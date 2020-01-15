@@ -1,0 +1,18 @@
+#Thank you for installing LevelledMobs! ::: If you have any issues or questions, send them to GitHub or my PMs, NOT the reviews. I will cease support with anyone who uses reviews for that.
+
+#Creature nametags
+creature-nametag: '&8[&7Level %level%&8 | &f%name%&8]'
+
+min-level: 0
+max-level: 10
+
+#For each level, these values are added to a mob. The default have been tried and tested, but you're free to change it.
+movement_speed: 0.02
+max_health: 1.0
+attack_damage: 1.7
+
+#Should the plugin check for updates at the SpigotMC page?
+updater: true
+
+#You shouldn't change this integer. LevelledMobs uses it to determine if your file is outdated.
+file-version: 6
