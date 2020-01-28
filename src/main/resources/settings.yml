@@ -1,6 +1,11 @@
 #Thank you for installing LevelledMobs! ::: If you have any issues or questions, send them to GitHub or my PMs, NOT the reviews. I will cease support with anyone who uses reviews for that.
 
 #Creature nametags
+# Placeholders:
+# %level% - displays the level of the mob
+# %name% - displays the name of the mob
+# %health% - displays the health of the mob
+# %max_health% - displays the max health of a mob
 creature-nametag: '&8[&7Level %level%&8 | &f%name%&8]'
 
 min-level: 0

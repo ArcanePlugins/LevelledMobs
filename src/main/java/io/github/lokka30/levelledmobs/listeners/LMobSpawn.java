@@ -1,13 +1,20 @@
 package io.github.lokka30.levelledmobs.listeners;
 
 import io.github.lokka30.levelledmobs.LevelledMobs;
+import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Monster;
+import org.bukkit.entity.memory.MemoryKey;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.CreatureSpawnEvent;
+import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.metadata.MetadataValue;
+import org.bukkit.persistence.PersistentDataHolder;
+import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.plugin.Plugin;
 
 import java.util.Objects;
 import java.util.Random;
@@ -15,6 +22,7 @@ import java.util.Random;
 public class LMobSpawn implements Listener {
 
     private LevelledMobs instance = LevelledMobs.getInstance();
+    private NamespacedKey key = new NamespacedKey(instance, "level");
 
     /*
     This class assigns mob levels to each entity spawned.
@@ -61,6 +69,11 @@ public class LMobSpawn implements Listener {
                 Objects.requireNonNull(ent.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE)).setBaseValue(baseAttackDamage + 0.5 + (instance.settings.getFloat("attack_damage") * level));
             }
 
+            //store the level in metadata
+            e.getEntity().getPersistentDataContainer().set(key, PersistentDataType.INTEGER, level);
+
+            ent.setHealth(baseMaxHealth);
+
             String name;
             if (e.getEntity().getCustomName() == null) {
                 name = e.getEntity().getName();
@@ -70,7 +83,9 @@ public class LMobSpawn implements Listener {
             e.getEntity().setCustomName(instance.colorize("&8[&7Level " + level + "&8 | &f" + name + "&8]"));
             e.getEntity().setCustomName(instance.colorize(instance.settings.get("creature-nametag", "&8[&7Level %level%&8 | &f%name%&8]")
                     .replaceAll("%level%", level + "")
-                    .replaceAll("%name%", name)));
+                    .replaceAll("%name%", name))
+                    .replaceAll("%health%", String.valueOf((int) Objects.requireNonNull(e.getEntity().getAttribute(Attribute.GENERIC_MAX_HEALTH)).getBaseValue()))
+                    .replaceAll("%max_health%", String.valueOf((int) Objects.requireNonNull(e.getEntity().getAttribute(Attribute.GENERIC_MAX_HEALTH)).getBaseValue())));
         }
     }
 

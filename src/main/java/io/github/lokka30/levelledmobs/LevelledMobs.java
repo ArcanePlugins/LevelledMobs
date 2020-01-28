@@ -3,6 +3,8 @@ package io.github.lokka30.levelledmobs;
 import de.leonhard.storage.LightningBuilder;
 import de.leonhard.storage.internal.FlatFile;
 import io.github.lokka30.levelledmobs.commands.CLevelledMobs;
+import io.github.lokka30.levelledmobs.listeners.EntityDamage;
+import io.github.lokka30.levelledmobs.listeners.EntityDeath;
 import io.github.lokka30.levelledmobs.listeners.LMobSpawn;
 import io.github.lokka30.levelledmobs.utils.LogLevel;
 import io.github.lokka30.levelledmobs.utils.UpdateChecker;
@@ -80,6 +82,8 @@ public class LevelledMobs extends JavaPlugin {
     private void registerEvents() {
         final PluginManager pm = getServer().getPluginManager();
         pm.registerEvents(new LMobSpawn(), this);
+        pm.registerEvents(new EntityDamage(), this);
+        pm.registerEvents(new EntityDeath(), this);
     }
 
     private void registerCommands() {
