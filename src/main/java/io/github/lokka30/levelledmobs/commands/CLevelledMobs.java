@@ -12,7 +12,7 @@ public class CLevelledMobs implements CommandExecutor {
     public boolean onCommand(final CommandSender s, final Command cmd, final String label, final String[] args) {
         s.sendMessage(instance.colorize("&8&m+-----------------------------------+"));
         s.sendMessage(instance.colorize("&7Running &a&lLevelledMobs&a v" + instance.getDescription().getVersion() + "&7."));
-        s.sendMessage(instance.colorize("&7Developer: &alokka30&7 &8| &7For: &a" + instance.recommendedVersion + "&7."));
+        s.sendMessage(instance.colorize("&7Developed for: &a" + instance.recommendedVersion + "&7."));
         s.sendMessage(instance.colorize("&8&m+-----------------------------------+"));
         s.sendMessage(instance.colorize("&a&lCommands:"));
         s.sendMessage(instance.colorize("&8&l \u00bb &f/LevelledMobs &8- &7&oview cmds and plugin info."));

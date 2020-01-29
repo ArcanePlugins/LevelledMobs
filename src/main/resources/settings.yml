@@ -6,7 +6,8 @@
 # - %name% - the mob's name
 # - %health% - the mob's health
 # - %max_health% - the mob's max health
-creature-nametag: '&8[&7Level %level%&8 | &f%name%&8 | &c%health%&7/&c%max_health% ❤&8]'
+# - %heart_symbol% - a heart symbol
+creature-nametag: '&8[&7Level %level%&8 | &f%name%&8 | &c%health%&8/&c%max_health% %heart_symbol%&8]'
 
 #Should passive creatures be levelled?
 level-passive: false
@@ -31,7 +32,6 @@ fine-tuning:
     attack_damage: 1.7
 
   #Should the creature's nametag be removed on death?
-  #If your death messages don't look right, this setting should help.
   remove-nametag-on-death: false
 
   #Should nametags be visible when close by (set to true) or only when looking at it (set to false)?

@@ -5,6 +5,7 @@ import de.leonhard.storage.internal.FlatFile;
 import io.github.lokka30.levelledmobs.commands.CLevelledMobs;
 import io.github.lokka30.levelledmobs.listeners.LDebug;
 import io.github.lokka30.levelledmobs.listeners.LMobSpawn;
+import io.github.lokka30.levelledmobs.listeners.LTagUpdate;
 import io.github.lokka30.levelledmobs.utils.LogLevel;
 import io.github.lokka30.levelledmobs.utils.UpdateChecker;
 import org.apache.commons.lang.StringUtils;
@@ -83,7 +84,7 @@ public class LevelledMobs extends JavaPlugin {
                 .addInputStreamFromResource("settings.yml")
                 .createYaml();
 
-        int recommendedSettingsVersion = 7;
+        int recommendedSettingsVersion = 8;
         if (settings.get("file-version") == null) {
             saveResource("settings.yml", true);
         } else if (settings.getInt("file-version") != recommendedSettingsVersion) {
@@ -96,6 +97,7 @@ public class LevelledMobs extends JavaPlugin {
 
         pm.registerEvents(new LMobSpawn(), this);
         pm.registerEvents(new LDebug(), this);
+        pm.registerEvents(new LTagUpdate(), this);
     }
 
     private void registerCommands() {
@@ -160,22 +162,26 @@ public class LevelledMobs extends JavaPlugin {
             final LivingEntity livingEntity = (LivingEntity) entity;
 
             if (instance.isLevellable(livingEntity)) {
-                String originalCustomName;
-                if (entity.getCustomName() == null) {
-                    originalCustomName = StringUtils.capitalize(entity.getType().name().toLowerCase());
-                } else {
-                    originalCustomName = entity.getCustomName();
-                }
-
-                String customName = settings.get("creature-nametag", "&8[&7Level %level%&8 | &f%name%&8 | &c%health%&7/&c%max_health% ❤&8]"
+                String customName = settings.get("creature-nametag", "&8[&7Level %level%&8 | &f%name%&8 | &c%health%&8/&c%max_health% %heart_symbol%&8]")
                         .replaceAll("%level%", entity.getPersistentDataContainer().get(key, PersistentDataType.INTEGER) + "")
-                        .replaceAll("%name%", originalCustomName))
-                        .replaceAll("%health%", livingEntity.getHealth() + " ")
-                        .replaceAll("%max_health%", Objects.requireNonNull(livingEntity.getAttribute(Attribute.GENERIC_MAX_HEALTH)).getBaseValue() + " ");
+                        .replaceAll("%name%", StringUtils.capitalize(entity.getType().name().toLowerCase()))
+                        .replaceAll("%health%", round(livingEntity.getHealth(), 1) + "")
+                        .replaceAll("%max_health%", Objects.requireNonNull(livingEntity.getAttribute(Attribute.GENERIC_MAX_HEALTH)).getBaseValue() + "")
+                        .replaceAll("%heart_symbol%", "❤");
                 entity.setCustomName(colorize(customName));
 
                 entity.setCustomNameVisible(settings.get("fine-tuning.custom-name-visible", false));
             }
         }
+    }
+
+    public double round(double value, int places) {
+        //Credit: Jonik & Mustapha Hadid @ stackoverflow
+        if (places < 0) throw new IllegalArgumentException();
+
+        long factor = (long) Math.pow(10, places);
+        value = value * factor;
+        long tmp = Math.round(value);
+        return (double) tmp / factor;
     }
 }
