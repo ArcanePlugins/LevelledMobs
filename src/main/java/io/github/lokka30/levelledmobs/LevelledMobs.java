@@ -18,7 +18,7 @@ import java.util.logging.Logger;
 public class LevelledMobs extends JavaPlugin {
 
     private static LevelledMobs instance;
-    public final String recommendedVersion = "1.15.1";
+    public final String recommendedVersion = "1.15";
     public FlatFile settings;
 
     public static LevelledMobs getInstance() {
@@ -69,7 +69,7 @@ public class LevelledMobs extends JavaPlugin {
                 .addInputStreamFromResource("settings.yml")
                 .createYaml();
 
-        int recommendedSettingsVersion = 6;
+        int recommendedSettingsVersion = 7;
         if (settings.get("file-version") == null) {
             saveResource("settings.yml", true);
         } else if (settings.getInt("file-version") != recommendedSettingsVersion) {
