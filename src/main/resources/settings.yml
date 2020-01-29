@@ -1,7 +1,15 @@
 #Thank you for installing LevelledMobs! ::: If you have any issues or questions, send them to GitHub or my PMs, NOT the reviews - you won't get support there!
 
-#Creature nametags
-creature-nametag: '&8[&7Level %level%&8 | &f%name%&8]'
+#Creature nametags.
+# Placeholders:
+# - %level% - the mob's level
+# - %name% - the mob's name
+# - %health% - the mob's health
+# - %max_health% - the mob's max health
+creature-nametag: '&8[&7Level %level%&8 | &f%name%&8 | &c%health%&7/&c%max_health% ❤&8]'
+
+#Should passive creatures be levelled?
+level-passive: false
 
 #Blacklisted types
 blacklisted-types:
@@ -12,15 +20,28 @@ blacklisted-types:
   - 'RAVAGER'
 
 #Fine-tuning. You probably don't need to change the values in this cluster.
-min-level: 0
-max-level: 10
-#For each level, these values are added to a mob. The default have been tried and tested, but you're free to change it.
-movement_speed: 0.02
-max_health: 1.0
-attack_damage: 1.7
+fine-tuning:
+  min-level: 0
+  max-level: 10
+
+  #For each level, these values are added to a mob. The default have been tried and tested, but you're free to change it.
+  multipliers:
+    movement_speed: 0.02
+    max_health: 1.0
+    attack_damage: 1.7
+
+  #Should the creature's nametag be removed on death?
+  #If your death messages don't look right, this setting should help.
+  remove-nametag-on-death: false
+
+  #Should nametags be visible when close by (set to true) or only when looking at it (set to false)?
+  custom-name-visible: false
 
 #Should the plugin check for updates at the SpigotMC page?
 updater: true
 
+#Should the plugin use debug mode? You most likely won't want this.
+debug: false
+
 #You shouldn't change this integer. LevelledMobs uses it to determine if your file is outdated.
-file-version: 7
+file-version: 8
