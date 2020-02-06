@@ -30,7 +30,9 @@ public class LMobSpawn implements Listener {
                 final double baseMaxHealth = Objects.requireNonNull(e.getEntity().getAttribute(Attribute.GENERIC_MAX_HEALTH)).getBaseValue();
 
                 //Set the max health.
-                Objects.requireNonNull(ent.getAttribute(Attribute.GENERIC_MAX_HEALTH)).setBaseValue(baseMaxHealth + (instance.settings.get("fine-tuning.max_health", 1.0F) * level));
+                final double maxHealth = baseMaxHealth + (instance.settings.get("fine-tuning.max_health", 1.0F) * level);
+                Objects.requireNonNull(ent.getAttribute(Attribute.GENERIC_MAX_HEALTH)).setBaseValue(maxHealth);
+                ent.setHealth(maxHealth);
 
                 //Only monsters should have their movement speed changed. Otherwise you would have a very fast level 10 race horse, or an untouchable bat.
                 if (ent instanceof Monster) {
@@ -66,8 +68,6 @@ public class LMobSpawn implements Listener {
 
                 //Set the level.
                 e.getEntity().getPersistentDataContainer().set(instance.key, PersistentDataType.INTEGER, level);
-
-                ent.setHealth(baseMaxHealth);
 
                 //Update their tag.
                 instance.updateTag(e.getEntity());
