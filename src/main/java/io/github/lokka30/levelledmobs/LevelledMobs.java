@@ -84,7 +84,7 @@ public class LevelledMobs extends JavaPlugin {
                 .addInputStreamFromResource("settings.yml")
                 .createYaml();
 
-        int recommendedSettingsVersion = 8;
+        int recommendedSettingsVersion = 9;
         if (settings.get("file-version") == null) {
             saveResource("settings.yml", false);
         } else if (settings.getInt("file-version") != recommendedSettingsVersion) {
