@@ -86,7 +86,7 @@ public class LevelledMobs extends JavaPlugin {
 
         int recommendedSettingsVersion = 8;
         if (settings.get("file-version") == null) {
-            saveResource("settings.yml", true);
+            saveResource("settings.yml", false);
         } else if (settings.getInt("file-version") != recommendedSettingsVersion) {
             log(LogLevel.WARNING, "Your &asettings.yml&7 file is outdated, please update it to version &a" + recommendedSettingsVersion + "&7.");
         }

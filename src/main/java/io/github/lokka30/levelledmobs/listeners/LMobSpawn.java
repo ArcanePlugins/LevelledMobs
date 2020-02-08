@@ -30,14 +30,15 @@ public class LMobSpawn implements Listener {
                 final double baseMaxHealth = Objects.requireNonNull(e.getEntity().getAttribute(Attribute.GENERIC_MAX_HEALTH)).getBaseValue();
 
                 //Set the max health.
-                final double maxHealth = baseMaxHealth + (instance.settings.get("fine-tuning.max_health", 1.0F) * level);
-                Objects.requireNonNull(ent.getAttribute(Attribute.GENERIC_MAX_HEALTH)).setBaseValue(maxHealth);
-                ent.setHealth(maxHealth);
+                final double newMaxHealth = baseMaxHealth + (instance.settings.get("fine-tuning.multipliers.max-health", 1.0F) * level);
+                Objects.requireNonNull(ent.getAttribute(Attribute.GENERIC_MAX_HEALTH)).setBaseValue(newMaxHealth);
+                ent.setHealth(newMaxHealth);
 
                 //Only monsters should have their movement speed changed. Otherwise you would have a very fast level 10 race horse, or an untouchable bat.
                 if (ent instanceof Monster) {
                     final double baseMovementSpeed = Objects.requireNonNull(e.getEntity().getAttribute(Attribute.GENERIC_MOVEMENT_SPEED)).getBaseValue();
-                    Objects.requireNonNull(ent.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED)).setBaseValue(baseMovementSpeed + (instance.settings.get("fine-tuning.movement_speed", 0.02F) * level));
+                    final double newMovementSpeed = baseMovementSpeed + (instance.settings.get("fine-tuning.multipliers.movement-speed", 0.02F) * level);
+                    Objects.requireNonNull(ent.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED)).setBaseValue(newMovementSpeed);
                 }
 
                 //These are melee mobs - their attack damage can be defined. Don't touch ranged mobs, else a NPE will occur.
@@ -59,8 +60,11 @@ public class LMobSpawn implements Listener {
                     case EVOKER:
                     case IRON_GOLEM:
                         final double baseAttackDamage = Objects.requireNonNull(e.getEntity().getAttribute(Attribute.GENERIC_MOVEMENT_SPEED)).getBaseValue();
-                        //add 0.5. the default attack damage is very weak.
-                        Objects.requireNonNull(ent.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE)).setBaseValue(baseAttackDamage + 0.5 + (instance.settings.get("fine-tuning.attack_damage", 1.7F) * level));
+                        final double defaultAttackDamageAddition = instance.settings.get("fine-tuning.default-attack-damage", 0.5D);
+                        final double attackDamageMultiplier = instance.settings.get("fine-tuning.multipliers.attack-damage", 1.7D);
+                        final double newAttackDamage = baseAttackDamage + defaultAttackDamageAddition + (attackDamageMultiplier * level);
+
+                        Objects.requireNonNull(ent.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE)).setBaseValue(newAttackDamage);
                         break;
                     default:
                         break;

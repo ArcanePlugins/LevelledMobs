@@ -25,11 +25,14 @@ fine-tuning:
   min-level: 0
   max-level: 10
 
+  #Since the vanilla damage is quite low, you can increase that here.
+  default-attack-damage: 0.5
+
   #For each level, these values are added to a mob. The default have been tried and tested, but you're free to change it.
   multipliers:
-    movement_speed: 0.02
-    max_health: 1.0
-    attack_damage: 1.7
+    movement-speed: 0.02
+    max-health: 1.0
+    attack-damage: 1.7
 
   #Should the creature's nametag be removed on death?
   remove-nametag-on-death: false
@@ -44,4 +47,4 @@ updater: true
 debug: false
 
 #You shouldn't change this integer. LevelledMobs uses it to determine if your file is outdated.
-file-version: 8
+file-version: 9

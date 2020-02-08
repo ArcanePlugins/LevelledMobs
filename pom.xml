@@ -6,7 +6,7 @@
 
     <groupId>io.github.lokka30</groupId>
     <artifactId>LevelledMobs</artifactId>
-    <version>1.12-SNAPSHOT</version>
+    <version>1.13-SNAPSHOT</version>
 
     <packaging>jar</packaging>
 
@@ -38,7 +38,11 @@
                     <relocations>
                         <relocation>
                             <pattern>org.bstats</pattern>
-                            <shadedPattern>io.github.lokka30.levelledmobs</shadedPattern>
+                            <shadedPattern>io.github.lokka30.levelledmobs.bstats</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>com.github.JavaFactoryDev</pattern>
+                            <shadedPattern>io.github.lokka30.levelledmobs.lightningstorage</shadedPattern>
                         </relocation>
                     </relocations>
                 </configuration>

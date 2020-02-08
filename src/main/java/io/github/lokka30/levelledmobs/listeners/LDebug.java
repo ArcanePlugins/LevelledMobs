@@ -28,7 +28,7 @@ public class LDebug implements Listener {
             final LivingEntity ent = (LivingEntity) e.getEntity();
 
             if (p.isOp() && !delay.contains(uuid) && instance.isLevellable(ent)) {
-                p.sendMessage(instance.colorize("&a&lLevelledMobs: &7Debug Information for &a" + ent.getType().toString() + "&7: "));
+                p.sendMessage(instance.colorize("&a&lLevelledMobs: &7Debug information for &a" + ent.getType().toString() + "&7: "));
                 p.sendMessage(instance.colorize("&8 - &fAttribute.GENERIC_MAX_HEALTH = " + Objects.requireNonNull(ent.getAttribute(Attribute.GENERIC_MAX_HEALTH)).getBaseValue()));
                 p.sendMessage(instance.colorize("&8 - &fAttribute.GENERIC_MOVEMENT_SPEED = " + Objects.requireNonNull(ent.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED)).getBaseValue()));
                 p.sendMessage(instance.colorize("&8 - &fAttribute.GENERIC_ATTACK_DAMAGE = " + Objects.requireNonNull(ent.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE)).getBaseValue()));

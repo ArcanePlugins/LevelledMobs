@@ -12,3 +12,13 @@ website: https://www.spigotmc.org/resources/%E2%98%85levelledmobs%E2%98%85-a-sim
 commands:
   LevelledMobs:
     description: Various plugin information.
+
+permissions:
+  levelledmobs.*:
+    description: all levelledmobs permissions
+    default: op
+    children:
+      levelledmobs.killall: true
+  levelledmobs.killall:
+    description: access to /levelledMobs killAll [world]
+    default: op
