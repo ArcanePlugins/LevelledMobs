@@ -84,7 +84,7 @@ public class LevelledMobs extends JavaPlugin {
                 .addInputStreamFromResource("settings.yml")
                 .createYaml();
 
-        int recommendedSettingsVersion = 9;
+        int recommendedSettingsVersion = 10;
         if (settings.get("file-version") == null) {
             saveResource("settings.yml", false);
         } else if (settings.getInt("file-version") != recommendedSettingsVersion) {
@@ -158,7 +158,7 @@ public class LevelledMobs extends JavaPlugin {
 
     //Updates the nametag of a creature
     public void updateTag(final Entity entity) {
-        if (entity instanceof LivingEntity) {
+        if (entity instanceof LivingEntity && settings.get("enable-nametag-changes", true)) {
             final LivingEntity livingEntity = (LivingEntity) entity;
 
             if (instance.isLevellable(livingEntity)) {
@@ -166,7 +166,7 @@ public class LevelledMobs extends JavaPlugin {
                         .replaceAll("%level%", entity.getPersistentDataContainer().get(key, PersistentDataType.INTEGER) + "")
                         .replaceAll("%name%", StringUtils.capitalize(entity.getType().name().toLowerCase()))
                         .replaceAll("%health%", round(livingEntity.getHealth(), 1) + "")
-                        .replaceAll("%max_health%", Objects.requireNonNull(livingEntity.getAttribute(Attribute.GENERIC_MAX_HEALTH)).getBaseValue() + "")
+                        .replaceAll("%max_health%", round(Objects.requireNonNull(livingEntity.getAttribute(Attribute.GENERIC_MAX_HEALTH)).getBaseValue(), 1) + "")
                         .replaceAll("%heart_symbol%", "❤");
                 entity.setCustomName(colorize(customName));
 

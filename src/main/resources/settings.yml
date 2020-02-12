@@ -9,6 +9,10 @@
 # - %heart_symbol% - a heart symbol
 creature-nametag: '&8[&7Level %level%&8 | &f%name%&8 | &c%health%&8/&c%max_health% %heart_symbol%&8]'
 
+#This allows creature nametags to be updated to the one set above when they are spawned or damaged.
+#If you use WildStacker or any other stacking plugins, you might want to disable this.
+enable-nametag-changes: true
+
 #Should passive creatures be levelled?
 level-passive: false
 
@@ -30,8 +34,8 @@ fine-tuning:
 
   #For each level, these values are added to a mob. The default have been tried and tested, but you're free to change it.
   multipliers:
-    movement-speed: 0.02
-    max-health: 1.0
+    movement-speed: 0.01
+    max-health: 1.5
     attack-damage: 1.7
 
   #Should the creature's nametag be removed on death?
@@ -47,4 +51,4 @@ updater: true
 debug: false
 
 #You shouldn't change this integer. LevelledMobs uses it to determine if your file is outdated.
-file-version: 9
+file-version: 10

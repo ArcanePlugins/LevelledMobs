@@ -30,14 +30,14 @@ public class LMobSpawn implements Listener {
                 final double baseMaxHealth = Objects.requireNonNull(e.getEntity().getAttribute(Attribute.GENERIC_MAX_HEALTH)).getBaseValue();
 
                 //Set the max health.
-                final double newMaxHealth = baseMaxHealth + (instance.settings.get("fine-tuning.multipliers.max-health", 1.0F) * level);
+                final double newMaxHealth = baseMaxHealth + (baseMaxHealth * (instance.settings.get("fine-tuning.multipliers.max-health", 1.5F) - 1) * level);
                 Objects.requireNonNull(ent.getAttribute(Attribute.GENERIC_MAX_HEALTH)).setBaseValue(newMaxHealth);
                 ent.setHealth(newMaxHealth);
 
                 //Only monsters should have their movement speed changed. Otherwise you would have a very fast level 10 race horse, or an untouchable bat.
                 if (ent instanceof Monster) {
                     final double baseMovementSpeed = Objects.requireNonNull(e.getEntity().getAttribute(Attribute.GENERIC_MOVEMENT_SPEED)).getBaseValue();
-                    final double newMovementSpeed = baseMovementSpeed + (instance.settings.get("fine-tuning.multipliers.movement-speed", 0.02F) * level);
+                    final double newMovementSpeed = baseMovementSpeed + (instance.settings.get("fine-tuning.multipliers.movement-speed", 0.01F) * level);
                     Objects.requireNonNull(ent.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED)).setBaseValue(newMovementSpeed);
                 }
 
@@ -59,7 +59,7 @@ public class LMobSpawn implements Listener {
                     case RAVAGER:
                     case EVOKER:
                     case IRON_GOLEM:
-                        final double baseAttackDamage = Objects.requireNonNull(e.getEntity().getAttribute(Attribute.GENERIC_MOVEMENT_SPEED)).getBaseValue();
+                        final double baseAttackDamage = Objects.requireNonNull(e.getEntity().getAttribute(Attribute.GENERIC_ATTACK_DAMAGE)).getBaseValue();
                         final double defaultAttackDamageAddition = instance.settings.get("fine-tuning.default-attack-damage", 0.5D);
                         final double attackDamageMultiplier = instance.settings.get("fine-tuning.multipliers.attack-damage", 1.7D);
                         final double newAttackDamage = baseAttackDamage + defaultAttackDamageAddition + (attackDamageMultiplier * level);
