@@ -9,6 +9,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.persistence.PersistentDataType;
 
+import java.util.Collections;
 import java.util.Objects;
 import java.util.Random;
 
@@ -27,17 +28,27 @@ public class LMobSpawn implements Listener {
             LivingEntity ent = e.getEntity();
 
             if (instance.isLevellable(ent)) {
-                final double baseMaxHealth = Objects.requireNonNull(e.getEntity().getAttribute(Attribute.GENERIC_MAX_HEALTH)).getBaseValue();
+                for (String blacklistedWorld : instance.settings.get("blacklisted-worlds", Collections.singletonList("BLACKLISTED_WORLD"))) {
+                    if (e.getEntity().getWorld().getName().equalsIgnoreCase(blacklistedWorld)) {
+                        return;
+                    }
+                }
 
-                //Set the max health.
-                final double newMaxHealth = baseMaxHealth + (baseMaxHealth * (instance.settings.get("fine-tuning.multipliers.max-health", 1.5F) - 1) * level);
+                for (String blacklistedReason : instance.settings.get("blacklisted-reasons", Collections.singletonList("NONE"))) {
+                    if (e.getSpawnReason().toString().equalsIgnoreCase(blacklistedReason)) {
+                        return;
+                    }
+                }
+
+                final double baseMaxHealth = Objects.requireNonNull(e.getEntity().getAttribute(Attribute.GENERIC_MAX_HEALTH)).getBaseValue();
+                final double newMaxHealth = baseMaxHealth + (baseMaxHealth * (instance.settings.get("fine-tuning.multipliers.max-health", 0.2F)) * level);
                 Objects.requireNonNull(ent.getAttribute(Attribute.GENERIC_MAX_HEALTH)).setBaseValue(newMaxHealth);
                 ent.setHealth(newMaxHealth);
 
                 //Only monsters should have their movement speed changed. Otherwise you would have a very fast level 10 race horse, or an untouchable bat.
                 if (ent instanceof Monster) {
                     final double baseMovementSpeed = Objects.requireNonNull(e.getEntity().getAttribute(Attribute.GENERIC_MOVEMENT_SPEED)).getBaseValue();
-                    final double newMovementSpeed = baseMovementSpeed + (instance.settings.get("fine-tuning.multipliers.movement-speed", 0.01F) * level);
+                    final double newMovementSpeed = baseMovementSpeed + (baseMovementSpeed * instance.settings.get("fine-tuning.multipliers.movement-speed", 0.065F) * level);
                     Objects.requireNonNull(ent.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED)).setBaseValue(newMovementSpeed);
                 }
 
@@ -60,8 +71,8 @@ public class LMobSpawn implements Listener {
                     case EVOKER:
                     case IRON_GOLEM:
                         final double baseAttackDamage = Objects.requireNonNull(e.getEntity().getAttribute(Attribute.GENERIC_ATTACK_DAMAGE)).getBaseValue();
-                        final double defaultAttackDamageAddition = instance.settings.get("fine-tuning.default-attack-damage", 0.5D);
-                        final double attackDamageMultiplier = instance.settings.get("fine-tuning.multipliers.attack-damage", 1.7D);
+                        final double defaultAttackDamageAddition = instance.settings.get("fine-tuning.default-attack-damage-increase", 1.0F);
+                        final double attackDamageMultiplier = instance.settings.get("fine-tuning.multipliers.attack-damage", 1.5F);
                         final double newAttackDamage = baseAttackDamage + defaultAttackDamageAddition + (attackDamageMultiplier * level);
 
                         Objects.requireNonNull(ent.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE)).setBaseValue(newAttackDamage);

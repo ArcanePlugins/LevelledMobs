@@ -2,12 +2,14 @@ package io.github.lokka30.levelledmobs;
 
 import de.leonhard.storage.LightningBuilder;
 import de.leonhard.storage.internal.FlatFile;
+import de.leonhard.storage.internal.exception.LightningValidationException;
 import io.github.lokka30.levelledmobs.commands.CLevelledMobs;
 import io.github.lokka30.levelledmobs.listeners.LDebug;
 import io.github.lokka30.levelledmobs.listeners.LMobSpawn;
 import io.github.lokka30.levelledmobs.listeners.LTagUpdate;
 import io.github.lokka30.levelledmobs.utils.LogLevel;
 import io.github.lokka30.levelledmobs.utils.UpdateChecker;
+import io.github.lokka30.levelledmobs.utils.Utils;
 import org.apache.commons.lang.StringUtils;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.ChatColor;
@@ -29,7 +31,6 @@ import java.util.logging.Logger;
 public class LevelledMobs extends JavaPlugin {
 
     private static LevelledMobs instance;
-    public final String recommendedVersion = "1.15";
     public FlatFile settings;
     public NamespacedKey key;
 
@@ -42,7 +43,6 @@ public class LevelledMobs extends JavaPlugin {
     }
 
     public void onEnable() {
-        log(LogLevel.INFO, "&8&m+------------------------------+");
         log(LogLevel.INFO, "&8[&71&8/&75&8] &7Checking compatibility...");
         checkCompatibility();
 
@@ -59,8 +59,7 @@ public class LevelledMobs extends JavaPlugin {
         log(LogLevel.INFO, "&8[&75&8/&75&8] &7Starting metrics...");
         new Metrics(this);
 
-        log(LogLevel.INFO, "&8[&7Loaded&8] &7Thank you for using LevelledMobs. Enjoy!");
-        log(LogLevel.INFO, "&8&m+------------------------------+");
+        log(LogLevel.INFO, "Loaded successfuly. Thank you for choosing LevelledMobs!");
 
         checkUpdates();
     }
@@ -70,25 +69,45 @@ public class LevelledMobs extends JavaPlugin {
     }
 
     private void checkCompatibility() {
-        final String version = getServer().getVersion();
-        if (!version.contains(recommendedVersion)) {
-            log(LogLevel.WARNING, "Your server is running the unsupported version &a" + version + "&7. Please switch to the only supported version, &a" + recommendedVersion + "&7, otherwise issues may occur.");
+        final String currentVersion = getServer().getVersion();
+        final String recommendedVersion = Utils.getRecommendedServerVersion();
+        if (currentVersion.contains(recommendedVersion)) {
+            log(LogLevel.INFO, "Server is running supported version &a" + currentVersion + "&7.");
         } else {
-            log(LogLevel.INFO, "Server is running supported version &a" + version + "&7.");
+            log(LogLevel.WARNING, " ");
+            log(LogLevel.WARNING, "Server is running &cunsupported&7 version &a" + currentVersion + "&7.");
+            log(LogLevel.WARNING, "The recommended version is &a" + recommendedVersion + "&7.");
+            log(LogLevel.WARNING, "You will not get support with the plugin whilst using an unsupported version!");
+            log(LogLevel.WARNING, " ");
         }
     }
 
     private void loadFiles() {
-        settings = LightningBuilder
-                .fromFile(new File("plugins/LevelledMobs/settings"))
-                .addInputStreamFromResource("settings.yml")
-                .createYaml();
+        //Load the files
+        final PluginManager pm = getServer().getPluginManager();
+        final String path = "plugins/PhantomEconomy/";
+        try {
+            settings = LightningBuilder
+                    .fromFile(new File(path + "settings"))
+                    .addInputStreamFromResource("settings.yml")
+                    .createYaml();
+        } catch (LightningValidationException e) {
+            log(LogLevel.SEVERE, "Unable to load &asettings.yml&7!");
+            pm.disablePlugin(this);
+            return;
+        }
 
-        int recommendedSettingsVersion = 10;
-        if (settings.get("file-version") == null) {
+        //Check if they exist
+        final File settingsFile = new File(path + "settings.yml");
+
+        if (!(settingsFile.exists() && !settingsFile.isDirectory())) {
+            log(LogLevel.INFO, "File &asettings.yml&7 doesn't exist. Creating it now.");
             saveResource("settings.yml", false);
-        } else if (settings.getInt("file-version") != recommendedSettingsVersion) {
-            log(LogLevel.WARNING, "Your &asettings.yml&7 file is outdated, please update it to version &a" + recommendedSettingsVersion + "&7.");
+        }
+
+        //Check their versions
+        if (settings.get("file-version", 0) != Utils.getRecommendedSettingsVersion()) {
+            log(LogLevel.SEVERE, "File &asettings.yml&7 is out of date! Lower-quality default values will be used for the new features! Reset it or merge the old values to the new file.");
         }
     }
 
