@@ -180,6 +180,10 @@ public class LevelledMobs extends JavaPlugin {
         if (entity instanceof LivingEntity && settings.get("enable-nametag-changes", true)) {
             final LivingEntity livingEntity = (LivingEntity) entity;
 
+            if (entity.getPersistentDataContainer().get(key, PersistentDataType.INTEGER) == null) {
+                return;
+            }
+
             if (instance.isLevellable(livingEntity)) {
                 String customName = settings.get("creature-nametag", "&8[&7Level %level%&8 | &f%name%&8 | &c%health%&8/&c%max_health% %heart_symbol%&8]")
                         .replaceAll("%level%", entity.getPersistentDataContainer().get(key, PersistentDataType.INTEGER) + "")
