@@ -85,7 +85,7 @@ public class LevelledMobs extends JavaPlugin {
     private void loadFiles() {
         //Load the files
         final PluginManager pm = getServer().getPluginManager();
-        final String path = "plugins/PhantomEconomy/";
+        final String path = "plugins/LevelledMobs/";
         try {
             settings = LightningBuilder
                     .fromFile(new File(path + "settings"))
