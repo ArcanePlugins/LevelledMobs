@@ -86,6 +86,8 @@ public class LMobSpawn implements Listener {
 
                 //Update their tag.
                 instance.updateTag(e.getEntity());
+            } else if (e.getSpawnReason() == CreatureSpawnEvent.SpawnReason.CURED) {
+                e.getEntity().setCustomName("");
             }
         }
     }
