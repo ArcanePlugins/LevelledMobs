@@ -6,6 +6,6 @@ public class Utils {
     }
 
     public static int getRecommendedSettingsVersion() {
-        return 11;
+        return 12;
     }
 }

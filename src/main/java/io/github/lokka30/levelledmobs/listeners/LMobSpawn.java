@@ -128,9 +128,9 @@ public class LMobSpawn implements Listener {
     		
     		
     		//Create array with chances for each level
-    		levelarray = new double[maxlevel - minlevel];
+    		levelarray = new double[levelspan];
     		binomialp = (1.0D / levelspan / 2.0D) + ((1.0D - (1.0D / levelspan)) / levelspan * (defaultlevel - minlevel));
-    		for(int i = 0; i <= maxlevel - minlevel; i++) {
+    		for(int i = 0; i < levelspan; i++) {
     			levelarray[i] = binomialDistribution(levelspan, i, binomialp);
     		}
     		
@@ -140,8 +140,10 @@ public class LMobSpawn implements Listener {
     		//Choose a level based on the weight of a level
     		randomnumber = new Random().nextDouble() * weightedlevelarray[weightedlevelarray.length - 1];
     		for(int i = 0; i < weightedlevelarray.length; i++)
-    			if(randomnumber <= weightedlevelarray[i])
+    			if(randomnumber <= weightedlevelarray[i]) {
     				finallevel = i + minlevel;
+    				break;
+    			}
     		
     	}
     	else
