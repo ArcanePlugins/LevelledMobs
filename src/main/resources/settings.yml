@@ -55,6 +55,14 @@ fine-tuning:
   #Should nametags be visible when close by (set to true) or only when looking at it (set to false)?
   custom-name-visible: false
 
+#Should monsters level depending on distance to spawn? Set "active" respectively.
+#Should monsters with non-default levels spawn? Set "variance" accordingly.
+#Set the distance to increase the level by one via "increase-level-distance".
+spawn-distance-levelling:
+  active: false
+  variance: true
+  increase-level-distance: 200
+
 #Should the plugin check for updates at the SpigotMC page?
 updater: true
 
@@ -62,4 +70,4 @@ updater: true
 debug: false
 
 #You shouldn't change this integer. LevelledMobs uses it to determine if your file is outdated.
-file-version: 11
+file-version: 12
