@@ -36,7 +36,7 @@ blacklisted-reasons: []
 
 #Fine-tuning. You probably don't need to change the values in this cluster.
 fine-tuning:
-  min-level: 0
+  min-level: 1
   max-level: 10
 
   #Since the vanilla damage is pretty weak, you can increase its base value here.

@@ -1,7 +1,6 @@
 package io.github.lokka30.levelledmobs.listeners;
 
 import io.github.lokka30.levelledmobs.LevelledMobs;
-
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Monster;
@@ -13,6 +12,7 @@ import org.bukkit.persistence.PersistentDataType;
 import java.util.Collections;
 import java.util.Objects;
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class LMobSpawn implements Listener {
 
@@ -25,33 +25,40 @@ public class LMobSpawn implements Listener {
     @EventHandler
     public void onMobSpawn(final CreatureSpawnEvent e) {
         if (!e.isCancelled()) {
-        	final int level;
-            LivingEntity ent = e.getEntity();
-            
-            //Check settings for spawn distance levelling and choose accordingly
-            if(instance.settings.get("spawn-distance-levelling.active", false))
-            	level = generateLevelByDistance(ent);
-            else
-            	level = generateLevel();
-            
-            if (instance.isLevellable(ent)) {
+            final int level; //The mob's level.
+            LivingEntity ent = e.getEntity(); //The entity that was just spawned.
+
+            //Check settings for spawn distance levelling and choose levelling method accordingly.
+            if (instance.settings.get("spawn-distance-levelling.active", false)) {
+                level = generateLevelByDistance(ent);
+            } else {
+                level = generateLevel();
+            }
+
+            if (instance.isLevellable(ent)) { //Is the mob allowed to be levelled?
+
+                //Check the list of blacklisted worlds. If the entity's world is in here, then we don't continue.
                 for (String blacklistedWorld : instance.settings.get("blacklisted-worlds", Collections.singletonList("BLACKLISTED_WORLD"))) {
                     if (e.getEntity().getWorld().getName().equalsIgnoreCase(blacklistedWorld)) {
                         return;
                     }
                 }
 
+                //Check the list of blacklisted spawn reasons. If the entity's spawn reason is in there, then we don't continue.
+                //Uses a default as "NONE" as there are no blocked spawn reasons in the default config.
                 for (String blacklistedReason : instance.settings.get("blacklisted-reasons", Collections.singletonList("NONE"))) {
                     if (e.getSpawnReason().toString().equalsIgnoreCase(blacklistedReason)) {
                         return;
                     }
                 }
 
+                //Set the entity's max health.
                 final double baseMaxHealth = Objects.requireNonNull(e.getEntity().getAttribute(Attribute.GENERIC_MAX_HEALTH)).getBaseValue();
                 final double newMaxHealth = baseMaxHealth + (baseMaxHealth * (instance.settings.get("fine-tuning.multipliers.max-health", 0.2F)) * level);
                 Objects.requireNonNull(ent.getAttribute(Attribute.GENERIC_MAX_HEALTH)).setBaseValue(newMaxHealth);
-                ent.setHealth(newMaxHealth);
+                ent.setHealth(newMaxHealth); //Set the entity's health to their max health, otherwise their health is still the default of 20, so they'll be just as easy to kill.
 
+                //Set the entity's movement speed.
                 //Only monsters should have their movement speed changed. Otherwise you would have a very fast level 10 race horse, or an untouchable bat.
                 if (ent instanceof Monster) {
                     final double baseMovementSpeed = Objects.requireNonNull(e.getEntity().getAttribute(Attribute.GENERIC_MOVEMENT_SPEED)).getBaseValue();
@@ -59,7 +66,9 @@ public class LMobSpawn implements Listener {
                     Objects.requireNonNull(ent.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED)).setBaseValue(newMovementSpeed);
                 }
 
-                //These are melee mobs - their attack damage can be defined. Don't touch ranged mobs, else a NPE will occur.
+                //These are melee mobs - their attack damage can be defined.
+                // Don't touch ranged mobs, else a NPE will occur.
+                // Ranged mobs' damage is planned to be added in a later date.
                 switch (ent.getType()) {
                     case ZOMBIE:
                     case HUSK:
@@ -84,24 +93,28 @@ public class LMobSpawn implements Listener {
 
                         Objects.requireNonNull(ent.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE)).setBaseValue(newAttackDamage);
                         break;
-                    default:
+                    default: //The mob isn't a melee mob defined above. Don't set their movement speed.
                         break;
                 }
 
-                //Set the level.
+                //Define the mob's level so it can be accessed elsewhere.
                 e.getEntity().getPersistentDataContainer().set(instance.key, PersistentDataType.INTEGER, level);
 
                 //Update their tag.
                 instance.updateTag(e.getEntity());
+
             } else if (e.getSpawnReason() == CreatureSpawnEvent.SpawnReason.CURED) {
+                //Check if a zombie villager was cured. If villagers aren't levellable, then their name will be cleared,
+                // otherwise their nametag is still 'Zombie Villager'. Imposter!
                 e.getEntity().setCustomName("");
             }
         }
     }
 
     //Generates a level.
+    //Uses ThreadLocalRandom.current().nextInt(min, max + 1). + 1 is because ThreadLocalRandom is usually exclusive of the uppermost value.
     public Integer generateLevel() {
-        return new Random().nextInt(instance.settings.get("fine-tuning.max-level", 10) + 1) + instance.settings.get("fine-tuning.min-level", 0);
+        return ThreadLocalRandom.current().nextInt(instance.settings.get("fine-tuning.min-level", 1), instance.settings.get("fine-tuning.max-level", 10) + 1);
     }
     
     //Generates a level based on distance to spawn and, if active, variance

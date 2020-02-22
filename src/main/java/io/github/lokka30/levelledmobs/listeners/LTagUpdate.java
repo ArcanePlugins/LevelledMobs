@@ -17,6 +17,8 @@ public class LTagUpdate implements Listener {
     public void onDamage(final EntityDamageEvent e) {
         instance.updateTag(e.getEntity());
 
+        //Update their tag 10 ticks, or half a second, after the mob was damaged.
+        // This makes the nametag show their current health, otherwise you hit a zombie and it shows its old health.
         new BukkitRunnable() {
             public void run() {
                 instance.updateTag(e.getEntity());
