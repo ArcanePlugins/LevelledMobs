@@ -5,6 +5,11 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.persistence.PersistentDataType;
+
+import java.util.List;
+import java.util.Random;
 
 public class LMobDeath implements Listener {
 
@@ -13,12 +18,42 @@ public class LMobDeath implements Listener {
     @EventHandler
     public void onDeath(final EntityDeathEvent e) {
         clearNametag(e.getEntity());
+        calculateDrops(e.getEntity(), e.getDrops());
     }
 
     //Clear their nametag on death.
-    private void clearNametag(LivingEntity ent){
+    private void clearNametag(final LivingEntity ent){
         if (instance.isLevellable(ent) && instance.settings.get("fine-tuning.remove-nametag-on-death", false)) {
             ent.setCustomName(null);
+        }
+    }
+
+    //Calculates the drops when a levellable creature dies.
+    private void calculateDrops(final LivingEntity ent, List<ItemStack> drops){
+
+        if(instance.isLevellable(ent)){
+            //If mob is levellable, but wasn't levelled, return.
+            Integer level = ent.getPersistentDataContainer().get(instance.key, PersistentDataType.INTEGER);
+            if(level == null)
+                return;
+
+            //Read settings for drops.
+            double dropmultiplier = instance.settings.get("fine-tuning.multipliers.item-drop", 0.25);
+            int finalmultiplier;
+
+            //If multiplier * level gurantees an extra drop set 'finalmultiplier' to the amount of safe multiples.
+            finalmultiplier = (int) dropmultiplier;
+            dropmultiplier -= finalmultiplier;
+
+            //Calculate if the remaining extra drop chance triggers.
+            double random = new Random().nextDouble();
+            if (random < dropmultiplier)
+                finalmultiplier++;
+
+            //Edit the ItemStacks to drop the calculated multiple items.
+            for(ItemStack i : drops) {
+                i.setAmount(i.getAmount() * finalmultiplier);
+            }
         }
     }
 }
