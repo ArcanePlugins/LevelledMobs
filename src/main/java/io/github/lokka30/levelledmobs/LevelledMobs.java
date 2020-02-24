@@ -5,8 +5,9 @@ import de.leonhard.storage.internal.FlatFile;
 import de.leonhard.storage.internal.exception.LightningValidationException;
 import io.github.lokka30.levelledmobs.commands.CLevelledMobs;
 import io.github.lokka30.levelledmobs.listeners.LDebug;
+import io.github.lokka30.levelledmobs.listeners.LMobDamage;
+import io.github.lokka30.levelledmobs.listeners.LMobDeath;
 import io.github.lokka30.levelledmobs.listeners.LMobSpawn;
-import io.github.lokka30.levelledmobs.listeners.LTagUpdate;
 import io.github.lokka30.levelledmobs.utils.LogLevel;
 import io.github.lokka30.levelledmobs.utils.UpdateChecker;
 import io.github.lokka30.levelledmobs.utils.Utils;
@@ -114,9 +115,10 @@ public class LevelledMobs extends JavaPlugin {
     private void registerEvents() {
         final PluginManager pm = getServer().getPluginManager();
 
-        pm.registerEvents(new LMobSpawn(), this);
         pm.registerEvents(new LDebug(), this);
-        pm.registerEvents(new LTagUpdate(), this);
+        pm.registerEvents(new LMobSpawn(), this);
+        pm.registerEvents(new LMobDamage(), this);
+        pm.registerEvents(new LMobDeath(), this);
     }
 
     private void registerCommands() {
