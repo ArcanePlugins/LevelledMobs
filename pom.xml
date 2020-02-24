@@ -6,7 +6,7 @@
 
     <groupId>io.github.lokka30</groupId>
     <artifactId>LevelledMobs</artifactId>
-    <version>1.18-RELEASE</version>
+    <version>1.20-RELEASE</version>
 
     <packaging>jar</packaging>
 
@@ -96,7 +96,7 @@
         <dependency>
             <groupId>com.github.JavaFactoryDev</groupId>
             <artifactId>LightningStorage</artifactId>
-            <version>3.0.3</version>
+            <version>3.0.6</version>
         </dependency>
         <dependency>
             <groupId>org.bstats</groupId>
