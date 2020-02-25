@@ -10,12 +10,13 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 public class CLevelledMobs implements CommandExecutor {
 
     private LevelledMobs instance = LevelledMobs.getInstance();
 
-    public boolean onCommand(final CommandSender s, final Command cmd, final String label, final String[] args) {
+    public boolean onCommand(@NotNull final CommandSender s, @NotNull final Command cmd, @NotNull final String label, final String[] args) {
         if (args.length == 0) {
             s.sendMessage(instance.colorize("&8&m+-----------------------------------+"));
             s.sendMessage(instance.colorize("&a&lLevelledMobs: &7Available commands:"));

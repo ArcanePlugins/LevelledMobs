@@ -183,9 +183,7 @@ public class LMobSpawn implements Listener {
     
     //Binomial distribution function
     private double binomialDistribution(int n, int k, double p) {
-    	double chance;
-    		chance = factorial(n) / (factorial(k)*factorial(n-k)) * Math.pow(p, k) * Math.pow(1 - p, n - k);
-    	return chance;
+        return factorial(n) / (factorial(k) * factorial(n - k)) * Math.pow(p, k) * Math.pow(1 - p, n - k);
     }
     
     //Factorial function
