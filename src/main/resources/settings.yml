@@ -48,6 +48,7 @@ fine-tuning:
     movement-speed: 0.065
     max-health: 0.2
     attack-damage: 1.5
+    item-drop: 0.25
 
   #Should the creature's nametag be removed on death?
   remove-nametag-on-death: false
@@ -70,4 +71,4 @@ updater: true
 debug: false
 
 #You shouldn't change this integer. LevelledMobs uses it to determine if your file is outdated.
-file-version: 12
+file-version: 13
