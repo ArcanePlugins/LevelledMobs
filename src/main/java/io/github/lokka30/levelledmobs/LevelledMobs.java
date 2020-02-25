@@ -31,28 +31,63 @@ import java.util.logging.Logger;
 
 public class LevelledMobs extends JavaPlugin {
 
-    private static LevelledMobs instance;
-    public FlatFile settings;
-    public NamespacedKey key;
+    /*
+    Information for Developers, about my weird programming stuff and what to know if you're going to touch this plugin.
+    I apologise for the poor formatting. I just wanted to get it out of the way.
 
+    - Class naming
+     - I've adopted my own class naming thing. CommandExecutor classes begin with 'C' and Listener classes begin with 'L'.
+      - This is so, for example, if I have a command called 'Death' and a listener called 'Death', the class names don't clash.
+      - Also, when looking up the class in IntelliJ, I can easily start with a 'C' or a 'L' and it only shows the listeners, for example, in the suggested words.
+    - This plugin uses LightningStorage.
+      The syntax is [instance.]settings.get("path", (Object) defaultValue).
+       Let me get a String in the file: instance.settings.get("string", "the default string here in case the settings file doesn't contain 'string'.")
+
+       If that isn't enough to tell you how to use lightningStorage, see below:
+       - "path" is the path of the setting.
+       - (Object) is the object type that the value is. For example, getting a float from the settings file:
+        - instance.settings.get("float-value", 1.2F)
+     or - instance.settings.get("float-value", (float) 1.2)
+       - defaultValue is the default value returned if the path doesn't exist.
+        - For example, if a user hasn't updated their settings file, the defaultValue will be used instead of
+          what is meant to be there. If the value in the settings file is too large to put into the defaultValue area,
+          such as a large list of mob names or something, you can simply use a few of the values as
+          Collection.asSingletonList("ZOMBIE", "CREEPER"), or Arrays.asList("ZOMBIE", "CREEPER").
+       - e.g. getting a List<String> from the config and checking each value
+        - for(String s : instance.settings.get("string-list", Collection.asSingletonList("ZOMBIE", "STRING2")) {
+           if(s.equals("STRING2") {
+            ...
+           }
+          }
+      - When updating the settings file, change the value in the bottom of the settings.yml file and in the Utils class.
+     */
+
+    private static LevelledMobs instance; //The main class is stored here so other classes can access it.
+    public FlatFile settings; //The settings config file managed by LightningStorage.
+    public NamespacedKey key; //The NamespacedKey which holds each levellable mob's level value.
+
+    //Returns the instance class. Will return null if the plugin is disabled - this shouldn't happen.
     public static LevelledMobs getInstance() {
         return instance;
     }
 
+    //When the plugin starts loading (when Bukkit announces that it's loading, but it isn't actually enabling yet),
+    //the instance is set.
     public void onLoad() {
         instance = this;
     }
 
+    //When the plugin starts enabling.
     public void onEnable() {
         log(LogLevel.INFO, "&8[&71&8/&75&8] &7Checking compatibility...");
-        checkCompatibility();
+        checkCompatibility(); //Is the server running the latest version? Dependencies required?
 
         log(LogLevel.INFO, "&8[&72&8/&75&8] &7Loading files...");
-        loadFiles();
+        loadFiles(); //Tell LightningStorage to get things started. Check if there's something wrong going on, such as an outdated file.
 
         log(LogLevel.INFO, "&8[&73&8/&75&8] &7Registering events...");
-        key = new NamespacedKey(this, "level");
-        registerEvents();
+        key = new NamespacedKey(this, "level"); //Set the NamespacedKey, holding the mob's level.
+        registerEvents(); //Start registering the listeners - these classes start with L.
 
         log(LogLevel.INFO, "&8[&74&8/&75&8] &7Registering commands...");
         registerCommands();
@@ -177,16 +212,16 @@ public class LevelledMobs extends JavaPlugin {
         return entity instanceof Monster || instance.settings.get("level-passive", false);
     }
 
-    //Updates the nametag of a creature
+    //Updates the nametag of a creature. Gets called by certain listeners.
     public void updateTag(final Entity entity) {
-        if (entity instanceof LivingEntity && settings.get("enable-nametag-changes", true)) {
+        if (entity instanceof LivingEntity && settings.get("enable-nametag-changes", true)) { //if the settings allows nametag changes, go ahead.
             final LivingEntity livingEntity = (LivingEntity) entity;
 
-            if (entity.getPersistentDataContainer().get(key, PersistentDataType.INTEGER) == null) {
+            if (entity.getPersistentDataContainer().get(key, PersistentDataType.INTEGER) == null) { //if the entity doesn't contain a level, skip this.
                 return;
             }
 
-            if (instance.isLevellable(livingEntity)) {
+            if (instance.isLevellable(livingEntity)) { // If the mob is levellable, go ahead.
                 String customName = settings.get("creature-nametag", "&8[&7Level %level%&8 | &f%name%&8 | &c%health%&8/&c%max_health% %heart_symbol%&8]")
                         .replaceAll("%level%", entity.getPersistentDataContainer().get(key, PersistentDataType.INTEGER) + "")
                         .replaceAll("%name%", StringUtils.capitalize(entity.getType().name().toLowerCase()))
@@ -195,11 +230,19 @@ public class LevelledMobs extends JavaPlugin {
                         .replaceAll("%heart_symbol%", "❤");
                 entity.setCustomName(colorize(customName));
 
+                // CustomNameVisible
+                // If true, players can see it from afar and through walls and roofs and the surface of the world if under caves.
+                // If false, players can only see it when looking directly at it and within 4 or so blocks.
+                //
+                // I can't change anything else here, as it's a Minecraft feature.
+                // Unfortunately no hybrid between the two where you can't see it through caves and that. :(
                 entity.setCustomNameVisible(settings.get("fine-tuning.custom-name-visible", false));
             }
         }
     }
 
+    //This is a method created by Jonik & Mustapha Hadid at StackOverflow.
+    //It simply grabs 'value', being a double, and rounds it, leaving 'places' decimal places intact.
     public double round(double value, int places) {
         //Credit: Jonik & Mustapha Hadid @ stackoverflow
         if (places < 0) throw new IllegalArgumentException();

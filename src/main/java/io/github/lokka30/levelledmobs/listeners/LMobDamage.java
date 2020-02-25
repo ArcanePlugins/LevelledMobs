@@ -11,13 +11,13 @@ public class LMobDamage implements Listener {
 
     private LevelledMobs instance = LevelledMobs.getInstance();
 
-    //EventHandler firing on damage to entity.
+    // When the mob is damaged, try to update their nametag.
     @EventHandler
     public void onDamage(final EntityDamageEvent e) {
         updateTag(e.getEntity());
     }
 
-    //Update their tag 10 ticks, or half a second, after the mob was damaged.
+    // Update their tag 10 ticks, or half a second, after the mob was damaged.
     // This makes the nametag show their current health, otherwise you hit a zombie and it shows its old health.
     private void updateTag(Entity ent){
         new BukkitRunnable() {

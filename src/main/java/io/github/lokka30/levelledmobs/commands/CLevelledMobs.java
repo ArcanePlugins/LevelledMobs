@@ -18,14 +18,11 @@ public class CLevelledMobs implements CommandExecutor {
     public boolean onCommand(final CommandSender s, final Command cmd, final String label, final String[] args) {
         if (args.length == 0) {
             s.sendMessage(instance.colorize("&8&m+-----------------------------------+"));
-            s.sendMessage(instance.colorize("&7Running &a&lLevelledMobs&a v" + instance.getDescription().getVersion() + "&7."));
-            s.sendMessage(instance.colorize("&7Developed for: &a" + Utils.getRecommendedServerVersion() + "&7."));
-            s.sendMessage(instance.colorize("&8&m+-----------------------------------+"));
-            s.sendMessage(instance.colorize("&a&lCommands:"));
-            s.sendMessage(instance.colorize("&8&l \u00bb &f/levelledMobs &8- &7&oview cmds and plugin info."));
+            s.sendMessage(instance.colorize("&a&lLevelledMobs: &7Available commands:"));
+            s.sendMessage(instance.colorize("&8&l \u00bb &f/levelledMobs &8- &7&oview plugin commands."));
+            s.sendMessage(instance.colorize("&8&l \u00bb &f/levelledMobs info &8- &7&oview plugin information."));
             s.sendMessage(instance.colorize("&8&l \u00bb &f/levelledMobs killAll [world] &8- &7&obutcher levellable mobs."));
             s.sendMessage(instance.colorize("&8&m+-----------------------------------+"));
-            return true;
         } else {
             if (args[0].equalsIgnoreCase("killall")) {
                 if (s instanceof Player && !s.hasPermission("levelledmobs.killall")) {
@@ -77,9 +74,24 @@ public class CLevelledMobs implements CommandExecutor {
                             return true;
                     }
                 }
+            } else if (args[0].equalsIgnoreCase("info")) {
+                if (args.length == 1) {
+                    s.sendMessage(instance.colorize("&8&m+-----------------------------------+"));
+                    s.sendMessage(instance.colorize("&7Thank you for running &a&lLevelledMobs&7!"));
+                    s.sendMessage(instance.colorize("&8&l \u00bb &7Running plugin version &a" + instance.getDescription().getVersion() + "&7."));
+                    s.sendMessage(instance.colorize("&8&l \u00bb &7Developed for server version &a" + Utils.getRecommendedServerVersion() + "&7."));
+                    s.sendMessage(instance.colorize("&7Developed by &alokka30&7, along with highly appreciated contributions by &aiCodinqs&7 and &aEyrian7&7."));
+                    s.sendMessage(" ");
+                    s.sendMessage(instance.colorize("&7For more information, please visit the plugin page here:"));
+                    s.sendMessage(instance.colorize("&8&nhttps://www.spigotmc.org/resources/%E2%98%85levelledmobs%E2%98%85-a-simple-drag-n-drop-solution-for-mob-attributes.74304/"));
+                    s.sendMessage(instance.colorize("&8&m+-----------------------------------+"));
+                } else {
+                    s.sendMessage(instance.colorize("&a&lLevelledMobs: &7Usage: &a/levelledMobs info"));
+                }
+                return true;
             }
             s.sendMessage(instance.colorize("&a&lLevelledMobs: &7Unknown subcommand. For a list of commands, try &a/levelledMobs&7."));
-            return true;
         }
+        return true;
     }
 }
