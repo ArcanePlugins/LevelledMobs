@@ -39,11 +39,12 @@ public class LMobDeath implements Listener {
 
             //Read settings for drops.
             double dropmultiplier = instance.settings.get("fine-tuning.multipliers.item-drop", 0.25);
-            int finalmultiplier;
+            int finalmultiplier = 1;
 
             //If multiplier * level gurantees an extra drop set 'finalmultiplier' to the amount of safe multiples.
-            finalmultiplier = (int) dropmultiplier;
-            dropmultiplier -= finalmultiplier;
+            dropmultiplier *= level;
+            finalmultiplier += (int) dropmultiplier;
+            dropmultiplier -= (int)dropmultiplier;
 
             //Calculate if the remaining extra drop chance triggers.
             double random = new Random().nextDouble();
@@ -51,8 +52,10 @@ public class LMobDeath implements Listener {
                 finalmultiplier++;
 
             //Edit the ItemStacks to drop the calculated multiple items.
-            for(ItemStack i : drops) {
-                i.setAmount(i.getAmount() * finalmultiplier);
+            for(int i = 0; i < drops.size(); i++) {
+                ItemStack istack = drops.get(i);
+                istack.setAmount(istack.getAmount() * finalmultiplier);
+                drops.set(i, istack);
             }
         }
     }
