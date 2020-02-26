@@ -1,6 +1,7 @@
 package io.github.lokka30.levelledmobs.listeners;
 
 import io.github.lokka30.levelledmobs.LevelledMobs;
+import io.github.lokka30.levelledmobs.utils.Utils;
 import org.bukkit.Sound;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.LivingEntity;
@@ -28,12 +29,12 @@ public class LDebug implements Listener {
             final UUID uuid = p.getUniqueId();
             final LivingEntity ent = (LivingEntity) e.getEntity();
 
-            if (p.isOp() && !delay.contains(uuid) && instance.isLevellable(ent)) {
+            if (p.isOp() && !delay.contains(uuid) && instance.levelManager.isLevellable(ent)) {
                 p.sendMessage(instance.colorize("&a&lLevelledMobs: &7Debug information for &a" + ent.getType().toString() + "&7: "));
                 p.sendMessage(instance.colorize("&8 - &fAttribute.GENERIC_MAX_HEALTH = &a" + Objects.requireNonNull(ent.getAttribute(Attribute.GENERIC_MAX_HEALTH)).getBaseValue()));
                 p.sendMessage(instance.colorize("&8 - &fAttribute.GENERIC_MOVEMENT_SPEED = &a" + Objects.requireNonNull(ent.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED)).getBaseValue()));
                 p.sendMessage(instance.colorize("&8 - &fAttribute.GENERIC_ATTACK_DAMAGE = &a" + Objects.requireNonNull(ent.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE)).getBaseValue()));
-                p.sendMessage(instance.colorize("&8 - &fCurrent Health = &a" + instance.round(ent.getHealth(), 1)));
+                p.sendMessage(instance.colorize("&8 - &fCurrent Health = &a" + Utils.round(ent.getHealth(), 1)));
                 p.sendMessage(instance.colorize("&8 - &fLevel = &a" + ent.getPersistentDataContainer().get(instance.key, PersistentDataType.INTEGER)));
                 p.sendMessage(instance.colorize("&8 - &fCustomName = &r" + ent.getCustomName()));
 
