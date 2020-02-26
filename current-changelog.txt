@@ -1,0 +1,208 @@
+1.0-SNAPSHOT
+- Initial release. Base programming, doesn't include levelled mobs function.
+
+
+
+
+1.1-SNAPSHOT
+- Added levelled mobs function.
+- Small updates to settings file.
+- switched back to bukkit's normal logger. no onEnable/onDisable spam.
+
+
+
+
+1.2-SNAPSHOT
+- Added config version checker
+- Upped settings ver to 2
+
+
+
+
+1.3-SNAPSHOT
+- fixed settings ver
+- fixed attack damage attribute error for passive/ranged entities
+
+
+
+
+1.4-SNAPSHOT
+- only hostiles get movement speed changed. otherwise players can hunt level 10 horses and fly over the hills and far away
+- adjusted default values
+- upped settings ver to 3
+
+
+
+
+1.5-SNAPSHOT
+- added 0.5 to default attack damage. settings value stacks with it.
+- adjusted code comments.
+- adjusted command /levelledmobs.
+- removed messages.yml and data.json. they're not needed yet.
+
+
+
+
+1.6-SNAPSHOT
+- added update checker class. todo: change the resource ID once uploaded.
+- small plugin.yml adjustment
+- small settings.yml adjustment
+
+
+
+
+1.7-SNAPSHOT
+insignificant stuff:
+- plugin.yml adjustment
+- recommendedSettingsVer moved to loadFiles()
+important stuff:
+- added nametag to settings
+- added bStats metrics
+- upped settings version
+- released to spigotmc!
+
+
+
+
+1.8-SNAPSHOT
+- updater working.
+
+
+
+
+1.9-SNAPSHOT
+- Added min and max level in settings.
+- changed the level generator method
+- upped settings version to 6
+- changed plugin.yml website to spigot page
+
+
+
+
+1.10-SNAPSHOT:
+
+notable changes:
+- compiled against 1.15.2
+- created wiki
+- added blacklisted types
+- changed recommended version to 1.15, as it should work perfectly fine.
+
+
+
+
+1.11-SNAPSHOT:
+notable changes:
+- can toggle levelling of passive mobs.
+- can remove creature's nametag on death which should clean up death messages. disabled by default.
+- updated the default creature nametag.
+- new placeholders for creature nametags: %health% and %max_health%.
+- changed layout of settings slightly.
+- better utilisation of the file library - settings values now have defaults built in, in case of a bad file
+
+file changes:
+- upped settings version to 8
+
+other changes:
+- added a debug function for development and bug checking. sends various information to OP players on entity attack.
+- internal changes to how mobs levels are stored and named
+- sets entity's health to their max health
+
+
+
+
+1.12-snapshot:
+notable changes:
+- mobs's health now set to their max health, not old max health.
+
+file changes:
+- none
+
+other changes:
+- none
+
+
+
+
+1.13-SNAPSHOT:
+notable changes: [1]
+- fixed incompatibility with PhantomCombat
+- added /levelledmobs killall [world]
+- added permission 'levelledmobs.killall'
+- you can now edit the default mob damage (as vanilla one is too easy)
+
+file changes: [1]
+- settings.yml, now version 9
+
+other changes:
+- some code cleanup
+- relocating shaded libraries in pom.xml, for storage and stats
+- underscores in settings replaced with dashes for consistency
+
+
+
+1.15-RELEASE:
+notable changes: [0]
+- [issue #22] fixed wrong attribute multiplier being checked
+
+file changes: [1]
+- settings.yml, now version 10
+
+other changes: [0]
+- ...
+
+
+1.16-RELEASE:
+notable changes: [?]
+- Mob attributes were given the wrong value. The 'multipliers' section of the settings didn't really function like multipliers, but now they do.
+ - Thus the values have been drastically lowered.
+ - It is very important you replace the old values with these ones.
+ - These values have been tried and tested by me for a while with all ten mob levels working well.
+- [issue #27] added multiworld support for newly spawned mobs.
+- [issue #28] you can now exclude mob spawners from creating levelled mobs.
+- improved the file management system.
+
+file changes: [1]
+- settings.yml, now version 11
+
+other changes: [?]
+- code changes:
+ - updated checkCompatibility() method.
+ - added Utils class to have a universal area to access recommended versions for the server and plugin files.
+
+1.17-release
+fixed file system
+
+1.18-release
+ - updated libraries
+
+1.19-release
+- updated libraries
+ - fixed dependency issue: file system console spam issue
+- fixed name not being updated when zombie villager is cured
+
+1.20-release
+- merged pull request by Eyrian
+ - Distance from spawn levelling is added. highly configurable.
+- added heaps of code comments to help you guys understand what's going on. plan on cleaning up the code too.
+- changed the random integer method for generating a mob level.
+ - should have fixed level being 1 more than it should be (Remii on Discord)
+- added CustomName to debug and spiced up the colours a little more
+
+1.21-RELEASE
+ Big thanks to Eyrian for once again making a great contribution to the plugin. I highly appreciate people putting in contributions to help me maintain the plugin whilst I'm learning Java and struggling with time.
+- [pull #34] merged pull request by Eyrian
+ - [issue #4] Added a drops multiplier, as suggested by Dralga ツ#1339
+   Eyrian has added in a 'drops multiplier', meaning, as a mob's level increases, their drops do too.
+   This multiplier is customisable in the settings file. The default value should be good - send me a message if you've found something that you recon would be better as a default value.
+ - Renamed 'LTagUpdate' to 'LMobDamage' to better represent what the class does.
+- added a new subcommand, /levelledMobs info. neatens up the main command more.
+- added more to the code comments. tried my best to explain my class naming convention and how to use the file library. i'm surprised Eyrian managed to figure it out without any input from me whatsoever.
+- added more to the config comments.
+- settings.yml was updated to version 13.
+
+1.22-RELEASE
+- Fixed max stack size not being taken into consideration when multiplying drops
+- Fixed incorrect failsafe-default in drop multiplier
+- Cleaned up code quite a bit
+ - added a new class, LevelManager, to centralise some of the tasks.
+ - Moved some math to the Utils class. Currently it's a whole bunch of static methods, but I plan on soon changing that.

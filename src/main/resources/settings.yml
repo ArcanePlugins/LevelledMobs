@@ -1,4 +1,5 @@
-#Thank you for installing LevelledMobs! ::: If you have any issues or questions, send them to GitHub or my PMs, NOT the reviews - you won't get support there!
+#Thank you for installing LevelledMobs!
+#If you have any issues or questions, send them to me via SpigotMC PMs, Discord or the GitHub issues page - NOT the reviews! :)
 
 #Creature nametags.
 # Placeholders:
@@ -6,17 +7,18 @@
 # - %name% - the mob's name
 # - %health% - the mob's health
 # - %max_health% - the mob's max health
-# - %heart_symbol% - a heart symbol
+# - %heart_symbol% - a predefined heart symbol.
 creature-nametag: '&8[&7Level %level%&8 | &f%name%&8 | &c%health%&8/&c%max_health% %heart_symbol%&8]'
 
 #This allows creature nametags to be updated to the one set above when they are spawned or damaged.
-#If you use WildStacker or any other stacking plugins, you might want to disable this.
+#If you use WildStacker or any other stacking plugins, you might want to disable this, by setting it to 'false'.
 enable-nametag-changes: true
 
 #Should passive creatures be levelled?
+#You probably don't want a Level 10 race horse to ramp up your chunk loading, or a random pig that moves fast.
 level-passive: false
 
-#Blacklisted types
+#Blacklisted types. These mobs won't be levelled, regardless of the setting above.
 blacklisted-types:
   - 'VILLAGER'
   - 'WANDERING_TRADER'
@@ -31,6 +33,7 @@ blacklisted-worlds:
 
 #You can block certain spawn reasons from levelling mobs, such as Mob Spawners.
 #To block mob spawners from levelling mobs, remove the [] and the hashtag before - 'SPAWNER'.
+#This checks for SpawnReasons created by the Spigot API.
 blacklisted-reasons: []
 #  - 'SPAWNER'
 
@@ -48,7 +51,7 @@ fine-tuning:
     movement-speed: 0.065
     max-health: 0.2
     attack-damage: 1.5
-    item-drop: 0.25
+    item-drop: 0.16
 
   #Should the creature's nametag be removed on death?
   remove-nametag-on-death: false
@@ -56,12 +59,16 @@ fine-tuning:
   #Should nametags be visible when close by (set to true) or only when looking at it (set to false)?
   custom-name-visible: false
 
-#Should monsters level depending on distance to spawn? Set "active" respectively.
-#Should monsters with non-default levels spawn? Set "variance" accordingly.
-#Set the distance to increase the level by one via "increase-level-distance".
+#Spawn Distance Levelling
 spawn-distance-levelling:
+
+  #Should monsters level depending on distance to spawn?
   active: false
+
+  #Should monsters with non-default levels spawn?
   variance: true
+
+  #Each 200 blocks, for example, the level will be increased.
   increase-level-distance: 200
 
 #Should the plugin check for updates at the SpigotMC page?
@@ -70,5 +77,9 @@ updater: true
 #Should the plugin use debug mode? You most likely won't want this.
 debug: false
 
-#You shouldn't change this integer. LevelledMobs uses it to determine if your file is outdated.
+#You shouldn't change this integer unless updating your config.
+#LevelledMobs uses it to determine if your file is outdated.
+#You must set it to the version of the current file, not a future file.
 file-version: 13
+
+#You've made it to the end of the settings file. Treat yourself with a cup of coffee.
