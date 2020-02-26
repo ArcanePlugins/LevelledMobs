@@ -116,4 +116,17 @@ public class LevelManager {
         }
     }
 
+    //Calculates the XP dropped when a levellable creature dies.
+    public int calculateXp(final LivingEntity ent, int xp) {
+        if (instance.levelManager.isLevellable(ent)) {
+            double xpMultiplier = instance.settings.get("fine-tuning.multipliers.xp-drop", 0.1D);
+            Integer level = ent.getPersistentDataContainer().get(instance.key, PersistentDataType.INTEGER);
+
+            if (level != null) {
+                xp *= xpMultiplier * level + 1;
+            }
+        }
+        return xp;
+    }
+
 }

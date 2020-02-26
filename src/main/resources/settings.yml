@@ -52,6 +52,7 @@ fine-tuning:
     max-health: 0.2
     attack-damage: 1.5
     item-drop: 0.16
+    xp-drop: 0.1
 
   #Should the creature's nametag be removed on death?
   remove-nametag-on-death: false
@@ -74,12 +75,13 @@ spawn-distance-levelling:
 #Should the plugin check for updates at the SpigotMC page?
 updater: true
 
-#Should the plugin use debug mode? You most likely won't want this.
+#Should the plugin use debug mode?
+#You most likely won't need this. Used in development and testing.
 debug: false
 
 #You shouldn't change this integer unless updating your config.
 #LevelledMobs uses it to determine if your file is outdated.
 #You must set it to the version of the current file, not a future file.
-file-version: 13
+file-version: 14
 
 #You've made it to the end of the settings file. Treat yourself with a cup of coffee.
