@@ -1,7 +1,14 @@
 package io.github.lokka30.levelledmobs.listeners;
 
+import com.sk89q.worldedit.math.BlockVector3;
+import com.sk89q.worldedit.world.World;
+import com.sk89q.worldguard.WorldGuard;
+import com.sk89q.worldguard.protection.ApplicableRegionSet;
+import com.sk89q.worldguard.protection.managers.RegionManager;
+import com.sk89q.worldguard.protection.regions.RegionContainer;
 import io.github.lokka30.levelledmobs.LevelledMobs;
 import io.github.lokka30.levelledmobs.utils.Utils;
+import org.bukkit.Location;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Monster;
@@ -9,7 +16,9 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.persistence.PersistentDataType;
+import org.jetbrains.annotations.NotNull;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Objects;
 import java.util.Random;
@@ -30,7 +39,9 @@ public class LMobSpawn implements Listener {
             LivingEntity ent = e.getEntity(); //The entity that was just spawned.
 
             //Check settings for spawn distance levelling and choose levelling method accordingly.
-            if (instance.settings.get("spawn-distance-levelling.active", false)) {
+            if(CheckRegionFlags(ent)) {
+                level = generateRegionLevel(ent);
+            } else if (instance.settings.get("spawn-distance-levelling.active", false)) {
                 level = generateLevelByDistance(ent);
             } else {
                 level = generateLevel();
@@ -168,5 +179,41 @@ public class LMobSpawn implements Listener {
     	finallevel = finallevel == -1 ? 0 : finallevel;
     	
     	return finallevel;
+    }
+
+    private int generateRegionLevel(LivingEntity ent) {
+        Location loc = ent.getLocation();
+        RegionContainer container = WorldGuard.getInstance().getPlatform().getRegionContainer();
+        RegionManager regions = container.get((World) Objects.requireNonNull(loc.getWorld()));
+        ApplicableRegionSet regset = Objects.requireNonNull(regions).getApplicableRegions(BlockVector3.at(loc.getX(),loc.getY(),loc.getZ()));
+
+        if(regset.testState(null, LevelledMobs.allowlevelflag)){
+            int minlevel = 0;
+            int maxlevel = 10;
+
+            Collection<String> minlevelstring = regset.queryAllValues(null, LevelledMobs.minlevelflag);
+            Collection<String> maxlevelstring = regset.queryAllValues(null, LevelledMobs.maxlevelflag);
+
+            for(String s : minlevelstring){
+                int regminlevel = Integer.parseInt(s);
+                minlevel = Math.max(regminlevel, minlevel);
+            }
+
+            for(String s : maxlevelstring){
+                int regmaxlevel = Integer.parseInt(s);
+                maxlevel = Math.min(regmaxlevel, maxlevel);
+            }
+
+        }
+        return 0; //TODO
+    }
+
+    private boolean CheckRegionFlags(LivingEntity ent) {
+        if(!instance.worldguard)
+            return false;
+
+        //TODO
+
+        return false;
     }
 }

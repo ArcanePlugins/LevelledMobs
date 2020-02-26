@@ -1,5 +1,9 @@
 package io.github.lokka30.levelledmobs;
 
+import com.sk89q.worldguard.WorldGuard;
+import com.sk89q.worldguard.protection.flags.*;
+import com.sk89q.worldguard.protection.flags.registry.FlagConflictException;
+import com.sk89q.worldguard.protection.flags.registry.FlagRegistry;
 import de.leonhard.storage.LightningBuilder;
 import de.leonhard.storage.internal.FlatFile;
 import de.leonhard.storage.internal.exception.LightningValidationException;
@@ -55,9 +59,12 @@ public class LevelledMobs extends JavaPlugin {
      */
 
     private static LevelledMobs instance; //The main class is stored here so other classes can access it.
+    public static StateFlag allowlevelflag;
+    public static StringFlag minlevelflag, maxlevelflag;
     public LevelManager levelManager;
     public FlatFile settings; //The settings config file managed by LightningStorage.
     public NamespacedKey key; //The NamespacedKey which holds each levellable mob's level value.
+    public boolean worldguard;
 
     //Returns the instance class. Will return null if the plugin is disabled - this shouldn't happen.
     public static LevelledMobs getInstance() {
@@ -69,6 +76,47 @@ public class LevelledMobs extends JavaPlugin {
     public void onLoad() {
         instance = this;
         levelManager = new LevelManager(this);
+        manageWorldGuard();
+    }
+
+    private void manageWorldGuard() {
+        worldguard = getServer().getPluginManager().getPlugin("WorldGuard") != null;
+        if(worldguard){
+            FlagRegistry freg = WorldGuard.getInstance().getFlagRegistry();
+            try{
+                StateFlag allowflag;
+                StringFlag minflag, maxflag;
+
+                allowflag = new StateFlag("CustomLevelFlag", false);
+                minflag = new StringFlag("MinLevelFlag", "0");
+                maxflag = new StringFlag("MaxLevelFlag", "0");
+
+                freg.register(allowflag);
+                freg.register(minflag);
+                freg.register(maxflag);
+
+                allowlevelflag = allowflag;
+                minlevelflag = minflag;
+                maxlevelflag = maxflag;
+            }
+            catch(FlagConflictException e){
+                Flag<?> allow = freg.get("CustonmLevelFlag");
+                Flag<?> min = freg.get("MinLevelFlag");
+                Flag<?> max = freg.get("MaxLevelFlag");
+
+                if(min instanceof StringFlag){
+                    minlevelflag = (StringFlag) min;
+                }
+
+                if(max instanceof StringFlag){
+                    maxlevelflag = (StringFlag) max;
+                }
+
+                if(allow instanceof StateFlag){
+                    allowlevelflag = (StateFlag) allow;
+                }
+            }
+        }
     }
 
     //When the plugin starts enabling.

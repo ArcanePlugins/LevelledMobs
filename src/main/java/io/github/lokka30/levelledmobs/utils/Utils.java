@@ -35,7 +35,7 @@ public class Utils {
 
     //Binomial distribution function
     public static double binomialDistribution(int n, int k, double p) {
-        return factorial(n) / (factorial(k) * factorial(n - k)) * Math.pow(p, k) * Math.pow(1 - p, n - k);
+        return ((double)factorial(n)) / ((double)(factorial(k)) * ((double)factorial(n - k))) * Math.pow(p, k) * Math.pow(1 - p, n - k);
     }
 
     //Factorial function
@@ -44,5 +44,23 @@ public class Utils {
         for (int i = num; i > 1; i--)
             result *= i;
         return result;
+    }
+
+    //Integer check
+    public static boolean isInteger(String s) {
+        return isInteger(s,10);
+    }
+
+    //Integer check
+    public static boolean isInteger(String s, int radix) {
+        if(s.isEmpty()) return false;
+        for(int i = 0; i < s.length(); i++) {
+            if(i == 0 && s.charAt(i) == '-') {
+                if(s.length() == 1) return false;
+                else continue;
+            }
+            if(Character.digit(s.charAt(i),radix) < 0) return false;
+        }
+        return true;
     }
 }
