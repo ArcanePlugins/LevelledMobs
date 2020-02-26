@@ -116,4 +116,13 @@ public class LevelManager {
         }
     }
 
+    public int calculateXp(final LivingEntity ent, int xp){
+        if(instance.levelManager.isLevellable(ent)){
+            double xpmultiplier = instance.settings.get("fine-tuning.multipliers.xp-drop", 0.1D);
+            Integer level = ent.getPersistentDataContainer().get(instance.key, PersistentDataType.INTEGER);
+            if(level != null)
+                xp *= xpmultiplier * level + 1;
+        }
+        return xp;
+    }
 }
