@@ -39,7 +39,7 @@ public class CLevelledMobs implements CommandExecutor {
                                 for (Entity e : w.getEntities()) {
                                     if (e instanceof LivingEntity) {
                                         final LivingEntity livingEntity = (LivingEntity) e;
-                                        if (instance.isLevellable(livingEntity)) {
+                                        if (instance.levelManager.isLevellable(livingEntity)) {
                                             e.remove();
                                             killed++;
                                         }
@@ -61,7 +61,7 @@ public class CLevelledMobs implements CommandExecutor {
                                 for (Entity e : w.getEntities()) {
                                     if (e instanceof LivingEntity) {
                                         final LivingEntity livingEntity = (LivingEntity) e;
-                                        if (instance.isLevellable(livingEntity)) {
+                                        if (instance.levelManager.isLevellable(livingEntity)) {
                                             e.remove();
                                             killed++;
                                         }

@@ -22,7 +22,7 @@ public class LMobDamage implements Listener {
     private void updateTag(Entity ent){
         new BukkitRunnable() {
             public void run() {
-                instance.updateTag(ent);
+                instance.levelManager.updateTag(ent);
             }
         }.runTaskLater(instance, 10L);
     }

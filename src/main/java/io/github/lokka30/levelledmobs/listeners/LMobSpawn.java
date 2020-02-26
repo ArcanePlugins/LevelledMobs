@@ -1,6 +1,7 @@
 package io.github.lokka30.levelledmobs.listeners;
 
 import io.github.lokka30.levelledmobs.LevelledMobs;
+import io.github.lokka30.levelledmobs.utils.Utils;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Monster;
@@ -35,7 +36,7 @@ public class LMobSpawn implements Listener {
                 level = generateLevel();
             }
 
-            if (instance.isLevellable(ent)) { //Is the mob allowed to be levelled?
+            if (instance.levelManager.isLevellable(ent)) { //Is the mob allowed to be levelled?
 
                 //Check the list of blacklisted worlds. If the entity's world is in here, then we don't continue.
                 for (String blacklistedWorld : instance.settings.get("blacklisted-worlds", Collections.singletonList("BLACKLISTED_WORLD"))) {
@@ -101,7 +102,7 @@ public class LMobSpawn implements Listener {
                 e.getEntity().getPersistentDataContainer().set(instance.key, PersistentDataType.INTEGER, level);
 
                 //Update their tag.
-                instance.updateTag(e.getEntity());
+                instance.levelManager.updateTag(e.getEntity());
 
             } else if (e.getSpawnReason() == CreatureSpawnEvent.SpawnReason.CURED) {
                 //Check if a zombie villager was cured. If villagers aren't levellable, then their name will be cleared,
@@ -140,57 +141,32 @@ public class LMobSpawn implements Listener {
     	if(instance.settings.get("spawn-distance-levelling.variance", true)){
     		double binomialp, randomnumber;
     		double[] levelarray, weightedlevelarray;
-    		
-    		
-    		//Create array with chances for each level
-    		levelarray = new double[levelspan];
-    		binomialp = (1.0D / levelspan / 2.0D) + ((1.0D - (1.0D / levelspan)) / levelspan * (defaultlevel - minlevel));
-    		for(int i = 0; i < levelspan; i++) {
-    			levelarray[i] = binomialDistribution(levelspan, i, binomialp);
-    		}
-    		
-    		//Create weighted array for choosing a level
-    		weightedlevelarray = createWeightedArray(levelarray);
-    		
-    		//Choose a level based on the weight of a level
-    		randomnumber = new Random().nextDouble() * weightedlevelarray[weightedlevelarray.length - 1];
-    		for(int i = 0; i < weightedlevelarray.length; i++)
-    			if(randomnumber <= weightedlevelarray[i]) {
-    				finallevel = i + minlevel;
-    				break;
-    			}
-    		
-    	}
+
+
+            //Create array with chances for each level
+            levelarray = new double[levelspan];
+            binomialp = (1.0D / levelspan / 2.0D) + ((1.0D - (1.0D / levelspan)) / levelspan * (defaultlevel - minlevel));
+            for (int i = 0; i < levelspan; i++) {
+                levelarray[i] = Utils.binomialDistribution(levelspan, i, binomialp);
+            }
+
+            //Create weighted array for choosing a level
+            weightedlevelarray = Utils.createWeightedArray(levelarray);
+
+            //Choose a level based on the weight of a level
+            randomnumber = new Random().nextDouble() * weightedlevelarray[weightedlevelarray.length - 1];
+            for (int i = 0; i < weightedlevelarray.length; i++)
+                if (randomnumber <= weightedlevelarray[i]) {
+                    finallevel = i + minlevel;
+                    break;
+                }
+
+        }
     	else
     		finallevel = defaultlevel;
     	
     	finallevel = finallevel == -1 ? 0 : finallevel;
     	
     	return finallevel;
-    }
-    
-    //Creates a weighted array where the values contain the sum of itself and all preceding values
-    private double[] createWeightedArray(double[] inputarray) {
-    	double[] outputarray = new double[inputarray.length];
-    	
-    	outputarray[0] = inputarray[0];
-    	for(int i = 1; i < inputarray.length; i++) {
-    		outputarray[i] = inputarray[i] + outputarray[i - 1];
-    	}
-    	
-    	return outputarray;
-    }
-    
-    //Binomial distribution function
-    private double binomialDistribution(int n, int k, double p) {
-        return factorial(n) / (factorial(k) * factorial(n - k)) * Math.pow(p, k) * Math.pow(1 - p, n - k);
-    }
-    
-    //Factorial function
-    private long factorial(int num) {
-    	long result = 1;
-    	for(int i = num; i > 1; i--)
-    			result *= i;
-    	return result;
     }
 }
