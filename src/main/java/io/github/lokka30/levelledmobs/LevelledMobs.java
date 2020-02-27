@@ -88,8 +88,8 @@ public class LevelledMobs extends JavaPlugin {
                 StringFlag minflag, maxflag;
 
                 allowflag = new StateFlag("CustomLevelFlag", false);
-                minflag = new StringFlag("MinLevelFlag", "0");
-                maxflag = new StringFlag("MaxLevelFlag", "0");
+                minflag = new StringFlag("MinLevelFlag", "-1");
+                maxflag = new StringFlag("MaxLevelFlag", "-1");
 
                 freg.register(allowflag);
                 freg.register(minflag);
