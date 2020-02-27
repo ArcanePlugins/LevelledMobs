@@ -80,6 +80,6 @@ debug: false
 #You shouldn't change this integer unless updating your config.
 #LevelledMobs uses it to determine if your file is outdated.
 #You must set it to the version of the current file, not a future file.
-file-version: !§
+file-version: 13
 
 #You've made it to the end of the settings file. Treat yourself with a cup of coffee.
