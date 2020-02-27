@@ -1,16 +1,8 @@
 package io.github.lokka30.levelledmobs.listeners;
 
-import com.sk89q.worldedit.math.BlockVector3;
-import com.sk89q.worldedit.world.World;
-import com.sk89q.worldguard.WorldGuard;
-import com.sk89q.worldguard.protection.ApplicableRegionSet;
-import com.sk89q.worldguard.protection.flags.StateFlag;
-import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
-import com.sk89q.worldguard.protection.regions.RegionContainer;
 import io.github.lokka30.levelledmobs.LevelledMobs;
 import io.github.lokka30.levelledmobs.utils.Utils;
-import org.bukkit.Location;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Monster;
@@ -19,10 +11,12 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.persistence.PersistentDataType;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.Objects;
+import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
-import static io.github.lokka30.levelledmobs.utils.Utils.isInteger;
+import static io.github.lokka30.levelledmobs.utils.Utils.*;
 
 public class LMobSpawn implements Listener {
 
@@ -39,7 +33,7 @@ public class LMobSpawn implements Listener {
             LivingEntity ent = e.getEntity(); //The entity that was just spawned.
 
             //Check settings for spawn distance levelling and choose levelling method accordingly.
-            if(CheckRegionFlags(ent)) {
+            if(checkRegionFlags(ent)) {
                 level = generateRegionLevel(ent);
             } else if (instance.settings.get("spawn-distance-levelling.active", false)) {
                 level = generateLevelByDistance(ent);
@@ -181,12 +175,16 @@ public class LMobSpawn implements Listener {
     	return finallevel;
     }
 
+    //Generate level based on WorldGuard region flags.
     private int generateRegionLevel(LivingEntity ent) {
+        //Sorted region array, highest priority comes last.
         ProtectedRegion[] regions = sortRegionsByPriority(getRegionSet(ent));
 
+        //Fallback values
         int minlevel = instance.settings.get("fine-tuning.min-level", 1);
         int maxlevel = instance.settings.get("fine-tuning.max-level", 10);
 
+        //Set min. max. level to flag values
         for (ProtectedRegion region : regions) {
             if (isInteger(region.getFlag(LevelledMobs.minlevelflag)))
                 minlevel = Math.max(Integer.parseInt(Objects.requireNonNull(region.getFlag(LevelledMobs.minlevelflag))), 0);
@@ -194,57 +192,9 @@ public class LMobSpawn implements Listener {
                 maxlevel = Math.max(Integer.parseInt(Objects.requireNonNull(region.getFlag(LevelledMobs.maxlevelflag))), 0);
         }
 
-        return minlevel + Math.round(new Random().nextFloat() * (maxlevel - minlevel + 1));
+        return minlevel + Math.round(new Random().nextFloat() * (maxlevel - minlevel));
     }
 
-    private boolean CheckRegionFlags(LivingEntity ent) {
-        boolean minbool = false;
-        boolean maxbool = false;
-        boolean customlevelbool = false;
 
-        if(!instance.worldguard)
-            return false;
 
-        ProtectedRegion[] regions = sortRegionsByPriority(getRegionSet(ent));
-
-        for (ProtectedRegion region : regions) {
-            if (isInteger(region.getFlag(LevelledMobs.minlevelflag)))
-                if (Integer.parseInt(Objects.requireNonNull(region.getFlag(LevelledMobs.minlevelflag))) > -1)
-                    minbool = true;
-            if (isInteger(region.getFlag(LevelledMobs.maxlevelflag)))
-                if (Integer.parseInt(Objects.requireNonNull(region.getFlag(LevelledMobs.maxlevelflag))) > -1)
-                    maxbool = true;
-            if (region.getFlag(LevelledMobs.allowlevelflag) == StateFlag.State.ALLOW)
-                customlevelbool = true;
-            else if (region.getFlag(LevelledMobs.allowlevelflag) == StateFlag.State.DENY)
-                customlevelbool = false;
-        }
-
-        return minbool && maxbool && customlevelbool;
-    }
-
-    private ProtectedRegion[] sortRegionsByPriority(ApplicableRegionSet regset){
-        List<ProtectedRegion> regionList = new ArrayList<>();
-
-        if(regset.size() == 0)
-            return new ProtectedRegion[0];
-        else if (regset.size() == 1)
-            return (ProtectedRegion[]) regset.getRegions().toArray();
-
-        for(ProtectedRegion r : regset){
-            regionList.add(r);
-        }
-
-        regionList.sort(Comparator.comparingInt(ProtectedRegion::getPriority));
-
-        return (ProtectedRegion[]) regionList.toArray();
-    }
-
-    private ApplicableRegionSet getRegionSet(LivingEntity ent){
-        Location loc = ent.getLocation();
-        RegionContainer container = WorldGuard.getInstance().getPlatform().getRegionContainer();
-        RegionManager regions = container.get((World) Objects.requireNonNull(loc.getWorld()));
-
-        return Objects.requireNonNull(regions).getApplicableRegions(BlockVector3.at(loc.getX(),loc.getY(),loc.getZ()));
-    }
 }

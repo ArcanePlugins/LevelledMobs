@@ -1,6 +1,7 @@
 name: LevelledMobs
 version: ${project.version}
 main: io.github.lokka30.levelledmobs.LevelledMobs
+softdepend: [WorldGuard]
 
 api-version: '1.15'
 load: STARTUP
