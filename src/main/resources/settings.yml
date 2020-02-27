@@ -52,7 +52,6 @@ fine-tuning:
     max-health: 0.2
     attack-damage: 1.5
     item-drop: 0.16
-    xp-drop: 0.1
 
   #Should the creature's nametag be removed on death?
   remove-nametag-on-death: false
@@ -81,6 +80,6 @@ debug: false
 #You shouldn't change this integer unless updating your config.
 #LevelledMobs uses it to determine if your file is outdated.
 #You must set it to the version of the current file, not a future file.
-file-version: 14
+file-version: !§
 
 #You've made it to the end of the settings file. Treat yourself with a cup of coffee.
