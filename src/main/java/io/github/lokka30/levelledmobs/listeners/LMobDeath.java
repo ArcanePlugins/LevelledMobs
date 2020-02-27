@@ -13,5 +13,6 @@ public class LMobDeath implements Listener {
     public void onDeath(final EntityDeathEvent e) {
         instance.levelManager.checkClearNametag(e.getEntity());
         instance.levelManager.calculateDrops(e.getEntity(), e.getDrops());
+        e.setDroppedExp(instance.levelManager.calculateXp(e.getEntity(), e.getDroppedExp()));
     }
 }
