@@ -1,5 +1,6 @@
 package io.github.lokka30.levelledmobs.listeners;
 
+import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import io.github.lokka30.levelledmobs.LevelledMobs;
 import io.github.lokka30.levelledmobs.utils.Utils;
 import org.bukkit.attribute.Attribute;
@@ -14,6 +15,8 @@ import java.util.Collections;
 import java.util.Objects;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
+
+import static io.github.lokka30.levelledmobs.utils.Utils.*;
 
 public class LMobSpawn implements Listener {
 
@@ -30,7 +33,9 @@ public class LMobSpawn implements Listener {
             LivingEntity ent = e.getEntity(); //The entity that was just spawned.
 
             //Check settings for spawn distance levelling and choose levelling method accordingly.
-            if (instance.settings.get("spawn-distance-levelling.active", false)) {
+            if(checkRegionFlags(ent)) {
+                level = generateRegionLevel(ent);
+            } else if (instance.settings.get("spawn-distance-levelling.active", false)) {
                 level = generateLevelByDistance(ent);
             } else {
                 level = generateLevel();
@@ -169,4 +174,27 @@ public class LMobSpawn implements Listener {
     	
     	return finallevel;
     }
+
+    //Generate level based on WorldGuard region flags.
+    private int generateRegionLevel(LivingEntity ent) {
+        //Sorted region array, highest priority comes last.
+        ProtectedRegion[] regions = sortRegionsByPriority(getRegionSet(ent));
+
+        //Fallback values
+        int minlevel = instance.settings.get("fine-tuning.min-level", 1);
+        int maxlevel = instance.settings.get("fine-tuning.max-level", 10);
+
+        //Set min. max. level to flag values
+        for (ProtectedRegion region : regions) {
+            if (isInteger(region.getFlag(LevelledMobs.minlevelflag)))
+                minlevel = Math.max(Integer.parseInt(Objects.requireNonNull(region.getFlag(LevelledMobs.minlevelflag))), 0);
+            if (isInteger(region.getFlag(LevelledMobs.maxlevelflag)))
+                maxlevel = Math.max(Integer.parseInt(Objects.requireNonNull(region.getFlag(LevelledMobs.maxlevelflag))), 0);
+        }
+
+        return minlevel + Math.round(new Random().nextFloat() * (maxlevel - minlevel));
+    }
+
+
+
 }
