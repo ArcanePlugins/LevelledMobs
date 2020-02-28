@@ -44,7 +44,7 @@
 
 
 1.6-SNAPSHOT
-- added update checker class. todo: change the resource ID once uploaded.
+- added update checker class.
 - small plugin.yml adjustment
 - small settings.yml adjustment
 
@@ -169,6 +169,8 @@ other changes: [?]
  - updated checkCompatibility() method.
  - added Utils class to have a universal area to access recommended versions for the server and plugin files.
 
+------------- made the changelog simpler. sort the changes when writing the description on spigot instead -----------------
+
 1.17-release
 fixed file system
 
@@ -206,3 +208,10 @@ fixed file system
 - Cleaned up code quite a bit
  - added a new class, LevelManager, to centralise some of the tasks.
  - Moved some math to the Utils class. Currently it's a whole bunch of static methods, but I plan on soon changing that.
+
+1.23
+- [pull #35] using XP multiplier method from pull request by Eyrian
+ - Added XP drop multiplier (configurable)
+- Removed RELEASE tag from versions, which is unnecessary.
+- Fixed a typo in /levelledMobs info.
+- Source now includes changelog file.

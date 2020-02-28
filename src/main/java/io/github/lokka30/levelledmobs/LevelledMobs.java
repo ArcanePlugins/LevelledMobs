@@ -35,7 +35,9 @@ public class LevelledMobs extends JavaPlugin {
      - I've adopted my own class naming thing. CommandExecutor classes begin with 'C' and Listener classes begin with 'L'.
       - This is so, for example, if I have a command called 'Death' and a listener called 'Death', the class names don't clash.
       - Also, when looking up the class in IntelliJ, I can easily start with a 'C' or a 'L' and it only shows the listeners, for example, in the suggested words.
-    - This plugin uses LightningStorage.
+    - Naming: LivingEntity !!!livingEntity!!! = e.getE ...
+    - Always use curly brackets in if statements and such.
+    - This plugin uses LightningStorage. Might put this wall of text in a different file included with the jar, or in the wiki.
       The syntax is [instance.]settings.get("path", (Object) defaultValue).
        Let me get a String in the file: instance.settings.get("string", "the default string here in case the settings file doesn't contain 'string'.")
 
