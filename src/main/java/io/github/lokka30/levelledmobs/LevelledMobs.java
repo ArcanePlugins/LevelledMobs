@@ -1,7 +1,9 @@
 package io.github.lokka30.levelledmobs;
 
 import com.sk89q.worldguard.WorldGuard;
-import com.sk89q.worldguard.protection.flags.*;
+import com.sk89q.worldguard.protection.flags.Flag;
+import com.sk89q.worldguard.protection.flags.StateFlag;
+import com.sk89q.worldguard.protection.flags.StringFlag;
 import com.sk89q.worldguard.protection.flags.registry.FlagConflictException;
 import com.sk89q.worldguard.protection.flags.registry.FlagRegistry;
 import de.leonhard.storage.LightningBuilder;
@@ -78,65 +80,27 @@ public class LevelledMobs extends JavaPlugin {
     public void onLoad() {
         instance = this;
         levelManager = new LevelManager(this);
-        manageWorldGuard();
-    }
-
-    private void manageWorldGuard() {
-        worldguard = getServer().getPluginManager().getPlugin("WorldGuard") != null;
-        if(worldguard){
-            FlagRegistry freg = WorldGuard.getInstance().getFlagRegistry();
-            try{
-                StateFlag allowflag;
-                StringFlag minflag, maxflag;
-
-                allowflag = new StateFlag("CustomLevelFlag", false);
-                minflag = new StringFlag("MinLevelFlag", "-1");
-                maxflag = new StringFlag("MaxLevelFlag", "-1");
-
-                freg.register(allowflag);
-                freg.register(minflag);
-                freg.register(maxflag);
-
-                allowlevelflag = allowflag;
-                minlevelflag = minflag;
-                maxlevelflag = maxflag;
-            }
-            catch(FlagConflictException e){
-                Flag<?> allow = freg.get("CustonmLevelFlag");
-                Flag<?> min = freg.get("MinLevelFlag");
-                Flag<?> max = freg.get("MaxLevelFlag");
-
-                if(min instanceof StringFlag){
-                    minlevelflag = (StringFlag) min;
-                }
-
-                if(max instanceof StringFlag){
-                    maxlevelflag = (StringFlag) max;
-                }
-
-                if(allow instanceof StateFlag){
-                    allowlevelflag = (StateFlag) allow;
-                }
-            }
-        }
     }
 
     //When the plugin starts enabling.
     public void onEnable() {
-        log(LogLevel.INFO, "&8[&71&8/&75&8] &7Checking compatibility...");
+        log(LogLevel.INFO, "&8[&71&8/&76&8] &7Checking compatibility...");
         checkCompatibility(); //Is the server running the latest version? Dependencies required?
 
-        log(LogLevel.INFO, "&8[&72&8/&75&8] &7Loading files...");
+        log(LogLevel.INFO, "&8[&72&8/&76&8] &7Loading files...");
         loadFiles(); //Tell LightningStorage to get things started. Check if there's something wrong going on, such as an outdated file.
 
-        log(LogLevel.INFO, "&8[&73&8/&75&8] &7Registering events...");
+        log(LogLevel.INFO, "&8[&73&8/&76&8] &7Registering events...");
         key = new NamespacedKey(this, "level"); //Set the NamespacedKey, holding the mob's level.
         registerEvents(); //Start registering the listeners - these classes start with L.
 
-        log(LogLevel.INFO, "&8[&74&8/&75&8] &7Registering commands...");
+        log(LogLevel.INFO, "&8[&74&8/&76&8] &7Registering commands...");
         registerCommands();
 
-        log(LogLevel.INFO, "&8[&75&8/&75&8] &7Starting metrics...");
+        log(LogLevel.INFO, "&8[&75&8/&76&8] &7Hooking to other plugins...");
+        manageWorldGuard();
+
+        log(LogLevel.INFO, "&8[&76&8/&76&8] &7Starting metrics...");
         new Metrics(this);
 
         log(LogLevel.INFO, "Loaded successfuly. Thank you for choosing LevelledMobs!");
@@ -202,6 +166,47 @@ public class LevelledMobs extends JavaPlugin {
 
     private void registerCommands() {
         Objects.requireNonNull(getCommand("LevelledMobs")).setExecutor(new CLevelledMobs());
+    }
+
+    private void manageWorldGuard() {
+        worldguard = getServer().getPluginManager().getPlugin("WorldGuard") != null;
+
+        if (worldguard) {
+            log(LogLevel.INFO, "&aWorldGuard&7 found.");
+            FlagRegistry freg = WorldGuard.getInstance().getFlagRegistry();
+            try {
+                StateFlag allowflag;
+                StringFlag minflag, maxflag;
+
+                allowflag = new StateFlag("CustomLevelFlag", false);
+                minflag = new StringFlag("MinLevelFlag", "-1");
+                maxflag = new StringFlag("MaxLevelFlag", "-1");
+
+                freg.register(allowflag);
+                freg.register(minflag);
+                freg.register(maxflag);
+
+                allowlevelflag = allowflag;
+                minlevelflag = minflag;
+                maxlevelflag = maxflag;
+            } catch (FlagConflictException e) {
+                Flag<?> allow = freg.get("CustonmLevelFlag");
+                Flag<?> min = freg.get("MinLevelFlag");
+                Flag<?> max = freg.get("MaxLevelFlag");
+
+                if (min instanceof StringFlag) {
+                    minlevelflag = (StringFlag) min;
+                }
+
+                if (max instanceof StringFlag) {
+                    maxlevelflag = (StringFlag) max;
+                }
+
+                if (allow instanceof StateFlag) {
+                    allowlevelflag = (StateFlag) allow;
+                }
+            }
+        }
     }
 
     private void checkUpdates() {
