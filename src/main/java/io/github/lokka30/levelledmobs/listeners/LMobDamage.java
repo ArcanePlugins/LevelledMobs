@@ -5,6 +5,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
 public class LMobDamage implements Listener {
@@ -16,6 +17,12 @@ public class LMobDamage implements Listener {
     public void onDamage(final EntityDamageEvent e) {
         updateTag(e.getEntity());
     }
+    
+    // When the mob regains health, try to update their nametag.
+    @EventHandler
+    public void onRegainHealth(final EntityRegainHealthEvent e) {
+        updateTag(e.getEntity());
+    }
 
     // Update their tag 10 ticks, or half a second, after the mob was damaged.
     // This makes the nametag show their current health, otherwise you hit a zombie and it shows its old health.
@@ -24,6 +31,6 @@ public class LMobDamage implements Listener {
             public void run() {
                 instance.levelManager.updateTag(ent);
             }
-        }.runTaskLater(instance, 10L);
+        }.runTaskLater(instance, 1L);
     }
 }
