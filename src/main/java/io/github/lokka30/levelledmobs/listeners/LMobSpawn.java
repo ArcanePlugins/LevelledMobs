@@ -16,6 +16,7 @@ import java.util.Objects;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
+import static io.github.lokka30.levelledmobs.utils.ManageWorldGuard.*;
 import static io.github.lokka30.levelledmobs.utils.Utils.*;
 
 public class LMobSpawn implements Listener {
@@ -33,7 +34,7 @@ public class LMobSpawn implements Listener {
             LivingEntity ent = e.getEntity(); //The entity that was just spawned.
 
             //Check settings for spawn distance levelling and choose levelling method accordingly.
-            if(checkRegionFlags(ent)) {
+            if(instance.worldguard && checkRegionFlags(ent)) {
                 level = generateRegionLevel(ent);
             } else if (instance.settings.get("spawn-distance-levelling.active", false)) {
                 level = generateLevelByDistance(ent);
@@ -175,26 +176,13 @@ public class LMobSpawn implements Listener {
     	return finallevel;
     }
 
-    //Generate level based on WorldGuard region flags.
-    private int generateRegionLevel(LivingEntity ent) {
-        //Sorted region array, highest priority comes last.
-        ProtectedRegion[] regions = sortRegionsByPriority(getRegionSet(ent));
-
+    private int generateRegionLevel(LivingEntity ent){
         //Fallback values
         int minlevel = instance.settings.get("fine-tuning.min-level", 1);
         int maxlevel = instance.settings.get("fine-tuning.max-level", 10);
 
-        //Set min. max. level to flag values
-        for (ProtectedRegion region : regions) {
-            if (isInteger(region.getFlag(LevelledMobs.minlevelflag)))
-                minlevel = Math.max(Integer.parseInt(Objects.requireNonNull(region.getFlag(LevelledMobs.minlevelflag))), 0);
-            if (isInteger(region.getFlag(LevelledMobs.maxlevelflag)))
-                maxlevel = Math.max(Integer.parseInt(Objects.requireNonNull(region.getFlag(LevelledMobs.maxlevelflag))), 0);
-        }
+        int[] levels = getRegionLevel(ent, minlevel, maxlevel);
 
-        return minlevel + Math.round(new Random().nextFloat() * (maxlevel - minlevel));
+        return levels[0] + Math.round(new Random().nextFloat() * (levels[1] - levels[0]));
     }
-
-
-
 }

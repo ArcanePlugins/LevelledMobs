@@ -1,8 +1,6 @@
 package io.github.lokka30.levelledmobs.listeners;
 
-import io.github.lokka30.levelledmobs.LevelManager;
 import io.github.lokka30.levelledmobs.LevelledMobs;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDeathEvent;
