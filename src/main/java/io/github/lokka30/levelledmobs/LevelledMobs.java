@@ -75,11 +75,12 @@ public class LevelledMobs extends JavaPlugin {
         return instance;
     }
 
-    //When the plugin starts loading (when Bukkit announces that it's loading, but it isn't actually enabling yet),
-    //the instance is set.
+    //When the plugin starts loading (when Bukkit announces that it's loading, but it hasn't started the enable process).
+    //onLoad should only be used for setting the instance, or other classes, such as LevelManager.
     public void onLoad() {
         instance = this;
         levelManager = new LevelManager(this);
+        manageWorldGuard();
     }
 
     //When the plugin starts enabling.
@@ -98,7 +99,7 @@ public class LevelledMobs extends JavaPlugin {
         registerCommands();
 
         log(LogLevel.INFO, "&8[&75&8/&76&8] &7Hooking to other plugins...");
-        manageWorldGuard();
+        //will be added in the future.
 
         log(LogLevel.INFO, "&8[&76&8/&76&8] &7Starting metrics...");
         new Metrics(this);
@@ -172,7 +173,6 @@ public class LevelledMobs extends JavaPlugin {
         worldguard = getServer().getPluginManager().getPlugin("WorldGuard") != null;
 
         if (worldguard) {
-            log(LogLevel.INFO, "&aWorldGuard&7 found.");
             FlagRegistry freg = WorldGuard.getInstance().getFlagRegistry();
             try {
                 StateFlag allowflag;
