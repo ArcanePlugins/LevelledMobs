@@ -1,11 +1,7 @@
 package io.github.lokka30.levelledmobs;
 
-import com.sk89q.worldguard.WorldGuard;
-import com.sk89q.worldguard.protection.flags.Flag;
 import com.sk89q.worldguard.protection.flags.StateFlag;
 import com.sk89q.worldguard.protection.flags.StringFlag;
-import com.sk89q.worldguard.protection.flags.registry.FlagConflictException;
-import com.sk89q.worldguard.protection.flags.registry.FlagRegistry;
 import de.leonhard.storage.LightningBuilder;
 import de.leonhard.storage.internal.FlatFile;
 import de.leonhard.storage.internal.exception.LightningValidationException;
@@ -15,6 +11,7 @@ import io.github.lokka30.levelledmobs.listeners.LMobDamage;
 import io.github.lokka30.levelledmobs.listeners.LMobDeath;
 import io.github.lokka30.levelledmobs.listeners.LMobSpawn;
 import io.github.lokka30.levelledmobs.utils.LogLevel;
+import io.github.lokka30.levelledmobs.utils.ManageWorldGuard;
 import io.github.lokka30.levelledmobs.utils.UpdateChecker;
 import io.github.lokka30.levelledmobs.utils.Utils;
 import org.bstats.bukkit.Metrics;
@@ -173,39 +170,7 @@ public class LevelledMobs extends JavaPlugin {
         worldguard = getServer().getPluginManager().getPlugin("WorldGuard") != null;
 
         if (worldguard) {
-            FlagRegistry freg = WorldGuard.getInstance().getFlagRegistry();
-            try {
-                StateFlag allowflag;
-                StringFlag minflag, maxflag;
-
-                allowflag = new StateFlag("CustomLevelFlag", false);
-                minflag = new StringFlag("MinLevelFlag", "-1");
-                maxflag = new StringFlag("MaxLevelFlag", "-1");
-
-                freg.register(allowflag);
-                freg.register(minflag);
-                freg.register(maxflag);
-
-                allowlevelflag = allowflag;
-                minlevelflag = minflag;
-                maxlevelflag = maxflag;
-            } catch (FlagConflictException e) {
-                Flag<?> allow = freg.get("CustonmLevelFlag");
-                Flag<?> min = freg.get("MinLevelFlag");
-                Flag<?> max = freg.get("MaxLevelFlag");
-
-                if (min instanceof StringFlag) {
-                    minlevelflag = (StringFlag) min;
-                }
-
-                if (max instanceof StringFlag) {
-                    maxlevelflag = (StringFlag) max;
-                }
-
-                if (allow instanceof StateFlag) {
-                    allowlevelflag = (StateFlag) allow;
-                }
-            }
+            ManageWorldGuard.registerFlags();
         }
     }
 
