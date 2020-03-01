@@ -1,9 +1,13 @@
 package io.github.lokka30.levelledmobs.listeners;
 
 import io.github.lokka30.levelledmobs.LevelledMobs;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.persistence.PersistentDataType;
 
 public class LEntityDamage implements Listener {
 
@@ -13,5 +17,30 @@ public class LEntityDamage implements Listener {
     @EventHandler
     public void onDamage(final EntityDamageEvent e) {
         instance.levelManager.updateTag(e.getEntity());
+    }
+
+    // Check for levelled ranged damage.
+    @EventHandler
+    public void onRangedDamage(final EntityDamageByEntityEvent e) {
+        if (e.getDamager() instanceof Projectile) {
+            final Projectile projectile = (Projectile) e.getDamager();
+            if (projectile.getShooter() instanceof LivingEntity) {
+                final LivingEntity livingEntity = (LivingEntity) projectile.getShooter();
+                if (instance.levelManager.isLevellable(livingEntity)) {
+                    if (livingEntity.getPersistentDataContainer().get(instance.key, PersistentDataType.INTEGER) == null) { //if the entity doesn't contain a level, skip this.
+                        return;
+                    }
+
+                    int level = livingEntity.getPersistentDataContainer().get(instance.key, PersistentDataType.INTEGER);
+
+                    final double baseAttackDamage = e.getDamage();
+                    final double defaultAttackDamageAddition = instance.settings.get("fine-tuning.default-attack-damage-increase", 1.0F);
+                    final double attackDamageMultiplier = instance.settings.get("fine-tuning.multipliers.attack-damage", 1.5F);
+                    final double newAttackDamage = baseAttackDamage + defaultAttackDamageAddition + (attackDamageMultiplier * level);
+
+                    e.setDamage(newAttackDamage);
+                }
+            }
+        }
     }
 }

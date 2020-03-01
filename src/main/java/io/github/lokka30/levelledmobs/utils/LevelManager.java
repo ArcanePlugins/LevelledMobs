@@ -2,6 +2,7 @@ package io.github.lokka30.levelledmobs.utils;
 
 import io.github.lokka30.levelledmobs.LevelledMobs;
 import org.apache.commons.lang.StringUtils;
+import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -105,8 +106,19 @@ public class LevelManager {
 
             //Calculate if the remaining extra drop chance triggers.
             double random = new Random().nextDouble();
-            if (random < dropMultiplier)
+            if (random < dropMultiplier) {
                 finalMultiplier++;
+            }
+
+            //Remove the hand item from the mob's drops so it doesn't get multiplied
+            final ItemStack mainHand = ent.getEquipment().getItemInMainHand();
+            final ItemStack offHand = ent.getEquipment().getItemInOffHand();
+            if (mainHand.getType() != Material.AIR) {
+                drops.remove(mainHand);
+            }
+            if (offHand.getType() != Material.AIR) {
+                drops.remove(offHand);
+            }
 
             //Edit the ItemStacks to drop the calculated multiple items.
             for (int i = 0; i < drops.size(); i++) {

@@ -58,8 +58,8 @@ public class LCreatureSpawn implements Listener {
                     }
                 }
 
-                //Portals will duplicate mob's attributes. Don't let this happen.
-                if (e.getSpawnReason() == CreatureSpawnEvent.SpawnReason.NETHER_PORTAL) {
+                //Check if mob is already levelled. Fixes portal doubling and other related issues.
+                if (e.getEntity().getPersistentDataContainer().get(instance.key, PersistentDataType.INTEGER) != null) {
                     return;
                 }
 
@@ -77,35 +77,14 @@ public class LCreatureSpawn implements Listener {
                     Objects.requireNonNull(ent.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED)).setBaseValue(newMovementSpeed);
                 }
 
-                //These are melee mobs - their attack damage can be defined.
-                // Don't touch ranged mobs, else a NPE will occur.
-                // Ranged mobs' damage is planned to be added in a later date.
-                switch (ent.getType()) {
-                    case ZOMBIE:
-                    case HUSK:
-                    case DROWNED:
-                    case ZOMBIE_VILLAGER:
-                    case WITHER_SKELETON:
-                    case PIG_ZOMBIE:
-                    case CAVE_SPIDER:
-                    case SILVERFISH:
-                    case SPIDER:
-                    case ENDERMAN:
-                    case ENDERMITE:
-                    case SLIME:
-                    case VINDICATOR:
-                    case RAVAGER:
-                    case EVOKER:
-                    case IRON_GOLEM:
-                        final double baseAttackDamage = Objects.requireNonNull(e.getEntity().getAttribute(Attribute.GENERIC_ATTACK_DAMAGE)).getBaseValue();
-                        final double defaultAttackDamageAddition = instance.settings.get("fine-tuning.default-attack-damage-increase", 1.0F);
-                        final double attackDamageMultiplier = instance.settings.get("fine-tuning.multipliers.attack-damage", 1.5F);
-                        final double newAttackDamage = baseAttackDamage + defaultAttackDamageAddition + (attackDamageMultiplier * level);
+                //Checks if mobs attack damage can be modified before changing it.
+                if (e.getEntity().getAttribute(Attribute.GENERIC_ATTACK_DAMAGE) != null) {
+                    final double baseAttackDamage = Objects.requireNonNull(e.getEntity().getAttribute(Attribute.GENERIC_ATTACK_DAMAGE)).getBaseValue();
+                    final double defaultAttackDamageAddition = instance.settings.get("fine-tuning.default-attack-damage-increase", 1.0F);
+                    final double attackDamageMultiplier = instance.settings.get("fine-tuning.multipliers.attack-damage", 1.5F);
+                    final double newAttackDamage = baseAttackDamage + defaultAttackDamageAddition + (attackDamageMultiplier * level);
 
-                        Objects.requireNonNull(ent.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE)).setBaseValue(newAttackDamage);
-                        break;
-                    default: //The mob isn't a melee mob defined above. Don't set their movement speed.
-                        break;
+                    Objects.requireNonNull(ent.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE)).setBaseValue(newAttackDamage);
                 }
 
                 //Define the mob's level so it can be accessed elsewhere.

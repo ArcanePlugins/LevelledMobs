@@ -227,3 +227,8 @@ other:
 
 1.25
 - fixed nether portals duping mob attribs
+
+1.26
+- not released yet!!!!!!!!
+- added ranged damage
+- fixed portals again
