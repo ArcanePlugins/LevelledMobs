@@ -31,6 +31,7 @@ public class LCreatureSpawn implements Listener {
         if (!e.isCancelled()) {
             final int level; //The mob's level.
             LivingEntity ent = e.getEntity(); //The entity that was just spawned.
+            ent.setCanPickupItems(true);
 
             //Check settings for spawn distance levelling and choose levelling method accordingly.
             if(instance.worldguard && checkRegionFlags(ent)) {

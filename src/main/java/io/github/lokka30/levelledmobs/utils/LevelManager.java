@@ -2,7 +2,6 @@ package io.github.lokka30.levelledmobs.utils;
 
 import io.github.lokka30.levelledmobs.LevelledMobs;
 import org.apache.commons.lang.StringUtils;
-import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -111,14 +110,12 @@ public class LevelManager {
             }
 
             //Remove the hand item from the mob's drops so it doesn't get multiplied
+            final ItemStack helmet = ent.getEquipment().getHelmet();
+            final ItemStack chestplate = ent.getEquipment().getChestplate();
+            final ItemStack leggings = ent.getEquipment().getLeggings();
+            final ItemStack boots = ent.getEquipment().getBoots();
             final ItemStack mainHand = ent.getEquipment().getItemInMainHand();
             final ItemStack offHand = ent.getEquipment().getItemInOffHand();
-            if (mainHand.getType() != Material.AIR) {
-                drops.remove(mainHand);
-            }
-            if (offHand.getType() != Material.AIR) {
-                drops.remove(offHand);
-            }
 
             //Edit the ItemStacks to drop the calculated multiple items.
             for (int i = 0; i < drops.size(); i++) {
@@ -132,8 +129,25 @@ public class LevelManager {
                     amount = maxStackSize;
                 }
 
-                //Don't let the plugin multiply non-default drops, such as enchanted diamond swords picked up by zombies.
-                //TODO
+                //Don't let the plugin multiply items which match their equipment. stops bows and that from multiplying
+                if (itemStack.isSimilar(helmet)) {
+                    amount = helmet.getAmount();
+                }
+                if (itemStack.isSimilar(chestplate)) {
+                    amount = chestplate.getAmount();
+                }
+                if (itemStack.isSimilar(leggings)) {
+                    amount = leggings.getAmount();
+                }
+                if (itemStack.isSimilar(boots)) {
+                    amount = boots.getAmount();
+                }
+                if (itemStack.isSimilar(mainHand)) {
+                    amount = mainHand.getAmount();
+                }
+                if (itemStack.isSimilar(offHand)) {
+                    amount = offHand.getAmount();
+                }
 
                 itemStack.setAmount(amount);
                 drops.set(i, itemStack);
