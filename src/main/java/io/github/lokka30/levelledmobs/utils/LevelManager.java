@@ -110,12 +110,20 @@ public class LevelManager {
             }
 
             //Remove the hand item from the mob's drops so it doesn't get multiplied
-            final ItemStack helmet = ent.getEquipment().getHelmet();
-            final ItemStack chestplate = ent.getEquipment().getChestplate();
-            final ItemStack leggings = ent.getEquipment().getLeggings();
-            final ItemStack boots = ent.getEquipment().getBoots();
-            final ItemStack mainHand = ent.getEquipment().getItemInMainHand();
-            final ItemStack offHand = ent.getEquipment().getItemInOffHand();
+            ItemStack helmet = null;
+            ItemStack chestplate = null;
+            ItemStack leggings = null;
+            ItemStack boots = null;
+            ItemStack mainHand = null;
+            ItemStack offHand = null;
+            if (ent.getEquipment() != null) {
+                helmet = ent.getEquipment().getHelmet();
+                chestplate = ent.getEquipment().getChestplate();
+                leggings = ent.getEquipment().getLeggings();
+                boots = ent.getEquipment().getBoots();
+                mainHand = ent.getEquipment().getItemInMainHand();
+                offHand = ent.getEquipment().getItemInOffHand();
+            }
 
             //Edit the ItemStacks to drop the calculated multiple items.
             for (int i = 0; i < drops.size(); i++) {
@@ -130,22 +138,22 @@ public class LevelManager {
                 }
 
                 //Don't let the plugin multiply items which match their equipment. stops bows and that from multiplying
-                if (itemStack.isSimilar(helmet)) {
+                if (helmet != null && itemStack.isSimilar(helmet)) {
                     amount = helmet.getAmount();
                 }
-                if (itemStack.isSimilar(chestplate)) {
+                if (chestplate != null && itemStack.isSimilar(chestplate)) {
                     amount = chestplate.getAmount();
                 }
-                if (itemStack.isSimilar(leggings)) {
+                if (leggings != null && itemStack.isSimilar(leggings)) {
                     amount = leggings.getAmount();
                 }
-                if (itemStack.isSimilar(boots)) {
+                if (boots != null && itemStack.isSimilar(boots)) {
                     amount = boots.getAmount();
                 }
-                if (itemStack.isSimilar(mainHand)) {
+                if (mainHand != null && itemStack.isSimilar(mainHand)) {
                     amount = mainHand.getAmount();
                 }
-                if (itemStack.isSimilar(offHand)) {
+                if (offHand != null && itemStack.isSimilar(offHand)) {
                     amount = offHand.getAmount();
                 }
 
