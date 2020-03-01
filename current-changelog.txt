@@ -229,6 +229,6 @@ other:
 - fixed nether portals duping mob attribs
 
 1.26
-- not released yet!!!!!!!!
 - added ranged damage
-- fixed portals again
+- [issue #41] fixed portals doubling attributes
+- [issue #38] fixed mob equipment multiplying
