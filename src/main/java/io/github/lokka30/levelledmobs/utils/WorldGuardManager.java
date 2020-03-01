@@ -16,13 +16,16 @@ import io.github.lokka30.levelledmobs.LevelledMobs;
 import org.bukkit.Location;
 import org.bukkit.entity.LivingEntity;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Objects;
 
 import static io.github.lokka30.levelledmobs.LevelledMobs.getInstance;
 import static io.github.lokka30.levelledmobs.utils.Utils.isInteger;
 
-public class ManageWorldGuard {
-    public static void registerFlags(){
+public class WorldGuardManager {
+    public static void registerFlags() {
         FlagRegistry freg = WorldGuard.getInstance().getFlagRegistry();
         try {
             StateFlag allowflag;

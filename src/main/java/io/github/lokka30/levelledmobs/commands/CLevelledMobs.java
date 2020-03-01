@@ -81,9 +81,8 @@ public class CLevelledMobs implements CommandExecutor {
                     s.sendMessage(instance.colorize("&7Thank you for running &a&lLevelledMobs&7!"));
                     s.sendMessage(instance.colorize("&8&l \u00bb &7Running plugin version &a" + instance.getDescription().getVersion() + "&7."));
                     s.sendMessage(instance.colorize("&8&l \u00bb &7Developed for server version &a" + Utils.getRecommendedServerVersion() + "&7."));
-                    s.sendMessage(instance.colorize("&7Developed by &alokka30&7, along with highly appreciated contributions by &aiCodinqs&7 and &aEyrian&7."));
                     s.sendMessage(" ");
-                    s.sendMessage(instance.colorize("&7For more information, please visit the plugin page here:"));
+                    s.sendMessage(instance.colorize("&7For much more information, please visit the plugin page here:"));
                     s.sendMessage(instance.colorize("&8&nhttps://www.spigotmc.org/resources/%E2%98%85levelledmobs%E2%98%85-a-simple-drag-n-drop-solution-for-mob-attributes.74304/"));
                     s.sendMessage(instance.colorize("&8&m+-----------------------------------+"));
                 } else {

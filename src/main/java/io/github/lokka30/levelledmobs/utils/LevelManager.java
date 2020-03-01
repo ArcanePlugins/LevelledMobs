@@ -1,6 +1,6 @@
-package io.github.lokka30.levelledmobs;
+package io.github.lokka30.levelledmobs.utils;
 
-import io.github.lokka30.levelledmobs.utils.Utils;
+import io.github.lokka30.levelledmobs.LevelledMobs;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Entity;
@@ -8,6 +8,7 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Monster;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.Arrays;
 import java.util.List;
@@ -39,8 +40,17 @@ public class LevelManager {
         return entity instanceof Monster || instance.settings.get("level-passive", false);
     }
 
+    //Update an entity's tag. it is called twice as when a mob gets damaged their health is updated after to the health after they got damaged.
+    public void updateTag(Entity ent) {
+        new BukkitRunnable() {
+            public void run() {
+                setTag(ent);
+            }
+        }.runTaskLater(instance, 1L);
+    }
+
     //Updates the nametag of a creature. Gets called by certain listeners.
-    public void updateTag(final Entity entity) {
+    public void setTag(final Entity entity) {
         if (entity instanceof LivingEntity && instance.settings.get("enable-nametag-changes", true)) { //if the settings allows nametag changes, go ahead.
             final LivingEntity livingEntity = (LivingEntity) entity;
 

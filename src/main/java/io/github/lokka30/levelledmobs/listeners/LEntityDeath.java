@@ -5,7 +5,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDeathEvent;
 
-public class LMobDeath implements Listener {
+public class LEntityDeath implements Listener {
 
     private LevelledMobs instance = LevelledMobs.getInstance();
 

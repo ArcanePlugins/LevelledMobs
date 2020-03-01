@@ -1,6 +1,5 @@
 package io.github.lokka30.levelledmobs.listeners;
 
-import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import io.github.lokka30.levelledmobs.LevelledMobs;
 import io.github.lokka30.levelledmobs.utils.Utils;
 import org.bukkit.attribute.Attribute;
@@ -16,10 +15,10 @@ import java.util.Objects;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
-import static io.github.lokka30.levelledmobs.utils.ManageWorldGuard.*;
-import static io.github.lokka30.levelledmobs.utils.Utils.*;
+import static io.github.lokka30.levelledmobs.utils.WorldGuardManager.checkRegionFlags;
+import static io.github.lokka30.levelledmobs.utils.WorldGuardManager.getRegionLevel;
 
-public class LMobSpawn implements Listener {
+public class LCreatureSpawn implements Listener {
 
     private LevelledMobs instance = LevelledMobs.getInstance();
 

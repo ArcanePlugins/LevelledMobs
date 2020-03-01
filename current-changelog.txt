@@ -215,3 +215,12 @@ fixed file system
 - Removed RELEASE tag from versions, which is unnecessary.
 - Fixed a typo in /levelledMobs info.
 - Source now includes changelog file.
+
+1.24
+notable:
+- [pull #40] worldguard region levelling added by Eyrian
+- [pull #39] update nametags on health regain by konsolas
+
+other:
+- moved LevelManager to utils package
+- renamed a bunch of listener classes to correspond to their events

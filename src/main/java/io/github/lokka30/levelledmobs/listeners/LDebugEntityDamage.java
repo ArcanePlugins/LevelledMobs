@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.Objects;
 import java.util.UUID;
 
-public class LDebug implements Listener {
+public class LDebugEntityDamage implements Listener {
 
     ArrayList<UUID> delay = new ArrayList<>();
     private LevelledMobs instance = LevelledMobs.getInstance();

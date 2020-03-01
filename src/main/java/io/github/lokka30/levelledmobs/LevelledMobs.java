@@ -6,14 +6,8 @@ import de.leonhard.storage.LightningBuilder;
 import de.leonhard.storage.internal.FlatFile;
 import de.leonhard.storage.internal.exception.LightningValidationException;
 import io.github.lokka30.levelledmobs.commands.CLevelledMobs;
-import io.github.lokka30.levelledmobs.listeners.LDebug;
-import io.github.lokka30.levelledmobs.listeners.LMobDamage;
-import io.github.lokka30.levelledmobs.listeners.LMobDeath;
-import io.github.lokka30.levelledmobs.listeners.LMobSpawn;
-import io.github.lokka30.levelledmobs.utils.LogLevel;
-import io.github.lokka30.levelledmobs.utils.ManageWorldGuard;
-import io.github.lokka30.levelledmobs.utils.UpdateChecker;
-import io.github.lokka30.levelledmobs.utils.Utils;
+import io.github.lokka30.levelledmobs.listeners.*;
+import io.github.lokka30.levelledmobs.utils.*;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.ChatColor;
 import org.bukkit.NamespacedKey;
@@ -61,11 +55,12 @@ public class LevelledMobs extends JavaPlugin {
 
     private static LevelledMobs instance; //The main class is stored here so other classes can access it.
     public static StateFlag allowlevelflag;
-    public static StringFlag minlevelflag, maxlevelflag;
-    public LevelManager levelManager;
     public FlatFile settings; //The settings config file managed by LightningStorage.
     public NamespacedKey key; //The NamespacedKey which holds each levellable mob's level value.
-    public boolean worldguard;
+    public static StringFlag minlevelflag, maxlevelflag;
+    public LevelManager levelManager; //The LevelManager class which holds a bunch of common methods
+    //WorldGuard
+    public boolean worldguard; //if worldguard is on the server
 
     //Returns the instance class. Will return null if the plugin is disabled - this shouldn't happen.
     public static LevelledMobs getInstance() {
@@ -77,7 +72,7 @@ public class LevelledMobs extends JavaPlugin {
     public void onLoad() {
         instance = this;
         levelManager = new LevelManager(this);
-        manageWorldGuard();
+        checkWorldGuard(); //WorldGuard check is onLoad as it is required to be here instead of onEnable (as stated in its documentation).
     }
 
     //When the plugin starts enabling.
@@ -110,6 +105,7 @@ public class LevelledMobs extends JavaPlugin {
         instance = null;
     }
 
+    //Checks if the server version is supported
     private void checkCompatibility() {
         final String currentVersion = getServer().getVersion();
         final String recommendedVersion = Utils.getRecommendedServerVersion();
@@ -124,6 +120,7 @@ public class LevelledMobs extends JavaPlugin {
         }
     }
 
+    //Manages the LightningStorage files.
     private void loadFiles() {
         //Load the files
         final PluginManager pm = getServer().getPluginManager();
@@ -153,27 +150,31 @@ public class LevelledMobs extends JavaPlugin {
         }
     }
 
+    //Registers the listener classes.
     private void registerEvents() {
         final PluginManager pm = getServer().getPluginManager();
 
-        pm.registerEvents(new LDebug(), this);
-        pm.registerEvents(new LMobSpawn(), this);
-        pm.registerEvents(new LMobDamage(), this);
-        pm.registerEvents(new LMobDeath(), this);
+        pm.registerEvents(new LDebugEntityDamage(), this);
+        pm.registerEvents(new LCreatureSpawn(), this);
+        pm.registerEvents(new LEntityDamage(), this);
+        pm.registerEvents(new LEntityDeath(), this);
+        pm.registerEvents(new LEntityRegainHealth(), this);
     }
 
+    //Registers the command classes.
     private void registerCommands() {
         Objects.requireNonNull(getCommand("LevelledMobs")).setExecutor(new CLevelledMobs());
     }
 
-    private void manageWorldGuard() {
+    //Checks if WorldGuard is available. If so, start registering its flags.
+    private void checkWorldGuard() {
         worldguard = getServer().getPluginManager().getPlugin("WorldGuard") != null;
-
         if (worldguard) {
-            ManageWorldGuard.registerFlags();
+            WorldGuardManager.registerFlags();
         }
     }
 
+    //Check for updates on the Spigot page.
     private void checkUpdates() {
         if (settings.get("updater", true)) {
             log(LogLevel.INFO, "&8[&7Update Checker&8] &7Starting version comparison...");
@@ -187,10 +188,12 @@ public class LevelledMobs extends JavaPlugin {
         }
     }
 
+    //Replace color codes in the message with colors.
     public String colorize(final String msg) {
         return ChatColor.translateAlternateColorCodes('&', msg);
     }
 
+    //My favoured logging system.
     public void log(final LogLevel level, String msg) {
         final Logger logger = getLogger();
         msg = colorize("&7" + msg);
