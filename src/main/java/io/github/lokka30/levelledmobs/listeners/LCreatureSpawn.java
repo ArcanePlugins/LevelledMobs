@@ -58,6 +58,11 @@ public class LCreatureSpawn implements Listener {
                     }
                 }
 
+                //Portals will duplicate mob's attributes. Don't let this happen.
+                if (e.getSpawnReason() == CreatureSpawnEvent.SpawnReason.NETHER_PORTAL) {
+                    return;
+                }
+
                 //Set the entity's max health.
                 final double baseMaxHealth = Objects.requireNonNull(e.getEntity().getAttribute(Attribute.GENERIC_MAX_HEALTH)).getBaseValue();
                 final double newMaxHealth = baseMaxHealth + (baseMaxHealth * (instance.settings.get("fine-tuning.multipliers.max-health", 0.2F)) * level);

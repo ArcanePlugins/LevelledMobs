@@ -120,6 +120,9 @@ public class LevelManager {
                     amount = maxStackSize;
                 }
 
+                //Don't let the plugin multiply non-default drops, such as enchanted diamond swords picked up by zombies.
+                //TODO
+
                 itemStack.setAmount(amount);
                 drops.set(i, itemStack);
             }

@@ -224,3 +224,6 @@ notable:
 other:
 - moved LevelManager to utils package
 - renamed a bunch of listener classes to correspond to their events
+
+1.25
+- fixed nether portals duping mob attribs
