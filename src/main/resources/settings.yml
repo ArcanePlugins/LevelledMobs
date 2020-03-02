@@ -19,6 +19,7 @@ enable-nametag-changes: true
 level-passive: false
 
 #Blacklisted types. These mobs won't be levelled, regardless of the setting above.
+#Blacklist all types by putting in 'ALL'.
 blacklisted-types:
   - 'VILLAGER'
   - 'WANDERING_TRADER'
@@ -27,6 +28,7 @@ blacklisted-types:
   - 'RAVAGER'
 
 #Multiworld support - newly spawned mobs in these worlds won't be levelled.
+#Blacklist all worlds by putting in 'ALL'.
 blacklisted-worlds:
   - 'blacklisted_world_here'
   - 'another_blacklisted_world'
@@ -34,6 +36,7 @@ blacklisted-worlds:
 #You can block certain spawn reasons from levelling mobs, such as Mob Spawners.
 #To block mob spawners from levelling mobs, remove the [] and the hashtag before - 'SPAWNER'.
 #This checks for SpawnReasons created by the Spigot API.
+#Blacklist all reasons by putting in 'ALL'.
 blacklisted-reasons: []
 #  - 'SPAWNER'
 
@@ -82,6 +85,6 @@ debug: false
 #You shouldn't change this integer unless updating your config.
 #LevelledMobs uses it to determine if your file is outdated.
 #You must set it to the version of the current file, not a future file.
-file-version: 14
+file-version: 15
 
 #You've made it to the end of the settings file. Treat yourself with a cup of coffee.

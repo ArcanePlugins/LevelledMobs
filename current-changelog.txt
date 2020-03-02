@@ -232,3 +232,7 @@ other:
 - added ranged damage
 - [issue #41] fixed portals doubling attributes
 - [issue #38] fixed mob equipment multiplying
+
+1.27
+- NOT RELEASED YET
+- blacklists can now use the term 'ALL' to block all possible values.

@@ -45,7 +45,7 @@ public class LCreatureSpawn implements Listener {
 
                 //Check the list of blacklisted worlds. If the entity's world is in here, then we don't continue.
                 for (String blacklistedWorld : instance.settings.get("blacklisted-worlds", Collections.singletonList("BLACKLISTED_WORLD"))) {
-                    if (e.getEntity().getWorld().getName().equalsIgnoreCase(blacklistedWorld)) {
+                    if (e.getEntity().getWorld().getName().equalsIgnoreCase(blacklistedWorld) || blacklistedWorld.equals("ALL")) {
                         return;
                     }
                 }
@@ -53,7 +53,7 @@ public class LCreatureSpawn implements Listener {
                 //Check the list of blacklisted spawn reasons. If the entity's spawn reason is in there, then we don't continue.
                 //Uses a default as "NONE" as there are no blocked spawn reasons in the default config.
                 for (String blacklistedReason : instance.settings.get("blacklisted-reasons", Collections.singletonList("NONE"))) {
-                    if (e.getSpawnReason().toString().equalsIgnoreCase(blacklistedReason)) {
+                    if (e.getSpawnReason().toString().equalsIgnoreCase(blacklistedReason) || blacklistedReason.equals("ALL")) {
                         return;
                     }
                 }

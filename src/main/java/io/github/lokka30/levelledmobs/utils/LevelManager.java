@@ -31,7 +31,7 @@ public class LevelManager {
         //Set it to what's specified. If it's invalid, it'll just take a small predefiend list.
         blacklistedTypes = instance.settings.get("blacklisted-types", Arrays.asList("VILLAGER", "WANDERING_TRADER", "ENDER_DRAGON", "WITHER"));
         for (String blacklistedType : blacklistedTypes) {
-            if (entity.getType().toString().equalsIgnoreCase(blacklistedType)) {
+            if (entity.getType().toString().equalsIgnoreCase(blacklistedType) || blacklistedType.equals("ALL")) {
                 return false;
             }
         }
