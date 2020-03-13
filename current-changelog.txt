@@ -234,5 +234,6 @@ other:
 - [issue #38] fixed mob equipment multiplying
 
 1.27
-- NOT RELEASED YET
-- blacklists can now use the term 'ALL' to block all possible values.
+- [#43] blacklists can now use the term 'ALL' to block all possible values.
+- [#53] attempted fix at stopping players from being considered levellable
+- [#49] checks if events are cancelled before proceeding. could fix potential issues

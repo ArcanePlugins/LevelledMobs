@@ -10,6 +10,7 @@ public class LEntityRegainHealth implements Listener {
     // When the mob regains health, try to update their nametag.
     @EventHandler
     public void onEntityRegainHealth(final EntityRegainHealthEvent e) {
+        if (e.isCancelled()) return;
         LevelledMobs.getInstance().levelManager.updateTag(e.getEntity());
     }
 

@@ -22,7 +22,7 @@ public class LEntityDamage implements Listener {
     // Check for levelled ranged damage.
     @EventHandler
     public void onRangedDamage(final EntityDamageByEntityEvent e) {
-        if (e.getDamager() instanceof Projectile) {
+        if (!e.isCancelled() && e.getDamager() instanceof Projectile) {
             final Projectile projectile = (Projectile) e.getDamager();
             if (projectile.getShooter() instanceof LivingEntity) {
                 final LivingEntity livingEntity = (LivingEntity) projectile.getShooter();

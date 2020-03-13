@@ -4,6 +4,7 @@ import io.github.lokka30.levelledmobs.LevelledMobs;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Monster;
 import org.bukkit.inventory.ItemStack;
@@ -25,19 +26,30 @@ public class LevelManager {
 
     //Checks if an entity can be levelled.
     public boolean isLevellable(final LivingEntity entity) {
+        if (entity.getType() == EntityType.PLAYER) {
+            return false;
+        }
+
+
         //Checks for the 'blacklisted-types' option.
         List<String> blacklistedTypes;
 
         //Set it to what's specified. If it's invalid, it'll just take a small predefiend list.
         blacklistedTypes = instance.settings.get("blacklisted-types", Arrays.asList("VILLAGER", "WANDERING_TRADER", "ENDER_DRAGON", "WITHER"));
         for (String blacklistedType : blacklistedTypes) {
-            if (entity.getType().toString().equalsIgnoreCase(blacklistedType) || blacklistedType.equals("ALL")) {
+            final String entityType = entity.getType().name();
+            if (entityType.equalsIgnoreCase(blacklistedType) || blacklistedType.equalsIgnoreCase("ALL")) {
                 return false;
             }
         }
 
         //Checks for the 'level-passive' option.
-        return entity instanceof Monster || instance.settings.get("level-passive", false);
+        if (instance.settings.get("level-passive", false)) {
+            return true;
+        }
+
+        //If the entity is a monster, return true
+        return entity instanceof Monster;
     }
 
     //Update an entity's tag. it is called twice as when a mob gets damaged their health is updated after to the health after they got damaged.
