@@ -11,10 +11,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
-import java.util.Random;
+import java.util.*;
 
 public class LevelManager {
 
@@ -26,21 +23,22 @@ public class LevelManager {
 
     //Checks if an entity can be levelled.
     public boolean isLevellable(final LivingEntity entity) {
+
+        //Players shouldn't be levelled! Keep this at the top to ensure they don't return true
         if (entity.getType() == EntityType.PLAYER) {
             return false;
         }
 
-
-        //Checks for the 'blacklisted-types' option.
-        List<String> blacklistedTypes;
+        //Blacklist override, entities here will return true regardless if they are in blacklistedTypes or are passive
+        List<String> blacklistOverrideTypes = instance.settings.get("blacklist-override-types", Collections.singletonList("SHULKER"));
+        if (blacklistOverrideTypes.contains(entity.getType().name())) {
+            return true;
+        }
 
         //Set it to what's specified. If it's invalid, it'll just take a small predefiend list.
-        blacklistedTypes = instance.settings.get("blacklisted-types", Arrays.asList("VILLAGER", "WANDERING_TRADER", "ENDER_DRAGON", "WITHER"));
-        for (String blacklistedType : blacklistedTypes) {
-            final String entityType = entity.getType().name();
-            if (entityType.equalsIgnoreCase(blacklistedType) || blacklistedType.equalsIgnoreCase("ALL")) {
-                return false;
-            }
+        List<String> blacklistedTypes = instance.settings.get("blacklisted-types", Arrays.asList("VILLAGER", "WANDERING_TRADER", "ENDER_DRAGON", "WITHER"));
+        if (blacklistedTypes.contains(entity.getType().name())) {
+            return false;
         }
 
         //Checks for the 'level-passive' option.

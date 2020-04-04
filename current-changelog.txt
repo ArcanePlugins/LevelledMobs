@@ -237,3 +237,19 @@ other:
 - [#43] blacklists can now use the term 'ALL' to block all possible values.
 - [#53] attempted fix at stopping players from being considered levellable
 - [#49] checks if events are cancelled before proceeding. could fix potential issues
+
+1.28-RELEASE
+note:
+- This release wasn't tested, please use with caution.
+- I recommend installing this on a test server and ensuring the plugin works properly before installing it on a server where there is too much to lose.
+
+file changes:
+- settings.yml (now version 16)
+ - added ranged damage multiplier
+
+changes:
+- [#56] Added 'ranged damage multiplier' with a default value of 1.1
+ - Projectiles, such as arrows from skeletons, did too much damage. Requested by SpigotMC user Velerium.
+- [#44] Added 'blacklisted types override', which forces mobs to be levelled, regardless of their status in 'blacklisted types' and if 'level passive' is false.
+ - 'SHULKER' is added by default, as for some reason they aren't considered a hostile mob.
+- [#55] Updated libraries (LightningStorage 3.0.6 -> 3.0.9)

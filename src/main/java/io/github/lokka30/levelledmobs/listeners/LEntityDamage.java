@@ -31,14 +31,15 @@ public class LEntityDamage implements Listener {
                         return;
                     }
 
-                    int level = livingEntity.getPersistentDataContainer().get(instance.key, PersistentDataType.INTEGER);
+                    Number level = livingEntity.getPersistentDataContainer().get(instance.key, PersistentDataType.INTEGER);
+                    if (level != null) {
+                        final double baseAttackDamage = e.getDamage();
+                        final double defaultAttackDamageAddition = instance.settings.get("fine-tuning.default-attack-damage-increase", 1.0F);
+                        final double attackDamageMultiplier = instance.settings.get("fine-tuning.multipliers.ranged-attack-damage", 1.1F);
+                        final double newAttackDamage = baseAttackDamage + defaultAttackDamageAddition + (attackDamageMultiplier * level.intValue());
 
-                    final double baseAttackDamage = e.getDamage();
-                    final double defaultAttackDamageAddition = instance.settings.get("fine-tuning.default-attack-damage-increase", 1.0F);
-                    final double attackDamageMultiplier = instance.settings.get("fine-tuning.multipliers.attack-damage", 1.5F);
-                    final double newAttackDamage = baseAttackDamage + defaultAttackDamageAddition + (attackDamageMultiplier * level);
-
-                    e.setDamage(newAttackDamage);
+                        e.setDamage(newAttackDamage);
+                    }
                 }
             }
         }

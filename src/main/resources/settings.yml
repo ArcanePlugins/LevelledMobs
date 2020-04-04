@@ -20,12 +20,19 @@ level-passive: false
 
 #Blacklisted types. These mobs won't be levelled, regardless of the setting above.
 #Blacklist all types by putting in 'ALL'.
+#Warning: Types are case-sensitive! That means they should be in UPPERCASE.
 blacklisted-types:
   - 'VILLAGER'
   - 'WANDERING_TRADER'
   - 'ENDER_DRAGON'
   - 'WITHER'
   - 'RAVAGER'
+
+#Blacklisted Types Override: The mobs in here will be levelled regardless if they are included in 'blacklisted-types' or if 'level-passive' is true.
+#Shulkers are added by default as for some reason they aren't considered hostile mobs.
+#Warning: Types are case-sensitive! That means they should be in UPPERCASE.
+blacklisted-types-override:
+  - 'SHULKER'
 
 #Multiworld support - newly spawned mobs in these worlds won't be levelled.
 #Blacklist all worlds by putting in 'ALL'.
@@ -54,6 +61,7 @@ fine-tuning:
     movement-speed: 0.065
     max-health: 0.2
     attack-damage: 1.5
+    ranged-attack-damage: 1.1
     item-drop: 0.16
     xp-drop: 0.1
 
@@ -85,6 +93,6 @@ debug: false
 #You shouldn't change this integer unless updating your config.
 #LevelledMobs uses it to determine if your file is outdated.
 #You must set it to the version of the current file, not a future file.
-file-version: 15
+file-version: 16
 
 #You've made it to the end of the settings file. Treat yourself with a cup of coffee.
