@@ -30,18 +30,23 @@ public class LCreatureSpawn implements Listener {
     public void onMobSpawn(final CreatureSpawnEvent e) {
         if (!e.isCancelled()) {
             final int level; //The mob's level.
-            LivingEntity ent = e.getEntity(); //The entity that was just spawned.
+            LivingEntity livingEntity = e.getEntity(); //The entity that was just spawned.
+
+            //Check if the mob is already levelled (safarinet compatibility, etc)
+            if (livingEntity.getPersistentDataContainer().get(instance.key, PersistentDataType.INTEGER) != null) { //if the entity doesn't contain a level, skip this.
+                return;
+            }
 
             //Check settings for spawn distance levelling and choose levelling method accordingly.
-            if(instance.worldguard && checkRegionFlags(ent)) {
-                level = generateRegionLevel(ent);
+            if (instance.worldguard && checkRegionFlags(livingEntity)) {
+                level = generateRegionLevel(livingEntity);
             } else if (instance.settings.get("spawn-distance-levelling.active", false)) {
-                level = generateLevelByDistance(ent);
+                level = generateLevelByDistance(livingEntity);
             } else {
                 level = generateLevel();
             }
 
-            if (instance.levelManager.isLevellable(ent)) { //Is the mob allowed to be levelled?
+            if (instance.levelManager.isLevellable(livingEntity)) { //Is the mob allowed to be levelled?
 
                 //Check the list of blacklisted worlds. If the entity's world is in here, then we don't continue.
                 for (String blacklistedWorld : instance.settings.get("blacklisted-worlds", Collections.singletonList("BLACKLISTED_WORLD"))) {
@@ -66,15 +71,15 @@ public class LCreatureSpawn implements Listener {
                 //Set the entity's max health.
                 final double baseMaxHealth = Objects.requireNonNull(e.getEntity().getAttribute(Attribute.GENERIC_MAX_HEALTH)).getBaseValue();
                 final double newMaxHealth = baseMaxHealth + (baseMaxHealth * (instance.settings.get("fine-tuning.multipliers.max-health", 0.2F)) * level);
-                Objects.requireNonNull(ent.getAttribute(Attribute.GENERIC_MAX_HEALTH)).setBaseValue(newMaxHealth);
-                ent.setHealth(newMaxHealth); //Set the entity's health to their max health, otherwise their health is still the default of 20, so they'll be just as easy to kill.
+                Objects.requireNonNull(livingEntity.getAttribute(Attribute.GENERIC_MAX_HEALTH)).setBaseValue(newMaxHealth);
+                livingEntity.setHealth(newMaxHealth); //Set the entity's health to their max health, otherwise their health is still the default of 20, so they'll be just as easy to kill.
 
                 //Set the entity's movement speed.
                 //Only monsters should have their movement speed changed. Otherwise you would have a very fast level 10 race horse, or an untouchable bat.
-                if (ent instanceof Monster) {
+                if (livingEntity instanceof Monster) {
                     final double baseMovementSpeed = Objects.requireNonNull(e.getEntity().getAttribute(Attribute.GENERIC_MOVEMENT_SPEED)).getBaseValue();
                     final double newMovementSpeed = baseMovementSpeed + (baseMovementSpeed * instance.settings.get("fine-tuning.multipliers.movement-speed", 0.065F) * level);
-                    Objects.requireNonNull(ent.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED)).setBaseValue(newMovementSpeed);
+                    Objects.requireNonNull(livingEntity.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED)).setBaseValue(newMovementSpeed);
                 }
 
                 //Checks if mobs attack damage can be modified before changing it.
@@ -84,7 +89,7 @@ public class LCreatureSpawn implements Listener {
                     final double attackDamageMultiplier = instance.settings.get("fine-tuning.multipliers.attack-damage", 1.5F);
                     final double newAttackDamage = baseAttackDamage + defaultAttackDamageAddition + (attackDamageMultiplier * level);
 
-                    Objects.requireNonNull(ent.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE)).setBaseValue(newAttackDamage);
+                    Objects.requireNonNull(livingEntity.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE)).setBaseValue(newAttackDamage);
                 }
 
                 //Define the mob's level so it can be accessed elsewhere.

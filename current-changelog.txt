@@ -253,3 +253,7 @@ changes:
 - [#44] Added 'blacklisted types override', which forces mobs to be levelled, regardless of their status in 'blacklisted types' and if 'level passive' is false.
  - 'SHULKER' is added by default, as for some reason they aren't considered a hostile mob.
 - [#55] Updated libraries (LightningStorage 3.0.6 -> 3.0.9)
+
+1.29-RELEASE
+notes:
+- When a mob spawns, LM now checks if it is already levelled. This should provide compatibility to plugins such as Safari Net.
