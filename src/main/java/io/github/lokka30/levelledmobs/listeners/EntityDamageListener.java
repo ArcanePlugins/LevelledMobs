@@ -9,9 +9,13 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.persistence.PersistentDataType;
 
-public class LEntityDamage implements Listener {
+public class EntityDamageListener implements Listener {
 
-    private LevelledMobs instance = LevelledMobs.getInstance();
+    private LevelledMobs instance;
+
+    public EntityDamageListener(final LevelledMobs instance) {
+        this.instance = instance;
+    }
 
     // When the mob is damaged, try to update their nametag.
     @EventHandler
@@ -27,11 +31,11 @@ public class LEntityDamage implements Listener {
             if (projectile.getShooter() instanceof LivingEntity) {
                 final LivingEntity livingEntity = (LivingEntity) projectile.getShooter();
                 if (instance.levelManager.isLevellable(livingEntity)) {
-                    if (livingEntity.getPersistentDataContainer().get(instance.key, PersistentDataType.INTEGER) == null) { //if the entity doesn't contain a level, skip this.
+                    if (livingEntity.getPersistentDataContainer().get(instance.levelKey, PersistentDataType.INTEGER) == null) { //if the entity doesn't contain a level, skip this.
                         return;
                     }
 
-                    Number level = livingEntity.getPersistentDataContainer().get(instance.key, PersistentDataType.INTEGER);
+                    Number level = livingEntity.getPersistentDataContainer().get(instance.levelKey, PersistentDataType.INTEGER);
                     if (level != null) {
                         final double baseAttackDamage = e.getDamage();
                         final double defaultAttackDamageAddition = instance.settings.get("fine-tuning.default-attack-damage-increase", 1.0F);

@@ -5,9 +5,13 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDeathEvent;
 
-public class LEntityDeath implements Listener {
+public class EntityDeathListener implements Listener {
 
-    private LevelledMobs instance = LevelledMobs.getInstance();
+    private LevelledMobs instance;
+
+    public EntityDeathListener(final LevelledMobs instance) {
+        this.instance = instance;
+    }
 
     @EventHandler
     public void onDeath(final EntityDeathEvent e) {

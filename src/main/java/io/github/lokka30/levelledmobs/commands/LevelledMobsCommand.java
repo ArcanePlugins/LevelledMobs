@@ -1,7 +1,6 @@
 package io.github.lokka30.levelledmobs.commands;
 
 import io.github.lokka30.levelledmobs.LevelledMobs;
-import io.github.lokka30.levelledmobs.utils.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.command.Command;
@@ -12,9 +11,13 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
-public class CLevelledMobs implements CommandExecutor {
+public class LevelledMobsCommand implements CommandExecutor {
 
-    private LevelledMobs instance = LevelledMobs.getInstance();
+    private LevelledMobs instance;
+
+    public LevelledMobsCommand(final LevelledMobs instance) {
+        this.instance = instance;
+    }
 
     public boolean onCommand(@NotNull final CommandSender s, @NotNull final Command cmd, @NotNull final String label, final String[] args) {
         if (args.length == 0) {
@@ -80,7 +83,7 @@ public class CLevelledMobs implements CommandExecutor {
                     s.sendMessage(instance.colorize("&8&m+-----------------------------------+"));
                     s.sendMessage(instance.colorize("&7Thank you for running &a&lLevelledMobs&7!"));
                     s.sendMessage(instance.colorize("&8&l \u00bb &7Running plugin version &a" + instance.getDescription().getVersion() + "&7."));
-                    s.sendMessage(instance.colorize("&8&l \u00bb &7Developed for server version &a" + Utils.getRecommendedServerVersion() + "&7."));
+                    s.sendMessage(instance.colorize("&8&l \u00bb &7Developed for server version &a" + instance.utils.getRecommendedServerVersion() + "&7."));
                     s.sendMessage(" ");
                     s.sendMessage(instance.colorize("&7For much more information, please visit the plugin page here:"));
                     s.sendMessage(instance.colorize("&8&nhttps://www.spigotmc.org/resources/%E2%98%85levelledmobs%E2%98%85-a-simple-drag-n-drop-solution-for-mob-attributes.74304/"));

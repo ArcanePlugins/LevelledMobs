@@ -1,7 +1,6 @@
 package io.github.lokka30.levelledmobs.listeners;
 
 import io.github.lokka30.levelledmobs.LevelledMobs;
-import io.github.lokka30.levelledmobs.utils.Utils;
 import org.bukkit.Sound;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.LivingEntity;
@@ -16,10 +15,14 @@ import java.util.ArrayList;
 import java.util.Objects;
 import java.util.UUID;
 
-public class LDebugEntityDamage implements Listener {
+public class EntityDamageDebugListener implements Listener {
 
     ArrayList<UUID> delay = new ArrayList<>();
-    private LevelledMobs instance = LevelledMobs.getInstance();
+    private LevelledMobs instance;
+
+    public EntityDamageDebugListener(final LevelledMobs instance) {
+        this.instance = instance;
+    }
 
     //This class is used to debug levellable mobs. It simply displays their current attributes, current health and current level.
     @EventHandler
@@ -34,8 +37,8 @@ public class LDebugEntityDamage implements Listener {
                 p.sendMessage(instance.colorize("&8 - &fAttribute.GENERIC_MAX_HEALTH = &a" + Objects.requireNonNull(ent.getAttribute(Attribute.GENERIC_MAX_HEALTH)).getBaseValue()));
                 p.sendMessage(instance.colorize("&8 - &fAttribute.GENERIC_MOVEMENT_SPEED = &a" + Objects.requireNonNull(ent.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED)).getBaseValue()));
                 p.sendMessage(instance.colorize("&8 - &fAttribute.GENERIC_ATTACK_DAMAGE = &a" + Objects.requireNonNull(ent.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE)).getBaseValue()));
-                p.sendMessage(instance.colorize("&8 - &fCurrent Health = &a" + Utils.round(ent.getHealth(), 1)));
-                p.sendMessage(instance.colorize("&8 - &fLevel = &a" + ent.getPersistentDataContainer().get(instance.key, PersistentDataType.INTEGER)));
+                p.sendMessage(instance.colorize("&8 - &fCurrent Health = &a" + instance.utils.round(ent.getHealth(), 1)));
+                p.sendMessage(instance.colorize("&8 - &fLevel = &a" + ent.getPersistentDataContainer().get(instance.levelKey, PersistentDataType.INTEGER)));
                 p.sendMessage(instance.colorize("&8 - &fCustomName = &r" + ent.getCustomName()));
 
                 p.playSound(p.getLocation(), Sound.ITEM_BOOK_PAGE_TURN, 1.0F, 1.0F);

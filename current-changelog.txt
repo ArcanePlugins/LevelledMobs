@@ -254,6 +254,23 @@ changes:
  - 'SHULKER' is added by default, as for some reason they aren't considered a hostile mob.
 - [#55] Updated libraries (LightningStorage 3.0.6 -> 3.0.9)
 
+
+
+
 1.29-RELEASE
 notes:
 - When a mob spawns, LM now checks if it is already levelled. This should provide compatibility to plugins such as Safari Net.
+
+
+
+
+1.30.0-RELEASE
+notes:
+- Added extra bit in the version number for the 'build' version.
+channges:
+- Shortened the 'Unsupported version' message, and switched it from a 'Warning' to a 'Info' log.
+- Bunch of code changes.
+ - Renamed Commands and Listener classes to more appropriate names.
+ - Removed statics use in EVERY class.
+ - Used lowercase 'levelledmobs' instead of 'LevelledMobs' for command
+ - Changed code comments where necessary

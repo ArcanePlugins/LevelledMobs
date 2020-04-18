@@ -21,11 +21,15 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
-import static io.github.lokka30.levelledmobs.LevelledMobs.getInstance;
-import static io.github.lokka30.levelledmobs.utils.Utils.isInteger;
-
 public class WorldGuardManager {
-    public static void registerFlags() {
+
+    private LevelledMobs instance;
+
+    public WorldGuardManager(final LevelledMobs instance) {
+        this.instance = instance;
+    }
+
+    public void registerFlags() {
         FlagRegistry freg = WorldGuard.getInstance().getFlagRegistry();
         try {
             StateFlag allowflag;
@@ -62,27 +66,27 @@ public class WorldGuardManager {
     }
 
     //Get all regions at an Entities' location.
-    public static ApplicableRegionSet getRegionSet(LivingEntity ent){
+    public ApplicableRegionSet getRegionSet(LivingEntity ent) {
         Location loc = ent.getLocation();
         RegionContainer container = WorldGuard.getInstance().getPlatform().getRegionContainer();
         RegionManager regions = container.get(BukkitAdapter.adapt(ent.getWorld()));
 
-        return Objects.requireNonNull(regions).getApplicableRegions(BlockVector3.at(loc.getX(),loc.getY(),loc.getZ()));
+        return Objects.requireNonNull(regions).getApplicableRegions(BlockVector3.at(loc.getX(), loc.getY(), loc.getZ()));
     }
 
     //Sorts a RegionSet by priority, lowest to highest.
-    public static ProtectedRegion[] sortRegionsByPriority(ApplicableRegionSet regset){
+    public ProtectedRegion[] sortRegionsByPriority(ApplicableRegionSet regset) {
         ProtectedRegion[] regionarray = new ProtectedRegion[0];
         List<ProtectedRegion> regionList = new ArrayList<>();
 
-        if(regset.size() == 0)
+        if (regset.size() == 0)
             return regionarray;
         else if (regset.size() == 1) {
             regionarray = new ProtectedRegion[1];
             return regset.getRegions().toArray(regionarray);
         }
 
-        for(ProtectedRegion r : regset){
+        for (ProtectedRegion r : regset) {
             regionList.add(r);
         }
 
@@ -92,13 +96,13 @@ public class WorldGuardManager {
     }
 
     //Check if region is applicable for region levelling.
-    public static boolean checkRegionFlags(LivingEntity ent) {
+    public boolean checkRegionFlags(LivingEntity ent) {
         boolean minbool = false;
         boolean maxbool = false;
         boolean customlevelbool = false;
 
         //Check if WorldGuard-plugin exists
-        if(!getInstance().worldguard)
+        if (instance.worldguard)
             return false;
 
         //Sorted region array, highest priority comes last.
@@ -106,10 +110,10 @@ public class WorldGuardManager {
 
         //Check region flags on integrity.
         for (ProtectedRegion region : regions) {
-            if (isInteger(region.getFlag(LevelledMobs.minlevelflag)))
+            if (instance.utils.isInteger(region.getFlag(LevelledMobs.minlevelflag)))
                 if (Integer.parseInt(Objects.requireNonNull(region.getFlag(LevelledMobs.minlevelflag))) > -1)
                     minbool = true;
-            if (isInteger(region.getFlag(LevelledMobs.maxlevelflag)))
+            if (instance.utils.isInteger(region.getFlag(LevelledMobs.maxlevelflag)))
                 if (Integer.parseInt(Objects.requireNonNull(region.getFlag(LevelledMobs.maxlevelflag))) > Integer.parseInt(Objects.requireNonNull(region.getFlag(LevelledMobs.minlevelflag))))
                     maxbool = true;
             if (region.getFlag(LevelledMobs.allowlevelflag) == StateFlag.State.ALLOW)
@@ -123,15 +127,15 @@ public class WorldGuardManager {
 
 
     //Generate level based on WorldGuard region flags.
-    public static int[] getRegionLevel(LivingEntity ent, int minlevel, int maxlevel) {
+    public int[] getRegionLevel(LivingEntity ent, int minlevel, int maxlevel) {
         //Sorted region array, highest priority comes last.
         ProtectedRegion[] regions = sortRegionsByPriority(getRegionSet(ent));
 
         //Set min. max. level to flag values
         for (ProtectedRegion region : regions) {
-            if (isInteger(region.getFlag(LevelledMobs.minlevelflag)))
+            if (instance.utils.isInteger(region.getFlag(LevelledMobs.minlevelflag)))
                 minlevel = Math.max(Integer.parseInt(Objects.requireNonNull(region.getFlag(LevelledMobs.minlevelflag))), 0);
-            if (isInteger(region.getFlag(LevelledMobs.maxlevelflag)))
+            if (instance.utils.isInteger(region.getFlag(LevelledMobs.maxlevelflag)))
                 maxlevel = Math.max(Integer.parseInt(Objects.requireNonNull(region.getFlag(LevelledMobs.maxlevelflag))), 0);
         }
 

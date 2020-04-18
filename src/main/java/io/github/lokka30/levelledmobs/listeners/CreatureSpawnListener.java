@@ -1,7 +1,6 @@
 package io.github.lokka30.levelledmobs.listeners;
 
 import io.github.lokka30.levelledmobs.LevelledMobs;
-import io.github.lokka30.levelledmobs.utils.Utils;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Monster;
@@ -15,12 +14,13 @@ import java.util.Objects;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
-import static io.github.lokka30.levelledmobs.utils.WorldGuardManager.checkRegionFlags;
-import static io.github.lokka30.levelledmobs.utils.WorldGuardManager.getRegionLevel;
+public class CreatureSpawnListener implements Listener {
 
-public class LCreatureSpawn implements Listener {
+    private LevelledMobs instance;
 
-    private LevelledMobs instance = LevelledMobs.getInstance();
+    public CreatureSpawnListener(final LevelledMobs instance) {
+        this.instance = instance;
+    }
 
     /*
     This class assigns mob levels to each entity spawned.
@@ -33,12 +33,13 @@ public class LCreatureSpawn implements Listener {
             LivingEntity livingEntity = e.getEntity(); //The entity that was just spawned.
 
             //Check if the mob is already levelled (safarinet compatibility, etc)
-            if (livingEntity.getPersistentDataContainer().get(instance.key, PersistentDataType.INTEGER) != null) { //if the entity doesn't contain a level, skip this.
+            String isLevelled = livingEntity.getPersistentDataContainer().get(instance.isLevelledKey, PersistentDataType.STRING);
+            if (isLevelled != null && isLevelled.equalsIgnoreCase("true")) {
                 return;
             }
 
             //Check settings for spawn distance levelling and choose levelling method accordingly.
-            if (instance.worldguard && checkRegionFlags(livingEntity)) {
+            if (instance.worldguard && instance.worldGuardManager.checkRegionFlags(livingEntity)) {
                 level = generateRegionLevel(livingEntity);
             } else if (instance.settings.get("spawn-distance-levelling.active", false)) {
                 level = generateLevelByDistance(livingEntity);
@@ -64,7 +65,7 @@ public class LCreatureSpawn implements Listener {
                 }
 
                 //Check if mob is already levelled. Fixes portal doubling and other related issues.
-                if (e.getEntity().getPersistentDataContainer().get(instance.key, PersistentDataType.INTEGER) != null) {
+                if (e.getEntity().getPersistentDataContainer().get(instance.levelKey, PersistentDataType.INTEGER) != null) {
                     return;
                 }
 
@@ -83,7 +84,7 @@ public class LCreatureSpawn implements Listener {
                 }
 
                 //Checks if mobs attack damage can be modified before changing it.
-                if (e.getEntity().getAttribute(Attribute.GENERIC_ATTACK_DAMAGE) != null) {
+                if (livingEntity.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE) != null) {
                     final double baseAttackDamage = Objects.requireNonNull(e.getEntity().getAttribute(Attribute.GENERIC_ATTACK_DAMAGE)).getBaseValue();
                     final double defaultAttackDamageAddition = instance.settings.get("fine-tuning.default-attack-damage-increase", 1.0F);
                     final double attackDamageMultiplier = instance.settings.get("fine-tuning.multipliers.attack-damage", 1.5F);
@@ -93,7 +94,8 @@ public class LCreatureSpawn implements Listener {
                 }
 
                 //Define the mob's level so it can be accessed elsewhere.
-                e.getEntity().getPersistentDataContainer().set(instance.key, PersistentDataType.INTEGER, level);
+                livingEntity.getPersistentDataContainer().set(instance.levelKey, PersistentDataType.INTEGER, level);
+                livingEntity.getPersistentDataContainer().set(instance.isLevelledKey, PersistentDataType.STRING, "true");
 
                 //Update their tag.
                 instance.levelManager.updateTag(e.getEntity());
@@ -111,41 +113,41 @@ public class LCreatureSpawn implements Listener {
     public Integer generateLevel() {
         return ThreadLocalRandom.current().nextInt(instance.settings.get("fine-tuning.min-level", 1), instance.settings.get("fine-tuning.max-level", 10) + 1);
     }
-    
+
     //Generates a level based on distance to spawn and, if active, variance
     private Integer generateLevelByDistance(LivingEntity lEnt) {
-    	int minlevel, maxlevel, defaultlevel, finallevel, levelspan, distance;
-    	
-    	minlevel = instance.settings.get("fine-tuning.min-level", 0);
-    	maxlevel = instance.settings.get("fine-tuning.max-level", 10);
-    	finallevel = -1;
-    	
-    	//Calculate amount of available levels
-    	levelspan = (maxlevel + 1) - minlevel;
-    	
-    	//Get distance between entity spawn point and world spawn
-    	distance = (int) lEnt.getWorld().getSpawnLocation().distance(lEnt.getLocation());
-    	
-    	//Get the level thats meant to be at a given distance
-    	defaultlevel = (distance / instance.settings.get("spawn-distance-levelling.increase-level-distance", 200)) + minlevel;
-    	if(defaultlevel > maxlevel)
-    		defaultlevel = maxlevel;
-    	
-    	//Check if there should be a variance in level
-    	if(instance.settings.get("spawn-distance-levelling.variance", true)){
-    		double binomialp, randomnumber;
-    		double[] levelarray, weightedlevelarray;
+        int minlevel, maxlevel, defaultlevel, finallevel, levelspan, distance;
+
+        minlevel = instance.settings.get("fine-tuning.min-level", 0);
+        maxlevel = instance.settings.get("fine-tuning.max-level", 10);
+        finallevel = -1;
+
+        //Calculate amount of available levels
+        levelspan = (maxlevel + 1) - minlevel;
+
+        //Get distance between entity spawn point and world spawn
+        distance = (int) lEnt.getWorld().getSpawnLocation().distance(lEnt.getLocation());
+
+        //Get the level thats meant to be at a given distance
+        defaultlevel = (distance / instance.settings.get("spawn-distance-levelling.increase-level-distance", 200)) + minlevel;
+        if (defaultlevel > maxlevel)
+            defaultlevel = maxlevel;
+
+        //Check if there should be a variance in level
+        if (instance.settings.get("spawn-distance-levelling.variance", true)) {
+            double binomialp, randomnumber;
+            double[] levelarray, weightedlevelarray;
 
 
             //Create array with chances for each level
             levelarray = new double[levelspan];
             binomialp = (1.0D / levelspan / 2.0D) + ((1.0D - (1.0D / levelspan)) / levelspan * (defaultlevel - minlevel));
             for (int i = 0; i < levelspan; i++) {
-                levelarray[i] = Utils.binomialDistribution(levelspan, i, binomialp);
+                levelarray[i] = instance.utils.binomialDistribution(levelspan, i, binomialp);
             }
 
             //Create weighted array for choosing a level
-            weightedlevelarray = Utils.createWeightedArray(levelarray);
+            weightedlevelarray = instance.utils.createWeightedArray(levelarray);
 
             //Choose a level based on the weight of a level
             randomnumber = new Random().nextDouble() * weightedlevelarray[weightedlevelarray.length - 1];
@@ -155,21 +157,20 @@ public class LCreatureSpawn implements Listener {
                     break;
                 }
 
-        }
-    	else
-    		finallevel = defaultlevel;
-    	
-    	finallevel = finallevel == -1 ? 0 : finallevel;
-    	
-    	return finallevel;
+        } else
+            finallevel = defaultlevel;
+
+        finallevel = finallevel == -1 ? 0 : finallevel;
+
+        return finallevel;
     }
 
-    private int generateRegionLevel(LivingEntity ent){
+    private int generateRegionLevel(LivingEntity ent) {
         //Fallback values
         int minlevel = instance.settings.get("fine-tuning.min-level", 1);
         int maxlevel = instance.settings.get("fine-tuning.max-level", 10);
 
-        int[] levels = getRegionLevel(ent, minlevel, maxlevel);
+        int[] levels = instance.worldGuardManager.getRegionLevel(ent, minlevel, maxlevel);
 
         return levels[0] + Math.round(new Random().nextFloat() * (levels[1] - levels[0]));
     }

@@ -64,16 +64,16 @@ public class LevelManager {
         if (entity instanceof LivingEntity && instance.settings.get("enable-nametag-changes", true)) { //if the settings allows nametag changes, go ahead.
             final LivingEntity livingEntity = (LivingEntity) entity;
 
-            if (entity.getPersistentDataContainer().get(instance.key, PersistentDataType.INTEGER) == null) { //if the entity doesn't contain a level, skip this.
+            if (entity.getPersistentDataContainer().get(instance.levelKey, PersistentDataType.INTEGER) == null) { //if the entity doesn't contain a level, skip this.
                 return;
             }
 
             if (isLevellable(livingEntity)) { // If the mob is levellable, go ahead.
                 String customName = instance.settings.get("creature-nametag", "&8[&7Level %level%&8 | &f%name%&8 | &c%health%&8/&c%max_health% %heart_symbol%&8]")
-                        .replaceAll("%level%", entity.getPersistentDataContainer().get(instance.key, PersistentDataType.INTEGER) + "")
+                        .replaceAll("%level%", entity.getPersistentDataContainer().get(instance.levelKey, PersistentDataType.INTEGER) + "")
                         .replaceAll("%name%", StringUtils.capitalize(entity.getType().name().toLowerCase()))
-                        .replaceAll("%health%", Utils.round(livingEntity.getHealth(), 1) + "")
-                        .replaceAll("%max_health%", Utils.round(Objects.requireNonNull(livingEntity.getAttribute(Attribute.GENERIC_MAX_HEALTH)).getBaseValue(), 1) + "")
+                        .replaceAll("%health%", instance.utils.round(livingEntity.getHealth(), 1) + "")
+                        .replaceAll("%max_health%", instance.utils.round(Objects.requireNonNull(livingEntity.getAttribute(Attribute.GENERIC_MAX_HEALTH)).getBaseValue(), 1) + "")
                         .replaceAll("%heart_symbol%", "❤");
                 entity.setCustomName(instance.colorize(customName));
 
@@ -100,7 +100,7 @@ public class LevelManager {
 
         if (instance.levelManager.isLevellable(ent)) {
             //If mob is levellable, but wasn't levelled, return.
-            Integer level = ent.getPersistentDataContainer().get(instance.key, PersistentDataType.INTEGER);
+            Integer level = ent.getPersistentDataContainer().get(instance.levelKey, PersistentDataType.INTEGER);
             if (level == null)
                 return;
 
@@ -177,7 +177,7 @@ public class LevelManager {
     public int calculateXp(final LivingEntity ent, int xp) {
         if (instance.levelManager.isLevellable(ent)) {
             double xpMultiplier = instance.settings.get("fine-tuning.multipliers.xp-drop", 0.1D);
-            Integer level = ent.getPersistentDataContainer().get(instance.key, PersistentDataType.INTEGER);
+            Integer level = ent.getPersistentDataContainer().get(instance.levelKey, PersistentDataType.INTEGER);
 
             if (level != null) {
                 xp *= xpMultiplier * level + 1;

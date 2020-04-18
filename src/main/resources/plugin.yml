@@ -11,7 +11,7 @@ description: ${project.description}
 website: https://www.spigotmc.org/resources/%E2%98%85levelledmobs%E2%98%85-a-simple-drag-n-drop-solution-for-mob-attributes.74304/
 
 commands:
-  LevelledMobs:
+  levelledmobs:
     description: Various plugin information.
 
 permissions:
