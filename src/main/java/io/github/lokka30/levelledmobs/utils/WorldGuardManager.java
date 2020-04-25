@@ -102,7 +102,7 @@ public class WorldGuardManager {
         boolean customlevelbool = false;
 
         //Check if WorldGuard-plugin exists
-        if (instance.worldguard)
+        if (instance.hasWorldGuard)
             return false;
 
         //Sorted region array, highest priority comes last.

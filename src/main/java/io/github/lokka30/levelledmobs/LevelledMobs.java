@@ -36,7 +36,7 @@ public class LevelledMobs extends JavaPlugin {
     public static StateFlag allowlevelflag; //The WorldGuard flag if mobs can be levelled.
     public static StringFlag minlevelflag, maxlevelflag; //The WorldGuard flags of the min and max mob levels.
     public FlatFile settings; //The settings config file.
-    public boolean worldguard; //if worldguard is on the server
+    public boolean hasWorldGuard; //if worldguard is on the server
     public NamespacedKey levelKey; //What's the mob's level?
     public NamespacedKey isLevelledKey; //Is the mob levelled?
     public LevelManager levelManager; //The LevelManager class which holds a bunch of common methods
@@ -48,7 +48,6 @@ public class LevelledMobs extends JavaPlugin {
     public void onLoad() {
         utils = new Utils();
         levelManager = new LevelManager(this);
-        worldGuardManager = new WorldGuardManager(this);
         checkWorldGuard(); //WorldGuard check is onLoad as it is required to be here instead of onEnable (as stated in its documentation).
     }
 
@@ -72,7 +71,7 @@ public class LevelledMobs extends JavaPlugin {
         //will be added in the future.
 
         log(LogLevel.INFO, "&8[&76&8/&76&8] &7Starting metrics...");
-        new Metrics(this);
+        new Metrics(this, 6269);
 
         log(LogLevel.INFO, "Loaded successfuly. Thank you for choosing LevelledMobs!");
 
@@ -138,9 +137,13 @@ public class LevelledMobs extends JavaPlugin {
 
     //Checks if WorldGuard is available. If so, start registering its flags.
     private void checkWorldGuard() {
-        worldguard = getServer().getPluginManager().getPlugin("WorldGuard") != null;
-        if (worldguard) {
+        hasWorldGuard = getServer().getPluginManager().getPlugin("WorldGuard") != null;
+        if (hasWorldGuard) {
+            worldGuardManager = new WorldGuardManager(this);
             worldGuardManager.registerFlags();
+            log(LogLevel.INFO, "WorldGuard hook &aenabled&7.");
+        } else {
+            log(LogLevel.INFO, "WorldGuard hook &cdisabled&7.");
         }
     }
 

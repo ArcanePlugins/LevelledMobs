@@ -267,10 +267,20 @@ notes:
 1.30.0-RELEASE
 notes:
 - Added extra bit in the version number for the 'build' version.
-channges:
+- no file changes.
+changes:
+- Tried another method of adding compatibility between Mob Catcher plugins (such as SafariNets).
 - Shortened the 'Unsupported version' message, and switched it from a 'Warning' to a 'Info' log.
 - Bunch of code changes.
  - Renamed Commands and Listener classes to more appropriate names.
  - Removed statics use in EVERY class.
  - Used lowercase 'levelledmobs' instead of 'LevelledMobs' for command
  - Changed code comments where necessary
+
+1.30.0-RELEASE
+- Tried another method to help with SafariNet compatibility
+- Updated bStats (v1.5 -> v1.7)
+
+1.30.1-RELEASE
+- NOT RELEASED YET
+- Tried to fix error on load when WorldGuard is not installed

@@ -33,13 +33,20 @@ public class CreatureSpawnListener implements Listener {
             LivingEntity livingEntity = e.getEntity(); //The entity that was just spawned.
 
             //Check if the mob is already levelled (safarinet compatibility, etc)
+            /* Code seems to not work.
             String isLevelled = livingEntity.getPersistentDataContainer().get(instance.isLevelledKey, PersistentDataType.STRING);
             if (isLevelled != null && isLevelled.equalsIgnoreCase("true")) {
                 return;
             }
+            */
+
+            //Check if the mob is already levelled (safarinet compatibility, etc)
+            if (livingEntity.getPersistentDataContainer().get(instance.levelKey, PersistentDataType.INTEGER) != null) {
+                return;
+            }
 
             //Check settings for spawn distance levelling and choose levelling method accordingly.
-            if (instance.worldguard && instance.worldGuardManager.checkRegionFlags(livingEntity)) {
+            if (instance.hasWorldGuard && instance.worldGuardManager.checkRegionFlags(livingEntity)) {
                 level = generateRegionLevel(livingEntity);
             } else if (instance.settings.get("spawn-distance-levelling.active", false)) {
                 level = generateLevelByDistance(livingEntity);
@@ -115,23 +122,23 @@ public class CreatureSpawnListener implements Listener {
     }
 
     //Generates a level based on distance to spawn and, if active, variance
-    private Integer generateLevelByDistance(LivingEntity lEnt) {
-        int minlevel, maxlevel, defaultlevel, finallevel, levelspan, distance;
+    private Integer generateLevelByDistance(LivingEntity livingEntity) {
+        int minLevel, maxLevel, defaultLevel, finalLevel, levelSpan, distance;
 
-        minlevel = instance.settings.get("fine-tuning.min-level", 0);
-        maxlevel = instance.settings.get("fine-tuning.max-level", 10);
-        finallevel = -1;
+        minLevel = instance.settings.get("fine-tuning.min-level", 1);
+        maxLevel = instance.settings.get("fine-tuning.max-level", 10);
+        finalLevel = -1;
 
         //Calculate amount of available levels
-        levelspan = (maxlevel + 1) - minlevel;
+        levelSpan = (maxLevel + 1) - minLevel;
 
         //Get distance between entity spawn point and world spawn
-        distance = (int) lEnt.getWorld().getSpawnLocation().distance(lEnt.getLocation());
+        distance = (int) livingEntity.getWorld().getSpawnLocation().distance(livingEntity.getLocation());
 
         //Get the level thats meant to be at a given distance
-        defaultlevel = (distance / instance.settings.get("spawn-distance-levelling.increase-level-distance", 200)) + minlevel;
-        if (defaultlevel > maxlevel)
-            defaultlevel = maxlevel;
+        defaultLevel = (distance / instance.settings.get("spawn-distance-levelling.increase-level-distance", 200)) + minLevel;
+        if (defaultLevel > maxLevel)
+            defaultLevel = maxLevel;
 
         //Check if there should be a variance in level
         if (instance.settings.get("spawn-distance-levelling.variance", true)) {
@@ -140,10 +147,10 @@ public class CreatureSpawnListener implements Listener {
 
 
             //Create array with chances for each level
-            levelarray = new double[levelspan];
-            binomialp = (1.0D / levelspan / 2.0D) + ((1.0D - (1.0D / levelspan)) / levelspan * (defaultlevel - minlevel));
-            for (int i = 0; i < levelspan; i++) {
-                levelarray[i] = instance.utils.binomialDistribution(levelspan, i, binomialp);
+            levelarray = new double[levelSpan];
+            binomialp = (1.0D / levelSpan / 2.0D) + ((1.0D - (1.0D / levelSpan)) / levelSpan * (defaultLevel - minLevel));
+            for (int i = 0; i < levelSpan; i++) {
+                levelarray[i] = instance.utils.binomialDistribution(levelSpan, i, binomialp);
             }
 
             //Create weighted array for choosing a level
@@ -153,16 +160,16 @@ public class CreatureSpawnListener implements Listener {
             randomnumber = new Random().nextDouble() * weightedlevelarray[weightedlevelarray.length - 1];
             for (int i = 0; i < weightedlevelarray.length; i++)
                 if (randomnumber <= weightedlevelarray[i]) {
-                    finallevel = i + minlevel;
+                    finalLevel = i + minLevel;
                     break;
                 }
 
         } else
-            finallevel = defaultlevel;
+            finalLevel = defaultLevel;
 
-        finallevel = finallevel == -1 ? 0 : finallevel;
+        finalLevel = finalLevel == -1 ? 0 : finalLevel;
 
-        return finallevel;
+        return finalLevel;
     }
 
     private int generateRegionLevel(LivingEntity ent) {

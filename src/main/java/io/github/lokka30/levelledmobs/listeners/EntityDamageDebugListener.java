@@ -39,6 +39,7 @@ public class EntityDamageDebugListener implements Listener {
                 p.sendMessage(instance.colorize("&8 - &fAttribute.GENERIC_ATTACK_DAMAGE = &a" + Objects.requireNonNull(ent.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE)).getBaseValue()));
                 p.sendMessage(instance.colorize("&8 - &fCurrent Health = &a" + instance.utils.round(ent.getHealth(), 1)));
                 p.sendMessage(instance.colorize("&8 - &fLevel = &a" + ent.getPersistentDataContainer().get(instance.levelKey, PersistentDataType.INTEGER)));
+                p.sendMessage(instance.colorize("&8 - &fisLevelled = &a" + ent.getPersistentDataContainer().get(instance.isLevelledKey, PersistentDataType.STRING)));
                 p.sendMessage(instance.colorize("&8 - &fCustomName = &r" + ent.getCustomName()));
 
                 p.playSound(p.getLocation(), Sound.ITEM_BOOK_PAGE_TURN, 1.0F, 1.0F);
