@@ -2,17 +2,17 @@ name: LevelledMobs
 version: ${project.version}
 main: io.github.lokka30.levelledmobs.LevelledMobs
 softdepend: [WorldGuard]
-
 api-version: '1.15'
 load: STARTUP
-
 author: lokka30
 description: ${project.description}
-website: https://www.spigotmc.org/resources/%E2%98%85levelledmobs%E2%98%85-a-simple-drag-n-drop-solution-for-mob-attributes.74304/
+website: 'https://github.com/lokka30/LevelledMobs/wiki'
 
 commands:
   levelledmobs:
-    description: Various plugin information.
+    description: Manage LevelledMobs
+    aliases: [leveledmobs]
+    usage: /<command> [killall/info]
 
 permissions:
   levelledmobs.*:

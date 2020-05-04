@@ -2,6 +2,7 @@ package io.github.lokka30.levelledmobs.listeners;
 
 import io.github.lokka30.levelledmobs.LevelledMobs;
 import org.bukkit.attribute.Attribute;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Monster;
 import org.bukkit.event.EventHandler;
@@ -10,6 +11,7 @@ import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.persistence.PersistentDataType;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
@@ -33,14 +35,10 @@ public class CreatureSpawnListener implements Listener {
             LivingEntity livingEntity = e.getEntity(); //The entity that was just spawned.
 
             //Check if the mob is already levelled (safarinet compatibility, etc)
-            /* Code seems to not work.
             String isLevelled = livingEntity.getPersistentDataContainer().get(instance.isLevelledKey, PersistentDataType.STRING);
             if (isLevelled != null && isLevelled.equalsIgnoreCase("true")) {
                 return;
             }
-            */
-
-            //Check if the mob is already levelled (safarinet compatibility, etc)
             if (livingEntity.getPersistentDataContainer().get(instance.levelKey, PersistentDataType.INTEGER) != null) {
                 return;
             }
@@ -51,15 +49,29 @@ public class CreatureSpawnListener implements Listener {
             } else if (instance.settings.get("spawn-distance-levelling.active", false)) {
                 level = generateLevelByDistance(livingEntity);
             } else {
-                level = generateLevel();
+                level = generateLevel(livingEntity.getType());
             }
 
             if (instance.levelManager.isLevellable(livingEntity)) { //Is the mob allowed to be levelled?
 
-                //Check the list of blacklisted worlds. If the entity's world is in here, then we don't continue.
-                for (String blacklistedWorld : instance.settings.get("blacklisted-worlds", Collections.singletonList("BLACKLISTED_WORLD"))) {
-                    if (e.getEntity().getWorld().getName().equalsIgnoreCase(blacklistedWorld) || blacklistedWorld.equals("ALL")) {
-                        return;
+                //Check the 'worlds list' to see if the mob is allowed to be levelled in the world it spawned in
+                if (instance.settings.get("worlds-list.enabled", false)) {
+                    final List<String> worldsList = instance.settings.get("worlds-list.list", Collections.singletonList("world"));
+                    final String mode = instance.settings.get("worlds-list.mode", "BLACKLIST").toUpperCase();
+                    final String currentWorldName = livingEntity.getWorld().getName();
+                    switch (mode) {
+                        case "BLACKLIST":
+                            if (worldsList.contains(currentWorldName)) {
+                                return;
+                            }
+                            break;
+                        case "WHITELIST":
+                            if (!worldsList.contains(currentWorldName)) {
+                                return;
+                            }
+                            break;
+                        default:
+                            throw new IllegalStateException("Unknown worlds list mode '" + mode + "', expecting 'BLACKLIST' or 'WHITELIST'. Ignoring world list due to the error.");
                     }
                 }
 
@@ -69,11 +81,6 @@ public class CreatureSpawnListener implements Listener {
                     if (e.getSpawnReason().toString().equalsIgnoreCase(blacklistedReason) || blacklistedReason.equals("ALL")) {
                         return;
                     }
-                }
-
-                //Check if mob is already levelled. Fixes portal doubling and other related issues.
-                if (e.getEntity().getPersistentDataContainer().get(instance.levelKey, PersistentDataType.INTEGER) != null) {
-                    return;
                 }
 
                 //Set the entity's max health.
@@ -109,7 +116,7 @@ public class CreatureSpawnListener implements Listener {
 
             } else if (e.getSpawnReason() == CreatureSpawnEvent.SpawnReason.CURED) {
                 //Check if a zombie villager was cured. If villagers aren't levellable, then their name will be cleared,
-                // otherwise their nametag is still 'Zombie Villager'. Imposter!
+                //otherwise their nametag is still 'Zombie Villager'. Imposter!
                 e.getEntity().setCustomName("");
             }
         }
@@ -117,16 +124,16 @@ public class CreatureSpawnListener implements Listener {
 
     //Generates a level.
     //Uses ThreadLocalRandom.current().nextInt(min, max + 1). + 1 is because ThreadLocalRandom is usually exclusive of the uppermost value.
-    public Integer generateLevel() {
-        return ThreadLocalRandom.current().nextInt(instance.settings.get("fine-tuning.min-level", 1), instance.settings.get("fine-tuning.max-level", 10) + 1);
+    public Integer generateLevel(EntityType entityType) {
+        return ThreadLocalRandom.current().nextInt(instance.levelManager.getMinLevel(entityType), instance.levelManager.getMaxLevel(entityType) + 1);
     }
 
     //Generates a level based on distance to spawn and, if active, variance
     private Integer generateLevelByDistance(LivingEntity livingEntity) {
         int minLevel, maxLevel, defaultLevel, finalLevel, levelSpan, distance;
 
-        minLevel = instance.settings.get("fine-tuning.min-level", 1);
-        maxLevel = instance.settings.get("fine-tuning.max-level", 10);
+        minLevel = instance.levelManager.getMinLevel(livingEntity.getType());
+        maxLevel = instance.levelManager.getMaxLevel(livingEntity.getType());
         finalLevel = -1;
 
         //Calculate amount of available levels
@@ -164,21 +171,15 @@ public class CreatureSpawnListener implements Listener {
                     break;
                 }
 
-        } else
+        } else {
             finalLevel = defaultLevel;
-
+        }
         finalLevel = finalLevel == -1 ? 0 : finalLevel;
-
         return finalLevel;
     }
 
-    private int generateRegionLevel(LivingEntity ent) {
-        //Fallback values
-        int minlevel = instance.settings.get("fine-tuning.min-level", 1);
-        int maxlevel = instance.settings.get("fine-tuning.max-level", 10);
-
-        int[] levels = instance.worldGuardManager.getRegionLevel(ent, minlevel, maxlevel);
-
+    private int generateRegionLevel(LivingEntity livingEntity) {
+        int[] levels = instance.worldGuardManager.getRegionLevel(livingEntity, instance.levelManager.getMinLevel(livingEntity.getType()), instance.levelManager.getMaxLevel(livingEntity.getType()));
         return levels[0] + Math.round(new Random().nextFloat() * (levels[1] - levels[0]));
     }
 }

@@ -1,7 +1,7 @@
-#Thank you for installing LevelledMobs!
-#If you have any issues or questions, send them to me via SpigotMC PMs, Discord or the GitHub issues page - NOT the reviews! :)
+# Thank you for installing LevelledMobs, I hope you enjoy the plugin!
+# You can get support on my discord: https://discord.gg/69NWW6A
 
-#Creature nametags.
+# Creature nametags.
 # Placeholders:
 # - %level% - the mob's level
 # - %name% - the mob's name
@@ -10,12 +10,14 @@
 # - %heart_symbol% - a predefined heart symbol.
 creature-nametag: '&8[&7Level %level%&8 | &f%name%&8 | &c%health%&8/&c%max_health% %heart_symbol%&8]'
 
-#This allows creature nametags to be updated to the one set above when they are spawned or damaged.
-#If you use WildStacker or any other stacking plugins, you might want to disable this, by setting it to 'false'.
+# This allows creature nametags to be updated to the one set above when they are spawned or damaged.
+# If you use WildStacker or any other stacking plugins, you might want to disable this, by setting it to 'false'.
+# Unfortunately you won't be able to see the mob's level that way though.
 enable-nametag-changes: true
 
-#Should passive creatures be levelled?
-#You probably don't want a Level 10 race horse to ramp up your chunk loading, or a random pig that moves fast.
+# Should passive creatures be levelled?
+# You probably don't want a Level 10 race horse to ramp up your chunk loading, or a random pig that moves fast.
+# However, you can always limit passive mobs' levels yourself in the 'entitytype-level-override' settings!
 level-passive: false
 
 #Blacklisted types. These mobs won't be levelled, regardless of the setting above.
@@ -28,35 +30,45 @@ blacklisted-types:
   - 'WITHER'
   - 'RAVAGER'
 
-#Blacklisted Types Override: The mobs in here will be levelled regardless if they are included in 'blacklisted-types' or if 'level-passive' is true.
-#Shulkers are added by default as for some reason they aren't considered hostile mobs.
-#Warning: Types are case-sensitive! That means they should be in UPPERCASE.
+# Blacklisted Types Override: The mobs in here will be levelled regardless if they are included in 'blacklisted-types' or if 'level-passive' is true.
+# Shulkers are added by default as for some reason they aren't considered hostile mobs.
+# Warning: Types are case-sensitive! That means they should be in UPPERCASE.
 blacklisted-types-override:
   - 'SHULKER'
 
-#Multiworld support - newly spawned mobs in these worlds won't be levelled.
-#Blacklist all worlds by putting in 'ALL'.
-blacklisted-worlds:
-  - 'blacklisted_world_here'
-  - 'another_blacklisted_world'
+# Manage a list of worlds where Levelled Mobs can spawn or not
+worlds-list:
 
-#You can block certain spawn reasons from levelling mobs, such as Mob Spawners.
-#To block mob spawners from levelling mobs, remove the [] and the hashtag before - 'SPAWNER'.
-#This checks for SpawnReasons created by the Spigot API.
-#Blacklist all reasons by putting in 'ALL'.
+  # Should the plugin apply the worlds list settings or not?
+  enabled: false
+
+  # What mode should the world list use?
+  # 'BLACKLIST' = The worlds in the list are excluded but all the other ones are allowed
+  # 'WHITELIST' = The worlds in the list are allowed but all the other ones are not
+  mode: 'BLACKLIST'
+
+  # Here's the list of worlds to apply the blacklist/whitelist to.
+  list:
+    - 'world'
+    - 'another_world'
+
+# You can block certain spawn reasons from levelling mobs, such as Mob Spawners.
+# To block mob spawners from levelling mobs, remove the [] and the hashtag before - 'SPAWNER'.
+# This checks for SpawnReasons created by the Spigot API.
+# Blacklist all reasons by putting in 'ALL' - this means that no mobs will be levelled though.
 blacklisted-reasons: []
 #  - 'SPAWNER'
 
-#Fine-tuning. You probably don't need to change the values in this cluster.
+# Fine-tuning. You probably don't need to change the values in this cluster.
 fine-tuning:
   min-level: 1
   max-level: 10
 
-  #Since the vanilla damage is pretty weak, you can increase its base value here.
-  #The default adds 1 extra point to the attack damage attribute.
+  # Since the vanilla damage is pretty weak, you can increase its base value here.
+  # The default adds 1 extra point to the attack damage attribute.
   default-attack-damage-increase: 1.0
 
-  #For each level, these values are added to a mob. The default have been tried and tested, but you're free to change it.
+  # For each level, these values are added to a mob. The default have been tried and tested, but you're free to change it.
   multipliers:
     movement-speed: 0.065
     max-health: 0.2
@@ -65,34 +77,59 @@ fine-tuning:
     item-drop: 0.16
     xp-drop: 0.1
 
-  #Should the creature's nametag be removed on death?
+  # Should the creature's nametag be removed on death?
   remove-nametag-on-death: false
 
-  #Should nametags be visible when close by (set to true) or only when looking at it (set to false)?
+  # Should nametags be visible when close by (set to true) or only when looking at it (set to false)?
+  # Unfortunately, Minecraft limits us to a hard choice, there's no 'can see the nametag if mob is not obstructed' setting. :(
   custom-name-visible: false
 
-#Spawn Distance Levelling
+# Spawn Distance Levelling
 spawn-distance-levelling:
 
-  #Should monsters level depending on distance to spawn?
+  # Should monsters level depending on distance to spawn?
   active: false
 
-  #Should monsters with non-default levels spawn?
-  variance: true
+  # Should the level be able to randomly increase or decrease (within min/max limits) for variation?
+  variance: false
 
-  #Each 200 blocks, for example, the level will be increased.
+  # Each 200 blocks, for example, the level will be increased.
   increase-level-distance: 200
 
-#Should the plugin check for updates at the SpigotMC page?
-updater: true
+# If you want to force an entity type to have a different minimum/maximum level then you can do that here
+# These settings are further overriden by 'world-level-override'
+entitytype-level-override:
+  enabled: false
 
-#Should the plugin use debug mode?
-#You most likely won't need this. Used in development and testing.
+  min-level:
+    ENDER_DRAGON: 5
+    WITHER: 3
+
+  max-level:
+    ENDER_DRAGON: 10
+    WITHER: 6
+
+# If you want to force a world to have a minimum/maximum level then you can do that here
+world-level-override:
+  enabled: false
+
+  min-level:
+    example_world_123: 6
+
+  max-level:
+    example_world_123: 7
+
+# If you want to change the name of mobs in the nametag then you can do that here
+entity-name-override:
+  WITHER: 'Wither'
+  CREEPER: 'Creeper'
+
+# Should LevelledMobs check for updates off of the Spigot page?
+use-update-checker: true
+
+# Should the plugin print information about a levelled mob to you when an operator (/op-ped player) hits it?
+# (This is named debug for a reason - you probably don't want to have it enabled)
 debug: false
 
-#You shouldn't change this integer unless updating your config.
-#LevelledMobs uses it to determine if your file is outdated.
-#You must set it to the version of the current file, not a future file.
-file-version: 16
-
-#You've made it to the end of the settings file. Treat yourself with a cup of coffee.
+# Don't touch this unless you know what you are doing!
+file-version: 17

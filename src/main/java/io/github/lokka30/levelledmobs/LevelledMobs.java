@@ -53,27 +53,30 @@ public class LevelledMobs extends JavaPlugin {
 
     //When the plugin starts enabling.
     public void onEnable() {
-        log(LogLevel.INFO, "&8[&71&8/&76&8] &7Checking compatibility...");
+        log(LogLevel.INFO, "&8+----+ &f(Enable Started) &8+----+");
+        final long startingTime = System.currentTimeMillis();
+
+        log(LogLevel.INFO, "&8(&31&8/&36&8) &7Checking compatibility...");
         checkCompatibility(); //Is the server running the latest version? Dependencies required?
 
-        log(LogLevel.INFO, "&8[&72&8/&76&8] &7Loading files...");
-        loadFiles(); //Tell LightningStorage to get things started. Check if there's something wrong going on, such as an outdated file.
+        log(LogLevel.INFO, "&8(&32&8/&36&8) &7Loading files...");
+        loadFiles();
 
-        log(LogLevel.INFO, "&8[&73&8/&76&8] &7Registering events...");
+        log(LogLevel.INFO, "&8(&33&8/&36&8) &7Registering events...");
         levelKey = new NamespacedKey(this, "level");
         isLevelledKey = new NamespacedKey(this, "isLevelled");
-        registerEvents(); //Start registering the listeners - these classes start with L.
+        registerEvents();
 
-        log(LogLevel.INFO, "&8[&74&8/&76&8] &7Registering commands...");
+        log(LogLevel.INFO, "&8(&34&8/&36&8) &7Registering commands...");
         registerCommands();
 
-        log(LogLevel.INFO, "&8[&75&8/&76&8] &7Hooking to other plugins...");
+        log(LogLevel.INFO, "&8(&35&8/&36&8) &7Hooking to other plugins...");
         //will be added in the future.
 
-        log(LogLevel.INFO, "&8[&76&8/&76&8] &7Starting metrics...");
+        log(LogLevel.INFO, "&8(&36&8/&36&8) &7Starting bStats metrics...");
         new Metrics(this, 6269);
 
-        log(LogLevel.INFO, "Loaded successfuly. Thank you for choosing LevelledMobs!");
+        log(LogLevel.INFO, "&8+----+ &f(Enable Complete, took &b" + (System.currentTimeMillis() - startingTime) + "ms&f) &8+----+");
 
         checkUpdates();
     }
@@ -85,37 +88,36 @@ public class LevelledMobs extends JavaPlugin {
         if (currentVersion.contains(recommendedVersion)) {
             log(LogLevel.INFO, "Server is running supported version &a" + currentVersion + "&7.");
         } else {
-            log(LogLevel.INFO, "&a" + currentVersion + "&7 is not a recommended server version! You will not receive support if you encounter issues whilst running this server version.");
+            log(LogLevel.INFO, "'&b" + currentVersion + "&7' is not a supported server version! You will not receive support whilst running this version.");
+            log(LogLevel.INFO, "This version of LevelledMobs supports Minecraft version '&b" + recommendedVersion + "&7'.");
         }
     }
 
-    //Manages the LightningStorage files.
+    //Manages the setting file.
     private void loadFiles() {
-        //Load the files
         final PluginManager pm = getServer().getPluginManager();
-        final String path = "plugins/LevelledMobs/";
         try {
             settings = LightningBuilder
-                    .fromFile(new File(path + "settings"))
+                    .fromFile(new File(getDataFolder() + File.separator + "settings"))
                     .addInputStreamFromResource("settings.yml")
                     .createYaml();
         } catch (LightningValidationException e) {
-            log(LogLevel.SEVERE, "Unable to load &asettings.yml&7!");
+            log(LogLevel.SEVERE, "Unable to load &bsettings.yml&7!");
             pm.disablePlugin(this);
             return;
         }
 
         //Check if they exist
-        final File settingsFile = new File(path + "settings.yml");
+        final File settingsFile = new File(getDataFolder() + File.separator + "settings.yml");
 
         if (!(settingsFile.exists() && !settingsFile.isDirectory())) {
-            log(LogLevel.INFO, "File &asettings.yml&7 doesn't exist. Creating it now.");
+            log(LogLevel.INFO, "File &bsettings.yml&7 doesn't exist. Creating it now.");
             saveResource("settings.yml", false);
         }
 
         //Check their versions
         if (settings.get("file-version", 0) != utils.getRecommendedSettingsVersion()) {
-            log(LogLevel.SEVERE, "File &asettings.yml&7 is out of date! Lower-quality default values will be used for the new features! Reset it or merge the old values to the new file.");
+            log(LogLevel.SEVERE, "File &bsettings.yml&7 is out of date! Lower-quality default values will be used for the new features! Reset it or merge the old values to the new file.");
         }
     }
 
@@ -149,13 +151,13 @@ public class LevelledMobs extends JavaPlugin {
 
     //Check for updates on the Spigot page.
     private void checkUpdates() {
-        if (settings.get("updater", true)) {
-            log(LogLevel.INFO, "&8[&7Update Checker&8] &7Checking for updates...");
+        if (settings.get("use-update-checker", true)) {
+            log(LogLevel.INFO, "&8(&3Update Checker&8) &7Checking for updates...");
             new UpdateChecker(this, 74304).getVersion(version -> {
                 if (getDescription().getVersion().equalsIgnoreCase(version)) {
-                    log(LogLevel.INFO, "&8[&7Update Checker&8] &7You're running the latest version.");
+                    log(LogLevel.INFO, "&8(&3Update Checker&8) &7You're running the latest version.");
                 } else {
-                    log(LogLevel.WARNING, "&8[&7Update Checker&8] &7There's a new update available: &a" + version + "&7. You're running &a" + getDescription().getVersion() + "&7.");
+                    log(LogLevel.WARNING, "&8(&3Update Checker&8) &7There's a new update available: '&b" + version + "&7'. You're running '&b" + getDescription().getVersion() + "&7'.");
                 }
             });
         }

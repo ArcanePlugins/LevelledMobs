@@ -18,7 +18,7 @@ public class Utils {
     }
 
     public int getRecommendedSettingsVersion() {
-        return 16;
+        return 17;
     }
 
     //This is a method created by Jonik & Mustapha Hadid at StackOverflow.

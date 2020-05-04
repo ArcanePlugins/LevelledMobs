@@ -14,29 +14,28 @@ import org.jetbrains.annotations.NotNull;
 public class LevelledMobsCommand implements CommandExecutor {
 
     private LevelledMobs instance;
-
     public LevelledMobsCommand(final LevelledMobs instance) {
         this.instance = instance;
     }
 
-    public boolean onCommand(@NotNull final CommandSender s, @NotNull final Command cmd, @NotNull final String label, final String[] args) {
+    public boolean onCommand(@NotNull final CommandSender sender, @NotNull final Command command, @NotNull final String label, final String[] args) {
         if (args.length == 0) {
-            s.sendMessage(instance.colorize("&8&m+-----------------------------------+"));
-            s.sendMessage(instance.colorize("&a&lLevelledMobs: &7Available commands:"));
-            s.sendMessage(instance.colorize("&8&l \u00bb &f/levelledMobs &8- &7&oview plugin commands."));
-            s.sendMessage(instance.colorize("&8&l \u00bb &f/levelledMobs info &8- &7&oview plugin information."));
-            s.sendMessage(instance.colorize("&8&l \u00bb &f/levelledMobs killAll [world] &8- &7&obutcher levellable mobs."));
-            s.sendMessage(instance.colorize("&8&m+-----------------------------------+"));
+            sender.sendMessage(" ");
+            sender.sendMessage(instance.colorize("&b&lLevelledMobs: &7Available commands:"));
+            sender.sendMessage(instance.colorize("&8 &m->&3 /levelledMobs &8- &7view plugin commands."));
+            sender.sendMessage(instance.colorize("&8 &m->&3 /levelledMobs killall [world] &8- &7butcher levellable mobs."));
+            sender.sendMessage(instance.colorize("&8 &m->&3 /levelledMobs info &8- &7view plugin information."));
+            sender.sendMessage(" ");
         } else {
             if (args[0].equalsIgnoreCase("killall")) {
-                if (s instanceof Player && !s.hasPermission("levelledmobs.killall")) {
-                    s.sendMessage(instance.colorize("&a&lLevelledMobs: &7You don't have access to that."));
+                if (sender instanceof Player && !sender.hasPermission("levelledmobs.killall")) {
+                    sender.sendMessage(instance.colorize("&b&lLevelledMobs: &7You don't have access to that."));
                     return true;
                 } else {
                     switch (args.length) {
                         case 1:
-                            if (s instanceof Player) {
-                                final Player p = (Player) s;
+                            if (sender instanceof Player) {
+                                final Player p = (Player) sender;
                                 int killed = 0;
                                 final World w = p.getWorld();
                                 for (Entity e : w.getEntities()) {
@@ -48,16 +47,16 @@ public class LevelledMobsCommand implements CommandExecutor {
                                         }
                                     }
                                 }
-                                s.sendMessage(instance.colorize("&a&lLevelledMobs: &7You killed &a" + killed + " entities &7in the world &a" + w.getName() + "&7."));
+                                sender.sendMessage(instance.colorize("&b&lLevelledMobs: &7Killed &b" + killed + " levellable entities &7in world '&b" + w.getName() + "&7'."));
                             } else {
-                                s.sendMessage(instance.colorize("&a&lLevelledMobs: &7Usage (console): &a/levelledMobs killAll <world>"));
+                                sender.sendMessage(instance.colorize("&b&lLevelledMobs: &7Usage (console): &b/" + label + " killAll <world>"));
                             }
                             return true;
                         case 2:
                             int killed = 0;
 
                             if (Bukkit.getWorld(args[1]) == null) {
-                                s.sendMessage(instance.colorize("&a&lLevelledMobs: &7Invalid world &a" + args[1] + "&7."));
+                                sender.sendMessage(instance.colorize("&b&lLevelledMobs: &7Invalid world &b" + args[1] + "&7."));
                             } else {
                                 final World w = Bukkit.getWorld(args[1]);
                                 assert w != null;
@@ -70,30 +69,26 @@ public class LevelledMobsCommand implements CommandExecutor {
                                         }
                                     }
                                 }
-                                s.sendMessage(instance.colorize("&a&lLevelledMobs: &7You killed &a" + killed + " entities &7in the world &a" + w.getName() + "&7."));
+                                sender.sendMessage(instance.colorize("&b&lLevelledMobs: &7Killed &b" + killed + "&7 levellable entities in world '&b" + w.getName() + "&7'."));
                             }
                             return true;
                         default:
-                            s.sendMessage(instance.colorize("&a&lLevelledMobs: &7Usage: &a/levelledMobs killAll [world]"));
+                            sender.sendMessage(instance.colorize("&b&lLevelledMobs: &7Usage: &b/levelledmobs killall [world]"));
                             return true;
                     }
                 }
             } else if (args[0].equalsIgnoreCase("info")) {
                 if (args.length == 1) {
-                    s.sendMessage(instance.colorize("&8&m+-----------------------------------+"));
-                    s.sendMessage(instance.colorize("&7Thank you for running &a&lLevelledMobs&7!"));
-                    s.sendMessage(instance.colorize("&8&l \u00bb &7Running plugin version &a" + instance.getDescription().getVersion() + "&7."));
-                    s.sendMessage(instance.colorize("&8&l \u00bb &7Developed for server version &a" + instance.utils.getRecommendedServerVersion() + "&7."));
-                    s.sendMessage(" ");
-                    s.sendMessage(instance.colorize("&7For much more information, please visit the plugin page here:"));
-                    s.sendMessage(instance.colorize("&8&nhttps://www.spigotmc.org/resources/%E2%98%85levelledmobs%E2%98%85-a-simple-drag-n-drop-solution-for-mob-attributes.74304/"));
-                    s.sendMessage(instance.colorize("&8&m+-----------------------------------+"));
+                    sender.sendMessage(" ");
+                    sender.sendMessage(instance.colorize("&7Running &bLevelledMobs v" + instance.getDescription().getVersion() + "&7, designed to run on &bMC v" + instance.utils.getRecommendedServerVersion() + "&7."));
+                    sender.sendMessage(instance.colorize("&7This resource is available on &bSpigotMC.org&7."));
+                    sender.sendMessage(" ");
                 } else {
-                    s.sendMessage(instance.colorize("&a&lLevelledMobs: &7Usage: &a/levelledMobs info"));
+                    sender.sendMessage(instance.colorize("&b&lLevelledMobs: &7Usage: &b/" + label + " info"));
                 }
                 return true;
             }
-            s.sendMessage(instance.colorize("&a&lLevelledMobs: &7Unknown subcommand. For a list of commands, try &a/levelledMobs&7."));
+            sender.sendMessage(instance.colorize("&b&lLevelledMobs: &7For a list of available commands, run &b/" + label + "&7."));
         }
         return true;
     }

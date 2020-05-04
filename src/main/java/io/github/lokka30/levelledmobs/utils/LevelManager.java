@@ -3,10 +3,7 @@ package io.github.lokka30.levelledmobs.utils;
 import io.github.lokka30.levelledmobs.LevelledMobs;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.attribute.Attribute;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Monster;
+import org.bukkit.entity.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -41,13 +38,7 @@ public class LevelManager {
             return false;
         }
 
-        //Checks for the 'level-passive' option.
-        if (instance.settings.get("level-passive", false)) {
-            return true;
-        }
-
-        //If the entity is a monster, return true
-        return entity instanceof Monster;
+        return entity instanceof Monster || entity instanceof Boss || instance.settings.get("level-passive", false);
     }
 
     //Update an entity's tag. it is called twice as when a mob gets damaged their health is updated after to the health after they got damaged.
@@ -63,26 +54,26 @@ public class LevelManager {
     public void setTag(final Entity entity) {
         if (entity instanceof LivingEntity && instance.settings.get("enable-nametag-changes", true)) { //if the settings allows nametag changes, go ahead.
             final LivingEntity livingEntity = (LivingEntity) entity;
+            final String entityTypeStr = entity.getType().name().toUpperCase();
 
             if (entity.getPersistentDataContainer().get(instance.levelKey, PersistentDataType.INTEGER) == null) { //if the entity doesn't contain a level, skip this.
                 return;
             }
 
+            String entityName = StringUtils.capitalize(entityTypeStr.toLowerCase());
+            final String entityNameOverridePath = "entity-name-override." + entityTypeStr;
+            if (instance.settings.contains(entityNameOverridePath)) {
+                entityName = instance.settings.get(entityNameOverridePath, "INVALID_SETTING!");
+            }
+
             if (isLevellable(livingEntity)) { // If the mob is levellable, go ahead.
                 String customName = instance.settings.get("creature-nametag", "&8[&7Level %level%&8 | &f%name%&8 | &c%health%&8/&c%max_health% %heart_symbol%&8]")
                         .replaceAll("%level%", entity.getPersistentDataContainer().get(instance.levelKey, PersistentDataType.INTEGER) + "")
-                        .replaceAll("%name%", StringUtils.capitalize(entity.getType().name().toLowerCase()))
+                        .replaceAll("%name%", entityName)
                         .replaceAll("%health%", instance.utils.round(livingEntity.getHealth(), 1) + "")
                         .replaceAll("%max_health%", instance.utils.round(Objects.requireNonNull(livingEntity.getAttribute(Attribute.GENERIC_MAX_HEALTH)).getBaseValue(), 1) + "")
                         .replaceAll("%heart_symbol%", "❤");
                 entity.setCustomName(instance.colorize(customName));
-
-                // CustomNameVisible
-                // If true, players can see it from afar and through walls and roofs and the surface of the world if under caves.
-                // If false, players can only see it when looking directly at it and within 4 or so blocks.
-                //
-                // I can't change anything else here, as it's a Minecraft feature.
-                // Unfortunately no hybrid between the two where you can't see it through caves and that. :(
                 entity.setCustomNameVisible(instance.settings.get("fine-tuning.custom-name-visible", false));
             }
         }
@@ -184,5 +175,35 @@ public class LevelManager {
             }
         }
         return xp;
+    }
+
+    public int getMinLevel(EntityType entityType) {
+        final String entityTypeStr = entityType.name().toUpperCase();
+        final int defaultMinLevel = instance.settings.get("fine-tuning.min-level", 10);
+        final String worldOverridePath = "world-level-override.min-level." + entityTypeStr;
+        final String entityTypeOverridePath = "entitytype-level-override.min-level." + entityTypeStr;
+
+        if (instance.settings.get("world-level-override.enabled", false) && instance.settings.contains(worldOverridePath)) {
+            return instance.settings.get(worldOverridePath, 10);
+        } else if (instance.settings.get("entitytype-level-override.enabled", false) && instance.settings.contains(entityTypeOverridePath)) {
+            return instance.settings.get(entityTypeOverridePath, 10);
+        } else {
+            return defaultMinLevel;
+        }
+    }
+
+    public int getMaxLevel(EntityType entityType) {
+        final String entityTypeStr = entityType.name().toUpperCase();
+        final int defaultMaxLevel = instance.settings.get("fine-tuning.max-level", 10);
+        final String worldOverridePath = "world-level-override.max-level." + entityTypeStr;
+        final String entityTypeOverridePath = "entitytype-level-override.max-level." + entityTypeStr;
+
+        if (instance.settings.get("world-level-override.enabled", false) && instance.settings.contains(worldOverridePath)) {
+            return instance.settings.get(worldOverridePath, 10);
+        } else if (instance.settings.get("entitytype-level-override.enabled", false) && instance.settings.contains(entityTypeOverridePath)) {
+            return instance.settings.get(entityTypeOverridePath, 10);
+        } else {
+            return defaultMaxLevel;
+        }
     }
 }
