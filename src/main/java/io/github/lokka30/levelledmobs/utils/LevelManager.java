@@ -60,7 +60,7 @@ public class LevelManager {
                 return;
             }
 
-            String entityName = StringUtils.capitalize(entityTypeStr.toLowerCase());
+            String entityName = StringUtils.capitalize(entityTypeStr.toLowerCase().replaceAll("_", ""));
             final String entityNameOverridePath = "entity-name-override." + entityTypeStr;
             if (instance.settings.contains(entityNameOverridePath)) {
                 entityName = instance.settings.get(entityNameOverridePath, "INVALID_SETTING!");
@@ -177,10 +177,10 @@ public class LevelManager {
         return xp;
     }
 
-    public int getMinLevel(EntityType entityType) {
-        final String entityTypeStr = entityType.name().toUpperCase();
+    public int getMinLevel(LivingEntity livingEntity) {
+        final String entityTypeStr = livingEntity.getType().name().toUpperCase();
         final int defaultMinLevel = instance.settings.get("fine-tuning.min-level", 10);
-        final String worldOverridePath = "world-level-override.min-level." + entityTypeStr;
+        final String worldOverridePath = "world-level-override.min-level." + livingEntity.getWorld().getName();
         final String entityTypeOverridePath = "entitytype-level-override.min-level." + entityTypeStr;
 
         if (instance.settings.get("world-level-override.enabled", false) && instance.settings.contains(worldOverridePath)) {
@@ -192,10 +192,10 @@ public class LevelManager {
         }
     }
 
-    public int getMaxLevel(EntityType entityType) {
-        final String entityTypeStr = entityType.name().toUpperCase();
+    public int getMaxLevel(LivingEntity livingEntity) {
+        final String entityTypeStr = livingEntity.getType().name().toUpperCase();
         final int defaultMaxLevel = instance.settings.get("fine-tuning.max-level", 10);
-        final String worldOverridePath = "world-level-override.max-level." + entityTypeStr;
+        final String worldOverridePath = "world-level-override.max-level." + livingEntity.getWorld().getName();
         final String entityTypeOverridePath = "entitytype-level-override.max-level." + entityTypeStr;
 
         if (instance.settings.get("world-level-override.enabled", false) && instance.settings.contains(worldOverridePath)) {

@@ -294,4 +294,6 @@ changes:
 - Improvement | Removed duplicate check for if the 'level' namespacedkey is not null
 - Improvement | Changed part of the methods which determine a mob's level
 - Improvement | Tinkered with the settings file to improve a few setting names and comments
+- Improvement | Removed 'server is running supported version' message, useless
+- Improvement | Replaced underscores in mob names with a space
 - Improvement | A bunch of small quality-aimed changes not worth mentioning. :)

@@ -2,7 +2,6 @@ package io.github.lokka30.levelledmobs.listeners;
 
 import io.github.lokka30.levelledmobs.LevelledMobs;
 import org.bukkit.attribute.Attribute;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Monster;
 import org.bukkit.event.EventHandler;
@@ -49,7 +48,7 @@ public class CreatureSpawnListener implements Listener {
             } else if (instance.settings.get("spawn-distance-levelling.active", false)) {
                 level = generateLevelByDistance(livingEntity);
             } else {
-                level = generateLevel(livingEntity.getType());
+                level = generateLevel(livingEntity);
             }
 
             if (instance.levelManager.isLevellable(livingEntity)) { //Is the mob allowed to be levelled?
@@ -124,16 +123,16 @@ public class CreatureSpawnListener implements Listener {
 
     //Generates a level.
     //Uses ThreadLocalRandom.current().nextInt(min, max + 1). + 1 is because ThreadLocalRandom is usually exclusive of the uppermost value.
-    public Integer generateLevel(EntityType entityType) {
-        return ThreadLocalRandom.current().nextInt(instance.levelManager.getMinLevel(entityType), instance.levelManager.getMaxLevel(entityType) + 1);
+    public Integer generateLevel(LivingEntity livingEntity) {
+        return ThreadLocalRandom.current().nextInt(instance.levelManager.getMinLevel(livingEntity), instance.levelManager.getMaxLevel(livingEntity) + 1);
     }
 
     //Generates a level based on distance to spawn and, if active, variance
     private Integer generateLevelByDistance(LivingEntity livingEntity) {
         int minLevel, maxLevel, defaultLevel, finalLevel, levelSpan, distance;
 
-        minLevel = instance.levelManager.getMinLevel(livingEntity.getType());
-        maxLevel = instance.levelManager.getMaxLevel(livingEntity.getType());
+        minLevel = instance.levelManager.getMinLevel(livingEntity);
+        maxLevel = instance.levelManager.getMaxLevel(livingEntity);
         finalLevel = -1;
 
         //Calculate amount of available levels
@@ -179,7 +178,7 @@ public class CreatureSpawnListener implements Listener {
     }
 
     private int generateRegionLevel(LivingEntity livingEntity) {
-        int[] levels = instance.worldGuardManager.getRegionLevel(livingEntity, instance.levelManager.getMinLevel(livingEntity.getType()), instance.levelManager.getMaxLevel(livingEntity.getType()));
+        int[] levels = instance.worldGuardManager.getRegionLevel(livingEntity, instance.levelManager.getMinLevel(livingEntity), instance.levelManager.getMaxLevel(livingEntity));
         return levels[0] + Math.round(new Random().nextFloat() * (levels[1] - levels[0]));
     }
 }

@@ -85,9 +85,7 @@ public class LevelledMobs extends JavaPlugin {
     private void checkCompatibility() {
         final String currentVersion = getServer().getVersion();
         final String recommendedVersion = utils.getRecommendedServerVersion();
-        if (currentVersion.contains(recommendedVersion)) {
-            log(LogLevel.INFO, "Server is running supported version &a" + currentVersion + "&7.");
-        } else {
+        if (!currentVersion.contains(recommendedVersion)) {
             log(LogLevel.INFO, "'&b" + currentVersion + "&7' is not a supported server version! You will not receive support whilst running this version.");
             log(LogLevel.INFO, "This version of LevelledMobs supports Minecraft version '&b" + recommendedVersion + "&7'.");
         }
