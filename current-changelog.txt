@@ -297,3 +297,7 @@ changes:
 - Improvement | Removed 'server is running supported version' message, useless
 - Improvement | Replaced underscores in mob names with a space
 - Improvement | A bunch of small quality-aimed changes not worth mentioning. :)
+
+1.32.0-RELEASE
+- Important Note | 'settings.yml' was updated to version 18. I have only touched the 'variance' part of the settings file.
+- Improvement | Redone the 'variance' part of the 'distance from spawn levelling' system. The code is far simpler, more configurable, and it won't break the plugin anymore.

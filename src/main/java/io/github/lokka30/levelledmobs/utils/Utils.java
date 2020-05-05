@@ -5,20 +5,12 @@ public class Utils {
     public Utils() {
     }
 
-    //Factorial function
-    public static long factorial(int num) {
-        long result = 1;
-        for (int i = num; i > 1; i--)
-            result *= i;
-        return result;
-    }
-
     public String getRecommendedServerVersion() {
         return "1.15";
     }
 
     public int getRecommendedSettingsVersion() {
-        return 17;
+        return 18;
     }
 
     //This is a method created by Jonik & Mustapha Hadid at StackOverflow.
@@ -31,23 +23,6 @@ public class Utils {
         value = value * factor;
         long tmp = Math.round(value);
         return (double) tmp / factor;
-    }
-
-    //Creates a weighted array where the values contain the sum of itself and all preceding values
-    public double[] createWeightedArray(double[] inputarray) {
-        double[] outputarray = new double[inputarray.length];
-
-        outputarray[0] = inputarray[0];
-        for (int i = 1; i < inputarray.length; i++) {
-            outputarray[i] = inputarray[i] + outputarray[i - 1];
-        }
-
-        return outputarray;
-    }
-
-    //Binomial distribution function
-    public double binomialDistribution(int n, int k, double p) {
-        return ((double) factorial(n)) / ((double) (factorial(k)) * ((double) factorial(n - k))) * Math.pow(p, k) * Math.pow(1 - p, n - k);
     }
 
     //Integer check

@@ -129,51 +129,43 @@ public class CreatureSpawnListener implements Listener {
 
     //Generates a level based on distance to spawn and, if active, variance
     private Integer generateLevelByDistance(LivingEntity livingEntity) {
-        int minLevel, maxLevel, defaultLevel, finalLevel, levelSpan, distance;
-
-        minLevel = instance.levelManager.getMinLevel(livingEntity);
-        maxLevel = instance.levelManager.getMaxLevel(livingEntity);
-        finalLevel = -1;
-
-        //Calculate amount of available levels
-        levelSpan = (maxLevel + 1) - minLevel;
+        final int minLevel = instance.levelManager.getMinLevel(livingEntity);
+        final int maxLevel = instance.levelManager.getMaxLevel(livingEntity);
 
         //Get distance between entity spawn point and world spawn
-        distance = (int) livingEntity.getWorld().getSpawnLocation().distance(livingEntity.getLocation());
+        final int distance = (int) livingEntity.getWorld().getSpawnLocation().distance(livingEntity.getLocation());
 
         //Get the level thats meant to be at a given distance
-        defaultLevel = (distance / instance.settings.get("spawn-distance-levelling.increase-level-distance", 200)) + minLevel;
-        if (defaultLevel > maxLevel)
-            defaultLevel = maxLevel;
+        int finalLevel = (distance / instance.settings.get("spawn-distance-levelling.increase-level-distance", 200)) + minLevel;
 
         //Check if there should be a variance in level
-        if (instance.settings.get("spawn-distance-levelling.variance", true)) {
-            double binomialp, randomnumber;
-            double[] levelarray, weightedlevelarray;
+        if (instance.settings.get("spawn-distance-levelling.variance.enabled", true)) {
+            //The minmum amount of variation.
+            final int minVariation = instance.settings.get("spawn-distance-levelling.variance.min", 0);
 
+            //The maximum amount of variation.
+            final int maxVariation = instance.settings.get("spawn-distance-levelling.variance.max", 2);
 
-            //Create array with chances for each level
-            levelarray = new double[levelSpan];
-            binomialp = (1.0D / levelSpan / 2.0D) + ((1.0D - (1.0D / levelSpan)) / levelSpan * (defaultLevel - minLevel));
-            for (int i = 0; i < levelSpan; i++) {
-                levelarray[i] = instance.utils.binomialDistribution(levelSpan, i, binomialp);
+            //A random number between min and max which determines the amount of variation that will take place
+            final int change = ThreadLocalRandom.current().nextInt(minVariation, maxVariation + 1);
+
+            //Start variation. First check if variation is positive or negative towards the original level amount.
+            if (new Random().nextBoolean()) {
+                //Positive. Add the variation to the final level
+                finalLevel = finalLevel + change;
+            } else {
+                //Negative. Subtract the variation from the final level
+                finalLevel = finalLevel - change;
             }
-
-            //Create weighted array for choosing a level
-            weightedlevelarray = instance.utils.createWeightedArray(levelarray);
-
-            //Choose a level based on the weight of a level
-            randomnumber = new Random().nextDouble() * weightedlevelarray[weightedlevelarray.length - 1];
-            for (int i = 0; i < weightedlevelarray.length; i++)
-                if (randomnumber <= weightedlevelarray[i]) {
-                    finalLevel = i + minLevel;
-                    break;
-                }
-
-        } else {
-            finalLevel = defaultLevel;
         }
-        finalLevel = finalLevel == -1 ? 0 : finalLevel;
+
+        if (finalLevel > maxLevel) {
+            finalLevel = maxLevel;
+        }
+        if (finalLevel < minLevel) {
+            finalLevel = minLevel;
+        }
+
         return finalLevel;
     }
 

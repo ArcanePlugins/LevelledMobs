@@ -91,9 +91,23 @@ spawn-distance-levelling:
   active: false
 
   # Should the level be able to randomly increase or decrease (within min/max limits) for variation?
-  variance: false
+  variance:
 
-  # Each 200 blocks, for example, the level will be increased.
+    # Should the levels vary randomly (within min/max limits)?
+    # Variation will add/subtract a random amount between min/max numbers set below to the mob's final level.
+    enabled: true
+
+    # The minimum amount of variance.
+    # Expected: [Integer], Default: [0]
+    min: 0
+
+    # The maximum amount of variance.
+    # Expected: [Integer], Default: [2]
+    max: 2
+
+  # The level will be increased by 1 per the number defined below.
+  # By default, every 200 blocks, the mob's level will increase by 1.
+  # Expected: [Integer], Default: [200]
   increase-level-distance: 200
 
 # If you want to force an entity type to have a different minimum/maximum level then you can do that here
@@ -132,4 +146,4 @@ use-update-checker: true
 debug: false
 
 # Don't touch this unless you know what you are doing!
-file-version: 17
+file-version: 18
