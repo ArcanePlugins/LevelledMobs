@@ -301,3 +301,6 @@ changes:
 1.32.0-RELEASE
 - Important Note | 'settings.yml' was updated to version 18. I have only touched the 'variance' part of the settings file.
 - Improvement | Redone the 'variance' part of the 'distance from spawn levelling' system. The code is far simpler, more configurable, and it won't break the plugin anymore.
+
+1.32.1-RELEASE
+- Fix | No longer attempts to apply levels to Citizen NPCs

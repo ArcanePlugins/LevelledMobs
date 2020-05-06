@@ -22,7 +22,7 @@ public class LevelManager {
     public boolean isLevellable(final LivingEntity entity) {
 
         //Players shouldn't be levelled! Keep this at the top to ensure they don't return true
-        if (entity.getType() == EntityType.PLAYER) {
+        if (entity.getType() == EntityType.PLAYER || entity.hasMetadata("NPC")) {
             return false;
         }
 
