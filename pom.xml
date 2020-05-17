@@ -6,12 +6,12 @@
 
     <groupId>io.github.lokka30</groupId>
     <artifactId>LevelledMobs</artifactId>
-    <version>1.32.1-RELEASE</version>
+    <version>1.33.0-RELEASE</version>
 
     <packaging>jar</packaging>
 
     <name>LevelledMobs</name>
-    <description>Vanilla mobs are too easy! Assigns mobs levels, which represents their strength.</description>
+    <description>An advanced RPG mob levelling plugin</description>
 
     <properties>
         <java.version>1.8</java.version>
@@ -100,7 +100,7 @@
         <dependency>
             <groupId>com.github.JavaFactoryDev</groupId>
             <artifactId>LightningStorage</artifactId>
-            <version>3.0.9</version>
+            <version>3.1.2</version>
         </dependency>
         <dependency>
             <groupId>org.bstats</groupId>
@@ -113,6 +113,13 @@
             <artifactId>worldguard-bukkit</artifactId>
             <version>7.0.2</version>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.github.lokka30</groupId>
+            <artifactId>PhantomLib</artifactId>
+            <version>1.0.2-ALPHA</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/libs/PhantomLib-1.0.2-ALPHA.jar</systemPath>
         </dependency>
     </dependencies>
 </project>

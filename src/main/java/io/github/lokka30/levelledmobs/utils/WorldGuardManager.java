@@ -47,7 +47,7 @@ public class WorldGuardManager {
             LevelledMobs.minlevelflag = minflag;
             LevelledMobs.maxlevelflag = maxflag;
         } catch (FlagConflictException e) {
-            Flag<?> allow = freg.get("CustonmLevelFlag");
+            Flag<?> allow = freg.get("CustomLevelFlag");
             Flag<?> min = freg.get("MinLevelFlag");
             Flag<?> max = freg.get("MaxLevelFlag");
 

@@ -9,7 +9,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.persistence.PersistentDataType;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Random;
@@ -45,7 +44,7 @@ public class CreatureSpawnListener implements Listener {
             //Check settings for spawn distance levelling and choose levelling method accordingly.
             if (instance.hasWorldGuard && instance.worldGuardManager.checkRegionFlags(livingEntity)) {
                 level = generateRegionLevel(livingEntity);
-            } else if (instance.settings.get("spawn-distance-levelling.active", false)) {
+            } else if (instance.fileCache.SETTINGS_SPAWN_DISTANCE_LEVELLING_ACTIVE) {
                 level = generateLevelByDistance(livingEntity);
             } else {
                 level = generateLevel(livingEntity);
@@ -54,9 +53,9 @@ public class CreatureSpawnListener implements Listener {
             if (instance.levelManager.isLevellable(livingEntity)) { //Is the mob allowed to be levelled?
 
                 //Check the 'worlds list' to see if the mob is allowed to be levelled in the world it spawned in
-                if (instance.settings.get("worlds-list.enabled", false)) {
-                    final List<String> worldsList = instance.settings.get("worlds-list.list", Collections.singletonList("world"));
-                    final String mode = instance.settings.get("worlds-list.mode", "BLACKLIST").toUpperCase();
+                if (instance.fileCache.SETTINGS_WORLDS_LIST_ENABLED) {
+                    final List<String> worldsList = instance.fileCache.SETTINGS_WORLDS_LIST_LIST;
+                    final String mode = instance.fileCache.SETTINGS_WORLDS_LIST_MODE;
                     final String currentWorldName = livingEntity.getWorld().getName();
                     switch (mode) {
                         case "BLACKLIST":
@@ -76,7 +75,7 @@ public class CreatureSpawnListener implements Listener {
 
                 //Check the list of blacklisted spawn reasons. If the entity's spawn reason is in there, then we don't continue.
                 //Uses a default as "NONE" as there are no blocked spawn reasons in the default config.
-                for (String blacklistedReason : instance.settings.get("blacklisted-reasons", Collections.singletonList("NONE"))) {
+                for (String blacklistedReason : instance.fileCache.SETTINGS_BLACKLISTED_REASONS) {
                     if (e.getSpawnReason().toString().equalsIgnoreCase(blacklistedReason) || blacklistedReason.equals("ALL")) {
                         return;
                     }
@@ -84,7 +83,7 @@ public class CreatureSpawnListener implements Listener {
 
                 //Set the entity's max health.
                 final double baseMaxHealth = Objects.requireNonNull(e.getEntity().getAttribute(Attribute.GENERIC_MAX_HEALTH)).getBaseValue();
-                final double newMaxHealth = baseMaxHealth + (baseMaxHealth * (instance.settings.get("fine-tuning.multipliers.max-health", 0.2F)) * level);
+                final double newMaxHealth = baseMaxHealth + (baseMaxHealth * (instance.fileCache.SETTINGS_FINE_TUNING_MULTIPLIERS_MAX_HEALTH) * level);
                 Objects.requireNonNull(livingEntity.getAttribute(Attribute.GENERIC_MAX_HEALTH)).setBaseValue(newMaxHealth);
                 livingEntity.setHealth(newMaxHealth); //Set the entity's health to their max health, otherwise their health is still the default of 20, so they'll be just as easy to kill.
 
@@ -92,15 +91,15 @@ public class CreatureSpawnListener implements Listener {
                 //Only monsters should have their movement speed changed. Otherwise you would have a very fast level 10 race horse, or an untouchable bat.
                 if (livingEntity instanceof Monster) {
                     final double baseMovementSpeed = Objects.requireNonNull(e.getEntity().getAttribute(Attribute.GENERIC_MOVEMENT_SPEED)).getBaseValue();
-                    final double newMovementSpeed = baseMovementSpeed + (baseMovementSpeed * instance.settings.get("fine-tuning.multipliers.movement-speed", 0.065F) * level);
+                    final double newMovementSpeed = baseMovementSpeed + (baseMovementSpeed * instance.fileCache.SETTINGS_FINE_TUNING_MULTIPLIERS_MOVEMENT_SPEED * level);
                     Objects.requireNonNull(livingEntity.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED)).setBaseValue(newMovementSpeed);
                 }
 
                 //Checks if mobs attack damage can be modified before changing it.
                 if (livingEntity.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE) != null) {
                     final double baseAttackDamage = Objects.requireNonNull(e.getEntity().getAttribute(Attribute.GENERIC_ATTACK_DAMAGE)).getBaseValue();
-                    final double defaultAttackDamageAddition = instance.settings.get("fine-tuning.default-attack-damage-increase", 1.0F);
-                    final double attackDamageMultiplier = instance.settings.get("fine-tuning.multipliers.attack-damage", 1.5F);
+                    final double defaultAttackDamageAddition = instance.fileCache.SETTINGS_FINE_TUNING_DEFAULT_ATTACK_DAMAGE_INCREASE;
+                    final double attackDamageMultiplier = instance.fileCache.SETTINGS_FINE_TUNING_MULTIPLIERS_ATTACK_DAMAGE;
                     final double newAttackDamage = baseAttackDamage + defaultAttackDamageAddition + (attackDamageMultiplier * level);
 
                     Objects.requireNonNull(livingEntity.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE)).setBaseValue(newAttackDamage);
@@ -124,27 +123,27 @@ public class CreatureSpawnListener implements Listener {
     //Generates a level.
     //Uses ThreadLocalRandom.current().nextInt(min, max + 1). + 1 is because ThreadLocalRandom is usually exclusive of the uppermost value.
     public Integer generateLevel(LivingEntity livingEntity) {
-        return ThreadLocalRandom.current().nextInt(instance.levelManager.getMinLevel(livingEntity), instance.levelManager.getMaxLevel(livingEntity) + 1);
+        return ThreadLocalRandom.current().nextInt(instance.fileCache.getMinLevel(livingEntity), instance.fileCache.getMaxLevel(livingEntity) + 1);
     }
 
     //Generates a level based on distance to spawn and, if active, variance
     private Integer generateLevelByDistance(LivingEntity livingEntity) {
-        final int minLevel = instance.levelManager.getMinLevel(livingEntity);
-        final int maxLevel = instance.levelManager.getMaxLevel(livingEntity);
+        final int minLevel = instance.fileCache.getMinLevel(livingEntity);
+        final int maxLevel = instance.fileCache.getMaxLevel(livingEntity);
 
         //Get distance between entity spawn point and world spawn
         final int distance = (int) livingEntity.getWorld().getSpawnLocation().distance(livingEntity.getLocation());
 
         //Get the level thats meant to be at a given distance
-        int finalLevel = (distance / instance.settings.get("spawn-distance-levelling.increase-level-distance", 200)) + minLevel;
+        int finalLevel = (distance / instance.fileCache.SETTINGS_SPAWN_DISTANCE_LEVELLING_INCREASE_LEVEL_DISTANCE) + minLevel;
 
         //Check if there should be a variance in level
-        if (instance.settings.get("spawn-distance-levelling.variance.enabled", true)) {
+        if (instance.fileCache.SETTINGS_SPAWN_DISTANCE_LEVELLING_VARIANCE_ENABLED) {
             //The minmum amount of variation.
-            final int minVariation = instance.settings.get("spawn-distance-levelling.variance.min", 0);
+            final int minVariation = instance.fileCache.SETTINGS_SPAWN_DISTANCE_LEVELLING_VARIANCE_MIN;
 
             //The maximum amount of variation.
-            final int maxVariation = instance.settings.get("spawn-distance-levelling.variance.max", 2);
+            final int maxVariation = instance.fileCache.SETTINGS_SPAWN_DISTANCE_LEVELLING_VARIANCE_MAX;
 
             //A random number between min and max which determines the amount of variation that will take place
             final int change = ThreadLocalRandom.current().nextInt(minVariation, maxVariation + 1);
@@ -170,7 +169,7 @@ public class CreatureSpawnListener implements Listener {
     }
 
     private int generateRegionLevel(LivingEntity livingEntity) {
-        int[] levels = instance.worldGuardManager.getRegionLevel(livingEntity, instance.levelManager.getMinLevel(livingEntity), instance.levelManager.getMaxLevel(livingEntity));
+        int[] levels = instance.worldGuardManager.getRegionLevel(livingEntity, instance.fileCache.getMinLevel(livingEntity), instance.fileCache.getMaxLevel(livingEntity));
         return levels[0] + Math.round(new Random().nextFloat() * (levels[1] - levels[0]));
     }
 }

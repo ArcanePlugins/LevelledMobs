@@ -1,14 +1,15 @@
 package io.github.lokka30.levelledmobs.utils;
 
 import io.github.lokka30.levelledmobs.LevelledMobs;
-import org.apache.commons.lang.StringUtils;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.*;
+import java.util.List;
+import java.util.Objects;
+import java.util.Random;
 
 public class LevelManager {
 
@@ -27,18 +28,17 @@ public class LevelManager {
         }
 
         //Blacklist override, entities here will return true regardless if they are in blacklistedTypes or are passive
-        List<String> blacklistOverrideTypes = instance.settings.get("blacklist-override-types", Collections.singletonList("SHULKER"));
-        if (blacklistOverrideTypes.contains(entity.getType().name())) {
+        if (instance.fileCache.SETTINGS_BLACKLIST_OVERRIDE_TYPES.contains(entity.getType().name())) {
             return true;
         }
 
         //Set it to what's specified. If it's invalid, it'll just take a small predefiend list.
-        List<String> blacklistedTypes = instance.settings.get("blacklisted-types", Arrays.asList("VILLAGER", "WANDERING_TRADER", "ENDER_DRAGON", "WITHER"));
+        List<String> blacklistedTypes = instance.fileCache.SETTINGS_BLACKLISTED_TYPES;
         if (blacklistedTypes.contains(entity.getType().name())) {
             return false;
         }
 
-        return entity instanceof Monster || entity instanceof Boss || instance.settings.get("level-passive", false);
+        return entity instanceof Monster || entity instanceof Boss || instance.fileCache.SETTINGS_LEVEL_PASSIVE;
     }
 
     //Update an entity's tag. it is called twice as when a mob gets damaged their health is updated after to the health after they got damaged.
@@ -52,36 +52,32 @@ public class LevelManager {
 
     //Updates the nametag of a creature. Gets called by certain listeners.
     public void setTag(final Entity entity) {
-        if (entity instanceof LivingEntity && instance.settings.get("enable-nametag-changes", true)) { //if the settings allows nametag changes, go ahead.
+
+        final EntityType entityType = entity.getType();
+
+        if (entity instanceof LivingEntity && instance.fileCache.SETTINGS_ENABLE_NAMETAG_CHANGES) { //if the settings allows nametag changes, go ahead.
             final LivingEntity livingEntity = (LivingEntity) entity;
-            final String entityTypeStr = entity.getType().name().toUpperCase();
 
             if (entity.getPersistentDataContainer().get(instance.levelKey, PersistentDataType.INTEGER) == null) { //if the entity doesn't contain a level, skip this.
                 return;
             }
 
-            String entityName = StringUtils.capitalize(entityTypeStr.toLowerCase().replaceAll("_", ""));
-            final String entityNameOverridePath = "entity-name-override." + entityTypeStr;
-            if (instance.settings.contains(entityNameOverridePath)) {
-                entityName = instance.settings.get(entityNameOverridePath, "INVALID_SETTING!");
-            }
-
             if (isLevellable(livingEntity)) { // If the mob is levellable, go ahead.
                 String customName = instance.settings.get("creature-nametag", "&8[&7Level %level%&8 | &f%name%&8 | &c%health%&8/&c%max_health% %heart_symbol%&8]")
                         .replaceAll("%level%", entity.getPersistentDataContainer().get(instance.levelKey, PersistentDataType.INTEGER) + "")
-                        .replaceAll("%name%", entityName)
+                        .replaceAll("%name%", instance.fileCache.getEntityName(entityType))
                         .replaceAll("%health%", instance.utils.round(livingEntity.getHealth(), 1) + "")
                         .replaceAll("%max_health%", instance.utils.round(Objects.requireNonNull(livingEntity.getAttribute(Attribute.GENERIC_MAX_HEALTH)).getBaseValue(), 1) + "")
                         .replaceAll("%heart_symbol%", "❤");
-                entity.setCustomName(instance.colorize(customName));
-                entity.setCustomNameVisible(instance.settings.get("fine-tuning.custom-name-visible", false));
+                entity.setCustomName(instance.messageMethods.colorize(customName));
+                entity.setCustomNameVisible(instance.fileCache.SETTINGS_FINE_TUNING_CUSTOM_NAME_VISIBLE);
             }
         }
     }
 
     //Clear their nametag on death.
     public void checkClearNametag(final LivingEntity ent) {
-        if (instance.levelManager.isLevellable(ent) && instance.settings.get("fine-tuning.remove-nametag-on-death", false)) {
+        if (isLevellable(ent) && instance.fileCache.SETTINGS_FINE_TUNING_REMOVE_NAMETAG_ON_DEATH) {
             ent.setCustomName(null);
         }
     }
@@ -89,14 +85,14 @@ public class LevelManager {
     //Calculates the drops when a levellable creature dies.
     public void calculateDrops(final LivingEntity ent, List<ItemStack> drops) {
 
-        if (instance.levelManager.isLevellable(ent)) {
+        if (isLevellable(ent)) {
             //If mob is levellable, but wasn't levelled, return.
             Integer level = ent.getPersistentDataContainer().get(instance.levelKey, PersistentDataType.INTEGER);
             if (level == null)
                 return;
 
             //Read settings for drops.
-            double dropMultiplier = instance.settings.get("fine-tuning.multipliers.item-drop", 0.16);
+            double dropMultiplier = instance.fileCache.SETTINGS_FINE_TUNING_MULTIPLIERS_ITEM_DROP;
             int finalMultiplier = 1;
 
             //If multiplier * level gurantees an extra drop set 'finalMultiplier' to the amount of safe multiples.
@@ -167,7 +163,7 @@ public class LevelManager {
     //Calculates the XP dropped when a levellable creature dies.
     public int calculateXp(final LivingEntity ent, int xp) {
         if (instance.levelManager.isLevellable(ent)) {
-            double xpMultiplier = instance.settings.get("fine-tuning.multipliers.xp-drop", 0.1D);
+            double xpMultiplier = instance.fileCache.SETTINGS_FINE_TUNING_MULTIPLIERS_XP_DROP;
             Integer level = ent.getPersistentDataContainer().get(instance.levelKey, PersistentDataType.INTEGER);
 
             if (level != null) {
@@ -175,35 +171,5 @@ public class LevelManager {
             }
         }
         return xp;
-    }
-
-    public int getMinLevel(LivingEntity livingEntity) {
-        final String entityTypeStr = livingEntity.getType().name().toUpperCase();
-        final int defaultMinLevel = instance.settings.get("fine-tuning.min-level", 10);
-        final String worldOverridePath = "world-level-override.min-level." + livingEntity.getWorld().getName();
-        final String entityTypeOverridePath = "entitytype-level-override.min-level." + entityTypeStr;
-
-        if (instance.settings.get("world-level-override.enabled", false) && instance.settings.contains(worldOverridePath)) {
-            return instance.settings.get(worldOverridePath, 10);
-        } else if (instance.settings.get("entitytype-level-override.enabled", false) && instance.settings.contains(entityTypeOverridePath)) {
-            return instance.settings.get(entityTypeOverridePath, 10);
-        } else {
-            return defaultMinLevel;
-        }
-    }
-
-    public int getMaxLevel(LivingEntity livingEntity) {
-        final String entityTypeStr = livingEntity.getType().name().toUpperCase();
-        final int defaultMaxLevel = instance.settings.get("fine-tuning.max-level", 10);
-        final String worldOverridePath = "world-level-override.max-level." + livingEntity.getWorld().getName();
-        final String entityTypeOverridePath = "entitytype-level-override.max-level." + entityTypeStr;
-
-        if (instance.settings.get("world-level-override.enabled", false) && instance.settings.contains(worldOverridePath)) {
-            return instance.settings.get(worldOverridePath, 10);
-        } else if (instance.settings.get("entitytype-level-override.enabled", false) && instance.settings.contains(entityTypeOverridePath)) {
-            return instance.settings.get(entityTypeOverridePath, 10);
-        } else {
-            return defaultMaxLevel;
-        }
     }
 }

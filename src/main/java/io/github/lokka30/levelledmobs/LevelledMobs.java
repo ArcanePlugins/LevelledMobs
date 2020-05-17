@@ -4,104 +4,119 @@ import com.sk89q.worldguard.protection.flags.StateFlag;
 import com.sk89q.worldguard.protection.flags.StringFlag;
 import de.leonhard.storage.LightningBuilder;
 import de.leonhard.storage.internal.FlatFile;
-import de.leonhard.storage.internal.exception.LightningValidationException;
+import de.leonhard.storage.internal.exceptions.LightningValidationException;
 import io.github.lokka30.levelledmobs.commands.LevelledMobsCommand;
 import io.github.lokka30.levelledmobs.listeners.*;
 import io.github.lokka30.levelledmobs.utils.*;
+import io.github.lokka30.phantomlib.PhantomLib;
+import io.github.lokka30.phantomlib.classes.MessageMethods;
+import io.github.lokka30.phantomlib.classes.PhantomLogger;
+import io.github.lokka30.phantomlib.enums.LogLevel;
 import org.bstats.bukkit.Metrics;
-import org.bukkit.ChatColor;
 import org.bukkit.NamespacedKey;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
-import java.util.Objects;
-import java.util.logging.Logger;
 
 public class LevelledMobs extends JavaPlugin {
 
-    /*
-    Are you planning on contributing to the plugin?
-    Thanks! Please take note:
-
-    - Please name variables as the 'good' example:
-     - (GOOD) LivingEntity livingEntity
-     - (OKAY) LivingEntity entity
-     - (BAD) LivingEntity le / e / l
-     - (GOOD) PlayerJoinEvent e (either is fine)
-     - (GOOD) PlayerJoinEvent playerJoinEvent (either is fine)
-    - Please use curly brackets in if/for/class/etc.
-     */
-
+    //WorldGuard stuff
     public static StateFlag allowlevelflag; //The WorldGuard flag if mobs can be levelled.
+    //PhantomLib stuff
+    public PhantomLib phantomLib;
+    public PhantomLogger phantomLogger;
+    public String LOGGER_PREFIX = "&b&lLevelledMobs: &7";
+    public MessageMethods messageMethods;
     public static StringFlag minlevelflag, maxlevelflag; //The WorldGuard flags of the min and max mob levels.
-    public FlatFile settings; //The settings config file.
     public boolean hasWorldGuard; //if worldguard is on the server
+    public WorldGuardManager worldGuardManager; //The WorldGuardManager class brings WorldGuard support to LM.
+
+    //Storage stuff
+    public FlatFile settings; //The settings config file.
+    public FileCache fileCache; //The class which stores the settings in memory and provides useful methods for getting specific settings
+
+    //LM stuff
     public NamespacedKey levelKey; //What's the mob's level?
     public NamespacedKey isLevelledKey; //Is the mob levelled?
     public LevelManager levelManager; //The LevelManager class which holds a bunch of common methods
     public Utils utils; //The Utils class which holds some common utility methods
-    public WorldGuardManager worldGuardManager; //The WorldGuardManager class brings WorldGuard support to LM.
+
+    //Other stuff
+    private PluginManager pluginManager;
 
     //When the plugin starts loading (when Bukkit announces that it's loading, but it hasn't started the enable process).
     //onLoad should only be used for setting other classes like LevelManager.
     public void onLoad() {
+        pluginManager = getServer().getPluginManager();
+
+        //Make sure that PhantomLib is installed.
+        if (pluginManager.getPlugin("PhantomLib") == null) {
+            getLogger().severe(" ----- WARNING -----");
+            getLogger().severe("PhantomLib is not installed! You must install PhantomLib for the plugin to function.");
+            getLogger().severe("Link to the SpigotMC resource: https://www.spigotmc.org/resources/%E2%99%A6-phantomlib-%E2%99%A6-1-7-10-1-15-2.78556/");
+            getLogger().severe(" ----- WARNING -----");
+            pluginManager.disablePlugin(this);
+            return;
+        } else {
+            phantomLib = PhantomLib.getInstance();
+            phantomLogger = phantomLib.getPhantomLogger();
+            messageMethods = phantomLib.getMessageMethods();
+        }
+
         utils = new Utils();
         levelManager = new LevelManager(this);
         checkWorldGuard(); //WorldGuard check is onLoad as it is required to be here instead of onEnable (as stated in its documentation).
     }
 
-    //When the plugin starts enabling.
     public void onEnable() {
-        log(LogLevel.INFO, "&8+----+ &f(Enable Started) &8+----+");
+        phantomLogger.log(LogLevel.INFO, LOGGER_PREFIX, "&8+----+ &f(Enable Started) &8+----+");
         final long startingTime = System.currentTimeMillis();
 
-        log(LogLevel.INFO, "&8(&31&8/&36&8) &7Checking compatibility...");
         checkCompatibility(); //Is the server running the latest version? Dependencies required?
 
-        log(LogLevel.INFO, "&8(&32&8/&36&8) &7Loading files...");
         loadFiles();
+        fileCache = new FileCache(this);
+        fileCache.loadLatest();
 
-        log(LogLevel.INFO, "&8(&33&8/&36&8) &7Registering events...");
         levelKey = new NamespacedKey(this, "level");
         isLevelledKey = new NamespacedKey(this, "isLevelled");
         registerEvents();
 
-        log(LogLevel.INFO, "&8(&34&8/&36&8) &7Registering commands...");
         registerCommands();
 
-        log(LogLevel.INFO, "&8(&35&8/&36&8) &7Hooking to other plugins...");
-        //will be added in the future.
+        hookToOtherPlugins();
 
-        log(LogLevel.INFO, "&8(&36&8/&36&8) &7Starting bStats metrics...");
-        new Metrics(this, 6269);
+        setupMetrics();
 
-        log(LogLevel.INFO, "&8+----+ &f(Enable Complete, took &b" + (System.currentTimeMillis() - startingTime) + "ms&f) &8+----+");
+        phantomLogger.log(LogLevel.INFO, LOGGER_PREFIX, "&8+----+ &f(Enable Complete, took " + (System.currentTimeMillis() - startingTime) + "ms) &8+----+");
 
         checkUpdates();
     }
 
     //Checks if the server version is supported
     private void checkCompatibility() {
+        phantomLogger.log(LogLevel.INFO, LOGGER_PREFIX, "&8(&3Startup &8- &31&8/&36&8) &7Checking compatibility...");
+
         final String currentVersion = getServer().getVersion();
         final String recommendedVersion = utils.getRecommendedServerVersion();
         if (!currentVersion.contains(recommendedVersion)) {
-            log(LogLevel.INFO, "'&b" + currentVersion + "&7' is not a supported server version! You will not receive support whilst running this version.");
-            log(LogLevel.INFO, "This version of LevelledMobs supports Minecraft version '&b" + recommendedVersion + "&7'.");
+            phantomLogger.log(LogLevel.INFO, LOGGER_PREFIX, "'&b" + currentVersion + "&7' is not a supported server version! You will not receive support whilst running this version.");
+            phantomLogger.log(LogLevel.INFO, LOGGER_PREFIX, "This version of LevelledMobs supports Minecraft version '&b" + recommendedVersion + "&7'.");
         }
     }
 
     //Manages the setting file.
     private void loadFiles() {
-        final PluginManager pm = getServer().getPluginManager();
+        phantomLogger.log(LogLevel.INFO, LOGGER_PREFIX, "&8(&3Startup &8- &32&8/&36&8) &7Loading files...");
         try {
             settings = LightningBuilder
                     .fromFile(new File(getDataFolder() + File.separator + "settings"))
                     .addInputStreamFromResource("settings.yml")
                     .createYaml();
         } catch (LightningValidationException e) {
-            log(LogLevel.SEVERE, "Unable to load &bsettings.yml&7!");
-            pm.disablePlugin(this);
+            phantomLogger.log(LogLevel.SEVERE, LOGGER_PREFIX, "Unable to load &bsettings.yml&7! Disabling plugin.");
+            pluginManager.disablePlugin(this);
             return;
         }
 
@@ -109,30 +124,45 @@ public class LevelledMobs extends JavaPlugin {
         final File settingsFile = new File(getDataFolder() + File.separator + "settings.yml");
 
         if (!(settingsFile.exists() && !settingsFile.isDirectory())) {
-            log(LogLevel.INFO, "File &bsettings.yml&7 doesn't exist. Creating it now.");
+            phantomLogger.log(LogLevel.INFO, LOGGER_PREFIX, "File &bsettings.yml&7 doesn't exist. Creating it now.");
             saveResource("settings.yml", false);
         }
 
         //Check their versions
         if (settings.get("file-version", 0) != utils.getRecommendedSettingsVersion()) {
-            log(LogLevel.SEVERE, "File &bsettings.yml&7 is out of date! Lower-quality default values will be used for the new features! Reset it or merge the old values to the new file.");
+            phantomLogger.log(LogLevel.SEVERE, LOGGER_PREFIX, "File &bsettings.yml&7 is out of date! Lower-quality default values will be used for the new changes! Reset it or merge the old values to the new file.");
         }
     }
 
     //Registers the listener classes.
     private void registerEvents() {
-        final PluginManager pm = getServer().getPluginManager();
+        phantomLogger.log(LogLevel.INFO, LOGGER_PREFIX, "&8(&3Startup &8- &33&8/&36&8) &7Registering events...");
 
-        pm.registerEvents(new EntityDamageDebugListener(this), this);
-        pm.registerEvents(new CreatureSpawnListener(this), this);
-        pm.registerEvents(new EntityDamageListener(this), this);
-        pm.registerEvents(new EntityDeathListener(this), this);
-        pm.registerEvents(new EntityRegainHealthListener(this), this);
+        pluginManager.registerEvents(new EntityDamageDebugListener(this), this);
+        pluginManager.registerEvents(new CreatureSpawnListener(this), this);
+        pluginManager.registerEvents(new EntityDamageListener(this), this);
+        pluginManager.registerEvents(new EntityDeathListener(this), this);
+        pluginManager.registerEvents(new EntityRegainHealthListener(this), this);
     }
 
     //Registers the command classes.
     private void registerCommands() {
-        Objects.requireNonNull(getCommand("levelledmobs")).setExecutor(new LevelledMobsCommand(this));
+        phantomLogger.log(LogLevel.INFO, LOGGER_PREFIX, "&8(&3Startup &8- &34&8/&36&8) &7Registering commands...");
+
+        phantomLib.getCommandRegister().registerCommand(this, "levelledmobs", new LevelledMobsCommand(this));
+    }
+
+    // Things will be added in the future if needed.
+    private void hookToOtherPlugins() {
+        phantomLogger.log(LogLevel.INFO, LOGGER_PREFIX, "&8(&3Startup &8- &35&8/&36&8) &7Hooking to other plugins...");
+
+        //...
+    }
+
+    private void setupMetrics() {
+        phantomLogger.log(LogLevel.INFO, LOGGER_PREFIX, "&8(&3Startup &8- &36&8/&36&8) &7Setting up bStats...");
+
+        new Metrics(this, 6269);
     }
 
     //Checks if WorldGuard is available. If so, start registering its flags.
@@ -141,47 +171,20 @@ public class LevelledMobs extends JavaPlugin {
         if (hasWorldGuard) {
             worldGuardManager = new WorldGuardManager(this);
             worldGuardManager.registerFlags();
-            log(LogLevel.INFO, "WorldGuard hook &aenabled&7.");
-        } else {
-            log(LogLevel.INFO, "WorldGuard hook &cdisabled&7.");
         }
     }
 
     //Check for updates on the Spigot page.
     private void checkUpdates() {
-        if (settings.get("use-update-checker", true)) {
-            log(LogLevel.INFO, "&8(&3Update Checker&8) &7Checking for updates...");
+        if (fileCache.SETTINGS_USE_UPDATE_CHECKER) {
+            phantomLogger.log(LogLevel.INFO, LOGGER_PREFIX, "&8(&3Update Checker&8) &7Checking for updates...");
             new UpdateChecker(this, 74304).getVersion(version -> {
                 if (getDescription().getVersion().equalsIgnoreCase(version)) {
-                    log(LogLevel.INFO, "&8(&3Update Checker&8) &7You're running the latest version.");
+                    phantomLogger.log(LogLevel.INFO, LOGGER_PREFIX, "&8(&3Update Checker&8) &7You're running the latest version.");
                 } else {
-                    log(LogLevel.WARNING, "&8(&3Update Checker&8) &7There's a new update available: '&b" + version + "&7'. You're running '&b" + getDescription().getVersion() + "&7'.");
+                    phantomLogger.log(LogLevel.WARNING, LOGGER_PREFIX, "&8(&3Update Checker&8) &7There's a new update available: '&b" + version + "&7'. You're running '&b" + getDescription().getVersion() + "&7'.");
                 }
             });
-        }
-    }
-
-    //Replace color codes in the message with colors.
-    public String colorize(final String msg) {
-        return ChatColor.translateAlternateColorCodes('&', msg);
-    }
-
-    //My favoured logging system.
-    public void log(final LogLevel level, String msg) {
-        final Logger logger = getLogger();
-        msg = colorize("&7" + msg);
-        switch (level) {
-            case INFO:
-                logger.info(msg);
-                break;
-            case WARNING:
-                logger.warning(msg);
-                break;
-            case SEVERE:
-                logger.severe(msg);
-                break;
-            default:
-                throw new IllegalStateException("Unexpected LogLevel value: " + level + ". Message: " + msg);
         }
     }
 

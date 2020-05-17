@@ -38,8 +38,8 @@ public class EntityDamageListener implements Listener {
                     Number level = livingEntity.getPersistentDataContainer().get(instance.levelKey, PersistentDataType.INTEGER);
                     if (level != null) {
                         final double baseAttackDamage = e.getDamage();
-                        final double defaultAttackDamageAddition = instance.settings.get("fine-tuning.default-attack-damage-increase", 1.0F);
-                        final double attackDamageMultiplier = instance.settings.get("fine-tuning.multipliers.ranged-attack-damage", 1.1F);
+                        final double defaultAttackDamageAddition = instance.fileCache.SETTINGS_FINE_TUNING_DEFAULT_ATTACK_DAMAGE_INCREASE;
+                        final double attackDamageMultiplier = instance.fileCache.SETTINGS_FINE_TUNING_MULTIPLIERS_RANGED_ATTACK_DAMAGE;
                         final double newAttackDamage = baseAttackDamage + defaultAttackDamageAddition + (attackDamageMultiplier * level.intValue());
 
                         e.setDamage(newAttackDamage);
