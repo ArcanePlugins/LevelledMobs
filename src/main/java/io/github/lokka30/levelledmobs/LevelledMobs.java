@@ -26,7 +26,7 @@ public class LevelledMobs extends JavaPlugin {
     //PhantomLib stuff
     public PhantomLib phantomLib;
     public PhantomLogger phantomLogger;
-    public String LOGGER_PREFIX = "&b&lLevelledMobs: &7";
+    public String PREFIX = "&b&lLevelledMobs: &7";
     public MessageMethods messageMethods;
     public static StringFlag minlevelflag, maxlevelflag; //The WorldGuard flags of the min and max mob levels.
     public boolean hasWorldGuard; //if worldguard is on the server
@@ -70,7 +70,7 @@ public class LevelledMobs extends JavaPlugin {
     }
 
     public void onEnable() {
-        phantomLogger.log(LogLevel.INFO, LOGGER_PREFIX, "&8+----+ &f(Enable Started) &8+----+");
+        phantomLogger.log(LogLevel.INFO, PREFIX, "&8+----+ &f(Enable Started) &8+----+");
         final long startingTime = System.currentTimeMillis();
 
         checkCompatibility(); //Is the server running the latest version? Dependencies required?
@@ -89,33 +89,33 @@ public class LevelledMobs extends JavaPlugin {
 
         setupMetrics();
 
-        phantomLogger.log(LogLevel.INFO, LOGGER_PREFIX, "&8+----+ &f(Enable Complete, took " + (System.currentTimeMillis() - startingTime) + "ms) &8+----+");
+        phantomLogger.log(LogLevel.INFO, PREFIX, "&8+----+ &f(Enable Complete, took " + (System.currentTimeMillis() - startingTime) + "ms) &8+----+");
 
         checkUpdates();
     }
 
     //Checks if the server version is supported
     private void checkCompatibility() {
-        phantomLogger.log(LogLevel.INFO, LOGGER_PREFIX, "&8(&3Startup &8- &31&8/&36&8) &7Checking compatibility...");
+        phantomLogger.log(LogLevel.INFO, PREFIX, "&8(&3Startup &8- &31&8/&36&8) &7Checking compatibility...");
 
         final String currentVersion = getServer().getVersion();
         final String recommendedVersion = utils.getRecommendedServerVersion();
         if (!currentVersion.contains(recommendedVersion)) {
-            phantomLogger.log(LogLevel.INFO, LOGGER_PREFIX, "'&b" + currentVersion + "&7' is not a supported server version! You will not receive support whilst running this version.");
-            phantomLogger.log(LogLevel.INFO, LOGGER_PREFIX, "This version of LevelledMobs supports Minecraft version '&b" + recommendedVersion + "&7'.");
+            phantomLogger.log(LogLevel.INFO, PREFIX, "'&b" + currentVersion + "&7' is not a supported server version! You will not receive support whilst running this version.");
+            phantomLogger.log(LogLevel.INFO, PREFIX, "This version of LevelledMobs supports Minecraft version '&b" + recommendedVersion + "&7'.");
         }
     }
 
     //Manages the setting file.
     private void loadFiles() {
-        phantomLogger.log(LogLevel.INFO, LOGGER_PREFIX, "&8(&3Startup &8- &32&8/&36&8) &7Loading files...");
+        phantomLogger.log(LogLevel.INFO, PREFIX, "&8(&3Startup &8- &32&8/&36&8) &7Loading files...");
         try {
             settings = LightningBuilder
                     .fromFile(new File(getDataFolder() + File.separator + "settings"))
                     .addInputStreamFromResource("settings.yml")
                     .createYaml();
         } catch (LightningValidationException e) {
-            phantomLogger.log(LogLevel.SEVERE, LOGGER_PREFIX, "Unable to load &bsettings.yml&7! Disabling plugin.");
+            phantomLogger.log(LogLevel.SEVERE, PREFIX, "Unable to load &bsettings.yml&7! Disabling plugin.");
             pluginManager.disablePlugin(this);
             return;
         }
@@ -124,19 +124,19 @@ public class LevelledMobs extends JavaPlugin {
         final File settingsFile = new File(getDataFolder() + File.separator + "settings.yml");
 
         if (!(settingsFile.exists() && !settingsFile.isDirectory())) {
-            phantomLogger.log(LogLevel.INFO, LOGGER_PREFIX, "File &bsettings.yml&7 doesn't exist. Creating it now.");
+            phantomLogger.log(LogLevel.INFO, PREFIX, "File &bsettings.yml&7 doesn't exist. Creating it now.");
             saveResource("settings.yml", false);
         }
 
         //Check their versions
         if (settings.get("file-version", 0) != utils.getRecommendedSettingsVersion()) {
-            phantomLogger.log(LogLevel.SEVERE, LOGGER_PREFIX, "File &bsettings.yml&7 is out of date! Lower-quality default values will be used for the new changes! Reset it or merge the old values to the new file.");
+            phantomLogger.log(LogLevel.SEVERE, PREFIX, "File &bsettings.yml&7 is out of date! Lower-quality default values will be used for the new changes! Reset it or merge the old values to the new file.");
         }
     }
 
     //Registers the listener classes.
     private void registerEvents() {
-        phantomLogger.log(LogLevel.INFO, LOGGER_PREFIX, "&8(&3Startup &8- &33&8/&36&8) &7Registering events...");
+        phantomLogger.log(LogLevel.INFO, PREFIX, "&8(&3Startup &8- &33&8/&36&8) &7Registering events...");
 
         pluginManager.registerEvents(new EntityDamageDebugListener(this), this);
         pluginManager.registerEvents(new CreatureSpawnListener(this), this);
@@ -147,20 +147,20 @@ public class LevelledMobs extends JavaPlugin {
 
     //Registers the command classes.
     private void registerCommands() {
-        phantomLogger.log(LogLevel.INFO, LOGGER_PREFIX, "&8(&3Startup &8- &34&8/&36&8) &7Registering commands...");
+        phantomLogger.log(LogLevel.INFO, PREFIX, "&8(&3Startup &8- &34&8/&36&8) &7Registering commands...");
 
         phantomLib.getCommandRegister().registerCommand(this, "levelledmobs", new LevelledMobsCommand(this));
     }
 
     // Things will be added in the future if needed.
     private void hookToOtherPlugins() {
-        phantomLogger.log(LogLevel.INFO, LOGGER_PREFIX, "&8(&3Startup &8- &35&8/&36&8) &7Hooking to other plugins...");
+        phantomLogger.log(LogLevel.INFO, PREFIX, "&8(&3Startup &8- &35&8/&36&8) &7Hooking to other plugins...");
 
         //...
     }
 
     private void setupMetrics() {
-        phantomLogger.log(LogLevel.INFO, LOGGER_PREFIX, "&8(&3Startup &8- &36&8/&36&8) &7Setting up bStats...");
+        phantomLogger.log(LogLevel.INFO, PREFIX, "&8(&3Startup &8- &36&8/&36&8) &7Setting up bStats...");
 
         new Metrics(this, 6269);
     }
@@ -177,12 +177,12 @@ public class LevelledMobs extends JavaPlugin {
     //Check for updates on the Spigot page.
     private void checkUpdates() {
         if (fileCache.SETTINGS_USE_UPDATE_CHECKER) {
-            phantomLogger.log(LogLevel.INFO, LOGGER_PREFIX, "&8(&3Update Checker&8) &7Checking for updates...");
+            phantomLogger.log(LogLevel.INFO, PREFIX, "&8(&3Update Checker&8) &7Checking for updates...");
             new UpdateChecker(this, 74304).getVersion(version -> {
                 if (getDescription().getVersion().equalsIgnoreCase(version)) {
-                    phantomLogger.log(LogLevel.INFO, LOGGER_PREFIX, "&8(&3Update Checker&8) &7You're running the latest version.");
+                    phantomLogger.log(LogLevel.INFO, PREFIX, "&8(&3Update Checker&8) &7You're running the latest version.");
                 } else {
-                    phantomLogger.log(LogLevel.WARNING, LOGGER_PREFIX, "&8(&3Update Checker&8) &7There's a new update available: '&b" + version + "&7'. You're running '&b" + getDescription().getVersion() + "&7'.");
+                    phantomLogger.log(LogLevel.WARNING, PREFIX, "&8(&3Update Checker&8) &7There's a new update available: '&b" + version + "&7'. You're running '&b" + getDescription().getVersion() + "&7'.");
                 }
             });
         }

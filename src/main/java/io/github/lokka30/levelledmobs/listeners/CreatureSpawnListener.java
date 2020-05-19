@@ -82,7 +82,7 @@ public class CreatureSpawnListener implements Listener {
                 }
 
                 //Set the entity's max health.
-                final double baseMaxHealth = Objects.requireNonNull(e.getEntity().getAttribute(Attribute.GENERIC_MAX_HEALTH)).getBaseValue();
+                final double baseMaxHealth = Objects.requireNonNull(e.getEntity().getAttribute(Attribute.GENERIC_MAX_HEALTH)).getDefaultValue();
                 final double newMaxHealth = baseMaxHealth + (baseMaxHealth * (instance.fileCache.SETTINGS_FINE_TUNING_MULTIPLIERS_MAX_HEALTH) * level);
                 Objects.requireNonNull(livingEntity.getAttribute(Attribute.GENERIC_MAX_HEALTH)).setBaseValue(newMaxHealth);
                 livingEntity.setHealth(newMaxHealth); //Set the entity's health to their max health, otherwise their health is still the default of 20, so they'll be just as easy to kill.
@@ -90,14 +90,14 @@ public class CreatureSpawnListener implements Listener {
                 //Set the entity's movement speed.
                 //Only monsters should have their movement speed changed. Otherwise you would have a very fast level 10 race horse, or an untouchable bat.
                 if (livingEntity instanceof Monster) {
-                    final double baseMovementSpeed = Objects.requireNonNull(e.getEntity().getAttribute(Attribute.GENERIC_MOVEMENT_SPEED)).getBaseValue();
+                    final double baseMovementSpeed = Objects.requireNonNull(e.getEntity().getAttribute(Attribute.GENERIC_MOVEMENT_SPEED)).getDefaultValue();
                     final double newMovementSpeed = baseMovementSpeed + (baseMovementSpeed * instance.fileCache.SETTINGS_FINE_TUNING_MULTIPLIERS_MOVEMENT_SPEED * level);
                     Objects.requireNonNull(livingEntity.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED)).setBaseValue(newMovementSpeed);
                 }
 
                 //Checks if mobs attack damage can be modified before changing it.
                 if (livingEntity.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE) != null) {
-                    final double baseAttackDamage = Objects.requireNonNull(e.getEntity().getAttribute(Attribute.GENERIC_ATTACK_DAMAGE)).getBaseValue();
+                    final double baseAttackDamage = Objects.requireNonNull(e.getEntity().getAttribute(Attribute.GENERIC_ATTACK_DAMAGE)).getDefaultValue();
                     final double defaultAttackDamageAddition = instance.fileCache.SETTINGS_FINE_TUNING_DEFAULT_ATTACK_DAMAGE_INCREASE;
                     final double attackDamageMultiplier = instance.fileCache.SETTINGS_FINE_TUNING_MULTIPLIERS_ATTACK_DAMAGE;
                     final double newAttackDamage = baseAttackDamage + defaultAttackDamageAddition + (attackDamageMultiplier * level);

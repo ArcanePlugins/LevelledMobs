@@ -306,16 +306,18 @@ changes:
 - Fix | No longer attempts to apply levels to Citizen NPCs
 
 1.33.0-RELEASE: [NOT TESTED]
-- Important Note | New dependency: PhantomLib
+- Important Note | New dependency: PhantomLib.
+- Important Note | Please note that the settings file no longer reloads itself, this is to substantially increase performance. Use '/lm reload' to reload the settings file to memory now.
+- Important Note | New permissions 'levelledmobs.reload', 'levelledmobs.summon'
 - Addition | Now caching the Settings file! LM will no longer have to access your disk several times when a mob spawns.
-- Addition | Added '/lm' alias to '/levelledmobs'
+- Addition | Added '/lm' and '/lvlmobs' aliases to '/levelledmobs' for easier command usage.
+- Addition | Added '/lm reload' to reload the settings.yml file to memory.
+- Addition | Started work on a '/lm summon' command. It is not functional yet as the levelling system needs to be moved to a method rather than levelling a mob inside the listener. -- Requested by Leasoncre
+- Improvement | Removed multiple methods in favour of using PhantomLib's methods.
 - Improvement | Entity names now have spaces where necessary and each word is capitalized. e.g. 'CAVE_SPIDER' used to translate to 'Cavespider', it is now 'Cave Spider'.
 - Improvement | Updated dependencies
-- Improvement | Removed 'instance.levelManager' access in 'LevelManager.java', e.g. 'instance.levelManager.isLevellable' becomes 'isLevellable'
+- Improvement | Removed 'instance.levelManager' access in LevelManager, e.g. 'instance.levelManager.isLevellable' becomes 'isLevellable'
 - Improvement | Fixed typo in WorldGuardManager line 50
-- Improvement | Moved 'getMinLevel' and 'getMaxLevel' methods from LevelManager to FileCache, improved code.
-To be completed:
-- Addition | Added a '/levelledmobs reload' command to reload the settings file. Please note that the settings file no longer reloads itself, this is to substantially increase performance.
-- Addition | Added a '/levelledmobs summon' command to summon a levelled mob with specified options. (req by Leasoncre)
-- Addition | Revamped '/levelledmobs killall', it has now become '/levelledmobs kill' and you can now specify to kill 'near' (nearby levelled mobs) or 'all' (all levelled mobs).
-- Addition | Added tab completion to '/levelledmobs'
+- Improvement | Unimportant changes to the '/levelledmobs' command, messages in particular.
+- Improvement | Moved 'getMinLevel' and 'getMaxLevel' methods from LevelManager to FileCache + improved its code.
+- Improvement (& fix?) | Using 'Attribute#getDefaultValue' instead of `Attribute#getBaseValue`. Might fix incompatibility with SafariNets and other plugins like that

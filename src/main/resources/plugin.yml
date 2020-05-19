@@ -11,8 +11,8 @@ website: 'https://github.com/lokka30/LevelledMobs/wiki'
 commands:
   levelledmobs:
     description: Manage LevelledMobs
-    aliases: [leveledmobs, lm]
-    usage: /<command> [killall/info]
+    aliases: [leveledmobs, lm, lvlmobs]
+    usage: /<command> [killall/reload/summon/info]
 
 permissions:
   levelledmobs.*:
@@ -20,6 +20,14 @@ permissions:
     default: op
     children:
       levelledmobs.killall: true
+      levelledmobs.reload: true
+      levelledmobs.summon: true
   levelledmobs.killall:
-    description: access to /levelledMobs killAll [world]
+    description: access to /levelledMobs killall
+    default: op
+  levelledmobs.reload:
+    description: access to /levelledmobs reload
+    default: op
+  levelledmobs.summon:
+    description: access to /levelledmobs summon
     default: op
