@@ -307,18 +307,24 @@ changes:
 
 1.33.0, 1.33.1, 1.33.2, 1.33.3:
 - TODO Not Released Yet
-- Important Note | New dependency: PhantomLib.
-- Important Note | The settings file has been updated to ver 19. You can now allow passive mobs to have changed movement speeds (disabled by default), and there are extra comments to help users who need it.
-- Important Note | The settings file no longer reloads itself, this is to substantially increase performance. Use '/lm reload' to reload the settings file to memory now.
-- Important Note | New permissions 'levelledmobs.reload', 'levelledmobs.summon'
+Important Information:
+- New dependency: PhantomLib.
+- The settings file has been updated to ver 19. You can now allow passive mobs to have changed movement speeds (disabled by default), and there are extra comments to help users who need it.
+- The settings file no longer reloads itself, this is to substantially increase performance. Use '/lm reload' to reload the settings file to memory now.
+- New permissions 'levelledmobs.reload', 'levelledmobs.summon'
+
+Notable Changes:
 - Addition | Now caching the Settings file! LM will no longer have to access your disk several times when a mob spawns.
 - Addition | Added an option to the config to allow passive mobs to have their movement speeds changed.
 - Addition | Added '/lm' and '/lvlmobs' aliases to '/levelledmobs' for easier command usage.
-- Addition | Added '/lm reload' to reload the settings.yml file to memory.
-- Addition | Added more information to the debug functionality (base values of attributes)
-- Addition | Started work on a '/lm summon' command. It is not functional yet as the levelling system needs to be moved to a method rather than levelling a mob inside the listener. -- Requested by Leasoncre
-- Improvement | Removed multiple methods in favour of using PhantomLib's methods.
+- Addition | Added '/lm reload' to reload the settings.yml file to memory. permission is 'levelledmobs.reload'
 - Improvement | Entity names now have spaces where necessary and each word is capitalized. e.g. 'CAVE_SPIDER' used to translate to 'Cavespider', it is now 'Cave Spider'.
+- Improvement | Changed the default fine tuning multipliers to tone them down so they're not so overpowered
+
+Other Changes:
+- Addition | Added more information to the debug functionality (base values of attributes)
+- Addition | Started work on a '/lm summon' command. It is not functional yet as the levelling system needs to be revised for this to be added. Permission is 'levelledmobs.summon'. Requested by leasoncre.
+- Improvement | Removed multiple methods in favour of using PhantomLib's methods.
 - Improvement | Updated dependencies
 - Improvement | Removed 'instance.levelManager' access in LevelManager, e.g. 'instance.levelManager.isLevellable' becomes 'isLevellable'
 - Improvement | Fixed typo in WorldGuardManager line 50
