@@ -37,6 +37,8 @@ public class FileCache {
     public boolean SETTINGS_WORLDS_LIST_ENABLED;
     public List<String> SETTINGS_WORLDS_LIST_LIST;
     public String SETTINGS_WORLDS_LIST_MODE;
+    public boolean SETTINGS_ENTITYTYPE_LEVEL_OVERRIDE_ENABLED;
+    public boolean SETTINGS_WORLD_LEVEL_OVERRIDE_ENABLED;
     private FlatFile settings;
     private HashMap<EntityType, String> entityNameMap;
     private HashMap<EntityType, Integer> entityTypeMinLevelMap;
@@ -73,8 +75,10 @@ public class FileCache {
         SETTINGS_FINE_TUNING_MAX_LEVEL = settings.get("fine-tuning.max-level", 10);
         SETTINGS_SPAWN_DISTANCE_LEVELLING_ACTIVE = settings.get("spawn-distance-levelling.active", false);
         SETTINGS_WORLDS_LIST_ENABLED = settings.get("worlds-list.enabled", false);
-        SETTINGS_WORLDS_LIST_LIST = settings.get("worlds-list-list", Collections.singletonList("world"));
+        SETTINGS_WORLDS_LIST_LIST = settings.get("worlds-list.list", Collections.singletonList("world"));
         SETTINGS_WORLDS_LIST_MODE = settings.get("worlds-list.mode", "BLACKLIST").toUpperCase();
+        SETTINGS_ENTITYTYPE_LEVEL_OVERRIDE_ENABLED = settings.get("entitytype-level-override.enabled", false);
+        SETTINGS_WORLD_LEVEL_OVERRIDE_ENABLED = settings.get("world-level-override.enabled", false);
 
         entityNameMap = new HashMap<>();
         entityTypeMinLevelMap = new HashMap<>();
@@ -120,27 +124,31 @@ public class FileCache {
 
         int minLevel = SETTINGS_FINE_TUNING_MIN_LEVEL;
 
-        if (worldMinLevelMap.containsKey(worldName) && worldMinLevelMap.get(worldName) != -1) {
-            return worldMinLevelMap.get(worldName);
-        } else {
-            if (settings.contains(worldOverridePath)) {
-                minLevel = settings.get(worldOverridePath, 10);
-                worldMinLevelMap.put(worldName, minLevel);
-                return minLevel;
+        if (SETTINGS_WORLD_LEVEL_OVERRIDE_ENABLED) {
+            if (worldMinLevelMap.containsKey(worldName) && worldMinLevelMap.get(worldName) != -1) {
+                return worldMinLevelMap.get(worldName);
             } else {
-                worldMinLevelMap.put(worldName, -1);
+                if (settings.contains(worldOverridePath)) {
+                    minLevel = settings.get(worldOverridePath, 10);
+                    worldMinLevelMap.put(worldName, minLevel);
+                    return minLevel;
+                } else {
+                    worldMinLevelMap.put(worldName, -1);
+                }
             }
         }
 
-        if (entityTypeMinLevelMap.containsKey(entityType) && entityTypeMinLevelMap.get(entityType) != -1) {
-            return entityTypeMinLevelMap.get(entityType);
-        } else {
-            if (settings.contains(entityTypeOverridePath)) {
-                minLevel = settings.get(entityTypeOverridePath, 10);
-                entityTypeMinLevelMap.put(entityType, minLevel);
-                return minLevel;
+        if (SETTINGS_ENTITYTYPE_LEVEL_OVERRIDE_ENABLED) {
+            if (entityTypeMinLevelMap.containsKey(entityType) && entityTypeMinLevelMap.get(entityType) != -1) {
+                return entityTypeMinLevelMap.get(entityType);
             } else {
-                entityTypeMinLevelMap.put(entityType, -1);
+                if (settings.contains(entityTypeOverridePath)) {
+                    minLevel = settings.get(entityTypeOverridePath, 10);
+                    entityTypeMinLevelMap.put(entityType, minLevel);
+                    return minLevel;
+                } else {
+                    entityTypeMinLevelMap.put(entityType, -1);
+                }
             }
         }
 
@@ -165,27 +173,31 @@ public class FileCache {
 
         int maxLevel = SETTINGS_FINE_TUNING_MAX_LEVEL;
 
-        if (worldMaxLevelMap.containsKey(worldName) && worldMaxLevelMap.get(worldName) != -1) {
-            return worldMaxLevelMap.get(worldName);
-        } else {
-            if (settings.contains(worldOverridePath)) {
-                maxLevel = settings.get(worldOverridePath, 10);
-                worldMaxLevelMap.put(worldName, maxLevel);
-                return maxLevel;
+        if (SETTINGS_WORLD_LEVEL_OVERRIDE_ENABLED) {
+            if (worldMaxLevelMap.containsKey(worldName) && worldMaxLevelMap.get(worldName) != -1) {
+                return worldMaxLevelMap.get(worldName);
             } else {
-                worldMaxLevelMap.put(worldName, -1);
+                if (settings.contains(worldOverridePath)) {
+                    maxLevel = settings.get(worldOverridePath, 10);
+                    worldMaxLevelMap.put(worldName, maxLevel);
+                    return maxLevel;
+                } else {
+                    worldMaxLevelMap.put(worldName, -1);
+                }
             }
         }
 
-        if (entityTypeMaxLevelMap.containsKey(entityType) && entityTypeMaxLevelMap.get(entityType) != -1) {
-            return entityTypeMaxLevelMap.get(entityType);
-        } else {
-            if (settings.contains(entityTypeOverridePath)) {
-                maxLevel = settings.get(entityTypeOverridePath, 10);
-                entityTypeMaxLevelMap.put(entityType, maxLevel);
-                return maxLevel;
+        if (SETTINGS_ENTITYTYPE_LEVEL_OVERRIDE_ENABLED) {
+            if (entityTypeMaxLevelMap.containsKey(entityType) && entityTypeMaxLevelMap.get(entityType) != -1) {
+                return entityTypeMaxLevelMap.get(entityType);
             } else {
-                entityTypeMaxLevelMap.put(entityType, -1);
+                if (settings.contains(entityTypeOverridePath)) {
+                    maxLevel = settings.get(entityTypeOverridePath, 10);
+                    entityTypeMaxLevelMap.put(entityType, maxLevel);
+                    return maxLevel;
+                } else {
+                    entityTypeMaxLevelMap.put(entityType, -1);
+                }
             }
         }
 

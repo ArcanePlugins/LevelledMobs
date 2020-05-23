@@ -88,6 +88,7 @@ public class LevelledMobsCommand implements CommandExecutor {
                 } else {
                     sender.sendMessage(instance.messageMethods.prefix(instance.PREFIX, "You don't have access to that."));
                 }
+                return true;
             } else if (args[0].equalsIgnoreCase("summon")) {
                 if (sender.hasPermission("levelledmobs.summon")) {
                     sender.sendMessage(instance.messageMethods.prefix(instance.PREFIX, "Please avoid using this command as it isn't complete yet."));
@@ -132,6 +133,7 @@ public class LevelledMobsCommand implements CommandExecutor {
                 } else {
                     sender.sendMessage(instance.messageMethods.prefix(instance.PREFIX, "You don't have access to that."));
                 }
+                return true;
             } else if (args[0].equalsIgnoreCase("info")) {
                 if (args.length == 1) {
                     sender.sendMessage(" ");
@@ -142,8 +144,9 @@ public class LevelledMobsCommand implements CommandExecutor {
                     sender.sendMessage(instance.messageMethods.prefix(instance.PREFIX, "Usage: &b/" + label + " info"));
                 }
                 return true;
+            } else {
+                sender.sendMessage(instance.messageMethods.prefix(instance.PREFIX, "For a list of available commands, please run &b/" + label + "&7."));
             }
-            sender.sendMessage(instance.messageMethods.prefix(instance.PREFIX, "For a list of available commands, please run &b/" + label + "&7."));
         }
         return true;
     }

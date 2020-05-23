@@ -305,7 +305,8 @@ changes:
 1.32.1-RELEASE
 - Fix | No longer attempts to apply levels to Citizen NPCs
 
-1.33.0-RELEASE: [NOT TESTED]
+1.33.0, 1.33.1, 1.33.2:
+- TODO Not Released Yet
 - Important Note | New dependency: PhantomLib.
 - Important Note | Please note that the settings file no longer reloads itself, this is to substantially increase performance. Use '/lm reload' to reload the settings file to memory now.
 - Important Note | New permissions 'levelledmobs.reload', 'levelledmobs.summon'
@@ -321,3 +322,5 @@ changes:
 - Improvement | Unimportant changes to the '/levelledmobs' command, messages in particular.
 - Improvement | Moved 'getMinLevel' and 'getMaxLevel' methods from LevelManager to FileCache + improved its code.
 - Improvement (& fix?) | Using 'Attribute#getDefaultValue' instead of `Attribute#getBaseValue`. Might fix incompatibility with SafariNets and other plugins like that
+- Fix | all '/lm' commands saying 'for a list of commands' message
+- Fix | world and entitytype overrides not checking if they're enabled before scanning for their presence
