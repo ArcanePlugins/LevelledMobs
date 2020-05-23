@@ -13,11 +13,13 @@ creature-nametag: '&8[&7Level %level%&8 | &f%name%&8 | &c%health%&8/&c%max_healt
 # This allows creature nametags to be updated to the one set above when they are spawned or damaged.
 # If you use WildStacker or any other stacking plugins, you might want to disable this, by setting it to 'false'.
 # Unfortunately you won't be able to see the mob's level that way though.
+# Expected: [Boolean], Default: [true]
 enable-nametag-changes: true
 
 # Should passive creatures be levelled?
 # You probably don't want a Level 10 race horse to ramp up your chunk loading, or a random pig that moves fast.
 # However, you can always limit passive mobs' levels yourself in the 'entitytype-level-override' settings!
+# Expected: [Boolean], Default: [false]
 level-passive: false
 
 #Blacklisted types. These mobs won't be levelled, regardless of the setting above.
@@ -40,6 +42,7 @@ blacklisted-types-override:
 worlds-list:
 
   # Should the plugin apply the worlds list settings or not?
+  # Expected: [Boolean], Default: [false]
   enabled: false
 
   # What mode should the world list use?
@@ -61,33 +64,55 @@ blacklisted-reasons: []
 
 # Fine-tuning. You probably don't need to change the values in this cluster.
 fine-tuning:
+
+  # The minimum level possible for all mobs (unless overriden)
+  # Expected: [Integer], Default: [1]
   min-level: 1
+
+  # The maximum level possible for all mobs (unless overriden)
+  # Expected: [Integer], Default: [10]
   max-level: 10
 
   # Since the vanilla damage is pretty weak, you can increase its base value here.
   # The default adds 1 extra point to the attack damage attribute.
+  # Expected: [Double], Default: [1.0]
   default-attack-damage-increase: 1.0
 
   # For each level, these values are added to a mob. The default have been tried and tested, but you're free to change it.
   multipliers:
+
+    # Expected: [Double], Default: [0.065]
     movement-speed: 0.065
+
+    # Expected: [Double], Default: [0.02]
     max-health: 0.2
+
+    # Expected: [Double], Default: [1.5]
     attack-damage: 1.5
+
+    # Expected: [Double], Default: [1.1]
     ranged-attack-damage: 1.1
+
+    # Expected: [Double], Default: [0.16]
     item-drop: 0.16
+
+    # Expected: [Double], Default: [0.1]
     xp-drop: 0.1
 
   # Should the creature's nametag be removed on death?
+  # Expected: [Boolean], Default: [false]
   remove-nametag-on-death: false
 
   # Should nametags be visible when close by (set to true) or only when looking at it (set to false)?
   # Unfortunately, Minecraft limits us to a hard choice, there's no 'can see the nametag if mob is not obstructed' setting. :(
+  # Expected: [Boolean], Default: [false]
   custom-name-visible: false
 
 # Spawn Distance Levelling
 spawn-distance-levelling:
 
   # Should monsters level depending on distance to spawn?
+  # Expected: [Boolean], Default: [false]
   active: false
 
   # Should the level be able to randomly increase or decrease (within min/max limits) for variation?
@@ -129,14 +154,25 @@ world-level-override:
 
   min-level:
     example_world_123: 6
+    example_world_456: 3
+    world_nether: 5
 
   max-level:
     example_world_123: 7
+    example_world_456: 10
+    world_the_end: 10
 
 # If you want to change the name of mobs in the nametag then you can do that here
+# You can use color codes if you want too :)
 entity-name-override:
   WITHER: 'Wither'
   CREEPER: 'Creeper'
+# ENDER_DRAGON: '&5&lEnder Dragon'
+
+# Should passive mobs have changed movement speeds?
+# Set to false by default as most owners likely want it this way
+# Expected: [Boolean], Default: [false]
+passive-mobs-changed-movement-speed: false
 
 # Should LevelledMobs check for updates off of the Spigot page?
 use-update-checker: true
@@ -146,4 +182,4 @@ use-update-checker: true
 debug: false
 
 # Don't touch this unless you know what you are doing!
-file-version: 18
+file-version: 19

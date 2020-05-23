@@ -305,14 +305,17 @@ changes:
 1.32.1-RELEASE
 - Fix | No longer attempts to apply levels to Citizen NPCs
 
-1.33.0, 1.33.1, 1.33.2:
+1.33.0, 1.33.1, 1.33.2, 1.33.3:
 - TODO Not Released Yet
 - Important Note | New dependency: PhantomLib.
-- Important Note | Please note that the settings file no longer reloads itself, this is to substantially increase performance. Use '/lm reload' to reload the settings file to memory now.
+- Important Note | The settings file has been updated to ver 19. You can now allow passive mobs to have changed movement speeds (disabled by default), and there are extra comments to help users who need it.
+- Important Note | The settings file no longer reloads itself, this is to substantially increase performance. Use '/lm reload' to reload the settings file to memory now.
 - Important Note | New permissions 'levelledmobs.reload', 'levelledmobs.summon'
 - Addition | Now caching the Settings file! LM will no longer have to access your disk several times when a mob spawns.
+- Addition | Added an option to the config to allow passive mobs to have their movement speeds changed.
 - Addition | Added '/lm' and '/lvlmobs' aliases to '/levelledmobs' for easier command usage.
 - Addition | Added '/lm reload' to reload the settings.yml file to memory.
+- Addition | Added more information to the debug functionality (base values of attributes)
 - Addition | Started work on a '/lm summon' command. It is not functional yet as the levelling system needs to be moved to a method rather than levelling a mob inside the listener. -- Requested by Leasoncre
 - Improvement | Removed multiple methods in favour of using PhantomLib's methods.
 - Improvement | Entity names now have spaces where necessary and each word is capitalized. e.g. 'CAVE_SPIDER' used to translate to 'Cavespider', it is now 'Cave Spider'.
@@ -322,5 +325,6 @@ changes:
 - Improvement | Unimportant changes to the '/levelledmobs' command, messages in particular.
 - Improvement | Moved 'getMinLevel' and 'getMaxLevel' methods from LevelManager to FileCache + improved its code.
 - Improvement (& fix?) | Using 'Attribute#getDefaultValue' instead of `Attribute#getBaseValue`. Might fix incompatibility with SafariNets and other plugins like that
+- Improvement | Renamed a few methods in Utils class
 - Fix | all '/lm' commands saying 'for a list of commands' message
 - Fix | world and entitytype overrides not checking if they're enabled before scanning for their presence

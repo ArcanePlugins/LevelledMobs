@@ -21,9 +21,7 @@ import java.io.File;
 
 public class LevelledMobs extends JavaPlugin {
 
-    //WorldGuard stuff
     public static StateFlag allowlevelflag; //The WorldGuard flag if mobs can be levelled.
-    //PhantomLib stuff
     public PhantomLib phantomLib;
     public PhantomLogger phantomLogger;
     public String PREFIX = "&b&lLevelledMobs: &7";
@@ -31,18 +29,12 @@ public class LevelledMobs extends JavaPlugin {
     public static StringFlag minlevelflag, maxlevelflag; //The WorldGuard flags of the min and max mob levels.
     public boolean hasWorldGuard; //if worldguard is on the server
     public WorldGuardManager worldGuardManager; //The WorldGuardManager class brings WorldGuard support to LM.
-
-    //Storage stuff
     public FlatFile settings; //The settings config file.
     public FileCache fileCache; //The class which stores the settings in memory and provides useful methods for getting specific settings
-
-    //LM stuff
     public NamespacedKey levelKey; //What's the mob's level?
     public NamespacedKey isLevelledKey; //Is the mob levelled?
     public LevelManager levelManager; //The LevelManager class which holds a bunch of common methods
     public Utils utils; //The Utils class which holds some common utility methods
-
-    //Other stuff
     private PluginManager pluginManager;
 
     //When the plugin starts loading (when Bukkit announces that it's loading, but it hasn't started the enable process).
@@ -55,6 +47,7 @@ public class LevelledMobs extends JavaPlugin {
             getLogger().severe(" ----- WARNING -----");
             getLogger().severe("PhantomLib is not installed! You must install PhantomLib for the plugin to function.");
             getLogger().severe("Link to the SpigotMC resource: https://www.spigotmc.org/resources/%E2%99%A6-phantomlib-%E2%99%A6-1-7-10-1-15-2.78556/");
+            getLogger().severe("Plugin will now disable itself!");
             getLogger().severe(" ----- WARNING -----");
             pluginManager.disablePlugin(this);
             return;
@@ -99,7 +92,7 @@ public class LevelledMobs extends JavaPlugin {
         phantomLogger.log(LogLevel.INFO, PREFIX, "&8(&3Startup &8- &31&8/&36&8) &7Checking compatibility...");
 
         final String currentVersion = getServer().getVersion();
-        final String recommendedVersion = utils.getRecommendedServerVersion();
+        final String recommendedVersion = utils.getSupportedServerVersion();
         if (!currentVersion.contains(recommendedVersion)) {
             phantomLogger.log(LogLevel.INFO, PREFIX, "'&b" + currentVersion + "&7' is not a supported server version! You will not receive support whilst running this version.");
             phantomLogger.log(LogLevel.INFO, PREFIX, "This version of LevelledMobs supports Minecraft version '&b" + recommendedVersion + "&7'.");
@@ -129,7 +122,7 @@ public class LevelledMobs extends JavaPlugin {
         }
 
         //Check their versions
-        if (settings.get("file-version", 0) != utils.getRecommendedSettingsVersion()) {
+        if (settings.get("file-version", 0) != utils.getLatestSettingsVersion()) {
             phantomLogger.log(LogLevel.SEVERE, PREFIX, "File &bsettings.yml&7 is out of date! Lower-quality default values will be used for the new changes! Reset it or merge the old values to the new file.");
         }
     }

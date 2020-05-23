@@ -35,8 +35,11 @@ public class EntityDamageDebugListener implements Listener {
             if (p.isOp() && !delay.contains(uuid) && instance.levelManager.isLevellable(ent)) {
                 p.sendMessage(instance.messageMethods.colorize("&a&lLevelledMobs: &7Debug information for &a" + ent.getType().toString() + "&7: "));
                 p.sendMessage(instance.messageMethods.colorize("&8 - &fAttribute.GENERIC_MAX_HEALTH = &a" + Objects.requireNonNull(ent.getAttribute(Attribute.GENERIC_MAX_HEALTH)).getBaseValue()));
+                p.sendMessage(instance.messageMethods.colorize("&8 - &fAttribute.GENERIC_MAX_HEALTH Default = &a" + Objects.requireNonNull(ent.getAttribute(Attribute.GENERIC_MAX_HEALTH)).getDefaultValue()));
                 p.sendMessage(instance.messageMethods.colorize("&8 - &fAttribute.GENERIC_MOVEMENT_SPEED = &a" + Objects.requireNonNull(ent.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED)).getBaseValue()));
+                p.sendMessage(instance.messageMethods.colorize("&8 - &fAttribute.GENERIC_MOVEMENT_SPEED Default = &a" + Objects.requireNonNull(ent.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED)).getDefaultValue()));
                 p.sendMessage(instance.messageMethods.colorize("&8 - &fAttribute.GENERIC_ATTACK_DAMAGE = &a" + Objects.requireNonNull(ent.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE)).getBaseValue()));
+                p.sendMessage(instance.messageMethods.colorize("&8 - &fAttribute.GENERIC_ATTACK_DAMAGE Default = &a" + Objects.requireNonNull(ent.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE)).getDefaultValue()));
                 p.sendMessage(instance.messageMethods.colorize("&8 - &fCurrent Health = &a" + instance.utils.round(ent.getHealth(), 1)));
                 p.sendMessage(instance.messageMethods.colorize("&8 - &fLevel = &a" + ent.getPersistentDataContainer().get(instance.levelKey, PersistentDataType.INTEGER)));
                 p.sendMessage(instance.messageMethods.colorize("&8 - &fisLevelled = &a" + ent.getPersistentDataContainer().get(instance.isLevelledKey, PersistentDataType.STRING)));

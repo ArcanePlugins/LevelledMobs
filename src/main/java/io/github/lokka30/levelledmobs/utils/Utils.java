@@ -5,12 +5,12 @@ public class Utils {
     public Utils() {
     }
 
-    public String getRecommendedServerVersion() {
+    public String getSupportedServerVersion() {
         return "1.15";
     }
 
-    public int getRecommendedSettingsVersion() {
-        return 18;
+    public int getLatestSettingsVersion() {
+        return 19;
     }
 
     //This is a method created by Jonik & Mustapha Hadid at StackOverflow.

@@ -39,6 +39,7 @@ public class FileCache {
     public String SETTINGS_WORLDS_LIST_MODE;
     public boolean SETTINGS_ENTITYTYPE_LEVEL_OVERRIDE_ENABLED;
     public boolean SETTINGS_WORLD_LEVEL_OVERRIDE_ENABLED;
+    public boolean SETTINGS_PASSIVE_MOBS_CHANGED_MOVEMENT_SPEED;
     private FlatFile settings;
     private HashMap<EntityType, String> entityNameMap;
     private HashMap<EntityType, Integer> entityTypeMinLevelMap;
@@ -79,6 +80,7 @@ public class FileCache {
         SETTINGS_WORLDS_LIST_MODE = settings.get("worlds-list.mode", "BLACKLIST").toUpperCase();
         SETTINGS_ENTITYTYPE_LEVEL_OVERRIDE_ENABLED = settings.get("entitytype-level-override.enabled", false);
         SETTINGS_WORLD_LEVEL_OVERRIDE_ENABLED = settings.get("world-level-override.enabled", false);
+        SETTINGS_PASSIVE_MOBS_CHANGED_MOVEMENT_SPEED = settings.get("passive-mobs-changed-movement-speed", false);
 
         entityNameMap = new HashMap<>();
         entityTypeMinLevelMap = new HashMap<>();

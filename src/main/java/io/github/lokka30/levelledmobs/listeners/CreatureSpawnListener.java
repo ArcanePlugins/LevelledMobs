@@ -2,6 +2,7 @@ package io.github.lokka30.levelledmobs.listeners;
 
 import io.github.lokka30.levelledmobs.LevelledMobs;
 import org.bukkit.attribute.Attribute;
+import org.bukkit.entity.Boss;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Monster;
 import org.bukkit.event.EventHandler;
@@ -88,8 +89,7 @@ public class CreatureSpawnListener implements Listener {
                 livingEntity.setHealth(newMaxHealth); //Set the entity's health to their max health, otherwise their health is still the default of 20, so they'll be just as easy to kill.
 
                 //Set the entity's movement speed.
-                //Only monsters should have their movement speed changed. Otherwise you would have a very fast level 10 race horse, or an untouchable bat.
-                if (livingEntity instanceof Monster) {
+                if (instance.fileCache.SETTINGS_PASSIVE_MOBS_CHANGED_MOVEMENT_SPEED || livingEntity instanceof Monster || livingEntity instanceof Boss) {
                     final double baseMovementSpeed = Objects.requireNonNull(e.getEntity().getAttribute(Attribute.GENERIC_MOVEMENT_SPEED)).getDefaultValue();
                     final double newMovementSpeed = baseMovementSpeed + (baseMovementSpeed * instance.fileCache.SETTINGS_FINE_TUNING_MULTIPLIERS_MOVEMENT_SPEED * level);
                     Objects.requireNonNull(livingEntity.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED)).setBaseValue(newMovementSpeed);
