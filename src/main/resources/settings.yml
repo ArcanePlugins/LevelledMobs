@@ -81,17 +81,17 @@ fine-tuning:
   # For each level, these values are added to a mob. The default have been tried and tested, but you're free to change it.
   multipliers:
 
-    # Expected: [Double], Default: [0.065]
-    movement-speed: 0.065
+    # Expected: [Double], Default: [0.055]
+    movement-speed: 0.055
 
-    # Expected: [Double], Default: [0.013]
-    max-health: 0.13
+    # Expected: [Double], Default: [0.06]
+    max-health: 0.06
 
     # Expected: [Double], Default: [0.3]
     attack-damage: 0.3
 
-    # Expected: [Double], Default: [0.4]
-    ranged-attack-damage: 0.4
+    # Expected: [Double], Default: [0.2]
+    ranged-attack-damage: 0.2
 
     # Expected: [Double], Default: [0.16]
     item-drop: 0.16
