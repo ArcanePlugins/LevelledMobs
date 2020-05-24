@@ -2,6 +2,7 @@ name: LevelledMobs
 version: ${project.version}
 main: io.github.lokka30.levelledmobs.LevelledMobs
 softdepend: [WorldGuard]
+depend: [PhantomLib]
 api-version: '1.15'
 load: STARTUP
 author: lokka30

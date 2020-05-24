@@ -335,3 +335,6 @@ Other Changes:
 
 Upcoming Changes:
 - Improvement & Fix | Using 'Attribute#getDefaultValue' instead of `Attribute#getBaseValue`. Might fix incompatibility with SafariNets and other plugins like that
+
+v1.33.6-RELEASE:
+- Improvement, Fix | Added PhantomLib to the plugin.yml depend list. Should fix the error on startup for some users.

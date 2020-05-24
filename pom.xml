@@ -6,7 +6,7 @@
 
     <groupId>io.github.lokka30</groupId>
     <artifactId>LevelledMobs</artifactId>
-    <version>1.33.5-RELEASE</version>
+    <version>1.33.6-RELEASE</version>
 
     <packaging>jar</packaging>
 
