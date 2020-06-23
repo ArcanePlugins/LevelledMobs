@@ -83,7 +83,7 @@ public class LevelledMobsCommand implements CommandExecutor {
             } else if (args[0].equalsIgnoreCase("reload")) {
                 if (sender.hasPermission("levelledmobs.reload")) {
                     sender.sendMessage(instance.messageMethods.prefix(instance.PREFIX, "Reload started..."));
-                    instance.fileCache.loadLatest();
+                    instance.loadFiles();
                     sender.sendMessage(instance.messageMethods.prefix(instance.PREFIX, "...reload complete."));
                 } else {
                     sender.sendMessage(instance.messageMethods.prefix(instance.PREFIX, "You don't have access to that."));

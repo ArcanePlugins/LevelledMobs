@@ -338,3 +338,7 @@ Upcoming Changes:
 
 v1.33.6-RELEASE:
 - Improvement, Fix | Added PhantomLib to the plugin.yml depend list. Should fix the error on startup for some users.
+
+v1.33.7-RELEASE:
+- Improvement | Updated libraries as they were a few versions behind.
+- Improvement | Reload command now initiates the whole file loading process instead of just reloading the cache. (Req by leasoncre)

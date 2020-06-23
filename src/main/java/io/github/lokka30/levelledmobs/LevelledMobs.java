@@ -68,9 +68,8 @@ public class LevelledMobs extends JavaPlugin {
 
         checkCompatibility(); //Is the server running the latest version? Dependencies required?
 
+        phantomLogger.log(LogLevel.INFO, PREFIX, "&8(&3Startup &8- &32&8/&36&8) &7Loading files...");
         loadFiles();
-        fileCache = new FileCache(this);
-        fileCache.loadLatest();
 
         levelKey = new NamespacedKey(this, "level");
         isLevelledKey = new NamespacedKey(this, "isLevelled");
@@ -100,8 +99,7 @@ public class LevelledMobs extends JavaPlugin {
     }
 
     //Manages the setting file.
-    private void loadFiles() {
-        phantomLogger.log(LogLevel.INFO, PREFIX, "&8(&3Startup &8- &32&8/&36&8) &7Loading files...");
+    public void loadFiles() {
         try {
             settings = LightningBuilder
                     .fromFile(new File(getDataFolder() + File.separator + "settings"))
@@ -125,6 +123,9 @@ public class LevelledMobs extends JavaPlugin {
         if (settings.get("file-version", 0) != utils.getLatestSettingsVersion()) {
             phantomLogger.log(LogLevel.SEVERE, PREFIX, "File &bsettings.yml&7 is out of date! Lower-quality default values will be used for the new changes! Reset it or merge the old values to the new file.");
         }
+
+        fileCache = new FileCache(this);
+        fileCache.loadLatest();
     }
 
     //Registers the listener classes.
