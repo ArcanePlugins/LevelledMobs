@@ -1,12 +1,15 @@
 package io.github.lokka30.levelledmobs.utils;
 
+import java.util.Arrays;
+import java.util.List;
+
 public class Utils {
 
     public Utils() {
     }
 
-    public String getSupportedServerVersion() {
-        return "1.15";
+    public List<String> getSupportedServerVersions() {
+        return Arrays.asList("1.15", "1.16");
     }
 
     public int getLatestSettingsVersion() {

@@ -342,3 +342,9 @@ v1.33.6-RELEASE:
 v1.33.7-RELEASE:
 - Improvement | Updated libraries as they were a few versions behind.
 - Improvement | Reload command now initiates the whole file loading process instead of just reloading the cache. (Req by leasoncre)
+
+v1.33.8-RELEASE:
+- Improvement | Plugin now supports 1.16.1.
+- Improvement | Compiled in Minecraft 1.16.1
+- Improvement | Made the compatibility checker's supported version a list so multiple versions can be considered supported
+- Improvement | Added '1.16' to the supported versions on startup

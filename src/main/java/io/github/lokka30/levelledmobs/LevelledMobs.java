@@ -91,10 +91,15 @@ public class LevelledMobs extends JavaPlugin {
         phantomLogger.log(LogLevel.INFO, PREFIX, "&8(&3Startup &8- &31&8/&36&8) &7Checking compatibility...");
 
         final String currentVersion = getServer().getVersion();
-        final String recommendedVersion = utils.getSupportedServerVersion();
-        if (!currentVersion.contains(recommendedVersion)) {
-            phantomLogger.log(LogLevel.INFO, PREFIX, "'&b" + currentVersion + "&7' is not a supported server version! You will not receive support whilst running this version.");
-            phantomLogger.log(LogLevel.INFO, PREFIX, "This version of LevelledMobs supports Minecraft version '&b" + recommendedVersion + "&7'.");
+        boolean isRunningSupportedVersion = false;
+        for (String supportedVersion : utils.getSupportedServerVersions()) {
+            if (currentVersion.contains(supportedVersion)) {
+                isRunningSupportedVersion = true;
+                break;
+            }
+        }
+        if (!isRunningSupportedVersion) {
+            phantomLogger.log(LogLevel.INFO, PREFIX, "'&b" + currentVersion + "&7' is not a supported server version for this version of LevelledMobs. You will not receive the author's support whilst running this unsupported configuration.");
         }
     }
 
