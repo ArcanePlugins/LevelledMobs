@@ -137,8 +137,10 @@ public class LevelledMobsCommand implements CommandExecutor {
             } else if (args[0].equalsIgnoreCase("info")) {
                 if (args.length == 1) {
                     sender.sendMessage(" ");
-                    sender.sendMessage(instance.messageMethods.colorize("&7Running &bLevelledMobs v" + instance.getDescription().getVersion() + "&7, designed to run on &bMC v" + instance.utils.getSupportedServerVersion() + "&7."));
-                    sender.sendMessage(instance.messageMethods.colorize("&7This resource is available on &bSpigotMC.org&7."));
+                    sender.sendMessage(instance.messageMethods.colorize("&b&lLevelledMobs&b v" + instance.getDescription().getVersion() + "&8 | &7Developed by &3&olokka30&7."));
+                    sender.sendMessage(" ");
+                    sender.sendMessage(instance.messageMethods.colorize("&f&nSpigotMC Resource Link:"));
+                    sender.sendMessage(instance.messageMethods.colorize("&8https://www.spigotmc.org/resources/%E2%99%A6-levelledmobs-%E2%99%A6-for-1-15-x.74304/"));
                     sender.sendMessage(" ");
                 } else {
                     sender.sendMessage(instance.messageMethods.prefix(instance.PREFIX, "Usage: &b/" + label + " info"));
