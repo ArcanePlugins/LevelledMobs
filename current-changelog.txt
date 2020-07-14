@@ -348,3 +348,7 @@ v1.33.8-RELEASE:
 - Improvement | Compiled in Minecraft 1.16.1
 - Improvement | Made the compatibility checker's supported version a list so multiple versions can be considered supported
 - Improvement | Added '1.16' to the supported versions on startup
+
+v1.33.9-RELEASE:
+- Addition | You can now use 'BABY_ZOMBIE' type in Blacklisted Entities and Blacklist Override parts of the settings.yml :) Suggested by The8BitBuilder.
+- Improvement | Little bit of code cleanup in CreatureSpawnListener

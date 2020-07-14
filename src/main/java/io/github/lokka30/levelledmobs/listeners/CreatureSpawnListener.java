@@ -2,6 +2,7 @@ package io.github.lokka30.levelledmobs.listeners;
 
 import io.github.lokka30.levelledmobs.LevelledMobs;
 import org.bukkit.attribute.Attribute;
+import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.entity.Boss;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Monster;
@@ -11,7 +12,6 @@ import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.persistence.PersistentDataType;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -32,6 +32,9 @@ public class CreatureSpawnListener implements Listener {
         if (!e.isCancelled()) {
             final int level; //The mob's level.
             LivingEntity livingEntity = e.getEntity(); //The entity that was just spawned.
+            AttributeInstance ATTRIBUTE_MAX_HEALTH = livingEntity.getAttribute(Attribute.GENERIC_MAX_HEALTH);
+            AttributeInstance ATTRIBUTE_MOVEMENT_SPEED = livingEntity.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED);
+            AttributeInstance ATTRIBUTE_ATTACK_DAMAGE = livingEntity.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE);
 
             //Check if the mob is already levelled (safarinet compatibility, etc)
             String isLevelled = livingEntity.getPersistentDataContainer().get(instance.isLevelledKey, PersistentDataType.STRING);
@@ -83,26 +86,27 @@ public class CreatureSpawnListener implements Listener {
                 }
 
                 //Set the entity's max health.
-                final double baseMaxHealth = Objects.requireNonNull(e.getEntity().getAttribute(Attribute.GENERIC_MAX_HEALTH)).getBaseValue(); //change to default value
-                final double newMaxHealth = baseMaxHealth + (baseMaxHealth * (instance.fileCache.SETTINGS_FINE_TUNING_MULTIPLIERS_MAX_HEALTH) * level);
-                Objects.requireNonNull(livingEntity.getAttribute(Attribute.GENERIC_MAX_HEALTH)).setBaseValue(newMaxHealth);
-                livingEntity.setHealth(newMaxHealth); //Set the entity's health to their max health, otherwise their health is still the default of 20, so they'll be just as easy to kill.
+                if (ATTRIBUTE_MAX_HEALTH != null) {
+                    final double baseMaxHealth = ATTRIBUTE_MAX_HEALTH.getBaseValue(); //change to default value
+                    final double newMaxHealth = baseMaxHealth + (baseMaxHealth * (instance.fileCache.SETTINGS_FINE_TUNING_MULTIPLIERS_MAX_HEALTH) * level);
+                    ATTRIBUTE_MAX_HEALTH.setBaseValue(newMaxHealth);
+                    livingEntity.setHealth(newMaxHealth); //Set the entity's health to their max health, otherwise their health is still the default of 20, so they'll be just as easy to kill.
+                }
 
                 //Set the entity's movement speed.
-                if (instance.fileCache.SETTINGS_PASSIVE_MOBS_CHANGED_MOVEMENT_SPEED || livingEntity instanceof Monster || livingEntity instanceof Boss) {
-                    final double baseMovementSpeed = Objects.requireNonNull(e.getEntity().getAttribute(Attribute.GENERIC_MOVEMENT_SPEED)).getBaseValue(); //change to default value
+                if (ATTRIBUTE_MOVEMENT_SPEED != null && (instance.fileCache.SETTINGS_PASSIVE_MOBS_CHANGED_MOVEMENT_SPEED || livingEntity instanceof Monster || livingEntity instanceof Boss)) {
+                    final double baseMovementSpeed = ATTRIBUTE_MOVEMENT_SPEED.getBaseValue(); //change to default value
                     final double newMovementSpeed = baseMovementSpeed + (baseMovementSpeed * instance.fileCache.SETTINGS_FINE_TUNING_MULTIPLIERS_MOVEMENT_SPEED * level);
-                    Objects.requireNonNull(livingEntity.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED)).setBaseValue(newMovementSpeed);
+                    ATTRIBUTE_MOVEMENT_SPEED.setBaseValue(newMovementSpeed);
                 }
 
                 //Checks if mobs attack damage can be modified before changing it.
-                if (livingEntity.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE) != null) {
-                    final double baseAttackDamage = Objects.requireNonNull(e.getEntity().getAttribute(Attribute.GENERIC_ATTACK_DAMAGE)).getBaseValue(); //change to default value
+                if (ATTRIBUTE_ATTACK_DAMAGE != null) {
+                    final double baseAttackDamage = ATTRIBUTE_ATTACK_DAMAGE.getBaseValue(); //change to default value
                     final double defaultAttackDamageAddition = instance.fileCache.SETTINGS_FINE_TUNING_DEFAULT_ATTACK_DAMAGE_INCREASE;
                     final double attackDamageMultiplier = instance.fileCache.SETTINGS_FINE_TUNING_MULTIPLIERS_ATTACK_DAMAGE;
                     final double newAttackDamage = baseAttackDamage + defaultAttackDamageAddition + (attackDamageMultiplier * level);
-
-                    Objects.requireNonNull(livingEntity.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE)).setBaseValue(newAttackDamage);
+                    ATTRIBUTE_ATTACK_DAMAGE.setBaseValue(newAttackDamage);
                 }
 
                 //Define the mob's level so it can be accessed elsewhere.
@@ -158,6 +162,7 @@ public class CreatureSpawnListener implements Listener {
             }
         }
 
+        //Ensure the final level is within level min/max caps
         if (finalLevel > maxLevel) {
             finalLevel = maxLevel;
         }

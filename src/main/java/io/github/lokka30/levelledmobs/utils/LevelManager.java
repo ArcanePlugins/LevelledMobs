@@ -28,14 +28,29 @@ public class LevelManager {
         }
 
         //Blacklist override, entities here will return true regardless if they are in blacklistedTypes or are passive
-        if (instance.fileCache.SETTINGS_BLACKLIST_OVERRIDE_TYPES.contains(entity.getType().name())) {
+        List<String> blacklistOverrideTypes = instance.fileCache.SETTINGS_BLACKLIST_OVERRIDE_TYPES;
+        if (blacklistOverrideTypes.contains(entity.getType().name())) {
             return true;
+        } else {
+            if (entity instanceof Zombie) {
+                Zombie zombie = (Zombie) entity;
+                if (zombie.isBaby() && blacklistOverrideTypes.contains("BABY_ZOMBIE")) {
+                    return true;
+                }
+            }
         }
 
         //Set it to what's specified. If it's invalid, it'll just take a small predefiend list.
         List<String> blacklistedTypes = instance.fileCache.SETTINGS_BLACKLISTED_TYPES;
         if (blacklistedTypes.contains(entity.getType().name())) {
             return false;
+        } else {
+            if (entity instanceof Zombie) {
+                Zombie zombie = (Zombie) entity;
+                if (zombie.isBaby() && blacklistedTypes.contains("BABY_ZOMBIE")) {
+                    return false;
+                }
+            }
         }
 
         return entity instanceof Monster || entity instanceof Boss || instance.fileCache.SETTINGS_LEVEL_PASSIVE;

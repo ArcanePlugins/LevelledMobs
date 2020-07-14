@@ -99,7 +99,7 @@ public class LevelledMobs extends JavaPlugin {
             }
         }
         if (!isRunningSupportedVersion) {
-            phantomLogger.log(LogLevel.INFO, PREFIX, "'&b" + currentVersion + "&7' is not a supported server version for this version of LevelledMobs. You will not receive the author's support whilst running this unsupported configuration.");
+            phantomLogger.log(LogLevel.WARNING, PREFIX, "'&b" + currentVersion + "&7' is not a supported server version for this version of LevelledMobs. You will not receive the author's support whilst running this unsupported configuration.");
         }
     }
 

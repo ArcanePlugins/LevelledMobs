@@ -22,21 +22,25 @@ enable-nametag-changes: true
 # Expected: [Boolean], Default: [false]
 level-passive: false
 
-#Blacklisted types. These mobs won't be levelled, regardless of the setting above.
-#Blacklist all types by putting in 'ALL'.
-#Warning: Types are case-sensitive! That means they should be in UPPERCASE.
+# Blacklisted types. These mobs won't be levelled, regardless of the setting above.
+# Blacklist all types by putting in 'ALL'.
+# Warning: Types are case-sensitive! That means they should be in UPPERCASE.
+# You can also use 'BABY_ZOMBIE' to blacklist baby zombies.
 blacklisted-types:
   - 'VILLAGER'
   - 'WANDERING_TRADER'
   - 'ENDER_DRAGON'
   - 'WITHER'
   - 'RAVAGER'
+# - 'BABY_ZOMBIE'
 
 # Blacklisted Types Override: The mobs in here will be levelled regardless if they are included in 'blacklisted-types' or if 'level-passive' is true.
 # Shulkers are added by default as for some reason they aren't considered hostile mobs.
 # Warning: Types are case-sensitive! That means they should be in UPPERCASE.
+# You can also use 'BABY_ZOMBIE' to override baby zombies.
 blacklisted-types-override:
   - 'SHULKER'
+# - 'BABY_ZOMBIE'
 
 # Manage a list of worlds where Levelled Mobs can spawn or not
 worlds-list:
