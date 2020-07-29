@@ -16,7 +16,7 @@ public class EntityRegainHealthListener implements Listener {
     // When the mob regains health, try to update their nametag.
     @EventHandler
     public void onEntityRegainHealth(final EntityRegainHealthEvent e) {
-        if (e.isCancelled()) return;
+        if (e.isCancelled() || !instance.fileCache.SETTINGS_UPDATE_NAMETAG_HEALTH) return;
         instance.levelManager.updateTag(e.getEntity());
     }
 

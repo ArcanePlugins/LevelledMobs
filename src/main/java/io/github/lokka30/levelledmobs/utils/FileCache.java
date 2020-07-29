@@ -27,6 +27,7 @@ public class FileCache {
     public List<String> SETTINGS_BLACKLISTED_TYPES;
     public boolean SETTINGS_LEVEL_PASSIVE;
     public boolean SETTINGS_ENABLE_NAMETAG_CHANGES;
+    public boolean SETTINGS_UPDATE_NAMETAG_HEALTH;
     public boolean SETTINGS_FINE_TUNING_CUSTOM_NAME_VISIBLE;
     public boolean SETTINGS_FINE_TUNING_REMOVE_NAMETAG_ON_DEATH;
     public double SETTINGS_FINE_TUNING_MULTIPLIERS_ITEM_DROP;
@@ -68,6 +69,7 @@ public class FileCache {
         SETTINGS_BLACKLISTED_TYPES = settings.get("blacklisted-types", Arrays.asList("VILLAGER", "WANDERING_TRADER", "ENDER_DRAGON", "WITHER"));
         SETTINGS_LEVEL_PASSIVE = settings.get("level-passive", false);
         SETTINGS_ENABLE_NAMETAG_CHANGES = settings.get("enable-nametag-changes", true);
+        SETTINGS_UPDATE_NAMETAG_HEALTH = settings.get("update-nametag-health", true);
         SETTINGS_FINE_TUNING_CUSTOM_NAME_VISIBLE = settings.get("fine-tuning.custom-name-visible", false);
         SETTINGS_FINE_TUNING_REMOVE_NAMETAG_ON_DEATH = settings.get("fine-tuning.remove-nametag-on-death", false);
         SETTINGS_FINE_TUNING_MULTIPLIERS_ITEM_DROP = settings.get("fine-tuning.multipliers.item-drop", 0.16);

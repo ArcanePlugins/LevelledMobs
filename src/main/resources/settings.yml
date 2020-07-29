@@ -16,6 +16,10 @@ creature-nametag: '&8[&7Level %level%&8 | &f%name%&8 | &c%health%&8/&c%max_healt
 # Expected: [Boolean], Default: [true]
 enable-nametag-changes: true
 
+# Should creature nametags be updated when their health changes?
+# Set to false if you only want nametags to be set on spawn.
+update-nametag-health: true
+
 # Should passive creatures be levelled?
 # You probably don't want a Level 10 race horse to ramp up your chunk loading, or a random pig that moves fast.
 # However, you can always limit passive mobs' levels yourself in the 'entitytype-level-override' settings!

@@ -20,7 +20,9 @@ public class EntityDamageListener implements Listener {
     // When the mob is damaged, try to update their nametag.
     @EventHandler
     public void onDamage(final EntityDamageEvent e) {
-        instance.levelManager.updateTag(e.getEntity());
+    	if (instance.fileCache.SETTINGS_UPDATE_NAMETAG_HEALTH) {
+            instance.levelManager.updateTag(e.getEntity());
+    	}
     }
 
     // Check for levelled ranged damage.
