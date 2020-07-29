@@ -136,10 +136,14 @@ public class CreatureSpawnListener implements Listener {
         final int maxLevel = instance.fileCache.getMaxLevel(livingEntity);
 
         //Get distance between entity spawn point and world spawn
-        final int distance = (int) livingEntity.getWorld().getSpawnLocation().distance(livingEntity.getLocation());
+        final int entityDistance = (int) livingEntity.getWorld().getSpawnLocation().distance(livingEntity.getLocation());
+        
+        //Make mobs start leveling from start distance
+        int levelDistance = entityDistance - instance.fileCache.SETTINGS_SPAWN_DISTANCE_LEVELLING_START_DISTANCE;
+        if (levelDistance < 0) levelDistance = 0;
 
         //Get the level thats meant to be at a given distance
-        int finalLevel = (distance / instance.fileCache.SETTINGS_SPAWN_DISTANCE_LEVELLING_INCREASE_LEVEL_DISTANCE) + minLevel;
+        int finalLevel = (levelDistance / instance.fileCache.SETTINGS_SPAWN_DISTANCE_LEVELLING_INCREASE_LEVEL_DISTANCE) + minLevel;
 
         //Check if there should be a variance in level
         if (instance.fileCache.SETTINGS_SPAWN_DISTANCE_LEVELLING_VARIANCE_ENABLED) {

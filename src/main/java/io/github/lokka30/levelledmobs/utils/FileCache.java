@@ -21,6 +21,7 @@ public class FileCache {
     public boolean SETTINGS_SPAWN_DISTANCE_LEVELLING_VARIANCE_ENABLED;
     public int SETTINGS_SPAWN_DISTANCE_LEVELLING_VARIANCE_MIN;
     public int SETTINGS_SPAWN_DISTANCE_LEVELLING_VARIANCE_MAX;
+    public int SETTINGS_SPAWN_DISTANCE_LEVELLING_START_DISTANCE;
     public boolean SETTINGS_DEBUG;
     public double SETTINGS_FINE_TUNING_MULTIPLIERS_RANGED_ATTACK_DAMAGE;
     public List<String> SETTINGS_BLACKLIST_OVERRIDE_TYPES;
@@ -63,6 +64,7 @@ public class FileCache {
         SETTINGS_SPAWN_DISTANCE_LEVELLING_VARIANCE_ENABLED = settings.get("spawn-distance-levelling.variance.enabled", true);
         SETTINGS_SPAWN_DISTANCE_LEVELLING_VARIANCE_MIN = settings.get("spawn-distance-levelling.variance.min", 0);
         SETTINGS_SPAWN_DISTANCE_LEVELLING_VARIANCE_MAX = settings.get("spawn-distance-levelling.variance.max", 2);
+        SETTINGS_SPAWN_DISTANCE_LEVELLING_START_DISTANCE = settings.get("spawn-distance-levelling.start-distance", 0);
         SETTINGS_DEBUG = settings.get("debug", false);
         SETTINGS_FINE_TUNING_MULTIPLIERS_RANGED_ATTACK_DAMAGE = settings.get("fine-tuning.multipliers.ranged-attack-damage", 1.1F);
         SETTINGS_BLACKLIST_OVERRIDE_TYPES = settings.get("blacklist-override-types", Collections.singletonList("SHULKER"));
