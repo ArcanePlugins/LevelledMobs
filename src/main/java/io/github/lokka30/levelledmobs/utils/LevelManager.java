@@ -78,7 +78,7 @@ public class LevelManager {
             }
 
             if (isLevellable(livingEntity)) { // If the mob is levellable, go ahead.
-                String customName = instance.settings.get("creature-nametag", "&8[&7Level %level%&8 | &f%name%&8 | &c%health%&8/&c%max_health% %heart_symbol%&8]")
+                String customName = instance.fileCache.SETTINGS_CREATURE_NAMETAG
                         .replaceAll("%level%", entity.getPersistentDataContainer().get(instance.levelKey, PersistentDataType.INTEGER) + "")
                         .replaceAll("%name%", instance.fileCache.getEntityName(entityType))
                         .replaceAll("%health%", instance.utils.round(livingEntity.getHealth(), 1) + "")

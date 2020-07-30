@@ -91,7 +91,7 @@ public class LevelledMobsCommand implements CommandExecutor {
                 return true;
             } else if (args[0].equalsIgnoreCase("summon")) {
                 if (sender.hasPermission("levelledmobs.summon")) {
-                    sender.sendMessage(instance.messageMethods.prefix(instance.PREFIX, "Please avoid using this command as it isn't complete yet."));
+                    sender.sendMessage(instance.messageMethods.prefix(instance.PREFIX, "&7Please &cdo not use this command&7, it isn't complete yet."));
 
                     if (args.length == 3) { //Spawn the mob at their current coords (must be player)
                         if (sender instanceof Player) {
@@ -137,7 +137,8 @@ public class LevelledMobsCommand implements CommandExecutor {
             } else if (args[0].equalsIgnoreCase("info")) {
                 if (args.length == 1) {
                     sender.sendMessage(" ");
-                    sender.sendMessage(instance.messageMethods.colorize("&b&lLevelledMobs&b v" + instance.getDescription().getVersion() + "&8 | &7Developed by &3&olokka30&7."));
+                    sender.sendMessage(instance.messageMethods.colorize("&b&lLevelledMobs&b v" + instance.getDescription().getVersion()));
+                    sender.sendMessage(instance.messageMethods.colorize("&8 &m->&7 Developed by &3lokka30&7, &3Eyrian2010&7 and &3deiphiz&7."));
                     sender.sendMessage(" ");
                     sender.sendMessage(instance.messageMethods.colorize("&f&nSpigotMC Resource Link:"));
                     sender.sendMessage(instance.messageMethods.colorize("&8https://www.spigotmc.org/resources/%E2%99%A6-levelledmobs-%E2%99%A6-for-1-15-x.74304/"));

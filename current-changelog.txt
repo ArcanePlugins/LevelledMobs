@@ -352,3 +352,11 @@ v1.33.8-RELEASE:
 v1.33.9-RELEASE:
 - Addition | You can now use 'BABY_ZOMBIE' type in Blacklisted Entities and Blacklist Override parts of the settings.yml :) Suggested by The8BitBuilder.
 - Improvement | Little bit of code cleanup in CreatureSpawnListener
+
+v1.34.0-RELEASE:
+    Before I show the changelog, I need to give a big thank you to deiphiz for their contribution this update. Not only are his contributions brilliant, I didn't have to fix or tweak a single line of code he'd made.
+    If you are a user who wants nametags or health name tag plugins to work (which quite a lot of you are), he's got you sorted this update!
+    - Important | File 'settings.yml' has updated, its version is now '20'. Please reset or merge your current file.
+    - Addition (deiphiz) | New config option to toggle if nametags update when a mob's health is updated. This option is called 'update-nametag-health'. This is now disabled by default, and I have removed the health bar placeholders from the mob name tag by default (although they are still available!). This means that you can now use name tags and health indicator plugins such as 'BeautyIndicator' to show health bars on mobs. A lot of users have been requesting this and my brain was uncapable of thinking of this simple fix.
+    - Addition (deiphiz) | New config option 'start-distance' under 'spawn-distance-levelling'. This option allows you to set a value where distance from spawn levelling will begin. For example, if you only wanted distance from spawn levelling to start its action 5,000 blocks from spawn, then you can now do that!
+    - Fix | Forgot to cache the nametag config option. Fixed now. :)

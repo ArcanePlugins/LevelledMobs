@@ -8,7 +8,7 @@
 # - %health% - the mob's health
 # - %max_health% - the mob's max health
 # - %heart_symbol% - a predefined heart symbol.
-creature-nametag: '&8[&7Level %level%&8 | &f%name%&8 | &c%health%&8/&c%max_health% %heart_symbol%&8]'
+creature-nametag: '&8[&7Level %level%&8 | &f%name%&8]'
 
 # This allows creature nametags to be updated to the one set above when they are spawned or damaged.
 # If you use WildStacker or any other stacking plugins, you might want to disable this, by setting it to 'false'.
@@ -18,8 +18,9 @@ enable-nametag-changes: true
 
 # Should creature nametags be updated when their health changes?
 # Set to false if you only want nametags to be set on spawn.
-# Expected: [Boolean], Default: [true]
-update-nametag-health: true
+# Set to true if you want them to be set every time a mob's health updates (e.g. they were hit or regained health).
+# Expected: [Boolean], Default: [false]
+update-nametag-health: false
 
 # Should passive creatures be levelled?
 # You probably don't want a Level 10 race horse to ramp up your chunk loading, or a random pig that moves fast.

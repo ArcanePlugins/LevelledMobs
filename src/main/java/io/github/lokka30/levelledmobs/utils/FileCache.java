@@ -42,6 +42,7 @@ public class FileCache {
     public boolean SETTINGS_ENTITYTYPE_LEVEL_OVERRIDE_ENABLED;
     public boolean SETTINGS_WORLD_LEVEL_OVERRIDE_ENABLED;
     public boolean SETTINGS_PASSIVE_MOBS_CHANGED_MOVEMENT_SPEED;
+    public String SETTINGS_CREATURE_NAMETAG;
     private FlatFile settings;
     private HashMap<EntityType, String> entityNameMap;
     private HashMap<EntityType, Integer> entityTypeMinLevelMap;
@@ -71,7 +72,7 @@ public class FileCache {
         SETTINGS_BLACKLISTED_TYPES = settings.get("blacklisted-types", Arrays.asList("VILLAGER", "WANDERING_TRADER", "ENDER_DRAGON", "WITHER"));
         SETTINGS_LEVEL_PASSIVE = settings.get("level-passive", false);
         SETTINGS_ENABLE_NAMETAG_CHANGES = settings.get("enable-nametag-changes", true);
-        SETTINGS_UPDATE_NAMETAG_HEALTH = settings.get("update-nametag-health", true);
+        SETTINGS_UPDATE_NAMETAG_HEALTH = settings.get("update-nametag-health", false);
         SETTINGS_FINE_TUNING_CUSTOM_NAME_VISIBLE = settings.get("fine-tuning.custom-name-visible", false);
         SETTINGS_FINE_TUNING_REMOVE_NAMETAG_ON_DEATH = settings.get("fine-tuning.remove-nametag-on-death", false);
         SETTINGS_FINE_TUNING_MULTIPLIERS_ITEM_DROP = settings.get("fine-tuning.multipliers.item-drop", 0.16);
@@ -85,6 +86,7 @@ public class FileCache {
         SETTINGS_ENTITYTYPE_LEVEL_OVERRIDE_ENABLED = settings.get("entitytype-level-override.enabled", false);
         SETTINGS_WORLD_LEVEL_OVERRIDE_ENABLED = settings.get("world-level-override.enabled", false);
         SETTINGS_PASSIVE_MOBS_CHANGED_MOVEMENT_SPEED = settings.get("passive-mobs-changed-movement-speed", false);
+        SETTINGS_CREATURE_NAMETAG = settings.get("creature-nametag", "&8[&7Level %level%&8 | &f%name%&8]");
 
         entityNameMap = new HashMap<>();
         entityTypeMinLevelMap = new HashMap<>();
