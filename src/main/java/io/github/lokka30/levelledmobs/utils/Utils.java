@@ -13,7 +13,7 @@ public class Utils {
     }
 
     public int getLatestSettingsVersion() {
-        return 19;
+        return 20;
     }
 
     //This is a method created by Jonik & Mustapha Hadid at StackOverflow.
