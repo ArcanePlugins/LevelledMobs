@@ -107,7 +107,7 @@ public class LevelledMobs extends JavaPlugin {
     public void loadFiles() {
         try {
             settings = LightningBuilder
-                    .fromFile(new File(getDataFolder() + File.separator + "settings"))
+                    .fromFile(new File(getDataFolder(), "settings"))
                     .addInputStreamFromResource("settings.yml")
                     .createYaml();
         } catch (LightningValidationException e) {
@@ -117,7 +117,8 @@ public class LevelledMobs extends JavaPlugin {
         }
 
         //Check if they exist
-        final File settingsFile = new File(getDataFolder() + File.separator + "settings.yml");
+        final File settingsFile = new File(getDataFolder(), "settings.yml");
+        
 
         if (!(settingsFile.exists() && !settingsFile.isDirectory())) {
             phantomLogger.log(LogLevel.INFO, PREFIX, "File &bsettings.yml&7 doesn't exist. Creating it now.");

@@ -191,13 +191,6 @@ entity-name-override:
 # Expected: [Boolean], Default: [false]
 passive-mobs-changed-movement-speed: false
 
-# if the mob is the default level, show the label? (false is more like vanilla minecraft if the mob is at default level)
-show-label-for-default-leveled-mobs: true
-
-# what should the maxed out creeper explosion radius be?  3 is vanilla default
-# to keep creeper explosion radius from increasing, leave it at 3
-creeper-max-damage-radius: 6
-
 # Should LevelledMobs check for updates off of the Spigot page?
 use-update-checker: true
 

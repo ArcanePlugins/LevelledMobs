@@ -43,6 +43,7 @@ public class FileCache {
     public boolean SETTINGS_WORLD_LEVEL_OVERRIDE_ENABLED;
     public boolean SETTINGS_PASSIVE_MOBS_CHANGED_MOVEMENT_SPEED;
     public String SETTINGS_CREATURE_NAMETAG;
+    public int SETTINGS_CREEPER_MAX_RADIUS;
     private FlatFile settings;
     private HashMap<EntityType, String> entityNameMap;
     private HashMap<EntityType, Integer> entityTypeMinLevelMap;
@@ -87,6 +88,7 @@ public class FileCache {
         SETTINGS_WORLD_LEVEL_OVERRIDE_ENABLED = settings.get("world-level-override.enabled", false);
         SETTINGS_PASSIVE_MOBS_CHANGED_MOVEMENT_SPEED = settings.get("passive-mobs-changed-movement-speed", false);
         SETTINGS_CREATURE_NAMETAG = settings.get("creature-nametag", "&8[&7Level %level%&8 | &f%name%&8]");
+        SETTINGS_CREEPER_MAX_RADIUS = settings.get("creeper-max-damage-radius", 8);
 
         entityNameMap = new HashMap<>();
         entityTypeMinLevelMap = new HashMap<>();

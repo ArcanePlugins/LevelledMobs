@@ -1,9 +1,12 @@
 package io.github.lokka30.levelledmobs.listeners;
 
 import io.github.lokka30.levelledmobs.LevelledMobs;
+import io.github.lokka30.phantomlib.enums.LogLevel;
+
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.entity.Boss;
+import org.bukkit.entity.Creeper;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Monster;
 import org.bukkit.event.EventHandler;
@@ -29,98 +32,109 @@ public class CreatureSpawnListener implements Listener {
      */
     @EventHandler
     public void onMobSpawn(final CreatureSpawnEvent e) {
-        if (!e.isCancelled()) {
-            final int level; //The mob's level.
-            LivingEntity livingEntity = e.getEntity(); //The entity that was just spawned.
-            AttributeInstance ATTRIBUTE_MAX_HEALTH = livingEntity.getAttribute(Attribute.GENERIC_MAX_HEALTH);
-            AttributeInstance ATTRIBUTE_MOVEMENT_SPEED = livingEntity.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED);
-            AttributeInstance ATTRIBUTE_ATTACK_DAMAGE = livingEntity.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE);
+        if (e.isCancelled()) return;
+        		
+        final int level; //The mob's level.
+        LivingEntity livingEntity = e.getEntity(); //The entity that was just spawned.
+        AttributeInstance ATTRIBUTE_MAX_HEALTH = livingEntity.getAttribute(Attribute.GENERIC_MAX_HEALTH);
+        AttributeInstance ATTRIBUTE_MOVEMENT_SPEED = livingEntity.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED);
+        AttributeInstance ATTRIBUTE_ATTACK_DAMAGE = livingEntity.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE);
 
-            //Check if the mob is already levelled (safarinet compatibility, etc)
-            String isLevelled = livingEntity.getPersistentDataContainer().get(instance.isLevelledKey, PersistentDataType.STRING);
-            if (isLevelled != null && isLevelled.equalsIgnoreCase("true")) {
-                return;
+        //Check if the mob is already levelled (safarinet compatibility, etc)
+        String isLevelled = livingEntity.getPersistentDataContainer().get(instance.isLevelledKey, PersistentDataType.STRING);
+        if (isLevelled != null && isLevelled.equalsIgnoreCase("true")) {
+            return;
+        }
+        if (livingEntity.getPersistentDataContainer().get(instance.levelKey, PersistentDataType.INTEGER) != null) {
+            return;
+        }
+
+        //Check settings for spawn distance levelling and choose levelling method accordingly.
+        if (instance.hasWorldGuard && instance.worldGuardManager.checkRegionFlags(livingEntity)) {
+            level = generateRegionLevel(livingEntity);
+        } else if (instance.fileCache.SETTINGS_SPAWN_DISTANCE_LEVELLING_ACTIVE) {
+            level = generateLevelByDistance(livingEntity);
+        } else {
+            level = generateLevel(livingEntity);
+        }
+        
+        if (level == 1) return;
+
+        if (instance.levelManager.isLevellable(livingEntity)) { //Is the mob allowed to be levelled?
+
+            //Check the 'worlds list' to see if the mob is allowed to be levelled in the world it spawned in
+            if (instance.fileCache.SETTINGS_WORLDS_LIST_ENABLED) {
+                final List<String> worldsList = instance.fileCache.SETTINGS_WORLDS_LIST_LIST;
+                final String mode = instance.fileCache.SETTINGS_WORLDS_LIST_MODE;
+                final String currentWorldName = livingEntity.getWorld().getName();
+                switch (mode) {
+                    case "BLACKLIST":
+                        if (worldsList.contains(currentWorldName)) {
+                            return;
+                        }
+                        break;
+                    case "WHITELIST":
+                        if (!worldsList.contains(currentWorldName)) {
+                            return;
+                        }
+                        break;
+                    default:
+                        throw new IllegalStateException("Unknown worlds list mode '" + mode + "', expecting 'BLACKLIST' or 'WHITELIST'. Ignoring world list due to the error.");
+                }
             }
-            if (livingEntity.getPersistentDataContainer().get(instance.levelKey, PersistentDataType.INTEGER) != null) {
-                return;
+
+            //Check the list of blacklisted spawn reasons. If the entity's spawn reason is in there, then we don't continue.
+            //Uses a default as "NONE" as there are no blocked spawn reasons in the default config.
+            for (String blacklistedReason : instance.fileCache.SETTINGS_BLACKLISTED_REASONS) {
+                if (e.getSpawnReason().toString().equalsIgnoreCase(blacklistedReason) || blacklistedReason.equals("ALL")) {
+                    return;
+                }
             }
 
-            //Check settings for spawn distance levelling and choose levelling method accordingly.
-            if (instance.hasWorldGuard && instance.worldGuardManager.checkRegionFlags(livingEntity)) {
-                level = generateRegionLevel(livingEntity);
-            } else if (instance.fileCache.SETTINGS_SPAWN_DISTANCE_LEVELLING_ACTIVE) {
-                level = generateLevelByDistance(livingEntity);
-            } else {
-                level = generateLevel(livingEntity);
+            //Set the entity's max health.
+            if (ATTRIBUTE_MAX_HEALTH != null) {
+                final double baseMaxHealth = ATTRIBUTE_MAX_HEALTH.getBaseValue(); //change to default value
+                final double newMaxHealth = baseMaxHealth + (baseMaxHealth * (instance.fileCache.SETTINGS_FINE_TUNING_MULTIPLIERS_MAX_HEALTH) * level);
+                ATTRIBUTE_MAX_HEALTH.setBaseValue(newMaxHealth);
+                livingEntity.setHealth(newMaxHealth); //Set the entity's health to their max health, otherwise their health is still the default of 20, so they'll be just as easy to kill.
             }
 
-            if (instance.levelManager.isLevellable(livingEntity)) { //Is the mob allowed to be levelled?
-
-                //Check the 'worlds list' to see if the mob is allowed to be levelled in the world it spawned in
-                if (instance.fileCache.SETTINGS_WORLDS_LIST_ENABLED) {
-                    final List<String> worldsList = instance.fileCache.SETTINGS_WORLDS_LIST_LIST;
-                    final String mode = instance.fileCache.SETTINGS_WORLDS_LIST_MODE;
-                    final String currentWorldName = livingEntity.getWorld().getName();
-                    switch (mode) {
-                        case "BLACKLIST":
-                            if (worldsList.contains(currentWorldName)) {
-                                return;
-                            }
-                            break;
-                        case "WHITELIST":
-                            if (!worldsList.contains(currentWorldName)) {
-                                return;
-                            }
-                            break;
-                        default:
-                            throw new IllegalStateException("Unknown worlds list mode '" + mode + "', expecting 'BLACKLIST' or 'WHITELIST'. Ignoring world list due to the error.");
-                    }
-                }
-
-                //Check the list of blacklisted spawn reasons. If the entity's spawn reason is in there, then we don't continue.
-                //Uses a default as "NONE" as there are no blocked spawn reasons in the default config.
-                for (String blacklistedReason : instance.fileCache.SETTINGS_BLACKLISTED_REASONS) {
-                    if (e.getSpawnReason().toString().equalsIgnoreCase(blacklistedReason) || blacklistedReason.equals("ALL")) {
-                        return;
-                    }
-                }
-
-                //Set the entity's max health.
-                if (ATTRIBUTE_MAX_HEALTH != null) {
-                    final double baseMaxHealth = ATTRIBUTE_MAX_HEALTH.getBaseValue(); //change to default value
-                    final double newMaxHealth = baseMaxHealth + (baseMaxHealth * (instance.fileCache.SETTINGS_FINE_TUNING_MULTIPLIERS_MAX_HEALTH) * level);
-                    ATTRIBUTE_MAX_HEALTH.setBaseValue(newMaxHealth);
-                    livingEntity.setHealth(newMaxHealth); //Set the entity's health to their max health, otherwise their health is still the default of 20, so they'll be just as easy to kill.
-                }
-
-                //Set the entity's movement speed.
-                if (ATTRIBUTE_MOVEMENT_SPEED != null && (instance.fileCache.SETTINGS_PASSIVE_MOBS_CHANGED_MOVEMENT_SPEED || livingEntity instanceof Monster || livingEntity instanceof Boss)) {
-                    final double baseMovementSpeed = ATTRIBUTE_MOVEMENT_SPEED.getBaseValue(); //change to default value
-                    final double newMovementSpeed = baseMovementSpeed + (baseMovementSpeed * instance.fileCache.SETTINGS_FINE_TUNING_MULTIPLIERS_MOVEMENT_SPEED * level);
-                    ATTRIBUTE_MOVEMENT_SPEED.setBaseValue(newMovementSpeed);
-                }
-
-                //Checks if mobs attack damage can be modified before changing it.
-                if (ATTRIBUTE_ATTACK_DAMAGE != null) {
-                    final double baseAttackDamage = ATTRIBUTE_ATTACK_DAMAGE.getBaseValue(); //change to default value
-                    final double defaultAttackDamageAddition = instance.fileCache.SETTINGS_FINE_TUNING_DEFAULT_ATTACK_DAMAGE_INCREASE;
-                    final double attackDamageMultiplier = instance.fileCache.SETTINGS_FINE_TUNING_MULTIPLIERS_ATTACK_DAMAGE;
-                    final double newAttackDamage = baseAttackDamage + defaultAttackDamageAddition + (attackDamageMultiplier * level);
-                    ATTRIBUTE_ATTACK_DAMAGE.setBaseValue(newAttackDamage);
-                }
-
-                //Define the mob's level so it can be accessed elsewhere.
-                livingEntity.getPersistentDataContainer().set(instance.levelKey, PersistentDataType.INTEGER, level);
-                livingEntity.getPersistentDataContainer().set(instance.isLevelledKey, PersistentDataType.STRING, "true");
-
-                //Update their tag.
-                instance.levelManager.updateTag(e.getEntity());
-
-            } else if (e.getSpawnReason() == CreatureSpawnEvent.SpawnReason.CURED) {
-                //Check if a zombie villager was cured. If villagers aren't levellable, then their name will be cleared,
-                //otherwise their nametag is still 'Zombie Villager'. Imposter!
-                e.getEntity().setCustomName("");
+            //Set the entity's movement speed.
+            if (ATTRIBUTE_MOVEMENT_SPEED != null && (instance.fileCache.SETTINGS_PASSIVE_MOBS_CHANGED_MOVEMENT_SPEED || livingEntity instanceof Monster || livingEntity instanceof Boss)) {
+                final double baseMovementSpeed = ATTRIBUTE_MOVEMENT_SPEED.getBaseValue(); //change to default value
+                final double newMovementSpeed = baseMovementSpeed + (baseMovementSpeed * instance.fileCache.SETTINGS_FINE_TUNING_MULTIPLIERS_MOVEMENT_SPEED * level);
+                ATTRIBUTE_MOVEMENT_SPEED.setBaseValue(newMovementSpeed);
             }
+
+            //Checks if mobs attack damage can be modified before changing it.
+            if (ATTRIBUTE_ATTACK_DAMAGE != null) {
+                final double baseAttackDamage = ATTRIBUTE_ATTACK_DAMAGE.getBaseValue(); //change to default value
+                final double defaultAttackDamageAddition = instance.fileCache.SETTINGS_FINE_TUNING_DEFAULT_ATTACK_DAMAGE_INCREASE;
+                final double attackDamageMultiplier = instance.fileCache.SETTINGS_FINE_TUNING_MULTIPLIERS_ATTACK_DAMAGE;
+                final double newAttackDamage = baseAttackDamage + defaultAttackDamageAddition + (attackDamageMultiplier * level);
+                ATTRIBUTE_ATTACK_DAMAGE.setBaseValue(newAttackDamage);
+            }
+
+            //Define the mob's level so it can be accessed elsewhere.
+            livingEntity.getPersistentDataContainer().set(instance.levelKey, PersistentDataType.INTEGER, level);
+            livingEntity.getPersistentDataContainer().set(instance.isLevelledKey, PersistentDataType.STRING, "true");
+
+            if (instance.fileCache.SETTINGS_CREEPER_MAX_RADIUS != 3 && livingEntity instanceof Creeper) {
+            	//Creeper creeper = (Creeper)livingEntity;
+            	// level 1 ends up with 3 (base) and anything higher becomes a percent of the max radius as specified in the config
+            	double temp = (double)level * 0.1 * (double)instance.fileCache.SETTINGS_CREEPER_MAX_RADIUS; 
+            	int temp2 = (int)Math.ceil(temp) + 2;
+            	
+            	instance.phantomLogger.log(LogLevel.INFO, "test", String.format("creepers: %s, %s, %s", level, temp, temp2));
+            }
+            
+            //Update their tag.
+            instance.levelManager.updateTag(e.getEntity());
+
+        } else if (e.getSpawnReason() == CreatureSpawnEvent.SpawnReason.CURED) {
+            //Check if a zombie villager was cured. If villagers aren't levellable, then their name will be cleared,
+            //otherwise their nametag is still 'Zombie Villager'. Imposter!
+            e.getEntity().setCustomName("");
         }
     }
 
