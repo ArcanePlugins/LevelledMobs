@@ -37,6 +37,7 @@ public class LevelledMobs extends JavaPlugin {
     public LevelManager levelManager; //The LevelManager class which holds a bunch of common methods
     private PluginManager pluginManager;
     public final static int maxCreeperBlastRadius = 100; // prevent creepers from blowing up the world!
+    private final static int currentFileVersion = 21;
     public Pattern slimeRegex;
     public CreatureSpawnListener creatureSpawn;
     
@@ -132,7 +133,7 @@ public class LevelledMobs extends JavaPlugin {
         }
 
         //Check their versions
-        if (settings.get("file-version", 0) != Utils.getLatestSettingsVersion()) {
+        if (settings.get("file-version", 0) != currentFileVersion) {
             phantomLogger.log(LogLevel.SEVERE, PREFIX, "File &bsettings.yml&7 is out of date! Lower-quality default values will be used for the new changes! Reset it or merge the old values to the new file.");
         }
 

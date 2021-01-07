@@ -36,10 +36,6 @@ public final class Utils {
     	 * */
     }
 
-    public static int getLatestSettingsVersion() {
-        return 20;
-    }
-
     //This is a method created by Jonik & Mustapha Hadid at StackOverflow.
     //It simply grabs 'value', being a double, and rounds it, leaving 'places' decimal places intact.
     //Created by Jonik & Mustapha Hadid @ stackoverflow

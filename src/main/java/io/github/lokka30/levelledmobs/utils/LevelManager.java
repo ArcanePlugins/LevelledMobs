@@ -56,7 +56,7 @@ public class LevelManager {
         boolean result = entity instanceof Monster || entity instanceof Boss || instance.fileCache.SETTINGS_LEVEL_PASSIVE;
         
         // there are a few special cases here since they aren't part of the 'Monster' interface
-        if (!result && (entity instanceof Ghast || entity instanceof MagmaCube))
+        if (!result && (entity instanceof Ghast || entity instanceof MagmaCube || entity instanceof Hoglin))
         	result = true;
 
         return result;

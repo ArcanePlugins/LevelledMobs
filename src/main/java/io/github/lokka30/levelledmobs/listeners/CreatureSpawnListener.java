@@ -184,7 +184,7 @@ public class CreatureSpawnListener implements Listener {
         	livingEntity.setCustomName("");
         }
         else {
-        	//instance.phantomLogger.log(LogLevel.INFO, "test", livingEntity.getName() + " is NOT levelable");
+        	//instance.phantomLogger.log(io.github.lokka30.phantomlib.enums.LogLevel.INFO, "test", livingEntity.getName() + " is NOT levelable");
         }
     }
 

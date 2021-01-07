@@ -4,14 +4,15 @@ Upcoming Changes:
 v.1.4.0-BETA:
   Developement work has been passed over by stumper66.
 - Improvement | WorldGuard level restrictions now properly respect the max level if both max and min levels are set to the same value
-- Improvement | Magmacubes, Slimes and Ghasts now are leveled as expected
+- Improvement | Magmacubes, Slimes, Ghasts and Hoglins are now leveled as expected
 - Improvement | KillAll command revamped and split into two subcommands; kill all [world] and kill near [radius]
+- Improvement | Kill command now kills mobs instead of instantly removing them
 - Addition | Creeper blast radius is now scaled with their corresponding level.  The amount is configured in settings.  Default is 5 for max blast radius (vanilla creeper radius is 3)
 - Addiiton | Full tab autocompletion for all commands
 - Addition | New setting (on by default) for when slimes / magmacubes split they will retain the level of their parents.  If disabled then each child is randomly leveled (same behavior as previous versions)
 - Addition | New setting to show labels on default leveled mobs.  If set to false and a level 1 mob is spawned, no label will be shown
 - Addition | Summon command is fully implemented.  Summon the specified level and amount of mobs and your location, another player or x y z location.
-- Addition | Slight change in permissions.  Added levelledmobs.kill.all and levelledmobs.kill.near.  Remove levelledmobs.killall
+- Addition | Slight change in permissions.  Added levelledmobs.kill.all and levelledmobs.kill.near.  Removed levelledmobs.killall
 - Addition | added setting 'summon-command-spawn-distance-from-player' with default of 5.  This is used with the summon command
 
 
