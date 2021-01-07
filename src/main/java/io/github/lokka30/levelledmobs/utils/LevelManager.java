@@ -2,13 +2,13 @@ package io.github.lokka30.levelledmobs.utils;
 
 import io.github.lokka30.levelledmobs.LevelledMobs;
 import org.bukkit.attribute.Attribute;
+import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.entity.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Random;
 
 public class LevelManager {
@@ -52,8 +52,14 @@ public class LevelManager {
                 }
             }
         }
+        
+        boolean result = entity instanceof Monster || entity instanceof Boss || instance.fileCache.SETTINGS_LEVEL_PASSIVE;
+        
+        // there are a few special cases here since they aren't part of the 'Monster' interface
+        if (!result && (entity instanceof Ghast || entity instanceof MagmaCube))
+        	result = true;
 
-        return entity instanceof Monster || entity instanceof Boss || instance.fileCache.SETTINGS_LEVEL_PASSIVE;
+        return result;
     }
 
     //Update an entity's tag. it is called twice as when a mob gets damaged their health is updated after to the health after they got damaged.
@@ -78,12 +84,26 @@ public class LevelManager {
             }
 
             if (isLevellable(livingEntity)) { // If the mob is levellable, go ahead.
-                String customName = instance.fileCache.SETTINGS_CREATURE_NAMETAG
+            	
+            	// changed from regex replace to case-insensitive replace
+            	// in theory should use less resources and they can use capital letters in the variables now
+            	String customName = instance.fileCache.SETTINGS_CREATURE_NAMETAG;
+            	customName = Utils.replaceEx(customName, "%level%", String.valueOf(entity.getPersistentDataContainer().get(instance.levelKey, PersistentDataType.INTEGER)));
+            	customName = Utils.replaceEx(customName, "%name%", instance.fileCache.getEntityName(entityType));
+            	customName = Utils.replaceEx(customName, "%health%", String.valueOf(Utils.round(livingEntity.getHealth(), 1)));
+            	AttributeInstance att = livingEntity.getAttribute(Attribute.GENERIC_MAX_HEALTH);
+            	String health = att == null ? "" : String.valueOf(Utils.round((livingEntity.getAttribute(Attribute.GENERIC_MAX_HEALTH)).getBaseValue(), 1));
+            	customName = Utils.replaceEx(customName, "%max_health%", health);
+            	customName = Utils.replaceEx(customName, "%heart_symbol%", "❤");
+            	
+            	/*
+                customName = instance.fileCache.SETTINGS_CREATURE_NAMETAG
                         .replaceAll("%level%", entity.getPersistentDataContainer().get(instance.levelKey, PersistentDataType.INTEGER) + "")
                         .replaceAll("%name%", instance.fileCache.getEntityName(entityType))
-                        .replaceAll("%health%", instance.utils.round(livingEntity.getHealth(), 1) + "")
-                        .replaceAll("%max_health%", instance.utils.round(Objects.requireNonNull(livingEntity.getAttribute(Attribute.GENERIC_MAX_HEALTH)).getBaseValue(), 1) + "")
+                        .replaceAll("%health%", Utils.round(livingEntity.getHealth(), 1) + "")
+                        .replaceAll("%max_health%", Utils.round(Objects.requireNonNull(livingEntity.getAttribute(Attribute.GENERIC_MAX_HEALTH)).getBaseValue(), 1) + "")
                         .replaceAll("%heart_symbol%", "❤");
+                */
                 entity.setCustomName(instance.messageMethods.colorize(customName));
                 entity.setCustomNameVisible(instance.fileCache.SETTINGS_FINE_TUNING_CUSTOM_NAME_VISIBLE);
             }

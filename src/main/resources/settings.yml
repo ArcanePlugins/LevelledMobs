@@ -8,6 +8,7 @@
 # - %health% - the mob's health
 # - %max_health% - the mob's max health
 # - %heart_symbol% - a predefined heart symbol.
+# warning, changing this much from the default might break the setting for 'slime-children-retain-level-of-parent'
 creature-nametag: '&8[&7Level %level%&8 | &f%name%&8]'
 
 # This allows creature nametags to be updated to the one set above when they are spawned or damaged.
@@ -108,6 +109,9 @@ fine-tuning:
 
     # Expected: [Double], Default: [0.1]
     xp-drop: 0.1
+    
+    # Expected: [Double], Default: [??]
+    flying-speed: 0.1
 
   # Should the creature's nametag be removed on death?
   # Expected: [Boolean], Default: [false]
@@ -192,11 +196,19 @@ entity-name-override:
 passive-mobs-changed-movement-speed: false
 
 # if the mob is the default level, show the label? (false is more like vanilla minecraft if the mob is at default level)
-show-label-for-default-leveled-mobs: true
+show-label-for-default-leveled-mobs: false
 
 # what should the maxed out creeper explosion radius be?  3 is vanilla default
-# to keep creeper explosion radius from increasing, leave it at 3
-creeper-max-damage-radius: 6
+# to keep creeper explosion radius from increasing, leave it at 3.
+# warning, putting a high value in here will basically turn creepers into atomic bombs!
+creeper-max-damage-radius: 5
+
+# when a slime or magmacube splits it creates new entities.  Should they match the level of the parent?
+# if not each child gets a random level matching the defined rules
+slime-children-retain-level-of-parent: true
+
+# when using the summon command how far away from the player will the mobs spawn
+summon-command-spawn-distance-from-player: 5
 
 # Should LevelledMobs check for updates off of the Spigot page?
 use-update-checker: true
@@ -206,4 +218,4 @@ use-update-checker: true
 debug: false
 
 # Don't touch this unless you know what you are doing!
-file-version: 20
+file-version: 21

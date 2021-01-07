@@ -110,10 +110,10 @@ public class WorldGuardManager {
 
         //Check region flags on integrity.
         for (ProtectedRegion region : regions) {
-            if (instance.utils.isInteger(region.getFlag(LevelledMobs.minlevelflag)))
+            if (Utils.isInteger(region.getFlag(LevelledMobs.minlevelflag)))
                 if (Integer.parseInt(Objects.requireNonNull(region.getFlag(LevelledMobs.minlevelflag))) > -1)
                     minbool = true;
-            if (instance.utils.isInteger(region.getFlag(LevelledMobs.maxlevelflag)))
+            if (Utils.isInteger(region.getFlag(LevelledMobs.maxlevelflag)))
                 if (Integer.parseInt(Objects.requireNonNull(region.getFlag(LevelledMobs.maxlevelflag))) > Integer.parseInt(Objects.requireNonNull(region.getFlag(LevelledMobs.minlevelflag))))
                     maxbool = true;
             if (region.getFlag(LevelledMobs.allowlevelflag) == StateFlag.State.ALLOW)
@@ -133,9 +133,9 @@ public class WorldGuardManager {
 
         //Set min. max. level to flag values
         for (ProtectedRegion region : regions) {
-            if (instance.utils.isInteger(region.getFlag(LevelledMobs.minlevelflag)))
+            if (Utils.isInteger(region.getFlag(LevelledMobs.minlevelflag)))
                 minlevel = Math.max(Integer.parseInt(Objects.requireNonNull(region.getFlag(LevelledMobs.minlevelflag))), 0);
-            if (instance.utils.isInteger(region.getFlag(LevelledMobs.maxlevelflag)))
+            if (Utils.isInteger(region.getFlag(LevelledMobs.maxlevelflag)))
                 maxlevel = Math.max(Integer.parseInt(Objects.requireNonNull(region.getFlag(LevelledMobs.maxlevelflag))), 0);
         }
 

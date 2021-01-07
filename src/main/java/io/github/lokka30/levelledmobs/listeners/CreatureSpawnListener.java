@@ -1,7 +1,7 @@
 package io.github.lokka30.levelledmobs.listeners;
 
 import io.github.lokka30.levelledmobs.LevelledMobs;
-import io.github.lokka30.phantomlib.enums.LogLevel;
+import io.github.lokka30.levelledmobs.utils.Utils;
 
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
@@ -12,11 +12,13 @@ import org.bukkit.entity.Monster;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.CreatureSpawnEvent;
+import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import org.bukkit.persistence.PersistentDataType;
 
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.regex.Matcher;
 
 public class CreatureSpawnListener implements Listener {
 
@@ -25,7 +27,7 @@ public class CreatureSpawnListener implements Listener {
     public CreatureSpawnListener(final LevelledMobs instance) {
         this.instance = instance;
     }
-
+    
     /*
     This class assigns mob levels to each entity spawned.
     Attribute determined by: setBaseValue(default + elevated? + (increase-per-level * level)
@@ -33,15 +35,19 @@ public class CreatureSpawnListener implements Listener {
     @EventHandler
     public void onMobSpawn(final CreatureSpawnEvent e) {
         if (e.isCancelled()) return;
-        		
-        final int level; //The mob's level.
-        LivingEntity livingEntity = e.getEntity(); //The entity that was just spawned.
-        AttributeInstance ATTRIBUTE_MAX_HEALTH = livingEntity.getAttribute(Attribute.GENERIC_MAX_HEALTH);
-        AttributeInstance ATTRIBUTE_MOVEMENT_SPEED = livingEntity.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED);
-        AttributeInstance ATTRIBUTE_ATTACK_DAMAGE = livingEntity.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE);
+        
+        // spawned using summon command.  It will get processed directly
+        if (e.getSpawnReason() == SpawnReason.CUSTOM) return;
+        
+        processMobSpawn(e.getEntity(), e.getSpawnReason(), -1);
+    }
+    
+    public void processMobSpawn(final LivingEntity livingEntity, final SpawnReason spawnReason, int level) {
+
+    	String entityName = livingEntity.getName();
 
         //Check if the mob is already levelled (safarinet compatibility, etc)
-        String isLevelled = livingEntity.getPersistentDataContainer().get(instance.isLevelledKey, PersistentDataType.STRING);
+        String isLevelled = livingEntity.getPersistentDataContainer().get(instance.isLevelledKey, PersistentDataType.STRING);       
         if (isLevelled != null && isLevelled.equalsIgnoreCase("true")) {
             return;
         }
@@ -49,19 +55,26 @@ public class CreatureSpawnListener implements Listener {
             return;
         }
 
-        //Check settings for spawn distance levelling and choose levelling method accordingly.
-        if (instance.hasWorldGuard && instance.worldGuardManager.checkRegionFlags(livingEntity)) {
-            level = generateRegionLevel(livingEntity);
-        } else if (instance.fileCache.SETTINGS_SPAWN_DISTANCE_LEVELLING_ACTIVE) {
-            level = generateLevelByDistance(livingEntity);
-        } else {
-            level = generateLevel(livingEntity);
+        // if spawned naturally it will be -1.  If used summon with specific level specified then it will be >= 0
+        if (level == -1) {
+	        //Check settings for spawn distance levelling and choose levelling method accordingly.
+	        if (instance.hasWorldGuard && instance.worldGuardManager.checkRegionFlags(livingEntity)) {
+	            level = generateRegionLevel(livingEntity);
+	        } else if (instance.fileCache.SETTINGS_SPAWN_DISTANCE_LEVELLING_ACTIVE) {
+	            level = generateLevelByDistance(livingEntity);
+	        } else {
+	            level = generateLevel(livingEntity);
+	        }
         }
         
-        if (level == 1) return;
+        if (level == 1 && !instance.fileCache.SETTINGS_SHOW_LABEL_FOR_DEFAULT_LEVELED_MOBS) {
+        	if (spawnReason == SpawnReason.SLIME_SPLIT)
+        		livingEntity.setCustomName(""); // child slimes carry the name of their parent
+        	return;
+        }
 
         if (instance.levelManager.isLevellable(livingEntity)) { //Is the mob allowed to be levelled?
-
+        	
             //Check the 'worlds list' to see if the mob is allowed to be levelled in the world it spawned in
             if (instance.fileCache.SETTINGS_WORLDS_LIST_ENABLED) {
                 final List<String> worldsList = instance.fileCache.SETTINGS_WORLDS_LIST_LIST;
@@ -86,10 +99,33 @@ public class CreatureSpawnListener implements Listener {
             //Check the list of blacklisted spawn reasons. If the entity's spawn reason is in there, then we don't continue.
             //Uses a default as "NONE" as there are no blocked spawn reasons in the default config.
             for (String blacklistedReason : instance.fileCache.SETTINGS_BLACKLISTED_REASONS) {
-                if (e.getSpawnReason().toString().equalsIgnoreCase(blacklistedReason) || blacklistedReason.equals("ALL")) {
+                if (spawnReason.toString().equalsIgnoreCase(blacklistedReason) || blacklistedReason.equals("ALL")) {
                     return;
                 }
             }
+            
+            if (instance.fileCache.SETTINGS_SLIME_CHILDREN_RETAIN_LEVEL_OF_PARENT &&
+            		spawnReason == SpawnReason.SLIME_SPLIT && !Utils.isNullOrEmpty(entityName)) {
+            	// change child level to match parent.  Only possible from parsing the custom number for the level number
+            	
+                // [Level 10 | Slime]
+            	// §8[§7Level 3§8 | §fSlime§8]
+            	
+            	Matcher m = instance.slimeRegex.matcher(entityName);
+            	if (m.find() && m.groupCount() >= 1) {
+            		// the only reason it won't match is if someone has changed the custom name syntax significantly
+            		String probablyLevelNum = m.group(1);
+            		if (Utils.isInteger(probablyLevelNum))
+            			level = Integer.parseInt(probablyLevelNum);
+            	}
+            	// if we didn't match then the slime will get a random level instead of the parent's level
+            	
+            }
+                                   
+            AttributeInstance ATTRIBUTE_MAX_HEALTH = livingEntity.getAttribute(Attribute.GENERIC_MAX_HEALTH);
+            AttributeInstance ATTRIBUTE_MOVEMENT_SPEED = livingEntity.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED);
+            AttributeInstance ATTRIBUTE_ATTACK_DAMAGE = livingEntity.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE);
+            AttributeInstance ATTRIBUTE_FLYING_SPEED = livingEntity.getAttribute(Attribute.GENERIC_FLYING_SPEED); // doesn't look like this is actually used :(
 
             //Set the entity's max health.
             if (ATTRIBUTE_MAX_HEALTH != null) {
@@ -114,27 +150,41 @@ public class CreatureSpawnListener implements Listener {
                 final double newAttackDamage = baseAttackDamage + defaultAttackDamageAddition + (attackDamageMultiplier * level);
                 ATTRIBUTE_ATTACK_DAMAGE.setBaseValue(newAttackDamage);
             }
+            
+            if (ATTRIBUTE_FLYING_SPEED != null) {
+            	final double baseFlyingSpeed = ATTRIBUTE_FLYING_SPEED.getBaseValue(); //change to default value
+                final double newflyingSpeed = baseFlyingSpeed + (baseFlyingSpeed * instance.fileCache.SETTINGS_FINE_TUNING_MULTIPLIERS_FLYING_SPEED * level);
+                ATTRIBUTE_MOVEMENT_SPEED.setBaseValue(newflyingSpeed);
+            }
 
             //Define the mob's level so it can be accessed elsewhere.
             livingEntity.getPersistentDataContainer().set(instance.levelKey, PersistentDataType.INTEGER, level);
             livingEntity.getPersistentDataContainer().set(instance.isLevelledKey, PersistentDataType.STRING, "true");
 
             if (instance.fileCache.SETTINGS_CREEPER_MAX_RADIUS != 3 && livingEntity instanceof Creeper) {
-            	//Creeper creeper = (Creeper)livingEntity;
             	// level 1 ends up with 3 (base) and anything higher becomes a percent of the max radius as specified in the config
-            	double temp = (double)level * 0.1 * (double)instance.fileCache.SETTINGS_CREEPER_MAX_RADIUS; 
-            	int temp2 = (int)Math.ceil(temp) + 2;
+            	int blastRadius = (int)Math.floor(level / 10.0 * ((double)instance.fileCache.SETTINGS_CREEPER_MAX_RADIUS) - 3) + 3;
+
+            	// even at 100 creepers are atomic bombs but at least won't blow up the entire world
+            	if (blastRadius > LevelledMobs.maxCreeperBlastRadius)
+            		blastRadius = LevelledMobs.maxCreeperBlastRadius;
+            	if (level == 1) blastRadius = 3; // level 1 creepers will always have default radius
+            	else if (level == 0 && blastRadius > 2) blastRadius = 2; // level 0 will always be less than default 
             	
-            	instance.phantomLogger.log(LogLevel.INFO, "test", String.format("creepers: %s, %s, %s", level, temp, temp2));
+            	((Creeper)livingEntity).setExplosionRadius(blastRadius);
             }
             
             //Update their tag.
-            instance.levelManager.updateTag(e.getEntity());
+            instance.levelManager.updateTag(livingEntity);
 
-        } else if (e.getSpawnReason() == CreatureSpawnEvent.SpawnReason.CURED) {
+        } // end if entity is levelable 
+        else if (spawnReason == CreatureSpawnEvent.SpawnReason.CURED) {
             //Check if a zombie villager was cured. If villagers aren't levellable, then their name will be cleared,
             //otherwise their nametag is still 'Zombie Villager'. Imposter!
-            e.getEntity().setCustomName("");
+        	livingEntity.setCustomName("");
+        }
+        else {
+        	//instance.phantomLogger.log(LogLevel.INFO, "test", livingEntity.getName() + " is NOT levelable");
         }
     }
 
