@@ -1,21 +1,10 @@
-Upcoming Changes:
-- Improvement & Fix | Using 'Attribute#getDefaultValue' instead of `Attribute#getBaseValue`. Might fix incompatibility with SafariNets and other plugins like that
+# Changelog
+Please scroll down to 'New Changelog' unless you wish to read the old changelog.
 
-v.1.4.0-BETA:
-  Developement work has been passed over by stumper66.
-- Improvement | WorldGuard level restrictions now properly respect the max level if both max and min levels are set to the same value
-- Improvement | Magmacubes, Slimes, Ghasts and Hoglins are now leveled as expected
-- Improvement | KillAll command revamped and split into two subcommands; kill all [world] and kill near [radius]
-- Improvement | Kill command now kills mobs instead of instantly removing them
-- Addition | Creeper blast radius is now scaled with their corresponding level.  The amount is configured in settings.  Default is 5 for max blast radius (vanilla creeper radius is 3)
-- Addiiton | Full tab autocompletion for all commands
-- Addition | New setting (on by default) for when slimes / magmacubes split they will retain the level of their parents.  If disabled then each child is randomly leveled (same behavior as previous versions)
-- Addition | New setting to show labels on default leveled mobs.  If set to false and a level 1 mob is spawned, no label will be shown
-- Addition | Summon command is fully implemented.  Summon the specified level and amount of mobs and your location, another player or x y z location.
-- Addition | Slight change in permissions.  Added levelledmobs.kill.all and levelledmobs.kill.near.  Removed levelledmobs.killall
-- Addition | added setting 'summon-command-spawn-distance-from-player' with default of 5.  This is used with the summon command
+# Old Changelog
+Unformatted, and in descending order.
 
-
+```
 v1.34.0-RELEASE:
     Before I show the changelog, I need to give a big thank you to deiphiz for their contribution this update. Not only are his contributions brilliant, I didn't have to fix or tweak a single line of code he'd made.
     If you are a user who wants nametags or health name tag plugins to work (which quite a lot of you are), he's got you sorted this update!
@@ -334,3 +323,34 @@ other changes:
 
 1.0-SNAPSHOT
 - Initial release. Base programming, doesn't include levelled mobs function.
+```
+
+# New Changelog
+The new changelog is formatted using Markdown and is now in ascending order.
+
+## v1.35.0-PRE:
+
+### Notes:
+* I wish to start off with a big thank you to stumper66 for their huge list of contributions this update. Stumper also gave me the spark to recontinue work on the resource. Give him your thanks too if you enjoy this update ;)
+* I've recontinued work on the plugin. Almost all of the code has been altered from the previous version.
+
+### Changes by stumper66:
+* WorldGuard level restrictions now properly respect the max level if both max and min levels are set to the same value
+* Magmacubes, Slimes, Ghasts and Hoglins are now leveled as expected
+* KillAll command revamped and split into two subcommands; `kill all [world]` and `kill near [radius]`
+* Kill command now kills mobs instead of instantly removing them
+* Creeper blast radius is now scaled with their corresponding level.  The amount is configured in settings.  Default is 5 for max blast radius (vanilla creeper radius is 3)
+* Full tab autocompletion for all commands
+* New setting (on by default) for when slimes / magmacubes split they will retain the level of their parents.  If disabled then each child is randomly leveled (same behavior as previous versions)
+* New setting to show labels on default leveled mobs.  If set to false and a level 1 mob is spawned, no label will be shown
+* Summon command is fully implemented.  Summon the specified level and amount of mobs and your location, another player or x y z location.
+* Slight change in permissions.  Added levelledmobs.kill.all and levelledmobs.kill.near.  Removed levelledmobs.killall
+* Added setting 'summon-command-spawn-distance-from-player' with default of 5. This is used with the summon command.
+
+### Changes by lokka30:
+* Removed PhantomLib dependency. It has been replaced with MicroLib which I have hidden inside the LevelledMobs .jar file so that you don't need to worry about it. :)
+* Cleaned up the main class significantly. A bunch of methods and variables have been moved to more fitting classes.
+* Added a `messages.yml` file, which administrators can now translate all chat messages from the plugin.
+* Technical changes:
+  * Removed the LightningStorage system - it has been replaced with a far simpler system. This will not only increase performance, but also decrease clutter in the code and decrease the file size of the plugin.
+  * Added the ListMode enum which will make checking lists in the config easier and cleaner

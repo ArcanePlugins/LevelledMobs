@@ -196,7 +196,7 @@ entity-name-override:
 passive-mobs-changed-movement-speed: false
 
 # if the mob is the default level, show the label? (false is more like vanilla minecraft if the mob is at default level)
-show-label-for-default-leveled-mobs: false
+show-label-for-default-levelled-mobs: true
 
 # what should the maxed out creeper explosion radius be?  3 is vanilla default
 # to keep creeper explosion radius from increasing, leave it at 3.
