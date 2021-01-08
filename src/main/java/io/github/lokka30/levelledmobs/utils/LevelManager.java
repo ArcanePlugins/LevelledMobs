@@ -106,8 +106,7 @@ public class LevelManager {
 
             if (isLevellable(livingEntity)) { // If the mob is levellable, go ahead.
 
-                // changed from regex replace to case-insensitive replace
-                // in theory should use less resources and they can use capital letters in the variables now
+                // case-insensitive replace
                 String customName = instance.settingsCfg.getString("creature-nametag");
                 customName = Utils.replaceEx(customName, "%level%", String.valueOf(entity.getPersistentDataContainer().get(instance.levelManager.levelKey, PersistentDataType.INTEGER)));
                 customName = Utils.replaceEx(customName, "%name%", instance.configUtils.getEntityName(entityType));
@@ -116,15 +115,7 @@ public class LevelManager {
                 String health = att == null ? "" : String.valueOf(Utils.round((Objects.requireNonNull(livingEntity.getAttribute(Attribute.GENERIC_MAX_HEALTH))).getBaseValue(), 1));
                 customName = Utils.replaceEx(customName, "%max_health%", health);
                 customName = Utils.replaceEx(customName, "%heart_symbol%", "❤");
-            	
-            	/*
-                customName = instance.fileCache.SETTINGS_CREATURE_NAMETAG
-                        .replaceAll("%level%", entity.getPersistentDataContainer().get(instance.levelKey, PersistentDataType.INTEGER) + "")
-                        .replaceAll("%name%", instance.fileCache.getEntityName(entityType))
-                        .replaceAll("%health%", Utils.round(livingEntity.getHealth(), 1) + "")
-                        .replaceAll("%max_health%", Utils.round(Objects.requireNonNull(livingEntity.getAttribute(Attribute.GENERIC_MAX_HEALTH)).getBaseValue(), 1) + "")
-                        .replaceAll("%heart_symbol%", "❤");
-                */
+
                 assert customName != null;
                 entity.setCustomName(MicroUtils.colorize(customName));
                 entity.setCustomNameVisible(instance.settingsCfg.getBoolean("fine-tuning.custom-name-visible"));

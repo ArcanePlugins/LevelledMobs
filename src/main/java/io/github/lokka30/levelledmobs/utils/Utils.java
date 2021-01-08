@@ -31,43 +31,55 @@ public final class Utils {
     }
 
     //Integer check
-    public static boolean isInteger(String s) {
-        return isInteger(s, 10);
-    }
+    public static boolean isInteger(String str) {
+        if (Utils.isNotNullOrEmpty(str)) {
+            for (int i = 0; i < str.length(); i++) {
+                if (i == 0 && str.charAt(i) == '-') {
+                    if (str.length() == 1) {
+                        return false;
+                    } else {
+                        continue;
+                    }
+                }
 
-    //Integer check
-    public static boolean isInteger(String s, int radix) {
-        if (s == null || s.isEmpty()) return false;
-        for (int i = 0; i < s.length(); i++) {
-            if (i == 0 && s.charAt(i) == '-') {
-                if (s.length() == 1) return false;
-                else continue;
+                if (Character.digit(str.charAt(i), 10) < 0) {
+                    return false;
+                }
             }
-            if (Character.digit(s.charAt(i), radix) < 0) return false;
+            return true;
+        } else {
+            return false;
         }
-        return true;
     }
 
-	public static String replaceEx(String original, String pattern, String replacement) {
-        if (original == null || pattern == null) return null;
+    /**
+     * Case insensitive alternative to String#replace
+     *
+     * @param originalString the original string which may contain the item to replace
+     * @param replaceWhat    the item that should be replaced
+     * @param replaceWith    what to replace the item with
+     * @return the original string with replaced content
+     */
+    public static String replaceEx(String originalString, String replaceWhat, String replaceWith) {
+        if (originalString == null || replaceWhat == null) return null;
 
         int count, position0, position1;
         count = position0 = 0;
-        String upperString = original.toUpperCase();
-        String upperPattern = pattern.toUpperCase();
-        int inc = (original.length() / pattern.length()) *
-                (replacement.length() - pattern.length());
-        char[] chars = new char[original.length() + Math.max(0, inc)];
+        String upperString = originalString.toUpperCase();
+        String upperPattern = replaceWhat.toUpperCase();
+        int inc = (originalString.length() / replaceWhat.length()) *
+                (replaceWith.length() - replaceWhat.length());
+        char[] chars = new char[originalString.length() + Math.max(0, inc)];
         while ((position1 = upperString.indexOf(upperPattern, position0)) != -1) {
             for (int i = position0; i < position1; ++i)
-                chars[count++] = original.charAt(i);
-            for (int i = 0; i < replacement.length(); ++i)
-                chars[count++] = replacement.charAt(i);
-            position0 = position1 + pattern.length();
+                chars[count++] = originalString.charAt(i);
+            for (int i = 0; i < replaceWith.length(); ++i)
+                chars[count++] = replaceWith.charAt(i);
+            position0 = position1 + replaceWhat.length();
         }
-        if (position0 == 0) return original;
-        for (int i = position0; i < original.length(); ++i)
-            chars[count++] = original.charAt(i);
+        if (position0 == 0) return originalString;
+        for (int i = position0; i < originalString.length(); ++i)
+            chars[count++] = originalString.charAt(i);
 
         return new String(chars, 0, count);
     }
