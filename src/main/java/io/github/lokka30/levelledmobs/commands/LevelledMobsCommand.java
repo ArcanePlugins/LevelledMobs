@@ -494,25 +494,28 @@ public class LevelledMobsCommand implements CommandExecutor, TabCompleter {
 			List<String> cmds = new ArrayList<>();
 
 			if (args.length == 1) {
-				cmds.add("info");
+				cmds.add("contributors");
 
-				if (sender.hasPermission("levelledmobs.kill.all") || sender.hasPermission("levelledmobs.kill.near"))
+				if (sender.hasPermission("levelledmobs.kill.all") || sender.hasPermission("levelledmobs.kill.near")) {
 					cmds.add("kill");
-				if (sender.hasPermission("levelledmobs.reload"))
+				}
+
+				if (sender.hasPermission("levelledmobs.reload")) {
 					cmds.add("reload");
-				if (sender.hasPermission("levelledmobs.summon"))
+				}
+
+				if (sender.hasPermission("levelledmobs.summon")) {
 					cmds.add("summon");
-			}
-			else if (args.length >= 2) {
+				}
+			} else if (args.length >= 2) {
 				// lvlmobs kill all <world>
 				// lblmobs kill near <radius>
-				
+
 				if (args[0].equalsIgnoreCase("kill")) {
 					if (args.length == 2) {
 						cmds.add("all");
 						cmds.add("near");
-					}
-					else if (args.length == 3) {
+					} else if (args.length == 3) {
 						if (args[1].equalsIgnoreCase("all") && sender.hasPermission("levelledmobs.kill.all")) {
 							List<String> enabledWorlds = getEnabledWorldsList();
 							if (!enabledWorlds.isEmpty()) {

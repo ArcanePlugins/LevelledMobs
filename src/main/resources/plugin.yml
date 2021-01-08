@@ -2,8 +2,7 @@ name: LevelledMobs
 version: ${project.version}
 main: io.github.lokka30.levelledmobs.LevelledMobs
 softdepend: [WorldGuard]
-depend: [PhantomLib]
-api-version: '1.15'
+api-version: '1.13'
 load: STARTUP
 author: lokka30
 description: ${project.description}
@@ -13,7 +12,7 @@ commands:
   levelledmobs:
     description: Manage LevelledMobs
     aliases: [leveledmobs, lm, lvlmobs]
-    usage: /<command> [killall/reload/summon/info]
+    usage: /<command> [killall/reload/summon/contributors]
 
 permissions:
   levelledmobs.*:
