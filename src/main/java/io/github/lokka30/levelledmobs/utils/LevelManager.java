@@ -1,6 +1,7 @@
 package io.github.lokka30.levelledmobs.utils;
 
 import io.github.lokka30.levelledmobs.LevelledMobs;
+import io.github.lokka30.levelledmobs.listeners.CreatureSpawnListener;
 import me.lokka30.microlib.MicroUtils;
 import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.Attribute;
@@ -13,6 +14,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import java.util.List;
 import java.util.Objects;
 import java.util.Random;
+import java.util.regex.Pattern;
 
 public class LevelManager {
 
@@ -23,10 +25,19 @@ public class LevelManager {
 
         levelKey = new NamespacedKey(instance, "level");
         isLevelledKey = new NamespacedKey(instance, "isLevelled");
+
+        // [Level 10 | Slime]
+        // [&7Level 10&8 | &fSlime&8]
+        // "Level.*?(\\d{1,2})"
+        slimeRegex = Pattern.compile("Level.*?(\\d{1,2})", Pattern.CASE_INSENSITIVE);
     }
 
-    public NamespacedKey levelKey; //What's the mob's level?
-    public NamespacedKey isLevelledKey; //Is the mob levelled? //TODO Remove.
+    public final NamespacedKey levelKey; //What's the mob's level?
+    public final NamespacedKey isLevelledKey; //Is the mob levelled? //TODO Remove.
+
+    public final static int maxCreeperBlastRadius = 100; // prevent creepers from blowing up the world!
+    public final Pattern slimeRegex;
+    public CreatureSpawnListener creatureSpawnListener;
 
     //Checks if an entity can be levelled.
     public boolean isLevellable(final LivingEntity entity) {

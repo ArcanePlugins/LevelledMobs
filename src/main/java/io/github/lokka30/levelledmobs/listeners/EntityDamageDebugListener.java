@@ -22,7 +22,7 @@ import java.util.UUID;
 
 public class EntityDamageDebugListener implements Listener {
 
-    List<UUID> delay = new ArrayList<>();
+    final List<UUID> delay = new ArrayList<>();
     private final LevelledMobs instance;
 
     public EntityDamageDebugListener(final LevelledMobs instance) {

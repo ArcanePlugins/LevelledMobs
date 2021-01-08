@@ -476,7 +476,7 @@ public class LevelledMobsCommand implements CommandExecutor, TabCompleter {
 			Entity spawnedEntity = world.spawnEntity(newLocation1, entity);
 
 			mobResult.MobsSpawned++;
-			instance.creatureSpawnListener.processMobSpawn((LivingEntity) spawnedEntity, spawnReason, level);
+			instance.levelManager.creatureSpawnListener.processMobSpawn((LivingEntity) spawnedEntity, spawnReason, level);
 		}
 		
 		return mobResult;

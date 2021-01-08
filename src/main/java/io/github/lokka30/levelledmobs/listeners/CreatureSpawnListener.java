@@ -2,6 +2,7 @@ package io.github.lokka30.levelledmobs.listeners;
 
 import io.github.lokka30.levelledmobs.LevelledMobs;
 import io.github.lokka30.levelledmobs.utils.ConfigUtils;
+import io.github.lokka30.levelledmobs.utils.LevelManager;
 import io.github.lokka30.levelledmobs.utils.Utils;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
@@ -59,7 +60,7 @@ public class CreatureSpawnListener implements Listener {
         // if spawned naturally it will be -1.  If used summon with specific level specified then it will be >= 0
         if (level == -1) {
 	        //Check settings for spawn distance levelling and choose levelling method accordingly.
-            if (instance.hasWorldGuard && instance.worldGuardManager.checkRegionFlags(livingEntity)) {
+            if (instance.worldGuardManager.hasWorldGuardInstalled && instance.worldGuardManager.checkRegionFlags(livingEntity)) {
                 level = generateRegionLevel(livingEntity);
             } else if (instance.settingsCfg.getBoolean("spawn-distance-levelling.active")) {
                 level = generateLevelByDistance(livingEntity);
@@ -112,7 +113,7 @@ public class CreatureSpawnListener implements Listener {
                 // [Level 10 | Slime]
                 // §8[§7Level 3§8 | §fSlime§8]
 
-                Matcher m = instance.slimeRegex.matcher(entityName);
+                Matcher m = instance.levelManager.slimeRegex.matcher(entityName);
                 if (m.find() && m.groupCount() >= 1) {
                     // the only reason it won't match is if someone has changed the custom name syntax significantly
                     String probablyLevelNum = m.group(1);
@@ -168,8 +169,8 @@ public class CreatureSpawnListener implements Listener {
                 int blastRadius = (int) Math.floor(level / 10.0 * ((double) ConfigUtils.SETTINGS_CREEPER_MAX_RADIUS) - 3) + 3;
 
                 // even at 100 creepers are atomic bombs but at least won't blow up the entire world
-                if (blastRadius > LevelledMobs.maxCreeperBlastRadius) {
-                    blastRadius = LevelledMobs.maxCreeperBlastRadius;
+                if (blastRadius > LevelManager.maxCreeperBlastRadius) {
+                    blastRadius = LevelManager.maxCreeperBlastRadius;
                 }
                 if (level == 1) {
                     blastRadius = 3;

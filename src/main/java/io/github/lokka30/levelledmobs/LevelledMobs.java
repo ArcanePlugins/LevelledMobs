@@ -1,7 +1,5 @@
 package io.github.lokka30.levelledmobs;
 
-import com.sk89q.worldguard.protection.flags.StateFlag;
-import com.sk89q.worldguard.protection.flags.StringFlag;
 import io.github.lokka30.levelledmobs.commands.LevelledMobsCommand;
 import io.github.lokka30.levelledmobs.listeners.*;
 import io.github.lokka30.levelledmobs.utils.*;
@@ -16,34 +14,18 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Pattern;
 
 public class LevelledMobs extends JavaPlugin {
 
-    // Configuration files.
     public YamlConfiguration settingsCfg;
     public YamlConfiguration messagesCfg;
     public ConfigUtils configUtils;
 
-    // TODO Move these.
-    // WorldGuard
-    public boolean hasWorldGuard; //if worldguard is on the server
-    public static StringFlag minlevelflag, maxlevelflag; //The WorldGuard flags of the min and max mob levels.
-    public static StateFlag allowlevelflag; //The WorldGuard flag if mobs can be levelled.
-    public WorldGuardManager worldGuardManager; //The WorldGuardManager class brings WorldGuard support to LM.
-
-    // Level Manager
-    public LevelManager levelManager; //The LevelManager class which holds a bunch of common methods
-
-    // TODO Move these.
-    public final static int maxCreeperBlastRadius = 100; // prevent creepers from blowing up the world!
-    public Pattern slimeRegex;
-    public CreatureSpawnListener creatureSpawnListener;
+    public LevelManager levelManager;
+    public WorldGuardManager worldGuardManager;
 
     private long loadTime;
 
-    //When the plugin starts loading (when Bukkit announces that it's loading, but it hasn't started the enable process).
-    //onLoad should only be used for setting other classes like LevelManager.
     public void onLoad() {
         Utils.logger.info("&f~ Initiating start-up procedure ~");
 
@@ -51,11 +33,10 @@ public class LevelledMobs extends JavaPlugin {
         loadTimer.start(); // Record how long it takes for the plugin to load.
 
         levelManager = new LevelManager(this);
-        // [Level 10 | Slime]
-        // [&7Level 10&8 | &fSlime&8]
-        // "Level.*?(\\d{1,2})"
-        slimeRegex = Pattern.compile("Level.*?(\\d{1,2})", Pattern.CASE_INSENSITIVE);
-        checkWorldGuard(); //WorldGuard check is onLoad as it is required to be here instead of onEnable (as stated in its documentation).
+
+        // Hook into WorldGuard, register LM's flags.
+        // This cannot be moved to onEnable (stated in WorldGuard's documentation).
+        worldGuardManager = new WorldGuardManager(this);
 
         loadTime = loadTimer.getTimer();
     }
@@ -125,10 +106,10 @@ public class LevelledMobs extends JavaPlugin {
 
         final PluginManager pluginManager = getServer().getPluginManager();
 
-        creatureSpawnListener = new CreatureSpawnListener(this); // we're saving this reference so the summon command has access to it
+        levelManager.creatureSpawnListener = new CreatureSpawnListener(this); // we're saving this reference so the summon command has access to it
 
         pluginManager.registerEvents(new EntityDamageDebugListener(this), this);
-        pluginManager.registerEvents(creatureSpawnListener, this);
+        pluginManager.registerEvents(levelManager.creatureSpawnListener, this);
         pluginManager.registerEvents(new EntityDamageListener(this), this);
         pluginManager.registerEvents(new EntityDeathListener(this), this);
         pluginManager.registerEvents(new EntityRegainHealthListener(this), this);
@@ -158,15 +139,6 @@ public class LevelledMobs extends JavaPlugin {
                     Utils.logger.warning("&fUpdate Checker: &7The plugin has an update available! You're running &bv" + updateChecker.getCurrentVersion() + "&7, latest version is &bv" + latestVersion + "&7.");
                 }
             });
-        }
-    }
-
-    //Checks if WorldGuard is available. If so, start registering its flags.
-    private void checkWorldGuard() {
-        hasWorldGuard = getServer().getPluginManager().getPlugin("WorldGuard") != null;
-        if (hasWorldGuard) {
-            worldGuardManager = new WorldGuardManager(this);
-            worldGuardManager.registerFlags();
         }
     }
 
