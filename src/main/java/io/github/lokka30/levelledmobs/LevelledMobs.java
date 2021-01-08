@@ -41,21 +41,29 @@ public class LevelledMobs extends JavaPlugin {
     public Pattern slimeRegex;
     public CreatureSpawnListener creatureSpawnListener;
 
+    private long loadTime;
+
     //When the plugin starts loading (when Bukkit announces that it's loading, but it hasn't started the enable process).
     //onLoad should only be used for setting other classes like LevelManager.
     public void onLoad() {
+        Utils.logger.info("&f~ Initiating start-up procedure ~");
+
+        QuickTimer loadTimer = new QuickTimer();
+        loadTimer.start(); // Record how long it takes for the plugin to load.
+
         levelManager = new LevelManager(this);
         // [Level 10 | Slime]
         // [&7Level 10&8 | &fSlime&8]
         // "Level.*?(\\d{1,2})"
         slimeRegex = Pattern.compile("Level.*?(\\d{1,2})", Pattern.CASE_INSENSITIVE);
         checkWorldGuard(); //WorldGuard check is onLoad as it is required to be here instead of onEnable (as stated in its documentation).
+
+        loadTime = loadTimer.getTimer();
     }
 
     public void onEnable() {
-        Utils.logger.info("&f~ Initiating start-up procedure ~");
-        QuickTimer timer = new QuickTimer();
-        timer.start();
+        QuickTimer enableTimer = new QuickTimer();
+        enableTimer.start(); // Record how long it takes for the plugin to enable.
 
         checkCompatibility(); //Is the server running the latest version? Dependencies required?
         loadFiles();
@@ -66,7 +74,7 @@ public class LevelledMobs extends JavaPlugin {
         setupMetrics();
         checkUpdates();
 
-        Utils.logger.info("&f~ Start-up complete, took &b" + timer.getTimer() + "ms&f ~");
+        Utils.logger.info("&f~ Start-up complete, took &b" + (enableTimer.getTimer() + loadTime) + "ms&f ~");
     }
 
     //Checks if the server version is supported
