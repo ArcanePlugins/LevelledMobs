@@ -4,10 +4,7 @@ import com.sk89q.worldguard.protection.flags.StateFlag;
 import com.sk89q.worldguard.protection.flags.StringFlag;
 import io.github.lokka30.levelledmobs.commands.LevelledMobsCommand;
 import io.github.lokka30.levelledmobs.listeners.*;
-import io.github.lokka30.levelledmobs.utils.FileLoader;
-import io.github.lokka30.levelledmobs.utils.LevelManager;
-import io.github.lokka30.levelledmobs.utils.Utils;
-import io.github.lokka30.levelledmobs.utils.WorldGuardManager;
+import io.github.lokka30.levelledmobs.utils.*;
 import me.lokka30.microlib.QuickTimer;
 import me.lokka30.microlib.UpdateChecker;
 import org.bstats.bukkit.Metrics;
@@ -25,6 +22,7 @@ public class LevelledMobs extends JavaPlugin {
     // Configuration files.
     public YamlConfiguration settingsCfg;
     public YamlConfiguration messagesCfg;
+    public ConfigUtils configUtils;
 
     // TODO Move these.
     // WorldGuard
@@ -112,6 +110,8 @@ public class LevelledMobs extends JavaPlugin {
 
         settingsCfg = FileLoader.loadFile(this, "settings", FileLoader.SETTINGS_FILE_VERSION);
         messagesCfg = FileLoader.loadFile(this, "messages", FileLoader.MESSAGES_FILE_VERSION);
+
+        configUtils = new ConfigUtils(this);
     }
 
     private void registerListeners() {

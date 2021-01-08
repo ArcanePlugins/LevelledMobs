@@ -217,5 +217,5 @@ use-update-checker: true
 # (This is named debug for a reason - you probably don't want to have it enabled)
 debug: false
 
-# Don't touch this unless you know what you are doing!
+# Don't change this unless you know what you're doing!
 file-version: 21
