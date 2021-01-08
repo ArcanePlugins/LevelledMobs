@@ -6,7 +6,7 @@
 
     <groupId>io.github.lokka30</groupId>
     <artifactId>LevelledMobs</artifactId>
-    <version>1.4.0-BETA</version>
+    <version>1.35.0-PRE-0</version>
 
     <packaging>jar</packaging>
 
@@ -41,8 +41,8 @@
                             <shadedPattern>io.github.lokka30.levelledmobs.bstats</shadedPattern>
                         </relocation>
                         <relocation>
-                            <pattern>de.leonhard.storage</pattern>
-                            <shadedPattern>io.github.lokka30.levelledmobs.lightningstorage</shadedPattern>
+                            <pattern>me.lokka30.microlib</pattern>
+                            <shadedPattern>io.github.lokka30.levelledmobs.microlib</shadedPattern>
                         </relocation>
                     </relocations>
                 </configuration>
@@ -94,13 +94,8 @@
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
-            <version>1.16.1-R0.1-SNAPSHOT</version>
+            <version>1.16.4-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.github.JavaFactoryDev</groupId>
-            <artifactId>LightningStorage</artifactId>
-            <version>3.1.4</version>
         </dependency>
         <dependency>
             <groupId>org.bstats</groupId>
@@ -111,14 +106,13 @@
         <dependency>
             <groupId>com.sk89q.worldguard</groupId>
             <artifactId>worldguard-bukkit</artifactId>
-            <version>7.0.2</version>
+            <version>7.0.4</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>io.github.lokka30</groupId>
-            <artifactId>PhantomLib</artifactId>
-            <version>1.0.4-RELEASE</version>
-            <scope>provided</scope>
+            <groupId>com.github.lokka30</groupId>
+            <artifactId>MicroLib</artifactId>
+            <version>2.1.1</version>
         </dependency>
     </dependencies>
 </project>

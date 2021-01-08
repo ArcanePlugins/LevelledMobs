@@ -1,6 +1,7 @@
 package io.github.lokka30.levelledmobs.utils;
 
 import io.github.lokka30.levelledmobs.LevelledMobs;
+import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.entity.*;
@@ -13,11 +14,17 @@ import java.util.Random;
 
 public class LevelManager {
 
-    private LevelledMobs instance;
+    private final LevelledMobs instance;
 
     public LevelManager(LevelledMobs instance) {
         this.instance = instance;
+
+        levelKey = new NamespacedKey(instance, "level");
+        isLevelledKey = new NamespacedKey(instance, "isLevelled");
     }
+
+    public NamespacedKey levelKey; //What's the mob's level?
+    public NamespacedKey isLevelledKey; //Is the mob levelled? //TODO Remove.
 
     //Checks if an entity can be levelled.
     public boolean isLevellable(final LivingEntity entity) {
@@ -34,7 +41,7 @@ public class LevelManager {
         } else {
             if (entity instanceof Zombie) {
                 Zombie zombie = (Zombie) entity;
-                if (zombie.isBaby() && blacklistOverrideTypes.contains("BABY_ZOMBIE")) {
+                if (!zombie.isAdult() && blacklistOverrideTypes.contains("BABY_ZOMBIE")) {
                     return true;
                 }
             }

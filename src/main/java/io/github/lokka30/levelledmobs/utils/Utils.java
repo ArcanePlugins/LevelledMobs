@@ -1,40 +1,21 @@
 package io.github.lokka30.levelledmobs.utils;
 
+import me.lokka30.microlib.MicroLogger;
+
 import java.util.Arrays;
 import java.util.List;
 
-import io.github.lokka30.levelledmobs.LevelledMobs;
-
 public final class Utils {
+
     private Utils() {
-    	// this makes analyzers happy that this is now a utility class
         throw new UnsupportedOperationException();
     }
-	
+
     public static List<String> getSupportedServerVersions() {
         return Arrays.asList("1.15", "1.16");
     }
-    
-    public static List<String> getInfoStrings(LevelledMobs instance){
-    	return Arrays.asList(
-    			" ",
-    			"&b&lLevelledMobs&b v" + instance.getDescription().getVersion(),
-    			"&8 &m->&7 Developed by &3lokka30&7, &3Eyrian2010&7 and &3deiphiz&7.",
-    			" ",
-    			"&f&nSpigotMC Resource Link:",
-    			"&8https://www.spigotmc.org/resources/%E2%99%A6-levelledmobs-%E2%99%A6-for-1-15-x.74304/",
-    			" "
-    			);
-    	/*
-    	 *                     sender.sendMessage(" ");
-                    sender.sendMessage(instance.messageMethods.colorize("&b&lLevelledMobs&b v" + instance.getDescription().getVersion()));
-                    sender.sendMessage(instance.messageMethods.colorize("&8 &m->&7 Developed by &3lokka30&7, &3Eyrian2010&7 and &3deiphiz&7."));
-                    sender.sendMessage(" ");
-                    sender.sendMessage(instance.messageMethods.colorize("&f&nSpigotMC Resource Link:"));
-                    sender.sendMessage(instance.messageMethods.colorize("&8https://www.spigotmc.org/resources/%E2%99%A6-levelledmobs-%E2%99%A6-for-1-15-x.74304/"));
-                    sender.sendMessage(" ");
-    	 * */
-    }
+
+    public static final MicroLogger logger = new MicroLogger("&b&lLevelledMobs: &7");
 
     //This is a method created by Jonik & Mustapha Hadid at StackOverflow.
     //It simply grabs 'value', being a double, and rounds it, leaving 'places' decimal places intact.

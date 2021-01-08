@@ -2,7 +2,6 @@ package io.github.lokka30.levelledmobs.listeners;
 
 import io.github.lokka30.levelledmobs.LevelledMobs;
 import io.github.lokka30.levelledmobs.utils.Utils;
-
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.entity.Boss;
@@ -22,7 +21,7 @@ import java.util.regex.Matcher;
 
 public class CreatureSpawnListener implements Listener {
 
-    private LevelledMobs instance;
+    private final LevelledMobs instance;
 
     public CreatureSpawnListener(final LevelledMobs instance) {
         this.instance = instance;
@@ -47,11 +46,11 @@ public class CreatureSpawnListener implements Listener {
     	String entityName = livingEntity.getName();
 
         //Check if the mob is already levelled (safarinet compatibility, etc)
-        String isLevelled = livingEntity.getPersistentDataContainer().get(instance.isLevelledKey, PersistentDataType.STRING);       
+        String isLevelled = livingEntity.getPersistentDataContainer().get(instance.levelManager.isLevelledKey, PersistentDataType.STRING);
         if (isLevelled != null && isLevelled.equalsIgnoreCase("true")) {
             return;
         }
-        if (livingEntity.getPersistentDataContainer().get(instance.levelKey, PersistentDataType.INTEGER) != null) {
+        if (livingEntity.getPersistentDataContainer().get(instance.levelManager.levelKey, PersistentDataType.INTEGER) != null) {
             return;
         }
 
@@ -154,6 +153,7 @@ public class CreatureSpawnListener implements Listener {
             if (ATTRIBUTE_FLYING_SPEED != null) {
             	final double baseFlyingSpeed = ATTRIBUTE_FLYING_SPEED.getBaseValue(); //change to default value
                 final double newflyingSpeed = baseFlyingSpeed + (baseFlyingSpeed * instance.fileCache.SETTINGS_FINE_TUNING_MULTIPLIERS_FLYING_SPEED * level);
+                assert ATTRIBUTE_MOVEMENT_SPEED != null;
                 ATTRIBUTE_MOVEMENT_SPEED.setBaseValue(newflyingSpeed);
             }
 
@@ -180,11 +180,8 @@ public class CreatureSpawnListener implements Listener {
         } // end if entity is levelable 
         else if (spawnReason == CreatureSpawnEvent.SpawnReason.CURED) {
             //Check if a zombie villager was cured. If villagers aren't levellable, then their name will be cleared,
-            //otherwise their nametag is still 'Zombie Villager'. Imposter!
+            //otherwise their nametag is still 'Zombie Villager'. That doesn't seem right...
         	livingEntity.setCustomName("");
-        }
-        else {
-        	//instance.phantomLogger.log(io.github.lokka30.phantomlib.enums.LogLevel.INFO, "test", livingEntity.getName() + " is NOT levelable");
         }
     }
 

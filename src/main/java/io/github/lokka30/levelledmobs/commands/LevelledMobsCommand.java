@@ -2,13 +2,8 @@ package io.github.lokka30.levelledmobs.commands;
 
 import io.github.lokka30.levelledmobs.LevelledMobs;
 import io.github.lokka30.levelledmobs.utils.Utils;
+import me.lokka30.microlib.MicroUtils;
 import net.md_5.bungee.api.ChatColor;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -21,34 +16,38 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
-import org.jetbrains.annotations.NotNull;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Random;
 
 public class LevelledMobsCommand implements CommandExecutor, TabCompleter {
 
-    private LevelledMobs instance;
-    private final Random rand;
-    private List<String> allMobsList;
-    private List<String> zeroThruNine;
-    
-    public LevelledMobsCommand(final LevelledMobs instance) {
-        this.instance = instance;
-        rand = new Random();
-        
-        this.allMobsList = Arrays.asList(
-        		"bat",
-        		"bee",
-        		"blaze",
-        		"cat",
-        		"cave_spider",
-        		"chicken",
-        		"cod",
-        		"cow",
-        		"creeper",
-        		"dolphin",
-        		"donkey",
-        		"drowned",
-        		"elder_guardian",
-        		"ender_dragon",
+	private final LevelledMobs instance;
+	private final Random rand;
+	private final List<String> allMobsList;
+	private final List<String> zeroThruNine;
+
+	public LevelledMobsCommand(final LevelledMobs instance) {
+		this.instance = instance;
+		rand = new Random();
+
+		this.allMobsList = Arrays.asList(
+				"bat",
+				"bee",
+				"blaze",
+				"cat",
+				"cave_spider",
+				"chicken",
+				"cod",
+				"cow",
+				"creeper",
+				"dolphin",
+				"donkey",
+				"drowned",
+				"elder_guardian",
+				"ender_dragon",
         		"enderman",
         		"endermite",
         		"evoker",
@@ -111,64 +110,58 @@ public class LevelledMobsCommand implements CommandExecutor, TabCompleter {
         		"0",
         		"1",
         		"2",
-        		"3",
-        		"4",
-        		"5",
-        		"6",
-        		"7",
-        		"8",
-        		"9"
-        		);
-    }
+				"3",
+				"4",
+				"5",
+				"6",
+				"7",
+				"8",
+				"9"
+		);
+	}
 
-    public boolean onCommand(@NotNull final CommandSender sender, @NotNull final Command command, @NotNull final String label, final String[] args) {
-        if (args.length == 0) {
-            sender.sendMessage(" ");
-            sender.sendMessage(instance.messageMethods.prefix(instance.PREFIX, "Available commands:"));
-            sender.sendMessage(instance.messageMethods.colorize("&8 &m->&3 /levelledMobs &8- &7view plugin commands."));
-            sender.sendMessage(instance.messageMethods.colorize("&8 &m->&3 /levelledMobs killall [world] &8- &7butcher levellable mobs."));
-            sender.sendMessage(instance.messageMethods.colorize("&8 &m->&3 /levelledMobs summon <...> &8- &7summon a levelled mob."));
-            sender.sendMessage(instance.messageMethods.colorize("&8 &m->&3 /levelledMobs reload &8- &7reload the settings file into memory."));
-            sender.sendMessage(instance.messageMethods.colorize("&8 &m->&3 /levelledMobs info &8- &7view plugin information."));
-            sender.sendMessage(" ");
-            return true;
-        }
-        
-        if (args[0].equalsIgnoreCase("kill")) {
-            parseKillCmd(sender, args, label);
-        } else if (args[0].equalsIgnoreCase("reload")) {
-            if (sender.hasPermission("levelledmobs.reload")) {
-                sender.sendMessage(instance.messageMethods.prefix(instance.PREFIX, "Reload started..."));
-                instance.loadFiles();
-                sender.sendMessage(instance.messageMethods.prefix(instance.PREFIX, "...reload complete."));
-            } else {
-                sender.sendMessage(instance.messageMethods.prefix(instance.PREFIX, "You don't have access to that."));
-            }
-        } else if (args[0].equalsIgnoreCase("summon")) {
-        	parseSummonMobsCmd(sender, args);
-        } else if (args[0].equalsIgnoreCase("info")) {
-            if (args.length == 1) {
-            	for (String line : Utils.getInfoStrings(instance)) {
-            		if (line.equals(" "))
-            			sender.sendMessage(" ");
-            		else
-            			sender.sendMessage(instance.messageMethods.colorize(line));
-            	}
-            } else {
-                sender.sendMessage(instance.messageMethods.prefix(instance.PREFIX, "Usage: &b/" + label + " info"));
-            }
-        } else {
-            sender.sendMessage(instance.messageMethods.prefix(instance.PREFIX, "For a list of available commands, please run &b/" + label + "&7."));
-        }
-        
-        return true;
-    }
-    
-    private void parseKillCmd(CommandSender sender, final String[] args, final String label) {
-    	if (!sender.hasPermission("levelledmobs.kill.all") && !sender.hasPermission("levelledmobs.kill.near")) {
-            sender.sendMessage(instance.messageMethods.prefix(instance.PREFIX, "You don't have access to that."));
-            return;
-    	}
+	public boolean onCommand(final CommandSender sender, final Command command, final String label, final String[] args) {
+		if (args.length == 0) {
+			sender.sendMessage(" ");
+			sender.sendMessage(MicroUtils.colorize("&b&lLevelledMobs: &7Available commands:"));
+			sender.sendMessage(MicroUtils.colorize("&8 &m->&b /levelledMobs &8- &7view plugin commands."));
+			sender.sendMessage(MicroUtils.colorize("&8 &m->&b /levelledMobs killall [world] &8- &7butcher levellable mobs."));
+			sender.sendMessage(MicroUtils.colorize("&8 &m->&b /levelledMobs summon <...> &8- &7summon a levelled mob."));
+			sender.sendMessage(MicroUtils.colorize("&8 &m->&b /levelledMobs reload &8- &7reload the settings file into memory."));
+			sender.sendMessage(MicroUtils.colorize("&8 &m->&b /levelledMobs contributors &8- &7view the list of contributors."));
+			sender.sendMessage(" ");
+			return true;
+		} else if (args[0].equalsIgnoreCase("kill")) {
+			parseKillCmd(sender, args, label);
+		} else if (args[0].equalsIgnoreCase("reload")) {
+			if (sender.hasPermission("levelledmobs.reload")) {
+				sender.sendMessage(MicroUtils.colorize("&b&lLevelledMobs: &7Reloading configuration files..."));
+				instance.loadFiles();
+				sender.sendMessage(MicroUtils.colorize("&b&lLevelledMobs: &7Reload complete."));
+			} else {
+				sender.sendMessage(MicroUtils.colorize("&b&lLevelledMobs: &7You don't have access to that."));
+			}
+		} else if (args[0].equalsIgnoreCase("summon")) {
+			parseSummonMobsCmd(sender, args);
+		} else if (args[0].equalsIgnoreCase("contributors")) {
+			if (args.length == 1) {
+				List<String> contributors = Arrays.asList("lokka30", "stumper66", "Eyrian", "iCodinqs", "deiphiz", "konsolas", "bStats team");
+				sender.sendMessage(MicroUtils.colorize("&b&lLevelledMobs: &7Contributors: &f" + String.join("&7, &f", contributors)));
+			} else {
+				sender.sendMessage(MicroUtils.colorize("&b&lLevelledMobs: &7Usage: &b/" + label + " contributors"));
+			}
+		} else {
+			sender.sendMessage(MicroUtils.colorize("&b&lLevelledMobs: &7Invalid usage. For a list of subcommands, run &b/" + label + "&7."));
+		}
+
+		return true;
+	}
+
+	private void parseKillCmd(CommandSender sender, final String[] args, final String label) {
+		if (!sender.hasPermission("levelledmobs.kill.all") && !sender.hasPermission("levelledmobs.kill.near")) {
+			sender.sendMessage(MicroUtils.colorize("&b&lLevelledMobs: &7You don't have access to that."));
+			return;
+		}
     	
     	int killed = 0;
         World world = null;
@@ -176,89 +169,89 @@ public class LevelledMobsCommand implements CommandExecutor, TabCompleter {
 		// lblmobs kill near <radius>
         
         if (args.length < 2) {
-            sender.sendMessage(instance.messageMethods.colorize("Usage: &b/levelledmobs kill all [world]"));
-            sender.sendMessage(instance.messageMethods.colorize("Usage: &b/levelledmobs kill near [radius]"));
-            return;
-        }
+			sender.sendMessage(MicroUtils.colorize("&b&lLevelledMobs: &7Usage: &b/levelledmobs kill all [world]"));
+			sender.sendMessage(MicroUtils.colorize("&b&lLevelledMobs: &7Usage: &b/levelledmobs kill near [radius]"));
+			return;
+		}
         if (args.length == 2) {
-        	if (!(sender instanceof Player)) {
-        		sender.sendMessage(instance.messageMethods.prefix(instance.PREFIX, "Usage (console): &b/" + label + " kill all [world]"));
-        		return;
-        	}
-        	if (args[1].equalsIgnoreCase("all")) 
-        		sender.sendMessage(instance.messageMethods.colorize("Usage: &b/levelledmobs kill all [world]"));	
-        	else if (args[1].equalsIgnoreCase("near")) 
-        		sender.sendMessage(instance.messageMethods.colorize("Usage: &b/levelledmobs kill near [radius]"));
-        	
-    		return;
-        }
+			if (!(sender instanceof Player)) {
+				sender.sendMessage(MicroUtils.colorize("&b&lLevelledMobs: &7Usage (console): &b/" + label + " kill all [world]"));
+				return;
+			}
+			if (args[1].equalsIgnoreCase("all"))
+				sender.sendMessage(MicroUtils.colorize("&b&lLevelledMobs: &7Usage: &b/levelledmobs kill all [world]"));
+			else if (args[1].equalsIgnoreCase("near"))
+				sender.sendMessage(MicroUtils.colorize("&b&lLevelledMobs: &7Usage: &b/levelledmobs kill near [radius]"));
+
+			return;
+		}
         else if (args.length >= 3) {
         	if (args[1].equalsIgnoreCase("all")) {
             	if (!sender.hasPermission("levelledmobs.kill.all")) {
-                    sender.sendMessage(instance.messageMethods.prefix(instance.PREFIX, "You don't have access to that."));
-                    return;
-            	}
+					sender.sendMessage(MicroUtils.colorize("&b&lLevelledMobs: &7You don't have access to that."));
+					return;
+				}
         		
                 if (Bukkit.getWorld(args[2]) == null) {
-                    sender.sendMessage(instance.messageMethods.prefix(instance.PREFIX, "Invalid world &b" + args[1] + "&7."));
-                    return;
-                }
+					sender.sendMessage(MicroUtils.colorize("&b&lLevelledMobs: &7Invalid world &b" + args[1] + "&7."));
+					return;
+				}
                 
                 world = Bukkit.getWorld(args[2]);
-                assert world != null;
-                for (Entity e : world.getEntities()) {
-                    if (e instanceof LivingEntity) {
-                        final LivingEntity livingEntity = (LivingEntity) e;
-                        if (instance.levelManager.isLevellable(livingEntity)) {
-                            livingEntity.setHealth(0);
-                            killed++;
-                        }
-                    }
-                }
-                sender.sendMessage(instance.messageMethods.prefix(instance.PREFIX, String.format(
-                		"Killed &b%s&7 levellable entities in world '&b%s&7'.", killed, world.getName())));	
-        	}
+				assert world != null;
+				for (Entity e : world.getEntities()) {
+					if (e instanceof LivingEntity) {
+						final LivingEntity livingEntity = (LivingEntity) e;
+						if (instance.levelManager.isLevellable(livingEntity)) {
+							livingEntity.setHealth(0);
+							killed++;
+						}
+					}
+				}
+				sender.sendMessage(MicroUtils.colorize("&b&lLevelledMobs: &7" + String.format(
+						"Killed &b%s&7 levellable entities in world '&b%s&7'.", killed, world.getName())));
+			}
         	else if (args[1].equalsIgnoreCase("near")) {
             	if (!sender.hasPermission("levelledmobs.kill.near")) {
-                    sender.sendMessage(instance.messageMethods.prefix(instance.PREFIX, "You don't have access to that."));
-                    return;
-            	}
+					sender.sendMessage(MicroUtils.colorize("&b&lLevelledMobs: &7You don't have access to that."));
+					return;
+				}
         		
             	if (!(sender instanceof Player)) {
-            		sender.sendMessage(instance.messageMethods.prefix(instance.PREFIX, "kill near command not available from console"));
-            		return;
-            	}
+					sender.sendMessage(MicroUtils.colorize("&b&lLevelledMobs: &7Kill near command not available from console"));
+					return;
+				}
             	
             	int radius = 0;
                 try {
                     radius = Integer.parseInt(args[2]);
                 } catch (NumberFormatException ex) {
-                	sender.sendMessage(instance.messageMethods.prefix(instance.PREFIX, "Invalid radius: " + args[2]));
-                	return;
-                }
+					sender.sendMessage(MicroUtils.colorize("&b&lLevelledMobs: &7Invalid radius: " + args[2]));
+					return;
+				}
                 
                 Player p = (Player) sender;
-                
-                for (Entity e : p.getNearbyEntities(radius, radius, radius)) {
-                    if (e instanceof LivingEntity) {
-                        final LivingEntity livingEntity = (LivingEntity) e;
-                        if (instance.levelManager.isLevellable(livingEntity)) {
-                        	livingEntity.setHealth(0);
-                            killed++;
-                        }
-                    }
-                }
-                sender.sendMessage(instance.messageMethods.prefix(instance.PREFIX, String.format(
-                	"Killed &b%s&7 levellable entities within radius '&b%s&7'.", killed, radius)));
-        	}
+
+				for (Entity e : p.getNearbyEntities(radius, radius, radius)) {
+					if (e instanceof LivingEntity) {
+						final LivingEntity livingEntity = (LivingEntity) e;
+						if (instance.levelManager.isLevellable(livingEntity)) {
+							livingEntity.setHealth(0);
+							killed++;
+						}
+					}
+				}
+				sender.sendMessage(MicroUtils.colorize("&b&lLevelledMobs: &7" + String.format(
+						"Killed &b%s&7 levellable entities within radius '&b%s&7'.", killed, radius)));
+			}
         }
     }
     
     private void parseSummonMobsCmd(CommandSender sender, final String[] args) {
     	if (!sender.hasPermission("levelledmobs.summon")) {
-    		sender.sendMessage(instance.messageMethods.prefix(instance.PREFIX, "You don't have access to that."));
-    		return;
-    	}
+			sender.sendMessage(MicroUtils.colorize("&b&lLevelledMobs: &7You don't have access to that."));
+			return;
+		}
         
     	boolean isSenderPlayer = (sender instanceof Player); // as opposed to console
         Player player = null;
@@ -285,23 +278,23 @@ public class LevelledMobsCommand implements CommandExecutor, TabCompleter {
         try {
             amount = Integer.parseInt(args[1]);
         } catch (NumberFormatException ex) {
-            sender.sendMessage(instance.messageMethods.prefix(instance.PREFIX, "Invalid amount: " + args[1]));
-            return;
-        }
+			sender.sendMessage(MicroUtils.colorize("&b&lLevelledMobs: &7Invalid amount: " + args[1]));
+			return;
+		}
         
         try {
             entityType = EntityType.valueOf(args[2].toUpperCase());
         } catch (Exception ex) {
-            sender.sendMessage(instance.messageMethods.prefix(instance.PREFIX, "Invalid mob type: " + args[2]));
-            return;
-        }
+			sender.sendMessage(MicroUtils.colorize("&b&lLevelledMobs: &7Invalid mob type: " + args[2]));
+			return;
+		}
         
         try {
             level = Integer.parseInt(args[3]);
         } catch (NumberFormatException ex) {
-            sender.sendMessage(instance.messageMethods.prefix(instance.PREFIX, "Invalid level: " + args[3]));
-            return;
-        }
+			sender.sendMessage(MicroUtils.colorize("&b&lLevelledMobs: &7Invalid level: " + args[3]));
+			return;
+		}
         
         SummonType summonType = SummonType.Here;
         
@@ -390,9 +383,9 @@ public class LevelledMobsCommand implements CommandExecutor, TabCompleter {
 	    		
 	    	if (arg.charAt(0) == '+') {
 	    		if (arg.length() == 2) {
-	    			sender.sendMessage(instance.messageMethods.prefix(instance.PREFIX, "Invalid " + letter.toString() + " coordinate: " + arg));
-	    			return -1;
-	    		}
+					sender.sendMessage(MicroUtils.colorize("&b&lLevelledMobs: &7Invalid " + letter.toString() + " coordinate: " + arg));
+					return -1;
+				}
 	    		temp = arg.substring(2);
 	    	}
 	    	else
@@ -403,9 +396,9 @@ public class LevelledMobsCommand implements CommandExecutor, TabCompleter {
             toAdd = Integer.parseInt(isRelative ? temp : arg);
             result += toAdd;
         } catch (NumberFormatException ex) {
-        	sender.sendMessage(instance.messageMethods.prefix(instance.PREFIX, "Invalid " + letter.toString() + " coordinate: " + arg));
-        	return -1;
-        }	
+			sender.sendMessage(MicroUtils.colorize("&b&lLevelledMobs: &7Invalid " + letter.toString() + " coordinate: " + arg));
+			return -1;
+		}
         
         return result;
     }
@@ -460,9 +453,9 @@ public class LevelledMobsCommand implements CommandExecutor, TabCompleter {
 	    Location newLocation2 = new Location(world, location.getX() + distanceX, location.getY() + 1.0D, location.getZ() + distanceZ);
 	    
 	    if (newLocation1.getBlock().getType().isSolid() || newLocation2.getBlock().getType().isSolid()) {
-	    	sender.sendMessage(instance.messageMethods.prefix(instance.PREFIX, "&7Not enough room, try somewhere else"));
-	    	return mobResult;
-	    }
+			sender.sendMessage(MicroUtils.colorize("&b&lLevelledMobs: &7Not enough room, try somewhere else"));
+			return mobResult;
+		}
 	    
 	    SpawnReason spawnReason = SpawnReason.CUSTOM;
 	    mobResult.location = newLocation1;
@@ -479,7 +472,7 @@ public class LevelledMobsCommand implements CommandExecutor, TabCompleter {
 						
 			if (spawnedEntity != null) {
 				mobResult.MobsSpawned++;
-				instance.creatureSpawn.processMobSpawn((LivingEntity)spawnedEntity, spawnReason, level);
+				instance.creatureSpawnListener.processMobSpawn((LivingEntity) spawnedEntity, spawnReason, level);
 			}
 		}
 		
