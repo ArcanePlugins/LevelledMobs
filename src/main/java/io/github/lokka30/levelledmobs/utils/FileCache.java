@@ -8,7 +8,6 @@ import org.bukkit.entity.LivingEntity;
 
 import java.util.*;
 
-@SuppressWarnings("unused")
 public class FileCache {
 
     public boolean SETTINGS_USE_UPDATE_CHECKER;
@@ -33,6 +32,7 @@ public class FileCache {
     public boolean SETTINGS_FINE_TUNING_REMOVE_NAMETAG_ON_DEATH;
     public double SETTINGS_FINE_TUNING_MULTIPLIERS_ITEM_DROP;
     public double SETTINGS_FINE_TUNING_MULTIPLIERS_XP_DROP;
+    public double SETTINGS_FINE_TUNING_MULTIPLIERS_FLYING_SPEED;
     public int SETTINGS_FINE_TUNING_MIN_LEVEL;
     public int SETTINGS_FINE_TUNING_MAX_LEVEL;
     public boolean SETTINGS_SPAWN_DISTANCE_LEVELLING_ACTIVE;
@@ -43,12 +43,16 @@ public class FileCache {
     public boolean SETTINGS_WORLD_LEVEL_OVERRIDE_ENABLED;
     public boolean SETTINGS_PASSIVE_MOBS_CHANGED_MOVEMENT_SPEED;
     public String SETTINGS_CREATURE_NAMETAG;
+    public int SETTINGS_CREEPER_MAX_RADIUS;
+    public boolean SETTINGS_SHOW_LABEL_FOR_DEFAULT_LEVELED_MOBS;
+    public boolean SETTINGS_SLIME_CHILDREN_RETAIN_LEVEL_OF_PARENT;
+    public int SETTINGS_SPAWN_DISTANCE_FROM_PLAYER;
     private FlatFile settings;
-    private HashMap<EntityType, String> entityNameMap;
-    private HashMap<EntityType, Integer> entityTypeMinLevelMap;
-    private HashMap<EntityType, Integer> entityTypeMaxLevelMap;
-    private HashMap<String, Integer> worldMinLevelMap;
-    private HashMap<String, Integer> worldMaxLevelMap;
+    private Map<EntityType, String> entityNameMap;
+    private Map<EntityType, Integer> entityTypeMinLevelMap;
+    private Map<EntityType, Integer> entityTypeMaxLevelMap;
+    private Map<String, Integer> worldMinLevelMap;
+    private Map<String, Integer> worldMaxLevelMap;
 
     public FileCache(final LevelledMobs instance) {
         this.settings = instance.settings;
@@ -61,6 +65,7 @@ public class FileCache {
         SETTINGS_FINE_TUNING_MULTIPLIERS_MOVEMENT_SPEED = settings.get("fine-tuning.multipliers.movement-speed", 0.065D);
         SETTINGS_FINE_TUNING_DEFAULT_ATTACK_DAMAGE_INCREASE = settings.get("fine-tuning.default-attack-damage-increase", 1.0D);
         SETTINGS_FINE_TUNING_MULTIPLIERS_ATTACK_DAMAGE = settings.get("fine-tuning.multipliers.attack-damage", 1.5D);
+        SETTINGS_FINE_TUNING_MULTIPLIERS_FLYING_SPEED = settings.get("fine-tuning.multipliers.flying-speed", 0.1D);
         SETTINGS_SPAWN_DISTANCE_LEVELLING_INCREASE_LEVEL_DISTANCE = settings.get("spawn-distance-levelling.increase-level-distance", 200);
         SETTINGS_SPAWN_DISTANCE_LEVELLING_VARIANCE_ENABLED = settings.get("spawn-distance-levelling.variance.enabled", true);
         SETTINGS_SPAWN_DISTANCE_LEVELLING_VARIANCE_MIN = settings.get("spawn-distance-levelling.variance.min", 0);
@@ -87,6 +92,14 @@ public class FileCache {
         SETTINGS_WORLD_LEVEL_OVERRIDE_ENABLED = settings.get("world-level-override.enabled", false);
         SETTINGS_PASSIVE_MOBS_CHANGED_MOVEMENT_SPEED = settings.get("passive-mobs-changed-movement-speed", false);
         SETTINGS_CREATURE_NAMETAG = settings.get("creature-nametag", "&8[&7Level %level%&8 | &f%name%&8]");
+        SETTINGS_CREEPER_MAX_RADIUS = settings.get("creeper-max-damage-radius", 5);
+        SETTINGS_SHOW_LABEL_FOR_DEFAULT_LEVELED_MOBS = settings.get("show-label-for-default-leveled-mobs", false);
+        SETTINGS_SLIME_CHILDREN_RETAIN_LEVEL_OF_PARENT = settings.get("slime-children-retain-level-of-parent", true);
+        SETTINGS_SPAWN_DISTANCE_FROM_PLAYER = settings.get("summon-command-spawn-distance-from-player", 5);
+        
+        // anything less than 3 breaks the formula
+        if (SETTINGS_CREEPER_MAX_RADIUS < 3) SETTINGS_CREEPER_MAX_RADIUS = 3;
+        if (SETTINGS_SPAWN_DISTANCE_FROM_PLAYER < 1) SETTINGS_SPAWN_DISTANCE_FROM_PLAYER = 1;
 
         entityNameMap = new HashMap<>();
         entityTypeMinLevelMap = new HashMap<>();

@@ -1,0 +1,34 @@
+name: LevelledMobs
+version: ${project.version}
+main: io.github.lokka30.levelledmobs.LevelledMobs
+softdepend: [WorldGuard]
+depend: [PhantomLib]
+api-version: '1.15'
+load: STARTUP
+author: lokka30
+description: ${project.description}
+website: 'https://github.com/lokka30/LevelledMobs/wiki'
+
+commands:
+  levelledmobs:
+    description: Manage LevelledMobs
+    aliases: [leveledmobs, lm, lvlmobs]
+    usage: /<command> [killall/reload/summon/info]
+
+permissions:
+  levelledmobs.*:
+    description: all levelledmobs permissions
+    default: op
+    children:
+      levelledmobs.killall: true
+      levelledmobs.reload: true
+      levelledmobs.summon: true
+  levelledmobs.killall:
+    description: access to /levelledMobs killall
+    default: op
+  levelledmobs.reload:
+    description: access to /levelledmobs reload
+    default: op
+  levelledmobs.summon:
+    description: access to /levelledmobs summon
+    default: op

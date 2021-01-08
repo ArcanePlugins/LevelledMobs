@@ -1,8 +1,12 @@
 package io.github.lokka30.levelledmobs.listeners;
 
 import io.github.lokka30.levelledmobs.LevelledMobs;
+import io.github.lokka30.levelledmobs.utils.Utils;
+
 import org.bukkit.Sound;
 import org.bukkit.attribute.Attribute;
+import org.bukkit.attribute.AttributeInstance;
+import org.bukkit.entity.Creeper;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -12,12 +16,13 @@ import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
 public class EntityDamageDebugListener implements Listener {
 
-    ArrayList<UUID> delay = new ArrayList<>();
+    List<UUID> delay = new ArrayList<UUID>();
     private LevelledMobs instance;
 
     public EntityDamageDebugListener(final LevelledMobs instance) {
@@ -34,16 +39,21 @@ public class EntityDamageDebugListener implements Listener {
 
             if (p.isOp() && !delay.contains(uuid) && instance.levelManager.isLevellable(ent)) {
                 p.sendMessage(instance.messageMethods.colorize("&a&lLevelledMobs: &7Debug information for &a" + ent.getType().toString() + "&7: "));
-                p.sendMessage(instance.messageMethods.colorize("&8 - &fAttribute.GENERIC_MAX_HEALTH = &a" + Objects.requireNonNull(ent.getAttribute(Attribute.GENERIC_MAX_HEALTH)).getBaseValue()));
-                p.sendMessage(instance.messageMethods.colorize("&8 - &fAttribute.GENERIC_MAX_HEALTH Default = &a" + Objects.requireNonNull(ent.getAttribute(Attribute.GENERIC_MAX_HEALTH)).getDefaultValue()));
-                p.sendMessage(instance.messageMethods.colorize("&8 - &fAttribute.GENERIC_MOVEMENT_SPEED = &a" + Objects.requireNonNull(ent.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED)).getBaseValue()));
-                p.sendMessage(instance.messageMethods.colorize("&8 - &fAttribute.GENERIC_MOVEMENT_SPEED Default = &a" + Objects.requireNonNull(ent.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED)).getDefaultValue()));
-                p.sendMessage(instance.messageMethods.colorize("&8 - &fAttribute.GENERIC_ATTACK_DAMAGE = &a" + Objects.requireNonNull(ent.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE)).getBaseValue()));
-                p.sendMessage(instance.messageMethods.colorize("&8 - &fAttribute.GENERIC_ATTACK_DAMAGE Default = &a" + Objects.requireNonNull(ent.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE)).getDefaultValue()));
-                p.sendMessage(instance.messageMethods.colorize("&8 - &fCurrent Health = &a" + instance.utils.round(ent.getHealth(), 1)));
-                p.sendMessage(instance.messageMethods.colorize("&8 - &fLevel = &a" + ent.getPersistentDataContainer().get(instance.levelKey, PersistentDataType.INTEGER)));
-                p.sendMessage(instance.messageMethods.colorize("&8 - &fisLevelled = &a" + ent.getPersistentDataContainer().get(instance.isLevelledKey, PersistentDataType.STRING)));
-                p.sendMessage(instance.messageMethods.colorize("&8 - &fCustomName = &r" + ent.getCustomName()));
+                
+                writeDebugForAttribute(p, ent, Attribute.GENERIC_MAX_HEALTH);
+                writeDebugForAttribute(p, ent, Attribute.GENERIC_MOVEMENT_SPEED);
+                writeDebugForAttribute(p, ent, Attribute.GENERIC_MAX_HEALTH);
+                if (ent instanceof Creeper) {
+                	final Creeper creeper = (Creeper)ent;
+                	writeDebugForAttribute(p, "BLAST_RADIUS", creeper.getExplosionRadius(), 3);
+                }
+                writeDebugForAttribute(p, ent, Attribute.GENERIC_ATTACK_DAMAGE);
+                writeDebugForAttribute(p, ent, Attribute.GENERIC_FLYING_SPEED);
+                
+                writeDebugForAttribute(p, "Current Health", Utils.round(ent.getHealth(), 1));
+                writeDebugForAttribute(p, "Level", Objects.requireNonNull(ent.getPersistentDataContainer().get(instance.levelKey, PersistentDataType.INTEGER), "Level was null"));
+                writeDebugForAttribute(p, "isLevelled", Objects.requireNonNull(ent.getPersistentDataContainer().get(instance.isLevelledKey, PersistentDataType.STRING), "isLevelled was null"));
+                writeDebugForAttribute(p, "CustomName", ent.getCustomName() != null ? ent.getCustomName() : "(null)");
 
                 p.playSound(p.getLocation(), Sound.ITEM_BOOK_PAGE_TURN, 1.0F, 1.0F);
 
@@ -56,5 +66,35 @@ public class EntityDamageDebugListener implements Listener {
                 }.runTaskLater(instance, 40L);
             }
         }
+    }
+    
+    private void writeDebugForAttribute(final Player p, final String attributeName, final double amount, final double defaultAmount) {
+    	
+    	writeDebugForAttribute(p, attributeName, amount);
+
+    	p.sendMessage(instance.messageMethods.colorize(String.format(
+    			"&8 - &f%s Default = &a%s", attributeName, Math.round(defaultAmount*100.0)/100.0)));
+    }
+    
+    private void writeDebugForAttribute(final Player p, final String attributeName, final double amount) {
+    	p.sendMessage(instance.messageMethods.colorize(String.format(
+    			"&8 - &f%s = &a%s", attributeName, Math.round(amount*100.0)/100.0)));
+    }
+    
+    private void writeDebugForAttribute(final Player p, final String attributeName, final String msg) {
+    	p.sendMessage(instance.messageMethods.colorize(String.format(
+    			"&8 - &f%s = &a%s", attributeName, msg)));
+    }
+    
+    private void writeDebugForAttribute(final Player p, final LivingEntity ent, final Attribute att) {
+    	AttributeInstance attInstance = ent.getAttribute(att);
+    	if (attInstance == null) return;
+    	
+    	String attName = att.name();
+    	
+    	p.sendMessage(instance.messageMethods.colorize(String.format(
+    			"&8 - &f%s = &a%s", attName, Math.round(attInstance.getBaseValue()*100.0)/100.0)));
+    	p.sendMessage(instance.messageMethods.colorize(String.format(
+    			"&8 - &f%s Default = &a%s", attName, Math.round(attInstance.getDefaultValue()*100.0/100.0))));
     }
 }

@@ -18,6 +18,7 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
+import java.util.regex.Pattern;
 
 public class LevelledMobs extends JavaPlugin {
 
@@ -34,9 +35,12 @@ public class LevelledMobs extends JavaPlugin {
     public NamespacedKey levelKey; //What's the mob's level?
     public NamespacedKey isLevelledKey; //Is the mob levelled?
     public LevelManager levelManager; //The LevelManager class which holds a bunch of common methods
-    public Utils utils; //The Utils class which holds some common utility methods
     private PluginManager pluginManager;
-
+    public final static int maxCreeperBlastRadius = 100; // prevent creepers from blowing up the world!
+    private final static int currentFileVersion = 21;
+    public Pattern slimeRegex;
+    public CreatureSpawnListener creatureSpawn;
+    
     //When the plugin starts loading (when Bukkit announces that it's loading, but it hasn't started the enable process).
     //onLoad should only be used for setting other classes like LevelManager.
     public void onLoad() {
@@ -57,8 +61,11 @@ public class LevelledMobs extends JavaPlugin {
             messageMethods = phantomLib.getMessageMethods();
         }
 
-        utils = new Utils();
         levelManager = new LevelManager(this);
+        // [Level 10 | Slime]
+        // [&7Level 10&8 | &fSlime&8]
+        // "Level.*?(\\d{1,2})"
+        slimeRegex = Pattern.compile("Level.*?(\\d{1,2})", Pattern.CASE_INSENSITIVE);
         checkWorldGuard(); //WorldGuard check is onLoad as it is required to be here instead of onEnable (as stated in its documentation).
     }
 
@@ -92,7 +99,7 @@ public class LevelledMobs extends JavaPlugin {
 
         final String currentVersion = getServer().getVersion();
         boolean isRunningSupportedVersion = false;
-        for (String supportedVersion : utils.getSupportedServerVersions()) {
+        for (String supportedVersion : Utils.getSupportedServerVersions()) {
             if (currentVersion.contains(supportedVersion)) {
                 isRunningSupportedVersion = true;
                 break;
@@ -107,7 +114,7 @@ public class LevelledMobs extends JavaPlugin {
     public void loadFiles() {
         try {
             settings = LightningBuilder
-                    .fromFile(new File(getDataFolder() + File.separator + "settings"))
+                    .fromFile(new File(getDataFolder(), "settings"))
                     .addInputStreamFromResource("settings.yml")
                     .createYaml();
         } catch (LightningValidationException e) {
@@ -117,7 +124,8 @@ public class LevelledMobs extends JavaPlugin {
         }
 
         //Check if they exist
-        final File settingsFile = new File(getDataFolder() + File.separator + "settings.yml");
+        final File settingsFile = new File(getDataFolder(), "settings.yml");
+        
 
         if (!(settingsFile.exists() && !settingsFile.isDirectory())) {
             phantomLogger.log(LogLevel.INFO, PREFIX, "File &bsettings.yml&7 doesn't exist. Creating it now.");
@@ -125,7 +133,7 @@ public class LevelledMobs extends JavaPlugin {
         }
 
         //Check their versions
-        if (settings.get("file-version", 0) != utils.getLatestSettingsVersion()) {
+        if (settings.get("file-version", 0) != currentFileVersion) {
             phantomLogger.log(LogLevel.SEVERE, PREFIX, "File &bsettings.yml&7 is out of date! Lower-quality default values will be used for the new changes! Reset it or merge the old values to the new file.");
         }
 
@@ -137,8 +145,11 @@ public class LevelledMobs extends JavaPlugin {
     private void registerEvents() {
         phantomLogger.log(LogLevel.INFO, PREFIX, "&8(&3Startup &8- &33&8/&36&8) &7Registering events...");
 
+        // we're saving this reference so the summon command has access to it
+        this.creatureSpawn = new CreatureSpawnListener(this);
+        
         pluginManager.registerEvents(new EntityDamageDebugListener(this), this);
-        pluginManager.registerEvents(new CreatureSpawnListener(this), this);
+        pluginManager.registerEvents(this.creatureSpawn, this);
         pluginManager.registerEvents(new EntityDamageListener(this), this);
         pluginManager.registerEvents(new EntityDeathListener(this), this);
         pluginManager.registerEvents(new EntityRegainHealthListener(this), this);
