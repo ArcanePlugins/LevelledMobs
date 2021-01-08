@@ -519,7 +519,7 @@ public class LevelledMobsCommand implements CommandExecutor, TabCompleter {
 					else if (args.length == 3) {
 						if (args[1].equalsIgnoreCase("all") && sender.hasPermission("levelledmobs.kill.all")){
 							List<String> enabledWorlds = getEnabledWorldsList();
-							if (enabledWorlds != null && enabledWorlds.size() > 0) {
+							if (enabledWorlds != null && !enabledWorlds.isEmpty()) {
 								for (String world : enabledWorlds) {
 									cmds.add(world);
 								}

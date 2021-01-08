@@ -16,12 +16,13 @@ import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
 public class EntityDamageDebugListener implements Listener {
 
-    ArrayList<UUID> delay = new ArrayList<>();
+    List<UUID> delay = new ArrayList<UUID>();
     private LevelledMobs instance;
 
     public EntityDamageDebugListener(final LevelledMobs instance) {
