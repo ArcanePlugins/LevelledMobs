@@ -164,7 +164,7 @@ public class LevelledMobsCommand implements CommandExecutor, TabCompleter {
 		}
     	
     	int killed = 0;
-        World world = null;
+		World world;
 		// lvlmobs kill all <world>
 		// lblmobs kill near <radius>
         
@@ -183,16 +183,14 @@ public class LevelledMobsCommand implements CommandExecutor, TabCompleter {
 			else if (args[1].equalsIgnoreCase("near"))
 				sender.sendMessage(MicroUtils.colorize("&b&lLevelledMobs: &7Usage: &b/levelledmobs kill near [radius]"));
 
-			return;
-		}
-        else if (args.length >= 3) {
-        	if (args[1].equalsIgnoreCase("all")) {
-            	if (!sender.hasPermission("levelledmobs.kill.all")) {
+		} else {
+			if (args[1].equalsIgnoreCase("all")) {
+				if (!sender.hasPermission("levelledmobs.kill.all")) {
 					sender.sendMessage(MicroUtils.colorize("&b&lLevelledMobs: &7You don't have access to that."));
 					return;
 				}
-        		
-                if (Bukkit.getWorld(args[2]) == null) {
+
+				if (Bukkit.getWorld(args[2]) == null) {
 					sender.sendMessage(MicroUtils.colorize("&b&lLevelledMobs: &7Invalid world &b" + args[1] + "&7."));
 					return;
 				}
@@ -212,25 +210,25 @@ public class LevelledMobsCommand implements CommandExecutor, TabCompleter {
 						"Killed &b%s&7 levellable entities in world '&b%s&7'.", killed, world.getName())));
 			}
         	else if (args[1].equalsIgnoreCase("near")) {
-            	if (!sender.hasPermission("levelledmobs.kill.near")) {
+				if (!sender.hasPermission("levelledmobs.kill.near")) {
 					sender.sendMessage(MicroUtils.colorize("&b&lLevelledMobs: &7You don't have access to that."));
 					return;
 				}
-        		
-            	if (!(sender instanceof Player)) {
+
+				if (!(sender instanceof Player)) {
 					sender.sendMessage(MicroUtils.colorize("&b&lLevelledMobs: &7Kill near command not available from console"));
 					return;
 				}
-            	
-            	int radius = 0;
-                try {
-                    radius = Integer.parseInt(args[2]);
-                } catch (NumberFormatException ex) {
+
+				int radius;
+				try {
+					radius = Integer.parseInt(args[2]);
+				} catch (NumberFormatException ex) {
 					sender.sendMessage(MicroUtils.colorize("&b&lLevelledMobs: &7Invalid radius: " + args[2]));
 					return;
 				}
-                
-                Player p = (Player) sender;
+
+				Player p = (Player) sender;
 
 				for (Entity e : p.getNearbyEntities(radius, radius, radius)) {
 					if (e instanceof LivingEntity) {
@@ -263,27 +261,27 @@ public class LevelledMobsCommand implements CommandExecutor, TabCompleter {
 		// lvlmobs summon <amount> <entity> <level> atPlayer   <playername>
     	// lvlmobs summon <amount> <entity> <level> atLocation <x>          <y> <z>
 
-        if (args.length < 4) {
-        	sender.sendMessage(ChatColor.GRAY + "Summon command syntax:");
-        	sender.sendMessage("/lvlmobs summon <amount> <entity> <level> here");
-        	sender.sendMessage("/lvlmobs summon <amount> <entity> <level> atPlayer <playername>");
-        	sender.sendMessage("/lvlmobs summon <amount> <entity> <level> atLocation <x> <y> <z>");
-        	return;
-        }
+		if (args.length < 4) {
+			sender.sendMessage(ChatColor.GRAY + "Summon command syntax:");
+			sender.sendMessage("/lvlmobs summon <amount> <entity> <level> here");
+			sender.sendMessage("/lvlmobs summon <amount> <entity> <level> atPlayer <playername>");
+			sender.sendMessage("/lvlmobs summon <amount> <entity> <level> atLocation <x> <y> <z>");
+			return;
+		}
 
-        EntityType entityType;
-        int amount = 0;
-        int level = 1;
+		EntityType entityType;
+		int amount;
+		int level;
 
-        try {
-            amount = Integer.parseInt(args[1]);
-        } catch (NumberFormatException ex) {
+		try {
+			amount = Integer.parseInt(args[1]);
+		} catch (NumberFormatException ex) {
 			sender.sendMessage(MicroUtils.colorize("&b&lLevelledMobs: &7Invalid amount: " + args[1]));
 			return;
 		}
-        
-        try {
-            entityType = EntityType.valueOf(args[2].toUpperCase());
+
+		try {
+			entityType = EntityType.valueOf(args[2].toUpperCase());
         } catch (Exception ex) {
 			sender.sendMessage(MicroUtils.colorize("&b&lLevelledMobs: &7Invalid mob type: " + args[2]));
 			return;
@@ -341,18 +339,19 @@ public class LevelledMobsCommand implements CommandExecutor, TabCompleter {
         if (!isSenderPlayer && (xIsRelative || yIsRelative || zIsRelative)) {
         	sender.sendMessage(ChatColor.RED + "You can't use this option from console");
         	return;
-        }
-        
-        final int useX = getLocationFromArg(sender, player, args[5], CoordiateLetter.X, xIsRelative);
-        if (useX == -1) return;
-        final int useY = getLocationFromArg(sender, player, args[6], CoordiateLetter.Y, yIsRelative);
-        if (useY == -1) return;
-        final int useZ = getLocationFromArg(sender, player, args[7], CoordiateLetter.Z, zIsRelative);
-        if (useZ == -1) return;
+		}
 
-        // payload 3:
-        createMobs(entityType, amount, player, sender, level, useX, useY, useZ);
-    }
+		final int useX = getLocationFromArg(sender, player, args[5], CoordiateLetter.X, xIsRelative);
+		if (useX == -1) return;
+		final int useY = getLocationFromArg(sender, player, args[6], CoordiateLetter.Y, yIsRelative);
+		if (useY == -1) return;
+		final int useZ = getLocationFromArg(sender, player, args[7], CoordiateLetter.Z, zIsRelative);
+		if (useZ == -1) return;
+
+		// payload 3:
+		assert player != null;
+		createMobs(entityType, amount, player, sender, level, useX, useY, useZ);
+	}
         
     private enum SummonType{
     	At_Player,
@@ -367,19 +366,25 @@ public class LevelledMobsCommand implements CommandExecutor, TabCompleter {
     }
     
     private int getLocationFromArg(final CommandSender sender, Player player, final String arg, CoordiateLetter letter, boolean isRelative) {
-    	
-    	String temp = null;
-    	int result = -1;
-    	int toAdd = 0;
-    	
-    	if (isRelative) {
-	    	switch (letter) {
-	    		case X: result = player.getLocation().getBlockX(); break;
-	    		case Y: result = player.getLocation().getBlockY(); break;
-	    		case Z: result = player.getLocation().getBlockZ(); break;
-	    	}
-	    	
-	    	if (arg.length() == 1) return result;
+
+		String temp = null;
+		int result = -1;
+		int toAdd;
+
+		if (isRelative) {
+			switch (letter) {
+				case X:
+					result = player.getLocation().getBlockX();
+					break;
+				case Y:
+					result = player.getLocation().getBlockY();
+					break;
+				case Z:
+					result = player.getLocation().getBlockZ();
+					break;
+			}
+
+			if (arg.length() == 1) return result;
 	    		
 	    	if (arg.charAt(0) == '+') {
 	    		if (arg.length() == 2) {
@@ -429,27 +434,27 @@ public class LevelledMobsCommand implements CommandExecutor, TabCompleter {
     
     private MobSpawnResult createMobs(EntityType entity, int amount, Player player, CommandSender sender, int level, 
     		Location location, boolean useDistFromPlayer) {
-    	
-	    MobSpawnResult mobResult = new MobSpawnResult();
-        
-        if (amount > 100) {
-        	sender.sendMessage("max mobs allowed is 100");
-        	amount = 100;
-        }
-    	
-	    int distanceX = 0;
-	    int distanceZ = 0;
-	    int distFromPlayer = useDistFromPlayer ? instance.fileCache.SETTINGS_SPAWN_DISTANCE_FROM_PLAYER : 0;
 
-	    World world = player.getWorld();
-	    
-	    double direction = player.getLocation().getYaw();
-	    if (direction >= 225.0D && direction <= 314.9D) distanceX += distFromPlayer; 
-	    if (direction >= 45.0D && direction <= 134.9D)  distanceX -= distFromPlayer; 
-	    if (direction >= 135.0D && direction <= 224.9D) distanceZ -= distFromPlayer; 
-	    if (direction >= 315.0D || direction <= 44.9D)  distanceZ += distFromPlayer;
-	    
-	    Location newLocation1 = new Location(world, location.getX() + distanceX, location.getY(), location.getZ() + distanceZ);
+		MobSpawnResult mobResult = new MobSpawnResult();
+
+		if (amount > 100) {
+			sender.sendMessage("max mobs allowed is 100");
+			amount = 100;
+		}
+
+		int distanceX = 0;
+		int distanceZ = 0;
+		int distFromPlayer = useDistFromPlayer ? instance.settingsCfg.getInt("summon-command-spawn-distance-from-player") : 0;
+
+		World world = player.getWorld();
+
+		double direction = player.getLocation().getYaw();
+		if (direction >= 225.0D && direction <= 314.9D) distanceX += distFromPlayer;
+		if (direction >= 45.0D && direction <= 134.9D) distanceX -= distFromPlayer;
+		if (direction >= 135.0D && direction <= 224.9D) distanceZ -= distFromPlayer;
+		if (direction >= 315.0D || direction <= 44.9D) distanceZ += distFromPlayer;
+
+		Location newLocation1 = new Location(world, location.getX() + distanceX, location.getY(), location.getZ() + distanceZ);
 	    Location newLocation2 = new Location(world, location.getX() + distanceX, location.getY() + 1.0D, location.getZ() + distanceZ);
 	    
 	    if (newLocation1.getBlock().getType().isSolid() || newLocation2.getBlock().getType().isSolid()) {
@@ -463,36 +468,34 @@ public class LevelledMobsCommand implements CommandExecutor, TabCompleter {
 		for (int i = 0; i < amount; i++) {
 			if (i > 0) {
 				// offset by a random number otherwise it'll look just like only one entity is there
-				double randomX = (double)rand.ints(0, 50).findFirst().getAsInt() * 0.01;
-				double randomZ = (double)rand.ints(0, 50).findFirst().getAsInt() * 0.01;
+				double randomX = (double) rand.ints(0, 50).findFirst().getAsInt() * 0.01;
+				double randomZ = (double) rand.ints(0, 50).findFirst().getAsInt() * 0.01;
 				newLocation1 = new Location(world, newLocation2.getX() + randomX, newLocation1.getY(), newLocation2.getZ() + randomZ);
 			}
-			
+
 			Entity spawnedEntity = world.spawnEntity(newLocation1, entity);
-						
-			if (spawnedEntity != null) {
-				mobResult.MobsSpawned++;
-				instance.creatureSpawnListener.processMobSpawn((LivingEntity) spawnedEntity, spawnReason, level);
-			}
+
+			mobResult.MobsSpawned++;
+			instance.creatureSpawnListener.processMobSpawn((LivingEntity) spawnedEntity, spawnReason, level);
 		}
 		
 		return mobResult;
     }
-    
-    private class MobSpawnResult{
-    	public int MobsSpawned;
-    	public Location location;
-    }
+
+	private static class MobSpawnResult {
+		public int MobsSpawned;
+		public Location location;
+	}
     
 	@Override
 	public List<String> onTabComplete(CommandSender sender, Command cmd, String alias, String[] args) {
 				
 		if (cmd.getName().equalsIgnoreCase("levelledmobs")) {
-			List<String> cmds = new ArrayList<String>();
-			
-			if (args.length == 1) { 
+			List<String> cmds = new ArrayList<>();
+
+			if (args.length == 1) {
 				cmds.add("info");
-				
+
 				if (sender.hasPermission("levelledmobs.kill.all") || sender.hasPermission("levelledmobs.kill.near"))
 					cmds.add("kill");
 				if (sender.hasPermission("levelledmobs.reload"))
@@ -510,19 +513,15 @@ public class LevelledMobsCommand implements CommandExecutor, TabCompleter {
 						cmds.add("near");
 					}
 					else if (args.length == 3) {
-						if (args[1].equalsIgnoreCase("all") && sender.hasPermission("levelledmobs.kill.all")){
+						if (args[1].equalsIgnoreCase("all") && sender.hasPermission("levelledmobs.kill.all")) {
 							List<String> enabledWorlds = getEnabledWorldsList();
-							if (enabledWorlds != null && !enabledWorlds.isEmpty()) {
-								for (String world : enabledWorlds) {
-									cmds.add(world);
-								}
+							if (!enabledWorlds.isEmpty()) {
+								cmds.addAll(enabledWorlds);
 							}
+						} else if (args[1].equalsIgnoreCase("near")) {
+							cmds.addAll(zeroThruNine);
 						}
-						else if (args[1].equalsIgnoreCase("near")){
-							for (String num : this.zeroThruNine) cmds.add(num);
-						}
-					}
-					else if (args.length >= 4) {
+					} else {
 						return cmds;
 					}
 				}
@@ -542,10 +541,10 @@ public class LevelledMobsCommand implements CommandExecutor, TabCompleter {
 					}
 					
 					if (args.length == 3) {
-						for (String mob : this.allMobsList) cmds.add(mob);
+						cmds.addAll(this.allMobsList);
 					}
 					else if (args.length == 2 || args.length == 4) {
-						for (String num : this.zeroThruNine) cmds.add(num);
+						cmds.addAll(this.zeroThruNine);
 					}
 					else if (args.length == 5) {
 						cmds.add("atLocation");
@@ -578,26 +577,25 @@ public class LevelledMobsCommand implements CommandExecutor, TabCompleter {
 	
 	private List<String> getEnabledWorldsList() {
 		String mode = "";
-		final List<String> worlds = new ArrayList<String>();
-		
-		if (instance.fileCache.SETTINGS_WORLDS_LIST_ENABLED) {
-            mode = instance.fileCache.SETTINGS_WORLDS_LIST_MODE;
+		final List<String> worlds = new ArrayList<>();
+
+		if (instance.settingsCfg.getBoolean("worlds-list.enabled")) {
+			mode = instance.settingsCfg.getString("worlds-list.mode");
 		}
-		
+
 		for (World world : Bukkit.getWorlds()) {
 			String worldName = world.getName();
-			
-	        if (!Utils.isNullOrEmpty(mode)) {
-	            switch (mode) {
-	                case "BLACKLIST":
-	                    if (instance.fileCache.SETTINGS_WORLDS_LIST_LIST.contains(worldName)) continue;
-	                    break;
-	                case "WHITELIST":
-	                    if (!instance.fileCache.SETTINGS_WORLDS_LIST_LIST.contains(worldName)) continue;
-	                    break;
-	            }
-	        }
-	        else {
+
+			if (Utils.isNotNullOrEmpty(mode)) {
+				switch (mode) {
+					case "BLACKLIST":
+						if (instance.settingsCfg.getStringList("worlds-list.list").contains(worldName)) continue;
+						break;
+					case "WHITELIST":
+						if (!instance.settingsCfg.getStringList("worlds-list.list").contains(worldName)) continue;
+						break;
+				}
+			} else {
 	        	worlds.add(worldName);
 	        }
 		} // next world

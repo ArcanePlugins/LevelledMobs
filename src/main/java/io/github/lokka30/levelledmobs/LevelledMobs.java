@@ -13,6 +13,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -108,9 +109,14 @@ public class LevelledMobs extends JavaPlugin {
     public void loadFiles() {
         Utils.logger.info("&fFile Loader: &7Loading files...");
 
+        // save license.txt
+        FileLoader.saveResourceIfNotExists(this, new File(getDataFolder(), "license.txt"));
+
+        // load configurations
         settingsCfg = FileLoader.loadFile(this, "settings", FileLoader.SETTINGS_FILE_VERSION);
         messagesCfg = FileLoader.loadFile(this, "messages", FileLoader.MESSAGES_FILE_VERSION);
 
+        // load configutils
         configUtils = new ConfigUtils(this);
     }
 

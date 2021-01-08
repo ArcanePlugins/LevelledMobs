@@ -7,7 +7,7 @@ import org.bukkit.event.entity.EntityRegainHealthEvent;
 
 public class EntityRegainHealthListener implements Listener {
 
-    private LevelledMobs instance;
+    private final LevelledMobs instance;
 
     public EntityRegainHealthListener(final LevelledMobs instance) {
         this.instance = instance;
@@ -16,7 +16,10 @@ public class EntityRegainHealthListener implements Listener {
     // When the mob regains health, try to update their nametag.
     @EventHandler
     public void onEntityRegainHealth(final EntityRegainHealthEvent e) {
-        if (e.isCancelled() || !instance.fileCache.SETTINGS_UPDATE_NAMETAG_HEALTH) return;
+        if (e.isCancelled() || !instance.settingsCfg.getBoolean("update-nametag-health")) {
+            return;
+        }
+
         instance.levelManager.updateTag(e.getEntity());
     }
 

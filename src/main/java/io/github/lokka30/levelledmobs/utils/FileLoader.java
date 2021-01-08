@@ -30,7 +30,7 @@ public final class FileLoader {
         return cfg;
     }
 
-    private static void saveResourceIfNotExists(Plugin instance, File file) {
+    public static void saveResourceIfNotExists(Plugin instance, File file) {
         if (!file.exists()) {
             Utils.logger.info("&fFile Loader: &7Configuration file '&b" + file.getName() + "&7' doesn't exist, creating it now...");
             instance.saveResource(file.getName(), false);

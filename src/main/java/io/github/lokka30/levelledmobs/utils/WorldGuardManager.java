@@ -23,7 +23,7 @@ import java.util.Objects;
 
 public class WorldGuardManager {
 
-    private LevelledMobs instance;
+    private final LevelledMobs instance;
 
     public WorldGuardManager(final LevelledMobs instance) {
         this.instance = instance;

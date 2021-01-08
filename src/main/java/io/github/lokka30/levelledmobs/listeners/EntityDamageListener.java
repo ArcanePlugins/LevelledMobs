@@ -11,7 +11,7 @@ import org.bukkit.persistence.PersistentDataType;
 
 public class EntityDamageListener implements Listener {
 
-    private LevelledMobs instance;
+    private final LevelledMobs instance;
 
     public EntityDamageListener(final LevelledMobs instance) {
         this.instance = instance;
@@ -20,9 +20,9 @@ public class EntityDamageListener implements Listener {
     // When the mob is damaged, try to update their nametag.
     @EventHandler
     public void onDamage(final EntityDamageEvent e) {
-    	if (instance.fileCache.SETTINGS_UPDATE_NAMETAG_HEALTH) {
+        if (instance.settingsCfg.getBoolean("update-nametag-health")) {
             instance.levelManager.updateTag(e.getEntity());
-    	}
+        }
     }
 
     // Check for levelled ranged damage.
@@ -33,15 +33,15 @@ public class EntityDamageListener implements Listener {
             if (projectile.getShooter() instanceof LivingEntity) {
                 final LivingEntity livingEntity = (LivingEntity) projectile.getShooter();
                 if (instance.levelManager.isLevellable(livingEntity)) {
-                    if (livingEntity.getPersistentDataContainer().get(instance.levelKey, PersistentDataType.INTEGER) == null) { //if the entity doesn't contain a level, skip this.
+                    if (livingEntity.getPersistentDataContainer().get(instance.levelManager.levelKey, PersistentDataType.INTEGER) == null) { //if the entity doesn't contain a level, skip this.
                         return;
                     }
 
-                    Number level = livingEntity.getPersistentDataContainer().get(instance.levelKey, PersistentDataType.INTEGER);
+                    Number level = livingEntity.getPersistentDataContainer().get(instance.levelManager.levelKey, PersistentDataType.INTEGER);
                     if (level != null) {
                         final double baseAttackDamage = e.getDamage();
-                        final double defaultAttackDamageAddition = instance.fileCache.SETTINGS_FINE_TUNING_DEFAULT_ATTACK_DAMAGE_INCREASE;
-                        final double attackDamageMultiplier = instance.fileCache.SETTINGS_FINE_TUNING_MULTIPLIERS_RANGED_ATTACK_DAMAGE;
+                        final double defaultAttackDamageAddition = instance.settingsCfg.getDouble("fine-tuning.default-attack-damage-increase");
+                        final double attackDamageMultiplier = instance.settingsCfg.getDouble("fine-tuning.multipliers.ranged-attack-damage");
                         final double newAttackDamage = baseAttackDamage + defaultAttackDamageAddition + (attackDamageMultiplier * level.intValue());
 
                         e.setDamage(newAttackDamage);

@@ -106,7 +106,7 @@ public class CreatureSpawnListener implements Listener {
             }
 
             if (instance.settingsCfg.getBoolean("slime-children-retain-level-of-parent") &&
-                    spawnReason == SpawnReason.SLIME_SPLIT && !Utils.isNullOrEmpty(entityName)) {
+                    spawnReason == SpawnReason.SLIME_SPLIT && Utils.isNotNullOrEmpty(entityName)) {
                 // change child level to match parent.  Only possible from parsing the custom number for the level number
 
                 // [Level 10 | Slime]
@@ -116,7 +116,7 @@ public class CreatureSpawnListener implements Listener {
                 if (m.find() && m.groupCount() >= 1) {
                     // the only reason it won't match is if someone has changed the custom name syntax significantly
                     String probablyLevelNum = m.group(1);
-            		if (Utils.isInteger(probablyLevelNum))
+                    if (Utils.isInteger(probablyLevelNum))
             			level = Integer.parseInt(probablyLevelNum);
             	}
             	// if we didn't match then the slime will get a random level instead of the parent's level

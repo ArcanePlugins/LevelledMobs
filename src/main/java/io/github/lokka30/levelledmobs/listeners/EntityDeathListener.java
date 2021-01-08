@@ -7,7 +7,7 @@ import org.bukkit.event.entity.EntityDeathEvent;
 
 public class EntityDeathListener implements Listener {
 
-    private LevelledMobs instance;
+    private final LevelledMobs instance;
 
     public EntityDeathListener(final LevelledMobs instance) {
         this.instance = instance;

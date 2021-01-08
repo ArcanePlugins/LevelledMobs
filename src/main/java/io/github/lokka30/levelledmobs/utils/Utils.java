@@ -49,12 +49,12 @@ public final class Utils {
     }
 
 	public static String replaceEx(String original, String pattern, String replacement) {
-		if (original == null || pattern == null) return null;
-		
-		int count, position0, position1;
-		count = position0 = position1 = 0;
-		String upperString = original.toUpperCase();
-		String upperPattern = pattern.toUpperCase();
+        if (original == null || pattern == null) return null;
+
+        int count, position0, position1;
+        count = position0 = 0;
+        String upperString = original.toUpperCase();
+        String upperPattern = pattern.toUpperCase();
         int inc = (original.length() / pattern.length()) *
                 (replacement.length() - pattern.length());
         char[] chars = new char[original.length() + Math.max(0, inc)];
@@ -72,12 +72,8 @@ public final class Utils {
         return new String(chars, 0, count);
     }
 
-    public static boolean isNullOrEmpty(String str) {
-        return (str == null || str.isEmpty());
-    }
-
-    public static Object getDefaultIfNull(Object object, Object def) {
-        return object == null ? def : object;
+    public static boolean isNotNullOrEmpty(String str) {
+        return (str != null && !str.isEmpty());
     }
 
     public static int getDefaultIfNull(YamlConfiguration cfg, String path, int def) {
