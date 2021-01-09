@@ -24,7 +24,7 @@ permissions:
       levelledmobs.summon: true
       levelledmobs.kill.*: true
   levelledmobs.kill.*:
-    description:' access to both ''/levelledmob kill'' commands'
+    description: 'access to both ''/levelledmob kill'' commands'
   levelledmobs.kill.near:
     description: 'access to ''/levelledMobs kill near'''
     default: op
