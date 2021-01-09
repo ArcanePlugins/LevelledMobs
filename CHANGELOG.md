@@ -334,6 +334,10 @@ The new changelog is formatted using Markdown and is now in ascending order.
 * I wish to start off with a big thank you to stumper66 for their huge list of contributions this update. Stumper also gave me the spark to recontinue work on the resource. Give him your thanks too if you enjoy this update ;)
 * I've recontinued work on the plugin. Almost all of the code has been altered from the previous version.
 
+### Summary for server owners:
+* We've cleaned up a lot of code, added a bunch of new features, fixed lots of bugs and made some changes to existing features.
+* If you are using any WorldGuard flags from LM, you should remove them from your regions prior to installing this new version. All flags have been renamed + there is a new flag ;)
+
 ### Changes by stumper66:
 * WorldGuard level restrictions now properly respect the max level if both max and min levels are set to the same value
 * Magmacubes, Slimes, Ghasts and Hoglins are now leveled as expected
@@ -349,8 +353,9 @@ The new changelog is formatted using Markdown and is now in ascending order.
 
 ### Changes by lokka30:
 * Removed PhantomLib dependency. It has been replaced with MicroLib which I have hidden inside the LevelledMobs .jar file so that you don't need to worry about it. :)
-* Cleaned up the main class significantly. A bunch of methods and variables have been moved to more fitting classes.
 * Added a `messages.yml` file, which administrators can now translate all chat messages from the plugin.
-* Technical changes:
+* Renamed all previous WorldGuard flags + added a new 'Allow Levelled Mobs' flag which can disable mobs from being levelled in regions ;)
+* Behind-the-scenes changes:
+  * Cleaned up the main class significantly. A bunch of methods and variables have been moved to more fitting classes.
   * Removed the LightningStorage system - it has been replaced with a far simpler system. This will not only increase performance, but also decrease clutter in the code and decrease the file size of the plugin.
   * Added the ListMode enum which will make checking lists in the config easier and cleaner

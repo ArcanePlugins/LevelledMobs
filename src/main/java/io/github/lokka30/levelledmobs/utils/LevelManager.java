@@ -47,6 +47,13 @@ public class LevelManager {
             return false;
         }
 
+        // Check WorldGuard flag.
+        if (instance.worldGuardManager.hasWorldGuardInstalled) {
+            if (!instance.worldGuardManager.regionAllowsLevelling(entity)) {
+                return false;
+            }
+        }
+
         //Blacklist override, entities here will return true regardless if they are in blacklistedTypes or are passive
         List<String> blacklistOverrideTypes = instance.settingsCfg.getStringList("blacklist-override-types");
         if (blacklistOverrideTypes.contains(entity.getType().name())) {
