@@ -3,7 +3,6 @@ package io.github.lokka30.levelledmobs.listeners;
 import io.github.lokka30.levelledmobs.LevelledMobs;
 import io.github.lokka30.levelledmobs.utils.Utils;
 import me.lokka30.microlib.MicroUtils;
-import org.bukkit.Sound;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.entity.Creeper;
@@ -41,29 +40,24 @@ public class EntityDamageDebugListener implements Listener {
             final LivingEntity ent = (LivingEntity) e.getEntity();
 
             if (p.isOp() && !delay.contains(uuid) && instance.levelManager.isLevellable(ent)) {
-                p.sendMessage(MicroUtils.colorize("&a&lLevelledMobs: &7Debug information for &a" + ent.getType().toString() + "&7: "));
+                p.sendMessage(MicroUtils.colorize("&b&lLevelledMobs: &7Debug information for &b" + ent.getType().toString() + "&7: "));
 
                 writeDebugForAttribute(p, ent, Attribute.GENERIC_MAX_HEALTH);
                 writeDebugForAttribute(p, ent, Attribute.GENERIC_MOVEMENT_SPEED);
-                writeDebugForAttribute(p, ent, Attribute.GENERIC_MAX_HEALTH);
                 if (ent instanceof Creeper) {
                     final Creeper creeper = (Creeper) ent;
                     writeDebugForAttribute(p, "BLAST_RADIUS", creeper.getExplosionRadius(), 3);
                 }
                 writeDebugForAttribute(p, ent, Attribute.GENERIC_ATTACK_DAMAGE);
-                writeDebugForAttribute(p, ent, Attribute.GENERIC_FLYING_SPEED);
 
                 writeDebugForAttribute(p, "Current Health", Utils.round(ent.getHealth()));
                 writeDebugForAttribute(p, "Level", Objects.requireNonNull(ent.getPersistentDataContainer().get(instance.levelManager.levelKey, PersistentDataType.INTEGER), "Level was null"));
-                writeDebugForAttribute(p, "CustomName", ent.getCustomName() != null ? ent.getCustomName() : "(null)");
-
-                p.playSound(p.getLocation(), Sound.ITEM_BOOK_PAGE_TURN, 1.0F, 1.0F);
+                writeDebugForAttribute(p, ent.getCustomName() != null ? ent.getCustomName() : "(null)");
 
                 delay.add(uuid);
                 new BukkitRunnable() {
                     public void run() {
                         delay.remove(uuid);
-                        p.playSound(p.getLocation(), Sound.ITEM_BOOK_PUT, 1.0F, 1.0F);
                     }
                 }.runTaskLater(instance, 40L);
             }
@@ -76,17 +70,17 @@ public class EntityDamageDebugListener implements Listener {
         writeDebugForAttribute(p, attributeName, amount);
 
         p.sendMessage(MicroUtils.colorize(String.format(
-                "&8 - &f%s Default = &a%s", attributeName, Math.round(defaultAmount * 100.0) / 100.0)));
+                "&8 - &f%s (Default) &8= &b%s", attributeName, Math.round(defaultAmount * 100.0) / 100.0)));
     }
 
     private void writeDebugForAttribute(final Player p, final String attributeName, final double amount) {
         p.sendMessage(MicroUtils.colorize(String.format(
-                "&8 - &f%s = &a%s", attributeName, Math.round(amount * 100.0) / 100.0)));
+                "&8 - &f%s &8= &b%s", attributeName, Math.round(amount * 100.0) / 100.0)));
     }
 
-    private void writeDebugForAttribute(final Player p, final String attributeName, final String msg) {
+    private void writeDebugForAttribute(final Player p, final String msg) {
         p.sendMessage(MicroUtils.colorize(String.format(
-                "&8 - &f%s = &a%s", attributeName, msg)));
+                "&8 - &f%s &8= &b%s", "CustomName", msg)));
     }
 
     private void writeDebugForAttribute(final Player p, final LivingEntity ent, final Attribute att) {
@@ -96,8 +90,8 @@ public class EntityDamageDebugListener implements Listener {
         String attName = att.name();
 
         p.sendMessage(MicroUtils.colorize(String.format(
-                "&8 - &f%s = &a%s", attName, Math.round(attInstance.getBaseValue() * 100.0) / 100.0)));
+                "&8 - &f%s &8= &a%s", attName, Math.round(attInstance.getBaseValue() * 100.0) / 100.0)));
         p.sendMessage(MicroUtils.colorize(String.format(
-                "&8 - &f%s Default = &a%s", attName, Math.round(attInstance.getDefaultValue() * 100.0 / 100.0))));
+                "&8 - &f%s (Default) = &a%s", attName, Math.round(attInstance.getDefaultValue() * 100.0 / 100.0))));
     }
 }

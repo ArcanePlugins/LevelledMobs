@@ -30,7 +30,7 @@ public class LevelledMobsCommand implements CommandExecutor, TabCompleter {
 	private final LevelledMobs instance;
 	private final Random rand;
 	private final List<String> allMobsList;
-	private final List<String> zeroThruNine;
+	private final List<String> oneToNine;
 
 	public LevelledMobsCommand(final LevelledMobs instance) {
 		this.instance = instance;
@@ -109,18 +109,7 @@ public class LevelledMobsCommand implements CommandExecutor, TabCompleter {
 				"zombified_piglin"
 		);
 
-		this.zeroThruNine = Arrays.asList(
-				"0",
-				"1",
-				"2",
-				"3",
-				"4",
-				"5",
-				"6",
-				"7",
-				"8",
-				"9"
-		);
+		this.oneToNine = Arrays.asList("1", "2", "3", "4", "5", "6", "7", "8", "9");
 	}
 
 	public boolean onCommand(final CommandSender sender, final Command command, final String label, final String[] args) {
@@ -152,11 +141,9 @@ public class LevelledMobsCommand implements CommandExecutor, TabCompleter {
 
 				sender.sendMessage(MicroUtils.colorize("&b&lLevelledMobs&f v" + instance.getDescription().getVersion() + "&7 by lokka30"));
 				sender.sendMessage(MicroUtils.colorize("&7'" + instance.getDescription().getDescription() + "'"));
-
-				sender.sendMessage(" ");
-
+				sender.sendMessage(MicroUtils.colorize("&7Supported versions: &f" + String.join("&7, &f", Utils.getSupportedServerVersions()) + "&7."));
 				List<String> contributors = Arrays.asList("stumper66", "Eyrian", "iCodinqs", "deiphiz", "konsolas", "bStats", "SpigotMC");
-				sender.sendMessage(MicroUtils.colorize("&b&lLevelledMobs: &7Thank you to the contributors: &f" + String.join("&7, &f", contributors)));
+				sender.sendMessage(MicroUtils.colorize("&7Thank you to the contributors: &f" + String.join("&7, &f", contributors) + "&7."));
 
 				sender.sendMessage(" ");
 			} else {
@@ -467,7 +454,7 @@ public class LevelledMobsCommand implements CommandExecutor, TabCompleter {
 		Location newLocation2 = new Location(world, location.getX() + distanceX, location.getY() + 1.0D, location.getZ() + distanceZ);
 
 		if (newLocation1.getBlock().getType().isSolid() || newLocation2.getBlock().getType().isSolid()) {
-			sender.sendMessage(MicroUtils.colorize("&b&lLevelledMobs: &7Not enough room, try somewhere else"));
+			sender.sendMessage(MicroUtils.colorize("&b&lLevelledMobs: &7Not enough room, try somewhere else."));
 			return mobResult;
 		}
 
@@ -503,7 +490,7 @@ public class LevelledMobsCommand implements CommandExecutor, TabCompleter {
 			List<String> cmds = new ArrayList<>();
 
 			if (args.length == 1) {
-				cmds.add("contributors");
+				cmds.add("info");
 
 				if (sender.hasPermission("levelledmobs.kill.all") || sender.hasPermission("levelledmobs.kill.near")) {
 					cmds.add("kill");
@@ -531,7 +518,7 @@ public class LevelledMobsCommand implements CommandExecutor, TabCompleter {
 								cmds.addAll(enabledWorlds);
 							}
 						} else if (args[1].equalsIgnoreCase("near")) {
-							cmds.addAll(zeroThruNine);
+							cmds.addAll(oneToNine);
 						}
 					} else {
 						return cmds;
@@ -554,7 +541,7 @@ public class LevelledMobsCommand implements CommandExecutor, TabCompleter {
 					if (args.length == 3) {
 						cmds.addAll(this.allMobsList);
 					} else if (args.length == 2 || args.length == 4) {
-						cmds.addAll(this.zeroThruNine);
+						cmds.addAll(this.oneToNine);
 					} else if (args.length == 5) {
 						cmds.add("atLocation");
 						cmds.add("atPlayer");

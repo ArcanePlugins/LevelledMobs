@@ -385,9 +385,10 @@ The new changelog is formatted using Markdown and is now in ascending order.
 * Magma Cubes, Slimes, Ghasts and Hoglins are now levelled as expected (stumper66)
 * Shulkers are now levelled as expected (lokka30)
 
-**Code Changes** (lokka30)
+**Other Code Changes** (lokka30)
 * Cleaned up the main class significantly. A bunch of methods and variables have been moved to more fitting classes.
 * Removed the LightningStorage system - it has been replaced with a far simpler system. This will not only increase performance, but also decrease clutter in the code and decrease the file size of the plugin.
 * Added the ListMode enum which will make checking lists in the config easier and cleaner
 * Removed 'isLevelled' NamespacedKey
 * Added all code contributors to the 'info' subcommand.
+* Removed sound from debug feature - in case older versions become supported, this sound will need to go anyways
