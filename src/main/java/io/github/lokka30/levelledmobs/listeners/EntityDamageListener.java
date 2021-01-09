@@ -9,6 +9,11 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.persistence.PersistentDataType;
 
+/**
+ * This class is used for
+ * 1) updating the nametag of an entity when they are hit (if configured)
+ * 2) adjusting the ranged attack damage of projectiles by the configured multiplier
+ */
 public class EntityDamageListener implements Listener {
 
     private final LevelledMobs instance;

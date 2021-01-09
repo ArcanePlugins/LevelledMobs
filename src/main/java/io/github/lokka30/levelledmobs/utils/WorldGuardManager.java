@@ -26,19 +26,19 @@ public class WorldGuardManager {
 
     private final LevelledMobs instance;
 
-    public WorldGuardManager(final LevelledMobs instance) {
-        this.instance = instance;
-        this.hasWorldGuardInstalled = Bukkit.getPluginManager().getPlugin("WorldGuard") != null;
-
-        if (hasWorldGuardInstalled) {
-            registerFlags();
-        }
-    }
-
     public final boolean hasWorldGuardInstalled;
 
     public static StringFlag minlevelflag, maxlevelflag; //The WorldGuard flags of the min and max mob levels.
     public static StateFlag allowlevelflag; //The WorldGuard flag if mobs can be levelled.
+
+    public WorldGuardManager(final LevelledMobs instance) {
+        this.instance = instance;
+
+        hasWorldGuardInstalled = Bukkit.getPluginManager().getPlugin("WorldGuard") != null;
+        if (hasWorldGuardInstalled) {
+            registerFlags();
+        }
+    }
 
     public void registerFlags() {
         FlagRegistry freg = WorldGuard.getInstance().getFlagRegistry();

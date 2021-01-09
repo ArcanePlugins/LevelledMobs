@@ -20,6 +20,9 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
+/**
+ * This class is used for debugging the plugin.
+ */
 public class EntityDamageDebugListener implements Listener {
 
     final List<UUID> delay = new ArrayList<>();
@@ -32,7 +35,7 @@ public class EntityDamageDebugListener implements Listener {
     //This class is used to debug levellable mobs. It simply displays their current attributes, current health and current level.
     @EventHandler
     public void onEntityDamageByEntity(final EntityDamageByEntityEvent e) {
-        if (!e.isCancelled() && e.getEntity() instanceof LivingEntity && e.getDamager() instanceof Player && instance.settingsCfg.getBoolean("debug")) {
+        if (!e.isCancelled() && instance.settingsCfg.getBoolean("debug") && e.getEntity() instanceof LivingEntity && e.getDamager() instanceof Player) {
             final Player p = (Player) e.getDamager();
             final UUID uuid = p.getUniqueId();
             final LivingEntity ent = (LivingEntity) e.getEntity();
@@ -81,12 +84,12 @@ public class EntityDamageDebugListener implements Listener {
         p.sendMessage(MicroUtils.colorize(String.format(
                 "&8 - &f%s = &a%s", attributeName, Math.round(amount * 100.0) / 100.0)));
     }
-    
+
     private void writeDebugForAttribute(final Player p, final String attributeName, final String msg) {
         p.sendMessage(MicroUtils.colorize(String.format(
                 "&8 - &f%s = &a%s", attributeName, msg)));
     }
-    
+
     private void writeDebugForAttribute(final Player p, final LivingEntity ent, final Attribute att) {
         AttributeInstance attInstance = ent.getAttribute(att);
         if (attInstance == null) return;

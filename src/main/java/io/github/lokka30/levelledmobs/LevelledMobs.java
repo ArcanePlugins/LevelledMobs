@@ -15,6 +15,9 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * This is the main class of the plugin. Bukkit will call onLoad and onEnable on startup, and onDisable on shutdown.
+ */
 public class LevelledMobs extends JavaPlugin {
 
     public YamlConfiguration settingsCfg;

@@ -84,32 +84,32 @@ fine-tuning:
   max-level: 10
 
   # Since the vanilla damage is pretty weak, you can increase its base value here.
-  # The default adds 1 extra point to the attack damage attribute.
-  # Expected: [Double], Default: [1.0]
-  default-attack-damage-increase: 1.0
+  # The default adds 0.7 extra points to the attack damage attribute.
+  # Expected: [Double], Default: [0.7]
+  default-attack-damage-increase: 0.7
 
   # For each level, these values are added to a mob. The default have been tried and tested, but you're free to change it.
   multipliers:
 
-    # Expected: [Double], Default: [0.055]
-    movement-speed: 0.055
-
-    # Expected: [Double], Default: [0.06]
-    max-health: 0.06
-
-    # Expected: [Double], Default: [0.3]
-    attack-damage: 0.3
-
-    # Expected: [Double], Default: [0.2]
-    ranged-attack-damage: 0.2
-
-    # Expected: [Double], Default: [0.16]
-    item-drop: 0.16
+    # Expected: [Double], Default: [0.049]
+    movement-speed: 0.049
 
     # Expected: [Double], Default: [0.1]
-    xp-drop: 0.1
-    
-    # Expected: [Double], Default: [??]
+    max-health: 0.1
+
+    # Expected: [Double], Default: [0.21]
+    attack-damage: 0.21
+
+    # Expected: [Double], Default: [0.05]
+    ranged-attack-damage: 0.05
+
+    # Expected: [Double], Default: [0.11]
+    item-drop: 0.11
+
+    # Expected: [Double], Default: [0.11]
+    xp-drop: 0.11
+
+    # Expected: [Double], Default: [0.1]
     flying-speed: 0.1
 
   # Should the creature's nametag be removed on death?
