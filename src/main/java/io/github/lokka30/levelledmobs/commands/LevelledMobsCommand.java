@@ -131,7 +131,7 @@ public class LevelledMobsCommand implements CommandExecutor, TabCompleter {
 			sender.sendMessage(MicroUtils.colorize("&8 &m->&b /levelledMobs killall [world] &8- &7butcher levellable mobs."));
 			sender.sendMessage(MicroUtils.colorize("&8 &m->&b /levelledMobs summon <...> &8- &7summon a levelled mob."));
 			sender.sendMessage(MicroUtils.colorize("&8 &m->&b /levelledMobs reload &8- &7reload the settings file into memory."));
-			sender.sendMessage(MicroUtils.colorize("&8 &m->&b /levelledMobs contributors &8- &7view the list of contributors."));
+			sender.sendMessage(MicroUtils.colorize("&8 &m->&b /levelledMobs info &8- &7view info about the plugin"));
 			sender.sendMessage(" ");
 			return true;
 		} else if (args[0].equalsIgnoreCase("kill")) {
@@ -146,10 +146,19 @@ public class LevelledMobsCommand implements CommandExecutor, TabCompleter {
 			}
 		} else if (args[0].equalsIgnoreCase("summon")) {
 			parseSummonMobsCmd(sender, args);
-		} else if (args[0].equalsIgnoreCase("contributors")) {
+		} else if (args[0].equalsIgnoreCase("info")) {
 			if (args.length == 1) {
-				List<String> contributors = Arrays.asList("lokka30", "stumper66", "Eyrian", "iCodinqs", "deiphiz", "konsolas", "bStats team");
-				sender.sendMessage(MicroUtils.colorize("&b&lLevelledMobs: &7Contributors: &f" + String.join("&7, &f", contributors)));
+				sender.sendMessage(" ");
+
+				sender.sendMessage(MicroUtils.colorize("&b&lLevelledMobs&f v" + instance.getDescription().getVersion() + "&7 by lokka30"));
+				sender.sendMessage(MicroUtils.colorize("&7'" + instance.getDescription().getDescription() + "'"));
+
+				sender.sendMessage(" ");
+
+				List<String> contributors = Arrays.asList("stumper66", "Eyrian", "iCodinqs", "deiphiz", "konsolas", "bStats", "SpigotMC");
+				sender.sendMessage(MicroUtils.colorize("&b&lLevelledMobs: &7Thank you to the contributors: &f" + String.join("&7, &f", contributors)));
+
+				sender.sendMessage(" ");
 			} else {
 				sender.sendMessage(MicroUtils.colorize("&b&lLevelledMobs: &7Usage: &b/" + label + " contributors"));
 			}

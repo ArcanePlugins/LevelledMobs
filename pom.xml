@@ -11,7 +11,7 @@
     <packaging>jar</packaging>
 
     <name>LevelledMobs</name>
-    <description>An advanced RPG mob levelling plugin</description>
+    <description>The ultimate RPG mob levelling plugin.</description>
 
     <properties>
         <java.version>1.8</java.version>

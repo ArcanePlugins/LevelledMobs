@@ -12,7 +12,7 @@ commands:
   levelledmobs:
     description: Manage LevelledMobs
     aliases: [leveledmobs, lm, lvlmobs]
-    usage: /<command> [killall/reload/summon/contributors]
+    usage: /<command> [killall/reload/summon/info]
 
 permissions:
   levelledmobs.*:
@@ -22,12 +22,18 @@ permissions:
       levelledmobs.killall: true
       levelledmobs.reload: true
       levelledmobs.summon: true
-  levelledmobs.killall:
-    description: access to /levelledMobs killall
+      levelledmobs.kill.*: true
+  levelledmobs.kill.*:
+    description:' access to both ''/levelledmob kill'' commands'
+  levelledmobs.kill.near:
+    description: 'access to ''/levelledMobs kill near'''
+    default: op
+  levelledmobs.kill.all:
+    description: 'access to ''/levelledmobs kill all'''
     default: op
   levelledmobs.reload:
-    description: access to /levelledmobs reload
+    description: 'access to ''/levelledmobs reload'''
     default: op
   levelledmobs.summon:
-    description: access to /levelledmobs summon
+    description: 'access to ''/levelledmobs summon'''
     default: op

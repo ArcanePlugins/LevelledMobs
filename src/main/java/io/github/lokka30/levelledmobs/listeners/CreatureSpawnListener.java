@@ -48,11 +48,7 @@ public class CreatureSpawnListener implements Listener {
 
     	String entityName = livingEntity.getName();
 
-        //Check if the mob is already levelled (safarinet compatibility, etc)
-        String isLevelled = livingEntity.getPersistentDataContainer().get(instance.levelManager.isLevelledKey, PersistentDataType.STRING);
-        if (isLevelled != null && isLevelled.equalsIgnoreCase("true")) {
-            return;
-        }
+        //Check if the mob is already levelled
         if (livingEntity.getPersistentDataContainer().get(instance.levelManager.levelKey, PersistentDataType.INTEGER) != null) {
             return;
         }
@@ -162,7 +158,6 @@ public class CreatureSpawnListener implements Listener {
 
             //Define the mob's level so it can be accessed elsewhere.
             livingEntity.getPersistentDataContainer().set(instance.levelManager.levelKey, PersistentDataType.INTEGER, level);
-            livingEntity.getPersistentDataContainer().set(instance.levelManager.isLevelledKey, PersistentDataType.STRING, "true");
 
             if (ConfigUtils.SETTINGS_CREEPER_MAX_RADIUS != 3 && livingEntity instanceof Creeper) {
                 // level 1 ends up with 3 (base) and anything higher becomes a percent of the max radius as specified in the config

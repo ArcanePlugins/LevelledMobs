@@ -55,7 +55,6 @@ public class EntityDamageDebugListener implements Listener {
 
                 writeDebugForAttribute(p, "Current Health", Utils.round(ent.getHealth()));
                 writeDebugForAttribute(p, "Level", Objects.requireNonNull(ent.getPersistentDataContainer().get(instance.levelManager.levelKey, PersistentDataType.INTEGER), "Level was null"));
-                writeDebugForAttribute(p, "isLevelled", Objects.requireNonNull(ent.getPersistentDataContainer().get(instance.levelManager.isLevelledKey, PersistentDataType.STRING), "isLevelled was null"));
                 writeDebugForAttribute(p, "CustomName", ent.getCustomName() != null ? ent.getCustomName() : "(null)");
 
                 p.playSound(p.getLocation(), Sound.ITEM_BOOK_PAGE_TURN, 1.0F, 1.0F);

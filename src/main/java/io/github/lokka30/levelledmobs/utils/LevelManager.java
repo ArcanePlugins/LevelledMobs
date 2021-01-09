@@ -24,19 +24,12 @@ public class LevelManager {
         this.instance = instance;
 
         levelKey = new NamespacedKey(instance, "level");
-        isLevelledKey = new NamespacedKey(instance, "isLevelled");
-
-        // [Level 10 | Slime]
-        // [&7Level 10&8 | &fSlime&8]
-        // "Level.*?(\\d{1,2})"
-        slimeRegex = Pattern.compile("Level.*?(\\d{1,2})", Pattern.CASE_INSENSITIVE);
     }
 
-    public final NamespacedKey levelKey; //What's the mob's level?
-    public final NamespacedKey isLevelledKey; //Is the mob levelled? //TODO Remove.
+    public final NamespacedKey levelKey; // This stores the mob's level.
 
-    public final static int maxCreeperBlastRadius = 100; // prevent creepers from blowing up the world!
-    public final Pattern slimeRegex;
+    public final static int maxCreeperBlastRadius = 100;
+    public final Pattern slimeRegex = Pattern.compile("Level.*?(\\d{1,2})", Pattern.CASE_INSENSITIVE);
     public CreatureSpawnListener creatureSpawnListener;
 
     //Checks if an entity can be levelled.
