@@ -88,16 +88,19 @@ fine-tuning:
   default-attack-damage-increase: 0.7
 
   # For each level, these values are added to a mob. The default have been tried and tested, but you're free to change it.
+  # Warning: these multipliers do not scale if you change the min/max levels above. they have only been made to fit the standard 1-10 level configuration.
   multipliers:
 
-    # Expected: [Double], Default: [0.049]
-    movement-speed: 0.049
+    # Expected: [Double], Default: [0.056]
+    # Warning: +/- in very, very small amounts! (i.e. 0.005)
+    # Note: Minecraft's AI isn't intelligent enough to work with crazy high movement speeds.
+    movement-speed: 0.056
 
-    # Expected: [Double], Default: [0.1]
-    max-health: 0.1
+    # Expected: [Double], Default: [0.13]
+    max-health: 0.13
 
-    # Expected: [Double], Default: [0.21]
-    attack-damage: 0.21
+    # Expected: [Double], Default: [0.33]
+    attack-damage: 0.33
 
     # Expected: [Double], Default: [0.05]
     ranged-attack-damage: 0.05
@@ -105,11 +108,8 @@ fine-tuning:
     # Expected: [Double], Default: [0.11]
     item-drop: 0.11
 
-    # Expected: [Double], Default: [0.11]
-    xp-drop: 0.11
-
-    # Expected: [Double], Default: [0.1]
-    flying-speed: 0.1
+    # Expected: [Double], Default: [0.09]
+    xp-drop: 0.09
 
   # Should the creature's nametag be removed on death?
   # Expected: [Boolean], Default: [false]
