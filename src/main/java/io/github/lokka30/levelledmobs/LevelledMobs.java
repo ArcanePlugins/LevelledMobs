@@ -25,6 +25,7 @@ public class LevelledMobs extends JavaPlugin {
     public ConfigUtils configUtils;
 
     public LevelManager levelManager;
+    public boolean hasWorldGuardInstalled;
     public WorldGuardManager worldGuardManager;
 
     private long loadTime;
@@ -39,7 +40,10 @@ public class LevelledMobs extends JavaPlugin {
 
         // Hook into WorldGuard, register LM's flags.
         // This cannot be moved to onEnable (stated in WorldGuard's documentation).
-        worldGuardManager = new WorldGuardManager(this);
+        hasWorldGuardInstalled = getServer().getPluginManager().getPlugin("WorldGuard") != null;
+        if (hasWorldGuardInstalled) {
+            worldGuardManager = new WorldGuardManager(this);
+        }
 
         loadTime = loadTimer.getTimer();
     }

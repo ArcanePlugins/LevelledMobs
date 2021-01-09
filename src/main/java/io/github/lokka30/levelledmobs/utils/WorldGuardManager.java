@@ -13,7 +13,6 @@ import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import com.sk89q.worldguard.protection.regions.RegionContainer;
 import io.github.lokka30.levelledmobs.LevelledMobs;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.LivingEntity;
 
@@ -26,9 +25,6 @@ public class WorldGuardManager {
 
     private final LevelledMobs instance;
 
-    // If WorldGuard is installed on the server or not.
-    public final boolean hasWorldGuardInstalled;
-
     /* Flags */
     public static StringFlag
             customMinLevelFlag, // This flag forces mobs to not be levelled lower than the value stated in the flag. -1 = no minimum from WorldGuard.
@@ -39,11 +35,7 @@ public class WorldGuardManager {
 
     public WorldGuardManager(final LevelledMobs instance) {
         this.instance = instance;
-
-        hasWorldGuardInstalled = Bukkit.getPluginManager().getPlugin("WorldGuard") != null;
-        if (hasWorldGuardInstalled) {
-            registerFlags();
-        }
+        registerFlags();
     }
 
     public void registerFlags() {
@@ -133,7 +125,7 @@ public class WorldGuardManager {
         boolean minBool = false;
         boolean maxBool = false;
 
-        if (instance.worldGuardManager.hasWorldGuardInstalled) {
+        if (instance.hasWorldGuardInstalled) {
             return false;
         }
 

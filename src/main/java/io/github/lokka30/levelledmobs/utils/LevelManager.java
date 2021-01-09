@@ -41,7 +41,7 @@ public class LevelManager {
         }
 
         // Check WorldGuard flag.
-        if (instance.worldGuardManager.hasWorldGuardInstalled) {
+        if (instance.hasWorldGuardInstalled) {
             if (!instance.worldGuardManager.regionAllowsLevelling(entity)) {
                 return false;
             }

@@ -56,7 +56,7 @@ public class CreatureSpawnListener implements Listener {
         // if spawned naturally it will be -1.  If used summon with specific level specified then it will be >= 0
         if (level == -1) {
 	        //Check settings for spawn distance levelling and choose levelling method accordingly.
-            if (instance.worldGuardManager.hasWorldGuardInstalled && instance.worldGuardManager.checkRegionFlags(livingEntity)) {
+            if (instance.hasWorldGuardInstalled && instance.worldGuardManager.checkRegionFlags(livingEntity)) {
                 level = generateRegionLevel(livingEntity);
             } else if (instance.settingsCfg.getBoolean("spawn-distance-levelling.active")) {
                 level = generateLevelByDistance(livingEntity);
