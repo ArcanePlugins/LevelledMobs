@@ -50,7 +50,7 @@ public class EntityDamageDebugListener implements Listener {
                 writeDebugForAttribute(p, ent, Attribute.GENERIC_ATTACK_DAMAGE);
                 writeDebugForAttribute(p, ent, Attribute.GENERIC_FLYING_SPEED);
 
-                writeDebugForAttribute(p, "Current Health", Utils.round(ent.getHealth(), 1));
+                writeDebugForAttribute(p, "Current Health", Utils.round(ent.getHealth()));
                 writeDebugForAttribute(p, "Level", Objects.requireNonNull(ent.getPersistentDataContainer().get(instance.levelManager.levelKey, PersistentDataType.INTEGER), "Level was null"));
                 writeDebugForAttribute(p, "isLevelled", Objects.requireNonNull(ent.getPersistentDataContainer().get(instance.levelManager.isLevelledKey, PersistentDataType.STRING), "isLevelled was null"));
                 writeDebugForAttribute(p, "CustomName", ent.getCustomName() != null ? ent.getCustomName() : "(null)");

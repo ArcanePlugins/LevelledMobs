@@ -110,9 +110,9 @@ public class LevelManager {
                 String customName = instance.settingsCfg.getString("creature-nametag");
                 customName = Utils.replaceEx(customName, "%level%", String.valueOf(entity.getPersistentDataContainer().get(instance.levelManager.levelKey, PersistentDataType.INTEGER)));
                 customName = Utils.replaceEx(customName, "%name%", instance.configUtils.getEntityName(entityType));
-                customName = Utils.replaceEx(customName, "%health%", String.valueOf(Utils.round(livingEntity.getHealth(), 1)));
+                customName = Utils.replaceEx(customName, "%health%", String.valueOf(Utils.round(livingEntity.getHealth())));
                 AttributeInstance att = livingEntity.getAttribute(Attribute.GENERIC_MAX_HEALTH);
-                String health = att == null ? "" : String.valueOf(Utils.round((Objects.requireNonNull(livingEntity.getAttribute(Attribute.GENERIC_MAX_HEALTH))).getBaseValue(), 1));
+                String health = att == null ? "" : String.valueOf(Utils.round((Objects.requireNonNull(livingEntity.getAttribute(Attribute.GENERIC_MAX_HEALTH))).getBaseValue()));
                 customName = Utils.replaceEx(customName, "%max_health%", health);
                 customName = Utils.replaceEx(customName, "%heart_symbol%", "❤");
 

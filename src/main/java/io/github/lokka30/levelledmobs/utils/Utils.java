@@ -18,6 +18,7 @@ public final class Utils {
 
     public static final MicroLogger logger = new MicroLogger("&b&lLevelledMobs: &7");
 
+    //TODO Replace usages with other round method.
     //This is a method created by Jonik & Mustapha Hadid at StackOverflow.
     //It simply grabs 'value', being a double, and rounds it, leaving 'places' decimal places intact.
     //Created by Jonik & Mustapha Hadid @ stackoverflow
@@ -28,6 +29,16 @@ public final class Utils {
         value = value * factor;
         long tmp = Math.round(value);
         return (double) tmp / factor;
+    }
+
+    /**
+     * Rounds value to 2dp
+     *
+     * @param value value to round
+     * @return rounded value
+     */
+    public static double round(double value) {
+        return Math.round(value * 100) / 100.00;
     }
 
     //Integer check
