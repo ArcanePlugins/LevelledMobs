@@ -76,7 +76,7 @@ public class LevelManager {
         boolean result = entity instanceof Monster || entity instanceof Boss || instance.settingsCfg.getBoolean("level-passive");
 
         // there are a few special cases here since they aren't part of the 'Monster' interface
-        if (!result && (entity instanceof Ghast || entity instanceof MagmaCube || entity instanceof Hoglin)) {
+        if (!result && (entity instanceof Ghast || entity instanceof MagmaCube || entity instanceof Hoglin || entity instanceof Shulker)) {
             result = true;
         }
 

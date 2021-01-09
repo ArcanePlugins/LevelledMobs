@@ -38,14 +38,13 @@ blacklisted-types:
   - 'ENDER_DRAGON'
   - 'WITHER'
   - 'RAVAGER'
+  - 'ENDER_DRAGON'
 # - 'BABY_ZOMBIE'
 
 # Blacklisted Types Override: The mobs in here will be levelled regardless if they are included in 'blacklisted-types' or if 'level-passive' is true.
-# Shulkers are added by default as for some reason they aren't considered hostile mobs.
 # Warning: Types are case-sensitive! That means they should be in UPPERCASE.
 # You can also use 'BABY_ZOMBIE' to override baby zombies.
 blacklisted-types-override:
-  - 'SHULKER'
 # - 'BABY_ZOMBIE'
 
 # Manage a list of worlds where Levelled Mobs can spawn or not
@@ -66,10 +65,10 @@ worlds-list:
     - 'another_world'
 
 # You can block certain spawn reasons from levelling mobs, such as Mob Spawners.
-# To block mob spawners from levelling mobs, remove the [] and the hashtag before - 'SPAWNER'.
+# To block mob spawners from levelling mobs, remove the hashtag before - 'SPAWNER'.
 # This checks for SpawnReasons created by the Spigot API.
 # Blacklist all reasons by putting in 'ALL' - this means that no mobs will be levelled though.
-blacklisted-reasons: []
+blacklisted-reasons:
 #  - 'SPAWNER'
 
 # Fine-tuning. You probably don't need to change the values in this cluster.
