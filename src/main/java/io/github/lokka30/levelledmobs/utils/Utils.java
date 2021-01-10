@@ -1,8 +1,10 @@
 package io.github.lokka30.levelledmobs.utils;
 
 import me.lokka30.microlib.MicroLogger;
+import me.lokka30.microlib.MicroUtils;
 import org.bukkit.configuration.file.YamlConfiguration;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -88,5 +90,100 @@ public final class Utils {
 
     public static int getDefaultIfNull(YamlConfiguration cfg, String path, int def) {
         return cfg.contains(path) ? cfg.getInt(path) : def;
+    }
+
+    public static List<String> oneToNine = Arrays.asList("1", "2", "3", "4", "5", "6", "7", "8", "9");
+
+    public static List<String> mobs = Arrays.asList(
+            "bat",
+            "bee",
+            "blaze",
+            "cat",
+            "cave_spider",
+            "chicken",
+            "cod",
+            "cow",
+            "creeper",
+            "dolphin",
+            "donkey",
+            "drowned",
+            "elder_guardian",
+            "ender_dragon",
+            "enderman",
+            "endermite",
+            "evoker",
+            "evoker_fangs",
+            "fox",
+            "ghast",
+            "giant",
+            "guardian",
+            "hoglin",
+            "horse",
+            "husk",
+            "illusioner",
+            "iron_golem",
+            "llama",
+            "magma_cube",
+            "mule",
+            "mushroom_cow",
+            "ocelot",
+            "panda",
+            "parrot",
+            "phantom",
+            "pig",
+            "piglin",
+            "piglin_brute",
+            "pillager",
+            "polar_bear",
+            "pufferfish",
+            "rabbit",
+            "ravager",
+            "salmon",
+            "sheep",
+            "shulker",
+            "silverfish",
+            "skeleton",
+            "skeleton_horse",
+            "slime",
+            "snowball",
+            "snowman",
+            "spider",
+            "squid",
+            "stray",
+            "strider",
+            "tropical_fish",
+            "turtle",
+            "vex",
+            "villager",
+            "vindicator",
+            "witch",
+            "wither",
+            "wither_skeleton",
+            "wolf",
+            "zoglin",
+            "zombie",
+            "zombie_horse",
+            "zombie_villager",
+            "zombified_piglin"
+    );
+
+    public static List<String> replaceAllInList(List<String> oldList, String replaceWhat, String replaceTo) {
+        List<String> newList = new ArrayList<>();
+
+        for (String string : oldList) {
+            newList.add(string.replace(replaceWhat, replaceTo));
+        }
+
+        return newList;
+    }
+
+    public static List<String> colorizeAllInList(List<String> oldList) {
+        List<String> newList = new ArrayList<>();
+
+        for (String string : oldList) {
+            newList.add(MicroUtils.colorize(string));
+        }
+
+        return newList;
     }
 }

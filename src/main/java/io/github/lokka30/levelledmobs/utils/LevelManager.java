@@ -32,6 +32,32 @@ public class LevelManager {
     public final Pattern slimeRegex = Pattern.compile("Level.*?(\\d{1,2})", Pattern.CASE_INSENSITIVE);
     public CreatureSpawnListener creatureSpawnListener;
 
+    public boolean isLevellable(final EntityType entityType) {
+        if (entityType == EntityType.PLAYER) {
+            return false;
+        }
+
+        //TODO check config lists. skipping for the moment
+
+        Class<? extends Entity> entityClass = entityType.getEntityClass();
+        if (entityClass == null) {
+            return false;
+        }
+
+        return entityClass.isAssignableFrom(Monster.class)
+
+                // there are a few special cases here since they aren't part of the 'Monster' interface
+                || entityClass.isAssignableFrom(Boss.class)
+                || entityClass.isAssignableFrom(Ghast.class)
+                || entityClass.isAssignableFrom(MagmaCube.class)
+                || entityClass.isAssignableFrom(Hoglin.class)
+                || entityClass.isAssignableFrom(Shulker.class)
+                || entityClass.isAssignableFrom(Phantom.class)
+
+                // Allow passive mobs?
+                || instance.settingsCfg.getBoolean("level-passive");
+    }
+
     //Checks if an entity can be levelled.
     public boolean isLevellable(final LivingEntity entity) {
 
@@ -76,7 +102,7 @@ public class LevelManager {
         boolean result = entity instanceof Monster || entity instanceof Boss || instance.settingsCfg.getBoolean("level-passive");
 
         // there are a few special cases here since they aren't part of the 'Monster' interface
-        if (!result && (entity instanceof Ghast || entity instanceof MagmaCube || entity instanceof Hoglin || entity instanceof Shulker)) {
+        if (!result && (entity instanceof Ghast || entity instanceof MagmaCube || entity instanceof Hoglin || entity instanceof Shulker || entity instanceof Phantom)) {
             result = true;
         }
 

@@ -14,6 +14,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
+import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.persistence.PersistentDataType;
 
 import java.util.List;
@@ -159,6 +160,9 @@ public class CreatureSpawnListener implements Listener {
             //Define the mob's level so it can be accessed elsewhere.
             livingEntity.getPersistentDataContainer().set(instance.levelManager.levelKey, PersistentDataType.INTEGER, level);
 
+            //Set the metadata so other plugins and the kill command can check if it is a levelledmob
+            livingEntity.setMetadata("levelled", new FixedMetadataValue(instance, "true"));
+
             if (ConfigUtils.SETTINGS_CREEPER_MAX_RADIUS != 3 && livingEntity instanceof Creeper) {
                 // level 1 ends up with 3 (base) and anything higher becomes a percent of the max radius as specified in the config
                 int blastRadius = (int) Math.floor(level / 10.0 * ((double) ConfigUtils.SETTINGS_CREEPER_MAX_RADIUS) - 3) + 3;
@@ -191,13 +195,13 @@ public class CreatureSpawnListener implements Listener {
     //Generates a level.
     //Uses ThreadLocalRandom.current().nextInt(min, max + 1). + 1 is because ThreadLocalRandom is usually exclusive of the uppermost value.
     public Integer generateLevel(LivingEntity livingEntity) {
-        return ThreadLocalRandom.current().nextInt(instance.configUtils.getMinLevel(livingEntity), instance.configUtils.getMaxLevel(livingEntity) + 1);
+        return ThreadLocalRandom.current().nextInt(instance.configUtils.getMinLevel(livingEntity.getType(), livingEntity.getWorld()), instance.configUtils.getMaxLevel(livingEntity.getType(), livingEntity.getWorld()) + 1);
     }
 
     //Generates a level based on distance to spawn and, if active, variance
     private Integer generateLevelByDistance(LivingEntity livingEntity) {
-        final int minLevel = instance.configUtils.getMinLevel(livingEntity);
-        final int maxLevel = instance.configUtils.getMaxLevel(livingEntity);
+        final int minLevel = instance.configUtils.getMinLevel(livingEntity.getType(), livingEntity.getWorld());
+        final int maxLevel = instance.configUtils.getMaxLevel(livingEntity.getType(), livingEntity.getWorld());
 
         //Get distance between entity spawn point and world spawn
         final int entityDistance = (int) livingEntity.getWorld().getSpawnLocation().distance(livingEntity.getLocation());
@@ -242,7 +246,7 @@ public class CreatureSpawnListener implements Listener {
     }
 
     private int generateRegionLevel(LivingEntity livingEntity) {
-        int[] levels = instance.worldGuardManager.getRegionLevel(livingEntity, instance.configUtils.getMinLevel(livingEntity), instance.configUtils.getMaxLevel(livingEntity));
+        int[] levels = instance.worldGuardManager.getRegionLevel(livingEntity, instance.configUtils.getMinLevel(livingEntity.getType(), livingEntity.getWorld()), instance.configUtils.getMaxLevel(livingEntity.getType(), livingEntity.getWorld()));
         return levels[0] + Math.round(new Random().nextFloat() * (levels[1] - levels[0]));
     }
 }

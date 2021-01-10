@@ -1,4 +1,39 @@
-#TODO
+prefix: '&b&lLevelledMobs:&7'
+common:
+  noPermission:
+    - '%prefix% You don''t have access to that.'
+command:
+  levelledmobs:
+    main-usage:
+      - '%prefix% Available commands:'
+      - '&8 &m->&b /%label% summon &8- &7summon specific levelled mobs'
+      - '&8 &m->&b /%label% kill &8- &7kill levelled mobs'
+      - '&8 &m->&b /%label% reload &8- &7reload configuration files'
+      - '&8 &m->&b /%label% info &8- &7view info about the plugin'
+    summon:
+    kill:
+      usage:
+        - '%prefix% Usage: &b/%label% kill <all/near>'
+    reload:
+      started:
+        - '%prefix% Reloading configuration files...'
+      finished:
+        - '%prefix% Reload complete.'
+      usage:
+        - '%prefix% Usage: &b/%label% reload'
+    info:
+      about:
+        - ' '
+        - '&b&lLevelledMobs &fv%version%&7 by lokka30'
+        - '&7&o%description%'
+        - ' '
+        - '&7This version of the plugin supports: &fMC %supportedVersions%'
+        - '&7Thank-you to the contributors: &f%contributors%'
+        - ' '
+      listSeparator: '&7, &f'
+      usage:
+        - '%prefix% Usage: &b/%label% info'
+    #TODO
 
 # Don't change this unless you know what you're doing!
 file-version: 1

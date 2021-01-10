@@ -39,6 +39,7 @@ blacklisted-types:
   - 'WITHER'
   - 'RAVAGER'
   - 'ENDER_DRAGON'
+  - 'PHANTOM'
 # - 'BABY_ZOMBIE'
 
 # Blacklisted Types Override: The mobs in here will be levelled regardless if they are included in 'blacklisted-types' or if 'level-passive' is true.

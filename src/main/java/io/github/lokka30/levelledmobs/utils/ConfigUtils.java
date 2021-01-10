@@ -1,12 +1,16 @@
 package io.github.lokka30.levelledmobs.utils;
 
 import io.github.lokka30.levelledmobs.LevelledMobs;
+import me.lokka30.microlib.MicroUtils;
 import org.apache.commons.lang.WordUtils;
+import org.bukkit.World;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.EntityType;
-import org.bukkit.entity.LivingEntity;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class ConfigUtils {
     private final Map<EntityType, String> entityNameMap;
@@ -53,7 +57,7 @@ public class ConfigUtils {
         }
     }
 
-    public int getMinLevel(LivingEntity livingEntity) {
+    public int getMinLevel(EntityType entityType, World world) {
 
         // Note for users wondering why '-1' is stored in the min level map:
         // -1 is supposed to be an impossible level to achieve. It is used
@@ -62,12 +66,10 @@ public class ConfigUtils {
         // a mob spawns.
 
 
-        EntityType entityType = livingEntity.getType();
         String entityTypeStr = entityType.toString();
-
-        String worldOverridePath = "world-level-override.min-level." + livingEntity.getWorld().getName();
+        String worldName = world.getName();
+        String worldOverridePath = "world-level-override.min-level." + worldName;
         String entityTypeOverridePath = "entitytype-level-override.min-level." + entityTypeStr;
-        String worldName = livingEntity.getWorld().getName();
 
         int minLevel = instance.settingsCfg.getInt("fine-tuning.min-level");
 
@@ -102,7 +104,7 @@ public class ConfigUtils {
         return minLevel;
     }
 
-    public int getMaxLevel(LivingEntity livingEntity) {
+    public int getMaxLevel(EntityType entityType, World world) {
 
         // Note for users wondering why '-1' is stored in the max level map:
         // -1 is supposed to be an impossible level to achieve. It is used
@@ -111,12 +113,10 @@ public class ConfigUtils {
         // a mob spawns.
 
 
-        EntityType entityType = livingEntity.getType();
         String entityTypeStr = entityType.toString();
-
-        String worldOverridePath = "world-level-override.max-level." + livingEntity.getWorld().getName();
+        String worldName = world.getName();
+        String worldOverridePath = "world-level-override.max-level." + worldName;
         String entityTypeOverridePath = "entitytype-level-override.max-level." + entityTypeStr;
-        String worldName = livingEntity.getWorld().getName();
 
         int maxLevel = Utils.getDefaultIfNull(instance.settingsCfg, "fine-tuning.max-level", 10);
 
@@ -149,6 +149,19 @@ public class ConfigUtils {
         }
 
         return maxLevel;
+    }
+
+    public String getPrefix() {
+        return MicroUtils.colorize(Objects.requireNonNull(instance.settingsCfg.getString("prefix")));
+    }
+
+    public void sendNoPermissionMsg(CommandSender sender) {
+        List<String> noPermissionMsg = instance.messagesCfg.getStringList("common.noPermission");
+
+        noPermissionMsg = Utils.replaceAllInList(noPermissionMsg, "%prefix%", getPrefix());
+        noPermissionMsg = Utils.colorizeAllInList(noPermissionMsg);
+
+        noPermissionMsg.forEach(sender::sendMessage);
     }
 
 }
