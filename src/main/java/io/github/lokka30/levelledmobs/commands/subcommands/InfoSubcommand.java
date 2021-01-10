@@ -11,7 +11,7 @@ import java.util.Objects;
 public class InfoSubcommand implements Subcommand {
 
     @Override
-    public void parse(LevelledMobs instance, CommandSender sender, String label, String[] args) {
+    public void parseSubcommand(LevelledMobs instance, CommandSender sender, String label, String[] args) {
         if (sender.hasPermission("levelledmobs.command.info")) {
             if (args.length == 1) {
                 String version = instance.getDescription().getVersion();
@@ -36,5 +36,11 @@ public class InfoSubcommand implements Subcommand {
         } else {
             instance.configUtils.sendNoPermissionMsg(sender);
         }
+    }
+
+    @Override
+    public List<String> parseTabCompletions(LevelledMobs instance, CommandSender sender, String[] args) {
+        // This subcommand has no tab completions.
+        return null;
     }
 }

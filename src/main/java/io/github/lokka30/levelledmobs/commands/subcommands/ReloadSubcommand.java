@@ -9,7 +9,7 @@ import java.util.List;
 public class ReloadSubcommand implements Subcommand {
 
     @Override
-    public void parse(LevelledMobs instance, CommandSender sender, String label, String[] args) {
+    public void parseSubcommand(LevelledMobs instance, CommandSender sender, String label, String[] args) {
         if (sender.hasPermission("levelledmobs.command.reload")) {
             if (args.length == 1) {
                 List<String> reloadStartedMsg = instance.messagesCfg.getStringList("command.levelledmobs.reload.started");
@@ -33,5 +33,10 @@ public class ReloadSubcommand implements Subcommand {
         } else {
             instance.configUtils.sendNoPermissionMsg(sender);
         }
+    }
+
+    @Override
+    public List<String> parseTabCompletions(LevelledMobs instance, CommandSender sender, String[] args) {
+        return null; //No tab completions.
     }
 }

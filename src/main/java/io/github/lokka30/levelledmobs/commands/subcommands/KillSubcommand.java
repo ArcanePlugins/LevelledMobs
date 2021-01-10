@@ -1,6 +1,7 @@
 package io.github.lokka30.levelledmobs.commands.subcommands;
 
 import io.github.lokka30.levelledmobs.LevelledMobs;
+import io.github.lokka30.levelledmobs.utils.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
@@ -8,13 +9,14 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 public class KillSubcommand implements Subcommand {
 
     @Override
-    public void parse(LevelledMobs instance, CommandSender sender, String label, String[] args) {
+    public void parseSubcommand(LevelledMobs instance, CommandSender sender, String label, String[] args) {
         if (!sender.hasPermission("levelledmobs.command.kill")) {
             instance.configUtils.sendNoPermissionMsg(sender);
             return;
@@ -44,7 +46,7 @@ public class KillSubcommand implements Subcommand {
                     } else if (args.length == 3) {
                         //TODO Proceed
 
-                        if (args[2] == "*") {
+                        if (args[2].equals("*")) {
                             parseKillAll(sender, Bukkit.getWorlds());
                             return;
                         }
@@ -106,6 +108,29 @@ public class KillSubcommand implements Subcommand {
         } else {
             sendUsageMsg(sender, label);
         }
+    }
+
+    @Override
+    public List<String> parseTabCompletions(LevelledMobs instance, CommandSender sender, String[] args) {
+
+        if (args.length == 2) {
+            return Arrays.asList("all", "near");
+        }
+
+        if (args.length == 3) {
+            if (args[1].equalsIgnoreCase("all")) {
+                if (sender.hasPermission("levelledmobs.command.kill.all")) {
+                    return Collections.singletonList("worldNameHere"); //TODO Replace with 'Enabled Worlds' list.
+                }
+            } else if (args[1].equalsIgnoreCase("near")) {
+                if (sender.hasPermission("levelledmobs.command.kill.near")) {
+                    return Utils.oneToNine;
+                }
+            }
+        }
+
+        // Nothing to suggest.
+        return null;
     }
 
     private void sendUsageMsg(CommandSender sender, String label) {

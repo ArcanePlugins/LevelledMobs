@@ -1,6 +1,7 @@
 package io.github.lokka30.levelledmobs.commands.subcommands;
 
 import io.github.lokka30.levelledmobs.LevelledMobs;
+import io.github.lokka30.levelledmobs.utils.Utils;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -13,7 +14,7 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 
-import java.util.Random;
+import java.util.*;
 
 public class SummonSubcommand implements Subcommand {
 
@@ -24,7 +25,7 @@ public class SummonSubcommand implements Subcommand {
     // lvlmobs summon <amount> <entity> <level> atLocation <x>          <y> <z> [world]
 
     @Override
-    public void parse(LevelledMobs instance, CommandSender sender, String label, String[] args) {
+    public void parseSubcommand(LevelledMobs instance, CommandSender sender, String label, String[] args) {
         if (!sender.hasPermission("levelledmobs.command.summon")) {
             instance.configUtils.sendNoPermissionMsg(sender);
             return;
@@ -108,6 +109,57 @@ public class SummonSubcommand implements Subcommand {
         }
     }
 
+    @Override
+    public List<String> parseTabCompletions(LevelledMobs instance, CommandSender sender, String[] args) {
+
+        //TODO Cleanup
+
+        // len:    1      2        3        4       5          6            7   8
+        // arg:    0      1        2        3       4          5            6   9
+        // lvlmobs summon <amount> <entity> <level> here
+        // lvlmobs summon <amount> <entity> <level> atPlayer   <playername>
+        // lvlmobs summon <amount> <entity> <level> atLocation <x>          <y> <z>
+
+        boolean isAtLocation = false;
+        boolean isAtPlayer = false;
+        if (args.length > 4) {
+            if (args[4].equalsIgnoreCase("atlocation")) isAtLocation = true;
+            if (args[4].equalsIgnoreCase("atplayer")) isAtPlayer = true;
+        }
+
+        if (args.length == 3) {
+            return Utils.mobs;
+        } else if (args.length == 2 || args.length == 4) {
+            return Utils.oneToNine;
+        } else if (args.length == 5) {
+            return Arrays.asList("atLocation", "atPlayer", "here");
+        } else if (args.length == 6) {
+            if (isAtLocation) {
+                return Collections.singletonList("~");
+            } else if (isAtPlayer) {
+                List<String> usernames = new ArrayList<>();
+
+                for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
+                    if (sender instanceof Player) {
+                        Player player = (Player) sender;
+
+                        if (player.canSee(onlinePlayer) || player.isOp()) {
+                            usernames.add(onlinePlayer.getName());
+                        }
+                    } else {
+                        usernames.add(onlinePlayer.getName());
+                    }
+                }
+
+                return usernames;
+            }
+        } else if ((args.length == 7 || args.length == 8) && isAtLocation) {
+            return Collections.singletonList("~");
+        }
+
+        return null;
+    }
+
     private enum SummonType {
         HERE,
         AT_PLAYER,
@@ -123,7 +175,6 @@ public class SummonSubcommand implements Subcommand {
 
     private void summonMobs(LevelledMobs instance, EntityType entityType, int amount, CommandSender sender, int level, Location location, SummonType summonType, Player target) {
         if (instance.levelManager.isLevellable(entityType)) {
-            //TODO complete
 
             int maxAmount = 100; //TODO Customisable
             if (amount > maxAmount) {

@@ -12,7 +12,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -38,16 +37,16 @@ public class LevelledMobsCommand implements CommandExecutor, TabCompleter {
 			} else {
 				switch (args[0].toLowerCase()) {
 					case "kill":
-						killSubcommand.parse(instance, sender, label, args);
+						killSubcommand.parseSubcommand(instance, sender, label, args);
 						break;
 					case "reload":
-						reloadSubcommand.parse(instance, sender, label, args);
+						reloadSubcommand.parseSubcommand(instance, sender, label, args);
 						break;
 					case "summon":
-						summonSubcommand.parse(instance, sender, label, args);
+						summonSubcommand.parseSubcommand(instance, sender, label, args);
 						break;
 					case "info":
-						infoSubcommand.parse(instance, sender, label, args);
+						infoSubcommand.parseSubcommand(instance, sender, label, args);
 						break;
 					default:
 						sendMainUsage(sender, label);
@@ -71,86 +70,32 @@ public class LevelledMobsCommand implements CommandExecutor, TabCompleter {
 
 	@Override
 	public List<String> onTabComplete(CommandSender sender, Command cmd, String alias, String[] args) {
+		if (args.length == 0) {
+			List<String> suggestions = new ArrayList<>();
 
-		if (cmd.getName().equalsIgnoreCase("levelledmobs")) {
-			List<String> cmds = new ArrayList<>();
+			if (sender.hasPermission("levelledmobs.command.summon")) {
+				suggestions.add("summon");
+			}
+			if (sender.hasPermission("levelledmobs.command.kill")) {
+				suggestions.add("kill");
+			}
+			if (sender.hasPermission("levelledmobs.command.reload")) {
+				suggestions.add("reload");
+			}
+			if (sender.hasPermission("levelledmobs.command.info")) {
+				suggestions.add("info");
+			}
 
-			if (args.length == 1) {
-				cmds.add("info");
-
-				if (sender.hasPermission("levelledmobs.kill.all") || sender.hasPermission("levelledmobs.kill.near")) {
-					cmds.add("kill");
-				}
-
-				if (sender.hasPermission("levelledmobs.reload")) {
-					cmds.add("reload");
-				}
-
-				if (sender.hasPermission("levelledmobs.summon")) {
-					cmds.add("summon");
-				}
-			} else if (args.length >= 2) {
-				// lvlmobs kill all <world>
-				// lblmobs kill near <radius>
-
-				if (args[0].equalsIgnoreCase("kill")) {
-					if (args.length == 2) {
-						cmds.add("all");
-						cmds.add("near");
-					} else if (args.length == 3) {
-						if (args[1].equalsIgnoreCase("all") && sender.hasPermission("levelledmobs.kill.all")) {
-							List<String> enabledWorlds = Collections.singletonList("WorldName"); //TODO replace with get Enabled Worlds List
-							//noinspection ConstantConditions
-							if (!enabledWorlds.isEmpty()) {
-								cmds.addAll(enabledWorlds);
-							}
-						} else if (args[1].equalsIgnoreCase("near")) {
-							cmds.addAll(Utils.oneToNine);
-						}
-					} else {
-						return cmds;
-					}
-				} else if (args[0].equalsIgnoreCase("summon")) {
-					// len:    1      2        3        4       5          6            7   8
-					// arg:    0      1        2        3       4          5            6   9
-					// lvlmobs summon <amount> <entity> <level> here
-					// lvlmobs summon <amount> <entity> <level> atPlayer   <playername>
-					// lvlmobs summon <amount> <entity> <level> atLocation <x>          <y> <z>
-
-
-					boolean isAtLocation = false;
-					boolean isAtPlayer = false;
-					if (args.length > 4) {
-						if (args[4].equalsIgnoreCase("atlocation")) isAtLocation = true;
-						if (args[4].equalsIgnoreCase("atplayer")) isAtPlayer = true;
-					}
-
-					if (args.length == 3) {
-						cmds.addAll(Utils.mobs);
-					} else if (args.length == 2 || args.length == 4) {
-						cmds.addAll(Utils.oneToNine);
-					} else if (args.length == 5) {
-						cmds.add("atLocation");
-						cmds.add("atPlayer");
-						cmds.add("here");
-					} else if (args.length == 6) {
-						if (isAtLocation) {
-							cmds.add("~ ~ ~");
-							cmds.add("~ ~");
-							cmds.add("~");
-						} else if (isAtPlayer) return null; // causes player list to show
-					} else if (args.length == 7 && !isAtPlayer) {
-						cmds.add("~ ~");
-						cmds.add("~");
-					} else if (args.length == 8 && !isAtPlayer) {
-						cmds.add("~");
-					}
-				}
-			} // end if args >= 2
-
-			return cmds;
-		} // end if cmd == leveledmobs
-
-		return null;
+			return suggestions;
+		} else {
+			switch (args[0].toLowerCase()) {
+				case "summon":
+					return summonSubcommand.parseTabCompletions(instance, sender, args);
+				case "kill":
+					return killSubcommand.parseTabCompletions(instance, sender, args);
+				default:
+					return null;
+			}
+		}
 	}
 }
