@@ -24,9 +24,11 @@ public class LevelManager {
         this.instance = instance;
 
         levelKey = new NamespacedKey(instance, "level");
+        isLevelledKey = new NamespacedKey(instance, "isLevelled");
     }
 
     public final NamespacedKey levelKey; // This stores the mob's level.
+    public final NamespacedKey isLevelledKey; //This is stored on levelled mobs to tell plugins that it is a levelled mob.
 
     public final static int maxCreeperBlastRadius = 100;
     public final Pattern slimeRegex = Pattern.compile("Level.*?(\\d{1,2})", Pattern.CASE_INSENSITIVE);

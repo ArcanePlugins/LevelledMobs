@@ -8,6 +8,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.persistence.PersistentDataType;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -86,7 +87,7 @@ public class KillSubcommand implements Subcommand {
                             for (Entity entity : player.getNearbyEntities(radius, radius, radius)) {
                                 if (entity instanceof LivingEntity) {
                                     final LivingEntity livingEntity = (LivingEntity) entity;
-                                    if (livingEntity.hasMetadata("levelled")) {
+                                    if (livingEntity.getPersistentDataContainer().has(instance.levelManager.isLevelledKey, PersistentDataType.STRING)) {
                                         livingEntity.setHealth(0.0);
                                         killed++;
                                     }

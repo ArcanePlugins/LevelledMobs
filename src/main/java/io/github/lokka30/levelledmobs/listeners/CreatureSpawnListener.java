@@ -14,7 +14,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
-import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.persistence.PersistentDataType;
 
 import java.util.List;
@@ -159,9 +158,7 @@ public class CreatureSpawnListener implements Listener {
 
             //Define the mob's level so it can be accessed elsewhere.
             livingEntity.getPersistentDataContainer().set(instance.levelManager.levelKey, PersistentDataType.INTEGER, level);
-
-            //Set the metadata so other plugins and the kill command can check if it is a levelledmob
-            livingEntity.setMetadata("levelled", new FixedMetadataValue(instance, "true"));
+            livingEntity.getPersistentDataContainer().set(instance.levelManager.isLevelledKey, PersistentDataType.STRING, "true");
 
             if (ConfigUtils.SETTINGS_CREEPER_MAX_RADIUS != 3 && livingEntity instanceof Creeper) {
                 // level 1 ends up with 3 (base) and anything higher becomes a percent of the max radius as specified in the config
