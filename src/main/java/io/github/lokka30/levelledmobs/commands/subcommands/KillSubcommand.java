@@ -41,12 +41,9 @@ public class KillSubcommand implements Subcommand {
                             final Player player = (Player) sender;
                             parseKillAll(sender, Collections.singletonList(player.getWorld()));
                         } else {
-                            //TODO Console Usage
-                            sender.sendMessage("Usage (console): /lvlmobs kill all <world/*>");
+                            sender.sendMessage("Usage (console): /lvlmobs kill all <world/*>"); //TODO Customisable
                         }
                     } else if (args.length == 3) {
-                        //TODO Proceed
-
                         if (args[2].equals("*")) {
                             parseKillAll(sender, Bukkit.getWorlds());
                             return;
@@ -54,14 +51,13 @@ public class KillSubcommand implements Subcommand {
 
                         World world = Bukkit.getWorld(args[2]);
                         if (world == null) {
-                            sender.sendMessage("Invalid world " + args[2] + "!");
+                            sender.sendMessage("Invalid world " + args[2] + "!"); //TODO Customisable
                             return;
                         }
 
                         parseKillAll(sender, Collections.singletonList(world));
                     } else {
-                        //TODO Usage
-                        sender.sendMessage("Usage: /lvlmobs kill all [world/*]");
+                        sender.sendMessage("Usage: /lvlmobs kill all [world/*]"); //TODO Customisable
                     }
 
                     break;

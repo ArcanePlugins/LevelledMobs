@@ -20,15 +20,13 @@ permissions:
     default: op
     children:
       levelledmobs.command.*: true
-      levelledmobs.killall: true
-      levelledmobs.summon: true
-      levelledmobs.kill.*: true
 
   levelledmobs.command.*:
     description: 'Access to all LevelledMobs commands.'
     default: op
     children:
       levelledmobs.command: true
+      levelledmobs.command.summon: true
       levelledmobs.command.kill.*: true
       levelledmobs.command.reload: true
       levelledmobs.command.info: true
@@ -37,8 +35,16 @@ permissions:
     description: 'Access to `/levelledmobs`.'
     default: true
 
+  levelledmobs.command.summon:
+    description: 'access to ''/levelledmobs summon'''
+    default: op
+
   levelledmobs.command.kill.*:
     description: 'Access to `/levelledmobs kill all` and `/levelledmobs kill near`.'
+    default: op
+    children:
+      levelledmobs.command.kill.all: true
+      levelledmobs.command.kill.near: true
 
   levelledmobs.command.kill:
     description: 'Access to `/levelledmobs kill`.'
@@ -59,17 +65,3 @@ permissions:
   levelledmobs.command.info:
     description: 'Access to `/levelledmobs info`.'
     default: true
-
-  #TODO CONVERT
-  levelledmobs.kill.*:
-    description: 'Access to `/levelledmobs kill`.'
-    default: op
-  levelledmobs.kill.near:
-    description: 'access to ''/levelledMobs kill near'''
-    default: op
-  levelledmobs.kill.all:
-    description: 'access to ''/levelledmobs kill all'''
-    default: op
-  levelledmobs.summon:
-    description: 'access to ''/levelledmobs summon'''
-    default: op
