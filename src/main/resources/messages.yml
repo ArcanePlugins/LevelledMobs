@@ -28,13 +28,21 @@ command:
       invalid-location:
         - '%prefix% Invalid location.'
       here:
+        usage:
+          - '%prefix% Usage: &b/%label% summon <amount> <entity> <level> here'
         success:
           - '%prefix% Spawned &b%amount%&7 of &fLvl.%level% &b%entity%(s)&7 at your location.'
-        #TODO has usage?
       atLocation:
+        usage:
+          - '%prefix% Usage: &b/%label% summon <amount> <entity> <level> atLocation <x> <y> <z> [world]'
         success:
           - '%prefix% Spawned &b%amount%&7 of &fLvl.%level% &b%entity%(s)&7 at &8(&b%x%&7, &b%y%&7, &b%z&7 in world ''&b%world%&7''%&8)&7.'
-          #TODO has usage?
+        usage-console:
+          - '%prefix% Usage (console): &b/%label% summon <amount> <entity> <level> atLocation <x> <y> <z> <world>'
+        invalid-world:
+          - '%prefix% Invalid world ''&b%world%&7''.'
+        invalid-location:
+          - '%prefix% Invalid location.'
       atPlayer:
         usage:
           - '%prefix% Usage: &b/%label% summon <amount> <entityType> <level> atPlayer <player>'
@@ -42,7 +50,7 @@ command:
           - '%prefix% Spawned &b%amount%&7 of &fLvl.%level% &b%entity%(s)&7 at &r%target%&7''s location.'
       usage:
         - '%prefix% Summon command syntax:'
-        - '&8 &m->&b /%label% summon <amount> <entity> <level> [here]'
+        - '&8 &m->&b /%label% summon <amount> <entity> <level> here'
         - '&8 &m->&b /%label% summon <amount> <entity> <level> atPlayer <player>'
         - '&8 &m->&b /%label% summon <amount> <entity> <level> atLocation <x> <y> <z>'
       amount-limited:

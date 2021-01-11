@@ -96,7 +96,16 @@ public class SummonSubcommand implements Subcommand {
         if (summonType == SummonType.HERE) {
             if (sender instanceof Player) {
                 final Player player = (Player) sender;
-                summonMobs(instance, entityType, amount, sender, level, player.getLocation(), summonType, null);
+
+                if (args.length == 4 || args.length == 5) {
+                    summonMobs(instance, entityType, amount, sender, level, player.getLocation(), summonType, null);
+                } else {
+                    List<String> messages = instance.messagesCfg.getStringList("command.levelledmobs.summon.here.usage");
+                    messages = Utils.replaceAllInList(messages, "%prefix%", instance.configUtils.getPrefix());
+                    messages = Utils.replaceAllInList(messages, "%label%", label);
+                    messages = Utils.colorizeAllInList(messages);
+                    messages.forEach(sender::sendMessage);
+                }
             } else {
                 List<String> messages = instance.messagesCfg.getStringList("command.levelledmobs.summon.invalid-summon-type-console");
                 messages = Utils.replaceAllInList(messages, "%prefix%", instance.configUtils.getPrefix());
@@ -136,14 +145,52 @@ public class SummonSubcommand implements Subcommand {
                 messages.forEach(sender::sendMessage);
             }
         } else { // At Location
-            if (args.length == 8) {
-                Location location = getRelativeLocation(sender, args[5], args[6], args[7], args[8]);
+            if (args.length == 8 || args.length == 9) {
+                final String worldName;
 
-                if (location != null) {
+                if (args.length == 8) {
+                    if (sender instanceof Player) {
+                        final Player player = (Player) sender;
+                        worldName = player.getWorld().getName();
+                    } else {
+                        List<String> messages = instance.messagesCfg.getStringList("command.levelledmobs.summon.atLocation.usage-console");
+                        messages = Utils.replaceAllInList(messages, "%prefix%", instance.configUtils.getPrefix());
+                        messages = Utils.replaceAllInList(messages, "%label%", label);
+                        messages = Utils.colorizeAllInList(messages);
+                        messages.forEach(sender::sendMessage);
+                        return;
+                    }
+                } else { //args.length==9
+                    World world = Bukkit.getWorld(args[8]);
+
+                    if (world == null) {
+                        List<String> messages = instance.messagesCfg.getStringList("command.levelledmobs.summon.atLocation.invalid-world");
+                        messages = Utils.replaceAllInList(messages, "%prefix%", instance.configUtils.getPrefix());
+                        messages = Utils.colorizeAllInList(messages);
+                        messages = Utils.replaceAllInList(messages, "%world%", args[8]); //This is after colorize so that args[8] is not colorized.
+                        messages.forEach(sender::sendMessage);
+                        return;
+                    } else {
+                        worldName = world.getName();
+                    }
+                }
+
+                Location location = getRelativeLocation(sender, args[5], args[6], args[7], worldName);
+
+                if (location == null) {
+                    List<String> messages = instance.messagesCfg.getStringList("command.levelledmobs.summon.atLocation.invalid-location");
+                    messages = Utils.replaceAllInList(messages, "%prefix%", instance.configUtils.getPrefix());
+                    messages = Utils.colorizeAllInList(messages);
+                    messages.forEach(sender::sendMessage);
+                } else {
                     summonMobs(instance, entityType, amount, sender, level, location, summonType, null);
                 }
             } else {
-
+                List<String> messages = instance.messagesCfg.getStringList("command.levelledmobs.summon.atLocation.usage");
+                messages = Utils.replaceAllInList(messages, "%prefix%", instance.configUtils.getPrefix());
+                messages = Utils.replaceAllInList(messages, "%label%", label);
+                messages = Utils.colorizeAllInList(messages);
+                messages.forEach(sender::sendMessage);
             }
         }
     }
@@ -151,49 +198,64 @@ public class SummonSubcommand implements Subcommand {
     @Override
     public List<String> parseTabCompletions(LevelledMobs instance, CommandSender sender, String[] args) {
 
-        //TODO Cleanup
-
-        // len:    1      2        3        4       5          6            7   8     9
-        // arg:    0      1        2        3       4          5            6   9     10
-        // lvlmobs summon <amount> <entity> <level> here
-        // lvlmobs summon <amount> <entity> <level> atPlayer   <playername>
-        // lvlmobs summon <amount> <entity> <level> atLocation <x>          <y> <z> [world]
-
-        boolean isAtLocation = false;
-        boolean isAtPlayer = false;
-        if (args.length > 4) {
-            if (args[4].equalsIgnoreCase("atlocation")) isAtLocation = true;
-            if (args[4].equalsIgnoreCase("atplayer")) isAtPlayer = true;
+        // <amount>
+        if (args.length == 1) {
+            return Utils.oneToNine;
         }
 
-        if (args.length == 3) {
-            return Utils.mobs;
-        } else if (args.length == 2 || args.length == 4) {
-            return Utils.oneToNine;
-        } else if (args.length == 5) {
-            return Arrays.asList("atLocation", "atPlayer", "here");
-        } else if (args.length == 6) {
-            if (isAtLocation) {
-                return Collections.singletonList("~");
-            } else if (isAtPlayer) {
-                List<String> usernames = new ArrayList<>();
-
-                for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
-                    if (sender instanceof Player) {
-                        Player player = (Player) sender;
-
-                        if (player.canSee(onlinePlayer) || player.isOp()) {
-                            usernames.add(onlinePlayer.getName());
-                        }
-                    } else {
-                        usernames.add(onlinePlayer.getName());
-                    }
-                }
-
-                return usernames;
+        // <entity>
+        if (args.length == 2) {
+            List<String> entityNames = new ArrayList<>();
+            for (EntityType entityType : EntityType.values()) {
+                entityNames.add(entityType.toString());
             }
-        } else if ((args.length == 7 || args.length == 8) && isAtLocation) {
-            return Collections.singletonList("~");
+            return entityNames;
+        }
+
+        // <level>
+        if (args.length == 3) {
+            return Utils.oneToNine;
+        }
+
+        // here, atPlayer, atLocation
+        if (args.length == 4) {
+            return Arrays.asList("here", "atPlayer", "atLocation");
+        }
+
+        // no suggestions for 'here' since it is the last argument for itself
+        // these are for atPlayer and atLocation
+        if (args.length > 4) {
+            switch (args[4].toLowerCase()) {
+                case "atplayer":
+                    if (args.length == 6) {
+                        List<String> suggestions = new ArrayList<>();
+                        for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
+                            if (sender instanceof Player) {
+                                Player player = (Player) sender;
+                                if (player.canSee(onlinePlayer) || player.isOp()) {
+                                    suggestions.add(onlinePlayer.getName());
+                                }
+                            } else {
+                                suggestions.add(onlinePlayer.getName());
+                            }
+                        }
+                        return suggestions;
+                    }
+                    break;
+
+                case "atlocation":
+
+                    if (args.length > 5 && args.length < 9) {
+                        return Collections.singletonList("~");
+                    } else if (args.length == 9) {
+                        List<String> worlds = new ArrayList<>();
+                        Bukkit.getWorlds().forEach(world -> worlds.add(world.getName()));
+                        return worlds;
+                    }
+                    break;
+                default:
+                    return null;
+            }
         }
 
         return null;
@@ -206,7 +268,7 @@ public class SummonSubcommand implements Subcommand {
     }
 
     private void sendMainUsage(CommandSender sender, String label, LevelledMobs instance) {
-        //TODO is atLocation accessible from console? if so, fix usage for [world] argument?
+
 
         List<String> messages = instance.messagesCfg.getStringList("command.levelledmobs.summon.usage");
         messages = Utils.replaceAllInList(messages, "%prefix%", instance.configUtils.getPrefix());
@@ -233,7 +295,7 @@ public class SummonSubcommand implements Subcommand {
                 messages.forEach(sender::sendMessage);
             }
 
-            int maxAmount = 100; //TODO Customisable
+            int maxAmount = 100;
             if (amount > maxAmount) {
                 amount = maxAmount;
 
