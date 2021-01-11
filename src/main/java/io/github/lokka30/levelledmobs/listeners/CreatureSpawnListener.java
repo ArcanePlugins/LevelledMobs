@@ -263,7 +263,7 @@ public class CreatureSpawnListener implements Listener {
     }
 
     private int getMobLevelFromYDistance(final int mobYLocation, final int minLevel, final int maxLevel) {
-        final int yPeriod = instance.settingsCfg.getInt("y-period", 0);
+        final int yPeriod = instance.settingsCfg.getInt("y-distance-levelling.y-period", 0);
         final int variance = instance.settingsCfg.getInt("y-distance-levelling.variance", 0);
         int yStart = instance.settingsCfg.getInt("y-distance-levelling.starting-y-level", 100);
         int yEnd = instance.settingsCfg.getInt("y-distance-levelling.ending-y-level", 20);
