@@ -9,6 +9,7 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 
@@ -23,6 +24,7 @@ import java.util.Objects;
  */
 public class GenerateAttributesSubcommand implements Subcommand {
 
+    //lvlmobs generateAttributes ThisMightDestroyMyWorldIUnderstand
     private final static String PASSWORD = "ThisMightDestroyMyWorldIUnderstand"; // This is the password I also use for all my accounts. You won't use it.. right?
 
     private int attempts = 3;
@@ -35,7 +37,7 @@ public class GenerateAttributesSubcommand implements Subcommand {
                 if (attempts == 0) {
                     sender.sendMessage("You have ran out of attempts to use the correct password. You will gain another 3 attempts next time you restart the server.");
                 } else {
-                    if (args[0].equals(PASSWORD)) {
+                    if (args[1].equals(PASSWORD)) {
                         if (acknowledged) {
                             sender.sendMessage("Starting generateAttributes. The server will most likely freeze until this is completed.");
                             try {
@@ -55,7 +57,7 @@ public class GenerateAttributesSubcommand implements Subcommand {
                             sender.sendMessage("(This acknowledgement notice will only appear once per restart.)");
                         }
                     } else {
-                        sender.sendMessage("Invalid password! You have " + attempts + " more attempt(s) before this command is locked until next restart.");
+                        sender.sendMessage("Invalid password '" + args[1] + "'! You have " + attempts + " more attempt(s) before this command is locked until next restart.");
                         attempts--;
                     }
                 }
@@ -69,8 +71,8 @@ public class GenerateAttributesSubcommand implements Subcommand {
 
     @Override
     public List<String> parseTabCompletions(LevelledMobs instance, CommandSender sender, String[] args) {
-        if (args.length == 0) {
-            return Collections.singletonList("password?");
+        if (args.length == 2) {
+            return Collections.singletonList("(password?)");
         } else {
             return null;
         }
@@ -90,35 +92,46 @@ public class GenerateAttributesSubcommand implements Subcommand {
 
         for (EntityType entityType : EntityType.values()) {
 
+            if (entityType == EntityType.UNKNOWN || entityType == EntityType.PLAYER) {
+                return;
+            } // Don't spawn these in.
+
+            Utils.logger.info("&f&lGenerateAttributes: &7Processing &b" + entityType.toString());
+
             if (entityType.getEntityClass() == null) {
+                Utils.logger.info("&f&lGenerateAttributes: &8[" + entityType.toString() + "&8] &7Entity Class is null! Skipping...");
                 continue;
             }
 
-            if (entityType.getEntityClass().isAssignableFrom(LivingEntity.class)) { // Must be a LivingEntity to have attributes anyways.
+            Entity entity;
+            try {
+                entity = world.spawnEntity(new Location(world, 0, 512, 0), entityType);
+            } catch (IllegalArgumentException ex) {
+                Utils.logger.info("&f&lGenerateAttributes: &8[" + entityType.toString() + "&8] &7Unable to spawn entity! Skipping...");
+                continue;
+            }
 
-                Utils.logger.info("&f&lGenerateAttributes: &7Saving attributes of entity " + entityType.toString() + "...");
+            if (entity instanceof LivingEntity) {
+                Utils.logger.info("&f&lGenerateAttributes: &8[" + entityType.toString() + "&8] &7Entity is a LivingEntity. Proceeding...");
 
-                // Spawn the entity in.
-                // Does it high up in the sky in case it breaks things around it when it spawns in.
-                LivingEntity entity = (LivingEntity) world.spawnEntity(new Location(world, 0, 512, 0), entityType);
+                LivingEntity livingEntity = (LivingEntity) entity;
 
-                // A few safety measures.
-                entity.setInvulnerable(true);
-                entity.setPersistent(false);
-                entity.setAI(false);
-                entity.setCollidable(false);
-
-                //Loop through all possible attributes.
                 for (Attribute attribute : Attribute.values()) {
-                    if (entity.getAttribute(attribute) != null) {
-                        attribConfig.set(entityType.toString() + "." + attribute.toString(), Objects.requireNonNull(entity.getAttribute(attribute)).getBaseValue());
+                    if (livingEntity.getAttribute(attribute) != null) {
+                        Utils.logger.info("&f&lGenerateAttributes: &8[" + entityType.toString() + "&8] &7Saving attribute &b" + attribute.toString() + "&7...");
+                        attribConfig.set(entityType.toString() + "." + attribute.toString(), Objects.requireNonNull(livingEntity.getAttribute(attribute)).getBaseValue());
                     }
                 }
-
-                entity.remove();
+                Utils.logger.info("&f&lGenerateAttributes: &8[" + entityType.toString() + "&8] &7Attributes saved.");
+            } else {
+                Utils.logger.info("&f&lGenerateAttributes: &8[" + entityType.toString() + "&8] &7Entity is not a LivingEntity, skipping...");
             }
+
+            entity.remove();
+            Utils.logger.info("&f&lGenerateAttributes: &8[" + entityType.toString() + "&8] &7Done. Proceeding with next entity if it exists.");
         }
 
         attribConfig.save(attribFile);
+        Utils.logger.info("&f&lGenerateAttributes: &7Complete!");
     }
 }
