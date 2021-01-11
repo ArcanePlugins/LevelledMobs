@@ -76,6 +76,9 @@ Before installing this update on your server, please understand the following:
 * Magma Cubes, Slimes, Ghasts and Hoglins are now levelled as expected (stumper66)
 * Shulkers are now levelled as expected (lokka30)
 
+**Removed Features**
+* Removed an old feature 'flight speed multiplier' which we found out Minecraft only applies to parrots. Completely unnecessary and misleading.
+
 **Other Code Changes** (lokka30)
 * Cleaned up the every single class in this project significantly. A bunch of methods and variables have been moved to more fitting classes too.
 * Removed the LightningStorage system - it has been replaced with a far simpler system. This will not only increase performance, but also decrease clutter in the code and decrease the file size of the plugin.

@@ -123,7 +123,6 @@ public class CreatureSpawnListener implements Listener {
             AttributeInstance ATTRIBUTE_MAX_HEALTH = livingEntity.getAttribute(Attribute.GENERIC_MAX_HEALTH);
             AttributeInstance ATTRIBUTE_MOVEMENT_SPEED = livingEntity.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED);
             AttributeInstance ATTRIBUTE_ATTACK_DAMAGE = livingEntity.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE);
-            AttributeInstance ATTRIBUTE_FLYING_SPEED = livingEntity.getAttribute(Attribute.GENERIC_FLYING_SPEED); // doesn't look like this is actually used :(
 
             //Set the entity's max health.
             if (ATTRIBUTE_MAX_HEALTH != null) {
@@ -147,13 +146,6 @@ public class CreatureSpawnListener implements Listener {
                 final double attackDamageMultiplier = instance.settingsCfg.getDouble("fine-tuning.multipliers.attack-damage");
                 final double newAttackDamage = baseAttackDamage + defaultAttackDamageAddition + (attackDamageMultiplier * level);
                 ATTRIBUTE_ATTACK_DAMAGE.setBaseValue(newAttackDamage);
-            }
-
-            if (ATTRIBUTE_FLYING_SPEED != null) {
-                final double baseFlyingSpeed = ATTRIBUTE_FLYING_SPEED.getBaseValue(); //change to default value
-                final double newflyingSpeed = baseFlyingSpeed + (baseFlyingSpeed * instance.settingsCfg.getDouble("fine-tuning.multipliers.flying-speed") * level);
-                assert ATTRIBUTE_MOVEMENT_SPEED != null;
-                ATTRIBUTE_MOVEMENT_SPEED.setBaseValue(newflyingSpeed);
             }
 
             //Define the mob's level so it can be accessed elsewhere.
