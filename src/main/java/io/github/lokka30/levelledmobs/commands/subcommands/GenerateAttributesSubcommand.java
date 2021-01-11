@@ -31,7 +31,7 @@ public class GenerateAttributesSubcommand implements Subcommand {
     @Override
     public void parseSubcommand(LevelledMobs instance, CommandSender sender, String label, String[] args) {
         if (sender instanceof ConsoleCommandSender) {
-            if (args.length == 1) {
+            if (args.length != 2) {
                 if (attempts == 0) {
                     sender.sendMessage("You have ran out of attempts to use the correct password. You will gain another 3 attempts next time you restart the server.");
                 } else {
