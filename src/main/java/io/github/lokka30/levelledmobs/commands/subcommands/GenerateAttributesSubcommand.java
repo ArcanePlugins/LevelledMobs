@@ -2,6 +2,7 @@ package io.github.lokka30.levelledmobs.commands.subcommands;
 
 import io.github.lokka30.levelledmobs.LevelledMobs;
 import io.github.lokka30.levelledmobs.utils.Utils;
+import me.lokka30.microlib.QuickTimer;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -15,7 +16,9 @@ import org.bukkit.entity.LivingEntity;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -24,7 +27,6 @@ import java.util.Objects;
  */
 public class GenerateAttributesSubcommand implements Subcommand {
 
-    //lvlmobs generateAttributes ThisMightDestroyMyWorldIUnderstand
     private final static String PASSWORD = "ThisMightDestroyMyWorldIUnderstand"; // This is the password I also use for all my accounts. You won't use it.. right?
 
     private int attempts = 3;
@@ -40,6 +42,10 @@ public class GenerateAttributesSubcommand implements Subcommand {
                     if (args[1].equals(PASSWORD)) {
                         if (acknowledged) {
                             sender.sendMessage("Starting generateAttributes. The server will most likely freeze until this is completed.");
+
+                            QuickTimer timer = new QuickTimer();
+                            timer.start();
+
                             try {
                                 generateAttributes(instance);
                             } catch (IOException ex) {
@@ -47,13 +53,14 @@ public class GenerateAttributesSubcommand implements Subcommand {
                                 ex.printStackTrace();
                             }
 
-                            sender.sendMessage("Finished generateAttributes.");
+                            sender.sendMessage("Finished generateAttributes, took " + timer.getTimer() + "ms.");
                         } else {
                             acknowledged = true;
                             sender.sendMessage("********* WARNING! **********");
                             sender.sendMessage("This command can possibly cause significant issues on your server, especially by unexpected behaviour from other plugins.");
                             sender.sendMessage("If you are sure you are meant to be running this command, please run this command again (with the password too).");
                             sender.sendMessage("Developers are NOT responsible for any damages that this plugin could unintentionally cause.");
+                            sender.sendMessage("The file generated will still be reset next startup, and the file you will generate will not take effect. This simply generates a new one.");
                             sender.sendMessage("(This acknowledgement notice will only appear once per restart.)");
                         }
                     } else {
@@ -86,15 +93,17 @@ public class GenerateAttributesSubcommand implements Subcommand {
         attribFile.createNewFile();
 
         YamlConfiguration attribConfig = YamlConfiguration.loadConfiguration(attribFile);
-        attribConfig.options().header("DO NOT modify this file unless you know exactly what you are doing!");
+        attribConfig.options().header("This is NOT a configuration file! All changes to this file will not take effect and be reset!");
+        attribConfig.set("GENERATION_INFO", "[Date: " + new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(new Date()) + "]. [ServerVersion: " + Bukkit.getVersion() + "]");
 
         World world = Bukkit.getWorlds().get(0);
 
         for (EntityType entityType : EntityType.values()) {
 
+            // Don't spawn these in.
             if (entityType == EntityType.UNKNOWN || entityType == EntityType.PLAYER) {
-                return;
-            } // Don't spawn these in.
+                continue;
+            }
 
             Utils.logger.info("&f&lGenerateAttributes: &7Processing &b" + entityType.toString());
 
