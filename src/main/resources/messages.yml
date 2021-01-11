@@ -2,6 +2,10 @@ prefix: '&b&lLevelledMobs:&7'
 common:
   noPermission:
     - '%prefix% You don''t have access to that.'
+  playersOnly:
+    - '%prefix% Only players may use this command.'
+  player-offline:
+    - '%prefix% &r%player%&7 is offline.'
 command:
   levelledmobs:
     main-usage:
@@ -11,9 +15,67 @@ command:
       - '&8 &m->&b /%label% reload &8- &7reload configuration files'
       - '&8 &m->&b /%label% info &8- &7view info about the plugin'
     summon:
+      invalid-amount:
+        - '%prefix% Invalid amount ''&b%amount%&7''.'
+      invalid-entity-type:
+        - '%prefix% Invalid entity type ''&b%entityType%&7''.'
+      invalid-level:
+        - '%prefix% Invalid level ''&b%level%&7''.'
+      invalid-summon-type:
+        - '%prefix% Invalid summon type ''&b%summonType%&7''.'
+      invalid-summon-type-console:
+        - '%prefix% Only players may use summon type ''&bhere''&7, you must use ''&batPlayer&7'' or ''&batLocation&7'' instead.'
+      invalid-location:
+        - '%prefix% Invalid location.'
+      here:
+        success:
+          - '%prefix% Spawned &b%amount%&7 of &fLvl.%level% &b%entity%(s)&7 at your location.'
+        #TODO has usage?
+      atLocation:
+        success:
+          - '%prefix% Spawned &b%amount%&7 of &fLvl.%level% &b%entity%(s)&7 at &8(&b%x%&7, &b%y%&7, &b%z&7 in world ''&b%world%&7''%&8)&7.'
+          #TODO has usage?
+      atPlayer:
+        usage:
+          - '%prefix% Usage: &b/%label% summon <amount> <entityType> <level> atPlayer <player>'
+        success:
+          - '%prefix% Spawned &b%amount%&7 of &fLvl.%level% &b%entity%(s)&7 at &r%target%&7''s location.'
+      usage:
+        - '%prefix% Summon command syntax:'
+        - '&8 &m->&b /%label% summon <amount> <entity> <level> [here]'
+        - '&8 &m->&b /%label% summon <amount> <entity> <level> atPlayer <player>'
+        - '&8 &m->&b /%label% summon <amount> <entity> <level> atLocation <x> <y> <z>'
+      amount-limited:
+        min:
+          - '%prefix% Summon amount limited to a minimum of &b1&7 mob.'
+        max:
+          - '%prefix% Summon amount limited to a maximum of &b%maxAmount%&7 mobs.'
+      level-limited:
+        min:
+          - '%prefix% Level limited to a minimum of &bLvl.%minLevel%&7.'
+        max:
+          - '%prefix% Level limited to a maximum of &bLvl.%maxLevel%&7.'
+      not-levellable:
+        - '%prefix% &b%entity%&7 is not levellable.'
     kill:
       usage:
         - '%prefix% Usage: &b/%label% kill <all/near>'
+      all:
+        invalid-world:
+          - '%prefix% Invalid world ''&b%world%&7''.'
+        success:
+          - '%prefix% Killed &b%killed%&7 levelled mobs in &b%worlds%&7 world(s).'
+        usage:
+          - '%prefix% Usage: &b/%label% kill all [world/*]'
+        usage-console:
+          - '%prefix% Usage (console): /%label% kill all <world/*>'
+      near:
+        invalid-radius:
+          - '%prefix% Invalid radius ''&b%radius%&7''.'
+        success:
+          - '%prefix% Killed &b%killed%&7 levelled mobs within a radius of &b%radius%&7 blocks.'
+        usage:
+          - '%prefix% Usage: &b/%label% kill near <radius>'
     reload:
       started:
         - '%prefix% Reloading configuration files...'
@@ -33,7 +95,6 @@ command:
       listSeparator: '&7, &f'
       usage:
         - '%prefix% Usage: &b/%label% info'
-    #TODO
 
 # Don't change this unless you know what you're doing!
 file-version: 1

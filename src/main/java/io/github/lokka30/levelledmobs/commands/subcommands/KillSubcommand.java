@@ -1,6 +1,7 @@
 package io.github.lokka30.levelledmobs.commands.subcommands;
 
 import io.github.lokka30.levelledmobs.LevelledMobs;
+import io.github.lokka30.levelledmobs.enums.ModalList;
 import io.github.lokka30.levelledmobs.utils.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
@@ -10,6 +11,7 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.persistence.PersistentDataType;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -23,11 +25,6 @@ public class KillSubcommand implements Subcommand {
             return;
         }
 
-        // LEN  0    1    2    3
-        // ARG  -    0    1    2
-        // /lvlmobs kill all [world]
-        // /lvlmobs kill near <radius>
-
         if (args.length > 1) {
             switch (args[1].toLowerCase()) {
                 case "all":
@@ -39,25 +36,37 @@ public class KillSubcommand implements Subcommand {
                     if (args.length == 2) {
                         if (sender instanceof Player) {
                             final Player player = (Player) sender;
-                            parseKillAll(sender, Collections.singletonList(player.getWorld()));
+                            parseKillAll(sender, Collections.singletonList(player.getWorld()), instance);
                         } else {
-                            sender.sendMessage("Usage (console): /lvlmobs kill all <world/*>"); //TODO Customisable
+                            List<String> messages = instance.messagesCfg.getStringList("command.levelledmobs.kill.all.usage-console");
+                            messages = Utils.replaceAllInList(messages, "%prefix%", instance.configUtils.getPrefix());
+                            messages = Utils.replaceAllInList(messages, "%label%", label);
+                            messages = Utils.colorizeAllInList(messages);
+                            messages.forEach(sender::sendMessage);
                         }
                     } else if (args.length == 3) {
                         if (args[2].equals("*")) {
-                            parseKillAll(sender, Bukkit.getWorlds());
+                            parseKillAll(sender, Bukkit.getWorlds(), instance);
                             return;
                         }
 
                         World world = Bukkit.getWorld(args[2]);
                         if (world == null) {
-                            sender.sendMessage("Invalid world " + args[2] + "!"); //TODO Customisable
+                            List<String> messages = instance.messagesCfg.getStringList("command.levelledmobs.kill.all.invalid-world");
+                            messages = Utils.replaceAllInList(messages, "%prefix%", instance.configUtils.getPrefix());
+                            messages = Utils.colorizeAllInList(messages);
+                            messages = Utils.replaceAllInList(messages, "%world%", args[2]); //This is after the list is colourised to ensure that an input of a world name '&aGreen' will not be colourised.
+                            messages.forEach(sender::sendMessage);
                             return;
                         }
 
-                        parseKillAll(sender, Collections.singletonList(world));
+                        parseKillAll(sender, Collections.singletonList(world), instance);
                     } else {
-                        sender.sendMessage("Usage: /lvlmobs kill all [world/*]"); //TODO Customisable
+                        List<String> messages = instance.messagesCfg.getStringList("command.levelledmobs.kill.all.usage");
+                        messages = Utils.replaceAllInList(messages, "%prefix%", instance.configUtils.getPrefix());
+                        messages = Utils.replaceAllInList(messages, "%label%", label);
+                        messages = Utils.colorizeAllInList(messages);
+                        messages.forEach(sender::sendMessage);
                     }
 
                     break;
@@ -75,7 +84,11 @@ public class KillSubcommand implements Subcommand {
                             try {
                                 radius = Integer.parseInt(args[2]);
                             } catch (NumberFormatException exception) {
-                                sender.sendMessage("Invalid radius: " + args[2]); //TODO Customisable
+                                List<String> messages = instance.messagesCfg.getStringList("command.levelledmobs.kill.near.invalid-radius");
+                                messages = Utils.replaceAllInList(messages, "%prefix%", instance.configUtils.getPrefix());
+                                messages = Utils.colorizeAllInList(messages);
+                                messages = Utils.replaceAllInList(messages, "%radius%", args[2]); //After the list is colourised, so %radius% is not coloursied.
+                                messages.forEach(sender::sendMessage);
                                 return;
                             }
 
@@ -90,20 +103,33 @@ public class KillSubcommand implements Subcommand {
                                 }
                             }
 
-                            sender.sendMessage("Killed " + killed + " levelled entities within a radius of " + radius + " blocks"); //TODO Customisable
+                            List<String> messages = instance.messagesCfg.getStringList("command.levelledmobs.kill.near.success");
+                            messages = Utils.replaceAllInList(messages, "%prefix%", instance.configUtils.getPrefix());
+                            messages = Utils.replaceAllInList(messages, "%killed%", killed + "");
+                            messages = Utils.replaceAllInList(messages, "%radius%", radius + "");
+                            messages = Utils.colorizeAllInList(messages);
+                            messages.forEach(sender::sendMessage);
+
                         } else {
-                            sender.sendMessage("Console can't use this command."); //TODO Customisable
+                            List<String> messages = instance.messagesCfg.getStringList("common.playersOnly");
+                            messages = Utils.replaceAllInList(messages, "%prefix%", instance.configUtils.getPrefix());
+                            messages = Utils.colorizeAllInList(messages);
+                            messages.forEach(sender::sendMessage);
                         }
                     } else {
-                        sender.sendMessage("Usage: /lvlmobs kill near <radius>"); //TODO Customisable
+                        List<String> messages = instance.messagesCfg.getStringList("command.levelledmobs.kill.near.usage");
+                        messages = Utils.replaceAllInList(messages, "%prefix%", instance.configUtils.getPrefix());
+                        messages = Utils.replaceAllInList(messages, "%label%", label);
+                        messages = Utils.colorizeAllInList(messages);
+                        messages.forEach(sender::sendMessage);
                     }
 
                     break;
                 default:
-                    sendUsageMsg(sender, label);
+                    sendUsageMsg(sender, label, instance);
             }
         } else {
-            sendUsageMsg(sender, label);
+            sendUsageMsg(sender, label, instance);
         }
     }
 
@@ -117,7 +143,15 @@ public class KillSubcommand implements Subcommand {
         if (args.length == 3) {
             if (args[1].equalsIgnoreCase("all")) {
                 if (sender.hasPermission("levelledmobs.command.kill.all")) {
-                    return Collections.singletonList("worldNameHere"); //TODO Replace with 'Enabled Worlds' list.
+                    List<String> worlds = new ArrayList<>();
+
+                    for (World world : Bukkit.getWorlds()) {
+                        if (ModalList.isEnabledInList(instance.settingsCfg, "worlds-list", world.getName())) {
+                            worlds.add(world.getName());
+                        }
+                    }
+
+                    return worlds;
                 }
             } else if (args[1].equalsIgnoreCase("near")) {
                 if (sender.hasPermission("levelledmobs.command.kill.near")) {
@@ -130,26 +164,34 @@ public class KillSubcommand implements Subcommand {
         return null;
     }
 
-    private void sendUsageMsg(CommandSender sender, String label) {
-        sender.sendMessage("Usage: /" + label + " kill <all/near>"); //TODO Customisable
+    private void sendUsageMsg(CommandSender sender, String label, LevelledMobs instance) {
+        List<String> messages = instance.messagesCfg.getStringList("command.levelledmobs.kill.usage");
+        messages = Utils.replaceAllInList(messages, "%prefix%", instance.configUtils.getPrefix());
+        messages = Utils.replaceAllInList(messages, "%label%", label);
+        messages = Utils.colorizeAllInList(messages);
+        messages.forEach(sender::sendMessage);
     }
 
-    private void parseKillAll(CommandSender sender, List<World> worlds) {
-        int killedAmount = 0;
+    private void parseKillAll(CommandSender sender, List<World> worlds, LevelledMobs instance) {
+        int killed = 0;
 
         for (World world : worlds) {
             for (Entity entity : world.getEntities()) {
                 if (entity instanceof LivingEntity) {
                     LivingEntity livingEntity = (LivingEntity) entity;
-                    if (livingEntity.hasMetadata("levelled")) {
+                    if (livingEntity.getPersistentDataContainer().has(instance.levelManager.isLevelledKey, PersistentDataType.STRING)) {
                         livingEntity.setHealth(0.0);
-                        killedAmount++;
+                        killed++;
                     }
                 }
             }
         }
 
-        //TODO
-        sender.sendMessage("Killed " + killedAmount + " levelled mobs in " + worlds.size() + " world(s)");
+        List<String> messages = instance.messagesCfg.getStringList("command.levelledmobs.kill.all.success");
+        messages = Utils.replaceAllInList(messages, "%prefix%", instance.configUtils.getPrefix());
+        messages = Utils.replaceAllInList(messages, "%killed%", killed + "");
+        messages = Utils.replaceAllInList(messages, "%worlds%", worlds.size() + "");
+        messages = Utils.colorizeAllInList(messages);
+        messages.forEach(sender::sendMessage);
     }
 }

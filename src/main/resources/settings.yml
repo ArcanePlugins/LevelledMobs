@@ -51,19 +51,15 @@ blacklisted-types-override:
 # Manage a list of worlds where Levelled Mobs can spawn or not
 worlds-list:
 
-  # Should the plugin apply the worlds list settings or not?
-  # Expected: [Boolean], Default: [false]
-  enabled: false
-
   # What mode should the world list use?
   # 'BLACKLIST' = The worlds in the list are excluded but all the other ones are allowed
   # 'WHITELIST' = The worlds in the list are allowed but all the other ones are not
-  mode: 'BLACKLIST'
+  # 'ALL' = This list is skipped, and all worlds are allowed.
+  mode: 'ALL'
 
   # Here's the list of worlds to apply the blacklist/whitelist to.
   list:
-    - 'world'
-    - 'another_world'
+    - 'example_world'
 
 # You can block certain spawn reasons from levelling mobs, such as Mob Spawners.
 # To block mob spawners from levelling mobs, remove the hashtag before - 'SPAWNER'.
@@ -217,4 +213,4 @@ use-update-checker: true
 debug: false
 
 # Don't change this unless you know what you're doing!
-file-version: 21
+file-version: 22

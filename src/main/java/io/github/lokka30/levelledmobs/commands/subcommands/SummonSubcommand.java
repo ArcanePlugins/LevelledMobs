@@ -2,7 +2,6 @@ package io.github.lokka30.levelledmobs.commands.subcommands;
 
 import io.github.lokka30.levelledmobs.LevelledMobs;
 import io.github.lokka30.levelledmobs.utils.Utils;
-import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -32,7 +31,7 @@ public class SummonSubcommand implements Subcommand {
         }
 
         if (args.length < 4) {
-            sendMainUsage(sender, label);
+            sendMainUsage(sender, label, instance);
             return;
         }
 
@@ -40,7 +39,11 @@ public class SummonSubcommand implements Subcommand {
         try {
             amount = Integer.parseInt(args[1]);
         } catch (NumberFormatException ex) {
-            sender.sendMessage("Invalid amount " + args[1] + "!"); //TODO Customisable
+            List<String> messages = instance.messagesCfg.getStringList("command.levelledmobs.summon.invalid-amount");
+            messages = Utils.replaceAllInList(messages, "%prefix%", instance.configUtils.getPrefix());
+            messages = Utils.colorizeAllInList(messages);
+            messages = Utils.replaceAllInList(messages, "%amount%", args[1]); // This is after colorize so that args[1] is not colorized.
+            messages.forEach(sender::sendMessage);
             return;
         }
 
@@ -48,7 +51,11 @@ public class SummonSubcommand implements Subcommand {
         try {
             entityType = EntityType.valueOf(args[2].toUpperCase());
         } catch (IllegalArgumentException ex) {
-            sender.sendMessage("Invalid entity type " + args[2] + "!"); //TODO Customisable
+            List<String> messages = instance.messagesCfg.getStringList("command.levelledmobs.summon.invalid-entity-type");
+            messages = Utils.replaceAllInList(messages, "%prefix%", instance.configUtils.getPrefix());
+            messages = Utils.colorizeAllInList(messages);
+            messages = Utils.replaceAllInList(messages, "%entityType%", args[2]); // This is after colorize so that args[2] is not colorized.
+            messages.forEach(sender::sendMessage);
             return;
         }
 
@@ -56,7 +63,11 @@ public class SummonSubcommand implements Subcommand {
         try {
             level = Integer.parseInt(args[3]);
         } catch (NumberFormatException ex) {
-            sender.sendMessage("Invalid level " + args[3] + "!"); //TODO Customisable
+            List<String> messages = instance.messagesCfg.getStringList("command.levelledmobs.summon.invalid-level");
+            messages = Utils.replaceAllInList(messages, "%prefix%", instance.configUtils.getPrefix());
+            messages = Utils.colorizeAllInList(messages);
+            messages = Utils.replaceAllInList(messages, "%level%", args[3]); // This is after colorize so that args[3] is not colorized.
+            messages.forEach(sender::sendMessage);
             return;
         }
 
@@ -73,7 +84,11 @@ public class SummonSubcommand implements Subcommand {
                     summonType = SummonType.AT_LOCATION;
                     break;
                 default:
-                    sender.sendMessage("Invalid summon type " + args[4] + "!"); //TODO Customisable
+                    List<String> messages = instance.messagesCfg.getStringList("command.levelledmobs.summon.invalid-summon-type");
+                    messages = Utils.replaceAllInList(messages, "%prefix%", instance.configUtils.getPrefix());
+                    messages = Utils.colorizeAllInList(messages);
+                    messages = Utils.replaceAllInList(messages, "%summonType%", args[4]); // This is after colorize so args[4] is not colorized.
+                    messages.forEach(sender::sendMessage);
                     return;
             }
         }
@@ -83,28 +98,52 @@ public class SummonSubcommand implements Subcommand {
                 final Player player = (Player) sender;
                 summonMobs(instance, entityType, amount, sender, level, player.getLocation(), summonType, null);
             } else {
-                sender.sendMessage("You must specify 'atPlayer' or 'atLocation' from console."); //TODO
+                List<String> messages = instance.messagesCfg.getStringList("command.levelledmobs.summon.invalid-summon-type-console");
+                messages = Utils.replaceAllInList(messages, "%prefix%", instance.configUtils.getPrefix());
+                messages = Utils.colorizeAllInList(messages);
+                messages.forEach(sender::sendMessage);
             }
         } else if (summonType == SummonType.AT_PLAYER) {
             if (args.length == 6) {
 
+                boolean offline = false;
                 final Player target = Bukkit.getPlayer(args[5]);
                 if (target == null) {
-                    sender.sendMessage(args[5] + " isn't online."); //TODO
+                    offline = true;
+                } else if (sender instanceof Player) {
+                    // Vanished player compatibility.
+                    final Player player = (Player) sender;
+                    if (!player.canSee(target) && !player.isOp()) {
+                        offline = true;
+                    }
+                }
+
+                if (offline) {
+                    List<String> messages = instance.messagesCfg.getStringList("common.player-offline");
+                    messages = Utils.replaceAllInList(messages, "%prefix%", instance.configUtils.getPrefix());
+                    messages = Utils.colorizeAllInList(messages);
+                    messages = Utils.replaceAllInList(messages, "%player%", args[5]); // This is after colorize so that args[5] is not colorized.
+                    messages.forEach(sender::sendMessage);
                     return;
                 }
 
                 summonMobs(instance, entityType, amount, sender, level, target.getLocation(), summonType, target);
             } else {
-                sender.sendMessage("Usage: /" + label + " summon <amount> <entityType> <level> atPlayer <player>"); //TODO Customisable
+                List<String> messages = instance.messagesCfg.getStringList("command.levelledmobs.summon.atPlayer.usage");
+                messages = Utils.replaceAllInList(messages, "%prefix%", instance.configUtils.getPrefix());
+                messages = Utils.replaceAllInList(messages, "%label%", label);
+                messages = Utils.colorizeAllInList(messages);
+                messages.forEach(sender::sendMessage);
             }
-        } else {
-            if (args.length > 9) {
+        } else { // At Location
+            if (args.length == 8) {
                 Location location = getRelativeLocation(sender, args[5], args[6], args[7], args[8]);
 
                 if (location != null) {
                     summonMobs(instance, entityType, amount, sender, level, location, summonType, null);
                 }
+            } else {
+
             }
         }
     }
@@ -114,11 +153,11 @@ public class SummonSubcommand implements Subcommand {
 
         //TODO Cleanup
 
-        // len:    1      2        3        4       5          6            7   8
-        // arg:    0      1        2        3       4          5            6   9
+        // len:    1      2        3        4       5          6            7   8     9
+        // arg:    0      1        2        3       4          5            6   9     10
         // lvlmobs summon <amount> <entity> <level> here
         // lvlmobs summon <amount> <entity> <level> atPlayer   <playername>
-        // lvlmobs summon <amount> <entity> <level> atLocation <x>          <y> <z>
+        // lvlmobs summon <amount> <entity> <level> atLocation <x>          <y> <z> [world]
 
         boolean isAtLocation = false;
         boolean isAtPlayer = false;
@@ -166,33 +205,65 @@ public class SummonSubcommand implements Subcommand {
         AT_LOCATION
     }
 
-    private void sendMainUsage(CommandSender sender, String label) { //TODO Customisable
-        sender.sendMessage(ChatColor.GRAY + "Summon command syntax:");
-        sender.sendMessage("/" + label + " summon <amount> <entity> <level> here");
-        sender.sendMessage("/" + label + " summon <amount> <entity> <level> atPlayer <playername>");
-        sender.sendMessage("/" + label + " summon <amount> <entity> <level> atLocation <x> <y> <z>");
+    private void sendMainUsage(CommandSender sender, String label, LevelledMobs instance) {
+        //TODO is atLocation accessible from console? if so, fix usage for [world] argument?
+
+        List<String> messages = instance.messagesCfg.getStringList("command.levelledmobs.summon.usage");
+        messages = Utils.replaceAllInList(messages, "%prefix%", instance.configUtils.getPrefix());
+        messages = Utils.replaceAllInList(messages, "%label%", label);
+        messages = Utils.colorizeAllInList(messages);
+        messages.forEach(sender::sendMessage);
     }
 
     private void summonMobs(LevelledMobs instance, EntityType entityType, int amount, CommandSender sender, int level, Location location, SummonType summonType, Player target) {
         if (instance.levelManager.isLevellable(entityType)) {
 
+            if (location == null || location.getWorld() == null) {
+                List<String> messages = instance.messagesCfg.getStringList("command.levelledmobs.summon.invalid-location");
+                messages = Utils.replaceAllInList(messages, "%prefix%", instance.configUtils.getPrefix());
+                messages = Utils.colorizeAllInList(messages);
+                messages.forEach(sender::sendMessage);
+                return;
+            }
+
+            if (amount < 1) {
+                List<String> messages = instance.messagesCfg.getStringList("command.levelledmobs.summon.amount-limited.min");
+                messages = Utils.replaceAllInList(messages, "%prefix%", instance.configUtils.getPrefix());
+                messages = Utils.colorizeAllInList(messages);
+                messages.forEach(sender::sendMessage);
+            }
+
             int maxAmount = 100; //TODO Customisable
             if (amount > maxAmount) {
                 amount = maxAmount;
-                sender.sendMessage("Amount limited to " + maxAmount + " mobs."); //TODO customisable
+
+                List<String> messages = instance.messagesCfg.getStringList("command.levelledmobs.summon.amount-limited.max");
+                messages = Utils.replaceAllInList(messages, "%prefix%", instance.configUtils.getPrefix());
+                messages = Utils.replaceAllInList(messages, "%maxAmount%", maxAmount + "");
+                messages = Utils.colorizeAllInList(messages);
+                messages.forEach(sender::sendMessage);
             }
 
-            assert location.getWorld() != null;
             int minLevel = instance.configUtils.getMinLevel(entityType, location.getWorld());
             if (level < minLevel) {
                 level = minLevel;
-                sender.sendMessage("Level limited to minimum of " + level + "."); //TODO Customsiable
+
+                List<String> messages = instance.messagesCfg.getStringList("command.levelledmobs.summon.level-limited.min");
+                messages = Utils.replaceAllInList(messages, "%prefix%", instance.configUtils.getPrefix());
+                messages = Utils.replaceAllInList(messages, "%minLevel%", minLevel + "");
+                messages = Utils.colorizeAllInList(messages);
+                messages.forEach(sender::sendMessage);
             }
 
             int maxLevel = instance.configUtils.getMaxLevel(entityType, location.getWorld());
             if (level > maxLevel) {
                 level = maxLevel;
-                sender.sendMessage("Level limited to a maximum of " + level + "."); //TODO Customisable
+
+                List<String> messages = instance.messagesCfg.getStringList("command.levelledmobs.summon.level-limited.max");
+                messages = Utils.replaceAllInList(messages, "%prefix%", instance.configUtils.getPrefix());
+                messages = Utils.replaceAllInList(messages, "%maxLevel%", maxLevel + "");
+                messages = Utils.colorizeAllInList(messages);
+                messages.forEach(sender::sendMessage);
             }
 
             if (summonType == SummonType.HERE) {
@@ -200,27 +271,56 @@ public class SummonSubcommand implements Subcommand {
             }
 
             for (int i = 0; i < amount; i++) {
-                assert location.getWorld() != null;
-                Entity entity = location.getWorld().spawnEntity(location, entityType);
+                Entity entity = Objects.requireNonNull(location.getWorld()).spawnEntity(location, entityType);
                 instance.levelManager.creatureSpawnListener.processMobSpawn((LivingEntity) entity, CreatureSpawnEvent.SpawnReason.CUSTOM, level);
             }
 
+            String entityName = instance.configUtils.getEntityName(entityType);
+
             switch (summonType) {
                 case HERE:
-                    sender.sendMessage("Spawned " + amount + "x Lvl." + level + " " + entityType.toString() + "(s) at your location.");
+                    List<String> hereSuccessmessages = instance.messagesCfg.getStringList("command.levelledmobs.summon.here.success");
+                    hereSuccessmessages = Utils.replaceAllInList(hereSuccessmessages, "%prefix%", instance.configUtils.getPrefix());
+                    hereSuccessmessages = Utils.replaceAllInList(hereSuccessmessages, "%amount%", amount + "");
+                    hereSuccessmessages = Utils.replaceAllInList(hereSuccessmessages, "%level%", level + "");
+                    hereSuccessmessages = Utils.replaceAllInList(hereSuccessmessages, "%entity%", entityName + "");
+                    hereSuccessmessages = Utils.colorizeAllInList(hereSuccessmessages);
+                    hereSuccessmessages.forEach(sender::sendMessage);
                     break;
+
                 case AT_LOCATION:
-                    assert location.getWorld() != null;
-                    sender.sendMessage("Spawned " + amount + "x Lvl." + level + " " + entityType.toString() + "(s) at X:" + location.getBlockX() + " Y:" + location.getBlockY() + " Z:" + location.getBlockZ() + " in world " + location.getWorld().getName() + ".");
+                    List<String> atLocationSuccessMessages = instance.messagesCfg.getStringList("command.levelledmobs.summon.atLocation.success");
+                    atLocationSuccessMessages = Utils.replaceAllInList(atLocationSuccessMessages, "%prefix%", instance.configUtils.getPrefix());
+                    atLocationSuccessMessages = Utils.replaceAllInList(atLocationSuccessMessages, "%amount%", amount + "");
+                    atLocationSuccessMessages = Utils.replaceAllInList(atLocationSuccessMessages, "%level%", level + "");
+                    atLocationSuccessMessages = Utils.replaceAllInList(atLocationSuccessMessages, "%entity%", entityName + "");
+                    atLocationSuccessMessages = Utils.replaceAllInList(atLocationSuccessMessages, "%x%", location.getBlockX() + "");
+                    atLocationSuccessMessages = Utils.replaceAllInList(atLocationSuccessMessages, "%y%", location.getBlockY() + "");
+                    atLocationSuccessMessages = Utils.replaceAllInList(atLocationSuccessMessages, "%z%", location.getBlockZ() + "");
+                    atLocationSuccessMessages = Utils.replaceAllInList(atLocationSuccessMessages, "%world%", location.getWorld().getName());
+                    atLocationSuccessMessages = Utils.colorizeAllInList(atLocationSuccessMessages);
+                    atLocationSuccessMessages.forEach(sender::sendMessage);
                     break;
+
                 case AT_PLAYER:
-                    sender.sendMessage("Spawned " + amount + "x Lvl." + level + " " + entityType.toString() + "(s) at " + target.getName() + "'s location.");
+                    List<String> atPlayerSuccessMessages = instance.messagesCfg.getStringList("command.levelledmobs.summon.atPlayer.success");
+                    atPlayerSuccessMessages = Utils.replaceAllInList(atPlayerSuccessMessages, "%prefix%", instance.configUtils.getPrefix());
+                    atPlayerSuccessMessages = Utils.replaceAllInList(atPlayerSuccessMessages, "%amount%", amount + "");
+                    atPlayerSuccessMessages = Utils.replaceAllInList(atPlayerSuccessMessages, "%level%", level + "");
+                    atPlayerSuccessMessages = Utils.replaceAllInList(atPlayerSuccessMessages, "%entity%", entityName + "");
+                    atPlayerSuccessMessages = Utils.replaceAllInList(atPlayerSuccessMessages, "%player%", target.getDisplayName() + "");
+                    atPlayerSuccessMessages = Utils.colorizeAllInList(atPlayerSuccessMessages);
+                    atPlayerSuccessMessages.forEach(sender::sendMessage);
                     break;
                 default:
                     throw new IllegalStateException("Unexpected SummonType value of " + summonType.toString() + "!");
             }
         } else {
-            sender.sendMessage(entityType.toString() + " is not levellable.");
+            List<String> messages = instance.messagesCfg.getStringList("command.levelledmobs.summon.not-levellable");
+            messages = Utils.replaceAllInList(messages, "%prefix%", instance.configUtils.getPrefix());
+            messages = Utils.replaceAllInList(messages, "%entity%", instance.configUtils.getEntityName(entityType));
+            messages = Utils.colorizeAllInList(messages);
+            messages.forEach(sender::sendMessage);
         }
     }
 
@@ -324,6 +424,7 @@ public class SummonSubcommand implements Subcommand {
         double min = 0.5, max = 2.5;
 
         for (int i = 0; i < 20; i++) {
+            //Creates 3x new Random()s for a different seed each time
             double x = min + (max - min) * new Random().nextDouble();
             double y = min + (max - min) * new Random().nextDouble();
             double z = min + (max - min) * new Random().nextDouble();

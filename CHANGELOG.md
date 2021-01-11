@@ -11,6 +11,7 @@ Before installing this update on your server, please understand the following:
   * **PhantomLib is no longer used by LevelledMobs!** Uninstall it if you wish (unless you have other plugins that depend on it installed)
   * **Almost all permissions have changed.** I recommend you remove any current permissions from LM you have set and apply the new ones. See the documentation.
   * If you are using any **WorldGuard flags from this plugin**, you should **remove them from your regions prior to installing this new version**. ALL previous LevelledMobs flags have been renamed, and I've also added in a new flag which was a popular request. :)
+  * `settings.yml` has been updated, please reset/update your current file.
   
 
 ### Changelog:
