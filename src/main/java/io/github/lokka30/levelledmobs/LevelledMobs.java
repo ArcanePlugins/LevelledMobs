@@ -105,6 +105,13 @@ public class LevelledMobs extends JavaPlugin {
         settingsCfg = FileLoader.loadFile(this, "settings", FileLoader.SETTINGS_FILE_VERSION);
         messagesCfg = FileLoader.loadFile(this, "messages", FileLoader.MESSAGES_FILE_VERSION);
 
+        // make sure spawn-distance-levelling AND y-distance-levelling are not both enabled.  If so we'll disable y-distance-levelling
+        if (settingsCfg.getBoolean("spawn-distance-levelling.active") &&
+                settingsCfg.getBoolean("y-distance-levelling.active")){
+            Utils.logger.warning("both spawn-distance-levelling AND y-distance-levelling are enabled so we are disabling y-distance-levelling");
+            settingsCfg.set("y-distance-levelling.active", false);
+        }
+
         // Replace/copy attributes file
         saveResource("attributes.yml", true);
         attributesCfg = YamlConfiguration.loadConfiguration(new File(getDataFolder(), "attributes.yml"));

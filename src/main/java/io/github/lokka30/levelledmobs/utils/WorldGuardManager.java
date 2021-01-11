@@ -45,10 +45,10 @@ public class WorldGuardManager {
             StateFlag useCustomLevelsFlag, allowLevelledMobsFlag;
             StringFlag customMinLevelFlag, customMaxLevelFlag;
 
-            allowLevelledMobsFlag = new StateFlag("LM_AllowLevelledMobs", false);
-            useCustomLevelsFlag = new StateFlag("LM_UseCustomLevels", false);
-            customMinLevelFlag = new StringFlag("LM_CustomMinLevel", "-1");
-            customMaxLevelFlag = new StringFlag("LM_CustomMaxLevel", "-1");
+            allowLevelledMobsFlag = new StateFlag("LM-AllowLevelledMobs", false);
+            useCustomLevelsFlag = new StateFlag("LM-UseCustomLevels", false);
+            customMinLevelFlag = new StringFlag("LM-CustomMinLevel", "-1");
+            customMaxLevelFlag = new StringFlag("LM-CustomMaxLevel", "-1");
 
             flagRegistry.register(allowLevelledMobsFlag);
             flagRegistry.register(useCustomLevelsFlag);
@@ -62,10 +62,10 @@ public class WorldGuardManager {
 
         } catch (FlagConflictException e) {
 
-            Flag<?> allowLevelledMobs = flagRegistry.get("LM_AllowLevelledMobs");
-            Flag<?> useCustomLevels = flagRegistry.get("LM_UseCustomLevels");
-            Flag<?> customMinLevel = flagRegistry.get("LM_CustomMinLevel");
-            Flag<?> customMaxLevel = flagRegistry.get("LM_CustomMaxLevel");
+            Flag<?> allowLevelledMobs = flagRegistry.get("LM-AllowLevelledMobs");
+            Flag<?> useCustomLevels = flagRegistry.get("LM-UseCustomLevels");
+            Flag<?> customMinLevel = flagRegistry.get("LM-CustomMinLevel");
+            Flag<?> customMaxLevel = flagRegistry.get("LM-CustomMaxLevel");
 
             if (allowLevelledMobs instanceof StateFlag) {
                 WorldGuardManager.allowLevelledMobsFlag = (StateFlag) allowLevelledMobs;

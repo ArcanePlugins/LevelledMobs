@@ -151,6 +151,31 @@ spawn-distance-levelling:
   # Expected: [Integer], Default: [0]
   start-distance: 0
 
+y-distance-levelling:
+
+    # Should monsters level depending on the Y level they spawn in as configured below?
+    # Note that you can't use y-distance-leveling AND spawn-distance-levelling enabled at the same time.
+    # Expected: [Boolean], Default: [false]
+    active: false
+
+    # Specify the Y axis that leveled-mobs will start at.  Mobs spawned at and below this y-level will be level 1.
+    # Expected: [Integer], Default: [0]
+    starting-y-level: 100
+
+    # Specify the Y axis that leveled-mobs will end at.  Mobs spawned at and above this y-level will be fully levelled.
+    # Expected: [Integer], Default: [20]
+    ending-y-level: 20
+
+    # Optional: Instead of having a linear level assignment from starting-y-level to ending-y-level, specify how many blocks from starting-y-level the next level will apply
+    # for example with a value of 5 and starting-y-level of 20, y-level of 30 will spawn level 2 mobs, y-level 40 will be level 4, and so on
+    # Note that by giving y-period a value of higher than 0 effectively nullifies the ending-y-level setting
+  # Expected: [Integer], Default: [0]
+    y-period: 0
+
+    # Optional: at a bit of randomness to the assigned level.  The higher the value here the higher chance of a random level being assigned
+    # Expected: [Integer], Default: [0]
+    variance: 0
+
 # If you want to force an entity type to have a different minimum/maximum level then you can do that here
 # These settings are further overriden by 'world-level-override'
 entitytype-level-override:

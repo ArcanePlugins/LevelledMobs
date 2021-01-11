@@ -1,7 +1,6 @@
 package io.github.lokka30.levelledmobs.listeners;
 
 import io.github.lokka30.levelledmobs.LevelledMobs;
-import io.github.lokka30.levelledmobs.utils.ConfigUtils;
 import io.github.lokka30.levelledmobs.utils.LevelManager;
 import io.github.lokka30.levelledmobs.utils.Utils;
 import org.bukkit.attribute.Attribute;
@@ -152,9 +151,11 @@ public class CreatureSpawnListener implements Listener {
             livingEntity.getPersistentDataContainer().set(instance.levelManager.levelKey, PersistentDataType.INTEGER, level);
             livingEntity.getPersistentDataContainer().set(instance.levelManager.isLevelledKey, PersistentDataType.STRING, "true");
 
-            if (ConfigUtils.SETTINGS_CREEPER_MAX_RADIUS != 3 && livingEntity instanceof Creeper) {
+            if (livingEntity instanceof Creeper && instance.settingsCfg.getInt("creeper-max-damage-radius", 3) != 3) {
+                //TODO: update this method to properly scale blast radius when min or max levels have been changed from the default of 1 and 10
+
                 // level 1 ends up with 3 (base) and anything higher becomes a percent of the max radius as specified in the config
-                int blastRadius = (int) Math.floor(level / 10.0 * ((double) ConfigUtils.SETTINGS_CREEPER_MAX_RADIUS) - 3) + 3;
+                int blastRadius = (int) Math.floor(level / 10.0 * ((double) instance.settingsCfg.getInt("creeper-max-damage-radius")) - 3) + 3;
 
                 // even at 100 creepers are atomic bombs but at least won't blow up the entire world
                 if (blastRadius > LevelManager.maxCreeperBlastRadius) {
@@ -183,12 +184,27 @@ public class CreatureSpawnListener implements Listener {
 
     //Generates a level.
     //Uses ThreadLocalRandom.current().nextInt(min, max + 1). + 1 is because ThreadLocalRandom is usually exclusive of the uppermost value.
-    public Integer generateLevel(LivingEntity livingEntity) {
-        return ThreadLocalRandom.current().nextInt(instance.configUtils.getMinLevel(livingEntity.getType(), livingEntity.getWorld()), instance.configUtils.getMaxLevel(livingEntity.getType(), livingEntity.getWorld()) + 1);
+    public Integer generateLevel(final LivingEntity livingEntity) {
+
+        if (instance.settingsCfg.getBoolean("y-distance-levelling.active")){
+            return getMobLevelFromYDistance(
+                    livingEntity.getLocation().getBlockY(),
+                    instance.configUtils.getMinLevel(livingEntity.getType(), livingEntity.getWorld()),
+                    instance.configUtils.getMaxLevel(livingEntity.getType(), livingEntity.getWorld())
+            );
+        }
+
+        // normal return:
+        return ThreadLocalRandom.current().nextInt(
+                instance.configUtils.getMinLevel(livingEntity.getType(),
+                        livingEntity.getWorld()),
+                instance.configUtils.getMaxLevel(livingEntity.getType(),
+                        livingEntity.getWorld()) + 1
+        );
     }
 
     //Generates a level based on distance to spawn and, if active, variance
-    private Integer generateLevelByDistance(LivingEntity livingEntity) {
+    private Integer generateLevelByDistance(final LivingEntity livingEntity) {
         final int minLevel = instance.configUtils.getMinLevel(livingEntity.getType(), livingEntity.getWorld());
         final int maxLevel = instance.configUtils.getMaxLevel(livingEntity.getType(), livingEntity.getWorld());
 
@@ -214,7 +230,7 @@ public class CreatureSpawnListener implements Listener {
             final int change = ThreadLocalRandom.current().nextInt(minVariation, maxVariation + 1);
 
             //Start variation. First check if variation is positive or negative towards the original level amount.
-            if (new Random().nextBoolean()) {
+            if (ThreadLocalRandom.current().nextBoolean()) {
                 //Positive. Add the variation to the final level
                 finalLevel = finalLevel + change;
             } else {
@@ -227,15 +243,80 @@ public class CreatureSpawnListener implements Listener {
         if (finalLevel > maxLevel) {
             finalLevel = maxLevel;
         }
-        if (finalLevel < minLevel) {
+        else if (finalLevel < minLevel) {
             finalLevel = minLevel;
         }
 
         return finalLevel;
     }
 
-    private int generateRegionLevel(LivingEntity livingEntity) {
-        int[] levels = instance.worldGuardManager.getRegionLevel(livingEntity, instance.configUtils.getMinLevel(livingEntity.getType(), livingEntity.getWorld()), instance.configUtils.getMaxLevel(livingEntity.getType(), livingEntity.getWorld()));
-        return levels[0] + Math.round(new Random().nextFloat() * (levels[1] - levels[0]));
+    private int generateRegionLevel(final LivingEntity livingEntity) {
+        final int[] levels = instance.worldGuardManager.getRegionLevel(livingEntity, instance.configUtils.getMinLevel(livingEntity.getType(), livingEntity.getWorld()), instance.configUtils.getMaxLevel(livingEntity.getType(), livingEntity.getWorld()));
+
+        if (!instance.settingsCfg.getBoolean("y-distance-levelling.active")){
+            // standard issue, generate random levels based upon max and min flags in worldguard
+            return levels[0] + Math.round(new Random().nextFloat() * (levels[1] - levels[0]));
+        }
+
+        // generate level based on y distance but use min and max values from world guard
+        return getMobLevelFromYDistance(livingEntity.getLocation().getBlockY(), levels[0], levels[1]);
+    }
+
+    private int getMobLevelFromYDistance(final int mobYLocation, final int minLevel, final int maxLevel) {
+        final int yPeriod = instance.settingsCfg.getInt("y-period", 0);
+        final int variance = instance.settingsCfg.getInt("y-distance-levelling.variance", 0);
+        int yStart = instance.settingsCfg.getInt("y-distance-levelling.starting-y-level", 100);
+        int yEnd = instance.settingsCfg.getInt("y-distance-levelling.ending-y-level", 20);
+
+        final boolean isAscending = (yEnd > yStart);
+        if (!isAscending){
+            yStart = yEnd;
+            yEnd = instance.settingsCfg.getInt("y-distance-levelling.starting-y-level", 100);
+        }
+
+        if (mobYLocation <= yStart){
+            return isAscending ? minLevel : maxLevel;
+        }
+        else if (mobYLocation > yEnd){
+            return isAscending ? maxLevel : minLevel;
+        }
+
+        final double diff = yEnd - yStart;
+        double useMobYLocation = mobYLocation - yStart;
+        int useLevel;
+
+        if (yPeriod > 0){
+            useLevel = (int)(useMobYLocation / (double) yPeriod);
+        }
+        else {
+            if (useMobYLocation < yStart) {
+                useMobYLocation = 1.0;
+            } else if (useMobYLocation > yEnd) {
+                useMobYLocation = yEnd;
+            }
+
+            useLevel = (int) Math.ceil(useMobYLocation / diff * maxLevel);
+        }
+
+        if (variance > 0){
+            final int change = ThreadLocalRandom.current().nextInt(0, variance);
+            //Start variation. First check if variation is positive or negative towards the original level amount.
+            if (ThreadLocalRandom.current().nextBoolean()) {
+                //Positive. Add the variation to the final level
+                useLevel += change;
+            } else {
+                //Negative. Subtract the variation from the final level
+                useLevel -= change;
+            }
+        }
+
+        if (!isAscending) {
+            useLevel = maxLevel - useLevel + 1;
+        }
+
+        if (useLevel < minLevel){ useLevel = minLevel; }
+        else if (useLevel > maxLevel){ useLevel = maxLevel; }
+
+        return useLevel;
     }
 }
