@@ -35,7 +35,7 @@ public class LevelManager {
     public CreatureSpawnListener creatureSpawnListener;
 
     public boolean isLevellable(final EntityType entityType) {
-        if (entityType == EntityType.PLAYER) {
+        if (entityType == EntityType.PLAYER || entityType == EntityType.UNKNOWN) {
             return false;
         }
 
@@ -64,7 +64,7 @@ public class LevelManager {
     public boolean isLevellable(final LivingEntity entity) {
 
         //Players shouldn't be levelled! Keep this at the top to ensure they don't return true
-        if (entity.getType() == EntityType.PLAYER || entity.hasMetadata("NPC")) {
+        if (entity.getType() == EntityType.PLAYER || entity.getType() == EntityType.UNKNOWN || entity.hasMetadata("NPC")) {
             return false;
         }
 

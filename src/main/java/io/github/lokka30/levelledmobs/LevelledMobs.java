@@ -22,6 +22,7 @@ public class LevelledMobs extends JavaPlugin {
 
     public YamlConfiguration settingsCfg;
     public YamlConfiguration messagesCfg;
+    public YamlConfiguration attributesCfg;
     public ConfigUtils configUtils;
 
     public LevelManager levelManager;
@@ -103,6 +104,10 @@ public class LevelledMobs extends JavaPlugin {
         // load configurations
         settingsCfg = FileLoader.loadFile(this, "settings", FileLoader.SETTINGS_FILE_VERSION);
         messagesCfg = FileLoader.loadFile(this, "messages", FileLoader.MESSAGES_FILE_VERSION);
+
+        // Replace/copy attributes file
+        saveResource("attributes.yml", true);
+        attributesCfg = YamlConfiguration.loadConfiguration(new File(getDataFolder(), "attributes.yml"));
 
         // load configutils
         configUtils = new ConfigUtils(this);

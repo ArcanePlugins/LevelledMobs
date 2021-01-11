@@ -2,6 +2,7 @@ package io.github.lokka30.levelledmobs.commands.subcommands;
 
 import io.github.lokka30.levelledmobs.LevelledMobs;
 import io.github.lokka30.levelledmobs.utils.Utils;
+import me.lokka30.microlib.MicroUtils;
 import me.lokka30.microlib.QuickTimer;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -37,11 +38,11 @@ public class GenerateAttributesSubcommand implements Subcommand {
         if (sender instanceof ConsoleCommandSender) {
             if (args.length == 2) {
                 if (attempts == 0) {
-                    sender.sendMessage("You have ran out of attempts to use the correct password. You will gain another 3 attempts next time you restart the server.");
+                    sender.sendMessage(MicroUtils.colorize(instance.configUtils.getPrefix() + " You have ran out of attempts to use the correct password. You will gain another 3 attempts next time you restart the server."));
                 } else {
                     if (args[1].equals(PASSWORD)) {
                         if (acknowledged) {
-                            sender.sendMessage("Starting generateAttributes. The server will most likely freeze until this is completed.");
+                            sender.sendMessage(MicroUtils.colorize(instance.configUtils.getPrefix() + " Starting generateAttributes..."));
 
                             QuickTimer timer = new QuickTimer();
                             timer.start();
@@ -49,30 +50,30 @@ public class GenerateAttributesSubcommand implements Subcommand {
                             try {
                                 generateAttributes(instance);
                             } catch (IOException ex) {
-                                sender.sendMessage("Unable to generate attributes! Stack trace:");
+                                sender.sendMessage(MicroUtils.colorize(instance.configUtils.getPrefix() + " Unable to generate attributes! Stack trace:"));
                                 ex.printStackTrace();
                             }
 
-                            sender.sendMessage("Finished generateAttributes, took " + timer.getTimer() + "ms.");
+                            sender.sendMessage(MicroUtils.colorize(instance.configUtils.getPrefix() + " Finished generateAttributes, took &b" + timer.getTimer() + "ms&7."));
                         } else {
                             acknowledged = true;
-                            sender.sendMessage("********* WARNING! **********");
-                            sender.sendMessage("This command can possibly cause significant issues on your server, especially by unexpected behaviour from other plugins.");
-                            sender.sendMessage("If you are sure you are meant to be running this command, please run this command again (with the password too).");
-                            sender.sendMessage("Developers are NOT responsible for any damages that this plugin could unintentionally cause.");
-                            sender.sendMessage("The file generated will still be reset next startup, and the file you will generate will not take effect. This simply generates a new one.");
-                            sender.sendMessage("(This acknowledgement notice will only appear once per restart.)");
+                            sender.sendMessage(MicroUtils.colorize(instance.configUtils.getPrefix() + " &8&m**********&r &c&lWARNING!&r &8&m**********&r"));
+                            sender.sendMessage(MicroUtils.colorize(instance.configUtils.getPrefix() + " &fThis command can possibly cause significant issues on your server&7, especially by unexpected behaviour from other plugins."));
+                            sender.sendMessage(MicroUtils.colorize(instance.configUtils.getPrefix() + " &fIf you are sure &7you are meant to be running this command, please &frun this command again (with the password too)&7."));
+                            sender.sendMessage(MicroUtils.colorize(instance.configUtils.getPrefix() + " &fDevelopers are NOT responsible for any damages&7 that this plugin could unintentionally cause."));
+                            sender.sendMessage(MicroUtils.colorize(instance.configUtils.getPrefix() + " The file generated will still be&f reset next startup&7, and the file you will generate will &fnot take effect&7. This simply generates a new one which you should copy before you restart the server next."));
+                            sender.sendMessage(MicroUtils.colorize(instance.configUtils.getPrefix() + " &8(This acknowledgement notice will only appear once per restart.)"));
                         }
                     } else {
-                        sender.sendMessage("Invalid password '" + args[1] + "'! You have " + attempts + " more attempt(s) before this command is locked until next restart.");
+                        sender.sendMessage(MicroUtils.colorize(instance.configUtils.getPrefix() + " Invalid password '&b%password%&7'! You have &b" + attempts + "&7 more attempt(s) before this command is locked until next restart.").replace("%password%", args[1]));
                         attempts--;
                     }
                 }
             } else {
-                sender.sendMessage("Usage: /" + label + " generateAttributes <password>");
+                sender.sendMessage(MicroUtils.colorize(instance.configUtils.getPrefix() + " Usage: &b/" + label + " generateAttributes <password>"));
             }
         } else {
-            sender.sendMessage("Only console may use this command.");
+            sender.sendMessage(MicroUtils.colorize(instance.configUtils.getPrefix() + " Only console may use this command."));
         }
     }
 
@@ -94,7 +95,7 @@ public class GenerateAttributesSubcommand implements Subcommand {
 
         YamlConfiguration attribConfig = YamlConfiguration.loadConfiguration(attribFile);
         attribConfig.options().header("This is NOT a configuration file! All changes to this file will not take effect and be reset!");
-        attribConfig.set("GENERATION_INFO", "[Date: " + new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(new Date()) + "]. [ServerVersion: " + Bukkit.getVersion() + "]");
+        attribConfig.set("GENERATION_INFO", "[Date: " + new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(new Date()) + "], [ServerVersion: " + Bukkit.getVersion() + "]");
 
         World world = Bukkit.getWorlds().get(0);
 
@@ -102,10 +103,11 @@ public class GenerateAttributesSubcommand implements Subcommand {
 
             // Don't spawn these in.
             if (entityType == EntityType.UNKNOWN || entityType == EntityType.PLAYER) {
+                Utils.logger.info("&f&lGenerateAttributes: &7Skipping &b" + entityType.toString() + ".");
                 continue;
             }
 
-            Utils.logger.info("&f&lGenerateAttributes: &7Processing &b" + entityType.toString());
+            Utils.logger.info("&f&lGenerateAttributes: &7Processing &b" + entityType.toString() + ":");
 
             if (entityType.getEntityClass() == null) {
                 Utils.logger.info("&f&lGenerateAttributes: &8[" + entityType.toString() + "&8] &7Entity Class is null! Skipping...");
