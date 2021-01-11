@@ -1,11 +1,17 @@
-prefix: '&b&lLevelledMobs:&7'
+# Messages that are used in more than one location.
 common:
+
+  # Note: the prefix does not have multi-line support (of course)
+  prefix: '&b&lLevelledMobs:&7'
+
   noPermission:
     - '%prefix% You don''t have access to that.'
   playersOnly:
     - '%prefix% Only players may use this command.'
   player-offline:
     - '%prefix% &r%player%&7 is offline.'
+
+# Messages from this plugin's commands.
 command:
   levelledmobs:
     main-usage:

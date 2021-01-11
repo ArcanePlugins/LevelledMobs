@@ -52,6 +52,7 @@ public class GenerateAttributesSubcommand implements Subcommand {
                             sender.sendMessage("This command can possibly cause significant issues on your server, especially by unexpected behaviour from other plugins.");
                             sender.sendMessage("If you are sure you are meant to be running this command, please run this command again (with the password too).");
                             sender.sendMessage("Developers are NOT responsible for any damages that this plugin could unintentionally cause.");
+                            sender.sendMessage("(This acknowledgement notice will only appear once per restart.)");
                         }
                     } else {
                         sender.sendMessage("Invalid password! You have " + attempts + " more attempt(s) before this command is locked until next restart.");

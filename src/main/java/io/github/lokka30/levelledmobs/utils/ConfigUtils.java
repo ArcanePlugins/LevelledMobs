@@ -152,7 +152,7 @@ public class ConfigUtils {
     }
 
     public String getPrefix() {
-        return MicroUtils.colorize(Objects.requireNonNull(instance.settingsCfg.getString("prefix")));
+        return MicroUtils.colorize(Objects.requireNonNull(instance.messagesCfg.getString("common.prefix")));
     }
 
     public void sendNoPermissionMsg(CommandSender sender) {
