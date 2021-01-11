@@ -1,10 +1,7 @@
 package io.github.lokka30.levelledmobs.commands;
 
 import io.github.lokka30.levelledmobs.LevelledMobs;
-import io.github.lokka30.levelledmobs.commands.subcommands.InfoSubcommand;
-import io.github.lokka30.levelledmobs.commands.subcommands.KillSubcommand;
-import io.github.lokka30.levelledmobs.commands.subcommands.ReloadSubcommand;
-import io.github.lokka30.levelledmobs.commands.subcommands.SummonSubcommand;
+import io.github.lokka30.levelledmobs.commands.subcommands.*;
 import io.github.lokka30.levelledmobs.utils.Utils;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -29,6 +26,7 @@ public class LevelledMobsCommand implements CommandExecutor, TabCompleter {
 	private final KillSubcommand killSubcommand = new KillSubcommand();
 	private final ReloadSubcommand reloadSubcommand = new ReloadSubcommand();
 	private final SummonSubcommand summonSubcommand = new SummonSubcommand();
+	private final GenerateAttributesSubcommand generateAttributesSubcommand = new GenerateAttributesSubcommand();
 
 	public boolean onCommand(final CommandSender sender, final Command command, final String label, final String[] args) {
 		if (sender.hasPermission("levelledmobs.command")) {
@@ -47,6 +45,9 @@ public class LevelledMobsCommand implements CommandExecutor, TabCompleter {
 						break;
 					case "info":
 						infoSubcommand.parseSubcommand(instance, sender, label, args);
+						break;
+					case "generateattributes":
+						generateAttributesSubcommand.parseSubcommand(instance, sender, label, args);
 						break;
 					default:
 						sendMainUsage(sender, label);
@@ -93,6 +94,8 @@ public class LevelledMobsCommand implements CommandExecutor, TabCompleter {
 					return summonSubcommand.parseTabCompletions(instance, sender, args);
 				case "kill":
 					return killSubcommand.parseTabCompletions(instance, sender, args);
+				case "generateattributes":
+					return generateAttributesSubcommand.parseTabCompletions(instance, sender, args);
 				default:
 					return null;
 			}
