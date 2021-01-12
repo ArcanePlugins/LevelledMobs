@@ -85,51 +85,6 @@ allowed-spawn-reasons-list:
     - 'SPAWNER'
 
 
-# TODO Move this to the bottom.
-# Fine-tuning. You probably don't need to change the values in this cluster.
-fine-tuning:
-
-  # The minimum level possible for all mobs (unless overriden)
-  # Expected: [Integer], Default: [1]
-  min-level: 1
-
-  # The maximum level possible for all mobs (unless overriden)
-  # Expected: [Integer], Default: [10]
-  max-level: 10
-
-  # Math: New Attribute = Old Attribute + (Addition * Level)
-  # e.g. a Lvl.2 Zombie = 0.23 + (0.01 * 2) = a movement speed of 0.25
-  additions:
-
-    max-health: 1.0
-
-    # Note: movement speed should be increased in very, very small amounts!
-    movement-speed: 0.01
-
-    attack-damage: 0.4
-
-  # TODO REMOVE
-  multipliers:
-
-    # Expected: [Double], Default: [0.05]
-    ranged-attack-damage: 0.05
-
-    # Expected: [Double], Default: [0.11]
-    item-drop: 0.11
-
-    # Expected: [Double], Default: [0.09]
-    xp-drop: 0.09
-
-  # Should the creature's nametag be removed on death?
-  # Expected: [Boolean], Default: [false]
-  remove-nametag-on-death: false
-
-  # Should nametags be visible when close by (set to true) or only when looking at it (set to false)?
-  # Due to a Minecraft limitation, if 'true', the nametag will be visible through blocks too (like holograms)!
-  # Expected: [Boolean], Default: [false]
-  custom-name-visible: false
-
-
 # This system levels mobs depending on their distance to spawn.
 spawn-distance-levelling:
 
@@ -258,6 +213,73 @@ summon-command-spawn-distance-from-player: 5
 # Asnyc: done on a separate CPU thread, so it won't freeze your server whilst it checks
 # Quiet: sends a single warning, only if it found a new update.
 use-update-checker: true
+
+
+# *** It is not recommended that you touch any of these values unless you have tested them on a test server beforehand. ***
+# This section allows you to make levelled mobs easier or harder.
+# These values have been tried and tested already.
+fine-tuning:
+
+  # *** WARNING ***
+  # Changing the min &/or max levels below will not scale the additions section below!
+  # This means if you change the min/max levels below, then you will also need to change the additions values!
+  # It is *highly* recommended that you test changes in this section on a test server before applying it to your main server.
+
+  # The minimum level possible for all mobs (unless overriden)
+  # Expected: [Integer], Default: [1]
+  min-level: 1
+
+  # The maximum level possible for all mobs (unless overriden)
+  # Expected: [Integer], Default: [10]
+  max-level: 10
+
+  # Per-level, these numbers are added to a levelled mob's attributes.
+  # Math:                Old Attribute + (Addition * Level) = New Attribute
+  # e.g. a Lvl.2 Zombie:      0.23     +    (0.01  *   2)   = a movement speed of 0.25
+  additions:
+
+    # Additions to Minecraft's attributes
+    # Changes here will only apply to levelled mobs spawned *after* you reload the config. Not existing mobs!
+    attributes:
+
+      # Maximum health.
+      # Default = 1.1
+      max-health: 1.1
+
+      # **IMPORTANT**
+      # Movement speed should be increased in very, very small amounts! (i.e. 0.001 - 0.005 each time)
+      # This is because Minecraft uses very small numbers for movement speeds.
+      # The default value here is already pretty high, so I would not recommend going higher than what it already is.
+      # Default = 0.015
+      movement-speed: 0.015
+
+      # Attack damage.
+      # Default = 0.55
+      attack-damage: 0.55
+
+    # Additions to LevelledMob's own systems. These will apply to existing mobs as well since these are event-based.
+    custom:
+
+      # Ranged attack damage (i.e. skeleton arrows).
+      # Default = 0.05
+      ranged-attack-damage: 0.05
+
+      # Item drops
+      # Default = 0.15
+      item-drop: 0.15
+
+      # XP drops
+      # Default = 0.09
+      xp-drop: 0.09
+
+  # Should the creature's nametag be removed on death?
+  # Expected: [Boolean], Default: [false]
+  remove-nametag-on-death: false
+
+  # Should nametags be visible when close by (set to true) or only when looking at it (set to false)?
+  # Due to a Minecraft limitation, if 'true', the nametag will be visible through blocks too (like holograms)!
+  # Expected: [Boolean], Default: [false]
+  custom-name-visible: false
 
 
 # Debug functionality. You most likely don't want to enable this unless you are a developer.

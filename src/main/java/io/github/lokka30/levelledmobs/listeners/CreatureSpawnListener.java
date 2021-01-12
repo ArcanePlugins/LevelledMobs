@@ -102,19 +102,19 @@ public class CreatureSpawnListener implements Listener {
 
             // Max Health attribute
             if (livingEntity.getAttribute(Attribute.GENERIC_MAX_HEALTH) != null) {
-                double multiplier = instance.settingsCfg.getDouble("fine-tuning.additions.max-health");
+                double multiplier = instance.settingsCfg.getDouble("fine-tuning.additions.attributes.max-health");
                 instance.attributeManager.setAddedValue(livingEntity, Attribute.GENERIC_MAX_HEALTH, multiplier, level);
             }
 
             // Movement Speed attribute
             if (livingEntity.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED) != null) {
-                double multiplier = instance.settingsCfg.getDouble("fine-tuning.additions.movement-speed");
+                double multiplier = instance.settingsCfg.getDouble("fine-tuning.additions.attributes.movement-speed");
                 instance.attributeManager.setAddedValue(livingEntity, Attribute.GENERIC_MOVEMENT_SPEED, multiplier, level);
             }
 
             // Attack Damage attribute
             if (livingEntity.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE) != null) {
-                double multiplier = instance.settingsCfg.getDouble("fine-tuning.additions.attack-damage");
+                double multiplier = instance.settingsCfg.getDouble("fine-tuning.additions.attributes.attack-damage");
                 instance.attributeManager.setAddedValue(livingEntity, Attribute.GENERIC_ATTACK_DAMAGE, multiplier, level);
             }
 

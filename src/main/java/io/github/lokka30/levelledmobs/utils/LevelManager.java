@@ -176,7 +176,7 @@ public class LevelManager {
                 return;
 
             //Read settings for drops.
-            double dropMultiplier = instance.settingsCfg.getDouble("fine-tuning.multipliers.item-drop");
+            double dropMultiplier = instance.settingsCfg.getDouble("fine-tuning.additions.custom.item-drop");
             int finalMultiplier = 1;
 
             //If multiplier * level gurantees an extra drop set 'finalMultiplier' to the amount of safe multiples.
@@ -247,7 +247,7 @@ public class LevelManager {
     //Calculates the XP dropped when a levellable creature dies.
     public int calculateXp(final LivingEntity ent, int xp) {
         if (instance.levelManager.isLevellable(ent)) {
-            double xpMultiplier = instance.settingsCfg.getDouble("fine-tuning.multipliers.xp-drop");
+            double xpMultiplier = instance.settingsCfg.getDouble("fine-tuning.additions.custom.xp-drop");
             Integer level = ent.getPersistentDataContainer().get(instance.levelManager.levelKey, PersistentDataType.INTEGER);
 
             if (level != null) {

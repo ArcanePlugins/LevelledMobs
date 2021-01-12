@@ -50,6 +50,10 @@ Before installing this update on your server, please understand the following:
 * Server owners do not need to install MicroLib as it is embedded inside of the LevelledMobs plugin file. It is also not a separate plugin, rather part of this plugin.
 * Server owners are recommended to **remove PhantomLib** if it is no longer used by any of their installed plugins as it will remain unsupported.
 
+**Y-Coordinate Levelling** (stumper66)
+* A brilliant suggestion by @Oathkeeper, this levels entities depending on their y-coordinate. It functions very similarly to 'distance from spawn levelling'.
+* This can make mining in caves that much harder! :)
+
 **Creeper Blast Radius Scaling** (stumper66)
 * Creeper blast radius is now scaled with their corresponding level.
 * The amount is configurable in settings. Default is 5 for max blast radius (vanilla creeper radius is 3)
@@ -68,13 +72,11 @@ Before installing this update on your server, please understand the following:
 * New setting to apply nametags on default leveled mobs.
 * If set to false and a level 1 mob is spawned, no nametag will be applied to the mob.
 
-**New Multipliers System** (lokka30)
-* The old "multipliers" weren't actually multipliers.
-* I've re-coded that system. Not only is it easier to change multipliers (since you're not dealing with Minecraft's mysterious scales), it is also no longer misleading :)
-
-**Better Default Settings** (lokka30)
-* Until this update, the default settings have been beyond hardcore, and I am honestly surprised servers are coping with them.
-* Following the new multipliers system being added in, I have tested new values to ensure they function well.
+**New Additions System** (lokka30)
+* Replacing the old "multipliers" system that didn't actually function as a multiplier, introducing the Additions system!
+* For each level a mob has, the 'addition values' will be added to their attributes, e.g. movement speed.
+* It is highly recommended that you don't touch anything in the fine-tuning section since the numbers are pretty sensitive.
+* The default addition values have been properly tested, unlike the previous multipliers which were beyond hardcore ;)
 
 **New Attributes System** (lokka30)
 * LM now stores a pregenerated attributes file in its data folder. This contains all of the default attributes for every living entity in 1.16.
