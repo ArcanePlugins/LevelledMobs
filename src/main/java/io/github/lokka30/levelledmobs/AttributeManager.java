@@ -28,8 +28,8 @@ public class AttributeManager {
         Objects.requireNonNull(entity.getAttribute(attribute)).setBaseValue(newValue);
     }
 
-    public void setMultipliedValue(LivingEntity entity, Attribute attribute, Double multiplier, int level) {
-        double currentValue = (double) getDefaultValue(entity.getType(), attribute);
-        applyNewValue(entity, attribute, currentValue * (multiplier * level));
+    public void setAddedValue(LivingEntity entity, Attribute attribute, Double addition, int level) {
+        double defaultValue = (double) getDefaultValue(entity.getType(), attribute);
+        applyNewValue(entity, attribute, defaultValue + (addition * level));
     }
 }

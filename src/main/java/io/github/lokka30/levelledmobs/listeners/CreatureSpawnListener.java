@@ -102,20 +102,20 @@ public class CreatureSpawnListener implements Listener {
 
             // Max Health attribute
             if (livingEntity.getAttribute(Attribute.GENERIC_MAX_HEALTH) != null) {
-                double multiplier = instance.settingsCfg.getDouble("fine-tuning.multipliers.max-health");
-                instance.attributeManager.setMultipliedValue(livingEntity, Attribute.GENERIC_MAX_HEALTH, multiplier, level);
+                double multiplier = instance.settingsCfg.getDouble("fine-tuning.additions.max-health");
+                instance.attributeManager.setAddedValue(livingEntity, Attribute.GENERIC_MAX_HEALTH, multiplier, level);
             }
 
             // Movement Speed attribute
             if (livingEntity.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED) != null) {
-                double multiplier = instance.settingsCfg.getDouble("fine-tuning.multipliers.movement-speed");
-                instance.attributeManager.setMultipliedValue(livingEntity, Attribute.GENERIC_MOVEMENT_SPEED, multiplier, level);
+                double multiplier = instance.settingsCfg.getDouble("fine-tuning.additions.movement-speed");
+                instance.attributeManager.setAddedValue(livingEntity, Attribute.GENERIC_MOVEMENT_SPEED, multiplier, level);
             }
 
             // Attack Damage attribute
             if (livingEntity.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE) != null) {
-                double multiplier = instance.settingsCfg.getDouble("fine-tuning.multipliers.attack-damage");
-                instance.attributeManager.setMultipliedValue(livingEntity, Attribute.GENERIC_ATTACK_DAMAGE, multiplier, level);
+                double multiplier = instance.settingsCfg.getDouble("fine-tuning.additions.attack-damage");
+                instance.attributeManager.setAddedValue(livingEntity, Attribute.GENERIC_ATTACK_DAMAGE, multiplier, level);
             }
 
             if (livingEntity instanceof Creeper && instance.settingsCfg.getInt("creeper-max-damage-radius", 3) != 3) {
