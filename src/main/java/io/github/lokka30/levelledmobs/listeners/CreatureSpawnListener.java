@@ -1,22 +1,18 @@
 package io.github.lokka30.levelledmobs.listeners;
 
 import io.github.lokka30.levelledmobs.LevelledMobs;
+import io.github.lokka30.levelledmobs.enums.ModalList;
 import io.github.lokka30.levelledmobs.utils.LevelManager;
 import io.github.lokka30.levelledmobs.utils.Utils;
 import org.bukkit.attribute.Attribute;
-import org.bukkit.attribute.AttributeInstance;
-import org.bukkit.entity.Boss;
 import org.bukkit.entity.Creeper;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Monster;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import org.bukkit.persistence.PersistentDataType;
 
-import java.util.List;
-import java.util.Objects;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.regex.Matcher;
@@ -73,32 +69,14 @@ public class CreatureSpawnListener implements Listener {
         if (instance.levelManager.isLevellable(livingEntity)) {
 
             //Check the 'worlds list' to see if the mob is allowed to be levelled in the world it spawned in
-            if (instance.settingsCfg.getBoolean("worlds-list.enabled")) {
-                final List<String> worldsList = instance.settingsCfg.getStringList("worlds-list.list");
-                final String mode = instance.settingsCfg.getString("worlds-list.mode");
-                final String currentWorldName = livingEntity.getWorld().getName();
-                switch (Objects.requireNonNull(mode)) {
-                    case "BLACKLIST":
-                        if (worldsList.contains(currentWorldName)) {
-                            return;
-                        }
-                        break;
-                    case "WHITELIST":
-                        if (!worldsList.contains(currentWorldName)) {
-                            return;
-                        }
-                        break;
-                    default:
-                        throw new IllegalStateException("Unknown worlds list mode '" + mode + "', expecting 'BLACKLIST' or 'WHITELIST'. Ignoring world list due to the error.");
-                }
+            if (!ModalList.isEnabledInList(instance.settingsCfg, "allowed-worlds-list", livingEntity.getWorld().getName())) {
+                return;
             }
 
             //Check the list of blacklisted spawn reasons. If the entity's spawn reason is in there, then we don't continue.
             //Uses a default as "NONE" as there are no blocked spawn reasons in the default config.
-            for (String blacklistedReason : instance.settingsCfg.getStringList("blacklisted-reasons")) {
-                if (spawnReason.toString().equalsIgnoreCase(blacklistedReason) || blacklistedReason.equals("ALL")) {
-                    return;
-                }
+            if (!ModalList.isEnabledInList(instance.settingsCfg, "allowed-spawn-reasons-list", spawnReason.toString())) {
+                return;
             }
 
             if (instance.settingsCfg.getBoolean("slime-children-retain-level-of-parent") &&
@@ -113,43 +91,33 @@ public class CreatureSpawnListener implements Listener {
                     // the only reason it won't match is if someone has changed the custom name syntax significantly
                     String probablyLevelNum = m.group(1);
                     if (Utils.isInteger(probablyLevelNum))
-            			level = Integer.parseInt(probablyLevelNum);
-            	}
-            	// if we didn't match then the slime will get a random level instead of the parent's level
-            	
-            }
-                                   
-            AttributeInstance ATTRIBUTE_MAX_HEALTH = livingEntity.getAttribute(Attribute.GENERIC_MAX_HEALTH);
-            AttributeInstance ATTRIBUTE_MOVEMENT_SPEED = livingEntity.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED);
-            AttributeInstance ATTRIBUTE_ATTACK_DAMAGE = livingEntity.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE);
+                        level = Integer.parseInt(probablyLevelNum);
+                }
+                // if we didn't match then the slime will get a random level instead of the parent's level
 
-            //Set the entity's max health.
-            if (ATTRIBUTE_MAX_HEALTH != null) {
-                final double baseMaxHealth = ATTRIBUTE_MAX_HEALTH.getBaseValue(); //change to default value
-                final double newMaxHealth = baseMaxHealth + (baseMaxHealth * (instance.settingsCfg.getDouble("fine-tuning.multipliers.max-health")) * level);
-                ATTRIBUTE_MAX_HEALTH.setBaseValue(newMaxHealth);
-                livingEntity.setHealth(newMaxHealth); //Set the entity's health to their max health, otherwise their health is still the default of 20, so they'll be just as easy to kill.
-            }
-
-            //Set the entity's movement speed.
-            if (ATTRIBUTE_MOVEMENT_SPEED != null && (instance.settingsCfg.getBoolean("passive-mobs-changed-movement-speed") || livingEntity instanceof Monster || livingEntity instanceof Boss)) {
-                final double baseMovementSpeed = ATTRIBUTE_MOVEMENT_SPEED.getBaseValue(); //change to default value
-                final double newMovementSpeed = baseMovementSpeed + (baseMovementSpeed * instance.settingsCfg.getDouble("fine-tuning.multipliers.movement-speed") * level);
-                ATTRIBUTE_MOVEMENT_SPEED.setBaseValue(newMovementSpeed);
-            }
-
-            //Checks if mobs attack damage can be modified before changing it.
-            if (ATTRIBUTE_ATTACK_DAMAGE != null) {
-                final double baseAttackDamage = ATTRIBUTE_ATTACK_DAMAGE.getBaseValue(); //change to default value
-                final double defaultAttackDamageAddition = instance.settingsCfg.getDouble("fine-tuning.default-attack-damage-increase");
-                final double attackDamageMultiplier = instance.settingsCfg.getDouble("fine-tuning.multipliers.attack-damage");
-                final double newAttackDamage = baseAttackDamage + defaultAttackDamageAddition + (attackDamageMultiplier * level);
-                ATTRIBUTE_ATTACK_DAMAGE.setBaseValue(newAttackDamage);
             }
 
             //Define the mob's level so it can be accessed elsewhere.
             livingEntity.getPersistentDataContainer().set(instance.levelManager.levelKey, PersistentDataType.INTEGER, level);
             livingEntity.getPersistentDataContainer().set(instance.levelManager.isLevelledKey, PersistentDataType.STRING, "true");
+
+            // Max Health attribute
+            if (livingEntity.getAttribute(Attribute.GENERIC_MAX_HEALTH) != null) {
+                double multiplier = instance.settingsCfg.getDouble("fine-tuning.multipliers.max-health");
+                instance.attributeManager.setMultipliedValue(livingEntity, Attribute.GENERIC_MAX_HEALTH, multiplier);
+            }
+
+            // Movement Speed attribute
+            if (livingEntity.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED) != null) {
+                double multiplier = instance.settingsCfg.getDouble("fine-tuning.multipliers.movement-speed");
+                instance.attributeManager.setMultipliedValue(livingEntity, Attribute.GENERIC_MOVEMENT_SPEED, multiplier);
+            }
+
+            // Attack Damage attribute
+            if (livingEntity.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE) != null) {
+                double multiplier = instance.settingsCfg.getDouble("fine-tuning.multipliers.attack-damage");
+                instance.attributeManager.setMultipliedValue(livingEntity, Attribute.GENERIC_ATTACK_DAMAGE, multiplier);
+            }
 
             if (livingEntity instanceof Creeper && instance.settingsCfg.getInt("creeper-max-damage-radius", 3) != 3) {
                 //TODO: update this method to properly scale blast radius when min or max levels have been changed from the default of 1 and 10

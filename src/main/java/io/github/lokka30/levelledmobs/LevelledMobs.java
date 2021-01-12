@@ -25,7 +25,9 @@ public class LevelledMobs extends JavaPlugin {
     public YamlConfiguration attributesCfg;
     public ConfigUtils configUtils;
 
+    public AttributeManager attributeManager;
     public LevelManager levelManager;
+
     public boolean hasWorldGuardInstalled;
     public WorldGuardManager worldGuardManager;
 
@@ -37,6 +39,7 @@ public class LevelledMobs extends JavaPlugin {
         QuickTimer loadTimer = new QuickTimer();
         loadTimer.start(); // Record how long it takes for the plugin to load.
 
+        attributeManager = new AttributeManager(this);
         levelManager = new LevelManager(this);
 
         // Hook into WorldGuard, register LM's flags.
