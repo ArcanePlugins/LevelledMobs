@@ -146,7 +146,7 @@ public class KillSubcommand implements Subcommand {
                     List<String> worlds = new ArrayList<>();
 
                     for (World world : Bukkit.getWorlds()) {
-                        if (ModalList.isEnabledInList(instance.settingsCfg, "worlds-list", world.getName())) {
+                        if (ModalList.isEnabledInList(instance.settingsCfg, "allowed-worlds-list", world.getName())) {
                             worlds.add(world.getName());
                         }
                     }

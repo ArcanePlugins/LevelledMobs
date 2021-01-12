@@ -79,11 +79,11 @@ public class GenerateAttributesSubcommand implements Subcommand {
 
     @Override
     public List<String> parseTabCompletions(LevelledMobs instance, CommandSender sender, String[] args) {
-        if (args.length == 2) {
+        if (args.length == 2 && sender instanceof ConsoleCommandSender) {
             return Collections.singletonList("(password?)");
-        } else {
-            return null;
         }
+
+        return null;
     }
 
     private void generateAttributes(LevelledMobs instance) throws IOException {

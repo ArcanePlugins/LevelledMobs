@@ -17,12 +17,6 @@ import java.util.*;
 
 public class SummonSubcommand implements Subcommand {
 
-    // len:    1      2        3        4       5          6            7   8     9
-    // arg:    0      1        2        3       4          5            6   7     8
-    // lvlmobs summon <amount> <entity> <level> here
-    // lvlmobs summon <amount> <entity> <level> atPlayer   <playername>
-    // lvlmobs summon <amount> <entity> <level> atLocation <x>          <y> <z> [world]
-
     @Override
     public void parseSubcommand(LevelledMobs instance, CommandSender sender, String label, String[] args) {
         if (!sender.hasPermission("levelledmobs.command.summon")) {
@@ -198,13 +192,19 @@ public class SummonSubcommand implements Subcommand {
     @Override
     public List<String> parseTabCompletions(LevelledMobs instance, CommandSender sender, String[] args) {
 
+        // len:    1      2        3        4       5          6            7   8     9
+        // arg:    0      1        2        3       4          5            6   7     8
+        // lvlmobs summon <amount> <entity> <level> here
+        // lvlmobs summon <amount> <entity> <level> atPlayer   <playername>
+        // lvlmobs summon <amount> <entity> <level> atLocation <x>          <y> <z> [world]
+
         // <amount>
-        if (args.length == 1) {
+        if (args.length == 2) {
             return Utils.oneToNine;
         }
 
         // <entity>
-        if (args.length == 2) {
+        if (args.length == 3) {
             List<String> entityNames = new ArrayList<>();
             for (EntityType entityType : EntityType.values()) {
                 entityNames.add(entityType.toString());
@@ -213,18 +213,18 @@ public class SummonSubcommand implements Subcommand {
         }
 
         // <level>
-        if (args.length == 3) {
+        if (args.length == 4) {
             return Utils.oneToNine;
         }
 
         // here, atPlayer, atLocation
-        if (args.length == 4) {
+        if (args.length == 5) {
             return Arrays.asList("here", "atPlayer", "atLocation");
         }
 
         // no suggestions for 'here' since it is the last argument for itself
         // these are for atPlayer and atLocation
-        if (args.length > 4) {
+        if (args.length > 5) {
             switch (args[4].toLowerCase()) {
                 case "atplayer":
                     if (args.length == 6) {
@@ -244,8 +244,7 @@ public class SummonSubcommand implements Subcommand {
                     break;
 
                 case "atlocation":
-
-                    if (args.length > 5 && args.length < 9) {
+                    if (args.length < 9) { // args 6, 7 and 8 = x, y and z
                         return Collections.singletonList("~");
                     } else if (args.length == 9) {
                         List<String> worlds = new ArrayList<>();

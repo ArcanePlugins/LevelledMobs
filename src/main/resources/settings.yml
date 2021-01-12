@@ -10,11 +10,13 @@
 # warning, changing this much from the default might break the setting for 'slime-children-retain-level-of-parent'
 creature-nametag: '&8[&7Level %level%&8 | &f%name%&8]'
 
+
 # This allows creature nametags to be updated to the one set above when they are spawned or damaged.
 # If you use WildStacker or any other stacking plugins, you might want to disable this, by setting it to 'false'.
 # Unfortunately you won't be able to see the mob's level that way though.
 # Expected: [Boolean], Default: [true]
 enable-nametag-changes: true
+
 
 # Should creature nametags be updated when their health changes?
 # Set to false if you only want nametags to be set on spawn.
@@ -22,11 +24,13 @@ enable-nametag-changes: true
 # Expected: [Boolean], Default: [false]
 update-nametag-health: false
 
+
 # Should passive creatures be levelled?
 # You probably don't want a Level 10 race horse to ramp up your chunk loading, or a random pig that moves fast.
 # However, you can always limit passive mobs' levels yourself in the 'entitytype-level-override' settings!
 # Expected: [Boolean], Default: [false]
 level-passive: false
+
 
 # Blacklisted types. These mobs won't be levelled, regardless of the setting above.
 # Blacklist all types by putting in 'ALL'.
@@ -42,31 +46,44 @@ blacklisted-types:
   - 'PHANTOM'
 # - 'BABY_ZOMBIE'
 
+
 # Blacklisted Types Override: The mobs in here will be levelled regardless if they are included in 'blacklisted-types' or if 'level-passive' is true.
 # Warning: Types are case-sensitive! That means they should be in UPPERCASE.
 # You can also use 'BABY_ZOMBIE' to override baby zombies.
 blacklisted-types-override:
 # - 'BABY_ZOMBIE'
 
-# Manage a list of worlds where Levelled Mobs can spawn or not
-worlds-list:
+
+# Manage a list of worlds where levelled mobs can spawn or not
+allowed-worlds-list:
 
   # What mode should the world list use?
-  # 'BLACKLIST' = The worlds in the list are excluded but all the other ones are allowed
-  # 'WHITELIST' = The worlds in the list are allowed but all the other ones are not
+  # 'BLACKLIST' = The worlds in the list are blocked, but all the other ones are allowed
+  # 'WHITELIST' = The worlds in the list are allowed, but all the other ones are blocked
   # 'ALL' = This list is skipped, and all worlds are allowed.
   mode: 'ALL'
 
-  # Here's the list of worlds to apply the blacklist/whitelist to.
+  # The list of worlds to apply the blacklist or whitelist to.
+  # Simply enter the name of the world here. Case-sensitive!
   list:
     - 'example_world'
 
-# You can block certain spawn reasons from levelling mobs, such as Mob Spawners.
-# To block mob spawners from levelling mobs, remove the hashtag before - 'SPAWNER'.
-# This checks for SpawnReasons created by the Spigot API.
-# Blacklist all reasons by putting in 'ALL' - this means that no mobs will be levelled though.
-blacklisted-reasons:
-#  - 'SPAWNER'
+
+# *** For advanced users! ***
+# Change if LevelledMobs ignores mobs spawned with certain spawn reasons.
+allowed-spawn-reasons-list:
+
+  # What mode should the spawn reasons list use?
+  # 'BLACKLIST' = The spawn reasons in the list are blocked, but all the other ones are allowed
+  # 'WHITELIST' = The spawn reasons in the list are allowed, but all the other ones are blocked
+  # 'ALL' = This list is skipped, and all the spawn reasons are allowed.
+  mode: 'ALL'
+
+  # The list of spawn reasons to apply the blacklist or whitelist to.
+  # You can find all spawn reasons here: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/event/entity/CreatureSpawnEvent.SpawnReason.html
+  list:
+    - 'SPAWNER'
+
 
 # Fine-tuning. You probably don't need to change the values in this cluster.
 fine-tuning:
@@ -112,11 +129,12 @@ fine-tuning:
   remove-nametag-on-death: false
 
   # Should nametags be visible when close by (set to true) or only when looking at it (set to false)?
-  # Unfortunately, Minecraft limits us to a hard choice, there's no 'can see the nametag if mob is not obstructed' setting. :(
+  # Due to a Minecraft limitation, if 'true', the nametag will be visible through blocks too (like holograms)!
   # Expected: [Boolean], Default: [false]
   custom-name-visible: false
 
-# Spawn Distance Levelling
+
+# This system levels mobs depending on their distance to spawn.
 spawn-distance-levelling:
 
   # Should monsters level depending on distance to spawn?
@@ -142,7 +160,7 @@ spawn-distance-levelling:
   # By default, every 200 blocks, the mob's level will increase by 1.
   # Expected: [Integer], Default: [200]
   increase-level-distance: 200
-  
+
   # What distance should we start adding levels to mobs?
   # Any mob who spawns under this distance will be level 1 (plus variance if set true)
   # This is only the start so for example, if your increase-level-distance is 200
@@ -150,6 +168,8 @@ spawn-distance-levelling:
   # Expected: [Integer], Default: [0]
   start-distance: 0
 
+
+# This system levels mobs depending on their Y-level.
 y-distance-levelling:
 
   # Should monsters level depending on the Y level they spawn in as configured below?
@@ -175,6 +195,7 @@ y-distance-levelling:
   # Expected: [Integer], Default: [0]
   variance: 0
 
+
 # If you want to force an entity type to have a different minimum/maximum level then you can do that here
 # These settings are further overriden by 'world-level-override'
 entitytype-level-override:
@@ -187,6 +208,7 @@ entitytype-level-override:
   max-level:
     ENDER_DRAGON: 10
     WITHER: 6
+
 
 # If you want to force a world to have a minimum/maximum level then you can do that here
 world-level-override:
@@ -202,6 +224,7 @@ world-level-override:
     example_world_456: 10
     world_the_end: 10
 
+
 # If you want to change the name of mobs in the nametag then you can do that here
 # You can use color codes if you want too :)
 entity-name-override:
@@ -209,32 +232,41 @@ entity-name-override:
   CREEPER: 'Creeper'
 # ENDER_DRAGON: '&5&lEnder Dragon'
 
+
 # Should passive mobs have changed movement speeds?
 # Set to false by default as most owners likely want it this way
 # Expected: [Boolean], Default: [false]
 passive-mobs-changed-movement-speed: false
 
-# if the mob is the default level, show the label? (false is more like vanilla minecraft if the mob is at default level)
+
+# If the mob is the default level, show the label? (false is more like vanilla minecraft if the mob is at default level)
 show-label-for-default-levelled-mobs: true
+
 
 # what should the maxed out creeper explosion radius be?  3 is vanilla default
 # to keep creeper explosion radius from increasing, leave it at 3.
 # warning, putting a high value in here will basically turn creepers into atomic bombs!
 creeper-max-damage-radius: 5
 
-# when a slime or magmacube splits it creates new entities.  Should they match the level of the parent?
-# if not each child gets a random level matching the defined rules
+
+# When a slime or magmacube splits it creates new entities.  Should they match the level of the parent?
+# If not each child gets a random level matching the defined rules
 slime-children-retain-level-of-parent: true
 
-# when using the summon command how far away from the player will the mobs spawn
+
+# When using the summon command how far away from the player will the mobs spawn
 summon-command-spawn-distance-from-player: 5
 
+
 # Should LevelledMobs check for updates off of the Spigot page?
+# Asnyc: done on a separate CPU thread, so it won't freeze your server whilst it checks
+# Quiet: sends a single warning, only if it found a new update.
 use-update-checker: true
 
-# Should the plugin print information about a levelled mob to you when an operator (/op-ped player) hits it?
-# (This is named debug for a reason - you probably don't want to have it enabled)
+
+# Debug functionality. You most likely don't want to enable this unless you are a developer.
 debug: false
+
 
 # Don't change this unless you know what you're doing!
 file-version: 22

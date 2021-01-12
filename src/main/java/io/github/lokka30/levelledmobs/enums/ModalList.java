@@ -45,7 +45,7 @@ public class ModalList {
                     throw new IllegalStateException("Invalid ListMode " + listMode.toString() + "!");
             }
         } else {
-            Utils.logger.error("Mode is unset in config file '" + cfg.getName() + "' at path '" + path + ".mode'! The plugin will malfunction until this is fixed!");
+            Utils.logger.error("Mode is unset at path '" + path + ".mode'! The plugin will malfunction until this is fixed!");
             return false;
         }
     }
