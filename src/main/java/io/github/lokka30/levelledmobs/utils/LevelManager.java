@@ -11,6 +11,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Random;
@@ -39,24 +40,31 @@ public class LevelManager {
             return false;
         }
 
-        //TODO check config lists. skipping for the moment
+        //Blacklist override, entities here will return true regardless if they are in blacklistedTypes or are passive
+        List<String> blacklistOverrideTypes = instance.settingsCfg.getStringList("blacklist-override-types");
+        if (blacklistOverrideTypes.contains(entityType.toString())) {
+            return true;
+        }
+
+        //Set it to what's specified. If it's invalid, it'll just take a small predefiend list.
+        List<String> blacklistedTypes = instance.settingsCfg.getStringList("blacklisted-types");
+        if (blacklistedTypes.contains(entityType.toString())) {
+            return false;
+        }
 
         Class<? extends Entity> entityClass = entityType.getEntityClass();
         if (entityClass == null) {
             return false;
         }
 
-        return entityClass.isAssignableFrom(Monster.class)
+        // These entities don't implement Monster or Boss and thus must be forced to return true
+        if (Arrays.asList(EntityType.GHAST, EntityType.MAGMA_CUBE, EntityType.HOGLIN, EntityType.SHULKER, EntityType.PHANTOM, EntityType.ENDER_DRAGON)
+                .contains(entityType)) {
+            return true;
+        }
 
-                // there are a few special cases here since they aren't part of the 'Monster' interface
-                || entityClass.isAssignableFrom(Boss.class)
-                || entityClass.isAssignableFrom(Ghast.class)
-                || entityClass.isAssignableFrom(MagmaCube.class)
-                || entityClass.isAssignableFrom(Hoglin.class)
-                || entityClass.isAssignableFrom(Shulker.class)
-                || entityClass.isAssignableFrom(Phantom.class)
-
-                // Allow passive mobs?
+        return Monster.class.isAssignableFrom(entityClass)
+                || Boss.class.isAssignableFrom(entityClass)
                 || instance.settingsCfg.getBoolean("level-passive");
     }
 
@@ -104,7 +112,7 @@ public class LevelManager {
         boolean result = entity instanceof Monster || entity instanceof Boss || instance.settingsCfg.getBoolean("level-passive");
 
         // there are a few special cases here since they aren't part of the 'Monster' interface
-        if (!result && (entity instanceof Ghast || entity instanceof MagmaCube || entity instanceof Hoglin || entity instanceof Shulker || entity instanceof Phantom)) {
+        if (!result && (entity instanceof Ghast || entity instanceof MagmaCube || entity instanceof Hoglin || entity instanceof Shulker || entity instanceof Phantom || entity instanceof EnderDragon)) {
             result = true;
         }
 
