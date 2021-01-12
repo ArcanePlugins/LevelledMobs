@@ -3,19 +3,19 @@
 ## v1.35.0-PRE:
 
 ### Notes:
-* I wish to start off with a big thank you to stumper66 for their huge list of contributions this update. Stumper also gave me the spark to recontinue work on the resource. Give him your thanks too if you enjoy this update ;)
-* I've recontinued work on the plugin. Almost all of the code has been altered from the previous version.
+* **Before installing this update, read the Important section below.**
+* I wish to start off with a huge thank you to **stumper66** for their massive list of contributions this update. Stumper also gave me the spark to recontinue work on the resource. This update wouldn't be here without him!
+* I've recontinued work on the plugin. Most of the code has been updated from the previous version. This update took many hours to make, so I hope it was worth it! :)
+* (psst: leave a like / positive review if you enjoy this update!)
 
 ### Important:
 Before installing this update on your server, please understand the following:
   * **PhantomLib is no longer used by LevelledMobs!** Uninstall it if you wish (unless you have other plugins that depend on it installed)
   * **Almost all permissions have changed.** I recommend you remove any current permissions from LM you have set and apply the new ones. See the documentation.
   * If you are using any **WorldGuard flags from this plugin**, you should **remove them from your regions prior to installing this new version**. ALL previous LevelledMobs flags have been renamed, and I've also added in a new flag which was a popular request. :)
-  * `settings.yml` has been updated, please reset/update your current file.
+  * **Reset your config!** You might want to back it up in case you want to copy old settings across, but the settings file has changed enough that I would recommend starting from scratch.
   
-
 ### Changelog:
-
 **Summon Subcommand** (stumper66)
 * The summon command is now completed!
 * Summon the specified level, amount of mobs and at your location, another player's or an x/y/z location.
@@ -68,16 +68,27 @@ Before installing this update on your server, please understand the following:
 * New setting to apply nametags on default leveled mobs.
 * If set to false and a level 1 mob is spawned, no nametag will be applied to the mob.
 
+**New Multipliers System** (lokka30)
+* The old "multipliers" weren't actually multipliers.
+* I've re-coded that system. Not only is it easier to change multipliers (since you're not dealing with Minecraft's mysterious scales), it is also no longer misleading :)
+
 **Better Default Settings** (lokka30)
-* The previous default settings were *way* too difficult. I was scared of my own creation when I deployed it on a private survival server for friends.
-* I've now finally adjusted down the multipliers so that it can provide a challenge but not something beyond hardcore.
+* Until this update, the default settings have been beyond hardcore, and I am honestly surprised servers are coping with them.
+* Following the new multipliers system being added in, I have tested new values to ensure they function well.
+
+**New Attributes System** (lokka30)
+* LM now stores a pregenerated attributes file in its data folder. This contains all of the default attributes for every living entity in 1.16.
+* This file will be updated with each new Minecraft version.
+* This will improve compatibility with plugins such as SafariNets immensely.
+* A secret, secure command has been implemented (only accessible by console with a password) which generates a new copy of the file. This is only meant to be used by developers. It is used to update the file with new Minecraft versions.
 
 **Other Bugfixes**
 * Magma Cubes, Slimes, Ghasts and Hoglins are now levelled as expected (stumper66)
 * Shulkers are now levelled as expected (lokka30)
 
-**Removed Features**
+**Removed Features** (lokka30)
 * Removed an old feature 'flight speed multiplier' which we found out Minecraft only applies to parrots. Completely unnecessary and misleading.
+* Removed 'default attack damage increase'
 
 **Other Code Changes** (lokka30)
 * Cleaned up the every single class in this project significantly. A bunch of methods and variables have been moved to more fitting classes too.

@@ -79,22 +79,21 @@ public class CreatureSpawnListener implements Listener {
                 return;
             }
 
-            if (instance.settingsCfg.getBoolean("slime-children-retain-level-of-parent") &&
-                    spawnReason == SpawnReason.SLIME_SPLIT && Utils.isNotNullOrEmpty(entityName)) {
-                // change child level to match parent.  Only possible from parsing the custom number for the level number
+            // change child level to match parent.  Only possible from parsing the custom number for the level number
+            if (spawnReason == SpawnReason.SLIME_SPLIT && Utils.isNotNullOrEmpty(entityName)) {
+                if (instance.settingsCfg.getBoolean("slime-children-retain-level-of-parent")) {
+                    // [Level 10 | Slime]
 
-                // [Level 10 | Slime]
-                // §8[§7Level 3§8 | §fSlime§8]
+                    Matcher m = instance.levelManager.slimeRegex.matcher(entityName);
+                    if (m.find() && m.groupCount() >= 1) {
+                        // the only reason it won't match is if someone has changed the custom name syntax significantly
+                        String probablyLevelNum = m.group(1);
+                        if (Utils.isInteger(probablyLevelNum))
+                            level = Integer.parseInt(probablyLevelNum);
+                    }
 
-                Matcher m = instance.levelManager.slimeRegex.matcher(entityName);
-                if (m.find() && m.groupCount() >= 1) {
-                    // the only reason it won't match is if someone has changed the custom name syntax significantly
-                    String probablyLevelNum = m.group(1);
-                    if (Utils.isInteger(probablyLevelNum))
-                        level = Integer.parseInt(probablyLevelNum);
+                    // if we didn't match then the slime will get a random level instead of the parent's level
                 }
-                // if we didn't match then the slime will get a random level instead of the parent's level
-
             }
 
             //Define the mob's level so it can be accessed elsewhere.
@@ -104,19 +103,19 @@ public class CreatureSpawnListener implements Listener {
             // Max Health attribute
             if (livingEntity.getAttribute(Attribute.GENERIC_MAX_HEALTH) != null) {
                 double multiplier = instance.settingsCfg.getDouble("fine-tuning.multipliers.max-health");
-                instance.attributeManager.setMultipliedValue(livingEntity, Attribute.GENERIC_MAX_HEALTH, multiplier);
+                instance.attributeManager.setMultipliedValue(livingEntity, Attribute.GENERIC_MAX_HEALTH, multiplier, level);
             }
 
             // Movement Speed attribute
             if (livingEntity.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED) != null) {
                 double multiplier = instance.settingsCfg.getDouble("fine-tuning.multipliers.movement-speed");
-                instance.attributeManager.setMultipliedValue(livingEntity, Attribute.GENERIC_MOVEMENT_SPEED, multiplier);
+                instance.attributeManager.setMultipliedValue(livingEntity, Attribute.GENERIC_MOVEMENT_SPEED, multiplier, level);
             }
 
             // Attack Damage attribute
             if (livingEntity.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE) != null) {
                 double multiplier = instance.settingsCfg.getDouble("fine-tuning.multipliers.attack-damage");
-                instance.attributeManager.setMultipliedValue(livingEntity, Attribute.GENERIC_ATTACK_DAMAGE, multiplier);
+                instance.attributeManager.setMultipliedValue(livingEntity, Attribute.GENERIC_ATTACK_DAMAGE, multiplier, level);
             }
 
             if (livingEntity instanceof Creeper && instance.settingsCfg.getInt("creeper-max-damage-radius", 3) != 3) {

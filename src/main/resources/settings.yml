@@ -79,25 +79,24 @@ fine-tuning:
   # Expected: [Integer], Default: [10]
   max-level: 10
 
-  # Since the vanilla damage is pretty weak, you can increase its base value here.
-  # The default adds 0.7 extra points to the attack damage attribute.
-  # Expected: [Double], Default: [0.7]
-  default-attack-damage-increase: 0.7
-
-  # For each level, these values are added to a mob. The default have been tried and tested, but you're free to change it.
+  # Multipliers! If you want to make the mobs more difficult (or easier), it's all in your hands.
+  # The default have been tried and tested, but you're free to change it.
+  # Example math: new movement speed = (old movement speed * (level * multiplier))
+  # Warning: multipliers changed in v1.35.0 (file version 22), do not use multipliers from older versions (e.g. file version 21).
   # Warning: these multipliers do not scale if you change the min/max levels above. they have only been made to fit the standard 1-10 level configuration.
   multipliers:
 
-    # Expected: [Double], Default: [0.056]
-    # Warning: +/- in very, very small amounts! (i.e. 0.005)
-    # Note: Minecraft's AI isn't intelligent enough to work with crazy high movement speeds.
-    movement-speed: 0.056
+    # Default: [0.001]
+    # Warning: +/- in very, very small amounts! (i.e. 0.001)
+    # Minecraft uses very small numbers for movement speeds. As said above, change this number in very small amounts if you want to change it.
+    # Minecraft's AI isn't intelligent enough to work with crazy high movement speeds.
+    movement-speed: 0.001
 
-    # Expected: [Double], Default: [0.13]
-    max-health: 0.13
+    # Default: [1.1]
+    max-health: 1.1
 
-    # Expected: [Double], Default: [0.33]
-    attack-damage: 0.33
+    # Default: [1.1]
+    attack-damage: 1.1
 
     # Expected: [Double], Default: [0.05]
     ranged-attack-damage: 0.05
