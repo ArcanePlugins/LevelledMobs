@@ -1,8 +1,17 @@
 package io.github.lokka30.levelledmobs.utils;
 
+import com.comphenix.protocol.PacketType;
+import com.comphenix.protocol.ProtocolLibrary;
+import com.comphenix.protocol.events.ListenerPriority;
+import com.comphenix.protocol.events.PacketAdapter;
+import com.comphenix.protocol.events.PacketContainer;
+import com.comphenix.protocol.events.PacketEvent;
+import com.comphenix.protocol.wrappers.WrappedChatComponent;
+import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 import io.github.lokka30.levelledmobs.LevelledMobs;
 import io.github.lokka30.levelledmobs.listeners.CreatureSpawnListener;
 import me.lokka30.microlib.MicroUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
@@ -11,10 +20,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
-import java.util.Random;
+import java.lang.reflect.InvocationTargetException;
+import java.util.*;
 import java.util.regex.Pattern;
 
 public class LevelManager {
@@ -26,6 +33,8 @@ public class LevelManager {
 
         levelKey = new NamespacedKey(instance, "level");
         isLevelledKey = new NamespacedKey(instance, "isLevelled");
+
+        registerPacketListeners();
     }
 
     public final NamespacedKey levelKey; // This stores the mob's level.
@@ -130,33 +139,7 @@ public class LevelManager {
 
     //Updates the nametag of a creature. Gets called by certain listeners.
     public void setTag(final Entity entity) {
-
-        final EntityType entityType = entity.getType();
-
-        if (entity instanceof LivingEntity && instance.settingsCfg.getBoolean("enable-nametag-changes")) { //if the settings allows nametag changes, go ahead.
-            final LivingEntity livingEntity = (LivingEntity) entity;
-
-            if (entity.getPersistentDataContainer().get(instance.levelManager.levelKey, PersistentDataType.INTEGER) == null) { //if the entity doesn't contain a level, skip this.
-                return;
-            }
-
-            if (isLevellable(livingEntity)) { // If the mob is levellable, go ahead.
-
-                // case-insensitive replace
-                String customName = instance.settingsCfg.getString("creature-nametag");
-                customName = Utils.replaceEx(customName, "%level%", String.valueOf(entity.getPersistentDataContainer().get(instance.levelManager.levelKey, PersistentDataType.INTEGER)));
-                customName = Utils.replaceEx(customName, "%name%", instance.configUtils.getEntityName(entityType));
-                customName = Utils.replaceEx(customName, "%health%", String.valueOf(Utils.round(livingEntity.getHealth())));
-                AttributeInstance att = livingEntity.getAttribute(Attribute.GENERIC_MAX_HEALTH);
-                String health = att == null ? "" : String.valueOf(Utils.round((Objects.requireNonNull(livingEntity.getAttribute(Attribute.GENERIC_MAX_HEALTH))).getBaseValue()));
-                customName = Utils.replaceEx(customName, "%max_health%", health);
-                customName = Utils.replaceEx(customName, "%heart_symbol%", "❤");
-
-                assert customName != null;
-                entity.setCustomName(MicroUtils.colorize(customName));
-                entity.setCustomNameVisible(instance.settingsCfg.getBoolean("fine-tuning.custom-name-visible"));
-            }
-        }
+        //TODO
     }
 
     //Clear their nametag on death.
@@ -255,5 +238,77 @@ public class LevelManager {
             }
         }
         return xp;
+    }
+
+    public String getTag(LivingEntity livingEntity) {
+        String customName = instance.settingsCfg.getString("creature-nametag");
+        customName = Utils.replaceEx(customName, "%level%", String.valueOf(livingEntity.getPersistentDataContainer().get(instance.levelManager.levelKey, PersistentDataType.INTEGER)));
+        customName = Utils.replaceEx(customName, "%name%", instance.configUtils.getEntityName(livingEntity.getType()));
+        customName = Utils.replaceEx(customName, "%health%", String.valueOf(Utils.round(livingEntity.getHealth())));
+        AttributeInstance att = livingEntity.getAttribute(Attribute.GENERIC_MAX_HEALTH);
+        String health = att == null ? "" : String.valueOf(Utils.round((Objects.requireNonNull(livingEntity.getAttribute(Attribute.GENERIC_MAX_HEALTH))).getBaseValue()));
+        customName = Utils.replaceEx(customName, "%max_health%", health);
+        customName = Utils.replaceEx(customName, "%heart_symbol%", "❤");
+        assert customName != null;
+        customName = MicroUtils.colorize(customName);
+
+        return customName;
+    }
+
+    /**
+     * Credit: https://www.spigotmc.org/threads/changing-an-entitys-name-using-protocollib.482855/#post-4051032 by SpigotMC user: https://www.spigotmc.org/members/CoolBoy.102500/
+     */
+    public void registerPacketListeners() {
+        ProtocolLibrary.getProtocolManager().addPacketListener(new PacketAdapter(instance, ListenerPriority.NORMAL, PacketType.Play.Server.ENTITY_METADATA) {
+            @Override
+            public void onPacketSending(PacketEvent event) {
+                if (event.getPacketType() != PacketType.Play.Server.ENTITY_METADATA) {
+                    return;
+                }
+
+                PacketContainer packet = event.getPacket();
+
+                Entity entity = packet.getEntityModifier(event).read(0);
+
+                if (entity instanceof LivingEntity) {
+                    LivingEntity livingEntity = (LivingEntity) entity;
+
+                    if (isLevellable(livingEntity)) {
+                        WrappedDataWatcher dataWatcher = WrappedDataWatcher.getEntityWatcher(entity);
+
+                        WrappedDataWatcher.Serializer chatSerializer = WrappedDataWatcher.Registry.getChatComponentSerializer(true);
+
+                        dataWatcher.setObject(new WrappedDataWatcher.WrappedDataWatcherObject(2, chatSerializer),
+                                Optional.of(WrappedChatComponent.fromChatMessage(getTag(livingEntity))[0].getHandle()));
+
+                        packet.getWatchableCollectionModifier().write(0, dataWatcher.getWatchableObjects());
+
+                        event.setPacket(packet);
+                    }
+                }
+            }
+        });
+    }
+
+    public void updateNametag(LivingEntity entity) {
+        entity.setCustomNameVisible(instance.settingsCfg.getBoolean("custom-name-visible"));
+
+        WrappedDataWatcher dataWatcher = WrappedDataWatcher.getEntityWatcher(entity);
+        WrappedDataWatcher.Serializer chatSerializer = WrappedDataWatcher.Registry.getChatComponentSerializer(true);
+        dataWatcher.setObject(new WrappedDataWatcher.WrappedDataWatcherObject(2, chatSerializer),
+                Optional.of(WrappedChatComponent.fromChatMessage(getTag(entity))[0].getHandle()));
+
+        PacketContainer packet = ProtocolLibrary.getProtocolManager().createPacket(PacketType.Play.Server.ENTITY_METADATA);
+        packet.getWatchableCollectionModifier().write(0, dataWatcher.getWatchableObjects());
+
+        for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
+            try {
+                ProtocolLibrary.getProtocolManager().sendServerPacket(onlinePlayer, packet);
+            } catch (InvocationTargetException ex) {
+                Utils.logger.error("Unable to update nametag packet for player &b" + onlinePlayer.getName() + "&7! Stack trace:");
+                ex.printStackTrace();
+                return;
+            }
+        }
     }
 }
