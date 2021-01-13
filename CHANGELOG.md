@@ -50,6 +50,7 @@ Before installing this update on your server, please understand the following:
 * This has fixed the following problems:
   * You can now apply nametags to levelled mobs without losing the levelled nametag
   * Anti-lag plugins usually ignore nametagged mobs - this means they will now kill levelled mobs too, since there isn't actually a nametag on the entity.
+* This was possible thanks to help from @CoolBoy in [this](https://www.spigotmc.org/threads/changing-an-entitys-name-using-protocollib.482855/) thread. A big thank you to them for their assistance.
 
 **Full Tab Auto-Completion Implemented** (stumper66)
 * The commands now feature full auto tab-completion to help speed things up.
