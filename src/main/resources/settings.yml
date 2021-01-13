@@ -11,13 +11,6 @@
 creature-nametag: '&8[&7Level %level%&8 | &f%name%&8]'
 
 
-# This allows creature nametags to be updated to the one set above when they are spawned or damaged.
-# If you use WildStacker or any other stacking plugins, you might want to disable this, by setting it to 'false'.
-# Unfortunately you won't be able to see the mob's level that way though.
-# Expected: [Boolean], Default: [true]
-enable-nametag-changes: true
-
-
 # Should passive creatures be levelled?
 # You probably don't want a Level 10 race horse to ramp up your chunk loading, or a random pig that moves fast.
 # However, you can always limit passive mobs' levels yourself in the 'entitytype-level-override' settings!

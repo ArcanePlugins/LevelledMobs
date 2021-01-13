@@ -1,4 +1,4 @@
-package io.github.lokka30.levelledmobs.utils;
+package io.github.lokka30.levelledmobs;
 
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldedit.math.BlockVector3;
@@ -12,7 +12,7 @@ import com.sk89q.worldguard.protection.flags.registry.FlagRegistry;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import com.sk89q.worldguard.protection.regions.RegionContainer;
-import io.github.lokka30.levelledmobs.LevelledMobs;
+import io.github.lokka30.levelledmobs.utils.Utils;
 import org.bukkit.Location;
 import org.bukkit.entity.LivingEntity;
 

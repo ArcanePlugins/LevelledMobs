@@ -1,4 +1,4 @@
-package io.github.lokka30.levelledmobs.utils;
+package io.github.lokka30.levelledmobs;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
@@ -8,8 +8,8 @@ import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import com.comphenix.protocol.wrappers.WrappedDataWatcher;
-import io.github.lokka30.levelledmobs.LevelledMobs;
 import io.github.lokka30.levelledmobs.listeners.CreatureSpawnListener;
+import io.github.lokka30.levelledmobs.utils.Utils;
 import me.lokka30.microlib.MicroUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
@@ -231,9 +231,11 @@ public class LevelManager {
     }
 
     public String getNametag(LivingEntity livingEntity) {
+        String entityName = livingEntity.getCustomName() == null ? instance.configUtils.getEntityName(livingEntity.getType()) : livingEntity.getCustomName();
+
         String customName = instance.settingsCfg.getString("creature-nametag");
         customName = Utils.replaceEx(customName, "%level%", String.valueOf(livingEntity.getPersistentDataContainer().get(instance.levelManager.levelKey, PersistentDataType.INTEGER)));
-        customName = Utils.replaceEx(customName, "%name%", instance.configUtils.getEntityName(livingEntity.getType()));
+        customName = Utils.replaceEx(customName, "%name%", entityName);
         customName = Utils.replaceEx(customName, "%health%", String.valueOf(Utils.round(livingEntity.getHealth())));
         AttributeInstance att = livingEntity.getAttribute(Attribute.GENERIC_MAX_HEALTH);
         String health = att == null ? "" : String.valueOf(Utils.round((Objects.requireNonNull(livingEntity.getAttribute(Attribute.GENERIC_MAX_HEALTH))).getBaseValue()));
