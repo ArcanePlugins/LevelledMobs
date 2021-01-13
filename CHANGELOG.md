@@ -111,3 +111,4 @@ Before installing this update on your server, please understand the following:
 * Added the ListMode enum which will make checking lists in the config easier and cleaner
 * Added all code contributors to the 'info' subcommand.
 * Removed sound from debug feature - in case older versions become supported, this sound will need to go anyways
+* Rearranged the Manager classes from the utils package to the main package
