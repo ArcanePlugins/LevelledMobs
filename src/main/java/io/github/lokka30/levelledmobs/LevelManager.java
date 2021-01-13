@@ -21,7 +21,10 @@ import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+import java.util.Random;
 import java.util.regex.Pattern;
 
 public class LevelManager {
@@ -233,18 +236,19 @@ public class LevelManager {
     public String getNametag(LivingEntity livingEntity) {
         String entityName = livingEntity.getCustomName() == null ? instance.configUtils.getEntityName(livingEntity.getType()) : livingEntity.getCustomName();
 
-        String customName = instance.settingsCfg.getString("creature-nametag");
-        customName = Utils.replaceEx(customName, "%level%", String.valueOf(livingEntity.getPersistentDataContainer().get(instance.levelManager.levelKey, PersistentDataType.INTEGER)));
-        customName = Utils.replaceEx(customName, "%name%", entityName);
-        customName = Utils.replaceEx(customName, "%health%", String.valueOf(Utils.round(livingEntity.getHealth())));
-        AttributeInstance att = livingEntity.getAttribute(Attribute.GENERIC_MAX_HEALTH);
-        String health = att == null ? "" : String.valueOf(Utils.round((Objects.requireNonNull(livingEntity.getAttribute(Attribute.GENERIC_MAX_HEALTH))).getBaseValue()));
-        customName = Utils.replaceEx(customName, "%max_health%", health);
-        customName = Utils.replaceEx(customName, "%heart_symbol%", "❤");
-        assert customName != null;
-        customName = MicroUtils.colorize(customName);
+        AttributeInstance maxHealth = livingEntity.getAttribute(Attribute.GENERIC_MAX_HEALTH);
+        String health = maxHealth == null ? "?" : maxHealth.getBaseValue() + "";
 
-        return customName;
+        String nametag = instance.settingsCfg.getString("creature-nametag");
+        nametag = Utils.replaceEx(nametag, "%level%", String.valueOf(livingEntity.getPersistentDataContainer().get(instance.levelManager.levelKey, PersistentDataType.INTEGER)));
+        nametag = Utils.replaceEx(nametag, "%name%", entityName);
+        nametag = Utils.replaceEx(nametag, "%health%", Utils.round(livingEntity.getHealth()) + "");
+        nametag = Utils.replaceEx(nametag, "%max_health%", health);
+        nametag = Utils.replaceEx(nametag, "%heart_symbol%", "❤");
+        assert nametag != null;
+        nametag = MicroUtils.colorize(nametag);
+
+        return nametag;
     }
 
     /**
