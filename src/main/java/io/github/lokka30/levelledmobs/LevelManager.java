@@ -32,8 +32,6 @@ public class LevelManager {
 
         levelKey = new NamespacedKey(instance, "level");
         isLevelledKey = new NamespacedKey(instance, "isLevelled");
-
-        //TODO registerPacketListeners();
     }
 
     public final NamespacedKey levelKey; // This stores the mob's level.
@@ -249,43 +247,8 @@ public class LevelManager {
 
     /**
      * Credit: https://www.spigotmc.org/threads/changing-an-entitys-name-using-protocollib.482855/#post-4051032 by SpigotMC user: https://www.spigotmc.org/members/CoolBoy.102500/
+     * Thanks to @CoolBoy for helping out with all the packet stuff. That's all beyond me.
      */
-    /*
-
-    //TODO Could be removed. Need testing.
-
-    public void registerPacketListeners() {
-        ProtocolLibrary.getProtocolManager().addPacketListener(new PacketAdapter(instance, ListenerPriority.NORMAL, PacketType.Play.Server.ENTITY_METADATA) {
-            @Override
-            public void onPacketSending(PacketEvent event) {
-                if (event.getPacketType() != PacketType.Play.Server.ENTITY_METADATA) {
-                    return;
-                }
-
-                PacketContainer packet = event.getPacket();
-
-                Entity entity = packet.getEntityModifier(event).read(0);
-
-                if (entity instanceof LivingEntity) {
-                    LivingEntity livingEntity = (LivingEntity) entity;
-
-                    if (isLevellable(livingEntity)) {
-                        WrappedDataWatcher dataWatcher = WrappedDataWatcher.getEntityWatcher(entity);
-
-                        WrappedDataWatcher.Serializer chatSerializer = WrappedDataWatcher.Registry.getChatComponentSerializer(true);
-
-                        dataWatcher.setObject(new WrappedDataWatcher.WrappedDataWatcherObject(2, chatSerializer),
-                                Optional.of(WrappedChatComponent.fromChatMessage(getNametag(livingEntity))[0].getHandle()));
-
-                        packet.getWatchableCollectionModifier().write(0, dataWatcher.getWatchableObjects());
-
-                        event.setPacket(packet);
-                    }
-                }
-            }
-        });
-    }
-    */
     public void updateNametag(LivingEntity entity, String nametag) {
         WrappedDataWatcher dataWatcher = WrappedDataWatcher.getEntityWatcher(entity);
         WrappedDataWatcher.Serializer chatSerializer = WrappedDataWatcher.Registry.getChatComponentSerializer(true);
