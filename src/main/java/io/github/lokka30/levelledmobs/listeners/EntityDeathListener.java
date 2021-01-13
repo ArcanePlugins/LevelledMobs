@@ -15,7 +15,6 @@ public class EntityDeathListener implements Listener {
 
     @EventHandler
     public void onDeath(final EntityDeathEvent e) {
-        instance.levelManager.checkClearNametag(e.getEntity());
         instance.levelManager.setLevelledDrops(e.getEntity(), e.getDrops());
         e.setDroppedExp(instance.levelManager.setLevelledXP(e.getEntity(), e.getDroppedExp()));
     }
