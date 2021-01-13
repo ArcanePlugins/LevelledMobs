@@ -369,7 +369,8 @@ public class SummonSubcommand implements Subcommand {
                     atPlayerSuccessMessages = Utils.replaceAllInList(atPlayerSuccessMessages, "%amount%", amount + "");
                     atPlayerSuccessMessages = Utils.replaceAllInList(atPlayerSuccessMessages, "%level%", level + "");
                     atPlayerSuccessMessages = Utils.replaceAllInList(atPlayerSuccessMessages, "%entity%", entityName + "");
-                    atPlayerSuccessMessages = Utils.replaceAllInList(atPlayerSuccessMessages, "%player%", target.getDisplayName() + "");
+                    atPlayerSuccessMessages = Utils.replaceAllInList(atPlayerSuccessMessages, "%targetUsername%", target.getName() + "");
+                    atPlayerSuccessMessages = Utils.replaceAllInList(atPlayerSuccessMessages, "%targetDisplayname%", target.getDisplayName() + "");
                     atPlayerSuccessMessages = Utils.colorizeAllInList(atPlayerSuccessMessages);
                     atPlayerSuccessMessages.forEach(sender::sendMessage);
                     break;

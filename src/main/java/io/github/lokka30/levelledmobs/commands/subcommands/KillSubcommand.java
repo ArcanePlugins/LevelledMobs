@@ -92,6 +92,28 @@ public class KillSubcommand implements Subcommand {
                                 return;
                             }
 
+                            int maxRadius = 1000;
+                            if (radius > maxRadius) {
+                                radius = maxRadius;
+
+                                List<String> messages = instance.messagesCfg.getStringList("command.levelledmobs.kill.near.invalid-radius-max");
+                                messages = Utils.replaceAllInList(messages, "%prefix%", instance.configUtils.getPrefix());
+                                messages = Utils.replaceAllInList(messages, "%maxRadius%", maxRadius + "");
+                                messages = Utils.colorizeAllInList(messages);
+                                messages.forEach(sender::sendMessage);
+                            }
+
+                            int minRadius = 1;
+                            if (radius < minRadius) {
+                                radius = minRadius;
+
+                                List<String> messages = instance.messagesCfg.getStringList("command.levelledmobs.kill.near.invalid-radius-min");
+                                messages = Utils.replaceAllInList(messages, "%prefix%", instance.configUtils.getPrefix());
+                                messages = Utils.replaceAllInList(messages, "%minRadius%", minRadius + "");
+                                messages = Utils.colorizeAllInList(messages);
+                                messages.forEach(sender::sendMessage);
+                            }
+
                             int killed = 0;
                             for (Entity entity : player.getNearbyEntities(radius, radius, radius)) {
                                 if (entity instanceof LivingEntity) {
@@ -146,6 +168,7 @@ public class KillSubcommand implements Subcommand {
                     List<String> worlds = new ArrayList<>();
 
                     for (World world : Bukkit.getWorlds()) {
+                        worlds.add("*");
                         if (ModalList.isEnabledInList(instance.settingsCfg, "allowed-worlds-list", world.getName())) {
                             worlds.add(world.getName());
                         }

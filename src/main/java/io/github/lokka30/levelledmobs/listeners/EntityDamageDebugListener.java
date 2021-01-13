@@ -52,7 +52,7 @@ public class EntityDamageDebugListener implements Listener {
 
                 writeDebugForAttribute(p, "Current Health", Utils.round(ent.getHealth()));
                 writeDebugForAttribute(p, "Level", Objects.requireNonNull(ent.getPersistentDataContainer().get(instance.levelManager.levelKey, PersistentDataType.INTEGER), "Level was null"));
-                writeDebugForAttribute(p, ent.getCustomName() != null ? ent.getCustomName() : "(null)");
+                p.sendMessage(MicroUtils.colorize("&8 - &fCustomName &8= &b" + (ent.getCustomName() == null ? "N/A" : ent.getCustomName())));
 
                 delay.add(uuid);
                 new BukkitRunnable() {
@@ -70,17 +70,12 @@ public class EntityDamageDebugListener implements Listener {
         writeDebugForAttribute(p, attributeName, amount);
 
         p.sendMessage(MicroUtils.colorize(String.format(
-                "&8 - &f%s (Default) &8= &b%s", attributeName, Math.round(defaultAmount * 100.0) / 100.0)));
+                "&8 - &f%s &7(DefaultValue) &8= &b%s", attributeName, Math.round(defaultAmount * 100.0) / 100.0)));
     }
 
     private void writeDebugForAttribute(final Player p, final String attributeName, final double amount) {
         p.sendMessage(MicroUtils.colorize(String.format(
                 "&8 - &f%s &8= &b%s", attributeName, Math.round(amount * 100.0) / 100.0)));
-    }
-
-    private void writeDebugForAttribute(final Player p, final String msg) {
-        p.sendMessage(MicroUtils.colorize(String.format(
-                "&8 - &f%s &8= &b%s", "CustomName", msg)));
     }
 
     private void writeDebugForAttribute(final Player p, final LivingEntity ent, final Attribute att) {
@@ -90,8 +85,8 @@ public class EntityDamageDebugListener implements Listener {
         String attName = att.name();
 
         p.sendMessage(MicroUtils.colorize(String.format(
-                "&8 - &f%s (BaseValue) &8= &b%s", attName, Math.round(attInstance.getBaseValue() * 100.0) / 100.0)));
+                "&8 - &f%s &7(CurrentValue) &8= &b%s", attName, Math.round(attInstance.getBaseValue() * 100.0) / 100.0)));
         p.sendMessage(MicroUtils.colorize(String.format(
-                "&8 - &f%s (DefaultValue) = &b%s", attName, instance.attributeManager.getDefaultValue(ent.getType(), att))));
+                "&8 - &f%s &7(DefaultValue) &8= &b%s", attName, instance.attributeManager.getDefaultValue(ent.getType(), att))));
     }
 }

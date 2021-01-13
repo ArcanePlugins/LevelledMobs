@@ -2,10 +2,7 @@ package io.github.lokka30.levelledmobs;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
-import com.comphenix.protocol.events.ListenerPriority;
-import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
-import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 import io.github.lokka30.levelledmobs.listeners.CreatureSpawnListener;
@@ -25,7 +22,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
-import java.util.regex.Pattern;
 
 public class LevelManager {
 
@@ -37,14 +33,14 @@ public class LevelManager {
         levelKey = new NamespacedKey(instance, "level");
         isLevelledKey = new NamespacedKey(instance, "isLevelled");
 
-        registerPacketListeners();
+        //TODO registerPacketListeners();
     }
 
     public final NamespacedKey levelKey; // This stores the mob's level.
     public final NamespacedKey isLevelledKey; //This is stored on levelled mobs to tell plugins that it is a levelled mob.
 
     public final static int maxCreeperBlastRadius = 100;
-    public final Pattern slimeRegex = Pattern.compile("Level.*?(\\d{1,2})", Pattern.CASE_INSENSITIVE);
+    //TODO public final Pattern slimeRegex = Pattern.compile("Level.*?(\\d{1,2})", Pattern.CASE_INSENSITIVE);
     public CreatureSpawnListener creatureSpawnListener;
 
     public boolean isLevellable(final EntityType entityType) {
@@ -137,7 +133,7 @@ public class LevelManager {
     public void updateNametagWithDelay(LivingEntity entity) {
         new BukkitRunnable() {
             public void run() {
-                updateNametag(entity);
+                updateNametag(entity, getNametag(entity));
             }
         }.runTaskLater(instance, 1L);
     }
@@ -240,7 +236,7 @@ public class LevelManager {
         String health = maxHealth == null ? "?" : maxHealth.getBaseValue() + "";
 
         String nametag = instance.settingsCfg.getString("creature-nametag");
-        nametag = Utils.replaceEx(nametag, "%level%", String.valueOf(livingEntity.getPersistentDataContainer().get(instance.levelManager.levelKey, PersistentDataType.INTEGER)));
+        nametag = Utils.replaceEx(nametag, "%level%", livingEntity.getPersistentDataContainer().get(instance.levelManager.levelKey, PersistentDataType.INTEGER) + "");
         nametag = Utils.replaceEx(nametag, "%name%", entityName);
         nametag = Utils.replaceEx(nametag, "%health%", Utils.round(livingEntity.getHealth()) + "");
         nametag = Utils.replaceEx(nametag, "%max_health%", health);
@@ -254,6 +250,10 @@ public class LevelManager {
     /**
      * Credit: https://www.spigotmc.org/threads/changing-an-entitys-name-using-protocollib.482855/#post-4051032 by SpigotMC user: https://www.spigotmc.org/members/CoolBoy.102500/
      */
+    /*
+
+    //TODO Could be removed. Need testing.
+
     public void registerPacketListeners() {
         ProtocolLibrary.getProtocolManager().addPacketListener(new PacketAdapter(instance, ListenerPriority.NORMAL, PacketType.Play.Server.ENTITY_METADATA) {
             @Override
@@ -285,12 +285,12 @@ public class LevelManager {
             }
         });
     }
-
-    public void updateNametag(LivingEntity entity) {
+    */
+    public void updateNametag(LivingEntity entity, String nametag) {
         WrappedDataWatcher dataWatcher = WrappedDataWatcher.getEntityWatcher(entity);
         WrappedDataWatcher.Serializer chatSerializer = WrappedDataWatcher.Registry.getChatComponentSerializer(true);
         dataWatcher.setObject(new WrappedDataWatcher.WrappedDataWatcherObject(2, chatSerializer),
-                Optional.of(WrappedChatComponent.fromChatMessage(getNametag(entity))[0].getHandle()));
+                Optional.of(WrappedChatComponent.fromChatMessage(nametag)[0].getHandle()));
 
         PacketContainer packet = ProtocolLibrary.getProtocolManager().createPacket(PacketType.Play.Server.ENTITY_METADATA);
         packet.getWatchableCollectionModifier().write(0, dataWatcher.getWatchableObjects());
