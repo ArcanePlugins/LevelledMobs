@@ -128,29 +128,19 @@ public class LevelManager {
         return result;
     }
 
-    //Update an entity's tag. it is called twice as when a mob gets damaged their health is updated after to the health after they got damaged.
-    public void updateTag(Entity ent) {
+    //Updates the entity's nametag after a 1 tick delay. Without the delay, it would
+    //display the entity's previous health rather than their new health.
+    //Used on EntityDamageEvent and EntityRegainHealthEvent.
+    public void updateNametagWithDelay(LivingEntity entity) {
         new BukkitRunnable() {
             public void run() {
-                setTag(ent);
+                updateNametag(entity);
             }
         }.runTaskLater(instance, 1L);
     }
 
-    //Updates the nametag of a creature. Gets called by certain listeners.
-    public void setTag(final Entity entity) {
-        //TODO
-    }
-
-    //Clear their nametag on death.
-    public void checkClearNametag(final LivingEntity ent) {
-        if (isLevellable(ent) && instance.settingsCfg.getBoolean("fine-tuning.remove-nametag-on-death")) {
-            ent.setCustomName(null);
-        }
-    }
-
     //Calculates the drops when a levellable creature dies.
-    public void calculateDrops(final LivingEntity ent, List<ItemStack> drops) {
+    public void setLevelledDrops(final LivingEntity ent, List<ItemStack> drops) {
 
         if (isLevellable(ent)) {
             //If mob is levellable, but wasn't levelled, return.
@@ -228,7 +218,7 @@ public class LevelManager {
     }
 
     //Calculates the XP dropped when a levellable creature dies.
-    public int calculateXp(final LivingEntity ent, int xp) {
+    public int setLevelledXP(final LivingEntity ent, int xp) {
         if (instance.levelManager.isLevellable(ent)) {
             double xpMultiplier = instance.settingsCfg.getDouble("fine-tuning.additions.custom.xp-drop");
             Integer level = ent.getPersistentDataContainer().get(instance.levelManager.levelKey, PersistentDataType.INTEGER);
@@ -240,7 +230,7 @@ public class LevelManager {
         return xp;
     }
 
-    public String getTag(LivingEntity livingEntity) {
+    public String getNametag(LivingEntity livingEntity) {
         String customName = instance.settingsCfg.getString("creature-nametag");
         customName = Utils.replaceEx(customName, "%level%", String.valueOf(livingEntity.getPersistentDataContainer().get(instance.levelManager.levelKey, PersistentDataType.INTEGER)));
         customName = Utils.replaceEx(customName, "%name%", instance.configUtils.getEntityName(livingEntity.getType()));
@@ -279,7 +269,7 @@ public class LevelManager {
                         WrappedDataWatcher.Serializer chatSerializer = WrappedDataWatcher.Registry.getChatComponentSerializer(true);
 
                         dataWatcher.setObject(new WrappedDataWatcher.WrappedDataWatcherObject(2, chatSerializer),
-                                Optional.of(WrappedChatComponent.fromChatMessage(getTag(livingEntity))[0].getHandle()));
+                                Optional.of(WrappedChatComponent.fromChatMessage(getNametag(livingEntity))[0].getHandle()));
 
                         packet.getWatchableCollectionModifier().write(0, dataWatcher.getWatchableObjects());
 
@@ -291,12 +281,10 @@ public class LevelManager {
     }
 
     public void updateNametag(LivingEntity entity) {
-        entity.setCustomNameVisible(instance.settingsCfg.getBoolean("custom-name-visible"));
-
         WrappedDataWatcher dataWatcher = WrappedDataWatcher.getEntityWatcher(entity);
         WrappedDataWatcher.Serializer chatSerializer = WrappedDataWatcher.Registry.getChatComponentSerializer(true);
         dataWatcher.setObject(new WrappedDataWatcher.WrappedDataWatcherObject(2, chatSerializer),
-                Optional.of(WrappedChatComponent.fromChatMessage(getTag(entity))[0].getHandle()));
+                Optional.of(WrappedChatComponent.fromChatMessage(getNametag(entity))[0].getHandle()));
 
         PacketContainer packet = ProtocolLibrary.getProtocolManager().createPacket(PacketType.Play.Server.ENTITY_METADATA);
         packet.getWatchableCollectionModifier().write(0, dataWatcher.getWatchableObjects());

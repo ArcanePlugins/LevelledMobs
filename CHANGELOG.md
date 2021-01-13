@@ -43,6 +43,14 @@ Before installing this update on your server, please understand the following:
 * Full wildcard support (`*` character, e.g. `levelledmobs.command.*`) to make applying permissions far quicker.
 * The command now requires a permission to run too (given by default) in case you wanted to restrict access to it.
 
+**Packet Nametags** (lokka30)
+* This feature now forces LM to depend on ProtocolLib. Make sure you have ProtocolLib installed!
+* No longer does LevelledMobs mess with nametags! It instead modifies the packets sent to the client.
+* In other words, LM sends a 'fake nametag' to the client, but there isn't actually a nametag on the mob.
+* This has fixed the following problems:
+  * You can now apply nametags to levelled mobs without losing the levelled nametag
+  * Anti-lag plugins usually ignore nametagged mobs - this means they will now kill levelled mobs too, since there isn't actually a nametag on the entity.
+
 **Full Tab Auto-Completion Implemented** (stumper66)
 * The commands now feature full auto tab-completion to help speed things up.
 
@@ -91,7 +99,9 @@ Before installing this update on your server, please understand the following:
 
 **Removed Features** (lokka30)
 * Removed an old feature 'flight speed multiplier' which we found out Minecraft only applies to parrots. Completely unnecessary and misleading.
-* Removed 'default attack damage increase'
+* Removed 'default attack damage increase', it was unnecessary.
+* Removed 'remove nametag on death', 'update nametag on health change', which are no longer necessary with the introduction of packet nametags.
+* 'custom name visible' has been temporarily removed until I learn how to implement it.
 
 **Other Code Changes** (lokka30)
 * Cleaned up the every single class in this project significantly. A bunch of methods and variables have been moved to more fitting classes too.

@@ -18,13 +18,6 @@ creature-nametag: '&8[&7Level %level%&8 | &f%name%&8]'
 enable-nametag-changes: true
 
 
-# Should creature nametags be updated when their health changes?
-# Set to false if you only want nametags to be set on spawn.
-# Set to true if you want them to be set every time a mob's health updates (e.g. they were hit or regained health).
-# Expected: [Boolean], Default: [false]
-update-nametag-health: false
-
-
 # Should passive creatures be levelled?
 # You probably don't want a Level 10 race horse to ramp up your chunk loading, or a random pig that moves fast.
 # However, you can always limit passive mobs' levels yourself in the 'entitytype-level-override' settings!
@@ -271,15 +264,6 @@ fine-tuning:
       # XP drops
       # Default = 0.09
       xp-drop: 0.09
-
-  # Should the creature's nametag be removed on death?
-  # Expected: [Boolean], Default: [false]
-  remove-nametag-on-death: false
-
-  # Should nametags be visible when close by (set to true) or only when looking at it (set to false)?
-  # Due to a Minecraft limitation, if 'true', the nametag will be visible through blocks too (like holograms)!
-  # Expected: [Boolean], Default: [false]
-  custom-name-visible: false
 
 
 # Debug functionality. You most likely don't want to enable this unless you are a developer.

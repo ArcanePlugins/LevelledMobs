@@ -139,7 +139,7 @@ public class CreatureSpawnListener implements Listener {
             }
             
             //Update their tag.
-            instance.levelManager.updateTag(livingEntity);
+            instance.levelManager.updateNametag(livingEntity);
 
         }
         else if (spawnReason == CreatureSpawnEvent.SpawnReason.CURED) {

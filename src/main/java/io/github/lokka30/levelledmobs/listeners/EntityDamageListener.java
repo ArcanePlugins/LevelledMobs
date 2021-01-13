@@ -1,6 +1,7 @@
 package io.github.lokka30.levelledmobs.listeners;
 
 import io.github.lokka30.levelledmobs.LevelledMobs;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
@@ -24,9 +25,13 @@ public class EntityDamageListener implements Listener {
 
     // When the mob is damaged, try to update their nametag.
     @EventHandler
-    public void onDamage(final EntityDamageEvent e) {
-        if (instance.settingsCfg.getBoolean("update-nametag-health")) {
-            instance.levelManager.updateTag(e.getEntity());
+    public void onDamage(final EntityDamageEvent event) {
+        final Entity entity = event.getEntity();
+
+        if (entity instanceof LivingEntity) {
+            LivingEntity livingEntity = (LivingEntity) entity;
+
+            instance.levelManager.updateNametagWithDelay(livingEntity);
         }
     }
 
@@ -45,9 +50,8 @@ public class EntityDamageListener implements Listener {
                     Number level = livingEntity.getPersistentDataContainer().get(instance.levelManager.levelKey, PersistentDataType.INTEGER);
                     if (level != null) {
                         final double baseAttackDamage = e.getDamage();
-                        final double defaultAttackDamageAddition = instance.settingsCfg.getDouble("fine-tuning.default-attack-damage-increase");
-                        final double attackDamageMultiplier = instance.settingsCfg.getDouble("fine-tuning.multipliers.ranged-attack-damage");
-                        final double newAttackDamage = baseAttackDamage + defaultAttackDamageAddition + (attackDamageMultiplier * level.intValue());
+                        final double attackDamageMultiplier = instance.settingsCfg.getDouble("fine-tuning.additions.custom.ranged-attack-damage");
+                        final double newAttackDamage = baseAttackDamage + (attackDamageMultiplier * level.intValue());
 
                         e.setDamage(newAttackDamage);
                     }
