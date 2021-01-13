@@ -156,7 +156,7 @@ public class ConfigUtils {
     }
 
     public void sendNoPermissionMsg(CommandSender sender) {
-        List<String> noPermissionMsg = instance.messagesCfg.getStringList("common.noPermission");
+        List<String> noPermissionMsg = instance.messagesCfg.getStringList("common.no-permission");
 
         noPermissionMsg = Utils.replaceAllInList(noPermissionMsg, "%prefix%", getPrefix());
         noPermissionMsg = Utils.colorizeAllInList(noPermissionMsg);

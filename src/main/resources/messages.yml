@@ -4,12 +4,12 @@ common:
   # Note: the prefix does not have multi-line support (of course)
   prefix: '&b&lLevelledMobs:&7'
 
-  noPermission:
+  no-permission:
     - '%prefix% You don''t have access to that.'
-  playersOnly:
-    - '%prefix% Only players may use this command.'
+  players-only:
+    - '%prefix% Only players may use that.'
   player-offline:
-    - '%prefix% &r%player%&7 is offline.'
+    - '%prefix% &r%player%&7 is offline or invalid.'
 
 # Messages from this plugin's commands.
 command:

@@ -24,11 +24,7 @@ public class CreatureSpawnListener implements Listener {
     public CreatureSpawnListener(final LevelledMobs instance) {
         this.instance = instance;
     }
-    
-    /*
-    This class assigns mob levels to each entity spawned.
-    Attribute determined by: setBaseValue(default + elevated? + (increase-per-level * level)
-     */
+
     @EventHandler
     public void onMobSpawn(final CreatureSpawnEvent e) {
         if (e.isCancelled()) return;

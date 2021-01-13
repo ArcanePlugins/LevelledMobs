@@ -111,7 +111,7 @@ public class KillSubcommand implements Subcommand {
                             messages.forEach(sender::sendMessage);
 
                         } else {
-                            List<String> messages = instance.messagesCfg.getStringList("common.playersOnly");
+                            List<String> messages = instance.messagesCfg.getStringList("common.players-only");
                             messages = Utils.replaceAllInList(messages, "%prefix%", instance.configUtils.getPrefix());
                             messages = Utils.colorizeAllInList(messages);
                             messages.forEach(sender::sendMessage);
