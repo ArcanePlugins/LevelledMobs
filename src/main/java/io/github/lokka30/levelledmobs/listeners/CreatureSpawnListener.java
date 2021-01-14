@@ -5,13 +5,17 @@ import io.github.lokka30.levelledmobs.LevelledMobs;
 import io.github.lokka30.levelledmobs.enums.ModalList;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Creeper;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
+import org.bukkit.event.entity.EntitySpawnEvent;
 import org.bukkit.persistence.PersistentDataType;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -23,14 +27,39 @@ public class CreatureSpawnListener implements Listener {
         this.instance = instance;
     }
 
+    /**
+     * This listens for entities that are not passed thrrough CreatureSpawnEvent,
+     * such as Phantoms and Ender Dragons, which server owners may want to have levelled.
+     *
+     * @param event EntitySpawnEvent, the event to listen to
+     */
     @EventHandler
-    public void onMobSpawn(final CreatureSpawnEvent e) {
-        if (e.isCancelled()) return;
-        
+    public void onEntitySpawn(final EntitySpawnEvent event) {
+        if (event.isCancelled()) return;
+
+        if (!(event.getEntity() instanceof LivingEntity)) return;
+
+        LivingEntity livingEntity = (LivingEntity) event.getEntity();
+
+        List<EntityType> forcedTypes = Arrays.asList(EntityType.ENDER_DRAGON, EntityType.PHANTOM);
+        if (forcedTypes.contains(event.getEntityType())) {
+            processMobSpawn(livingEntity, SpawnReason.DEFAULT, -1);
+        }
+    }
+
+    /**
+     * Thos listens to most mobs that spawn in.
+     *
+     * @param event CreatureSpawnEvent, the event to listen to
+     */
+    @EventHandler
+    public void onCreatureSpawn(final CreatureSpawnEvent event) {
+        if (event.isCancelled()) return;
+
         // spawned using summon command.  It will get processed directly
-        if (e.getSpawnReason() == SpawnReason.CUSTOM) return;
-        
-        processMobSpawn(e.getEntity(), e.getSpawnReason(), -1);
+        if (event.getSpawnReason() == SpawnReason.CUSTOM) return;
+
+        processMobSpawn(event.getEntity(), event.getSpawnReason(), -1);
     }
     
     public void processMobSpawn(final LivingEntity livingEntity, final SpawnReason spawnReason, int level) {
