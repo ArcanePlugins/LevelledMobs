@@ -28,7 +28,7 @@ allowed-entities-list:
   # 'BLACKLIST' = The entities in the list are blocked, but all the other ones are allowed
   # 'WHITELIST' = The entities in the list are allowed, but all the other ones are blocked
   # 'ALL' = This list is skipped, and all worlds are allowed.
-  mode: 'ALL'
+  mode: 'BLACKLIST'
 
   # The list of worlds to apply the blacklist or whitelist to.
   # Simply enter the name of the world here. Case-sensitive!
