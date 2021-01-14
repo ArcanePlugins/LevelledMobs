@@ -5,6 +5,7 @@ import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import com.comphenix.protocol.wrappers.WrappedDataWatcher;
+import io.github.lokka30.levelledmobs.enums.ModalList;
 import io.github.lokka30.levelledmobs.listeners.CreatureSpawnListener;
 import io.github.lokka30.levelledmobs.utils.Utils;
 import me.lokka30.microlib.MicroUtils;
@@ -42,32 +43,24 @@ public class LevelManager {
     public CreatureSpawnListener creatureSpawnListener;
 
     public boolean isLevellable(final EntityType entityType) {
-        if (entityType == EntityType.PLAYER || entityType == EntityType.UNKNOWN) {
-            return false;
-        }
+        // Don't level these
+        if (entityType == EntityType.PLAYER || entityType == EntityType.UNKNOWN) return false;
 
-        //Blacklist override, entities here will return true regardless if they are in blacklistedTypes or are passive
-        List<String> blacklistOverrideTypes = instance.settingsCfg.getStringList("blacklist-override-types");
-        if (blacklistOverrideTypes.contains(entityType.toString())) {
-            return true;
-        }
+        // Check if the entity is overriden. If so, force it to be levelled.
+        if(instance.settingsCfg.getStringList("overriden-entities").contains(entityType.toString())) return true;
 
-        //Set it to what's specified. If it's invalid, it'll just take a small predefiend list.
-        List<String> blacklistedTypes = instance.settingsCfg.getStringList("blacklisted-types");
-        if (blacklistedTypes.contains(entityType.toString())) {
-            return false;
-        }
-
-        Class<? extends Entity> entityClass = entityType.getEntityClass();
-        if (entityClass == null) {
-            return false;
-        }
+        // Check if the entity is blacklisted. If not, continue.
+        if(!ModalList.isEnabledInList(instance.settingsCfg, "allowed-entities-list", entityType.toString())) return false;
 
         // These entities don't implement Monster or Boss and thus must be forced to return true
         if (Arrays.asList(EntityType.GHAST, EntityType.MAGMA_CUBE, EntityType.HOGLIN, EntityType.SHULKER, EntityType.PHANTOM, EntityType.ENDER_DRAGON)
                 .contains(entityType)) {
             return true;
         }
+
+        // Grab the Entity class, which is used to check for certain assignments
+        Class<? extends Entity> entityClass = entityType.getEntityClass();
+        if (entityClass == null) return false;
 
         return Monster.class.isAssignableFrom(entityClass)
                 || Boss.class.isAssignableFrom(entityClass)
@@ -83,22 +76,19 @@ public class LevelManager {
         }
 
         // Check WorldGuard flag.
-        if (instance.hasWorldGuardInstalled) {
-            if (!instance.worldGuardManager.regionAllowsLevelling(entity)) {
-                return false;
-            }
-        }
+        if (instance.hasWorldGuardInstalled && !instance.worldGuardManager.regionAllowsLevelling(entity)) return false;
 
-        //Check blacklisted types for baby zombie
-        List<String> blacklistedTypes = instance.settingsCfg.getStringList("blacklisted-types");
-        if (blacklistedTypes.contains(entity.getType().name())) {
-            return false;
-        } else {
-            if (entity instanceof Zombie) {
-                Zombie zombie = (Zombie) entity;
-                if (!zombie.isAdult() && blacklistedTypes.contains("BABY_ZOMBIE")) {
-                    return false;
-                }
+        // Check for overrides
+        if(instance.settingsCfg.getStringList("overriden-entities").contains(entity.getType().toString())) return true;
+
+        //Check allowed entities for normal entity types
+        if(!ModalList.isEnabledInList(instance.settingsCfg, "allowed-entities-list", entity.getType().toString())) return false;
+
+        // Specific allwoed entities check for BABY_ZOMBIE
+        if(entity instanceof Zombie) {
+            final Zombie zombie = (Zombie) entity;
+            if(!zombie.isAdult()) {
+                if(!ModalList.isEnabledInList(instance.settingsCfg, "allowed-entities-list", "BABY_ZOMBIE")) return false;
             }
         }
 

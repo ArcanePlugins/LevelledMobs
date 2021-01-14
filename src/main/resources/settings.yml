@@ -1,46 +1,55 @@
-# LevelledMobs - a plugin by lokka30
+# LevelledMobs - The Ultimate RPG Levelled Mobs Solution
 
-# Creature nametags.
-# Placeholders:
+# These nametags are applied to levelled mobs. You can change the format of it here:
+# You can use the following placeholders:
 # - %level% - the mob's level
 # - %name% - the mob's name
 # - %health% - the mob's health
 # - %max_health% - the mob's max health
 # - %heart_symbol% - a predefined heart symbol.
-# warning, changing this much from the default might break the setting for 'slime-children-retain-level-of-parent'
+# Warning: The 'slime-children-retain-level-of-parent' setting requires the %level% placeholder to be used.
 creature-nametag: '&8[&7Level %level%&8 | &f%name%&8]'
 
 
 # Should passive creatures be levelled?
 # You probably don't want a Level 10 race horse to ramp up your chunk loading, or a random pig that moves fast.
-# However, you can always limit passive mobs' levels yourself in the 'entitytype-level-override' settings!
-# Expected: [Boolean], Default: [false]
+# However, you can always limit passive mobs' levels yourself in the 'entitytype-level-override' list :)
+# By default, passive mobs are not levelled.
 level-passive: false
 
 
-# Blacklisted types. These mobs won't be levelled, regardless of the setting above.
-# Blacklist all types by putting in 'ALL'.
-# Warning: Types are case-sensitive! That means they should be in UPPERCASE.
-# You can also use 'BABY_ZOMBIE' to blacklist baby zombies.
-blacklisted-types:
-  - 'VILLAGER'
-  - 'WANDERING_TRADER'
-  - 'ENDER_DRAGON'
-  - 'WITHER'
-  - 'RAVAGER'
-  - 'ENDER_DRAGON'
-  - 'PHANTOM'
-# - 'BABY_ZOMBIE'
+# This list determines what entities are allowed to be levelled.
+# These types are case-sensitive, so you must keep them in UPPERCASE.
+# You may also use 'BABY_ZOMBIE' to allow/block baby zombies from being levelled.
+# By default, this blacklists villagers, wandering traders, ender dragons, withers, ravagers, phantoms and baby zombies.
+allowed-entities-list:
+
+  # What mode should the allowed entities list use?
+  # 'BLACKLIST' = The entities in the list are blocked, but all the other ones are allowed
+  # 'WHITELIST' = The entities in the list are allowed, but all the other ones are blocked
+  # 'ALL' = This list is skipped, and all worlds are allowed.
+  mode: 'ALL'
+
+  # The list of worlds to apply the blacklist or whitelist to.
+  # Simply enter the name of the world here. Case-sensitive!
+  list:
+    - VILLAGER
+    - WANDERING_TRADER
+    - ENDER_DRAGON
+    - WITHER
+    - RAVAGER
+    - PHANTOM
+    - BABY_ZOMBIE
 
 
-# Blacklisted Types Override: The mobs in here will be levelled regardless if they are included in 'blacklisted-types' or if 'level-passive' is true.
-# Warning: Types are case-sensitive! That means they should be in UPPERCASE.
-# You can also use 'BABY_ZOMBIE' to override baby zombies.
-blacklisted-types-override:
-# - 'BABY_ZOMBIE'
+# Any entity types in this list will be force-levelled regardless if they are passive, are in 'allowed entities', and so on.
+# These types are case-sensitive, so you must keep them in UPPERCASE.
+# You may also use 'BABY_ZOMBIE' to force baby zombies to be levelled.
+# By default, this list is empty.
+overriden-entities:
 
 
-# Manage a list of worlds where levelled mobs can spawn or not
+# In what worlds can levelled mobs spawn?
 allowed-worlds-list:
 
   # What mode should the world list use?
@@ -53,22 +62,6 @@ allowed-worlds-list:
   # Simply enter the name of the world here. Case-sensitive!
   list:
     - 'example_world'
-
-
-# *** For advanced users! ***
-# Change if LevelledMobs ignores mobs spawned with certain spawn reasons.
-allowed-spawn-reasons-list:
-
-  # What mode should the spawn reasons list use?
-  # 'BLACKLIST' = The spawn reasons in the list are blocked, but all the other ones are allowed
-  # 'WHITELIST' = The spawn reasons in the list are allowed, but all the other ones are blocked
-  # 'ALL' = This list is skipped, and all the spawn reasons are allowed.
-  mode: 'ALL'
-
-  # The list of spawn reasons to apply the blacklist or whitelist to.
-  # You can find all spawn reasons here: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/event/entity/CreatureSpawnEvent.SpawnReason.html
-  list:
-    - 'SPAWNER'
 
 
 # This system levels mobs depending on their distance to spawn.
@@ -154,12 +147,12 @@ world-level-override:
   min-level:
     example_world_123: 6
     example_world_456: 3
-    world_nether: 5
+    example_world_789: 5
 
   max-level:
     example_world_123: 7
-    example_world_456: 10
-    world_the_end: 10
+    example_world_456: 5
+    example_world_789: 10
 
 
 # If you want to change the name of mobs in the nametag then you can do that here
@@ -180,15 +173,31 @@ passive-mobs-changed-movement-speed: false
 show-label-for-default-levelled-mobs: true
 
 
-# what should the maxed out creeper explosion radius be?  3 is vanilla default
+# What should the maxed out creeper explosion radius be?  3 is vanilla default
 # to keep creeper explosion radius from increasing, leave it at 3.
-# warning, putting a high value in here will basically turn creepers into atomic bombs!
+# Warning: using a high value here will basically turn creepers into atomic bombs! :)
 creeper-max-damage-radius: 5
 
 
 # When a slime or magmacube splits it creates new entities.  Should they match the level of the parent?
 # If not each child gets a random level matching the defined rules
 slime-children-retain-level-of-parent: true
+
+
+# *** For advanced users! ***
+# Change if LevelledMobs ignores mobs spawned with certain spawn reasons.
+allowed-spawn-reasons-list:
+
+  # What mode should the spawn reasons list use?
+  # 'BLACKLIST' = The spawn reasons in the list are blocked, but all the other ones are allowed
+  # 'WHITELIST' = The spawn reasons in the list are allowed, but all the other ones are blocked
+  # 'ALL' = This list is skipped, and all the spawn reasons are allowed.
+  mode: 'ALL'
+
+  # The list of spawn reasons to apply the blacklist or whitelist to.
+  # You can find all spawn reasons here: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/event/entity/CreatureSpawnEvent.SpawnReason.html
+  list:
+    - 'SPAWNER'
 
 
 # When using the summon command how far away from the player will the mobs spawn
