@@ -89,20 +89,7 @@ public class LevelManager {
             }
         }
 
-        //Blacklist override, entities here will return true regardless if they are in blacklistedTypes or are passive
-        List<String> blacklistOverrideTypes = instance.settingsCfg.getStringList("blacklist-override-types");
-        if (blacklistOverrideTypes.contains(entity.getType().name())) {
-            return true;
-        } else {
-            if (entity instanceof Zombie) {
-                Zombie zombie = (Zombie) entity;
-                if (!zombie.isAdult() && blacklistOverrideTypes.contains("BABY_ZOMBIE")) {
-                    return true;
-                }
-            }
-        }
-
-        //Set it to what's specified. If it's invalid, it'll just take a small predefiend list.
+        //Check blacklisted types for baby zombie
         List<String> blacklistedTypes = instance.settingsCfg.getStringList("blacklisted-types");
         if (blacklistedTypes.contains(entity.getType().name())) {
             return false;
@@ -115,14 +102,7 @@ public class LevelManager {
             }
         }
 
-        boolean result = entity instanceof Monster || entity instanceof Boss || instance.settingsCfg.getBoolean("level-passive");
-
-        // there are a few special cases here since they aren't part of the 'Monster' interface
-        if (!result && (entity instanceof Ghast || entity instanceof MagmaCube || entity instanceof Hoglin || entity instanceof Shulker || entity instanceof Phantom || entity instanceof EnderDragon)) {
-            result = true;
-        }
-
-        return result;
+        return isLevellable(entity.getType());
     }
 
     //Updates the entity's nametag after a 1 tick delay. Without the delay, it would
