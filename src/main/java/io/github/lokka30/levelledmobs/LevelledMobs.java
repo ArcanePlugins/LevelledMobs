@@ -28,8 +28,10 @@ public class LevelledMobs extends JavaPlugin {
     public AttributeManager attributeManager;
     public LevelManager levelManager;
 
+
     public boolean hasWorldGuardInstalled;
     public WorldGuardManager worldGuardManager;
+    public boolean nametagContainsHealth;
 
     private long loadTime;
 
@@ -121,6 +123,13 @@ public class LevelledMobs extends JavaPlugin {
 
         // load configutils
         configUtils = new ConfigUtils(this);
+
+        this.nametagContainsHealth = false;
+        String nametag = settingsCfg.getString("creature-nametag");
+        if (Utils.isNotNullOrEmpty(nametag)){
+            nametag = nametag.toLowerCase();
+            this.nametagContainsHealth = nametag.contains("%health%") || nametag.contains("%max_health%");
+        }
     }
 
     private void registerListeners() {

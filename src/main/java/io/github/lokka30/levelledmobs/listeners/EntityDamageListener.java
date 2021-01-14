@@ -24,8 +24,12 @@ public class EntityDamageListener implements Listener {
         final Entity entity = event.getEntity();
 
         if (entity instanceof LivingEntity) {
-            LivingEntity livingEntity = (LivingEntity) entity;
+            if (!instance.nametagContainsHealth){
+                // we only need to update the tag if they are using health placeholders.  This is not by default
+                return;
+            }
 
+            LivingEntity livingEntity = (LivingEntity) entity;
             instance.levelManager.updateNametagWithDelay(livingEntity);
         }
     }
