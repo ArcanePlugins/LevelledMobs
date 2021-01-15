@@ -125,7 +125,7 @@ public class WorldGuardManager {
         boolean minBool = false;
         boolean maxBool = false;
 
-        if (instance.hasWorldGuardInstalled) {
+        if (!instance.hasWorldGuardInstalled) {
             return false;
         }
 
