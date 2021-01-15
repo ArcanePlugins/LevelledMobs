@@ -3,16 +3,16 @@
 ## v1.35.0-PRE:
 
 ### Notes:
-* **Before installing this update, read the Important section below.**
+* **Before installing this update, you must read the 'Important' section below.**
 * I wish to start off with a huge thank you to **stumper66** for their massive list of contributions this update. Stumper also gave me the spark to recontinue work on the resource. This update wouldn't be here without him!
 * I've recontinued work on the plugin. Most of the code has been updated from the previous version. This update took many hours to make, so I hope it was worth it! :)
 * (psst: leave a like / positive review if you enjoy this update!)
 
 ### Important:
 Before installing this update on your server, please understand the following:
-  * **You must install ProtocolLib alongside LevelledMobs.** LevelledMobs depends on ProtocolLib for nametags.
-  * **PhantomLib is no longer used by LevelledMobs!** Uninstall it if you wish (unless you have other plugins that depend on it installed)
-  * **Almost all permissions have changed.** I recommend you remove any current permissions from LM you have set and apply the new ones. See the documentation.
+  * **You must install ProtocolLib alongside LevelledMobs.** LevelledMobs depends on ProtocolLib for the new nametag system.
+  * **PhantomLib is no longer used by LevelledMobs.** Uninstall it if you wish (unless you have other plugins that depend on it installed)
+  * **Every single permission has changed, and a bunch have been added in too.** I recommend you remove any current permissions from LM you have set to your groups and apply the new ones. See the documentation.
   * If you are using any **WorldGuard flags from this plugin**, you should **remove them from your regions prior to installing this new version**. ALL previous LevelledMobs flags have been renamed, and I've also added in a new flag which was a popular request. :)
   * **Reset your config!** You might want to back it up in case you want to copy old settings across, but the settings file has changed enough that I would recommend starting from scratch.
   
@@ -35,6 +35,7 @@ Before installing this update on your server, please understand the following:
 * Renamed the old flags. The renamed flags are:
   * 'LM_UseCustomLevels': this determines if the custom min and custom max level limit flags are in effect. (lokka30)
   * 'LM_CustomMinLevel' and 'LM_CustomMaxLevel' put a boundary on how high and/or low a mob's level will be if they spawn in the region. (lokka30)
+* WorldGuard flags were broken, we are unsure for how long this was the case. Luckily it was a simple fix. (stumper66)
 * WorldGuard level restrictions now properly respect the max level if both max and min levels are set to the same value. (stumper66)
 
 **New Powerful Permissions** (lokka30)
@@ -98,11 +99,12 @@ Before installing this update on your server, please understand the following:
 * Magma Cubes, Slimes, Ghasts and Hoglins are now levelled as expected (stumper66)
 * Shulkers are now levelled as expected (lokka30)
 
-**Removed Features** (lokka30)
-* Removed an old feature 'flight speed multiplier' which we found out Minecraft only applies to parrots. Completely unnecessary and misleading.
-* Removed 'default attack damage increase', it was unnecessary.
-* Removed 'remove nametag on death', 'update nametag on health change', which are no longer necessary with the introduction of packet nametags.
-* 'custom name visible' has been temporarily removed until I learn how to implement it.
+**Removed Features**
+* Removed an old feature 'flight speed multiplier' which we found out Minecraft only applies to parrots. Completely unnecessary and misleading. (lokka30)
+* Removed 'default attack damage increase' (lokka30)
+* Removed 'remove nametag on death' which is no longer necessary with the introduction of packet nametags. (lokka30)
+* Removed 'update nametag on health update' as LM does this automatically (stumper66)
+* 'custom name visible' has been temporarily removed until I learn how to implement it. (lokka30)
 
 **Other Code Changes** (lokka30)
 * Cleaned up the every single class in this project significantly. A bunch of methods and variables have been moved to more fitting classes too.
