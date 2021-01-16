@@ -8,3 +8,5 @@ I would appreciate if contributors follow these in order to save time cleaning u
 * Please do not have your IDE automatically rearrange code (unless what you are rearranging is messy)
 
 Completely optional as I will go over the code myself and fix what doesn't abide by these requests, but it would be helpful if contributors followed.
+
+Any contributions must fall under the same license.

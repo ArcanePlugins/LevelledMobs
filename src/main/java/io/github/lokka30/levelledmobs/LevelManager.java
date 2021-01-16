@@ -215,12 +215,16 @@ public class LevelManager {
         return nametag;
     }
 
-    /**
-     * Credit: https://www.spigotmc.org/threads/changing-an-entitys-name-using-protocollib.482855/#post-4051032 by SpigotMC user: https://www.spigotmc.org/members/CoolBoy.102500/
-     * Thanks to @CoolBoy for helping out with all the packet stuff. That's all beyond me.
+    /*
+     * Credit
+     * - Thread: https://www.spigotmc.org/threads/changing-an-entitys-nametag-with-packets.482855/
+     *
+     * - Users:
+     *   - @CoolBoy (https://www.spigotmc.org/members/CoolBoy.102500/)
+     *   - @Esophose (https://www.spigotmc.org/members/esophose.34168/)
      */
     public void updateNametag(LivingEntity entity, String nametag) {
-        WrappedDataWatcher dataWatcher = WrappedDataWatcher.getEntityWatcher(entity);
+        WrappedDataWatcher dataWatcher = WrappedDataWatcher.getEntityWatcher(entity).deepClone();
         WrappedDataWatcher.Serializer chatSerializer = WrappedDataWatcher.Registry.getChatComponentSerializer(true);
         dataWatcher.setObject(new WrappedDataWatcher.WrappedDataWatcherObject(2, chatSerializer),
                 Optional.of(WrappedChatComponent.fromChatMessage(nametag)[0].getHandle()));
