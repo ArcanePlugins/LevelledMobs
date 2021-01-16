@@ -13,7 +13,7 @@ public class EntityDeathListener implements Listener {
         this.instance = instance;
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onDeath(final EntityDeathEvent e) {
         instance.levelManager.setLevelledDrops(e.getEntity(), e.getDrops());
         e.setDroppedExp(instance.levelManager.setLevelledXP(e.getEntity(), e.getDroppedExp()));

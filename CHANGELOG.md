@@ -113,5 +113,8 @@ Before installing this update on your server, please understand the following:
 * Added `LevelManager#isLevellable(EntityType)` so a mob can be checked if it is levellable or not before it spawns in. (used in the summon command)
 * Added the ListMode enum which will make checking lists in the config easier and cleaner
 * Added all code contributors to the 'info' subcommand.
+* Use EnumSet for forced entity types instead (Hugo5551)
+* Determine level after the entity is deemed levellable (Hugo5551)
 * Removed sound from debug feature - in case older versions become supported, this sound will need to go anyways
 * Rearranged the Manager classes from the utils package to the main package
+* Use `(ignoreCancelled = true)` with event handlers (Hugo5551)
