@@ -23,6 +23,7 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
+import java.util.regex.Pattern;
 
 public class LevelManager {
 
@@ -41,8 +42,7 @@ public class LevelManager {
     public final EnumSet<EntityType> forcedTypes = EnumSet.of(EntityType.GHAST, EntityType.MAGMA_CUBE, EntityType.HOGLIN, EntityType.SHULKER, EntityType.PHANTOM, EntityType.ENDER_DRAGON);
 
     public final static int maxCreeperBlastRadius = 100;
-    //TODO Work on this after nametags
-    //public final Pattern slimeRegex = Pattern.compile("Level.*?(\\d{1,2})", Pattern.CASE_INSENSITIVE);
+    public final Pattern slimeRegex = Pattern.compile("Level.*?(\\d{1,2})", Pattern.CASE_INSENSITIVE);
     public CreatureSpawnListener creatureSpawnListener;
 
     public boolean isLevellable(final EntityType entityType) {
