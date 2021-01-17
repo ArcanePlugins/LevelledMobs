@@ -6,7 +6,6 @@ import org.bukkit.configuration.file.YamlConfiguration;
 /**
  * This enum will significantly decrease clutter from checking lists from the settings file with configurable modes (e.g. whitelist/blacklist)
  */
-//TODO Should be used for CreatureSpawnListener.84 for example.
 public class ModalList {
 
     public enum ListMode {

@@ -224,21 +224,26 @@ public class LevelManager {
      * - Users:
      *   - @CoolBoy (https://www.spigotmc.org/members/CoolBoy.102500/)
      *   - @Esophose (https://www.spigotmc.org/members/esophose.34168/)
+     *   - @7smile7 (https://www.spigotmc.org/members/7smile7.43809/)
      */
     public void updateNametag(LivingEntity entity, String nametag) {
+
         WrappedDataWatcher dataWatcher = WrappedDataWatcher.getEntityWatcher(entity).deepClone();
         WrappedDataWatcher.Serializer chatSerializer = WrappedDataWatcher.Registry.getChatComponentSerializer(true);
-        dataWatcher.setObject(new WrappedDataWatcher.WrappedDataWatcherObject(2, chatSerializer),
-                Optional.of(WrappedChatComponent.fromChatMessage(nametag)[0].getHandle()));
+        WrappedDataWatcher.WrappedDataWatcherObject watcherObject = new WrappedDataWatcher.WrappedDataWatcherObject(2, chatSerializer);
+        Optional<Object> optional = Optional.of(WrappedChatComponent.fromChatMessage(nametag)[0].getHandle());
+        dataWatcher.setObject(watcherObject, optional);
+        dataWatcher.setObject(3, true);
 
         PacketContainer packet = ProtocolLibrary.getProtocolManager().createPacket(PacketType.Play.Server.ENTITY_METADATA);
         packet.getWatchableCollectionModifier().write(0, dataWatcher.getWatchableObjects());
+        packet.getIntegers().write(0, entity.getEntityId());
 
         for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
             try {
                 ProtocolLibrary.getProtocolManager().sendServerPacket(onlinePlayer, packet);
             } catch (InvocationTargetException ex) {
-                Utils.logger.error("Unable to update nametag packet for player &b" + onlinePlayer.getName() + "&7! Stack trace:");
+                Utils.logger.error("Unable to update nametag packet for player '&b" + onlinePlayer.getName() + "&7'! Stack trace:");
                 ex.printStackTrace();
                 return;
             }

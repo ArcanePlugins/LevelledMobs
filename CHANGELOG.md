@@ -16,12 +16,12 @@ Before installing this update on your server, please understand the following:
   * If you are using any **WorldGuard flags from this plugin**, you should **remove them from your regions prior to installing this new version**. ALL previous LevelledMobs flags have been renamed, and I've also added in a new flag which was a popular request. :)
   * **Reset your config!** You might want to back it up in case you want to copy old settings across, but the settings file has changed enough that I would recommend starting from scratch.
 
-### Thanks to:
-* stumper66 for their *many* contributions this update
-* CoolBoy and Esophose for helping with packets
-* Hugo5551 for making code improvements
-* Oathkeeper for their feature suggestion
-* JacksaYouTube for reporting bugs
+### Impossible without:
+* @stumper66, whose contributions are too many to list here ;)
+* @CoolBoy, @Esophose and @7smile7 for creating & fixing the complicated packet nametag method
+* Hugo5551 for making a bunch of code improvements
+* @Oathkeeper for their great feature suggestion
+* Jacksa for reporting multiple bugs
 * You, for running the plugin :)
   
 ### Changelog:
