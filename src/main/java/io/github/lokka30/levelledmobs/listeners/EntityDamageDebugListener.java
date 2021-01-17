@@ -71,12 +71,12 @@ public class EntityDamageDebugListener implements Listener {
         writeDebugForAttribute(p, attributeName, amount);
 
         p.sendMessage(MicroUtils.colorize(String.format(
-                "&8 - &f%s &7(DefaultValue) &8= &b%s", attributeName, Math.round(defaultAmount * 100.0) / 100.0)));
+                "&8 - &f%s &7(DefaultValue) &8= &b%s", attributeName, Utils.round(defaultAmount))));
     }
 
     private void writeDebugForAttribute(final Player p, final String attributeName, final double amount) {
         p.sendMessage(MicroUtils.colorize(String.format(
-                "&8 - &f%s &8= &b%s", attributeName, Math.round(amount * 100.0) / 100.0)));
+                "&8 - &f%s &8= &b%s", attributeName, Utils.round(amount))));
     }
 
     private void writeDebugForAttribute(final Player p, final LivingEntity ent, final Attribute att) {
@@ -86,8 +86,9 @@ public class EntityDamageDebugListener implements Listener {
         String attName = att.name();
 
         p.sendMessage(MicroUtils.colorize(String.format(
-                "&8 - &f%s &7(CurrentValue) &8= &b%s", attName, Math.round(attInstance.getBaseValue() * 100.0) / 100.0)));
+                "&8 - &f%s &7(CurrentValue) &8= &b%s", attName, Utils.round(attInstance.getBaseValue()))));
         p.sendMessage(MicroUtils.colorize(String.format(
-                "&8 - &f%s &7(DefaultValue) &8= &b%s", attName, instance.attributeManager.getDefaultValue(ent.getType(), att))));
+                "&8 - &f%s &7(DefaultValue) &8= &b%s",
+                attName, Utils.round((double)instance.attributeManager.getDefaultValue(ent.getType(), att)))));
     }
 }

@@ -1,5 +1,6 @@
 package io.github.lokka30.levelledmobs.utils;
 
+import io.github.lokka30.levelledmobs.DebugInfo;
 import io.github.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.microlib.MicroUtils;
 import org.apache.commons.lang.WordUtils;
@@ -49,7 +50,7 @@ public class ConfigUtils {
         }
     }
 
-    public int getMinLevel(EntityType entityType, World world, boolean isAdult) {
+    public int getMinLevel(EntityType entityType, World world, boolean isAdult, final DebugInfo debugInfo) {
 
         // Note for users wondering why '-1' is stored in the min level map:
         // -1 is supposed to be an impossible level to achieve. It is used
@@ -63,21 +64,29 @@ public class ConfigUtils {
 
         if (instance.settingsCfg.getBoolean("world-level-override.enabled") && instance.worldLevelOverride_Min.containsKey(worldName)) {
             minLevel = Utils.getDefaultIfNull(instance.worldLevelOverride_Min, worldName, minLevel);
+            if (debugInfo != null){
+                debugInfo.hadWorldOverride = true;
+                debugInfo.minLevel = minLevel;
+            }
             return minLevel;
         }
 
         if (instance.settingsCfg.getBoolean("entitytype-level-override.enabled")) {
             if (isAdult && instance.entityTypesLevelOverride_Min.containsKey(entityTypeStr)) {
                 minLevel = Utils.getDefaultIfNull(instance.entityTypesLevelOverride_Min, entityTypeStr, minLevel);
+                if (debugInfo != null) debugInfo.hadEntityOverride = true;
             } else if (!isAdult && instance.entityTypesLevelOverride_Min.containsKey("baby_" + entityTypeStr)) {
                 minLevel = Utils.getDefaultIfNull(instance.entityTypesLevelOverride_Min, "baby_" + entityTypeStr, minLevel);
+                if (debugInfo != null) debugInfo.hadEntityOverride = true;
             }
         }
+
+        if (debugInfo != null) debugInfo.minLevel = minLevel;
 
         return minLevel;
     }
 
-    public int getMaxLevel(EntityType entityType, World world, boolean isAdult) {
+    public int getMaxLevel(EntityType entityType, World world, boolean isAdult, final DebugInfo debugInfo) {
 
         // Note for users wondering why '-1' is stored in the max level map:
         // -1 is supposed to be an impossible level to achieve. It is used
@@ -91,18 +100,24 @@ public class ConfigUtils {
 
         if (instance.settingsCfg.getBoolean("world-level-override.enabled") && instance.worldLevelOverride_Max.containsKey(worldName)) {
             maxLevel = Utils.getDefaultIfNull(instance.worldLevelOverride_Max, worldName, maxLevel);
+            if (debugInfo != null){
+                debugInfo.hadWorldOverride = true;
+                debugInfo.maxLevel = maxLevel;
+            }
             return maxLevel;
         }
 
         if (instance.settingsCfg.getBoolean("entitytype-level-override.enabled")) {
             if (isAdult && instance.entityTypesLevelOverride_Max.containsKey(entityTypeStr)) {
                 maxLevel = Utils.getDefaultIfNull(instance.entityTypesLevelOverride_Max, entityTypeStr, maxLevel);
-                return maxLevel;
+                if (debugInfo != null) debugInfo.hadEntityOverride = true;
             } else if (!isAdult && instance.entityTypesLevelOverride_Max.containsKey("baby_" + entityTypeStr)) {
                 maxLevel = Utils.getDefaultIfNull(instance.entityTypesLevelOverride_Max, "baby_" + entityTypeStr, maxLevel);
-                return maxLevel;
+                if (debugInfo != null) debugInfo.hadEntityOverride = true;
             }
         }
+
+        if (debugInfo != null) debugInfo.maxLevel = maxLevel;
 
         return maxLevel;
     }

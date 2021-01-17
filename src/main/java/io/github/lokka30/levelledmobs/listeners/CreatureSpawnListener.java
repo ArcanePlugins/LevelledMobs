@@ -1,5 +1,6 @@
 package io.github.lokka30.levelledmobs.listeners;
 
+import io.github.lokka30.levelledmobs.DebugInfo;
 import io.github.lokka30.levelledmobs.LevelManager;
 import io.github.lokka30.levelledmobs.LevelledMobs;
 import io.github.lokka30.levelledmobs.enums.ModalList;
@@ -69,24 +70,31 @@ public class CreatureSpawnListener implements Listener {
             return;
         }
 
+        final DebugInfo debugInfo = instance.settingsCfg.getBoolean("debug-show-spawned-mobs") ?
+                new DebugInfo() : null;
+
         // if spawned naturally it will be -1.  If used summon with specific level specified then it will be >= 0
         if (level == -1) {
 	        //Check settings for spawn distance levelling and choose levelling method accordingly.
             if (instance.hasWorldGuardInstalled && instance.worldGuardManager.checkRegionFlags(livingEntity)) {
-                level = generateRegionLevel(livingEntity);
+                level = generateRegionLevel(livingEntity, debugInfo);
             } else if (instance.settingsCfg.getBoolean("spawn-distance-levelling.active")) {
-                level = generateDistanceFromSpawnLevel(livingEntity);
+                level = generateDistanceFromSpawnLevel(livingEntity, debugInfo);
             } else {
-                level = generateLevel(livingEntity);
+                level = generateLevel(livingEntity, debugInfo);
             }
         }
 
-        if (instance.settingsCfg.getBoolean("debug-show-spawned-mobs")) {
+        if (debugInfo != null) {
             boolean isAdult = !(livingEntity instanceof Ageable) || ((Ageable) livingEntity).isAdult();
-            if (isAdult)
-                Utils.logger.info(String.format("Spawned a &fLvl.%s &b%s &8(&7Adult&8)", level, livingEntity.getName()));
-            else
-                Utils.logger.info(String.format("Spawned a &fLvl.%s &b%s &8(&7Baby&8)", level, livingEntity.getName()));
+            String rule = "";
+            if (debugInfo.hadWorldGuardOverride) rule = " - WG rule";
+            else if (debugInfo.hadEntityOverride) rule = " - Entity rule";
+            else if (debugInfo.hadWorldOverride) rule = " - World rule";
+            String babyOrAdult = isAdult ? "Adult" : "Baby";
+
+            Utils.logger.info(String.format("Spawned a &fLvl.%s &b%s &8(&7%s&8) min: %s, max: %s%s",
+                  level, livingEntity.getName(), babyOrAdult, debugInfo.minLevel, debugInfo.maxLevel, rule));
         }
 
         if (instance.levelManager.isLevellable(livingEntity)) {
@@ -123,11 +131,11 @@ public class CreatureSpawnListener implements Listener {
             if (level == -1) {
                 //Check settings for spawn distance levelling and choose levelling method accordingly.
                 if (instance.hasWorldGuardInstalled && instance.worldGuardManager.checkRegionFlags(livingEntity)) {
-                    level = generateRegionLevel(livingEntity);
+                    level = generateRegionLevel(livingEntity, debugInfo);
                 } else if (instance.settingsCfg.getBoolean("spawn-distance-levelling.active")) {
-                    level = generateDistanceFromSpawnLevel(livingEntity);
+                    level = generateDistanceFromSpawnLevel(livingEntity, debugInfo);
                 } else {
-                    level = generateLevel(livingEntity);
+                    level = generateLevel(livingEntity, debugInfo);
                 }
             }
 
@@ -192,32 +200,40 @@ public class CreatureSpawnListener implements Listener {
 
     //Generates a level.
     //Uses ThreadLocalRandom.current().nextInt(min, max + 1). + 1 is because ThreadLocalRandom is usually exclusive of the uppermost value.
-    public Integer generateLevel(final LivingEntity livingEntity) {
+    public Integer generateLevel(final LivingEntity livingEntity, final DebugInfo debugInfo) {
 
         boolean isAdult = !(livingEntity instanceof Ageable) || ((Ageable) livingEntity).isAdult();
 
         if (instance.settingsCfg.getBoolean("y-distance-levelling.active")){
             return generateYCoordinateLevel(
                     livingEntity.getLocation().getBlockY(),
-                    instance.configUtils.getMinLevel(livingEntity.getType(), livingEntity.getWorld(), isAdult),
-                    instance.configUtils.getMaxLevel(livingEntity.getType(), livingEntity.getWorld(), isAdult)
+                    instance.configUtils.getMinLevel(livingEntity.getType(), livingEntity.getWorld(), isAdult, debugInfo),
+                    instance.configUtils.getMaxLevel(livingEntity.getType(), livingEntity.getWorld(), isAdult, debugInfo)
             );
         }
 
         // normal return:
-        return ThreadLocalRandom.current().nextInt(
-                instance.configUtils.getMinLevel(livingEntity.getType(),
-                        livingEntity.getWorld(), isAdult),
-                instance.configUtils.getMaxLevel(livingEntity.getType(),
-                        livingEntity.getWorld(), isAdult) + 1
-        );
+        int minLevel = instance.configUtils.getMinLevel(livingEntity.getType(),
+                livingEntity.getWorld(), isAdult, debugInfo);
+        int maxLevel = instance.configUtils.getMaxLevel(livingEntity.getType(),
+                livingEntity.getWorld(), isAdult, debugInfo) + 1;
+
+        // this will prevent an unhandled exception:
+        if (minLevel > maxLevel) minLevel = maxLevel;
+        
+        return ThreadLocalRandom.current().nextInt(minLevel, maxLevel);
     }
 
     //Generates a level based on distance to spawn and, if active, variance
-    private Integer generateDistanceFromSpawnLevel(final LivingEntity livingEntity) {
+    private Integer generateDistanceFromSpawnLevel(final LivingEntity livingEntity, final DebugInfo debugInfo) {
         boolean isAdult = !(livingEntity instanceof Ageable) || ((Ageable) livingEntity).isAdult();
-        final int minLevel = instance.configUtils.getMinLevel(livingEntity.getType(), livingEntity.getWorld(), isAdult);
-        final int maxLevel = instance.configUtils.getMaxLevel(livingEntity.getType(), livingEntity.getWorld(), isAdult);
+        final int minLevel = instance.configUtils.getMinLevel(livingEntity.getType(), livingEntity.getWorld(), isAdult, debugInfo);
+        final int maxLevel = instance.configUtils.getMaxLevel(livingEntity.getType(), livingEntity.getWorld(), isAdult, debugInfo);
+
+        if (debugInfo != null){
+            debugInfo.minLevel = minLevel;
+            debugInfo.maxLevel = maxLevel;
+        }
 
         //Get distance between entity spawn point and world spawn
         final int entityDistance = (int) livingEntity.getWorld().getSpawnLocation().distance(livingEntity.getLocation());
@@ -261,11 +277,17 @@ public class CreatureSpawnListener implements Listener {
         return finalLevel;
     }
 
-    private int generateRegionLevel(final LivingEntity livingEntity) {
+    private int generateRegionLevel(final LivingEntity livingEntity, final DebugInfo debugInfo) {
         boolean isAdult = !(livingEntity instanceof Ageable) || ((Ageable) livingEntity).isAdult();
         final int[] levels = instance.worldGuardManager.getRegionLevel(livingEntity,
-                instance.configUtils.getMinLevel(livingEntity.getType(), livingEntity.getWorld(), isAdult),
-                instance.configUtils.getMaxLevel(livingEntity.getType(), livingEntity.getWorld(), isAdult));
+                instance.configUtils.getMinLevel(livingEntity.getType(), livingEntity.getWorld(), isAdult, debugInfo),
+                instance.configUtils.getMaxLevel(livingEntity.getType(), livingEntity.getWorld(), isAdult, debugInfo));
+
+        if (debugInfo != null){
+            debugInfo.hadWorldGuardOverride = true;
+            debugInfo.minLevel = levels[0];
+            debugInfo.maxLevel = levels[1];
+        }
 
         if (!instance.settingsCfg.getBoolean("y-distance-levelling.active")){
             // standard issue, generate random levels based upon max and min flags in worldguard

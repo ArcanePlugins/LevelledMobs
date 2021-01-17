@@ -305,7 +305,7 @@ public class SummonSubcommand implements Subcommand {
                 messages.forEach(sender::sendMessage);
             }
 
-            int minLevel = instance.configUtils.getMinLevel(entityType, location.getWorld(), true);
+            int minLevel = instance.configUtils.getMinLevel(entityType, location.getWorld(), true, null);
 
             if (level < minLevel) {
                 level = minLevel;
@@ -317,7 +317,7 @@ public class SummonSubcommand implements Subcommand {
                 messages.forEach(sender::sendMessage);
             }
 
-            int maxLevel = instance.configUtils.getMaxLevel(entityType, location.getWorld(), true);
+            int maxLevel = instance.configUtils.getMaxLevel(entityType, location.getWorld(), true, null);
             if (level > maxLevel) {
                 level = maxLevel;
 
