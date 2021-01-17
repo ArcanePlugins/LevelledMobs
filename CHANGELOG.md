@@ -15,12 +15,20 @@ Before installing this update on your server, please understand the following:
   * **Every single permission has changed, and a bunch have been added in too.** I recommend you remove any current permissions from LM you have set to your groups and apply the new ones. See the documentation.
   * If you are using any **WorldGuard flags from this plugin**, you should **remove them from your regions prior to installing this new version**. ALL previous LevelledMobs flags have been renamed, and I've also added in a new flag which was a popular request. :)
   * **Reset your config!** You might want to back it up in case you want to copy old settings across, but the settings file has changed enough that I would recommend starting from scratch.
+
+### Thanks to:
+* stumper66 for their *many* contributions this update
+* CoolBoy and Esophose for helping with packets
+* Hugo5551 for making code improvements
+* Oathkeeper for their feature suggestion
+* JacksaYouTube for reporting bugs
+* You, for running the plugin :)
   
 ### Changelog:
 **Summon Subcommand** (stumper66)
-* The summon command is now completed!
+* The summon command is finally complete thanks to efforts by stumper66!
 * Summon the specified level, amount of mobs and at your location, another player's or an x/y/z location.
-* Added setting 'summon-command-spawn-distance-from-player' with default of 5.
+* Added setting `'`summon-command-spawn-distance-from-player` with default of 5.
 
 **Kill Subcommands**
 * The `KillAll` subcommand has been revamped and split into two subcommands; `kill all [world]` and `kill near [radius]`. (stumper66)
@@ -82,6 +90,7 @@ Before installing this update on your server, please understand the following:
 **Default Level Nametags** (stumper66)
 * New setting to apply nametags on default leveled mobs.
 * If set to false and a level 1 mob is spawned, no nametag will be applied to the mob.
+* This gives a more vanilla feel.
 
 **New Additions System** (lokka30)
 * Replacing the old "multipliers" system that didn't actually function as a multiplier, introducing the Additions system!
@@ -98,6 +107,7 @@ Before installing this update on your server, please understand the following:
 **Other Bugfixes**
 * Magma Cubes, Slimes, Ghasts and Hoglins are now levelled as expected (stumper66)
 * Shulkers are now levelled as expected (lokka30)
+* Armor Stands no longer have items/xp drops from death multiplied (lokka30)
 
 **Removed Features**
 * Removed an old feature 'flight speed multiplier' which we found out Minecraft only applies to parrots. Completely unnecessary and misleading. (lokka30)
@@ -106,15 +116,15 @@ Before installing this update on your server, please understand the following:
 * Removed 'update nametag on health update' as LM does this automatically (stumper66)
 * 'custom name visible' has been temporarily removed until I learn how to implement it. (lokka30)
 
-**Other Code Changes** (lokka30)
-* Cleaned up the every single class in this project significantly. A bunch of methods and variables have been moved to more fitting classes too.
-* Removed the LightningStorage system - it has been replaced with a far simpler system. This will not only increase performance, but also decrease clutter in the code and decrease the file size of the plugin.
-* Moved all subcommands to their own classes implementing a Subcommand interface - cleans up the LevelledMobsCommand class to a huge degree
-* Added `LevelManager#isLevellable(EntityType)` so a mob can be checked if it is levellable or not before it spawns in. (used in the summon command)
-* Added the ListMode enum which will make checking lists in the config easier and cleaner
-* Added all code contributors to the 'info' subcommand.
+**Other Code Changes**
+* Cleaned up the every single class in this project significantly. A bunch of methods and variables have been moved to more fitting classes too. (lokka30)
+* Removed the LightningStorage system - it has been replaced with a far simpler system. This will not only increase performance, but also decrease clutter in the code and decrease the file size of the plugin. (lokka30)
+* Moved all subcommands to their own classes implementing a Subcommand interface - cleans up the LevelledMobsCommand class to a huge degree (lokka30)
+* Added `LevelManager#isLevellable(EntityType)` so a mob can be checked if it is levellable or not before it spawns in. (used in the summon command) (lokka30)
+* Added the ListMode enum which will make checking lists in the config easier and cleaner (lokka30)
+* Added all code contributors to the 'info' subcommand. (lokka30)
 * Use EnumSet for forced entity types instead (Hugo5551)
 * Determine level after the entity is deemed levellable (Hugo5551)
-* Removed sound from debug feature - in case older versions become supported, this sound will need to go anyways
-* Rearranged the Manager classes from the utils package to the main package
+* Removed sound from debug feature - in case older versions become supported, this sound will need to go anyways (lokka30)
+* Rearranged the Manager classes from the utils package to the main package (lokka30)
 * Use `(ignoreCancelled = true)` with event handlers (Hugo5551)

@@ -1,4 +1,16 @@
-# LevelledMobs - The Ultimate RPG Levelled Mobs Solution
+# .                           .    .               _ __   __        _
+# /       ___  _   __   ___   |    |     ___    ___/ |    |    __.  \ ___    ____
+# |     .'   ` |   /  .'   `  |    |   .'   `  /   | |\  /|  .'   \ |/   \  (
+# |     |----' `  /   |----'  |    |   |----' ,'   | | \/ |  |    | |    `  `--.
+# /---/ `.___,  \/    `.___, /\__ /\__ `.___, `___,' /    /   `._.' `___,' \___.'
+#                     The Ultimate RPG Levelled Mobs Solution
+#
+# This is LevelledMobs' settings configuration file. Here, you can adjust the many features
+# the plugin offers. Please be careful when adjusting these settings and read the comments
+# that accompany the setting so you know what it does.
+#
+# Use a YAML parser to check for errors before use: https://yaml-online-parser.appspot.com/
+# Join the Discord server for assistance or a chat: https://discord.io/arcaneplugins
 
 # These nametags are applied to levelled mobs. You can change the format of it here:
 # You can use the following placeholders:
@@ -8,6 +20,7 @@
 # - %max_health% - the mob's max health
 # - %heart_symbol% - a predefined heart symbol.
 # Warning: The 'slime-children-retain-level-of-parent' setting requires the %level% placeholder to be used.
+# By default, this is '&8[&7Level %level%&8 | &f%name%&8]'.
 creature-nametag: '&8[&7Level %level%&8 | &f%name%&8]'
 
 
@@ -50,6 +63,7 @@ overriden-entities:
 
 
 # In what worlds can levelled mobs spawn?
+# By default, levelled mobs are spawned in all worlds.
 allowed-worlds-list:
 
   # What mode should the world list use?
@@ -67,8 +81,8 @@ allowed-worlds-list:
 # This system levels mobs depending on their distance to spawn.
 spawn-distance-levelling:
 
-  # Should monsters level depending on distance to spawn?
-  # Expected: [Boolean], Default: [false]
+  # Should monsters level depending on distance to spawn? (false = this system will be disabled)
+  # By default, this is disabled.
   active: false
 
   # Should the level be able to randomly increase or decrease (within min/max limits) for variation?
@@ -76,26 +90,27 @@ spawn-distance-levelling:
 
     # Should the levels vary randomly (within min/max limits)?
     # Variation will add/subtract a random amount between min/max numbers set below to the mob's final level.
+    # By default, this is enabled.
     enabled: true
 
     # The minimum amount of variance.
-    # Expected: [Integer], Default: [0]
+    # Use a positive integer. By default, this is 0.
     min: 0
 
     # The maximum amount of variance.
-    # Expected: [Integer], Default: [2]
+    # Use a positive integer. By default, this is 2.
     max: 2
 
   # The level will be increased by 1 per the number defined below.
   # By default, every 200 blocks, the mob's level will increase by 1.
-  # Expected: [Integer], Default: [200]
+  # Use a positive integer. By default, this is 200.
   increase-level-distance: 200
 
   # What distance should we start adding levels to mobs?
   # Any mob who spawns under this distance will be level 1 (plus variance if set true)
   # This is only the start so for example, if your increase-level-distance is 200
   # and this value is 1000, mobs won't be level 2 until 1200 blocks out.
-  # Expected: [Integer], Default: [0]
+  # Use a positive integer. By default, this is 0.
   start-distance: 0
 
 
@@ -104,59 +119,67 @@ y-distance-levelling:
 
   # Should monsters level depending on the Y level they spawn in as configured below?
   # Note that you can't use y-distance-leveling AND spawn-distance-levelling enabled at the same time.
-  # Expected: [Boolean], Default: [false]
+  # By default, this is disabled.
   active: false
 
   # Specify the Y axis that leveled-mobs will start at.  Mobs spawned at and below this y-level will be level 1.
-  # Expected: [Integer], Default: [0]
+  # Use a positive integer. By default, this is 100.
   starting-y-level: 100
 
   # Specify the Y axis that leveled-mobs will end at.  Mobs spawned at and above this y-level will be fully levelled.
-  # Expected: [Integer], Default: [20]
+  # Use a positive integer. By default, this is 20.
   ending-y-level: 20
 
   # Optional: Instead of having a linear level assignment from starting-y-level to ending-y-level, specify how many blocks from starting-y-level the next level will apply
   # for example with a value of 5 and starting-y-level of 20, y-level of 30 will spawn level 2 mobs, y-level 40 will be level 4, and so on
   # Note that by giving y-period a value of higher than 0 effectively nullifies the ending-y-level setting
-  # Expected: [Integer], Default: [0]
+  # Use a positive integer. By default, this is 0.
   y-period: 0
 
   # Optional: at a bit of randomness to the assigned level.  The higher the value here the higher chance of a random level being assigned
-  # Expected: [Integer], Default: [0]
+  # Use a positive integer. By default, this is 0.
   variance: 0
 
 
-# If you want to force an entity type to have a different minimum/maximum level then you can do that here
+# If you want to force an entity type to have a different minimum/maximum level then you can do that here.
 # These settings are further overriden by 'world-level-override'
 entitytype-level-override:
+
+  # Should this system be enabled?
+  # By default, this is disabled.
   enabled: false
 
+  # Configure the minimum levels of certain entities here.
   min-level:
     ENDER_DRAGON: 5
     WITHER: 3
 
+  # Configure the max levels of certain entities here.
   max-level:
-    ENDER_DRAGON: 10
+    ENDER_DRAGON: 7
     WITHER: 6
 
 
-# If you want to force a world to have a minimum/maximum level then you can do that here
+# If you want to force a world to have a minimum/maximum level then you can do that here.
+# This system overrides level limits determined by 'entitytype-level-override'.
 world-level-override:
+
+  # Should this system be enabled?
+  # By default, this is disabled.
   enabled: false
 
+  # Configure the minimum levels of entities in certain worlds here.
   min-level:
     example_world_123: 6
-    example_world_456: 3
-    example_world_789: 5
 
+  # Configure the maximum levels of entities in certain worlds here.
   max-level:
-    example_world_123: 7
-    example_world_456: 5
-    example_world_789: 10
+    example_world_123: 5
+    example_world_456: 3
 
 
 # If you want to change the name of mobs in the nametag then you can do that here
-# You can use color codes if you want too :)
+# Comes with color code support too. :)
 entity-name-override:
   WITHER: 'Wither'
   CREEPER: 'Creeper'
@@ -164,28 +187,80 @@ entity-name-override:
 
 
 # Should passive mobs have changed movement speeds?
-# Set to false by default as most owners likely want it this way
-# Expected: [Boolean], Default: [false]
+# Most owners would like this to be disabled, as saddled horses and
+# pigs for example of high levels can cause increased chunk loading.
+# By default, this is disabled.
 passive-mobs-changed-movement-speed: false
 
 
-# If the mob is the default level, show the label? (false is more like vanilla minecraft if the mob is at default level)
+# If the mob is the default level, show the label?
+# 'false' is more like vanilla minecraft if the mob is at the default level.
+# By default, this is enabled.
 show-label-for-default-levelled-mobs: true
 
 
-# What should the maxed out creeper explosion radius be?  3 is vanilla default
+# What should the maxed out creeper explosion radius be?
 # to keep creeper explosion radius from increasing, leave it at 3.
 # Warning: using a high value here will basically turn creepers into atomic bombs! :)
+# By default, this is 3, the vanilla default.
 creeper-max-damage-radius: 5
 
 
-# When a slime or magmacube splits it creates new entities.  Should they match the level of the parent?
-# If not each child gets a random level matching the defined rules
+# When a slime or magmacube splits it creates new entities. Should they match the level of the parent?
+# If not each child gets a random level matching the defined rules.
+# By default, this is enabled.
 slime-children-retain-level-of-parent: true
 
 
-# *** For advanced users! ***
+# When using the summon command how far away from the player will the mobs spawn
+summon-command-spawn-distance-from-player: 5
+
+
+# Should LevelledMobs check for updates off of the Spigot page?
+# Following annoyances from other plugins' update checkers, LM's update checker just does its job nicely.
+# This update checker is async, meaning it won't freeze your server whilst it checks. (separate CPU thread)
+# Also, it will only send a message if it found an update. You won't get spammed.
+# It will only run once on startup. No repeating tasks or anything like that.
+# By default, this is enabled.
+use-update-checker: true
+
+
+
+
+
+
+# *********************
+# ADVANCED USERS ONLY!
+# *********************
+#
+# The author recommends
+# only advanced server
+# owners to configure
+# anything below this
+# notice.
+#
+# You could cause the
+# plugin to malfunction
+# by misconfiguring it.
+#
+# If you are unsure,
+# please join the
+# Discord server, we
+# will be happy to
+# assist you. :)
+#
+# https://discord.io/arcaneplugins
+#
+# *********************
+
+
+
+
+
+
+# ** Recommended that only advanced users configure this! **
 # Change if LevelledMobs ignores mobs spawned with certain spawn reasons.
+# By default, this system allows all spawn reasons for levelled mobs.
 allowed-spawn-reasons-list:
 
   # What mode should the spawn reasons list use?
@@ -200,32 +275,25 @@ allowed-spawn-reasons-list:
     - 'SPAWNER'
 
 
-# When using the summon command how far away from the player will the mobs spawn
-summon-command-spawn-distance-from-player: 5
-
-
-# Should LevelledMobs check for updates off of the Spigot page?
-# Asnyc: done on a separate CPU thread, so it won't freeze your server whilst it checks
-# Quiet: sends a single warning, only if it found a new update.
-use-update-checker: true
-
-
-# *** It is not recommended that you touch any of these values unless you have tested them on a test server beforehand. ***
+# ******************************************************************************
+# TEST CHANGES ON A SECONDARY TEST SERVER BEFORE APPLYING TO YOUR MAIN SERVER :)
+# ******************************************************************************
 # This section allows you to make levelled mobs easier or harder.
-# These values have been tried and tested already.
+# These values have been tried and tested already, so most server owners won't need to change anything here.
 fine-tuning:
 
   # *** WARNING ***
   # Changing the min &/or max levels below will not scale the additions section below!
   # This means if you change the min/max levels below, then you will also need to change the additions values!
   # It is *highly* recommended that you test changes in this section on a test server before applying it to your main server.
+  # *** WARNING ***
 
   # The minimum level possible for all mobs (unless overriden)
-  # Expected: [Integer], Default: [1]
+  # Use a positive integer. By default, this is 1.
   min-level: 1
 
   # The maximum level possible for all mobs (unless overriden)
-  # Expected: [Integer], Default: [10]
+  # Use a positive integer. By default, this is 10.
   max-level: 10
 
   # Per-level, these numbers are added to a levelled mob's attributes.
@@ -238,39 +306,42 @@ fine-tuning:
     attributes:
 
       # Maximum health.
-      # Default = 1.1
+      # Use a positive double (decimal). By default, this is 1.1.
       max-health: 1.1
 
       # **IMPORTANT**
       # Movement speed should be increased in very, very small amounts! (i.e. 0.001 - 0.005 each time)
       # This is because Minecraft uses very small numbers for movement speeds.
       # The default value here is already pretty high, so I would not recommend going higher than what it already is.
-      # Default = 0.015
+      # Use a positive double (decimal). By default, this is 0.015.
       movement-speed: 0.015
 
       # Attack damage.
-      # Default = 0.55
+      # Use a positive double (decimal). By default, this is 0.55.
       attack-damage: 0.55
 
     # Additions to LevelledMob's own systems. These will apply to existing mobs as well since these are event-based.
     custom:
 
       # Ranged attack damage (i.e. skeleton arrows).
-      # Default = 0.05
+      # Use a positive double (decimal). By default, this is 0.05.
       ranged-attack-damage: 0.05
 
       # Item drops
-      # Default = 0.15
+      # Use a positive double (decimal). By default, this is 0.15.
       item-drop: 0.15
 
       # XP drops
-      # Default = 0.09
+      # Use a positive double (decimal). By default, this is 0.09.
       xp-drop: 0.09
 
 
 # Debug functionality. You most likely don't want to enable this unless you are a developer.
+# By default, this is disabled.
 debug: false
 
 
+# This value is used when this file is loaded to check if this file is most likely incompatible.
+# The value must match exactly what version the plugin ships the default file with.
 # Don't change this unless you know what you're doing!
 file-version: 22
