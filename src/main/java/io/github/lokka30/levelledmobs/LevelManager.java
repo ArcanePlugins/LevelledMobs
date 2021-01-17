@@ -31,40 +31,6 @@ public class LevelManager {
 
         levelKey = new NamespacedKey(instance, "level");
         isLevelledKey = new NamespacedKey(instance, "isLevelled");
-
-        /*
-        ProtocolLibrary.getProtocolManager().addPacketListener(new PacketAdapter(instance, ListenerPriority.NORMAL, PacketType.Play.Server.ENTITY_METADATA) {
-            @Override
-            public void onPacketSending(PacketEvent event) {
-                if (event.getPacketType() != PacketType.Play.Server.ENTITY_METADATA) return;
-
-                PacketContainer packet = event.getPacket();
-
-
-                final Entity entity = packet.getEntityModifier(event).read(0);
-
-                if(!(entity instanceof LivingEntity)) return;
-
-                final LivingEntity livingEntity = (LivingEntity) entity;
-
-                if(!livingEntity.getPersistentDataContainer().has(isLevelledKey, PersistentDataType.STRING)) return;
-
-                WrappedDataWatcher dataWatcher = WrappedDataWatcher.getEntityWatcher(entity).deepClone();
-                WrappedDataWatcher.Serializer chatSerializer = WrappedDataWatcher.Registry.getChatComponentSerializer(true);
-                WrappedDataWatcher.WrappedDataWatcherObject watcherObject = new WrappedDataWatcher.WrappedDataWatcherObject(2, chatSerializer);
-                Optional<Object> optional = Optional.of(WrappedChatComponent.fromChatMessage(getNametag(livingEntity))[0].getHandle());
-                dataWatcher.setObject(watcherObject, optional);
-                dataWatcher.setObject(3, true);
-
-                packet.getWatchableCollectionModifier().write(0, dataWatcher.getWatchableObjects());
-                packet.getIntegers().write(0, entity.getEntityId());
-
-                event.setPacket(packet);
-            }
-        });
-
-         */
-
     }
 
     public final NamespacedKey levelKey; // This stores the mob's level.
@@ -118,25 +84,30 @@ public class LevelManager {
         if(!ModalList.isEnabledInList(instance.settingsCfg, "allowed-entities-list", entity.getType().toString())) return false;
 
         // Specific allwoed entities check for BABY_ZOMBIE
-        if(entity instanceof Zombie) {
+        if (entity instanceof Zombie) {
             final Zombie zombie = (Zombie) entity;
-            if(!zombie.isAdult()) {
-                if(!ModalList.isEnabledInList(instance.settingsCfg, "allowed-entities-list", "BABY_ZOMBIE")) return false;
+            if (!zombie.isAdult()) {
+                if (!ModalList.isEnabledInList(instance.settingsCfg, "allowed-entities-list", "BABY_ZOMBIE"))
+                    return false;
             }
         }
 
         return isLevellable(entity.getType());
     }
 
-    //Updates the entity's nametag after a 1 tick delay. Without the delay, it would
-    //display the entity's previous health rather than their new health.
+    //Updates the livingEntity's nametag after a 1 tick delay. Without the delay, it would
+    //display the livingEntity's previous health rather than their new health.
     //Used on EntityDamageEvent and EntityRegainHealthEvent.
-    public void updateNametagWithDelay(LivingEntity entity) {
+    public void updateNametagWithDelay(LivingEntity livingEntity) {
+        updateNametagWithDelay(livingEntity, getNametag(livingEntity));
+    }
+
+    public void updateNametagWithDelay(LivingEntity livingEntity, String nametag) {
         new BukkitRunnable() {
             public void run() {
-                if (entity == null) return; // may have died 1 tick later.
+                if (livingEntity == null) return; // may have died 1 tick later.
 
-                updateNametag(entity, getNametag(entity));
+                updateNametag(livingEntity, nametag);
             }
         }.runTaskLater(instance, 1L);
     }

@@ -130,4 +130,4 @@ Before installing this update on your server, please understand the following:
 * Removed sound from debug feature - in case older versions become supported, this sound will need to go anyways (lokka30)
 * Rearranged the Manager classes from the utils package to the main package (lokka30)
 * Use `(ignoreCancelled = true)` with event handlers (Hugo5551)
-* Improvements to the debug listener
+* Improvements to the debug listener (stumper66)

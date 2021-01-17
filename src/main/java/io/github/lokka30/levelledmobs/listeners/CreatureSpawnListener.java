@@ -189,12 +189,12 @@ public class CreatureSpawnListener implements Listener {
             } else {
                 nameTag = instance.levelManager.getNametag(livingEntity, level);
             }
-            instance.levelManager.updateNametag(livingEntity, nameTag);
+            instance.levelManager.updateNametagWithDelay(livingEntity, nameTag);
 
         } else if (spawnReason == CreatureSpawnEvent.SpawnReason.CURED) {
             //Check if a zombie villager was cured. If villagers aren't levellable, then their name will be cleared,
             //otherwise their nametag is still 'Zombie Villager'. That doesn't seem right...
-            instance.levelManager.updateNametag(livingEntity, "");
+            instance.levelManager.updateNametagWithDelay(livingEntity, "");
         }
     }
 
