@@ -7,6 +7,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.TreeMap;
 
 public final class Utils {
 
@@ -90,6 +91,10 @@ public final class Utils {
 
     public static int getDefaultIfNull(YamlConfiguration cfg, String path, int def) {
         return cfg.contains(path) ? cfg.getInt(path) : def;
+    }
+
+    public static int getDefaultIfNull(TreeMap<String, Integer> map, String item, int def) {
+        return map.containsKey(item) ? map.get(item) : def;
     }
 
     public static List<String> oneToNine = Arrays.asList("1", "2", "3", "4", "5", "6", "7", "8", "9");

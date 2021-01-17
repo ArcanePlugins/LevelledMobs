@@ -134,10 +134,12 @@ entitytype-level-override:
   min-level:
     ENDER_DRAGON: 5
     WITHER: 3
+    BABY_ZOMBIE: 1
 
   max-level:
     ENDER_DRAGON: 10
     WITHER: 6
+    BABY_ZOMBIE: 1
 
 
 # If you want to force a world to have a minimum/maximum level then you can do that here
@@ -269,7 +271,9 @@ fine-tuning:
 
 
 # Debug functionality. You most likely don't want to enable this unless you are a developer.
-debug: false
+debug-entity-damage: false
+# Warning, enabling this option will spam your server console!
+debug-show-spawnned-mobs: true
 
 
 # Don't change this unless you know what you're doing!

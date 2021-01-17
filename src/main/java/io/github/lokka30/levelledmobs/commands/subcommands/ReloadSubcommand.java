@@ -3,6 +3,7 @@ package io.github.lokka30.levelledmobs.commands.subcommands;
 import io.github.lokka30.levelledmobs.LevelledMobs;
 import io.github.lokka30.levelledmobs.utils.Utils;
 import org.bukkit.command.CommandSender;
+import org.bukkit.event.HandlerList;
 
 import java.util.List;
 
@@ -21,6 +22,16 @@ public class ReloadSubcommand implements Subcommand {
             List<String> reloadFinishedMsg = instance.messagesCfg.getStringList("command.levelledmobs.reload.finished");
             reloadFinishedMsg = Utils.replaceAllInList(reloadFinishedMsg, "%prefix%", instance.configUtils.getPrefix());
             reloadFinishedMsg = Utils.colorizeAllInList(reloadFinishedMsg);
+
+            if (instance.settingsCfg.getBoolean("debug-entity-damage") && !instance.debugEntityDamageWasEnabled) {
+                instance.debugEntityDamageWasEnabled = true;
+                instance.pluginManager.registerEvents(instance.entityDamageDebugListener, instance);
+            }
+            else if (!instance.settingsCfg.getBoolean("debug-entity-damage") && instance.debugEntityDamageWasEnabled) {
+                instance.debugEntityDamageWasEnabled = false;
+                HandlerList.unregisterAll(instance.entityDamageDebugListener);
+            }
+
             reloadFinishedMsg.forEach(sender::sendMessage);
         } else {
             instance.configUtils.sendNoPermissionMsg(sender);

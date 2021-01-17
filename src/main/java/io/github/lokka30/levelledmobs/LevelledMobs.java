@@ -6,14 +6,17 @@ import io.github.lokka30.levelledmobs.utils.*;
 import me.lokka30.microlib.QuickTimer;
 import me.lokka30.microlib.UpdateChecker;
 import org.bstats.bukkit.Metrics;
+import org.bukkit.ChatColor;
 import org.bukkit.command.PluginCommand;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.logging.Logger;
 
 /**
  * This is the main class of the plugin. Bukkit will call onLoad and onEnable on startup, and onDisable on shutdown.
@@ -24,14 +27,20 @@ public class LevelledMobs extends JavaPlugin {
     public YamlConfiguration messagesCfg;
     public YamlConfiguration attributesCfg;
     public ConfigUtils configUtils;
+    public EntityDamageDebugListener entityDamageDebugListener;
 
     public AttributeManager attributeManager;
     public LevelManager levelManager;
 
-
+    public PluginManager pluginManager;
     public boolean hasWorldGuardInstalled;
     public WorldGuardManager worldGuardManager;
     public boolean nametagContainsHealth;
+    public boolean debugEntityDamageWasEnabled = false;
+    public TreeMap<String, Integer> entityTypesLevelOverride_Min;
+    public TreeMap<String, Integer> entityTypesLevelOverride_Max;
+    public TreeMap<String, Integer> worldLevelOverride_Min;
+    public TreeMap<String, Integer> worldLevelOverride_Max;
 
     private long loadTime;
 
@@ -110,12 +119,10 @@ public class LevelledMobs extends JavaPlugin {
         settingsCfg = FileLoader.loadFile(this, "settings", FileLoader.SETTINGS_FILE_VERSION);
         messagesCfg = FileLoader.loadFile(this, "messages", FileLoader.MESSAGES_FILE_VERSION);
 
-        // make sure spawn-distance-levelling AND y-distance-levelling are not both enabled.  If so we'll disable y-distance-levelling
-        if (settingsCfg.getBoolean("spawn-distance-levelling.active") &&
-                settingsCfg.getBoolean("y-distance-levelling.active")){
-            Utils.logger.warning("both spawn-distance-levelling AND y-distance-levelling are enabled so we are disabling y-distance-levelling");
-            settingsCfg.set("y-distance-levelling.active", false);
-        }
+        this.entityTypesLevelOverride_Min = getMapFromConfigSection("entitytype-level-override.min-level");
+        this.entityTypesLevelOverride_Max = getMapFromConfigSection("entitytype-level-override.max-level");
+        this.worldLevelOverride_Min = getMapFromConfigSection("world-level-override.min-level");
+        this.worldLevelOverride_Max = getMapFromConfigSection("world-level-override.max-level");
 
         // Replace/copy attributes file
         saveResource("attributes.yml", true);
@@ -132,14 +139,37 @@ public class LevelledMobs extends JavaPlugin {
         }
     }
 
+    private TreeMap<String, Integer> getMapFromConfigSection(String configPath){
+        TreeMap<String, Integer> result = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+
+        ConfigurationSection cs = settingsCfg.getConfigurationSection(configPath);
+        if (cs == null){ return result; }
+
+        Set<String> set = cs.getKeys(false);
+
+        for (String item : set) {
+            Object value = cs.get(item);
+            if (value != null && Utils.isInteger(value.toString())) {
+                result.put(item, Integer.parseInt(value.toString()));
+            }
+        }
+
+        return result;
+    }
+
     private void registerListeners() {
         Utils.logger.info("&fListeners: &7Registering event listeners...");
 
-        final PluginManager pluginManager = getServer().getPluginManager();
-
+        this.pluginManager = getServer().getPluginManager();
+        HandlerList.unregisterAll();
         levelManager.creatureSpawnListener = new CreatureSpawnListener(this); // we're saving this reference so the summon command has access to it
+        this.entityDamageDebugListener = new EntityDamageDebugListener(this);
 
-        pluginManager.registerEvents(new EntityDamageDebugListener(this), this);
+        if (settingsCfg.getBoolean("debug-entity-damage")) {
+            // we'll load and unload this listener based on the above setting when reloading
+            this.debugEntityDamageWasEnabled = true;
+            pluginManager.registerEvents(this.entityDamageDebugListener, this);
+        }
         pluginManager.registerEvents(levelManager.creatureSpawnListener, this);
         pluginManager.registerEvents(new EntityDamageListener(this), this);
         pluginManager.registerEvents(new EntityDeathListener(this), this);

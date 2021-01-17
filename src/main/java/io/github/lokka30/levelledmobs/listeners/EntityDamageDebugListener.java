@@ -34,7 +34,7 @@ public class EntityDamageDebugListener implements Listener {
     //This class is used to debug levellable mobs. It simply displays their current attributes, current health and current level.
     @EventHandler
     public void onEntityDamageByEntity(final EntityDamageByEntityEvent e) {
-        if (!e.isCancelled() && instance.settingsCfg.getBoolean("debug") && e.getEntity() instanceof LivingEntity && e.getDamager() instanceof Player) {
+        if (!e.isCancelled() && instance.settingsCfg.getBoolean("debug-entity-damage") && e.getEntity() instanceof LivingEntity && e.getDamager() instanceof Player) {
             final Player p = (Player) e.getDamager();
             final UUID uuid = p.getUniqueId();
             final LivingEntity ent = (LivingEntity) e.getEntity();
