@@ -3,6 +3,7 @@ package io.github.lokka30.levelledmobs.listeners;
 import io.github.lokka30.levelledmobs.LevelManager;
 import io.github.lokka30.levelledmobs.LevelledMobs;
 import io.github.lokka30.levelledmobs.enums.ModalList;
+import io.github.lokka30.levelledmobs.utils.Utils;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Ageable;
 import org.bukkit.entity.Creeper;
@@ -20,6 +21,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.regex.Matcher;
 
 public class CreatureSpawnListener implements Listener {
 
@@ -87,14 +89,6 @@ public class CreatureSpawnListener implements Listener {
                 instance.getLogger().info(String.format("spawned: level %s %s (baby)", level, livingEntity.getName()));
         }
 
-        /* TODO
-        if (level == 1 && !instance.settingsCfg.getBoolean("show-label-for-default-levelled-mobs")) {
-            if (spawnReason == SpawnReason.SLIME_SPLIT)
-                livingEntity.setCustomName(""); // child slimes carry the name of their parent
-            return;
-        }
-         */
-
         if (instance.levelManager.isLevellable(livingEntity)) {
 
             //Check the 'worlds list' to see if the mob is allowed to be levelled in the world it spawned in
@@ -108,33 +102,12 @@ public class CreatureSpawnListener implements Listener {
                 return;
             }
 
-            // if spawned naturally it will be -1.  If used summon with specific level specified then it will be >= 0
-            if (level == -1) {
-                //Check settings for spawn distance levelling and choose levelling method accordingly.
-                if (instance.hasWorldGuardInstalled && instance.worldGuardManager.checkRegionFlags(livingEntity)) {
-                    level = generateRegionLevel(livingEntity);
-                } else if (instance.settingsCfg.getBoolean("spawn-distance-levelling.active")) {
-                    level = generateLevelByDistance(livingEntity);
-                } else {
-                    level = generateLevel(livingEntity);
-                }
-            }
-
-            /* TODO
-            if (level == 1 && !instance.settingsCfg.getBoolean("show-label-for-default-levelled-mobs")) {
-                if (spawnReason == SpawnReason.SLIME_SPLIT)
-                    livingEntity.setCustomName(""); // child slimes carry the name of their parent
-                return;
-            }
-             */
-
-            /* TODO
             // change child level to match parent.  Only possible from parsing the custom number for the level number
-            if (spawnReason == SpawnReason.SLIME_SPLIT && Utils.isNotNullOrEmpty(entityName)) {
+            if (spawnReason == SpawnReason.SLIME_SPLIT) {
                 if (instance.settingsCfg.getBoolean("slime-children-retain-level-of-parent")) {
                     // [Level 10 | Slime]
 
-                    Matcher m = instance.levelManager.slimeRegex.matcher(entityName);
+                    Matcher m = instance.levelManager.slimeRegex.matcher(instance.levelManager.getNametag(livingEntity));
                     if (m.find() && m.groupCount() >= 1) {
                         // the only reason it won't match is if someone has changed the custom name syntax significantly
                         String probablyLevelNum = m.group(1);
@@ -146,7 +119,24 @@ public class CreatureSpawnListener implements Listener {
                 }
             }
 
-             */
+            // if spawned naturally it will be -1.  If used summon with specific level specified or if using the slime child system then it will be >= 0
+            if (level == -1) {
+                //Check settings for spawn distance levelling and choose levelling method accordingly.
+                if (instance.hasWorldGuardInstalled && instance.worldGuardManager.checkRegionFlags(livingEntity)) {
+                    level = generateRegionLevel(livingEntity);
+                } else if (instance.settingsCfg.getBoolean("spawn-distance-levelling.active")) {
+                    level = generateLevelByDistance(livingEntity);
+                } else {
+                    level = generateLevel(livingEntity);
+                }
+            }
+
+            final String nameTag;
+            if (level == 1 && !instance.settingsCfg.getBoolean("show-label-for-default-levelled-mobs")) {
+                nameTag = "";
+            } else {
+                nameTag = instance.levelManager.getNametag(livingEntity);
+            }
 
             //Define the mob's level so it can be accessed elsewhere.
             livingEntity.getPersistentDataContainer().set(instance.levelManager.levelKey, PersistentDataType.INTEGER, level);
@@ -173,7 +163,6 @@ public class CreatureSpawnListener implements Listener {
             }
 
             if (livingEntity instanceof Creeper && instance.settingsCfg.getInt("creeper-max-damage-radius", 3) != 3) {
-                //TODO: update this method to properly scale blast radius when min or max levels have been changed from the default of 1 and 10
 
                 // level 1 ends up with 3 (base) and anything higher becomes a percent of the max radius as specified in the config
                 int blastRadius = (int) Math.floor(level / 10.0 * ((double) instance.settingsCfg.getInt("creeper-max-damage-radius")) - 3) + 3;
@@ -193,7 +182,7 @@ public class CreatureSpawnListener implements Listener {
             }
 
             //Update their tag.
-            instance.levelManager.updateNametag(livingEntity, instance.levelManager.getNametag(livingEntity));
+            instance.levelManager.updateNametag(livingEntity, nameTag);
 
         } else if (spawnReason == CreatureSpawnEvent.SpawnReason.CURED) {
             //Check if a zombie villager was cured. If villagers aren't levellable, then their name will be cleared,
