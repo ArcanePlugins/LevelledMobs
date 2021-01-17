@@ -109,6 +109,7 @@ Before installing this update on your server, please understand the following:
 * Magma Cubes, Slimes, Ghasts and Hoglins are now levelled as expected (stumper66)
 * Shulkers are now levelled as expected (lokka30)
 * Armor Stands no longer have items/xp drops from death multiplied (lokka30)
+* XP drop management now checks if the mob is levelled rather than is levellable, fixes possible NPE (lokka30)
 
 **Removed Features**
 * Removed an old feature 'flight speed multiplier' which we found out Minecraft only applies to parrots. Completely unnecessary and misleading. (lokka30)

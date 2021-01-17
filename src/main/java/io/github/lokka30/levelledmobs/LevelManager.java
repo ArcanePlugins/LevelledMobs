@@ -2,10 +2,7 @@ package io.github.lokka30.levelledmobs;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
-import com.comphenix.protocol.events.ListenerPriority;
-import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
-import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 import io.github.lokka30.levelledmobs.enums.ModalList;
@@ -35,6 +32,7 @@ public class LevelManager {
         levelKey = new NamespacedKey(instance, "level");
         isLevelledKey = new NamespacedKey(instance, "isLevelled");
 
+        /*
         ProtocolLibrary.getProtocolManager().addPacketListener(new PacketAdapter(instance, ListenerPriority.NORMAL, PacketType.Play.Server.ENTITY_METADATA) {
             @Override
             public void onPacketSending(PacketEvent event) {
@@ -42,7 +40,7 @@ public class LevelManager {
 
                 PacketContainer packet = event.getPacket();
 
-                
+
                 final Entity entity = packet.getEntityModifier(event).read(0);
 
                 if(!(entity instanceof LivingEntity)) return;
@@ -64,6 +62,9 @@ public class LevelManager {
                 event.setPacket(packet);
             }
         });
+
+         */
+
     }
 
     public final NamespacedKey levelKey; // This stores the mob's level.
@@ -133,6 +134,8 @@ public class LevelManager {
     public void updateNametagWithDelay(LivingEntity entity) {
         new BukkitRunnable() {
             public void run() {
+                if (entity == null) return; // may have died 1 tick later.
+
                 updateNametag(entity, getNametag(entity));
             }
         }.runTaskLater(instance, 1L);
@@ -218,13 +221,11 @@ public class LevelManager {
 
     //Calculates the XP dropped when a levellable creature dies.
     public int setLevelledXP(final LivingEntity ent, int xp) {
-        if (instance.levelManager.isLevellable(ent)) {
-            double xpMultiplier = instance.settingsCfg.getDouble("fine-tuning.additions.custom.xp-drop");
-            Integer level = ent.getPersistentDataContainer().get(instance.levelManager.levelKey, PersistentDataType.INTEGER);
+        if (ent.getPersistentDataContainer().has(isLevelledKey, PersistentDataType.STRING)) {
+            double xpPerLevel = instance.settingsCfg.getDouble("fine-tuning.additions.custom.xp-drop");
+            int level = Objects.requireNonNull(ent.getPersistentDataContainer().get(instance.levelManager.levelKey, PersistentDataType.INTEGER));
 
-            if (level != null) {
-                xp *= xpMultiplier * level + 1;
-            }
+            xp = (int) (xp + (xpPerLevel * level));
         }
         return xp;
     }

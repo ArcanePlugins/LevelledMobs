@@ -131,13 +131,6 @@ public class CreatureSpawnListener implements Listener {
                 }
             }
 
-            final String nameTag;
-            if (level == 1 && !instance.settingsCfg.getBoolean("show-label-for-default-levelled-mobs")) {
-                nameTag = "";
-            } else {
-                nameTag = instance.levelManager.getNametag(livingEntity, level);
-            }
-
             //Define the mob's level so it can be accessed elsewhere.
             livingEntity.getPersistentDataContainer().set(instance.levelManager.levelKey, PersistentDataType.INTEGER, level);
             livingEntity.getPersistentDataContainer().set(instance.levelManager.isLevelledKey, PersistentDataType.STRING, "true");
@@ -182,6 +175,12 @@ public class CreatureSpawnListener implements Listener {
             }
 
             //Update their tag.
+            final String nameTag;
+            if (level == 1 && !instance.settingsCfg.getBoolean("show-label-for-default-levelled-mobs")) {
+                nameTag = "";
+            } else {
+                nameTag = instance.levelManager.getNametag(livingEntity, level);
+            }
             instance.levelManager.updateNametag(livingEntity, nameTag);
 
         } else if (spawnReason == CreatureSpawnEvent.SpawnReason.CURED) {

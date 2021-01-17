@@ -308,8 +308,8 @@ fine-tuning:
     attributes:
 
       # Maximum health.
-      # Use a positive double (decimal). By default, this is 1.1.
-      max-health: 1.1
+      # Use a positive double (decimal). By default, this is 1.6.
+      max-health: 1.6
 
       # **IMPORTANT**
       # Movement speed should be increased in very, very small amounts! (i.e. 0.001 - 0.005 each time)

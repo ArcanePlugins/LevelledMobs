@@ -6,6 +6,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
+import org.bukkit.persistence.PersistentDataType;
 
 public class EntityRegainHealthListener implements Listener {
 
@@ -20,6 +21,10 @@ public class EntityRegainHealthListener implements Listener {
     public void onEntityRegainHealth(final EntityRegainHealthEvent event) {
         if (event.getEntity() instanceof LivingEntity) {
             LivingEntity entity = (LivingEntity) event.getEntity();
+
+            // Make sure the mob is levelled
+            if (!entity.getPersistentDataContainer().has(instance.levelManager.isLevelledKey, PersistentDataType.STRING))
+                return;
 
             instance.levelManager.updateNametagWithDelay(entity);
         }
