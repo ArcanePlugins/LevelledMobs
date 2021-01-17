@@ -9,6 +9,7 @@ import org.bukkit.entity.Creeper;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.persistence.PersistentDataType;
@@ -32,9 +33,9 @@ public class EntityDamageDebugListener implements Listener {
     }
 
     //This class is used to debug levellable mobs. It simply displays their current attributes, current health and current level.
-    @EventHandler
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void onEntityDamageByEntity(final EntityDamageByEntityEvent e) {
-        if (!e.isCancelled() && instance.settingsCfg.getBoolean("debug-entity-damage") && e.getEntity() instanceof LivingEntity && e.getDamager() instanceof Player) {
+        if (instance.settingsCfg.getBoolean("debug") && e.getEntity() instanceof LivingEntity && e.getDamager() instanceof Player) {
             final Player p = (Player) e.getDamager();
             final UUID uuid = p.getUniqueId();
             final LivingEntity ent = (LivingEntity) e.getEntity();

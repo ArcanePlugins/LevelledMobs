@@ -1,3 +1,18 @@
+# .                           .    .               _ __   __        _
+# /       ___  _   __   ___   |    |     ___    ___/ |    |    __.  \ ___    ____
+# |     .'   ` |   /  .'   `  |    |   .'   `  /   | |\  /|  .'   \ |/   \  (
+# |     |----' `  /   |----'  |    |   |----' ,'   | | \/ |  |    | |    `  `--.
+# /---/ `.___,  \/    `.___, /\__ /\__ `.___, `___,' /    /   `._.' `___,' \___.'
+#                     The Ultimate RPG Levelled Mobs Solution
+#
+# This is LevelledMobs' messages configuration file. Here, you can change every chat message
+# that is sent by the plugin. Translate it, change the colors, or do whatever you wish! :)
+# Almost every message allows the %prefix% placeholder to be used. A lot of messages have
+# a collection of their own placeholders too.
+#
+# Use a YAML parser to check for errors before use: https://yaml-online-parser.appspot.com/
+# Join the Discord server for assistance or a chat: https://discord.io/arcaneplugins
+
 # Messages that are used in more than one location.
 common:
 
@@ -145,8 +160,8 @@ command:
         - '&b&lLevelledMobs &fv%version%&7 by lokka30'
         - '&7&o%description%'
         - ' '
-        - '&7This version of the plugin supports: &fMC %supportedVersions%'
-        - '&7Thank-you to the contributors: &f%contributors%'
+        - '&7This version of the plugin supports: &fMinecraft %supportedVersions%'
+        - '&7Code contributors: &f%contributors%'
         - ' '
 
       listSeparator: '&7, &f'
@@ -154,5 +169,7 @@ command:
       usage:
         - '%prefix% Usage: &b/%label% info'
 
+# This value is used when this file is loaded to check if this file is most likely incompatible.
+# The value must match exactly what version the plugin ships the default file with.
 # Don't change this unless you know what you're doing!
 file-version: 1

@@ -3,6 +3,7 @@ package io.github.lokka30.levelledmobs.listeners;
 import io.github.lokka30.levelledmobs.LevelledMobs;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
 
@@ -15,7 +16,7 @@ public class EntityRegainHealthListener implements Listener {
     }
 
     // When the mob regains health, try to update their nametag.
-    @EventHandler
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void onEntityRegainHealth(final EntityRegainHealthEvent event) {
         if (event.getEntity() instanceof LivingEntity) {
             LivingEntity entity = (LivingEntity) event.getEntity();

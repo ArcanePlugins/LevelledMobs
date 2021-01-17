@@ -19,7 +19,7 @@ import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
@@ -38,8 +38,11 @@ public class LevelManager {
     public final NamespacedKey levelKey; // This stores the mob's level.
     public final NamespacedKey isLevelledKey; //This is stored on levelled mobs to tell plugins that it is a levelled mob.
 
+    public final EnumSet<EntityType> forcedTypes = EnumSet.of(EntityType.GHAST, EntityType.MAGMA_CUBE, EntityType.HOGLIN, EntityType.SHULKER, EntityType.PHANTOM, EntityType.ENDER_DRAGON);
+
     public final static int maxCreeperBlastRadius = 100;
-    //TODO public final Pattern slimeRegex = Pattern.compile("Level.*?(\\d{1,2})", Pattern.CASE_INSENSITIVE);
+    //TODO Work on this after nametags
+    //public final Pattern slimeRegex = Pattern.compile("Level.*?(\\d{1,2})", Pattern.CASE_INSENSITIVE);
     public CreatureSpawnListener creatureSpawnListener;
 
     public boolean isLevellable(final EntityType entityType) {
@@ -47,14 +50,13 @@ public class LevelManager {
         if (entityType == EntityType.PLAYER || entityType == EntityType.UNKNOWN) return false;
 
         // Check if the entity is overriden. If so, force it to be levelled.
-        if(instance.settingsCfg.getStringList("overriden-entities").contains(entityType.toString())) return true;
+        if (instance.settingsCfg.getStringList("overriden-entities").contains(entityType.toString())) return true;
 
         // Check if the entity is blacklisted. If not, continue.
         if(!ModalList.isEnabledInList(instance.settingsCfg, "allowed-entities-list", entityType.toString())) return false;
 
         // These entities don't implement Monster or Boss and thus must be forced to return true
-        if (Arrays.asList(EntityType.GHAST, EntityType.MAGMA_CUBE, EntityType.HOGLIN, EntityType.SHULKER, EntityType.PHANTOM, EntityType.ENDER_DRAGON)
-                .contains(entityType)) {
+        if (forcedTypes.contains(entityType)) {
             return true;
         }
 

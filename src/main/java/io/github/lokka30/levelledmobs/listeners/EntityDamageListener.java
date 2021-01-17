@@ -5,6 +5,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
@@ -19,7 +20,7 @@ public class EntityDamageListener implements Listener {
     }
 
     // When the mob is damaged, update their nametag.
-    @EventHandler
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void onDamage(final EntityDamageEvent event) {
         final Entity entity = event.getEntity();
 
@@ -35,9 +36,9 @@ public class EntityDamageListener implements Listener {
     }
 
     // Check for levelled ranged damage.
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onRangedDamage(final EntityDamageByEntityEvent e) {
-        if (!e.isCancelled() && e.getDamager() instanceof Projectile) {
+        if (e.getDamager() instanceof Projectile) {
             final Projectile projectile = (Projectile) e.getDamager();
             if (projectile.getShooter() instanceof LivingEntity) {
                 final LivingEntity livingEntity = (LivingEntity) projectile.getShooter();

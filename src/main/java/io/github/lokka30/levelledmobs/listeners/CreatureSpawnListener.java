@@ -9,6 +9,7 @@ import org.bukkit.entity.Creeper;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
@@ -34,10 +35,8 @@ public class CreatureSpawnListener implements Listener {
      *
      * @param event EntitySpawnEvent, the event to listen to
      */
-    @EventHandler
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void onEntitySpawn(final EntitySpawnEvent event) {
-        if (event.isCancelled()) return;
-
         if (!(event.getEntity() instanceof LivingEntity)) return;
 
         LivingEntity livingEntity = (LivingEntity) event.getEntity();
@@ -53,10 +52,8 @@ public class CreatureSpawnListener implements Listener {
      *
      * @param event CreatureSpawnEvent, the event to listen to
      */
-    @EventHandler
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void onCreatureSpawn(final CreatureSpawnEvent event) {
-        if (event.isCancelled()) return;
-
         // spawned using summon command.  It will get processed directly
         if (event.getSpawnReason() == SpawnReason.CUSTOM) return;
 
@@ -110,6 +107,26 @@ public class CreatureSpawnListener implements Listener {
             if (!ModalList.isEnabledInList(instance.settingsCfg, "allowed-spawn-reasons-list", spawnReason.toString())) {
                 return;
             }
+
+            // if spawned naturally it will be -1.  If used summon with specific level specified then it will be >= 0
+            if (level == -1) {
+                //Check settings for spawn distance levelling and choose levelling method accordingly.
+                if (instance.hasWorldGuardInstalled && instance.worldGuardManager.checkRegionFlags(livingEntity)) {
+                    level = generateRegionLevel(livingEntity);
+                } else if (instance.settingsCfg.getBoolean("spawn-distance-levelling.active")) {
+                    level = generateLevelByDistance(livingEntity);
+                } else {
+                    level = generateLevel(livingEntity);
+                }
+            }
+
+            /* TODO
+            if (level == 1 && !instance.settingsCfg.getBoolean("show-label-for-default-levelled-mobs")) {
+                if (spawnReason == SpawnReason.SLIME_SPLIT)
+                    livingEntity.setCustomName(""); // child slimes carry the name of their parent
+                return;
+            }
+             */
 
             /* TODO
             // change child level to match parent.  Only possible from parsing the custom number for the level number
@@ -174,12 +191,11 @@ public class CreatureSpawnListener implements Listener {
 
                 ((Creeper) livingEntity).setExplosionRadius(blastRadius);
             }
-            
+
             //Update their tag.
             instance.levelManager.updateNametag(livingEntity, instance.levelManager.getNametag(livingEntity));
 
-        }
-        else if (spawnReason == CreatureSpawnEvent.SpawnReason.CURED) {
+        } else if (spawnReason == CreatureSpawnEvent.SpawnReason.CURED) {
             //Check if a zombie villager was cured. If villagers aren't levellable, then their name will be cleared,
             //otherwise their nametag is still 'Zombie Villager'. That doesn't seem right...
             instance.levelManager.updateNametag(livingEntity, "");
