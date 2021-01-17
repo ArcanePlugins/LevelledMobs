@@ -1,7 +1,7 @@
 # For Contributors
 I would appreciate if contributors follow these in order to save time cleaning up code from PRs.
 
-* Please use curly braces everywhere. Use `if(cond) { do; }` instead of `if(cond) do`;
+* Please use curly braces everywhere except for simple return statements. Use `if(cond) { do; }` instead of `if(cond) do`;
 * Although other regions of the world spell 'leveled' (2 'l' characters), this resource uses 3 characters: 'levelled'. Please use the same spelling. (Australian English)
 * Please provide a comment to whatever degree you wish explaining what your method does if it isn't self explanatory. This is so other contributors and myself understand how it functions.
 * Please do not commit any IDE settings change unless you feel they are a significant improvement.

@@ -75,18 +75,18 @@ public class CreatureSpawnListener implements Listener {
             if (instance.hasWorldGuardInstalled && instance.worldGuardManager.checkRegionFlags(livingEntity)) {
                 level = generateRegionLevel(livingEntity);
             } else if (instance.settingsCfg.getBoolean("spawn-distance-levelling.active")) {
-                level = generateLevelByDistance(livingEntity);
+                level = generateDistanceFromSpawnLevel(livingEntity);
             } else {
                 level = generateLevel(livingEntity);
             }
         }
 
-        if (instance.settingsCfg.getBoolean("debug-show-spawnned-mobs")) {
+        if (instance.settingsCfg.getBoolean("debug-show-spawned-mobs")) {
             boolean isAdult = !(livingEntity instanceof Ageable) || ((Ageable) livingEntity).isAdult();
             if (isAdult)
-                instance.getLogger().info(String.format("spawned: level %s %s", level, livingEntity.getName()));
+                Utils.logger.info(String.format("Spawned a &fLvl.%s &b%s &8(&7Adult&8)", level, livingEntity.getName()));
             else
-                instance.getLogger().info(String.format("spawned: level %s %s (baby)", level, livingEntity.getName()));
+                Utils.logger.info(String.format("Spawned a &fLvl.%s &b%s &8(&7Baby&8)", level, livingEntity.getName()));
         }
 
         if (instance.levelManager.isLevellable(livingEntity)) {
@@ -125,7 +125,7 @@ public class CreatureSpawnListener implements Listener {
                 if (instance.hasWorldGuardInstalled && instance.worldGuardManager.checkRegionFlags(livingEntity)) {
                     level = generateRegionLevel(livingEntity);
                 } else if (instance.settingsCfg.getBoolean("spawn-distance-levelling.active")) {
-                    level = generateLevelByDistance(livingEntity);
+                    level = generateDistanceFromSpawnLevel(livingEntity);
                 } else {
                     level = generateLevel(livingEntity);
                 }
@@ -135,7 +135,7 @@ public class CreatureSpawnListener implements Listener {
             if (level == 1 && !instance.settingsCfg.getBoolean("show-label-for-default-levelled-mobs")) {
                 nameTag = "";
             } else {
-                nameTag = instance.levelManager.getNametag(livingEntity);
+                nameTag = instance.levelManager.getNametag(livingEntity, level);
             }
 
             //Define the mob's level so it can be accessed elsewhere.
@@ -198,7 +198,7 @@ public class CreatureSpawnListener implements Listener {
         boolean isAdult = !(livingEntity instanceof Ageable) || ((Ageable) livingEntity).isAdult();
 
         if (instance.settingsCfg.getBoolean("y-distance-levelling.active")){
-            return getMobLevelFromYDistance(
+            return generateYCoordinateLevel(
                     livingEntity.getLocation().getBlockY(),
                     instance.configUtils.getMinLevel(livingEntity.getType(), livingEntity.getWorld(), isAdult),
                     instance.configUtils.getMaxLevel(livingEntity.getType(), livingEntity.getWorld(), isAdult)
@@ -215,7 +215,7 @@ public class CreatureSpawnListener implements Listener {
     }
 
     //Generates a level based on distance to spawn and, if active, variance
-    private Integer generateLevelByDistance(final LivingEntity livingEntity) {
+    private Integer generateDistanceFromSpawnLevel(final LivingEntity livingEntity) {
         boolean isAdult = !(livingEntity instanceof Ageable) || ((Ageable) livingEntity).isAdult();
         final int minLevel = instance.configUtils.getMinLevel(livingEntity.getType(), livingEntity.getWorld(), isAdult);
         final int maxLevel = instance.configUtils.getMaxLevel(livingEntity.getType(), livingEntity.getWorld(), isAdult);
@@ -274,17 +274,17 @@ public class CreatureSpawnListener implements Listener {
         }
 
         // generate level based on y distance but use min and max values from world guard
-        return getMobLevelFromYDistance(livingEntity.getLocation().getBlockY(), levels[0], levels[1]);
+        return generateYCoordinateLevel(livingEntity.getLocation().getBlockY(), levels[0], levels[1]);
     }
 
-    private int getMobLevelFromYDistance(final int mobYLocation, final int minLevel, final int maxLevel) {
+    private int generateYCoordinateLevel(final int mobYLocation, final int minLevel, final int maxLevel) {
         final int yPeriod = instance.settingsCfg.getInt("y-distance-levelling.y-period", 0);
         final int variance = instance.settingsCfg.getInt("y-distance-levelling.variance", 0);
         int yStart = instance.settingsCfg.getInt("y-distance-levelling.starting-y-level", 100);
         int yEnd = instance.settingsCfg.getInt("y-distance-levelling.ending-y-level", 20);
 
         final boolean isAscending = (yEnd > yStart);
-        if (!isAscending){
+        if (!isAscending) {
             yStart = yEnd;
             yEnd = instance.settingsCfg.getInt("y-distance-levelling.starting-y-level", 100);
         }

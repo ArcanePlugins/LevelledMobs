@@ -338,10 +338,12 @@ fine-tuning:
       xp-drop: 0.09
 
 
-# By default, this is disabled.
+# These settings are meant for developer use to diagnose bugs in the plugin.
+# Enabling them will cause a lot of spam, so you should only enable the
+# debug features if you need the information they provide.
+# By default, these are disabled.
 debug-entity-damage: false
-# Warning, enabling this option will spam your server console!
-debug-show-spawnned-mobs: true
+debug-show-spawned-mobs: false
 
 # This value is used when this file is loaded to check if this file is most likely incompatible.
 # The value must match exactly what version the plugin ships the default file with.

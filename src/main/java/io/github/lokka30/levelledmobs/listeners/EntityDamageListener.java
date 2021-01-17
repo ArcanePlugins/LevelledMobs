@@ -25,12 +25,16 @@ public class EntityDamageListener implements Listener {
         final Entity entity = event.getEntity();
 
         if (entity instanceof LivingEntity) {
-            if (!instance.nametagContainsHealth){
-                // we only need to update the tag if they are using health placeholders.  This is not by default
-                return;
-            }
-
             LivingEntity livingEntity = (LivingEntity) entity;
+
+            // we only need to update the tag if they are using health placeholders.  This is not by default
+            if (!instance.nametagContainsHealth) return;
+
+            //Make sure the mob is levelled
+            if (!livingEntity.getPersistentDataContainer().has(instance.levelManager.isLevelledKey, PersistentDataType.STRING))
+                return;
+
+            // Update their nametag with a 1 tick delay so that their health after the damage is shown
             instance.levelManager.updateNametagWithDelay(livingEntity);
         }
     }

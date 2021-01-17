@@ -35,25 +35,25 @@ public class EntityDamageDebugListener implements Listener {
     //This class is used to debug levellable mobs. It simply displays their current attributes, current health and current level.
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void onEntityDamageByEntity(final EntityDamageByEntityEvent e) {
-        if (instance.settingsCfg.getBoolean("debug") && e.getEntity() instanceof LivingEntity && e.getDamager() instanceof Player) {
-            final Player p = (Player) e.getDamager();
-            final UUID uuid = p.getUniqueId();
-            final LivingEntity ent = (LivingEntity) e.getEntity();
+        if (instance.settingsCfg.getBoolean("debug-entity-damage") && e.getEntity() instanceof LivingEntity && e.getDamager() instanceof Player) {
+            final Player player = (Player) e.getDamager();
+            final UUID uuid = player.getUniqueId();
+            final LivingEntity livingEntity = (LivingEntity) e.getEntity();
 
-            if (p.isOp() && !delay.contains(uuid) && instance.levelManager.isLevellable(ent)) {
-                p.sendMessage(MicroUtils.colorize("&b&lLevelledMobs: &7Debug information for &b" + ent.getType().toString() + "&7: "));
+            if (player.isOp() && !delay.contains(uuid) && instance.levelManager.isLevellable(livingEntity)) {
+                player.sendMessage(MicroUtils.colorize("&b&lLevelledMobs: &7Debug information for &b" + livingEntity.getType().toString() + "&7: "));
 
-                writeDebugForAttribute(p, ent, Attribute.GENERIC_MAX_HEALTH);
-                writeDebugForAttribute(p, ent, Attribute.GENERIC_MOVEMENT_SPEED);
-                if (ent instanceof Creeper) {
-                    final Creeper creeper = (Creeper) ent;
-                    writeDebugForAttribute(p, "BLAST_RADIUS", creeper.getExplosionRadius(), 3);
+                writeDebugForAttribute(player, livingEntity, Attribute.GENERIC_MAX_HEALTH);
+                writeDebugForAttribute(player, livingEntity, Attribute.GENERIC_MOVEMENT_SPEED);
+                if (livingEntity instanceof Creeper) {
+                    final Creeper creeper = (Creeper) livingEntity;
+                    writeDebugForAttribute(player, "BLAST_RADIUS", creeper.getExplosionRadius(), 3);
                 }
-                writeDebugForAttribute(p, ent, Attribute.GENERIC_ATTACK_DAMAGE);
+                writeDebugForAttribute(player, livingEntity, Attribute.GENERIC_ATTACK_DAMAGE);
 
-                writeDebugForAttribute(p, "Current Health", Utils.round(ent.getHealth()));
-                writeDebugForAttribute(p, "Level", Objects.requireNonNull(ent.getPersistentDataContainer().get(instance.levelManager.levelKey, PersistentDataType.INTEGER), "Level was null"));
-                p.sendMessage(MicroUtils.colorize("&8 - &fCustomName &8= &b" + (ent.getCustomName() == null ? "N/A" : ent.getCustomName())));
+                writeDebugForAttribute(player, "Current Health", Utils.round(livingEntity.getHealth()));
+                writeDebugForAttribute(player, "Level", Objects.requireNonNull(livingEntity.getPersistentDataContainer().get(instance.levelManager.levelKey, PersistentDataType.INTEGER), "Level was null"));
+                player.sendMessage(MicroUtils.colorize("&8 - &fCustomName &8= &b" + (livingEntity.getCustomName() == null ? "N/A" : livingEntity.getCustomName())));
 
                 delay.add(uuid);
                 new BukkitRunnable() {

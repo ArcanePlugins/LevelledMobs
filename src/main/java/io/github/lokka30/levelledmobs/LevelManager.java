@@ -19,10 +19,7 @@ import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
 import java.util.regex.Pattern;
 
 public class LevelManager {
@@ -34,6 +31,38 @@ public class LevelManager {
 
         levelKey = new NamespacedKey(instance, "level");
         isLevelledKey = new NamespacedKey(instance, "isLevelled");
+
+        /*
+        ProtocolLibrary.getProtocolManager().addPacketListener(new PacketAdapter(instance, ListenerPriority.NORMAL, PacketType.Play.Server.ENTITY_METADATA) {
+            @Override
+            public void onPacketSending(PacketEvent event) {
+                if (event.getPacketType() != PacketType.Play.Server.ENTITY_METADATA) return;
+
+                PacketContainer packet = event.getPacket();
+
+                final Entity entity = packet.getEntityModifier(event).read(0);
+
+                if(!(entity instanceof LivingEntity)) return;
+
+                final LivingEntity livingEntity = (LivingEntity) entity;
+
+                if(!livingEntity.getPersistentDataContainer().has(isLevelledKey, PersistentDataType.STRING)) return;
+
+                WrappedDataWatcher dataWatcher = WrappedDataWatcher.getEntityWatcher(entity).deepClone();
+                WrappedDataWatcher.Serializer chatSerializer = WrappedDataWatcher.Registry.getChatComponentSerializer(true);
+                WrappedDataWatcher.WrappedDataWatcherObject watcherObject = new WrappedDataWatcher.WrappedDataWatcherObject(2, chatSerializer);
+                Optional<Object> optional = Optional.of(WrappedChatComponent.fromChatMessage(getNametag(livingEntity))[0].getHandle());
+                dataWatcher.setObject(watcherObject, optional);
+                dataWatcher.setObject(3, true);
+
+                packet.getWatchableCollectionModifier().write(0, dataWatcher.getWatchableObjects());
+                packet.getIntegers().write(0, entity.getEntityId());
+
+                event.setPacket(packet);
+            }
+        });
+
+         */
     }
 
     public final NamespacedKey levelKey; // This stores the mob's level.
@@ -199,14 +228,21 @@ public class LevelManager {
         return xp;
     }
 
+    // When the persistent data container levelled key has been set on the entity already (i.e. when they are damaged)
     public String getNametag(LivingEntity livingEntity) {
+        return getNametag(livingEntity, Objects.requireNonNull(
+                livingEntity.getPersistentDataContainer().get(levelKey, PersistentDataType.INTEGER)));
+    }
+
+    // When the persistent data container levelled key has not been set on the entity yet (i.e. for use in CreatureSpawnListener)
+    public String getNametag(LivingEntity livingEntity, int level) {
         String entityName = livingEntity.getCustomName() == null ? instance.configUtils.getEntityName(livingEntity.getType()) : livingEntity.getCustomName();
 
         AttributeInstance maxHealth = livingEntity.getAttribute(Attribute.GENERIC_MAX_HEALTH);
         String health = maxHealth == null ? "?" : maxHealth.getBaseValue() + "";
 
         String nametag = instance.settingsCfg.getString("creature-nametag");
-        nametag = Utils.replaceEx(nametag, "%level%", livingEntity.getPersistentDataContainer().get(instance.levelManager.levelKey, PersistentDataType.INTEGER) + "");
+        nametag = Utils.replaceEx(nametag, "%level%", level + "");
         nametag = Utils.replaceEx(nametag, "%name%", entityName);
         nametag = Utils.replaceEx(nametag, "%health%", Utils.round(livingEntity.getHealth()) + "");
         nametag = Utils.replaceEx(nametag, "%max_health%", health);
@@ -243,7 +279,7 @@ public class LevelManager {
             try {
                 ProtocolLibrary.getProtocolManager().sendServerPacket(onlinePlayer, packet);
             } catch (InvocationTargetException ex) {
-                Utils.logger.error("Unable to update nametag packet for player '&b" + onlinePlayer.getName() + "&7'! Stack trace:");
+                Utils.logger.error("Unable to update nametag packet for player &b" + onlinePlayer.getName() + "&7! Stack trace:");
                 ex.printStackTrace();
                 return;
             }
