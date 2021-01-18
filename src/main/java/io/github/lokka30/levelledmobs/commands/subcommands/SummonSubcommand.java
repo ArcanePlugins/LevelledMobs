@@ -1,6 +1,7 @@
 package io.github.lokka30.levelledmobs.commands.subcommands;
 
 import io.github.lokka30.levelledmobs.LevelledMobs;
+import io.github.lokka30.levelledmobs.enums.MobProcessReason;
 import io.github.lokka30.levelledmobs.utils.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -334,7 +335,7 @@ public class SummonSubcommand implements Subcommand {
 
             for (int i = 0; i < amount; i++) {
                 Entity entity = Objects.requireNonNull(location.getWorld()).spawnEntity(location, entityType);
-                instance.levelManager.creatureSpawnListener.processMobSpawn((LivingEntity) entity, CreatureSpawnEvent.SpawnReason.CUSTOM, level);
+                instance.levelManager.creatureSpawnListener.processMobSpawn((LivingEntity) entity, CreatureSpawnEvent.SpawnReason.CUSTOM, level, MobProcessReason.Summon);
             }
 
             String entityName = instance.configUtils.getEntityName(entityType);

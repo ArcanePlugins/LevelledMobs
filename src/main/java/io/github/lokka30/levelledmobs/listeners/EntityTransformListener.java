@@ -1,6 +1,7 @@
 package io.github.lokka30.levelledmobs.listeners;
 
 import io.github.lokka30.levelledmobs.LevelledMobs;
+import io.github.lokka30.levelledmobs.enums.MobProcessReason;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
@@ -36,10 +37,10 @@ public class EntityTransformListener implements Listener {
 
         for (Entity transformedEntity : event.getTransformedEntities()) {
             if (!(transformedEntity instanceof LivingEntity)) continue;
-            if (!instance.settingsCfg.getBoolean("slime-children-retain-level-of-parent") && (
-                   transformedEntity.getType().name().equals(EntityType.SLIME.name())
-                || transformedEntity.getType().name().equals(EntityType.MAGMA_CUBE.name()))){
-                continue;
+            MobProcessReason processReason = MobProcessReason.Transform;
+            if (transformedEntity.getType().name().equals(EntityType.SLIME.name()) || transformedEntity.getType().name().equals(EntityType.MAGMA_CUBE.name())){
+                if (!instance.settingsCfg.getBoolean("slime-children-retain-level-of-parent")) continue;
+                processReason = MobProcessReason.Slime_Split;
             }
 
             final LivingEntity transformedLivingEntity = (LivingEntity) transformedEntity;
@@ -49,7 +50,7 @@ public class EntityTransformListener implements Listener {
                 continue;
             }
 
-            instance.levelManager.creatureSpawnListener.processMobSpawn(transformedLivingEntity, CreatureSpawnEvent.SpawnReason.CUSTOM, level);
+            instance.levelManager.creatureSpawnListener.processMobSpawn(transformedLivingEntity, CreatureSpawnEvent.SpawnReason.CUSTOM, level, processReason);
         }
     }
 }
