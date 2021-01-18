@@ -20,17 +20,18 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
-import java.util.regex.Pattern;
 
 public class LevelManager {
 
     private final LevelledMobs instance;
+    private final List<EntityType> otherLevellableMobs;
 
     public LevelManager(LevelledMobs instance) {
         this.instance = instance;
 
         levelKey = new NamespacedKey(instance, "level");
         isLevelledKey = new NamespacedKey(instance, "isLevelled");
+        this.otherLevellableMobs = Arrays.asList(EntityType.SLIME, EntityType.MAGMA_CUBE, EntityType.PHANTOM, EntityType.GHAST, EntityType.HOGLIN);
     }
 
     public final NamespacedKey levelKey; // This stores the mob's level.
@@ -39,7 +40,7 @@ public class LevelManager {
     public final EnumSet<EntityType> forcedTypes = EnumSet.of(EntityType.GHAST, EntityType.MAGMA_CUBE, EntityType.HOGLIN, EntityType.SHULKER, EntityType.PHANTOM, EntityType.ENDER_DRAGON);
 
     public final static int maxCreeperBlastRadius = 100;
-    public final Pattern slimeRegex = Pattern.compile("Level.*?(\\d{1,2})", Pattern.CASE_INSENSITIVE);
+    //public final Pattern slimeRegex = Pattern.compile("Level.*?(\\d{1,2})", Pattern.CASE_INSENSITIVE);
     public CreatureSpawnListener creatureSpawnListener;
 
     public boolean isLevellable(final EntityType entityType) {
@@ -63,7 +64,8 @@ public class LevelManager {
 
         return Monster.class.isAssignableFrom(entityClass)
                 || Boss.class.isAssignableFrom(entityClass)
-                || instance.settingsCfg.getBoolean("level-passive");
+                || instance.settingsCfg.getBoolean("level-passive")
+                || this.otherLevellableMobs.contains(entityType);
     }
 
     //Checks if an entity can be levelled.
@@ -83,7 +85,7 @@ public class LevelManager {
         //Check allowed entities for normal entity types
         if(!ModalList.isEnabledInList(instance.settingsCfg, "allowed-entities-list", entity.getType().toString())) return false;
 
-        // Specific allwoed entities check for BABY_ZOMBIE
+        // Specific allowed entities check for BABY_ZOMBIE
         if (entity instanceof Zombie) {
             final Zombie zombie = (Zombie) entity;
             if (!zombie.isAdult()) {
@@ -115,78 +117,78 @@ public class LevelManager {
     //Calculates the drops when a levellable creature dies.
     public void setLevelledDrops(final LivingEntity ent, List<ItemStack> drops) {
 
-        if (isLevellable(ent)) {
-            //If mob is levellable, but wasn't levelled, return.
-            Integer level = ent.getPersistentDataContainer().get(instance.levelManager.levelKey, PersistentDataType.INTEGER);
-            if (level == null)
-                return;
+        if (!isLevellable(ent)) return;
 
-            //Read settings for drops.
-            double dropMultiplier = instance.settingsCfg.getDouble("fine-tuning.additions.custom.item-drop");
-            int finalMultiplier = 1;
+        //If mob is levellable, but wasn't levelled, return.
+        Integer level = ent.getPersistentDataContainer().get(instance.levelManager.levelKey, PersistentDataType.INTEGER);
+        if (level == null)
+            return;
 
-            //If multiplier * level gurantees an extra drop set 'finalMultiplier' to the amount of safe multiples.
-            dropMultiplier *= level;
-            finalMultiplier += (int) dropMultiplier;
-            dropMultiplier -= (int) dropMultiplier;
+        //Read settings for drops.
+        double dropMultiplier = instance.settingsCfg.getDouble("fine-tuning.additions.custom.item-drop");
+        int finalMultiplier = 1;
 
-            //Calculate if the remaining extra drop chance triggers.
-            double random = new Random().nextDouble();
-            if (random < dropMultiplier) {
-                finalMultiplier++;
+        //If multiplier * level gurantees an extra drop set 'finalMultiplier' to the amount of safe multiples.
+        dropMultiplier *= level;
+        finalMultiplier += (int) dropMultiplier;
+        dropMultiplier -= (int) dropMultiplier;
+
+        //Calculate if the remaining extra drop chance triggers.
+        double random = new Random().nextDouble();
+        if (random < dropMultiplier) {
+            finalMultiplier++;
+        }
+
+        //Remove the hand item from the mob's drops so it doesn't get multiplied
+        ItemStack helmet = null;
+        ItemStack chestplate = null;
+        ItemStack leggings = null;
+        ItemStack boots = null;
+        ItemStack mainHand = null;
+        ItemStack offHand = null;
+        if (ent.getEquipment() != null) {
+            helmet = ent.getEquipment().getHelmet();
+            chestplate = ent.getEquipment().getChestplate();
+            leggings = ent.getEquipment().getLeggings();
+            boots = ent.getEquipment().getBoots();
+            mainHand = ent.getEquipment().getItemInMainHand();
+            offHand = ent.getEquipment().getItemInOffHand();
+        }
+
+        //Edit the ItemStacks to drop the calculated multiple items.
+        for (int i = 0; i < drops.size(); i++) {
+            ItemStack itemStack = drops.get(i);
+
+            int amount = itemStack.getAmount() * finalMultiplier;
+
+            //Don't let the drops go over the max stack size.
+            int maxStackSize = itemStack.getMaxStackSize();
+            if (amount > maxStackSize) {
+                amount = maxStackSize;
             }
 
-            //Remove the hand item from the mob's drops so it doesn't get multiplied
-            ItemStack helmet = null;
-            ItemStack chestplate = null;
-            ItemStack leggings = null;
-            ItemStack boots = null;
-            ItemStack mainHand = null;
-            ItemStack offHand = null;
-            if (ent.getEquipment() != null) {
-                helmet = ent.getEquipment().getHelmet();
-                chestplate = ent.getEquipment().getChestplate();
-                leggings = ent.getEquipment().getLeggings();
-                boots = ent.getEquipment().getBoots();
-                mainHand = ent.getEquipment().getItemInMainHand();
-                offHand = ent.getEquipment().getItemInOffHand();
+            //Don't let the plugin multiply items which match their equipment. stops bows and that from multiplying
+            if (helmet != null && itemStack.isSimilar(helmet)) {
+                amount = helmet.getAmount();
+            }
+            if (chestplate != null && itemStack.isSimilar(chestplate)) {
+                amount = chestplate.getAmount();
+            }
+            if (leggings != null && itemStack.isSimilar(leggings)) {
+                amount = leggings.getAmount();
+            }
+            if (boots != null && itemStack.isSimilar(boots)) {
+                amount = boots.getAmount();
+            }
+            if (mainHand != null && itemStack.isSimilar(mainHand)) {
+                amount = mainHand.getAmount();
+            }
+            if (offHand != null && itemStack.isSimilar(offHand)) {
+                amount = offHand.getAmount();
             }
 
-            //Edit the ItemStacks to drop the calculated multiple items.
-            for (int i = 0; i < drops.size(); i++) {
-                ItemStack itemStack = drops.get(i);
-
-                int amount = itemStack.getAmount() * finalMultiplier;
-
-                //Don't let the drops go over the max stack size.
-                int maxStackSize = itemStack.getMaxStackSize();
-                if (amount > maxStackSize) {
-                    amount = maxStackSize;
-                }
-
-                //Don't let the plugin multiply items which match their equipment. stops bows and that from multiplying
-                if (helmet != null && itemStack.isSimilar(helmet)) {
-                    amount = helmet.getAmount();
-                }
-                if (chestplate != null && itemStack.isSimilar(chestplate)) {
-                    amount = chestplate.getAmount();
-                }
-                if (leggings != null && itemStack.isSimilar(leggings)) {
-                    amount = leggings.getAmount();
-                }
-                if (boots != null && itemStack.isSimilar(boots)) {
-                    amount = boots.getAmount();
-                }
-                if (mainHand != null && itemStack.isSimilar(mainHand)) {
-                    amount = mainHand.getAmount();
-                }
-                if (offHand != null && itemStack.isSimilar(offHand)) {
-                    amount = offHand.getAmount();
-                }
-
-                itemStack.setAmount(amount);
-                drops.set(i, itemStack);
-            }
+            itemStack.setAmount(amount);
+            drops.set(i, itemStack);
         }
     }
 

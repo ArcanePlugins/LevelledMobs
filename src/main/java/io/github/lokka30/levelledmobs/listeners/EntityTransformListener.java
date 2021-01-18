@@ -2,6 +2,7 @@ package io.github.lokka30.levelledmobs.listeners;
 
 import io.github.lokka30.levelledmobs.LevelledMobs;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -29,22 +30,26 @@ public class EntityTransformListener implements Listener {
         final LivingEntity livingEntity = (LivingEntity) event.getEntity();
 
         // is the original entity levelled
-        if (!livingEntity.getPersistentDataContainer().has(instance.levelManager.isLevelledKey, PersistentDataType.STRING))
-            return;
+        if (!livingEntity.getPersistentDataContainer().has(instance.levelManager.isLevelledKey, PersistentDataType.STRING)) return;
 
         final int level = Objects.requireNonNull(livingEntity.getPersistentDataContainer().get(instance.levelManager.levelKey, PersistentDataType.INTEGER));
 
         for (Entity transformedEntity : event.getTransformedEntities()) {
-            if (transformedEntity instanceof LivingEntity) {
-                final LivingEntity transformedLivingEntity = (LivingEntity) transformedEntity;
-
-                if (!instance.levelManager.isLevellable(transformedLivingEntity)) {
-                    instance.levelManager.updateNametagWithDelay(transformedLivingEntity, "");
-                    continue;
-                }
-
-                instance.levelManager.creatureSpawnListener.processMobSpawn(transformedLivingEntity, CreatureSpawnEvent.SpawnReason.CUSTOM, level);
+            if (!(transformedEntity instanceof LivingEntity)) continue;
+            if (!instance.settingsCfg.getBoolean("slime-children-retain-level-of-parent") && (
+                   transformedEntity.getType().name().equals(EntityType.SLIME.name())
+                || transformedEntity.getType().name().equals(EntityType.MAGMA_CUBE.name()))){
+                continue;
             }
+
+            final LivingEntity transformedLivingEntity = (LivingEntity) transformedEntity;
+
+            if (!instance.levelManager.isLevellable(transformedLivingEntity)) {
+                instance.levelManager.updateNametagWithDelay(transformedLivingEntity, "");
+                continue;
+            }
+
+            instance.levelManager.creatureSpawnListener.processMobSpawn(transformedLivingEntity, CreatureSpawnEvent.SpawnReason.CUSTOM, level);
         }
     }
 }

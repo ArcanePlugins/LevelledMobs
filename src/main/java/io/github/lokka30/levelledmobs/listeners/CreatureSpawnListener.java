@@ -22,14 +22,15 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.regex.Matcher;
 
 public class CreatureSpawnListener implements Listener {
 
     private final LevelledMobs instance;
+    private final List<EntityType> forcedTypes;
 
     public CreatureSpawnListener(final LevelledMobs instance) {
         this.instance = instance;
+        this.forcedTypes = Arrays.asList(EntityType.ENDER_DRAGON, EntityType.PHANTOM);
     }
 
     /**
@@ -41,19 +42,14 @@ public class CreatureSpawnListener implements Listener {
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void onEntitySpawn(final EntitySpawnEvent event) {
         if (!(event.getEntity() instanceof LivingEntity)) return;
-
-        LivingEntity livingEntity = (LivingEntity) event.getEntity();
-
-        List<EntityType> forcedTypes = Arrays.asList(EntityType.ENDER_DRAGON, EntityType.PHANTOM);
-
         if (!forcedTypes.contains(event.getEntityType())) return;
 
+        LivingEntity livingEntity = (LivingEntity) event.getEntity();
         processMobSpawn(livingEntity, SpawnReason.DEFAULT, -1);
-
     }
 
     /**
-     * Thos listens to most mobs that spawn in.
+     * This listens to most mobs that spawn in.
      *
      * @param event CreatureSpawnEvent, the event to listen to
      */
@@ -88,19 +84,30 @@ public class CreatureSpawnListener implements Listener {
             }
         }
 
-        if (debugInfo != null) {
-            boolean isAdult = !(livingEntity instanceof Ageable) || ((Ageable) livingEntity).isAdult();
-            String rule = "";
-            if (debugInfo.hadWorldGuardOverride) rule = " - WG rule";
-            else if (debugInfo.hadEntityOverride) rule = " - Entity rule";
-            else if (debugInfo.hadWorldOverride) rule = " - World rule";
-            String babyOrAdult = isAdult ? "Adult" : "Baby";
-
-            Utils.logger.info(String.format("Spawned a &fLvl.%s &b%s &8(&7%s&8) min: %s, max: %s%s",
-                  level, livingEntity.getName(), babyOrAdult, debugInfo.minLevel, debugInfo.maxLevel, rule));
-        }
-
         if (instance.levelManager.isLevellable(livingEntity)) {
+
+            if (debugInfo != null) {
+                boolean isAdult = !(livingEntity instanceof Ageable) || ((Ageable) livingEntity).isAdult();
+
+                if (spawnReason == SpawnReason.CUSTOM){
+                    debugInfo.minLevel = level;
+                    debugInfo.maxLevel = level;
+                    debugInfo.rule = DebugInfo.RuleUsed.Slime_Split;
+                }
+
+                String babyOrAdult = isAdult ? "Adult" : "Baby";
+                String rule;
+                switch (debugInfo.rule){
+                    case World: rule = " - World rule"; break;
+                    case Entity: rule = " - Entity rule"; break;
+                    case World_Guard: rule = " - WG rule"; break;
+                    case Slime_Split: rule = " - slime split rule"; break;
+                    default: rule = "";
+                }
+
+                Utils.logger.info(String.format("Spawned a &fLvl.%s &b%s &8(&7%s&8) min: %s, max: %s%s",
+                    level, livingEntity.getName(), babyOrAdult, debugInfo.minLevel, debugInfo.maxLevel, rule));
+            }
 
             //Check the 'worlds list' to see if the mob is allowed to be levelled in the world it spawned in
             if (!ModalList.isEnabledInList(instance.settingsCfg, "allowed-worlds-list", livingEntity.getWorld().getName())) {
@@ -111,23 +118,6 @@ public class CreatureSpawnListener implements Listener {
             //Uses a default as "NONE" as there are no blocked spawn reasons in the default config.
             if (!ModalList.isEnabledInList(instance.settingsCfg, "allowed-spawn-reasons-list", spawnReason.toString())) {
                 return;
-            }
-
-            // change child level to match parent.  Only possible from parsing the custom number for the level number
-            if (spawnReason == SpawnReason.SLIME_SPLIT) {
-                if (instance.settingsCfg.getBoolean("slime-children-retain-level-of-parent")) {
-                    // [Level 10 | Slime]
-
-                    Matcher m = instance.levelManager.slimeRegex.matcher(instance.levelManager.getNametag(livingEntity));
-                    if (m.find() && m.groupCount() >= 1) {
-                        // the only reason it won't match is if someone has changed the custom name syntax significantly
-                        String probablyLevelNum = m.group(1);
-                        if (Utils.isInteger(probablyLevelNum))
-                            level = Integer.parseInt(probablyLevelNum);
-                    }
-
-                    // if we didn't match then the slime will get a random level instead of the parent's level
-                }
             }
 
             // if spawned naturally it will be -1.  If used summon with specific level specified or if using the slime child system then it will be >= 0
@@ -199,6 +189,12 @@ public class CreatureSpawnListener implements Listener {
             //otherwise their nametag is still 'Zombie Villager'. That doesn't seem right...
             instance.levelManager.updateNametagWithDelay(livingEntity, "");
         }
+        else{
+            if (instance.settingsCfg.getBoolean("debug-show-mobs-not-levellable")) {
+                instance.getLogger().info("mob is not levellable: " + livingEntity.getName());
+            }
+        }
+
     }
 
     //Generates a level.
@@ -287,7 +283,7 @@ public class CreatureSpawnListener implements Listener {
                 instance.configUtils.getMaxLevel(livingEntity.getType(), livingEntity.getWorld(), isAdult, debugInfo));
 
         if (debugInfo != null){
-            debugInfo.hadWorldGuardOverride = true;
+            debugInfo.rule = DebugInfo.RuleUsed.World_Guard;
             debugInfo.minLevel = levels[0];
             debugInfo.maxLevel = levels[1];
         }

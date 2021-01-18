@@ -19,7 +19,6 @@
 # - %health% - the mob's health
 # - %max_health% - the mob's max health
 # - %heart_symbol% - a predefined heart symbol.
-# Warning: The 'slime-children-retain-level-of-parent' setting requires the %level% placeholder to be used.
 # By default, this is '&8[&7Level %level%&8 | &f%name%&8]'.
 creature-nametag: '&8[&7Level %level%&8 | &f%name%&8]'
 
@@ -352,6 +351,7 @@ fine-tuning:
 # By default, these are disabled.
 debug-entity-damage: false
 debug-show-spawned-mobs: false
+debug-show-mobs-not-levellable: false
 
 # This value is used when this file is loaded to check if this file is most likely incompatible.
 # The value must match exactly what version the plugin ships the default file with.
