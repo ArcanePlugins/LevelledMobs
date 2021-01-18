@@ -1,7 +1,7 @@
 package io.github.lokka30.levelledmobs.utils;
 
-import io.github.lokka30.levelledmobs.DebugInfo;
 import io.github.lokka30.levelledmobs.LevelledMobs;
+import io.github.lokka30.levelledmobs.enums.DebugInfo;
 import me.lokka30.microlib.MicroUtils;
 import org.apache.commons.lang.WordUtils;
 import org.bukkit.World;
