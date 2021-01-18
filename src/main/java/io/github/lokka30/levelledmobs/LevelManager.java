@@ -212,7 +212,7 @@ public class LevelManager {
         String entityName = livingEntity.getCustomName() == null ? instance.configUtils.getEntityName(livingEntity.getType()) : livingEntity.getCustomName();
 
         AttributeInstance maxHealth = livingEntity.getAttribute(Attribute.GENERIC_MAX_HEALTH);
-        String health = maxHealth == null ? "?" : maxHealth.getBaseValue() + "";
+        String health = maxHealth == null ? "?" : Utils.round(maxHealth.getBaseValue()) + "";
 
         String nametag = instance.settingsCfg.getString("creature-nametag");
         nametag = Utils.replaceEx(nametag, "%level%", level + "");
