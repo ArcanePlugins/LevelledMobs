@@ -26,8 +26,7 @@ public class ReloadSubcommand implements Subcommand {
             if (instance.settingsCfg.getBoolean("debug-entity-damage") && !instance.debugEntityDamageWasEnabled) {
                 instance.debugEntityDamageWasEnabled = true;
                 instance.pluginManager.registerEvents(instance.entityDamageDebugListener, instance);
-            }
-            else if (!instance.settingsCfg.getBoolean("debug-entity-damage") && instance.debugEntityDamageWasEnabled) {
+            } else if (!instance.settingsCfg.getBoolean("debug-entity-damage") && instance.debugEntityDamageWasEnabled) {
                 instance.debugEntityDamageWasEnabled = false;
                 HandlerList.unregisterAll(instance.entityDamageDebugListener);
             }

@@ -105,6 +105,9 @@ Before installing this update on your server, please understand the following:
 * This will improve compatibility with plugins such as SafariNets immensely.
 * A secret, secure command has been implemented (only accessible by console with a password) which generates a new copy of the file. This is only meant to be used by developers. It is used to update the file with new Minecraft versions.
 
+**Entity Transformation Fixes** (lokka30 + stumper66)
+* All entities that transform into other entities (e.g. Zombies->Drowned and Slimes) now carry over their parent's level.
+
 **Other Bugfixes**
 * Magma Cubes, Slimes, Ghasts and Hoglins are now levelled as expected (stumper66)
 * Shulkers are now levelled as expected (lokka30)

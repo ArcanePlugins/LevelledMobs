@@ -45,9 +45,11 @@ public class CreatureSpawnListener implements Listener {
         LivingEntity livingEntity = (LivingEntity) event.getEntity();
 
         List<EntityType> forcedTypes = Arrays.asList(EntityType.ENDER_DRAGON, EntityType.PHANTOM);
-        if (forcedTypes.contains(event.getEntityType())) {
-            processMobSpawn(livingEntity, SpawnReason.DEFAULT, -1);
-        }
+
+        if (!forcedTypes.contains(event.getEntityType())) return;
+
+        processMobSpawn(livingEntity, SpawnReason.DEFAULT, -1);
+
     }
 
     /**
@@ -66,16 +68,17 @@ public class CreatureSpawnListener implements Listener {
     public void processMobSpawn(final LivingEntity livingEntity, final SpawnReason spawnReason, int level) {
 
         //Check if the mob is already levelled
-        if (livingEntity.getPersistentDataContainer().get(instance.levelManager.levelKey, PersistentDataType.INTEGER) != null) {
+        if (livingEntity.getPersistentDataContainer().has(instance.levelManager.isLevelledKey, PersistentDataType.STRING))
             return;
-        }
+        if (livingEntity.getPersistentDataContainer().has(instance.levelManager.levelKey, PersistentDataType.INTEGER))
+            return;
 
         final DebugInfo debugInfo = instance.settingsCfg.getBoolean("debug-show-spawned-mobs") ?
                 new DebugInfo() : null;
 
         // if spawned naturally it will be -1.  If used summon with specific level specified then it will be >= 0
         if (level == -1) {
-	        //Check settings for spawn distance levelling and choose levelling method accordingly.
+            //Check settings for spawn distance levelling and choose levelling method accordingly.
             if (instance.hasWorldGuardInstalled && instance.worldGuardManager.checkRegionFlags(livingEntity)) {
                 level = generateRegionLevel(livingEntity, debugInfo);
             } else if (instance.settingsCfg.getBoolean("spawn-distance-levelling.active")) {

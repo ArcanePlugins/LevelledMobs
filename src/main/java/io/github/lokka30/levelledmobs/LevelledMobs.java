@@ -11,7 +11,6 @@ import org.bstats.bukkit.Metrics;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -173,11 +172,13 @@ public class LevelledMobs extends JavaPlugin {
             this.debugEntityDamageWasEnabled = true;
             pluginManager.registerEvents(this.entityDamageDebugListener, this);
         }
+
         pluginManager.registerEvents(levelManager.creatureSpawnListener, this);
         pluginManager.registerEvents(new EntityDamageListener(this), this);
         pluginManager.registerEvents(new EntityDeathListener(this), this);
         pluginManager.registerEvents(new EntityRegainHealthListener(this), this);
         pluginManager.registerEvents(new PlayerJoinListener(this), this);
+        pluginManager.registerEvents(new EntityTransformListener(this), this);
     }
 
     private void registerCommands() {
