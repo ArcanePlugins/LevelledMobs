@@ -164,7 +164,7 @@ public class LevelledMobs extends JavaPlugin {
         Utils.logger.info("&fListeners: &7Registering event listeners...");
 
         this.pluginManager = getServer().getPluginManager();
-        HandlerList.unregisterAll();
+
         levelManager.creatureSpawnListener = new CreatureSpawnListener(this); // we're saving this reference so the summon command has access to it
         this.entityDamageDebugListener = new EntityDamageDebugListener(this);
 
