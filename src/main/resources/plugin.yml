@@ -2,7 +2,7 @@ name: LevelledMobs
 version: ${project.version}
 main: io.github.lokka30.levelledmobs.LevelledMobs
 depend: [ ProtocolLib ]
-softdepend: [WorldGuard]
+softdepend: [ WorldEdit, WorldGuard ]
 api-version: '1.13'
 load: STARTUP
 author: lokka30
@@ -12,7 +12,7 @@ website: 'https://github.com/lokka30/LevelledMobs/wiki'
 commands:
   levelledmobs:
     description: Manage LevelledMobs
-    aliases: [leveledmobs, lm, lvlmobs]
+    aliases: [ leveledmobs, lm, lvlmobs ]
     usage: /<command> [killall/reload/summon/info]
 
 permissions:

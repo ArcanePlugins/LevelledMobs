@@ -17,7 +17,7 @@ public class InfoSubcommand implements Subcommand {
                 String version = instance.getDescription().getVersion();
                 String description = instance.getDescription().getDescription();
                 List<String> supportedVersions = Utils.getSupportedServerVersions();
-                List<String> contributors = Arrays.asList("stumper66", "Eyrian", "iCodinqs", "deiphiz", "konsolas", "bStats", "SpigotMC");
+                List<String> contributors = Arrays.asList("stumper66", "Eyrian", "iCodinqs", "deiphiz", "CoolBoy", "Esophose", "7smile7", "konsolas", "Hugo5551", "bStats Project", "SpigotMC Project");
                 String listSeparator = Objects.requireNonNull(instance.messagesCfg.getString("command.levelledmobs.info.listSeparator"), "messages.yml: command.levelledmobs.info.listSeparator is undefined");
 
                 List<String> aboutMsg = instance.messagesCfg.getStringList("command.levelledmobs.info.about");
@@ -25,6 +25,7 @@ public class InfoSubcommand implements Subcommand {
                 aboutMsg = Utils.replaceAllInList(aboutMsg, "%description%", description);
                 aboutMsg = Utils.replaceAllInList(aboutMsg, "%supportedVersions%", String.join(listSeparator, supportedVersions));
                 aboutMsg = Utils.replaceAllInList(aboutMsg, "%contributors%", String.join(listSeparator, contributors));
+                aboutMsg = Utils.colorizeAllInList(aboutMsg);
                 aboutMsg.forEach(sender::sendMessage);
             } else {
                 List<String> usageMsg = instance.messagesCfg.getStringList("command.levelledmobs.info.usage");

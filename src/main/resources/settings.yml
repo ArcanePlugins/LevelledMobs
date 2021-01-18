@@ -24,10 +24,18 @@
 creature-nametag: '&8[&7Level %level%&8 | &f%name%&8]'
 
 
+# Should the nametag above always be visible?
+# true = can see the nametag when in range. (warning: also through blocks!)
+# false = can see the nametag when very close to it and looking at it
+# Unfortunately there is no in-between option as we are limited with what Minecraft provides.
+# By default, this is disabled.
+creature-nametag-always-visible: false
+
+
 # Should passive creatures be levelled?
 # You probably don't want a Level 10 race horse to ramp up your chunk loading, or a random pig that moves fast.
 # However, you can always limit passive mobs' levels yourself in the 'entitytype-level-override' list :)
-# By default, passive mobs are not levelled.
+# By default, this is disabled.
 level-passive: false
 
 

@@ -2,11 +2,12 @@ package io.github.lokka30.levelledmobs;
 
 import io.github.lokka30.levelledmobs.commands.LevelledMobsCommand;
 import io.github.lokka30.levelledmobs.listeners.*;
-import io.github.lokka30.levelledmobs.utils.*;
+import io.github.lokka30.levelledmobs.utils.ConfigUtils;
+import io.github.lokka30.levelledmobs.utils.FileLoader;
+import io.github.lokka30.levelledmobs.utils.Utils;
 import me.lokka30.microlib.QuickTimer;
 import me.lokka30.microlib.UpdateChecker;
 import org.bstats.bukkit.Metrics;
-import org.bukkit.ChatColor;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -15,8 +16,10 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
-import java.util.*;
-import java.util.logging.Logger;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeMap;
 
 /**
  * This is the main class of the plugin. Bukkit will call onLoad and onEnable on startup, and onDisable on shutdown.
@@ -174,6 +177,7 @@ public class LevelledMobs extends JavaPlugin {
         pluginManager.registerEvents(new EntityDamageListener(this), this);
         pluginManager.registerEvents(new EntityDeathListener(this), this);
         pluginManager.registerEvents(new EntityRegainHealthListener(this), this);
+        pluginManager.registerEvents(new PlayerJoinListener(this), this);
     }
 
     private void registerCommands() {
