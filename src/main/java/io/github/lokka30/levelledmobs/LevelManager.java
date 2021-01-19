@@ -9,7 +9,6 @@ import io.github.lokka30.levelledmobs.enums.ModalList;
 import io.github.lokka30.levelledmobs.listeners.CreatureSpawnListener;
 import io.github.lokka30.levelledmobs.utils.Utils;
 import me.lokka30.microlib.MicroUtils;
-import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
@@ -95,21 +94,14 @@ public class LevelManager {
         return isLevellable(entity.getType());
     }
 
-    //Updates the livingEntity's nametag after a 1 tick delay. Without the delay, it would
-    //display the livingEntity's previous health rather than their new health.
-    //Used on EntityDamageEvent and EntityRegainHealthEvent.
-    public void updateNametagWithDelay(LivingEntity livingEntity) {
-        updateNametagWithDelay(livingEntity, getNametag(livingEntity));
-    }
-
-    public void updateNametagWithDelay(LivingEntity livingEntity, String nametag) {
+    public void updateNametagWithDelay(LivingEntity livingEntity, String nametag, List<Player> players) {
         new BukkitRunnable() {
             public void run() {
-                if (livingEntity == null) return; // may have died 1 tick later.
+                if (livingEntity == null) return; // may have died after the timer.
 
-                updateNametag(livingEntity, nametag);
+                updateNametag(livingEntity, nametag, players);
             }
-        }.runTaskLater(instance, 1L);
+        }.runTaskLater(instance, 20L);
     }
 
     //Calculates the drops when a levellable creature dies.
@@ -226,12 +218,6 @@ public class LevelManager {
         return nametag;
     }
 
-    public void updateNametag(LivingEntity entity, String nametag) {
-        for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
-            updateNametag(entity, nametag, onlinePlayer);
-        }
-    }
-
     /*
      * Credit
      * - Thread: https://www.spigotmc.org/threads/changing-an-entitys-nametag-with-packets.482855/
@@ -241,24 +227,25 @@ public class LevelManager {
      *   - @Esophose (https://www.spigotmc.org/members/esophose.34168/)
      *   - @7smile7 (https://www.spigotmc.org/members/7smile7.43809/)
      */
-    public void updateNametag(LivingEntity entity, String nametag, Player player) {
+    public void updateNametag(LivingEntity entity, String nametag, List<Player> players) {
+        for (Player player : players) {
+            WrappedDataWatcher dataWatcher = WrappedDataWatcher.getEntityWatcher(entity).deepClone();
+            WrappedDataWatcher.Serializer chatSerializer = WrappedDataWatcher.Registry.getChatComponentSerializer(true);
+            WrappedDataWatcher.WrappedDataWatcherObject watcherObject = new WrappedDataWatcher.WrappedDataWatcherObject(2, chatSerializer);
+            Optional<Object> optional = Optional.of(WrappedChatComponent.fromChatMessage(nametag)[0].getHandle());
+            dataWatcher.setObject(watcherObject, optional);
+            dataWatcher.setObject(3, instance.settingsCfg.getBoolean("creature-nametag-always-visible"));
 
-        WrappedDataWatcher dataWatcher = WrappedDataWatcher.getEntityWatcher(entity).deepClone();
-        WrappedDataWatcher.Serializer chatSerializer = WrappedDataWatcher.Registry.getChatComponentSerializer(true);
-        WrappedDataWatcher.WrappedDataWatcherObject watcherObject = new WrappedDataWatcher.WrappedDataWatcherObject(2, chatSerializer);
-        Optional<Object> optional = Optional.of(WrappedChatComponent.fromChatMessage(nametag)[0].getHandle());
-        dataWatcher.setObject(watcherObject, optional);
-        dataWatcher.setObject(3, instance.settingsCfg.getBoolean("creature-nametag-always-visible"));
+            PacketContainer packet = ProtocolLibrary.getProtocolManager().createPacket(PacketType.Play.Server.ENTITY_METADATA);
+            packet.getWatchableCollectionModifier().write(0, dataWatcher.getWatchableObjects());
+            packet.getIntegers().write(0, entity.getEntityId());
 
-        PacketContainer packet = ProtocolLibrary.getProtocolManager().createPacket(PacketType.Play.Server.ENTITY_METADATA);
-        packet.getWatchableCollectionModifier().write(0, dataWatcher.getWatchableObjects());
-        packet.getIntegers().write(0, entity.getEntityId());
-
-        try {
-            ProtocolLibrary.getProtocolManager().sendServerPacket(player, packet);
-        } catch (InvocationTargetException ex) {
-            Utils.logger.error("Unable to update nametag packet for player &b" + player.getName() + "&7! Stack trace:");
-            ex.printStackTrace();
+            try {
+                ProtocolLibrary.getProtocolManager().sendServerPacket(player, packet);
+            } catch (InvocationTargetException ex) {
+                Utils.logger.error("Unable to update nametag packet for player &b" + player.getName() + "&7! Stack trace:");
+                ex.printStackTrace();
+            }
         }
     }
 }

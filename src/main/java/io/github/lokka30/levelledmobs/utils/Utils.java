@@ -2,7 +2,9 @@ package io.github.lokka30.levelledmobs.utils;
 
 import me.lokka30.microlib.MicroLogger;
 import me.lokka30.microlib.MicroUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -118,5 +120,9 @@ public final class Utils {
         }
 
         return newList;
+    }
+
+    public static List<Player> getOnlinePlayers() {
+        return new ArrayList<>(Bukkit.getOnlinePlayers());
     }
 }

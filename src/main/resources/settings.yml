@@ -150,7 +150,7 @@ y-distance-levelling:
   # Use a positive integer. By default, this is 0.
   y-period: 0
 
-  # Optional: at a bit of randomness to the assigned level.  The higher the value here the higher chance of a random level being assigned
+  # Optional: add a bit of randomness to the assigned level.  The higher the value here the higher chance of a random level being assigned
   # Use a positive integer. By default, this is 0.
   variance: 0
 

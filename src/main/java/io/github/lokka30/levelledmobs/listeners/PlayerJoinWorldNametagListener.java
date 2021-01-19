@@ -11,7 +11,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.persistence.PersistentDataType;
-import org.bukkit.scheduler.BukkitRunnable;
+
+import java.util.Collections;
 
 public class PlayerJoinWorldNametagListener implements Listener {
 
@@ -38,14 +39,7 @@ public class PlayerJoinWorldNametagListener implements Listener {
 
                 //Send nametag packet
                 //This also must be delayed by 1 tick
-                new BukkitRunnable() {
-                    public void run() {
-                        // In case the entity died 1 tick later
-                        if (livingEntity.isDead()) return;
-
-                        instance.levelManager.updateNametag(livingEntity, nametag, player);
-                    }
-                }.runTaskLater(instance, 20L);
+                instance.levelManager.updateNametagWithDelay(livingEntity, nametag, Collections.singletonList(player));
             }
         }
     }
