@@ -221,15 +221,11 @@ show-label-for-default-levelled-mobs: true
 creeper-max-damage-radius: 5
 
 
-# When using the summon command how far away from the player will the mobs spawn
-summon-command-spawn-distance-from-player: 5
-
-
 # Should LevelledMobs check for updates off of the Spigot page?
 # Following annoyances from other plugins' update checkers, LM's update checker just does its job nicely.
-# This update checker is async, meaning it won't freeze your server whilst it checks. (separate CPU thread)
-# Also, it will only send a message if it found an update. You won't get spammed.
-# It will only run once on startup. No repeating tasks or anything like that.
+# - This update checker is async, meaning it won't freeze your server whilst it checks. (separate CPU thread)
+# - It will only send a message to console if it found an update. You won't get spammed.
+# - It will only run once on startup. No repeating tasks or anything like that.
 # By default, this is enabled.
 use-update-checker: true
 

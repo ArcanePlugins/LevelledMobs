@@ -172,7 +172,7 @@ public class WorldGuardManager {
         ProtectedRegion[] regions = sortRegionsByPriority(getRegionSet(livingEntity));
 
         for (ProtectedRegion region : regions) {
-            return region.getFlag(WorldGuardManager.allowLevelledMobsFlag) == StateFlag.State.ALLOW;
+            return region.getFlag(WorldGuardManager.allowLevelledMobsFlag) != StateFlag.State.DENY;
         }
 
         return true;

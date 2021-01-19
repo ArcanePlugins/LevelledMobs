@@ -45,7 +45,7 @@ public class PlayerJoinWorldNametagListener implements Listener {
 
                         instance.levelManager.updateNametag(livingEntity, nametag, player);
                     }
-                }.runTaskLater(instance, 1L);
+                }.runTaskLater(instance, 20L);
             }
         }
     }
