@@ -335,7 +335,7 @@ public class SummonSubcommand implements Subcommand {
 
             for (int i = 0; i < amount; i++) {
                 Entity entity = Objects.requireNonNull(location.getWorld()).spawnEntity(location, entityType);
-                instance.levelManager.creatureSpawnListener.processMobSpawn((LivingEntity) entity, CreatureSpawnEvent.SpawnReason.CUSTOM, level, MobProcessReason.Summon);
+                instance.levelManager.creatureSpawnListener.processMobSpawn((LivingEntity) entity, CreatureSpawnEvent.SpawnReason.CUSTOM, level, MobProcessReason.SUMMON);
             }
 
             String entityName = instance.configUtils.getEntityName(entityType);

@@ -66,7 +66,7 @@ public class ConfigUtils {
         if (instance.settingsCfg.getBoolean("world-level-override.enabled") && instance.worldLevelOverride_Min.containsKey(worldName)) {
             minLevel = Utils.getDefaultIfNull(instance.worldLevelOverride_Min, worldName, minLevel);
             if (debugInfo != null){
-                debugInfo.rule = MobProcessReason.World;
+                debugInfo.rule = MobProcessReason.WORLD;
                 debugInfo.minLevel = minLevel;
             }
             return minLevel;
@@ -75,10 +75,10 @@ public class ConfigUtils {
         if (instance.settingsCfg.getBoolean("entitytype-level-override.enabled")) {
             if (isAdult && instance.entityTypesLevelOverride_Min.containsKey(entityTypeStr)) {
                 minLevel = Utils.getDefaultIfNull(instance.entityTypesLevelOverride_Min, entityTypeStr, minLevel);
-                if (debugInfo != null) debugInfo.rule = MobProcessReason.Entity;
+                if (debugInfo != null) debugInfo.rule = MobProcessReason.ENTITY;
             } else if (!isAdult && instance.entityTypesLevelOverride_Min.containsKey("baby_" + entityTypeStr)) {
                 minLevel = Utils.getDefaultIfNull(instance.entityTypesLevelOverride_Min, "baby_" + entityTypeStr, minLevel);
-                if (debugInfo != null) debugInfo.rule = MobProcessReason.Entity;
+                if (debugInfo != null) debugInfo.rule = MobProcessReason.ENTITY;
             }
         }
 
@@ -102,7 +102,7 @@ public class ConfigUtils {
         if (instance.settingsCfg.getBoolean("world-level-override.enabled") && instance.worldLevelOverride_Max.containsKey(worldName)) {
             maxLevel = Utils.getDefaultIfNull(instance.worldLevelOverride_Max, worldName, maxLevel);
             if (debugInfo != null){
-                debugInfo.rule = MobProcessReason.World;
+                debugInfo.rule = MobProcessReason.WORLD;
                 debugInfo.maxLevel = maxLevel;
             }
             return maxLevel;
@@ -111,10 +111,10 @@ public class ConfigUtils {
         if (instance.settingsCfg.getBoolean("entitytype-level-override.enabled")) {
             if (isAdult && instance.entityTypesLevelOverride_Max.containsKey(entityTypeStr)) {
                 maxLevel = Utils.getDefaultIfNull(instance.entityTypesLevelOverride_Max, entityTypeStr, maxLevel);
-                if (debugInfo != null) debugInfo.rule = MobProcessReason.Entity;
+                if (debugInfo != null) debugInfo.rule = MobProcessReason.ENTITY;
             } else if (!isAdult && instance.entityTypesLevelOverride_Max.containsKey("baby_" + entityTypeStr)) {
                 maxLevel = Utils.getDefaultIfNull(instance.entityTypesLevelOverride_Max, "baby_" + entityTypeStr, maxLevel);
-                if (debugInfo != null) debugInfo.rule = MobProcessReason.Entity;
+                if (debugInfo != null) debugInfo.rule = MobProcessReason.ENTITY;
             }
         }
 

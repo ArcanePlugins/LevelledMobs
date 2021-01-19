@@ -24,20 +24,18 @@ import java.util.*;
 public class LevelManager {
 
     private final LevelledMobs instance;
-    private final List<EntityType> otherLevellableMobs;
 
     public LevelManager(LevelledMobs instance) {
         this.instance = instance;
 
         levelKey = new NamespacedKey(instance, "level");
         isLevelledKey = new NamespacedKey(instance, "isLevelled");
-        this.otherLevellableMobs = Arrays.asList(EntityType.SLIME, EntityType.MAGMA_CUBE, EntityType.PHANTOM, EntityType.GHAST, EntityType.HOGLIN);
     }
 
     public final NamespacedKey levelKey; // This stores the mob's level.
     public final NamespacedKey isLevelledKey; //This is stored on levelled mobs to tell plugins that it is a levelled mob.
 
-    public final EnumSet<EntityType> forcedTypes = EnumSet.of(EntityType.GHAST, EntityType.MAGMA_CUBE, EntityType.HOGLIN, EntityType.SHULKER, EntityType.PHANTOM, EntityType.ENDER_DRAGON);
+    public final EnumSet<EntityType> forcedTypes = EnumSet.of(EntityType.GHAST, EntityType.MAGMA_CUBE, EntityType.HOGLIN, EntityType.SHULKER, EntityType.PHANTOM, EntityType.ENDER_DRAGON, EntityType.SLIME, EntityType.MAGMA_CUBE, EntityType.PHANTOM, EntityType.GHAST, EntityType.HOGLIN);
 
     public final static int maxCreeperBlastRadius = 100;
     //public final Pattern slimeRegex = Pattern.compile("Level.*?(\\d{1,2})", Pattern.CASE_INSENSITIVE);
@@ -47,11 +45,12 @@ public class LevelManager {
         // Don't level these
         if (entityType == EntityType.PLAYER || entityType == EntityType.UNKNOWN) return false;
 
+        // Check if the entity is blacklisted. If not, continue.
+        if (!ModalList.isEnabledInList(instance.settingsCfg, "allowed-entities-list", entityType.toString()))
+            return false;
+
         // Check if the entity is overriden. If so, force it to be levelled.
         if (instance.settingsCfg.getStringList("overriden-entities").contains(entityType.toString())) return true;
-
-        // Check if the entity is blacklisted. If not, continue.
-        if(!ModalList.isEnabledInList(instance.settingsCfg, "allowed-entities-list", entityType.toString())) return false;
 
         // These entities don't implement Monster or Boss and thus must be forced to return true
         if (forcedTypes.contains(entityType)) {
@@ -64,8 +63,7 @@ public class LevelManager {
 
         return Monster.class.isAssignableFrom(entityClass)
                 || Boss.class.isAssignableFrom(entityClass)
-                || instance.settingsCfg.getBoolean("level-passive")
-                || this.otherLevellableMobs.contains(entityType);
+                || instance.settingsCfg.getBoolean("level-passive");
     }
 
     //Checks if an entity can be levelled.

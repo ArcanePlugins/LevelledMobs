@@ -31,6 +31,12 @@ creature-nametag: '&8[&7Level %level%&8 | &f%name%&8]'
 creature-nametag-always-visible: false
 
 
+# When a levelled mob transforms into another mob (e.g. big slime -> smaller slimes, zombie -> drowned),
+# should the transformed mob inherit the level of the original mob?
+# By default, this is enabled.
+level-inheritance: true
+
+
 # Should passive creatures be levelled?
 # You probably don't want a Level 10 race horse to ramp up your chunk loading, or a random pig that moves fast.
 # However, you can always limit passive mobs' levels yourself in the 'entitytype-level-override' list :)
@@ -213,12 +219,6 @@ show-label-for-default-levelled-mobs: true
 # Warning: using a high value here will basically turn creepers into atomic bombs! :)
 # By default, this is 3, the vanilla default.
 creeper-max-damage-radius: 5
-
-
-# When a slime or magmacube splits it creates new entities. Should they match the level of the parent?
-# If not each child gets a random level matching the defined rules.
-# By default, this is enabled.
-slime-children-retain-level-of-parent: true
 
 
 # When using the summon command how far away from the player will the mobs spawn

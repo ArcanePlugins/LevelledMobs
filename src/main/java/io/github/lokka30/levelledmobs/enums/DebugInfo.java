@@ -6,6 +6,6 @@ public class DebugInfo {
     public MobProcessReason rule;
 
     public DebugInfo(){
-        this.rule = MobProcessReason.None;
+        this.rule = MobProcessReason.NONE;
     }
 }

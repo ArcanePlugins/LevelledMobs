@@ -45,7 +45,7 @@ public class WorldGuardManager {
             StateFlag useCustomLevelsFlag, allowLevelledMobsFlag;
             StringFlag customMinLevelFlag, customMaxLevelFlag;
 
-            allowLevelledMobsFlag = new StateFlag("LM-AllowLevelledMobs", false);
+            allowLevelledMobsFlag = new StateFlag("LM-AllowLevelledMobs", true);
             useCustomLevelsFlag = new StateFlag("LM-UseCustomLevels", false);
             customMinLevelFlag = new StringFlag("LM-CustomMinLevel", "-1");
             customMaxLevelFlag = new StringFlag("LM-CustomMaxLevel", "-1");

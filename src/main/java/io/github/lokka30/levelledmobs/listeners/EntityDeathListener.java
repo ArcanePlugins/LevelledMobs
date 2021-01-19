@@ -19,7 +19,7 @@ public class EntityDeathListener implements Listener {
     }
 
     // These entities will be forced not to have levelled drops
-    EnumSet<EntityType> bypassDrops = EnumSet.of(EntityType.ARMOR_STAND);
+    final EnumSet<EntityType> bypassDrops = EnumSet.of(EntityType.ARMOR_STAND);
 
     @EventHandler(ignoreCancelled = true)
     public void onDeath(final EntityDeathEvent event) {

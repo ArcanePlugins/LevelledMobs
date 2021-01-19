@@ -46,7 +46,7 @@ public class CreatureSpawnListener implements Listener {
         if (!forcedTypes.contains(event.getEntityType())) return;
 
         LivingEntity livingEntity = (LivingEntity) event.getEntity();
-        processMobSpawn(livingEntity, SpawnReason.DEFAULT, -1, MobProcessReason.None);
+        processMobSpawn(livingEntity, SpawnReason.DEFAULT, -1, MobProcessReason.NONE);
     }
 
     /**
@@ -59,7 +59,7 @@ public class CreatureSpawnListener implements Listener {
         // spawned using summon command.  It will get processed directly
         if (event.getSpawnReason() == SpawnReason.CUSTOM) return;
 
-        processMobSpawn(event.getEntity(), event.getSpawnReason(), -1, MobProcessReason.None);
+        processMobSpawn(event.getEntity(), event.getSpawnReason(), -1, MobProcessReason.NONE);
     }
     
     public void processMobSpawn(final LivingEntity livingEntity, final SpawnReason spawnReason, int level, final MobProcessReason processReason) {
@@ -90,23 +90,36 @@ public class CreatureSpawnListener implements Listener {
             if (debugInfo != null) {
                 boolean isAdult = !(livingEntity instanceof Ageable) || ((Ageable) livingEntity).isAdult();
 
-                if (spawnReason == SpawnReason.CUSTOM){
+                if (spawnReason == SpawnReason.CUSTOM) {
                     debugInfo.minLevel = level;
                     debugInfo.maxLevel = level;
                 }
-                if (processReason == MobProcessReason.Slime_Split) debugInfo.rule = MobProcessReason.Slime_Split;
-                else if (processReason == MobProcessReason.Summon) debugInfo.rule = MobProcessReason.Summon;
+                if (processReason == MobProcessReason.SLIME_SPLIT) debugInfo.rule = MobProcessReason.SLIME_SPLIT;
+                else if (processReason == MobProcessReason.SUMMON) debugInfo.rule = MobProcessReason.SUMMON;
 
                 String babyOrAdult = isAdult ? "Adult" : "Baby";
                 String rule;
-                switch (debugInfo.rule){
-                    case World: rule = " - World rule"; break;
-                    case Entity: rule = " - Entity rule"; break;
-                    case World_Guard: rule = " - WG rule"; break;
-                    case Slime_Split: rule = " - slime split rule"; break;
-                    case Summon: rule = " - summon rule"; break;
-                    case Transform: rule = " - transform rule"; break;
-                    default: rule = "";
+                switch (debugInfo.rule) {
+                    case WORLD:
+                        rule = " - World rule";
+                        break;
+                    case ENTITY:
+                        rule = " - Entity rule";
+                        break;
+                    case WORLD_GUARD:
+                        rule = " - WG rule";
+                        break;
+                    case SLIME_SPLIT:
+                        rule = " - slime split rule";
+                        break;
+                    case SUMMON:
+                        rule = " - summon rule";
+                        break;
+                    case TRANSFORM:
+                        rule = " - transform rule";
+                        break;
+                    default:
+                        rule = "";
                 }
 
                 Utils.logger.info(String.format("Spawned a &fLvl.%s &b%s &8(&7%s&8) min: %s, max: %s%s",
@@ -287,7 +300,7 @@ public class CreatureSpawnListener implements Listener {
                 instance.configUtils.getMaxLevel(livingEntity.getType(), livingEntity.getWorld(), isAdult, debugInfo));
 
         if (debugInfo != null){
-            debugInfo.rule = MobProcessReason.World_Guard;
+            debugInfo.rule = MobProcessReason.WORLD_GUARD;
             debugInfo.minLevel = levels[0];
             debugInfo.maxLevel = levels[1];
         }

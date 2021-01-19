@@ -94,83 +94,10 @@ public final class Utils {
     }
 
     public static int getDefaultIfNull(TreeMap<String, Integer> map, String item, int def) {
-        return map.containsKey(item) ? map.get(item) : def;
+        return map.getOrDefault(item, def);
     }
 
-    public static List<String> oneToNine = Arrays.asList("1", "2", "3", "4", "5", "6", "7", "8", "9");
-
-    public static List<String> mobs = Arrays.asList(
-            "bat",
-            "bee",
-            "blaze",
-            "cat",
-            "cave_spider",
-            "chicken",
-            "cod",
-            "cow",
-            "creeper",
-            "dolphin",
-            "donkey",
-            "drowned",
-            "elder_guardian",
-            "ender_dragon",
-            "enderman",
-            "endermite",
-            "evoker",
-            "evoker_fangs",
-            "fox",
-            "ghast",
-            "giant",
-            "guardian",
-            "hoglin",
-            "horse",
-            "husk",
-            "illusioner",
-            "iron_golem",
-            "llama",
-            "magma_cube",
-            "mule",
-            "mushroom_cow",
-            "ocelot",
-            "panda",
-            "parrot",
-            "phantom",
-            "pig",
-            "piglin",
-            "piglin_brute",
-            "pillager",
-            "polar_bear",
-            "pufferfish",
-            "rabbit",
-            "ravager",
-            "salmon",
-            "sheep",
-            "shulker",
-            "silverfish",
-            "skeleton",
-            "skeleton_horse",
-            "slime",
-            "snowball",
-            "snowman",
-            "spider",
-            "squid",
-            "stray",
-            "strider",
-            "tropical_fish",
-            "turtle",
-            "vex",
-            "villager",
-            "vindicator",
-            "witch",
-            "wither",
-            "wither_skeleton",
-            "wolf",
-            "zoglin",
-            "zombie",
-            "zombie_horse",
-            "zombie_villager",
-            "zombified_piglin"
-    );
+    public static final List<String> oneToNine = Arrays.asList("1", "2", "3", "4", "5", "6", "7", "8", "9");
 
     public static List<String> replaceAllInList(List<String> oldList, String replaceWhat, String replaceTo) {
         List<String> newList = new ArrayList<>();

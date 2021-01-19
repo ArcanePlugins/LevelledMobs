@@ -3,7 +3,6 @@ package io.github.lokka30.levelledmobs.listeners;
 import io.github.lokka30.levelledmobs.LevelledMobs;
 import io.github.lokka30.levelledmobs.enums.MobProcessReason;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -25,23 +24,23 @@ public class EntityTransformListener implements Listener {
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void onTransform(final EntityTransformEvent event) {
 
+        // is level inheritance enabled?
+        if (!instance.settingsCfg.getBoolean("level-inheritance")) return;
+
         // is the original entity a living entity
         if (!(event.getEntity() instanceof LivingEntity)) return;
 
         final LivingEntity livingEntity = (LivingEntity) event.getEntity();
 
         // is the original entity levelled
-        if (!livingEntity.getPersistentDataContainer().has(instance.levelManager.isLevelledKey, PersistentDataType.STRING)) return;
+        if (!livingEntity.getPersistentDataContainer().has(instance.levelManager.isLevelledKey, PersistentDataType.STRING))
+            return;
 
         final int level = Objects.requireNonNull(livingEntity.getPersistentDataContainer().get(instance.levelManager.levelKey, PersistentDataType.INTEGER));
 
         for (Entity transformedEntity : event.getTransformedEntities()) {
+
             if (!(transformedEntity instanceof LivingEntity)) continue;
-            MobProcessReason processReason = MobProcessReason.Transform;
-            if (transformedEntity.getType().name().equals(EntityType.SLIME.name()) || transformedEntity.getType().name().equals(EntityType.MAGMA_CUBE.name())){
-                if (!instance.settingsCfg.getBoolean("slime-children-retain-level-of-parent")) continue;
-                processReason = MobProcessReason.Slime_Split;
-            }
 
             final LivingEntity transformedLivingEntity = (LivingEntity) transformedEntity;
 
@@ -50,7 +49,7 @@ public class EntityTransformListener implements Listener {
                 continue;
             }
 
-            instance.levelManager.creatureSpawnListener.processMobSpawn(transformedLivingEntity, CreatureSpawnEvent.SpawnReason.CUSTOM, level, processReason);
+            instance.levelManager.creatureSpawnListener.processMobSpawn(transformedLivingEntity, CreatureSpawnEvent.SpawnReason.CUSTOM, level, MobProcessReason.TRANSFORM);
         }
     }
 }
