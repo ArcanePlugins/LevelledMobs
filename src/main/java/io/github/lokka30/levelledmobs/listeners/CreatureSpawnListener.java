@@ -87,45 +87,6 @@ public class CreatureSpawnListener implements Listener {
 
         if (instance.levelManager.isLevellable(livingEntity)) {
 
-            if (debugInfo != null) {
-                boolean isAdult = !(livingEntity instanceof Ageable) || ((Ageable) livingEntity).isAdult();
-
-                if (spawnReason == SpawnReason.CUSTOM) {
-                    debugInfo.minLevel = level;
-                    debugInfo.maxLevel = level;
-                }
-                if (processReason == MobProcessReason.SLIME_SPLIT) debugInfo.rule = MobProcessReason.SLIME_SPLIT;
-                else if (processReason == MobProcessReason.SUMMON) debugInfo.rule = MobProcessReason.SUMMON;
-
-                String babyOrAdult = isAdult ? "Adult" : "Baby";
-                String rule;
-                switch (debugInfo.rule) {
-                    case WORLD:
-                        rule = " - World rule";
-                        break;
-                    case ENTITY:
-                        rule = " - Entity rule";
-                        break;
-                    case WORLD_GUARD:
-                        rule = " - WG rule";
-                        break;
-                    case SLIME_SPLIT:
-                        rule = " - slime split rule";
-                        break;
-                    case SUMMON:
-                        rule = " - summon rule";
-                        break;
-                    case TRANSFORM:
-                        rule = " - transform rule";
-                        break;
-                    default:
-                        rule = "";
-                }
-
-                Utils.logger.info(String.format("Spawned a &fLvl.%s &b%s &8(&7%s&8) min: %s, max: %s%s",
-                    level, livingEntity.getName(), babyOrAdult, debugInfo.minLevel, debugInfo.maxLevel, rule));
-            }
-
             //Check the 'worlds list' to see if the mob is allowed to be levelled in the world it spawned in
             if (!ModalList.isEnabledInList(instance.settingsCfg, "allowed-worlds-list", livingEntity.getWorld().getName())) {
                 return;
@@ -201,9 +162,48 @@ public class CreatureSpawnListener implements Listener {
             }
             instance.levelManager.updateNametagWithDelay(livingEntity, nameTag);
 
+            // Debug Info
+            if (debugInfo != null) {
+                final boolean isAdult = livingEntity instanceof Ageable && ((Ageable) (livingEntity)).isAdult();
+
+                if (spawnReason == SpawnReason.CUSTOM) {
+                    debugInfo.minLevel = level;
+                    debugInfo.maxLevel = level;
+                }
+
+                if (processReason == MobProcessReason.SUMMON) {
+                    debugInfo.rule = MobProcessReason.SUMMON;
+                }
+
+                String babyOrAdult = isAdult ? "Adult" : "Baby";
+                String rule;
+                switch (debugInfo.rule) {
+                    case WORLD:
+                        rule = " - World rule";
+                        break;
+                    case ENTITY:
+                        rule = " - Entity rule";
+                        break;
+                    case WORLD_GUARD:
+                        rule = " - WG rule";
+                        break;
+                    case SUMMON:
+                        rule = " - summon rule";
+                        break;
+                    case TRANSFORM:
+                        rule = " - transform rule";
+                        break;
+                    default:
+                        rule = "";
+                }
+
+                Utils.logger.info(String.format("Spawned a &fLvl.%s &b%s &8(&7%s&8) min: %s, max: %s%s",
+                        level, livingEntity.getName(), babyOrAdult, debugInfo.minLevel, debugInfo.maxLevel, rule));
+            }
+
         } else if (spawnReason == CreatureSpawnEvent.SpawnReason.CURED) {
             //Check if a zombie villager was cured. If villagers aren't levellable, then their name will be cleared,
-            //otherwise their nametag is still 'Zombie Villager'. That doesn't seem right...
+            //otherwise their nametag is still 'Zombie Villager'.
             instance.levelManager.updateNametagWithDelay(livingEntity, "");
         }
         else{

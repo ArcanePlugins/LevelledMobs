@@ -136,4 +136,12 @@ public class ConfigUtils {
         noPermissionMsg.forEach(sender::sendMessage);
     }
 
+    public boolean nametagContainsHealth() {
+        final String creatureNametag = instance.settingsCfg.getString("creature-nametag");
+
+        assert creatureNametag != null;
+
+        return creatureNametag.contains("%health%") || creatureNametag.contains("%max_health%");
+    }
+
 }

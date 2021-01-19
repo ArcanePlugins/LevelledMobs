@@ -28,7 +28,7 @@ public class EntityDamageListener implements Listener {
             LivingEntity livingEntity = (LivingEntity) entity;
 
             // we only need to update the tag if they are using health placeholders.  This is not by default
-            if (!instance.nametagContainsHealth) return;
+            if (!instance.configUtils.nametagContainsHealth()) return;
 
             //Make sure the mob is levelled
             if (!livingEntity.getPersistentDataContainer().has(instance.levelManager.isLevelledKey, PersistentDataType.STRING))

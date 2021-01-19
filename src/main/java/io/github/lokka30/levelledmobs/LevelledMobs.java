@@ -35,10 +35,12 @@ public class LevelledMobs extends JavaPlugin {
     public LevelManager levelManager;
 
     public PluginManager pluginManager;
+
     public boolean hasWorldGuardInstalled;
     public WorldGuardManager worldGuardManager;
-    public boolean nametagContainsHealth;
+
     public boolean debugEntityDamageWasEnabled = false;
+
     public TreeMap<String, Integer> entityTypesLevelOverride_Min;
     public TreeMap<String, Integer> entityTypesLevelOverride_Max;
     public TreeMap<String, Integer> worldLevelOverride_Min;
@@ -132,13 +134,6 @@ public class LevelledMobs extends JavaPlugin {
 
         // load configutils
         configUtils = new ConfigUtils(this);
-
-        this.nametagContainsHealth = false;
-        String nametag = settingsCfg.getString("creature-nametag");
-        if (Utils.isNotNullOrEmpty(nametag)){
-            nametag = nametag.toLowerCase();
-            this.nametagContainsHealth = nametag.contains("%health%") || nametag.contains("%max_health%");
-        }
     }
 
     private TreeMap<String, Integer> getMapFromConfigSection(String configPath){
@@ -162,14 +157,14 @@ public class LevelledMobs extends JavaPlugin {
     private void registerListeners() {
         Utils.logger.info("&fListeners: &7Registering event listeners...");
 
-        this.pluginManager = getServer().getPluginManager();
+        pluginManager = getServer().getPluginManager();
 
         levelManager.creatureSpawnListener = new CreatureSpawnListener(this); // we're saving this reference so the summon command has access to it
-        this.entityDamageDebugListener = new EntityDamageDebugListener(this);
+        entityDamageDebugListener = new EntityDamageDebugListener(this);
 
         if (settingsCfg.getBoolean("debug-entity-damage")) {
             // we'll load and unload this listener based on the above setting when reloading
-            this.debugEntityDamageWasEnabled = true;
+            debugEntityDamageWasEnabled = true;
             pluginManager.registerEvents(this.entityDamageDebugListener, this);
         }
 
