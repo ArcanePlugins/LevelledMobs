@@ -135,16 +135,16 @@ y-distance-levelling:
   # By default, this is disabled.
   active: false
 
-  # Specify the Y axis that leveled-mobs will start at.  Mobs spawned at and below this y-level will be level 1.
+  # Specify the Y axis that leveled-mobs will start at.  Mobs spawned at and above this y-level will be at the starting level.
   # Use a positive integer. By default, this is 100.
   starting-y-level: 100
 
-  # Specify the Y axis that leveled-mobs will end at.  Mobs spawned at and above this y-level will be fully levelled.
+  # Specify the Y axis that leveled-mobs will end at.  Mobs spawned at and below this y-level will be fully levelled.
   # Use a positive integer. By default, this is 20.
   ending-y-level: 20
 
   # Optional: Instead of having a linear level assignment from starting-y-level to ending-y-level, specify how many blocks from starting-y-level the next level will apply
-  # for example with a value of 5 and starting-y-level of 20, y-level of 30 will spawn level 2 mobs, y-level 40 will be level 4, and so on
+  # for example with a value of 5 and starting-y-level of 100, y-level of 90 will spawn level 2 mobs, y-level 80 will be level 4, and so on
   # Note that by giving y-period a value of higher than 0 effectively nullifies the ending-y-level setting
   # Use a positive integer. By default, this is 0.
   y-period: 0
@@ -185,11 +185,11 @@ world-level-override:
 
   # Configure the minimum levels of entities in certain worlds here.
   min-level:
-    example_world_123: 6
+    example_world_123: 5
 
   # Configure the maximum levels of entities in certain worlds here.
   max-level:
-    example_world_123: 5
+    example_world_123: 6
     example_world_456: 3
 
 
@@ -340,6 +340,10 @@ fine-tuning:
       # Use a positive double (decimal). By default, this is 0.09.
       xp-drop: 0.09
 
+
+# when using the summon command how far away from the player will the mob(s) spawn
+# Use a positive integer. By default, this is 5.
+summon-command-spawn-distance-from-player: 5
 
 # These settings are meant for developer use to diagnose bugs in the plugin.
 # Enabling them will cause a lot of spam, so you should only enable the

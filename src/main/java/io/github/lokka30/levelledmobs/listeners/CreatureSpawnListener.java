@@ -73,18 +73,6 @@ public class CreatureSpawnListener implements Listener {
         final DebugInfo debugInfo = instance.settingsCfg.getBoolean("debug-show-spawned-mobs") ?
                 new DebugInfo() : null;
 
-        // if spawned naturally it will be -1.  If used summon with specific level specified then it will be >= 0
-        if (level == -1) {
-            //Check settings for spawn distance levelling and choose levelling method accordingly.
-            if (instance.hasWorldGuardInstalled && instance.worldGuardManager.checkRegionFlags(livingEntity)) {
-                level = generateRegionLevel(livingEntity, debugInfo);
-            } else if (instance.settingsCfg.getBoolean("spawn-distance-levelling.active")) {
-                level = generateDistanceFromSpawnLevel(livingEntity, debugInfo);
-            } else {
-                level = generateLevel(livingEntity, debugInfo);
-            }
-        }
-
         if (instance.levelManager.isLevellable(livingEntity)) {
 
             //Check the 'worlds list' to see if the mob is allowed to be levelled in the world it spawned in
@@ -111,8 +99,10 @@ public class CreatureSpawnListener implements Listener {
             }
 
             //Define the mob's level so it can be accessed elsewhere.
-            livingEntity.getPersistentDataContainer().set(instance.levelManager.levelKey, PersistentDataType.INTEGER, level);
-            livingEntity.getPersistentDataContainer().set(instance.levelManager.isLevelledKey, PersistentDataType.STRING, "true");
+            if (level != 1 || instance.settingsCfg.getBoolean("show-label-for-default-levelled-mobs")) {
+                livingEntity.getPersistentDataContainer().set(instance.levelManager.levelKey, PersistentDataType.INTEGER, level);
+                livingEntity.getPersistentDataContainer().set(instance.levelManager.isLevelledKey, PersistentDataType.STRING, "true");
+            }
 
             // Max Health attribute
             if (livingEntity.getAttribute(Attribute.GENERIC_MAX_HEALTH) != null) {
@@ -159,8 +149,8 @@ public class CreatureSpawnListener implements Listener {
                 nameTag = "";
             } else {
                 nameTag = instance.levelManager.getNametag(livingEntity, level);
+                instance.levelManager.updateNametagWithDelay(livingEntity, nameTag);
             }
-            instance.levelManager.updateNametagWithDelay(livingEntity, nameTag);
 
             // Debug Info
             if (debugInfo != null) {

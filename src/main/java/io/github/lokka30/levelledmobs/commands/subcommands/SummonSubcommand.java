@@ -19,7 +19,7 @@ import java.util.*;
 public class SummonSubcommand implements Subcommand {
 
     @Override
-    public void parseSubcommand(LevelledMobs instance, CommandSender sender, String label, String[] args) {
+    public void parseSubcommand(final LevelledMobs instance, final CommandSender sender, final String label, final String[] args) {
         if (!sender.hasPermission("levelledmobs.command.summon")) {
             instance.configUtils.sendNoPermissionMsg(sender);
             return;
@@ -93,7 +93,7 @@ public class SummonSubcommand implements Subcommand {
                 final Player player = (Player) sender;
 
                 if (args.length == 4 || args.length == 5) {
-                    summonMobs(instance, entityType, amount, sender, level, player.getLocation(), summonType, null);
+                    summonMobs(instance, entityType, amount, sender, level, player.getLocation(), summonType, player);
                 } else {
                     List<String> messages = instance.messagesCfg.getStringList("command.levelledmobs.summon.here.usage");
                     messages = Utils.replaceAllInList(messages, "%prefix%", instance.configUtils.getPrefix());
@@ -191,7 +191,7 @@ public class SummonSubcommand implements Subcommand {
     }
 
     @Override
-    public List<String> parseTabCompletions(LevelledMobs instance, CommandSender sender, String[] args) {
+    public List<String> parseTabCompletions(final LevelledMobs instance, final CommandSender sender, final String[] args) {
 
         // len:    1      2        3        4       5          6            7   8     9
         // arg:    0      1        2        3       4          5            6   7     8
@@ -208,7 +208,7 @@ public class SummonSubcommand implements Subcommand {
         if (args.length == 3) {
             List<String> entityNames = new ArrayList<>();
             for (EntityType entityType : EntityType.values()) {
-                entityNames.add(entityType.toString());
+                entityNames.add(entityType.toString().toLowerCase());
             }
             return entityNames;
         }
@@ -267,8 +267,7 @@ public class SummonSubcommand implements Subcommand {
         AT_LOCATION
     }
 
-    private void sendMainUsage(CommandSender sender, String label, LevelledMobs instance) {
-
+    private void sendMainUsage(final CommandSender sender, final String label, final LevelledMobs instance) {
 
         List<String> messages = instance.messagesCfg.getStringList("command.levelledmobs.summon.usage");
         messages = Utils.replaceAllInList(messages, "%prefix%", instance.configUtils.getPrefix());
@@ -277,7 +276,7 @@ public class SummonSubcommand implements Subcommand {
         messages.forEach(sender::sendMessage);
     }
 
-    private void summonMobs(LevelledMobs instance, EntityType entityType, int amount, CommandSender sender, int level, Location location, SummonType summonType, Player target) {
+    private void summonMobs(final LevelledMobs instance, final EntityType entityType, int amount, final CommandSender sender, int level, Location location, final SummonType summonType, final Player target) {
         if (instance.levelManager.isLevellable(entityType)) {
 
             if (location == null || location.getWorld() == null) {
@@ -331,6 +330,20 @@ public class SummonSubcommand implements Subcommand {
 
             if (summonType == SummonType.HERE) {
                 location = addVarianceToLocation(location);
+            }
+
+            if (summonType == SummonType.HERE || summonType == SummonType.AT_PLAYER) {
+                int distFromPlayer = instance.settingsCfg.getInt("summon-command-spawn-distance-from-player", 5);
+                if (distFromPlayer > 0) {
+                    int newX = location.getBlockX();
+                    int newZ = location.getBlockZ();
+                    double direction = target.getLocation().getYaw();
+                    if (direction >= 225.0D && direction <= 314.9D) newX += distFromPlayer;
+                    if (direction >= 45.0D && direction <= 134.9D) newX -= distFromPlayer;
+                    if (direction >= 135.0D && direction <= 224.9D) newZ -= distFromPlayer;
+                    if (direction >= 315.0D || direction <= 44.9D) newZ += distFromPlayer;
+                    location = new Location(location.getWorld(), newX, location.getBlockY(), newZ);
+                }
             }
 
             for (int i = 0; i < amount; i++) {
@@ -388,7 +401,7 @@ public class SummonSubcommand implements Subcommand {
         }
     }
 
-    private Location getRelativeLocation(CommandSender sender, String xStr, String yStr, String zStr, String worldName) {
+    private Location getRelativeLocation(final CommandSender sender, final String xStr, final String yStr, final String zStr, final String worldName) {
         double x = 0, y = 0, z = 0;
 
         boolean xRelative = false, yRelative = false, zRelative = false;
@@ -484,7 +497,7 @@ public class SummonSubcommand implements Subcommand {
         return new Location(world, x, y, z);
     }
 
-    private Location addVarianceToLocation(Location oldLocation) {
+    private Location addVarianceToLocation(final Location oldLocation) {
         double min = 0.5, max = 2.5;
 
         for (int i = 0; i < 20; i++) {

@@ -33,24 +33,25 @@ public final class Utils {
 
     //Integer check
     public static boolean isInteger(String str) {
-        if (Utils.isNotNullOrEmpty(str)) {
-            for (int i = 0; i < str.length(); i++) {
-                if (i == 0 && str.charAt(i) == '-') {
-                    if (str.length() == 1) {
-                        return false;
-                    } else {
-                        continue;
-                    }
-                }
+        if (!Utils.isNotNullOrEmpty(str)) return false;
 
-                if (Character.digit(str.charAt(i), 10) < 0) {
-                    return false;
-                }
+        // taken from https://www.edureka.co/community/2301/what-the-best-way-check-string-represents-an-integer-in-java
+
+        int length = str.length();
+        int i = 0;
+        if (str.charAt(0) == '-') {
+            if (length == 1) {
+                return false;
             }
-            return true;
-        } else {
-            return false;
+            i = 1;
         }
+        for (; i < length; i++) {
+            char c = str.charAt(i);
+            if (c < '0' || c > '9') {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**
