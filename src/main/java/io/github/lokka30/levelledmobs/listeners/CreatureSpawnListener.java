@@ -70,21 +70,27 @@ public class CreatureSpawnListener implements Listener {
         if (livingEntity.getPersistentDataContainer().has(instance.levelManager.levelKey, PersistentDataType.INTEGER))
             return;
 
+        //Check the 'worlds list' to see if the mob is allowed to be levelled in the world it spawned in
+        if (!ModalList.isEnabledInList(instance.settingsCfg, "allowed-worlds-list", livingEntity.getWorld().getName())) {
+            if (instance.settingsCfg.getBoolean("debug-show-mobs-not-levellable")) {
+                Utils.logger.info("&b" + livingEntity.getName() + "&7 spawned but is not levellable - not in allowed-worlds-list");
+            }
+            return;
+        }
+
+        //Check the list of blacklisted spawn reasons. If the entity's spawn reason is in there, then we don't continue.
+        //Uses a default as "NONE" as there are no blocked spawn reasons in the default config.
+        if (!ModalList.isEnabledInList(instance.settingsCfg, "allowed-spawn-reasons-list", spawnReason.toString())) {
+            if (instance.settingsCfg.getBoolean("debug-show-mobs-not-levellable")) {
+                Utils.logger.info("&b" + livingEntity.getName() + "&7 spawned but is not levellable - not in allowed-spawn-reasons-list");
+            }
+            return;
+        }
+
         final DebugInfo debugInfo = instance.settingsCfg.getBoolean("debug-show-spawned-mobs") ?
                 new DebugInfo() : null;
 
         if (instance.levelManager.isLevellable(livingEntity)) {
-
-            //Check the 'worlds list' to see if the mob is allowed to be levelled in the world it spawned in
-            if (!ModalList.isEnabledInList(instance.settingsCfg, "allowed-worlds-list", livingEntity.getWorld().getName())) {
-                return;
-            }
-
-            //Check the list of blacklisted spawn reasons. If the entity's spawn reason is in there, then we don't continue.
-            //Uses a default as "NONE" as there are no blocked spawn reasons in the default config.
-            if (!ModalList.isEnabledInList(instance.settingsCfg, "allowed-spawn-reasons-list", spawnReason.toString())) {
-                return;
-            }
 
             // if spawned naturally it will be -1.  If used summon with specific level specified or if using the slime child system then it will be >= 0
             if (level == -1) {
@@ -145,9 +151,7 @@ public class CreatureSpawnListener implements Listener {
 
             //Update their tag.
             final String nameTag;
-            if (level == 1 && !instance.settingsCfg.getBoolean("show-label-for-default-levelled-mobs")) {
-                nameTag = "";
-            } else {
+            if (level != 1 || instance.settingsCfg.getBoolean("show-label-for-default-levelled-mobs")) {
                 nameTag = instance.levelManager.getNametag(livingEntity, level);
                 instance.levelManager.updateNametagWithDelay(livingEntity, nameTag);
             }

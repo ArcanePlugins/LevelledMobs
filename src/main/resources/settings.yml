@@ -143,7 +143,8 @@ y-distance-levelling:
   # Use a positive integer. By default, this is 20.
   ending-y-level: 20
 
-  # Optional: Instead of having a linear level assignment from starting-y-level to ending-y-level, specify how many blocks from starting-y-level the next level will apply
+  # Optional: How many blocks per level.
+  # Instead of having a linear level assignment from starting-y-level to ending-y-level, specify how many blocks from starting-y-level the next level will apply
   # for example with a value of 5 and starting-y-level of 100, y-level of 90 will spawn level 2 mobs, y-level 80 will be level 4, and so on
   # Note that by giving y-period a value of higher than 0 effectively nullifies the ending-y-level setting
   # Use a positive integer. By default, this is 0.
