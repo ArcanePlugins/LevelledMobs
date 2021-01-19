@@ -204,11 +204,10 @@ public class CreatureSpawnListener implements Listener {
         } else if (spawnReason == CreatureSpawnEvent.SpawnReason.CURED) {
             //Check if a zombie villager was cured. If villagers aren't levellable, then their name will be cleared,
             //otherwise their nametag is still 'Zombie Villager'.
-            instance.levelManager.updateNametagWithDelay(livingEntity, "");
-        }
-        else{
+            instance.levelManager.updateNametagWithDelay(livingEntity, null);
+        } else {
             if (instance.settingsCfg.getBoolean("debug-show-mobs-not-levellable")) {
-                instance.getLogger().info("mob is not levellable: " + livingEntity.getName());
+                Utils.logger.info("&b" + livingEntity.getName() + "&7 spawned but is not levellable");
             }
         }
 
