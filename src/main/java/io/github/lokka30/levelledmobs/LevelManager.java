@@ -94,14 +94,19 @@ public class LevelManager {
         return isLevellable(entity.getType());
     }
 
-    public void updateNametagWithDelay(LivingEntity livingEntity, String nametag, List<Player> players) {
+    public void updateNametagWithDelays(LivingEntity livingEntity, String nametag, List<Player> players) {
+        updateNametagWithDelay(livingEntity, nametag, players, 1);
+        updateNametagWithDelay(livingEntity, nametag, players, 20);
+        updateNametagWithDelay(livingEntity, nametag, players, 40);
+    }
+
+    public void updateNametagWithDelay(LivingEntity livingEntity, String nametag, List<Player> players, long delay) {
         new BukkitRunnable() {
             public void run() {
                 if (livingEntity == null) return; // may have died after the timer.
-
                 updateNametag(livingEntity, nametag, players);
             }
-        }.runTaskLater(instance, 20L);
+        }.runTaskLater(instance, delay);
     }
 
     //Calculates the drops when a levellable creature dies.
@@ -207,12 +212,14 @@ public class LevelManager {
         String health = maxHealth == null ? "?" : Utils.round(maxHealth.getBaseValue()) + "";
 
         String nametag = instance.settingsCfg.getString("creature-nametag");
-        nametag = Utils.replaceEx(nametag, "%level%", level + "");
-        nametag = Utils.replaceEx(nametag, "%name%", entityName);
-        nametag = Utils.replaceEx(nametag, "%health%", Utils.round(livingEntity.getHealth()) + "");
-        nametag = Utils.replaceEx(nametag, "%max_health%", health);
-        nametag = Utils.replaceEx(nametag, "%heart_symbol%", "❤");
-        assert nametag != null;
+
+        if (nametag == null || nametag.isEmpty()) return null;
+
+        nametag = nametag.replace("%level%", level + "");
+        nametag = nametag.replace("%name%", entityName);
+        nametag = nametag.replace("%health%", Utils.round(livingEntity.getHealth()) + "");
+        nametag = nametag.replace("%max_health%", health);
+        nametag = nametag.replace("%heart_symbol%", "❤");
         nametag = MicroUtils.colorize(nametag);
 
         return nametag;

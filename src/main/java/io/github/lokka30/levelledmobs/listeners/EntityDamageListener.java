@@ -35,7 +35,7 @@ public class EntityDamageListener implements Listener {
                 return;
 
             // Update their nametag with a 1 tick delay so that their health after the damage is shown
-            instance.levelManager.updateNametagWithDelay(livingEntity, instance.levelManager.getNametag(livingEntity), livingEntity.getWorld().getPlayers());
+            instance.levelManager.updateNametagWithDelays(livingEntity, instance.levelManager.getNametag(livingEntity), livingEntity.getWorld().getPlayers());
         }
     }
 

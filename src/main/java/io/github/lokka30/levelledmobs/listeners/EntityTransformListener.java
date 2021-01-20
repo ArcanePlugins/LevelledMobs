@@ -45,7 +45,7 @@ public class EntityTransformListener implements Listener {
             final LivingEntity transformedLivingEntity = (LivingEntity) transformedEntity;
 
             if (!instance.levelManager.isLevellable(transformedLivingEntity)) {
-                instance.levelManager.updateNametagWithDelay(transformedLivingEntity, null, livingEntity.getWorld().getPlayers());
+                instance.levelManager.updateNametagWithDelays(transformedLivingEntity, null, livingEntity.getWorld().getPlayers());
                 continue;
             }
 
