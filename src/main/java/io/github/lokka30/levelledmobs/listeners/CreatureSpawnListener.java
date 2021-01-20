@@ -7,15 +7,14 @@ import io.github.lokka30.levelledmobs.enums.MobProcessReason;
 import io.github.lokka30.levelledmobs.enums.ModalList;
 import io.github.lokka30.levelledmobs.utils.Utils;
 import org.bukkit.attribute.Attribute;
-import org.bukkit.entity.Creeper;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Zombie;
+import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import org.bukkit.event.entity.EntitySpawnEvent;
+import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.persistence.PersistentDataType;
 
 import java.util.Arrays;
@@ -41,10 +40,21 @@ public class CreatureSpawnListener implements Listener {
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void onEntitySpawn(final EntitySpawnEvent event) {
         if (!(event.getEntity() instanceof LivingEntity)) return;
+
         if (!forcedTypes.contains(event.getEntityType().toString())) return;
 
         LivingEntity livingEntity = (LivingEntity) event.getEntity();
         processMobSpawn(livingEntity, SpawnReason.DEFAULT, -1, MobProcessReason.NONE);
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
+    public void onChunkLoad(final ChunkLoadEvent event){
+        for (Entity entity : event.getChunk().getEntities()){
+            if (!(entity instanceof LivingEntity)) continue;
+
+            LivingEntity livingEntity = (LivingEntity) entity;
+            processMobSpawn(livingEntity, SpawnReason.DEFAULT, -1, MobProcessReason.NONE);
+        }
     }
 
     /**
@@ -59,7 +69,9 @@ public class CreatureSpawnListener implements Listener {
 
         processMobSpawn(event.getEntity(), event.getSpawnReason(), -1, MobProcessReason.NONE);
     }
-    
+
+
+
     public void processMobSpawn(final LivingEntity livingEntity, final SpawnReason spawnReason, int level, final MobProcessReason processReason) {
 
         //Check if the mob is already levelled

@@ -52,7 +52,9 @@ public class EntityDamageDebugListener implements Listener {
                 writeDebugForAttribute(player, livingEntity, Attribute.GENERIC_ATTACK_DAMAGE);
 
                 writeDebugForAttribute(player, "Current Health", Utils.round(livingEntity.getHealth()));
-                writeDebugForAttribute(player, "Level", Objects.requireNonNull(livingEntity.getPersistentDataContainer().get(instance.levelManager.levelKey, PersistentDataType.INTEGER), "Level was null"));
+                Object levelTemp = (livingEntity.getPersistentDataContainer().get(instance.levelManager.levelKey, PersistentDataType.INTEGER));
+
+                writeDebugForAttribute(player, "Level", levelTemp == null ? 0 : (int)levelTemp);
                 player.sendMessage(MicroUtils.colorize("&8 - &fCustomName &8= &b" + (livingEntity.getCustomName() == null ? "N/A" : livingEntity.getCustomName())));
 
                 delay.add(uuid);

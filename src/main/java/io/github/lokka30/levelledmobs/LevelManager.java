@@ -99,8 +99,8 @@ public class LevelManager {
 
     public void updateNametagWithDelays(LivingEntity livingEntity, String nametag, List<Player> players) {
         updateNametagWithDelay(livingEntity, nametag, players, 1);
-        updateNametagWithDelay(livingEntity, nametag, players, 20);
-        updateNametagWithDelay(livingEntity, nametag, players, 40);
+        //updateNametagWithDelay(livingEntity, nametag, players, 20);
+        //updateNametagWithDelay(livingEntity, nametag, players, 40);
     }
 
     public void updateNametagWithDelay(LivingEntity livingEntity, String nametag, List<Player> players, long delay) {
