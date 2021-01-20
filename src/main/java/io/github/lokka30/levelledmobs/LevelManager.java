@@ -9,6 +9,8 @@ import io.github.lokka30.levelledmobs.enums.ModalList;
 import io.github.lokka30.levelledmobs.listeners.CreatureSpawnListener;
 import io.github.lokka30.levelledmobs.utils.Utils;
 import me.lokka30.microlib.MicroUtils;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
@@ -16,6 +18,7 @@ import org.bukkit.entity.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
@@ -254,5 +257,47 @@ public class LevelManager {
                 ex.printStackTrace();
             }
         }
+    }
+
+    private BukkitTask nametagAutoUpdateTask;
+
+    public void startNametagAutoUpdateTask() {
+        Utils.logger.info("&fTasks: &7Starting async nametag auto update task...");
+
+        double maxDistance = Math.pow(128, 2); // square the distance we are using Location#distanceSquared. This is because it is faster than Location#distance since it does not need to sqrt which is taxing on the CPU.
+        long period = 10; // run every 10 seconds.
+
+        nametagAutoUpdateTask = new BukkitRunnable() {
+            @Override
+            public void run() {
+                for (Player player : Bukkit.getOnlinePlayers()) {
+                    final Location location = player.getLocation();
+
+                    for (Entity entity : player.getWorld().getEntities()) {
+
+                        // Mob must be a livingentity that is ...living.
+                        if (!(entity instanceof LivingEntity)) continue;
+                        final LivingEntity livingEntity = (LivingEntity) entity;
+                        if (livingEntity.isDead()) continue;
+
+                        // Mob must be levelled
+                        if (!livingEntity.getPersistentDataContainer().has(instance.levelManager.isLevelledKey, PersistentDataType.STRING))
+                            continue;
+
+                        //if within distance, update nametag.
+                        if (livingEntity.getLocation().distanceSquared(location) <= maxDistance) {
+                            instance.levelManager.updateNametag(livingEntity, instance.levelManager.getNametag(livingEntity), Collections.singletonList(player));
+                        }
+                    }
+                }
+            }
+        }.runTaskTimerAsynchronously(instance, 0, 20 * period);
+    }
+
+    public void stopNametagAutoUpdateTask() {
+        Utils.logger.info("&fTasks: &7Stopping async nametag auto update task...");
+
+        if (nametagAutoUpdateTask != null)
+            nametagAutoUpdateTask.cancel();
     }
 }

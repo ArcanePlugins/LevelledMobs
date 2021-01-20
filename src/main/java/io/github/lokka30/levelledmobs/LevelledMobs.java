@@ -64,23 +64,35 @@ public class LevelledMobs extends JavaPlugin {
             worldGuardManager = new WorldGuardManager(this);
         }
 
-        loadTime = loadTimer.getTimer();
+        loadTime = loadTimer.getTimer(); // combine the load time with enable time.
     }
 
     public void onEnable() {
         QuickTimer enableTimer = new QuickTimer();
         enableTimer.start(); // Record how long it takes for the plugin to enable.
 
-        checkCompatibility(); //Is the server running the latest version? Dependencies required?
+        checkCompatibility();
         loadFiles();
         registerListeners();
         registerCommands();
+        levelManager.startNametagAutoUpdateTask();
 
         Utils.logger.info("&fStart-up: &7Running misc procedures...");
         setupMetrics();
         checkUpdates();
 
         Utils.logger.info("&f~ Start-up complete, took &b" + (enableTimer.getTimer() + loadTime) + "ms&f ~");
+    }
+
+    public void onDisable() {
+        Utils.logger.info("&f~ Initiating shut-down procedure ~");
+
+        QuickTimer disableTimer = new QuickTimer();
+        disableTimer.start();
+
+        levelManager.stopNametagAutoUpdateTask();
+
+        Utils.logger.info("&f~ Shut-down complete, took &b" + disableTimer.getTimer() + "ms&f ~");
     }
 
     //Checks if the server version is supported

@@ -31,7 +31,7 @@ public class EntityNametagListener implements Listener {
             if (!livingEntity.getPersistentDataContainer().has(instance.levelManager.isLevelledKey, PersistentDataType.STRING))
                 return;
 
-            instance.levelManager.updateNametag(livingEntity, instance.levelManager.getNametag(livingEntity), livingEntity.getWorld().getPlayers());
+            instance.levelManager.updateNametagWithDelay(livingEntity, instance.levelManager.getNametag(livingEntity), livingEntity.getWorld().getPlayers(), 1L);
         }
     }
 }

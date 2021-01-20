@@ -17,7 +17,6 @@ import java.util.Collections;
 public class PlayerJoinWorldNametagListener implements Listener {
 
     private final LevelledMobs instance;
-
     public PlayerJoinWorldNametagListener(final LevelledMobs instance) {
         this.instance = instance;
     }
@@ -47,6 +46,7 @@ public class PlayerJoinWorldNametagListener implements Listener {
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void onJoin(final PlayerJoinEvent event) {
         updateNametagsInWorld(event.getPlayer(), event.getPlayer().getWorld());
+
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
