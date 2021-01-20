@@ -37,7 +37,7 @@ public class LevelManager {
     public final NamespacedKey levelKey; // This stores the mob's level.
     public final NamespacedKey isLevelledKey; //This is stored on levelled mobs to tell plugins that it is a levelled mob.
 
-    public final EnumSet<EntityType> forcedTypes = EnumSet.of(EntityType.GHAST, EntityType.MAGMA_CUBE, EntityType.HOGLIN, EntityType.SHULKER, EntityType.PHANTOM, EntityType.ENDER_DRAGON, EntityType.SLIME, EntityType.MAGMA_CUBE, EntityType.PHANTOM, EntityType.GHAST, EntityType.HOGLIN);
+    public final List<String> forcedTypes = Arrays.asList("GHAST", "MAGMA_CUBE", "HOGLIN", "SHULKER", "PHANTOM", "ENDER_DRAGON", "SLIME", "MAGMA_CUBE");
 
     public final static int maxCreeperBlastRadius = 100;
     //public final Pattern slimeRegex = Pattern.compile("Level.*?(\\d{1,2})", Pattern.CASE_INSENSITIVE);
@@ -55,7 +55,7 @@ public class LevelManager {
         if (instance.settingsCfg.getStringList("overriden-entities").contains(entityType.toString())) return true;
 
         // These entities don't implement Monster or Boss and thus must be forced to return true
-        if (forcedTypes.contains(entityType)) {
+        if (forcedTypes.contains(entityType.toString())) {
             return true;
         }
 
@@ -69,32 +69,32 @@ public class LevelManager {
     }
 
     //Checks if an entity can be levelled.
-    public boolean isLevellable(final LivingEntity entity) {
+    public boolean isLevellable(final LivingEntity livingEntity) {
 
         //Players shouldn't be levelled! Keep this at the top to ensure they don't return true
-        if (entity.getType() == EntityType.PLAYER || entity.getType() == EntityType.UNKNOWN || entity.hasMetadata("NPC")) {
+        if (livingEntity.getType() == EntityType.PLAYER || livingEntity.getType() == EntityType.UNKNOWN || livingEntity.hasMetadata("NPC")) {
             return false;
         }
 
         // Check WorldGuard flag.
-        if (instance.hasWorldGuardInstalled && !instance.worldGuardManager.regionAllowsLevelling(entity)) return false;
+        if (instance.hasWorldGuardInstalled && !instance.worldGuardManager.regionAllowsLevelling(livingEntity))
+            return false;
 
         // Check for overrides
-        if(instance.settingsCfg.getStringList("overriden-entities").contains(entity.getType().toString())) return true;
+        if (instance.settingsCfg.getStringList("overriden-entities").contains(livingEntity.getType().toString()))
+            return true;
 
         //Check allowed entities for normal entity types
-        if(!ModalList.isEnabledInList(instance.settingsCfg, "allowed-entities-list", entity.getType().toString())) return false;
+        if (!ModalList.isEnabledInList(instance.settingsCfg, "allowed-entities-list", livingEntity.getType().toString()))
+            return false;
 
         // Specific allowed entities check for BABY_ZOMBIE
-        if (entity instanceof Zombie) {
-            final Zombie zombie = (Zombie) entity;
-            if (!zombie.isAdult()) {
-                if (!ModalList.isEnabledInList(instance.settingsCfg, "allowed-entities-list", "BABY_ZOMBIE"))
-                    return false;
-            }
+        if (livingEntity instanceof Zombie && Utils.isZombieBaby((Zombie) livingEntity)) {
+            if (!ModalList.isEnabledInList(instance.settingsCfg, "allowed-entities-list", "BABY_ZOMBIE"))
+                return false;
         }
 
-        return isLevellable(entity.getType());
+        return isLevellable(livingEntity.getType());
     }
 
     public void updateNametagWithDelays(LivingEntity livingEntity, String nametag, List<Player> players) {

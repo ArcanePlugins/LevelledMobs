@@ -3,6 +3,7 @@ package io.github.lokka30.levelledmobs.utils;
 import me.lokka30.microlib.MicroLogger;
 import me.lokka30.microlib.MicroUtils;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Zombie;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -75,5 +76,15 @@ public final class Utils {
         }
 
         return newList;
+    }
+
+    public static boolean isZombieBaby(Zombie zombie) {
+        try {
+            zombie.isAdult();
+            return !zombie.isAdult();
+        } catch (NoSuchMethodError err) {
+            //noinspection deprecation
+            return zombie.isBaby();
+        }
     }
 }
