@@ -71,8 +71,12 @@ allowed-entities-list:
 # Any entity types in this list will be force-levelled regardless if they are passive, are in 'allowed entities', and so on.
 # These types are case-sensitive, so you must keep them in UPPERCASE.
 # You may also use 'BABY_ZOMBIE' to force baby zombies to be levelled.
-# By default, this list is empty.
+# By default, this list has commented-out entries (and thus is empty). Remove the '#' character before the entries if you want
+# them to take effect.
 overriden-entities:
+#  - CREEPER
+#  - BABY_ZOMBIE
+#  - HOGLIN
 
 
 # In what worlds can levelled mobs spawn?
@@ -218,7 +222,7 @@ show-label-for-default-levelled-mobs: true
 # What should the maxed out creeper explosion radius be?
 # to keep creeper explosion radius from increasing, leave it at 3.
 # Warning: using a high value here will basically turn creepers into atomic bombs! :)
-# By default, this is 3, the vanilla default.
+# By default, this is 5.
 creeper-max-damage-radius: 5
 
 

@@ -19,18 +19,17 @@ import org.bukkit.event.entity.EntitySpawnEvent;
 import org.bukkit.persistence.PersistentDataType;
 
 import java.util.Arrays;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class CreatureSpawnListener implements Listener {
 
     private final LevelledMobs instance;
-    private final List<String> forcedTypes;
+    private final HashSet<String> forcedTypes = new HashSet<>(Arrays.asList("ENDER_DRAGON", "PHANTOM"));
 
     public CreatureSpawnListener(final LevelledMobs instance) {
         this.instance = instance;
-        this.forcedTypes = Arrays.asList("ENDER_DRAGON", "PHANTOM");
     }
 
     /**
