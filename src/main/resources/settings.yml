@@ -12,15 +12,19 @@
 # Use a YAML parser to check for errors before use: https://yaml-online-parser.appspot.com/
 # Join the Discord server for assistance or a chat: https://discord.io/arcaneplugins
 
-# These nametags are applied to levelled mobs. You can change the format of it here:
+# Creature nametags! These appear above levelled mobs' heads. They use packets to trick the client into thinking
+# there is an actual nametag on the entity, but there isn't as LevelledMobs won't touch the actual nametag of the entity.
+# You can customise the format of the nametag below! :)
 # You can use the following placeholders:
 # - %level% - the mob's level
-# - %name% - the mob's name
+# - %displayname% - the mob's name - will be replaced with the text on its nametag (if the mob is nametagged). -- recommended over %typename%
+# - %typename% - the mob's name - this will not show underlying nametags.
 # - %health% - the mob's health
 # - %max_health% - the mob's max health
 # - %heart_symbol% - a predefined heart symbol.
-# By default, this is '&8[&7Level %level%&8 | &f%name%&8]'.
-creature-nametag: '&8[&7Level %level%&8 | &f%name%&8]'
+# By default, this is '&8[&7Level %level%&8 | &f%name%&8 | &c%health%&8/&c%max_health% %heart_symbol%&8]'.
+# Screenshot of the default nametag's appearance: https://prnt.sc/xcckzw
+creature-nametag: '&8[&7Level %level%&8 | &f%name%&8 | &c%health%&8/&c%max_health% %heart_symbol%&8]'
 
 
 # Should the nametag above always be visible?

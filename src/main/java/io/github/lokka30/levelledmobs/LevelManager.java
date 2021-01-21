@@ -203,7 +203,8 @@ public class LevelManager {
 
     // When the persistent data container levelled key has not been set on the entity yet (i.e. for use in CreatureSpawnListener)
     public String getNametag(LivingEntity livingEntity, int level) {
-        String entityName = livingEntity.getCustomName() == null ? instance.configUtils.getEntityName(livingEntity.getType()) : livingEntity.getCustomName();
+        String entityName = instance.configUtils.getEntityName(livingEntity.getType());
+        String displayName = livingEntity.getCustomName() == null ? entityName : livingEntity.getCustomName();
 
         AttributeInstance maxHealth = livingEntity.getAttribute(Attribute.GENERIC_MAX_HEALTH);
         String health = maxHealth == null ? "?" : Utils.round(maxHealth.getBaseValue()) + "";
@@ -213,7 +214,8 @@ public class LevelManager {
         if (nametag == null || nametag.isEmpty()) return null;
 
         nametag = nametag.replace("%level%", level + "");
-        nametag = nametag.replace("%name%", entityName);
+        nametag = nametag.replace("%displayname%", displayName);
+        nametag = nametag.replace("%typename%", entityName);
         nametag = nametag.replace("%health%", Utils.round(livingEntity.getHealth()) + "");
         nametag = nametag.replace("%max_health%", health);
         nametag = nametag.replace("%heart_symbol%", "❤");
