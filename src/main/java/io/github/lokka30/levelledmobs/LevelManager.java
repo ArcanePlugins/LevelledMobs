@@ -105,14 +105,13 @@ public class LevelManager {
 
     public void updateNametagWithDelays(LivingEntity livingEntity, String nametag, List<Player> players) {
         updateNametagWithDelay(livingEntity, nametag, players, 1);
-        //updateNametagWithDelay(livingEntity, nametag, players, 20);
-        //updateNametagWithDelay(livingEntity, nametag, players, 40);
+        updateNametagWithDelay(livingEntity, nametag, players, 5);
     }
 
     public void updateNametagWithDelay(LivingEntity livingEntity, String nametag, List<Player> players, long delay) {
         new BukkitRunnable() {
             public void run() {
-                if (livingEntity == null) return; // may have died after the timer.
+                if (livingEntity == null) return; // may have died/removed after the timer.
                 updateNametag(livingEntity, nametag, players);
             }
         }.runTaskLater(instance, delay);
@@ -269,7 +268,6 @@ public class LevelManager {
                         // Mob must be a livingentity that is ...living.
                         if (!(entity instanceof LivingEntity)) continue;
                         final LivingEntity livingEntity = (LivingEntity) entity;
-                        if (!livingEntity.isValid()) continue;
 
                         // Mob must be levelled
                         if (!livingEntity.getPersistentDataContainer().has(instance.levelManager.isLevelledKey, PersistentDataType.STRING))
