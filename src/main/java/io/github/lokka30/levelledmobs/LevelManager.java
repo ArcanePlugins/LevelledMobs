@@ -166,7 +166,7 @@ public class LevelManager {
         // Multiply current drops
         List<ItemStack> newDrops = new ArrayList<>();
         for (ItemStack currentDrop : currentDrops) {
-            final int newAmount = currentDrop.getAmount() * multiplierInt;
+            final int newAmount = currentDrop.getAmount() + (currentDrop.getAmount() * multiplierInt);
             currentDrop.setAmount(newAmount);
             newDrops.add(currentDrop);
         }
