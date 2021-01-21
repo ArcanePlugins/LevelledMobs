@@ -166,7 +166,7 @@ public class WorldGuardManager {
         }
 
         if (minLevel < 0) minLevel = 1;
-        if (minLevel > maxLevel) minLevel = maxLevel;
+        if (maxLevel < minLevel) maxLevel = minLevel;
 
         return new int[]{minLevel, maxLevel};
     }
