@@ -26,7 +26,7 @@ public class EntityTargetListener implements Listener {
     public void onTarget(final EntityTargetEvent event) {
 
         // Must target a player and must be a living entity
-        if (!(event.getTarget() instanceof Player) && (event.getEntity() instanceof LivingEntity)) return;
+        if (!(event.getTarget() instanceof Player) || !(event.getEntity() instanceof LivingEntity)) return;
 
         final LivingEntity livingEntity = (LivingEntity) event.getEntity();
 

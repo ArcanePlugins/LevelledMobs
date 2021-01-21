@@ -112,6 +112,15 @@ public class LevelManager {
         }.runTaskLater(instance, delay);
     }
 
+    public void updateNametagWithDelay(LivingEntity livingEntity, List<Player> players, long delay) {
+        new BukkitRunnable() {
+            public void run() {
+                if (livingEntity == null) return; // may have died/removed after the timer.
+                updateNametag(livingEntity, getNametag(livingEntity), players);
+            }
+        }.runTaskLater(instance, delay);
+    }
+
     // This sets the levelled currentDrops on a levelled mob that just died.
     public List<ItemStack> getLevelledItemDrops(final LivingEntity livingEntity, List<ItemStack> currentDrops) {
 
@@ -250,7 +259,7 @@ public class LevelManager {
         Utils.logger.info("&fTasks: &7Starting async nametag auto update task...");
 
         double maxDistance = Math.pow(128, 2); // square the distance we are using Location#distanceSquared. This is because it is faster than Location#distance since it does not need to sqrt which is taxing on the CPU.
-        long period = 10; // run every 10 seconds.
+        long period = 6; // run every ? seconds.
 
         nametagAutoUpdateTask = new BukkitRunnable() {
             @Override
