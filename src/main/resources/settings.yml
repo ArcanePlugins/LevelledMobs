@@ -343,8 +343,8 @@ fine-tuning:
       ranged-attack-damage: 0.15
 
       # Item drops
-      # Use a positive double (decimal). By default, this is 0.15.
-      item-drop: 0.15
+      # Use a positive double (decimal). By default, this is 0.3.
+      item-drop: 0.3
 
       # XP drops
       # Use a positive double (decimal). By default, this is 0.09.

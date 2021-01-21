@@ -16,8 +16,6 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.entity.*;
-import org.bukkit.inventory.EntityEquipment;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
@@ -129,41 +127,19 @@ public class LevelManager {
             return currentDrops;
 
         // Make sure their other items don't get duped
-        List<ItemStack> avoidDropping = new ArrayList<>();
-        EntityEquipment equipment = livingEntity.getEquipment();
-        if (equipment != null) {
-            if (equipment.getHelmet() != null) {
-                avoidDropping.add(equipment.getHelmet());
-            }
-            if (equipment.getChestplate() != null) {
-                avoidDropping.add(equipment.getChestplate());
-            }
-            if (equipment.getLeggings() != null) {
-                avoidDropping.add(equipment.getLeggings());
-            }
-            if (equipment.getBoots() != null) {
-                avoidDropping.add(equipment.getBoots());
-            }
-            if (equipment.getItemInMainHand().getType() != Material.AIR) {
-                avoidDropping.add(equipment.getItemInMainHand());
-            }
-            if (equipment.getItemInOffHand().getType() != Material.AIR) {
-                avoidDropping.add(equipment.getItemInOffHand());
-            }
+        List<ItemStack> equipmentList = new ArrayList<>();
+
+        if (livingEntity.getEquipment() != null) {
+            equipmentList.addAll(Arrays.asList(livingEntity.getEquipment().getArmorContents()));
+            equipmentList.add(livingEntity.getEquipment().getItemInMainHand());
+            equipmentList.add(livingEntity.getEquipment().getItemInOffHand());
         }
+
         if (livingEntity instanceof InventoryHolder) {
-            Inventory inventory = ((InventoryHolder) livingEntity).getInventory();
-            Collections.addAll(avoidDropping, inventory.getContents());
+            equipmentList.addAll(Arrays.asList(((InventoryHolder) livingEntity).getInventory().getContents()));
         }
-        List<ItemStack> removeDrops = new ArrayList<>();
-        for (ItemStack currentDrop : currentDrops) {
-            for (ItemStack avoidDrop : avoidDropping) {
-                if (currentDrop.isSimilar(avoidDrop)) {
-                    removeDrops.add(currentDrop);
-                }
-            }
-        }
-        currentDrops.removeAll(removeDrops);
+
+        equipmentList.removeIf(itemStack -> itemStack.getType() == Material.AIR);
 
         // Get their level
         int level = Objects.requireNonNull(livingEntity.getPersistentDataContainer().get(levelKey, PersistentDataType.INTEGER));
@@ -172,16 +148,14 @@ public class LevelManager {
         int multiplierInt = new BigDecimal(instance.settingsCfg.getDouble("fine-tuning.additions.custom.item-drop") * level) // get value from config
                 .setScale(0, RoundingMode.HALF_DOWN).intValueExact(); // truncate double to int
 
-        // Multiply current drops
-        List<ItemStack> newDrops = new ArrayList<>();
-        for (ItemStack currentDrop : currentDrops) {
-            final int newAmount = currentDrop.getAmount() + (currentDrop.getAmount() * multiplierInt);
-            currentDrop.setAmount(newAmount);
-            newDrops.add(currentDrop);
-        }
+        // Modify current drops
+        currentDrops.forEach(currentDrop -> equipmentList.forEach(equipmentItem -> {
+            if (!currentDrop.isSimilar(equipmentItem)) {
+                currentDrop.setAmount(currentDrop.getAmount() + (currentDrop.getAmount() * multiplierInt));
+            }
+        }));
 
-        // Return new drops
-        return newDrops;
+        return currentDrops;
     }
 
     //Calculates the XP dropped when a levellable creature dies.
