@@ -3,9 +3,9 @@
 ## v2.0.0-PRE:
 
 ### Notes:
-* **Before installing this update, you must read the 'Important' section below.**
+* **Before installing this update, you must read the 'Important' section below. The plugin WILL malfunction if you refuse to follow the information provided there.**
 * I wish to start off with a huge thank you to **stumper66** for their massive list of contributions this update. Stumper also gave me the spark to recontinue work on the resource. This update wouldn't be here without him!
-* I've recontinued work on the plugin. Most of the code has been updated from the previous version. This update took many hours to make, so I hope it was worth it! :)
+* I've recontinued work on the plugin. Most of the code has been updated from the previous version. This update took so many hours to make, so I really hope you all like it. :)
 * (psst: leave a like / positive review if you enjoy this update!)
 
 ### Important:
@@ -16,13 +16,13 @@ Before installing this update on your server, please understand the following:
   * If you are using any **WorldGuard flags from this plugin**, you should **remove them from your regions prior to installing this new version**. ALL previous LevelledMobs flags have been renamed, and I've also added in a new flag which was a popular request. :)
   * **Reset your config!** You might want to back it up in case you want to copy old settings across, but the settings file has changed enough that I would recommend starting from scratch.
 
-### Impossible without:
+### Impossible without big help from:
 * @stumper66, whose contributions are too many to list here ;)
 * @CoolBoy, @Esophose and @7smile7 for creating & fixing the complicated packet nametag method
-* Hugo5551 for making a bunch of code improvements
-* @Oathkeeper for their great feature suggestion
+* @Oathkeeper for their great feature suggestions and testing
+* Hugo5551 for making a bunch of code suggestions
+* squeebis for testing
 * Jacksa for reporting multiple bugs
-* You, for running the plugin :)
   
 ### Changelog:
 **Summon Subcommand** (stumper66)
@@ -30,7 +30,7 @@ Before installing this update on your server, please understand the following:
 * Summon the specified level, amount of mobs and at your location, another player's or an x/y/z location.
 * Added setting `'`summon-command-spawn-distance-from-player` with default of 5.
 
-**Kill Subcommands**
+**Kill Subcommands** (stumper66)
 * The `KillAll` subcommand has been revamped and split into two subcommands; `kill all [world]` and `kill near [radius]`. (stumper66)
 * Now kills mobs instead of instantly removing them. This means drops, exp, etc. (stumper66)
 * `<world>` argument accepts a wildcard (`*` character) to specify 'all worlds loaded on the server' to have levelled mobs purged from.
@@ -52,7 +52,7 @@ Before installing this update on your server, please understand the following:
 * Full wildcard support (`*` character, e.g. `levelledmobs.command.*`) to make applying permissions far quicker.
 * The command now requires a permission to run too (given by default) in case you wanted to restrict access to it.
 
-**Packet Nametags** (lokka30)
+**Packet Nametags** (lokka30, CoolBoy, Esophose, 7smile7, stumper66)
 * This feature now forces LM to depend on ProtocolLib. Make sure you have ProtocolLib installed!
 * No longer does LevelledMobs mess with nametags! It instead modifies the packets sent to the client.
 * In other words, LM sends a 'fake nametag' to the client, but there isn't actually a nametag on the mob.
@@ -61,13 +61,14 @@ Before installing this update on your server, please understand the following:
   * Anti-lag plugins usually ignore nametagged mobs - this means they will now kill levelled mobs too, since there isn't actually a nametag on the entity.
   * Essentials' killall command now works properly! :)
 * This was possible thanks to help from @CoolBoy, @Esophose and @7smile7 in [this](https://www.spigotmc.org/threads/changing-an-entitys-name-using-protocollib.482855/) thread. A big thank you to them for their assistance.
+* Thanks to @stumper66 for assisting me with band-aiding issues caused by this new system.
 
 **Full Tab Auto-Completion Implemented** (stumper66)
 * The commands now feature full auto tab-completion to help speed things up.
 
 **Bye bye, PhantomLib** (lokka30)
 * I have made the switch to my new development library, MicroLib.
-* Server owners do not need to install MicroLib as it is embedded inside of the LevelledMobs plugin file. It is also not a separate plugin, rather part of this plugin.
+* **Server owners do not need to install MicroLib** as it is embedded inside of the LevelledMobs plugin file. It is also not a separate plugin, rather part of this plugin.
 * Server owners are recommended to **remove PhantomLib** if it is no longer used by any of their installed plugins as it will remain unsupported.
 
 **Y-Coordinate Levelling** (stumper66)
@@ -83,10 +84,6 @@ Before installing this update on your server, please understand the following:
 * Generic colour code support (no rgb yet).
 * Multi-line support.
 * `%prefix%` variable available on all messages.
-
-**Slime Splitting** (stumper66)
-* New setting (enabled by default) for when slimes / magmacubes split, they will retain the level of their parents.
-* If disabled, then each child is randomly leveled (same behavior as previous versions)
 
 **Default Level Nametags** (stumper66)
 * New setting to apply nametags on default leveled mobs.
@@ -109,17 +106,16 @@ Before installing this update on your server, please understand the following:
 * All entities that transform into other entities (e.g. Zombies->Drowned and Slimes) now carry over their parent's level.
 
 **Other Bugfixes**
-* Magma Cubes, Slimes, Ghasts and Hoglins are now levelled as expected (stumper66)
-* Shulkers are now levelled as expected (lokka30)
+* Magma Cubes, Slimes, Ghasts, Phantoms, Ender Dragons, Shulkers and Hoglins are now levelled as expected (stumper66)
 * Armor Stands no longer have items/xp drops from death multiplied (lokka30)
 * XP drop management now checks if the mob is levelled rather than is levellable, fixes possible NPE (lokka30)
+* Many unwritten bugs fixed by stumper66 and lokka30 during testing
 
 **Removed Features**
 * Removed an old feature 'flight speed multiplier' which we found out Minecraft only applies to parrots. Completely unnecessary and misleading. (lokka30)
 * Removed 'default attack damage increase' (lokka30)
 * Removed 'remove nametag on death' which is no longer necessary with the introduction of packet nametags. (lokka30)
 * Removed 'update nametag on health update' as LM does this automatically (stumper66)
-* 'custom name visible' has been temporarily removed until I learn how to implement it. (lokka30)
 
 **Other Code Changes**
 * Cleaned up the every single class in this project significantly. A bunch of methods and variables have been moved to more fitting classes too. (lokka30)
@@ -128,10 +124,9 @@ Before installing this update on your server, please understand the following:
 * Added `LevelManager#isLevellable(EntityType)` so a mob can be checked if it is levellable or not before it spawns in. (used in the summon command) (lokka30)
 * Added the ListMode enum which will make checking lists in the config easier and cleaner (lokka30)
 * Added all code contributors to the 'info' subcommand. (lokka30)
-* Use EnumSet for forced entity types instead (Hugo5551)
+* Use HashSet for forced entity types instead (Hugo5551)
 * Determine level after the entity is deemed levellable (Hugo5551)
 * Removed sound from debug feature - in case older versions become supported, this sound will need to go anyways (lokka30)
 * Rearranged the Manager classes from the utils package to the main package (lokka30)
-* Use `(ignoreCancelled = true)` with event handlers (Hugo5551)
-* Use HashSets for entity types (Hugo5551)
+* Use `(ignoreCancelled = true, priority = EventPriority.MONITOR)` with most event handlers (Hugo5551)
 * Improvements to the debug listener (stumper66)

@@ -163,7 +163,7 @@ public class LevelManager {
         currentDrops.removeAll(removeDrops);
 
         // Get their level
-        int level = livingEntity.getPersistentDataContainer().get(levelKey, PersistentDataType.INTEGER);
+        int level = Objects.requireNonNull(livingEntity.getPersistentDataContainer().get(levelKey, PersistentDataType.INTEGER));
 
         // Get currentDrops added per level value
         int multiplierInt = new BigDecimal(instance.settingsCfg.getDouble("fine-tuning.additions.custom.item-drop") * level) // get value from config
@@ -179,84 +179,6 @@ public class LevelManager {
 
         // Return new drops
         return newDrops;
-    }
-
-    //Calculates the drops when a levellable creature dies.
-    public void setLevelledDrops(final LivingEntity ent, List<ItemStack> drops) {
-
-        if (!isLevellable(ent)) return;
-
-        //If mob is levellable, but wasn't levelled, return.
-        Integer level = ent.getPersistentDataContainer().get(instance.levelManager.levelKey, PersistentDataType.INTEGER);
-        if (level == null)
-            return;
-
-        //Read settings for drops.
-        double dropMultiplier = instance.settingsCfg.getDouble("fine-tuning.additions.custom.item-drop");
-        int finalMultiplier = 1;
-
-        //If multiplier * level gurantees an extra drop set 'finalMultiplier' to the amount of safe multiples.
-        dropMultiplier *= level;
-        finalMultiplier += (int) dropMultiplier;
-        dropMultiplier -= (int) dropMultiplier;
-
-        //Calculate if the remaining extra drop chance triggers.
-        double random = new Random().nextDouble();
-        if (random < dropMultiplier) {
-            finalMultiplier++;
-        }
-
-        //Remove the hand item from the mob's drops so it doesn't get multiplied
-        ItemStack helmet = null;
-        ItemStack chestplate = null;
-        ItemStack leggings = null;
-        ItemStack boots = null;
-        ItemStack mainHand = null;
-        ItemStack offHand = null;
-        if (ent.getEquipment() != null) {
-            helmet = ent.getEquipment().getHelmet();
-            chestplate = ent.getEquipment().getChestplate();
-            leggings = ent.getEquipment().getLeggings();
-            boots = ent.getEquipment().getBoots();
-            mainHand = ent.getEquipment().getItemInMainHand();
-            offHand = ent.getEquipment().getItemInOffHand();
-        }
-
-        //Edit the ItemStacks to drop the calculated multiple items.
-        for (int i = 0; i < drops.size(); i++) {
-            ItemStack itemStack = drops.get(i);
-
-            int amount = itemStack.getAmount() * finalMultiplier;
-
-            //Don't let the drops go over the max stack size.
-            int maxStackSize = itemStack.getMaxStackSize();
-            if (amount > maxStackSize) {
-                amount = maxStackSize;
-            }
-
-            //Don't let the plugin multiply items which match their equipment. stops bows and that from multiplying
-            if (helmet != null && itemStack.isSimilar(helmet)) {
-                amount = helmet.getAmount();
-            }
-            if (chestplate != null && itemStack.isSimilar(chestplate)) {
-                amount = chestplate.getAmount();
-            }
-            if (leggings != null && itemStack.isSimilar(leggings)) {
-                amount = leggings.getAmount();
-            }
-            if (boots != null && itemStack.isSimilar(boots)) {
-                amount = boots.getAmount();
-            }
-            if (mainHand != null && itemStack.isSimilar(mainHand)) {
-                amount = mainHand.getAmount();
-            }
-            if (offHand != null && itemStack.isSimilar(offHand)) {
-                amount = offHand.getAmount();
-            }
-
-            itemStack.setAmount(amount);
-            drops.set(i, itemStack);
-        }
     }
 
     //Calculates the XP dropped when a levellable creature dies.
