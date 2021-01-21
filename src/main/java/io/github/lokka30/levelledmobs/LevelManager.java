@@ -11,16 +11,22 @@ import io.github.lokka30.levelledmobs.utils.Utils;
 import me.lokka30.microlib.MicroUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.entity.*;
+import org.bukkit.inventory.EntityEquipment;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.lang.reflect.InvocationTargetException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.*;
 
 public class LevelManager {
@@ -112,6 +118,69 @@ public class LevelManager {
         }.runTaskLater(instance, delay);
     }
 
+    // This sets the levelled currentDrops on a levelled mob that just died.
+    public List<ItemStack> getLevelledItemDrops(final LivingEntity livingEntity, List<ItemStack> currentDrops) {
+
+        // Must be a levelled mob
+        if (!livingEntity.getPersistentDataContainer().has(isLevelledKey, PersistentDataType.STRING))
+            return currentDrops;
+
+        // Make sure their other items don't get duped
+        List<ItemStack> avoidDropping = new ArrayList<>();
+        EntityEquipment equipment = livingEntity.getEquipment();
+        if (equipment != null) {
+            if (equipment.getHelmet() != null) {
+                avoidDropping.add(equipment.getHelmet());
+            }
+            if (equipment.getChestplate() != null) {
+                avoidDropping.add(equipment.getChestplate());
+            }
+            if (equipment.getLeggings() != null) {
+                avoidDropping.add(equipment.getLeggings());
+            }
+            if (equipment.getBoots() != null) {
+                avoidDropping.add(equipment.getBoots());
+            }
+            if (equipment.getItemInMainHand().getType() != Material.AIR) {
+                avoidDropping.add(equipment.getItemInMainHand());
+            }
+            if (equipment.getItemInOffHand().getType() != Material.AIR) {
+                avoidDropping.add(equipment.getItemInOffHand());
+            }
+        }
+        if (livingEntity instanceof InventoryHolder) {
+            Inventory inventory = ((InventoryHolder) livingEntity).getInventory();
+            Collections.addAll(avoidDropping, inventory.getContents());
+        }
+        List<ItemStack> removeDrops = new ArrayList<>();
+        for (ItemStack currentDrop : currentDrops) {
+            for (ItemStack avoidDrop : avoidDropping) {
+                if (currentDrop.isSimilar(avoidDrop)) {
+                    removeDrops.add(currentDrop);
+                }
+            }
+        }
+        currentDrops.removeAll(removeDrops);
+
+        // Get their level
+        int level = livingEntity.getPersistentDataContainer().get(levelKey, PersistentDataType.INTEGER);
+
+        // Get currentDrops added per level value
+        int multiplierInt = new BigDecimal(instance.settingsCfg.getDouble("fine-tuning.additions.custom.item-drop") * level) // get value from config
+                .setScale(0, RoundingMode.HALF_DOWN).intValueExact(); // truncate double to int
+
+        // Multiply current drops
+        List<ItemStack> newDrops = new ArrayList<>();
+        for (ItemStack currentDrop : currentDrops) {
+            final int newAmount = currentDrop.getAmount() * multiplierInt;
+            currentDrop.setAmount(newAmount);
+            newDrops.add(currentDrop);
+        }
+
+        // Return new drops
+        return newDrops;
+    }
+
     //Calculates the drops when a levellable creature dies.
     public void setLevelledDrops(final LivingEntity ent, List<ItemStack> drops) {
 
@@ -191,7 +260,7 @@ public class LevelManager {
     }
 
     //Calculates the XP dropped when a levellable creature dies.
-    public int setLevelledXP(final LivingEntity ent, int xp) {
+    public int getLevelledExpDrops(final LivingEntity ent, int xp) {
         if (ent.getPersistentDataContainer().has(isLevelledKey, PersistentDataType.STRING)) {
             double xpPerLevel = instance.settingsCfg.getDouble("fine-tuning.additions.custom.xp-drop");
             int level = Objects.requireNonNull(ent.getPersistentDataContainer().get(instance.levelManager.levelKey, PersistentDataType.INTEGER));
@@ -278,7 +347,7 @@ public class LevelManager {
                         // Mob must be a livingentity that is ...living.
                         if (!(entity instanceof LivingEntity)) continue;
                         final LivingEntity livingEntity = (LivingEntity) entity;
-                        if (livingEntity.isDead()) continue;
+                        if (!livingEntity.isValid()) continue;
 
                         // Mob must be levelled
                         if (!livingEntity.getPersistentDataContainer().has(instance.levelManager.isLevelledKey, PersistentDataType.STRING))

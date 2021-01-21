@@ -27,7 +27,7 @@ public class PlayerJoinWorldNametagListener implements Listener {
                 final LivingEntity livingEntity = (LivingEntity) entity;
 
                 // mob must be alive
-                if (livingEntity.isDead()) continue;
+                if (!livingEntity.isValid()) continue;
 
                 // mob must be levelled
                 if (!livingEntity.getPersistentDataContainer().has(instance.levelManager.isLevelledKey, PersistentDataType.STRING)) {

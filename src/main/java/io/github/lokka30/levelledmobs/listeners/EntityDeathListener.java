@@ -1,14 +1,14 @@
 package io.github.lokka30.levelledmobs.listeners;
 
 import io.github.lokka30.levelledmobs.LevelledMobs;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.persistence.PersistentDataType;
 
-import java.util.EnumSet;
+import java.util.Arrays;
+import java.util.HashSet;
 
 public class EntityDeathListener implements Listener {
 
@@ -19,7 +19,7 @@ public class EntityDeathListener implements Listener {
     }
 
     // These entities will be forced not to have levelled drops
-    final EnumSet<EntityType> bypassDrops = EnumSet.of(EntityType.ARMOR_STAND);
+    final HashSet<String> bypassDrops = new HashSet<>(Arrays.asList("ARMOR_STAND", "ITEM_FRAME", "DROPPED_ITEM", "PAINTING"));
 
     @EventHandler(ignoreCancelled = true)
     public void onDeath(final EntityDeathEvent event) {
@@ -30,8 +30,13 @@ public class EntityDeathListener implements Listener {
         final LivingEntity livingEntity = event.getEntity();
 
         if (livingEntity.getPersistentDataContainer().has(instance.levelManager.isLevelledKey, PersistentDataType.STRING)) {
-            instance.levelManager.setLevelledDrops(event.getEntity(), event.getDrops());
-            event.setDroppedExp(instance.levelManager.setLevelledXP(event.getEntity(), event.getDroppedExp()));
+
+            // Set levelled item drops
+            event.getDrops().clear();
+            event.getDrops().addAll(instance.levelManager.getLevelledItemDrops(livingEntity, event.getDrops()));
+
+            // Set levelled exp drops
+            event.setDroppedExp(instance.levelManager.getLevelledExpDrops(livingEntity, event.getDroppedExp()));
         }
     }
 }

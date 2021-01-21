@@ -66,6 +66,7 @@ allowed-entities-list:
     - RAVAGER
     - PHANTOM
     - BABY_ZOMBIE
+    - ARMOR_STAND
 
 
 # Any entity types in this list will be force-levelled regardless if they are passive, are in 'allowed entities', and so on.
