@@ -22,9 +22,9 @@
 # - %health% - the mob's health
 # - %max_health% - the mob's max health
 # - %heart_symbol% - a predefined heart symbol.
-# By default, this is '&8[&7Level %level%&8 | &f%name%&8 | &c%health%&8/&c%max_health% %heart_symbol%&8]'.
+# By default, this is '&8[&7Level %level%&8 | &f%displayname%&8 | &c%health%&8/&c%max_health% %heart_symbol%&8]'.
 # Screenshot of the default nametag's appearance: https://prnt.sc/xcckzw
-creature-nametag: '&8[&7Level %level%&8 | &f%name%&8 | &c%health%&8/&c%max_health% %heart_symbol%&8]'
+creature-nametag: '&8[&7Level %level%&8 | &f%displayname%&8 | &c%health%&8/&c%max_health% %heart_symbol%&8]'
 
 
 # Should the nametag above always be visible?
