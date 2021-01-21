@@ -7,7 +7,10 @@ import io.github.lokka30.levelledmobs.enums.MobProcessReason;
 import io.github.lokka30.levelledmobs.enums.ModalList;
 import io.github.lokka30.levelledmobs.utils.Utils;
 import org.bukkit.attribute.Attribute;
-import org.bukkit.entity.*;
+import org.bukkit.entity.Creeper;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Zombie;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -163,7 +166,7 @@ public class CreatureSpawnListener implements Listener {
             final String nameTag;
             if (level != 1 || instance.settingsCfg.getBoolean("show-label-for-default-levelled-mobs")) {
                 nameTag = instance.levelManager.getNametag(livingEntity, level);
-                instance.levelManager.updateNametagWithDelays(livingEntity, nameTag, livingEntity.getWorld().getPlayers());
+                instance.levelManager.updateNametagWithDelay(livingEntity, nameTag, livingEntity.getWorld().getPlayers(), 1);
             }
 
             // Debug Info
@@ -208,7 +211,7 @@ public class CreatureSpawnListener implements Listener {
         } else if (spawnReason == CreatureSpawnEvent.SpawnReason.CURED) {
             //Check if a zombie villager was cured. If villagers aren't levellable, then their name will be cleared,
             //otherwise their nametag is still 'Zombie Villager'.
-            instance.levelManager.updateNametagWithDelays(livingEntity, null, livingEntity.getWorld().getPlayers());
+            instance.levelManager.updateNametagWithDelay(livingEntity, null, livingEntity.getWorld().getPlayers(), 1);
         } else {
             if (instance.settingsCfg.getBoolean("debug-show-mobs-not-levellable")) {
                 Utils.logger.info("&b" + livingEntity.getName() + "&7 spawned but is not levellable");

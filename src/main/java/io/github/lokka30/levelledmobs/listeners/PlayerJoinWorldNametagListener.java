@@ -38,7 +38,7 @@ public class PlayerJoinWorldNametagListener implements Listener {
 
                 //Send nametag packet
                 //This also must be delayed by 1 tick
-                instance.levelManager.updateNametagWithDelays(livingEntity, nametag, Collections.singletonList(player));
+                instance.levelManager.updateNametagWithDelay(livingEntity, nametag, Collections.singletonList(player), 1);
             }
         }
     }

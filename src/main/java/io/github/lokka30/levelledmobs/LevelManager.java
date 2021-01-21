@@ -103,11 +103,6 @@ public class LevelManager {
         return isLevellable(livingEntity.getType());
     }
 
-    public void updateNametagWithDelays(LivingEntity livingEntity, String nametag, List<Player> players) {
-        updateNametagWithDelay(livingEntity, nametag, players, 1);
-        updateNametagWithDelay(livingEntity, nametag, players, 5);
-    }
-
     public void updateNametagWithDelay(LivingEntity livingEntity, String nametag, List<Player> players, long delay) {
         new BukkitRunnable() {
             public void run() {

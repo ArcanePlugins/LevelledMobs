@@ -23,7 +23,7 @@ public class EntityDeathListener implements Listener {
 
     @EventHandler(ignoreCancelled = true)
     public void onDeath(final EntityDeathEvent event) {
-        if (bypassDrops.contains(event.getEntityType())) {
+        if (bypassDrops.contains(event.getEntityType().toString())) {
             return;
         }
 
