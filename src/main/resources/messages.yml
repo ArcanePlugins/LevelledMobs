@@ -34,9 +34,10 @@ command:
     main-usage:
       - '%prefix% Available commands:'
       - '&8 &m->&b /%label% summon &8- &7summon specific levelled mobs'
-      - '&8 &m->&b /%label% kill &8- &7kill levelled mobs'
-      - '&8 &m->&b /%label% reload &8- &7reload configuration files'
+      - '&8 &m->&b /%label% kill &8- &7mass kill levelled mobs'
+      - '&8 &m->&b /%label% reload &8- &7reload the configuration files'
       - '&8 &m->&b /%label% info &8- &7view info about the plugin'
+      - '&8 &m->&b /%label% compatibility &8- &7check plugin''s compatibility with the server'
 
     summon:
       invalid-amount:
@@ -168,6 +169,13 @@ command:
 
       usage:
         - '%prefix% Usage: &b/%label% info'
+
+    compatibility:
+      notice:
+        - '%prefix% Compatibility checks have been printed to your logs. Please check the console :)'
+
+      usage:
+        - '%prefix% Usage: &b/%label% compatibility'
 
 # This value is used when this file is loaded to check if this file is most likely incompatible.
 # The value must match exactly what version the plugin ships the default file with.

@@ -26,6 +26,7 @@ public class LevelledMobsCommand implements CommandExecutor, TabCompleter {
     private final KillSubcommand killSubcommand = new KillSubcommand();
     private final ReloadSubcommand reloadSubcommand = new ReloadSubcommand();
     private final SummonSubcommand summonSubcommand = new SummonSubcommand();
+    private final CompatibilitySubcommand compatibilitySubcommand = new CompatibilitySubcommand();
     private final GenerateMobDataSubcommand generateMobDataSubcommand = new GenerateMobDataSubcommand();
 
     public boolean onCommand(final CommandSender sender, final Command command, final String label, final String[] args) {
@@ -45,6 +46,9 @@ public class LevelledMobsCommand implements CommandExecutor, TabCompleter {
                         break;
                     case "info":
                         infoSubcommand.parseSubcommand(instance, sender, label, args);
+                        break;
+                    case "compatibility":
+                        compatibilitySubcommand.parseSubcommand(instance, sender, label, args);
                         break;
                     case "generatemobdata":
                         generateMobDataSubcommand.parseSubcommand(instance, sender, label, args);
@@ -76,19 +80,22 @@ public class LevelledMobsCommand implements CommandExecutor, TabCompleter {
 
 			if (sender.hasPermission("levelledmobs.command.summon")) {
 				suggestions.add("summon");
-			}
-			if (sender.hasPermission("levelledmobs.command.kill")) {
-				suggestions.add("kill");
-			}
-			if (sender.hasPermission("levelledmobs.command.reload")) {
-				suggestions.add("reload");
-			}
-			if (sender.hasPermission("levelledmobs.command.info")) {
-				suggestions.add("info");
-			}
+            }
+            if (sender.hasPermission("levelledmobs.command.kill")) {
+                suggestions.add("kill");
+            }
+            if (sender.hasPermission("levelledmobs.command.reload")) {
+                suggestions.add("reload");
+            }
+            if (sender.hasPermission("levelledmobs.command.info")) {
+                suggestions.add("info");
+            }
+            if (sender.hasPermission("levelledmobs.command.compatibility")) {
+                suggestions.add("compatibility");
+            }
 
-			return suggestions;
-		} else {
+            return suggestions;
+        } else {
 			switch (args[0].toLowerCase()) {
                 case "summon":
                     return summonSubcommand.parseTabCompletions(instance, sender, args);
@@ -96,6 +103,7 @@ public class LevelledMobsCommand implements CommandExecutor, TabCompleter {
                     return killSubcommand.parseTabCompletions(instance, sender, args);
                 case "generatemobdata":
                     return generateMobDataSubcommand.parseTabCompletions(instance, sender, args);
+                // missing subcommands don't have tab completions.
                 default:
                     return null;
             }

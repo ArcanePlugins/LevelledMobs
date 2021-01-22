@@ -102,7 +102,7 @@ public class LevelledMobs extends JavaPlugin {
     }
 
     //Checks if the server version is supported
-    private void checkCompatibility() {
+    public void checkCompatibility() {
         Utils.logger.info("&fCompatibility Checker: &7Checking compatibility with your server...");
 
         // Using a List system in case more compatibility checks are added.

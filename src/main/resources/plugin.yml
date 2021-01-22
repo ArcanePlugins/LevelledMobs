@@ -30,6 +30,7 @@ permissions:
       levelledmobs.command.kill.*: true
       levelledmobs.command.reload: true
       levelledmobs.command.info: true
+      levelledmobs.command.compatibility: true
 
   levelledmobs.command:
     description: 'Access to `/levelledmobs`.'
@@ -65,3 +66,7 @@ permissions:
   levelledmobs.command.info:
     description: 'Access to `/levelledmobs info`.'
     default: true
+
+  levelledmobs.command.compatibility:
+    description: 'Access to `/levelledmobs compatibility`.'
+    default: op
