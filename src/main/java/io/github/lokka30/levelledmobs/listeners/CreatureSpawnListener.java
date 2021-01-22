@@ -50,11 +50,7 @@ public class CreatureSpawnListener implements Listener {
         else{
             killer = (LivingEntity) damager;
         }
-
-        if (killer instanceof Projectile) {
-            killer = (LivingEntity) ((Projectile)killer).getShooter();
-        }
-
+        
         if (killer == null) return;
 
         Object levelTemp = killer.getPersistentDataContainer().get(instance.levelManager.levelKey, PersistentDataType.INTEGER);
