@@ -28,10 +28,11 @@ public class LevelledMobs extends JavaPlugin {
     public YamlConfiguration settingsCfg;
     public YamlConfiguration messagesCfg;
     public YamlConfiguration attributesCfg;
+    public YamlConfiguration dropsCfg;
     public ConfigUtils configUtils;
     public EntityDamageDebugListener entityDamageDebugListener;
 
-    public AttributeManager attributeManager;
+    public MobDataManager mobDataManager;
     public LevelManager levelManager;
 
     public PluginManager pluginManager;
@@ -54,7 +55,7 @@ public class LevelledMobs extends JavaPlugin {
         QuickTimer loadTimer = new QuickTimer();
         loadTimer.start(); // Record how long it takes for the plugin to load.
 
-        attributeManager = new AttributeManager(this);
+        mobDataManager = new MobDataManager(this);
         levelManager = new LevelManager(this);
 
         // Hook into WorldGuard, register LM's flags.
@@ -143,6 +144,10 @@ public class LevelledMobs extends JavaPlugin {
         // Replace/copy attributes file
         saveResource("attributes.yml", true);
         attributesCfg = YamlConfiguration.loadConfiguration(new File(getDataFolder(), "attributes.yml"));
+
+        // Replace/copy drops file
+        saveResource("drops.yml", true);
+        dropsCfg = YamlConfiguration.loadConfiguration(new File(getDataFolder(), "drops.yml"));
 
         // load configutils
         configUtils = new ConfigUtils(this);

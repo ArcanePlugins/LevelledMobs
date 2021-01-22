@@ -1,5 +1,6 @@
 package io.github.lokka30.levelledmobs.utils;
 
+import io.github.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.microlib.MicroLogger;
 import me.lokka30.microlib.MicroUtils;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -85,6 +86,19 @@ public final class Utils {
         } catch (NoSuchMethodError err) {
             //noinspection deprecation
             return zombie.isBaby();
+        }
+    }
+
+    /**
+     * Sends a debug message to console if enabled in settings
+     *
+     * @param instance LevelledMobs class
+     * @param location Reference to whereabouts the debug log is called so that it can be traced back easily
+     * @param msg      Message to help de-bugging
+     */
+    public static void debugLog(LevelledMobs instance, String location, String msg) {
+        if (instance.settingsCfg.getStringList("debug-misc").contains(location)) {
+            logger.info("&f&l[DEBUG]&7 &8[" + location + "&8]&7 " + msg);
         }
     }
 }

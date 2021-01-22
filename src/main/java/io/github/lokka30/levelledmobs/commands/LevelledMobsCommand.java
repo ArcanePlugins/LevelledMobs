@@ -16,42 +16,42 @@ import java.util.List;
  */
 public class LevelledMobsCommand implements CommandExecutor, TabCompleter {
 
-	private final LevelledMobs instance;
+    private final LevelledMobs instance;
 
-	public LevelledMobsCommand(final LevelledMobs instance) {
-		this.instance = instance;
-	}
+    public LevelledMobsCommand(final LevelledMobs instance) {
+        this.instance = instance;
+    }
 
-	private final InfoSubcommand infoSubcommand = new InfoSubcommand();
-	private final KillSubcommand killSubcommand = new KillSubcommand();
-	private final ReloadSubcommand reloadSubcommand = new ReloadSubcommand();
-	private final SummonSubcommand summonSubcommand = new SummonSubcommand();
-	private final GenerateAttributesSubcommand generateAttributesSubcommand = new GenerateAttributesSubcommand();
+    private final InfoSubcommand infoSubcommand = new InfoSubcommand();
+    private final KillSubcommand killSubcommand = new KillSubcommand();
+    private final ReloadSubcommand reloadSubcommand = new ReloadSubcommand();
+    private final SummonSubcommand summonSubcommand = new SummonSubcommand();
+    private final GenerateMobDataSubcommand generateMobDataSubcommand = new GenerateMobDataSubcommand();
 
-	public boolean onCommand(final CommandSender sender, final Command command, final String label, final String[] args) {
-		if (sender.hasPermission("levelledmobs.command")) {
-			if (args.length == 0) {
-				sendMainUsage(sender, label);
-			} else {
-				switch (args[0].toLowerCase()) {
-					case "kill":
-						killSubcommand.parseSubcommand(instance, sender, label, args);
-						break;
-					case "reload":
-						reloadSubcommand.parseSubcommand(instance, sender, label, args);
-						break;
-					case "summon":
-						summonSubcommand.parseSubcommand(instance, sender, label, args);
-						break;
-					case "info":
-						infoSubcommand.parseSubcommand(instance, sender, label, args);
-						break;
-					case "generateattributes":
-						generateAttributesSubcommand.parseSubcommand(instance, sender, label, args);
-						break;
-					default:
-						sendMainUsage(sender, label);
-				}
+    public boolean onCommand(final CommandSender sender, final Command command, final String label, final String[] args) {
+        if (sender.hasPermission("levelledmobs.command")) {
+            if (args.length == 0) {
+                sendMainUsage(sender, label);
+            } else {
+                switch (args[0].toLowerCase()) {
+                    case "kill":
+                        killSubcommand.parseSubcommand(instance, sender, label, args);
+                        break;
+                    case "reload":
+                        reloadSubcommand.parseSubcommand(instance, sender, label, args);
+                        break;
+                    case "summon":
+                        summonSubcommand.parseSubcommand(instance, sender, label, args);
+                        break;
+                    case "info":
+                        infoSubcommand.parseSubcommand(instance, sender, label, args);
+                        break;
+                    case "generatemobdata":
+                        generateMobDataSubcommand.parseSubcommand(instance, sender, label, args);
+                        break;
+                    default:
+                        sendMainUsage(sender, label);
+                }
 			}
 		} else {
 			instance.configUtils.sendNoPermissionMsg(sender);
@@ -90,15 +90,15 @@ public class LevelledMobsCommand implements CommandExecutor, TabCompleter {
 			return suggestions;
 		} else {
 			switch (args[0].toLowerCase()) {
-				case "summon":
-					return summonSubcommand.parseTabCompletions(instance, sender, args);
-				case "kill":
-					return killSubcommand.parseTabCompletions(instance, sender, args);
-				case "generateattributes":
-					return generateAttributesSubcommand.parseTabCompletions(instance, sender, args);
-				default:
-					return null;
-			}
+                case "summon":
+                    return summonSubcommand.parseTabCompletions(instance, sender, args);
+                case "kill":
+                    return killSubcommand.parseTabCompletions(instance, sender, args);
+                case "generatemobdata":
+                    return generateMobDataSubcommand.parseTabCompletions(instance, sender, args);
+                default:
+                    return null;
+            }
 		}
 	}
 }

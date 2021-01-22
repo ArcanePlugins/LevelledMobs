@@ -362,6 +362,7 @@ summon-command-spawn-distance-from-player: 5
 debug-entity-damage: false
 debug-show-spawned-mobs: false
 debug-show-mobs-not-levellable: false
+debug-misc: [ ]
 
 # This value is used when this file is loaded to check if this file is most likely incompatible.
 # The value must match exactly what version the plugin ships the default file with.

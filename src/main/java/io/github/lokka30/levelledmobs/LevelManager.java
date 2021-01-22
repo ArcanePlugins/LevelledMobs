@@ -11,12 +11,10 @@ import io.github.lokka30.levelledmobs.utils.Utils;
 import me.lokka30.microlib.MicroUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.entity.*;
-import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -122,38 +120,35 @@ public class LevelManager {
     // This sets the levelled currentDrops on a levelled mob that just died.
     public List<ItemStack> getLevelledItemDrops(final LivingEntity livingEntity, List<ItemStack> currentDrops) {
 
+        Utils.debugLog(instance, "LevelManager#getLevelledItemDrops", "1: Method called. " + currentDrops.size() + " drops will be analysed.");
+
         // Must be a levelled mob
         if (!livingEntity.getPersistentDataContainer().has(isLevelledKey, PersistentDataType.STRING))
             return currentDrops;
 
-        // Make sure their other items don't get duped
-        List<ItemStack> equipmentList = new ArrayList<>();
-
-        if (livingEntity.getEquipment() != null) {
-            equipmentList.addAll(Arrays.asList(livingEntity.getEquipment().getArmorContents()));
-            equipmentList.add(livingEntity.getEquipment().getItemInMainHand());
-            equipmentList.add(livingEntity.getEquipment().getItemInOffHand());
-        }
-
-        if (livingEntity instanceof InventoryHolder) {
-            equipmentList.addAll(Arrays.asList(((InventoryHolder) livingEntity).getInventory().getContents()));
-        }
-
-        equipmentList.removeIf(itemStack -> itemStack.getType() == Material.AIR);
+        Utils.debugLog(instance, "LevelManager#getLevelledItemDrops", "2: LivingEntity is a levelled mob.");
 
         // Get their level
         int level = Objects.requireNonNull(livingEntity.getPersistentDataContainer().get(levelKey, PersistentDataType.INTEGER));
+        Utils.debugLog(instance, "LevelManager#getLevelledItemDrops", "3: Entity level is " + level + ".");
 
         // Get currentDrops added per level value
-        int multiplierInt = new BigDecimal(instance.settingsCfg.getDouble("fine-tuning.additions.custom.item-drop") * level) // get value from config
+        int addition = new BigDecimal(instance.settingsCfg.getDouble("fine-tuning.additions.custom.item-drop") * level) // get value from config
                 .setScale(0, RoundingMode.HALF_DOWN).intValueExact(); // truncate double to int
+        Utils.debugLog(instance, "LevelManager#getLevelledItemDrops", "4: Item drop addition is +" + addition + ".");
 
         // Modify current drops
-        currentDrops.forEach(currentDrop -> equipmentList.forEach(equipmentItem -> {
-            if (!currentDrop.isSimilar(equipmentItem)) {
-                currentDrop.setAmount(currentDrop.getAmount() + (currentDrop.getAmount() * multiplierInt));
+        Utils.debugLog(instance, "LevelManager#getLevelledItemDrops", "5: Scanning " + currentDrops.size() + " items...");
+        for (ItemStack currentDrop : currentDrops) {
+            Utils.debugLog(instance, "LevelManager#getLevelledItemDrops", "6: Scanning drop " + currentDrop.getType().toString() + " with current amount " + currentDrop.getAmount() + "...");
+
+            if (instance.mobDataManager.isLevelledDropManaged(livingEntity.getType(), currentDrop.getType())) {
+                currentDrop.setAmount(currentDrop.getAmount() + (currentDrop.getAmount() * addition));
+                Utils.debugLog(instance, "LevelManager#getLevelledItemDrops", "7: Item was managed. New amount: " + currentDrop.getAmount() + ".");
+            } else {
+                Utils.debugLog(instance, "LevelManager#getLevelledItemDrops", "7: Item was unmanaged.");
             }
-        }));
+        }
 
         return currentDrops;
     }

@@ -5,10 +5,12 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 
 public class EntityDeathListener implements Listener {
 
@@ -32,11 +34,13 @@ public class EntityDeathListener implements Listener {
         if (livingEntity.getPersistentDataContainer().has(instance.levelManager.isLevelledKey, PersistentDataType.STRING)) {
 
             // Set levelled item drops
-            event.getDrops().clear();
-            event.getDrops().addAll(instance.levelManager.getLevelledItemDrops(livingEntity, event.getDrops()));
+            final List<ItemStack> drops = event.getDrops();
+            event.getDrops().addAll(instance.levelManager.getLevelledItemDrops(livingEntity, drops));
 
             // Set levelled exp drops
-            event.setDroppedExp(instance.levelManager.getLevelledExpDrops(livingEntity, event.getDroppedExp()));
+            if (event.getDroppedExp() > 0) {
+                event.setDroppedExp(instance.levelManager.getLevelledExpDrops(livingEntity, event.getDroppedExp()));
+            }
         }
     }
 }

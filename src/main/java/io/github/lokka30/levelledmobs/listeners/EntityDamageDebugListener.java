@@ -90,6 +90,6 @@ public class EntityDamageDebugListener implements Listener {
                 "&8 - &f%s &7(CurrentValue) &8= &b%s", attName, Utils.round(attInstance.getBaseValue()))));
         p.sendMessage(MicroUtils.colorize(String.format(
                 "&8 - &f%s &7(DefaultValue) &8= &b%s",
-                attName, Utils.round((double)instance.attributeManager.getDefaultValue(ent.getType(), att)))));
+                attName, Utils.round((double) instance.mobDataManager.getAttributeDefaultValue(ent.getType(), att)))));
     }
 }
