@@ -29,6 +29,7 @@ public class PlayerJoinListener implements Listener {
         if (!instance.messagesCfg.getBoolean("other.compatibility-notice.enabled")) return;
 
         List<String> messages = instance.messagesCfg.getStringList("other.compatibility-notice.messages");
+        messages = Utils.replaceAllInList(messages, "%prefix%", instance.configUtils.getPrefix());
         messages = Utils.replaceAllInList(messages, "%incompatibilities%", instance.incompatibilitiesAmount + "");
         messages = Utils.colorizeAllInList(messages);
         messages.forEach(event.getPlayer()::sendMessage);
