@@ -177,6 +177,15 @@ command:
       usage:
         - '%prefix% Usage: &b/%label% compatibility'
 
+other:
+  compatibility-notice:
+    enabled: true
+    messages:
+      - '%prefix% LevelledMobs compatibility notice:'
+      - '&8 &m->&r &b%incompatibilities% &7possible incompatibilities were found. Please run ''&b/levelledmobs compatibility&7'' to check them.'
+      - '&8 &m->&7 This message is sent as you have the permission &blevelledmobs.compatibility-notice&7. You can disable this message in &bmessages.yml&7.'
+      - '&8 &m->&7 Please ensure you have followed all instructions on the plugin''s Wiki page.'
+
 # This value is used when this file is loaded to check if this file is most likely incompatible.
 # The value must match exactly what version the plugin ships the default file with.
 # Don't change this unless you know what you're doing!

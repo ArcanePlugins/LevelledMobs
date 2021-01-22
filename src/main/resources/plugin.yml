@@ -19,6 +19,7 @@ permissions:
     description: 'Access to all LevelledMobs permissions.'
     default: op
     children:
+      levelledmobs.compatibility-notice: true
       levelledmobs.command.*: true
 
   levelledmobs.command.*:
@@ -31,6 +32,10 @@ permissions:
       levelledmobs.command.reload: true
       levelledmobs.command.info: true
       levelledmobs.command.compatibility: true
+
+  levelledmobs.compatibility-notice:
+    description: 'Ability to view the compatibility notice on join if any possible incompatibilities are found on startup.'
+    default: op
 
   levelledmobs.command:
     description: 'Access to `/levelledmobs`.'

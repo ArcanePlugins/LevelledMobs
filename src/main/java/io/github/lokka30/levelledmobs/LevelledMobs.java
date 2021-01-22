@@ -50,6 +50,8 @@ public class LevelledMobs extends JavaPlugin {
 
     private long loadTime;
 
+    public int incompatibilitiesAmount;
+
     public void onLoad() {
         Utils.logger.info("&f~ Initiating start-up procedure ~");
 
@@ -126,6 +128,7 @@ public class LevelledMobs extends JavaPlugin {
             incompatibilities.add("Your server does not have &bProtocolLib&7 installed! This means that no levelled nametags will appear on the mobs. If you wish to see custom nametags above levelled mobs, then you must install ProtocolLib.");
         }
 
+        incompatibilitiesAmount = incompatibilities.size();
         if (incompatibilities.isEmpty()) {
             Utils.logger.info("&fCompatibility Checker: &7No incompatibilities found.");
         } else {
@@ -202,6 +205,7 @@ public class LevelledMobs extends JavaPlugin {
         pluginManager.registerEvents(new EntityTransformListener(this), this);
         pluginManager.registerEvents(new EntityNametagListener(this), this);
         pluginManager.registerEvents(new EntityTargetListener(this), this);
+        pluginManager.registerEvents(new PlayerJoinListener(this), this);
     }
 
     private void registerCommands() {

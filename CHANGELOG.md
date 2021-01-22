@@ -10,7 +10,7 @@
 
 ### Important:
 Before installing this update on your server, please understand the following:
-  * **You must install ProtocolLib alongside LevelledMobs.** LevelledMobs depends on ProtocolLib for the new nametag system.
+  * **Nametags now require ProtocolLib.** If you do not install ProtocolLib, then you will not see levelled mobs' nametags.
   * **PhantomLib is no longer used by LevelledMobs.** Uninstall it if you wish (unless you have other plugins that depend on it installed)
   * **Every single permission has changed, and a bunch have been added in too.** I recommend you remove any current permissions from LM you have set to your groups and apply the new ones. See the documentation.
   * If you are using any **WorldGuard flags from this plugin**, you should **remove them from your regions prior to installing this new version**. ALL previous LevelledMobs flags have been renamed, and I've also added in a new flag which was a popular request. :)
@@ -20,9 +20,9 @@ Before installing this update on your server, please understand the following:
 * @stumper66, whose contributions are too many to list here ;)
 * @CoolBoy, @Esophose and @7smile7 for creating & fixing the complicated packet nametag method
 * @Oathkeeper for their great feature suggestions and testing
-* Hugo5551 for making a bunch of code suggestions
-* squeebis for testing
-* Jacksa for reporting multiple bugs
+* Hugo5551 for making a handful of great code suggestions
+* squeebis for helping us out with testing
+* JacksaYT for reporting multiple bugs, some of high importance
   
 ### Changelog:
 **Summon Subcommand** (stumper66)
@@ -109,7 +109,7 @@ Before installing this update on your server, please understand the following:
 * Magma Cubes, Slimes, Ghasts, Phantoms, Ender Dragons, Shulkers and Hoglins are now levelled as expected (stumper66)
 * Armor Stands no longer have items/xp drops from death multiplied (lokka30)
 * XP drop management now checks if the mob is levelled rather than is levellable, fixes possible NPE (lokka30)
-* Many unwritten bugs fixed by stumper66 and lokka30 during testing
+* Many unwritten bugs fixed by stumper66 and lokka30 during the pre-release testing stage
 
 **Removed Features**
 * Removed an old feature 'flight speed multiplier' which we found out Minecraft only applies to parrots. Completely unnecessary and misleading. (lokka30)
@@ -130,3 +130,4 @@ Before installing this update on your server, please understand the following:
 * Rearranged the Manager classes from the utils package to the main package (lokka30)
 * Use `(ignoreCancelled = true, priority = EventPriority.MONITOR)` with most event handlers (Hugo5551)
 * Improvements to the debug listener (stumper66)
+* Improved compatibility checker (lokka30)
