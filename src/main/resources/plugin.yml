@@ -3,7 +3,7 @@ version: ${project.version}
 main: io.github.lokka30.levelledmobs.LevelledMobs
 softdepend: [ WorldEdit, WorldGuard, ProtocolLib ]
 api-version: '1.13'
-load: STARTUP
+load: POSTWORLD
 author: lokka30
 description: ${project.description}
 website: 'https://github.com/lokka30/LevelledMobs/wiki'
