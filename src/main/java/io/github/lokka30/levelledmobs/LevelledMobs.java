@@ -37,6 +37,7 @@ public class LevelledMobs extends JavaPlugin {
 
     public PluginManager pluginManager;
 
+    private boolean abortStartup;
     public boolean hasWorldGuardInstalled;
     public WorldGuardManager worldGuardManager;
 
@@ -52,6 +53,13 @@ public class LevelledMobs extends JavaPlugin {
     public void onLoad() {
         Utils.logger.info("&f~ Initiating start-up procedure ~");
 
+        if (getServer().getPluginManager().getPlugin("ProtocolLib") == null){
+            Utils.logger.error("&cRequired plugin ProtocolLib is not present!  &bDisabling LevelledMobs");
+            abortStartup = true;
+            setEnabled(false);
+            return;
+        }
+
         QuickTimer loadTimer = new QuickTimer();
         loadTimer.start(); // Record how long it takes for the plugin to load.
 
@@ -66,9 +74,11 @@ public class LevelledMobs extends JavaPlugin {
         }
 
         loadTime = loadTimer.getTimer(); // combine the load time with enable time.
+        abortStartup = false;
     }
 
     public void onEnable() {
+        if (abortStartup) return;
         QuickTimer enableTimer = new QuickTimer();
         enableTimer.start(); // Record how long it takes for the plugin to enable.
 
@@ -86,6 +96,10 @@ public class LevelledMobs extends JavaPlugin {
     }
 
     public void onDisable() {
+        if (abortStartup){
+            Utils.logger.info("&f~ Shut-down complete");
+            return;
+        }
         Utils.logger.info("&f~ Initiating shut-down procedure ~");
 
         QuickTimer disableTimer = new QuickTimer();

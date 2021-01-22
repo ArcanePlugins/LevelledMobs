@@ -284,8 +284,18 @@ public class CreatureSpawnListener implements Listener {
             //A random number between min and max which determines the amount of variation that will take place
             final int change = ThreadLocalRandom.current().nextInt(minVariation, maxVariation + 1);
 
+            boolean useOnlyNegative = false;
+
+            if (finalLevel >= maxLevel) {
+                finalLevel = maxLevel;
+                useOnlyNegative = true;
+            }
+            else if (finalLevel <= minLevel) {
+                finalLevel = minLevel;
+            }
+
             //Start variation. First check if variation is positive or negative towards the original level amount.
-            if (ThreadLocalRandom.current().nextBoolean()) {
+            if (!useOnlyNegative || ThreadLocalRandom.current().nextBoolean()) {
                 //Positive. Add the variation to the final level
                 finalLevel = finalLevel + change;
             } else {
@@ -338,34 +348,48 @@ public class CreatureSpawnListener implements Listener {
             yEnd = instance.settingsCfg.getInt("y-distance-levelling.starting-y-level", 100);
         }
 
-        if (mobYLocation <= yStart){
-            return isAscending ? minLevel : maxLevel;
+        int useLevel = minLevel;
+        boolean skipYPeriod = false;
+
+        if (mobYLocation >= yEnd){
+            useLevel = maxLevel;
+            skipYPeriod = true;
         }
-        else if (mobYLocation > yEnd){
-            return isAscending ? maxLevel : minLevel;
+        else if (mobYLocation <= yStart){
+            skipYPeriod = true;
         }
 
-        final double diff = yEnd - yStart;
-        double useMobYLocation = mobYLocation - yStart;
-        int useLevel;
+        if (!skipYPeriod) {
+            final double diff = yEnd - yStart;
+            double useMobYLocation =  mobYLocation - yStart;
 
-        if (yPeriod > 0){
-            useLevel = (int)(useMobYLocation / (double) yPeriod);
-        }
-        else {
-            if (useMobYLocation < yStart) {
-                useMobYLocation = 1.0;
-            } else if (useMobYLocation > yEnd) {
-                useMobYLocation = yEnd;
+            if (yPeriod > 0) {
+                useLevel = (int) (useMobYLocation / (double) yPeriod);
+            } else {
+                double percent = useMobYLocation / diff;
+                useLevel = (int) Math.ceil((maxLevel - minLevel + 1) * percent);
             }
+        }
 
-            useLevel = (int) Math.ceil(useMobYLocation / diff * maxLevel);
+        if (!isAscending) {
+            useLevel = maxLevel - useLevel + 1;
         }
 
         if (variance > 0){
-            final int change = ThreadLocalRandom.current().nextInt(0, variance);
+            boolean useOnlyNegative = false;
+
+            if (useLevel >= maxLevel) {
+                useLevel = maxLevel;
+                useOnlyNegative = true;
+            }
+            else if (useLevel <= minLevel) {
+                useLevel = minLevel;
+            }
+
+            final int change = ThreadLocalRandom.current().nextInt(0, variance + 1);
+
             //Start variation. First check if variation is positive or negative towards the original level amount.
-            if (ThreadLocalRandom.current().nextBoolean()) {
+            if (!useOnlyNegative || ThreadLocalRandom.current().nextBoolean()) {
                 //Positive. Add the variation to the final level
                 useLevel += change;
             } else {
@@ -374,12 +398,8 @@ public class CreatureSpawnListener implements Listener {
             }
         }
 
-        if (!isAscending) {
-            useLevel = maxLevel - useLevel + 1;
-        }
-
-        if (useLevel < minLevel){ useLevel = minLevel; }
-        else if (useLevel > maxLevel){ useLevel = maxLevel; }
+        if (useLevel < minLevel) useLevel = minLevel;
+        else if (useLevel > maxLevel) useLevel = maxLevel;
 
         return useLevel;
     }
