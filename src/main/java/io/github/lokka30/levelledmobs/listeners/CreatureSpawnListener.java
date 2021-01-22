@@ -6,23 +6,19 @@ import io.github.lokka30.levelledmobs.utils.DebugInfo;
 import io.github.lokka30.levelledmobs.utils.MobProcessReason;
 import io.github.lokka30.levelledmobs.utils.ModalList;
 import io.github.lokka30.levelledmobs.utils.Utils;
+import me.lokka30.microlib.MicroUtils;
 import org.bukkit.attribute.Attribute;
-import org.bukkit.entity.Creeper;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Zombie;
+import org.bukkit.attribute.AttributeInstance;
+import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.CreatureSpawnEvent;
+import org.bukkit.event.entity.*;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
-import org.bukkit.event.entity.EntitySpawnEvent;
 import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.persistence.PersistentDataType;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Random;
+import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class CreatureSpawnListener implements Listener {
@@ -32,6 +28,54 @@ public class CreatureSpawnListener implements Listener {
 
     public CreatureSpawnListener(final LevelledMobs instance) {
         this.instance = instance;
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
+    public void onPlayerDeath(final PlayerDeathEvent event) {
+        String nametag = instance.settingsCfg.getString("creature-death-nametag", "&8[&7Level %level%&8 | &f%displayname%&8]");
+        if (!Utils.isNotNullOrEmpty(nametag)) return; // if they want retain the stock message they are configure it with an empty string
+
+        EntityDamageEvent entityDamageEvent = event.getEntity().getLastDamageCause();
+        if (entityDamageEvent == null || entityDamageEvent.isCancelled() || !(entityDamageEvent instanceof EntityDamageByEntityEvent)){
+            return;
+        }
+
+        Entity damager = ((EntityDamageByEntityEvent) entityDamageEvent).getDamager();
+        LivingEntity killer;
+
+        if (damager instanceof Projectile) {
+            killer = (LivingEntity) ((Projectile)damager).getShooter();
+        }
+        else if (!(damager instanceof LivingEntity)) return;
+        else{
+            killer = (LivingEntity) damager;
+        }
+
+        if (killer instanceof Projectile) {
+            killer = (LivingEntity) ((Projectile)killer).getShooter();
+        }
+
+        if (killer == null) return;
+
+        Object levelTemp = killer.getPersistentDataContainer().get(instance.levelManager.levelKey, PersistentDataType.INTEGER);
+        if (levelTemp == null) return;
+
+        int level = (int)levelTemp;
+        String entityName = instance.configUtils.getEntityName(killer.getType());
+        String displayName = killer.getCustomName() == null ? entityName : killer.getCustomName();
+        AttributeInstance maxHealth = killer.getAttribute(Attribute.GENERIC_MAX_HEALTH);
+        String health = maxHealth == null ? "?" : Utils.round(maxHealth.getBaseValue()) + "";
+
+        nametag = nametag.replace("%level%", level + "");
+        nametag = nametag.replace("%displayname%", displayName);
+        nametag = nametag.replace("%typename%", entityName);
+        nametag = nametag.replace("%health%", Utils.round(killer.getHealth()) + "");
+        nametag = nametag.replace("%max_health%", health);
+        nametag = nametag.replace("%heart_symbol%", "❤");
+        nametag = MicroUtils.colorize(nametag);
+
+        String newMessage = Utils.replaceEx(event.getDeathMessage(), killer.getName(), nametag);
+        event.setDeathMessage(newMessage);
     }
 
     /**
