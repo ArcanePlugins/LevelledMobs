@@ -146,7 +146,13 @@ public class CreatureSpawnListener implements Listener {
             if (livingEntity instanceof Creeper && instance.settingsCfg.getInt("creeper-max-damage-radius", 3) != 3) {
 
                 // level 1 ends up with 3 (base) and anything higher becomes a percent of the max radius as specified in the config
-                int blastRadius = (int) Math.floor(level / 10.0 * ((double) instance.settingsCfg.getInt("creeper-max-damage-radius")) - 3) + 3;
+                //int blastRadius = (int) Math.floor(level / 10.0 * ((double) instance.settingsCfg.getInt("creeper-max-damage-radius")) - 3) + 3;
+
+                final double levelDiff = instance.settingsCfg.getInt("fine-tuning.max-level", 10) - instance.settingsCfg.getInt("fine-tuning.min-level", 1);
+                final double maxBlastDiff = instance.settingsCfg.getInt("creeper-max-damage-radius", 3) - 3;
+                final double useLevel = level - instance.settingsCfg.getInt("fine-tuning.min-level", 1);
+                final double percent = useLevel / levelDiff;
+                int blastRadius = (int)Math.round(maxBlastDiff * percent) + 3;
 
                 // even at 100 creepers are atomic bombs but at least won't blow up the entire world
                 if (blastRadius > LevelManager.maxCreeperBlastRadius) {
