@@ -126,7 +126,7 @@ public class CreatureSpawnListener implements Listener {
             // Max Health attribute
             if (livingEntity.getAttribute(Attribute.GENERIC_MAX_HEALTH) != null) {
                 double multiplier = instance.settingsCfg.getDouble("fine-tuning.additions.attributes.max-health");
-                instance.attributeManager.setAddedValue(livingEntity, Attribute.GENERIC_MAX_HEALTH, multiplier, level);
+                instance.mobDataManager.setAttributeAddedValue(livingEntity, Attribute.GENERIC_MAX_HEALTH, multiplier, level);
                 //noinspection ConstantConditions
                 livingEntity.setHealth(livingEntity.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue());
             }
@@ -134,13 +134,13 @@ public class CreatureSpawnListener implements Listener {
             // Movement Speed attribute
             if (livingEntity.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED) != null) {
                 double multiplier = instance.settingsCfg.getDouble("fine-tuning.additions.attributes.movement-speed");
-                instance.attributeManager.setAddedValue(livingEntity, Attribute.GENERIC_MOVEMENT_SPEED, multiplier, level);
+                instance.mobDataManager.setAttributeAddedValue(livingEntity, Attribute.GENERIC_MOVEMENT_SPEED, multiplier, level);
             }
 
             // Attack Damage attribute
             if (livingEntity.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE) != null) {
                 double multiplier = instance.settingsCfg.getDouble("fine-tuning.additions.attributes.attack-damage");
-                instance.attributeManager.setAddedValue(livingEntity, Attribute.GENERIC_ATTACK_DAMAGE, multiplier, level);
+                instance.mobDataManager.setAttributeAddedValue(livingEntity, Attribute.GENERIC_ATTACK_DAMAGE, multiplier, level);
             }
 
             if (livingEntity instanceof Creeper && instance.settingsCfg.getInt("creeper-max-damage-radius", 3) != 3) {
