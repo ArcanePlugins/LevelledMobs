@@ -1,4 +1,4 @@
-package io.github.lokka30.levelledmobs.enums;
+package io.github.lokka30.levelledmobs.utils;
 
 public enum MobProcessReason {
     NONE,

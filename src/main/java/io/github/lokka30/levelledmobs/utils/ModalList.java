@@ -1,6 +1,5 @@
-package io.github.lokka30.levelledmobs.enums;
+package io.github.lokka30.levelledmobs.utils;
 
-import io.github.lokka30.levelledmobs.utils.Utils;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 /**

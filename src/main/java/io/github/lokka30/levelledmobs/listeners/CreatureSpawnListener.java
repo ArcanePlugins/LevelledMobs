@@ -2,9 +2,9 @@ package io.github.lokka30.levelledmobs.listeners;
 
 import io.github.lokka30.levelledmobs.LevelManager;
 import io.github.lokka30.levelledmobs.LevelledMobs;
-import io.github.lokka30.levelledmobs.enums.DebugInfo;
-import io.github.lokka30.levelledmobs.enums.MobProcessReason;
-import io.github.lokka30.levelledmobs.enums.ModalList;
+import io.github.lokka30.levelledmobs.utils.DebugInfo;
+import io.github.lokka30.levelledmobs.utils.MobProcessReason;
+import io.github.lokka30.levelledmobs.utils.ModalList;
 import io.github.lokka30.levelledmobs.utils.Utils;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Creeper;
