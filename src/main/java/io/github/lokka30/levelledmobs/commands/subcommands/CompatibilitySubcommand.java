@@ -13,6 +13,7 @@ public class CompatibilitySubcommand implements Subcommand {
         if (sender.hasPermission("levelledmobs.command.compatibility")) {
             if (args.length == 1) {
                 List<String> messages = instance.messagesCfg.getStringList("command.levelledmobs.compatibility.notice");
+                messages = Utils.replaceAllInList(messages, "%prefix%", instance.configUtils.getPrefix());
                 messages = Utils.colorizeAllInList(messages);
                 messages.forEach(sender::sendMessage);
                 instance.checkCompatibility();

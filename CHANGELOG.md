@@ -53,7 +53,7 @@ Before installing this update on your server, please understand the following:
 * The command now requires a permission to run too (given by default) in case you wanted to restrict access to it.
 
 **Packet Nametags** (lokka30, CoolBoy, Esophose, 7smile7, stumper66)
-* This feature now forces LM to depend on ProtocolLib. Make sure you have ProtocolLib installed!
+* This feature requires ProtocolLib to be installed, else the LevelledMobs nametag system won't be enabled.
 * No longer does LevelledMobs mess with nametags! It instead modifies the packets sent to the client.
 * In other words, LM sends a 'fake nametag' to the client, but there isn't actually a nametag on the mob.
 * This has fixed the following problems:
