@@ -159,7 +159,7 @@ public class LevelManager {
             double xpPerLevel = instance.settingsCfg.getDouble("fine-tuning.additions.custom.xp-drop");
             int level = Objects.requireNonNull(ent.getPersistentDataContainer().get(instance.levelManager.levelKey, PersistentDataType.INTEGER));
 
-            xp = (int) (xp + (xpPerLevel * level));
+            xp = (int) Math.round(xp + (xpPerLevel * level));
         }
         return xp;
     }
