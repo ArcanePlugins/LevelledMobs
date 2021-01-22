@@ -203,6 +203,8 @@ public class LevelManager {
      *   - @7smile7 (https://www.spigotmc.org/members/7smile7.43809/)
      */
     public void updateNametag(LivingEntity entity, String nametag, List<Player> players) {
+        if (!instance.hasProtocolLibInstalled) return;
+
         for (Player player : players) {
             WrappedDataWatcher dataWatcher = WrappedDataWatcher.getEntityWatcher(entity).deepClone();
             WrappedDataWatcher.Serializer chatSerializer = WrappedDataWatcher.Registry.getChatComponentSerializer(true);
@@ -259,6 +261,8 @@ public class LevelManager {
     }
 
     public void stopNametagAutoUpdateTask() {
+        if (!instance.hasProtocolLibInstalled) return;
+
         Utils.logger.info("&fTasks: &7Stopping async nametag auto update task...");
 
         if (nametagAutoUpdateTask != null)

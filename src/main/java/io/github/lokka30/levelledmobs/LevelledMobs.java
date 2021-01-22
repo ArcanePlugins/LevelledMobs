@@ -37,8 +37,8 @@ public class LevelledMobs extends JavaPlugin {
 
     public PluginManager pluginManager;
 
-    private boolean abortStartup;
     public boolean hasWorldGuardInstalled;
+    public boolean hasProtocolLibInstalled;
     public WorldGuardManager worldGuardManager;
 
     public boolean debugEntityDamageWasEnabled = false;
@@ -53,13 +53,6 @@ public class LevelledMobs extends JavaPlugin {
     public void onLoad() {
         Utils.logger.info("&f~ Initiating start-up procedure ~");
 
-        if (getServer().getPluginManager().getPlugin("ProtocolLib") == null){
-            Utils.logger.error("&cRequired plugin ProtocolLib is not present!  &bDisabling LevelledMobs");
-            abortStartup = true;
-            setEnabled(false);
-            return;
-        }
-
         QuickTimer loadTimer = new QuickTimer();
         loadTimer.start(); // Record how long it takes for the plugin to load.
 
@@ -73,12 +66,12 @@ public class LevelledMobs extends JavaPlugin {
             worldGuardManager = new WorldGuardManager(this);
         }
 
+        hasProtocolLibInstalled = getServer().getPluginManager().getPlugin("ProtocolLib") != null;
+
         loadTime = loadTimer.getTimer(); // combine the load time with enable time.
-        abortStartup = false;
     }
 
     public void onEnable() {
-        if (abortStartup) return;
         QuickTimer enableTimer = new QuickTimer();
         enableTimer.start(); // Record how long it takes for the plugin to enable.
 
@@ -86,7 +79,9 @@ public class LevelledMobs extends JavaPlugin {
         loadFiles();
         registerListeners();
         registerCommands();
-        levelManager.startNametagAutoUpdateTask();
+        if (hasProtocolLibInstalled) {
+            levelManager.startNametagAutoUpdateTask();
+        }
 
         Utils.logger.info("&fStart-up: &7Running misc procedures...");
         setupMetrics();
@@ -96,10 +91,6 @@ public class LevelledMobs extends JavaPlugin {
     }
 
     public void onDisable() {
-        if (abortStartup){
-            Utils.logger.info("&f~ Shut-down complete");
-            return;
-        }
         Utils.logger.info("&f~ Initiating shut-down procedure ~");
 
         QuickTimer disableTimer = new QuickTimer();
@@ -129,6 +120,10 @@ public class LevelledMobs extends JavaPlugin {
         if (!isRunningSupportedVersion) {
             incompatibilities.add("Your server version &8(&b" + currentServerVersion + "&8)&7 is unsupported by &bLevelledMobs v" + getDescription().getVersion() + "&7!" +
                     "Compatible MC versions: &b" + String.join(", ", Utils.getSupportedServerVersions()) + "&7.");
+        }
+
+        if (!hasProtocolLibInstalled) {
+            incompatibilities.add("Your server does not have &bProtocolLib&7 installed! This means that no levelled nametags will appear on the mobs. If you wish to see custom nametags above levelled mobs, then you must install ProtocolLib.");
         }
 
         if (incompatibilities.isEmpty()) {
