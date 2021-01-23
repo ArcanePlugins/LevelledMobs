@@ -1,0 +1,27 @@
+# use this file to add custom item drops for any specified mob
+
+# attributes available:
+# minlevel - the minimal mob level required to drop this item
+# maxlevel - the maximum mob level that can drop this item
+# chance - a value to determine how likely the mob is to drop this item.  1.0 = 100%, 0.1 = 10%, etc
+# amount - how many of this item will be dropped
+# nomultiplier - the level of the mob will not affect the amount dropped
+# enchantments - enter a list of enchantments the item will have and the enchantment level
+
+# enter a mob then specify the item it can drop.
+
+ZOMBIE:
+  - diamond:
+      amount: 2
+      chance: 0.3
+  - diamond_sword:
+      chance: 0.1
+      enchantments:
+        fire_aspect: 2
+        unbreaking: 1
+  - diamond_sword:
+      chance: 0.2
+  - emerald:
+      chance: 0.5
+      amount: 5
+
