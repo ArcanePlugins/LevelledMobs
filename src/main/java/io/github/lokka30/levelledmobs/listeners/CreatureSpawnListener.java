@@ -6,6 +6,7 @@ import io.github.lokka30.levelledmobs.utils.DebugInfo;
 import io.github.lokka30.levelledmobs.utils.MobProcessReason;
 import io.github.lokka30.levelledmobs.utils.ModalList;
 import io.github.lokka30.levelledmobs.utils.Utils;
+import io.lumine.xikage.mythicmobs.MythicMobs;
 import me.lokka30.microlib.MicroUtils;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
@@ -18,7 +19,9 @@ import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.persistence.PersistentDataType;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class CreatureSpawnListener implements Listener {
@@ -122,6 +125,11 @@ public class CreatureSpawnListener implements Listener {
             return;
         if (livingEntity.getPersistentDataContainer().has(instance.levelManager.levelKey, PersistentDataType.INTEGER))
             return;
+
+        //Check if the mob was spawned by MythicMobs
+        if (MythicMobs.inst().getAPIHelper().isMythicMob(livingEntity) && !instance.settingsCfg.getBoolean("allow-mythic-mobs")) {
+            return;
+        }
 
         //Check the 'worlds list' to see if the mob is allowed to be levelled in the world it spawned in
         if (!ModalList.isEnabledInList(instance.settingsCfg, "allowed-worlds-list", livingEntity.getWorld().getName())) {

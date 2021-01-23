@@ -167,6 +167,30 @@ y-distance-levelling:
   variance: 0
 
 
+# When a mob dies and drops a head, if the mob is a high level and their drops
+# are multiplied, should the heads be multiplied too?
+# On some servers, heads are an expensive resource in their economy
+# so this option allows you to keep it that way.
+# By default, this is disabled.
+mobs-multiply-head-drops: false
+
+
+# If an existing mob has
+# the following conditions
+# then they will not be levelled.
+# For example, enable 'nametagged'
+# if you do not want mobs that are
+# nametagged to be levelled.
+# By default, these are disabled and enabled respectively.
+no-level-conditions:
+  nametagged: false
+  tamed: true
+
+
+# Set if mythic mobs will be levelled or not.
+allow-mythic-mobs: false
+
+
 # If you want to force an entity type to have a different minimum/maximum level then you can do that here.
 # These settings are further overriden by 'world-level-override'
 entitytype-level-override:
@@ -370,4 +394,4 @@ debug-misc: [ ]
 # This value is used when this file is loaded to check if this file is most likely incompatible.
 # The value must match exactly what version the plugin ships the default file with.
 # Don't change this unless you know what you're doing!
-file-version: 22
+file-version: 23

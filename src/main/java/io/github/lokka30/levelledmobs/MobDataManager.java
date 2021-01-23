@@ -35,6 +35,14 @@ public class MobDataManager {
     }
 
     public boolean isLevelledDropManaged(EntityType entityType, Material material) {
+        // Head drops
+        if (material.toString().endsWith("_HEAD") || material.toString().endsWith("_SKULL")) {
+            if (!instance.settingsCfg.getBoolean("mobs-multiply-head-drops")) {
+                return false;
+            }
+        }
+
+        // Check list
         return instance.dropsCfg.getStringList(entityType.toString()).contains(material.toString());
     }
 }

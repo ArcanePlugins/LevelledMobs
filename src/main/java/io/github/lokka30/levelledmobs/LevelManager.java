@@ -78,6 +78,14 @@ public class LevelManager {
             return false;
         }
 
+        // Check 'no level conditions'
+        if (livingEntity.getCustomName() != null && instance.settingsCfg.getBoolean("no-level-conditions.nametagged")) {
+            return false;
+        }
+        if (livingEntity instanceof Tameable && ((Tameable) livingEntity).isTamed() && instance.settingsCfg.getBoolean("no-level-conditions.tamed")) {
+            return false;
+        }
+
         // Check WorldGuard flag.
         if (instance.hasWorldGuardInstalled && !instance.worldGuardManager.regionAllowsLevelling(livingEntity))
             return false;
