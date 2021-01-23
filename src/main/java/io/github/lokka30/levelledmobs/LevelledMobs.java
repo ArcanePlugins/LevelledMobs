@@ -11,14 +11,12 @@ import org.bstats.bukkit.Metrics;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.EntityType;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeMap;
+import java.util.*;
 
 /**
  * This is the main class of the plugin. Bukkit will call onLoad and onEnable on startup, and onDisable on shutdown.
@@ -29,6 +27,7 @@ public class LevelledMobs extends JavaPlugin {
     public YamlConfiguration messagesCfg;
     public YamlConfiguration attributesCfg;
     public YamlConfiguration dropsCfg;
+    public YamlConfiguration customDropsCfg;
     public ConfigUtils configUtils;
     public EntityDamageDebugListener entityDamageDebugListener;
 
@@ -47,6 +46,7 @@ public class LevelledMobs extends JavaPlugin {
     public TreeMap<String, Integer> entityTypesLevelOverride_Max;
     public TreeMap<String, Integer> worldLevelOverride_Min;
     public TreeMap<String, Integer> worldLevelOverride_Max;
+    public TreeMap<EntityType, CustomItemDrop> customDropsitems;
 
     private long loadTime;
 
@@ -152,6 +152,7 @@ public class LevelledMobs extends JavaPlugin {
         this.entityTypesLevelOverride_Max = getMapFromConfigSection("entitytype-level-override.max-level");
         this.worldLevelOverride_Min = getMapFromConfigSection("world-level-override.min-level");
         this.worldLevelOverride_Max = getMapFromConfigSection("world-level-override.max-level");
+        this.customDropsitems = new TreeMap<>();
 
         // Replace/copy attributes file
         saveResource("attributes.yml", true);
@@ -161,8 +162,41 @@ public class LevelledMobs extends JavaPlugin {
         saveResource("drops.yml", true);
         dropsCfg = YamlConfiguration.loadConfiguration(new File(getDataFolder(), "drops.yml"));
 
+        saveResource("customdrops.yml", false);
+        customDropsCfg = YamlConfiguration.loadConfiguration(new File(getDataFolder(), "customdrops.yml"));
+        if (settingsCfg.getBoolean("use-custom-item-drops-for-mobs")) processCustomDropsConfig();
+
         // load configutils
         configUtils = new ConfigUtils(this);
+    }
+
+    private void processCustomDropsConfig(){
+        //TODO: stumper66 is actively working on this section:
+        for (Map.Entry<String, Object> map: customDropsCfg.getValues(true).entrySet()){
+            String mobType = map.getKey();
+            EntityType entityType;
+            try{
+                entityType = EntityType.valueOf(mobType.toUpperCase()); }
+            catch (Exception e){
+                Utils.logger.warning("invalid mob type in customdrops.yml: " + mobType);
+                continue;
+            }
+
+            // now we have the mob type start parsing the materials next
+            Map<String, Object> materials = (Map<String, Object>) map.getValue();
+
+            for (String materialName : materials.keySet()){
+                // example: diamond_sword
+                Map<String, Object> materialAttributes = (Map<String, Object>) materials.get(materialName);
+
+                for (String attribute : materialAttributes.keySet()){
+                    // example: amount
+
+                    Object value = materialAttributes.get(attribute);
+                    // example 0.1
+                }
+            }
+        }
     }
 
     private TreeMap<String, Integer> getMapFromConfigSection(String configPath){
