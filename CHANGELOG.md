@@ -1,6 +1,6 @@
 # Changelog
 
-## v2.0.0-PRE:
+## v2.0.0:
 
 ### Notes:
 * **Before installing this update, you must read the 'Important' section below. The plugin WILL malfunction if you refuse to follow the information provided there.**
