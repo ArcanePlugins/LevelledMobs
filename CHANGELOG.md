@@ -5,7 +5,7 @@
 ### Notes:
 * **Before installing this update, you must read the 'Important' section below. The plugin WILL malfunction if you refuse to follow the information provided there.**
 * I wish to start off with a huge thank you to **stumper66** for their massive list of contributions this update. Stumper also gave me the spark to recontinue work on the resource. This update wouldn't be here without him!
-* I've recontinued work on the plugin. Most of the code has been updated from the previous version. This update took so many hours to make, so I really hope you all like it. :)
+* I've recontinued work on the plugin. Most of the code has been updated from the previous version. This update took so many hours to make, so I really hope you all like it. 7 other people assisted stumper and I to get this update through.
 * (psst: leave a like / positive review if you enjoy this update!)
 
 ### Important:

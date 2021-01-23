@@ -93,7 +93,7 @@ command:
         - '%prefix% Summon command syntax:'
         - '&8 &m->&b /%label% summon <amount> <entity> <level> here'
         - '&8 &m->&b /%label% summon <amount> <entity> <level> atPlayer <player>'
-        - '&8 &m->&b /%label% summon <amount> <entity> <level> atLocation <x> <y> <z>'
+        - '&8 &m->&b /%label% summon <amount> <entity> <level> atLocation <x> <y> <z> [world]'
 
       amount-limited:
         min:

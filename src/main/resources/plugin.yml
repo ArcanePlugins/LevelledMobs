@@ -12,7 +12,7 @@ commands:
   levelledmobs:
     description: Manage LevelledMobs
     aliases: [ leveledmobs, lm, lvlmobs ]
-    usage: /<command> [killall/reload/summon/info]
+    usage: /<command> [kill/reload/summon/info/compatibility]
 
 permissions:
   levelledmobs.*:

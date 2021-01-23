@@ -24,6 +24,7 @@ public final class FileLoader {
         saveResourceIfNotExists(plugin, file);
 
         YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
+        cfg.options().copyDefaults(true);
 
         checkFileVersion(file, fileVersion, cfg.getInt("file-version"));
 
