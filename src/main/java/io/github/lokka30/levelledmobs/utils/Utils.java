@@ -69,6 +69,17 @@ public final class Utils {
         }
     }
 
+    public static boolean isDouble(String str) {
+        if (!Utils.isNotNullOrEmpty(str)) return false;
+
+        try {
+            Double.parseDouble(str);
+            return true;
+        } catch (NumberFormatException ex) {
+            return false;
+        }
+    }
+
     public static boolean isNotNullOrEmpty(String str) {
         return (str != null && !str.isEmpty());
     }

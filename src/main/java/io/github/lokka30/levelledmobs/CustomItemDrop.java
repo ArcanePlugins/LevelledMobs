@@ -2,30 +2,45 @@ package io.github.lokka30.levelledmobs;
 
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
-import org.bukkit.enchantments.EnchantmentTarget;
-import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.Arrays;
 import java.util.List;
 
 public class CustomItemDrop {
-    public LivingEntity associatedMob;
+    final public EntityType associatedMob;
     public int minLevel;
     public int maxLevel;
     public double dropChance;
     public int amount;
-    public Material material;
+    public boolean noMultiplier;
     public List<Enchantment> enchantments;
+    private Material material;
+    private ItemStack itemStack;
+    private static double defaultCustomItemDropChance = 0.2;
 
-    public CustomItemDrop(){
-
+    public CustomItemDrop(EntityType associatedMob){
+        this.associatedMob = associatedMob;
+        this.minLevel = -1;
+        this.maxLevel = -1;
+        this.amount = 1;
+        this.dropChance = defaultCustomItemDropChance;
     }
 
-    /*
-        ItemStack testEnchant = new ItemStack (Material.BOW, 1);
-        ItemMeta testEnchantMeta = testEnchant.getItemMeta();
-        testEnchantMeta.addEnchant(Enchantment.ARROW_FIRE, 10, true);
-        testEnchant.setItemMeta(testEnchantMeta);
-    */
+    public void setMaterial(Material material){
+        this.material = material;
+        this.itemStack = new ItemStack(this.material, 1);
+    }
+
+    public Material getMaterial(){
+        return this.material;
+    }
+
+    public ItemStack getItemStack() {
+        return itemStack;
+    }
+
+    public void setItemStack(ItemStack itemStack){
+        this.itemStack = itemStack;
+    }
 }

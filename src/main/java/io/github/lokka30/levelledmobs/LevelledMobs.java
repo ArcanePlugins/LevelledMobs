@@ -8,10 +8,13 @@ import io.github.lokka30.levelledmobs.utils.Utils;
 import me.lokka30.microlib.QuickTimer;
 import me.lokka30.microlib.UpdateChecker;
 import org.bstats.bukkit.Metrics;
+import org.bukkit.Material;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.EntityType;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -46,7 +49,7 @@ public class LevelledMobs extends JavaPlugin {
     public TreeMap<String, Integer> entityTypesLevelOverride_Max;
     public TreeMap<String, Integer> worldLevelOverride_Min;
     public TreeMap<String, Integer> worldLevelOverride_Max;
-    public TreeMap<EntityType, CustomItemDrop> customDropsitems;
+    public TreeMap<EntityType, List<CustomItemDrop>> customDropsitems;
 
     private long loadTime;
 
@@ -171,7 +174,9 @@ public class LevelledMobs extends JavaPlugin {
     }
 
     private void processCustomDropsConfig(){
-        //TODO: stumper66 is actively working on this section:
+        //TODO: stumper66 is actively working on this section
+        // this code currently works but is ugly and does no kind of data validation
+
         for (Map.Entry<String, Object> map: customDropsCfg.getValues(true).entrySet()){
             String mobType = map.getKey();
             EntityType entityType;
@@ -182,20 +187,161 @@ public class LevelledMobs extends JavaPlugin {
                 continue;
             }
 
+            List<CustomItemDrop> dropList = new ArrayList<>();
+
             // now we have the mob type start parsing the materials next
-            Map<String, Object> materials = (Map<String, Object>) map.getValue();
+            ArrayList<Map<String, Object>> materials = (ArrayList<Map<String, Object>>) map.getValue();
 
-            for (String materialName : materials.keySet()){
-                // example: diamond_sword
-                Map<String, Object> materialAttributes = (Map<String, Object>) materials.get(materialName);
+            for (Map<String, Object> materialsMap : materials){
+                for (String materialName : materialsMap.keySet()) {
+                    Material material;
+                    try {
+                        material = Material.valueOf(materialName.toUpperCase());
+                    } catch (Exception e) {
+                        Utils.logger.warning(String.format("Invalid material type specified in customdrops.yml for mob: %s, %s", entityType, mobType));
+                        continue;
+                    }
 
-                for (String attribute : materialAttributes.keySet()){
-                    // example: amount
+                    CustomItemDrop item = new CustomItemDrop(entityType);
+                    item.setMaterial(material);
+                    Map<String, Object> materialAttributes = (Map<String, Object>) materialsMap.get(materialName);
 
-                    Object value = materialAttributes.get(attribute);
-                    // example 0.1
+                    for (String attribute : materialAttributes.keySet()) {
+                        // example: amount
+
+                        Object valueOrEnchant = materialAttributes.get(attribute);
+                        if (attribute.equalsIgnoreCase("enchantments") && valueOrEnchant.getClass().equals(LinkedHashMap.class)) {
+                            // enchantments here
+                            Map<String, Object> enchantments = (Map<String, Object>) valueOrEnchant;
+                            for (String enchantmentName : enchantments.keySet()) {
+                                Object enchantLevelObj = enchantments.get(enchantmentName);
+                                int enchantLevel = 1;
+                                if (enchantLevelObj != null && Utils.isInteger(enchantLevelObj.toString()))
+                                    enchantLevel = Integer.parseInt(enchantLevelObj.toString());
+
+                                Enchantment en = getEnchantmentFromName(enchantmentName);
+                                if (en == null) {
+                                    Utils.logger.warning("invalid enchantment in customdrops.yml: " + enchantmentName);
+                                    continue;
+                                }
+                                if (!en.canEnchantItem(item.getItemStack())) {
+                                    Utils.logger.warning(String.format(
+                                            "Enchantment %s in customdrops.yml: is not valid for item %s",
+                                            enchantmentName, materialName));
+                                    continue;
+                                }
+
+                                ItemMeta meta = item.getItemStack().getItemMeta();
+                                // true is for ignoring level restriction
+                                meta.addEnchant(en, enchantLevel, true);
+                                item.getItemStack().setItemMeta(meta);
+                            }
+                        } else if (!attribute.equalsIgnoreCase("enchantments")) {
+                            // non-enchantments here
+                            // example 0.1
+                            if (valueOrEnchant != null && Utils.isDouble(valueOrEnchant.toString())) {
+                                double dValue = Double.parseDouble(valueOrEnchant.toString());
+                                switch (attribute.toLowerCase()) {
+                                    case "minlevel":
+                                        item.minLevel = (int) dValue;
+                                        break;
+                                    case "maxlevel":
+                                        item.maxLevel = (int) dValue;
+                                        break;
+                                    case "chance":
+                                        item.dropChance = dValue;
+                                        break;
+                                    case "amount":
+                                        item.amount = (int) dValue;
+                                        if (item.amount > 64) item.amount = 64;
+                                        else if (item.amount < 1) item.amount = 1;
+                                        break;
+                                    default:
+                                        Utils.logger.warning("invalid attribute for " + mobType + " in customdrops.yml: " + attribute);
+                                }
+                            } else if (valueOrEnchant != null && "nomultiplier".equalsIgnoreCase(valueOrEnchant.toString())) {
+                                item.noMultiplier = true;
+                            }
+                        }
+                    } // next attribute
+                    dropList.add(item);
+                } // next material
+            } // next material array
+            if (dropList.size() > 0) customDropsitems.put(entityType, dropList);
+        } // next mob
+
+        if (settingsCfg.getStringList("debug-misc").contains("custom-drops")) {
+            Utils.logger.info("custom drops count: " + customDropsitems.size());
+            for (EntityType ent : customDropsitems.keySet()) {
+                Utils.logger.info("mob: " + ent.name());
+                for (CustomItemDrop item : customDropsitems.get(ent)) {
+                    String msg = String.format("    %s, amount: %s, chance: %s, minL: %s, maxL: %s, noMulp: %s",
+                            item.getMaterial(), item.amount, item.dropChance, item.minLevel, item.maxLevel, item.noMultiplier);
+                    StringBuilder sb = new StringBuilder();
+                    for (Enchantment enchant : item.getItemStack().getItemMeta().getEnchants().keySet()) {
+                        if (sb.length() > 0) sb.append(", ");
+                        sb.append(String.format("%s (%s)", enchant.getKey().getKey(), item.getItemStack().getItemMeta().getEnchants().get(enchant)));
+                    }
+                    Utils.logger.info(msg);
+                    if (sb.length() > 0) Utils.logger.info("         " + sb.toString());
                 }
             }
+        }
+    }
+
+    private static Enchantment getEnchantmentFromName(String name){
+
+        switch (name.replace(" ", "_").toLowerCase()){
+            case "arrow_damage": return Enchantment.ARROW_DAMAGE;
+            case "arrow_fire": return Enchantment.ARROW_FIRE;
+            case "arrow_infinity": case "infinity":
+                return Enchantment.ARROW_INFINITE;
+            case "binding": case "binding_curse":
+                return Enchantment.BINDING_CURSE;
+            case "arrow_knockback": case "punch":
+                return Enchantment.ARROW_KNOCKBACK;
+            case "channeling": return Enchantment.CHANNELING;
+            case "damage_all": return Enchantment.DAMAGE_ALL;
+            case "damage_arthropods": case "bane_of_arthopods":
+                return Enchantment.DAMAGE_ARTHROPODS;
+            case "damage_undead": case "smite":
+                return Enchantment.DAMAGE_UNDEAD;
+            case "depth_strider": return Enchantment.DEPTH_STRIDER;
+            case "dig_speed": case "efficiency":
+                return Enchantment.DIG_SPEED;
+            case "durability": case "unbreaking":
+                return Enchantment.DURABILITY;
+            case "fire_aspect": return Enchantment.FIRE_ASPECT;
+            case "frost_walker": return Enchantment.FROST_WALKER;
+            case "impaling": return Enchantment.IMPALING;
+            case "knockback": return Enchantment.KNOCKBACK;
+            case "loot_bonus_blocks": case "looting":
+                return Enchantment.LOOT_BONUS_BLOCKS;
+            case "loyalty": return Enchantment.LOYALTY;
+            case "luck": case "luck_of_the_sea":
+                return Enchantment.LUCK;
+            case "lure": return Enchantment.LURE;
+            case "mending": return Enchantment.MENDING;
+            case "multishot": return Enchantment.MULTISHOT;
+            case "piercing": return Enchantment.PIERCING;
+            case "protection_environmental": case "protection":
+                return Enchantment.PROTECTION_ENVIRONMENTAL;
+            case "protection_explosions": case "blast_protection":
+                return Enchantment.PROTECTION_EXPLOSIONS;
+            case "protection_fall": case "feather_falling":
+                return Enchantment.PROTECTION_FALL;
+            case "quick_charge": return Enchantment.QUICK_CHARGE;
+            case "riptide": return Enchantment.RIPTIDE;
+            case "silk_touch": return Enchantment.SILK_TOUCH;
+            case "soul_speed": return Enchantment.SOUL_SPEED;
+            case "sweeping_edge": return Enchantment.SWEEPING_EDGE;
+            case "thorns": return Enchantment.THORNS;
+            case "vanishing_curse": case "curse of vanishing":
+                return Enchantment.VANISHING_CURSE;
+            case "water_worker": case "respiration":
+                return Enchantment.WATER_WORKER;
+            default:
+                return null;
         }
     }
 
