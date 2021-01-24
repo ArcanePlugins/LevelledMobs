@@ -238,7 +238,7 @@ entity-name-override:
 # ENDER_DRAGON: '&5&lEnder Dragon'
 
 # if set to true then the file customdrops.yml will be utilized to specify which items mobs will drop
-use-custom-item-drops-for-mobs: true
+use-custom-item-drops-for-mobs: false
 
 # Should passive mobs have changed movement speeds?
 # Most owners would like this to be disabled, as saddled horses and

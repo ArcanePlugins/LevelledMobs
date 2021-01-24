@@ -24,6 +24,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class LevelManager {
 
@@ -155,6 +156,37 @@ public class LevelManager {
                 Utils.debugLog(instance, "LevelManager#getLevelledItemDrops", "7: Item was managed. New amount: " + currentDrop.getAmount() + ".");
             } else {
                 Utils.debugLog(instance, "LevelManager#getLevelledItemDrops", "7: Item was unmanaged.");
+            }
+        }
+
+        if (instance.settingsCfg.getBoolean("use-custom-item-drops-for-mobs") && instance.customDropsitems.containsKey(livingEntity.getType())){
+            List<CustomItemDrop> drops = instance.customDropsitems.get(livingEntity.getType());
+
+            for (CustomItemDrop drop : drops){
+                if (drop.maxLevel > -1 && level > drop.maxLevel) continue;
+                if (drop.minLevel > -1 && level < drop.minLevel) continue;
+                if (drop.dropChance < 1.0){
+                    double effectiveDropChance = drop.dropChance;
+                    if (!drop.noMultiplier){
+                        // TODO: factor in mob level here
+
+                    }
+
+                    double chanceRole = (double) ThreadLocalRandom.current().nextInt(0, 100001) * 0.00001;
+                    if (instance.settingsCfg.getStringList("debug-misc").contains("custom-drops")) {
+                        Utils.logger.info(String.format("mob: %s, item %s, origChance: %s, effectiveChance: %s, chanceRole: %s, dropped: %s",
+                                livingEntity.getName(), drop.getMaterial().name(), drop.dropChance, effectiveDropChance, chanceRole, !(1.0 - chanceRole >= effectiveDropChance)
+                                ));
+                    }
+                    if (1.0 - chanceRole >= effectiveDropChance) continue;
+                }
+                // if we made it this far then the item will be dropped
+                ItemStack newItem = drop.getItemStack();
+                if (drop.amount > 1){
+                    newItem = new ItemStack(drop.getMaterial(), drop.amount);
+                }
+
+                currentDrops.add(newItem);
             }
         }
 
