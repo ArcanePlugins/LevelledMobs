@@ -59,7 +59,7 @@ public final class Utils {
 
     //Integer check
     public static boolean isInteger(String str) {
-        if (!Utils.isNotNullOrEmpty(str)) return false;
+        if (Utils.isNullOrEmpty(str)) return false;
 
         try {
             Integer.parseInt(str);
@@ -70,7 +70,7 @@ public final class Utils {
     }
 
     public static boolean isDouble(String str) {
-        if (!Utils.isNotNullOrEmpty(str)) return false;
+        if (Utils.isNullOrEmpty(str)) return false;
 
         try {
             Double.parseDouble(str);
@@ -80,8 +80,8 @@ public final class Utils {
         }
     }
 
-    public static boolean isNotNullOrEmpty(String str) {
-        return (str != null && !str.isEmpty());
+    public static boolean isNullOrEmpty(String str) {
+        return (str == null || str.isEmpty());
     }
 
     public static int getDefaultIfNull(YamlConfiguration cfg, String path, int def) {

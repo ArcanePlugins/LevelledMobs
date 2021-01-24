@@ -17,7 +17,7 @@ public class CustomItemDrop {
     public List<Enchantment> enchantments;
     private Material material;
     private ItemStack itemStack;
-    private static double defaultCustomItemDropChance = 0.2;
+    private static final double defaultCustomItemDropChance = 0.2;
 
     public CustomItemDrop(EntityType associatedMob){
         this.associatedMob = associatedMob;
