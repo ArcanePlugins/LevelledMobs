@@ -7,15 +7,17 @@
 #
 # This is the custom drops configuration where you can make mobs drop items of your choice.
 # Thanks to stumper66 for creating this system!
+# NOTE: to use utilize this file, edit settings.yml and change this value to true: use-custom-item-drops-for-mobs
 
 # Attributes available:
 #
 # minlevel - the minimal mob level required to drop this item
 # maxlevel - the maximum mob level that can drop this item
-# chance - a value to determine how likely the mob is to drop this item.  1.0 = 100%, 0.1 = 10%, etc
-# amount - how many of this item will be dropped
+# chance - a value to determine how likely the mob is to drop this item.  1.0 = 100%, 0.1 = 10%, etc.
+#          If no chance is specified then the default of 0.2 will be used
+# amount - how many of this item will be dropped.  This can be a number or a number range.  Example: 2-4
 # nomultiplier: - the level of the mob will not affect the amount dropped - !!!! make sure you end it with ":", as in: nomultiplier:
-# enchantments - enter a list of enchantments the item will have and the enchantment level
+# enchantments - enter a list of enchantments the item will have and the enchantment level.  Example: unbreaking: 3
 # groupid - if multiple items for the same mob have the same groupid, one one of the items will be dropped
 
 # universal groups - instead of specifying items for a specific mob you can use the following universal groups:
@@ -24,22 +26,19 @@
 # all_flying_mobs, all_ground_mobs, all_aquatic_mobs
 
 ALL_LEVELLABLE_MOBS:
-  - gold:
-      amount: 2
-      chance: 0.3
+  - stick
 
-ZOMBIE:
+ZOMBIE;SKELETON:
   - diamond:
-      amount: 2
-      chance: 0.3
-  - diamond_sword:
-      chance: 0.1
-      enchantments:
-        fire_aspect: 2
-        unbreaking: 1
-  - diamond_sword:
-      chance: 0.2
+      amount: 1
+      chance: 0.01
   - emerald:
-      chance: 0.5
-      amount: 5
+      chance: 0.1
+      amount: 1-2
+  - diamond_sword:
+      chance: 0.05
+      nomultiplier:
+      enchantments:
+        sharpness: 2
+        unbreaking: 1
 

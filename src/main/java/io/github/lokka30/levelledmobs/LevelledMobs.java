@@ -22,6 +22,8 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.File;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * This is the main class of the plugin. Bukkit will call onLoad and onEnable on startup, and onDisable on shutdown.
@@ -43,7 +45,9 @@ public class LevelledMobs extends JavaPlugin {
 
     public boolean hasWorldGuardInstalled;
     public boolean hasProtocolLibInstalled;
+    public boolean hasMythicMobsInstalled;
     public WorldGuardManager worldGuardManager;
+    public MythicMobsHelper mythicMobsHelper;
 
     public boolean debugEntityDamageWasEnabled = false;
 
@@ -53,6 +57,10 @@ public class LevelledMobs extends JavaPlugin {
     public TreeMap<String, Integer> worldLevelOverride_Max;
     public TreeMap<EntityType, List<CustomItemDrop>> customDropsitems;
     public TreeMap<CustomDropsUniversalGroups, List<CustomItemDrop>> customDropsitems_groups;
+    public HashSet<EntityType> groups_HostileMobs;
+    public HashSet<EntityType> groups_AquaticMobs;
+    public HashSet<EntityType> groups_PassiveMobs;
+    public HashSet<EntityType> groups_NetherMobs;
 
     private long loadTime;
 
@@ -94,6 +102,11 @@ public class LevelledMobs extends JavaPlugin {
         Utils.logger.info("&fStart-up: &7Running misc procedures...");
         setupMetrics();
         checkUpdates();
+        buildUniversalGroups();
+        hasMythicMobsInstalled = pluginManager.getPlugin("MythicMobs") != null;
+        if (hasMythicMobsInstalled) {
+            this.mythicMobsHelper = new MythicMobsHelper(this);
+        }
 
         Utils.logger.info("&f~ Start-up complete, took &b" + (enableTimer.getTimer() + loadTime) + "ms&f ~");
     }
@@ -307,13 +320,28 @@ public class LevelledMobs extends JavaPlugin {
                     return false;
                 }
 
+                if (materialAttributes == null) {
+                    // there is a colon after the material name but no attributes were specified
+                    dropList.add(item);
+                    addedDrop = true;
+                    continue;
+                }
+
                 for (String attribute : materialAttributes.keySet()) {
                     // example: amount
 
                     Object valueOrEnchant = materialAttributes.get(attribute);
                     if (attribute.equalsIgnoreCase("enchantments") && valueOrEnchant.getClass().equals(LinkedHashMap.class)) {
                         // enchantments here
-                        Map<String, Object> enchantments = (Map<String, Object>) valueOrEnchant;
+                        Map<String, Object> enchantments;
+                        try {
+                            enchantments = (Map<String, Object>) valueOrEnchant;
+                        }
+                        catch (ClassCastException e){
+                            Utils.logger.warning("Unable to parse values (cast exception3) for " + mobTypeOrGroupName);
+                            return false;
+                        }
+
                         for (String enchantmentName : enchantments.keySet()) {
                             Object enchantLevelObj = enchantments.get(enchantmentName);
                             int enchantLevel = 1;
@@ -418,6 +446,36 @@ public class LevelledMobs extends JavaPlugin {
         }
     }
 
+    private void buildUniversalGroups(){
+
+        // include interfaces: Monster, Boss
+        groups_HostileMobs = Stream.of(
+                EntityType.ENDER_DRAGON,
+                EntityType.GHAST,
+                EntityType.HOGLIN,
+                EntityType.MAGMA_CUBE,
+                EntityType.PHANTOM,
+                EntityType.SHULKER,
+                EntityType.SLIME
+        ).collect(Collectors.toCollection(HashSet::new));
+
+        // include interfaces: Animals, WaterMob
+        groups_PassiveMobs = Stream.of(
+                EntityType.IRON_GOLEM,
+                EntityType.SNOWMAN,
+                EntityType.ZOMBIFIED_PIGLIN,
+                EntityType.STRIDER
+        ).collect(Collectors.toCollection(HashSet::new));
+
+        // include interfaces: WaterMob
+        groups_AquaticMobs = Stream.of(
+                EntityType.DROWNED,
+                EntityType.ELDER_GUARDIAN,
+                EntityType.GUARDIAN,
+                EntityType.TURTLE
+        ).collect(Collectors.toCollection(HashSet::new));
+    }
+
     @Nullable
     private static Enchantment getEnchantmentFromName(String name){
 
@@ -431,7 +489,8 @@ public class LevelledMobs extends JavaPlugin {
             case "arrow_knockback": case "punch":
                 return Enchantment.ARROW_KNOCKBACK;
             case "channeling": return Enchantment.CHANNELING;
-            case "damage_all": return Enchantment.DAMAGE_ALL;
+            case "damage_all": case "sharpness":
+                return Enchantment.DAMAGE_ALL;
             case "damage_arthropods": case "bane_of_arthopods":
                 return Enchantment.DAMAGE_ARTHROPODS;
             case "damage_undead": case "smite":

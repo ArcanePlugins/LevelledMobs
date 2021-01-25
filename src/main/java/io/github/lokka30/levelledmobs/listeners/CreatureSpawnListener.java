@@ -3,7 +3,6 @@ package io.github.lokka30.levelledmobs.listeners;
 import io.github.lokka30.levelledmobs.LevelManager;
 import io.github.lokka30.levelledmobs.LevelledMobs;
 import io.github.lokka30.levelledmobs.utils.*;
-import io.lumine.xikage.mythicmobs.MythicMobs;
 import me.lokka30.microlib.MicroUtils;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
@@ -125,7 +124,7 @@ public class CreatureSpawnListener implements Listener {
             return;
 
         //Check if the mob was spawned by MythicMobs
-        if (MythicMobs.inst().getAPIHelper().isMythicMob(livingEntity) && !instance.settingsCfg.getBoolean("allow-mythic-mobs")) {
+        if (instance.hasMythicMobsInstalled && !instance.settingsCfg.getBoolean("allow-mythic-mobs") && instance.mythicMobsHelper.isMythicMob(livingEntity)){
             return;
         }
 

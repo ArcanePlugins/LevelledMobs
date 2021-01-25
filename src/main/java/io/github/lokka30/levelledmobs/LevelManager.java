@@ -13,6 +13,7 @@ import me.lokka30.microlib.MicroUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
+import org.bukkit.World;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.entity.*;
@@ -21,6 +22,7 @@ import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
+import javax.annotation.Nonnull;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -174,37 +176,122 @@ public class LevelManager {
             }
         }
 
-        if (instance.settingsCfg.getBoolean("use-custom-item-drops-for-mobs") && instance.customDropsitems.containsKey(livingEntity.getType())){
-            List<CustomItemDrop> drops = instance.customDropsitems.get(livingEntity.getType());
-
-            for (CustomItemDrop drop : drops){
-                if (drop.maxLevel > -1 && level > drop.maxLevel) continue;
-                if (drop.minLevel > -1 && level < drop.minLevel) continue;
-                // TODO: incorporate drop amount range
-                if (drop.dropChance < 1.0){
-                    int newAmount = drop.amount;
-                    if (!drop.noMultiplier) newAmount *= addition;
-
-                    double chanceRole = (double) ThreadLocalRandom.current().nextInt(0, 100001) * 0.00001;
-                    if (instance.settingsCfg.getStringList("debug-misc").contains("custom-drops")) {
-                        Utils.logger.info(String.format(
-                                "mob: %s, item %s, amount: %s, newAmount: %s, chance: %s, chanceRole: %s, dropped: %s",
-                                livingEntity.getName(), drop.getMaterial().name(), drop.amount, newAmount, drop.dropChance, chanceRole, !(1.0 - chanceRole >= drop.dropChance)
-                                ));
-                    }
-                    if (1.0 - chanceRole >= drop.dropChance) continue;
-                }
-                // if we made it this far then the item will be dropped
-                ItemStack newItem = drop.getItemStack();
-                if (drop.amount > 1){
-                    newItem = new ItemStack(drop.getMaterial(), drop.amount);
-                }
-
-                currentDrops.add(newItem);
-            }
+        if (instance.settingsCfg.getBoolean("use-custom-item-drops-for-mobs")){
+            getCustomItemDrops(livingEntity, level, currentDrops, true);
         }
 
         return currentDrops;
+    }
+
+    public void getCustomItemDrops(final LivingEntity livingEntity, final int level, final List<ItemStack> drops, final boolean isLevellable){
+
+        final int preCount = drops.size();
+        List<CustomDropsUniversalGroups> applicableGroups = getApllicableGroupsForMob(livingEntity, isLevellable);
+
+        for (CustomDropsUniversalGroups group : applicableGroups){
+            if (!instance.customDropsitems_groups.containsKey(group)) continue;
+            Utils.logger.info("calling getCustomItemDrops with group " + group.name());
+            getCustomItemDrops2(livingEntity, level, instance.customDropsitems_groups.get(group), drops);
+        }
+
+        if (instance.customDropsitems.containsKey(livingEntity.getType())){
+            Utils.logger.info("calling getCustomItemDrops");
+            getCustomItemDrops2(livingEntity, level, instance.customDropsitems.get(livingEntity.getType()), drops);
+        }
+
+        final int postCount = drops.size();
+
+        if (instance.settingsCfg.getStringList("debug-misc").contains("custom-drops")) {
+            StringBuilder sb = new StringBuilder();
+            for (CustomDropsUniversalGroups group : applicableGroups){
+                if (sb.length() > 0) sb.append(", ");
+                sb.append(group.toString());
+            }
+            Utils.logger.info("custom drops for " + livingEntity.getName());
+            Utils.logger.info("    groups: " + sb.toString());
+            Utils.logger.info(String.format("     precount: %s, postcount: %s", preCount, postCount));
+        }
+    }
+
+    private void getCustomItemDrops2(final LivingEntity livingEntity, final int level, final List<CustomItemDrop> customDrops, final List<ItemStack> newDrops){
+        Utils.logger.info("getCustomItemDrops2 stack size: " + customDrops.size());
+
+        for (CustomItemDrop drop : customDrops){
+            if (drop.maxLevel > -1 && level > drop.maxLevel) continue;
+            if (drop.minLevel > -1 && level < drop.minLevel) continue;
+            int newDropAmount = drop.amount;
+            if (drop.getHasAmountRange()){
+                int change = ThreadLocalRandom.current().nextInt(0, drop.getamountRangeMax() - drop.getamountRangeMin() + 1);
+                newDropAmount = drop.getamountRangeMin() + change;
+            }
+
+            if (drop.dropChance < 1.0){
+                if (!drop.noMultiplier) {
+                    int addition = BigDecimal.valueOf(instance.mobDataManager.getAdditionsForLevel(livingEntity, Addition.CUSTOM_ITEM_DROP, level))
+                            .setScale(0, RoundingMode.HALF_DOWN).intValueExact(); // truncate double to int
+                    newDropAmount = newDropAmount + (newDropAmount * addition);
+                }
+
+                double chanceRole = (double) ThreadLocalRandom.current().nextInt(0, 100001) * 0.00001;
+                if (instance.settingsCfg.getStringList("debug-misc").contains("custom-drops")) {
+                    Utils.logger.info(String.format(
+                            "mob: %s, item %s, amount: %s, newAmount: %s, chance: %s, chanceRole: %s, dropped: %s",
+                            livingEntity.getName(), drop.getMaterial().name(), drop.getAmountAsString(), newDropAmount, drop.dropChance, chanceRole, !(1.0 - chanceRole >= drop.dropChance)
+                    ));
+                }
+                if (1.0 - chanceRole >= drop.dropChance) continue;
+            }
+            // if we made it this far then the item will be dropped
+            ItemStack newItem = drop.getItemStack();
+            if (drop.amount > 1){
+                newItem = new ItemStack(drop.getMaterial(), newDropAmount);
+            }
+
+            newDrops.add(newItem);
+        }
+    }
+
+    @Nonnull
+    private List<CustomDropsUniversalGroups> getApllicableGroupsForMob(final LivingEntity le, final boolean isLevelled){
+        List<CustomDropsUniversalGroups> groups = new ArrayList<>();
+        groups.add(CustomDropsUniversalGroups.ALL_MOBS);
+
+        if (isLevelled) groups.add(CustomDropsUniversalGroups.ALL_LEVELLABLE_MOBS);
+        final EntityType eType = le.getType();
+
+        if (le instanceof Monster || le instanceof Boss || instance.groups_HostileMobs.contains(eType)){
+            groups.add(CustomDropsUniversalGroups.ALL_HOSTILE_MOBS);
+        }
+
+        if (le instanceof WaterMob || instance.groups_AquaticMobs.contains(eType)){
+            groups.add(CustomDropsUniversalGroups.ALL_AQUATIC_MOBS);
+        }
+
+        if (le.getWorld().getEnvironment().equals(World.Environment.NORMAL)){
+            groups.add(CustomDropsUniversalGroups.ALL_OVERWORLD_MOBS);
+        }
+        else if (le.getWorld().getEnvironment().equals(World.Environment.NETHER)){
+            groups.add(CustomDropsUniversalGroups.ALL_NETHER_MOBS);
+        }
+
+        if (le instanceof Flying || eType.equals(EntityType.PARROT) || eType.equals(EntityType.BAT)){
+            groups.add(CustomDropsUniversalGroups.ALL_FLYING_MOBS);
+        }
+
+        // why bats aren't part of Flying interface is beyond me
+        if (!(le instanceof Flying) && !(le instanceof WaterMob) && !(le instanceof Boss) && !(eType.equals(EntityType.BAT))){
+            groups.add(CustomDropsUniversalGroups.ALL_GROUND_MOBS);
+        }
+
+        if (le instanceof WaterMob || instance.groups_AquaticMobs.contains(eType)){
+            groups.add(CustomDropsUniversalGroups.ALL_AQUATIC_MOBS);
+        }
+
+        if (le instanceof Animals || le instanceof WaterMob || instance.groups_PassiveMobs.contains(eType)){
+            groups.add(CustomDropsUniversalGroups.ALL_PASSIVE_MOBS);
+        }
+
+        return groups;
     }
 
     //Calculates the XP dropped when a levellable creature dies.

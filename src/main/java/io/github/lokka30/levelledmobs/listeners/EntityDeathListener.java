@@ -8,6 +8,7 @@ import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -40,6 +41,13 @@ public class EntityDeathListener implements Listener {
             // Set levelled exp drops
             if (event.getDroppedExp() > 0) {
                 event.setDroppedExp(instance.levelManager.getLevelledExpDrops(livingEntity, event.getDroppedExp()));
+            }
+        }
+        else if (instance.settingsCfg.getBoolean("use-custom-item-drops-for-mobs")){
+            final List<ItemStack> newDrops = new ArrayList<>();
+            instance.levelManager.getCustomItemDrops(livingEntity, -1, newDrops, false);
+            if (!newDrops.isEmpty()){
+                event.getDrops().addAll(newDrops);
             }
         }
     }
