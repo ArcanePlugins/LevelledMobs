@@ -3,9 +3,12 @@
 ***
 
 ## v2.1.0
+**WARNING** This update includes file changes! Please see the Notes section below. If you do not update your files then the plugin will malfunction!
+
 ### Notes:
 * File changes:
-  * New file `customdrops.yml`
+  * `settings.yml` updated **[RESET RECOMMENDED]**
+  * `customdrops.yml` added
 
 ### Changelog:
 **Custom Drops Configuration!** (stumper66)
@@ -13,8 +16,11 @@
 * It is a *very* configurable system. Take a look for yourself!
 * Thanks to those on the Discord server who provided suggestions to stumper whilst he worked on this system - especially Hugo5551!
 
-**MythicMobs and EliteMobs compatibility!** (lokka30)
-* Requested by many, LevelledMobs is now compatible with MythicMobs and EliteMobs!
+**Mob Additions Values Scaling!** (lokka30, stumper66)
+* You can now safely change the min and max levels in `fine-tuning` without having to change the `additions` values in `settings.yml` as they will now scale to the min and max levels you set. :)
+
+**New compatibility!** (lokka30)
+* Previously, LevelledMobs was only compatible with Citizens. Now as requested by many, LevelledMobs is now compatible with MythicMobs, EliteMobs, InfernalMobs and Shopkeepers too!
 * Thanks to @MagmaGuy for linking me towards the relevant metadata values to make LM compatible with EM.
 
 **Bug Fixes**

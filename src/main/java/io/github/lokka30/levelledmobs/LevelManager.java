@@ -75,17 +75,22 @@ public class LevelManager {
     //Checks if an entity can be levelled.
     public boolean isLevellable(final LivingEntity livingEntity) {
 
-        if (
-            // Ignore these EntityTypes.
-                livingEntity.getType() == EntityType.PLAYER
-                        || livingEntity.getType() == EntityType.UNKNOWN
+        // Ignore these entity types and metadatas
+        if (livingEntity.getType() == EntityType.PLAYER
+                || livingEntity.getType() == EntityType.UNKNOWN
 
-                        // Citizens plugin compatibility
-                        || livingEntity.hasMetadata("NPC")
+                // Citizens plugin compatibility
+                || livingEntity.hasMetadata("NPC")
 
-                        // EliteMobs plugin compatibility
-                        || livingEntity.hasMetadata("Elitemob")
-                        || livingEntity.hasMetadata("Supermob")) {
+                // Shopkeepers plugin compatibility
+                || livingEntity.hasMetadata("shopkeeper")
+
+                // EliteMobs plugin compatibility
+                || livingEntity.hasMetadata("Elitemob")
+                || livingEntity.hasMetadata("Supermob")
+
+                //InfernalMobs plugin compatibility)
+                || livingEntity.hasMetadata("infernalMetadata")) {
             return false;
         }
 

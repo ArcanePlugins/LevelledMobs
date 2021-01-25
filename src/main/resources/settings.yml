@@ -333,7 +333,7 @@ fine-tuning:
 
     # What is the maximum amount of health added to a normal mob?
     # Set to 0 to disable.
-    # Use a positive double (decimal). By default, this is 25. For example, a zombie would have a max health of 45.
+    # Use a positive double (decimal).
     max-health: 25
 
     # **WARNING, READ CAREFULLY**
