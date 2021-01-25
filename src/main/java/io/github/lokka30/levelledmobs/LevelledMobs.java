@@ -18,6 +18,8 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.io.File;
 import java.util.*;
 
@@ -50,6 +52,7 @@ public class LevelledMobs extends JavaPlugin {
     public TreeMap<String, Integer> worldLevelOverride_Min;
     public TreeMap<String, Integer> worldLevelOverride_Max;
     public TreeMap<EntityType, List<CustomItemDrop>> customDropsitems;
+    public TreeMap<CustomDropsUniversalGroups, List<CustomItemDrop>> customDropsitems_groups;
 
     private long loadTime;
 
@@ -156,6 +159,7 @@ public class LevelledMobs extends JavaPlugin {
         this.worldLevelOverride_Min = getMapFromConfigSection("world-level-override.min-level");
         this.worldLevelOverride_Max = getMapFromConfigSection("world-level-override.max-level");
         this.customDropsitems = new TreeMap<>();
+        this.customDropsitems_groups = new TreeMap<>();
 
         // Replace/copy attributes file
         saveResource("attributes.yml", true);
@@ -165,8 +169,9 @@ public class LevelledMobs extends JavaPlugin {
         saveResource("drops.yml", true);
         dropsCfg = YamlConfiguration.loadConfiguration(new File(getDataFolder(), "drops.yml"));
 
-        saveResource("customdrops.yml", false);
-        customDropsCfg = YamlConfiguration.loadConfiguration(new File(getDataFolder(), "customdrops.yml"));
+        final File customDropsFile = new File(getDataFolder(), "customdrops.yml");
+        if (!customDropsFile.exists()) saveResource("customdrops.yml", false);
+        customDropsCfg = YamlConfiguration.loadConfiguration(customDropsFile);
         if (settingsCfg.getBoolean("use-custom-item-drops-for-mobs")) processCustomDropsConfig();
 
         // load configutils
@@ -174,121 +179,246 @@ public class LevelledMobs extends JavaPlugin {
     }
 
     private void processCustomDropsConfig(){
-        //TODO: stumper66 is actively working on this section
-        // this code currently works but is ugly and does no kind of data validation
 
         for (Map.Entry<String, Object> map: customDropsCfg.getValues(true).entrySet()){
-            String mobType = map.getKey();
-            EntityType entityType;
-            try{
-                entityType = EntityType.valueOf(mobType.toUpperCase()); }
-            catch (Exception e){
-                Utils.logger.warning("invalid mob type in customdrops.yml: " + mobType);
-                continue;
-            }
+            String mobTypeTemp = map.getKey();
+            String[] mobTypes;
+            EntityType entityType = null;
+            if (mobTypeTemp.contains(";"))  mobTypes = mobTypeTemp.split(";");
+            else mobTypes = new String[]{ mobTypeTemp };
 
-            List<CustomItemDrop> dropList = new ArrayList<>();
+            for (String type : mobTypes) {
+                String mobType = type.trim();
+                if (mobType.equals("")) continue;
 
-            // now we have the mob type start parsing the materials next
-            ArrayList<Map<String, Object>> materials = (ArrayList<Map<String, Object>>) map.getValue();
+                CustomDropsUniversalGroups universalGroup = null;
+                boolean isUniversalGroup = mobType.toLowerCase().startsWith("all_");
 
-            for (Map<String, Object> materialsMap : materials){
-                for (String materialName : materialsMap.keySet()) {
-                    Material material;
+                if (isUniversalGroup) {
                     try {
-                        material = Material.valueOf(materialName.toUpperCase());
+                        universalGroup = CustomDropsUniversalGroups.valueOf(mobType.toUpperCase());
                     } catch (Exception e) {
-                        Utils.logger.warning(String.format("Invalid material type specified in customdrops.yml for mob: %s, %s", entityType, mobType));
+                        Utils.logger.warning("invalid universal group in customdrops.yml: " + mobType);
                         continue;
                     }
+                } else {
+                    try {
+                        entityType = EntityType.valueOf(mobType.toUpperCase());
+                    } catch (Exception e) {
+                        Utils.logger.warning("invalid mob type in customdrops.yml: " + mobType);
+                        continue;
+                    }
+                }
 
-                    CustomItemDrop item = new CustomItemDrop(entityType);
-                    item.setMaterial(material);
-                    Map<String, Object> materialAttributes = (Map<String, Object>) materialsMap.get(materialName);
+                List<CustomItemDrop> dropList;
 
-                    for (String attribute : materialAttributes.keySet()) {
-                        // example: amount
+                if (isUniversalGroup) {
+                    dropList = customDropsitems_groups.containsKey(universalGroup) ? customDropsitems_groups.get(universalGroup) : new ArrayList<>();
+                    if (processCustomDropsConfig2(universalGroup, null, map.getValue(), dropList))
+                        customDropsitems_groups.put(universalGroup, dropList);
+                } else {
+                    dropList = customDropsitems.containsKey(entityType) ? customDropsitems.get(entityType) : new ArrayList<>();
+                    if (processCustomDropsConfig2(null, entityType, map.getValue(), dropList))
+                        customDropsitems.put(entityType, dropList);
+                }
+            }
+        } // next mob
 
-                        Object valueOrEnchant = materialAttributes.get(attribute);
-                        if (attribute.equalsIgnoreCase("enchantments") && valueOrEnchant.getClass().equals(LinkedHashMap.class)) {
-                            // enchantments here
-                            Map<String, Object> enchantments = (Map<String, Object>) valueOrEnchant;
-                            for (String enchantmentName : enchantments.keySet()) {
-                                Object enchantLevelObj = enchantments.get(enchantmentName);
-                                int enchantLevel = 1;
-                                if (enchantLevelObj != null && Utils.isInteger(enchantLevelObj.toString()))
-                                    enchantLevel = Integer.parseInt(enchantLevelObj.toString());
+        if (settingsCfg.getStringList("debug-misc").contains("custom-drops")) {
+            Utils.logger.info(String.format("custom drops count: %s, custom groups drops counts: %s",
+                    customDropsitems.size(), customDropsitems_groups.size()));
 
-                                Enchantment en = getEnchantmentFromName(enchantmentName);
-                                if (en == null) {
-                                    Utils.logger.warning("invalid enchantment in customdrops.yml: " + enchantmentName);
-                                    continue;
-                                }
-                                if (!en.canEnchantItem(item.getItemStack())) {
-                                    Utils.logger.warning(String.format(
-                                            "Enchantment %s in customdrops.yml: is not valid for item %s",
-                                            enchantmentName, materialName));
-                                    continue;
-                                }
+            showCustomDropsDebugInfo();
+        }
+    }
 
-                                ItemMeta meta = item.getItemStack().getItemMeta();
+    private boolean processCustomDropsConfig2(final CustomDropsUniversalGroups entityGroup, final EntityType entityType, final Object configValue, final List<CustomItemDrop> dropList){
+        ArrayList<Map<String, Object>> map2 = null;
+        ArrayList<String> materialsStrings = null;
+        boolean isMap = false;
+        boolean addedDrop = false;
+        String mobTypeOrGroupName = entityType == null ? entityGroup.name() : entityType.name();
+
+        // the below try block is to determine which generics class is returned since this is impossible to check at runtime
+        // note if it's the wrong cast it will be thrown when attempting to enumerate the collection
+
+        try{
+            // I can't get the IDE to shutup about the potential cast exception!
+            map2 = (ArrayList<Map<String, Object>>) configValue;
+            for (Map<String, Object> ignored : map2) break;
+            isMap = true;
+        }
+        catch (ClassCastException e){
+            try{
+                // I can't get the IDE to shutup about the potential cast exception!
+                materialsStrings = (ArrayList<String>) configValue;
+            }
+            catch (ClassCastException ex){
+                Utils.logger.warning("Unable to parse values (cast exception) for " + mobTypeOrGroupName);
+                return false;
+            }
+        }
+
+        // the IDE complains isMap will always be true, but it's a lie!
+        if (!isMap){
+            // was just a simple assignment without any specifics
+            CustomItemDrop item;
+            if (entityType == null) item = new CustomItemDrop(entityGroup);
+            else item = new CustomItemDrop(entityType);
+
+            for (String str : materialsStrings){
+                Material material;
+                try {
+                    material = Material.valueOf(str.toUpperCase());
+                } catch (Exception e) {
+                    Utils.logger.warning(String.format("Invalid material type specified in customdrops.yml for: %s, %s", mobTypeOrGroupName, str));
+                    continue;
+                }
+                item.setMaterial(material);
+                dropList.add(item);
+                addedDrop = true;
+            }
+            return addedDrop;
+        }
+
+        // here we'll start parsing attributes, etc
+        for (Map<String, Object> materialsMap : map2){
+            for (String materialName : materialsMap.keySet()) {
+                Material material;
+                try {
+                    material = Material.valueOf(materialName.toUpperCase());
+                } catch (Exception e) {
+                    Utils.logger.warning(String.format("Invalid material type specified in customdrops.yml for: %s, %s", mobTypeOrGroupName, materialName));
+                    continue;
+                }
+
+                CustomItemDrop item;
+                if (entityType == null) item = new CustomItemDrop(entityGroup);
+                else item = new CustomItemDrop(entityType);
+
+                item.setMaterial(material);
+                Map<String, Object> materialAttributes;
+
+                try {
+                    materialAttributes = (Map<String, Object>) materialsMap.get(materialName);
+                }
+                catch (ClassCastException e){
+                    Utils.logger.warning("Unable to parse values (cast exception2) for " + mobTypeOrGroupName);
+                    return false;
+                }
+
+                for (String attribute : materialAttributes.keySet()) {
+                    // example: amount
+
+                    Object valueOrEnchant = materialAttributes.get(attribute);
+                    if (attribute.equalsIgnoreCase("enchantments") && valueOrEnchant.getClass().equals(LinkedHashMap.class)) {
+                        // enchantments here
+                        Map<String, Object> enchantments = (Map<String, Object>) valueOrEnchant;
+                        for (String enchantmentName : enchantments.keySet()) {
+                            Object enchantLevelObj = enchantments.get(enchantmentName);
+                            int enchantLevel = 1;
+                            if (enchantLevelObj != null && Utils.isInteger(enchantLevelObj.toString()))
+                                enchantLevel = Integer.parseInt(enchantLevelObj.toString());
+
+                            Enchantment en = getEnchantmentFromName(enchantmentName);
+                            if (en == null) {
+                                Utils.logger.warning("invalid enchantment in customdrops.yml: " + enchantmentName);
+                                continue;
+                            }
+                            if (!en.canEnchantItem(item.getItemStack())) {
+                                Utils.logger.warning(String.format(
+                                        "Enchantment %s in customdrops.yml: is not valid for item %s",
+                                        enchantmentName, materialName));
+                                continue;
+                            }
+
+                            ItemMeta meta = item.getItemStack().getItemMeta();
+                            if (meta != null) {
                                 // true is for ignoring level restriction
                                 meta.addEnchant(en, enchantLevel, true);
                                 item.getItemStack().setItemMeta(meta);
                             }
-                        } else if (!attribute.equalsIgnoreCase("enchantments")) {
-                            // non-enchantments here
-                            // example 0.1
-                            if (valueOrEnchant != null && Utils.isDouble(valueOrEnchant.toString())) {
-                                double dValue = Double.parseDouble(valueOrEnchant.toString());
-                                switch (attribute.toLowerCase()) {
-                                    case "minlevel":
-                                        item.minLevel = (int) dValue;
-                                        break;
-                                    case "maxlevel":
-                                        item.maxLevel = (int) dValue;
-                                        break;
-                                    case "chance":
-                                        item.dropChance = dValue;
-                                        break;
-                                    case "amount":
-                                        item.amount = (int) dValue;
-                                        if (item.amount > 64) item.amount = 64;
-                                        else if (item.amount < 1) item.amount = 1;
-                                        break;
-                                    default:
-                                        Utils.logger.warning("invalid attribute for " + mobType + " in customdrops.yml: " + attribute);
-                                }
-                            } else if (valueOrEnchant != null && "nomultiplier".equalsIgnoreCase(valueOrEnchant.toString())) {
-                                item.noMultiplier = true;
+                        }
+                    } else if (!attribute.equalsIgnoreCase("enchantments")) {
+                        // non-enchantments here
+                        // example 0.1
+                        if (valueOrEnchant != null && Utils.isDouble(valueOrEnchant.toString())) {
+                            double dValue = Double.parseDouble(valueOrEnchant.toString());
+                            switch (attribute.toLowerCase()) {
+                                case "minlevel":
+                                    item.minLevel = (int) dValue;
+                                    break;
+                                case "maxlevel":
+                                    item.maxLevel = (int) dValue;
+                                    break;
+                                case "chance":
+                                    item.dropChance = dValue;
+                                    break;
+                                case "amount":
+                                    item.amount = (int) dValue;
+                                    if (item.amount > 64) item.amount = 64;
+                                    else if (item.amount < 1) item.amount = 1;
+                                    break;
+                                default:
+                                    Utils.logger.warning("invalid attribute for " + mobTypeOrGroupName + " in customdrops.yml: " + attribute);
                             }
                         }
-                    } // next attribute
-                    dropList.add(item);
-                } // next material
-            } // next material array
-            if (dropList.size() > 0) customDropsitems.put(entityType, dropList);
-        } // next mob
+                        else if (valueOrEnchant != null && valueOrEnchant.toString().contains("-")){
+                            if (!item.setAmountRangeFromString(valueOrEnchant.toString()))
+                                Utils.logger.warning(String.format("Invalid number range for %s, %s", mobTypeOrGroupName, valueOrEnchant));
+                        }
+                        else if ("nomultiplier".equalsIgnoreCase(attribute)) {
+                            item.noMultiplier = true;
+                        }
+                    }
+                } // next attribute
+                dropList.add(item);
+                addedDrop = true;
+            } // next material
+        } // next material array
 
-        if (settingsCfg.getStringList("debug-misc").contains("custom-drops")) {
-            Utils.logger.info("custom drops count: " + customDropsitems.size());
-            for (EntityType ent : customDropsitems.keySet()) {
-                Utils.logger.info("mob: " + ent.name());
-                for (CustomItemDrop item : customDropsitems.get(ent)) {
-                    String msg = String.format("    %s, amount: %s, chance: %s, minL: %s, maxL: %s, noMulp: %s",
-                            item.getMaterial(), item.amount, item.dropChance, item.minLevel, item.maxLevel, item.noMultiplier);
-                    StringBuilder sb = new StringBuilder();
-                    for (Enchantment enchant : item.getItemStack().getItemMeta().getEnchants().keySet()) {
+        return addedDrop;
+    }
+
+    private void showCustomDropsDebugInfo(){
+        for (EntityType ent : customDropsitems.keySet()) {
+            Utils.logger.info("mob: " + ent.name());
+            for (CustomItemDrop item : customDropsitems.get(ent)) {
+                String msg = String.format("    %s, amount: %s, chance: %s, minL: %s, maxL: %s, noMulp: %s",
+                        item.getMaterial(), item.getAmountAsString(), item.dropChance, item.minLevel, item.maxLevel, item.noMultiplier);
+                StringBuilder sb = new StringBuilder();
+                ItemMeta meta = item.getItemStack().getItemMeta();
+                if (meta != null) {
+                    for (Enchantment enchant : meta.getEnchants().keySet()) {
                         if (sb.length() > 0) sb.append(", ");
                         sb.append(String.format("%s (%s)", enchant.getKey().getKey(), item.getItemStack().getItemMeta().getEnchants().get(enchant)));
                     }
-                    Utils.logger.info(msg);
-                    if (sb.length() > 0) Utils.logger.info("         " + sb.toString());
                 }
+                Utils.logger.info(msg);
+                if (sb.length() > 0) Utils.logger.info("         " + sb.toString());
+            }
+        }
+
+        for (CustomDropsUniversalGroups group : customDropsitems_groups.keySet()) {
+            Utils.logger.info("group: " + group.name());
+            for (CustomItemDrop item : customDropsitems_groups.get(group)) {
+                String msg = String.format("    %s, amount: %s, chance: %s, minL: %s, maxL: %s, noMulp: %s",
+                        item.getMaterial(), item.getAmountAsString(), item.dropChance, item.minLevel, item.maxLevel, item.noMultiplier);
+                StringBuilder sb = new StringBuilder();
+                ItemMeta meta = item.getItemStack().getItemMeta();
+                if (meta != null) {
+                    for (Enchantment enchant : meta.getEnchants().keySet()) {
+                        if (sb.length() > 0) sb.append(", ");
+                        sb.append(String.format("%s (%s)", enchant.getKey().getKey(), item.getItemStack().getItemMeta().getEnchants().get(enchant)));
+                    }
+                }
+                Utils.logger.info(msg);
+                if (sb.length() > 0) Utils.logger.info("         " + sb.toString());
             }
         }
     }
 
+    @Nullable
     private static Enchantment getEnchantmentFromName(String name){
 
         switch (name.replace(" ", "_").toLowerCase()){
@@ -345,11 +475,12 @@ public class LevelledMobs extends JavaPlugin {
         }
     }
 
+    @Nonnull
     private TreeMap<String, Integer> getMapFromConfigSection(String configPath){
         TreeMap<String, Integer> result = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
 
         ConfigurationSection cs = settingsCfg.getConfigurationSection(configPath);
-        if (cs == null){ return result; }
+        if (cs == null) return result;
 
         Set<String> set = cs.getKeys(false);
 

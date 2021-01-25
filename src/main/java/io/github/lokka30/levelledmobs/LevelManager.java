@@ -165,20 +165,19 @@ public class LevelManager {
             for (CustomItemDrop drop : drops){
                 if (drop.maxLevel > -1 && level > drop.maxLevel) continue;
                 if (drop.minLevel > -1 && level < drop.minLevel) continue;
+                // TODO: incorporate drop amount range
                 if (drop.dropChance < 1.0){
-                    double effectiveDropChance = drop.dropChance;
-                    if (!drop.noMultiplier){
-                        // TODO: factor in mob level here
-
-                    }
+                    int newAmount = drop.amount;
+                    if (!drop.noMultiplier) newAmount *= addition;
 
                     double chanceRole = (double) ThreadLocalRandom.current().nextInt(0, 100001) * 0.00001;
                     if (instance.settingsCfg.getStringList("debug-misc").contains("custom-drops")) {
-                        Utils.logger.info(String.format("mob: %s, item %s, origChance: %s, effectiveChance: %s, chanceRole: %s, dropped: %s",
-                                livingEntity.getName(), drop.getMaterial().name(), drop.dropChance, effectiveDropChance, chanceRole, !(1.0 - chanceRole >= effectiveDropChance)
+                        Utils.logger.info(String.format(
+                                "mob: %s, item %s, amount: %s, newAmount: %s, chance: %s, chanceRole: %s, dropped: %s",
+                                livingEntity.getName(), drop.getMaterial().name(), drop.amount, newAmount, drop.dropChance, chanceRole, !(1.0 - chanceRole >= drop.dropChance)
                                 ));
                     }
-                    if (1.0 - chanceRole >= effectiveDropChance) continue;
+                    if (1.0 - chanceRole >= drop.dropChance) continue;
                 }
                 // if we made it this far then the item will be dropped
                 ItemStack newItem = drop.getItemStack();

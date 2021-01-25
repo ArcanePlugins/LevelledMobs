@@ -1,14 +1,24 @@
 # use this file to add custom item drops for any specified mob
 
 # attributes available:
+#
 # minlevel - the minimal mob level required to drop this item
 # maxlevel - the maximum mob level that can drop this item
 # chance - a value to determine how likely the mob is to drop this item.  1.0 = 100%, 0.1 = 10%, etc
 # amount - how many of this item will be dropped
-# nomultiplier - the level of the mob will not affect the amount dropped
+# nomultiplier: - the level of the mob will not affect the amount dropped - !!!! make sure you end it with ":", as in: nomultiplier:
 # enchantments - enter a list of enchantments the item will have and the enchantment level
+# groupid - if multiple items for the same mob have the same groupid, one one of the items will be dropped
 
-# enter a mob then specify the item it can drop.
+# universal groups - instead of specifying items for a specific mob you can use the following universal groups:
+#
+# all_mobs, all_levellable_mobs, all_hostile_mobs, all_passive_mobs, all_overworld_mobs, all_nether_mobs,
+# all_flying_mobs, all_ground_mobs, all_aquatic_mobs
+
+ALL_LEVELLABLE_MOBS:
+  - gold:
+      amount: 2
+      chance: 0.3
 
 ZOMBIE:
   - diamond:

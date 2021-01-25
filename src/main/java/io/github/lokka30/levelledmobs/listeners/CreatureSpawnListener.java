@@ -36,7 +36,7 @@ public class CreatureSpawnListener implements Listener {
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void onPlayerDeath(final PlayerDeathEvent event) {
         String nametag = instance.settingsCfg.getString("creature-death-nametag", "&8[&7Level %level%&8 | &f%displayname%&8]");
-        if (!Utils.isNotNullOrEmpty(nametag)) return; // if they want retain the stock message they are configure it with an empty string
+        if (Utils.isNullOrEmpty(nametag)) return; // if they want retain the stock message they are configure it with an empty string
 
         EntityDamageEvent entityDamageEvent = event.getEntity().getLastDamageCause();
         if (entityDamageEvent == null || entityDamageEvent.isCancelled() || !(entityDamageEvent instanceof EntityDamageByEntityEvent)){
