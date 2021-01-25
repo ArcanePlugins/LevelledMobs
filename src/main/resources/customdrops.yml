@@ -1,6 +1,14 @@
-# use this file to add custom item drops for any specified mob
+# .                           .    .               _ __   __        _
+# /       ___  _   __   ___   |    |     ___    ___/ |    |    __.  \ ___    ____
+# |     .'   ` |   /  .'   `  |    |   .'   `  /   | |\  /|  .'   \ |/   \  (
+# |     |----' `  /   |----'  |    |   |----' ,'   | | \/ |  |    | |    `  `--.
+# /---/ `.___,  \/    `.___, /\__ /\__ `.___, `___,' /    /   `._.' `___,' \___.'
+#                     The Ultimate RPG Levelled Mobs Solution
+#
+# This is the custom drops configuration where you can make mobs drop items of your choice.
+# Thanks to stumper66 for creating this system!
 
-# attributes available:
+# Attributes available:
 #
 # minlevel - the minimal mob level required to drop this item
 # maxlevel - the maximum mob level that can drop this item

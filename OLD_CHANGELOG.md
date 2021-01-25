@@ -1,9 +1,7 @@
 # Old Changelog
 Differences:
 * The new changelog is formatted with Markdown. The old changelog is unformatted.
-* The new changelog is in ascending order. The old changelog is in descending order.
-* Change in versioning
-  * The old versions contained 'SNAPSHOT' and 'RELEASE', the new versions will only attach a 'PRE', 'ALPHA' or 'BETA' suffix where necessary. Stable versions will not have a suffix.
+* The old versions contained 'SNAPSHOT' and 'RELEASE', the new versions will only attach a 'PRE', 'ALPHA' or 'BETA' suffix where necessary. Stable versions will not have a suffix.
 
 ```
 v1.34.0-RELEASE:
