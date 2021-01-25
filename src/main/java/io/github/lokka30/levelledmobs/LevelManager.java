@@ -250,7 +250,7 @@ public class LevelManager {
             WrappedDataWatcher.WrappedDataWatcherObject watcherObject = new WrappedDataWatcher.WrappedDataWatcherObject(2, chatSerializer);
             Optional<Object> optional = Optional.of(WrappedChatComponent.fromChatMessage(nametag)[0].getHandle());
             dataWatcher.setObject(watcherObject, optional);
-            dataWatcher.setObject(3, instance.settingsCfg.getBoolean("creature-nametag-always-visible"));
+            dataWatcher.setObject(3, entity.isCustomNameVisible() || instance.settingsCfg.getBoolean("creature-nametag-always-visible"));
 
             PacketContainer packet = ProtocolLibrary.getProtocolManager().createPacket(PacketType.Play.Server.ENTITY_METADATA);
             packet.getWatchableCollectionModifier().write(0, dataWatcher.getWatchableObjects());

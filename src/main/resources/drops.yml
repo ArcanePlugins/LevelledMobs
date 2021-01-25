@@ -1,6 +1,7 @@
 # This is NOT a configuration file! All changes to this file will not take effect and be reset!
+# *** Add your own custom drops only in the customdrops.yml file! ***
 # This file stores the default mob drop materials for each LivingEntity. This is to fix issue #131.
-# *********** Developer Note *************
+#
 # This file has been manually modified as not all drops were covered by the generateMobData method
 # Ensure to check https://minecraft.gamepedia.com/Drops#Mob_drops when modifying this file
 GENERATION_INFO: '[Date: 22/01/2021 10:17:47], [ServerVersion: git-Paper-438 (MC:

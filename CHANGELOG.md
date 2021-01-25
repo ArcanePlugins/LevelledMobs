@@ -131,3 +131,19 @@ Before installing this update on your server, please understand the following:
 * Use `(ignoreCancelled = true, priority = EventPriority.MONITOR)` with most event handlers (Hugo5551)
 * Improvements to the debug listener (stumper66)
 * Improved compatibility checker (lokka30)
+
+
+
+# v2.1.0
+## Notes:
+* File changes:
+  * New file `customdrops.yml`
+
+## Changelog:
+**Custom Drops Configuration!** (stumper66)
+* stumper66 worked long and hard to implement the suggestion originally from @Ravenlant back in February 2020 that had been frequently requested since.
+* It is a *very* powerful system.
+* Thanks to those on the Discord server who provided suggestions to stumper whilst he worked on this system - especially Hugo5551!
+
+**Bug Fixes**
+* Fixed name tags ignoring a mob's existing 'isCustomNameVisible' boolean (lokka30)
