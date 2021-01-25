@@ -14,7 +14,7 @@ public final class FileLoader {
         throw new UnsupportedOperationException();
     }
 
-    public static YamlConfiguration loadFile(Plugin plugin, String cfgName, int fileVersion) {
+    public static YamlConfiguration loadFile(final Plugin plugin, String cfgName, final int fileVersion) {
         cfgName = cfgName + ".yml";
 
         Utils.logger.info("&fFile Loader: &7Loading file '&b" + cfgName + "&7'...");
@@ -23,7 +23,7 @@ public final class FileLoader {
 
         saveResourceIfNotExists(plugin, file);
 
-        YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
+        final YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
         cfg.options().copyDefaults(true);
 
         checkFileVersion(file, fileVersion, cfg.getInt("file-version"));
@@ -31,14 +31,14 @@ public final class FileLoader {
         return cfg;
     }
 
-    public static void saveResourceIfNotExists(Plugin instance, File file) {
+    public static void saveResourceIfNotExists(final Plugin instance, final File file) {
         if (!file.exists()) {
             Utils.logger.info("&fFile Loader: &7Configuration file '&b" + file.getName() + "&7' doesn't exist, creating it now...");
             instance.saveResource(file.getName(), false);
         }
     }
 
-    private static void checkFileVersion(File file, int compatibleVersion, int installedVersion) {
+    private static void checkFileVersion(final File file, final int compatibleVersion, final int installedVersion) {
         if (compatibleVersion == installedVersion) {
             return;
         }

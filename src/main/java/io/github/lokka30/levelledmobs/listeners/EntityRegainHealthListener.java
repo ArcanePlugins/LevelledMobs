@@ -20,7 +20,7 @@ public class EntityRegainHealthListener implements Listener {
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void onEntityRegainHealth(final EntityRegainHealthEvent event) {
         if (event.getEntity() instanceof LivingEntity) {
-            LivingEntity livingEntity = (LivingEntity) event.getEntity();
+            final LivingEntity livingEntity = (LivingEntity) event.getEntity();
 
             // Make sure the mob is levelled
             if (!livingEntity.getPersistentDataContainer().has(instance.levelManager.isLevelledKey, PersistentDataType.STRING))

@@ -30,13 +30,13 @@ public class ConfigUtils {
         entityNameMap = new HashMap<>();
     }
 
-    public String getEntityName(EntityType entityType) {
+    public String getEntityName(final EntityType entityType) {
         if (entityNameMap.containsKey(entityType)) {
             return entityNameMap.get(entityType);
         } else {
             String name;
-            String entityTypeStr = entityType.toString();
-            String path = "entity-name-override." + entityTypeStr;
+            final String entityTypeStr = entityType.toString();
+            final String path = "entity-name-override." + entityTypeStr;
 
             if (instance.settingsCfg.contains(path)) {
                 name = instance.settingsCfg.getString(path);
@@ -49,7 +49,7 @@ public class ConfigUtils {
         }
     }
 
-    public int getMinLevel(EntityType entityType, World world, boolean isAdult, final DebugInfo debugInfo) {
+    public int getMinLevel(final EntityType entityType, final World world, final boolean isAdult, final DebugInfo debugInfo) {
 
         // Note for users wondering why '-1' is stored in the min level map:
         // -1 is supposed to be an impossible level to achieve. It is used
@@ -57,8 +57,8 @@ public class ConfigUtils {
         // This allows the plugin to not have to check the disk every time
         // a mob spawns.
 
-        String entityTypeStr = entityType.toString();
-        String worldName = world.getName();
+        final String entityTypeStr = entityType.toString();
+        final String worldName = world.getName();
         int minLevel = instance.settingsCfg.getInt("fine-tuning.min-level", 1);
 
         if (instance.settingsCfg.getBoolean("world-level-override.enabled") && instance.worldLevelOverride_Min.containsKey(worldName)) {
@@ -85,7 +85,7 @@ public class ConfigUtils {
         return minLevel;
     }
 
-    public int getMaxLevel(EntityType entityType, World world, boolean isAdult, final DebugInfo debugInfo) {
+    public int getMaxLevel(final EntityType entityType, final World world, final boolean isAdult, final DebugInfo debugInfo) {
 
         // Note for users wondering why '-1' is stored in the max level map:
         // -1 is supposed to be an impossible level to achieve. It is used
@@ -93,8 +93,8 @@ public class ConfigUtils {
         // This allows the plugin to not have to check the disk every time
         // a mob spawns.
 
-        String entityTypeStr = entityType.toString();
-        String worldName = world.getName();
+        final String entityTypeStr = entityType.toString();
+        final String worldName = world.getName();
         int maxLevel = Utils.getDefaultIfNull(instance.settingsCfg, "fine-tuning.max-level", 10);
 
         if (instance.settingsCfg.getBoolean("world-level-override.enabled") && instance.worldLevelOverride_Max.containsKey(worldName)) {

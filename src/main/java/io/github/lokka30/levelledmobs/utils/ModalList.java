@@ -13,7 +13,7 @@ public class ModalList {
         BLACKLIST
     }
 
-    public static ListMode fromString(String mode) {
+    public static ListMode fromString(final String mode) {
         assert mode != null;
         switch (mode.toUpperCase()) {
             case "ALL":
@@ -27,10 +27,10 @@ public class ModalList {
         }
     }
 
-    public static boolean isEnabledInList(YamlConfiguration cfg, String path, String item) {
+    public static boolean isEnabledInList(final YamlConfiguration cfg, final String path, final String item) {
         if (cfg.contains(path + ".mode")) {
             @SuppressWarnings("ConstantConditions")
-            ListMode listMode = ModalList.fromString(cfg.getString(path + ".mode"));
+            final ListMode listMode = ModalList.fromString(cfg.getString(path + ".mode"));
 
             switch (listMode) {
                 case ALL:

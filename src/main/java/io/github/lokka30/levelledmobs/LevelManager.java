@@ -125,7 +125,7 @@ public class LevelManager {
         return isLevellable(livingEntity.getType());
     }
 
-    public void updateNametagWithDelay(LivingEntity livingEntity, String nametag, List<Player> players, long delay) {
+    public void updateNametagWithDelay(final LivingEntity livingEntity, final String nametag, final List<Player> players, final long delay) {
         new BukkitRunnable() {
             public void run() {
                 if (livingEntity == null) return; // may have died/removed after the timer.
@@ -134,7 +134,7 @@ public class LevelManager {
         }.runTaskLater(instance, delay);
     }
 
-    public void updateNametagWithDelay(LivingEntity livingEntity, List<Player> players, long delay) {
+    public void updateNametagWithDelay(final LivingEntity livingEntity, final List<Player> players, final long delay) {
         new BukkitRunnable() {
             public void run() {
                 if (livingEntity == null) return; // may have died/removed after the timer.
@@ -144,7 +144,7 @@ public class LevelManager {
     }
 
     // This sets the levelled currentDrops on a levelled mob that just died.
-    public List<ItemStack> getLevelledItemDrops(final LivingEntity livingEntity, List<ItemStack> currentDrops) {
+    public List<ItemStack> getLevelledItemDrops(final LivingEntity livingEntity, final List<ItemStack> currentDrops) {
 
         Utils.debugLog(instance, "LevelManager#getLevelledItemDrops", "1: Method called. " + currentDrops.size() + " drops will be analysed.");
 
@@ -159,7 +159,7 @@ public class LevelManager {
         Utils.debugLog(instance, "LevelManager#getLevelledItemDrops", "3: Entity level is " + level + ".");
 
         // Get currentDrops added per level value
-        int addition = BigDecimal.valueOf(instance.mobDataManager.getAdditionsForLevel(livingEntity, Addition.CUSTOM_ITEM_DROP, level))
+        final int addition = BigDecimal.valueOf(instance.mobDataManager.getAdditionsForLevel(livingEntity, Addition.CUSTOM_ITEM_DROP, level))
                 .setScale(0, RoundingMode.HALF_DOWN).intValueExact(); // truncate double to int
         Utils.debugLog(instance, "LevelManager#getLevelledItemDrops", "4: Item drop addition is +" + addition + ".");
 
@@ -186,23 +186,21 @@ public class LevelManager {
     public void getCustomItemDrops(final LivingEntity livingEntity, final int level, final List<ItemStack> drops, final boolean isLevellable){
 
         final int preCount = drops.size();
-        List<CustomDropsUniversalGroups> applicableGroups = getApllicableGroupsForMob(livingEntity, isLevellable);
+        final List<CustomDropsUniversalGroups> applicableGroups = getApllicableGroupsForMob(livingEntity, isLevellable);
 
-        for (CustomDropsUniversalGroups group : applicableGroups){
+        for (final CustomDropsUniversalGroups group : applicableGroups){
             if (!instance.customDropsitems_groups.containsKey(group)) continue;
-            Utils.logger.info("calling getCustomItemDrops with group " + group.name());
             getCustomItemDrops2(livingEntity, level, instance.customDropsitems_groups.get(group), drops);
         }
 
         if (instance.customDropsitems.containsKey(livingEntity.getType())){
-            Utils.logger.info("calling getCustomItemDrops");
             getCustomItemDrops2(livingEntity, level, instance.customDropsitems.get(livingEntity.getType()), drops);
         }
 
         final int postCount = drops.size();
 
         if (instance.settingsCfg.getStringList("debug-misc").contains("custom-drops")) {
-            StringBuilder sb = new StringBuilder();
+            final StringBuilder sb = new StringBuilder();
             for (CustomDropsUniversalGroups group : applicableGroups){
                 if (sb.length() > 0) sb.append(", ");
                 sb.append(group.toString());
@@ -216,23 +214,23 @@ public class LevelManager {
     private void getCustomItemDrops2(final LivingEntity livingEntity, final int level, final List<CustomItemDrop> customDrops, final List<ItemStack> newDrops){
         Utils.logger.info("getCustomItemDrops2 stack size: " + customDrops.size());
 
-        for (CustomItemDrop drop : customDrops){
+        for (final CustomItemDrop drop : customDrops){
             if (drop.maxLevel > -1 && level > drop.maxLevel) continue;
             if (drop.minLevel > -1 && level < drop.minLevel) continue;
             int newDropAmount = drop.amount;
             if (drop.getHasAmountRange()){
-                int change = ThreadLocalRandom.current().nextInt(0, drop.getamountRangeMax() - drop.getamountRangeMin() + 1);
+                final int change = ThreadLocalRandom.current().nextInt(0, drop.getamountRangeMax() - drop.getamountRangeMin() + 1);
                 newDropAmount = drop.getamountRangeMin() + change;
             }
 
             if (drop.dropChance < 1.0){
                 if (!drop.noMultiplier) {
-                    int addition = BigDecimal.valueOf(instance.mobDataManager.getAdditionsForLevel(livingEntity, Addition.CUSTOM_ITEM_DROP, level))
+                    final int addition = BigDecimal.valueOf(instance.mobDataManager.getAdditionsForLevel(livingEntity, Addition.CUSTOM_ITEM_DROP, level))
                             .setScale(0, RoundingMode.HALF_DOWN).intValueExact(); // truncate double to int
                     newDropAmount = newDropAmount + (newDropAmount * addition);
                 }
 
-                double chanceRole = (double) ThreadLocalRandom.current().nextInt(0, 100001) * 0.00001;
+                final double chanceRole = (double) ThreadLocalRandom.current().nextInt(0, 100001) * 0.00001;
                 if (instance.settingsCfg.getStringList("debug-misc").contains("custom-drops")) {
                     Utils.logger.info(String.format(
                             "mob: %s, item %s, amount: %s, newAmount: %s, chance: %s, chanceRole: %s, dropped: %s",
@@ -295,7 +293,7 @@ public class LevelManager {
     }
 
     //Calculates the XP dropped when a levellable creature dies.
-    public int getLevelledExpDrops(final LivingEntity ent, int xp) {
+    public int getLevelledExpDrops(final LivingEntity ent, final int xp) {
         if (ent.getPersistentDataContainer().has(isLevelledKey, PersistentDataType.STRING)) {
             final int level = Objects.requireNonNull(ent.getPersistentDataContainer().get(instance.levelManager.levelKey, PersistentDataType.INTEGER));
 
@@ -306,23 +304,23 @@ public class LevelManager {
     }
 
     // When the persistent data container levelled key has been set on the entity already (i.e. when they are damaged)
-    public String getNametag(LivingEntity livingEntity) {
+    public String getNametag(final LivingEntity livingEntity) {
         return getNametag(livingEntity, Objects.requireNonNull(
                 livingEntity.getPersistentDataContainer().get(levelKey, PersistentDataType.INTEGER)));
     }
 
     // When the persistent data container levelled key has not been set on the entity yet (i.e. for use in CreatureSpawnListener)
-    public String getNametag(LivingEntity livingEntity, int level) {
-        String entityName = instance.configUtils.getEntityName(livingEntity.getType());
-        String displayName = livingEntity.getCustomName() == null ? entityName : livingEntity.getCustomName();
+    public String getNametag(final LivingEntity livingEntity, final int level) {
+        final String entityName = instance.configUtils.getEntityName(livingEntity.getType());
+        final String displayName = livingEntity.getCustomName() == null ? entityName : livingEntity.getCustomName();
 
         // If show label for default levelled mobs is disabled and the mob is the min level, then don't modify their tag.
         if (!instance.settingsCfg.getBoolean("show-label-for-default-levelled-mobs") && level == instance.settingsCfg.getInt("fine-tuning.min-level")) {
             return livingEntity.getCustomName(); // Can be null, that is meant to be the case.
         }
 
-        AttributeInstance maxHealth = livingEntity.getAttribute(Attribute.GENERIC_MAX_HEALTH);
-        String health = maxHealth == null ? "?" : Utils.round(maxHealth.getBaseValue()) + "";
+        final AttributeInstance maxHealth = livingEntity.getAttribute(Attribute.GENERIC_MAX_HEALTH);
+        final String health = maxHealth == null ? "?" : Utils.round(maxHealth.getBaseValue()) + "";
 
         String nametag = instance.settingsCfg.getString("creature-nametag");
 
@@ -348,18 +346,18 @@ public class LevelManager {
      *   - @Esophose (https://www.spigotmc.org/members/esophose.34168/)
      *   - @7smile7 (https://www.spigotmc.org/members/7smile7.43809/)
      */
-    public void updateNametag(LivingEntity entity, String nametag, List<Player> players) {
+    public void updateNametag(final LivingEntity entity, final String nametag, final List<Player> players) {
         if (!instance.hasProtocolLibInstalled) return;
 
         for (Player player : players) {
-            WrappedDataWatcher dataWatcher = WrappedDataWatcher.getEntityWatcher(entity).deepClone();
-            WrappedDataWatcher.Serializer chatSerializer = WrappedDataWatcher.Registry.getChatComponentSerializer(true);
-            WrappedDataWatcher.WrappedDataWatcherObject watcherObject = new WrappedDataWatcher.WrappedDataWatcherObject(2, chatSerializer);
-            Optional<Object> optional = Optional.of(WrappedChatComponent.fromChatMessage(nametag)[0].getHandle());
+            final WrappedDataWatcher dataWatcher = WrappedDataWatcher.getEntityWatcher(entity).deepClone();
+            final WrappedDataWatcher.Serializer chatSerializer = WrappedDataWatcher.Registry.getChatComponentSerializer(true);
+            final WrappedDataWatcher.WrappedDataWatcherObject watcherObject = new WrappedDataWatcher.WrappedDataWatcherObject(2, chatSerializer);
+            final Optional<Object> optional = Optional.of(WrappedChatComponent.fromChatMessage(nametag)[0].getHandle());
             dataWatcher.setObject(watcherObject, optional);
             dataWatcher.setObject(3, entity.isCustomNameVisible() || instance.settingsCfg.getBoolean("creature-nametag-always-visible"));
 
-            PacketContainer packet = ProtocolLibrary.getProtocolManager().createPacket(PacketType.Play.Server.ENTITY_METADATA);
+            final PacketContainer packet = ProtocolLibrary.getProtocolManager().createPacket(PacketType.Play.Server.ENTITY_METADATA);
             packet.getWatchableCollectionModifier().write(0, dataWatcher.getWatchableObjects());
             packet.getIntegers().write(0, entity.getEntityId());
 
@@ -377,16 +375,16 @@ public class LevelManager {
     public void startNametagAutoUpdateTask() {
         Utils.logger.info("&fTasks: &7Starting async nametag auto update task...");
 
-        double maxDistance = Math.pow(128, 2); // square the distance we are using Location#distanceSquared. This is because it is faster than Location#distance since it does not need to sqrt which is taxing on the CPU.
-        long period = 6; // run every ? seconds.
+        final double maxDistance = Math.pow(128, 2); // square the distance we are using Location#distanceSquared. This is because it is faster than Location#distance since it does not need to sqrt which is taxing on the CPU.
+        final long period = 6; // run every ? seconds.
 
         nametagAutoUpdateTask = new BukkitRunnable() {
             @Override
             public void run() {
-                for (Player player : Bukkit.getOnlinePlayers()) {
+                for (final Player player : Bukkit.getOnlinePlayers()) {
                     final Location location = player.getLocation();
 
-                    for (Entity entity : player.getWorld().getEntities()) {
+                    for (final Entity entity : player.getWorld().getEntities()) {
 
                         // Mob must be a livingentity that is ...living.
                         if (!(entity instanceof LivingEntity)) continue;

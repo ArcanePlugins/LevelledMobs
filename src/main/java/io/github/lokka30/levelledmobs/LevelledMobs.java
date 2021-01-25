@@ -69,7 +69,7 @@ public class LevelledMobs extends JavaPlugin {
     public void onLoad() {
         Utils.logger.info("&f~ Initiating start-up procedure ~");
 
-        QuickTimer loadTimer = new QuickTimer();
+        final QuickTimer loadTimer = new QuickTimer();
         loadTimer.start(); // Record how long it takes for the plugin to load.
 
         mobDataManager = new MobDataManager(this);
@@ -88,7 +88,7 @@ public class LevelledMobs extends JavaPlugin {
     }
 
     public void onEnable() {
-        QuickTimer enableTimer = new QuickTimer();
+        final QuickTimer enableTimer = new QuickTimer();
         enableTimer.start(); // Record how long it takes for the plugin to enable.
 
         checkCompatibility();
@@ -114,7 +114,7 @@ public class LevelledMobs extends JavaPlugin {
     public void onDisable() {
         Utils.logger.info("&f~ Initiating shut-down procedure ~");
 
-        QuickTimer disableTimer = new QuickTimer();
+        final QuickTimer disableTimer = new QuickTimer();
         disableTimer.start();
 
         levelManager.stopNametagAutoUpdateTask();
@@ -127,12 +127,12 @@ public class LevelledMobs extends JavaPlugin {
         Utils.logger.info("&fCompatibility Checker: &7Checking compatibility with your server...");
 
         // Using a List system in case more compatibility checks are added.
-        List<String> incompatibilities = new ArrayList<>();
+        final List<String> incompatibilities = new ArrayList<>();
 
         // Check the MC version of the server.
         final String currentServerVersion = getServer().getVersion();
         boolean isRunningSupportedVersion = false;
-        for (String supportedServerVersion : Utils.getSupportedServerVersions()) {
+        for (final String supportedServerVersion : Utils.getSupportedServerVersions()) {
             if (currentServerVersion.contains(supportedServerVersion)) {
                 isRunningSupportedVersion = true;
                 break;
@@ -193,19 +193,19 @@ public class LevelledMobs extends JavaPlugin {
 
     private void processCustomDropsConfig(){
 
-        for (Map.Entry<String, Object> map: customDropsCfg.getValues(true).entrySet()){
-            String mobTypeTemp = map.getKey();
+        for (final Map.Entry<String, Object> map: customDropsCfg.getValues(true).entrySet()){
+            final String mobTypeTemp = map.getKey();
             String[] mobTypes;
             EntityType entityType = null;
             if (mobTypeTemp.contains(";"))  mobTypes = mobTypeTemp.split(";");
             else mobTypes = new String[]{ mobTypeTemp };
 
-            for (String type : mobTypes) {
-                String mobType = type.trim();
+            for (final String type : mobTypes) {
+                final String mobType = type.trim();
                 if (mobType.equals("")) continue;
 
                 CustomDropsUniversalGroups universalGroup = null;
-                boolean isUniversalGroup = mobType.toLowerCase().startsWith("all_");
+                final boolean isUniversalGroup = mobType.toLowerCase().startsWith("all_");
 
                 if (isUniversalGroup) {
                     try {
@@ -250,7 +250,7 @@ public class LevelledMobs extends JavaPlugin {
         ArrayList<String> materialsStrings = null;
         boolean isMap = false;
         boolean addedDrop = false;
-        String mobTypeOrGroupName = entityType == null ? entityGroup.name() : entityType.name();
+        final String mobTypeOrGroupName = entityType == null ? entityGroup.name() : entityType.name();
 
         // the below try block is to determine which generics class is returned since this is impossible to check at runtime
         // note if it's the wrong cast it will be thrown when attempting to enumerate the collection
@@ -279,7 +279,7 @@ public class LevelledMobs extends JavaPlugin {
             if (entityType == null) item = new CustomItemDrop(entityGroup);
             else item = new CustomItemDrop(entityType);
 
-            for (String str : materialsStrings){
+            for (final String str : materialsStrings){
                 Material material;
                 try {
                     material = Material.valueOf(str.toUpperCase());
@@ -295,8 +295,8 @@ public class LevelledMobs extends JavaPlugin {
         }
 
         // here we'll start parsing attributes, etc
-        for (Map<String, Object> materialsMap : map2){
-            for (String materialName : materialsMap.keySet()) {
+        for (final Map<String, Object> materialsMap : map2){
+            for (final String materialName : materialsMap.keySet()) {
                 Material material;
                 try {
                     material = Material.valueOf(materialName.toUpperCase());
@@ -327,10 +327,10 @@ public class LevelledMobs extends JavaPlugin {
                     continue;
                 }
 
-                for (String attribute : materialAttributes.keySet()) {
+                for (final String attribute : materialAttributes.keySet()) {
                     // example: amount
 
-                    Object valueOrEnchant = materialAttributes.get(attribute);
+                    final Object valueOrEnchant = materialAttributes.get(attribute);
                     if (attribute.equalsIgnoreCase("enchantments") && valueOrEnchant.getClass().equals(LinkedHashMap.class)) {
                         // enchantments here
                         Map<String, Object> enchantments;
@@ -342,13 +342,13 @@ public class LevelledMobs extends JavaPlugin {
                             return false;
                         }
 
-                        for (String enchantmentName : enchantments.keySet()) {
+                        for (final String enchantmentName : enchantments.keySet()) {
                             Object enchantLevelObj = enchantments.get(enchantmentName);
                             int enchantLevel = 1;
                             if (enchantLevelObj != null && Utils.isInteger(enchantLevelObj.toString()))
                                 enchantLevel = Integer.parseInt(enchantLevelObj.toString());
 
-                            Enchantment en = getEnchantmentFromName(enchantmentName);
+                            final Enchantment en = getEnchantmentFromName(enchantmentName);
                             if (en == null) {
                                 Utils.logger.warning("invalid enchantment in customdrops.yml: " + enchantmentName);
                                 continue;
@@ -360,7 +360,7 @@ public class LevelledMobs extends JavaPlugin {
                                 continue;
                             }
 
-                            ItemMeta meta = item.getItemStack().getItemMeta();
+                            final ItemMeta meta = item.getItemStack().getItemMeta();
                             if (meta != null) {
                                 // true is for ignoring level restriction
                                 meta.addEnchant(en, enchantLevel, true);
@@ -371,7 +371,7 @@ public class LevelledMobs extends JavaPlugin {
                         // non-enchantments here
                         // example 0.1
                         if (valueOrEnchant != null && Utils.isDouble(valueOrEnchant.toString())) {
-                            double dValue = Double.parseDouble(valueOrEnchant.toString());
+                            final double dValue = Double.parseDouble(valueOrEnchant.toString());
                             switch (attribute.toLowerCase()) {
                                 case "minlevel":
                                     item.minLevel = (int) dValue;
@@ -409,15 +409,15 @@ public class LevelledMobs extends JavaPlugin {
     }
 
     private void showCustomDropsDebugInfo(){
-        for (EntityType ent : customDropsitems.keySet()) {
+        for (final EntityType ent : customDropsitems.keySet()) {
             Utils.logger.info("mob: " + ent.name());
-            for (CustomItemDrop item : customDropsitems.get(ent)) {
-                String msg = String.format("    %s, amount: %s, chance: %s, minL: %s, maxL: %s, noMulp: %s",
+            for (final CustomItemDrop item : customDropsitems.get(ent)) {
+                final String msg = String.format("    %s, amount: %s, chance: %s, minL: %s, maxL: %s, noMulp: %s",
                         item.getMaterial(), item.getAmountAsString(), item.dropChance, item.minLevel, item.maxLevel, item.noMultiplier);
-                StringBuilder sb = new StringBuilder();
-                ItemMeta meta = item.getItemStack().getItemMeta();
+                final StringBuilder sb = new StringBuilder();
+                final ItemMeta meta = item.getItemStack().getItemMeta();
                 if (meta != null) {
-                    for (Enchantment enchant : meta.getEnchants().keySet()) {
+                    for (final Enchantment enchant : meta.getEnchants().keySet()) {
                         if (sb.length() > 0) sb.append(", ");
                         sb.append(String.format("%s (%s)", enchant.getKey().getKey(), item.getItemStack().getItemMeta().getEnchants().get(enchant)));
                     }
@@ -427,15 +427,15 @@ public class LevelledMobs extends JavaPlugin {
             }
         }
 
-        for (CustomDropsUniversalGroups group : customDropsitems_groups.keySet()) {
+        for (final CustomDropsUniversalGroups group : customDropsitems_groups.keySet()) {
             Utils.logger.info("group: " + group.name());
-            for (CustomItemDrop item : customDropsitems_groups.get(group)) {
-                String msg = String.format("    %s, amount: %s, chance: %s, minL: %s, maxL: %s, noMulp: %s",
+            for (final CustomItemDrop item : customDropsitems_groups.get(group)) {
+                final String msg = String.format("    %s, amount: %s, chance: %s, minL: %s, maxL: %s, noMulp: %s",
                         item.getMaterial(), item.getAmountAsString(), item.dropChance, item.minLevel, item.maxLevel, item.noMultiplier);
-                StringBuilder sb = new StringBuilder();
-                ItemMeta meta = item.getItemStack().getItemMeta();
+                final StringBuilder sb = new StringBuilder();
+                final ItemMeta meta = item.getItemStack().getItemMeta();
                 if (meta != null) {
-                    for (Enchantment enchant : meta.getEnchants().keySet()) {
+                    for (final Enchantment enchant : meta.getEnchants().keySet()) {
                         if (sb.length() > 0) sb.append(", ");
                         sb.append(String.format("%s (%s)", enchant.getKey().getKey(), item.getItemStack().getItemMeta().getEnchants().get(enchant)));
                     }
@@ -477,7 +477,7 @@ public class LevelledMobs extends JavaPlugin {
     }
 
     @Nullable
-    private static Enchantment getEnchantmentFromName(String name){
+    private static Enchantment getEnchantmentFromName(final String name){
 
         switch (name.replace(" ", "_").toLowerCase()){
             case "arrow_damage": return Enchantment.ARROW_DAMAGE;
@@ -535,16 +535,15 @@ public class LevelledMobs extends JavaPlugin {
     }
 
     @Nonnull
-    private TreeMap<String, Integer> getMapFromConfigSection(String configPath){
-        TreeMap<String, Integer> result = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
-
-        ConfigurationSection cs = settingsCfg.getConfigurationSection(configPath);
+    private TreeMap<String, Integer> getMapFromConfigSection(final String configPath){
+        final TreeMap<String, Integer> result = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+        final ConfigurationSection cs = settingsCfg.getConfigurationSection(configPath);
         if (cs == null) return result;
 
-        Set<String> set = cs.getKeys(false);
+        final Set<String> set = cs.getKeys(false);
 
-        for (String item : set) {
-            Object value = cs.get(item);
+        for (final String item : set) {
+            final Object value = cs.get(item);
             if (value != null && Utils.isInteger(value.toString())) {
                 result.put(item, Integer.parseInt(value.toString()));
             }
@@ -581,7 +580,7 @@ public class LevelledMobs extends JavaPlugin {
     private void registerCommands() {
         Utils.logger.info("&fCommands: &7Registering commands...");
 
-        PluginCommand levelledMobsCommand = getCommand("levelledmobs");
+        final PluginCommand levelledMobsCommand = getCommand("levelledmobs");
         if (levelledMobsCommand == null) {
             Utils.logger.error("Command &b/levelledmobs&7 is unavailable, is it not registered in plugin.yml?");
         } else {
@@ -596,7 +595,7 @@ public class LevelledMobs extends JavaPlugin {
     //Check for updates on the Spigot page.
     private void checkUpdates() {
         if (settingsCfg.getBoolean("use-update-checker")) {
-            UpdateChecker updateChecker = new UpdateChecker(this, 74304);
+            final UpdateChecker updateChecker = new UpdateChecker(this, 74304);
             updateChecker.getLatestVersion(latestVersion -> {
                 if (!updateChecker.getCurrentVersion().equals(latestVersion)) {
                     Utils.logger.warning("&fUpdate Checker: &7The plugin has an update available! You're running &bv" + updateChecker.getCurrentVersion() + "&7, latest version is &bv" + latestVersion + "&7.");

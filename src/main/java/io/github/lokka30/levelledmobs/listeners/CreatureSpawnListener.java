@@ -35,7 +35,7 @@ public class CreatureSpawnListener implements Listener {
         String nametag = instance.settingsCfg.getString("creature-death-nametag", "&8[&7Level %level%&8 | &f%displayname%&8]");
         if (Utils.isNullOrEmpty(nametag)) return; // if they want retain the stock message they are configure it with an empty string
 
-        EntityDamageEvent entityDamageEvent = event.getEntity().getLastDamageCause();
+        final EntityDamageEvent entityDamageEvent = event.getEntity().getLastDamageCause();
         if (entityDamageEvent == null || entityDamageEvent.isCancelled() || !(entityDamageEvent instanceof EntityDamageByEntityEvent)){
             return;
         }
@@ -53,14 +53,14 @@ public class CreatureSpawnListener implements Listener {
         
         if (killer == null) return;
 
-        Object levelTemp = killer.getPersistentDataContainer().get(instance.levelManager.levelKey, PersistentDataType.INTEGER);
+        final Object levelTemp = killer.getPersistentDataContainer().get(instance.levelManager.levelKey, PersistentDataType.INTEGER);
         if (levelTemp == null) return;
 
-        int level = (int)levelTemp;
-        String entityName = instance.configUtils.getEntityName(killer.getType());
-        String displayName = killer.getCustomName() == null ? entityName : killer.getCustomName();
-        AttributeInstance maxHealth = killer.getAttribute(Attribute.GENERIC_MAX_HEALTH);
-        String health = maxHealth == null ? "?" : Utils.round(maxHealth.getBaseValue()) + "";
+        final int level = (int)levelTemp;
+        final String entityName = instance.configUtils.getEntityName(killer.getType());
+        final String displayName = killer.getCustomName() == null ? entityName : killer.getCustomName();
+        final AttributeInstance maxHealth = killer.getAttribute(Attribute.GENERIC_MAX_HEALTH);
+        final String health = maxHealth == null ? "?" : Utils.round(maxHealth.getBaseValue()) + "";
 
         nametag = nametag.replace("%level%", level + "");
         nametag = nametag.replace("%displayname%", displayName);
@@ -70,7 +70,7 @@ public class CreatureSpawnListener implements Listener {
         nametag = nametag.replace("%heart_symbol%", "❤");
         nametag = MicroUtils.colorize(nametag);
 
-        String newMessage = Utils.replaceEx(event.getDeathMessage(), killer.getName(), nametag);
+        final String newMessage = Utils.replaceEx(event.getDeathMessage(), killer.getName(), nametag);
         event.setDeathMessage(newMessage);
     }
 
@@ -86,13 +86,13 @@ public class CreatureSpawnListener implements Listener {
 
         if (!forcedTypes.contains(event.getEntityType().toString())) return;
 
-        LivingEntity livingEntity = (LivingEntity) event.getEntity();
+        final LivingEntity livingEntity = (LivingEntity) event.getEntity();
         processMobSpawn(livingEntity, SpawnReason.DEFAULT, -1, MobProcessReason.NONE);
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void onChunkLoad(final ChunkLoadEvent event){
-        for (Entity entity : event.getChunk().getEntities()){
+        for (final Entity entity : event.getChunk().getEntities()){
             if (!(entity instanceof LivingEntity)) continue;
 
             LivingEntity livingEntity = (LivingEntity) entity;
@@ -278,7 +278,7 @@ public class CreatureSpawnListener implements Listener {
     //Uses ThreadLocalRandom.current().nextInt(min, max + 1). + 1 is because ThreadLocalRandom is usually exclusive of the uppermost value.
     public Integer generateLevel(final LivingEntity livingEntity, final DebugInfo debugInfo) {
 
-        boolean isBabyZombie = livingEntity instanceof Zombie && !Utils.isZombieBaby((Zombie) livingEntity);
+        final boolean isBabyZombie = livingEntity instanceof Zombie && !Utils.isZombieBaby((Zombie) livingEntity);
 
         if (instance.settingsCfg.getBoolean("y-distance-levelling.active")){
             return generateYCoordinateLevel(
@@ -291,7 +291,7 @@ public class CreatureSpawnListener implements Listener {
         // normal return:
         int minLevel = instance.configUtils.getMinLevel(livingEntity.getType(),
                 livingEntity.getWorld(), isBabyZombie, debugInfo);
-        int maxLevel = instance.configUtils.getMaxLevel(livingEntity.getType(),
+        final int maxLevel = instance.configUtils.getMaxLevel(livingEntity.getType(),
                 livingEntity.getWorld(), isBabyZombie, debugInfo) + 1;
 
         // this will prevent an unhandled exception:
@@ -302,7 +302,7 @@ public class CreatureSpawnListener implements Listener {
 
     //Generates a level based on distance to spawn and, if active, variance
     private Integer generateDistanceFromSpawnLevel(final LivingEntity livingEntity, final DebugInfo debugInfo) {
-        boolean isBabyZombie = livingEntity instanceof Zombie && !Utils.isZombieBaby((Zombie) livingEntity);
+        final boolean isBabyZombie = livingEntity instanceof Zombie && !Utils.isZombieBaby((Zombie) livingEntity);
         final int minLevel = instance.configUtils.getMinLevel(livingEntity.getType(), livingEntity.getWorld(), !isBabyZombie, debugInfo);
         final int maxLevel = instance.configUtils.getMaxLevel(livingEntity.getType(), livingEntity.getWorld(), !isBabyZombie, debugInfo);
 
@@ -364,7 +364,7 @@ public class CreatureSpawnListener implements Listener {
     }
 
     private int generateRegionLevel(final LivingEntity livingEntity, final DebugInfo debugInfo) {
-        boolean isBabyZombie = livingEntity instanceof Zombie && !Utils.isZombieBaby((Zombie) livingEntity);
+        final boolean isBabyZombie = livingEntity instanceof Zombie && !Utils.isZombieBaby((Zombie) livingEntity);
         final int[] levels = instance.worldGuardManager.getRegionLevel(livingEntity,
                 instance.configUtils.getMinLevel(livingEntity.getType(), livingEntity.getWorld(), !isBabyZombie, debugInfo),
                 instance.configUtils.getMaxLevel(livingEntity.getType(), livingEntity.getWorld(), !isBabyZombie, debugInfo));

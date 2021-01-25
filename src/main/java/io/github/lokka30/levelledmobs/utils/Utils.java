@@ -29,11 +29,11 @@ public final class Utils {
      * @param value value to round
      * @return rounded value
      */
-    public static double round(double value) {
+    public static double round(final double value) {
         return Math.round(value * 100) / 100.00;
     }
 
-    public static String replaceEx(String original, String pattern, String replacement) {
+    public static String replaceEx(final String original, final String pattern, final String replacement) {
         if (original == null || pattern == null) return null;
 
         int count, position0, position1;
@@ -58,7 +58,7 @@ public final class Utils {
     }
 
     //Integer check
-    public static boolean isInteger(String str) {
+    public static boolean isInteger(final String str) {
         if (Utils.isNullOrEmpty(str)) return false;
 
         try {
@@ -69,7 +69,7 @@ public final class Utils {
         }
     }
 
-    public static boolean isDouble(String str) {
+    public static boolean isDouble(final String str) {
         if (Utils.isNullOrEmpty(str)) return false;
 
         try {
@@ -80,41 +80,41 @@ public final class Utils {
         }
     }
 
-    public static boolean isNullOrEmpty(String str) {
+    public static boolean isNullOrEmpty(final String str) {
         return (str == null || str.isEmpty());
     }
 
-    public static int getDefaultIfNull(YamlConfiguration cfg, String path, int def) {
+    public static int getDefaultIfNull(final YamlConfiguration cfg, final  String path, final int def) {
         return cfg.contains(path) ? cfg.getInt(path) : def;
     }
 
-    public static int getDefaultIfNull(TreeMap<String, Integer> map, String item, int def) {
+    public static int getDefaultIfNull(final TreeMap<String, Integer> map, final String item, final int def) {
         return map.getOrDefault(item, def);
     }
 
     public static final List<String> oneToNine = Arrays.asList("1", "2", "3", "4", "5", "6", "7", "8", "9");
 
-    public static List<String> replaceAllInList(List<String> oldList, String replaceWhat, String replaceTo) {
-        List<String> newList = new ArrayList<>();
+    public static List<String> replaceAllInList(final List<String> oldList, final String replaceWhat, final String replaceTo) {
+        final List<String> newList = new ArrayList<>();
 
-        for (String string : oldList) {
+        for (final String string : oldList) {
             newList.add(string.replace(replaceWhat, replaceTo));
         }
 
         return newList;
     }
 
-    public static List<String> colorizeAllInList(List<String> oldList) {
-        List<String> newList = new ArrayList<>();
+    public static List<String> colorizeAllInList(final List<String> oldList) {
+        final List<String> newList = new ArrayList<>();
 
-        for (String string : oldList) {
+        for (final String string : oldList) {
             newList.add(MicroUtils.colorize(string));
         }
 
         return newList;
     }
 
-    public static boolean isZombieBaby(Zombie zombie) {
+    public static boolean isZombieBaby(final Zombie zombie) {
         try {
             zombie.isAdult();
             return !zombie.isAdult();
@@ -131,7 +131,7 @@ public final class Utils {
      * @param location Reference to whereabouts the debug log is called so that it can be traced back easily
      * @param msg      Message to help de-bugging
      */
-    public static void debugLog(LevelledMobs instance, String location, String msg) {
+    public static void debugLog(final LevelledMobs instance, final String location, final String msg) {
         if (instance.settingsCfg.getStringList("debug-misc").contains(location)) {
             logger.info("&f&l[DEBUG]&7 &8[" + location + "&8]&7 " + msg);
         }

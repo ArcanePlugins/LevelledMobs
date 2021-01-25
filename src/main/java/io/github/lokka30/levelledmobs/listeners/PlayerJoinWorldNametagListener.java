@@ -22,7 +22,7 @@ public class PlayerJoinWorldNametagListener implements Listener {
     }
 
     private void updateNametagsInWorld(final Player player, final World world) {
-        for (Entity entity : world.getEntities()) {
+        for (final Entity entity : world.getEntities()) {
             if (entity instanceof LivingEntity) {
                 final LivingEntity livingEntity = (LivingEntity) entity;
 
