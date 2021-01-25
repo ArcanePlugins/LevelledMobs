@@ -2,10 +2,7 @@ package io.github.lokka30.levelledmobs.listeners;
 
 import io.github.lokka30.levelledmobs.LevelManager;
 import io.github.lokka30.levelledmobs.LevelledMobs;
-import io.github.lokka30.levelledmobs.utils.DebugInfo;
-import io.github.lokka30.levelledmobs.utils.MobProcessReason;
-import io.github.lokka30.levelledmobs.utils.ModalList;
-import io.github.lokka30.levelledmobs.utils.Utils;
+import io.github.lokka30.levelledmobs.utils.*;
 import io.lumine.xikage.mythicmobs.MythicMobs;
 import me.lokka30.microlib.MicroUtils;
 import org.bukkit.attribute.Attribute;
@@ -21,6 +18,7 @@ import org.bukkit.persistence.PersistentDataType;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -166,29 +164,32 @@ public class CreatureSpawnListener implements Listener {
             }
 
             //Define the mob's level so it can be accessed elsewhere.
-            if (level != 1 || instance.settingsCfg.getBoolean("show-label-for-default-levelled-mobs")) {
-                livingEntity.getPersistentDataContainer().set(instance.levelManager.levelKey, PersistentDataType.INTEGER, level);
-                livingEntity.getPersistentDataContainer().set(instance.levelManager.isLevelledKey, PersistentDataType.STRING, "true");
-            }
+            livingEntity.getPersistentDataContainer().set(instance.levelManager.levelKey, PersistentDataType.INTEGER, level);
+            livingEntity.getPersistentDataContainer().set(instance.levelManager.isLevelledKey, PersistentDataType.STRING, "true");
 
-            // Max Health attribute
+            // Modify their maximum health attribute. This changes the maximum health the levelled mob has.
+            // Makes sure the levelled mob has this attribute. If not, skip setting it.
             if (livingEntity.getAttribute(Attribute.GENERIC_MAX_HEALTH) != null) {
-                double multiplier = instance.settingsCfg.getDouble("fine-tuning.additions.attributes.max-health");
-                instance.mobDataManager.setAttributeAddedValue(livingEntity, Attribute.GENERIC_MAX_HEALTH, multiplier, level);
-                //noinspection ConstantConditions
-                livingEntity.setHealth(livingEntity.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue());
+
+                // This sets the max health value.
+                instance.mobDataManager.setAdditionsForLevel(livingEntity, Attribute.GENERIC_MAX_HEALTH, Addition.ATTRIBUTE_MAX_HEALTH, level);
+
+                // Need to set their actual health otherwise their current health != max health.
+                livingEntity.setHealth(Objects.requireNonNull(livingEntity.getAttribute(Attribute.GENERIC_MAX_HEALTH)).getBaseValue());
             }
 
-            // Movement Speed attribute
+            // Modify their movement speed attribute. This changes the movement speed the levelled mob has.
+            // Makes sure the levelled mob has this attribute. If not, skip setting it.
             if (livingEntity.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED) != null) {
-                double multiplier = instance.settingsCfg.getDouble("fine-tuning.additions.attributes.movement-speed");
-                instance.mobDataManager.setAttributeAddedValue(livingEntity, Attribute.GENERIC_MOVEMENT_SPEED, multiplier, level);
+                //This sets the movement speed value.
+                instance.mobDataManager.setAdditionsForLevel(livingEntity, Attribute.GENERIC_MOVEMENT_SPEED, Addition.ATTRIBUTE_MOVEMENT_SPEED, level);
             }
 
-            // Attack Damage attribute
+            // Modify their attack damage attribute. This changes the attack damage the levelled mob has.
+            // Makes sure the levelled mob has this attribute. If not, skip setting it.
             if (livingEntity.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE) != null) {
-                double multiplier = instance.settingsCfg.getDouble("fine-tuning.additions.attributes.attack-damage");
-                instance.mobDataManager.setAttributeAddedValue(livingEntity, Attribute.GENERIC_ATTACK_DAMAGE, multiplier, level);
+                //This sets the movement speed value.
+                instance.mobDataManager.setAdditionsForLevel(livingEntity, Attribute.GENERIC_ATTACK_DAMAGE, Addition.ATTRIBUTE_ATTACK_DAMAGE, level);
             }
 
             if (livingEntity instanceof Creeper && instance.settingsCfg.getInt("creeper-max-damage-radius", 3) != 3) {

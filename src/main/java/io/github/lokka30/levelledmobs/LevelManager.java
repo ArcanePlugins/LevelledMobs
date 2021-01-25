@@ -6,6 +6,7 @@ import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 import io.github.lokka30.levelledmobs.listeners.CreatureSpawnListener;
+import io.github.lokka30.levelledmobs.utils.Addition;
 import io.github.lokka30.levelledmobs.utils.ModalList;
 import io.github.lokka30.levelledmobs.utils.Utils;
 import me.lokka30.microlib.MicroUtils;
@@ -74,8 +75,17 @@ public class LevelManager {
     //Checks if an entity can be levelled.
     public boolean isLevellable(final LivingEntity livingEntity) {
 
-        //Players shouldn't be levelled! Keep this at the top to ensure they don't return true
-        if (livingEntity.getType() == EntityType.PLAYER || livingEntity.getType() == EntityType.UNKNOWN || livingEntity.hasMetadata("NPC")) {
+        if (
+            // Ignore these EntityTypes.
+                livingEntity.getType() == EntityType.PLAYER
+                        || livingEntity.getType() == EntityType.UNKNOWN
+
+                        // Citizens plugin compatibility
+                        || livingEntity.hasMetadata("NPC")
+
+                        // EliteMobs plugin compatibility
+                        || livingEntity.hasMetadata("Elitemob")
+                        || livingEntity.hasMetadata("Supermob")) {
             return false;
         }
 
@@ -138,11 +148,11 @@ public class LevelManager {
         Utils.debugLog(instance, "LevelManager#getLevelledItemDrops", "2: LivingEntity is a levelled mob.");
 
         // Get their level
-        int level = Objects.requireNonNull(livingEntity.getPersistentDataContainer().get(levelKey, PersistentDataType.INTEGER));
+        final int level = Objects.requireNonNull(livingEntity.getPersistentDataContainer().get(levelKey, PersistentDataType.INTEGER));
         Utils.debugLog(instance, "LevelManager#getLevelledItemDrops", "3: Entity level is " + level + ".");
 
         // Get currentDrops added per level value
-        int addition = new BigDecimal(instance.settingsCfg.getDouble("fine-tuning.additions.custom.item-drop") * level) // get value from config
+        int addition = BigDecimal.valueOf(instance.mobDataManager.getAdditionsForLevel(livingEntity, Addition.CUSTOM_ITEM_DROP, level))
                 .setScale(0, RoundingMode.HALF_DOWN).intValueExact(); // truncate double to int
         Utils.debugLog(instance, "LevelManager#getLevelledItemDrops", "4: Item drop addition is +" + addition + ".");
 
@@ -195,12 +205,12 @@ public class LevelManager {
     //Calculates the XP dropped when a levellable creature dies.
     public int getLevelledExpDrops(final LivingEntity ent, int xp) {
         if (ent.getPersistentDataContainer().has(isLevelledKey, PersistentDataType.STRING)) {
-            double xpPerLevel = instance.settingsCfg.getDouble("fine-tuning.additions.custom.xp-drop");
-            int level = Objects.requireNonNull(ent.getPersistentDataContainer().get(instance.levelManager.levelKey, PersistentDataType.INTEGER));
+            final int level = Objects.requireNonNull(ent.getPersistentDataContainer().get(instance.levelManager.levelKey, PersistentDataType.INTEGER));
 
-            xp = (int) Math.round(xp + (xpPerLevel * level));
+            return (int) Math.round(xp + (xp * instance.mobDataManager.getAdditionsForLevel(ent, Addition.CUSTOM_XP_DROP, level)));
+        } else {
+            return xp;
         }
-        return xp;
     }
 
     // When the persistent data container levelled key has been set on the entity already (i.e. when they are damaged)
@@ -213,6 +223,11 @@ public class LevelManager {
     public String getNametag(LivingEntity livingEntity, int level) {
         String entityName = instance.configUtils.getEntityName(livingEntity.getType());
         String displayName = livingEntity.getCustomName() == null ? entityName : livingEntity.getCustomName();
+
+        // If show label for default levelled mobs is disabled and the mob is the min level, then don't modify their tag.
+        if (!instance.settingsCfg.getBoolean("show-label-for-default-levelled-mobs") && level == instance.settingsCfg.getInt("fine-tuning.min-level")) {
+            return livingEntity.getCustomName(); // Can be null, that is meant to be the case.
+        }
 
         AttributeInstance maxHealth = livingEntity.getAttribute(Attribute.GENERIC_MAX_HEALTH);
         String health = maxHealth == null ? "?" : Utils.round(maxHealth.getBaseValue()) + "";

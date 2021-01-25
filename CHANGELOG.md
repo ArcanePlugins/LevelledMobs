@@ -13,8 +13,16 @@
 * It is a *very* configurable system. Take a look for yourself!
 * Thanks to those on the Discord server who provided suggestions to stumper whilst he worked on this system - especially Hugo5551!
 
+**MythicMobs and EliteMobs compatibility!** (lokka30)
+* Requested by many, LevelledMobs is now compatible with MythicMobs and EliteMobs!
+* Thanks to @MagmaGuy for linking me towards the relevant metadata values to make LM compatible with EM.
+
 **Bug Fixes**
 * Fixed name tags ignoring a mob's existing 'isCustomNameVisible' boolean (lokka30)
+* Fixed `show-label-for-default-levelled-mobs` setting causing mobs not to be levelled properly (lokka30)
+
+**Removed Features**
+* `passive-mobs-change-movement-speed` was removed as it was a setting that was not even implemented in the first place. It may be added back in the future. (lokka30)
 
 ***
 

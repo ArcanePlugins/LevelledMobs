@@ -1,6 +1,7 @@
 package io.github.lokka30.levelledmobs.listeners;
 
 import io.github.lokka30.levelledmobs.LevelledMobs;
+import io.github.lokka30.levelledmobs.utils.Addition;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Projectile;
@@ -10,6 +11,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.persistence.PersistentDataType;
+
+import java.util.Objects;
 
 public class EntityDamageListener implements Listener {
 
@@ -47,18 +50,17 @@ public class EntityDamageListener implements Listener {
             if (projectile.getShooter() instanceof LivingEntity) {
                 final LivingEntity livingEntity = (LivingEntity) projectile.getShooter();
                 if (instance.levelManager.isLevellable(livingEntity)) {
-                    if (livingEntity.getPersistentDataContainer().get(instance.levelManager.levelKey, PersistentDataType.INTEGER) == null) { //if the entity doesn't contain a level, skip this.
+
+                    //if the entity doesn't contain a level, skip this.
+                    if (livingEntity.getPersistentDataContainer().get(instance.levelManager.isLevelledKey, PersistentDataType.STRING) == null) {
                         return;
                     }
 
-                    Number level = livingEntity.getPersistentDataContainer().get(instance.levelManager.levelKey, PersistentDataType.INTEGER);
-                    if (level != null) {
-                        final double baseAttackDamage = e.getDamage();
-                        final double attackDamageMultiplier = instance.settingsCfg.getDouble("fine-tuning.additions.custom.ranged-attack-damage");
-                        final double newAttackDamage = baseAttackDamage + (attackDamageMultiplier * level.intValue());
+                    //get their level
+                    final int level = Objects.requireNonNull(livingEntity.getPersistentDataContainer().get(instance.levelManager.levelKey, PersistentDataType.INTEGER));
 
-                        e.setDamage(newAttackDamage);
-                    }
+                    //set their damage
+                    e.setDamage(e.getDamage() + instance.mobDataManager.getAdditionsForLevel(livingEntity, Addition.CUSTOM_RANGED_ATTACK_DAMAGE, level));
                 }
             }
         }

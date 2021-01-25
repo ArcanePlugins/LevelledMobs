@@ -7,8 +7,8 @@ import java.io.File;
 
 public final class FileLoader {
 
-    public static final int SETTINGS_FILE_VERSION = 23;
-    public static final int MESSAGES_FILE_VERSION = 1;
+    public static final int SETTINGS_FILE_VERSION = 24; // Last changed: 2.1.0
+    public static final int MESSAGES_FILE_VERSION = 1; // Last changed: 2.1.0
 
     private FileLoader() {
         throw new UnsupportedOperationException();

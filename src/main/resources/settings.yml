@@ -237,14 +237,8 @@ entity-name-override:
   CREEPER: 'Creeper'
 # ENDER_DRAGON: '&5&lEnder Dragon'
 
-# if set to true then the file customdrops.yml will be utilized to specify which items mobs will drop
+# If set to true then the file customdrops.yml will be utilized to specify which items mobs will drop
 use-custom-item-drops-for-mobs: false
-
-# Should passive mobs have changed movement speeds?
-# Most owners would like this to be disabled, as saddled horses and
-# pigs for example of high levels can cause increased chunk loading.
-# By default, this is disabled.
-passive-mobs-changed-movement-speed: false
 
 
 # If the mob is the default level, show the label?
@@ -326,12 +320,6 @@ allowed-spawn-reasons-list:
 # These values have been tried and tested already, so most server owners won't need to change anything here.
 fine-tuning:
 
-  # *** WARNING ***
-  # Changing the min &/or max levels below will not scale the additions section below!
-  # This means if you change the min/max levels below, then you will also need to change the additions values!
-  # It is *highly* recommended that you test changes in this section on a test server before applying it to your main server.
-  # *** WARNING ***
-
   # The minimum level possible for all mobs (unless overriden)
   # Use a positive integer. By default, this is 1.
   min-level: 1
@@ -340,47 +328,48 @@ fine-tuning:
   # Use a positive integer. By default, this is 10.
   max-level: 10
 
-  # Per-level, these numbers are added to a levelled mob's attributes.
-  # Math:                Old Attribute + (Addition * Level) = New Attribute
-  # e.g. a Lvl.2 Zombie:      0.23     +    (0.01  *   2)   = a movement speed of 0.25
+  # These values are applied to levelled mobs to make them more difficult and rewarding.
   additions:
 
-    # Additions to Minecraft's attributes
-    # Changes here will only apply to levelled mobs spawned *after* you reload the config. Not existing mobs!
-    attributes:
+    # What is the maximum amount of health added to a normal mob?
+    # Set to 0 to disable.
+    # Use a positive double (decimal). By default, this is 25. For example, a zombie would have a max health of 45.
+    max-health: 25
 
-      # Maximum health.
-      # Use a positive double (decimal). By default, this is 1.6.
-      max-health: 1.6
+    # **WARNING, READ CAREFULLY**
+    # What is the maximum amount of movement speed added to a normal mob?
+    # Set to 0 to disable.
+    # Minecraft uses small numbers for movement speeds. It is sensitive to small changes.
+    # Do not set this above 0.4.
+    # Recommended: +/- by 0.1-0.05 if changing this.
+    # Use a positive double (decimal). By default, this is 0.38.
+    movement-speed: 0.38
 
-      # **IMPORTANT**
-      # Movement speed should be increased in very, very small amounts! (i.e. 0.001 - 0.005 each time)
-      # This is because Minecraft uses very small numbers for movement speeds.
-      # The default value here is already pretty high, so I would not recommend going higher than what it already is.
-      # Use a positive double (decimal). By default, this is 0.015.
-      movement-speed: 0.015
+    # What is the maximum attack damage added to a normal mob?
+    # Set to 0 to disable.
+    # Use a positive double (decimal). By default, this is 5.
+    attack-damage: 5
 
-      # Attack damage.
-      # Use a positive double (decimal). By default, this is 0.55.
-      attack-damage: 0.55
+    # What is the maximum ranged attack damage? (i.e. skeleton arrows).
+    # Set to 0 to disable.
+    # Recommended: +/- by 0.25 if changing this.
+    # Use a positive double (decimal). By default, this is 1.5.
+    ranged-attack-damage: 1.5
 
-    # Additions to LevelledMob's own systems. These will apply to existing mobs as well since these are event-based.
-    custom:
+    # What is the maximum item drop multiplier?
+    # Set to 0 to disable.
+    # Recommended: +/- by 0.5 if changing this.
+    # Use a positive double (decimal). By default, this is 3.
+    item-drop: 3
 
-      # Ranged attack damage (i.e. skeleton arrows).
-      # Use a positive double (decimal). By default, this is 0.15.
-      ranged-attack-damage: 0.15
-
-      # Item drops
-      # Use a positive double (decimal). By default, this is 0.3.
-      item-drop: 0.3
-
-      # XP drops
-      # Use a positive double (decimal). By default, this is 0.09.
-      xp-drop: 0.09
+    # What is the maximum XP drop multiplier?
+    # Set to 0 to disable.
+    # Recommended: +/- by 0.5 if changing this.
+    # Use a positive double (decimal). By default, this is 2.
+    xp-drop: 2
 
 
-# when using the summon command how far away from the player will the mob(s) spawn
+# When using the summon command how far away from the player will the mob(s) spawn
 # Use a positive integer. By default, this is 5.
 summon-command-spawn-distance-from-player: 5
 
@@ -396,4 +385,4 @@ debug-misc: [ ]
 # This value is used when this file is loaded to check if this file is most likely incompatible.
 # The value must match exactly what version the plugin ships the default file with.
 # Don't change this unless you know what you're doing!
-file-version: 23
+file-version: 24
