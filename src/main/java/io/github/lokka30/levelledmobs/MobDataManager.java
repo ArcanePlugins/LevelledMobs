@@ -49,6 +49,7 @@ public class MobDataManager {
         final double range = (double) maxLevel - (minLevel - 1);
         final double percent = currentLevel / range;
         final double max = instance.settingsCfg.getDouble(addition.getMaxAdditionConfigPath());
+        //Utils.logger.info(String.format("cl: %s, lmin: %s, lmax: %s, max: %s, percent: %s, test: %s", currentLevel, minLevel, maxLevel, max, percent, addition.getMaxAdditionConfigPath()));
         return percent * max;
     }
 }
