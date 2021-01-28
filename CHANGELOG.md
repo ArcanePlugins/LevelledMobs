@@ -18,14 +18,20 @@
 
 **Mob Additions Values Scaling!** (lokka30, stumper66)
 * You can now safely change the min and max levels in `fine-tuning` without having to change the `additions` values in `settings.yml` as they will now scale to the min and max levels you set. :)
+* **Movement speed, health, attack damage, etc have significantly changed as there is a new formula that uses these values. Please, do not use your old movement speed values, etc.**
 
-**New compatibility!** (lokka30)
-* Previously, LevelledMobs was only compatible with Citizens. Now as requested by many, LevelledMobs is now compatible with MythicMobs, EliteMobs, InfernalMobs and Shopkeepers too!
+**New compatibility!**
+* Previously, LevelledMobs only made compatibility Citizens. Now as requested by many, LevelledMobs is now compatible with MythicMobs, EliteMobs, InfernalMobs and Shopkeepers too!
 * Thanks to @MagmaGuy for linking me towards the relevant metadata values to make LM compatible with EM.
+* Added compatibility with the 4 mentioned plugins (lokka30)
+* Added toggles in settings for these 4 compatibilities (stumper66)
 
 **Bug Fixes**
 * Fixed name tags ignoring a mob's existing 'isCustomNameVisible' boolean (lokka30)
 * Fixed `show-label-for-default-levelled-mobs` setting causing mobs not to be levelled properly (lokka30)
+
+**Minor Improvements**
+* Added 'Is settings.yml outdated?' notice to the 'Mode is unset at path ...' warning.
 
 **Removed Features**
 * `passive-mobs-change-movement-speed` was removed as it was a setting that was not even implemented in the first place. It may be added back in the future. (lokka30)

@@ -43,7 +43,7 @@ public class ModalList {
                     throw new IllegalStateException("Invalid ListMode " + listMode.toString() + "!");
             }
         } else {
-            Utils.logger.error("Mode is unset at path '" + path + ".mode'! The plugin will malfunction until this is fixed!");
+            Utils.logger.error("&c(Is your settings.yml file outdated?) &7ModalListMode is unset at path '&b" + path + ".mode&7'! The plugin will malfunction until you fix this!");
             return false;
         }
     }
