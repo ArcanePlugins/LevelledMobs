@@ -144,13 +144,13 @@ public class LevelManager {
     }
 
     // This sets the levelled currentDrops on a levelled mob that just died.
-    public List<ItemStack> getLevelledItemDrops(final LivingEntity livingEntity, final List<ItemStack> currentDrops) {
+    public void getLevelledItemDrops(final LivingEntity livingEntity, final List<ItemStack> currentDrops) {
 
         Utils.debugLog(instance, "LevelManager#getLevelledItemDrops", "1: Method called. " + currentDrops.size() + " drops will be analysed.");
 
         // Must be a levelled mob
         if (!livingEntity.getPersistentDataContainer().has(isLevelledKey, PersistentDataType.STRING))
-            return currentDrops;
+            return;
 
         Utils.debugLog(instance, "LevelManager#getLevelledItemDrops", "2: LivingEntity is a levelled mob.");
 
@@ -179,8 +179,6 @@ public class LevelManager {
         if (instance.settingsCfg.getBoolean("use-custom-item-drops-for-mobs")){
             getCustomItemDrops(livingEntity, level, currentDrops, true);
         }
-
-        return currentDrops;
     }
 
     public void getCustomItemDrops(final LivingEntity livingEntity, final int level, final List<ItemStack> drops, final boolean isLevellable){
@@ -223,6 +221,9 @@ public class LevelManager {
                 newDropAmount = drop.getamountRangeMin() + change;
             }
 
+            boolean didNotMakeChance = false;
+            double chanceRole = 0.0;
+
             if (drop.dropChance < 1.0){
                 if (!drop.noMultiplier) {
                     final int addition = BigDecimal.valueOf(instance.mobDataManager.getAdditionsForLevel(livingEntity, Addition.CUSTOM_ITEM_DROP, level))
@@ -230,20 +231,22 @@ public class LevelManager {
                     newDropAmount = newDropAmount + (newDropAmount * addition);
                 }
 
-                final double chanceRole = (double) ThreadLocalRandom.current().nextInt(0, 100001) * 0.00001;
-                if (instance.settingsCfg.getStringList("debug-misc").contains("custom-drops")) {
-                    Utils.logger.info(String.format(
-                            "mob: %s, item %s, amount: %s, newAmount: %s, chance: %s, chanceRole: %s, dropped: %s",
-                            livingEntity.getName(), drop.getMaterial().name(), drop.getAmountAsString(), newDropAmount, drop.dropChance, chanceRole, !(1.0 - chanceRole >= drop.dropChance)
-                    ));
-                }
-                if (1.0 - chanceRole >= drop.dropChance) continue;
+                chanceRole = (double) ThreadLocalRandom.current().nextInt(0, 100001) * 0.00001;
+                if (1.0 - chanceRole >= drop.dropChance) didNotMakeChance = true;
             }
+
+            if (instance.settingsCfg.getStringList("debug-misc").contains("custom-drops")) {
+                Utils.logger.info(String.format(
+                        "mob: %s, item %s, amount: %s, newAmount: %s, chance: %s, chanceRole: %s, dropped: %s",
+                        livingEntity.getName(), drop.getMaterial().name(), drop.getAmountAsString(), newDropAmount, drop.dropChance, chanceRole, !didNotMakeChance)
+                );
+            }
+            if (didNotMakeChance) continue;
+
             // if we made it this far then the item will be dropped
+
             ItemStack newItem = drop.getItemStack();
-            if (drop.amount > 1){
-                newItem = new ItemStack(drop.getMaterial(), newDropAmount);
-            }
+            newItem.setAmount(newDropAmount);
 
             newDrops.add(newItem);
         }
