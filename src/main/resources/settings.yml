@@ -187,8 +187,11 @@ no-level-conditions:
   tamed: true
 
 
-# Set if mythic mobs will be levelled or not.
+# 3rd party plugin options here:
 allow-mythic-mobs: false
+allow-infernal-mobs: false
+allow-elite-mobs: false
+allow-super-mobs: false
 
 
 # If you want to force an entity type to have a different minimum/maximum level then you can do that here.

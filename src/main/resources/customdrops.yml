@@ -19,6 +19,7 @@
 #          If no chance is specified then the default of 0.2 will be used
 # amount - how many of this item will be dropped.  This can be a number or a number range.  Example: 2-4
 # nomultiplier: - the level of the mob will not affect the amount dropped - !!!! make sure you end it with ":", as in: nomultiplier:
+# nospawner: - if specified then any mobs created by a spawner will not drop the custom item - !!!! make sure you end it with ":", as in: nomultiplier:
 # enchantments - enter a list of enchantments the item will have and the enchantment level.  Example: unbreaking: 3
 # groupid - if multiple items for the same mob have the same groupid, one one of the items will be dropped
 

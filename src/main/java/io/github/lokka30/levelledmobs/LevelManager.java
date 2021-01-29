@@ -38,10 +38,12 @@ public class LevelManager {
 
         levelKey = new NamespacedKey(instance, "level");
         isLevelledKey = new NamespacedKey(instance, "isLevelled");
+        isSpawnerKey = new NamespacedKey(instance, "isSpawner");
     }
 
     public final NamespacedKey levelKey; // This stores the mob's level.
     public final NamespacedKey isLevelledKey; //This is stored on levelled mobs to tell plugins that it is a levelled mob.
+    public final NamespacedKey isSpawnerKey; //This is stored on levelled mobs to tell plugins that a mob was created from a spawner
 
     public final HashSet<String> forcedTypes = new HashSet<>(Arrays.asList("GHAST", "MAGMA_CUBE", "HOGLIN", "SHULKER", "PHANTOM", "ENDER_DRAGON", "SLIME", "MAGMA_CUBE", "ZOMBIFIED_PIGLIN"));
 
@@ -90,11 +92,11 @@ public class LevelManager {
                 || livingEntity.hasMetadata("shopkeeper")
 
                 // EliteMobs plugin compatibility
-                || livingEntity.hasMetadata("Elitemob")
-                || livingEntity.hasMetadata("Supermob")
+                || livingEntity.hasMetadata("Elitemob") && !instance.settingsCfg.getBoolean("allow-elite-mobs")
+                || livingEntity.hasMetadata("Supermob") && !instance.settingsCfg.getBoolean("allow-super-mobs")
 
                 //InfernalMobs plugin compatibility)
-                || livingEntity.hasMetadata("infernalMetadata")) {
+                || livingEntity.hasMetadata("infernalMetadata") && !instance.settingsCfg.getBoolean("allow-infernal-mobs")) {
             return false;
         }
 
@@ -187,14 +189,16 @@ public class LevelManager {
 
         final int preCount = drops.size();
         final List<CustomDropsUniversalGroups> applicableGroups = getApllicableGroupsForMob(livingEntity, isLevellable);
+        final boolean isSpawner = livingEntity.getPersistentDataContainer().has(isSpawnerKey, PersistentDataType.STRING);
 
         for (final CustomDropsUniversalGroups group : applicableGroups){
             if (!instance.customDropsitems_groups.containsKey(group)) continue;
-            getCustomItemDrops2(livingEntity, level, instance.customDropsitems_groups.get(group), drops);
+
+            getCustomItemDrops2(livingEntity, level, instance.customDropsitems_groups.get(group), drops, isSpawner);
         }
 
         if (instance.customDropsitems.containsKey(livingEntity.getType())){
-            getCustomItemDrops2(livingEntity, level, instance.customDropsitems.get(livingEntity.getType()), drops);
+            getCustomItemDrops2(livingEntity, level, instance.customDropsitems.get(livingEntity.getType()), drops, isSpawner);
         }
 
         final int postCount = drops.size();
@@ -211,12 +215,21 @@ public class LevelManager {
         }
     }
 
-    private void getCustomItemDrops2(final LivingEntity livingEntity, final int level, final List<CustomItemDrop> customDrops, final List<ItemStack> newDrops){
-        Utils.logger.info("getCustomItemDrops2 stack size: " + customDrops.size());
+    private void getCustomItemDrops2(final LivingEntity livingEntity, final int level, final List<CustomItemDrop> customDrops, final List<ItemStack> newDrops, final boolean isSpawner){
 
         for (final CustomItemDrop drop : customDrops){
-            if (drop.maxLevel > -1 && level > drop.maxLevel) continue;
-            if (drop.minLevel > -1 && level < drop.minLevel) continue;
+            boolean doDrop = true;
+            if (drop.maxLevel > -1 && level > drop.maxLevel) doDrop = false;
+            if (drop.minLevel > -1 && level < drop.minLevel) doDrop = false;
+            if (drop.noSpawner && isSpawner)  doDrop = false;
+            if (!doDrop){
+                if (instance.settingsCfg.getStringList("debug-misc").contains("custom-drops")) {
+                    Utils.logger.info(String.format("mob: %s, level: %s, fromSpawner: %s, item %s, minL: %s, maxL:%s, nospawner: %s, dropped: false",
+                            livingEntity.getName(), level, isSpawner, drop.getMaterial().name(), drop.minLevel, drop.maxLevel, drop.noSpawner));
+                }
+                continue;
+            }
+
             int newDropAmount = drop.amount;
             if (drop.getHasAmountRange()){
                 final int change = ThreadLocalRandom.current().nextInt(0, drop.getamountRangeMax() - drop.getamountRangeMin() + 1);
@@ -326,6 +339,7 @@ public class LevelManager {
 
         final AttributeInstance maxHealth = livingEntity.getAttribute(Attribute.GENERIC_MAX_HEALTH);
         final String health = maxHealth == null ? "?" : Utils.round(maxHealth.getBaseValue()) + "";
+        final String healthRounded = maxHealth == null ? "?" : (int)Utils.round(maxHealth.getBaseValue()) + "";
 
         String nametag = instance.settingsCfg.getString("creature-nametag");
 
@@ -335,7 +349,9 @@ public class LevelManager {
         nametag = nametag.replace("%displayname%", displayName);
         nametag = nametag.replace("%typename%", entityName);
         nametag = nametag.replace("%health%", Utils.round(livingEntity.getHealth()) + "");
+        nametag = nametag.replace("%health_rounded%", (int)Utils.round(livingEntity.getHealth()) + "");
         nametag = nametag.replace("%max_health%", health);
+        nametag = nametag.replace("%max_health_rounded%", healthRounded);
         nametag = nametag.replace("%heart_symbol%", "❤");
         nametag = MicroUtils.colorize(nametag);
 

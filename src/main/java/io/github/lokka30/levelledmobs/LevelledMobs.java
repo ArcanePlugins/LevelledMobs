@@ -164,8 +164,8 @@ public class LevelledMobs extends JavaPlugin {
         FileLoader.saveResourceIfNotExists(this, new File(getDataFolder(), "license.txt"));
 
         // load configurations
-        settingsCfg = FileLoader.loadFile(this, "settings", FileLoader.SETTINGS_FILE_VERSION);
-        messagesCfg = FileLoader.loadFile(this, "messages", FileLoader.MESSAGES_FILE_VERSION);
+        settingsCfg = FileLoader.loadFile(this, "settings", FileLoader.SETTINGS_FILE_VERSION, false);
+        messagesCfg = FileLoader.loadFile(this, "messages", FileLoader.MESSAGES_FILE_VERSION, false);
 
         this.entityTypesLevelOverride_Min = getMapFromConfigSection("entitytype-level-override.min-level");
         this.entityTypesLevelOverride_Max = getMapFromConfigSection("entitytype-level-override.max-level");
@@ -398,6 +398,9 @@ public class LevelledMobs extends JavaPlugin {
                         else if ("nomultiplier".equalsIgnoreCase(attribute)) {
                             item.noMultiplier = true;
                         }
+                        else if ("nospawner".equalsIgnoreCase(attribute)) {
+                            item.noSpawner = true;
+                        }
                     }
                 } // next attribute
                 dropList.add(item);
@@ -430,8 +433,8 @@ public class LevelledMobs extends JavaPlugin {
         for (final CustomDropsUniversalGroups group : customDropsitems_groups.keySet()) {
             Utils.logger.info("group: " + group.name());
             for (final CustomItemDrop item : customDropsitems_groups.get(group)) {
-                final String msg = String.format("    %s, amount: %s, chance: %s, minL: %s, maxL: %s, noMulp: %s",
-                        item.getMaterial(), item.getAmountAsString(), item.dropChance, item.minLevel, item.maxLevel, item.noMultiplier);
+                final String msg = String.format("    %s, amount: %s, chance: %s, minL: %s, maxL: %s, noMulp: %s, noSpawn: %s",
+                        item.getMaterial(), item.getAmountAsString(), item.dropChance, item.minLevel, item.maxLevel, item.noMultiplier, item.noSpawner);
                 final StringBuilder sb = new StringBuilder();
                 final ItemMeta meta = item.getItemStack().getItemMeta();
                 if (meta != null) {

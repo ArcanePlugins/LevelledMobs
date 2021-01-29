@@ -13,6 +13,7 @@ public class CustomItemDrop {
     public int amount;
     public int groupId;
     public boolean noMultiplier;
+    public boolean noSpawner;
     public CustomDropsUniversalGroups entityGroup;
     private boolean hasAmountRange;
     private int amountRangeMin;

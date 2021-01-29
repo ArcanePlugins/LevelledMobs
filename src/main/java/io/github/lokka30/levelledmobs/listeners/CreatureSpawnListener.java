@@ -165,6 +165,8 @@ public class CreatureSpawnListener implements Listener {
             //Define the mob's level so it can be accessed elsewhere.
             livingEntity.getPersistentDataContainer().set(instance.levelManager.levelKey, PersistentDataType.INTEGER, level);
             livingEntity.getPersistentDataContainer().set(instance.levelManager.isLevelledKey, PersistentDataType.STRING, "true");
+            if (spawnReason == SpawnReason.SPAWNER)
+                livingEntity.getPersistentDataContainer().set(instance.levelManager.isSpawnerKey, PersistentDataType.STRING, "true");
 
             // Modify their maximum health attribute. This changes the maximum health the levelled mob has.
             // Makes sure the levelled mob has this attribute. If not, skip setting it.
@@ -297,7 +299,7 @@ public class CreatureSpawnListener implements Listener {
         // this will prevent an unhandled exception:
         if (minLevel > maxLevel) minLevel = maxLevel;
         
-        return ThreadLocalRandom.current().nextInt(minLevel, maxLevel);
+        return minLevel == maxLevel ? minLevel : ThreadLocalRandom.current().nextInt(minLevel, maxLevel);
     }
 
     //Generates a level based on distance to spawn and, if active, variance
