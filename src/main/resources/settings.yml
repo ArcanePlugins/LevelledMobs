@@ -345,13 +345,13 @@ fine-tuning:
     # Minecraft uses small numbers for movement speeds. It is sensitive to small changes.
     # Do not set this above 0.4.
     # Recommended: +/- by 0.1-0.05 if changing this.
-    # Use a positive double (decimal). By default, this is 0.38.
-    movement-speed: 0.38
+    # Use a positive double (decimal). By default, this is 0.1.
+    movement-speed: 0.1
 
     # What is the maximum attack damage added to a normal mob?
     # Set to 0 to disable.
-    # Use a positive double (decimal). By default, this is 5.
-    attack-damage: 5
+    # Use a positive double (decimal). By default, this is 4.
+    attack-damage: 4
 
     # What is the maximum ranged attack damage? (i.e. skeleton arrows).
     # Set to 0 to disable.

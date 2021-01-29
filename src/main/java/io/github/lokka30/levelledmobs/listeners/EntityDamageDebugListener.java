@@ -39,7 +39,7 @@ public class EntityDamageDebugListener implements Listener {
             final UUID uuid = player.getUniqueId();
             final LivingEntity livingEntity = (LivingEntity) e.getEntity();
 
-            if (player.isOp() && !delay.contains(uuid) && instance.levelManager.isLevellable(livingEntity)) {
+            if (player.isOp() && !delay.contains(uuid) && livingEntity.getPersistentDataContainer().has(instance.levelManager.isLevelledKey, PersistentDataType.STRING)) {
                 player.sendMessage(MicroUtils.colorize("&b&lLevelledMobs: &7Debug information for &b" + livingEntity.getType().toString() + "&7: "));
 
                 writeDebugForAttribute(player, livingEntity, Attribute.GENERIC_MAX_HEALTH);
