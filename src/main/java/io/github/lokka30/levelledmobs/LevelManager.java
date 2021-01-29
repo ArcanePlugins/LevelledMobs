@@ -51,7 +51,8 @@ public class LevelManager {
 
     public boolean isLevellable(final EntityType entityType) {
         // Don't level these
-        if (entityType == EntityType.PLAYER || entityType == EntityType.UNKNOWN) return false;
+        if (entityType == EntityType.PLAYER || entityType == EntityType.UNKNOWN || entityType == EntityType.ARMOR_STAND)
+            return false;
 
         // Check if the entity is blacklisted. If not, continue.
         if (!ModalList.isEnabledInList(instance.settingsCfg, "allowed-entities-list", entityType.toString()))
@@ -80,6 +81,7 @@ public class LevelManager {
         // Ignore these entity types and metadatas
         if (livingEntity.getType() == EntityType.PLAYER
                 || livingEntity.getType() == EntityType.UNKNOWN
+                || livingEntity.getType() == EntityType.ARMOR_STAND
 
                 // Citizens plugin compatibility
                 || livingEntity.hasMetadata("NPC")

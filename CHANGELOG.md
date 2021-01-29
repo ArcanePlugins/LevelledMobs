@@ -7,7 +7,7 @@
 
 ### Notes:
 * File changes:
-  * `settings.yml` updated **[RESET RECOMMENDED]**
+  * `settings.yml` updated **[RESET REQUIRED]**
   * `customdrops.yml` added
 
 ### Changelog:
@@ -29,6 +29,7 @@
 **Bug Fixes**
 * Fixed name tags ignoring a mob's existing 'isCustomNameVisible' boolean (lokka30)
 * Fixed `show-label-for-default-levelled-mobs` setting causing mobs not to be levelled properly (lokka30)
+* Forced armor stands to not be levellable (thanks squeebis for reporting this) (lokka30)
 
 **Minor Improvements**
 * Added 'Is settings.yml outdated?' notice to the 'Mode is unset at path ...' warning.
