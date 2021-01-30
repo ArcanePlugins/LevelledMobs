@@ -55,6 +55,7 @@ public class LevelledMobs extends JavaPlugin {
     public TreeMap<String, Integer> entityTypesLevelOverride_Max;
     public TreeMap<String, Integer> worldLevelOverride_Min;
     public TreeMap<String, Integer> worldLevelOverride_Max;
+    public Set<String> noDropMultiplierEntities;
     public TreeMap<EntityType, List<CustomItemDrop>> customDropsitems;
     public TreeMap<CustomDropsUniversalGroups, List<CustomItemDrop>> customDropsitems_groups;
     public HashSet<EntityType> groups_HostileMobs;
@@ -171,6 +172,7 @@ public class LevelledMobs extends JavaPlugin {
         this.entityTypesLevelOverride_Max = getMapFromConfigSection("entitytype-level-override.max-level");
         this.worldLevelOverride_Min = getMapFromConfigSection("world-level-override.min-level");
         this.worldLevelOverride_Max = getMapFromConfigSection("world-level-override.max-level");
+        this.noDropMultiplierEntities = getSetFromConfigSection("no-drop-multipler-entities");
         this.customDropsitems = new TreeMap<>();
         this.customDropsitems_groups = new TreeMap<>();
 
@@ -551,6 +553,16 @@ public class LevelledMobs extends JavaPlugin {
                 result.put(item, Integer.parseInt(value.toString()));
             }
         }
+
+        return result;
+    }
+
+    @Nonnull
+    private Set<String> getSetFromConfigSection(final String configPath){
+        final Set<String> result = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER);
+        final List<String> set = settingsCfg.getStringList(configPath);
+
+        result.addAll(set);
 
         return result;
     }

@@ -162,21 +162,25 @@ public class LevelManager {
         final int level = Objects.requireNonNull(livingEntity.getPersistentDataContainer().get(levelKey, PersistentDataType.INTEGER));
         Utils.debugLog(instance, "LevelManager#getLevelledItemDrops", "3: Entity level is " + level + ".");
 
-        // Get currentDrops added per level value
-        final int addition = BigDecimal.valueOf(instance.mobDataManager.getAdditionsForLevel(livingEntity, Addition.CUSTOM_ITEM_DROP, level))
-                .setScale(0, RoundingMode.HALF_DOWN).intValueExact(); // truncate double to int
-        Utils.debugLog(instance, "LevelManager#getLevelledItemDrops", "4: Item drop addition is +" + addition + ".");
+        boolean doNotMultiplyDrops = instance.noDropMultiplierEntities.contains(livingEntity.getName());
 
-        // Modify current drops
-        Utils.debugLog(instance, "LevelManager#getLevelledItemDrops", "5: Scanning " + currentDrops.size() + " items...");
-        for (ItemStack currentDrop : currentDrops) {
-            Utils.debugLog(instance, "LevelManager#getLevelledItemDrops", "6: Scanning drop " + currentDrop.getType().toString() + " with current amount " + currentDrop.getAmount() + "...");
+        if (!doNotMultiplyDrops) {
+            // Get currentDrops added per level value
+            final int addition = BigDecimal.valueOf(instance.mobDataManager.getAdditionsForLevel(livingEntity, Addition.CUSTOM_ITEM_DROP, level))
+                    .setScale(0, RoundingMode.HALF_DOWN).intValueExact(); // truncate double to int
+            Utils.debugLog(instance, "LevelManager#getLevelledItemDrops", "4: Item drop addition is +" + addition + ".");
 
-            if (instance.mobDataManager.isLevelledDropManaged(livingEntity.getType(), currentDrop.getType())) {
-                currentDrop.setAmount(currentDrop.getAmount() + (currentDrop.getAmount() * addition));
-                Utils.debugLog(instance, "LevelManager#getLevelledItemDrops", "7: Item was managed. New amount: " + currentDrop.getAmount() + ".");
-            } else {
-                Utils.debugLog(instance, "LevelManager#getLevelledItemDrops", "7: Item was unmanaged.");
+            // Modify current drops
+            Utils.debugLog(instance, "LevelManager#getLevelledItemDrops", "5: Scanning " + currentDrops.size() + " items...");
+            for (ItemStack currentDrop : currentDrops) {
+                Utils.debugLog(instance, "LevelManager#getLevelledItemDrops", "6: Scanning drop " + currentDrop.getType().toString() + " with current amount " + currentDrop.getAmount() + "...");
+
+                if (instance.mobDataManager.isLevelledDropManaged(livingEntity.getType(), currentDrop.getType())) {
+                    currentDrop.setAmount(currentDrop.getAmount() + (currentDrop.getAmount() * addition));
+                    Utils.debugLog(instance, "LevelManager#getLevelledItemDrops", "7: Item was managed. New amount: " + currentDrop.getAmount() + ".");
+                } else {
+                    Utils.debugLog(instance, "LevelManager#getLevelledItemDrops", "7: Item was unmanaged.");
+                }
             }
         }
 
