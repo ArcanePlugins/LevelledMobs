@@ -164,7 +164,7 @@ public class LevelledMobs extends JavaPlugin {
         FileLoader.saveResourceIfNotExists(this, new File(getDataFolder(), "license.txt"));
 
         // load configurations
-        settingsCfg = FileLoader.loadFile(this, "settings", FileLoader.SETTINGS_FILE_VERSION, false);
+        settingsCfg = FileLoader.loadFile(this, "settings", FileLoader.SETTINGS_FILE_VERSION, true);
         messagesCfg = FileLoader.loadFile(this, "messages", FileLoader.MESSAGES_FILE_VERSION, false);
 
         this.entityTypesLevelOverride_Min = getMapFromConfigSection("entitytype-level-override.min-level");
