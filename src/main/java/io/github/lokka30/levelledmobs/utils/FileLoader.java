@@ -61,7 +61,7 @@ public final class FileLoader {
 
     public static void saveResourceIfNotExists(final Plugin instance, final File file) {
         if (!file.exists()) {
-            Utils.logger.info("&fFile Loader: &7Configuration file '&b" + file.getName() + "&7' doesn't exist, creating it now...");
+            Utils.logger.info("&fFile Loader: &7File '&b" + file.getName() + "&7' doesn't exist, creating it now...");
             instance.saveResource(file.getName(), false);
         }
     }
