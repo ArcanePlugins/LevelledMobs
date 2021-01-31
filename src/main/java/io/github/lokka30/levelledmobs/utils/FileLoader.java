@@ -4,6 +4,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.util.FileUtil;
 
+import javax.annotation.Nonnull;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -33,10 +34,10 @@ public final class FileLoader {
         YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
         cfg.options().copyDefaults(true);
 
-        int fileVersion = cfg.getInt("file-version");
+        final int fileVersion = cfg.getInt("file-version");
 
         if (fileVersion < compatibleVersion && doMigrate){
-            File backedupFile = new File(plugin.getDataFolder(), "settings-" + fileVersion + ".old");
+            final File backedupFile = new File(plugin.getDataFolder(), "settings-" + fileVersion + ".old");
             // copy settings.yml to settings.old
             FileUtil.copy(file, backedupFile);
             Utils.logger.info("settings.yml backed up to " + backedupFile.getName());
@@ -142,7 +143,7 @@ public final class FileLoader {
     private static void copyYmlValues(File from, File to, int oldVersion) {
 
         // version 20 = 1.34 - last version before 2.0
-        List<String> version20KeysToKeep = Arrays.asList(
+        final List<String> version20KeysToKeep = Arrays.asList(
                 "level-passive",
                 "fine-tuning.min-level",
                 "fine-tuning.max-level",
@@ -155,32 +156,32 @@ public final class FileLoader {
                 "use-update-checker");
 
         // version 2.1.0 - these fields should be reset to default
-        List<String> version24Resets = Arrays.asList(
+        final List<String> version24Resets = Arrays.asList(
                 "fine-tuning.additions.movement-speed",
                 "fine-tuning.additions.attack-damage"
         );
 
         try {
-            List<String> oldConfigLines = Files.readAllLines(from.toPath(), StandardCharsets.UTF_8);
-            List<String> newConfigLines = Files.readAllLines(to.toPath(), StandardCharsets.UTF_8);
+            final List<String> oldConfigLines = Files.readAllLines(from.toPath(), StandardCharsets.UTF_8);
+            final List<String> newConfigLines = Files.readAllLines(to.toPath(), StandardCharsets.UTF_8);
 
-            Map<String, FieldInfo> oldConfigMap = getMapFromConfig(oldConfigLines);
-            Map<String, FieldInfo> newConfigMap = getMapFromConfig(newConfigLines);
+            final Map<String, FieldInfo> oldConfigMap = getMapFromConfig(oldConfigLines);
+            final Map<String, FieldInfo> newConfigMap = getMapFromConfig(newConfigLines);
 
-            List<String> currentKey = new ArrayList<>();
+            final List<String> currentKey = new ArrayList<>();
             int keysMatched = 0;
             int valuesUpdated = 0;
             int valuesMatched = 0;
 
             for (int currentLine = 0; currentLine < newConfigLines.size(); currentLine++) {
                 String line = newConfigLines.get(currentLine);
-                int depth = getFieldDepth(line);
+                final int depth = getFieldDepth(line);
                 if (line.trim().startsWith("#") || line.trim().isEmpty()) continue;
 
                 if (line.contains(":")) {
-                    String[] lineSplit = line.split(":", 2);
+                    final String[] lineSplit = line.split(":", 2);
                     String key = lineSplit[0].replace("\t","").trim();
-                    String keyOnly = key;
+                    final String keyOnly = key;
 
                     if (depth == 0)
                         currentKey.clear();
@@ -201,14 +202,14 @@ public final class FileLoader {
 
                         // arrays go here:
                         if (oldConfigMap.containsKey(key) && newConfigMap.containsKey(key) && oldConfigMap.get(key).isList()){
-                            FieldInfo fiOld = oldConfigMap.get(key);
-                            FieldInfo fiNew = newConfigMap.get(key);
+                            final FieldInfo fiOld = oldConfigMap.get(key);
+                            final FieldInfo fiNew = newConfigMap.get(key);
                             if (fiNew.isList()){
                                 // add any values present in old list that might not be present in new
-                                String padding = IntStream.range(1, (depth + 1) * 3 - 1).mapToObj(index -> "" + ' ').collect(Collectors.joining());
+                                final String padding = IntStream.range(1, (depth + 1) * 3 - 1).mapToObj(index -> "" + ' ').collect(Collectors.joining());
                                 for (String oldValue : fiOld.valueList){
                                     if (!fiNew.valueList.contains(oldValue)) {
-                                        String newline = padding + "- " + oldValue; // + "\r\n" + line;
+                                        final String newline = padding + "- " + oldValue; // + "\r\n" + line;
                                         newConfigLines.add(currentLine + 1, newline);
                                         Utils.logger.info("added array value: " + oldValue);
                                     }
@@ -218,9 +219,9 @@ public final class FileLoader {
                     }
                     else if (splitLength == 2 && oldConfigMap.containsKey(key)){
                         keysMatched++;
-                        String value = lineSplit[1].trim();
-                        FieldInfo fi = oldConfigMap.get(key);
-                        String migratedValue = fi.simpleValue;
+                        final String value = lineSplit[1].trim();
+                        final FieldInfo fi = oldConfigMap.get(key);
+                        final String migratedValue = fi.simpleValue;
 
                         if (oldVersion <= 20 && !version20KeysToKeep.contains(key)) continue;
                         if (oldVersion < 24 && version24Resets.contains(key)) continue;
@@ -237,8 +238,8 @@ public final class FileLoader {
                     }
                 }
                 else if (line.trim().startsWith("-")){
-                    String key = getKeyFromList(currentKey, null);
-                    String value = line.trim().substring(1).trim();
+                    final String key = getKeyFromList(currentKey, null);
+                    final String value = line.trim().substring(1).trim();
 
                     // we have an array value present in the new config but not the old, so it must've been removed
                     if (oldConfigMap.containsKey(key) && oldConfigMap.get(key).isList() && !oldConfigMap.get(key).valueList.contains(value)){
@@ -258,19 +259,20 @@ public final class FileLoader {
         }
     }
 
+    @Nonnull
     private static Map<String, FieldInfo> getMapFromConfig(List<String> input){
-        Map<String, FieldInfo> configMap = new HashMap<>();
-        List<String> currentKey = new ArrayList<>();
+        final Map<String, FieldInfo> configMap = new HashMap<>();
+        final List<String> currentKey = new ArrayList<>();
 
         for (String line : input) {
             // step 1, collect level 1 key-pairs from old config
-            int depth = getFieldDepth(line);
+            final int depth = getFieldDepth(line);
             line = line.replace("\t", "").trim();
             if (line.startsWith("#") || line.isEmpty()) continue;
             if (line.contains(":")) {
-                String[] lineSplit = line.split(":", 2);
+                final String[] lineSplit = line.split(":", 2);
                 String key = lineSplit[0].replace("\t", "").trim();
-                String origKey = key;
+                final String origKey = key;
 
                 if (depth == 0)
                     currentKey.clear();
@@ -286,13 +288,13 @@ public final class FileLoader {
                     currentKey.add(origKey);
                 }
                 else if (splitLength == 2){
-                    String value = lineSplit[1].trim();
+                    final String value = lineSplit[1].trim();
                     configMap.put(key, new FieldInfo(value, depth));
                 }
             }
             else if (line.startsWith("-")){
-                String key = getKeyFromList(currentKey, null);
-                String value = line.trim().substring(1).trim();
+                final String key = getKeyFromList(currentKey, null);
+                final String value = line.trim().substring(1).trim();
                 if (configMap.containsKey(key))
                     configMap.get(key).addListValue(value);
                 else

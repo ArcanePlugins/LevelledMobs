@@ -162,7 +162,7 @@ public class LevelManager {
         final int level = Objects.requireNonNull(livingEntity.getPersistentDataContainer().get(levelKey, PersistentDataType.INTEGER));
         Utils.debugLog(instance, "LevelManager#getLevelledItemDrops", "3: Entity level is " + level + ".");
 
-        boolean doNotMultiplyDrops = instance.noDropMultiplierEntities.contains(livingEntity.getName());
+        final boolean doNotMultiplyDrops = instance.noDropMultiplierEntities.contains(livingEntity.getName());
 
         if (!doNotMultiplyDrops) {
             // Get currentDrops added per level value
