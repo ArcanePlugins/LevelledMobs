@@ -136,9 +136,15 @@ public class CreatureSpawnListener implements Listener {
             return;
         }
 
+        if (spawnReason == SpawnReason.SPAWNER)
+            livingEntity.getPersistentDataContainer().set(instance.levelManager.isSpawnerKey, PersistentDataType.STRING, "true");
+
+        boolean isSpawner = livingEntity.getPersistentDataContainer().has(instance.levelManager.isSpawnerKey, PersistentDataType.STRING);
+
         //Check the list of blacklisted spawn reasons. If the entity's spawn reason is in there, then we don't continue.
         //Uses a default as "NONE" as there are no blocked spawn reasons in the default config.
-        if (!ModalList.isEnabledInList(instance.settingsCfg, "allowed-spawn-reasons-list", spawnReason.toString())) {
+        if (!ModalList.isEnabledInList(instance.settingsCfg, "allowed-spawn-reasons-list", spawnReason.toString()) ||
+                isSpawner && !ModalList.isEnabledInList(instance.settingsCfg, "allowed-spawn-reasons-list", SpawnReason.SPAWNER.toString())) {
             if (instance.settingsCfg.getBoolean("debug-show-mobs-not-levellable")) {
                 Utils.logger.info("&b" + livingEntity.getName() + "&7 spawned but is not levellable - not in allowed-spawn-reasons-list");
             }
@@ -165,8 +171,6 @@ public class CreatureSpawnListener implements Listener {
             //Define the mob's level so it can be accessed elsewhere.
             livingEntity.getPersistentDataContainer().set(instance.levelManager.levelKey, PersistentDataType.INTEGER, level);
             livingEntity.getPersistentDataContainer().set(instance.levelManager.isLevelledKey, PersistentDataType.STRING, "true");
-            if (spawnReason == SpawnReason.SPAWNER)
-                livingEntity.getPersistentDataContainer().set(instance.levelManager.isSpawnerKey, PersistentDataType.STRING, "true");
 
             // Modify their maximum health attribute. This changes the maximum health the levelled mob has.
             // Makes sure the levelled mob has this attribute. If not, skip setting it.
