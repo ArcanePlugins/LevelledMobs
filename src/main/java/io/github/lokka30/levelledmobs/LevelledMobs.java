@@ -166,7 +166,7 @@ public class LevelledMobs extends JavaPlugin {
 
         // load configurations
         settingsCfg = FileLoader.loadFile(this, "settings", FileLoader.SETTINGS_FILE_VERSION, true);
-        messagesCfg = FileLoader.loadFile(this, "messages", FileLoader.MESSAGES_FILE_VERSION, false);
+        messagesCfg = FileLoader.loadFile(this, "messages", FileLoader.MESSAGES_FILE_VERSION, true);
 
         this.entityTypesLevelOverride_Min = getMapFromConfigSection("entitytype-level-override.min-level");
         this.entityTypesLevelOverride_Max = getMapFromConfigSection("entitytype-level-override.max-level");

@@ -37,15 +37,16 @@ public final class FileLoader {
         final int fileVersion = cfg.getInt("file-version");
 
         if (fileVersion < compatibleVersion && doMigrate){
-            final File backedupFile = new File(plugin.getDataFolder(), "settings-" + fileVersion + ".old");
-            // copy settings.yml to settings.old
+            final File backedupFile = new File(plugin.getDataFolder(), cfgName + ".v" + fileVersion + ".old");
+
+            // copy to old file
             FileUtil.copy(file, backedupFile);
-            Utils.logger.info("settings.yml backed up to " + backedupFile.getName());
+            Utils.logger.info("&fFile Loader: &8(Migration) &b" + cfgName + " backed up to " + backedupFile.getName());
             // overwrite settings.yml from new version
             plugin.saveResource(file.getName(), true);
 
             // copy supported values from old file to new
-            Utils.logger.info("migrating settings from old version to new settings.yml");
+            Utils.logger.info("&fFile Loader: &8(Migration) &7Migrating &b" + cfgName + "&7 from old version to new version.");
             copyYmlValues(backedupFile, file, fileVersion);
 
             // reload cfg from the updated values
@@ -229,7 +230,7 @@ public final class FileLoader {
 
                         if (!value.equals(migratedValue)) {
                             valuesUpdated++;
-                            Utils.logger.info("key: " + key + ", replacing: " + value + ", with: " + migratedValue);
+                            Utils.logger.info("&fFile Loader: &8(Migration) &7Current key: &b" + key + "&7, replacing: &r" + value + "&7, with: &r" + migratedValue + "&7.");
                             line = line.replace(value, migratedValue);
                             newConfigLines.set(currentLine, line);
                         }
@@ -242,19 +243,19 @@ public final class FileLoader {
                     final String value = line.trim().substring(1).trim();
 
                     // we have an array value present in the new config but not the old, so it must've been removed
-                    if (oldConfigMap.containsKey(key) && oldConfigMap.get(key).isList() && !oldConfigMap.get(key).valueList.contains(value)){
+                    if (oldConfigMap.containsKey(key) && oldConfigMap.get(key).isList() && !oldConfigMap.get(key).valueList.contains(value)) {
                         newConfigLines.remove(currentLine);
                         currentLine--;
-                        Utils.logger.info("key: " + key + " removing value: " + value);
+                        Utils.logger.info("&fFile Loader: &8(Migration) &7Current key: &b" + key + "&7, removing value: &r" + value + "&7.");
                     }
                 }
             } // loop to next line
 
             Files.write(to.toPath(), newConfigLines, StandardCharsets.UTF_8, StandardOpenOption.TRUNCATE_EXISTING);
-            Utils.logger.info("Migrated settings.yml successfully");
-            Utils.logger.info(String.format("keys matched: %s, values matched: %s, values updated: %s", keysMatched, valuesMatched, valuesUpdated));
+            Utils.logger.info("&fFile Loader: &8(Migration) &7Migrated &b" + to.getName() + "&7 successfully.");
+            Utils.logger.info(String.format("&fFile Loader: &8(Migration) &7Keys matched: &b%s&7, values matched: &b%s&7, values updated: &b%s&7.", keysMatched, valuesMatched, valuesUpdated));
         } catch (Exception e) {
-            Utils.logger.info("Failed to migrate config: " + e.getMessage());
+            Utils.logger.error("&fFile Loader: &8(Migration) &7Failed to migrate &b" + to.getName() + "&7! Stack trace:");
             e.printStackTrace();
         }
     }

@@ -12,13 +12,18 @@
 
 ### Changelog:
 **Custom Drops Configuration!** (stumper66)
-* stumper66 worked long and hard to implement the suggestion originally from @Ravenlant back in February 2020 that had been frequently requested since.
+* stumper66 worked long and hard to implement the suggestion originally from @Ravenlant back in February last year that had been frequently requested since.
 * It is a *very* configurable system. Take a look for yourself!
-* Thanks to those on the Discord server who provided suggestions to stumper whilst he worked on this system - especially Hugo5551!
+* Thanks to those on the Discord server who provided suggestions to stumper whilst he worked on this system - especially Hugo5551! Another thank-you to the testers, @Oathkeeper and **squeebis**!
 
 **Mob Additions Values Scaling!** (lokka30, stumper66)
 * You can now safely change the min and max levels in `fine-tuning` without having to change the `additions` values in `settings.yml` as they will now scale to the min and max levels you set. :)
 * **Movement speed, health, attack damage, etc have significantly changed as there is a new formula that uses these values. Please, do not use your old movement speed values, etc.**
+
+**Config Migration!** (stumper66)
+* We have received a dozen users join the server wondering why LM wasn't working on their server - 90% of the case this is because the user is running an outdated settings file.
+* stumper66 whipped up a brilliant system which automatically updates your config files (and backs up the previous files) just to make sure that the plugin runs smooth if you forgot to update a config file.
+* **Note:** It is still recommended you reset your files when they update regardless since otherwise you will miss out on new/improved config comments which are meant to guide you on how to configure the plugin.
 
 **New compatibility!**
 * Previously, LevelledMobs only made compatibility Citizens. Now as requested by many, LevelledMobs is now compatible with MythicMobs, EliteMobs, InfernalMobs and Shopkeepers too!
