@@ -247,6 +247,7 @@ public class LevelledMobs extends JavaPlugin {
         }
     }
 
+    @SuppressWarnings("ConstantConditions")
     private boolean processCustomDropsConfig2(final CustomDropsUniversalGroups entityGroup, final EntityType entityType, final Object configValue, final List<CustomItemDrop> dropList){
         ArrayList<Map<String, Object>> map2 = null;
         ArrayList<String> materialsStrings = null;
@@ -262,13 +263,11 @@ public class LevelledMobs extends JavaPlugin {
             map2 = (ArrayList<Map<String, Object>>) configValue;
             for (Map<String, Object> ignored : map2) break;
             isMap = true;
-        }
-        catch (ClassCastException e){
+        } catch (ClassCastException e){
             try{
                 // I can't get the IDE to shutup about the potential cast exception!
                 materialsStrings = (ArrayList<String>) configValue;
-            }
-            catch (ClassCastException ex){
+            } catch (ClassCastException ex){
                 Utils.logger.warning("Unable to parse values (cast exception) for " + mobTypeOrGroupName);
                 return false;
             }
@@ -316,8 +315,7 @@ public class LevelledMobs extends JavaPlugin {
 
                 try {
                     materialAttributes = (Map<String, Object>) materialsMap.get(materialName);
-                }
-                catch (ClassCastException e){
+                } catch (ClassCastException e){
                     Utils.logger.warning("Unable to parse values (cast exception2) for " + mobTypeOrGroupName);
                     return false;
                 }
@@ -338,8 +336,7 @@ public class LevelledMobs extends JavaPlugin {
                         Map<String, Object> enchantments;
                         try {
                             enchantments = (Map<String, Object>) valueOrEnchant;
-                        }
-                        catch (ClassCastException e){
+                        } catch (ClassCastException e){
                             Utils.logger.warning("Unable to parse values (cast exception3) for " + mobTypeOrGroupName);
                             return false;
                         }
@@ -392,15 +389,12 @@ public class LevelledMobs extends JavaPlugin {
                                 default:
                                     Utils.logger.warning("invalid attribute for " + mobTypeOrGroupName + " in customdrops.yml: " + attribute);
                             }
-                        }
-                        else if (valueOrEnchant != null && valueOrEnchant.toString().contains("-")){
+                        } else if (valueOrEnchant != null && valueOrEnchant.toString().contains("-")){
                             if (!item.setAmountRangeFromString(valueOrEnchant.toString()))
                                 Utils.logger.warning(String.format("Invalid number range for %s, %s", mobTypeOrGroupName, valueOrEnchant));
-                        }
-                        else if ("nomultiplier".equalsIgnoreCase(attribute)) {
+                        } else if ("nomultiplier".equalsIgnoreCase(attribute)) {
                             item.noMultiplier = true;
-                        }
-                        else if ("nospawner".equalsIgnoreCase(attribute)) {
+                        } else if ("nospawner".equalsIgnoreCase(attribute)) {
                             item.noSpawner = true;
                         }
                     }
@@ -558,8 +552,9 @@ public class LevelledMobs extends JavaPlugin {
     }
 
     @Nonnull
+    @SuppressWarnings("SameParameterValue")
     private Set<String> getSetFromConfigSection(final String configPath){
-        final Set<String> result = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER);
+        final Set<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
         final List<String> set = settingsCfg.getStringList(configPath);
 
         result.addAll(set);
