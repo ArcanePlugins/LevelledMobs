@@ -31,6 +31,9 @@ public class ReloadSubcommand implements Subcommand {
                 HandlerList.unregisterAll(instance.entityDamageDebugListener);
             }
 
+            instance.levelManager.creatureSpawnListener.levelNumsListCache.clear();
+            instance.levelManager.creatureSpawnListener.levelNumsListCacheOrder.clear();
+
             reloadFinishedMsg.forEach(sender::sendMessage);
         } else {
             instance.configUtils.sendNoPermissionMsg(sender);

@@ -1,6 +1,7 @@
 package io.github.lokka30.levelledmobs.listeners;
 
 import io.github.lokka30.levelledmobs.LevelManager;
+import io.github.lokka30.levelledmobs.LevelNumbersWithBias;
 import io.github.lokka30.levelledmobs.LevelledMobs;
 import io.github.lokka30.levelledmobs.utils.*;
 import me.lokka30.microlib.MicroUtils;
@@ -15,19 +16,33 @@ import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.persistence.PersistentDataType;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Random;
+import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class CreatureSpawnListener implements Listener {
 
     private final LevelledMobs instance;
     private final HashSet<String> forcedTypes = new HashSet<>(Arrays.asList("ENDER_DRAGON", "PHANTOM"));
+    final public HashMap<LevelNumbersWithBias, LevelNumbersWithBias> levelNumsListCache;
+    final public LinkedList<LevelNumbersWithBias> levelNumsListCacheOrder;
+    private final static int maxLevelNumsCache = 10;
 
     public CreatureSpawnListener(final LevelledMobs instance) {
         this.instance = instance;
+        this.levelNumsListCache = new HashMap<>();
+        this.levelNumsListCacheOrder = new LinkedList<>();
+
+        final int factor = instance.settingsCfg.getInt("fine-tuning.lower-mob-level-bias-factor", 0);
+        if (factor > 0) {
+            LevelNumbersWithBias lnwb = new LevelNumbersWithBias(
+                    instance.settingsCfg.getInt("fine-tuning.min-level", 1),
+                    instance.settingsCfg.getInt("fine-tuning.max-level", 10),
+                    factor
+            );
+            lnwb.populateData();
+            this.levelNumsListCache.put(lnwb, lnwb);
+            this.levelNumsListCacheOrder.addFirst(lnwb);
+        }
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
@@ -298,12 +313,44 @@ public class CreatureSpawnListener implements Listener {
         int minLevel = instance.configUtils.getMinLevel(livingEntity.getType(),
                 livingEntity.getWorld(), isBabyZombie, debugInfo);
         final int maxLevel = instance.configUtils.getMaxLevel(livingEntity.getType(),
-                livingEntity.getWorld(), isBabyZombie, debugInfo) + 1;
+                livingEntity.getWorld(), isBabyZombie, debugInfo);
 
         // this will prevent an unhandled exception:
         if (minLevel > maxLevel) minLevel = maxLevel;
-        
-        return minLevel == maxLevel ? minLevel : ThreadLocalRandom.current().nextInt(minLevel, maxLevel);
+
+        int biasFactor = instance.settingsCfg.getInt("fine-tuning.lower-mob-level-bias-factor", 0);
+
+        if (minLevel == maxLevel)
+            return minLevel;
+        else if (biasFactor > 0){
+            if (biasFactor > 10) biasFactor = 10;
+            return generateLevelWithBias(minLevel, maxLevel, biasFactor);
+        }
+        else
+            return ThreadLocalRandom.current().nextInt(minLevel, maxLevel + 1);
+    }
+
+    private int generateLevelWithBias(final int minLevel, final int maxLevel, final int factor){
+
+        LevelNumbersWithBias levelNum = new LevelNumbersWithBias(minLevel, maxLevel, factor);
+
+        if (this.levelNumsListCache.containsKey(levelNum)) {
+            levelNum = this.levelNumsListCache.get(levelNum);
+        }
+        else {
+            levelNum = new LevelNumbersWithBias(minLevel, maxLevel, factor);
+            levelNum.populateData();
+            this.levelNumsListCache.put(levelNum, levelNum);
+            this.levelNumsListCacheOrder.addLast(levelNum);
+        }
+
+        if (this.levelNumsListCache.size() > maxLevelNumsCache) {
+            LevelNumbersWithBias oldest = this.levelNumsListCacheOrder.getFirst();
+            this.levelNumsListCache.remove(oldest);
+            this.levelNumsListCacheOrder.removeFirst();
+        }
+
+        return levelNum.getNumberWithinLimits();
     }
 
     //Generates a level based on distance to spawn and, if active, variance
@@ -383,7 +430,12 @@ public class CreatureSpawnListener implements Listener {
 
         if (!instance.settingsCfg.getBoolean("y-distance-levelling.active")){
             // standard issue, generate random levels based upon max and min flags in worldguard
-            return levels[0] + Math.round(new Random().nextFloat() * (levels[1] - levels[0]));
+
+            final int biasFactor = instance.settingsCfg.getInt("fine-tuning.lower-mob-level-bias-factor", 0);
+            if (biasFactor > 0)
+                return generateLevelWithBias(levels[0], levels[1], biasFactor);
+            else
+                return levels[0] + Math.round(new Random().nextFloat() * (levels[1] - levels[0]));
         }
 
         // generate level based on y distance but use min and max values from world guard

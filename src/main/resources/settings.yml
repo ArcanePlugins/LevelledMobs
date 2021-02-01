@@ -335,6 +335,10 @@ fine-tuning:
   # Use a positive integer. By default, this is 10.
   max-level: 10
 
+  # to make lower mob levels more common, enter a number higher than 0.  Must be a number between 0 and 10
+  # the higher the number, the more common lower levelled mobs will be
+  lower-mob-level-bias-factor: 0
+
   # These values are applied to levelled mobs to make them more difficult and rewarding.
   additions:
 
@@ -392,4 +396,4 @@ debug-misc: [ ]
 # This value is used when this file is loaded to check if this file is most likely incompatible.
 # The value must match exactly what version the plugin ships the default file with.
 # Don't change this unless you know what you're doing!
-file-version: 25
+file-version: 26
