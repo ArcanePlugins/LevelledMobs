@@ -352,19 +352,8 @@ public class LevelledMobs extends JavaPlugin {
                                 Utils.logger.warning("invalid enchantment in customdrops.yml: " + enchantmentName);
                                 continue;
                             }
-                            if (!en.canEnchantItem(item.getItemStack())) {
-                                Utils.logger.warning(String.format(
-                                        "Enchantment %s in customdrops.yml: is not valid for item %s",
-                                        enchantmentName, materialName));
-                                continue;
-                            }
 
-                            final ItemMeta meta = item.getItemStack().getItemMeta();
-                            if (meta != null) {
-                                // true is for ignoring level restriction
-                                meta.addEnchant(en, enchantLevel, true);
-                                item.getItemStack().setItemMeta(meta);
-                            }
+                            item.getItemStack().addUnsafeEnchantment(en, enchantLevel);
                         }
                     } else if (!attribute.equalsIgnoreCase("enchantments")) {
                         // non-enchantments here

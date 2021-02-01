@@ -208,14 +208,12 @@ public class LevelManager {
         final int postCount = drops.size();
 
         if (instance.settingsCfg.getStringList("debug-misc").contains("custom-drops")) {
-            final StringBuilder sb = new StringBuilder();
-            for (CustomDropsUniversalGroups group : applicableGroups){
-                if (sb.length() > 0) sb.append(", ");
-                sb.append(group.toString());
-            }
-            Utils.logger.info("custom drops for " + livingEntity.getName());
-            Utils.logger.info("    groups: " + sb.toString());
-            Utils.logger.info(String.format("     precount: %s, postcount: %s", preCount, postCount));
+            ArrayList<String> applicableGroupsNames = new ArrayList<>();
+            applicableGroups.forEach(applicableGroup -> applicableGroupsNames.add(applicableGroup.toString()));
+
+            Utils.logger.info("&7Custom drops for " + livingEntity.getName());
+            Utils.logger.info("&8- &7Groups: &b" + String.join("&7, &b", applicableGroupsNames) + "&7.");
+            Utils.logger.info(String.format("&8 --- &7Precount: &b%s&7, postcount: &b%s&7.", preCount, postCount));
         }
     }
 
@@ -228,7 +226,7 @@ public class LevelManager {
             if (drop.noSpawner && isSpawner)  doDrop = false;
             if (!doDrop){
                 if (instance.settingsCfg.getStringList("debug-misc").contains("custom-drops")) {
-                    Utils.logger.info(String.format("mob: %s, level: %s, fromSpawner: %s, item %s, minL: %s, maxL:%s, nospawner: %s, dropped: false",
+                    Utils.logger.info(String.format("&8- &7Mob: &b%s&7, level: &b%s&7, fromSpawner: &b%s&7, item: &b%s&7, minL: &b%s&7, maxL: &b%s&7, nospawner: &b%s&7, dropped: &bfalse",
                             livingEntity.getName(), level, isSpawner, drop.getMaterial().name(), drop.minLevel, drop.maxLevel, drop.noSpawner));
                 }
                 continue;
@@ -256,7 +254,7 @@ public class LevelManager {
 
             if (instance.settingsCfg.getStringList("debug-misc").contains("custom-drops")) {
                 Utils.logger.info(String.format(
-                        "mob: %s, item %s, amount: %s, newAmount: %s, chance: %s, chanceRole: %s, dropped: %s",
+                        "&8 - &7Mob: &b%s&7, item: &b%s&7, amount: &b%s&7, newAmount: &b%s&7, chance: &b%s&7, chanceRole: &b%s&7, dropped: &b%s&7.",
                         livingEntity.getName(), drop.getMaterial().name(), drop.getAmountAsString(), newDropAmount, drop.dropChance, chanceRole, !didNotMakeChance)
                 );
             }
