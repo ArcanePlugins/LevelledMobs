@@ -5,15 +5,19 @@ import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.List;
+
 public class CustomItemDrop {
     final public EntityType associatedMob;
     public int minLevel;
     public int maxLevel;
     public double dropChance;
-    public int amount;
+    private int amount;
     public int groupId;
+    public int damage;
     public boolean noMultiplier;
     public boolean noSpawner;
+    public List<String> lore;
     public CustomDropsUniversalGroups entityGroup;
     private boolean hasAmountRange;
     private int amountRangeMin;
@@ -52,6 +56,16 @@ public class CustomItemDrop {
         this.hasAmountRange = true;
 
         return true;
+    }
+
+    public int getAmount(){
+        return this.amount;
+    }
+
+    public void setAmount(int amount){
+        this.amount = amount;
+        if (this.amount > 64) this.amount = 64;
+        if (this.amount < 1) this.amount = 1;
     }
 
     public int getamountRangeMin(){

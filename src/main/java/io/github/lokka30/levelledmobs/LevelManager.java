@@ -18,6 +18,8 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.entity.*;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.Damageable;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
@@ -232,7 +234,7 @@ public class LevelManager {
                 continue;
             }
 
-            int newDropAmount = drop.amount;
+            int newDropAmount = drop.getAmount();
             if (drop.getHasAmountRange()){
                 final int change = ThreadLocalRandom.current().nextInt(0, drop.getamountRangeMax() - drop.getamountRangeMin() + 1);
                 newDropAmount = drop.getamountRangeMin() + change;
@@ -264,6 +266,21 @@ public class LevelManager {
 
             ItemStack newItem = drop.getItemStack();
             newItem.setAmount(newDropAmount);
+            if (drop.damage > 0){
+                ItemMeta meta = newItem.getItemMeta();
+                if (meta instanceof Damageable){
+                    ((Damageable) meta).setDamage(drop.damage);
+                    //dam.setDamage(drop.damage);
+                    newItem.setItemMeta(meta);
+                }
+            }
+            if (drop.lore != null && !drop.lore.isEmpty()){
+                ItemMeta meta = newItem.getItemMeta();
+                if (meta != null) {
+                    meta.setLore(drop.lore);
+                    newItem.setItemMeta(meta);
+                }
+            }
 
             newDrops.add(newItem);
         }

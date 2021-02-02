@@ -18,15 +18,20 @@
 # chance - a value to determine how likely the mob is to drop this item.  1.0 = 100%, 0.1 = 10%, etc.
 #          If no chance is specified then the default of 0.2 will be used
 # amount - how many of this item will be dropped.  This can be a number or a number range.  Example: 2-4
-# nomultiplier: - the level of the mob will not affect the amount dropped - !!!! make sure you end it with ":", as in: nomultiplier:
-# nospawner: - if specified then any mobs created by a spawner will not drop the custom item - !!!! make sure you end it with ":", as in: nomultiplier:
+# nomultiplier: true - the level of the mob will not affect the amount dropped
+# nospawner: true - if specified then any mobs created by a spawner will not drop the custom item
 # enchantments - enter a list of enchantments the item will have and the enchantment level.  Example: unbreaking: 3
 # groupid - if multiple items for the same mob have the same groupid, one one of the items will be dropped
+# lore - enter a list of strings to use for the lore
+# damage: amount - enter the amount of damage the item will start with
 
 # universal groups - instead of specifying items for a specific mob you can use the following universal groups:
 #
 # all_mobs, all_levellable_mobs, all_hostile_mobs, all_passive_mobs, all_overworld_mobs, all_nether_mobs,
 # all_flying_mobs, all_ground_mobs, all_aquatic_mobs
+
+# Don't change this unless you know what you're doing!
+file-version: 2
 
 ALL_LEVELLABLE_MOBS:
   - stick
