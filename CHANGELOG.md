@@ -2,6 +2,21 @@
 
 ***
 
+## v2.2.0
+### Notes:
+* N/A
+
+### Changelog:
+**Minor New Features**
+* Unsafe Enchantments (lokka30)
+  * You can now apply enchantments to items that would not normally accept them, such as Sharpness on a Compass.
+  * Thanks @Noiverre for suggesting this.
+
+**Bug Fixes**
+* Fixed chunk load re-level issue (stumper66)
+
+***
+
 ## v2.1.0
 **WARNING** This update includes file changes! Please see the Notes section below. If you do not update your files then the plugin will malfunction!
 

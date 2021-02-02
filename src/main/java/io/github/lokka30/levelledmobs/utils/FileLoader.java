@@ -15,7 +15,7 @@ import java.util.stream.IntStream;
 
 public final class FileLoader {
 
-    public static final int SETTINGS_FILE_VERSION = 26; // Last changed: 2.1.0 PRE 9
+    public static final int SETTINGS_FILE_VERSION = 26; // Last changed: 2.2.0
     public static final int MESSAGES_FILE_VERSION = 1; // Last changed: 2.1.0
 
     private FileLoader() {
