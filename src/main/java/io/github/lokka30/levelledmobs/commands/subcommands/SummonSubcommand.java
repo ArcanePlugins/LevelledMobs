@@ -305,7 +305,7 @@ public class SummonSubcommand implements Subcommand {
                 messages.forEach(sender::sendMessage);
             }
 
-            int minLevel = instance.configUtils.getMinLevel(entityType, location.getWorld(), true, null);
+            int minLevel = instance.configUtils.getMinLevel(entityType, location.getWorld(), true, null, CreatureSpawnEvent.SpawnReason.CUSTOM);
 
             if (level < minLevel) {
                 level = minLevel;
@@ -317,7 +317,7 @@ public class SummonSubcommand implements Subcommand {
                 messages.forEach(sender::sendMessage);
             }
 
-            int maxLevel = instance.configUtils.getMaxLevel(entityType, location.getWorld(), true, null);
+            int maxLevel = instance.configUtils.getMaxLevel(entityType, location.getWorld(), true, null, CreatureSpawnEvent.SpawnReason.CUSTOM);
             if (level > maxLevel) {
                 level = maxLevel;
 

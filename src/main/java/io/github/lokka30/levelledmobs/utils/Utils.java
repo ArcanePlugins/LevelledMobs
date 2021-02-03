@@ -4,6 +4,8 @@ import io.github.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.microlib.MicroLogger;
 import me.lokka30.microlib.MicroUtils;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Ageable;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Zombie;
 
 import java.util.ArrayList;
@@ -105,7 +107,7 @@ public final class Utils {
     }
 
     public static List<String> colorizeAllInList(final List<String> oldList) {
-        final List<String> newList = new ArrayList<>();
+        final List<String> newList = new ArrayList<>(oldList.size());
 
         for (final String string : oldList) {
             newList.add(MicroUtils.colorize(string));

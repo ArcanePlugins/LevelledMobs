@@ -6,6 +6,7 @@ import org.apache.commons.lang.WordUtils;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.EntityType;
+import org.bukkit.event.entity.CreatureSpawnEvent;
 
 import java.util.HashMap;
 import java.util.List;
@@ -49,7 +50,7 @@ public class ConfigUtils {
         }
     }
 
-    public int getMinLevel(final EntityType entityType, final World world, final boolean isAdult, final DebugInfo debugInfo) {
+    public int getMinLevel(final EntityType entityType, final World world, final boolean isAdult, final DebugInfo debugInfo, final CreatureSpawnEvent.SpawnReason spawnReason) {
 
         // Note for users wondering why '-1' is stored in the min level map:
         // -1 is supposed to be an impossible level to achieve. It is used
@@ -71,7 +72,10 @@ public class ConfigUtils {
         }
 
         if (instance.settingsCfg.getBoolean("entitytype-level-override.enabled")) {
-            if (isAdult && instance.entityTypesLevelOverride_Min.containsKey(entityTypeStr)) {
+            if (spawnReason == CreatureSpawnEvent.SpawnReason.REINFORCEMENTS && instance.entityTypesLevelOverride_Min.containsKey(entityTypeStr + "_REINFORCEMENTS")){
+                minLevel = Utils.getDefaultIfNull(instance.entityTypesLevelOverride_Min, entityTypeStr + "_REINFORCEMENTS", minLevel);
+                if (debugInfo != null) debugInfo.rule = MobProcessReason.ENTITY;
+            } else if (isAdult && instance.entityTypesLevelOverride_Min.containsKey(entityTypeStr)) {
                 minLevel = Utils.getDefaultIfNull(instance.entityTypesLevelOverride_Min, entityTypeStr, minLevel);
                 if (debugInfo != null) debugInfo.rule = MobProcessReason.ENTITY;
             } else if (!isAdult && instance.entityTypesLevelOverride_Min.containsKey("baby_" + entityTypeStr)) {
@@ -85,7 +89,7 @@ public class ConfigUtils {
         return minLevel;
     }
 
-    public int getMaxLevel(final EntityType entityType, final World world, final boolean isAdult, final DebugInfo debugInfo) {
+    public int getMaxLevel(final EntityType entityType, final World world, final boolean isAdult, final DebugInfo debugInfo, final CreatureSpawnEvent.SpawnReason spawnReason) {
 
         // Note for users wondering why '-1' is stored in the max level map:
         // -1 is supposed to be an impossible level to achieve. It is used
@@ -107,7 +111,10 @@ public class ConfigUtils {
         }
 
         if (instance.settingsCfg.getBoolean("entitytype-level-override.enabled")) {
-            if (isAdult && instance.entityTypesLevelOverride_Max.containsKey(entityTypeStr)) {
+            if (spawnReason == CreatureSpawnEvent.SpawnReason.REINFORCEMENTS && instance.entityTypesLevelOverride_Min.containsKey(entityTypeStr + "_REINFORCEMENTS")) {
+                maxLevel = Utils.getDefaultIfNull(instance.entityTypesLevelOverride_Max, entityTypeStr + "_REINFORCEMENTS", maxLevel);
+                if (debugInfo != null) debugInfo.rule = MobProcessReason.ENTITY;
+            } else if (isAdult && instance.entityTypesLevelOverride_Max.containsKey(entityTypeStr)) {
                 maxLevel = Utils.getDefaultIfNull(instance.entityTypesLevelOverride_Max, entityTypeStr, maxLevel);
                 if (debugInfo != null) debugInfo.rule = MobProcessReason.ENTITY;
             } else if (!isAdult && instance.entityTypesLevelOverride_Max.containsKey("baby_" + entityTypeStr)) {

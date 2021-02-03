@@ -20,11 +20,15 @@
 # - %displayname% - the mob's name - will be replaced with the text on its nametag (if the mob is nametagged). -- recommended over %typename%
 # - %typename% - the mob's name - this will not show underlying nametags.
 # - %health% - the mob's health
+# - %health_rounded% - the mob's health, rounded to 0 digits
 # - %max_health% - the mob's max health
+# - %max_health_rounded% - the mob's max health, rounded to 0 digits
 # - %heart_symbol% - a predefined heart symbol.
 # By default, this is '&8[&7Level %level%&8 | &f%displayname%&8 | &c%health%&8/&c%max_health% %heart_symbol%&8]'.
 # Screenshot of the default nametag's appearance: https://prnt.sc/xcckzw
 creature-nametag: '&8[&7Level %level%&8 | &f%displayname%&8 | &c%health%&8/&c%max_health% %heart_symbol%&8]'
+# optional tiered nametag coloring:
+# creature-nametag: '&8[%tiered%Level %level%&8 | &f%displayname%&8 | &c%health%&8/&c%max_health% %heart_symbol%&8]'
 
 # When a player dies this will be the creature name used in the death message.
 creature-death-nametag: '&8[&7Level %level%&8 | &f%displayname%&8]'
@@ -217,6 +221,7 @@ entitytype-level-override:
     ENDER_DRAGON: 7
     WITHER: 6
     BABY_ZOMBIE: 1
+    ZOMBIE_REINFORCEMENTS: 2
 
 
 # If you want to force a world to have a minimum/maximum level then you can do that here.
@@ -379,6 +384,15 @@ fine-tuning:
     # Use a positive double (decimal). By default, this is 2.
     xp-drop: 2
 
+    # want to set multipliers or maximums for a specific mob?  Put them here.  Use any of the above settings.
+    custom_mob_level:
+    #  PIGLIN:
+    #    max-health: 30
+    #    movement-speed: 0.2
+    #    attack-damage: 6
+    #    xp-drop: 3
+    #    ranged-attack-damage: 2.5
+    #    item-drop: 4
 
 # When using the summon command how far away from the player will the mob(s) spawn
 # Use a positive integer. By default, this is 5.

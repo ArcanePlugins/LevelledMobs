@@ -3,6 +3,7 @@ package io.github.lokka30.levelledmobs;
 import io.github.lokka30.levelledmobs.utils.Addition;
 import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
+import org.bukkit.entity.Ageable;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 
@@ -46,10 +47,17 @@ public class MobDataManager {
     public final double getAdditionsForLevel(final LivingEntity livingEntity, final Addition addition, final int currentLevel) {
         final int minLevel = instance.settingsCfg.getInt("fine-tuning.min-level");
         final int maxLevel = instance.settingsCfg.getInt("fine-tuning.max-level");
-        final double range = (double) maxLevel - (minLevel - 1);
-        final double percent = currentLevel / range;
+        final double range = (double) maxLevel - minLevel - 1;
+        final double percent = (double) currentLevel / range;
+
+        final boolean isAdult = !(livingEntity instanceof Ageable) || ((Ageable)livingEntity).isAdult();
+        final String entityCheckName = isAdult ? livingEntity.getName() : "BABY_" + livingEntity.getName();
+        final double maxOverridenEntity = instance.settingsCfg.getDouble(addition.getMaxAdditionConfigPath(entityCheckName), -100.0); // in case negative number are allowed
         final double max = instance.settingsCfg.getDouble(addition.getMaxAdditionConfigPath());
         //Utils.logger.info(String.format("cl: %s, lmin: %s, lmax: %s, max: %s, percent: %s, test: %s", currentLevel, minLevel, maxLevel, max, percent, addition.getMaxAdditionConfigPath()));
-        return percent * max;
+
+        return maxOverridenEntity > -100.0 ?
+                percent * maxOverridenEntity :
+                percent * max;
     }
 }

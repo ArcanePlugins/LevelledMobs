@@ -17,6 +17,7 @@ public class CustomItemDrop {
     public int damage;
     public boolean noMultiplier;
     public boolean noSpawner;
+    public String customName;
     public List<String> lore;
     public CustomDropsUniversalGroups entityGroup;
     private boolean hasAmountRange;

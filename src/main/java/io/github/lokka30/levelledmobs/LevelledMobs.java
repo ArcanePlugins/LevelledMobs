@@ -5,6 +5,7 @@ import io.github.lokka30.levelledmobs.listeners.*;
 import io.github.lokka30.levelledmobs.utils.ConfigUtils;
 import io.github.lokka30.levelledmobs.utils.FileLoader;
 import io.github.lokka30.levelledmobs.utils.Utils;
+import me.lokka30.microlib.MicroUtils;
 import me.lokka30.microlib.QuickTimer;
 import me.lokka30.microlib.UpdateChecker;
 import org.bstats.bukkit.Metrics;
@@ -16,6 +17,7 @@ import org.bukkit.configuration.MemoryConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.EntityType;
+import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -305,6 +307,7 @@ public class LevelledMobs extends JavaPlugin {
                 item.lore = itemInfoConfiguration.getStringList("lore");
                 item.noMultiplier = itemInfoConfiguration.getBoolean("nomultipler");
                 item.noSpawner = itemInfoConfiguration.getBoolean("nospawner");
+                item.customName = itemInfoConfiguration.getString("name");
 
                 String amountRange = itemInfoConfiguration.getString("amount");
                 if (amountRange != null && !item.setAmountRangeFromString(amountRange)){
@@ -329,6 +332,31 @@ public class LevelledMobs extends JavaPlugin {
                         }
                     }
                 } // end enchantments
+
+                // set item attributes, etc here:
+
+                if (item.damage != 0){
+                    ItemMeta meta = item.getItemStack().getItemMeta();
+                    if (meta instanceof Damageable){
+                        ((Damageable) meta).setDamage(item.damage);
+                        item.getItemStack().setItemMeta(meta);
+                    }
+                }
+                if (item.lore != null && !item.lore.isEmpty()){
+                    ItemMeta meta = item.getItemStack().getItemMeta();
+                    if (meta != null) {
+                        meta.setLore(Utils.colorizeAllInList(item.lore));
+                        item.getItemStack().setItemMeta(meta);
+                    }
+                }
+
+                if (item.customName != null && !"".equals(item.customName)){
+                    ItemMeta meta = item.getItemStack().getItemMeta();
+                    if (meta != null) {
+                        meta.setDisplayName(MicroUtils.colorize(item.customName));
+                        item.getItemStack().setItemMeta(meta);
+                    }
+                }
             }
         }
 
@@ -371,6 +399,7 @@ public class LevelledMobs extends JavaPlugin {
         if (item.noMultiplier) msg += ", nomultp";
         if (item.noSpawner) msg += ", nospawner";
         if (!item.lore.isEmpty()) msg += ", hasLore";
+        if (item.customName != null && !"".equals(item.customName)) msg += ", hasName";
 
         final StringBuilder sb = new StringBuilder();
         final ItemMeta meta = item.getItemStack().getItemMeta();

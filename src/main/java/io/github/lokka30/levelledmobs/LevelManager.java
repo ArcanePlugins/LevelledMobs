@@ -10,16 +10,11 @@ import io.github.lokka30.levelledmobs.utils.Addition;
 import io.github.lokka30.levelledmobs.utils.ModalList;
 import io.github.lokka30.levelledmobs.utils.Utils;
 import me.lokka30.microlib.MicroUtils;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.NamespacedKey;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.entity.*;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.Damageable;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
@@ -263,24 +258,8 @@ public class LevelManager {
             if (didNotMakeChance) continue;
 
             // if we made it this far then the item will be dropped
-
             ItemStack newItem = drop.getItemStack();
             newItem.setAmount(newDropAmount);
-            if (drop.damage > 0){
-                ItemMeta meta = newItem.getItemMeta();
-                if (meta instanceof Damageable){
-                    ((Damageable) meta).setDamage(drop.damage);
-                    //dam.setDamage(drop.damage);
-                    newItem.setItemMeta(meta);
-                }
-            }
-            if (drop.lore != null && !drop.lore.isEmpty()){
-                ItemMeta meta = newItem.getItemMeta();
-                if (meta != null) {
-                    meta.setLore(drop.lore);
-                    newItem.setItemMeta(meta);
-                }
-            }
 
             newDrops.add(newItem);
         }
@@ -364,6 +343,13 @@ public class LevelManager {
 
         if (nametag == null || nametag.isEmpty()) return null;
 
+        int minLevel = instance.settingsCfg.getInt("fine-tuning.min-level", 1);
+        int maxLevel = instance.settingsCfg.getInt("fine-tuning.max-level", 10);
+        double levelPercent = (double) level / (double)(maxLevel - minLevel);
+        ChatColor tier = ChatColor.GREEN;
+        if (levelPercent >= 0.66666666) tier = ChatColor.RED;
+        else if (levelPercent >= 0.33333333) tier = ChatColor.GOLD;
+
         nametag = nametag.replace("%level%", level + "");
         nametag = nametag.replace("%displayname%", displayName);
         nametag = nametag.replace("%typename%", entityName);
@@ -372,6 +358,7 @@ public class LevelManager {
         nametag = nametag.replace("%max_health%", health);
         nametag = nametag.replace("%max_health_rounded%", healthRounded);
         nametag = nametag.replace("%heart_symbol%", "❤");
+        nametag = nametag.replace("%tiered%", tier.toString());
         nametag = MicroUtils.colorize(nametag);
 
         return nametag;
