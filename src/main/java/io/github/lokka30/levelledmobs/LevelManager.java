@@ -117,9 +117,9 @@ public class LevelManager {
         if (!ModalList.isEnabledInList(instance.settingsCfg, "allowed-entities-list", livingEntity.getType().toString()))
             return false;
 
-        // Specific allowed entities check for BABY_ZOMBIE
-        if (livingEntity instanceof Zombie && Utils.isZombieBaby((Zombie) livingEntity)) {
-            if (!ModalList.isEnabledInList(instance.settingsCfg, "allowed-entities-list", "BABY_ZOMBIE"))
+        // Specific allowed entities check for BABIES
+        if (Utils.isEntityBaby(livingEntity)) {
+            if (!ModalList.isEnabledInList(instance.settingsCfg, "allowed-entities-list", "BABY_" + livingEntity.getName().toUpperCase()))
                 return false;
         }
 

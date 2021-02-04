@@ -24,11 +24,11 @@
 # - %max_health% - the mob's max health
 # - %max_health_rounded% - the mob's max health, rounded to 0 digits
 # - %heart_symbol% - a predefined heart symbol.
-# By default, this is '&8[&7Level %level%&8 | &f%displayname%&8 | &c%health%&8/&c%max_health% %heart_symbol%&8]'.
+# - %tiered% - the color changes depending on the level of the mob.  Higher levels = red, middle = gold and lower levels = green
+#
+# By default, this is '&8[%tiered%Level %level%&8 | &f%displayname%&8 | &c%health%&8/&c%max_health% %heart_symbol%&8]'.
 # Screenshot of the default nametag's appearance: https://prnt.sc/xcckzw
-creature-nametag: '&8[&7Level %level%&8 | &f%displayname%&8 | &c%health%&8/&c%max_health% %heart_symbol%&8]'
-# optional tiered nametag coloring:
-# creature-nametag: '&8[%tiered%Level %level%&8 | &f%displayname%&8 | &c%health%&8/&c%max_health% %heart_symbol%&8]'
+creature-nametag: '&8[%tiered%Level %level%&8 | &f%displayname%&8 | &c%health%&8/&c%max_health% %heart_symbol%&8]'
 
 # When a player dies this will be the creature name used in the death message.
 creature-death-nametag: '&8[&7Level %level%&8 | &f%displayname%&8]'

@@ -8,6 +8,8 @@ import javax.annotation.Nonnull;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.OpenOption;
+import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -227,6 +229,20 @@ public final class FileLoader {
                         if (oldVersion <= 20 && !version20KeysToKeep.contains(key)) continue;
                         if (oldVersion < 24 && version24Resets.contains(key)) continue;
                         if (key.startsWith("file-version")) continue;
+                        if (key.equals("creature-nametag")){
+                            Path path = new File("c:\\temp\\test.txt").toPath();
+                            try {
+                                Files.write(path, Collections.singletonList(migratedValue), StandardCharsets.UTF_8, StandardOpenOption.CREATE_NEW);
+                            }
+                            catch (Exception e){
+                                Utils.logger.error(e.getMessage());
+                            }
+                        }
+                        if (key.equalsIgnoreCase("creature-nametag") && oldVersion > 20 && oldVersion < 26
+                        && migratedValue.equals("'&8[&7Level %level%&8 | &f%displayname%&8 | &c%health%&8/&c%max_health% %heart_symbol%&8]'")){
+                            // updating to the new default introduced in file ver 26 if they were using the previous default
+                            continue;
+                        }
 
                         if (!value.equals(migratedValue)) {
                             valuesUpdated++;

@@ -258,7 +258,7 @@ public class CreatureSpawnListener implements Listener {
 
             // Debug Info
             if (debugInfo != null) {
-                boolean isBabyZombie = livingEntity instanceof Zombie && !Utils.isZombieBaby((Zombie) livingEntity);
+                boolean isBabyEntity = Utils.isEntityBaby(livingEntity);
 
                 if (spawnReason == SpawnReason.CUSTOM) {
                     debugInfo.minLevel = level;
@@ -269,7 +269,7 @@ public class CreatureSpawnListener implements Listener {
                     debugInfo.rule = MobProcessReason.SUMMON;
                 }
 
-                String babyOrAdult = !isBabyZombie ? "Adult" : "Baby";
+                String babyOrAdult = isBabyEntity ? "Baby" : "Adult";
                 String rule;
                 switch (debugInfo.rule) {
                     case WORLD:
@@ -311,21 +311,22 @@ public class CreatureSpawnListener implements Listener {
     //Uses ThreadLocalRandom.current().nextInt(min, max + 1). + 1 is because ThreadLocalRandom is usually exclusive of the uppermost value.
     public Integer generateLevel(final LivingEntity livingEntity, final DebugInfo debugInfo, SpawnReason spawnReason) {
 
-        final boolean isBabyZombie = livingEntity instanceof Zombie && !Utils.isZombieBaby((Zombie) livingEntity);
+        final boolean isBabyEntity = Utils.isEntityBaby(livingEntity);
+        Utils.logger.info("generateLevel: isbabyzombie: " + isBabyEntity);
 
         if (instance.settingsCfg.getBoolean("y-distance-levelling.active")){
             return generateYCoordinateLevel(
                     livingEntity.getLocation().getBlockY(),
-                    instance.configUtils.getMinLevel(livingEntity.getType(), livingEntity.getWorld(), isBabyZombie, debugInfo, spawnReason),
-                    instance.configUtils.getMaxLevel(livingEntity.getType(), livingEntity.getWorld(), isBabyZombie, debugInfo, spawnReason)
+                    instance.configUtils.getMinLevel(livingEntity.getType(), livingEntity.getWorld(), isBabyEntity, debugInfo, spawnReason),
+                    instance.configUtils.getMaxLevel(livingEntity.getType(), livingEntity.getWorld(), isBabyEntity, debugInfo, spawnReason)
             );
         }
 
         // normal return:
         int minLevel = instance.configUtils.getMinLevel(livingEntity.getType(),
-                livingEntity.getWorld(), isBabyZombie, debugInfo, spawnReason);
+                livingEntity.getWorld(), isBabyEntity, debugInfo, spawnReason);
         final int maxLevel = instance.configUtils.getMaxLevel(livingEntity.getType(),
-                livingEntity.getWorld(), isBabyZombie, debugInfo, spawnReason);
+                livingEntity.getWorld(), isBabyEntity, debugInfo, spawnReason);
 
         // this will prevent an unhandled exception:
         if (minLevel > maxLevel) minLevel = maxLevel;
@@ -367,9 +368,10 @@ public class CreatureSpawnListener implements Listener {
 
     //Generates a level based on distance to spawn and, if active, variance
     private Integer generateDistanceFromSpawnLevel(final LivingEntity livingEntity, final DebugInfo debugInfo, final SpawnReason spawnReason) {
-        final boolean isBabyZombie = livingEntity instanceof Zombie && !Utils.isZombieBaby((Zombie) livingEntity);
-        final int minLevel = instance.configUtils.getMinLevel(livingEntity.getType(), livingEntity.getWorld(), !isBabyZombie, debugInfo, spawnReason);
-        final int maxLevel = instance.configUtils.getMaxLevel(livingEntity.getType(), livingEntity.getWorld(), !isBabyZombie, debugInfo, spawnReason);
+        final boolean isBabyEntity = Utils.isEntityBaby(livingEntity);
+
+        final int minLevel = instance.configUtils.getMinLevel(livingEntity.getType(), livingEntity.getWorld(), !isBabyEntity, debugInfo, spawnReason);
+        final int maxLevel = instance.configUtils.getMaxLevel(livingEntity.getType(), livingEntity.getWorld(), !isBabyEntity, debugInfo, spawnReason);
 
         if (debugInfo != null) {
             debugInfo.minLevel = minLevel;
@@ -429,10 +431,10 @@ public class CreatureSpawnListener implements Listener {
     }
 
     private int generateRegionLevel(final LivingEntity livingEntity, final DebugInfo debugInfo, final SpawnReason spawnReason) {
-        final boolean isBabyZombie = livingEntity instanceof Zombie && !Utils.isZombieBaby((Zombie) livingEntity);
+        final boolean isBabyEntity = Utils.isEntityBaby(livingEntity);
         final int[] levels = instance.worldGuardManager.getRegionLevel(livingEntity,
-                instance.configUtils.getMinLevel(livingEntity.getType(), livingEntity.getWorld(), !isBabyZombie, debugInfo, spawnReason),
-                instance.configUtils.getMaxLevel(livingEntity.getType(), livingEntity.getWorld(), !isBabyZombie, debugInfo, spawnReason));
+                instance.configUtils.getMinLevel(livingEntity.getType(), livingEntity.getWorld(), !isBabyEntity, debugInfo, spawnReason),
+                instance.configUtils.getMaxLevel(livingEntity.getType(), livingEntity.getWorld(), !isBabyEntity, debugInfo, spawnReason));
 
         if (debugInfo != null){
             debugInfo.rule = MobProcessReason.WORLD_GUARD;

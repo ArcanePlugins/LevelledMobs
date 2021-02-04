@@ -116,14 +116,24 @@ public final class Utils {
         return newList;
     }
 
-    public static boolean isZombieBaby(final Zombie zombie) {
-        try {
-            zombie.isAdult();
-            return !zombie.isAdult();
-        } catch (NoSuchMethodError err) {
-            //noinspection deprecation
-            return zombie.isBaby();
+    public static boolean isEntityBaby(final LivingEntity livingEntity) {
+
+        if (livingEntity instanceof Zombie) {
+            // for backwards compatibility
+            Zombie zombie = (Zombie) livingEntity;
+            try {
+                zombie.isAdult();
+                return !zombie.isAdult();
+            } catch (NoSuchMethodError err) {
+                //noinspection deprecation
+                return zombie.isBaby();
+            }
         }
+        else if (livingEntity instanceof Ageable){
+            return !(((Ageable) livingEntity).isAdult());
+        }
+
+        return false;
     }
 
     /**
