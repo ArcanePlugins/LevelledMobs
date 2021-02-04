@@ -312,7 +312,6 @@ public class CreatureSpawnListener implements Listener {
     public Integer generateLevel(final LivingEntity livingEntity, final DebugInfo debugInfo, SpawnReason spawnReason) {
 
         final boolean isBabyEntity = Utils.isEntityBaby(livingEntity);
-        Utils.logger.info("generateLevel: isbabyzombie: " + isBabyEntity);
 
         if (instance.settingsCfg.getBoolean("y-distance-levelling.active")){
             return generateYCoordinateLevel(
