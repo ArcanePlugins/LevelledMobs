@@ -41,7 +41,12 @@ public class MobDataManager {
 
     public void setAdditionsForLevel(final LivingEntity livingEntity, final Attribute attribute, final Addition addition, final int currentLevel) {
         final double defaultValue = (double) getAttributeDefaultValue(livingEntity.getType(), attribute);
-        Objects.requireNonNull(livingEntity.getAttribute(attribute)).setBaseValue(defaultValue + getAdditionsForLevel(livingEntity, addition, currentLevel));
+        double tempValue = defaultValue + getAdditionsForLevel(livingEntity, addition, currentLevel);
+        if (attribute.equals(Attribute.GENERIC_MAX_HEALTH) && tempValue > 2048.0){
+            // max health has hard limit of 2048
+            tempValue = 2048.0;
+        }
+        Objects.requireNonNull(livingEntity.getAttribute(attribute)).setBaseValue(tempValue);
     }
 
     public final double getAdditionsForLevel(final LivingEntity livingEntity, final Addition addition, final int currentLevel) {
