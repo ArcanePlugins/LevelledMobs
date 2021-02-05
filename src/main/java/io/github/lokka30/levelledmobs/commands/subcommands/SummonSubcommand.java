@@ -307,7 +307,7 @@ public class SummonSubcommand implements Subcommand {
 
             int minLevel = instance.configUtils.getMinLevel(entityType, location.getWorld(), true, null, CreatureSpawnEvent.SpawnReason.CUSTOM);
 
-            if (level < minLevel) {
+            if (level < minLevel && !sender.hasPermission("levelledmobs.command.summon.bypass-level-limit")) {
                 level = minLevel;
 
                 List<String> messages = instance.messagesCfg.getStringList("command.levelledmobs.summon.level-limited.min");
@@ -318,7 +318,7 @@ public class SummonSubcommand implements Subcommand {
             }
 
             int maxLevel = instance.configUtils.getMaxLevel(entityType, location.getWorld(), true, null, CreatureSpawnEvent.SpawnReason.CUSTOM);
-            if (level > maxLevel) {
+            if (level > maxLevel && !sender.hasPermission("levelledmobs.command.summon.bypass-level-limit")) {
                 level = maxLevel;
 
                 List<String> messages = instance.messagesCfg.getStringList("command.levelledmobs.summon.level-limited.max");

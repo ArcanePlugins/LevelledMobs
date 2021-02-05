@@ -398,7 +398,7 @@ public class LevelledMobs extends JavaPlugin {
 
         if (item.noMultiplier) msg += ", nomultp";
         if (item.noSpawner) msg += ", nospawner";
-        if (!item.lore.isEmpty()) msg += ", hasLore";
+        if (item.lore != null && !item.lore.isEmpty()) msg += ", hasLore";
         if (item.customName != null && !"".equals(item.customName)) msg += ", hasName";
 
         final StringBuilder sb = new StringBuilder();
