@@ -353,9 +353,8 @@ public class LevelManager {
         } else {
             nametag = instance.settingsCfg.getString("creature-nametag");
         }
-        if (nametag.equalsIgnoreCase("disabled")) return livingEntity.getCustomName();
 
-        if (nametag == null || nametag.isEmpty())
+        if (nametag == null || nametag.isEmpty() || nametag.equalsIgnoreCase("disabled"))
             return livingEntity.getCustomName(); // CustomName can be null, that is meant to be the case.
 
         int minLevel = instance.settingsCfg.getInt("fine-tuning.min-level", 1);
