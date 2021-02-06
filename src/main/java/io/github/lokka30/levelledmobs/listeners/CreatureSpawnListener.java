@@ -4,11 +4,11 @@ import io.github.lokka30.levelledmobs.LevelManager;
 import io.github.lokka30.levelledmobs.LevelNumbersWithBias;
 import io.github.lokka30.levelledmobs.LevelledMobs;
 import io.github.lokka30.levelledmobs.utils.*;
-import me.lokka30.microlib.MicroUtils;
-import org.bukkit.ChatColor;
 import org.bukkit.attribute.Attribute;
-import org.bukkit.attribute.AttributeInstance;
-import org.bukkit.entity.*;
+import org.bukkit.entity.Creeper;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -69,34 +69,10 @@ public class CreatureSpawnListener implements Listener {
         
         if (killer == null) return;
 
-        final Object levelTemp = killer.getPersistentDataContainer().get(instance.levelManager.levelKey, PersistentDataType.INTEGER);
-        if (levelTemp == null) return;
+        if (!killer.getPersistentDataContainer().has(instance.levelManager.isLevelledKey, PersistentDataType.STRING))
+            return;
 
-        final int level = (int)levelTemp;
-        final String entityName = instance.configUtils.getEntityName(killer.getType());
-        final String displayName = killer.getCustomName() == null ? entityName : killer.getCustomName();
-        final AttributeInstance maxHealth = killer.getAttribute(Attribute.GENERIC_MAX_HEALTH);
-        final String health = maxHealth == null ? "?" : Utils.round(maxHealth.getBaseValue()) + "";
-        final String healthRounded = maxHealth == null ? "?" : (int)Utils.round(maxHealth.getBaseValue()) + "";
-        int minLevel = instance.settingsCfg.getInt("fine-tuning.min-level", 1);
-        int maxLevel = instance.settingsCfg.getInt("fine-tuning.max-level", 10);
-        double levelPercent = (double) level / (double)(maxLevel - minLevel);
-        ChatColor tier = ChatColor.GREEN;
-        if (levelPercent >= 0.66666666) tier = ChatColor.RED;
-        else if (levelPercent >= 0.33333333) tier = ChatColor.GOLD;
-
-        nametag = nametag.replace("%level%", level + "");
-        nametag = nametag.replace("%displayname%", displayName);
-        nametag = nametag.replace("%typename%", entityName);
-        nametag = nametag.replace("%health%", Utils.round(killer.getHealth()) + "");
-        nametag = nametag.replace("%health_rounded%", (int)Utils.round(killer.getHealth()) + "");
-        nametag = nametag.replace("%max_health%", health);
-        nametag = nametag.replace("%max_health_rounded%", healthRounded);
-        nametag = nametag.replace("%heart_symbol%", "❤");
-        nametag = nametag.replace("%tiered%", tier.toString());
-        nametag = MicroUtils.colorize(nametag);
-
-        final String newMessage = Utils.replaceEx(event.getDeathMessage(), killer.getName(), nametag);
+        final String newMessage = Utils.replaceEx(event.getDeathMessage(), killer.getName(), instance.levelManager.getNametag(killer));
         event.setDeathMessage(newMessage);
     }
 
