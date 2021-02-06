@@ -351,15 +351,13 @@ public class SummonSubcommand implements Subcommand {
                 instance.levelManager.creatureSpawnListener.processMobSpawn((LivingEntity) entity, CreatureSpawnEvent.SpawnReason.CUSTOM, level, MobProcessReason.SUMMON);
             }
 
-            String entityName = instance.configUtils.getEntityName(entityType);
-
             switch (summonType) {
                 case HERE:
                     List<String> hereSuccessmessages = instance.messagesCfg.getStringList("command.levelledmobs.summon.here.success");
                     hereSuccessmessages = Utils.replaceAllInList(hereSuccessmessages, "%prefix%", instance.configUtils.getPrefix());
                     hereSuccessmessages = Utils.replaceAllInList(hereSuccessmessages, "%amount%", amount + "");
                     hereSuccessmessages = Utils.replaceAllInList(hereSuccessmessages, "%level%", level + "");
-                    hereSuccessmessages = Utils.replaceAllInList(hereSuccessmessages, "%entity%", entityName);
+                    hereSuccessmessages = Utils.replaceAllInList(hereSuccessmessages, "%entity%", entityType.toString());
                     hereSuccessmessages = Utils.colorizeAllInList(hereSuccessmessages);
                     hereSuccessmessages.forEach(sender::sendMessage);
                     break;
@@ -369,7 +367,7 @@ public class SummonSubcommand implements Subcommand {
                     atLocationSuccessMessages = Utils.replaceAllInList(atLocationSuccessMessages, "%prefix%", instance.configUtils.getPrefix());
                     atLocationSuccessMessages = Utils.replaceAllInList(atLocationSuccessMessages, "%amount%", amount + "");
                     atLocationSuccessMessages = Utils.replaceAllInList(atLocationSuccessMessages, "%level%", level + "");
-                    atLocationSuccessMessages = Utils.replaceAllInList(atLocationSuccessMessages, "%entity%", entityName);
+                    atLocationSuccessMessages = Utils.replaceAllInList(atLocationSuccessMessages, "%entity%", entityType.toString());
                     atLocationSuccessMessages = Utils.replaceAllInList(atLocationSuccessMessages, "%x%", location.getBlockX() + "");
                     atLocationSuccessMessages = Utils.replaceAllInList(atLocationSuccessMessages, "%y%", location.getBlockY() + "");
                     atLocationSuccessMessages = Utils.replaceAllInList(atLocationSuccessMessages, "%z%", location.getBlockZ() + "");
@@ -383,7 +381,7 @@ public class SummonSubcommand implements Subcommand {
                     atPlayerSuccessMessages = Utils.replaceAllInList(atPlayerSuccessMessages, "%prefix%", instance.configUtils.getPrefix());
                     atPlayerSuccessMessages = Utils.replaceAllInList(atPlayerSuccessMessages, "%amount%", amount + "");
                     atPlayerSuccessMessages = Utils.replaceAllInList(atPlayerSuccessMessages, "%level%", level + "");
-                    atPlayerSuccessMessages = Utils.replaceAllInList(atPlayerSuccessMessages, "%entity%", entityName);
+                    atPlayerSuccessMessages = Utils.replaceAllInList(atPlayerSuccessMessages, "%entity%", entityType.toString());
                     atPlayerSuccessMessages = Utils.replaceAllInList(atPlayerSuccessMessages, "%targetUsername%", target.getName());
                     atPlayerSuccessMessages = Utils.replaceAllInList(atPlayerSuccessMessages, "%targetDisplayname%", target.getDisplayName());
                     atPlayerSuccessMessages = Utils.colorizeAllInList(atPlayerSuccessMessages);
@@ -395,7 +393,7 @@ public class SummonSubcommand implements Subcommand {
         } else {
             List<String> messages = instance.messagesCfg.getStringList("command.levelledmobs.summon.not-levellable");
             messages = Utils.replaceAllInList(messages, "%prefix%", instance.configUtils.getPrefix());
-            messages = Utils.replaceAllInList(messages, "%entity%", instance.configUtils.getEntityName(entityType));
+            messages = Utils.replaceAllInList(messages, "%entity%", entityType.toString());
             messages = Utils.colorizeAllInList(messages);
             messages.forEach(sender::sendMessage);
         }
