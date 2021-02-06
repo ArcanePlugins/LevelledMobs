@@ -10,6 +10,7 @@ import io.github.lokka30.levelledmobs.utils.Addition;
 import io.github.lokka30.levelledmobs.utils.ModalList;
 import io.github.lokka30.levelledmobs.utils.Utils;
 import me.lokka30.microlib.MicroUtils;
+import org.apache.commons.lang.WordUtils;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
@@ -327,9 +328,6 @@ public class LevelManager {
 
     // When the persistent data container levelled key has not been set on the entity yet (i.e. for use in CreatureSpawnListener)
     public String getNametag(final LivingEntity livingEntity, final int level) {
-        final String entityName = instance.configUtils.getEntityName(livingEntity.getType());
-        final String displayName = livingEntity.getCustomName() == null ? entityName : livingEntity.getCustomName();
-
         // If show label for default levelled mobs is disabled and the mob is the min level, then don't modify their tag.
         if (!instance.settingsCfg.getBoolean("show-label-for-default-levelled-mobs") && level == instance.settingsCfg.getInt("fine-tuning.min-level")) {
             return livingEntity.getCustomName(); // CustomName can be null, that is meant to be the case.
@@ -339,24 +337,24 @@ public class LevelManager {
         final String health = maxHealth == null ? "?" : Utils.round(maxHealth.getBaseValue()) + "";
         final String healthRounded = maxHealth == null ? "?" : (int) Utils.round(maxHealth.getBaseValue()) + "";
 
-        String nametag;
+        String nametag = instance.settingsCfg.getString("creature-nametag");
+        String entityName = WordUtils.capitalizeFully(livingEntity.getType().toString().toLowerCase().replaceAll("_", " "));
 
         // Baby zombies can have specific nametags in entity-name-override
         if (livingEntity instanceof Zombie && !((Zombie) livingEntity).isAdult() && instance.settingsCfg.contains("entity-name-override.BABY_ZOMBIE")) {
-            nametag = instance.settingsCfg.getString("entity-name-override.BABY_ZOMBIE");
-
-            // Check if the nametag is overriden in entity-name-override
+            entityName = instance.settingsCfg.getString("entity-name-override.BABY_ZOMBIE");
         } else if (instance.settingsCfg.contains("entity-name-override." + livingEntity.getType())) {
-            nametag = instance.settingsCfg.getString("entity-name-override." + livingEntity.getType());
-
-            // Else, use the default nametag supplied by the creature-nametag setting
-        } else {
-            nametag = instance.settingsCfg.getString("creature-nametag");
+            entityName = instance.settingsCfg.getString("entity-name-override." + livingEntity.getType());
         }
+        assert entityName != null;
 
+        final String displayName = livingEntity.getCustomName() == null ? MicroUtils.colorize(entityName) : livingEntity.getCustomName();
+
+        // ignore if 'disabled'
         if (nametag == null || nametag.isEmpty() || nametag.equalsIgnoreCase("disabled"))
             return livingEntity.getCustomName(); // CustomName can be null, that is meant to be the case.
 
+        // %tiered% placeholder
         int minLevel = instance.settingsCfg.getInt("fine-tuning.min-level", 1);
         int maxLevel = instance.settingsCfg.getInt("fine-tuning.max-level", 10);
         double levelPercent = (double) level / (double) (maxLevel - minLevel);
@@ -364,6 +362,7 @@ public class LevelManager {
         if (levelPercent >= 0.66666666) tier = ChatColor.RED;
         else if (levelPercent >= 0.33333333) tier = ChatColor.GOLD;
 
+        // replace them placeholders ;)
         nametag = nametag.replace("%level%", level + "");
         nametag = nametag.replace("%typename%", entityName);
         nametag = nametag.replace("%health%", Utils.round(livingEntity.getHealth()) + "");
