@@ -121,7 +121,7 @@ command:
           - '%prefix% Invalid world ''&b%world%&7''.'
 
         success:
-          - '%prefix% Killed &b%killed%&7 levelled mobs in &b%worlds%&7 world(s).'
+          - '%prefix% Killed &b%killed%&7 levelled mobs in &b%worlds%&7 world(s) &8(&b%skipped%&7 mobs were skipped&8)&7.'
 
         usage:
           - '%prefix% Usage: &b/%label% kill all [world/*]'
@@ -140,7 +140,7 @@ command:
           - '%prefix% Specified radius has been adjusted to the maximum radius &8(&b%maxRadius%&8)&7.'
 
         success:
-          - '%prefix% Killed &b%killed%&7 levelled mobs within a radius of &b%radius%&7 blocks.'
+          - '%prefix% Killed &b%killed%&7 levelled mobs within a radius of &b%radius%&7 block(s) &8(&b%skipped%&7 mobs were skipped&8)&7.'
 
         usage:
           - '%prefix% Usage: &b/%label% kill near <radius>'

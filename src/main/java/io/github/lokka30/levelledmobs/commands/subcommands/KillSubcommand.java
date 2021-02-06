@@ -6,9 +6,7 @@ import io.github.lokka30.levelledmobs.utils.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.*;
 import org.bukkit.persistence.PersistentDataType;
 
 import java.util.ArrayList;
@@ -115,12 +113,17 @@ public class KillSubcommand implements Subcommand {
                             }
 
                             int killed = 0;
+                            int skipped = 0;
                             for (Entity entity : player.getNearbyEntities(radius, radius, radius)) {
                                 if (entity instanceof LivingEntity) {
                                     final LivingEntity livingEntity = (LivingEntity) entity;
                                     if (livingEntity.getPersistentDataContainer().has(instance.levelManager.isLevelledKey, PersistentDataType.STRING)) {
-                                        livingEntity.setHealth(0.0);
-                                        killed++;
+                                        if (skipKillingEntity(instance, livingEntity)) {
+                                            skipped++;
+                                        } else {
+                                            livingEntity.setHealth(0.0);
+                                            killed++;
+                                        }
                                     }
                                 }
                             }
@@ -128,6 +131,7 @@ public class KillSubcommand implements Subcommand {
                             List<String> messages = instance.messagesCfg.getStringList("command.levelledmobs.kill.near.success");
                             messages = Utils.replaceAllInList(messages, "%prefix%", instance.configUtils.getPrefix());
                             messages = Utils.replaceAllInList(messages, "%killed%", killed + "");
+                            messages = Utils.replaceAllInList(messages, "%skipped%", skipped + "");
                             messages = Utils.replaceAllInList(messages, "%radius%", radius + "");
                             messages = Utils.colorizeAllInList(messages);
                             messages.forEach(sender::sendMessage);
@@ -197,14 +201,19 @@ public class KillSubcommand implements Subcommand {
 
     private void parseKillAll(CommandSender sender, List<World> worlds, LevelledMobs instance) {
         int killed = 0;
+        int skipped = 0;
 
         for (World world : worlds) {
             for (Entity entity : world.getEntities()) {
                 if (entity instanceof LivingEntity) {
                     LivingEntity livingEntity = (LivingEntity) entity;
                     if (livingEntity.getPersistentDataContainer().has(instance.levelManager.isLevelledKey, PersistentDataType.STRING)) {
-                        livingEntity.setHealth(0.0);
-                        killed++;
+                        if (skipKillingEntity(instance, livingEntity)) {
+                            skipped++;
+                        } else {
+                            livingEntity.setHealth(0.0);
+                            killed++;
+                        }
                     }
                 }
             }
@@ -213,8 +222,26 @@ public class KillSubcommand implements Subcommand {
         List<String> messages = instance.messagesCfg.getStringList("command.levelledmobs.kill.all.success");
         messages = Utils.replaceAllInList(messages, "%prefix%", instance.configUtils.getPrefix());
         messages = Utils.replaceAllInList(messages, "%killed%", killed + "");
+        messages = Utils.replaceAllInList(messages, "%skipped%", skipped + "");
         messages = Utils.replaceAllInList(messages, "%worlds%", worlds.size() + "");
         messages = Utils.colorizeAllInList(messages);
         messages.forEach(sender::sendMessage);
+    }
+
+    private boolean skipKillingEntity(LevelledMobs instance, LivingEntity livingEntity) {
+
+        // Nametagged
+        if (livingEntity.getCustomName() != null && instance.settingsCfg.getBoolean("kill-skip-conditions.nametagged"))
+            return true;
+
+        // Tamed
+        if (livingEntity instanceof Tameable && ((Tameable) livingEntity).isTamed() && instance.settingsCfg.getBoolean("kill-skip-conditions.tamed"))
+            return true;
+
+        // Leashed
+        if (livingEntity.isLeashed() && instance.settingsCfg.getBoolean("kill-skip-conditions.leashed")) return true;
+
+        // Converting zombie villager
+        return livingEntity.getType() == EntityType.ZOMBIE_VILLAGER && ((ZombieVillager) livingEntity).isConverting() && instance.settingsCfg.getBoolean("kill-skip-conditions.convertingZombieVillager");
     }
 }

@@ -28,6 +28,7 @@
 #
 # By default, this is '&8[%tiered%Level %level%&8 | &f%displayname%&8 | &c%health%&8/&c%max_health% %heart_symbol%&8]'.
 # Screenshot of the default nametag's appearance: https://prnt.sc/xcckzw
+# Set to 'disabled' to disable the levelled nametags.
 creature-nametag: '&8[%tiered%Level %level%&8 | &f%displayname%&8 | &c%health%&8/&c%max_health% %heart_symbol%&8]'
 
 # When a player dies this will be the creature name used in the death message.
@@ -242,12 +243,18 @@ world-level-override:
     example_world_456: 3
 
 
-# If you want to change the name of mobs in the nametag then you can do that here
-# Comes with color code support too. :)
+# If you want to change the name of mobs in the nametag then you can do that here.
+# Comes with color code support too.
+# Set their name to 'disabled' to disable their individual nametag.
+# Baby zombies can use 'BABY_ZOMBIE' - if not supplied then they will use 'ZOMBIE'
 entity-name-override:
   WITHER: 'Wither'
   CREEPER: 'Creeper'
-# ENDER_DRAGON: '&5&lEnder Dragon'
+  BABY_ZOMBIE: 'Baby Zombie'
+# Here are examples, un-comment them to make them take effect.
+# ENDER_DRAGON: '&5&lEnder Dragon' # Color codes on the ender dragon's name.
+# PHANTOM: 'disabled' # Disables nametags for phantoms.
+
 
 # If set to true then the file customdrops.yml will be utilized to specify which items mobs will drop
 use-custom-item-drops-for-mobs: false
@@ -264,6 +271,23 @@ show-label-for-default-levelled-mobs: true
 # Warning: using a high value here will basically turn creepers into atomic bombs! :)
 # By default, this is 5.
 creeper-max-damage-radius: 5
+
+
+# When the '/lm kill' command attempts to kill a mob, if any of these conditions
+# are 'true' below and met by the mob, then they will be 'skipped'.
+kill-skip-conditions:
+
+  # If the mob is nametagged, then don't kill them with the kill command
+  nametagged: true
+
+  # If the mob is tamed, then don't kill them with the kill command
+  tamed: true
+
+  # If the mob is leashed, ...
+  leashed: true
+
+  # If the mob is a zombie villager and is in the process of converting to a normal villager, ...
+  convertingZombieVillager: true
 
 
 # Should LevelledMobs check for updates off of the Spigot page?
@@ -397,6 +421,11 @@ fine-tuning:
 # When using the summon command how far away from the player will the mob(s) spawn
 # Use a positive integer. By default, this is 5.
 summon-command-spawn-distance-from-player: 5
+
+# The nametag auto update task will asynchronously execute every ? seconds.
+# Don't change this if you don't know what you're doing.
+# By default, this is 6.
+nametag-auto-update-task-period: 6
 
 # These settings are meant for developer use to diagnose bugs in the plugin.
 # Enabling them will cause a lot of spam, so you should only enable the

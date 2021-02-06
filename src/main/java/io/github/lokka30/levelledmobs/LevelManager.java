@@ -332,34 +332,51 @@ public class LevelManager {
 
         // If show label for default levelled mobs is disabled and the mob is the min level, then don't modify their tag.
         if (!instance.settingsCfg.getBoolean("show-label-for-default-levelled-mobs") && level == instance.settingsCfg.getInt("fine-tuning.min-level")) {
-            return livingEntity.getCustomName(); // Can be null, that is meant to be the case.
+            return livingEntity.getCustomName(); // CustomName can be null, that is meant to be the case.
         }
 
         final AttributeInstance maxHealth = livingEntity.getAttribute(Attribute.GENERIC_MAX_HEALTH);
         final String health = maxHealth == null ? "?" : Utils.round(maxHealth.getBaseValue()) + "";
-        final String healthRounded = maxHealth == null ? "?" : (int)Utils.round(maxHealth.getBaseValue()) + "";
+        final String healthRounded = maxHealth == null ? "?" : (int) Utils.round(maxHealth.getBaseValue()) + "";
 
-        String nametag = instance.settingsCfg.getString("creature-nametag");
+        String nametag;
 
-        if (nametag == null || nametag.isEmpty()) return null;
+        // Baby zombies can have specific nametags in entity-name-override
+        if (livingEntity instanceof Zombie && !((Zombie) livingEntity).isAdult() && instance.settingsCfg.contains("entity-name-override.BABY_ZOMBIE")) {
+            nametag = instance.settingsCfg.getString("entity-name-override.BABY_ZOMBIE");
+
+            // Check if the nametag is overriden in entity-name-override
+        } else if (instance.settingsCfg.contains("entity-name-override." + livingEntity.getType())) {
+            nametag = instance.settingsCfg.getString("entity-name-override." + livingEntity.getType());
+
+            // Else, use the default nametag supplied by the creature-nametag setting
+        } else {
+            nametag = instance.settingsCfg.getString("creature-nametag");
+        }
+        if (nametag.equalsIgnoreCase("disabled")) return livingEntity.getCustomName();
+
+        if (nametag == null || nametag.isEmpty())
+            return livingEntity.getCustomName(); // CustomName can be null, that is meant to be the case.
 
         int minLevel = instance.settingsCfg.getInt("fine-tuning.min-level", 1);
         int maxLevel = instance.settingsCfg.getInt("fine-tuning.max-level", 10);
-        double levelPercent = (double) level / (double)(maxLevel - minLevel);
+        double levelPercent = (double) level / (double) (maxLevel - minLevel);
         ChatColor tier = ChatColor.GREEN;
         if (levelPercent >= 0.66666666) tier = ChatColor.RED;
         else if (levelPercent >= 0.33333333) tier = ChatColor.GOLD;
 
         nametag = nametag.replace("%level%", level + "");
-        nametag = nametag.replace("%displayname%", displayName);
         nametag = nametag.replace("%typename%", entityName);
         nametag = nametag.replace("%health%", Utils.round(livingEntity.getHealth()) + "");
-        nametag = nametag.replace("%health_rounded%", (int)Utils.round(livingEntity.getHealth()) + "");
+        nametag = nametag.replace("%health_rounded%", (int) Utils.round(livingEntity.getHealth()) + "");
         nametag = nametag.replace("%max_health%", health);
         nametag = nametag.replace("%max_health_rounded%", healthRounded);
         nametag = nametag.replace("%heart_symbol%", "❤");
         nametag = nametag.replace("%tiered%", tier.toString());
         nametag = MicroUtils.colorize(nametag);
+
+        // This is after colorize so that color codes in nametags dont get translated
+        nametag = nametag.replace("%displayname%", displayName);
 
         return nametag;
     }
@@ -375,6 +392,8 @@ public class LevelManager {
      */
     public void updateNametag(final LivingEntity entity, final String nametag, final List<Player> players) {
         if (!instance.hasProtocolLibInstalled) return;
+
+        if (!entity.isValid()) return;
 
         for (Player player : players) {
             final WrappedDataWatcher dataWatcher = WrappedDataWatcher.getEntityWatcher(entity).deepClone();
@@ -403,7 +422,7 @@ public class LevelManager {
         Utils.logger.info("&fTasks: &7Starting async nametag auto update task...");
 
         final double maxDistance = Math.pow(128, 2); // square the distance we are using Location#distanceSquared. This is because it is faster than Location#distance since it does not need to sqrt which is taxing on the CPU.
-        final long period = 6; // run every ? seconds.
+        final long period = instance.settingsCfg.getInt("nametag-auto-update-task-period"); // run every ? seconds.
 
         nametagAutoUpdateTask = new BukkitRunnable() {
             @Override
