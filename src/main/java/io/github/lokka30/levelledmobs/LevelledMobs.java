@@ -21,6 +21,7 @@ import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitTask;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -47,14 +48,16 @@ public class LevelledMobs extends JavaPlugin {
 
     public PluginManager pluginManager;
 
+    public ArrayList<BukkitTask> asyncTasks = new ArrayList<>();
+
     public boolean hasWorldGuardInstalled;
     public boolean hasProtocolLibInstalled;
     public boolean hasMythicMobsInstalled;
     public WorldGuardManager worldGuardManager;
     public MythicMobsHelper mythicMobsHelper;
 
+    // need to move these
     public boolean debugEntityDamageWasEnabled = false;
-
     public TreeMap<String, Integer> entityTypesLevelOverride_Min;
     public TreeMap<String, Integer> entityTypesLevelOverride_Max;
     public TreeMap<String, Integer> worldLevelOverride_Min;
@@ -71,6 +74,7 @@ public class LevelledMobs extends JavaPlugin {
 
     public int incompatibilitiesAmount;
 
+    @Override
     public void onLoad() {
         Utils.logger.info("&f~ Initiating start-up procedure ~");
 
@@ -92,6 +96,7 @@ public class LevelledMobs extends JavaPlugin {
         loadTime = loadTimer.getTimer(); // combine the load time with enable time.
     }
 
+    @Override
     public void onEnable() {
         final QuickTimer enableTimer = new QuickTimer();
         enableTimer.start(); // Record how long it takes for the plugin to enable.
@@ -116,6 +121,7 @@ public class LevelledMobs extends JavaPlugin {
         Utils.logger.info("&f~ Start-up complete, took &b" + (enableTimer.getTimer() + loadTime) + "ms&f ~");
     }
 
+    @Override
     public void onDisable() {
         Utils.logger.info("&f~ Initiating shut-down procedure ~");
 
@@ -123,6 +129,7 @@ public class LevelledMobs extends JavaPlugin {
         disableTimer.start();
 
         levelManager.stopNametagAutoUpdateTask();
+        shutDownAsyncTasks();
 
         Utils.logger.info("&f~ Shut-down complete, took &b" + disableTimer.getTimer() + "ms&f ~");
     }
@@ -587,5 +594,10 @@ public class LevelledMobs extends JavaPlugin {
                 }
             });
         }
+    }
+
+    private void shutDownAsyncTasks() {
+        Utils.logger.info("&fTasks: &7Shutting down other async tasks...");
+        asyncTasks.forEach(BukkitTask::cancel);
     }
 }

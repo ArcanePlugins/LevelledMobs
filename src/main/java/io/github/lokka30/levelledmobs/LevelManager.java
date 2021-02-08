@@ -391,27 +391,32 @@ public class LevelManager {
     public void updateNametag(final LivingEntity entity, final String nametag, final List<Player> players) {
         if (!instance.hasProtocolLibInstalled) return;
 
-        if (!entity.isValid()) return;
+        instance.asyncTasks.add(new BukkitRunnable() {
+            @Override
+            public void run() {
+                for (Player player : players) {
+                    if (!entity.isValid()) return;
 
-        for (Player player : players) {
-            final WrappedDataWatcher dataWatcher = WrappedDataWatcher.getEntityWatcher(entity).deepClone();
-            final WrappedDataWatcher.Serializer chatSerializer = WrappedDataWatcher.Registry.getChatComponentSerializer(true);
-            final WrappedDataWatcher.WrappedDataWatcherObject watcherObject = new WrappedDataWatcher.WrappedDataWatcherObject(2, chatSerializer);
-            final Optional<Object> optional = Optional.of(WrappedChatComponent.fromChatMessage(nametag)[0].getHandle());
-            dataWatcher.setObject(watcherObject, optional);
-            dataWatcher.setObject(3, entity.isCustomNameVisible() || instance.settingsCfg.getBoolean("creature-nametag-always-visible"));
+                    final WrappedDataWatcher dataWatcher = WrappedDataWatcher.getEntityWatcher(entity).deepClone();
+                    final WrappedDataWatcher.Serializer chatSerializer = WrappedDataWatcher.Registry.getChatComponentSerializer(true);
+                    final WrappedDataWatcher.WrappedDataWatcherObject watcherObject = new WrappedDataWatcher.WrappedDataWatcherObject(2, chatSerializer);
+                    final Optional<Object> optional = Optional.of(WrappedChatComponent.fromChatMessage(nametag)[0].getHandle());
+                    dataWatcher.setObject(watcherObject, optional);
+                    dataWatcher.setObject(3, entity.isCustomNameVisible() || instance.settingsCfg.getBoolean("creature-nametag-always-visible"));
 
-            final PacketContainer packet = ProtocolLibrary.getProtocolManager().createPacket(PacketType.Play.Server.ENTITY_METADATA);
-            packet.getWatchableCollectionModifier().write(0, dataWatcher.getWatchableObjects());
-            packet.getIntegers().write(0, entity.getEntityId());
+                    final PacketContainer packet = ProtocolLibrary.getProtocolManager().createPacket(PacketType.Play.Server.ENTITY_METADATA);
+                    packet.getWatchableCollectionModifier().write(0, dataWatcher.getWatchableObjects());
+                    packet.getIntegers().write(0, entity.getEntityId());
 
-            try {
-                ProtocolLibrary.getProtocolManager().sendServerPacket(player, packet);
-            } catch (InvocationTargetException ex) {
-                Utils.logger.error("Unable to update nametag packet for player &b" + player.getName() + "&7! Stack trace:");
-                ex.printStackTrace();
+                    try {
+                        ProtocolLibrary.getProtocolManager().sendServerPacket(player, packet);
+                    } catch (InvocationTargetException ex) {
+                        Utils.logger.error("Unable to update nametag packet for player &b" + player.getName() + "&7! Stack trace:");
+                        ex.printStackTrace();
+                    }
+                }
             }
-        }
+        }.runTaskAsynchronously(instance));
     }
 
     private BukkitTask nametagAutoUpdateTask;
