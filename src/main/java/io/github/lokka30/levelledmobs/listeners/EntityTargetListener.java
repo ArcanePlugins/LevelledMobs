@@ -4,6 +4,7 @@ import io.github.lokka30.levelledmobs.LevelledMobs;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.persistence.PersistentDataType;
@@ -22,7 +23,7 @@ public class EntityTargetListener implements Listener {
      *
      * @param event EntityTargetEvent
      */
-    @EventHandler
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void onTarget(final EntityTargetEvent event) {
 
         // Must target a player and must be a living entity
