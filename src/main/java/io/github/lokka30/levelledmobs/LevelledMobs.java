@@ -27,6 +27,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.File;
 import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -178,6 +179,7 @@ public class LevelledMobs extends JavaPlugin {
         // load configurations
         settingsCfg = FileLoader.loadFile(this, "settings", FileLoader.SETTINGS_FILE_VERSION, true);
         messagesCfg = FileLoader.loadFile(this, "messages", FileLoader.MESSAGES_FILE_VERSION, true);
+        customDropsCfg = FileLoader.loadFile(this, "customdrops", FileLoader.CUSTOMDROPS_FILE_VERSION, true);
 
         this.entityTypesLevelOverride_Min = getMapFromConfigSection("entitytype-level-override.min-level");
         this.entityTypesLevelOverride_Max = getMapFromConfigSection("entitytype-level-override.max-level");
@@ -195,9 +197,6 @@ public class LevelledMobs extends JavaPlugin {
         saveResource("drops.yml", true);
         dropsCfg = YamlConfiguration.loadConfiguration(new File(getDataFolder(), "drops.yml"));
 
-        final File customDropsFile = new File(getDataFolder(), "customdrops.yml");
-        if (!customDropsFile.exists()) saveResource("customdrops.yml", false);
-        customDropsCfg = YamlConfiguration.loadConfiguration(customDropsFile);
         if (settingsCfg.getBoolean("use-custom-item-drops-for-mobs")) parseCustomDrops(customDropsCfg);
 
         // load configutils
@@ -213,6 +212,7 @@ public class LevelledMobs extends JavaPlugin {
             for (String mobTypeOrGroup : mobTypeOrGroups) {
                 mobTypeOrGroup = mobTypeOrGroup.trim();
                 if ("".equals(mobTypeOrGroup)) continue;
+                if (mobTypeOrGroup.startsWith("file-version")) continue;
 
                 CustomDropsUniversalGroups universalGroup = null;
                 final boolean isUniversalGroup = mobTypeOrGroup.toLowerCase().startsWith("all_");
@@ -310,15 +310,21 @@ public class LevelledMobs extends JavaPlugin {
                 item.minLevel = itemInfoConfiguration.getInt("minlevel", -1);
                 item.maxLevel = itemInfoConfiguration.getInt("maxlevel", -1);
                 item.groupId = itemInfoConfiguration.getInt("groupid", -1);
-                item.damage = itemInfoConfiguration.getInt("damage", 0);
+                item.setDamage(itemInfoConfiguration.getInt("damage", 0));
                 item.lore = itemInfoConfiguration.getStringList("lore");
                 item.noMultiplier = itemInfoConfiguration.getBoolean("nomultipler");
                 item.noSpawner = itemInfoConfiguration.getBoolean("nospawner");
                 item.customName = itemInfoConfiguration.getString("name");
+                item.isEquipped = itemInfoConfiguration.getBoolean("equipped");
 
-                String amountRange = itemInfoConfiguration.getString("amount");
-                if (amountRange != null && !item.setAmountRangeFromString(amountRange)){
-                    Utils.logger.warning(String.format("Invalid number range for %s, %s", mobTypeOrGroupName, amountRange));
+                String numberRange = itemInfoConfiguration.getString("amount");
+                if (numberRange != null && numberRange.contains("-") && !item.setAmountRangeFromString(numberRange)){
+                    Utils.logger.warning(String.format("Invalid number range for amount on %s, %s", mobTypeOrGroupName, numberRange));
+                }
+
+                numberRange = itemInfoConfiguration.getString("damage");
+                if (numberRange != null && numberRange.contains("-") && !item.setDamageRangeFromString(numberRange)){
+                    Utils.logger.warning(String.format("Invalid number range for damage on %s, %s", mobTypeOrGroupName, numberRange));
                 }
 
                 final Object enchantmentsSection = itemInfoConfiguration.get("enchantments");
@@ -342,10 +348,14 @@ public class LevelledMobs extends JavaPlugin {
 
                 // set item attributes, etc here:
 
-                if (item.damage != 0){
+                if (item.getDamage() != 0 || item.getHasDamageRange()){
                     ItemMeta meta = item.getItemStack().getItemMeta();
                     if (meta instanceof Damageable){
-                        ((Damageable) meta).setDamage(item.damage);
+                        int damageAmount = item.getDamage();
+                        if (item.getHasDamageRange())
+                            damageAmount = ThreadLocalRandom.current().nextInt(item.getDamageRangeMin(), item.getDamageRangeMax() + 1);
+
+                        ((Damageable) meta).setDamage(damageAmount);
                         item.getItemStack().setItemMeta(meta);
                     }
                 }
@@ -404,9 +414,11 @@ public class LevelledMobs extends JavaPlugin {
                 item.getMaterial(), item.getAmountAsString(), item.dropChance, item.minLevel, item.maxLevel);
 
         if (item.noMultiplier) msg += ", nomultp";
-        if (item.noSpawner) msg += ", nospawner";
+        if (item.noSpawner) msg += ", nospn";
         if (item.lore != null && !item.lore.isEmpty()) msg += ", hasLore";
         if (item.customName != null && !"".equals(item.customName)) msg += ", hasName";
+        if (item.getDamage() != 0 || item.getHasDamageRange())
+            msg += ", dmg: " + item.getDamageAsString();
 
         final StringBuilder sb = new StringBuilder();
         final ItemMeta meta = item.getItemStack().getItemMeta();

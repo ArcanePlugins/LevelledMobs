@@ -4,17 +4,18 @@ import io.github.lokka30.levelledmobs.LevelManager;
 import io.github.lokka30.levelledmobs.LevelNumbersWithBias;
 import io.github.lokka30.levelledmobs.LevelledMobs;
 import io.github.lokka30.levelledmobs.utils.*;
+import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
-import org.bukkit.entity.Creeper;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Projectile;
+import org.bukkit.enchantments.EnchantmentTarget;
+import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.*;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import org.bukkit.event.world.ChunkLoadEvent;
+import org.bukkit.inventory.EntityEquipment;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
 
 import java.util.*;
@@ -89,7 +90,8 @@ public class CreatureSpawnListener implements Listener {
         if (!forcedTypes.contains(event.getEntityType().toString())) return;
 
         final LivingEntity livingEntity = (LivingEntity) event.getEntity();
-        processMobSpawn(livingEntity, SpawnReason.DEFAULT, -1, MobProcessReason.NONE);
+        final int mobLevel = processMobSpawn(livingEntity, SpawnReason.DEFAULT, -1, MobProcessReason.NONE);
+        if (mobLevel >= 0 && instance.settingsCfg.getBoolean("use-custom-item-drops-for-mobs")) processMobEquipment(livingEntity, mobLevel);
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
@@ -98,7 +100,8 @@ public class CreatureSpawnListener implements Listener {
             if (!(entity instanceof LivingEntity)) continue;
 
             LivingEntity livingEntity = (LivingEntity) entity;
-            processMobSpawn(livingEntity, SpawnReason.DEFAULT, -1, MobProcessReason.NONE);
+            final int mobLevel = processMobSpawn(livingEntity, SpawnReason.DEFAULT, -1, MobProcessReason.NONE);
+            if (mobLevel >= 0 && instance.settingsCfg.getBoolean("use-custom-item-drops-for-mobs")) processMobEquipment(livingEntity, mobLevel);
         }
     }
 
@@ -112,22 +115,21 @@ public class CreatureSpawnListener implements Listener {
         // spawned using summon command.  It will get processed directly
         if (event.getSpawnReason() == SpawnReason.CUSTOM) return;
 
-        processMobSpawn(event.getEntity(), event.getSpawnReason(), -1, MobProcessReason.NONE);
+        final int mobLevel = processMobSpawn(event.getEntity(), event.getSpawnReason(), -1, MobProcessReason.NONE);
+        if (mobLevel >= 0 && instance.settingsCfg.getBoolean("use-custom-item-drops-for-mobs")) processMobEquipment(event.getEntity(), mobLevel);
     }
 
-
-
-    public void processMobSpawn(final LivingEntity livingEntity, final SpawnReason spawnReason, int level, final MobProcessReason processReason) {
+    public int processMobSpawn(final LivingEntity livingEntity, final SpawnReason spawnReason, int level, final MobProcessReason processReason) {
 
         //Check if the mob is already levelled
         if (livingEntity.getPersistentDataContainer().has(instance.levelManager.isLevelledKey, PersistentDataType.STRING))
-            return;
+            return -1;
         if (livingEntity.getPersistentDataContainer().has(instance.levelManager.levelKey, PersistentDataType.INTEGER))
-            return;
+            return -1;
 
         //Check if the mob was spawned by MythicMobs
         if (instance.hasMythicMobsInstalled && !instance.settingsCfg.getBoolean("allow-mythic-mobs") && instance.mythicMobsHelper.isMythicMob(livingEntity)){
-            return;
+            return -1;
         }
 
         //Check the 'worlds list' to see if the mob is allowed to be levelled in the world it spawned in
@@ -135,7 +137,7 @@ public class CreatureSpawnListener implements Listener {
             if (instance.settingsCfg.getBoolean("debug-show-mobs-not-levellable")) {
                 Utils.logger.info("&b" + livingEntity.getName() + "&7 spawned but is not levellable - not in allowed-worlds-list");
             }
-            return;
+            return -1;
         }
 
         boolean isSpawner = false;
@@ -151,7 +153,7 @@ public class CreatureSpawnListener implements Listener {
             if (instance.settingsCfg.getBoolean("debug-show-mobs-not-levellable")) {
                 Utils.logger.info("&b" + livingEntity.getName() + "&7 spawned but is not levellable - not in allowed-spawn-reasons-list");
             }
-            return;
+            return -1;
         }
 
         final DebugInfo debugInfo = instance.settingsCfg.getBoolean("debug-show-spawned-mobs") ?
@@ -281,27 +283,59 @@ public class CreatureSpawnListener implements Listener {
             }
         }
 
+        return level;
+    }
+
+    public void processMobEquipment(final LivingEntity livingEntity, final int level){
+        List<ItemStack> items = new ArrayList<>();
+        instance.levelManager.getCustomItemDrops(livingEntity, level, items, true, true);
+        if (items.isEmpty()) return;
+
+        EntityEquipment ee = livingEntity.getEquipment();
+        if (ee == null) return;
+
+        boolean hadMainItem = false;
+
+        for (ItemStack itemStack : items){
+            Material material = itemStack.getType();
+            if (EnchantmentTarget.ARMOR_FEET.includes(material))
+                ee.setBoots(itemStack, true);
+            else if (EnchantmentTarget.ARMOR_LEGS.includes(material))
+                ee.setLeggings(itemStack, true);
+            else if (EnchantmentTarget.ARMOR_TORSO.includes(material))
+                ee.setChestplate(itemStack, true);
+            else if (EnchantmentTarget.ARMOR_HEAD.includes(material))
+                ee.setHelmet(itemStack, true);
+            else {
+                if (!hadMainItem) {
+                    ee.setItemInMainHand(itemStack);
+                    hadMainItem = true;
+                }
+                else
+                    ee.setItemInOffHand(itemStack);
+            }
+        }
     }
 
     //Generates a level.
     //Uses ThreadLocalRandom.current().nextInt(min, max + 1). + 1 is because ThreadLocalRandom is usually exclusive of the uppermost value.
     public Integer generateLevel(final LivingEntity livingEntity, final DebugInfo debugInfo, SpawnReason spawnReason) {
 
-        final boolean isBabyEntity = Utils.isEntityBaby(livingEntity);
+        final boolean isAdultEntity = !Utils.isEntityBaby(livingEntity);
 
         if (instance.settingsCfg.getBoolean("y-distance-levelling.active")){
             return generateYCoordinateLevel(
                     livingEntity.getLocation().getBlockY(),
-                    instance.configUtils.getMinLevel(livingEntity.getType(), livingEntity.getWorld(), isBabyEntity, debugInfo, spawnReason),
-                    instance.configUtils.getMaxLevel(livingEntity.getType(), livingEntity.getWorld(), isBabyEntity, debugInfo, spawnReason)
+                    instance.configUtils.getMinLevel(livingEntity.getType(), livingEntity.getWorld(), isAdultEntity, debugInfo, spawnReason),
+                    instance.configUtils.getMaxLevel(livingEntity.getType(), livingEntity.getWorld(), isAdultEntity, debugInfo, spawnReason)
             );
         }
 
         // normal return:
         int minLevel = instance.configUtils.getMinLevel(livingEntity.getType(),
-                livingEntity.getWorld(), isBabyEntity, debugInfo, spawnReason);
+                livingEntity.getWorld(), isAdultEntity, debugInfo, spawnReason);
         final int maxLevel = instance.configUtils.getMaxLevel(livingEntity.getType(),
-                livingEntity.getWorld(), isBabyEntity, debugInfo, spawnReason);
+                livingEntity.getWorld(), isAdultEntity, debugInfo, spawnReason);
 
         // this will prevent an unhandled exception:
         if (minLevel > maxLevel) minLevel = maxLevel;

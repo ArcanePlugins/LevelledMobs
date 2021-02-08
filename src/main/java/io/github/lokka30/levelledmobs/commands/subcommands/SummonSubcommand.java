@@ -348,7 +348,9 @@ public class SummonSubcommand implements Subcommand {
 
             for (int i = 0; i < amount; i++) {
                 Entity entity = Objects.requireNonNull(location.getWorld()).spawnEntity(location, entityType);
-                instance.levelManager.creatureSpawnListener.processMobSpawn((LivingEntity) entity, CreatureSpawnEvent.SpawnReason.CUSTOM, level, MobProcessReason.SUMMON);
+                final int mobLevel = instance.levelManager.creatureSpawnListener.processMobSpawn((LivingEntity) entity, CreatureSpawnEvent.SpawnReason.CUSTOM, level, MobProcessReason.SUMMON);
+                if (mobLevel >= 0 && instance.settingsCfg.getBoolean("use-custom-item-drops-for-mobs"))
+                    instance.levelManager.creatureSpawnListener.processMobEquipment((LivingEntity) entity, mobLevel);
             }
 
             switch (summonType) {

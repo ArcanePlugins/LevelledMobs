@@ -174,7 +174,9 @@ public class LevelManager {
                 Utils.debugLog(instance, "LevelManager#getLevelledItemDrops", "6: Scanning drop " + currentDrop.getType().toString() + " with current amount " + currentDrop.getAmount() + "...");
 
                 if (instance.mobDataManager.isLevelledDropManaged(livingEntity.getType(), currentDrop.getType())) {
-                    currentDrop.setAmount(currentDrop.getAmount() + (currentDrop.getAmount() * addition));
+                    int useAmount = currentDrop.getAmount() + (currentDrop.getAmount() * addition);
+                    if (useAmount > currentDrop.getMaxStackSize()) useAmount = currentDrop.getMaxStackSize();
+                    currentDrop.setAmount(useAmount);
                     Utils.debugLog(instance, "LevelManager#getLevelledItemDrops", "7: Item was managed. New amount: " + currentDrop.getAmount() + ".");
                 } else {
                     Utils.debugLog(instance, "LevelManager#getLevelledItemDrops", "7: Item was unmanaged.");
@@ -183,11 +185,11 @@ public class LevelManager {
         }
 
         if (instance.settingsCfg.getBoolean("use-custom-item-drops-for-mobs")){
-            getCustomItemDrops(livingEntity, level, currentDrops, true);
+            getCustomItemDrops(livingEntity, level, currentDrops, true, false);
         }
     }
 
-    public void getCustomItemDrops(final LivingEntity livingEntity, final int level, final List<ItemStack> drops, final boolean isLevellable){
+    public void getCustomItemDrops(final LivingEntity livingEntity, final int level, final List<ItemStack> drops, final boolean isLevellable, final boolean equippedOnly){
 
         final int preCount = drops.size();
         final List<CustomDropsUniversalGroups> applicableGroups = getApllicableGroupsForMob(livingEntity, isLevellable);
@@ -196,34 +198,47 @@ public class LevelManager {
         for (final CustomDropsUniversalGroups group : applicableGroups){
             if (!instance.customDropsitems_groups.containsKey(group)) continue;
 
-            getCustomItemDrops2(livingEntity, level, instance.customDropsitems_groups.get(group), drops, isSpawner);
+            getCustomItemDrops2(livingEntity, level, instance.customDropsitems_groups.get(group), drops, isSpawner, equippedOnly);
         }
 
         if (instance.customDropsitems.containsKey(livingEntity.getType())){
-            getCustomItemDrops2(livingEntity, level, instance.customDropsitems.get(livingEntity.getType()), drops, isSpawner);
+            getCustomItemDrops2(livingEntity, level, instance.customDropsitems.get(livingEntity.getType()), drops, isSpawner, equippedOnly);
         }
 
         final int postCount = drops.size();
 
         if (instance.settingsCfg.getStringList("debug-misc").contains("custom-drops")) {
-            ArrayList<String> applicableGroupsNames = new ArrayList<>();
-            applicableGroups.forEach(applicableGroup -> applicableGroupsNames.add(applicableGroup.toString()));
+            if (equippedOnly && !drops.isEmpty()){
+                Utils.logger.info("&7Custom equipment for " + livingEntity.getName());
+                StringBuilder sb = new StringBuilder();
+                for (ItemStack drop : drops) {
+                    if (sb.length() > 0) sb.append(", ");
+                    sb.append(drop.getType().name());
+                }
+                Utils.logger.info("   " + sb.toString());
+            } else if (!equippedOnly) {
+                ArrayList<String> applicableGroupsNames = new ArrayList<>();
+                applicableGroups.forEach(applicableGroup -> applicableGroupsNames.add(applicableGroup.toString()));
 
-            Utils.logger.info("&7Custom drops for " + livingEntity.getName());
-            Utils.logger.info("&8- &7Groups: &b" + String.join("&7, &b", applicableGroupsNames) + "&7.");
-            Utils.logger.info(String.format("&8 --- &7Precount: &b%s&7, postcount: &b%s&7.", preCount, postCount));
+                Utils.logger.info("&7Custom drops for " + livingEntity.getName());
+                Utils.logger.info("&8- &7Groups: &b" + String.join("&7, &b", applicableGroupsNames) + "&7.");
+                Utils.logger.info(String.format("&8 --- &7Precount: &b%s&7, postcount: &b%s&7.", preCount, postCount));
+            }
         }
     }
 
-    private void getCustomItemDrops2(final LivingEntity livingEntity, final int level, final List<CustomItemDrop> customDrops, final List<ItemStack> newDrops, final boolean isSpawner){
+    private void getCustomItemDrops2(final LivingEntity livingEntity, final int level, final List<CustomItemDrop> customDrops,
+                                     final List<ItemStack> newDrops, final boolean isSpawner, final boolean equippedOnly){
 
         for (final CustomItemDrop drop : customDrops){
+            if (equippedOnly && !drop.isEquipped) continue;
+
             boolean doDrop = true;
             if (drop.maxLevel > -1 && level > drop.maxLevel) doDrop = false;
             if (drop.minLevel > -1 && level < drop.minLevel) doDrop = false;
             if (drop.noSpawner && isSpawner)  doDrop = false;
             if (!doDrop){
-                if (instance.settingsCfg.getStringList("debug-misc").contains("custom-drops")) {
+                if (!equippedOnly && instance.settingsCfg.getStringList("debug-misc").contains("custom-drops")) {
                     Utils.logger.info(String.format("&8- &7Mob: &b%s&7, level: &b%s&7, fromSpawner: &b%s&7, item: &b%s&7, minL: &b%s&7, maxL: &b%s&7, nospawner: &b%s&7, dropped: &bfalse",
                             livingEntity.getName(), level, isSpawner, drop.getMaterial().name(), drop.minLevel, drop.maxLevel, drop.noSpawner));
                 }
@@ -232,8 +247,8 @@ public class LevelManager {
 
             int newDropAmount = drop.getAmount();
             if (drop.getHasAmountRange()){
-                final int change = ThreadLocalRandom.current().nextInt(0, drop.getamountRangeMax() - drop.getamountRangeMin() + 1);
-                newDropAmount = drop.getamountRangeMin() + change;
+                final int change = ThreadLocalRandom.current().nextInt(0, drop.getAmountRangeMax() - drop.getAmountRangeMin() + 1);
+                newDropAmount = drop.getAmountRangeMin() + change;
             }
 
             boolean didNotMakeChance = false;
@@ -250,7 +265,7 @@ public class LevelManager {
                 if (1.0 - chanceRole >= drop.dropChance) didNotMakeChance = true;
             }
 
-            if (instance.settingsCfg.getStringList("debug-misc").contains("custom-drops")) {
+            if (!equippedOnly && instance.settingsCfg.getStringList("debug-misc").contains("custom-drops")) {
                 Utils.logger.info(String.format(
                         "&8 - &7Mob: &b%s&7, item: &b%s&7, amount: &b%s&7, newAmount: &b%s&7, chance: &b%s&7, chanceRole: &b%s&7, dropped: &b%s&7.",
                         livingEntity.getName(), drop.getMaterial().name(), drop.getAmountAsString(), newDropAmount, drop.dropChance, chanceRole, !didNotMakeChance)
@@ -260,7 +275,8 @@ public class LevelManager {
 
             // if we made it this far then the item will be dropped
             ItemStack newItem = drop.getItemStack();
-            newItem.setAmount(newDropAmount);
+            if (newDropAmount > newItem.getMaxStackSize()) newDropAmount = newItem.getMaxStackSize();
+            if (newDropAmount != 1) newItem.setAmount(newDropAmount);
 
             newDrops.add(newItem);
         }

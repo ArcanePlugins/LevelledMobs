@@ -40,7 +40,7 @@ public class EntityDeathListener implements Listener {
             }
         }
         else if (instance.settingsCfg.getBoolean("use-custom-item-drops-for-mobs")){
-            instance.levelManager.getCustomItemDrops(livingEntity, -1, event.getDrops(), false);
+            instance.levelManager.getCustomItemDrops(livingEntity, -1, event.getDrops(), false, false);
         }
     }
 }

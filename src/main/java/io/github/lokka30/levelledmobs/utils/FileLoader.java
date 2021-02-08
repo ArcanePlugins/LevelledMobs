@@ -8,8 +8,6 @@ import javax.annotation.Nonnull;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.OpenOption;
-import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -19,6 +17,7 @@ public final class FileLoader {
 
     public static final int SETTINGS_FILE_VERSION = 26; // Last changed: 2.2.0
     public static final int MESSAGES_FILE_VERSION = 1; // Last changed: 2.1.0
+    public static final int CUSTOMDROPS_FILE_VERSION = 3; // Last changed: 2.2.0
 
     private FileLoader() {
         throw new UnsupportedOperationException();
@@ -145,6 +144,9 @@ public final class FileLoader {
 
     private static void copyYmlValues(File from, File to, int oldVersion) {
 
+        boolean isSettings = to.getName().equalsIgnoreCase("settings.yml");
+        boolean isCustomDrops = to.getName().equalsIgnoreCase("customdrops.yml");
+
         // version 20 = 1.34 - last version before 2.0
         final List<String> version20KeysToKeep = Arrays.asList(
                 "level-passive",
@@ -168,99 +170,134 @@ public final class FileLoader {
             final List<String> oldConfigLines = Files.readAllLines(from.toPath(), StandardCharsets.UTF_8);
             final List<String> newConfigLines = Files.readAllLines(to.toPath(), StandardCharsets.UTF_8);
 
-            final Map<String, FieldInfo> oldConfigMap = getMapFromConfig(oldConfigLines);
-            final Map<String, FieldInfo> newConfigMap = getMapFromConfig(newConfigLines);
+            if (!isCustomDrops) {
+                final Map<String, FieldInfo> oldConfigMap = getMapFromConfig(oldConfigLines);
+                final Map<String, FieldInfo> newConfigMap = getMapFromConfig(newConfigLines);
 
-            final List<String> currentKey = new ArrayList<>();
-            int keysMatched = 0;
-            int valuesUpdated = 0;
-            int valuesMatched = 0;
+                final List<String> currentKey = new ArrayList<>();
+                int keysMatched = 0;
+                int valuesUpdated = 0;
+                int valuesMatched = 0;
 
-            for (int currentLine = 0; currentLine < newConfigLines.size(); currentLine++) {
-                String line = newConfigLines.get(currentLine);
-                final int depth = getFieldDepth(line);
-                if (line.trim().startsWith("#") || line.trim().isEmpty()) continue;
+                for (int currentLine = 0; currentLine < newConfigLines.size(); currentLine++) {
+                    String line = newConfigLines.get(currentLine);
+                    final int depth = getFieldDepth(line);
+                    if (line.trim().startsWith("#") || line.trim().isEmpty()) continue;
 
-                if (line.contains(":")) {
-                    final String[] lineSplit = line.split(":", 2);
-                    String key = lineSplit[0].replace("\t","").trim();
-                    final String keyOnly = key;
+                    if (line.contains(":")) {
+                        final String[] lineSplit = line.split(":", 2);
+                        String key = lineSplit[0].replace("\t", "").trim();
+                        final String keyOnly = key;
 
-                    if (depth == 0)
-                        currentKey.clear();
-                    else if (currentKey.size() > depth) {
-                        while (currentKey.size() > depth) currentKey.remove(currentKey.size() - 1);
-                        key = getKeyFromList(currentKey, key);
-                    }
-                    else
-                        key = getKeyFromList(currentKey, key);
+                        if (depth == 0)
+                            currentKey.clear();
+                        else if (currentKey.size() > depth) {
+                            while (currentKey.size() > depth) currentKey.remove(currentKey.size() - 1);
+                            key = getKeyFromList(currentKey, key);
+                        } else
+                            key = getKeyFromList(currentKey, key);
 
-                    int splitLength = lineSplit.length;
-                    if (splitLength == 2 && lineSplit[1].isEmpty()) splitLength = 1;
-                    if (splitLength == 1) {
-                        // no value on a key, means we're likely increasing depth
-                        currentKey.add(keyOnly);
+                        int splitLength = lineSplit.length;
+                        if (splitLength == 2 && lineSplit[1].isEmpty()) splitLength = 1;
+                        if (splitLength == 1) {
+                            // no value on a key, means we're likely increasing depth
+                            currentKey.add(keyOnly);
 
-                        if (oldVersion <= 20 && !version20KeysToKeep.contains(key)) continue;
+                            if (isSettings && oldVersion <= 20 && !version20KeysToKeep.contains(key)) continue;
 
-                        // arrays go here:
-                        if (oldConfigMap.containsKey(key) && newConfigMap.containsKey(key) && oldConfigMap.get(key).isList()){
-                            final FieldInfo fiOld = oldConfigMap.get(key);
-                            final FieldInfo fiNew = newConfigMap.get(key);
-                            if (fiNew.isList()){
-                                // add any values present in old list that might not be present in new
-                                final String padding = IntStream.range(1, (depth + 1) * 3 - 1).mapToObj(index -> "" + ' ').collect(Collectors.joining());
-                                for (String oldValue : fiOld.valueList){
-                                    if (!fiNew.valueList.contains(oldValue)) {
-                                        final String newline = padding + "- " + oldValue; // + "\r\n" + line;
-                                        newConfigLines.add(currentLine + 1, newline);
-                                        Utils.logger.info("added array value: " + oldValue);
+                            // arrays go here:
+                            if (oldConfigMap.containsKey(key) && newConfigMap.containsKey(key) && oldConfigMap.get(key).isList()) {
+                                final FieldInfo fiOld = oldConfigMap.get(key);
+                                final FieldInfo fiNew = newConfigMap.get(key);
+                                if (fiNew.isList()) {
+                                    // add any values present in old list that might not be present in new
+                                    final String padding = IntStream.range(1, (depth + 1) * 3 - 1).mapToObj(index -> "" + ' ').collect(Collectors.joining());
+                                    for (String oldValue : fiOld.valueList) {
+                                        if (!fiNew.valueList.contains(oldValue)) {
+                                            final String newline = padding + "- " + oldValue; // + "\r\n" + line;
+                                            newConfigLines.add(currentLine + 1, newline);
+                                            Utils.logger.info("added array value: " + oldValue);
+                                        }
                                     }
                                 }
                             }
+                        } else if (splitLength == 2 && oldConfigMap.containsKey(key)) {
+                            keysMatched++;
+                            final String value = lineSplit[1].trim();
+                            final FieldInfo fi = oldConfigMap.get(key);
+                            final String migratedValue = fi.simpleValue;
+
+                            if (isSettings && oldVersion <= 20 && !version20KeysToKeep.contains(key)) continue;
+                            if (isSettings && oldVersion < 24 && version24Resets.contains(key)) continue;
+                            if (key.startsWith("file-version")) continue;
+                            if (isSettings && key.equalsIgnoreCase("creature-nametag") && oldVersion > 20 && oldVersion < 26
+                                    && migratedValue.equals("'&8[&7Level %level%&8 | &f%displayname%&8 | &c%health%&8/&c%max_health% %heart_symbol%&8]'")) {
+                                // updating to the new default introduced in file ver 26 if they were using the previous default
+                                continue;
+                            }
+
+                            if (!value.equals(migratedValue)) {
+                                valuesUpdated++;
+                                Utils.logger.info("&fFile Loader: &8(Migration) &7Current key: &b" + key + "&7, replacing: &r" + value + "&7, with: &r" + migratedValue + "&7.");
+                                line = line.replace(value, migratedValue);
+                                newConfigLines.set(currentLine, line);
+                            } else
+                                valuesMatched++;
+                        }
+                    } else if (line.trim().startsWith("-")) {
+                        final String key = getKeyFromList(currentKey, null);
+                        final String value = line.trim().substring(1).trim();
+
+                        // we have an array value present in the new config but not the old, so it must've been removed
+                        if (oldConfigMap.containsKey(key) && oldConfigMap.get(key).isList() && !oldConfigMap.get(key).valueList.contains(value)) {
+                            newConfigLines.remove(currentLine);
+                            currentLine--;
+                            Utils.logger.info("&fFile Loader: &8(Migration) &7Current key: &b" + key + "&7, removing value: &r" + value + "&7.");
                         }
                     }
-                    else if (splitLength == 2 && oldConfigMap.containsKey(key)){
-                        keysMatched++;
-                        final String value = lineSplit[1].trim();
-                        final FieldInfo fi = oldConfigMap.get(key);
-                        final String migratedValue = fi.simpleValue;
+                } // loop to next line
 
-                        if (oldVersion <= 20 && !version20KeysToKeep.contains(key)) continue;
-                        if (oldVersion < 24 && version24Resets.contains(key)) continue;
-                        if (key.startsWith("file-version")) continue;
-                        if (key.equalsIgnoreCase("creature-nametag") && oldVersion > 20 && oldVersion < 26
-                        && migratedValue.equals("'&8[&7Level %level%&8 | &f%displayname%&8 | &c%health%&8/&c%max_health% %heart_symbol%&8]'")){
-                            // updating to the new default introduced in file ver 26 if they were using the previous default
-                            continue;
-                        }
+                Utils.logger.info(String.format("&fFile Loader: &8(Migration) &7Keys matched: &b%s&7, values matched: &b%s&7, values updated: &b%s&7.", keysMatched, valuesMatched, valuesUpdated));
+            } // end if not custom drops
+            else{
+                // migrate all values
+                int firstNonCommentLine = 0;
+                int startAt = 0;
 
-                        if (!value.equals(migratedValue)) {
-                            valuesUpdated++;
-                            Utils.logger.info("&fFile Loader: &8(Migration) &7Current key: &b" + key + "&7, replacing: &r" + value + "&7, with: &r" + migratedValue + "&7.");
-                            line = line.replace(value, migratedValue);
-                            newConfigLines.set(currentLine, line);
-                        }
-                        else
-                            valuesMatched++;
+                for (int i = 0; i < oldConfigLines.size(); i++){
+                    final String line = oldConfigLines.get(i).replace("\t", "").trim();
+                    if (line.startsWith("#") || line.isEmpty()) continue;
+
+                    firstNonCommentLine = i;
+                    break;
+                }
+
+                for (int i = 0; i < newConfigLines.size(); i++){
+                    String line = newConfigLines.get(i).trim();
+
+                    if (line.startsWith("file-version")){
+                        startAt = i + 1;
+                        break;
                     }
                 }
-                else if (line.trim().startsWith("-")){
-                    final String key = getKeyFromList(currentKey, null);
-                    final String value = line.trim().substring(1).trim();
 
-                    // we have an array value present in the new config but not the old, so it must've been removed
-                    if (oldConfigMap.containsKey(key) && oldConfigMap.get(key).isList() && !oldConfigMap.get(key).valueList.contains(value)) {
-                        newConfigLines.remove(currentLine);
-                        currentLine--;
-                        Utils.logger.info("&fFile Loader: &8(Migration) &7Current key: &b" + key + "&7, removing value: &r" + value + "&7.");
+                while (newConfigLines.size() > startAt + 1)
+                    newConfigLines.remove(newConfigLines.size() - 1);
+
+                for (int i = firstNonCommentLine; i < oldConfigLines.size(); i++){
+                    String temp = oldConfigLines.get(i).replaceAll("\\s+$", ""); // trimEnd()
+                    if (temp.endsWith("nomultiplier:") || temp.endsWith("nospawner:")) {
+                        temp += " true";
+                        newConfigLines.add(temp);
                     }
+                    else
+                        newConfigLines.add(oldConfigLines.get(i));
                 }
-            } // loop to next line
+            }
+
 
             Files.write(to.toPath(), newConfigLines, StandardCharsets.UTF_8, StandardOpenOption.TRUNCATE_EXISTING);
             Utils.logger.info("&fFile Loader: &8(Migration) &7Migrated &b" + to.getName() + "&7 successfully.");
-            Utils.logger.info(String.format("&fFile Loader: &8(Migration) &7Keys matched: &b%s&7, values matched: &b%s&7, values updated: &b%s&7.", keysMatched, valuesMatched, valuesUpdated));
         } catch (Exception e) {
             Utils.logger.error("&fFile Loader: &8(Migration) &7Failed to migrate &b" + to.getName() + "&7! Stack trace:");
             e.printStackTrace();

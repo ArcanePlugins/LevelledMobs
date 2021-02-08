@@ -24,7 +24,8 @@
 # groupid - if multiple items for the same mob have the same groupid, one one of the items will be dropped
 # lore - enter a list of strings to use for the lore
 # name - a custom name that will be given to the item(s)
-# damage: amount - enter the amount of damage the item will start with
+# damage: amount - enter the amount of damage the item will start with.  This can be a number range such as 100-500
+# equipped: true - when configured then mob will be wearing or holding the applicable item
 
 # universal groups - instead of specifying items for a specific mob you can use the following universal groups:
 #
@@ -32,7 +33,7 @@
 # all_flying_mobs, all_ground_mobs, all_aquatic_mobs
 
 # Don't change this unless you know what you're doing!
-file-version: 2
+file-version: 3
 
 ALL_LEVELLABLE_MOBS:
   - stick
@@ -50,4 +51,9 @@ ZOMBIE;SKELETON:
       enchantments:
         sharpness: 2
         unbreaking: 1
+  - diamond_chestplate:
+      chance: 0.1
+      nomultiplier: true
+      nospawner: true
+      equipped: true
 
