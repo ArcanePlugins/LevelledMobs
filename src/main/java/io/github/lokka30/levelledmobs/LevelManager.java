@@ -398,7 +398,17 @@ public class LevelManager {
                     if (!entity.isValid()) return;
 
                     final WrappedDataWatcher dataWatcher = WrappedDataWatcher.getEntityWatcher(entity).deepClone();
-                    final WrappedDataWatcher.Serializer chatSerializer = WrappedDataWatcher.Registry.getChatComponentSerializer(true);
+                    final WrappedDataWatcher.Serializer chatSerializer;
+
+                    try {
+                        chatSerializer = WrappedDataWatcher.Registry.getChatComponentSerializer(true);
+                    } catch (IllegalArgumentException ex) {
+                        if (instance.settingsCfg.getStringList("debug-misc").contains("nametags")) {
+                            Utils.logger.info("&8[DEBUG] [nametags] &7Registry is empty, skipping the nametag update of &b" + entity.getName() + "&7.");
+                        }
+                        return;
+                    }
+
                     final WrappedDataWatcher.WrappedDataWatcherObject watcherObject = new WrappedDataWatcher.WrappedDataWatcherObject(2, chatSerializer);
                     final Optional<Object> optional = Optional.of(WrappedChatComponent.fromChatMessage(nametag)[0].getHandle());
                     dataWatcher.setObject(watcherObject, optional);
