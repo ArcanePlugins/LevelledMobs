@@ -23,7 +23,6 @@ import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitTask;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -50,8 +49,6 @@ public class LevelledMobs extends JavaPlugin {
     public LevelManager levelManager;
 
     public PluginManager pluginManager;
-
-    public ArrayList<BukkitTask> asyncTasks = new ArrayList<>();
 
     public boolean hasWorldGuardInstalled;
     public boolean hasProtocolLibInstalled;
@@ -108,6 +105,11 @@ public class LevelledMobs extends JavaPlugin {
 
         checkCompatibility();
         loadFiles();
+        buildUniversalGroups();
+        hasMythicMobsInstalled = pluginManager.getPlugin("MythicMobs") != null;
+        if (hasMythicMobsInstalled) {
+            this.mythicMobsHelper = new MythicMobsHelper(this);
+        }
         registerListeners();
         registerCommands();
         if (hasProtocolLibInstalled) {
@@ -117,11 +119,6 @@ public class LevelledMobs extends JavaPlugin {
         Utils.logger.info("&fStart-up: &7Running misc procedures...");
         setupMetrics();
         checkUpdates();
-        buildUniversalGroups();
-        hasMythicMobsInstalled = pluginManager.getPlugin("MythicMobs") != null;
-        if (hasMythicMobsInstalled) {
-            this.mythicMobsHelper = new MythicMobsHelper(this);
-        }
 
         Utils.logger.info("&f~ Start-up complete, took &b" + (enableTimer.getTimer() + loadTime) + "ms&f ~");
     }
@@ -626,6 +623,6 @@ public class LevelledMobs extends JavaPlugin {
 
     private void shutDownAsyncTasks() {
         Utils.logger.info("&fTasks: &7Shutting down other async tasks...");
-        asyncTasks.forEach(BukkitTask::cancel);
+        Bukkit.getScheduler().cancelTasks(this);
     }
 }

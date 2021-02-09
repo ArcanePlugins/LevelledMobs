@@ -408,7 +408,7 @@ public class LevelManager {
     public void updateNametag(final LivingEntity entity, final String nametag, final List<Player> players) {
         if (!instance.hasProtocolLibInstalled) return;
 
-        instance.asyncTasks.add(new BukkitRunnable() {
+        BukkitTask task = new BukkitRunnable() {
             @Override
             public void run() {
                 for (Player player : players) {
@@ -443,7 +443,7 @@ public class LevelManager {
                     }
                 }
             }
-        }.runTaskAsynchronously(instance));
+        }.runTaskAsynchronously(instance);
     }
 
     private BukkitTask nametagAutoUpdateTask;
