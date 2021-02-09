@@ -412,6 +412,8 @@ public class LevelManager {
             @Override
             public void run() {
                 for (Player player : players) {
+                    // async task, so make sure the player & entity are valid
+                    if (!player.isOnline()) return;
                     if (!entity.isValid()) return;
 
                     final WrappedDataWatcher dataWatcher = WrappedDataWatcher.getEntityWatcher(entity).deepClone();
@@ -461,6 +463,8 @@ public class LevelManager {
                     final Location location = player.getLocation();
 
                     for (final Entity entity : player.getWorld().getEntities()) {
+
+                        if (entity == null) continue; // async task, entity can despawn whilst it is running
 
                         // Mob must be a livingentity that is ...living.
                         if (!(entity instanceof LivingEntity)) continue;
