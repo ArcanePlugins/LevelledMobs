@@ -358,7 +358,7 @@ public class LevelManager {
 
         // Baby zombies can have specific nametags in entity-name-override
         boolean isBabyEntity = Utils.isEntityBaby(livingEntity);
-        if (isBabyEntity && instance.settingsCfg.contains("entity-name-override.BABY_ZOMBIE")) {
+        if (isBabyEntity && livingEntity instanceof Zombie && instance.settingsCfg.contains("entity-name-override.BABY_ZOMBIE")) {
             entityName = instance.settingsCfg.getString("entity-name-override.BABY_ZOMBIE");
         } else if (instance.settingsCfg.contains("entity-name-override." + livingEntity.getType())) {
             entityName = instance.settingsCfg.getString("entity-name-override." + livingEntity.getType());
