@@ -86,14 +86,16 @@ public class LevelledMobs extends JavaPlugin {
         mobDataManager = new MobDataManager(this);
         levelManager = new LevelManager(this);
 
+        pluginManager = getServer().getPluginManager();
+
         // Hook into WorldGuard, register LM's flags.
         // This cannot be moved to onEnable (stated in WorldGuard's documentation).
-        hasWorldGuardInstalled = getServer().getPluginManager().getPlugin("WorldGuard") != null;
+        hasWorldGuardInstalled = pluginManager.getPlugin("WorldGuard") != null;
         if (hasWorldGuardInstalled) {
             worldGuardManager = new WorldGuardManager(this);
         }
 
-        hasProtocolLibInstalled = getServer().getPluginManager().getPlugin("ProtocolLib") != null;
+        hasProtocolLibInstalled = pluginManager.getPlugin("ProtocolLib") != null;
 
         loadTime = loadTimer.getTimer(); // combine the load time with enable time.
     }
