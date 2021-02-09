@@ -357,7 +357,8 @@ public class LevelManager {
         String entityName = WordUtils.capitalizeFully(livingEntity.getType().toString().toLowerCase().replaceAll("_", " "));
 
         // Baby zombies can have specific nametags in entity-name-override
-        if (livingEntity instanceof Zombie && !((Zombie) livingEntity).isAdult() && instance.settingsCfg.contains("entity-name-override.BABY_ZOMBIE")) {
+        boolean isBabyEntity = Utils.isEntityBaby(livingEntity);
+        if (isBabyEntity && instance.settingsCfg.contains("entity-name-override.BABY_ZOMBIE")) {
             entityName = instance.settingsCfg.getString("entity-name-override.BABY_ZOMBIE");
         } else if (instance.settingsCfg.contains("entity-name-override." + livingEntity.getType())) {
             entityName = instance.settingsCfg.getString("entity-name-override." + livingEntity.getType());

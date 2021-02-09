@@ -4,11 +4,13 @@ import io.github.lokka30.levelledmobs.commands.LevelledMobsCommand;
 import io.github.lokka30.levelledmobs.listeners.*;
 import io.github.lokka30.levelledmobs.utils.ConfigUtils;
 import io.github.lokka30.levelledmobs.utils.FileLoader;
+import io.github.lokka30.levelledmobs.utils.MC1_16_Compat;
 import io.github.lokka30.levelledmobs.utils.Utils;
 import me.lokka30.microlib.MicroUtils;
 import me.lokka30.microlib.QuickTimer;
 import me.lokka30.microlib.UpdateChecker;
 import org.bstats.bukkit.Metrics;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.command.PluginCommand;
@@ -56,6 +58,8 @@ public class LevelledMobs extends JavaPlugin {
     public boolean hasMythicMobsInstalled;
     public WorldGuardManager worldGuardManager;
     public MythicMobsHelper mythicMobsHelper;
+    public boolean isMCVersion_16_OrHigher;
+    public MC1_16_Compat mc1_16_Compat;
 
     // need to move these
     public boolean debugEntityDamageWasEnabled = false;
@@ -138,6 +142,13 @@ public class LevelledMobs extends JavaPlugin {
     //Checks if the server version is supported
     public void checkCompatibility() {
         Utils.logger.info("&fCompatibility Checker: &7Checking compatibility with your server...");
+
+        final String[] bukkitVer = Bukkit.getBukkitVersion().split("\\.");
+        final int middleVer = Integer.parseInt(bukkitVer[1]);
+        if (middleVer >= 16) {
+            this.isMCVersion_16_OrHigher = true;
+            this.mc1_16_Compat = new MC1_16_Compat();
+        }
 
         // Using a List system in case more compatibility checks are added.
         final List<String> incompatibilities = new ArrayList<>();
@@ -438,20 +449,23 @@ public class LevelledMobs extends JavaPlugin {
         groups_HostileMobs = Stream.of(
                 EntityType.ENDER_DRAGON,
                 EntityType.GHAST,
-                EntityType.HOGLIN,
                 EntityType.MAGMA_CUBE,
                 EntityType.PHANTOM,
                 EntityType.SHULKER,
                 EntityType.SLIME
         ).collect(Collectors.toCollection(HashSet::new));
 
+        if (this.isMCVersion_16_OrHigher)
+            groups_HostileMobs.addAll(this.mc1_16_Compat.getHostileMobs());
+
         // include interfaces: Animals, WaterMob
         groups_PassiveMobs = Stream.of(
                 EntityType.IRON_GOLEM,
-                EntityType.SNOWMAN,
-                EntityType.ZOMBIFIED_PIGLIN,
-                EntityType.STRIDER
+                EntityType.SNOWMAN
         ).collect(Collectors.toCollection(HashSet::new));
+
+        if (this.isMCVersion_16_OrHigher)
+            groups_HostileMobs.addAll(this.mc1_16_Compat.getPassiveMobs());
 
         // include interfaces: WaterMob
         groups_AquaticMobs = Stream.of(
@@ -505,6 +519,8 @@ public class LevelledMobs extends JavaPlugin {
                 return Enchantment.PROTECTION_EXPLOSIONS;
             case "protection_fall": case "feather_falling":
                 return Enchantment.PROTECTION_FALL;
+            case "projectile_protection":
+                return Enchantment.PROTECTION_PROJECTILE;
             case "quick_charge": return Enchantment.QUICK_CHARGE;
             case "riptide": return Enchantment.RIPTIDE;
             case "silk_touch": return Enchantment.SILK_TOUCH;

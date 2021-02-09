@@ -4,6 +4,7 @@ import io.github.lokka30.levelledmobs.LevelManager;
 import io.github.lokka30.levelledmobs.LevelNumbersWithBias;
 import io.github.lokka30.levelledmobs.LevelledMobs;
 import io.github.lokka30.levelledmobs.utils.*;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.enchantments.EnchantmentTarget;
@@ -17,6 +18,7 @@ import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
@@ -115,8 +117,14 @@ public class CreatureSpawnListener implements Listener {
         // spawned using summon command.  It will get processed directly
         if (event.getSpawnReason() == SpawnReason.CUSTOM) return;
 
-        final int mobLevel = processMobSpawn(event.getEntity(), event.getSpawnReason(), -1, MobProcessReason.NONE);
-        if (mobLevel >= 0 && instance.settingsCfg.getBoolean("use-custom-item-drops-for-mobs")) processMobEquipment(event.getEntity(), mobLevel);
+        // process the spawns after 1 tick so other plugins have a chance to process them, such as mythic mobs
+
+        new BukkitRunnable() {
+            public void run() {
+                final int mobLevel = processMobSpawn(event.getEntity(), event.getSpawnReason(), -1, MobProcessReason.NONE);
+                if (mobLevel >= 0 && instance.settingsCfg.getBoolean("use-custom-item-drops-for-mobs")) processMobEquipment(event.getEntity(), mobLevel);
+            }
+        }.runTaskLater(instance, 1L);
     }
 
     public int processMobSpawn(final LivingEntity livingEntity, final SpawnReason spawnReason, int level, final MobProcessReason processReason) {
