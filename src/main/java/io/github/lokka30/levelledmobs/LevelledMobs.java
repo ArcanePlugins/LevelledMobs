@@ -490,7 +490,7 @@ public class LevelledMobs extends JavaPlugin {
             case "channeling": return Enchantment.CHANNELING;
             case "damage_all": case "sharpness":
                 return Enchantment.DAMAGE_ALL;
-            case "damage_arthropods": case "bane_of_arthopods":
+            case "damage_arthropods": case "bane_of_arthropods":
                 return Enchantment.DAMAGE_ARTHROPODS;
             case "damage_undead": case "smite":
                 return Enchantment.DAMAGE_UNDEAD;
@@ -526,7 +526,7 @@ public class LevelledMobs extends JavaPlugin {
             case "soul_speed": return Enchantment.SOUL_SPEED;
             case "sweeping_edge": return Enchantment.SWEEPING_EDGE;
             case "thorns": return Enchantment.THORNS;
-            case "vanishing_curse": case "curse of vanishing":
+            case "vanishing_curse": case "curse_of_vanishing":
                 return Enchantment.VANISHING_CURSE;
             case "water_worker": case "respiration":
                 return Enchantment.WATER_WORKER;
