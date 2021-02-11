@@ -494,7 +494,8 @@ public class LevelledMobs extends JavaPlugin {
     private Enchantment getEnchantmentFromName(final String name){
 
         switch (name.replace(" ", "_").toLowerCase()){
-            case "arrow_damage": return Enchantment.ARROW_DAMAGE;
+            case "arrow_damage": case "power":
+                return Enchantment.ARROW_DAMAGE;
             case "arrow_fire": return Enchantment.ARROW_FIRE;
             case "arrow_infinity": case "infinity":
                 return Enchantment.ARROW_INFINITE;
