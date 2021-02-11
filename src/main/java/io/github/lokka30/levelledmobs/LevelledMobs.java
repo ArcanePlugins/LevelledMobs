@@ -65,8 +65,8 @@ public class LevelledMobs extends JavaPlugin {
     public TreeMap<String, Integer> worldLevelOverride_Min;
     public TreeMap<String, Integer> worldLevelOverride_Max;
     public Set<String> noDropMultiplierEntities;
-    public TreeMap<EntityType, List<CustomItemDrop>> customDropsitems;
-    public TreeMap<CustomDropsUniversalGroups, List<CustomItemDrop>> customDropsitems_groups;
+    public TreeMap<EntityType, CustomDropInstance> customDropsitems;
+    public TreeMap<CustomDropsUniversalGroups, CustomDropInstance> customDropsitems_groups;
     public HashSet<EntityType> groups_HostileMobs;
     public HashSet<EntityType> groups_AquaticMobs;
     public HashSet<EntityType> groups_PassiveMobs;
@@ -106,7 +106,11 @@ public class LevelledMobs extends JavaPlugin {
         enableTimer.start(); // Record how long it takes for the plugin to enable.
 
         checkCompatibility();
-        loadFiles();
+        if (!loadFiles()){
+            // had fatal error reading required files
+            this.setEnabled(false);
+            return;
+        }
         buildUniversalGroups();
         hasMythicMobsInstalled = pluginManager.getPlugin("MythicMobs") != null;
         if (hasMythicMobsInstalled) {
@@ -180,7 +184,7 @@ public class LevelledMobs extends JavaPlugin {
     }
 
     // Note: also called by the reload subcommand.
-    public void loadFiles() {
+    public boolean loadFiles() {
         Utils.logger.info("&fFile Loader: &7Loading files...");
 
         // save license.txt
@@ -188,7 +192,14 @@ public class LevelledMobs extends JavaPlugin {
 
         // load configurations
         settingsCfg = FileLoader.loadFile(this, "settings", FileLoader.SETTINGS_FILE_VERSION, true);
-        messagesCfg = FileLoader.loadFile(this, "messages", FileLoader.MESSAGES_FILE_VERSION, true);
+
+        if (settingsCfg != null) // only load if settings were loaded successfully
+            messagesCfg = FileLoader.loadFile(this, "messages", FileLoader.MESSAGES_FILE_VERSION, true);
+        else {
+            // had an issue reading the file.  Disable the plugin now
+            return false;
+        }
+
         customDropsCfg = FileLoader.loadFile(this, "customdrops", FileLoader.CUSTOMDROPS_FILE_VERSION, true);
 
         this.entityTypesLevelOverride_Min = getMapFromConfigSection("entitytype-level-override.min-level");
@@ -207,10 +218,13 @@ public class LevelledMobs extends JavaPlugin {
         saveResource("drops.yml", true);
         dropsCfg = YamlConfiguration.loadConfiguration(new File(getDataFolder(), "drops.yml"));
 
-        if (settingsCfg.getBoolean("use-custom-item-drops-for-mobs")) parseCustomDrops(customDropsCfg);
+        if (settingsCfg.getBoolean("use-custom-item-drops-for-mobs") && customDropsCfg != null)
+            parseCustomDrops(customDropsCfg);
 
         // load configutils
         configUtils = new ConfigUtils(this);
+
+        return true;
     }
 
     private void parseCustomDrops(ConfigurationSection config){
@@ -226,6 +240,7 @@ public class LevelledMobs extends JavaPlugin {
 
                 CustomDropsUniversalGroups universalGroup = null;
                 final boolean isUniversalGroup = mobTypeOrGroup.toLowerCase().startsWith("all_");
+                CustomDropInstance dropInstance;
 
                 if (isUniversalGroup) {
                     try {
@@ -234,6 +249,7 @@ public class LevelledMobs extends JavaPlugin {
                         Utils.logger.warning("invalid universal group in customdrops.yml: " + mobTypeOrGroup);
                         continue;
                     }
+                    dropInstance = new CustomDropInstance(universalGroup);
                 } else {
                     try {
                         entityType = EntityType.valueOf(mobTypeOrGroup.toUpperCase());
@@ -241,15 +257,16 @@ public class LevelledMobs extends JavaPlugin {
                         Utils.logger.warning("invalid mob type in customdrops.yml: " + mobTypeOrGroup);
                         continue;
                     }
+                    dropInstance = new CustomDropInstance(entityType);
                 }
 
-                List<CustomItemDrop> result = parseCustomDrops2(config.getList(item), universalGroup, entityType, mobTypeOrGroup);
+                parseCustomDrops2(config.getList(item), dropInstance);
 
-                if (!result.isEmpty()) {
+                if (!dropInstance.customItems.isEmpty()) {
                     if (isUniversalGroup)
-                        customDropsitems_groups.put(universalGroup, result);
+                        customDropsitems_groups.put(universalGroup, dropInstance);
                     else
-                        customDropsitems.put(entityType, result);
+                        customDropsitems.put(entityType, dropInstance);
                 }
             } // next mob or group
         } // next root item from file
@@ -262,34 +279,34 @@ public class LevelledMobs extends JavaPlugin {
         }
     }
 
-    @Nonnull
-    private List<CustomItemDrop> parseCustomDrops2(final List<?> itemConfigurations, final CustomDropsUniversalGroups entityGroup, final EntityType entityType, final String mobTypeOrGroupName){
-
-        final List<CustomItemDrop> dropList = new ArrayList<>();
+    private void parseCustomDrops2(final List<?> itemConfigurations, final CustomDropInstance dropInstance){
 
         if (itemConfigurations == null) {
             Utils.logger.info("itemconfigs was null");
-            return dropList;
+            return;
         }
 
         for (final Object itemObject : itemConfigurations) {
 
             if (itemObject instanceof String) {
                 // just the string was given
-                CustomItemDrop item;
-                if (entityType == null) item = new CustomItemDrop(entityGroup);
-                else item = new CustomItemDrop(entityType);
-
+                final CustomItemDrop item = new CustomItemDrop();
                 final String materialName = (String) itemObject;
+
+                if ("override".equalsIgnoreCase(materialName)){
+                    dropInstance.overrideStockDrops = true;
+                    continue;
+                }
+
                 Material material;
                 try {
                     material = Material.valueOf(materialName.toUpperCase());
                 } catch (Exception e) {
-                    Utils.logger.warning(String.format("Invalid material type specified in customdrops.yml for: %s, %s", mobTypeOrGroupName, materialName));
+                    Utils.logger.warning(String.format("Invalid material type specified in customdrops.yml for: %s, %s", dropInstance.getMobOrGroupName(), materialName));
                     continue;
                 }
                 item.setMaterial(material);
-                dropList.add(item);
+                dropInstance.customItems.add(item);
                 continue;
             }
             final ConfigurationSection itemConfiguration = objectToConfigurationSection(itemObject);
@@ -301,19 +318,17 @@ public class LevelledMobs extends JavaPlugin {
                 final ConfigurationSection itemInfoConfiguration = objectToConfigurationSection(itemEntry.getValue());
                 if (itemInfoConfiguration == null) continue;
 
-                CustomItemDrop item;
-                if (entityType == null) item = new CustomItemDrop(entityGroup);
-                else item = new CustomItemDrop(entityType);
+                final CustomItemDrop item = new CustomItemDrop();
 
                 Material material;
                 try {
                     material = Material.valueOf(materialName.toUpperCase());
                 } catch (Exception e) {
-                    Utils.logger.warning(String.format("Invalid material type specified in customdrops.yml for: %s, %s", mobTypeOrGroupName, materialName));
+                    Utils.logger.warning(String.format("Invalid material type specified in customdrops.yml for: %s, %s", dropInstance.getMobOrGroupName(), materialName));
                     continue;
                 }
                 item.setMaterial(material);
-                dropList.add(item);
+                dropInstance.customItems.add(item);
 
                 item.setAmount(itemInfoConfiguration.getInt("amount", 1));
                 item.dropChance = itemInfoConfiguration.getDouble("chance", 0.2);
@@ -329,12 +344,12 @@ public class LevelledMobs extends JavaPlugin {
 
                 String numberRange = itemInfoConfiguration.getString("amount");
                 if (numberRange != null && numberRange.contains("-") && !item.setAmountRangeFromString(numberRange)){
-                    Utils.logger.warning(String.format("Invalid number range for amount on %s, %s", mobTypeOrGroupName, numberRange));
+                    Utils.logger.warning(String.format("Invalid number range for amount on %s, %s", dropInstance.getMobOrGroupName(), numberRange));
                 }
 
                 numberRange = itemInfoConfiguration.getString("damage");
                 if (numberRange != null && numberRange.contains("-") && !item.setDamageRangeFromString(numberRange)){
-                    Utils.logger.warning(String.format("Invalid number range for damage on %s, %s", mobTypeOrGroupName, numberRange));
+                    Utils.logger.warning(String.format("Invalid number range for damage on %s, %s", dropInstance.getMobOrGroupName(), numberRange));
                 }
 
                 final Object enchantmentsSection = itemInfoConfiguration.get("enchantments");
@@ -385,9 +400,7 @@ public class LevelledMobs extends JavaPlugin {
                     }
                 }
             }
-        }
-
-        return dropList;
+        } // next item
     }
 
     private  ConfigurationSection objectToConfigurationSection(Object object){
@@ -405,15 +418,17 @@ public class LevelledMobs extends JavaPlugin {
 
     private void showCustomDropsDebugInfo(){
         for (final EntityType ent : customDropsitems.keySet()) {
-            Utils.logger.info("mob: " + ent.name());
-            for (final CustomItemDrop item : customDropsitems.get(ent)) {
+            final String override = customDropsitems.get(ent).overrideStockDrops ? " (override)" : "";
+            Utils.logger.info("mob: " + ent.name() + override);
+            for (final CustomItemDrop item : customDropsitems.get(ent).customItems) {
                 showCustomDropsDebugInfo2(item);
             }
         }
 
         for (final CustomDropsUniversalGroups group : customDropsitems_groups.keySet()) {
-            Utils.logger.info("group: " + group.name());
-            for (final CustomItemDrop item : customDropsitems_groups.get(group)) {
+            final String override = customDropsitems_groups.get(group).overrideStockDrops ? " (override)" : "";
+            Utils.logger.info("group: " + group.name() + override);
+            for (final CustomItemDrop item : customDropsitems_groups.get(group).customItems) {
                 showCustomDropsDebugInfo2(item);
             }
         }

@@ -161,6 +161,15 @@ public class LevelManager {
         Utils.debugLog(instance, "LevelManager#getLevelledItemDrops", "3: Entity level is " + level + ".");
 
         final boolean doNotMultiplyDrops = instance.noDropMultiplierEntities.contains(livingEntity.getName());
+        final List<ItemStack> customDrops = new ArrayList<>();
+
+        if (instance.settingsCfg.getBoolean("use-custom-item-drops-for-mobs") &&
+                getCustomItemDrops(livingEntity, level, customDrops, true, false) == CustomDropResult.HAS_OVERRIDE){
+            Utils.debugLog(instance, "LevelManager#getLevelledItemDrops", "4: custom drop has override");
+            currentDrops.clear();
+            currentDrops.addAll(customDrops);
+            return;
+        }
 
         if (!doNotMultiplyDrops) {
             // Get currentDrops added per level value
@@ -184,25 +193,28 @@ public class LevelManager {
             }
         }
 
-        if (instance.settingsCfg.getBoolean("use-custom-item-drops-for-mobs")){
-            getCustomItemDrops(livingEntity, level, currentDrops, true, false);
-        }
+        if (!customDrops.isEmpty()) currentDrops.addAll(customDrops);
     }
 
-    public void getCustomItemDrops(final LivingEntity livingEntity, final int level, final List<ItemStack> drops, final boolean isLevellable, final boolean equippedOnly){
+    public CustomDropResult getCustomItemDrops(final LivingEntity livingEntity, final int level, final List<ItemStack> drops, final boolean isLevellable, final boolean equippedOnly){
 
         final int preCount = drops.size();
         final List<CustomDropsUniversalGroups> applicableGroups = getApllicableGroupsForMob(livingEntity, isLevellable);
         final boolean isSpawner = livingEntity.getPersistentDataContainer().has(isSpawnerKey, PersistentDataType.STRING);
+        CustomDropResult customDropResult = CustomDropResult.NO_OVERRIDE;
 
         for (final CustomDropsUniversalGroups group : applicableGroups){
             if (!instance.customDropsitems_groups.containsKey(group)) continue;
 
-            getCustomItemDrops2(livingEntity, level, instance.customDropsitems_groups.get(group), drops, isSpawner, equippedOnly);
+            CustomDropInstance dropInstance = instance.customDropsitems_groups.get(group);
+            if (dropInstance.overrideStockDrops) customDropResult = CustomDropResult.HAS_OVERRIDE;
+            getCustomItemDrops2(livingEntity, level, dropInstance, drops, isSpawner, equippedOnly);
         }
 
         if (instance.customDropsitems.containsKey(livingEntity.getType())){
-            getCustomItemDrops2(livingEntity, level, instance.customDropsitems.get(livingEntity.getType()), drops, isSpawner, equippedOnly);
+            CustomDropInstance dropInstance = instance.customDropsitems.get(livingEntity.getType());
+            if (dropInstance.overrideStockDrops) customDropResult = CustomDropResult.HAS_OVERRIDE;
+            getCustomItemDrops2(livingEntity, level, dropInstance, drops, isSpawner, equippedOnly);
         }
 
         final int postCount = drops.size();
@@ -225,12 +237,14 @@ public class LevelManager {
                 Utils.logger.info(String.format("&8 --- &7Precount: &b%s&7, postcount: &b%s&7.", preCount, postCount));
             }
         }
+
+        return customDropResult;
     }
 
-    private void getCustomItemDrops2(final LivingEntity livingEntity, final int level, final List<CustomItemDrop> customDrops,
+    private void getCustomItemDrops2(final LivingEntity livingEntity, final int level, final CustomDropInstance dropInstance,
                                      final List<ItemStack> newDrops, final boolean isSpawner, final boolean equippedOnly){
 
-        for (final CustomItemDrop drop : customDrops){
+        for (final CustomItemDrop drop : dropInstance.customItems){
             if (equippedOnly && !drop.isEquipped) continue;
 
             boolean doDrop = true;

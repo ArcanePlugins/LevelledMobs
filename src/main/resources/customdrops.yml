@@ -27,13 +27,20 @@
 # damage: amount - enter the amount of damage the item will start with.  This can be a number range such as 100-500
 # equipped: true - when configured then mob will be wearing or holding the applicable item
 
+# override: when configured then the mob's standard drops will not be dropped, only any configured custom drops (example zombies won't drop rotten flesh).
+# example on how to use:
+# ZOMBIE:
+#   - override
+#   - iron_sword:
+# ....
+
 # universal groups - instead of specifying items for a specific mob you can use the following universal groups:
 #
 # all_mobs, all_levellable_mobs, all_hostile_mobs, all_passive_mobs, all_overworld_mobs, all_nether_mobs,
 # all_flying_mobs, all_ground_mobs, all_aquatic_mobs
 
 # Don't change this unless you know what you're doing!
-file-version: 3
+file-version: 5
 
 ALL_LEVELLABLE_MOBS:
   - stick

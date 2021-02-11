@@ -2,13 +2,11 @@ package io.github.lokka30.levelledmobs;
 
 import io.github.lokka30.levelledmobs.utils.Utils;
 import org.bukkit.Material;
-import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.List;
 
 public class CustomItemDrop {
-    final public EntityType associatedMob;
     public int minLevel;
     public int maxLevel;
     public double dropChance;
@@ -20,7 +18,6 @@ public class CustomItemDrop {
     public boolean isEquipped;
     public String customName;
     public List<String> lore;
-    public CustomDropsUniversalGroups entityGroup;
     private boolean hasAmountRange;
     private boolean hasDamageRange;
     private int amountRangeMin;
@@ -30,18 +27,7 @@ public class CustomItemDrop {
     private Material material;
     private ItemStack itemStack;
 
-    public CustomItemDrop(final EntityType associatedMob){
-        this.associatedMob = associatedMob;
-        setDefaults();
-    }
-
-    public CustomItemDrop(final CustomDropsUniversalGroups entityGroup){
-        this.associatedMob = null;
-        this.entityGroup = entityGroup;
-        setDefaults();
-    }
-
-    private void setDefaults(){
+    public CustomItemDrop(){
         this.minLevel = -1;
         this.maxLevel = -1;
         this.groupId = -1;
@@ -120,10 +106,6 @@ public class CustomItemDrop {
     public void setMaterial(final Material material){
         this.material = material;
         this.itemStack = new ItemStack(this.material, 1);
-    }
-
-    public boolean getIsGroup(){
-        return this.entityGroup != null;
     }
 
     public String getAmountAsString(){

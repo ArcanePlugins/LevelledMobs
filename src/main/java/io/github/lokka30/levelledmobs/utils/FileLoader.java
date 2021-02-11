@@ -3,9 +3,11 @@ package io.github.lokka30.levelledmobs.utils;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.util.FileUtil;
+import org.yaml.snakeyaml.Yaml;
 
 import javax.annotation.Nonnull;
 import java.io.File;
+import java.io.FileInputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
@@ -17,13 +19,13 @@ public final class FileLoader {
 
     public static final int SETTINGS_FILE_VERSION = 26; // Last changed: 2.2.0
     public static final int MESSAGES_FILE_VERSION = 1; // Last changed: 2.1.0
-    public static final int CUSTOMDROPS_FILE_VERSION = 3; // Last changed: 2.2.0
+    public static final int CUSTOMDROPS_FILE_VERSION = 5; // Last changed: 2.2.0
 
     private FileLoader() {
         throw new UnsupportedOperationException();
     }
 
-    public static YamlConfiguration loadFile(final Plugin plugin, String cfgName, final int compatibleVersion, boolean doMigrate) {
+    public static YamlConfiguration loadFile(final Plugin plugin, String cfgName, final int compatibleVersion, final boolean doMigrate) {
         cfgName = cfgName + ".yml";
 
         Utils.logger.info("&fFile Loader: &7Loading file '&b" + cfgName + "&7'...");
@@ -31,6 +33,12 @@ public final class FileLoader {
         final File file = new File(plugin.getDataFolder(), cfgName);
 
         saveResourceIfNotExists(plugin, file);
+        try (FileInputStream fs = new FileInputStream(file)) {
+            new Yaml().load(fs);
+        } catch (Exception e) {
+            Utils.logger.error("&4Error reading " + cfgName + ". " + e.getMessage());
+            return null;
+        }
 
         YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
         cfg.options().copyDefaults(true);
@@ -290,7 +298,7 @@ public final class FileLoader {
                         temp += " true";
                         newConfigLines.add(temp);
                     }
-                    else
+                    else if (!temp.startsWith("file-version"))
                         newConfigLines.add(oldConfigLines.get(i));
                 }
             }

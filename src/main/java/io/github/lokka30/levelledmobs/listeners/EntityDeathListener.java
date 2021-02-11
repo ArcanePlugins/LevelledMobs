@@ -1,14 +1,18 @@
 package io.github.lokka30.levelledmobs.listeners;
 
+import io.github.lokka30.levelledmobs.CustomDropResult;
 import io.github.lokka30.levelledmobs.LevelledMobs;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 
 public class EntityDeathListener implements Listener {
 
@@ -40,7 +44,14 @@ public class EntityDeathListener implements Listener {
             }
         }
         else if (instance.settingsCfg.getBoolean("use-custom-item-drops-for-mobs")){
-            instance.levelManager.getCustomItemDrops(livingEntity, -1, event.getDrops(), false, false);
+            final List<ItemStack> drops = new ArrayList<>();
+            final CustomDropResult result = instance.levelManager.getCustomItemDrops(livingEntity, -1, drops, false, false);
+            if (result == CustomDropResult.HAS_OVERRIDE){
+                event.getDrops().clear();
+                event.getDrops().addAll(drops);
+            }
+            else if (!drops.isEmpty())
+                event.getDrops().addAll(drops);
         }
     }
 }
