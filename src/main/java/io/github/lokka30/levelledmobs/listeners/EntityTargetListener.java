@@ -36,6 +36,6 @@ public class EntityTargetListener implements Listener {
             return;
 
         // Update the nametag.
-        instance.levelManager.updateNametag(livingEntity, instance.levelManager.getNametag(livingEntity), livingEntity.getWorld().getPlayers());
+        instance.levelManager.updateNametag(livingEntity, instance.levelManager.getNametag(livingEntity, false), livingEntity.getWorld().getPlayers());
     }
 }

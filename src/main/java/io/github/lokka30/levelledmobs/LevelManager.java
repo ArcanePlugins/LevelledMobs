@@ -140,7 +140,7 @@ public class LevelManager {
         new BukkitRunnable() {
             public void run() {
                 if (livingEntity == null) return; // may have died/removed after the timer.
-                updateNametag(livingEntity, getNametag(livingEntity), players);
+                updateNametag(livingEntity, getNametag(livingEntity, false), players);
             }
         }.runTaskLater(instance, delay);
     }
@@ -351,13 +351,13 @@ public class LevelManager {
     }
 
     // When the persistent data container levelled key has been set on the entity already (i.e. when they are damaged)
-    public String getNametag(final LivingEntity livingEntity) {
+    public String getNametag(final LivingEntity livingEntity, final boolean isDeathNametag) {
         return getNametag(livingEntity, Objects.requireNonNull(
-                livingEntity.getPersistentDataContainer().get(levelKey, PersistentDataType.INTEGER)));
+                livingEntity.getPersistentDataContainer().get(levelKey, PersistentDataType.INTEGER)), isDeathNametag);
     }
 
     // When the persistent data container levelled key has not been set on the entity yet (i.e. for use in CreatureSpawnListener)
-    public String getNametag(final LivingEntity livingEntity, final int level) {
+    public String getNametag(final LivingEntity livingEntity, final int level, final boolean isDeathNametag) {
         // If show label for default levelled mobs is disabled and the mob is the min level, then don't modify their tag.
         if (!instance.settingsCfg.getBoolean("show-label-for-default-levelled-mobs") && level == instance.settingsCfg.getInt("fine-tuning.min-level")) {
             return livingEntity.getCustomName(); // CustomName can be null, that is meant to be the case.
@@ -367,7 +367,7 @@ public class LevelManager {
         final String health = maxHealth == null ? "?" : Utils.round(maxHealth.getBaseValue()) + "";
         final String healthRounded = maxHealth == null ? "?" : (int) Utils.round(maxHealth.getBaseValue()) + "";
 
-        String nametag = instance.settingsCfg.getString("creature-nametag");
+        String nametag = isDeathNametag ? instance.settingsCfg.getString("creature-death-nametag") : instance.settingsCfg.getString("creature-nametag");
         String entityName = WordUtils.capitalizeFully(livingEntity.getType().toString().toLowerCase().replaceAll("_", " "));
 
         // Baby zombies can have specific nametags in entity-name-override
@@ -490,7 +490,7 @@ public class LevelManager {
 
                         //if within distance, update nametag.
                         if (livingEntity.getLocation().distanceSquared(location) <= maxDistance) {
-                            instance.levelManager.updateNametag(livingEntity, instance.levelManager.getNametag(livingEntity), Collections.singletonList(player));
+                            instance.levelManager.updateNametag(livingEntity, instance.levelManager.getNametag(livingEntity, false), Collections.singletonList(player));
                         }
                     }
                 }

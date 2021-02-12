@@ -34,7 +34,7 @@ public class PlayerJoinWorldNametagListener implements Listener {
                     continue;
                 }
 
-                final String nametag = instance.levelManager.getNametag(livingEntity);
+                final String nametag = instance.levelManager.getNametag(livingEntity, false);
 
                 //Send nametag packet
                 //This also must be delayed by 1 tick

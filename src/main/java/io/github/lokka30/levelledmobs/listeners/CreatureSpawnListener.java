@@ -74,7 +74,7 @@ public class CreatureSpawnListener implements Listener {
         if (!killer.getPersistentDataContainer().has(instance.levelManager.isLevelledKey, PersistentDataType.STRING))
             return;
 
-        final String newMessage = Utils.replaceEx(event.getDeathMessage(), killer.getName(), instance.levelManager.getNametag(killer));
+        final String newMessage = Utils.replaceEx(event.getDeathMessage(), killer.getName(), instance.levelManager.getNametag(killer, true));
         event.setDeathMessage(newMessage);
     }
 
@@ -237,7 +237,7 @@ public class CreatureSpawnListener implements Listener {
             //Update their tag.
             final String nameTag;
             if (level != 1 || instance.settingsCfg.getBoolean("show-label-for-default-levelled-mobs")) {
-                nameTag = instance.levelManager.getNametag(livingEntity, level);
+                nameTag = instance.levelManager.getNametag(livingEntity, level, false);
                 instance.levelManager.updateNametagWithDelay(livingEntity, nameTag, livingEntity.getWorld().getPlayers(), 1);
             }
 
