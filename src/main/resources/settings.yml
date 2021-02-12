@@ -260,7 +260,7 @@ entity-name-override:
 use-custom-item-drops-for-mobs: false
 
 
-# If the mob is the default level, show the label?
+# If the mob is the default level, show the LevelledMobs label (nametag)?
 # 'false' is more like vanilla minecraft if the mob is at the default level.
 # By default, this is enabled.
 show-label-for-default-levelled-mobs: true
@@ -278,16 +278,28 @@ creeper-max-damage-radius: 5
 kill-skip-conditions:
 
   # If the mob is nametagged, then don't kill them with the kill command
+  # By default, this is enabled.
   nametagged: true
 
   # If the mob is tamed, then don't kill them with the kill command
+  # By default, this is enabled.
   tamed: true
 
-  # If the mob is leashed, ...
+  # If the mob is leashed, then don't kill them with the kill command
+  # By default, this is enabled.
   leashed: true
 
-  # If the mob is a zombie villager and is in the process of converting to a normal villager, ...
+  # If the mob is a zombie villager and is in the process of converting
+  # to a normal villager, then don't kill them with the kill command
+  # By default, this is enabled.
   convertingZombieVillager: true
+
+
+# Should nametag packets be ignored if the mob is dead?
+# Disable if you want '0 health' to show on the nametag. This has the
+# consequence that other plugins such as ViaBackwards do not like this.
+# By default, this is enabled.
+assert-entity-validity-with-nametag-packets: true
 
 
 # Should LevelledMobs check for updates off of the Spigot page?

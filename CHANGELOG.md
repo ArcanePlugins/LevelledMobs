@@ -3,22 +3,52 @@
 ***
 
 ## v2.2.0
+
 ### Notes:
-* N/A
+
+* This update includes file changes, although LevelledMobs' file migrator can take care of this for you automatically -
+  just start up the new version with your old files and it'll update your configs!
 
 ### Changelog:
-**Minor New Features**
-* Unsafe Enchantments (lokka30)
-  * You can now apply enchantments to items that would not normally accept them, such as Sharpness on a Compass.
-  * Thanks @Noiverre for suggesting this.
+
+**Nametag Enhancements**
+
+* New `%tiered%` placeholder which changes color depending on the level of the mob (green -> red), suggested by
+  @ItsGamingSoni (stumper66)
+* Disable-able nametags! Set `creature-nametag` to `disabled` or disable an individual entity's nametag
+  in `entity-name-override` too. (stumper66)
+
+**Unsafe Enchantments Support** (lokka30)
+
+* You can now apply enchantments to items that would not normally accept them, such as Sharpness on a Compass.
+* Thanks @Noiverre for suggesting this.
+
+**Custom Drops Enhancements**
+
+* Added customisable item meta and attributes, suggested by @Noiverre (stumper66)
+* Added different level increase rates for different mob types, suggested by @Oathkeeper (stumper66)
+* Added unsafe enchantment support (e.g. sharpness 300), suggested by @Noiverre (lokka30)
+
+**Misc Improvements**
+
+* Now allowing translation of baby zombie's nametag in specific, suggested by @bvssy (lokka30)
+* Added config option `assert-entity-validity-with-nametag-packets`, this by default stops nametags being updated on
+  dead mobs. Stops plugins such as ViaBackwards from complaining, but therefore no longer shows '0 HP' on mobs that have
+  just been killed. Thanks to @MelaniumAS for reporting the ViaBackwards issue. (lokka30)
+* Nametag update task timer is now configurable (lokka30)
 
 **Bug Fixes**
+
+* Fixed 1.14 and 1.15 incompatibility due to entity groups in code (stumper66)
+* Fixed `Utils#getSupportedServerVersions` not including `1.14` (lokka30)
 * Fixed chunk load re-level issue (stumper66)
 
 ***
 
 ## v2.1.0
-**WARNING** This update includes file changes! Please see the Notes section below. If you do not update your files then the plugin will malfunction!
+
+**WARNING** This update includes file changes! Please see the Notes section below. If you do not update your files then
+the plugin will malfunction!
 
 ### Notes:
 * File changes:
@@ -38,8 +68,6 @@
 **Config Migration!** (stumper66)
 * We have received a dozen users join the server wondering why LM wasn't working on their server - 90% of the case this is because the user is running an outdated settings file.
 * stumper66 whipped up a brilliant system which automatically updates your config files (and backs up the previous files) just to make sure that the plugin runs smooth if you forgot to update a config file.
-* **Note:** It is still recommended you reset your files when they update regardless since otherwise you will miss out on new/improved config comments which are meant to guide you on how to configure the plugin.
-
 **New compatibility!**
 * Previously, LevelledMobs only made compatibility Citizens. Now as requested by many, LevelledMobs is now compatible with MythicMobs, EliteMobs, InfernalMobs and Shopkeepers too!
 * Thanks to @MagmaGuy for linking me towards the relevant metadata values to make LM compatible with EM.

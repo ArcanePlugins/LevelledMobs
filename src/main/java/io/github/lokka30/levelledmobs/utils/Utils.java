@@ -20,7 +20,7 @@ public final class Utils {
     }
 
     public static List<String> getSupportedServerVersions() {
-        return Arrays.asList("1.15", "1.16");
+        return Arrays.asList("1.14", "1.15", "1.16");
     }
 
     public static final MicroLogger logger = new MicroLogger("&b&lLevelledMobs: &7");

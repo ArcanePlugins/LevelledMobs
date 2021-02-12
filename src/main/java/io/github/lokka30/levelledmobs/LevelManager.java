@@ -377,7 +377,7 @@ public class LevelManager {
         } else if (instance.settingsCfg.contains("entity-name-override." + livingEntity.getType())) {
             entityName = instance.settingsCfg.getString("entity-name-override." + livingEntity.getType());
         }
-        assert entityName != null;
+        if (entityName == null || entityName.isEmpty() || entityName.equalsIgnoreCase("disabled")) return null;
 
         final String displayName = livingEntity.getCustomName() == null ? MicroUtils.colorize(entityName) : livingEntity.getCustomName();
 
@@ -422,13 +422,17 @@ public class LevelManager {
     public void updateNametag(final LivingEntity entity, final String nametag, final List<Player> players) {
         if (!instance.useProtocolLib) return;
 
+        if (nametag == null) return;
+
         BukkitTask task = new BukkitRunnable() {
             @Override
             public void run() {
                 for (Player player : players) {
                     // async task, so make sure the player & entity are valid
                     if (!player.isOnline()) return;
-                    if (!entity.isValid()) return;
+
+                    if (instance.settingsCfg.getBoolean("assert-entity-validity-with-nametag-packets") && !entity.isValid())
+                        return;
 
                     final WrappedDataWatcher dataWatcher = WrappedDataWatcher.getEntityWatcher(entity).deepClone();
                     final WrappedDataWatcher.Serializer chatSerializer;
