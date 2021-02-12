@@ -5,40 +5,30 @@
 ## v2.2.0
 
 ### Notes:
-
 * This update includes file changes, although LevelledMobs' file migrator can take care of this for you automatically -
   just start up the new version with your old files and it'll update your configs!
 
 ### Changelog:
 
-**Nametag Enhancements**
-
+#### Nametag Enhancements
 * New `%tiered%` placeholder which changes color depending on the level of the mob (green -> red), suggested by
   @ItsGamingSoni (stumper66)
 * Disable-able nametags! Set `creature-nametag` to `disabled` or disable an individual entity's nametag
   in `entity-name-override` too. (stumper66)
 
-**Unsafe Enchantments Support** (lokka30)
-
-* You can now apply enchantments to items that would not normally accept them, such as Sharpness on a Compass.
-* Thanks @Noiverre for suggesting this.
-
-**Custom Drops Enhancements**
-
+#### Custom Drops Enhancements
 * Added customisable item meta and attributes, suggested by @Noiverre (stumper66)
 * Added different level increase rates for different mob types, suggested by @Oathkeeper (stumper66)
 * Added unsafe enchantment support (e.g. sharpness 300), suggested by @Noiverre (lokka30)
 
-**Misc Improvements**
-
+#### Misc Improvements
 * Now allowing translation of baby zombie's nametag in specific, suggested by @bvssy (lokka30)
 * Added config option `assert-entity-validity-with-nametag-packets`, this by default stops nametags being updated on
   dead mobs. Stops plugins such as ViaBackwards from complaining, but therefore no longer shows '0 HP' on mobs that have
   just been killed. Thanks to @MelaniumAS for reporting the ViaBackwards issue. (lokka30)
 * Nametag update task timer is now configurable (lokka30)
 
-**Bug Fixes**
-
+#### Bug Fixes
 * Fixed 1.14 and 1.15 incompatibility due to entity groups in code (stumper66)
 * Fixed `Utils#getSupportedServerVersions` not including `1.14` (lokka30)
 * Fixed chunk load re-level issue (stumper66)
