@@ -176,7 +176,7 @@ public class LevelledMobs extends JavaPlugin {
                     "Compatible MC versions: &b" + String.join(", ", Utils.getSupportedServerVersions()) + "&7.");
         }
 
-        if (!useProtocolLib) {
+        if (!hasProtocolLibInstalled) {
             incompatibilities.add("Your server does not have &bProtocolLib&7 installed! This means that no levelled nametags will appear on the mobs. If you wish to see custom nametags above levelled mobs, then you must install ProtocolLib.");
         }
 
