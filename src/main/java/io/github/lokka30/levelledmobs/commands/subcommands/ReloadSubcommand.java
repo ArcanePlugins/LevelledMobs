@@ -23,6 +23,15 @@ public class ReloadSubcommand implements Subcommand {
             reloadFinishedMsg = Utils.replaceAllInList(reloadFinishedMsg, "%prefix%", instance.configUtils.getPrefix());
             reloadFinishedMsg = Utils.colorizeAllInList(reloadFinishedMsg);
 
+            if (instance.hasProtocolLibInstalled){
+                instance.useProtocolLib = !"disabled".equalsIgnoreCase(instance.settingsCfg.getString("creature-nametag"));
+
+                if (instance.useProtocolLib && (instance.levelManager.nametagAutoUpdateTask == null || instance.levelManager.nametagAutoUpdateTask.isCancelled()))
+                    instance.levelManager.startNametagAutoUpdateTask();
+                else if (!instance.useProtocolLib && instance.levelManager.nametagAutoUpdateTask != null && !instance.levelManager.nametagAutoUpdateTask.isCancelled())
+                    instance.levelManager.stopNametagAutoUpdateTask();
+            }
+
             if (instance.settingsCfg.getBoolean("debug-entity-damage") && !instance.debugEntityDamageWasEnabled) {
                 instance.debugEntityDamageWasEnabled = true;
                 instance.pluginManager.registerEvents(instance.entityDamageDebugListener, instance);

@@ -51,6 +51,7 @@ public class LevelledMobs extends JavaPlugin {
     public PluginManager pluginManager;
 
     public boolean hasWorldGuardInstalled;
+    public boolean useProtocolLib;
     public boolean hasProtocolLibInstalled;
     public boolean hasMythicMobsInstalled;
     public WorldGuardManager worldGuardManager;
@@ -96,6 +97,7 @@ public class LevelledMobs extends JavaPlugin {
         }
 
         hasProtocolLibInstalled = pluginManager.getPlugin("ProtocolLib") != null;
+        useProtocolLib = hasProtocolLibInstalled;
 
         loadTime = loadTimer.getTimer(); // combine the load time with enable time.
     }
@@ -116,11 +118,15 @@ public class LevelledMobs extends JavaPlugin {
         if (hasMythicMobsInstalled) {
             this.mythicMobsHelper = new MythicMobsHelper(this);
         }
+
+        if ("disabled".equalsIgnoreCase(settingsCfg.getString("creature-nametag"))){
+            // we're resort to same behavior as protocollib not installed to disable nametags
+            this.useProtocolLib = false;
+        }
+
         registerListeners();
         registerCommands();
-        if (hasProtocolLibInstalled) {
-            levelManager.startNametagAutoUpdateTask();
-        }
+        if (useProtocolLib) levelManager.startNametagAutoUpdateTask();
 
         Utils.logger.info("&fStart-up: &7Running misc procedures...");
         setupMetrics();
@@ -170,7 +176,7 @@ public class LevelledMobs extends JavaPlugin {
                     "Compatible MC versions: &b" + String.join(", ", Utils.getSupportedServerVersions()) + "&7.");
         }
 
-        if (!hasProtocolLibInstalled) {
+        if (!useProtocolLib) {
             incompatibilities.add("Your server does not have &bProtocolLib&7 installed! This means that no levelled nametags will appear on the mobs. If you wish to see custom nametags above levelled mobs, then you must install ProtocolLib.");
         }
 

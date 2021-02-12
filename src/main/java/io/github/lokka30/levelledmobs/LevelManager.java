@@ -420,7 +420,7 @@ public class LevelManager {
      *   - @7smile7 (https://www.spigotmc.org/members/7smile7.43809/)
      */
     public void updateNametag(final LivingEntity entity, final String nametag, final List<Player> players) {
-        if (!instance.hasProtocolLibInstalled) return;
+        if (!instance.useProtocolLib) return;
 
         BukkitTask task = new BukkitRunnable() {
             @Override
@@ -462,7 +462,7 @@ public class LevelManager {
         }.runTaskAsynchronously(instance);
     }
 
-    private BukkitTask nametagAutoUpdateTask;
+    public BukkitTask nametagAutoUpdateTask;
 
     public void startNametagAutoUpdateTask() {
         Utils.logger.info("&fTasks: &7Starting async nametag auto update task...");
@@ -501,9 +501,9 @@ public class LevelManager {
     public void stopNametagAutoUpdateTask() {
         if (!instance.hasProtocolLibInstalled) return;
 
-        Utils.logger.info("&fTasks: &7Stopping async nametag auto update task...");
-
-        if (nametagAutoUpdateTask != null)
+        if (nametagAutoUpdateTask != null && !nametagAutoUpdateTask.isCancelled()) {
+            Utils.logger.info("&fTasks: &7Stopping async nametag auto update task...");
             nametagAutoUpdateTask.cancel();
+        }
     }
 }
