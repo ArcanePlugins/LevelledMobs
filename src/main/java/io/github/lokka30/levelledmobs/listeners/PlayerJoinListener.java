@@ -1,7 +1,7 @@
 package io.github.lokka30.levelledmobs.listeners;
 
 import io.github.lokka30.levelledmobs.LevelledMobs;
-import io.github.lokka30.levelledmobs.utils.Utils;
+import io.github.lokka30.levelledmobs.misc.Utils;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;

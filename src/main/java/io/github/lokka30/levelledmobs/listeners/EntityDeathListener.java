@@ -1,7 +1,7 @@
 package io.github.lokka30.levelledmobs.listeners;
 
-import io.github.lokka30.levelledmobs.CustomDropResult;
 import io.github.lokka30.levelledmobs.LevelledMobs;
+import io.github.lokka30.levelledmobs.customdrops.CustomDropResult;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;

@@ -198,9 +198,45 @@ no-level-conditions:
 
 # 3rd party plugin options here:
 allow-mythic-mobs: false
-allow-infernal-mobs: false
-allow-elite-mobs: false
-allow-super-mobs: false
+
+# Configure LM's compatibility with other plugins
+external-compatibilities:
+
+  # Should LM disable levelling of Mythic Mobs in the MythicMobs plugin?
+  # By default, this is enabled.
+  MYTHIC_MOBS: true
+
+  # Should LM disable levelling of Elite Mobs in the EliteMobs plugin?
+  # (metadata: Elitemob)
+  # By default, this is enabled.
+  ELITE_MOBS: true
+
+  # Should LM disable levelling of NPCs in the EliteMobs plugin?
+  # (metadata: Elitemobs_NPC)
+  # By default, this is enabled.
+  ELITE_MOBS_NPCS: true
+
+  # Should LM disable levelling of Super Mobs in the EliteMobs plugin?
+  # (metadata: Supermob)
+  # By default, this is enabled.
+  ELITE_MOBS_SUPER_MOBS: true
+
+  # Should LM disable levelling of Infernal Mobs in the InfernalMobs plugin?
+  # (metadata: infernalMetadata)
+  # By default, this is enabled.
+  INFERNAL_MOBS: true
+
+  # Should LM disable levelling of NPCs in the Citizens plugin?
+  # (metadata: NPC)
+  # By default, this is enabled.
+  CITIZENS: true
+
+  # Should LM disable levelling of Shopkeepers in the Shopkeepers plugin?
+  # (metadata: shopkeeper)
+  # By default, this is enabled.
+  SHOPKEEPERS: true
+
+
 
 
 # If you want to force an entity type to have a different minimum/maximum level then you can do that here.
@@ -451,4 +487,10 @@ debug-misc: [ ]
 # This value is used when this file is loaded to check if this file is most likely incompatible.
 # The value must match exactly what version the plugin ships the default file with.
 # Don't change this unless you know what you're doing!
-file-version: 26
+file-version: 27
+
+#   /\_/\  (
+#  ( ^.^ ) _)
+#    \"/  (   Psst,
+#  ( | | )    https://www.youtube.com/watch?v=dQw4w9WgXcQ ;)
+# (__d b__)

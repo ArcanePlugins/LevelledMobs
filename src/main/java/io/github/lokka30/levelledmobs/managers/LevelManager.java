@@ -1,14 +1,19 @@
-package io.github.lokka30.levelledmobs;
+package io.github.lokka30.levelledmobs.managers;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import com.comphenix.protocol.wrappers.WrappedDataWatcher;
+import io.github.lokka30.levelledmobs.LevelledMobs;
+import io.github.lokka30.levelledmobs.customdrops.CustomDropInstance;
+import io.github.lokka30.levelledmobs.customdrops.CustomDropResult;
+import io.github.lokka30.levelledmobs.customdrops.CustomDropsUniversalGroups;
+import io.github.lokka30.levelledmobs.customdrops.CustomItemDrop;
 import io.github.lokka30.levelledmobs.listeners.CreatureSpawnListener;
-import io.github.lokka30.levelledmobs.utils.Addition;
-import io.github.lokka30.levelledmobs.utils.ModalList;
-import io.github.lokka30.levelledmobs.utils.Utils;
+import io.github.lokka30.levelledmobs.misc.Addition;
+import io.github.lokka30.levelledmobs.misc.ModalList;
+import io.github.lokka30.levelledmobs.misc.Utils;
 import me.lokka30.microlib.MicroUtils;
 import org.apache.commons.lang.WordUtils;
 import org.bukkit.*;
@@ -79,22 +84,26 @@ public class LevelManager {
     public boolean isLevellable(final LivingEntity livingEntity) {
 
         // Ignore these entity types and metadatas
-        if (livingEntity.getType() == EntityType.PLAYER
-                || livingEntity.getType() == EntityType.UNKNOWN
-                || livingEntity.getType() == EntityType.ARMOR_STAND
+        if (
+            // Entity types to ignore
+                livingEntity.getType() == EntityType.PLAYER
+                        || livingEntity.getType() == EntityType.UNKNOWN
+                        || livingEntity.getType() == EntityType.ARMOR_STAND
 
-                // Citizens plugin compatibility
-                || livingEntity.hasMetadata("NPC")
+                        // EliteMobs plugin compatibility
+                        || (livingEntity.hasMetadata("Elitemob") && instance.externalCompatibilityManager.isExternalCompatibilityEnabled(ExternalCompatibilityManager.ExternalCompatibility.ELITE_MOBS))
+                        || (livingEntity.hasMetadata("Elitemobs_NPC") && instance.externalCompatibilityManager.isExternalCompatibilityEnabled(ExternalCompatibilityManager.ExternalCompatibility.ELITE_MOBS_NPCS))
+                        || (livingEntity.hasMetadata("Supermob") && instance.externalCompatibilityManager.isExternalCompatibilityEnabled(ExternalCompatibilityManager.ExternalCompatibility.ELITE_MOBS_SUPER_MOBS))
 
-                // Shopkeepers plugin compatibility
-                || livingEntity.hasMetadata("shopkeeper")
+                        //InfernalMobs plugin compatibility)
+                        || (livingEntity.hasMetadata("infernalMetadata") && instance.externalCompatibilityManager.isExternalCompatibilityEnabled(ExternalCompatibilityManager.ExternalCompatibility.INFERNAL_MOBS))
 
-                // EliteMobs plugin compatibility
-                || livingEntity.hasMetadata("Elitemob") && !instance.settingsCfg.getBoolean("allow-elite-mobs")
-                || livingEntity.hasMetadata("Supermob") && !instance.settingsCfg.getBoolean("allow-super-mobs")
+                        // Citizens plugin compatibility
+                        || (livingEntity.hasMetadata("NPC") && instance.externalCompatibilityManager.isExternalCompatibilityEnabled(ExternalCompatibilityManager.ExternalCompatibility.CITIZENS))
 
-                //InfernalMobs plugin compatibility)
-                || livingEntity.hasMetadata("infernalMetadata") && !instance.settingsCfg.getBoolean("allow-infernal-mobs")) {
+                        // Shopkeepers plugin compatibility
+                        || (livingEntity.hasMetadata("shopkeeper") && instance.externalCompatibilityManager.isExternalCompatibilityEnabled(ExternalCompatibilityManager.ExternalCompatibility.SHOPKEEPERS))
+        ) {
             return false;
         }
 
@@ -107,7 +116,7 @@ public class LevelManager {
         }
 
         // Check WorldGuard flag.
-        if (instance.hasWorldGuardInstalled && !instance.worldGuardManager.regionAllowsLevelling(livingEntity))
+        if (ExternalCompatibilityManager.hasWorldGuardInstalled() && !instance.worldGuardManager.regionAllowsLevelling(livingEntity))
             return false;
 
         // Check for overrides
@@ -420,13 +429,13 @@ public class LevelManager {
      *   - @7smile7 (https://www.spigotmc.org/members/7smile7.43809/)
      */
     public void updateNametag(final LivingEntity entity, final String nametag, final List<Player> players) {
-        if (!instance.useProtocolLib) return;
-
         if (nametag == null) return;
+        if (!ExternalCompatibilityManager.hasProtocolLibInstalled()) return;
 
         BukkitTask task = new BukkitRunnable() {
             @Override
             public void run() {
+
                 for (Player player : players) {
                     // async task, so make sure the player & entity are valid
                     if (!player.isOnline()) return;
@@ -503,7 +512,7 @@ public class LevelManager {
     }
 
     public void stopNametagAutoUpdateTask() {
-        if (!instance.hasProtocolLibInstalled) return;
+        if (!ExternalCompatibilityManager.hasProtocolLibInstalled()) return;
 
         if (nametagAutoUpdateTask != null && !nametagAutoUpdateTask.isCancelled()) {
             Utils.logger.info("&fTasks: &7Stopping async nametag auto update task...");

@@ -1,6 +1,7 @@
-package io.github.lokka30.levelledmobs;
+package io.github.lokka30.levelledmobs.managers;
 
-import io.github.lokka30.levelledmobs.utils.Addition;
+import io.github.lokka30.levelledmobs.LevelledMobs;
+import io.github.lokka30.levelledmobs.misc.Addition;
 import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Ageable;

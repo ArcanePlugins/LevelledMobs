@@ -1,6 +1,6 @@
-package io.github.lokka30.levelledmobs;
+package io.github.lokka30.levelledmobs.customdrops;
 
-import io.github.lokka30.levelledmobs.utils.Utils;
+import io.github.lokka30.levelledmobs.misc.Utils;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 

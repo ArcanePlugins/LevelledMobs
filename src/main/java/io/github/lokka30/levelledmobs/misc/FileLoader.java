@@ -1,4 +1,4 @@
-package io.github.lokka30.levelledmobs.utils;
+package io.github.lokka30.levelledmobs.misc;
 
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
@@ -17,9 +17,9 @@ import java.util.stream.IntStream;
 
 public final class FileLoader {
 
-    public static final int SETTINGS_FILE_VERSION = 26; // Last changed: 2.2.0
-    public static final int MESSAGES_FILE_VERSION = 1; // Last changed: 2.1.0
-    public static final int CUSTOMDROPS_FILE_VERSION = 5; // Last changed: 2.2.0
+    public static final int SETTINGS_FILE_VERSION = 27; // Last changed: b281
+    public static final int MESSAGES_FILE_VERSION = 1; // Last changed: v2.1.0
+    public static final int CUSTOMDROPS_FILE_VERSION = 5; // Last changed: b280
 
     private FileLoader() {
         throw new UnsupportedOperationException();

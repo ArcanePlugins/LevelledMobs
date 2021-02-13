@@ -1,7 +1,7 @@
 package io.github.lokka30.levelledmobs.listeners;
 
 import io.github.lokka30.levelledmobs.LevelledMobs;
-import io.github.lokka30.levelledmobs.utils.Addition;
+import io.github.lokka30.levelledmobs.misc.Addition;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Projectile;

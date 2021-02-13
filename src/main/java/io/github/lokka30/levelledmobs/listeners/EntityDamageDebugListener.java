@@ -1,7 +1,7 @@
 package io.github.lokka30.levelledmobs.listeners;
 
 import io.github.lokka30.levelledmobs.LevelledMobs;
-import io.github.lokka30.levelledmobs.utils.Utils;
+import io.github.lokka30.levelledmobs.misc.Utils;
 import me.lokka30.microlib.MicroUtils;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;

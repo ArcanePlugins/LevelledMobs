@@ -1,4 +1,4 @@
-package io.github.lokka30.levelledmobs.utils;
+package io.github.lokka30.levelledmobs.misc;
 
 import org.bukkit.entity.EntityType;
 

@@ -1,13 +1,16 @@
 package io.github.lokka30.levelledmobs.listeners;
 
-import io.github.lokka30.levelledmobs.LevelManager;
-import io.github.lokka30.levelledmobs.LevelNumbersWithBias;
 import io.github.lokka30.levelledmobs.LevelledMobs;
-import io.github.lokka30.levelledmobs.utils.*;
+import io.github.lokka30.levelledmobs.managers.ExternalCompatibilityManager;
+import io.github.lokka30.levelledmobs.managers.LevelManager;
+import io.github.lokka30.levelledmobs.misc.*;
 import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.enchantments.EnchantmentTarget;
-import org.bukkit.entity.*;
+import org.bukkit.entity.Creeper;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -134,8 +137,10 @@ public class CreatureSpawnListener implements Listener {
         if (livingEntity.getPersistentDataContainer().has(instance.levelManager.levelKey, PersistentDataType.INTEGER))
             return -1;
 
-        //Check if the mob was spawned by MythicMobs
-        if (instance.hasMythicMobsInstalled && !instance.settingsCfg.getBoolean("allow-mythic-mobs") && instance.mythicMobsHelper.isMythicMob(livingEntity)){
+        // MythicMobs compatibility
+        if (ExternalCompatibilityManager.hasMythicMobsInstalled()
+                && instance.externalCompatibilityManager.isExternalCompatibilityEnabled(ExternalCompatibilityManager.ExternalCompatibility.MYTHIC_MOBS)
+                && ExternalCompatibilityManager.isMythicMob(livingEntity)) {
             return -1;
         }
 
@@ -171,7 +176,7 @@ public class CreatureSpawnListener implements Listener {
             // if spawned naturally it will be -1.  If used summon with specific level specified or if using the slime child system then it will be >= 0
             if (level == -1) {
                 //Check settings for spawn distance levelling and choose levelling method accordingly.
-                if (instance.hasWorldGuardInstalled && instance.worldGuardManager.checkRegionFlags(livingEntity)) {
+                if (ExternalCompatibilityManager.hasWorldGuardInstalled() && instance.worldGuardManager.checkRegionFlags(livingEntity)) {
                     level = generateRegionLevel(livingEntity, debugInfo, spawnReason);
                 } else if (instance.settingsCfg.getBoolean("spawn-distance-levelling.active")) {
                     level = generateDistanceFromSpawnLevel(livingEntity, debugInfo, spawnReason);

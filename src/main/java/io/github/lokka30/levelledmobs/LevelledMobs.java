@@ -1,18 +1,24 @@
 package io.github.lokka30.levelledmobs;
 
 import io.github.lokka30.levelledmobs.commands.LevelledMobsCommand;
+import io.github.lokka30.levelledmobs.customdrops.CustomDropInstance;
+import io.github.lokka30.levelledmobs.customdrops.CustomDropsUniversalGroups;
+import io.github.lokka30.levelledmobs.customdrops.CustomItemDrop;
 import io.github.lokka30.levelledmobs.listeners.*;
-import io.github.lokka30.levelledmobs.utils.ConfigUtils;
-import io.github.lokka30.levelledmobs.utils.FileLoader;
-import io.github.lokka30.levelledmobs.utils.MC1_16_Compat;
-import io.github.lokka30.levelledmobs.utils.Utils;
+import io.github.lokka30.levelledmobs.managers.ExternalCompatibilityManager;
+import io.github.lokka30.levelledmobs.managers.LevelManager;
+import io.github.lokka30.levelledmobs.managers.MobDataManager;
+import io.github.lokka30.levelledmobs.managers.WorldGuardManager;
+import io.github.lokka30.levelledmobs.misc.ConfigUtils;
+import io.github.lokka30.levelledmobs.misc.FileLoader;
+import io.github.lokka30.levelledmobs.misc.MC1_16_Compat;
+import io.github.lokka30.levelledmobs.misc.Utils;
 import me.lokka30.microlib.MicroUtils;
 import me.lokka30.microlib.QuickTimer;
 import me.lokka30.microlib.UpdateChecker;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.MemoryConfiguration;
@@ -24,8 +30,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.io.File;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
@@ -37,29 +41,29 @@ import java.util.stream.Stream;
  */
 public class LevelledMobs extends JavaPlugin {
 
+    // Manager classes
+    public LevelManager levelManager;
+    public MobDataManager mobDataManager;
+    public ExternalCompatibilityManager externalCompatibilityManager;
+    public WorldGuardManager worldGuardManager;
+
+    // Configuration
     public YamlConfiguration settingsCfg;
     public YamlConfiguration messagesCfg;
     public YamlConfiguration attributesCfg;
     public YamlConfiguration dropsCfg;
     public YamlConfiguration customDropsCfg;
     public ConfigUtils configUtils;
+
+    // Misc
+    public final PluginManager pluginManager = Bukkit.getPluginManager();
     public EntityDamageDebugListener entityDamageDebugListener;
+    public int incompatibilitiesAmount;
+    private long loadTime;
 
-    public MobDataManager mobDataManager;
-    public LevelManager levelManager;
-
-    public PluginManager pluginManager;
-
-    public boolean hasWorldGuardInstalled;
-    public boolean useProtocolLib;
-    public boolean hasProtocolLibInstalled;
-    public boolean hasMythicMobsInstalled;
-    public WorldGuardManager worldGuardManager;
-    public MythicMobsHelper mythicMobsHelper;
+    // These will be moved in the near future.
     public boolean isMCVersion_16_OrHigher;
     public MC1_16_Compat mc1_16_Compat;
-
-    // need to move these
     public boolean debugEntityDamageWasEnabled = false;
     public TreeMap<String, Integer> entityTypesLevelOverride_Min;
     public TreeMap<String, Integer> entityTypesLevelOverride_Max;
@@ -73,10 +77,6 @@ public class LevelledMobs extends JavaPlugin {
     public HashSet<EntityType> groups_PassiveMobs;
     public HashSet<EntityType> groups_NetherMobs;
 
-    private long loadTime;
-
-    public int incompatibilitiesAmount;
-
     @Override
     public void onLoad() {
         Utils.logger.info("&f~ Initiating start-up procedure ~");
@@ -86,18 +86,9 @@ public class LevelledMobs extends JavaPlugin {
 
         mobDataManager = new MobDataManager(this);
         levelManager = new LevelManager(this);
-
-        pluginManager = getServer().getPluginManager();
-
-        // Hook into WorldGuard, register LM's flags.
-        // This cannot be moved to onEnable (stated in WorldGuard's documentation).
-        hasWorldGuardInstalled = pluginManager.getPlugin("WorldGuard") != null;
-        if (hasWorldGuardInstalled) {
-            worldGuardManager = new WorldGuardManager(this);
-        }
-
-        hasProtocolLibInstalled = pluginManager.getPlugin("ProtocolLib") != null;
-        useProtocolLib = hasProtocolLibInstalled;
+        externalCompatibilityManager = new ExternalCompatibilityManager(this);
+        configUtils = new ConfigUtils(this);
+        checkWorldGuard(); // Do not move this from onLoad. It will not work otherwise.
 
         loadTime = loadTimer.getTimer(); // combine the load time with enable time.
     }
@@ -114,19 +105,10 @@ public class LevelledMobs extends JavaPlugin {
             return;
         }
         buildUniversalGroups();
-        hasMythicMobsInstalled = pluginManager.getPlugin("MythicMobs") != null;
-        if (hasMythicMobsInstalled) {
-            this.mythicMobsHelper = new MythicMobsHelper(this);
-        }
-
-        if ("disabled".equalsIgnoreCase(settingsCfg.getString("creature-nametag"))){
-            // we're resort to same behavior as protocollib not installed to disable nametags
-            this.useProtocolLib = false;
-        }
 
         registerListeners();
         registerCommands();
-        if (useProtocolLib) levelManager.startNametagAutoUpdateTask();
+        if (ExternalCompatibilityManager.hasProtocolLibInstalled()) levelManager.startNametagAutoUpdateTask();
 
         Utils.logger.info("&fStart-up: &7Running misc procedures...");
         setupMetrics();
@@ -146,6 +128,14 @@ public class LevelledMobs extends JavaPlugin {
         shutDownAsyncTasks();
 
         Utils.logger.info("&f~ Shut-down complete, took &b" + disableTimer.getTimer() + "ms&f ~");
+    }
+
+    private void checkWorldGuard() {
+        // Hook into WorldGuard, register LM's flags.
+        // This cannot be moved to onEnable (stated in WorldGuard's documentation). It MUST be ran in onLoad.
+        if (ExternalCompatibilityManager.hasWorldGuardInstalled()) {
+            worldGuardManager = new WorldGuardManager(this);
+        }
     }
 
     //Checks if the server version is supported
@@ -176,7 +166,7 @@ public class LevelledMobs extends JavaPlugin {
                     "Compatible MC versions: &b" + String.join(", ", Utils.getSupportedServerVersions()) + "&7.");
         }
 
-        if (!hasProtocolLibInstalled) {
+        if (!ExternalCompatibilityManager.hasProtocolLibInstalled()) {
             incompatibilities.add("Your server does not have &bProtocolLib&7 installed! This means that no levelled nametags will appear on the mobs. If you wish to see custom nametags above levelled mobs, then you must install ProtocolLib.");
         }
 
@@ -208,11 +198,11 @@ public class LevelledMobs extends JavaPlugin {
 
         customDropsCfg = FileLoader.loadFile(this, "customdrops", FileLoader.CUSTOMDROPS_FILE_VERSION, true);
 
-        this.entityTypesLevelOverride_Min = getMapFromConfigSection("entitytype-level-override.min-level");
-        this.entityTypesLevelOverride_Max = getMapFromConfigSection("entitytype-level-override.max-level");
-        this.worldLevelOverride_Min = getMapFromConfigSection("world-level-override.min-level");
-        this.worldLevelOverride_Max = getMapFromConfigSection("world-level-override.max-level");
-        this.noDropMultiplierEntities = getSetFromConfigSection("no-drop-multipler-entities");
+        this.entityTypesLevelOverride_Min = configUtils.getMapFromConfigSection("entitytype-level-override.min-level");
+        this.entityTypesLevelOverride_Max = configUtils.getMapFromConfigSection("entitytype-level-override.max-level");
+        this.worldLevelOverride_Min = configUtils.getMapFromConfigSection("world-level-override.min-level");
+        this.worldLevelOverride_Max = configUtils.getMapFromConfigSection("world-level-override.max-level");
+        this.noDropMultiplierEntities = configUtils.getSetFromConfigSection("no-drop-multipler-entities");
         this.customDropsitems = new TreeMap<>();
         this.customDropsitems_groups = new TreeMap<>();
 
@@ -227,8 +217,8 @@ public class LevelledMobs extends JavaPlugin {
         if (settingsCfg.getBoolean("use-custom-item-drops-for-mobs") && customDropsCfg != null)
             parseCustomDrops(customDropsCfg);
 
-        // load configutils
-        configUtils = new ConfigUtils(this);
+        configUtils.init();
+        externalCompatibilityManager.load();
 
         return true;
     }
@@ -370,7 +360,7 @@ public class LevelledMobs extends JavaPlugin {
                             if (value != null && Utils.isInteger(value.toString()))
                                 enchantLevel = Integer.parseInt(value.toString());
 
-                            final Enchantment en = getEnchantmentFromName(enchantName);
+                            final Enchantment en = Utils.getEnchantmentFromName(this, enchantName);
                             if (en != null)
                                 item.getItemStack().addUnsafeEnchantment(en, enchantLevel);
                         }
@@ -496,107 +486,8 @@ public class LevelledMobs extends JavaPlugin {
         ).collect(Collectors.toCollection(HashSet::new));
     }
 
-    @Nullable
-    private Enchantment getEnchantmentFromName(final String name){
-
-        switch (name.replace(" ", "_").toLowerCase()){
-            case "arrow_damage": case "power":
-                return Enchantment.ARROW_DAMAGE;
-            case "arrow_fire": return Enchantment.ARROW_FIRE;
-            case "arrow_infinity": case "infinity":
-                return Enchantment.ARROW_INFINITE;
-            case "binding": case "binding_curse":
-                return Enchantment.BINDING_CURSE;
-            case "arrow_knockback": case "punch":
-                return Enchantment.ARROW_KNOCKBACK;
-            case "channeling": return Enchantment.CHANNELING;
-            case "damage_all": case "sharpness":
-                return Enchantment.DAMAGE_ALL;
-            case "damage_arthropods": case "bane_of_arthropods":
-                return Enchantment.DAMAGE_ARTHROPODS;
-            case "damage_undead": case "smite":
-                return Enchantment.DAMAGE_UNDEAD;
-            case "depth_strider": return Enchantment.DEPTH_STRIDER;
-            case "dig_speed": case "efficiency":
-                return Enchantment.DIG_SPEED;
-            case "durability": case "unbreaking":
-                return Enchantment.DURABILITY;
-            case "fire_aspect": return Enchantment.FIRE_ASPECT;
-            case "frost_walker": return Enchantment.FROST_WALKER;
-            case "impaling": return Enchantment.IMPALING;
-            case "knockback": return Enchantment.KNOCKBACK;
-            case "loot_bonus_blocks": case "looting":
-                return Enchantment.LOOT_BONUS_BLOCKS;
-            case "loyalty": return Enchantment.LOYALTY;
-            case "luck": case "luck_of_the_sea":
-                return Enchantment.LUCK;
-            case "lure": return Enchantment.LURE;
-            case "mending": return Enchantment.MENDING;
-            case "multishot": return Enchantment.MULTISHOT;
-            case "piercing": return Enchantment.PIERCING;
-            case "protection_environmental": case "protection":
-                return Enchantment.PROTECTION_ENVIRONMENTAL;
-            case "protection_explosions": case "blast_protection":
-                return Enchantment.PROTECTION_EXPLOSIONS;
-            case "protection_fall": case "feather_falling":
-                return Enchantment.PROTECTION_FALL;
-            case "projectile_protection":
-                return Enchantment.PROTECTION_PROJECTILE;
-            case "quick_charge": return Enchantment.QUICK_CHARGE;
-            case "riptide": return Enchantment.RIPTIDE;
-            case "silk_touch": return Enchantment.SILK_TOUCH;
-            case "soul_speed": return Enchantment.SOUL_SPEED;
-            case "sweeping_edge": return Enchantment.SWEEPING_EDGE;
-            case "thorns": return Enchantment.THORNS;
-            case "vanishing_curse": case "curse_of_vanishing":
-                return Enchantment.VANISHING_CURSE;
-            case "water_worker": case "respiration":
-                return Enchantment.WATER_WORKER;
-            default:
-                try{
-                    final NamespacedKey namespacedKey = new NamespacedKey(this, name);
-                    return Enchantment.getByKey(namespacedKey);
-                }
-                catch (Exception e){
-                    Utils.logger.warning("Invalid enchantment: " + name);
-                }
-                return null;
-        }
-    }
-
-    @Nonnull
-    private TreeMap<String, Integer> getMapFromConfigSection(final String configPath){
-        final TreeMap<String, Integer> result = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
-        final ConfigurationSection cs = settingsCfg.getConfigurationSection(configPath);
-        if (cs == null) return result;
-
-        final Set<String> set = cs.getKeys(false);
-
-        for (final String item : set) {
-            final Object value = cs.get(item);
-            if (value != null && Utils.isInteger(value.toString())) {
-                result.put(item, Integer.parseInt(value.toString()));
-            }
-        }
-
-        return result;
-    }
-
-    @Nonnull
-    @SuppressWarnings("SameParameterValue")
-    private Set<String> getSetFromConfigSection(final String configPath){
-        final Set<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
-        final List<String> set = settingsCfg.getStringList(configPath);
-
-        result.addAll(set);
-
-        return result;
-    }
-
     private void registerListeners() {
         Utils.logger.info("&fListeners: &7Registering event listeners...");
-
-        pluginManager = getServer().getPluginManager();
 
         levelManager.creatureSpawnListener = new CreatureSpawnListener(this); // we're saving this reference so the summon command has access to it
         entityDamageDebugListener = new EntityDamageDebugListener(this);

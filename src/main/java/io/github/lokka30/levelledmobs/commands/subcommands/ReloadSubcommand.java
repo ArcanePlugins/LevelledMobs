@@ -1,7 +1,8 @@
 package io.github.lokka30.levelledmobs.commands.subcommands;
 
 import io.github.lokka30.levelledmobs.LevelledMobs;
-import io.github.lokka30.levelledmobs.utils.Utils;
+import io.github.lokka30.levelledmobs.managers.ExternalCompatibilityManager;
+import io.github.lokka30.levelledmobs.misc.Utils;
 import org.bukkit.command.CommandSender;
 import org.bukkit.event.HandlerList;
 
@@ -23,12 +24,10 @@ public class ReloadSubcommand implements Subcommand {
             reloadFinishedMsg = Utils.replaceAllInList(reloadFinishedMsg, "%prefix%", instance.configUtils.getPrefix());
             reloadFinishedMsg = Utils.colorizeAllInList(reloadFinishedMsg);
 
-            if (instance.hasProtocolLibInstalled){
-                instance.useProtocolLib = !"disabled".equalsIgnoreCase(instance.settingsCfg.getString("creature-nametag"));
-
-                if (instance.useProtocolLib && (instance.levelManager.nametagAutoUpdateTask == null || instance.levelManager.nametagAutoUpdateTask.isCancelled()))
+            if (ExternalCompatibilityManager.hasProtocolLibInstalled()) {
+                if (ExternalCompatibilityManager.hasProtocolLibInstalled() && (instance.levelManager.nametagAutoUpdateTask == null || instance.levelManager.nametagAutoUpdateTask.isCancelled()))
                     instance.levelManager.startNametagAutoUpdateTask();
-                else if (!instance.useProtocolLib && instance.levelManager.nametagAutoUpdateTask != null && !instance.levelManager.nametagAutoUpdateTask.isCancelled())
+                else if (!ExternalCompatibilityManager.hasProtocolLibInstalled() && instance.levelManager.nametagAutoUpdateTask != null && !instance.levelManager.nametagAutoUpdateTask.isCancelled())
                     instance.levelManager.stopNametagAutoUpdateTask();
             }
 

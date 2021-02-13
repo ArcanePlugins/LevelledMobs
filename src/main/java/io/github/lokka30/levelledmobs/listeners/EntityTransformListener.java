@@ -1,7 +1,7 @@
 package io.github.lokka30.levelledmobs.listeners;
 
 import io.github.lokka30.levelledmobs.LevelledMobs;
-import io.github.lokka30.levelledmobs.utils.MobProcessReason;
+import io.github.lokka30.levelledmobs.misc.MobProcessReason;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;

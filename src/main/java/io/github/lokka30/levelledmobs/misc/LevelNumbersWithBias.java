@@ -1,4 +1,4 @@
-package io.github.lokka30.levelledmobs;
+package io.github.lokka30.levelledmobs.misc;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -56,13 +56,12 @@ public class LevelNumbersWithBias {
     }
 
     @Override
-    public boolean equals(Object obj)
-    {
+    public boolean equals(Object obj) {
         if (this == obj) return true;
         if (obj == null) return false;
         if (this.getClass() != obj.getClass()) return false;
 
-        LevelNumbersWithBias lnwb = (LevelNumbersWithBias) obj;
-        return this.minLevel == lnwb.minLevel && this.maxLevel == lnwb.maxLevel && this.factor == lnwb.factor;
+        LevelNumbersWithBias levelNumbersWithBias = (LevelNumbersWithBias) obj;
+        return this.minLevel == levelNumbersWithBias.minLevel && this.maxLevel == levelNumbersWithBias.maxLevel && this.factor == levelNumbersWithBias.factor;
     }
 }

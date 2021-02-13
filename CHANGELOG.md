@@ -1,10 +1,27 @@
 # Changelog
 
+## v?.?.? b281
+
+### Notes:
+
+* Updated `settings.yml` - the auto update checker will automatically update it for you, unless you do it manually
+
+### Changelog:
+
+LOKKA NOTE: test if creature-nametag 'disabled' works!
+
+#### Code Cleanup
+
+* Trimmed a lot of unnecessary code.
+* External compatibilities are now handled by **ExternalCompatibilityManager**. The relevant part of the settings file
+  has also been cleaned up. (lokka30)
+
 ***
 
 ## v2.2.0
 
 ### Notes:
+
 * This update includes file changes, although LevelledMobs' file migrator can take care of this for you automatically -
   just start up the new version with your old files and it'll update your configs!
 

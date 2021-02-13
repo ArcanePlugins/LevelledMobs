@@ -1,8 +1,8 @@
 package io.github.lokka30.levelledmobs.commands.subcommands;
 
 import io.github.lokka30.levelledmobs.LevelledMobs;
-import io.github.lokka30.levelledmobs.utils.ModalList;
-import io.github.lokka30.levelledmobs.utils.Utils;
+import io.github.lokka30.levelledmobs.misc.ModalList;
+import io.github.lokka30.levelledmobs.misc.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
