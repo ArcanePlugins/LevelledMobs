@@ -373,8 +373,8 @@ public class LevelManager {
         }
 
         final AttributeInstance maxHealth = livingEntity.getAttribute(Attribute.GENERIC_MAX_HEALTH);
-        final String health = maxHealth == null ? "?" : Utils.round(maxHealth.getBaseValue()) + "";
-        final String healthRounded = maxHealth == null ? "?" : (int) Utils.round(maxHealth.getBaseValue()) + "";
+        final String roundedMaxHealth = maxHealth == null ? "?" : Utils.round(maxHealth.getBaseValue()) + "";
+        final String roundedMaxHealthInt = maxHealth == null ? "?" : (int) Utils.round(maxHealth.getBaseValue()) + "";
 
         String nametag = isDeathNametag ? instance.settingsCfg.getString("creature-death-nametag") : instance.settingsCfg.getString("creature-nametag");
         String entityName = WordUtils.capitalizeFully(livingEntity.getType().toString().toLowerCase().replaceAll("_", " "));
@@ -407,8 +407,8 @@ public class LevelManager {
         nametag = nametag.replace("%typename%", entityName);
         nametag = nametag.replace("%health%", Utils.round(livingEntity.getHealth()) + "");
         nametag = nametag.replace("%health_rounded%", (int) Utils.round(livingEntity.getHealth()) + "");
-        nametag = nametag.replace("%max_health%", health);
-        nametag = nametag.replace("%max_health_rounded%", healthRounded);
+        nametag = nametag.replace("%max_health%", roundedMaxHealth);
+        nametag = nametag.replace("%max_health_rounded%", roundedMaxHealthInt);
         nametag = nametag.replace("%heart_symbol%", "❤");
         nametag = nametag.replace("%tiered%", tier.toString());
         nametag = MicroUtils.colorize(nametag);

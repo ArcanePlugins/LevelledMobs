@@ -123,7 +123,7 @@ public class ConfigUtils {
 
         assert creatureNametag != null;
 
-        return creatureNametag.contains("%health%") || creatureNametag.contains("%max_health%");
+        return creatureNametag.contains("%health%") || creatureNametag.contains("%max_health%") || creatureNametag.contains("health_rounded") || creatureNametag.contains("max_health_rounded");
     }
 
     public TreeMap<String, Integer> getMapFromConfigSection(final String configPath) {
