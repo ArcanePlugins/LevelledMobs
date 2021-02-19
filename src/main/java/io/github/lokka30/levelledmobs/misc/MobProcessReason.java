@@ -6,5 +6,6 @@ public enum MobProcessReason {
     SUMMON,
     TRANSFORM,
     WORLD,
-    WORLD_GUARD
+    WORLD_GUARD,
+    TAME_EVENT
 }

@@ -19,6 +19,7 @@ import me.lokka30.microlib.UpdateChecker;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.MemoryConfiguration;
@@ -360,9 +361,11 @@ public class LevelledMobs extends JavaPlugin {
                             if (value != null && Utils.isInteger(value.toString()))
                                 enchantLevel = Integer.parseInt(value.toString());
 
-                            final Enchantment en = Utils.getEnchantmentFromName(this, enchantName);
+                            final Enchantment en = Enchantment.getByKey(NamespacedKey.minecraft(enchantName.toLowerCase()));
                             if (en != null)
                                 item.getItemStack().addUnsafeEnchantment(en, enchantLevel);
+                            else
+                                Utils.logger.warning("Invalid enchantment: " + enchantName);
                         }
                     }
                 } // end enchantments
@@ -507,6 +510,8 @@ public class LevelledMobs extends JavaPlugin {
         pluginManager.registerEvents(new EntityNametagListener(this), this);
         pluginManager.registerEvents(new EntityTargetListener(this), this);
         pluginManager.registerEvents(new PlayerJoinListener(this), this);
+        // TODO: fix entity tame event
+        //pluginManager.registerEvents(new EntityTameEventListener(this), this);
     }
 
     private void registerCommands() {
