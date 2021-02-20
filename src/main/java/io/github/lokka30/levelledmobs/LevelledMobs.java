@@ -86,10 +86,10 @@ public class LevelledMobs extends JavaPlugin {
         loadTimer.start(); // Record how long it takes for the plugin to load.
 
         mobDataManager = new MobDataManager(this);
+        checkWorldGuard(); // Do not move this from onLoad. It will not work otherwise.
         levelManager = new LevelManager(this);
         externalCompatibilityManager = new ExternalCompatibilityManager(this);
         configUtils = new ConfigUtils(this);
-        checkWorldGuard(); // Do not move this from onLoad. It will not work otherwise.
 
         loadTime = loadTimer.getTimer(); // combine the load time with enable time.
     }

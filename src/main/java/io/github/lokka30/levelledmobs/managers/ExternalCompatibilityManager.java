@@ -41,15 +41,15 @@ public class ExternalCompatibilityManager {
     }
 
     public static boolean hasProtocolLibInstalled() {
-        return Bukkit.getPluginManager().isPluginEnabled("ProtocolLib");
+        return Bukkit.getPluginManager().getPlugin("ProtocolLib") != null;
     }
 
     public static boolean hasMythicMobsInstalled() {
-        return Bukkit.getPluginManager().isPluginEnabled("MythicMobs");
+        return Bukkit.getPluginManager().getPlugin("MythicMobs") != null;
     }
 
     public static boolean hasWorldGuardInstalled() {
-        return Bukkit.getPluginManager().isPluginEnabled("WorldGuard");
+        return Bukkit.getPluginManager().getPlugin("WorldGuard") != null;
     }
 
     public static boolean isMythicMob(final LivingEntity livingEntity) {
