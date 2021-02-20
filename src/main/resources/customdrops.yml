@@ -54,7 +54,7 @@ ZOMBIE;SKELETON:
       amount: 1-2
   - diamond_sword:
       chance: 0.05
-      nomultiplier:
+      nomultiplier: true
       enchantments:
         sharpness: 2
         unbreaking: 1

@@ -2,6 +2,7 @@ package io.github.lokka30.levelledmobs.managers;
 
 import io.github.lokka30.levelledmobs.LevelledMobs;
 import io.github.lokka30.levelledmobs.misc.Addition;
+import io.github.lokka30.levelledmobs.misc.Utils;
 import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Ageable;
@@ -57,7 +58,9 @@ public class MobDataManager {
         final double percent = (double) currentLevel / range;
 
         final boolean isAdult = !(livingEntity instanceof Ageable) || ((Ageable)livingEntity).isAdult();
-        final String entityCheckName = isAdult ? livingEntity.getName() : "BABY_" + livingEntity.getName();
+        final String entityCheckName = isAdult ?
+                livingEntity.getName().replace(" ", "_").toUpperCase() :
+                "BABY_" + livingEntity.getName().replace(" ", "_").toUpperCase();
         final double maxOverridenEntity = instance.settingsCfg.getDouble(addition.getMaxAdditionConfigPath(entityCheckName), -100.0); // in case negative number are allowed
         final double max = instance.settingsCfg.getDouble(addition.getMaxAdditionConfigPath());
         //Utils.logger.info(String.format("cl: %s, lmin: %s, lmax: %s, max: %s, percent: %s, test: %s", currentLevel, minLevel, maxLevel, max, percent, addition.getMaxAdditionConfigPath()));
