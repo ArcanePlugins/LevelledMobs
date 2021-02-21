@@ -14,15 +14,15 @@
 
 # Creature nametags! These appear above levelled mobs' heads. They use packets to trick the client into thinking
 # there is an actual nametag on the entity, but there isn't as LevelledMobs won't touch the actual nametag of the entity.
-# You can customise the format of the nametag below! :)
+# You can customize the format of the nametag below! :)
 # You can use the following placeholders:
 # - %level% - the mob's level
 # - %displayname% - the mob's name - will be replaced with the text on its nametag (if the mob is nametagged). -- recommended over %typename%
 # - %typename% - the mob's name - this will not show underlying nametags.
 # - %health% - the mob's health
-# - %health_rounded% - the mob's health, rounded to 0 digits
+# - %health_rounded% - the mob's health, rounded to a whole number
 # - %max_health% - the mob's max health
-# - %max_health_rounded% - the mob's max health, rounded to 0 digits
+# - %max_health_rounded% - the mob's max health, rounded to a whole number
 # - %heart_symbol% - a predefined heart symbol.
 # - %tiered% - the color changes depending on the level of the mob.  Higher levels = red, middle = gold and lower levels = green
 #
@@ -59,7 +59,7 @@ level-passive: false
 # This list determines what entities are allowed to be levelled.
 # These types are case-sensitive, so you must keep them in UPPERCASE.
 # You may also use 'BABY_ZOMBIE' to allow/block baby zombies from being levelled.
-# By default, this blacklists villagers, wandering traders, ender dragons, withers, ravagers, phantoms and baby zombies.
+# By default, this blacklists villagers, wandering traders, ender dragons, withers, ravagers, phantoms, baby zombies and armor stands.
 allowed-entities-list:
 
   # What mode should the allowed entities list use?
@@ -78,6 +78,8 @@ allowed-entities-list:
     - RAVAGER
     - PHANTOM
     - BABY_ZOMBIE
+    # If level-passive is enabled, armor stands are currently considered passive through the code we use which should be changed in the future.
+    # This is why armor stands are force-blacklisted here.
     - ARMOR_STAND
 
 
@@ -91,10 +93,10 @@ overriden-entities:
 #  - BABY_ZOMBIE
 #  - HOGLIN
 
-# make a list below of mobs who's drops will not be multiplied even if they are levelled
+# Make a list below of mobs who's drops will not be multiplied even if they are levelled
 no-drop-multipler-entities:
-  #- wither
-  #- enderman
+#  - WITHER
+#  - ENDERMAN
 
 # In what worlds can levelled mobs spawn?
 # By default, levelled mobs are spawned in all worlds.
@@ -152,15 +154,15 @@ spawn-distance-levelling:
 y-distance-levelling:
 
   # Should monsters level depending on the Y level they spawn in as configured below?
-  # Note that you can't use y-distance-leveling AND spawn-distance-levelling enabled at the same time.
+  # Note that you can't use y-distance-levelling AND spawn-distance-levelling enabled at the same time.
   # By default, this is disabled.
   active: false
 
-  # Specify the Y axis that leveled-mobs will start at.  Mobs spawned at and above this y-level will be at the starting level.
+  # Specify the Y axis that levelled-mobs will start at.  Mobs spawned at and above this y-level will be at the starting level.
   # Use a positive integer. By default, this is 100.
   starting-y-level: 100
 
-  # Specify the Y axis that leveled-mobs will end at.  Mobs spawned at and below this y-level will be fully levelled.
+  # Specify the Y axis that levelled-mobs will end at.  Mobs spawned at and below this y-level will be fully levelled.
   # Use a positive integer. By default, this is 20.
   ending-y-level: 20
 
@@ -240,7 +242,7 @@ external-compatibilities:
 
 
 # If you want to force an entity type to have a different minimum/maximum level then you can do that here.
-# These settings are further overriden by 'world-level-override'
+# These settings are further overridden by 'world-level-override'
 entitytype-level-override:
 
   # Should this system be enabled?
@@ -303,7 +305,7 @@ show-label-for-default-levelled-mobs: true
 
 
 # What should the maxed out creeper explosion radius be?
-# to keep creeper explosion radius from increasing, leave it at 3.
+# To keep creeper explosion radius from increasing, leave it at 3.
 # Warning: using a high value here will basically turn creepers into atomic bombs! :)
 # By default, this is 5.
 creeper-max-damage-radius: 5
@@ -351,19 +353,22 @@ use-update-checker: true
 
 
 
+# WARNING:
 # *********************
 # ADVANCED USERS ONLY!
 # *********************
 #
+#
 # The author recommends
-# only advanced server
-# owners to configure
-# anything below this
-# notice.
+# only highly experienced
+# server owners to change
+# anything below this notice.
+#
 #
 # You could cause the
 # plugin to malfunction
 # by misconfiguring it.
+#
 #
 # If you are unsure,
 # please join the
@@ -371,7 +376,9 @@ use-update-checker: true
 # will be happy to
 # assist you. :)
 #
+#
 # https://discord.io/arcaneplugins
+#
 #
 # *********************
 
@@ -380,7 +387,6 @@ use-update-checker: true
 
 
 
-# ** Recommended that only advanced users configure this! **
 # Change if LevelledMobs ignores mobs spawned with certain spawn reasons.
 # By default, this system allows all spawn reasons for levelled mobs.
 allowed-spawn-reasons-list:
@@ -404,16 +410,16 @@ allowed-spawn-reasons-list:
 # These values have been tried and tested already, so most server owners won't need to change anything here.
 fine-tuning:
 
-  # The minimum level possible for all mobs (unless overriden)
+  # The minimum level possible for all mobs (unless overridden)
   # Use a positive integer. By default, this is 1.
   min-level: 1
 
-  # The maximum level possible for all mobs (unless overriden)
+  # The maximum level possible for all mobs (unless overridden)
   # Use a positive integer. By default, this is 10.
   max-level: 10
 
-  # to make lower mob levels more common, enter a number higher than 0.  Must be a number between 0 and 10
-  # the higher the number, the more common lower levelled mobs will be
+  # To make lower mob levels more common, enter a number higher than 0.  Must be a number between 0 and 10
+  # The higher the number, the more common lower levelled mobs will be
   lower-mob-level-bias-factor: 0
 
   # These values are applied to levelled mobs to make them more difficult and rewarding.
@@ -456,7 +462,7 @@ fine-tuning:
     # Use a positive double (decimal). By default, this is 2.
     xp-drop: 2
 
-    # want to set multipliers or maximums for a specific mob?  Put them here.  Use any of the above settings.
+    # Want to set multipliers or maximums for a specific mob?  Put them here.  Use any of the above settings.
     custom_mob_level:
     #  PIGLIN:
     #    max-health: 30
@@ -466,14 +472,20 @@ fine-tuning:
     #    ranged-attack-damage: 2.5
     #    item-drop: 4
 
+
+
 # When using the summon command how far away from the player will the mob(s) spawn
 # Use a positive integer. By default, this is 5.
 summon-command-spawn-distance-from-player: 5
+
+
 
 # The nametag auto update task will asynchronously execute every ? seconds.
 # Don't change this if you don't know what you're doing.
 # By default, this is 6.
 nametag-auto-update-task-period: 6
+
+
 
 # These settings are meant for developer use to diagnose bugs in the plugin.
 # Enabling them will cause a lot of spam, so you should only enable the
@@ -484,10 +496,14 @@ debug-show-spawned-mobs: false
 debug-show-mobs-not-levellable: false
 debug-misc: [ ]
 
+
+
 # This value is used when this file is loaded to check if this file is most likely incompatible.
 # The value must match exactly what version the plugin ships the default file with.
 # Don't change this unless you know what you're doing!
 file-version: 27
+
+
 
 #   /\_/\  (
 #  ( ^.^ ) _)

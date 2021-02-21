@@ -1,6 +1,6 @@
 # Changelog
 
-## v?.?.? b281
+## v?.?.? b286
 
 ### Notes:
 
@@ -15,6 +15,7 @@ LOKKA NOTE: test if creature-nametag 'disabled' works!
 * Trimmed a lot of unnecessary code.
 * External compatibilities are now handled by **ExternalCompatibilityManager**. The relevant part of the settings file
   has also been cleaned up. (lokka30)
+* Fixed spelling and grammar errors in settings.yml - thanks @Oathkeeper! (@Oathkeeper)
 
 ***
 
