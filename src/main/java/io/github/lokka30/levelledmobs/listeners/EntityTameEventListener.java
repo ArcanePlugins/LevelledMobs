@@ -50,7 +50,7 @@ public class EntityTameEventListener implements Listener {
         int finalLevel = level;
         new BukkitRunnable() {
             public void run() {
-                instance.levelManager.creatureSpawnListener.processMobSpawn(le, CreatureSpawnEvent.SpawnReason.DEFAULT, finalLevel, MobProcessReason.TAME_EVENT);
+                instance.levelManager.creatureSpawnListener.processMobSpawn(le, CreatureSpawnEvent.SpawnReason.DEFAULT, finalLevel, MobProcessReason.TAME_EVENT, false);
             }
         }.runTaskLater(instance, 1L);
     }

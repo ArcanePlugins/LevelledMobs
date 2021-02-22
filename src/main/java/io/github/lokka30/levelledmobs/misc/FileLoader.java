@@ -178,15 +178,15 @@ public final class FileLoader {
             final List<String> oldConfigLines = Files.readAllLines(from.toPath(), StandardCharsets.UTF_8);
             final List<String> newConfigLines = Files.readAllLines(to.toPath(), StandardCharsets.UTF_8);
 
+            final SortedMap<String, FieldInfo> oldConfigMap = getMapFromConfig(oldConfigLines);
+            final SortedMap<String, FieldInfo> newConfigMap = getMapFromConfig(newConfigLines);
+
+            final List<String> currentKey = new ArrayList<>();
+            int keysMatched = 0;
+            int valuesUpdated = 0;
+            int valuesMatched = 0;
+
             if (!isCustomDrops) {
-                final Map<String, FieldInfo> oldConfigMap = getMapFromConfig(oldConfigLines);
-                final Map<String, FieldInfo> newConfigMap = getMapFromConfig(newConfigLines);
-
-                final List<String> currentKey = new ArrayList<>();
-                int keysMatched = 0;
-                int valuesUpdated = 0;
-                int valuesMatched = 0;
-
                 for (int currentLine = 0; currentLine < newConfigLines.size(); currentLine++) {
                     String line = newConfigLines.get(currentLine);
                     final int depth = getFieldDepth(line);
@@ -208,7 +208,6 @@ public final class FileLoader {
                         int splitLength = lineSplit.length;
                         if (splitLength == 2 && lineSplit[1].isEmpty()) splitLength = 1;
                         if (splitLength == 1) {
-                            // no value on a key, means we're likely increasing depth
                             currentKey.add(keyOnly);
 
                             if (isSettings && oldVersion <= 20 && !version20KeysToKeep.contains(key)) continue;
@@ -264,21 +263,10 @@ public final class FileLoader {
                         }
                     }
                 } // loop to next line
-
-                Utils.logger.info(String.format("&fFile Loader: &8(Migration) &7Keys matched: &b%s&7, values matched: &b%s&7, values updated: &b%s&7.", keysMatched, valuesMatched, valuesUpdated));
-            } // end if not custom drops
-            else{
+            } // end if is not custom drops
+            else  {
                 // migrate all values
-                int firstNonCommentLine = 0;
                 int startAt = 0;
-
-                for (int i = 0; i < oldConfigLines.size(); i++){
-                    final String line = oldConfigLines.get(i).replace("\t", "").trim();
-                    if (line.startsWith("#") || line.isEmpty()) continue;
-
-                    firstNonCommentLine = i;
-                    break;
-                }
 
                 for (int i = 0; i < newConfigLines.size(); i++){
                     String line = newConfigLines.get(i).trim();
@@ -292,40 +280,73 @@ public final class FileLoader {
                 while (newConfigLines.size() > startAt + 1)
                     newConfigLines.remove(newConfigLines.size() - 1);
 
+                final int firstNonCommentLine = getFirstNonCommentLine(oldConfigLines);
+
                 for (int i = firstNonCommentLine; i < oldConfigLines.size(); i++){
                     String temp = oldConfigLines.get(i).replaceAll("\\s+$", ""); // trimEnd()
                     if (temp.endsWith("nomultiplier:") || temp.endsWith("nospawner:")) {
                         temp += " true";
                         newConfigLines.add(temp);
                     }
-                    else if (!temp.startsWith("file-version"))
+                    else
                         newConfigLines.add(oldConfigLines.get(i));
                 }
             }
 
-
             Files.write(to.toPath(), newConfigLines, StandardCharsets.UTF_8, StandardOpenOption.TRUNCATE_EXISTING);
             Utils.logger.info("&fFile Loader: &8(Migration) &7Migrated &b" + to.getName() + "&7 successfully.");
+            Utils.logger.info(String.format("&fFile Loader: &8(Migration) &7Keys matched: &b%s&7, values matched: &b%s&7, values updated: &b%s&7.", keysMatched, valuesMatched, valuesUpdated));
         } catch (Exception e) {
             Utils.logger.error("&fFile Loader: &8(Migration) &7Failed to migrate &b" + to.getName() + "&7! Stack trace:");
             e.printStackTrace();
         }
     }
 
+    private static int getFirstNonCommentLine(List<String> input){
+        for (int lineNum = 0; lineNum < input.size(); lineNum++) {
+            final String line = input.get(lineNum).replace("\t", "").trim();
+            if (line.startsWith("#") || line.isEmpty()) continue;
+            return lineNum;
+        }
+
+        return -1;
+    }
+
     @Nonnull
-    private static Map<String, FieldInfo> getMapFromConfig(List<String> input){
-        final Map<String, FieldInfo> configMap = new HashMap<>();
+    private static SortedMap<String, FieldInfo> getMapFromConfig(List<String> input) {
+        //final Map<String, FieldInfo> configMap = new HashMap<>();
+        final SortedMap<String, FieldInfo> configMap = new TreeMap<>();
         final List<String> currentKey = new ArrayList<>();
 
+        int lineNum = -1;
         for (String line : input) {
-            // step 1, collect level 1 key-pairs from old config
+            lineNum++;
+
             final int depth = getFieldDepth(line);
             line = line.replace("\t", "").trim();
             if (line.startsWith("#") || line.isEmpty()) continue;
+
             if (line.contains(":")) {
                 final String[] lineSplit = line.split(":", 2);
                 String key = lineSplit[0].replace("\t", "").trim();
                 final String origKey = key;
+
+                if (origKey.startsWith("-")) {
+                    if (currentKey.size() > depth)
+                        while (currentKey.size() > depth) currentKey.remove(currentKey.size() - 1);
+                    String temp = origKey.substring(1).trim();
+                    String tempKey;
+                    for (int i = 0; i < 100; i++) {
+                        tempKey = String.format("%s[%s]", temp, i);
+                        final String checkKey = getKeyFromList(currentKey, tempKey);
+                        if (!configMap.containsKey(checkKey)) {
+                            currentKey.add(tempKey);
+                            configMap.put(checkKey, null);
+                            break;
+                        }
+                    }
+                    continue;
+                }
 
                 if (depth == 0)
                     currentKey.clear();
@@ -339,19 +360,20 @@ public final class FileLoader {
                 if (splitLength == 2 && lineSplit[1].isEmpty()) splitLength = 1;
                 if (splitLength == 1) {
                     currentKey.add(origKey);
-                }
-                else if (splitLength == 2){
+                } else if (splitLength == 2) {
                     final String value = lineSplit[1].trim();
                     configMap.put(key, new FieldInfo(value, depth));
                 }
-            }
-            else if (line.startsWith("-")){
+            } else if (line.startsWith("-")) {
                 final String key = getKeyFromList(currentKey, null);
+                final String origKey = key;
                 final String value = line.trim().substring(1).trim();
-                if (configMap.containsKey(key))
-                    configMap.get(key).addListValue(value);
+                if (configMap.containsKey(key)) {
+                    FieldInfo fi = configMap.get(key);
+                    fi.addListValue(value);
+                }
                 else
-                    configMap.put(key, new FieldInfo(value, depth));
+                    configMap.put(key, new FieldInfo(value, depth, true));
             }
         }
 

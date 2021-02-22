@@ -49,7 +49,7 @@ public class EntityTransformListener implements Listener {
                 continue;
             }
 
-            instance.levelManager.creatureSpawnListener.processMobSpawn(transformedLivingEntity, CreatureSpawnEvent.SpawnReason.CUSTOM, level, MobProcessReason.TRANSFORM);
+            instance.levelManager.creatureSpawnListener.processMobSpawn(transformedLivingEntity, CreatureSpawnEvent.SpawnReason.CUSTOM, level, MobProcessReason.TRANSFORM, false);
         }
     }
 }

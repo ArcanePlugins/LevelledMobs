@@ -20,6 +20,21 @@ public class SummonSubcommand implements Subcommand {
 
     @Override
     public void parseSubcommand(final LevelledMobs instance, final CommandSender sender, final String label, final String[] args) {
+        boolean useOverride = false;
+        final List<String> useArgs = new ArrayList<>();
+        for (final String arg : args) {
+            if ("/override".equalsIgnoreCase(arg))
+                useOverride = true;
+            else
+                useArgs.add(arg);
+        }
+
+        final String[] useArgs2 = new String[useArgs.size()];
+        useArgs.toArray(useArgs2);
+        parseSubcommand2(instance, sender, label, useArgs2, useOverride);
+    }
+
+    private void parseSubcommand2(final LevelledMobs instance, final CommandSender sender, final String label, final String[] args, final boolean override) {
         if (!sender.hasPermission("levelledmobs.command.summon")) {
             instance.configUtils.sendNoPermissionMsg(sender);
             return;
@@ -93,7 +108,7 @@ public class SummonSubcommand implements Subcommand {
                 final Player player = (Player) sender;
 
                 if (args.length == 4 || args.length == 5) {
-                    summonMobs(instance, entityType, amount, sender, level, player.getLocation(), summonType, player);
+                    summonMobs(instance, entityType, amount, sender, level, player.getLocation(), summonType, player, override);
                 } else {
                     List<String> messages = instance.messagesCfg.getStringList("command.levelledmobs.summon.here.usage");
                     messages = Utils.replaceAllInList(messages, "%prefix%", instance.configUtils.getPrefix());
@@ -131,7 +146,7 @@ public class SummonSubcommand implements Subcommand {
                     return;
                 }
 
-                summonMobs(instance, entityType, amount, sender, level, target.getLocation(), summonType, target);
+                summonMobs(instance, entityType, amount, sender, level, target.getLocation(), summonType, target, override);
             } else {
                 List<String> messages = instance.messagesCfg.getStringList("command.levelledmobs.summon.atPlayer.usage");
                 messages = Utils.replaceAllInList(messages, "%prefix%", instance.configUtils.getPrefix());
@@ -178,7 +193,7 @@ public class SummonSubcommand implements Subcommand {
                     messages = Utils.colorizeAllInList(messages);
                     messages.forEach(sender::sendMessage);
                 } else {
-                    summonMobs(instance, entityType, amount, sender, level, location, summonType, null);
+                    summonMobs(instance, entityType, amount, sender, level, location, summonType, null, override);
                 }
             } else {
                 List<String> messages = instance.messagesCfg.getStringList("command.levelledmobs.summon.atLocation.usage");
@@ -193,11 +208,11 @@ public class SummonSubcommand implements Subcommand {
     @Override
     public List<String> parseTabCompletions(final LevelledMobs instance, final CommandSender sender, final String[] args) {
 
-        // len:    1      2        3        4       5          6            7   8     9
-        // arg:    0      1        2        3       4          5            6   7     8
-        // lvlmobs summon <amount> <entity> <level> here
-        // lvlmobs summon <amount> <entity> <level> atPlayer   <playername>
-        // lvlmobs summon <amount> <entity> <level> atLocation <x>          <y> <z> [world]
+        // len:    1      2        3        4       5          6            7   8     9     10
+        // arg:    0      1        2        3       4          5            6   7     8     9
+        // lvlmobs summon <amount> <entity> <level> here       /override
+        // lvlmobs summon <amount> <entity> <level> atPlayer   <playername> /override
+        // lvlmobs summon <amount> <entity> <level> atLocation <x>          <y> <z> [world] /override
 
         // <amount>
         if (args.length == 2) {
@@ -220,7 +235,7 @@ public class SummonSubcommand implements Subcommand {
 
         // here, atPlayer, atLocation
         if (args.length == 5) {
-            return Arrays.asList("here", "atPlayer", "atLocation");
+            return Arrays.asList("here", "atPlayer", "atLocation", "/override");
         }
 
         // no suggestions for 'here' since it is the last argument for itself
@@ -241,6 +256,8 @@ public class SummonSubcommand implements Subcommand {
                             }
                         }
                         return suggestions;
+                    } else if (args.length == 7){
+                        return Collections.singletonList("/override");
                     }
                     break;
 
@@ -251,8 +268,13 @@ public class SummonSubcommand implements Subcommand {
                         List<String> worlds = new ArrayList<>();
                         Bukkit.getWorlds().forEach(world -> worlds.add(world.getName()));
                         return worlds;
+                    } else if (args.length == 10){
+                        return Collections.singletonList("/override");
                     }
+
                     break;
+                case "here":
+                    return Collections.singletonList("/override");
                 default:
                     return null;
             }
@@ -276,8 +298,9 @@ public class SummonSubcommand implements Subcommand {
         messages.forEach(sender::sendMessage);
     }
 
-    private void summonMobs(final LevelledMobs instance, final EntityType entityType, int amount, final CommandSender sender, int level, Location location, final SummonType summonType, final Player target) {
-        if (instance.levelManager.isLevellable(entityType)) {
+    private void summonMobs(final LevelledMobs instance, final EntityType entityType, int amount, final CommandSender sender,
+                            int level, Location location, final SummonType summonType, final Player target, final boolean override) {
+        if (override || instance.levelManager.isLevellable(entityType)) {
 
             if (location == null || location.getWorld() == null) {
                 List<String> messages = instance.messagesCfg.getStringList("command.levelledmobs.summon.invalid-location");
@@ -307,7 +330,7 @@ public class SummonSubcommand implements Subcommand {
 
             int minLevel = instance.configUtils.getMinLevel(entityType, location.getWorld(), true, null, CreatureSpawnEvent.SpawnReason.CUSTOM);
 
-            if (level < minLevel && !sender.hasPermission("levelledmobs.command.summon.bypass-level-limit")) {
+            if (level < minLevel && !sender.hasPermission("levelledmobs.command.summon.bypass-level-limit") && !override) {
                 level = minLevel;
 
                 List<String> messages = instance.messagesCfg.getStringList("command.levelledmobs.summon.level-limited.min");
@@ -318,7 +341,7 @@ public class SummonSubcommand implements Subcommand {
             }
 
             int maxLevel = instance.configUtils.getMaxLevel(entityType, location.getWorld(), true, null, CreatureSpawnEvent.SpawnReason.CUSTOM);
-            if (level > maxLevel && !sender.hasPermission("levelledmobs.command.summon.bypass-level-limit")) {
+            if (level > maxLevel && !sender.hasPermission("levelledmobs.command.summon.bypass-level-limit") && !override) {
                 level = maxLevel;
 
                 List<String> messages = instance.messagesCfg.getStringList("command.levelledmobs.summon.level-limited.max");
@@ -348,7 +371,8 @@ public class SummonSubcommand implements Subcommand {
 
             for (int i = 0; i < amount; i++) {
                 Entity entity = Objects.requireNonNull(location.getWorld()).spawnEntity(location, entityType);
-                final int mobLevel = instance.levelManager.creatureSpawnListener.processMobSpawn((LivingEntity) entity, CreatureSpawnEvent.SpawnReason.CUSTOM, level, MobProcessReason.SUMMON);
+                final int mobLevel = instance.levelManager.creatureSpawnListener.processMobSpawn(
+                        (LivingEntity) entity, CreatureSpawnEvent.SpawnReason.CUSTOM, level, MobProcessReason.SUMMON, override);
                 if (mobLevel >= 0 && instance.settingsCfg.getBoolean("use-custom-item-drops-for-mobs"))
                     instance.levelManager.creatureSpawnListener.processMobEquipment((LivingEntity) entity, mobLevel);
             }
