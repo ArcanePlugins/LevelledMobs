@@ -108,6 +108,7 @@ public class SummonSubcommand implements Subcommand {
                 final Player player = (Player) sender;
 
                 if (args.length == 4 || args.length == 5) {
+
                     summonMobs(instance, entityType, amount, sender, level, player.getLocation(), summonType, player, override);
                 } else {
                     List<String> messages = instance.messagesCfg.getStringList("command.levelledmobs.summon.here.usage");
@@ -356,16 +357,24 @@ public class SummonSubcommand implements Subcommand {
             }
 
             if (summonType == SummonType.HERE || summonType == SummonType.AT_PLAYER) {
-                int distFromPlayer = instance.settingsCfg.getInt("summon-command-spawn-distance-from-player", 5);
+                final int distFromPlayer = instance.settingsCfg.getInt("summon-command-spawn-distance-from-player", 5);
                 if (distFromPlayer > 0) {
-                    int newX = location.getBlockX();
-                    int newZ = location.getBlockZ();
-                    double direction = target.getLocation().getYaw();
-                    if (direction >= 225.0D && direction <= 314.9D) newX += distFromPlayer;
-                    if (direction >= 45.0D && direction <= 134.9D) newX -= distFromPlayer;
-                    if (direction >= 135.0D && direction <= 224.9D) newZ -= distFromPlayer;
-                    if (direction >= 315.0D || direction <= 44.9D) newZ += distFromPlayer;
-                    location = new Location(location.getWorld(), newX, location.getBlockY(), newZ);
+                    int useDistFromPlayer = distFromPlayer;
+                    final double direction = target.getEyeLocation().getYaw();
+                    final Location origLocation = location;
+                    // try up to 50 times to find a open spot to spawn the mob.  Keep getting closer to the player if needed
+                    for (int i = 0; i < 50; i++) {
+                        useDistFromPlayer -= i;
+                        if (useDistFromPlayer <= 0) break;
+                        int newX = origLocation.getBlockX();
+                        int newZ = origLocation.getBlockZ();
+                        if (direction >= 225.0D && direction <= 314.9D) newX += useDistFromPlayer;
+                        if (direction >= 45.0D && direction <= 134.9D) newX -= useDistFromPlayer;
+                        if (direction >= 135.0D && direction <= 224.9D) newZ -= useDistFromPlayer;
+                        if (direction >= 315.0D || direction <= 44.9D) newZ += useDistFromPlayer;
+                        location = new Location(location.getWorld(), newX, location.getBlockY(), newZ);
+                        if (location.getBlock().isPassable()) break; // found an open spot
+                    }
                 }
             }
 

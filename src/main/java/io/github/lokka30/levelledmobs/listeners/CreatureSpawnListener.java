@@ -411,14 +411,11 @@ public class CreatureSpawnListener implements Listener {
 
         //Check if there should be a variance in level
         if (instance.settingsCfg.getBoolean("spawn-distance-levelling.variance.enabled")) {
-            //The minmum amount of variation.
-            final int minVariation = instance.settingsCfg.getInt("spawn-distance-levelling.variance.min");
-
             //The maximum amount of variation.
             final int maxVariation = instance.settingsCfg.getInt("spawn-distance-levelling.variance.max");
 
             //A random number between min and max which determines the amount of variation that will take place
-            final int change = ThreadLocalRandom.current().nextInt(minVariation, maxVariation + 1);
+            final int change = ThreadLocalRandom.current().nextInt(0, maxVariation + 1);
 
             boolean useOnlyNegative = false;
 

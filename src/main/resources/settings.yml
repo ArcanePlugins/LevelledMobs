@@ -129,10 +129,6 @@ spawn-distance-levelling:
     # By default, this is enabled.
     enabled: true
 
-    # The minimum amount of variance.
-    # Use a positive integer. By default, this is 0.
-    min: 0
-
     # The maximum amount of variance.
     # Use a positive integer. By default, this is 2.
     max: 2

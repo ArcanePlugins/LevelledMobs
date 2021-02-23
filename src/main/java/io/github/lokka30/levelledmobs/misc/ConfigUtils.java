@@ -39,15 +39,6 @@ public class ConfigUtils {
         final String worldName = world.getName();
         int minLevel = main.settingsCfg.getInt("fine-tuning.min-level", 1);
 
-        if (main.settingsCfg.getBoolean("world-level-override.enabled") && main.worldLevelOverride_Min.containsKey(worldName)) {
-            minLevel = Utils.getDefaultIfNull(main.worldLevelOverride_Min, worldName, minLevel);
-            if (debugInfo != null) {
-                debugInfo.rule = MobProcessReason.WORLD;
-                debugInfo.minLevel = minLevel;
-            }
-            return minLevel;
-        }
-
         if (main.settingsCfg.getBoolean("entitytype-level-override.enabled")) {
             if (spawnReason == CreatureSpawnEvent.SpawnReason.REINFORCEMENTS && main.entityTypesLevelOverride_Min.containsKey(entityTypeStr + "_REINFORCEMENTS")) {
                 minLevel = Utils.getDefaultIfNull(main.entityTypesLevelOverride_Min, entityTypeStr + "_REINFORCEMENTS", minLevel);
@@ -59,6 +50,19 @@ public class ConfigUtils {
                 minLevel = Utils.getDefaultIfNull(main.entityTypesLevelOverride_Min, "baby_" + entityTypeStr, minLevel);
                 if (debugInfo != null) debugInfo.rule = MobProcessReason.ENTITY;
             }
+
+            if (debugInfo != null) debugInfo.minLevel = minLevel;
+            return minLevel;
+        }
+
+        if (main.settingsCfg.getBoolean("world-level-override.enabled") && main.worldLevelOverride_Min.containsKey(worldName)) {
+            minLevel = Utils.getDefaultIfNull(main.worldLevelOverride_Min, worldName, minLevel);
+            if (debugInfo != null) {
+                debugInfo.rule = MobProcessReason.WORLD;
+                debugInfo.minLevel = minLevel;
+            }
+            if (debugInfo != null) debugInfo.minLevel = minLevel;
+            return minLevel;
         }
 
         if (debugInfo != null) debugInfo.minLevel = minLevel;
@@ -78,15 +82,6 @@ public class ConfigUtils {
         final String worldName = world.getName();
         int maxLevel = Utils.getDefaultIfNull(main.settingsCfg, "fine-tuning.max-level", 10);
 
-        if (main.settingsCfg.getBoolean("world-level-override.enabled") && main.worldLevelOverride_Max.containsKey(worldName)) {
-            maxLevel = Utils.getDefaultIfNull(main.worldLevelOverride_Max, worldName, maxLevel);
-            if (debugInfo != null) {
-                debugInfo.rule = MobProcessReason.WORLD;
-                debugInfo.maxLevel = maxLevel;
-            }
-            return maxLevel;
-        }
-
         if (main.settingsCfg.getBoolean("entitytype-level-override.enabled")) {
             if (spawnReason == CreatureSpawnEvent.SpawnReason.REINFORCEMENTS && main.entityTypesLevelOverride_Min.containsKey(entityTypeStr + "_REINFORCEMENTS")) {
                 maxLevel = Utils.getDefaultIfNull(main.entityTypesLevelOverride_Max, entityTypeStr + "_REINFORCEMENTS", maxLevel);
@@ -98,6 +93,19 @@ public class ConfigUtils {
                 maxLevel = Utils.getDefaultIfNull(main.entityTypesLevelOverride_Max, "baby_" + entityTypeStr, maxLevel);
                 if (debugInfo != null) debugInfo.rule = MobProcessReason.ENTITY;
             }
+
+            if (debugInfo != null) debugInfo.maxLevel = maxLevel;
+            return maxLevel;
+        }
+
+        if (main.settingsCfg.getBoolean("world-level-override.enabled") && main.worldLevelOverride_Max.containsKey(worldName)) {
+            maxLevel = Utils.getDefaultIfNull(main.worldLevelOverride_Max, worldName, maxLevel);
+            if (debugInfo != null) {
+                debugInfo.rule = MobProcessReason.WORLD;
+                debugInfo.maxLevel = maxLevel;
+            }
+            if (debugInfo != null) debugInfo.maxLevel = maxLevel;
+            return maxLevel;
         }
 
         if (debugInfo != null) debugInfo.maxLevel = maxLevel;
