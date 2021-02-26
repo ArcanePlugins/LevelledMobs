@@ -2,7 +2,6 @@ package io.github.lokka30.levelledmobs.managers;
 
 import io.github.lokka30.levelledmobs.LevelledMobs;
 import io.github.lokka30.levelledmobs.misc.Addition;
-import io.github.lokka30.levelledmobs.misc.Utils;
 import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Ageable;
@@ -41,8 +40,10 @@ public class MobDataManager {
         return instance.dropsCfg.getStringList(entityType.toString()).contains(material.toString());
     }
 
-    public void setAdditionsForLevel(final LivingEntity livingEntity, final Attribute attribute, final Addition addition, final int currentLevel) {
-        final double defaultValue = (double) getAttributeDefaultValue(livingEntity.getType(), attribute);
+    public void setAdditionsForLevel(final LivingEntity livingEntity, final Attribute attribute, final Addition addition, final int currentLevel, final boolean useBaseValue) {
+        final double defaultValue = useBaseValue ?
+                Objects.requireNonNull(livingEntity.getAttribute(attribute)).getBaseValue () :
+                (double) getAttributeDefaultValue(livingEntity.getType(), attribute);
         double tempValue = defaultValue + getAdditionsForLevel(livingEntity, addition, currentLevel);
         if (attribute.equals(Attribute.GENERIC_MAX_HEALTH) && tempValue > 2048.0){
             // max health has hard limit of 2048

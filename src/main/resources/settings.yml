@@ -1,75 +1,190 @@
-# .                           .    .               _ __   __        _
-# /       ___  _   __   ___   |    |     ___    ___/ |    |    __.  \ ___    ____
-# |     .'   ` |   /  .'   `  |    |   .'   `  /   | |\  /|  .'   \ |/   \  (
-# |     |----' `  /   |----'  |    |   |----' ,'   | | \/ |  |    | |    `  `--.
-# /---/ `.___,  \/    `.___, /\__ /\__ `.___, `___,' /    /   `._.' `___,' \___.'
-#                     The Ultimate RPG Levelled Mobs Solution
+#   __                    _  _         _  _____       _
+#  |  |    ___  _ _  ___ | || | ___  _| ||     | ___ | |_  ___
+#  |  |__ | -_|| | || -_|| || || -_|| . || | | || . || . ||_ -|
+#  |_____||___| \_/ |___||_||_||___||___||_|_|_||___||___||___|
+#            The Ultimate RPG Levelled Mobs Solution
 #
-# This is LevelledMobs' settings configuration file. Here, you can adjust the many features
-# the plugin offers. Please be careful when adjusting these settings and read the comments
-# that accompany the setting so you know what it does.
+# |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+# ||
+# || Main Developers:
+# ||  Lokka30 (Original Author)
+# ||  Stumper66 (Developer since v2)
+# ||
+# || Other Contributors:
+# ||  Eyrian, iCodinqs, deiphiz, CoolBoy,
+# ||  Esophose, 7smile7, Hugo5551, konsolas
+# || Special Thanks
+# ||  ArcanePlugins Developers and Bug-Testers
+# ||  SpigotMC, ProtocolLib, PaperMC, and bStats
+# ||
+# |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+# ||
+# || Important Links:
+# ||  Official SpigotMC
+# ||   https://www.spigotmc.org/resources/levelledmobs-for-1-14-x-1-16-x.74304/
+# ||
+# ||  Official ArcanePlugins Discord
+# ||   https://discord.gg/RQ8M4A5
+# ||
+# || Useful Resources:
+# ||  YAML-Parser (Check your config for syntax errors)
+# ||   https://yaml-online-parser.appspot.com/
+# ||
+# || Dependencies:
+# ||  ProtocolLib
+# ||   A soft dependency, used to apply nametags to mobs
+# ||   Without this, mobs will not spawn with their nametags visible
+# ||   https://www.spigotmc.org/resources/protocollib.1997/
+# ||
+# |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 #
-# Use a YAML parser to check for errors before use: https://yaml-online-parser.appspot.com/
-# Join the Discord server for assistance or a chat: https://discord.io/arcaneplugins
-
-# Creature nametags! These appear above levelled mobs' heads. They use packets to trick the client into thinking
-# there is an actual nametag on the entity, but there isn't as LevelledMobs won't touch the actual nametag of the entity.
-# You can customize the format of the nametag below! :)
-# You can use the following placeholders:
-# - %level% - the mob's level
-# - %displayname% - the mob's name - will be replaced with the text on its nametag (if the mob is nametagged). -- recommended over %typename%
-# - %typename% - the mob's name - this will not show underlying nametags.
-# - %health% - the mob's health
-# - %health_rounded% - the mob's health, rounded to a whole number
-# - %max_health% - the mob's max health
-# - %max_health_rounded% - the mob's max health, rounded to a whole number
-# - %heart_symbol% - a predefined heart symbol.
-# - %tiered% - the color changes depending on the level of the mob.  Higher levels = red, middle = gold and lower levels = green
 #
-# By default, this is '&8[%tiered%Level %level%&8 | &f%displayname%&8 | &c%health%&8/&c%max_health% %heart_symbol%&8]'.
-# Screenshot of the default nametag's appearance: https://prnt.sc/xcckzw
-# Set to 'disabled' to disable the levelled nametags.
+# |||||||||||||||||||||||||||||||||||||||||||||||||||||
+# ||  Section 01 - Mob Nametags
+# |||||||||||||||||||||||||||||||||||||||||||||||||||||
+#
+# ||-------------------------------------------------------||
+#     These creature nametags appear above the levelled
+#     mobs head, using packets to emulate a nametag
+#     without actually applying one to the mob to
+#     prevent conflicts with other plugins.
+#
+#     You can use the following placeholders when
+#     crafting your creatures nametag:
+#
+#                   %level% | The mobs current level
+#             %displayname% | The mobs name; will show
+#                           | nametag name if tagged (recommended)
+#                %typename% | The mobs name; will NOT show
+#                           | nametag name if tagged
+#                  %health% | The mobs current health in decimal form
+#              %max_health% | The mobs max health
+#      %max_health_rounded% | The mobs current health,
+#                           | rounded to nearest whole number
+#            %heart_symbol% | A predefined heart character symbol
+#                  %tiered% | Color text based on the level of the mob
+#
+#     You can disable the nametag system entirely by
+#     changing the creature-nametag to 'disabled'
+#     If a player dies to a mob, creature-death-nametag
+#     name will be used for any death messages.
+# ||-------------------------------------------------------||
 creature-nametag: '&8[%tiered%Level %level%&8 | &f%displayname%&8 | &c%health%&8/&c%max_health% %heart_symbol%&8]'
-
-# When a player dies this will be the creature name used in the death message.
 creature-death-nametag: '&8[&7Level %level%&8 | &f%displayname%&8]'
 
 
-# Should the nametag above always be visible?
-# true = can see the nametag when in range. (warning: also through blocks!)
-# false = can see the nametag when very close to it and looking at it
-# Unfortunately there is no in-between option as we are limited with what Minecraft provides.
-# By default, this is disabled.
+# ||-------------------------------------------------------||
+# ||  Should the nametag always be visible?
+#
+#       true | The nametags are always visible, even
+#            | through blocks, when you enter their range
+#      false | The nametags remain hidden until you are
+#            | fairly close and looking directly at it (Default)
+#
+#     Unfortunately, there are no other options, due to
+#     limitations established in Minecraft itself
+# ||-------------------------------------------------------||
 creature-nametag-always-visible: false
 
 
-# When a levelled mob transforms into another mob (e.g. big slime -> smaller slimes, zombie -> drowned),
-# should the transformed mob inherit the level of the original mob?
-# By default, this is enabled.
-level-inheritance: true
+# ||-------------------------------------------------------||
+# ||  Customize Mob Names
+#
+#     If you wish to change the name of mobs used for
+#     nametags, you can do so below. You can disable the
+#     mobs nametag by changing it to 'disabled', as well
+#     as impliment Minecraft's color codes.
+#
+#     The format below consists of the mob name, and
+#     their replacement name.
+#     Reference https://tinyurl.com/SpigotMCEntityTypes
+#     To find the correct mob name to use when selecting it.
+#
+#      entity-name-override:
+#        EntityType:'New Name'
+# ||-------------------------------------------------------||
+entity-name-override:
+  WITHER: 'Wither'
+  CREEPER: 'Creeper'
+  BABY_ZOMBIE: 'Baby Zombie'
+# Here are some further examples below,
+# uncomment them to take effect
+
+#  ENDER_DRAGON: '&5&lEnder Dragon'
+#  PHANTOM: 'disabled'
 
 
-# Should passive creatures be levelled?
-# You probably don't want a Level 10 race horse to ramp up your chunk loading, or a random pig that moves fast.
-# However, you can always limit passive mobs' levels yourself in the 'entitytype-level-override' list :)
-# By default, this is disabled.
-level-passive: false
+# ||-------------------------------------------------------||
+# ||  Should Level 1 mobs display a nametag?
+#
+#        true | Default-Levelled mobs
+#             | will display a nametag (Default)
+#       false | Default-Levelled mobs
+#             | will NOT display a nametag
+# ||-------------------------------------------------------||
+show-label-for-default-levelled-mobs: true
 
 
-# This list determines what entities are allowed to be levelled.
-# These types are case-sensitive, so you must keep them in UPPERCASE.
-# You may also use 'BABY_ZOMBIE' to allow/block baby zombies from being levelled.
-# By default, this blacklists villagers, wandering traders, ender dragons, withers, ravagers, phantoms, baby zombies and armor stands.
+# ||-------------------------------------------------------||
+# ||  ADVANCED USERS ONLY
+# ||  Should nametag packets be ignored if the mob has died?
+#
+#        true | Packets will be ignored once the
+#             | mob has reached zero health
+#       false | Packets will continue to be sent
+#             | when mob has reached zero health
+#             | This is not recommended
+#
+#     This system attempts to fix any conflicts with
+#     plugins similar to ViaBackwards. It is not
+#     recommended that you change this setting unless
+#     you understand what you are doing
+# ||-------------------------------------------------------||
+assert-entity-validity-with-nametag-packets: true
+
+
+# ||-------------------------------------------------------||
+# ||  ADVANCED USERS ONLY
+# ||  Automatic Asynchronous Nametag Update
+#
+#     This setting forces the nametag to update itself
+#     every X seconds. This is meant to resolve any issues
+#     where mobs for whatever reason do not spawn with
+#     their nametags, or if the tags have not updated.
+#     By default, this is set to 6 seconds.
+#     It is not recommended that you change this setting
+#     unless you understand what you are doing
+# ||-------------------------------------------------------||
+nametag-auto-update-task-period: 6
+
+
+#
+#
+# |||||||||||||||||||||||||||||||||||||||||||||||||||||
+# ||  Section 02 - Levelling Mobs
+# |||||||||||||||||||||||||||||||||||||||||||||||||||||
+#
+# ||-------------------------------------------------------||
+# ||  Levellable Entities
+#
+#      BLACKLIST | All permitted entities are levelled,
+#                | excluding the list below
+#      WHITELIST | Only entities listed below will be levelled
+#            ALL | All permitted entities are levelled,
+#                | ignoring the list below
+#
+#      mode: 'BLACKLIST'
+#      list:
+#        - VILLAGER
+#        - ARMOR_STAND
+#
+#     If level-passive is set to true, armor stands are
+#     considered passive; it is recommended in order to
+#     prevent conflicts to leave ARMOR_STAND in the
+#     list until the code is updated
+# ||-------------------------------------------------------||
 allowed-entities-list:
-
-  # What mode should the allowed entities list use?
-  # 'BLACKLIST' = The entities in the list are blocked, but all the other ones are allowed
-  # 'WHITELIST' = The entities in the list are allowed, but all the other ones are blocked
-  # 'ALL' = This list is skipped, and all entities are allowed.
   mode: 'BLACKLIST'
-
-  # The list of worlds to apply the blacklist or whitelist to.
-  # Simply enter the name of the world here. Case-sensitive!
   list:
     - VILLAGER
     - WANDERING_TRADER
@@ -78,180 +193,359 @@ allowed-entities-list:
     - RAVAGER
     - PHANTOM
     - BABY_ZOMBIE
-    # If level-passive is enabled, armor stands are currently considered passive through the code we use which should be changed in the future.
-    # This is why armor stands are force-blacklisted here.
     - ARMOR_STAND
 
 
-# Any entity types in this list will be force-levelled regardless if they are passive, are in 'allowed entities', and so on.
-# These types are case-sensitive, so you must keep them in UPPERCASE.
-# You may also use 'BABY_ZOMBIE' to force baby zombies to be levelled.
-# By default, this list has commented-out entries (and thus is empty). Remove the '#' character before the entries if you want
-# them to take effect.
-overriden-entities:
-#  - CREEPER
-#  - BABY_ZOMBIE
-#  - HOGLIN
-
-# Make a list below of mobs who's drops will not be multiplied even if they are levelled
-no-drop-multipler-entities:
-#  - WITHER
-#  - ENDERMAN
-
-# In what worlds can levelled mobs spawn?
-# By default, levelled mobs are spawned in all worlds.
-allowed-worlds-list:
-
-  # What mode should the world list use?
-  # 'BLACKLIST' = The worlds in the list are blocked, but all the other ones are allowed
-  # 'WHITELIST' = The worlds in the list are allowed, but all the other ones are blocked
-  # 'ALL' = This list is skipped, and all worlds are allowed.
-  mode: 'ALL'
-
-  # The list of worlds to apply the blacklist or whitelist to.
-  # Simply enter the name of the world here. Case-sensitive!
-  list:
-    - 'example_world'
+# ||-------------------------------------------------------||
+# ||  Should Passive creatures be levelled?
+#
+#     Passive creatures are mobs which are not by
+#     default hostile towards the player, this
+#     includes mobs such as the pigs and villagers
+#
+#       true | Passive mobs will be levelled like any other mob
+#      false | Passive mobs will NOT be levelled (Default)
+#
+#     If level-passive is set to true, armor stands are
+#     considered passive; it is recommended in order to
+#     prevent conflicts to leave ARMOR_STAND in the above
+#     blacklist until the code is updated
+# ||-------------------------------------------------------||
+level-passive: false
 
 
-# This system levels mobs depending on their distance to spawn.
+# ||-------------------------------------------------------||
+# ||  Should transformed mobs inherit the
+# ||  level of the original mob?
+#
+#     An example of a transformed mob would be a
+#     Large Slime breaking into Small Slimes, or
+#     when a Zombie converts to a Drowned or Husk.
+#
+#      true | The transformed mob will inherit the
+#           | level of the previous mob (Default)
+#     false | The transformed mob will generate a
+#           | new level based on current settings
+# ||-------------------------------------------------------||
+level-inheritance: true
+
+
+# ||-------------------------------------------------------||
+# ||  Levelling System: Distance from Spawn
+# ||  You may not use both this levelling
+# ||  system and Y-Levelling
+#
+#      spawn-distance-levelling:
+#        active:
+#          true | Enable Distance
+#               | from Spawn Levelling
+#         false | Disable Distance
+#               | from Spawn Levelling (Default)
+#        variance:
+#          enabled:
+#             true | Enable the Variance System (Default)
+#            false | Disable the Variance System
+#          min:
+#              | The minimum amount of
+#              | variance when levelling a mob
+#          max:
+#              | The maximum amount of
+#              | variance when levelling a mob
+#          increase-level-distance:
+#              | Mob level will increase by one
+#              | for every X blocks from spawn
+#          start-distance:
+#              | Mob level will not begin to
+#              | increase until X blocks from spawn
+# ||-------------------------------------------------------||
 spawn-distance-levelling:
-
-  # Should monsters level depending on distance to spawn? (false = this system will be disabled)
-  # By default, this is disabled.
   active: false
-
-  # Should the level be able to randomly increase or decrease (within min/max limits) for variation?
   variance:
-
-    # Should the levels vary randomly (within min/max limits)?
-    # Variation will add/subtract a random amount between min/max numbers set below to the mob's final level.
-    # By default, this is enabled.
     enabled: true
-
-    # The maximum amount of variance.
-    # Use a positive integer. By default, this is 2.
+    min: 0
     max: 2
-
-  # The level will be increased by 1 per the number defined below.
-  # By default, every 200 blocks, the mob's level will increase by 1.
-  # Use a positive integer. By default, this is 200.
   increase-level-distance: 200
-
-  # What distance should we start adding levels to mobs?
-  # Any mob who spawns under this distance will be level 1 (plus variance if set true)
-  # This is only the start so for example, if your increase-level-distance is 200
-  # and this value is 1000, mobs won't be level 2 until 1200 blocks out.
-  # Use a positive integer. By default, this is 0.
   start-distance: 0
 
 
-# This system levels mobs depending on their Y-level.
+# ||-------------------------------------------------------||
+# ||  Levelling System: Y-Levelling
+# ||  You may not use both this levelling
+# ||  system and Distance from Spawn
+#
+#      y-distance-levelling:
+#        active:
+#          true | Enable Y-Distance Levelling
+#         false | Disable Y-Distance Levelling (Default)
+#      starting-y-level:
+#          | The Y-Height where the weakest,
+#          | low level mobs spawn
+#      ending-y-level:
+#          | The Y-Height where the strongest,
+#          | high level mobs spawn
+#      y-period:
+#          | From starting-y-level going down,
+#          | increase level every X blocks
+#      variance:
+#          | Add a +/- variance to any mob
+#          | spawned using this system
+# ||-------------------------------------------------------||
 y-distance-levelling:
-
-  # Should monsters level depending on the Y level they spawn in as configured below?
-  # Note that you can't use y-distance-levelling AND spawn-distance-levelling enabled at the same time.
-  # By default, this is disabled.
   active: false
-
-  # Specify the Y axis that levelled-mobs will start at.  Mobs spawned at and above this y-level will be at the starting level.
-  # Use a positive integer. By default, this is 100.
   starting-y-level: 100
-
-  # Specify the Y axis that levelled-mobs will end at.  Mobs spawned at and below this y-level will be fully levelled.
-  # Use a positive integer. By default, this is 20.
   ending-y-level: 20
-
-  # Optional: How many blocks per level.
-  # Instead of having a linear level assignment from starting-y-level to ending-y-level, specify how many blocks from starting-y-level the next level will apply
-  # for example with a value of 5 and starting-y-level of 100, y-level of 90 will spawn level 2 mobs, y-level 80 will be level 4, and so on
-  # Note that by giving y-period a value of higher than 0 effectively nullifies the ending-y-level setting
-  # Use a positive integer. By default, this is 0.
   y-period: 0
-
-  # Optional: add a bit of randomness to the assigned level.  The higher the value here the higher chance of a random level being assigned
-  # Use a positive integer. By default, this is 0.
   variance: 0
 
 
-# When a mob dies and drops a head, if the mob is a high level and their drops
-# are multiplied, should the heads be multiplied too?
-# On some servers, heads are an expensive resource in their economy
-# so this option allows you to keep it that way.
-# By default, this is disabled.
+# ||-------------------------------------------------------||
+# ||  ADVANCED USERS ONLY
+# ||  Mob Head Drop Multiplier
+#
+#     On some servers, PLAYER_HEADS are too valuable of
+#     a resource to be multiplied with the standard
+#     item drops. That's why this setting exists, to
+#     decide whether you want to multiply.
+#
+#      true | PLAYER_HEADS will be multiplied
+#           | using item-drop set below
+#     false | PLAYER_HEADS will NOT be multipled (Default)
+# ||-------------------------------------------------------||
 mobs-multiply-head-drops: false
 
+# ||-------------------------------------------------------||
+# ||  ADVANCED USERS ONLY
+# ||  Creeper Explosion Radius
+#
+#     Vanilla Minecraft has a Creeper explosion marked
+#     at a radius of 3, our default is 5
+#     WARNING: You can crash your server or at the least
+#     create a giant crater if the explosion radius is
+#     too large for your server or players to handle.
+#     It is recommended not to change this value, as it
+#     has been playtested to be a good middle ground.
+# ||-------------------------------------------------------||
+creeper-max-damage-radius: 5
 
-# If an existing mob has
-# the following conditions
-# then they will not be levelled.
-# For example, enable 'nametagged'
-# if you do not want mobs that are
-# nametagged to be levelled.
-# By default, these are disabled and enabled respectively.
+
+# ||-------------------------------------------------------||
+# ||  ADVANCED USERS ONLY
+# ||  Fine Tuning Settings for Levelling Mob Attributes
+#
+#     These default settings used below have been well
+#     tested to work well for the default configuration
+#     If you increase your Maximum level, you will want
+#     to make adjustments to the following settings in
+#     order to preserve proper difficulty scaling, and
+#     prevent situations where mobs become unkillable or
+#     unfairly difficult to the player. Every server
+#     design and plugin layout is different, so this section
+#     gives you near absolute control over how your mobs
+#     level. You are even given the ability to make
+#     per-mod adjustments at the end for higher flexibility
+#
+#      fine-tuning:
+#        min-level:
+#             | The Minimum level that mobs
+#             | will naturally spawn at
+#        max-level:
+#             | The Maximum level that mobs
+#             | will naturally spawn at
+#        lower-mob-level-bias-factor:
+#             | This setting will make lower-level mobs
+#             | spawn more frequently when higher than 0
+#             | The value can be any number between
+#             | 0 (Disabled) or 10
+#        additions:
+#             | You can set any of these 'additions'
+#             | to 0 to Disable the particular setting
+#          max-health:
+#               | This is the maximum health that can be
+#               | added to a naturally generated mob
+#               | Remember, your server jar may include
+#               | settings which set artificial limits on
+#               | The max-health of a mob. Make sure
+#               | to check your server settings files for any
+#               | imposed caps, as we cannot circumvent that
+#          movement-speed:
+#               | This is the maximum movement
+#               | speed added to a mob
+#               | This setting is HIGHLY sensative to any edits.
+#               | It is recommended that you make adjustments
+#               | no larger than 0.1, and do not increase the
+#               | speed beyond 0.4, as the mobs become too fast
+#          attack-damage:
+#               | This is the maximum additional attack
+#               | damage added to mob attacks
+#               | This by default adds four hearts
+#               | of damage to every attack at max level
+#          ranged-attack-damage:
+#               | This is the maximum additional ranged
+#               | attack damage added to mob attacks
+#               | This setting is HIGHLY sensative to any change.
+#               | It is recommended that you make adjustments
+#               | no larger than 0.25 at a time
+#          item-drop:
+#               | This is a multiplier applied to every
+#               | mob item that drops upon it's demise
+#               | You can made additional adjustments to
+#               | specific items multiplied in customdrops.yml
+#          xp-drop:
+#               | This is a multiplier applied to all xp
+#               | dropped by a mob upon it's demise
+#        custom_mob_level:
+#          EntityType:
+#               | Reference https://tinyurl.com/SpigotMCEntityTypes
+#               | For proper mob names to use in place
+#               | of 'EntityType'. For example, PIGLIN or PIGLIN_BRUTE
+#               | For each EntityType listed, you can establish
+#               | specific settings for that mob which
+#               | would override the global settings
+#               | above for that particular mob
+#               | The values used below are considered default
+#            max-health: 25
+#            movement-speed: 0.1
+#            attack-damage: 4
+#            xp-drop: 1.5
+#            ranged-attack-damage: 3
+#            item-drop: 2
+# ||-------------------------------------------------------||
+fine-tuning:
+  min-level: 1
+  max-level: 10
+  lower-mob-level-bias-factor: 0
+  additions:
+    max-health: 25
+    movement-speed: 0.1
+    attack-damage: 4
+    ranged-attack-damage: 1.5
+    item-drop: 3
+    xp-drop: 2
+
+    custom_mob_level:
+# Below represents an example of a customized PIGLIN
+# Uncomment it to take effect!
+#      PIGLIN:
+#        max-health: 30
+#        movement-speed: 0.2
+#        attack-damage: 6
+#        xp-drop: 3
+#        ranged-attack-damage: 2.5
+#        item-drop: 4
+
+
+#
+#
+# |||||||||||||||||||||||||||||||||||||||||||||||||||||
+# ||  Section 03 - World Settings and Exceptions
+# |||||||||||||||||||||||||||||||||||||||||||||||||||||
+#
+# ||-------------------------------------------------------||
+# ||  Allowed Worlds Settings
+#
+#      BLACKLIST | All worlds are levelled,
+#                | excluding the list below
+#      WHITELIST | Only worlds listed below will be levelled
+#            ALL | All worlds are levelled,
+#                | ignoring the list below
+#
+#      mode: 'BLACKLIST'
+#      list:
+#        - 'world'
+#        - 'world_nether'
+#        - 'world_the_end'
+#        - 'world_herobrine'
+#
+#     By default, ALL worlds are levelled.
+# ||-------------------------------------------------------||
+allowed-worlds-list:
+  mode: 'ALL'
+  list:
+
+# ||-------------------------------------------------------||
+# ||  Allowed Spawn Reasons
+#
+#      BLACKLIST | All mobs spawns are levelled,
+#                | excluding the reasons below
+#      WHITELIST | Only mobs spawn reasons below will be levelled
+#            ALL | All mob spawn reasons are levelled,
+#                | ignoring the list below
+#
+#      mode: 'ALL'
+#      list:
+#        - 'SPAWNER'
+#
+#     By default, ALL mobs are levelled
+#
+#     Reference
+#     https://tinyurl.com/SpigotMCCreatureSpawnEvents
+#     For a list of all possible spawn reasons
+#     to use in the list below
+# ||-------------------------------------------------------||
+allowed-spawn-reasons-list:
+  mode: 'ALL'
+  list:
+    - 'SPAWNER'
+
+# ||-------------------------------------------------------||
+# ||  Do-Not-Level Conditions
+#
+#      nametagged: | Mobs who have had a nametag used
+#                  | on them to change their names
+#           tamed: | Mobs who have been tamed as a pet
+#
+#     To remove or prevent levels on mobs who have been
+#     tamed or nametagged, change their setting below
+#     to true. To allow mobs to level regardless whether
+#     they are tamed or tagged, change the setting below
+#     to false. By default, they are false and true respectively.
+# ||-------------------------------------------------------||
 no-level-conditions:
   nametagged: false
   tamed: true
 
 
-# 3rd party plugin options here:
-allow-mythic-mobs: false
-
-# Configure LM's compatibility with other plugins
-external-compatibilities:
-
-  # Should LM disable levelling of Mythic Mobs in the MythicMobs plugin?
-  # By default, this is enabled.
-  MYTHIC_MOBS: true
-
-  # Should LM disable levelling of Elite Mobs in the EliteMobs plugin?
-  # (metadata: Elitemob)
-  # By default, this is enabled.
-  ELITE_MOBS: true
-
-  # Should LM disable levelling of NPCs in the EliteMobs plugin?
-  # (metadata: Elitemobs_NPC)
-  # By default, this is enabled.
-  ELITE_MOBS_NPCS: true
-
-  # Should LM disable levelling of Super Mobs in the EliteMobs plugin?
-  # (metadata: Supermob)
-  # By default, this is enabled.
-  ELITE_MOBS_SUPER_MOBS: true
-
-  # Should LM disable levelling of Infernal Mobs in the InfernalMobs plugin?
-  # (metadata: infernalMetadata)
-  # By default, this is enabled.
-  INFERNAL_MOBS: true
-
-  # Should LM disable levelling of NPCs in the Citizens plugin?
-  # (metadata: NPC)
-  # By default, this is enabled.
-  CITIZENS: true
-
-  # Should LM disable levelling of Shopkeepers in the Shopkeepers plugin?
-  # (metadata: shopkeeper)
-  # By default, this is enabled.
-  SHOPKEEPERS: true
-
-
-
-
-# If you want to force an entity type to have a different minimum/maximum level then you can do that here.
-# These settings are further overridden by 'world-level-override'
+# ||-------------------------------------------------------||
+# ||  ADVANCED USERS ONLY
+# ||  Entity Level Override
+#
+#     When enabled, any mob listed below will use their
+#     customized minimum and maximum when spawning
+#     overriding the global settings AND the
+#     world-level-override settings below.
+#
+#      entitytype-level-override:
+#        enabled:
+#           true | Use the customized minimum and
+#                | maximums for mobs listed below
+#          false | Use the global minimum and
+#                | maximum for all mobs (Default)
+#        min-level:
+#          EntityType: 1
+#               | This consists of the 'EntityType: X' list
+#               | Where X is the minimum level for
+#               | the EntityType to spawn
+#        max-level:
+#          EntityType: 10
+#               | This consists of the 'EntityType: Y' list
+#               | Where Y is the maximum level for
+#               | the EntityType to spawn
+#
+#     The default list below, while not enabled by
+#     default, has been play tested to function well
+#     with default configuration. Don't forget to
+#     change 'enabled' to true if you want to activate
+#     any changes you've made here.
+#     Reference https://tinyurl.com/SpigotMCEntityTypes
+#     For proper mob names to use in place of 'EntityType'
+#     For example, PIGLIN or PIGLIN_BRUTE
+# ||-------------------------------------------------------||
 entitytype-level-override:
-
-  # Should this system be enabled?
-  # By default, this is disabled.
   enabled: false
-
-  # Configure the minimum levels of certain entities here.
   min-level:
     ENDER_DRAGON: 5
     WITHER: 3
     BABY_ZOMBIE: 1
-
-  # Configure the max levels of certain entities here.
   max-level:
     ENDER_DRAGON: 7
     WITHER: 6
@@ -259,247 +553,208 @@ entitytype-level-override:
     ZOMBIE_REINFORCEMENTS: 2
 
 
-# If you want to force a world to have a minimum/maximum level then you can do that here.
-# This system overrides level limits determined by 'entitytype-level-override'.
+# ||-------------------------------------------------------||
+# ||  ADVANCED USERS ONLY
+# ||  World Level Override
+#
+#     When enabled, any world listed below will use
+#     their customized minimum and maximum when
+#     spawning, overriding the global settings.
+#
+#      world-level-override:
+#        enabled:
+#           true | Use the customized minimum and
+#                | maximums for worlds listed below
+#          false | Use the global minimum and
+#                | maximum for all mobs (Default)
+#                | Unless entity-type-override above
+#                | has been enabled
+#        min-level:
+#          example_world:
+#               | This consists of the 'world: X' list
+#               | Where X is the minimum level for the
+#               | world 'example_world' to spawn
+#        max-level:
+#          example_world:
+#               | This consists of the 'world: Y' list
+#               | Where Y is the maximum level for the
+#               | world 'example_world' to spawn
+#
+#     Don't forget to change 'enabled' to true if you
+#     wish to activate this setting
+# ||-------------------------------------------------------||
 world-level-override:
-
-  # Should this system be enabled?
-  # By default, this is disabled.
   enabled: false
-
-  # Configure the minimum levels of entities in certain worlds here.
   min-level:
-    example_world_123: 5
-
-  # Configure the maximum levels of entities in certain worlds here.
+    example_world: 1
+    example_world_the_end: 5
   max-level:
-    example_world_123: 6
-    example_world_456: 3
+    example_world: 5
+    example_world_nether: 8
 
 
-# If you want to change the name of mobs in the nametag then you can do that here.
-# Comes with color code support too.
-# Set their name to 'disabled' to disable their individual nametag.
-# Baby zombies can use 'BABY_ZOMBIE' - if not supplied then they will use 'ZOMBIE'
-entity-name-override:
-  WITHER: 'Wither'
-  CREEPER: 'Creeper'
-  BABY_ZOMBIE: 'Baby Zombie'
-# Here are examples, un-comment them to make them take effect.
-# ENDER_DRAGON: '&5&lEnder Dragon' # Color codes on the ender dragon's name.
-# PHANTOM: 'disabled' # Disables nametags for phantoms.
+# ||-------------------------------------------------------||
+# ||  ADVANCED USERS ONLY
+# ||  Force-Levelled Mobs
+#
+#     Any mob listed below will be levelled regardless
+#     of any setting listed above or below.
+#     Reference https://tinyurl.com/SpigotMCEntityTypes
+#     For proper mob names to use in place of 'EntityType'.
+#     For example, PIGLIN or PIGLIN_BRUTE
+#
+#      overriden-entities:
+#        - EntityType
+# ||-------------------------------------------------------||
+overriden-entities:
 
 
-# If set to true then the file customdrops.yml will be utilized to specify which items mobs will drop
+# ||-------------------------------------------------------||
+# ||  ADVANCED USERS ONLY
+# ||  Force No-Multiply Item and XP Drops
+#
+#     Any mob listed below will will not have their
+#     drops, items or xp, multiply regardless of
+#     any setting listed above or below.
+#     Reference https://tinyurl.com/SpigotMCEntityTypes
+#     For proper mob names to use in place of 'EntityType'.
+#     For example, PIGLIN or PIGLIN_BRUTE
+#
+#      overriden-entities:
+#        - EntityType
+# ||-------------------------------------------------------||
+no-drop-multipler-entities:
+
+
+# ||-------------------------------------------------------||
+# ||  ADVANCED USERS ONLY
+# ||  Assign Priority
+#
+#     There are several different settings which allow
+#     you to adjust your mobs level and stats based
+#     on the following settings, which are also in their
+#     suggested default priorities
+#
+#      ENTITY | entitytype-level-override
+#             | These settings fine-tune specific mobs
+#       WORLD | world-level-override
+#             | These settings override the minimum and
+#             | maximum levels in specific worlds
+#      GLOBAL | fine-tuning
+#             | The GLOBAL setting refers to the figures
+#             | listed in fine-tuning
+#
+# ||-------------------------------------------------------||
+assign_priority:
+  1: entity
+  2: world
+  3: global
+
+
+#
+#
+# |||||||||||||||||||||||||||||||||||||||||||||||||||||
+# ||  Section 04 - Compatibility and Other Settings
+# |||||||||||||||||||||||||||||||||||||||||||||||||||||
+#
+# ||-------------------------------------------------------||
+# ||  ADVANCED USERS ONLY
+# ||  External Plugin Compatibility
+#
+#     By default, all compatibilities are set to true.
+#     It is recommended that you do not change these
+#     settings without understanding what you are doing.
+#     Disabling a compatibility will prevent LevelledMobs
+#     from applying levels to the spawned creature.
+#
+#      external-compatibilites:
+#                  MYTHIC_MOBS: | Metadata: mythic_mobs
+#                   ELITE_MOBS: | Metadata: Elitemob
+#              ELITE_MOBS_NPCS: | Metadata: Elitemobs_NPC
+#        ELITE_MOBS_SUPER_MOBS: | Metadata: Supermob
+#                INFERNAL_MOBS: | Metadata: infernalMetadata
+#                     CITIZENS: | Metadata: NPC
+#                  SHOPKEEPERS: | Metadata: shopkeeper
+#
+# ||-------------------------------------------------------||
+external-compatibilities:
+  MYTHIC_MOBS: true
+  ELITE_MOBS: true
+  ELITE_MOBS_NPCS: true
+  ELITE_MOBS_SUPER_MOBS: true
+  INFERNAL_MOBS: true
+  CITIZENS: true
+  SHOPKEEPERS: true
+
+
+# ||-------------------------------------------------------||
+# ||  ADVANCED USERS ONLY
+# ||  Use CustomDrops (customdrops.yml)
+#
+#     The CustomDrops system is highly configurable and
+#     allows for incredible fine-tuning to drops
+#     The file customdrops.yml located within the same
+#     folder as this file will have more details
+#     By default, this is set to false
+# ||-------------------------------------------------------||
 use-custom-item-drops-for-mobs: false
 
 
-# If the mob is the default level, show the LevelledMobs label (nametag)?
-# 'false' is more like vanilla minecraft if the mob is at the default level.
-# By default, this is enabled.
-show-label-for-default-levelled-mobs: true
-
-
-# What should the maxed out creeper explosion radius be?
-# To keep creeper explosion radius from increasing, leave it at 3.
-# Warning: using a high value here will basically turn creepers into atomic bombs! :)
-# By default, this is 5.
-creeper-max-damage-radius: 5
-
-
-# When the '/lm kill' command attempts to kill a mob, if any of these conditions
-# are 'true' below and met by the mob, then they will be 'skipped'.
+# ||-------------------------------------------------------||
+# ||  ADVANCED USERS ONLY
+# ||  Miscellaneous LevelledMobs Settings
+#
+#      summon-command-spawn-distance-from-player:
+#        | This setting establishes how far away from
+#        | a player a mob will spawn when you use the
+#        | LevelledMobs '/lm summon' command
+#        | By default, the radius is 5 blocks
+#      kill-skip-conditions:
+#        | When using '/lm kill' command, any mob
+#        | with the following tags set to true will
+#        | be automatically skipped. This is useful
+#        | to prevent pets or other unintended deaths,
+#        | and it is recommended that you do not adjust
+#        | these settings without understanding what
+#        | you are doing
+#        nametagged:
+#             | Mobs with a nametag appplied
+#        tamed:
+#             | Mobs who have been tamed
+#        leashed:
+#             | Mobs currently attached to a leash
+#        convertingZombieVillager:
+#             | Zombie Villagers in
+#             | the process of transforming
+# ||-------------------------------------------------------||
+summon-command-spawn-distance-from-player: 5
 kill-skip-conditions:
-
-  # If the mob is nametagged, then don't kill them with the kill command
-  # By default, this is enabled.
   nametagged: true
-
-  # If the mob is tamed, then don't kill them with the kill command
-  # By default, this is enabled.
   tamed: true
-
-  # If the mob is leashed, then don't kill them with the kill command
-  # By default, this is enabled.
   leashed: true
-
-  # If the mob is a zombie villager and is in the process of converting
-  # to a normal villager, then don't kill them with the kill command
-  # By default, this is enabled.
   convertingZombieVillager: true
 
 
-# Should nametag packets be ignored if the mob is dead?
-# Disable if you want '0 health' to show on the nametag. This has the
-# consequence that other plugins such as ViaBackwards do not like this.
-# By default, this is enabled.
-assert-entity-validity-with-nametag-packets: true
-
-
-# Should LevelledMobs check for updates off of the Spigot page?
-# Following annoyances from other plugins' update checkers, LM's update checker just does its job nicely.
-# - This update checker is async, meaning it won't freeze your server whilst it checks. (separate CPU thread)
-# - It will only send a message to console if it found an update. You won't get spammed.
-# - It will only run once on startup. No repeating tasks or anything like that.
-# By default, this is enabled.
+# ||-------------------------------------------------------||
+# ||  ADVANCED USERS ONLY
+# ||  Updates and Debug Settings
+#
+#     You should only change these settings by the
+#     direction of an official LevelledMobs developer,
+#     as these could result in a broken plugin, console
+#     spam, and terminal config errors if not used as instructed.
+#     The update task runs ASYNC and only once at server
+#     startup, and should not affect performance.
+# ||-------------------------------------------------------||
 use-update-checker: true
-
-
-
-
-
-
-# WARNING:
-# *********************
-# ADVANCED USERS ONLY!
-# *********************
-#
-#
-# The author recommends
-# only highly experienced
-# server owners to change
-# anything below this notice.
-#
-#
-# You could cause the
-# plugin to malfunction
-# by misconfiguring it.
-#
-#
-# If you are unsure,
-# please join the
-# Discord server, we
-# will be happy to
-# assist you. :)
-#
-#
-# https://discord.io/arcaneplugins
-#
-#
-# *********************
-
-
-
-
-
-
-# Change if LevelledMobs ignores mobs spawned with certain spawn reasons.
-# By default, this system allows all spawn reasons for levelled mobs.
-allowed-spawn-reasons-list:
-
-  # What mode should the spawn reasons list use?
-  # 'BLACKLIST' = The spawn reasons in the list are blocked, but all the other ones are allowed
-  # 'WHITELIST' = The spawn reasons in the list are allowed, but all the other ones are blocked
-  # 'ALL' = This list is skipped, and all the spawn reasons are allowed.
-  mode: 'ALL'
-
-  # The list of spawn reasons to apply the blacklist or whitelist to.
-  # You can find all spawn reasons here: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/event/entity/CreatureSpawnEvent.SpawnReason.html
-  list:
-    - 'SPAWNER'
-
-
-# ******************************************************************************
-# TEST CHANGES ON A SECONDARY TEST SERVER BEFORE APPLYING TO YOUR MAIN SERVER :)
-# ******************************************************************************
-# This section allows you to make levelled mobs easier or harder.
-# These values have been tried and tested already, so most server owners won't need to change anything here.
-fine-tuning:
-
-  # The minimum level possible for all mobs (unless overridden)
-  # Use a positive integer. By default, this is 1.
-  min-level: 1
-
-  # The maximum level possible for all mobs (unless overridden)
-  # Use a positive integer. By default, this is 10.
-  max-level: 10
-
-  # To make lower mob levels more common, enter a number higher than 0.  Must be a number between 0 and 10
-  # The higher the number, the more common lower levelled mobs will be
-  lower-mob-level-bias-factor: 0
-
-  # These values are applied to levelled mobs to make them more difficult and rewarding.
-  additions:
-
-    # What is the maximum amount of health added to a normal mob?
-    # Set to 0 to disable.
-    # Use a positive double (decimal).
-    max-health: 25
-
-    # **WARNING, READ CAREFULLY**
-    # What is the maximum amount of movement speed added to a normal mob?
-    # Set to 0 to disable.
-    # Minecraft uses small numbers for movement speeds. It is sensitive to small changes.
-    # Do not set this above 0.4.
-    # Recommended: +/- by 0.1-0.05 if changing this.
-    # Use a positive double (decimal). By default, this is 0.1.
-    movement-speed: 0.1
-
-    # What is the maximum attack damage added to a normal mob?
-    # Set to 0 to disable.
-    # Use a positive double (decimal). By default, this is 4.
-    attack-damage: 4
-
-    # What is the maximum ranged attack damage? (i.e. skeleton arrows).
-    # Set to 0 to disable.
-    # Recommended: +/- by 0.25 if changing this.
-    # Use a positive double (decimal). By default, this is 1.5.
-    ranged-attack-damage: 1.5
-
-    # What is the maximum item drop multiplier?
-    # Set to 0 to disable.
-    # Recommended: +/- by 0.5 if changing this.
-    # Use a positive double (decimal). By default, this is 3.
-    item-drop: 3
-
-    # What is the maximum XP drop multiplier?
-    # Set to 0 to disable.
-    # Recommended: +/- by 0.5 if changing this.
-    # Use a positive double (decimal). By default, this is 2.
-    xp-drop: 2
-
-    # Want to set multipliers or maximums for a specific mob?  Put them here.  Use any of the above settings.
-    custom_mob_level:
-    #  PIGLIN:
-    #    max-health: 30
-    #    movement-speed: 0.2
-    #    attack-damage: 6
-    #    xp-drop: 3
-    #    ranged-attack-damage: 2.5
-    #    item-drop: 4
-
-
-
-# When using the summon command how far away from the player will the mob(s) spawn
-# Use a positive integer. By default, this is 5.
-summon-command-spawn-distance-from-player: 5
-
-
-
-# The nametag auto update task will asynchronously execute every ? seconds.
-# Don't change this if you don't know what you're doing.
-# By default, this is 6.
-nametag-auto-update-task-period: 6
-
-
-
-# These settings are meant for developer use to diagnose bugs in the plugin.
-# Enabling them will cause a lot of spam, so you should only enable the
-# debug features if you need the information they provide.
-# By default, these are disabled.
 debug-entity-damage: false
 debug-show-spawned-mobs: false
 debug-show-mobs-not-levellable: false
 debug-misc: [ ]
+file-version: 28
 
 
-
-# This value is used when this file is loaded to check if this file is most likely incompatible.
-# The value must match exactly what version the plugin ships the default file with.
-# Don't change this unless you know what you're doing!
-file-version: 27
-
-
+# And that's the end of the file! Congratulations!
 
 #   /\_/\  (
 #  ( ^.^ ) _)
