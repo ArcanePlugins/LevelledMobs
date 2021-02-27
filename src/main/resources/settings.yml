@@ -68,7 +68,7 @@ allowed-entities-list:
   # 'ALL' = This list is skipped, and all entities are allowed.
   mode: 'BLACKLIST'
 
-  # The list of worlds to apply the blacklist or whitelist to.
+  # The list of entities to apply the blacklist or whitelist to.
   # Simply enter the name of the world here. Case-sensitive!
   list:
     - VILLAGER
@@ -503,6 +503,6 @@ file-version: 27
 
 #   /\_/\  (
 #  ( ^.^ ) _)
-#    \"/  (   Psst,
-#  ( | | )    https://www.youtube.com/watch?v=dQw4w9WgXcQ ;)
+#    \"/  (   You've reached the end of the file! :o
+#  ( | | )    Remember to use a YAML validator to make sure your file has a valid structure. :)
 # (__d b__)

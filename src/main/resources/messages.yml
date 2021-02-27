@@ -190,3 +190,11 @@ other:
 # The value must match exactly what version the plugin ships the default file with.
 # Don't change this unless you know what you're doing!
 file-version: 1
+
+
+
+#   /\_/\  (
+#  ( ^.^ ) _)
+#    \"/  (   You've reached the end of the file! :o
+#  ( | | )    Remember to use a YAML validator to make sure your file has a valid structure. :)
+# (__d b__)

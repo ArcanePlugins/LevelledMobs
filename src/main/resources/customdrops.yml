@@ -6,7 +6,7 @@
 #                     The Ultimate RPG Levelled Mobs Solution
 #
 # This is the custom drops configuration where you can make mobs drop items of your choice.
-# Thanks to stumper66 for creating this system!
+# This entire system was created by stumper66, give him your thanks if you like it ;)
 #
 # ***** IMPORTANT NOTE! *****
 # To use utilize this file, edit settings.yml and change this value to true: use-custom-item-drops-for-mobs

@@ -4,6 +4,14 @@
 #
 # This file has been manually modified as not all drops were covered by the generateMobData method
 # Ensure to check https://minecraft.gamepedia.com/Drops#Mob_drops when modifying this file
+#
+# To repeat one last time:
+# (!) THIS
+# (!) IS
+# (!) NOT
+# (!) A
+# (!) CONFIGURATION
+# (!) FILE :)
 GENERATION_INFO: '[Date: 22/01/2021 10:17:47], [ServerVersion: git-Paper-438 (MC:
   1.16.5)]'
 ELDER_GUARDIAN:

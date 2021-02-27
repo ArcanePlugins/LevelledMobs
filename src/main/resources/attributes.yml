@@ -1,5 +1,13 @@
 # This is NOT a configuration file! All changes to this file will not take effect and be reset!
 # This file stores the default attributes for each LivingEntity. This is to squash issue #116 on the GitHub issue tracker.
+#
+# To repeat one last time:
+# (!) THIS
+# (!) IS
+# (!) NOT
+# (!) A
+# (!) CONFIGURATION
+# (!) FILE :)
 GENERATION_INFO: '[Date: 11/01/2021 20:14:47], [ServerVersion: git-Paper-366 (MC:
   1.16.4)]'
 ELDER_GUARDIAN:

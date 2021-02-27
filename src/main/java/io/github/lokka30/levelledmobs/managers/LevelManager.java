@@ -438,20 +438,26 @@ public class LevelManager {
 
                 for (Player player : players) {
                     // async task, so make sure the player & entity are valid
-                    if (!player.isOnline()) return;
+                    if (!player.isOnline() || entity == null) return;
 
                     if (instance.settingsCfg.getBoolean("assert-entity-validity-with-nametag-packets") && !entity.isValid())
                         return;
 
-                    final WrappedDataWatcher dataWatcher = WrappedDataWatcher.getEntityWatcher(entity).deepClone();
+                    final WrappedDataWatcher dataWatcher;
+
+                    try {
+                        dataWatcher = WrappedDataWatcher.getEntityWatcher(entity).deepClone();
+                    } catch (ConcurrentModificationException ex) {
+                        Utils.debugLog(instance, "LevelManagerUpdateNametag", "Concurrent modification occured, skipping nametag update of " + entity.getName() + ".");
+                        return;
+                    }
+
                     final WrappedDataWatcher.Serializer chatSerializer;
 
                     try {
                         chatSerializer = WrappedDataWatcher.Registry.getChatComponentSerializer(true);
                     } catch (IllegalArgumentException ex) {
-                        if (instance.settingsCfg.getStringList("debug-misc").contains("nametags")) {
-                            Utils.logger.info("&8[DEBUG] [nametags] &7Registry is empty, skipping the nametag update of &b" + entity.getName() + "&7.");
-                        }
+                        Utils.debugLog(instance, "LevelManagerUpdateNametag", "Registry is empty, skipping nametag update of " + entity.getName() + ".");
                         return;
                     }
 

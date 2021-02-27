@@ -12,7 +12,6 @@ import com.sk89q.worldguard.protection.flags.registry.FlagRegistry;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import com.sk89q.worldguard.protection.regions.RegionContainer;
-import io.github.lokka30.levelledmobs.LevelledMobs;
 import io.github.lokka30.levelledmobs.misc.Utils;
 import org.bukkit.Location;
 import org.bukkit.entity.LivingEntity;
@@ -24,8 +23,6 @@ import java.util.Objects;
 
 public class WorldGuardManager {
 
-    private final LevelledMobs instance;
-
     /* Flags */
     public static StringFlag
             customMinLevelFlag, // This flag forces mobs to not be levelled lower than the value stated in the flag. -1 = no minimum from WorldGuard.
@@ -34,8 +31,7 @@ public class WorldGuardManager {
             useCustomLevelsFlag, // This flag dictates if the custom min and max flags will be used or not. If false, then the min and max flags will have no effect.
             allowLevelledMobsFlag; // This flag dictates if mobs that spawn in the WorldGuard region will be levelled or not.
 
-    public WorldGuardManager(final LevelledMobs instance) {
-        this.instance = instance;
+    public WorldGuardManager() {
         registerFlags();
     }
 
@@ -90,6 +86,8 @@ public class WorldGuardManager {
     public ApplicableRegionSet getRegionSet(final LivingEntity livingEntity) {
         final Location location = livingEntity.getLocation();
 
+        if (location.getWorld() == null) return null;
+
         final RegionContainer regionContainer = WorldGuard.getInstance().getPlatform().getRegionContainer();
         final RegionManager regionManager = regionContainer.get(BukkitAdapter.adapt(livingEntity.getWorld()));
 
@@ -102,6 +100,8 @@ public class WorldGuardManager {
 
     //Sorts a RegionSet by priority, lowest to highest.
     public ProtectedRegion[] sortRegionsByPriority(final ApplicableRegionSet regionSet) {
+        if (regionSet == null) return null;
+
         ProtectedRegion[] protectedRegions = new ProtectedRegion[0];
         final List<ProtectedRegion> protectedRegionList = new ArrayList<>();
 
@@ -133,6 +133,8 @@ public class WorldGuardManager {
         //Sorted region array, highest priority comes last.
         final ProtectedRegion[] regions = sortRegionsByPriority(getRegionSet(ent));
 
+        if (regions == null) return true;
+
         //Check region flags on integrity.
         for (final ProtectedRegion region : regions) {
             if (region.getFlag(WorldGuardManager.useCustomLevelsFlag) == StateFlag.State.DENY) {
@@ -155,6 +157,13 @@ public class WorldGuardManager {
     //Generate level based on WorldGuard region flags.
     public int[] getRegionLevel(final LivingEntity livingEntity, int minLevel, int maxLevel) {
         final ProtectedRegion[] regions = sortRegionsByPriority(getRegionSet(livingEntity));
+
+        if (regions == null) {
+            int[] ints = new int[2];
+            ints[0] = minLevel;
+            ints[1] = maxLevel;
+            return ints;
+        }
 
         for (final ProtectedRegion region : regions) {
             if (Utils.isInteger(region.getFlag(WorldGuardManager.customMinLevelFlag))) {

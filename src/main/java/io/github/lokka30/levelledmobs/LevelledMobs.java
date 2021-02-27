@@ -1,6 +1,7 @@
 package io.github.lokka30.levelledmobs;
 
 import io.github.lokka30.levelledmobs.commands.LevelledMobsCommand;
+import io.github.lokka30.levelledmobs.compatibility.MC1_16_Compat;
 import io.github.lokka30.levelledmobs.customdrops.CustomDropInstance;
 import io.github.lokka30.levelledmobs.customdrops.CustomDropsUniversalGroups;
 import io.github.lokka30.levelledmobs.customdrops.CustomItemDrop;
@@ -11,7 +12,6 @@ import io.github.lokka30.levelledmobs.managers.MobDataManager;
 import io.github.lokka30.levelledmobs.managers.WorldGuardManager;
 import io.github.lokka30.levelledmobs.misc.ConfigUtils;
 import io.github.lokka30.levelledmobs.misc.FileLoader;
-import io.github.lokka30.levelledmobs.misc.MC1_16_Compat;
 import io.github.lokka30.levelledmobs.misc.Utils;
 import me.lokka30.microlib.MicroUtils;
 import me.lokka30.microlib.QuickTimer;
@@ -64,7 +64,6 @@ public class LevelledMobs extends JavaPlugin {
 
     // These will be moved in the near future.
     public boolean isMCVersion_16_OrHigher;
-    public MC1_16_Compat mc1_16_Compat;
     public boolean debugEntityDamageWasEnabled = false;
     public TreeMap<String, Integer> entityTypesLevelOverride_Min;
     public TreeMap<String, Integer> entityTypesLevelOverride_Max;
@@ -135,7 +134,7 @@ public class LevelledMobs extends JavaPlugin {
         // Hook into WorldGuard, register LM's flags.
         // This cannot be moved to onEnable (stated in WorldGuard's documentation). It MUST be ran in onLoad.
         if (ExternalCompatibilityManager.hasWorldGuardInstalled()) {
-            worldGuardManager = new WorldGuardManager(this);
+            worldGuardManager = new WorldGuardManager();
         }
     }
 
@@ -147,7 +146,6 @@ public class LevelledMobs extends JavaPlugin {
         final int middleVer = Integer.parseInt(bukkitVer[1]);
         if (middleVer >= 16) {
             this.isMCVersion_16_OrHigher = true;
-            this.mc1_16_Compat = new MC1_16_Compat();
         }
 
         // Using a List system in case more compatibility checks are added.
@@ -469,7 +467,7 @@ public class LevelledMobs extends JavaPlugin {
         ).collect(Collectors.toCollection(HashSet::new));
 
         if (this.isMCVersion_16_OrHigher)
-            groups_HostileMobs.addAll(this.mc1_16_Compat.getHostileMobs());
+            groups_HostileMobs.addAll(MC1_16_Compat.getHostileMobs());
 
         // include interfaces: Animals, WaterMob
         groups_PassiveMobs = Stream.of(
@@ -478,7 +476,7 @@ public class LevelledMobs extends JavaPlugin {
         ).collect(Collectors.toCollection(HashSet::new));
 
         if (this.isMCVersion_16_OrHigher)
-            groups_HostileMobs.addAll(this.mc1_16_Compat.getPassiveMobs());
+            groups_HostileMobs.addAll(MC1_16_Compat.getPassiveMobs());
 
         // include interfaces: WaterMob
         groups_AquaticMobs = Stream.of(
@@ -510,8 +508,7 @@ public class LevelledMobs extends JavaPlugin {
         pluginManager.registerEvents(new EntityNametagListener(this), this);
         pluginManager.registerEvents(new EntityTargetListener(this), this);
         pluginManager.registerEvents(new PlayerJoinListener(this), this);
-        // TODO: fix entity tame event
-        //pluginManager.registerEvents(new EntityTameEventListener(this), this);
+        //pluginManager.registerEvents(new EntityTameListener(this), this);
     }
 
     private void registerCommands() {
