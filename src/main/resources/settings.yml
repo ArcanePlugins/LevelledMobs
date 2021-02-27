@@ -313,6 +313,7 @@ y-distance-levelling:
 # ||-------------------------------------------------------||
 mobs-multiply-head-drops: false
 
+
 # ||-------------------------------------------------------||
 # ||  ADVANCED USERS ONLY
 # ||  Creeper Explosion Radius
@@ -422,16 +423,16 @@ fine-tuning:
     item-drop: 3
     xp-drop: 2
 
-    custom_mob_level:
+custom_mob_level:
 # Below represents an example of a customized PIGLIN
 # Uncomment it to take effect!
-#      PIGLIN:
-#        max-health: 30
-#        movement-speed: 0.2
-#        attack-damage: 6
-#        xp-drop: 3
-#        ranged-attack-damage: 2.5
-#        item-drop: 4
+#  PIGLIN:
+#    max-health: 30
+#    movement-speed: 0.2
+#    attack-damage: 6
+#    xp-drop: 3
+#    ranged-attack-damage: 2.5
+#    item-drop: 4
 
 
 #
@@ -462,6 +463,7 @@ allowed-worlds-list:
   mode: 'ALL'
   list:
 
+
 # ||-------------------------------------------------------||
 # ||  Allowed Spawn Reasons
 #
@@ -486,6 +488,7 @@ allowed-spawn-reasons-list:
   mode: 'ALL'
   list:
     - 'SPAWNER'
+
 
 # ||-------------------------------------------------------||
 # ||  Do-Not-Level Conditions
