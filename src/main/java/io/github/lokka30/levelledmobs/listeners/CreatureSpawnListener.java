@@ -7,10 +7,7 @@ import io.github.lokka30.levelledmobs.misc.*;
 import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.enchantments.EnchantmentTarget;
-import org.bukkit.entity.Creeper;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Projectile;
+import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -193,8 +190,10 @@ public class CreatureSpawnListener implements Listener {
             // Makes sure the levelled mob has this attribute. If not, skip setting it.
             if (livingEntity.getAttribute(Attribute.GENERIC_MAX_HEALTH) != null) {
 
+                boolean useBaseValue = (livingEntity instanceof Slime || livingEntity instanceof MagmaCube);
+
                 // This sets the max health value.
-                instance.mobDataManager.setAdditionsForLevel(livingEntity, Attribute.GENERIC_MAX_HEALTH, Addition.ATTRIBUTE_MAX_HEALTH, level);
+                instance.mobDataManager.setAdditionsForLevel(livingEntity, Attribute.GENERIC_MAX_HEALTH, Addition.ATTRIBUTE_MAX_HEALTH, level, useBaseValue);
 
                 // Need to set their actual health otherwise their current health != max health.
                 livingEntity.setHealth(Objects.requireNonNull(livingEntity.getAttribute(Attribute.GENERIC_MAX_HEALTH)).getBaseValue());
@@ -204,14 +203,14 @@ public class CreatureSpawnListener implements Listener {
             // Makes sure the levelled mob has this attribute. If not, skip setting it.
             if (livingEntity.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED) != null) {
                 //This sets the movement speed value.
-                instance.mobDataManager.setAdditionsForLevel(livingEntity, Attribute.GENERIC_MOVEMENT_SPEED, Addition.ATTRIBUTE_MOVEMENT_SPEED, level);
+                instance.mobDataManager.setAdditionsForLevel(livingEntity, Attribute.GENERIC_MOVEMENT_SPEED, Addition.ATTRIBUTE_MOVEMENT_SPEED, level, false);
             }
 
             // Modify their attack damage attribute. This changes the attack damage the levelled mob has.
             // Makes sure the levelled mob has this attribute. If not, skip setting it.
             if (livingEntity.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE) != null) {
                 //This sets the movement speed value.
-                instance.mobDataManager.setAdditionsForLevel(livingEntity, Attribute.GENERIC_ATTACK_DAMAGE, Addition.ATTRIBUTE_ATTACK_DAMAGE, level);
+                instance.mobDataManager.setAdditionsForLevel(livingEntity, Attribute.GENERIC_ATTACK_DAMAGE, Addition.ATTRIBUTE_ATTACK_DAMAGE, level, false);
             }
 
             if (livingEntity instanceof Creeper && instance.settingsCfg.getInt("creeper-max-damage-radius", 3) != 3) {
