@@ -14,7 +14,7 @@ import io.github.lokka30.levelledmobs.listeners.CreatureSpawnListener;
 import io.github.lokka30.levelledmobs.misc.Addition;
 import io.github.lokka30.levelledmobs.misc.ModalList;
 import io.github.lokka30.levelledmobs.misc.Utils;
-import me.lokka30.microlib.MicroUtils;
+import me.lokka30.microlib.MessageUtils;
 import org.apache.commons.lang.WordUtils;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
@@ -388,7 +388,7 @@ public class LevelManager {
         }
         if (entityName == null || entityName.isEmpty() || entityName.equalsIgnoreCase("disabled")) return null;
 
-        final String displayName = livingEntity.getCustomName() == null ? MicroUtils.colorize(entityName) : livingEntity.getCustomName();
+        final String displayName = livingEntity.getCustomName() == null ? MessageUtils.colorizeAll(entityName) : livingEntity.getCustomName();
 
         // ignore if 'disabled'
         if (nametag == null || nametag.isEmpty() || nametag.equalsIgnoreCase("disabled"))
@@ -411,7 +411,7 @@ public class LevelManager {
         nametag = nametag.replace("%max_health_rounded%", roundedMaxHealthInt);
         nametag = nametag.replace("%heart_symbol%", "❤");
         nametag = nametag.replace("%tiered%", tier.toString());
-        nametag = MicroUtils.colorize(nametag);
+        nametag = MessageUtils.colorizeAll(nametag);
 
         // This is after colorize so that color codes in nametags dont get translated
         nametag = nametag.replace("%displayname%", displayName);

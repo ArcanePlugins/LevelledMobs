@@ -6,7 +6,7 @@
 
     <groupId>io.github.lokka30</groupId>
     <artifactId>LevelledMobs</artifactId>
-    <version>b290 indev</version>
+    <version>b291 indev</version>
 
     <packaging>jar</packaging>
 
@@ -117,7 +117,7 @@
         <dependency>
             <groupId>com.github.lokka30</groupId>
             <artifactId>MicroLib</artifactId>
-            <version>2.1.1</version>
+            <version>bf026b06</version> <!-- v2.2.0 -->
         </dependency>
         <dependency>
             <groupId>com.github.dmulloy2</groupId>

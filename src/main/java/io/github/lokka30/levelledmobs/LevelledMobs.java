@@ -13,7 +13,7 @@ import io.github.lokka30.levelledmobs.managers.WorldGuardManager;
 import io.github.lokka30.levelledmobs.misc.ConfigUtils;
 import io.github.lokka30.levelledmobs.misc.FileLoader;
 import io.github.lokka30.levelledmobs.misc.Utils;
-import me.lokka30.microlib.MicroUtils;
+import me.lokka30.microlib.MessageUtils;
 import me.lokka30.microlib.QuickTimer;
 import me.lokka30.microlib.UpdateChecker;
 import org.bstats.bukkit.Metrics;
@@ -392,7 +392,7 @@ public class LevelledMobs extends JavaPlugin {
                 if (item.customName != null && !"".equals(item.customName)){
                     ItemMeta meta = item.getItemStack().getItemMeta();
                     if (meta != null) {
-                        meta.setDisplayName(MicroUtils.colorize(item.customName));
+                        meta.setDisplayName(MessageUtils.colorizeAll(item.customName));
                         item.getItemStack().setItemMeta(meta);
                     }
                 }

@@ -366,7 +366,6 @@ public final class FileLoader {
                 }
             } else if (line.startsWith("-")) {
                 final String key = getKeyFromList(currentKey, null);
-                final String origKey = key;
                 final String value = line.trim().substring(1).trim();
                 if (configMap.containsKey(key)) {
                     FieldInfo fi = configMap.get(key);

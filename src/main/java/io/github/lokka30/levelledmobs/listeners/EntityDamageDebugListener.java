@@ -2,7 +2,7 @@ package io.github.lokka30.levelledmobs.listeners;
 
 import io.github.lokka30.levelledmobs.LevelledMobs;
 import io.github.lokka30.levelledmobs.misc.Utils;
-import me.lokka30.microlib.MicroUtils;
+import me.lokka30.microlib.MessageUtils;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.entity.Creeper;
@@ -40,7 +40,7 @@ public class EntityDamageDebugListener implements Listener {
             final LivingEntity livingEntity = (LivingEntity) e.getEntity();
 
             if (player.isOp() && !delay.contains(uuid) && livingEntity.getPersistentDataContainer().has(instance.levelManager.isLevelledKey, PersistentDataType.STRING)) {
-                player.sendMessage(MicroUtils.colorize("&b&lLevelledMobs: &7Debug information for &b" + livingEntity.getType().toString() + "&7: "));
+                player.sendMessage(MessageUtils.colorizeAll("&b&lLevelledMobs: &7Debug information for &b" + livingEntity.getType().toString() + "&7: "));
 
                 writeDebugForAttribute(player, livingEntity, Attribute.GENERIC_MAX_HEALTH);
                 writeDebugForAttribute(player, livingEntity, Attribute.GENERIC_MOVEMENT_SPEED);
@@ -53,8 +53,8 @@ public class EntityDamageDebugListener implements Listener {
                 writeDebugForAttribute(player, "Current Health", Utils.round(livingEntity.getHealth()));
                 Object levelTemp = (livingEntity.getPersistentDataContainer().get(instance.levelManager.levelKey, PersistentDataType.INTEGER));
 
-                writeDebugForAttribute(player, "Level", levelTemp == null ? 0 : (int)levelTemp);
-                player.sendMessage(MicroUtils.colorize("&8 - &fCustomName &8= &b" + (livingEntity.getCustomName() == null ? "N/A" : livingEntity.getCustomName())));
+                writeDebugForAttribute(player, "Level", levelTemp == null ? 0 : (int) levelTemp);
+                player.sendMessage(MessageUtils.colorizeAll("&8 - &fCustomName &8= &b" + (livingEntity.getCustomName() == null ? "N/A" : livingEntity.getCustomName())));
 
                 delay.add(uuid);
                 new BukkitRunnable() {
@@ -71,12 +71,12 @@ public class EntityDamageDebugListener implements Listener {
 
         writeDebugForAttribute(p, attributeName, amount);
 
-        p.sendMessage(MicroUtils.colorize(String.format(
+        p.sendMessage(MessageUtils.colorizeAll(String.format(
                 "&8 - &f%s &7(DefaultValue) &8= &b%s", attributeName, Utils.round(defaultAmount))));
     }
 
     private void writeDebugForAttribute(final Player p, final String attributeName, final double amount) {
-        p.sendMessage(MicroUtils.colorize(String.format(
+        p.sendMessage(MessageUtils.colorizeAll(String.format(
                 "&8 - &f%s &8= &b%s", attributeName, Utils.round(amount))));
     }
 
@@ -86,9 +86,9 @@ public class EntityDamageDebugListener implements Listener {
 
         String attName = att.name();
 
-        p.sendMessage(MicroUtils.colorize(String.format(
+        p.sendMessage(MessageUtils.colorizeAll(String.format(
                 "&8 - &f%s &7(CurrentValue) &8= &b%s", attName, Utils.round(attInstance.getBaseValue()))));
-        p.sendMessage(MicroUtils.colorize(String.format(
+        p.sendMessage(MessageUtils.colorizeAll(String.format(
                 "&8 - &f%s &7(DefaultValue) &8= &b%s",
                 attName, Utils.round((double) instance.mobDataManager.getAttributeDefaultValue(ent.getType(), att)))));
     }

@@ -7,5 +7,5 @@ public enum MobProcessReason {
     TRANSFORM,
     WORLD,
     WORLD_GUARD,
-    TAME_EVENT
+    TAME
 }

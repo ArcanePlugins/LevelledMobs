@@ -1,8 +1,8 @@
 package io.github.lokka30.levelledmobs.misc;
 
 import io.github.lokka30.levelledmobs.LevelledMobs;
+import me.lokka30.microlib.MessageUtils;
 import me.lokka30.microlib.MicroLogger;
-import me.lokka30.microlib.MicroUtils;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Ageable;
 import org.bukkit.entity.LivingEntity;
@@ -110,7 +110,7 @@ public final class Utils {
         final List<String> newList = new ArrayList<>(oldList.size());
 
         for (final String string : oldList) {
-            newList.add(MicroUtils.colorize(string));
+            newList.add(MessageUtils.colorizeAll(string));
         }
 
         return newList;
