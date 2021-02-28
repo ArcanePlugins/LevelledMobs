@@ -212,18 +212,6 @@ public class LevelledMobs extends JavaPlugin {
         attributesCfg = loadEmbeddedResource("attributes.yml");
         dropsCfg = loadEmbeddedResource("drops.yml");
 
-        InputStream inputStream = this.getResource("drops.yml");
-        if (inputStream != null) {
-            try {
-                InputStreamReader reader = new InputStreamReader(inputStream);
-                dropsCfg = YamlConfiguration.loadConfiguration(reader);
-                inputStream.close();
-            }
-            catch (IOException e){
-                Utils.logger.error("Error reading embedded drops.yml: " + e.getMessage());
-            }
-        }
-
         if (settingsCfg.getBoolean("use-custom-item-drops-for-mobs") && customDropsCfg != null)
             parseCustomDrops(customDropsCfg);
 
