@@ -31,7 +31,11 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import javax.annotation.Nullable;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
@@ -205,13 +209,20 @@ public class LevelledMobs extends JavaPlugin {
         this.customDropsitems = new TreeMap<>();
         this.customDropsitems_groups = new TreeMap<>();
 
-        // Replace/copy attributes file
-        saveResource("attributes.yml", true);
-        attributesCfg = YamlConfiguration.loadConfiguration(new File(getDataFolder(), "attributes.yml"));
+        attributesCfg = loadEmbeddedResource("attributes.yml");
+        dropsCfg = loadEmbeddedResource("drops.yml");
 
-        // Replace/copy drops file
-        saveResource("drops.yml", true);
-        dropsCfg = YamlConfiguration.loadConfiguration(new File(getDataFolder(), "drops.yml"));
+        InputStream inputStream = this.getResource("drops.yml");
+        if (inputStream != null) {
+            try {
+                InputStreamReader reader = new InputStreamReader(inputStream);
+                dropsCfg = YamlConfiguration.loadConfiguration(reader);
+                inputStream.close();
+            }
+            catch (IOException e){
+                Utils.logger.error("Error reading embedded drops.yml: " + e.getMessage());
+            }
+        }
 
         if (settingsCfg.getBoolean("use-custom-item-drops-for-mobs") && customDropsCfg != null)
             parseCustomDrops(customDropsCfg);
@@ -219,7 +230,36 @@ public class LevelledMobs extends JavaPlugin {
         configUtils.init();
         externalCompatibilityManager.load();
 
+        // remove legacy files if they exist
+        final String[] legacyFile = { "attributes.yml", "drops.yml" };
+        for (String lFile : legacyFile){
+            final File delFile = new File(getDataFolder(), lFile);
+            try {
+                if (delFile.exists()) delFile.delete();
+            }
+            catch (Exception e){ } // swallow the exception
+        }
+
         return true;
+    }
+
+    @Nullable
+    private YamlConfiguration loadEmbeddedResource(final String filename){
+        YamlConfiguration result = null;
+        final InputStream inputStream = this.getResource(filename);
+        if (inputStream == null) return null;
+
+        try {
+            InputStreamReader reader = new InputStreamReader(inputStream);
+            result = YamlConfiguration.loadConfiguration(reader);
+            reader.close();
+            inputStream.close();
+        }
+        catch (IOException e){
+            Utils.logger.error("Error reading embedded file: " + filename + ", " + e.getMessage());
+        }
+
+        return result;
     }
 
     private void parseCustomDrops(ConfigurationSection config){
