@@ -34,9 +34,11 @@
 # ||
 # || IMPORTANT NOTE ABOUT USING LEVELLEDMOBS CUSTOMDROPS
 # || 
-# || To utilize this file, you must first edit settings.yml
-# || Locate 'use-custom-item-drops-for-mobs' and change it's
-# || value to 'true' instead of the default 'false'.
+# || To utilize this file, you must first edit settings.yml.
+# || Locate 'use-custom-item-drops-for-mobs' within that file
+# || in 'Section 03 - World Settings and Exceptions' and change
+# || it's value to 'true' instead of the default 'false'. Without
+# || this step, your custom drops will not function.
 # || 
 # |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 #
@@ -46,35 +48,35 @@
 # |||||||||||||||||||||||||||||||||||||||||||||||||||||
 # 
 # ||-------------------------------------------------------||
-#     Each individual mob or mob group can utilize the
-#     following attributes to customize their drops upon
-#     death. There are various examples using each available
-#     attribute located at the end of this file in the
-#     Section 04 - Demonstrations.
+#     Each individual mob or universal group can utilize the
+#     following attributes to customize when and how their
+#     their drops occur upon death. There are various examples
+#     at the bottom of this file in 'Section 04 - Demonstrations'
+#     providing examples on how to use each available attribute.
 #
 #     For your convenience, we have included various Universal
 #     Groups of mobs to use instead of EntityType in order to
-#     make changes to multiple mobs on a type at once. These
+#     make changes to multiple mobs of a type at once. These
 #     Universal Groups are listed below after the attributes.
 #
-#     NOTE: Unless 'override' is set for the drops, the EntityType
-#     will still process it's vanilla Minecraft drops alongside
-#     the custom drops.
+#     NOTE: Unless 'override' is set to true for the drops,
+#     the EntityType will still process it's vanilla Minecraft
+#     drops alongside the custom drops you have added.
 #
 # ||--A] Customizable Attributes
 #
 #      EntityType:
 #            | Reference 
 #            | https://tinyurl.com/SpigotMCEntityTypes
-#            | For proper mob names to use in place
+#            | for proper mob names to use in place
 #            | of 'EntityType'.
 #            | You may select multiple EntityTypes by separating
-#            | each with a semicolon. For example:
-#            | ZOMBIE;SKELETON;HUSK
+#            | each with a semicolon without space.
+#            | For example: ZOMBIE;SKELETON;HUSK
 #        - MATERIAL:
-#             | The material item you wish to drop customized.
+#             | The material item you wish to drop.
 #             | Reference https://tinyurl.com/MCMaterials
-#             | For proper material names to use in place
+#             | for proper material names to use in place
 #             | of 'MATERIAL' above. Any material marked
 #             | as 'Depreciated' is no longer functioning.
 #          minlevel:
@@ -88,18 +90,17 @@
 #              | If no chance is set, a default of 20% (0.2) is used.
 #          amount:
 #              | The amount of the drop, should it occur. You
-#              | are able to create a spread of possibly amounts.
+#              | are able to create a spread of possible amounts.
 #              | For example: 1 is one drop; 1-3 is one, two, or
 #              | three drops; 2-4 is two, three, or four drops.
 #              | If there is a spread, the drop quantity will
 #              | randomly select one of the values.
 #          nomultiplier: 
-#             true | If, in settings.yml, you have the item-multiplier
-#                  | activated, this will prevent any items under this
-#                  | EntityType's customized drops from being multiplied.
+#             true | If, in settings.yml, the EntityType has a listed
+#                  | 'item-drop' multiplier, then while 'nomultiplier'
+#                  | is 'true', custom drops will not be multiplied.
 #            false | Any drops from the custom drops will be multiplied
-#                  | according to your item-multiplier settings and the
-#                  | mobs current level. (Default)
+#                  | according to your 'item-drop' value in settings.yml
 #          nospawner: 
 #             true | If set to true, any mob spawned from a Mob Spawner
 #                  | will not have the custom drops applied to them.
@@ -107,41 +108,51 @@
 #                  | will have the custom drops apply.
 #          enchantments: 
 #            ENCHANTMENT: X
-#              | The enchantment formatting is fairly simple. You'll need
+#              | The enchantment formatting is fairly simple: You'll need
 #              | the enchantment name and it's strength. This system can
 #              | create 'unsafe' enchantments, which are considered any
 #              | enchantment outside of Minecraft's vanilla values.
 #              | Reference https://tinyurl.com/MCEnchantments
 #              | for a list of vanilla enchantments to use instead of
 #              | the 'ENCHANTMENT' above. The strength value is represented
-#              | by the 'X'.
+#              | by the 'X'. You should also be able to impliment custom
+#              | enchantment plugins through this system following the
+#              | formula above, though it is not guarenteed to be compatible.
 #          lore:
 #            - 'This is some &6lore'
 #            - 'Applied to the item'
 #               | This allows you to add lines of lore to the material.
 #               | Ensure you follow the formatting shown above. You are
 #               | able to include Minecraft's color codes as well.
+#               | In the example above, you have two different lines
+#               | of lore applied to the same item, one after the next.
 #          name: 'Material Name'
-#              | Giving the material a custom name.
+#              | Giving the material a custom name. You are able to
+#              | include Minecraft's color codes as well for flair.
 #          damage:
 #              | Used to apply durability damage to the item before it
 #              | drops. This value can be a spread, for example:
 #              | 100-500 would allow for durability damage at any
-#              | value within that range. If you want to apply able
+#              | value within that range. If you want to apply a
 #              | single static value, just put the amount rather than
-#              | apply the spread.
+#              | apply the spread. Please ensure you understand how
+#              | Minecraft's Durability works before applying this setting
+#              | to items. A recommended resource regarding Durability:
+#              | https://minecraft.fandom.com/wiki/Durability
 #          equipped:
 #             true | If set to true, the mob will attempt to equip the
 #                  | item it has spawned with. This is most useful for
-#                  | weapons, armor, and potions.
-#            false | If set to false, the mob will simply carry the drops.
-#                  | This is set to false by default.
+#                  | weapons, armor, and potions, though it will attempt
+#                  | to place whichever selected items in the mobs' hands.
+#                  | Remember: most mobs only have two hands to carry!
+#            false | If set to false, the mob will simply carry the drops
+#                  | 'in their inventory'. This is set to false by default.
 #          override:
 #             true | If set to true, the mob will not drop it's vanilla
 #                  | drops, and will instead reference this custom drops
 #                  | list for any potential drops it could have.
 #            false | If set to false, the mob will process it's own vanilla
-#                  | drops, and then process the custom drops separately.
+#                  | drops and then process the custom drops separately.
 #          groupid:
 #                  | By placing multiple items within the same groupid, you
 #                  | are establishing 'sets' of drops which are processed as
@@ -149,11 +160,12 @@
 #                  | items in the set, it will ignore the other options.
 #                  | An example of how this might work would be if you had
 #                  | set an EntityType to drop an IRON_BLOCK, GOLD_BLOCK, and
-#                  | DIAMOND_BLOCK, and placed each item into the same groupid,
-#                  | then you will only receive one of the three potential drops
-#                  | instead of having a chance at all three. This is useful for
+#                  | DIAMOND_BLOCK, each with their own chances and amounts,
+#                  | and placed each item into the same groupid. You would then
+#                  | only receive one of the three potential drops, instead of
+#                  | having all three process separately. This is useful for
 #                  | allowing a random selection from a set of items to apply to
-#                  | an EntityType.
+#                  | an EntityType, almost like your own loot table!
 #
 #
 # ||--B] Universal Groups
@@ -462,8 +474,8 @@ file-version: 5
 # 
 # Below are some examples of different EntityTypes and
 # Universal Groups which utilize all the different
-# options available within custom drops. You can use
-# these as a reference, or simply remove the comments
+# options available within custom drops so far. You can
+# use these as a reference, or simply remove the comments
 # from the one you like to apply it.
 #
 #
