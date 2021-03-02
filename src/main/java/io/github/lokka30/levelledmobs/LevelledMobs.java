@@ -180,7 +180,7 @@ public class LevelledMobs extends JavaPlugin {
             return false;
         }
 
-        customDropsCfg = FileLoader.loadFile(this, "customdrops", FileLoader.CUSTOMDROPS_FILE_VERSION, true);
+        customDropsCfg = FileLoader.loadFile(this, "customdrops", FileLoader.CUSTOMDROPS_FILE_VERSION, false);
 
         this.entityTypesLevelOverride_Min = configUtils.getMapFromConfigSection("entitytype-level-override.min-level");
         this.entityTypesLevelOverride_Max = configUtils.getMapFromConfigSection("entitytype-level-override.max-level");
