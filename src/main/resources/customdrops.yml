@@ -50,12 +50,17 @@
 #     following attributes to customize their drops upon
 #     death. There are various examples using each available
 #     attribute located at the end of this file in the
-#     Section 04 - Demonstrations.
+#     Section 05 - Demonstrations.
 #
 #     For your convenience, we have included various Universal
 #     Groups of mobs to use instead of EntityType in order to
 #     make changes to multiple mobs of a type at once. These
 #     Universal Groups are listed below after the attributes.
+#
+#     Finally, in Section 03 - Advanced CustomDrops, you will
+#     find several tools to craft loot-tables, mob-tables, and
+#     any other more advanced systems there. It is quite complex
+#     and requires attention to detail in order to use properly.
 #
 #     NOTE: Unless 'override' is set for the drops, the EntityType
 #     will still process it's vanilla Minecraft drops alongside
@@ -445,10 +450,119 @@ ZOMBIFIED_PIGLIN:
   - 
 
 
+#
+# |||||||||||||||||||||||||||||||||||||||||||||||||||||
+# ||  Section 03 - Advanced CustomDrops
+# ||  ADVANCED USERS ONLY
+# |||||||||||||||||||||||||||||||||||||||||||||||||||||
+#
+# ||-------------------------------------------------------||
+# ||  Drop Table System
+#
+#     This system allows you to establish sets of items, each
+#     with their own drop parameters, to apply to an EntityType
+#     or Universal Group. This makes applying multiple items
+#     or tables to an EntityType easy by transforming the set
+#     to a single line of configuration, making for less
+#     copy/paste and more flexibility in making large changes
+#     across multiple EntityTypes or Universal Groups.
+#
+#     Please reference 'Customizable Attributes' in the preface
+#     at the top of this file for crafting a custom drop to
+#     apply in the same section demonstrated below. You may
+#     override any drop attribute by specifying it after
+#     'usedroptable' within an EntityType or Universal Group.
+#
+#      drop-table:
+#        1:
+#          - MATERIAL
+#            Customized Attributes
+#        2:
+#          - MATERIAL
+#            Customized Attributes
+#      ENTITYTYPE:
+#        usedroptable: 1
+#        Customized Attributes
+# ||-------------------------------------------------------||#
+drop-table:
+  1:
+    - STICK:
+      amount: 1
+      chance: 1
+      nomultiplier: true
+      nospawner: true
+      groupid: 1
+    - COBBLESTONE:
+      amount: 1
+      chance: 1
+      nomultiplier: true
+      nospawner: true
+      groupid: 1
+  2:
+    - NETHERRACK:
+      amount: 1
+      chance: 1
+      nomultiplier: true
+      nospawner: true
+      groupid: 2
+    - SOUL_SAND:
+      amount: 1
+      chance: 1
+      nomultiplier: true
+      nospawner: true
+      groupid: 2
+      
+PIG;CHICKEN;COW:
+  usedroptable: 1
+
+ALL_NETHER_MOBS:
+  exclude: WITHER_SKELETON;MAGMA_CUBE
+  usedroptable: 2
+
+
+# ||-------------------------------------------------------||
+# ||  EntityType Table System
+#
+#     This system allows you to establish sets of EntityTypes
+#     with the ability to merge Entities and Universal Groups
+#     together to form 'entity tables' which you can then apply
+#     to the CustomDrops system. This adds flexibility in applying
+#     any customized drops to specific EntityTypes, making for less
+#     copy/paste and more flexibility in making large changes
+#     across multiple EntityTypes or Universal Groups.
+#
+#     Please reference 'Customizable Attributes' in the preface
+#     at the top of this file for crafting a custom drop to
+#     apply in the same section demonstrated below.
+#
+#      entity-table:
+#        1:
+#          - ENTITYTYPE
+#          - UNIVERSAL_GROUP
+#            exclude: ENTITYTYPE;ENTITYTYPE
+#        2:
+#          - ENTITYTYPE
+#
+#      useentitytable:
+#        usedroptable: 1
+#        - MATERIAL
+#          Customized Attributes
+# ||-------------------------------------------------------||
+entity-table:
+  1:
+    - CHICKEN
+    - ALL_AQUATIC_MOBS
+      exclude: TROPICAL_FISH;COD
+
+useentitytable: 1
+  usedroptable: 1
+  - KELP
+    amount: 1
+  
 
 #
 # |||||||||||||||||||||||||||||||||||||||||||||||||||||
-# ||  Section 03 - Advanced CustomDrops Settings
+# ||  Section 04 - CustomDrops System Settings
 # |||||||||||||||||||||||||||||||||||||||||||||||||||||
 #
 # It is recommended that you do not change any setting
@@ -462,7 +576,7 @@ file-version: 5
 
 #
 # |||||||||||||||||||||||||||||||||||||||||||||||||||||
-# ||  Section 04 - Demonstrations
+# ||  Section 05 - Demonstrations
 # |||||||||||||||||||||||||||||||||||||||||||||||||||||
 # 
 # Below are some examples of different EntityTypes and
