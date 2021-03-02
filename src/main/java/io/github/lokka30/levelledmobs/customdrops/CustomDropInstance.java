@@ -35,4 +35,16 @@ public class CustomDropInstance {
         else
             return ""; // this return should never happen
     }
+
+    public String toString() {
+        if (this.associatedMob != null) {
+            return this.overrideStockDrops ?
+                   this.associatedMob.name() + " - override" :
+                   this.associatedMob.name();
+        } else {
+            return this.overrideStockDrops ?
+                   this.entityGroup.toString() + " - override" :
+                   this.entityGroup.toString();
+        }
+    }
 }

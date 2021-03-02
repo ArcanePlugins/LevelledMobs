@@ -45,7 +45,7 @@ public class EntityDeathListener implements Listener {
         }
         else if (instance.settingsCfg.getBoolean("use-custom-item-drops-for-mobs")){
             final List<ItemStack> drops = new ArrayList<>();
-            final CustomDropResult result = instance.levelManager.getCustomItemDrops(livingEntity, -1, drops, false, false);
+            final CustomDropResult result = instance.customDropsHandler.getCustomItemDrops(livingEntity, -1, drops, false, false);
             if (result == CustomDropResult.HAS_OVERRIDE){
                 event.getDrops().clear();
                 event.getDrops().addAll(drops);

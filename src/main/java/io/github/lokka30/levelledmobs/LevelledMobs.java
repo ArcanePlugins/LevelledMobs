@@ -1,10 +1,7 @@
 package io.github.lokka30.levelledmobs;
 
 import io.github.lokka30.levelledmobs.commands.LevelledMobsCommand;
-import io.github.lokka30.levelledmobs.compatibility.MC1_16_Compat;
-import io.github.lokka30.levelledmobs.customdrops.CustomDropInstance;
-import io.github.lokka30.levelledmobs.customdrops.CustomDropsUniversalGroups;
-import io.github.lokka30.levelledmobs.customdrops.CustomItemDrop;
+import io.github.lokka30.levelledmobs.customdrops.CustomDropsHandler;
 import io.github.lokka30.levelledmobs.listeners.*;
 import io.github.lokka30.levelledmobs.managers.ExternalCompatibilityManager;
 import io.github.lokka30.levelledmobs.managers.LevelManager;
@@ -13,21 +10,12 @@ import io.github.lokka30.levelledmobs.managers.WorldGuardManager;
 import io.github.lokka30.levelledmobs.misc.ConfigUtils;
 import io.github.lokka30.levelledmobs.misc.FileLoader;
 import io.github.lokka30.levelledmobs.misc.Utils;
-import me.lokka30.microlib.MessageUtils;
 import me.lokka30.microlib.QuickTimer;
 import me.lokka30.microlib.UpdateChecker;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
 import org.bukkit.command.PluginCommand;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.MemoryConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.EntityType;
-import org.bukkit.inventory.meta.Damageable;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -37,9 +25,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.*;
-import java.util.concurrent.ThreadLocalRandom;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * This is the main class of the plugin. Bukkit will call onLoad and onEnable on startup, and onDisable on shutdown.
@@ -51,6 +36,7 @@ public class LevelledMobs extends JavaPlugin {
     public MobDataManager mobDataManager;
     public ExternalCompatibilityManager externalCompatibilityManager;
     public WorldGuardManager worldGuardManager;
+    public CustomDropsHandler customDropsHandler;
 
     // Configuration
     public YamlConfiguration settingsCfg;
@@ -74,12 +60,6 @@ public class LevelledMobs extends JavaPlugin {
     public TreeMap<String, Integer> worldLevelOverride_Min;
     public TreeMap<String, Integer> worldLevelOverride_Max;
     public Set<String> noDropMultiplierEntities;
-    public TreeMap<EntityType, CustomDropInstance> customDropsitems;
-    public TreeMap<CustomDropsUniversalGroups, CustomDropInstance> customDropsitems_groups;
-    public HashSet<EntityType> groups_HostileMobs;
-    public HashSet<EntityType> groups_AquaticMobs;
-    public HashSet<EntityType> groups_PassiveMobs;
-    public HashSet<EntityType> groups_NetherMobs;
 
     @Override
     public void onLoad() {
@@ -108,7 +88,8 @@ public class LevelledMobs extends JavaPlugin {
             this.setEnabled(false);
             return;
         }
-        buildUniversalGroups();
+
+        this.customDropsHandler = new CustomDropsHandler(this);
 
         registerListeners();
         registerCommands();
@@ -206,14 +187,9 @@ public class LevelledMobs extends JavaPlugin {
         this.worldLevelOverride_Min = configUtils.getMapFromConfigSection("world-level-override.min-level");
         this.worldLevelOverride_Max = configUtils.getMapFromConfigSection("world-level-override.max-level");
         this.noDropMultiplierEntities = configUtils.getSetFromConfigSection("no-drop-multipler-entities");
-        this.customDropsitems = new TreeMap<>();
-        this.customDropsitems_groups = new TreeMap<>();
 
         attributesCfg = loadEmbeddedResource("attributes.yml");
         dropsCfg = loadEmbeddedResource("drops.yml");
-
-        if (settingsCfg.getBoolean("use-custom-item-drops-for-mobs") && customDropsCfg != null)
-            parseCustomDrops(customDropsCfg);
 
         configUtils.init();
         externalCompatibilityManager.load();
@@ -225,7 +201,9 @@ public class LevelledMobs extends JavaPlugin {
             try {
                 if (delFile.exists()) delFile.delete();
             }
-            catch (Exception e){ } // swallow the exception
+            catch (Exception e) {
+                Utils.logger.warning("Unable to delete file " + lFile + ", " + e.getMessage());
+            }
         }
 
         return true;
@@ -250,270 +228,7 @@ public class LevelledMobs extends JavaPlugin {
         return result;
     }
 
-    private void parseCustomDrops(ConfigurationSection config){
-        for (String item : config.getKeys(false)) {
-            String[] mobTypeOrGroups;
-            EntityType entityType = null;
-            mobTypeOrGroups = item.split(";");
 
-            for (String mobTypeOrGroup : mobTypeOrGroups) {
-                mobTypeOrGroup = mobTypeOrGroup.trim();
-                if ("".equals(mobTypeOrGroup)) continue;
-                if (mobTypeOrGroup.startsWith("file-version")) continue;
-
-                CustomDropsUniversalGroups universalGroup = null;
-                final boolean isUniversalGroup = mobTypeOrGroup.toLowerCase().startsWith("all_");
-                CustomDropInstance dropInstance;
-
-                if (isUniversalGroup) {
-                    try {
-                        universalGroup = CustomDropsUniversalGroups.valueOf(mobTypeOrGroup.toUpperCase());
-                    } catch (Exception e) {
-                        Utils.logger.warning("invalid universal group in customdrops.yml: " + mobTypeOrGroup);
-                        continue;
-                    }
-                    dropInstance = new CustomDropInstance(universalGroup);
-                } else {
-                    try {
-                        entityType = EntityType.valueOf(mobTypeOrGroup.toUpperCase());
-                    } catch (Exception e) {
-                        Utils.logger.warning("invalid mob type in customdrops.yml: " + mobTypeOrGroup);
-                        continue;
-                    }
-                    dropInstance = new CustomDropInstance(entityType);
-                }
-
-                parseCustomDrops2(config.getList(item), dropInstance);
-
-                if (!dropInstance.customItems.isEmpty()) {
-                    if (isUniversalGroup)
-                        customDropsitems_groups.put(universalGroup, dropInstance);
-                    else
-                        customDropsitems.put(entityType, dropInstance);
-                }
-            } // next mob or group
-        } // next root item from file
-
-        if (settingsCfg.getStringList("debug-misc").contains("custom-drops")) {
-            Utils.logger.info(String.format("custom drops count: %s, custom groups drops counts: %s",
-                    customDropsitems.size(), customDropsitems_groups.size()));
-
-            showCustomDropsDebugInfo();
-        }
-    }
-
-    private void parseCustomDrops2(final List<?> itemConfigurations, final CustomDropInstance dropInstance){
-
-        if (itemConfigurations == null) {
-            Utils.logger.info("itemconfigs was null");
-            return;
-        }
-
-        for (final Object itemObject : itemConfigurations) {
-
-            if (itemObject instanceof String) {
-                // just the string was given
-                final CustomItemDrop item = new CustomItemDrop();
-                final String materialName = (String) itemObject;
-
-                if ("override".equalsIgnoreCase(materialName)){
-                    dropInstance.overrideStockDrops = true;
-                    continue;
-                }
-
-                Material material;
-                try {
-                    material = Material.valueOf(materialName.toUpperCase());
-                } catch (Exception e) {
-                    Utils.logger.warning(String.format("Invalid material type specified in customdrops.yml for: %s, %s", dropInstance.getMobOrGroupName(), materialName));
-                    continue;
-                }
-                item.setMaterial(material);
-                dropInstance.customItems.add(item);
-                continue;
-            }
-            final ConfigurationSection itemConfiguration = objectToConfigurationSection(itemObject);
-            if (itemConfiguration == null) continue;
-
-            for (final Map.Entry<String,Object> itemEntry : itemConfiguration.getValues(false).entrySet()) {
-
-                final String materialName = itemEntry.getKey();
-                final ConfigurationSection itemInfoConfiguration = objectToConfigurationSection(itemEntry.getValue());
-                if (itemInfoConfiguration == null) continue;
-
-                final CustomItemDrop item = new CustomItemDrop();
-
-                Material material;
-                try {
-                    material = Material.valueOf(materialName.toUpperCase());
-                } catch (Exception e) {
-                    Utils.logger.warning(String.format("Invalid material type specified in customdrops.yml for: %s, %s", dropInstance.getMobOrGroupName(), materialName));
-                    continue;
-                }
-                item.setMaterial(material);
-                dropInstance.customItems.add(item);
-
-                item.setAmount(itemInfoConfiguration.getInt("amount", 1));
-                item.dropChance = itemInfoConfiguration.getDouble("chance", 0.2);
-                item.minLevel = itemInfoConfiguration.getInt("minlevel", -1);
-                item.maxLevel = itemInfoConfiguration.getInt("maxlevel", -1);
-                item.groupId = itemInfoConfiguration.getInt("groupid", -1);
-                item.setDamage(itemInfoConfiguration.getInt("damage", 0));
-                item.lore = itemInfoConfiguration.getStringList("lore");
-                item.noMultiplier = itemInfoConfiguration.getBoolean("nomultipler");
-                item.noSpawner = itemInfoConfiguration.getBoolean("nospawner");
-                item.customName = itemInfoConfiguration.getString("name");
-                item.isEquipped = itemInfoConfiguration.getBoolean("equipped");
-
-                String numberRange = itemInfoConfiguration.getString("amount");
-                if (numberRange != null && numberRange.contains("-") && !item.setAmountRangeFromString(numberRange)){
-                    Utils.logger.warning(String.format("Invalid number range for amount on %s, %s", dropInstance.getMobOrGroupName(), numberRange));
-                }
-
-                numberRange = itemInfoConfiguration.getString("damage");
-                if (numberRange != null && numberRange.contains("-") && !item.setDamageRangeFromString(numberRange)){
-                    Utils.logger.warning(String.format("Invalid number range for damage on %s, %s", dropInstance.getMobOrGroupName(), numberRange));
-                }
-
-                final Object enchantmentsSection = itemInfoConfiguration.get("enchantments");
-                if (enchantmentsSection != null){
-                    final ConfigurationSection enchantments = objectToConfigurationSection(enchantmentsSection);
-                    if (enchantments != null) {
-                        final Map<String, Object> enchantMap = enchantments.getValues(false);
-                        for (final String enchantName : enchantMap.keySet()) {
-                            final Object value = enchantMap.get(enchantName);
-
-                            int enchantLevel = 1;
-                            if (value != null && Utils.isInteger(value.toString()))
-                                enchantLevel = Integer.parseInt(value.toString());
-
-                            final Enchantment en = Enchantment.getByKey(NamespacedKey.minecraft(enchantName.toLowerCase()));
-                            if (en != null)
-                                item.getItemStack().addUnsafeEnchantment(en, enchantLevel);
-                            else
-                                Utils.logger.warning("Invalid enchantment: " + enchantName);
-                        }
-                    }
-                } // end enchantments
-
-                // set item attributes, etc here:
-
-                if (item.getDamage() != 0 || item.getHasDamageRange()){
-                    ItemMeta meta = item.getItemStack().getItemMeta();
-                    if (meta instanceof Damageable){
-                        int damageAmount = item.getDamage();
-                        if (item.getHasDamageRange())
-                            damageAmount = ThreadLocalRandom.current().nextInt(item.getDamageRangeMin(), item.getDamageRangeMax() + 1);
-
-                        ((Damageable) meta).setDamage(damageAmount);
-                        item.getItemStack().setItemMeta(meta);
-                    }
-                }
-                if (item.lore != null && !item.lore.isEmpty()){
-                    ItemMeta meta = item.getItemStack().getItemMeta();
-                    if (meta != null) {
-                        meta.setLore(Utils.colorizeAllInList(item.lore));
-                        item.getItemStack().setItemMeta(meta);
-                    }
-                }
-
-                if (item.customName != null && !"".equals(item.customName)){
-                    ItemMeta meta = item.getItemStack().getItemMeta();
-                    if (meta != null) {
-                        meta.setDisplayName(MessageUtils.colorizeAll(item.customName));
-                        item.getItemStack().setItemMeta(meta);
-                    }
-                }
-            }
-        } // next item
-    }
-
-    private  ConfigurationSection objectToConfigurationSection(Object object){
-        if (object instanceof ConfigurationSection) {
-            return (ConfigurationSection) object;
-        } else if (object instanceof Map){
-            final MemoryConfiguration result = new MemoryConfiguration();
-            result.addDefaults((Map<String, Object>) object);
-            return result.getDefaultSection();
-        } else {
-            Utils.logger.warning("couldn't parse Config of type: " + object.getClass().getSimpleName());
-            return null;
-        }
-    }
-
-    private void showCustomDropsDebugInfo(){
-        for (final EntityType ent : customDropsitems.keySet()) {
-            final String override = customDropsitems.get(ent).overrideStockDrops ? " (override)" : "";
-            Utils.logger.info("mob: " + ent.name() + override);
-            for (final CustomItemDrop item : customDropsitems.get(ent).customItems) {
-                showCustomDropsDebugInfo2(item);
-            }
-        }
-
-        for (final CustomDropsUniversalGroups group : customDropsitems_groups.keySet()) {
-            final String override = customDropsitems_groups.get(group).overrideStockDrops ? " (override)" : "";
-            Utils.logger.info("group: " + group.name() + override);
-            for (final CustomItemDrop item : customDropsitems_groups.get(group).customItems) {
-                showCustomDropsDebugInfo2(item);
-            }
-        }
-    }
-
-    private void showCustomDropsDebugInfo2(final CustomItemDrop item){
-        String msg = String.format("    %s, amount: %s, chance: %s, minL: %s, maxL: %s",
-                item.getMaterial(), item.getAmountAsString(), item.dropChance, item.minLevel, item.maxLevel);
-
-        if (item.noMultiplier) msg += ", nomultp";
-        if (item.noSpawner) msg += ", nospn";
-        if (item.lore != null && !item.lore.isEmpty()) msg += ", hasLore";
-        if (item.customName != null && !"".equals(item.customName)) msg += ", hasName";
-        if (item.getDamage() != 0 || item.getHasDamageRange())
-            msg += ", dmg: " + item.getDamageAsString();
-
-        final StringBuilder sb = new StringBuilder();
-        final ItemMeta meta = item.getItemStack().getItemMeta();
-        if (meta != null) {
-            for (final Enchantment enchant : meta.getEnchants().keySet()) {
-                if (sb.length() > 0) sb.append(", ");
-                sb.append(String.format("%s (%s)", enchant.getKey().getKey(), item.getItemStack().getItemMeta().getEnchants().get(enchant)));
-            }
-        }
-        Utils.logger.info(msg);
-        if (sb.length() > 0) Utils.logger.info("         " + sb.toString());
-    }
-
-    private void buildUniversalGroups(){
-
-        // include interfaces: Monster, Boss
-        groups_HostileMobs = Stream.of(
-                EntityType.ENDER_DRAGON,
-                EntityType.GHAST,
-                EntityType.MAGMA_CUBE,
-                EntityType.PHANTOM,
-                EntityType.SHULKER,
-                EntityType.SLIME
-        ).collect(Collectors.toCollection(HashSet::new));
-
-        if (this.isMCVersion_16_OrHigher)
-            groups_HostileMobs.addAll(MC1_16_Compat.getHostileMobs());
-
-        // include interfaces: Animals, WaterMob
-        groups_PassiveMobs = Stream.of(
-                EntityType.IRON_GOLEM,
-                EntityType.SNOWMAN
-        ).collect(Collectors.toCollection(HashSet::new));
-
-        if (this.isMCVersion_16_OrHigher)
-            groups_HostileMobs.addAll(MC1_16_Compat.getPassiveMobs());
-
-        // include interfaces: WaterMob
-        groups_AquaticMobs = Stream.of(
-                EntityType.DROWNED,
-                EntityType.ELDER_GUARDIAN,
-                EntityType.GUARDIAN,
-                EntityType.TURTLE
-        ).collect(Collectors.toCollection(HashSet::new));
-    }
 
     private void registerListeners() {
         Utils.logger.info("&fListeners: &7Registering event listeners...");

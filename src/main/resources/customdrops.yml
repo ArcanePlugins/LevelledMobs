@@ -437,13 +437,82 @@ ZOMBIE_VILLAGER:
   - 
 
 ZOMBIFIED_PIGLIN:
-  - 
+  -
 
+
+
+    # |||||||||||||||||||||||||||||||||||||||||||||||||||||
+    # ||  Section 03 - Advanced CustomDrops
+    # ||  ADVANCED USERS ONLY
+    # |||||||||||||||||||||||||||||||||||||||||||||||||||||
+    #
+    # ||-------------------------------------------------------||
+    # ||  Drop Table System
+    #
+    #     This system allows you to establish sets of items, each
+    #     with their own drop parameters, to apply to an EntityType
+    #     or Universal Group. This makes applying multiple items
+    #     or tables to an EntityType easy by transforming the set
+    #     to a single line of configuration, making for less
+    #     copy/paste and more flexibility in making large changes
+    #     across multiple EntityTypes or Universal Groups.
+    #
+    #     Please reference 'Customizable Attributes' in the preface
+    #     at the top of this file for crafting a custom drop to
+    #     apply in the same section demonstrated below. You may
+    #     override any drop attribute by specifying it after
+    #     'usedroptable' within an EntityType or Universal Group.
+    #
+    #      drop-table:
+    #        1:
+    #          - MATERIAL
+    #            Customized Attributes
+    #        2:
+    #          - MATERIAL
+    #            Customized Attributes
+    #      ENTITYTYPE:
+    #        usedroptable: 1
+    #        Customized Attributes
+  # ||-------------------------------------------------------||#
+drop-table:
+  1:
+    - STICK:
+        amount: 1
+        chance: 1
+        nomultiplier: true
+        nospawner: true
+        groupid: 1
+    - COBBLESTONE:
+        amount: 1
+        chance: 1
+        nomultiplier: true
+        nospawner: true
+        groupid: 1
+  2:
+    - NETHERRACK:
+        amount: 1
+        chance: 1
+        nomultiplier: true
+        nospawner: true
+        groupid: 2
+    - SOUL_SAND:
+        amount: 1
+        chance: 1
+        nomultiplier: true
+        nospawner: true
+        groupid: 2
+
+PIG;CHICKEN;COW:
+  usedroptable: 1
+
+ALL_NETHER_MOBS:
+  excludemobs: WITHER_SKELETON;MAGMA_CUBE
+  usedroptable: 2
 
 
 #
 # |||||||||||||||||||||||||||||||||||||||||||||||||||||
-# ||  Section 03 - Advanced CustomDrops Settings
+# ||  Section 04 - Advanced CustomDrops Settings
 # |||||||||||||||||||||||||||||||||||||||||||||||||||||
 #
 # It is recommended that you do not change any setting
@@ -457,7 +526,7 @@ file-version: 5
 
 #
 # |||||||||||||||||||||||||||||||||||||||||||||||||||||
-# ||  Section 04 - Demonstrations
+# ||  Section 05 - Demonstrations
 # |||||||||||||||||||||||||||||||||||||||||||||||||||||
 # 
 # Below are some examples of different EntityTypes and
@@ -470,28 +539,28 @@ file-version: 5
 #
 #all_levellable_mobs: #Selected all Levelled Mobs
 #  - diamond: #Selected a diamond as my custom drop
-#    minlevel: 1 #Any EntityType or Universal Group --
-#    maxlevel: 15 #-- who are LVL1-15 has a chance to drop
-#    amount: 1 #Chose an amount of '1'
-#    chance: 0.05 #With a 5% chance of dropping
-#    nomultiplier: true #It won't be multiplied
-#    nospawner: true #Mobs spawned from a spawner do not count
-#    groupid: 1 #The material is part of a set called 'group 1'
+#      minlevel: 1 #Any EntityType or Universal Group --
+#      maxlevel: 15 #-- who are LVL1-15 has a chance to drop
+#      amount: 1 #Chose an amount of '1'
+#      chance: 0.05 #With a 5% chance of dropping
+#      nomultiplier: true #It won't be multiplied
+#      nospawner: true #Mobs spawned from a spawner do not count
+#      groupid: 1 #The material is part of a set called 'group 1'
 #
 #  - diamond_sword: #Selected a diamond sword as my custom drop
-#    amount: 1
-#    chance: 0.01
-#    nomultiplier: true
-#    nospawner: true
-#    groupid: 1 #The material is also part of the set 'group 1'
-#    equipped: true #The mob attempt to equip the item
-#    damage: 150 #The sword comes pre-damaged with 150pts
-#    enchantment: #The sword should come pre-enchanted
-#      unbreaking: 1
-#      sharpness: 2
-#    lore: #The sword gets a bit of 'flavor text'
-#      - 'Lost many updates ago'
-#      - 'and found once more.'
-#    name: 'Herobrine Blade' #And finally a custom name for the sword
+#      amount: 1
+#      chance: 0.01
+#      nomultiplier: true
+#      nospawner: true
+#      groupid: 1 #The material is also part of the set 'group 1'
+#      equipped: true #The mob attempt to equip the item
+#      damage: 150 #The sword comes pre-damaged with 150pts
+#      enchantments: #The sword should come pre-enchanted
+#        unbreaking: 1
+#        sharpness: 2
+#      lore: #The sword gets a bit of 'flavor text'
+#        - 'Lost many updates ago'
+#        - 'and found once more.'
+#      name: 'Herobrine Blade' #And finally a custom name for the sword
 #
 #

@@ -4,9 +4,12 @@ import io.github.lokka30.levelledmobs.misc.Utils;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
+import java.lang.reflect.Field;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
-public class CustomItemDrop {
+public class CustomItemDrop implements Cloneable {
     public int minLevel;
     public int maxLevel;
     public double dropChance;
@@ -26,6 +29,7 @@ public class CustomItemDrop {
     private int damageRangeMax;
     private Material material;
     private ItemStack itemStack;
+    public Set<String> excludedMobs;
 
     public CustomItemDrop(){
         this.minLevel = -1;
@@ -33,12 +37,38 @@ public class CustomItemDrop {
         this.groupId = -1;
         this.amount = 1;
         this.dropChance = 0.2; // default drop chance if not specified
+        this.excludedMobs = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
     }
 
-    public boolean setAmountRangeFromString(final String numberRange){
-        if (numberRange == null || numberRange.isEmpty()) return false;
+    public CustomItemDrop cloneItem(){
+        CustomItemDrop copy = null;
+        try {
+            copy = (CustomItemDrop) super.clone();
+            copy.itemStack = this.itemStack.clone();
+        }
+        catch (Exception ignored){ }
 
-        String[] nums = numberRange.split("-");
+        return copy;
+    }
+
+    private static String getContent(Object aClass, String name) throws NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
+        Field declaredField = aClass.getClass().getDeclaredField(name);
+        declaredField.setAccessible(true);
+        return (String) declaredField.get(aClass);
+    }
+
+    public boolean setAmountRangeFromString(final String numberOrNumberRange){
+        if (numberOrNumberRange == null || numberOrNumberRange.isEmpty()) return false;
+
+        if (!numberOrNumberRange.contains("-")){
+            if (!Utils.isInteger(numberOrNumberRange)) return false;
+
+            this.amount = Integer.parseInt(numberOrNumberRange);
+            this.hasAmountRange = false;
+            return true;
+        }
+
+        final String[] nums = numberOrNumberRange.split("-");
         if (nums.length != 2) return false;
 
         if (!Utils.isInteger(nums[0].trim()) || !Utils.isInteger(nums[1].trim())) return false;
@@ -49,10 +79,20 @@ public class CustomItemDrop {
         return true;
     }
 
-    public boolean setDamageRangeFromString(final String numberRange){
-        if (numberRange == null || numberRange.isEmpty()) return false;
+    public boolean setDamageRangeFromString(final String numberOrNumberRange){
+        if (numberOrNumberRange == null || numberOrNumberRange.isEmpty()) return false;
 
-        String[] nums = numberRange.split("-");
+        if (!numberOrNumberRange.contains("-")){
+            if (!Utils.isInteger(numberOrNumberRange)) return false;
+
+            this.damage = Integer.parseInt(numberOrNumberRange);
+            this.hasDamageRange = false;
+            this.damageRangeMax = 0;
+            this.damageRangeMin = 0;
+            return true;
+        }
+
+        String[] nums = numberOrNumberRange.split("-");
         if (nums.length != 2) return false;
 
         if (!Utils.isInteger(nums[0].trim()) || !Utils.isInteger(nums[1].trim())) return false;
@@ -77,6 +117,7 @@ public class CustomItemDrop {
 
     public void setDamage(int damage){
         this.damage = damage;
+        this.hasDamageRange = false;
     }
 
     public int getAmountRangeMin(){
@@ -119,7 +160,7 @@ public class CustomItemDrop {
         if (this.hasDamageRange)
             return String.format("%s-%s", this.damageRangeMin, this.damageRangeMax);
         else
-            return String.valueOf(this.amount);
+            return String.valueOf(this.damage);
     }
 
     public Material getMaterial(){
