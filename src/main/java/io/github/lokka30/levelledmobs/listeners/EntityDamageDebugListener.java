@@ -34,12 +34,16 @@ public class EntityDamageDebugListener implements Listener {
     //This class is used to debug levellable mobs. It simply displays their current attributes, current health and current level.
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void onEntityDamageByEntity(final EntityDamageByEntityEvent e) {
-        if (instance.settingsCfg.getBoolean("debug-entity-damage") && e.getEntity() instanceof LivingEntity && e.getDamager() instanceof Player) {
+        if (!instance.settingsCfg.getBoolean("debug-entity-damage")) return;
+
+        if (e.getEntity() instanceof LivingEntity && e.getDamager() instanceof Player) {
             final Player player = (Player) e.getDamager();
+            if (!player.isOp()) return;
+
             final UUID uuid = player.getUniqueId();
             final LivingEntity livingEntity = (LivingEntity) e.getEntity();
 
-            if (player.isOp() && !delay.contains(uuid) && livingEntity.getPersistentDataContainer().has(instance.levelManager.isLevelledKey, PersistentDataType.STRING)) {
+            if (!delay.contains(uuid) && livingEntity.getPersistentDataContainer().has(instance.levelManager.isLevelledKey, PersistentDataType.STRING)) {
                 player.sendMessage(MessageUtils.colorizeAll("&b&lLevelledMobs: &7Debug information for &b" + livingEntity.getType().toString() + "&7: "));
 
                 writeDebugForAttribute(player, livingEntity, Attribute.GENERIC_MAX_HEALTH);
@@ -57,6 +61,15 @@ public class EntityDamageDebugListener implements Listener {
                 player.sendMessage(MessageUtils.colorizeAll("&8 - &fCustomName &8= &b" + (livingEntity.getCustomName() == null ? "N/A" : livingEntity.getCustomName())));
 
                 delay.add(uuid);
+                new BukkitRunnable() {
+                    public void run() {
+                        delay.remove(uuid);
+                    }
+                }.runTaskLater(instance, 40L);
+            }
+            else if (!delay.contains(uuid) && !livingEntity.getPersistentDataContainer().has(instance.levelManager.isLevelledKey, PersistentDataType.STRING)){
+                player.sendMessage(MessageUtils.colorizeAll("&b&lLevelledMobs: &7Mob is not levelled"));
+
                 new BukkitRunnable() {
                     public void run() {
                         delay.remove(uuid);

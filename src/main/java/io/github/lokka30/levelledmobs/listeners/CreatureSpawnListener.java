@@ -299,7 +299,7 @@ public class CreatureSpawnListener implements Listener {
 
     public void processMobEquipment(final LivingEntity livingEntity, final int level){
         List<ItemStack> items = new ArrayList<>();
-        instance.levelManager.getCustomItemDrops(livingEntity, level, items, true, true);
+        instance.customDropsHandler.getCustomItemDrops(livingEntity, level, items, true, true);
         if (items.isEmpty()) return;
 
         EntityEquipment ee = livingEntity.getEquipment();
