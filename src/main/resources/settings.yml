@@ -41,6 +41,9 @@
 #
 # |||||||||||||||||||||||||||||||||||||||||||||||||||||
 # ||  Section 01 - Mob Nametags
+# ||
+# ||  NOTE: You must have ProtocolLib installed for
+# ||  this featureset to function.
 # |||||||||||||||||||||||||||||||||||||||||||||||||||||
 #
 # ||-------------------------------------------------------||
@@ -82,7 +85,7 @@ creature-death-nametag: '&8[&7Level %level%&8 | &f%displayname%&8]'
 #            | fairly close and looking directly at it (Default)
 #
 #     Unfortunately, there are no other options, due to
-#     limitations established in Minecraft itself
+#     limitations established in Minecraft itself.
 # ||-------------------------------------------------------||
 creature-nametag-always-visible: false
 
@@ -178,10 +181,12 @@ nametag-auto-update-task-period: 6
 #        - VILLAGER
 #        - ARMOR_STAND
 #
-#     If level-passive is set to true, armor stands are
-#     considered passive; it is recommended in order to
-#     prevent conflicts to leave ARMOR_STAND in the
-#     list until the code is updated
+#     NOTE: Armor stands are considered passive by vanilla
+#     Minecraft. If 'level-passive' is set to 'true', they
+#     will receive levels if they are not BLACKLISTED below.
+#     It is recommended that you do not change from BLACKLIST
+#     or remove ARMOR_STAND from the list until the code can
+#     by corrected to fix this!
 # ||-------------------------------------------------------||
 allowed-entities-list:
   mode: 'BLACKLIST'
@@ -200,16 +205,11 @@ allowed-entities-list:
 # ||  Should Passive creatures be levelled?
 #
 #     Passive creatures are mobs which are not by
-#     default hostile towards the player, this
-#     includes mobs such as the pigs and villagers
+#     default hostile towards the player. This
+#     includes mobs such as the pigs and villagers.
 #
 #       true | Passive mobs will be levelled like any other mob
 #      false | Passive mobs will NOT be levelled (Default)
-#
-#     If level-passive is set to true, armor stands are
-#     considered passive; it is recommended in order to
-#     prevent conflicts to leave ARMOR_STAND in the above
-#     blacklist until the code is updated
 # ||-------------------------------------------------------||
 level-passive: false
 
@@ -312,6 +312,7 @@ y-distance-levelling:
 #     false | PLAYER_HEADS will NOT be multipled (Default)
 # ||-------------------------------------------------------||
 mobs-multiply-head-drops: false
+
 
 # ||-------------------------------------------------------||
 # ||  ADVANCED USERS ONLY
@@ -422,16 +423,16 @@ fine-tuning:
     item-drop: 3
     xp-drop: 2
 
-custom_mob_level:
+    custom_mob_level:
 # Below represents an example of a customized PIGLIN
 # Uncomment it to take effect!
-#  PIGLIN:
-#    max-health: 30
-#    movement-speed: 0.2
-#    attack-damage: 6
-#    xp-drop: 3
-#    ranged-attack-damage: 2.5
-#    item-drop: 4
+#      PIGLIN:
+#        max-health: 30
+#        movement-speed: 0.2
+#        attack-damage: 6
+#        xp-drop: 3
+#        ranged-attack-damage: 2.5
+#        item-drop: 4
 
 
 #
@@ -757,9 +758,10 @@ file-version: 28
 
 
 # And that's the end of the file! Congratulations!
-
+#
 #   /\_/\  (
 #  ( ^.^ ) _)
 #    \"/  (
 #  ( | | )
 # (__d b__)
+#

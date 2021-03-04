@@ -1,34 +1,89 @@
-# .                           .    .               _ __   __        _
-# /       ___  _   __   ___   |    |     ___    ___/ |    |    __.  \ ___    ____
-# |     .'   ` |   /  .'   `  |    |   .'   `  /   | |\  /|  .'   \ |/   \  (
-# |     |----' `  /   |----'  |    |   |----' ,'   | | \/ |  |    | |    `  `--.
-# /---/ `.___,  \/    `.___, /\__ /\__ `.___, `___,' /    /   `._.' `___,' \___.'
-#                     The Ultimate RPG Levelled Mobs Solution
 #
-# This is LevelledMobs' messages configuration file. Here, you can change every chat message
-# that is sent by the plugin. Translate it, change the colors, or do whatever you wish! :)
-# Almost every message allows the %prefix% placeholder to be used. A lot of messages have
-# a collection of their own placeholders too.
+#        /\/\    ___  ___  ___   __ _   __ _   ___  ___ 
+#       /    \  / _ \/ __|/ __| / _` | / _` | / _ \/ __|
+#      / /\/\ \|  __/\__ \\__ \| (_| || (_| ||  __/\__ \
+#      \/    \/ \___||___/|___/ \__,_| \__, | \___||___/
+#                                      |___/            
+#   __                    _  _         _  _____       _        
+#  |  |    ___  _ _  ___ | || | ___  _| ||     | ___ | |_  ___ 
+#  |  |__ | -_|| | || -_|| || || -_|| . || | | || . || . ||_ -|
+#  |_____||___| \_/ |___||_||_||___||___||_|_|_||___||___||___| 
+#            The Ultimate RPG Levelled Mobs Solution
 #
-# Use a YAML parser to check for errors before use: https://yaml-online-parser.appspot.com/
-# Join the Discord server for assistance or a chat: https://discord.io/arcaneplugins
-
-# Messages that are used in more than one location.
+# |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+# || 
+# || This is LevelledMobs' messages configuration file.
+# || Here you can edit any messages sent through the plugin.
+# || There are several placeholders you may use available.
+# || 
+# || NOTE: Some placeholders will not function if the event
+# || calling these placeholders does not utilize the value.
+# || Keep this in mind when using the placeholders below.
+# || It is recommended that, if a certain placeholder is not
+# || present within the line you wish to configure, that you
+# || do not add new placeholders to that line without ensuring
+# || that the placeholder being used is actually called when
+# || the message is sent to you or your players.
+# || 
+# ||            %prefix% | The prefix to most messages displayed
+# ||                     | through LevelledMobs. Configure 'prefix'
+# ||                     | below to change this value.
+# ||            %player% | The playername who event is directed at
+# ||             %label% | The command used to access LevelledMobs /LM
+# ||            %amount% | The input value for event
+# ||        %entityType% | The EntityType for event
+# ||             %level% | The current level of Entity for event
+# ||        %summonType% | The input summoning type value for event
+# ||            %entity% | Use the custom name, nametag, or default
+# ||                     | name for applied EntityType
+# ||                 %x% | The X coordinate where event occurred
+# ||                 %y% | The Y coordinate where event occurred
+# ||                 %z% | The Z coordinate where event occurred
+# ||             %world% | The world where event occurred
+# ||    %targetUsername% | The username of target of event
+# || %targetDisplayname% | The displayname of target of event
+# ||         %maxAmount% | The maximum summon amount of event
+# ||          %minLevel% | The minimum level of EntityTypes
+# ||                     | Configure 'fine-tuning' in settings.yml
+# ||          %maxLevel% | The maximum level of EntityTypes
+# ||                     | Configure 'fine-tuning' in settings.yml
+# ||            %killed% | The number of killed Entities when
+# ||                     | the kill command is used
+# ||           %skipped% | The number of Entities skipped when
+# ||                     | the kill command is used
+# ||            %radius% | The input radius value when executing commands
+# ||         %minRadius% | The minimum radius as configured
+# ||         %maxRadius% | The maximum radius as configured
+# ||           %version% | The current version of the LevelledMobs plugin
+# ||       %description% | A preconfigured plugin description%
+# || %supportedVersions% | A list of supported Minecraft versions
+# ||                     | for current version of LevelledMobs plugin
+# ||      %contributors% | A preconfigured list of plugin contributors
+# || %incompatibilities% | Number of potential incomppatibilities
+# || 
+# |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+#
+#
+#
+# |||||||||||||||||||||||||||||||||||||||||||||||||||||
+# ||  Section 01 - Common Messages
+# |||||||||||||||||||||||||||||||||||||||||||||||||||||
+#
 common:
-
-  # Note: the prefix does not have multi-line support.
   prefix: '&b&lLevelledMobs:&7'
-
   no-permission:
     - '%prefix% You don''t have access to that.'
-
   players-only:
     - '%prefix% Only players may use that.'
-
   player-offline:
     - '%prefix% &r%player%&7 is offline or invalid.'
 
-# Messages from this plugin's commands.
+
+#
+# |||||||||||||||||||||||||||||||||||||||||||||||||||||
+# ||  Section 02 - Default Command Messages
+# |||||||||||||||||||||||||||||||||||||||||||||||||||||
+#
 command:
   levelledmobs:
     main-usage:
@@ -39,122 +94,107 @@ command:
       - '&8 &m->&b /%label% info &8- &7view info about the plugin'
       - '&8 &m->&b /%label% compatibility &8- &7check plugin''s compatibility with the server'
 
+
+#
+# |||||||||||||||||||||||||||||||||||||||||||||||||||||
+# ||  Section 03 - Summon Command Messages
+# |||||||||||||||||||||||||||||||||||||||||||||||||||||
+#
     summon:
       invalid-amount:
         - '%prefix% Invalid amount ''&b%amount%&7''.'
-
       invalid-entity-type:
         - '%prefix% Invalid entity type ''&b%entityType%&7''.'
-
       invalid-level:
         - '%prefix% Invalid level ''&b%level%&7''.'
-
       invalid-summon-type:
         - '%prefix% Invalid summon type ''&b%summonType%&7''.'
-
       invalid-summon-type-console:
         - '%prefix% Only players may use summon type ''&bhere''&7, you must use ''&batPlayer&7'' or ''&batLocation&7'' instead.'
-
       invalid-location:
         - '%prefix% Invalid location.'
-
       here:
         usage:
           - '%prefix% Usage: &b/%label% summon <amount> <entity> <level> here'
-
         success:
           - '%prefix% Spawned &b%amount%&7 of &fLvl.%level% &b%entity%(s)&7 at your location.'
-
       atLocation:
         usage:
           - '%prefix% Usage: &b/%label% summon <amount> <entity> <level> atLocation <x> <y> <z> [world]'
-
         success:
           - '%prefix% Spawned &b%amount%&7 of &fLvl.%level% &b%entity%(s)&7 at &8(&b%x%&7, &b%y%&7, &b%z%&7 in world ''&b%world%&7''&8)&7.'
-
         usage-console:
           - '%prefix% Usage (console): &b/%label% summon <amount> <entity> <level> atLocation <x> <y> <z> <world>'
-
         invalid-world:
           - '%prefix% Invalid world ''&b%world%&7''.'
-
         invalid-location:
           - '%prefix% Invalid location.'
-
       atPlayer:
         usage:
           - '%prefix% Usage: &b/%label% summon <amount> <entityType> <level> atPlayer <player>'
-
-        # Placeholders: %amount%, %level%, %entity%, %targetUsername%, %targetDisplayname%
         success:
           - '%prefix% Spawned &b%amount%&7 of &fLvl.%level% &b%entity%(s)&7 at &r%targetDisplayname%&7''s location.'
-
       usage:
         - '%prefix% Summon command syntax:'
         - '&8 &m->&b /%label% summon <amount> <entity> <level> here'
         - '&8 &m->&b /%label% summon <amount> <entity> <level> atPlayer <player>'
         - '&8 &m->&b /%label% summon <amount> <entity> <level> atLocation <x> <y> <z> [world]'
-
       amount-limited:
         min:
           - '%prefix% Summon amount limited to a minimum of &b1&7 mob.'
-
         max:
           - '%prefix% Summon amount limited to a maximum of &b%maxAmount%&7 mobs.'
-
       level-limited:
         min:
           - '%prefix% Level limited to a minimum of &bLvl.%minLevel%&7.'
-
         max:
           - '%prefix% Level limited to a maximum of &bLvl.%maxLevel%&7.'
-
       not-levellable:
         - '%prefix% &b%entity%&7 is not levellable.'
 
+
+#
+# |||||||||||||||||||||||||||||||||||||||||||||||||||||
+# ||  Section 04 - Kill Command Messages
+# |||||||||||||||||||||||||||||||||||||||||||||||||||||
+#
     kill:
       usage:
         - '%prefix% Usage: &b/%label% kill <all/near>'
-
       all:
         invalid-world:
           - '%prefix% Invalid world ''&b%world%&7''.'
-
         success:
           - '%prefix% Killed &b%killed%&7 levelled mobs in &b%worlds%&7 world(s) &8(&b%skipped%&7 mobs were skipped&8)&7.'
-
         usage:
           - '%prefix% Usage: &b/%label% kill all [world/*]'
-
         usage-console:
           - '%prefix% Usage (console): /%label% kill all <world/*>'
-
       near:
         invalid-radius:
           - '%prefix% Invalid radius ''&b%radius%&7''.'
-
         invalid-radius-min:
           - '%prefix% Specified radius has been adjusted to the minimum radius &8(&b%minRadius%&8)&7.'
-
         invalid-radius-max:
           - '%prefix% Specified radius has been adjusted to the maximum radius &8(&b%maxRadius%&8)&7.'
-
         success:
           - '%prefix% Killed &b%killed%&7 levelled mobs within a radius of &b%radius%&7 block(s) &8(&b%skipped%&7 mobs were skipped&8)&7.'
-
         usage:
           - '%prefix% Usage: &b/%label% kill near <radius>'
 
+
+#
+# |||||||||||||||||||||||||||||||||||||||||||||||||||||
+# ||  Section 05 - System Command Messages
+# |||||||||||||||||||||||||||||||||||||||||||||||||||||
+#
     reload:
       started:
         - '%prefix% Reloading configuration files...'
-
       finished:
         - '%prefix% Reload complete.'
-
       usage:
         - '%prefix% Usage: &b/%label% reload'
-
     info:
       about:
         - ' '
@@ -164,12 +204,9 @@ command:
         - '&7This version of the plugin supports: &fMinecraft %supportedVersions%'
         - '&7Code contributors: &f%contributors%'
         - ' '
-
       listSeparator: '&7, &f'
-
       usage:
         - '%prefix% Usage: &b/%label% info'
-
     compatibility:
       notice:
         - '%prefix% Compatibility checks have been printed to your logs. Please check the console :)'
@@ -177,6 +214,12 @@ command:
       usage:
         - '%prefix% Usage: &b/%label% compatibility'
 
+
+#
+# |||||||||||||||||||||||||||||||||||||||||||||||||||||
+# ||  Section 06 - Compatibility Warning System
+# |||||||||||||||||||||||||||||||||||||||||||||||||||||
+#
 other:
   compatibility-notice:
     enabled: true
@@ -190,11 +233,3 @@ other:
 # The value must match exactly what version the plugin ships the default file with.
 # Don't change this unless you know what you're doing!
 file-version: 1
-
-
-
-#   /\_/\  (
-#  ( ^.^ ) _)
-#    \"/  (   You've reached the end of the file! :o
-#  ( | | )    Remember to use a YAML validator to make sure your file has a valid structure. :)
-# (__d b__)
