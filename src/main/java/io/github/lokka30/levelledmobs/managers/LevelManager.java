@@ -8,15 +8,14 @@ import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 import io.github.lokka30.levelledmobs.LevelledMobs;
 import io.github.lokka30.levelledmobs.customdrops.CustomDropResult;
 import io.github.lokka30.levelledmobs.listeners.CreatureSpawnListener;
-import io.github.lokka30.levelledmobs.misc.Addition;
-import io.github.lokka30.levelledmobs.misc.ModalList;
-import io.github.lokka30.levelledmobs.misc.Utils;
+import io.github.lokka30.levelledmobs.misc.*;
 import me.lokka30.microlib.MessageUtils;
 import org.apache.commons.lang.WordUtils;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.entity.*;
+import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -26,17 +25,36 @@ import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class LevelManager {
 
     private final LevelledMobs instance;
+    final public HashMap<LevelNumbersWithBias, LevelNumbersWithBias> levelNumsListCache;
+    final public LinkedList<LevelNumbersWithBias> levelNumsListCacheOrder;
+    private final static int maxLevelNumsCache = 10;
 
     public LevelManager(final LevelledMobs instance) {
         this.instance = instance;
 
+        this.levelNumsListCache = new HashMap<>();
+        this.levelNumsListCacheOrder = new LinkedList<>();
+
         levelKey = new NamespacedKey(instance, "level");
         isLevelledKey = new NamespacedKey(instance, "isLevelled");
         isSpawnerKey = new NamespacedKey(instance, "isSpawner");
+
+        final int factor = instance.settingsCfg.getInt("fine-tuning.lower-mob-level-bias-factor", 0);
+        if (factor > 0) {
+            LevelNumbersWithBias lnwb = new LevelNumbersWithBias(
+                    instance.settingsCfg.getInt("fine-tuning.min-level", 1),
+                    instance.settingsCfg.getInt("fine-tuning.max-level", 10),
+                    factor
+            );
+            lnwb.populateData();
+            this.levelNumsListCache.put(lnwb, lnwb);
+            this.levelNumsListCacheOrder.addFirst(lnwb);
+        }
     }
 
     public final NamespacedKey levelKey; // This stores the mob's level.
@@ -46,7 +64,6 @@ public class LevelManager {
     public final HashSet<String> forcedTypes = new HashSet<>(Arrays.asList("GHAST", "MAGMA_CUBE", "HOGLIN", "SHULKER", "PHANTOM", "ENDER_DRAGON", "SLIME", "MAGMA_CUBE", "ZOMBIFIED_PIGLIN"));
 
     public final static int maxCreeperBlastRadius = 100;
-    //public final Pattern slimeRegex = Pattern.compile("Level.*?(\\d{1,2})", Pattern.CASE_INSENSITIVE);
     public CreatureSpawnListener creatureSpawnListener;
 
     public boolean isLevellable(final EntityType entityType) {
@@ -129,6 +146,373 @@ public class LevelManager {
         }
 
         return isLevellable(livingEntity.getType());
+    }
+
+    public int generateDistanceFromSpawnLevel(final LivingEntity livingEntity, final DebugInfo debugInfo, final CreatureSpawnEvent.SpawnReason spawnReason, final int minLevel, final int maxLevel) {
+        final boolean isBabyEntity = Utils.isEntityBaby(livingEntity);
+
+        //final int minLevel = instance.configUtils.getMinLevel(livingEntity.getType(), livingEntity.getWorld(), !isBabyEntity, debugInfo, spawnReason);
+        //final int maxLevel = instance.configUtils.getMaxLevel(livingEntity.getType(), livingEntity.getWorld(), !isBabyEntity, debugInfo, spawnReason);
+
+
+        if (debugInfo != null) {
+            debugInfo.minLevel = minLevel;
+            debugInfo.maxLevel = maxLevel;
+        }
+
+        //Get distance between entity spawn point and world spawn
+        final int entityDistance = (int) livingEntity.getWorld().getSpawnLocation().distance(livingEntity.getLocation());
+
+        //Make mobs start leveling from start distance
+        int levelDistance = entityDistance - instance.settingsCfg.getInt("spawn-distance-levelling.start-distance");
+        if (levelDistance < 0) levelDistance = 0;
+
+        //Get the level thats meant to be at a given distance
+        int finalLevel = (levelDistance / instance.settingsCfg.getInt("spawn-distance-levelling.increase-level-distance")) + minLevel;
+
+        //Check if there should be a variance in level
+        if (instance.settingsCfg.getBoolean("spawn-distance-levelling.variance.enabled")) {
+            //The maximum amount of variation.
+            final int maxVariation = instance.settingsCfg.getInt("spawn-distance-levelling.variance.max");
+
+            //A random number between min and max which determines the amount of variation that will take place
+            final int change = ThreadLocalRandom.current().nextInt(0, maxVariation + 1);
+
+            boolean useOnlyNegative = false;
+
+            if (finalLevel >= maxLevel) {
+                finalLevel = maxLevel;
+                useOnlyNegative = true;
+            }
+            else if (finalLevel <= minLevel) {
+                finalLevel = minLevel;
+            }
+
+            //Start variation. First check if variation is positive or negative towards the original level amount.
+            if (!useOnlyNegative || ThreadLocalRandom.current().nextBoolean()) {
+                //Positive. Add the variation to the final level
+                finalLevel = finalLevel + change;
+            } else {
+                //Negative. Subtract the variation from the final level
+                finalLevel = finalLevel - change;
+            }
+        }
+
+        //Ensure the final level is within level min/max caps
+        if (finalLevel > maxLevel) {
+            finalLevel = maxLevel;
+        }
+        else if (finalLevel < minLevel) {
+            finalLevel = minLevel;
+        }
+
+        return finalLevel;
+    }
+
+    // this is now the main entry point that determines the level for all criteria
+    public int generateLevel(final LivingEntity livingEntity, final DebugInfo debugInfo, final CreatureSpawnEvent.SpawnReason spawnReason) {
+
+        //TODO: change this to use the defined levelling system from settings.yml
+        // fow now we'll just use the global min / max
+
+        final boolean isAdultEntity = !Utils.isEntityBaby(livingEntity);
+        final int[] levels = getMinAndMaxLevels(livingEntity, livingEntity.getType(), isAdultEntity, livingEntity.getWorld().getName(), debugInfo, spawnReason);
+        final int minLevel = levels[0];
+        final int maxLevel = levels[1];
+
+        // option 2: spawn distance levelling
+        if (instance.settingsCfg.getBoolean("y-distance-levelling.active")){
+            return generateDistanceFromSpawnLevel(livingEntity, debugInfo, spawnReason, minLevel, maxLevel);
+        }
+
+        // option 3: y distance levelling
+        if (instance.settingsCfg.getBoolean("spawn-distance-levelling.active")) {
+            return generateYCoordinateLevel(livingEntity.getLocation().getBlockY(), minLevel, maxLevel);
+        }
+
+        int biasFactor = instance.settingsCfg.getInt("fine-tuning.lower-mob-level-bias-factor", 0);
+
+        if (minLevel == maxLevel)
+            return minLevel;
+        else if (biasFactor > 0){
+            if (biasFactor > 10) biasFactor = 10;
+            return generateLevelWithBias(minLevel, maxLevel, biasFactor);
+        }
+        else
+            return ThreadLocalRandom.current().nextInt(minLevel, maxLevel + 1);
+    }
+
+    public int[] getMinAndMaxLevels(final LivingEntity le, final EntityType entityType, final boolean isAdultEntity, final String worldName,
+                                    final DebugInfo debugInfo, final CreatureSpawnEvent.SpawnReason spawnReason){
+        // option 1: global levelling (default)
+        int minLevel = Utils.getDefaultIfNull(instance.settingsCfg, "fine-tuning.min-level", 1);
+        int maxLevel = Utils.getDefaultIfNull(instance.settingsCfg, "fine-tuning.max-level", 10);
+
+        if (debugInfo != null){
+            debugInfo.minLevel = minLevel;
+            debugInfo.maxLevel = maxLevel;
+        }
+
+        // world guard regions take precedence over any other min / max settings
+        // le is null if passed from summon mobs command
+        if (le != null && ExternalCompatibilityManager.hasWorldGuardInstalled() && instance.worldGuardManager.checkRegionFlags(le)){
+            final int[] levels = generateWorldGuardRegionLevel(le, debugInfo, spawnReason);
+            if (levels[0] > -1) minLevel = levels[0];
+            if (levels[1] > -1) maxLevel = levels[1];
+        }
+
+        // config will decide which takes precedence; entity override or world override
+
+        if (instance.settingsCfg.getBoolean("world-level-override.enabled")) {
+            final int[] levels = getWorldLevelOverride(worldName, debugInfo);
+            if (levels[0] > -1) minLevel = levels[0];
+            if (levels[1] > -1) maxLevel = levels[1];
+        }
+
+        if (instance.settingsCfg.getBoolean("entitytype-level-override.enabled")) {
+            final int[] levels = getEntityTypeOverride(entityType.toString(), spawnReason, isAdultEntity, debugInfo);
+            if (levels[0] > -1) minLevel = levels[0];
+            if (levels[1] > -1) maxLevel = levels[1];
+        }
+
+        // this will prevent an unhandled exception:
+        if (minLevel > maxLevel) minLevel = maxLevel;
+
+        return new int[]{ minLevel, maxLevel };
+    }
+
+    private int[] getWorldLevelOverride(final String worldName, final DebugInfo debugInfo){
+
+        final int[] levels = new int[]{ -1, -1};
+
+        if (instance.worldLevelOverride_Min.containsKey(worldName)) {
+            levels[0] = Utils.getDefaultIfNull(instance.worldLevelOverride_Min, worldName, -1);
+        }
+
+        if (instance.worldLevelOverride_Max.containsKey(worldName)) {
+            levels[1] = Utils.getDefaultIfNull(instance.worldLevelOverride_Max, worldName, -1);
+        }
+
+        if (levels[0] > -1) debugInfo.minLevel = levels[0];
+        if (levels[1] > -1) debugInfo.maxLevel = levels[1];
+        if (levels[0] > -1 || levels[1] > -1) debugInfo.rule = MobProcessReason.ENTITY;
+
+        return levels;
+    }
+
+    private int[] getEntityTypeOverride(final String entityTypeStr, final CreatureSpawnEvent.SpawnReason spawnReason, final boolean isAdult, final DebugInfo debugInfo){
+        final String reinforcementsStr = entityTypeStr + "_REINFORCEMENTS";
+
+        final int[] levels = new int[]{ -1, -1};
+
+        if (spawnReason == CreatureSpawnEvent.SpawnReason.REINFORCEMENTS){
+            if (instance.entityTypesLevelOverride_Min.containsKey(reinforcementsStr))
+                levels[0] = Utils.getDefaultIfNull(instance.entityTypesLevelOverride_Min, reinforcementsStr, levels[0]);
+            if (instance.entityTypesLevelOverride_Max.containsKey(reinforcementsStr))
+                levels[1] = Utils.getDefaultIfNull(instance.entityTypesLevelOverride_Max, reinforcementsStr, levels[1]);
+        }
+        else if (isAdult) {
+            if (instance.entityTypesLevelOverride_Min.containsKey(entityTypeStr))
+                levels[0] = Utils.getDefaultIfNull(instance.entityTypesLevelOverride_Min, entityTypeStr, levels[0]);
+            if (instance.entityTypesLevelOverride_Max.containsKey(entityTypeStr))
+                levels[1] = Utils.getDefaultIfNull(instance.entityTypesLevelOverride_Max, entityTypeStr, levels[1]);
+        }
+        // babies here:
+        else if (instance.entityTypesLevelOverride_Min.containsKey("baby_" + entityTypeStr)) {
+            if (instance.entityTypesLevelOverride_Min.containsKey("baby_" + entityTypeStr))
+                levels[0] = Utils.getDefaultIfNull(instance.entityTypesLevelOverride_Min, "baby_" + entityTypeStr, levels[0]);
+            if (instance.entityTypesLevelOverride_Max.containsKey("baby_" + entityTypeStr))
+                levels[1] = Utils.getDefaultIfNull(instance.entityTypesLevelOverride_Max, "baby_" + entityTypeStr, levels[1]);
+        }
+
+        if (debugInfo != null) {
+            if (levels[0] > -1) debugInfo.minLevel = levels[0];
+            if (levels[1] > -1) debugInfo.maxLevel = levels[1];
+            if (levels[0] > -1 || levels[1] > -1) debugInfo.rule = MobProcessReason.ENTITY;
+        }
+
+        return levels;
+    }
+
+    public int generateYCoordinateLevel(final int mobYLocation, final int minLevel, final int maxLevel) {
+        final int yPeriod = instance.settingsCfg.getInt("y-distance-levelling.y-period", 0);
+        final int variance = instance.settingsCfg.getInt("y-distance-levelling.variance", 0);
+        int yStart = instance.settingsCfg.getInt("y-distance-levelling.starting-y-level", 100);
+        int yEnd = instance.settingsCfg.getInt("y-distance-levelling.ending-y-level", 20);
+
+        final boolean isAscending = (yEnd > yStart);
+        if (!isAscending) {
+            yStart = yEnd;
+            yEnd = instance.settingsCfg.getInt("y-distance-levelling.starting-y-level", 100);
+        }
+
+        int useLevel = minLevel;
+        boolean skipYPeriod = false;
+
+        if (mobYLocation >= yEnd){
+            useLevel = maxLevel;
+            skipYPeriod = true;
+        }
+        else if (mobYLocation <= yStart){
+            skipYPeriod = true;
+        }
+
+        if (!skipYPeriod) {
+            final double diff = yEnd - yStart;
+            double useMobYLocation =  mobYLocation - yStart;
+
+            if (yPeriod > 0) {
+                useLevel = (int) (useMobYLocation / (double) yPeriod);
+            } else {
+                double percent = useMobYLocation / diff;
+                useLevel = (int) Math.ceil((maxLevel - minLevel + 1) * percent);
+            }
+        }
+
+        if (!isAscending) {
+            useLevel = maxLevel - useLevel + 1;
+        }
+
+        if (variance > 0){
+            boolean useOnlyNegative = false;
+
+            if (useLevel >= maxLevel) {
+                useLevel = maxLevel;
+                useOnlyNegative = true;
+            }
+            else if (useLevel <= minLevel) {
+                useLevel = minLevel;
+            }
+
+            final int change = ThreadLocalRandom.current().nextInt(0, variance + 1);
+
+            //Start variation. First check if variation is positive or negative towards the original level amount.
+            if (!useOnlyNegative || ThreadLocalRandom.current().nextBoolean()) {
+                //Positive. Add the variation to the final level
+                useLevel += change;
+            } else {
+                //Negative. Subtract the variation from the final level
+                useLevel -= change;
+            }
+        }
+
+        if (useLevel < minLevel) useLevel = minLevel;
+        else if (useLevel > maxLevel) useLevel = maxLevel;
+
+        return useLevel;
+    }
+
+    private int generateLevelWithBias(final int minLevel, final int maxLevel, final int factor){
+
+        LevelNumbersWithBias levelNum = new LevelNumbersWithBias(minLevel, maxLevel, factor);
+
+        if (this.levelNumsListCache.containsKey(levelNum)) {
+            levelNum = this.levelNumsListCache.get(levelNum);
+        }
+        else {
+            levelNum = new LevelNumbersWithBias(minLevel, maxLevel, factor);
+            levelNum.populateData();
+            this.levelNumsListCache.put(levelNum, levelNum);
+            this.levelNumsListCacheOrder.addLast(levelNum);
+        }
+
+        if (this.levelNumsListCache.size() > maxLevelNumsCache) {
+            LevelNumbersWithBias oldest = this.levelNumsListCacheOrder.getFirst();
+            this.levelNumsListCache.remove(oldest);
+            this.levelNumsListCacheOrder.removeFirst();
+        }
+
+        return levelNum.getNumberWithinLimits();
+    }
+
+    public int[] generateWorldGuardRegionLevel(final LivingEntity livingEntity, final DebugInfo debugInfo, final CreatureSpawnEvent.SpawnReason spawnReason) {
+        final boolean isBabyEntity = Utils.isEntityBaby(livingEntity);
+        final int[] levels = instance.worldGuardManager.getRegionLevel(livingEntity);
+
+        if (debugInfo != null){
+            debugInfo.rule = MobProcessReason.WORLD_GUARD;
+            debugInfo.minLevel = levels[0];
+            debugInfo.maxLevel = levels[1];
+        }
+
+        return levels;
+
+        // standard issue, generate random levels based upon max and min flags in worldguard
+
+//        final int biasFactor = instance.settingsCfg.getInt("fine-tuning.lower-mob-level-bias-factor", 0);
+//        if (biasFactor > 0)
+//            return generateLevelWithBias(levels[0], levels[1], biasFactor);
+//        else
+//            return levels[0] + Math.round(new Random().nextFloat() * (levels[1] - levels[0]));
+
+
+        // generate level based on y distance but use min and max values from world guard
+        //return instance.levelManager.generateYCoordinateLevel(livingEntity.getLocation().getBlockY(), levels[0], levels[1]);
+    }
+
+    public int getEntityOverrideLevel(final LivingEntity livingEntity, final CreatureSpawnEvent.SpawnReason spawnReason, int level,
+                                      final MobProcessReason processReason, final boolean override, final boolean isAdult, final DebugInfo debugInfo){
+
+        if (!instance.settingsCfg.getBoolean("entitytype-level-override.enabled")) return -1;
+
+        final String entityTypeStr = livingEntity.getType().toString();
+        final String worldName = livingEntity.getWorld().getName();
+        int minLevel = Utils.getDefaultIfNull(instance.settingsCfg, "fine-tuning.min-level", 1);
+        int maxLevel = Utils.getDefaultIfNull(instance.settingsCfg, "fine-tuning.max-level", 10);
+        boolean foundValue = false;
+
+        // min level
+        if (spawnReason == CreatureSpawnEvent.SpawnReason.REINFORCEMENTS && instance.entityTypesLevelOverride_Min.containsKey(entityTypeStr + "_REINFORCEMENTS")) {
+            minLevel = Utils.getDefaultIfNull(instance.entityTypesLevelOverride_Min, entityTypeStr + "_REINFORCEMENTS", minLevel);
+            if (debugInfo != null) {
+                debugInfo.rule = MobProcessReason.ENTITY;
+                debugInfo.minLevel = minLevel;
+            }
+            foundValue = true;
+        } else if (isAdult && instance.entityTypesLevelOverride_Max.containsKey(entityTypeStr)) {
+            minLevel = Utils.getDefaultIfNull(instance.entityTypesLevelOverride_Min, entityTypeStr, minLevel);
+            if (debugInfo != null) {
+                debugInfo.rule = MobProcessReason.ENTITY;
+                debugInfo.minLevel = minLevel;
+            }
+            foundValue = true;
+        } else if (!isAdult && instance.entityTypesLevelOverride_Max.containsKey("baby_" + entityTypeStr)) {
+            minLevel = Utils.getDefaultIfNull(instance.entityTypesLevelOverride_Min, "baby_" + entityTypeStr, minLevel);
+            if (debugInfo != null) {
+                debugInfo.rule = MobProcessReason.ENTITY;
+                debugInfo.minLevel = minLevel;
+            }
+            foundValue = true;
+        }
+
+        // max level
+        if (spawnReason == CreatureSpawnEvent.SpawnReason.REINFORCEMENTS && instance.entityTypesLevelOverride_Min.containsKey(entityTypeStr + "_REINFORCEMENTS")) {
+            maxLevel = Utils.getDefaultIfNull(instance.entityTypesLevelOverride_Max, entityTypeStr + "_REINFORCEMENTS", maxLevel);
+            if (debugInfo != null){
+                debugInfo.rule = MobProcessReason.ENTITY;
+                debugInfo.maxLevel = maxLevel;
+            }
+            foundValue = true;
+        } else if (isAdult && instance.entityTypesLevelOverride_Max.containsKey(entityTypeStr)) {
+            maxLevel = Utils.getDefaultIfNull(instance.entityTypesLevelOverride_Max, entityTypeStr, maxLevel);
+            if (debugInfo != null){
+                debugInfo.rule = MobProcessReason.ENTITY;
+                debugInfo.maxLevel = maxLevel;
+            }
+            foundValue = true;
+        } else if (!isAdult && instance.entityTypesLevelOverride_Max.containsKey("baby_" + entityTypeStr)) {
+            maxLevel = Utils.getDefaultIfNull(instance.entityTypesLevelOverride_Max, "baby_" + entityTypeStr, maxLevel);
+            if (debugInfo != null){
+                debugInfo.rule = MobProcessReason.ENTITY;
+                debugInfo.maxLevel = maxLevel;
+            }
+            foundValue = true;
+        }
+
+        if (foundValue)
+            return ThreadLocalRandom.current().nextInt(minLevel, maxLevel + 1);
+        else
+            return -1;
     }
 
     public void updateNametagWithDelay(final LivingEntity livingEntity, final String nametag, final List<Player> players, final long delay) {

@@ -22,6 +22,7 @@ public class CustomDropInstance {
     final public CustomDropsUniversalGroups entityGroup;
     final public List<CustomItemDrop> customItems;
     public boolean overrideStockDrops;
+    public boolean utilizesGroupIds;
 
     public boolean getIsGroup() {
         return this.entityGroup != null;
