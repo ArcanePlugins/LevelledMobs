@@ -31,7 +31,7 @@ public class EntityDamageListener implements Listener {
             LivingEntity livingEntity = (LivingEntity) entity;
 
             // we only need to update the tag if they are using health placeholders.  This is not by default
-            if (!instance.configUtils.nametagContainsHealth()) return;
+            if (instance.configUtils.nametagNotContainsHealthPlaceholders(livingEntity)) return;
 
             //Make sure the mob is levelled
             if (!livingEntity.getPersistentDataContainer().has(instance.levelManager.isLevelledKey, PersistentDataType.STRING))
@@ -43,7 +43,7 @@ public class EntityDamageListener implements Listener {
     }
 
     // Check for levelled ranged damage.
-    @EventHandler(ignoreCancelled = true)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.NORMAL)
     public void onRangedDamage(final EntityDamageByEntityEvent e) {
         if (e.getDamager() instanceof Projectile) {
             final Projectile projectile = (Projectile) e.getDamager();

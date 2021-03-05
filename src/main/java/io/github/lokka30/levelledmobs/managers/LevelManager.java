@@ -11,7 +11,10 @@ import io.github.lokka30.levelledmobs.listeners.CreatureSpawnListener;
 import io.github.lokka30.levelledmobs.misc.*;
 import me.lokka30.microlib.MessageUtils;
 import org.apache.commons.lang.WordUtils;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.entity.*;
@@ -140,7 +143,7 @@ public class LevelManager {
             return false;
 
         // Specific allowed entities check for BABIES
-        if (Utils.isEntityBaby(livingEntity)) {
+        if (Utils.isBabyZombie(livingEntity)) {
             if (!ModalList.isEnabledInList(instance.settingsCfg, "allowed-entities-list", "BABY_" + livingEntity.getName().toUpperCase()))
                 return false;
         }
@@ -149,7 +152,7 @@ public class LevelManager {
     }
 
     public int generateDistanceFromSpawnLevel(final LivingEntity livingEntity, final DebugInfo debugInfo, final CreatureSpawnEvent.SpawnReason spawnReason, final int minLevel, final int maxLevel) {
-        final boolean isBabyEntity = Utils.isEntityBaby(livingEntity);
+        final boolean isBabyEntity = Utils.isBabyZombie(livingEntity);
 
         //final int minLevel = instance.configUtils.getMinLevel(livingEntity.getType(), livingEntity.getWorld(), !isBabyEntity, debugInfo, spawnReason);
         //final int maxLevel = instance.configUtils.getMaxLevel(livingEntity.getType(), livingEntity.getWorld(), !isBabyEntity, debugInfo, spawnReason);
@@ -215,7 +218,7 @@ public class LevelManager {
         //TODO: change this to use the defined levelling system from settings.yml
         // fow now we'll just use the global min / max
 
-        final boolean isAdultEntity = !Utils.isEntityBaby(livingEntity);
+        final boolean isAdultEntity = !Utils.isBabyZombie(livingEntity);
         final int[] levels = getMinAndMaxLevels(livingEntity, livingEntity.getType(), isAdultEntity, livingEntity.getWorld().getName(), debugInfo, spawnReason);
         final int minLevel = levels[0];
         final int maxLevel = levels[1];
@@ -426,7 +429,7 @@ public class LevelManager {
     }
 
     public int[] generateWorldGuardRegionLevel(final LivingEntity livingEntity, final DebugInfo debugInfo, final CreatureSpawnEvent.SpawnReason spawnReason) {
-        final boolean isBabyEntity = Utils.isEntityBaby(livingEntity);
+        final boolean isBabyEntity = Utils.isBabyZombie(livingEntity);
         final int[] levels = instance.worldGuardManager.getRegionLevel(livingEntity);
 
         if (debugInfo != null){
@@ -616,7 +619,7 @@ public class LevelManager {
         String entityName = WordUtils.capitalizeFully(livingEntity.getType().toString().toLowerCase().replaceAll("_", " "));
 
         // Baby zombies can have specific nametags in entity-name-override
-        boolean isBabyEntity = Utils.isEntityBaby(livingEntity);
+        boolean isBabyEntity = Utils.isBabyZombie(livingEntity);
         if (isBabyEntity && livingEntity instanceof Zombie && instance.settingsCfg.contains("entity-name-override.BABY_ZOMBIE")) {
             entityName = instance.settingsCfg.getString("entity-name-override.BABY_ZOMBIE");
         } else if (instance.settingsCfg.contains("entity-name-override." + livingEntity.getType())) {

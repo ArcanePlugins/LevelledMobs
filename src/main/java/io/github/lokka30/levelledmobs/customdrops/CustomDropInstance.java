@@ -43,6 +43,7 @@ public class CustomDropInstance {
                    this.associatedMob.name() + " - override" :
                    this.associatedMob.name();
         } else {
+            //noinspection ConstantConditions
             return this.overrideStockDrops ?
                    this.entityGroup.toString() + " - override" :
                    this.entityGroup.toString();

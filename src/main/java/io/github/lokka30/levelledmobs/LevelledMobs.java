@@ -24,7 +24,10 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeMap;
 
 /**
  * This is the main class of the plugin. Bukkit will call onLoad and onEnable on startup, and onDisable on shutdown.
@@ -190,7 +193,7 @@ public class LevelledMobs extends JavaPlugin {
         attributesCfg = loadEmbeddedResource("attributes.yml");
         dropsCfg = loadEmbeddedResource("drops.yml");
 
-        configUtils.init();
+        configUtils.load();
         externalCompatibilityManager.load();
 
         // remove legacy files if they exist

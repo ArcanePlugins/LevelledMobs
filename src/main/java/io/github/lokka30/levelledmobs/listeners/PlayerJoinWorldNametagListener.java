@@ -10,6 +10,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.persistence.PersistentDataType;
 
 import java.util.Collections;
@@ -51,5 +52,11 @@ public class PlayerJoinWorldNametagListener implements Listener {
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void onChangeWorld(final PlayerChangedWorldEvent event) {
         updateNametagsInWorld(event.getPlayer(), event.getPlayer().getWorld());
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
+    public void onTeleport(final PlayerTeleportEvent event) {
+        //noinspection ConstantConditions
+        updateNametagsInWorld(event.getPlayer(), event.getTo().getWorld());
     }
 }

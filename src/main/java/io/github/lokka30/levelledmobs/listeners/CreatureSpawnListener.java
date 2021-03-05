@@ -223,7 +223,7 @@ public class CreatureSpawnListener implements Listener {
 
             // Debug Info
             if (debugInfo != null) {
-                boolean isBabyEntity = Utils.isEntityBaby(livingEntity);
+                boolean isBabyEntity = Utils.isBabyZombie(livingEntity);
 
                 if (spawnReason == SpawnReason.CUSTOM) {
                     debugInfo.minLevel = level;

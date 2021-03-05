@@ -3,6 +3,7 @@ package io.github.lokka30.levelledmobs.listeners;
 import io.github.lokka30.levelledmobs.LevelledMobs;
 import io.github.lokka30.levelledmobs.misc.Utils;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 
@@ -16,7 +17,7 @@ public class PlayerJoinListener implements Listener {
         this.instance = instance;
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.MONITOR)
     public void onJoin(final PlayerJoinEvent event) {
 
         // Player must have permission

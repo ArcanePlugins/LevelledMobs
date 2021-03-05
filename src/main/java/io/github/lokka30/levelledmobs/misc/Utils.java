@@ -15,6 +15,9 @@ import java.util.TreeMap;
 
 public final class Utils {
 
+    /**
+     * Use static methods, e.g. Utils.round, not new Utils().round for example.
+     */
     private Utils() {
         throw new UnsupportedOperationException();
     }
@@ -26,7 +29,7 @@ public final class Utils {
     public static final MicroLogger logger = new MicroLogger("&b&lLevelledMobs: &7");
 
     /**
-     * Rounds value to 2dp
+     * Rounds value to 2 decimal points.
      *
      * @param value value to round
      * @return rounded value
@@ -61,7 +64,7 @@ public final class Utils {
 
     //Integer check
     public static boolean isInteger(final String str) {
-        if (Utils.isNullOrEmpty(str)) return false;
+        if (isNullOrEmpty(str)) return false;
 
         try {
             Integer.parseInt(str);
@@ -72,7 +75,7 @@ public final class Utils {
     }
 
     public static boolean isDouble(final String str) {
-        if (Utils.isNullOrEmpty(str)) return false;
+        if (isNullOrEmpty(str)) return false;
 
         try {
             Double.parseDouble(str);
@@ -98,11 +101,9 @@ public final class Utils {
 
     public static List<String> replaceAllInList(final List<String> oldList, final String replaceWhat, final String replaceTo) {
         final List<String> newList = new ArrayList<>();
-
         for (final String string : oldList) {
             newList.add(string.replace(replaceWhat, replaceTo));
         }
-
         return newList;
     }
 
@@ -116,7 +117,7 @@ public final class Utils {
         return newList;
     }
 
-    public static boolean isEntityBaby(final LivingEntity livingEntity) {
+    public static boolean isBabyZombie(final LivingEntity livingEntity) {
 
         if (livingEntity instanceof Zombie) {
             // for backwards compatibility
