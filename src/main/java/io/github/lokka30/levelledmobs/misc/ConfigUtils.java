@@ -1,7 +1,7 @@
 package io.github.lokka30.levelledmobs.misc;
 
 import io.github.lokka30.levelledmobs.LevelledMobs;
-import me.lokka30.microlib.MicroUtils;
+import me.lokka30.microlib.MessageUtils;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 
@@ -25,7 +25,7 @@ public class ConfigUtils {
     }
 
     public String getPrefix() {
-        return MicroUtils.colorize(Objects.requireNonNull(main.messagesCfg.getString("common.prefix")));
+        return MessageUtils.colorizeAll(Objects.requireNonNull(main.messagesCfg.getString("common.prefix")));
     }
 
     public void sendNoPermissionMsg(CommandSender sender) {
