@@ -91,8 +91,6 @@ public class LevelledMobs extends JavaPlugin {
             return;
         }
 
-        this.customDropsHandler = new CustomDropsHandler(this);
-
         registerListeners();
         registerCommands();
         if (ExternalCompatibilityManager.hasProtocolLibInstalled()) levelManager.startNametagAutoUpdateTask();
@@ -197,16 +195,18 @@ public class LevelledMobs extends JavaPlugin {
         externalCompatibilityManager.load();
 
         // remove legacy files if they exist
-        final String[] legacyFile = { "attributes.yml", "drops.yml" };
-        for (String lFile : legacyFile){
+        final String[] legacyFile = {"attributes.yml", "drops.yml"};
+        for (String lFile : legacyFile) {
             final File delFile = new File(getDataFolder(), lFile);
             try {
                 if (delFile.exists()) delFile.delete();
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 Utils.logger.warning("Unable to delete file " + lFile + ", " + e.getMessage());
             }
         }
+
+        // build custom drops
+        customDropsHandler = new CustomDropsHandler(this);
 
         return true;
     }
