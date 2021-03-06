@@ -34,9 +34,6 @@ public class EntityDamageListener implements Listener {
             if (!livingEntity.getPersistentDataContainer().has(instance.levelManager.isLevelledKey, PersistentDataType.STRING))
                 return;
 
-            // we only need to update the tag if they are using health placeholders.  This is not by default
-            if (instance.configUtils.nametagNotContainsHealthPlaceholders(livingEntity)) return;
-
             // Update their nametag with a 1 tick delay so that their health after the damage is shown
             instance.levelManager.updateNametagWithDelay(livingEntity, livingEntity.getWorld().getPlayers(), 1);
         }

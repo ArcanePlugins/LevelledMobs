@@ -36,6 +36,7 @@ public class EntityTameListener implements Listener {
 
             instance.levelManager.updateNametagWithDelay(le, le.getCustomName(), le.getWorld().getPlayers(), 1);
 
+            Utils.debugLog(instance, "EntityTameListener", "Skipping, tamed is enabled under no-level-conditions");
             return;
         }
 
