@@ -685,8 +685,10 @@ public class LevelManager {
             public void run() {
 
                 for (Player player : players) {
+
                     // async task, so make sure the player & entity are valid
-                    if (!player.isOnline() || entity == null) return;
+                    if (!player.isOnline()) continue;
+                    if (entity == null) return;
 
                     if (instance.settingsCfg.getBoolean("assert-entity-validity-with-nametag-packets") && !entity.isValid())
                         return;
