@@ -57,10 +57,10 @@
 #     make changes to multiple mobs of a type at once. These
 #     Universal Groups are listed below after the attributes.
 #
-#     Finally, in Section 03 - Advanced CustomDrops, you will
-#     find several tools to craft loot-tables, mob-tables, and
-#     any other more advanced systems there. It is quite complex
-#     and requires attention to detail in order to use properly.
+#     Finally, in Section 03 - Loot Tables, you will find the
+#     tools needed to craft drop-tables of items with their own
+#     parameters to apply to any EntityType or Universal Group.
+#     It is quite complex and meant for advanced users only.
 #
 #     NOTE: Unless 'override' is set for the drops, the EntityType
 #     will still process it's vanilla Minecraft drops alongside
@@ -164,6 +164,8 @@
 #                  | Upon death, if you would have received any two or more items,
 #                  | you will only receive one of the drops; randomly selected.
 #                  | This is useful for establishing a form of loot tables.
+#          usedroptable:
+#                  | Reference Section 03 - Loot Tables below
 #
 #
 # ||--B] Universal Groups
@@ -555,7 +557,7 @@ file-version: 5
 #
 #all_levellable_mobs: #Selected all Levelled Mobs
 #  exclude: 'all_nether_mobs;ENDERMAN;ENDERMITE;SHULKER' #Remove the Nether mobs and the End mobs
-#  usedroptable: 'basic_overworld' #Apply the drop-table basic_overworld defined above
+#  usedroptable: 'basic_overworld' #Apply the drop-table basic_overworld defined below
 #  - diamond: #Selected a diamond as my custom drop
 #      minlevel: 1 #Any EntityType or Universal Group --
 #      maxlevel: 15 #-- who are LVL1-15 has a chance to drop
