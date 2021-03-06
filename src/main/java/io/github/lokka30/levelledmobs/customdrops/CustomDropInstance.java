@@ -22,6 +22,7 @@ public class CustomDropInstance {
     final public CustomDropsUniversalGroups entityGroup;
     final public List<CustomItemDrop> customItems;
     public boolean overrideStockDrops;
+    public boolean utilizesGroupIds;
 
     public boolean getIsGroup() {
         return this.entityGroup != null;
@@ -42,6 +43,7 @@ public class CustomDropInstance {
                    this.associatedMob.name() + " - override" :
                    this.associatedMob.name();
         } else {
+            //noinspection ConstantConditions
             return this.overrideStockDrops ?
                    this.entityGroup.toString() + " - override" :
                    this.entityGroup.toString();

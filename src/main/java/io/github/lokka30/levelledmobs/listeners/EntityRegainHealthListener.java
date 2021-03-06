@@ -26,6 +26,8 @@ public class EntityRegainHealthListener implements Listener {
             if (!livingEntity.getPersistentDataContainer().has(instance.levelManager.isLevelledKey, PersistentDataType.STRING))
                 return;
 
+            if (instance.configUtils.nametagNotContainsHealthPlaceholders(livingEntity)) return;
+
             instance.levelManager.updateNametagWithDelay(livingEntity, livingEntity.getWorld().getPlayers(), 1);
         }
     }

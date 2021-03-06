@@ -12,15 +12,17 @@ import java.util.TreeSet;
 public class CustomItemDrop implements Cloneable {
     public int minLevel;
     public int maxLevel;
-    public double dropChance;
-    private int amount;
     public int groupId;
-    private int damage;
+    public int customModelDataId;
+    public double dropChance;
     public boolean noMultiplier;
     public boolean noSpawner;
     public boolean isEquipped;
     public String customName;
     public List<String> lore;
+    public Set<String> excludedMobs;
+    private int damage;
+    private int amount;
     private boolean hasAmountRange;
     private boolean hasDamageRange;
     private int amountRangeMin;
@@ -29,12 +31,12 @@ public class CustomItemDrop implements Cloneable {
     private int damageRangeMax;
     private Material material;
     private ItemStack itemStack;
-    public Set<String> excludedMobs;
 
     public CustomItemDrop(){
         this.minLevel = -1;
         this.maxLevel = -1;
         this.groupId = -1;
+        this.customModelDataId = -1;
         this.amount = 1;
         this.dropChance = 0.2; // default drop chance if not specified
         this.excludedMobs = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);

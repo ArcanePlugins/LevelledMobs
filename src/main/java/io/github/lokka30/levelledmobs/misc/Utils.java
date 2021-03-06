@@ -15,10 +15,18 @@ import java.util.TreeMap;
 
 public final class Utils {
 
+    /**
+     * Use static methods, e.g. Utils.round, not new Utils().round for example.
+     */
     private Utils() {
         throw new UnsupportedOperationException();
     }
 
+    /**
+     * Get a list of major Minecraft versions supported by LM.
+     *
+     * @return list
+     */
     public static List<String> getSupportedServerVersions() {
         return Arrays.asList("1.14", "1.15", "1.16");
     }
@@ -26,7 +34,7 @@ public final class Utils {
     public static final MicroLogger logger = new MicroLogger("&b&lLevelledMobs: &7");
 
     /**
-     * Rounds value to 2dp
+     * Rounds value to 2 decimal points.
      *
      * @param value value to round
      * @return rounded value
@@ -35,33 +43,42 @@ public final class Utils {
         return Math.round(value * 100) / 100.00;
     }
 
-    public static String replaceEx(final String original, final String pattern, final String replacement) {
-        if (original == null || pattern == null) return null;
+    /**
+     * Replaces content of a message with case insensitivity.
+     *
+     * @param message     message that should be edited
+     * @param replaceWhat the text to be replaced
+     * @param replaceTo   the text to replace with
+     * @return modified message
+     * @author stumper66
+     */
+    public static String replaceEx(final String message, final String replaceWhat, final String replaceTo) {
+        if (message == null || replaceWhat == null) return null;
 
         int count, position0, position1;
         count = position0 = 0;
-        String upperString = original.toUpperCase();
-        String upperPattern = pattern.toUpperCase();
-        int inc = (original.length() / pattern.length()) *
-                (replacement.length() - pattern.length());
-        char[] chars = new char[original.length() + Math.max(0, inc)];
+        String upperString = message.toUpperCase();
+        String upperPattern = replaceWhat.toUpperCase();
+        int inc = (message.length() / replaceWhat.length()) *
+                (replaceTo.length() - replaceWhat.length());
+        char[] chars = new char[message.length() + Math.max(0, inc)];
         while ((position1 = upperString.indexOf(upperPattern, position0)) != -1) {
             for (int i = position0; i < position1; ++i)
-                chars[count++] = original.charAt(i);
-            for (int i = 0; i < replacement.length(); ++i)
-                chars[count++] = replacement.charAt(i);
-            position0 = position1 + pattern.length();
+                chars[count++] = message.charAt(i);
+            for (int i = 0; i < replaceTo.length(); ++i)
+                chars[count++] = replaceTo.charAt(i);
+            position0 = position1 + replaceWhat.length();
         }
-        if (position0 == 0) return original;
-        for (int i = position0; i < original.length(); ++i)
-            chars[count++] = original.charAt(i);
+        if (position0 == 0) return message;
+        for (int i = position0; i < message.length(); ++i)
+            chars[count++] = message.charAt(i);
 
         return new String(chars, 0, count);
     }
 
     //Integer check
     public static boolean isInteger(final String str) {
-        if (Utils.isNullOrEmpty(str)) return false;
+        if (isNullOrEmpty(str)) return false;
 
         try {
             Integer.parseInt(str);
@@ -72,7 +89,7 @@ public final class Utils {
     }
 
     public static boolean isDouble(final String str) {
-        if (Utils.isNullOrEmpty(str)) return false;
+        if (isNullOrEmpty(str)) return false;
 
         try {
             Double.parseDouble(str);
@@ -98,11 +115,9 @@ public final class Utils {
 
     public static List<String> replaceAllInList(final List<String> oldList, final String replaceWhat, final String replaceTo) {
         final List<String> newList = new ArrayList<>();
-
         for (final String string : oldList) {
             newList.add(string.replace(replaceWhat, replaceTo));
         }
-
         return newList;
     }
 
@@ -116,7 +131,7 @@ public final class Utils {
         return newList;
     }
 
-    public static boolean isEntityBaby(final LivingEntity livingEntity) {
+    public static boolean isBabyZombie(final LivingEntity livingEntity) {
 
         if (livingEntity instanceof Zombie) {
             // for backwards compatibility

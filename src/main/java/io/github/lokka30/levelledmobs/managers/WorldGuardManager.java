@@ -155,30 +155,24 @@ public class WorldGuardManager {
 
 
     //Generate level based on WorldGuard region flags.
-    public int[] getRegionLevel(final LivingEntity livingEntity, int minLevel, int maxLevel) {
+    public int[] getRegionLevel(final LivingEntity livingEntity) {
+        final int[] levels = new int[]{ -1, -1};
+
         final ProtectedRegion[] regions = sortRegionsByPriority(getRegionSet(livingEntity));
 
-        if (regions == null) {
-            int[] ints = new int[2];
-            ints[0] = minLevel;
-            ints[1] = maxLevel;
-            return ints;
-        }
+        if (regions == null) return levels;
 
         for (final ProtectedRegion region : regions) {
             if (Utils.isInteger(region.getFlag(WorldGuardManager.customMinLevelFlag))) {
-                minLevel = Integer.parseInt(Objects.requireNonNull(region.getFlag(WorldGuardManager.customMinLevelFlag)));
+                levels[0] = Integer.parseInt(Objects.requireNonNull(region.getFlag(WorldGuardManager.customMinLevelFlag)));
             }
 
             if (Utils.isInteger(region.getFlag(WorldGuardManager.customMaxLevelFlag))) {
-                maxLevel = Integer.parseInt(Objects.requireNonNull(region.getFlag(WorldGuardManager.customMaxLevelFlag)));
+                levels[1] = Integer.parseInt(Objects.requireNonNull(region.getFlag(WorldGuardManager.customMaxLevelFlag)));
             }
         }
 
-        if (minLevel < 0) minLevel = 1;
-        if (maxLevel < minLevel) maxLevel = minLevel;
-
-        return new int[]{minLevel, maxLevel};
+        return levels;
     }
 
     public boolean regionAllowsLevelling(final LivingEntity livingEntity) {

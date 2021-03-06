@@ -5,6 +5,7 @@ import org.bukkit.Material;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.persistence.PersistentDataType;
@@ -17,7 +18,7 @@ public class EntityNametagListener implements Listener {
         this.instance = instance;
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void onNametag(final PlayerInteractEntityEvent event) {
         if (event.getRightClicked() instanceof LivingEntity) {
             final LivingEntity livingEntity = (LivingEntity) event.getRightClicked();

@@ -101,17 +101,17 @@ public final class FileLoader {
         return whiteSpace == 0 ? 0 : whiteSpace / 2;
     }
 
-    private static class FieldInfo{
+    private static class FieldInfo {
         public String simpleValue;
         public List<String> valueList;
         public int depth;
 
-        public FieldInfo(String value, int depth){
+        public FieldInfo(String value, int depth) {
             this.simpleValue = value;
             this.depth = depth;
         }
 
-        public FieldInfo(String value, int depth, boolean isListValue){
+        public FieldInfo(String value, int depth, boolean isListValue) {
             if (isListValue) addListValue(value);
             else this.simpleValue = value;
             this.depth = depth;

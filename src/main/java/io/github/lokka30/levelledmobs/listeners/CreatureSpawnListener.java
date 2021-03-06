@@ -20,32 +20,15 @@ import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.*;
-import java.util.concurrent.ThreadLocalRandom;
 
 public class CreatureSpawnListener implements Listener {
 
     private final LevelledMobs instance;
     private final HashSet<String> forcedTypes = new HashSet<>(Arrays.asList("ENDER_DRAGON", "PHANTOM"));
-    final public HashMap<LevelNumbersWithBias, LevelNumbersWithBias> levelNumsListCache;
-    final public LinkedList<LevelNumbersWithBias> levelNumsListCacheOrder;
-    private final static int maxLevelNumsCache = 10;
+
 
     public CreatureSpawnListener(final LevelledMobs instance) {
         this.instance = instance;
-        this.levelNumsListCache = new HashMap<>();
-        this.levelNumsListCacheOrder = new LinkedList<>();
-
-        final int factor = instance.settingsCfg.getInt("fine-tuning.lower-mob-level-bias-factor", 0);
-        if (factor > 0) {
-            LevelNumbersWithBias lnwb = new LevelNumbersWithBias(
-                    instance.settingsCfg.getInt("fine-tuning.min-level", 1),
-                    instance.settingsCfg.getInt("fine-tuning.max-level", 10),
-                    factor
-            );
-            lnwb.populateData();
-            this.levelNumsListCache.put(lnwb, lnwb);
-            this.levelNumsListCacheOrder.addFirst(lnwb);
-        }
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
@@ -126,7 +109,7 @@ public class CreatureSpawnListener implements Listener {
         }.runTaskLater(instance, 1L);
     }
 
-    public int processMobSpawn(final LivingEntity livingEntity, final SpawnReason spawnReason, int level, final MobProcessReason processReason, boolean override) {
+    public int processMobSpawn(final LivingEntity livingEntity, final SpawnReason spawnReason, int level, final MobProcessReason processReason, final boolean override) {
 
         //Check if the mob is already levelled
         if (livingEntity.getPersistentDataContainer().has(instance.levelManager.isLevelledKey, PersistentDataType.STRING))
@@ -171,16 +154,9 @@ public class CreatureSpawnListener implements Listener {
         if (override || instance.levelManager.isLevellable(livingEntity)) {
 
             // if spawned naturally it will be -1.  If used summon with specific level specified or if using the slime child system then it will be >= 0
-            if (level == -1) {
-                //Check settings for spawn distance levelling and choose levelling method accordingly.
-                if (ExternalCompatibilityManager.hasWorldGuardInstalled() && instance.worldGuardManager.checkRegionFlags(livingEntity)) {
-                    level = generateRegionLevel(livingEntity, debugInfo, spawnReason);
-                } else if (instance.settingsCfg.getBoolean("spawn-distance-levelling.active")) {
-                    level = generateDistanceFromSpawnLevel(livingEntity, debugInfo, spawnReason);
-                } else {
-                    level = generateLevel(livingEntity, debugInfo, spawnReason);
-                }
-            }
+            // all level logic should now be in LevelManager.java
+            if (level == -1)
+                level = instance.levelManager.generateLevel(livingEntity, debugInfo, spawnReason);
 
             //Define the mob's level so it can be accessed elsewhere.
             livingEntity.getPersistentDataContainer().set(instance.levelManager.levelKey, PersistentDataType.INTEGER, level);
@@ -190,7 +166,7 @@ public class CreatureSpawnListener implements Listener {
             // Makes sure the levelled mob has this attribute. If not, skip setting it.
             if (livingEntity.getAttribute(Attribute.GENERIC_MAX_HEALTH) != null) {
 
-                boolean useBaseValue = (livingEntity instanceof Slime || livingEntity instanceof MagmaCube);
+                boolean useBaseValue = (livingEntity instanceof Slime);
 
                 // This sets the max health value.
                 instance.mobDataManager.setAdditionsForLevel(livingEntity, Attribute.GENERIC_MAX_HEALTH, Addition.ATTRIBUTE_MAX_HEALTH, level, useBaseValue);
@@ -247,7 +223,7 @@ public class CreatureSpawnListener implements Listener {
 
             // Debug Info
             if (debugInfo != null) {
-                boolean isBabyEntity = Utils.isEntityBaby(livingEntity);
+                boolean isBabyEntity = Utils.isBabyZombie(livingEntity);
 
                 if (spawnReason == SpawnReason.CUSTOM) {
                     debugInfo.minLevel = level;
@@ -330,214 +306,5 @@ public class CreatureSpawnListener implements Listener {
 
     //Generates a level.
     //Uses ThreadLocalRandom.current().nextInt(min, max + 1). + 1 is because ThreadLocalRandom is usually exclusive of the uppermost value.
-    public Integer generateLevel(final LivingEntity livingEntity, final DebugInfo debugInfo, SpawnReason spawnReason) {
 
-        final boolean isAdultEntity = !Utils.isEntityBaby(livingEntity);
-
-        if (instance.settingsCfg.getBoolean("y-distance-levelling.active")){
-            return generateYCoordinateLevel(
-                    livingEntity.getLocation().getBlockY(),
-                    instance.configUtils.getMinLevel(livingEntity.getType(), livingEntity.getWorld(), isAdultEntity, debugInfo, spawnReason),
-                    instance.configUtils.getMaxLevel(livingEntity.getType(), livingEntity.getWorld(), isAdultEntity, debugInfo, spawnReason)
-            );
-        }
-
-        // normal return:
-        int minLevel = instance.configUtils.getMinLevel(livingEntity.getType(),
-                livingEntity.getWorld(), isAdultEntity, debugInfo, spawnReason);
-        final int maxLevel = instance.configUtils.getMaxLevel(livingEntity.getType(),
-                livingEntity.getWorld(), isAdultEntity, debugInfo, spawnReason);
-
-        // this will prevent an unhandled exception:
-        if (minLevel > maxLevel) minLevel = maxLevel;
-
-        int biasFactor = instance.settingsCfg.getInt("fine-tuning.lower-mob-level-bias-factor", 0);
-
-        if (minLevel == maxLevel)
-            return minLevel;
-        else if (biasFactor > 0){
-            if (biasFactor > 10) biasFactor = 10;
-            return generateLevelWithBias(minLevel, maxLevel, biasFactor);
-        }
-        else
-            return ThreadLocalRandom.current().nextInt(minLevel, maxLevel + 1);
-    }
-
-    private int generateLevelWithBias(final int minLevel, final int maxLevel, final int factor){
-
-        LevelNumbersWithBias levelNum = new LevelNumbersWithBias(minLevel, maxLevel, factor);
-
-        if (this.levelNumsListCache.containsKey(levelNum)) {
-            levelNum = this.levelNumsListCache.get(levelNum);
-        }
-        else {
-            levelNum = new LevelNumbersWithBias(minLevel, maxLevel, factor);
-            levelNum.populateData();
-            this.levelNumsListCache.put(levelNum, levelNum);
-            this.levelNumsListCacheOrder.addLast(levelNum);
-        }
-
-        if (this.levelNumsListCache.size() > maxLevelNumsCache) {
-            LevelNumbersWithBias oldest = this.levelNumsListCacheOrder.getFirst();
-            this.levelNumsListCache.remove(oldest);
-            this.levelNumsListCacheOrder.removeFirst();
-        }
-
-        return levelNum.getNumberWithinLimits();
-    }
-
-    //Generates a level based on distance to spawn and, if active, variance
-    private Integer generateDistanceFromSpawnLevel(final LivingEntity livingEntity, final DebugInfo debugInfo, final SpawnReason spawnReason) {
-        final boolean isBabyEntity = Utils.isEntityBaby(livingEntity);
-
-        final int minLevel = instance.configUtils.getMinLevel(livingEntity.getType(), livingEntity.getWorld(), !isBabyEntity, debugInfo, spawnReason);
-        final int maxLevel = instance.configUtils.getMaxLevel(livingEntity.getType(), livingEntity.getWorld(), !isBabyEntity, debugInfo, spawnReason);
-
-        if (debugInfo != null) {
-            debugInfo.minLevel = minLevel;
-            debugInfo.maxLevel = maxLevel;
-        }
-
-        //Get distance between entity spawn point and world spawn
-        final int entityDistance = (int) livingEntity.getWorld().getSpawnLocation().distance(livingEntity.getLocation());
-
-        //Make mobs start leveling from start distance
-        int levelDistance = entityDistance - instance.settingsCfg.getInt("spawn-distance-levelling.start-distance");
-        if (levelDistance < 0) levelDistance = 0;
-
-        //Get the level thats meant to be at a given distance
-        int finalLevel = (levelDistance / instance.settingsCfg.getInt("spawn-distance-levelling.increase-level-distance")) + minLevel;
-
-        //Check if there should be a variance in level
-        if (instance.settingsCfg.getBoolean("spawn-distance-levelling.variance.enabled")) {
-            //The maximum amount of variation.
-            final int maxVariation = instance.settingsCfg.getInt("spawn-distance-levelling.variance.max");
-
-            //A random number between min and max which determines the amount of variation that will take place
-            final int change = ThreadLocalRandom.current().nextInt(0, maxVariation + 1);
-
-            boolean useOnlyNegative = false;
-
-            if (finalLevel >= maxLevel) {
-                finalLevel = maxLevel;
-                useOnlyNegative = true;
-            }
-            else if (finalLevel <= minLevel) {
-                finalLevel = minLevel;
-            }
-
-            //Start variation. First check if variation is positive or negative towards the original level amount.
-            if (!useOnlyNegative || ThreadLocalRandom.current().nextBoolean()) {
-                //Positive. Add the variation to the final level
-                finalLevel = finalLevel + change;
-            } else {
-                //Negative. Subtract the variation from the final level
-                finalLevel = finalLevel - change;
-            }
-        }
-
-        //Ensure the final level is within level min/max caps
-        if (finalLevel > maxLevel) {
-            finalLevel = maxLevel;
-        }
-        else if (finalLevel < minLevel) {
-            finalLevel = minLevel;
-        }
-
-        return finalLevel;
-    }
-
-    private int generateRegionLevel(final LivingEntity livingEntity, final DebugInfo debugInfo, final SpawnReason spawnReason) {
-        final boolean isBabyEntity = Utils.isEntityBaby(livingEntity);
-        final int[] levels = instance.worldGuardManager.getRegionLevel(livingEntity,
-                instance.configUtils.getMinLevel(livingEntity.getType(), livingEntity.getWorld(), !isBabyEntity, debugInfo, spawnReason),
-                instance.configUtils.getMaxLevel(livingEntity.getType(), livingEntity.getWorld(), !isBabyEntity, debugInfo, spawnReason));
-
-        if (debugInfo != null){
-            debugInfo.rule = MobProcessReason.WORLD_GUARD;
-            debugInfo.minLevel = levels[0];
-            debugInfo.maxLevel = levels[1];
-        }
-
-        if (!instance.settingsCfg.getBoolean("y-distance-levelling.active")){
-            // standard issue, generate random levels based upon max and min flags in worldguard
-
-            final int biasFactor = instance.settingsCfg.getInt("fine-tuning.lower-mob-level-bias-factor", 0);
-            if (biasFactor > 0)
-                return generateLevelWithBias(levels[0], levels[1], biasFactor);
-            else
-                return levels[0] + Math.round(new Random().nextFloat() * (levels[1] - levels[0]));
-        }
-
-        // generate level based on y distance but use min and max values from world guard
-        return generateYCoordinateLevel(livingEntity.getLocation().getBlockY(), levels[0], levels[1]);
-    }
-
-    private int generateYCoordinateLevel(final int mobYLocation, final int minLevel, final int maxLevel) {
-        final int yPeriod = instance.settingsCfg.getInt("y-distance-levelling.y-period", 0);
-        final int variance = instance.settingsCfg.getInt("y-distance-levelling.variance", 0);
-        int yStart = instance.settingsCfg.getInt("y-distance-levelling.starting-y-level", 100);
-        int yEnd = instance.settingsCfg.getInt("y-distance-levelling.ending-y-level", 20);
-
-        final boolean isAscending = (yEnd > yStart);
-        if (!isAscending) {
-            yStart = yEnd;
-            yEnd = instance.settingsCfg.getInt("y-distance-levelling.starting-y-level", 100);
-        }
-
-        int useLevel = minLevel;
-        boolean skipYPeriod = false;
-
-        if (mobYLocation >= yEnd){
-            useLevel = maxLevel;
-            skipYPeriod = true;
-        }
-        else if (mobYLocation <= yStart){
-            skipYPeriod = true;
-        }
-
-        if (!skipYPeriod) {
-            final double diff = yEnd - yStart;
-            double useMobYLocation =  mobYLocation - yStart;
-
-            if (yPeriod > 0) {
-                useLevel = (int) (useMobYLocation / (double) yPeriod);
-            } else {
-                double percent = useMobYLocation / diff;
-                useLevel = (int) Math.ceil((maxLevel - minLevel + 1) * percent);
-            }
-        }
-
-        if (!isAscending) {
-            useLevel = maxLevel - useLevel + 1;
-        }
-
-        if (variance > 0){
-            boolean useOnlyNegative = false;
-
-            if (useLevel >= maxLevel) {
-                useLevel = maxLevel;
-                useOnlyNegative = true;
-            }
-            else if (useLevel <= minLevel) {
-                useLevel = minLevel;
-            }
-
-            final int change = ThreadLocalRandom.current().nextInt(0, variance + 1);
-
-            //Start variation. First check if variation is positive or negative towards the original level amount.
-            if (!useOnlyNegative || ThreadLocalRandom.current().nextBoolean()) {
-                //Positive. Add the variation to the final level
-                useLevel += change;
-            } else {
-                //Negative. Subtract the variation from the final level
-                useLevel -= change;
-            }
-        }
-
-        if (useLevel < minLevel) useLevel = minLevel;
-        else if (useLevel > maxLevel) useLevel = maxLevel;
-
-        return useLevel;
-    }
 }

@@ -59,12 +59,22 @@ public class CustomDropsHandler {
 
             CustomDropInstance dropInstance = customDropsitems_groups.get(group);
             if (dropInstance.overrideStockDrops) customDropResult = CustomDropResult.HAS_OVERRIDE;
+
+            // if we are using groupIds then shuffle the list so it doesn't potentially drop the same item each time
+            if (dropInstance.utilizesGroupIds)
+                Collections.shuffle(dropInstance.customItems);
+
             getCustomItemDrops2(livingEntity, level, dropInstance, drops, isSpawner, equippedOnly);
         }
 
         if (customDropsitems.containsKey(livingEntity.getType())){
             CustomDropInstance dropInstance = customDropsitems.get(livingEntity.getType());
             if (dropInstance.overrideStockDrops) customDropResult = CustomDropResult.HAS_OVERRIDE;
+
+            // if we are using groupIds then shuffle the list so it doesn't potentially drop the same item each time
+            if (dropInstance.utilizesGroupIds)
+                Collections.shuffle(dropInstance.customItems);
+
             getCustomItemDrops2(livingEntity, level, dropInstance, drops, isSpawner, equippedOnly);
         }
 
@@ -377,14 +387,16 @@ public class CustomDropsHandler {
             if (!item.setAmountRangeFromString(itemInfoConfiguration.getString("amount")))
                 Utils.logger.warning(String.format("Invalid number or number range for amount on %s, %s", dropInstance.getMobOrGroupName(), itemInfoConfiguration.getString("amount")));
         }
-        if (itemInfoConfiguration.getDouble("chance", -1.0) >= 0)
-            item.dropChance = itemInfoConfiguration.getDouble("chance", -1.0);
+        if (itemInfoConfiguration.getDouble("chance", -1.0) > -1.0)
+            item.dropChance = itemInfoConfiguration.getDouble("chance");
         if (itemInfoConfiguration.getInt("minlevel", -1) > -1)
-            item.minLevel = itemInfoConfiguration.getInt("minlevel", -1);
+            item.minLevel = itemInfoConfiguration.getInt("minlevel");
         if (itemInfoConfiguration.getInt("maxlevel", -1) > -1)
-            item.maxLevel = itemInfoConfiguration.getInt("maxlevel", -1);
-        if (itemInfoConfiguration.getInt("groupid", -1) >= -1)
-            item.groupId = itemInfoConfiguration.getInt("groupid", -1);
+            item.maxLevel = itemInfoConfiguration.getInt("maxlevel");
+        if (itemInfoConfiguration.getInt("groupid", -1) > -1) {
+            item.groupId = itemInfoConfiguration.getInt("groupid");
+            dropInstance.utilizesGroupIds = true;
+        }
         if (!Utils.isNullOrEmpty(itemInfoConfiguration.getString("damage"))) {
             if (!item.setDamageRangeFromString(itemInfoConfiguration.getString("damage")))
                 Utils.logger.warning(String.format("Invalid number range for damage on %s, %s", dropInstance.getMobOrGroupName(), itemInfoConfiguration.getString("damage")));
@@ -402,11 +414,13 @@ public class CustomDropsHandler {
         if (itemInfoConfiguration.getBoolean("override"))
             dropInstance.overrideStockDrops = true;
         if (!Utils.isNullOrEmpty(itemInfoConfiguration.getString("excludemobs"))) {
-            String[] excludes = itemInfoConfiguration.getString("excludemobs").split(";");
+            String[] excludes = Objects.requireNonNull(itemInfoConfiguration.getString("excludemobs")).split(";");
             item.excludedMobs.clear();
             for (final String exclude : excludes)
                 item.excludedMobs.add(exclude.trim());
         }
+        if (itemInfoConfiguration.getInt("custommodeldata", -1) > -1)
+            item.customModelDataId = itemInfoConfiguration.getInt("custommodeldata");
 
         final Object enchantmentsSection = itemInfoConfiguration.get("enchantments");
         if (enchantmentsSection != null){
@@ -443,6 +457,14 @@ public class CustomDropsHandler {
             final ItemMeta meta = item.getItemStack().getItemMeta();
             if (meta != null) {
                 meta.setDisplayName(MessageUtils.colorizeAll(item.customName));
+                item.getItemStack().setItemMeta(meta);
+            }
+        }
+
+        if (item.customModelDataId > -1){
+            final ItemMeta meta = item.getItemStack().getItemMeta();
+            if (meta != null) {
+                meta.setCustomModelData(item.customModelDataId);
                 item.getItemStack().setItemMeta(meta);
             }
         }

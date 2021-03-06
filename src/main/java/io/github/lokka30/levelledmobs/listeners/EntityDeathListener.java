@@ -4,6 +4,7 @@ import io.github.lokka30.levelledmobs.LevelledMobs;
 import io.github.lokka30.levelledmobs.customdrops.CustomDropResult;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.inventory.ItemStack;
@@ -25,7 +26,7 @@ public class EntityDeathListener implements Listener {
     // These entities will be forced not to have levelled drops
     final HashSet<String> bypassDrops = new HashSet<>(Arrays.asList("ARMOR_STAND", "ITEM_FRAME", "DROPPED_ITEM", "PAINTING"));
 
-    @EventHandler(ignoreCancelled = true)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.NORMAL)
     public void onDeath(final EntityDeathEvent event) {
         if (bypassDrops.contains(event.getEntityType().toString())) {
             return;
