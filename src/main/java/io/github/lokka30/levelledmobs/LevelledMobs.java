@@ -254,7 +254,7 @@ public class LevelledMobs extends JavaPlugin {
         pluginManager.registerEvents(new EntityNametagListener(this), this);
         pluginManager.registerEvents(new EntityTargetListener(this), this);
         pluginManager.registerEvents(new PlayerJoinListener(this), this);
-        //pluginManager.registerEvents(new EntityTameListener(this), this);
+        pluginManager.registerEvents(new EntityTameListener(this), this);
     }
 
     private void registerCommands() {

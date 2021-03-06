@@ -22,19 +22,19 @@ public class EntityTameListener implements Listener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     private void onEntityTameEvent(EntityTameEvent event) {
-        final LivingEntity le = event.getEntity();
+        final LivingEntity livingEntity = event.getEntity();
 
         if (instance.settingsCfg.getBoolean("no-level-conditions.tamed")) {
             Utils.debugLog(instance, "EntityTameListener", "no-level-conditions.tamed = true");
 
             // if mob was levelled then remove it
 
-            if (le.getPersistentDataContainer().has(instance.levelManager.isLevelledKey, PersistentDataType.STRING))
-                le.getPersistentDataContainer().remove(instance.levelManager.isLevelledKey);
-            if (le.getPersistentDataContainer().has(instance.levelManager.levelKey, PersistentDataType.INTEGER))
-                le.getPersistentDataContainer().remove(instance.levelManager.levelKey);
+            if (livingEntity.getPersistentDataContainer().has(instance.levelManager.isLevelledKey, PersistentDataType.STRING))
+                livingEntity.getPersistentDataContainer().remove(instance.levelManager.isLevelledKey);
+            if (livingEntity.getPersistentDataContainer().has(instance.levelManager.levelKey, PersistentDataType.INTEGER))
+                livingEntity.getPersistentDataContainer().remove(instance.levelManager.levelKey);
 
-            instance.levelManager.updateNametagWithDelay(le, le.getCustomName(), le.getWorld().getPlayers(), 1);
+            instance.levelManager.updateNametagWithDelay(livingEntity, livingEntity.getCustomName(), livingEntity.getWorld().getPlayers(), 1);
 
             Utils.debugLog(instance, "EntityTameListener", "Removed level of tamed mob");
             return;
@@ -42,15 +42,15 @@ public class EntityTameListener implements Listener {
 
         Utils.debugLog(instance, "EntityTameListener", "Applying level to tamed mob");
         int level = -1;
-        if (le.getPersistentDataContainer().has(instance.levelManager.levelKey, PersistentDataType.INTEGER)) {
-            Object temp = le.getPersistentDataContainer().get(instance.levelManager.levelKey, PersistentDataType.INTEGER);
+        if (livingEntity.getPersistentDataContainer().has(instance.levelManager.levelKey, PersistentDataType.INTEGER)) {
+            Object temp = livingEntity.getPersistentDataContainer().get(instance.levelManager.levelKey, PersistentDataType.INTEGER);
             if (temp != null) level = (int) temp;
         }
 
         int finalLevel = level;
         new BukkitRunnable() {
             public void run() {
-                instance.levelManager.creatureSpawnListener.processMobSpawn(le, CreatureSpawnEvent.SpawnReason.DEFAULT, finalLevel, MobProcessReason.TAME, false);
+                instance.levelManager.creatureSpawnListener.processMobSpawn(livingEntity, CreatureSpawnEvent.SpawnReason.DEFAULT, finalLevel, MobProcessReason.TAME, false);
             }
         }.runTaskLater(instance, 1L);
     }
