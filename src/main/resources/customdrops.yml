@@ -554,7 +554,8 @@ file-version: 5
 #
 #
 #all_levellable_mobs: #Selected all Levelled Mobs
-#  exclude: PHANTOM;ENDER_DRAGON;WITHER #Except for these three mobs
+#  exclude: 'all_nether_mobs;ENDERMAN;ENDERMITE;SHULKER' #Remove the Nether mobs and the End mobs
+#  usedroptable: 'basic_overworld' #Apply the drop-table basic_overworld defined above
 #  - diamond: #Selected a diamond as my custom drop
 #      minlevel: 1 #Any EntityType or Universal Group --
 #      maxlevel: 15 #-- who are LVL1-15 has a chance to drop
@@ -582,17 +583,13 @@ file-version: 5
 #
 #drop-table:
 #  basic_overworld:
-#    - stick
+#    - stick:
 #      groupid: 3
-#    - mossy_cobblestone
+#    - mossy_cobblestone:
 #      groupid: 3
 #  basic_nether:
-#    - soul_soil
+#    - soul_soil:
 #      groupid: 4
-#    - soul_sand
+#    - soul_sand:
 #      groupid: 4
-#
-#all_levelled_mobs: #Select all Levelled Mobs
-#  exclude: all_nether_mobs;ENDERMAN;ENDERMITE;SHULKER #Remove the Nether mobs and the End mobs
-#  usedroptable: basic_overworld #Apply the drop-table basic_overworld defined above
 #

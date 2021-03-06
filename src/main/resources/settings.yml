@@ -61,8 +61,10 @@
 #                %typename% | The mobs name; will NOT show
 #                           | nametag name if tagged
 #                  %health% | The mobs current health in decimal form
+#          %health_rounded% | The mobs current health,
+#                           | rounded to nearest whole number
 #              %max_health% | The mobs max health
-#      %max_health_rounded% | The mobs current health,
+#      %max_health_rounded% | The mobs max health,
 #                           | rounded to nearest whole number
 #            %heart_symbol% | A predefined heart character symbol
 #                  %tiered% | Color text based on the level of the mob

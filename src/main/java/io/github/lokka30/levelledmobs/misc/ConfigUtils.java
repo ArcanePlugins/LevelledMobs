@@ -4,7 +4,6 @@ import io.github.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.microlib.MessageUtils;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.LivingEntity;
 
 import java.util.*;
 
@@ -36,20 +35,6 @@ public class ConfigUtils {
         noPermissionMsg = Utils.colorizeAllInList(noPermissionMsg);
 
         noPermissionMsg.forEach(sender::sendMessage);
-    }
-
-    /**
-     * This method is used to check if the mob's nametag contains health placeholders.
-     * This is used by EntityDamageListener and EntityRegainHealthListener to check if the mob's nametag
-     * needs to be updated or not in those events since otherwise the health placeholders may display incorrect values
-     * in the mob's nametag.
-     *
-     * @param livingEntity the entity to check for.
-     * @return if the mob's nametag does not contain health placeholders.
-     */
-    public boolean nametagNotContainsHealthPlaceholders(LivingEntity livingEntity) {
-        final String nametag = main.levelManager.getNametag(livingEntity, false);
-        return !nametag.contains("%health%") && !nametag.contains("%max_health%") && !nametag.contains("%health_rounded%") && !nametag.contains("%max_health_rounded%");
     }
 
     public TreeMap<String, Integer> getMapFromConfigSection(final String configPath) {
