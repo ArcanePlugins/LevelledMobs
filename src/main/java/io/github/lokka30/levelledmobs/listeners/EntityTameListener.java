@@ -18,7 +18,6 @@ public class EntityTameListener implements Listener {
 
     public EntityTameListener(final LevelledMobs instance) {
         this.instance = instance;
-        Utils.debugLog(instance, "EntityTameListener", "Listening for tame events");
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
@@ -26,6 +25,7 @@ public class EntityTameListener implements Listener {
         final LivingEntity le = event.getEntity();
 
         if (instance.settingsCfg.getBoolean("no-level-conditions.tamed")) {
+            Utils.debugLog(instance, "EntityTameListener", "no-level-conditions.tamed = true");
 
             // if mob was levelled then remove it
 
@@ -36,10 +36,11 @@ public class EntityTameListener implements Listener {
 
             instance.levelManager.updateNametagWithDelay(le, le.getCustomName(), le.getWorld().getPlayers(), 1);
 
-            Utils.debugLog(instance, "EntityTameListener", "Skipping, tamed is enabled under no-level-conditions");
+            Utils.debugLog(instance, "EntityTameListener", "Removed level of tamed mob");
             return;
         }
 
+        Utils.debugLog(instance, "EntityTameListener", "Applying level to tamed mob");
         int level = -1;
         if (le.getPersistentDataContainer().has(instance.levelManager.levelKey, PersistentDataType.INTEGER)) {
             Object temp = le.getPersistentDataContainer().get(instance.levelManager.levelKey, PersistentDataType.INTEGER);
