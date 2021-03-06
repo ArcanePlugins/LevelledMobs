@@ -71,8 +71,14 @@ public class LevelManager {
 
     public boolean isLevellable(final EntityType entityType) {
         // Don't level these
-        if (entityType == EntityType.PLAYER || entityType == EntityType.UNKNOWN || entityType == EntityType.ARMOR_STAND)
-            return false;
+        if (
+                entityType == EntityType.PLAYER
+                        || entityType == EntityType.UNKNOWN
+                        || entityType == EntityType.ARMOR_STAND
+                        || entityType == EntityType.ITEM_FRAME
+                        || entityType == EntityType.DROPPED_ITEM
+                        || entityType == EntityType.PAINTING
+        ) return false;
 
         // Check if the entity is blacklisted. If not, continue.
         if (!ModalList.isEnabledInList(instance.settingsCfg, "allowed-entities-list", entityType.toString()))
@@ -104,6 +110,9 @@ public class LevelManager {
                 livingEntity.getType() == EntityType.PLAYER
                         || livingEntity.getType() == EntityType.UNKNOWN
                         || livingEntity.getType() == EntityType.ARMOR_STAND
+                        || livingEntity.getType() == EntityType.ITEM_FRAME
+                        || livingEntity.getType() == EntityType.DROPPED_ITEM
+                        || livingEntity.getType() == EntityType.PAINTING
 
                         // EliteMobs plugin compatibility
                         || (livingEntity.hasMetadata("Elitemob") && instance.externalCompatibilityManager.isExternalCompatibilityEnabled(ExternalCompatibilityManager.ExternalCompatibility.ELITE_MOBS))

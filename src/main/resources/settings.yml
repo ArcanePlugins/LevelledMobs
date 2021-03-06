@@ -179,14 +179,6 @@ nametag-auto-update-task-period: 6
 #      mode: 'BLACKLIST'
 #      list:
 #        - VILLAGER
-#        - ARMOR_STAND
-#
-#     NOTE: Armor stands are considered passive by vanilla
-#     Minecraft. If 'level-passive' is set to 'true', they
-#     will receive levels if they are not BLACKLISTED below.
-#     It is recommended that you do not change from BLACKLIST
-#     or remove ARMOR_STAND from the list until the code can
-#     by corrected to fix this!
 # ||-------------------------------------------------------||
 allowed-entities-list:
   mode: 'BLACKLIST'
@@ -198,7 +190,6 @@ allowed-entities-list:
     - RAVAGER
     - PHANTOM
     - BABY_ZOMBIE
-    - ARMOR_STAND
 
 
 # ||-------------------------------------------------------||
