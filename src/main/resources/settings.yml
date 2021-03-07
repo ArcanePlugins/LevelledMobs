@@ -7,24 +7,30 @@
 # |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 # ||
 # || Main Developers:
-# ||  Lokka30 (Original Author)
-# ||  Stumper66 (Developer since v2)
+# ||  lokka30 (Author, developer)
+# ||  stumper66 (Developer since v2)
 # ||
 # || Other Contributors:
 # ||  Eyrian, iCodinqs, deiphiz, CoolBoy,
-# ||  Esophose, 7smile7, Hugo5551, konsolas
+# ||  Esophose, 7smile7, UltimaOath, Hugo5551,
+# ||  konsolas
+# ||
 # || Special Thanks
-# ||  ArcanePlugins Developers and Bug-Testers
+# ||  ArcanePlugins developers and testers,
+# ||  Donators, patrons, and other supporters,
 # ||  SpigotMC, ProtocolLib, PaperMC, and bStats
 # ||
 # |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 # ||
 # || Important Links:
-# ||  Official SpigotMC
+# ||  SpigotMC Resource Page (View info and download the plugin)
 # ||   https://www.spigotmc.org/resources/levelledmobs-for-1-14-x-1-16-x.74304/
 # ||
-# ||  Official ArcanePlugins Discord
+# ||  ArcanePlugins Discord (Have a chat or ask for assistance with the plugin)
 # ||   https://discord.gg/RQ8M4A5
+# ||
+# ||  Wiki on GitHub (Documentation)
+# ||   https://github.com/lokka30/LevelledMobs/wiki
 # ||
 # || Useful Resources:
 # ||  YAML-Parser (Check your config for syntax errors)
@@ -32,9 +38,11 @@
 # ||
 # || Dependencies:
 # ||  ProtocolLib
-# ||   A soft dependency, used to apply nametags to mobs
-# ||   Without this, mobs will not spawn with their nametags visible
-# ||   https://www.spigotmc.org/resources/protocollib.1997/
+# ||   A 'soft dependency': not *required*, but *highly* recommended.
+# ||   ProtocolLib is utilised by LevelledMobs to apply custom name
+# ||   tags on levelled mobs. Without this, the plugin will
+# ||   not show the custom name tags on levelled mobs.
+# ||   Download: https://www.spigotmc.org/resources/protocollib.1997/
 # ||
 # |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 #
@@ -42,8 +50,9 @@
 # |||||||||||||||||||||||||||||||||||||||||||||||||||||
 # ||  Section 01 - Mob Nametags
 # ||
-# ||  NOTE: You must have ProtocolLib installed for
-# ||  this featureset to function.
+# ||  NOTE: You must have ProtocolLib installed
+# ||  for this featureset to function.
+# ||  Download: https://www.spigotmc.org/resources/protocollib.1997/
 # |||||||||||||||||||||||||||||||||||||||||||||||||||||
 #
 # ||-------------------------------------------------------||
@@ -51,10 +60,12 @@
 #     mobs head, using packets to emulate a nametag
 #     without actually applying one to the mob to
 #     prevent conflicts with other plugins.
+#     This means the client is essentially 'tricked'
+#     into thinking the mob has that nametag, but
+#     the server itself has no idea that is the case.
 #
 #     You can use the following placeholders when
 #     crafting your creatures nametag:
-#
 #                   %level% | The mobs current level
 #             %displayname% | The mobs name; will show
 #                           | nametag name if tagged (recommended)
@@ -86,8 +97,9 @@ creature-death-nametag: '&8[&7Level %level%&8 | &f%displayname%&8]'
 #      false | The nametags remain hidden until you are
 #            | fairly close and looking directly at it (Default)
 #
-#     Unfortunately, there are no other options, due to
-#     limitations established in Minecraft itself.
+#     As much as we would like to have a 'you can see the
+#     nametag if you can see the mob' option, unfortunately
+#     Minecraft itself limits us to just these two options.
 # ||-------------------------------------------------------||
 creature-nametag-always-visible: false
 
@@ -113,8 +125,7 @@ entity-name-override:
   CREEPER: 'Creeper'
   BABY_ZOMBIE: 'Baby Zombie'
 # Here are some further examples below,
-# uncomment them to take effect
-
+# uncomment them to take effect:
 #  ENDER_DRAGON: '&5&lEnder Dragon'
 #  PHANTOM: 'disabled'
 
@@ -158,7 +169,7 @@ assert-entity-validity-with-nametag-packets: true
 #     their nametags, or if the tags have not updated.
 #     By default, this is set to 6 seconds.
 #     It is not recommended that you change this setting
-#     unless you understand what you are doing
+#     unless you understand exactly what you are doing.
 # ||-------------------------------------------------------||
 nametag-auto-update-task-period: 6
 
