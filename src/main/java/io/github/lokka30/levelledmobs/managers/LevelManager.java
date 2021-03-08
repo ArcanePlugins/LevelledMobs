@@ -677,7 +677,6 @@ public class LevelManager {
      *   - @7smile7 (https://www.spigotmc.org/members/7smile7.43809/)
      */
     public void updateNametag(final LivingEntity entity, final String nametag, final List<Player> players) {
-        if (nametag == null) return;
         if (!ExternalCompatibilityManager.hasProtocolLibInstalled()) return;
 
         BukkitTask task = new BukkitRunnable() {
@@ -712,9 +711,17 @@ public class LevelManager {
                     }
 
                     final WrappedDataWatcher.WrappedDataWatcherObject watcherObject = new WrappedDataWatcher.WrappedDataWatcherObject(2, chatSerializer);
-                    final Optional<Object> optional = Optional.of(WrappedChatComponent.fromChatMessage(nametag)[0].getHandle());
+
+                    Optional<Object> optional;
+                    if (Utils.isNullOrEmpty(nametag)) {
+                        optional = Optional.empty();
+                    } else {
+                        optional = Optional.of(WrappedChatComponent.fromChatMessage(nametag)[0].getHandle());
+                    }
+
                     dataWatcher.setObject(watcherObject, optional);
-                    dataWatcher.setObject(3, entity.isCustomNameVisible() || instance.settingsCfg.getBoolean("creature-nametag-always-visible"));
+
+                    dataWatcher.setObject(3, !Utils.isNullOrEmpty(nametag) && entity.isCustomNameVisible() || instance.settingsCfg.getBoolean("creature-nametag-always-visible"));
 
                     final PacketContainer packet = ProtocolLibrary.getProtocolManager().createPacket(PacketType.Play.Server.ENTITY_METADATA);
                     packet.getWatchableCollectionModifier().write(0, dataWatcher.getWatchableObjects());

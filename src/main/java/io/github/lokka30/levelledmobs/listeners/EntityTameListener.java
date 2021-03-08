@@ -35,7 +35,7 @@ public class EntityTameListener implements Listener {
                 livingEntity.getPersistentDataContainer().remove(instance.levelManager.levelKey);
 
             instance.levelManager.updateNametagWithDelay(livingEntity,
-                    livingEntity.getCustomName() == null ? "" : livingEntity.getCustomName(),
+                    livingEntity.getCustomName(),
                     livingEntity.getWorld().getPlayers(),
                     1);
 
