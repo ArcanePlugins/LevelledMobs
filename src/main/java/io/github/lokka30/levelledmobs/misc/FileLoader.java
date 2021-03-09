@@ -25,7 +25,7 @@ public final class FileLoader {
         throw new UnsupportedOperationException();
     }
 
-    public static YamlConfiguration loadFile(final Plugin plugin, String cfgName, final int compatibleVersion, final boolean doMigrate) {
+    public static YamlConfiguration loadFile(final Plugin plugin, String cfgName, final int compatibleVersion, final MigrateBehavior migrateBehavior) {
         cfgName = cfgName + ".yml";
 
         Utils.logger.info("&fFile Loader: &7Loading file '&b" + cfgName + "&7'...");
@@ -45,7 +45,7 @@ public final class FileLoader {
 
         final int fileVersion = cfg.getInt("file-version");
 
-        if (fileVersion < compatibleVersion && doMigrate){
+        if (fileVersion < compatibleVersion && (migrateBehavior == MigrateBehavior.MIGRATE || migrateBehavior == MigrateBehavior.RESET)){
             final File backedupFile = new File(plugin.getDataFolder(), cfgName + ".v" + fileVersion + ".old");
 
             // copy to old file
@@ -54,12 +54,18 @@ public final class FileLoader {
             // overwrite settings.yml from new version
             plugin.saveResource(file.getName(), true);
 
-            // copy supported values from old file to new
-            Utils.logger.info("&fFile Loader: &8(Migration) &7Migrating &b" + cfgName + "&7 from old version to new version.");
-            copyYmlValues(backedupFile, file, fileVersion);
+            if (migrateBehavior == MigrateBehavior.MIGRATE) {
+                // copy supported values from old file to new
+                Utils.logger.info("&fFile Loader: &8(Migration) &7Migrating &b" + cfgName + "&7 from old version to new version.");
+                copyYmlValues(backedupFile, file, fileVersion);
+            }
 
             // reload cfg from the updated values
             cfg = YamlConfiguration.loadConfiguration(file);
+
+            if (migrateBehavior == MigrateBehavior.RESET){
+                Utils.logger.warning("&fFile Loader: &8(Migration) &b" + cfgName + "&7 has been reset to default values.");
+            }
 
         } else{
             checkFileVersion(file, compatibleVersion, cfg.getInt("file-version"));
@@ -174,6 +180,8 @@ public final class FileLoader {
                 "fine-tuning.additions.attack-damage"
         );
 
+        final String useCustomDrops = "use-custom-item-drops-for-mobs";
+
         try {
             final List<String> oldConfigLines = Files.readAllLines(from.toPath(), StandardCharsets.UTF_8);
             final List<String> newConfigLines = Files.readAllLines(to.toPath(), StandardCharsets.UTF_8);
@@ -240,6 +248,15 @@ public final class FileLoader {
                             if (isSettings && key.equalsIgnoreCase("creature-nametag") && oldVersion > 20 && oldVersion < 26
                                     && migratedValue.equals("'&8[&7Level %level%&8 | &f%displayname%&8 | &c%health%&8/&c%max_health% %heart_symbol%&8]'")) {
                                 // updating to the new default introduced in file ver 26 if they were using the previous default
+                                continue;
+                            }
+                            if (isSettings && oldVersion < 28 && key.equalsIgnoreCase(useCustomDrops) &&
+                                    oldConfigMap.containsKey(useCustomDrops) &&
+                                    oldConfigMap.get(useCustomDrops).simpleValue.equalsIgnoreCase("true")){
+
+                                Utils.logger.info("&fFile Loader: &8(Migration) &7Current key: &b" + key + "&7, resetting to: &rfalse&7.");
+                                newConfigMap.get(useCustomDrops).simpleValue = "false";
+                                valuesUpdated++;
                                 continue;
                             }
 

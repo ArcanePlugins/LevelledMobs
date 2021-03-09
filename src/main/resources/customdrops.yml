@@ -153,6 +153,11 @@
 #                  | list for any potential drops it could have.
 #            false | If set to false, the mob will process it's own vanilla
 #                  | drops, and then process the custom drops separately.
+#          custommodeldata:
+#                  | This is used in conjunction with custom resource packs
+#                  | and allows you to utilize them in your custom drop.
+#                  | must be following by an id.
+#                  | Reference https://tinyurl.com/hhzkuxk8
 #          groupid:
 #                  | By placing multiple items within the same groupid, you
 #                  | are establishing 'sets' of drops which are processed as
@@ -495,30 +500,30 @@ ZOMBIFIED_PIGLIN:
 drop-table:
   1:
     - STICK:
-      amount: 1
-      chance: 1
-      nomultiplier: true
-      nospawner: true
-      groupid: 1
+        amount: 1
+        chance: 1
+        nomultiplier: true
+        nospawner: true
+        groupid: 1
     - COBBLESTONE:
-      amount: 1
-      chance: 1
-      nomultiplier: true
-      nospawner: true
-      groupid: 1
+        amount: 1
+        chance: 1
+        nomultiplier: true
+        nospawner: true
+        groupid: 1
   basic_nether:
     - NETHERRACK:
-      amount: 1
-      chance: 1
-      nomultiplier: true
-      nospawner: true
-      groupid: 2
+        amount: 1
+        chance: 1
+        nomultiplier: true
+        nospawner: true
+        groupid: 2
     - SOUL_SAND:
-      amount: 1
-      chance: 1
-      nomultiplier: true
-      nospawner: true
-      groupid: 2
+        amount: 1
+        chance: 1
+        nomultiplier: true
+        nospawner: true
+        groupid: 2
       
 PIG;CHICKEN;COW:
   usedroptable: 1

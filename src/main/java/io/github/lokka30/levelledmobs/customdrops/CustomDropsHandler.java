@@ -480,7 +480,7 @@ public class CustomDropsHandler {
             result.addDefaults((Map<String, Object>) object);
             return result.getDefaultSection();
         } else {
-            Utils.logger.warning("couldn't parse Config of type: " + object.getClass().getSimpleName());
+            Utils.logger.warning("couldn't parse Config of type: " + object.getClass().getSimpleName() + ", value: " + object.toString());
             return null;
         }
     }

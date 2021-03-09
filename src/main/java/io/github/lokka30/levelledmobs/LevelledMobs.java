@@ -9,6 +9,7 @@ import io.github.lokka30.levelledmobs.managers.MobDataManager;
 import io.github.lokka30.levelledmobs.managers.WorldGuardManager;
 import io.github.lokka30.levelledmobs.misc.ConfigUtils;
 import io.github.lokka30.levelledmobs.misc.FileLoader;
+import io.github.lokka30.levelledmobs.misc.MigrateBehavior;
 import io.github.lokka30.levelledmobs.misc.Utils;
 import me.lokka30.microlib.QuickTimer;
 import me.lokka30.microlib.UpdateChecker;
@@ -171,16 +172,16 @@ public class LevelledMobs extends JavaPlugin {
         FileLoader.saveResourceIfNotExists(this, new File(getDataFolder(), "license.txt"));
 
         // load configurations
-        settingsCfg = FileLoader.loadFile(this, "settings", FileLoader.SETTINGS_FILE_VERSION, true);
+        settingsCfg = FileLoader.loadFile(this, "settings", FileLoader.SETTINGS_FILE_VERSION, MigrateBehavior.MIGRATE);
 
         if (settingsCfg != null) // only load if settings were loaded successfully
-            messagesCfg = FileLoader.loadFile(this, "messages", FileLoader.MESSAGES_FILE_VERSION, true);
+            messagesCfg = FileLoader.loadFile(this, "messages", FileLoader.MESSAGES_FILE_VERSION, MigrateBehavior.MIGRATE);
         else {
             // had an issue reading the file.  Disable the plugin now
             return false;
         }
 
-        customDropsCfg = FileLoader.loadFile(this, "customdrops", FileLoader.CUSTOMDROPS_FILE_VERSION, false);
+        customDropsCfg = FileLoader.loadFile(this, "customdrops", FileLoader.CUSTOMDROPS_FILE_VERSION, MigrateBehavior.RESET);
 
         this.entityTypesLevelOverride_Min = configUtils.getMapFromConfigSection("entitytype-level-override.min-level");
         this.entityTypesLevelOverride_Max = configUtils.getMapFromConfigSection("entitytype-level-override.max-level");
