@@ -21,6 +21,10 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.*;
 
+/**
+ * @author lokka30
+ * @contributors stumper66
+ */
 public class CreatureSpawnListener implements Listener {
 
     private final LevelledMobs instance;
@@ -46,12 +50,11 @@ public class CreatureSpawnListener implements Listener {
 
         if (damager instanceof Projectile) {
             killer = (LivingEntity) ((Projectile)damager).getShooter();
-        }
-        else if (!(damager instanceof LivingEntity)) return;
+        } else if (!(damager instanceof LivingEntity)) return;
         else{
             killer = (LivingEntity) damager;
         }
-        
+
         if (killer == null) return;
 
         if (!killer.getPersistentDataContainer().has(instance.levelManager.isLevelledKey, PersistentDataType.STRING))
@@ -297,8 +300,7 @@ public class CreatureSpawnListener implements Listener {
                 if (!hadMainItem) {
                     ee.setItemInMainHand(itemStack);
                     hadMainItem = true;
-                }
-                else
+                } else
                     ee.setItemInOffHand(itemStack);
             }
         }

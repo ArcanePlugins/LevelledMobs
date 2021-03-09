@@ -9,6 +9,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
+/**
+ * @author stumper66
+ */
 public class CustomItemDrop implements Cloneable {
     public int minLevel;
     public int maxLevel;
@@ -47,8 +50,7 @@ public class CustomItemDrop implements Cloneable {
         try {
             copy = (CustomItemDrop) super.clone();
             copy.itemStack = this.itemStack.clone();
-        }
-        catch (Exception ignored){ }
+        } catch (Exception ignored){ }
 
         return copy;
     }

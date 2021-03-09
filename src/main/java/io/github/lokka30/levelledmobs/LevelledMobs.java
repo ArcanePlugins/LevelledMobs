@@ -32,6 +32,9 @@ import java.util.TreeMap;
 
 /**
  * This is the main class of the plugin. Bukkit will call onLoad and onEnable on startup, and onDisable on shutdown.
+ *
+ * @author lokka30
+ * @contributors stumper66
  */
 public class LevelledMobs extends JavaPlugin {
 

@@ -14,6 +14,10 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * @author stumper66
+ * @contributors lokka30
+ */
 public class KillSubcommand implements Subcommand {
 
     @Override

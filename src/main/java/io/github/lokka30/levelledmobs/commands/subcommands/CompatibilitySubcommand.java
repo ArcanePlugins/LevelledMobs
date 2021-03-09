@@ -6,6 +6,9 @@ import org.bukkit.command.CommandSender;
 
 import java.util.List;
 
+/**
+ * @author lokka30
+ */
 public class CompatibilitySubcommand implements Subcommand {
 
     @Override

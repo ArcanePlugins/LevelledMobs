@@ -6,6 +6,9 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
 
+/**
+ * @author stumper66
+ */
 public class LevelNumbersWithBias {
 
     public LevelNumbersWithBias(int minLevel, int maxLevel, int factor){

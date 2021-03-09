@@ -6,6 +6,9 @@ import java.util.HashSet;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+/**
+ * @author stumper66
+ */
 public class MC1_16_Compat {
 
     public static HashSet<EntityType> getHostileMobs() {

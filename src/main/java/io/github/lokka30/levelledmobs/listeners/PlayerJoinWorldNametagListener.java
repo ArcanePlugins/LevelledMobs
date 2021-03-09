@@ -15,9 +15,13 @@ import org.bukkit.persistence.PersistentDataType;
 
 import java.util.Collections;
 
+/**
+ * @author lokka30
+ */
 public class PlayerJoinWorldNametagListener implements Listener {
 
     private final LevelledMobs instance;
+
     public PlayerJoinWorldNametagListener(final LevelledMobs instance) {
         this.instance = instance;
     }

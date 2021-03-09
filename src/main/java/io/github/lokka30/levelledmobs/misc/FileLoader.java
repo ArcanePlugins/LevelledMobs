@@ -15,6 +15,10 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+/**
+ * @author lokka30
+ * @contributors stumper66
+ */
 public final class FileLoader {
 
     public static final int SETTINGS_FILE_VERSION = 28; // Last changed: b289
@@ -304,8 +308,7 @@ public final class FileLoader {
                     if (temp.endsWith("nomultiplier:") || temp.endsWith("nospawner:")) {
                         temp += " true";
                         newConfigLines.add(temp);
-                    }
-                    else
+                    } else
                         newConfigLines.add(oldConfigLines.get(i));
                 }
             }
@@ -387,8 +390,7 @@ public final class FileLoader {
                 if (configMap.containsKey(key)) {
                     FieldInfo fi = configMap.get(key);
                     fi.addListValue(value);
-                }
-                else
+                } else
                     configMap.put(key, new FieldInfo(value, depth, true));
             }
         }

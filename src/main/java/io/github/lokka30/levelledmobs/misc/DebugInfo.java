@@ -1,5 +1,8 @@
 package io.github.lokka30.levelledmobs.misc;
 
+/**
+ * @author stumper66
+ */
 public class DebugInfo {
     public int minLevel;
     public int maxLevel;

@@ -347,23 +347,32 @@ creeper-max-damage-radius: 5
 #     design and plugin layout is different, so this section
 #     gives you near absolute control over how your mobs
 #     level. You are even given the ability to make
-#     per-mod adjustments at the end for higher flexibility
+#     per-mod adjustments at the end for higher flexibility.
+#     Note that few of these values take effect on existing
+#     levelled mobs, you may want to run '/lm kill all *' if
+#     you want to clear old levelled mobs and let the new ones
+#     spawn in.
 #
 #      fine-tuning:
 #        min-level:
-#             | The Minimum level that mobs
-#             | will naturally spawn at
+#             | The minimum level that mobs
+#             | will naturally spawn at.
+#             | Note: this value is safe to change,
+#             | avoid huge numbers. Ask a dev if unsure.
 #        max-level:
-#             | The Maximum level that mobs
-#             | will naturally spawn at
+#             | The maximum level that mobs
+#             | will naturally spawn at.
+#             | Note: this value is safe to change,
+#             | avoid huge numbers. Ask a dev if unsure.
 #        lower-mob-level-bias-factor:
 #             | This setting will make lower-level mobs
 #             | spawn more frequently when higher than 0
 #             | The value can be any number between
 #             | 0 (Disabled) or 10
 #        additions:
-#             | You can set any of these 'additions'
-#             | to 0 to Disable the particular setting
+#             | This is where LevelledMobs makes mobs more difficult.
+#             | Check the FAQ page on the Wiki to learn how it works.
+#             | Set any of these values to zero to disable it.
 #          max-health:
 #               | This is the maximum health that can be
 #               | added to a naturally generated mob
@@ -371,19 +380,20 @@ creeper-max-damage-radius: 5
 #               | settings which set artificial limits on
 #               | The max-health of a mob. Make sure
 #               | to check your server settings files for any
-#               | imposed caps, as we cannot circumvent that
+#               | imposed caps, as we cannot circumvent that.
 #          movement-speed:
 #               | This is the maximum movement
-#               | speed added to a mob
+#               | speed added to a mob.
 #               | This setting is HIGHLY sensative to any edits.
 #               | It is recommended that you make adjustments
-#               | no larger than 0.1, and do not increase the
-#               | speed beyond 0.4, as the mobs become too fast
+#               | no larger than 0.03, and do not increase the
+#               | speed beyond 0.15, as the mobs become too fast
+#               | for the Minecraft AI to be at all effective.
 #          attack-damage:
 #               | This is the maximum additional attack
-#               | damage added to mob attacks
-#               | This by default adds four hearts
-#               | of damage to every attack at max level
+#               | damage added to mob attacks.
+#               | This by default makes the highest level
+#               | mob deal 4 extra hearts of damage than normal.
 #          ranged-attack-damage:
 #               | This is the maximum additional ranged
 #               | attack damage added to mob attacks
@@ -392,12 +402,12 @@ creeper-max-damage-radius: 5
 #               | no larger than 0.25 at a time
 #          item-drop:
 #               | This is a multiplier applied to every
-#               | mob item that drops upon it's demise
+#               | mob item that drops upon their demise.
 #               | You can made additional adjustments to
-#               | specific items multiplied in customdrops.yml
+#               | specific items multiplied in customdrops.yml.
 #          xp-drop:
 #               | This is a multiplier applied to all xp
-#               | dropped by a mob upon it's demise
+#               | dropped by a mob upon their demise.
 #        custom_mob_level:
 #          EntityType:
 #               | Reference https://tinyurl.com/SpigotMCEntityTypes
@@ -429,7 +439,7 @@ fine-tuning:
 
     custom_mob_level:
 # Below represents an example of a customized PIGLIN
-# Uncomment it to take effect!
+# Un-comment it to take effect!
 #      PIGLIN:
 #        max-health: 30
 #        movement-speed: 0.2

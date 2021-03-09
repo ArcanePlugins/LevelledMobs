@@ -7,6 +7,10 @@ import org.bukkit.configuration.ConfigurationSection;
 
 import java.util.*;
 
+/**
+ * @author lokka30
+ * @contributors stumper66
+ */
 public class ConfigUtils {
 
     public static int SETTINGS_CREEPER_MAX_RADIUS;

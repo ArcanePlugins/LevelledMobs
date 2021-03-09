@@ -5,6 +5,9 @@ import org.bukkit.entity.EntityType;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * @author stumper66
+ */
 public class CustomDropInstance {
     public CustomDropInstance(final EntityType associatedMob){
         this.associatedMob = associatedMob;
@@ -40,13 +43,13 @@ public class CustomDropInstance {
     public String toString() {
         if (this.associatedMob != null) {
             return this.overrideStockDrops ?
-                   this.associatedMob.name() + " - override" :
-                   this.associatedMob.name();
+                    this.associatedMob.name() + " - override" :
+                    this.associatedMob.name();
         } else {
             //noinspection ConstantConditions
             return this.overrideStockDrops ?
-                   this.entityGroup.toString() + " - override" :
-                   this.entityGroup.toString();
+                    this.entityGroup.toString() + " - override" :
+                    this.entityGroup.toString();
         }
     }
 }

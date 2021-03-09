@@ -10,6 +10,9 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.persistence.PersistentDataType;
 
+/**
+ * @author lokka30
+ */
 public class EntityNametagListener implements Listener {
 
     private final LevelledMobs instance;

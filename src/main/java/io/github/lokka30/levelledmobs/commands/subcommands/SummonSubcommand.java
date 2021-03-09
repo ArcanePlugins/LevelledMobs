@@ -16,6 +16,10 @@ import org.bukkit.event.entity.CreatureSpawnEvent;
 
 import java.util.*;
 
+/**
+ * @author stumper66
+ * @contributors lokka30
+ */
 public class SummonSubcommand implements Subcommand {
 
     @Override

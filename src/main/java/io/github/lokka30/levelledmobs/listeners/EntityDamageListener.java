@@ -14,6 +14,9 @@ import org.bukkit.persistence.PersistentDataType;
 
 import java.util.Objects;
 
+/**
+ * @author lokka30
+ */
 public class EntityDamageListener implements Listener {
 
     private final LevelledMobs instance;

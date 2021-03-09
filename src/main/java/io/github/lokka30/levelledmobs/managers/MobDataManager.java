@@ -10,6 +10,9 @@ import org.bukkit.entity.LivingEntity;
 
 import java.util.Objects;
 
+/**
+ * @author lokka30
+ */
 public class MobDataManager {
 
     private final LevelledMobs instance;

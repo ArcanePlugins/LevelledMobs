@@ -26,6 +26,9 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+/**
+ * @author stumper66
+ */
 public class CustomDropsHandler {
     private final LevelledMobs instance;
 
@@ -196,8 +199,7 @@ public class CustomDropsHandler {
 
         if (le.getWorld().getEnvironment().equals(World.Environment.NORMAL)){
             groups.add(CustomDropsUniversalGroups.ALL_OVERWORLD_MOBS);
-        }
-        else if (le.getWorld().getEnvironment().equals(World.Environment.NETHER)){
+        } else if (le.getWorld().getEnvironment().equals(World.Environment.NETHER)){
             groups.add(CustomDropsUniversalGroups.ALL_NETHER_MOBS);
         }
 
@@ -269,8 +271,7 @@ public class CustomDropsHandler {
                         continue;
                     }
                     dropInstance = new CustomDropInstance(entityType);
-                }
-                else {
+                } else {
                     // item groups, we processed them beforehand
                     continue;
                 }
@@ -279,8 +280,7 @@ public class CustomDropsHandler {
                     if (config.getList(item) != null) {
                         // standard drop processing
                         parseCustomDrops2(config.getList(item), dropInstance);
-                    }
-                    else if (config.get(item) instanceof MemorySection){
+                    } else if (config.get(item) instanceof MemorySection){
                         // drop is using a item group
                         final MemorySection ms = (MemorySection) config.get(item);
                         if (ms == null) continue;

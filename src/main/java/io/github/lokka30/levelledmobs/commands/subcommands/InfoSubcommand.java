@@ -8,6 +8,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * @author lokka30
+ * @since v2.0.0
+ */
 public class InfoSubcommand implements Subcommand {
 
     @Override

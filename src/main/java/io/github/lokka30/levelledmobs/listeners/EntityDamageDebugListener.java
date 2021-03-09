@@ -21,6 +21,9 @@ import java.util.UUID;
 
 /**
  * This class is used for debugging the plugin.
+ *
+ * @author lokka30
+ * @contributors stumper66
  */
 public class EntityDamageDebugListener implements Listener {
 

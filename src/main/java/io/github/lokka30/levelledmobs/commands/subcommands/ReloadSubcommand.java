@@ -8,6 +8,10 @@ import org.bukkit.event.HandlerList;
 
 import java.util.List;
 
+/**
+ * @author lokka30
+ * @contributors stumper66
+ */
 public class ReloadSubcommand implements Subcommand {
 
     @Override

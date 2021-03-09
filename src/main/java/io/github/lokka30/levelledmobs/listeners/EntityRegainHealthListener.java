@@ -8,6 +8,10 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.persistence.PersistentDataType;
 
+/**
+ * @author konsolas
+ * @contributors lokka30
+ */
 public class EntityRegainHealthListener implements Listener {
 
     private final LevelledMobs instance;

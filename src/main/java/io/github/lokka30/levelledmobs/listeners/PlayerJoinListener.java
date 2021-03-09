@@ -9,6 +9,9 @@ import org.bukkit.event.player.PlayerJoinEvent;
 
 import java.util.List;
 
+/**
+ * @author lokka30
+ */
 public class PlayerJoinListener implements Listener {
 
     private final LevelledMobs instance;

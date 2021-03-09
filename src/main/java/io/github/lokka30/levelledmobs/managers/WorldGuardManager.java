@@ -21,6 +21,10 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * @author Eyrian2010
+ * @contributors lokka30, stumper66
+ */
 public class WorldGuardManager {
 
     /* Flags */

@@ -4,6 +4,8 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 /**
  * This enum will significantly decrease clutter from checking lists from the settings file with configurable modes (e.g. whitelist/blacklist)
+ *
+ * @author lokka30
  */
 public class ModalList {
 

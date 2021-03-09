@@ -1,5 +1,8 @@
 package io.github.lokka30.levelledmobs.customdrops;
 
+/**
+ * @author stumper66
+ */
 public enum CustomDropsUniversalGroups {
     ALL_MOBS,
     ALL_LEVELLABLE_MOBS,

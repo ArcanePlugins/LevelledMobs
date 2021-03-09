@@ -11,8 +11,10 @@ import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityTransformEvent;
 import org.bukkit.persistence.PersistentDataType;
 
-import java.util.Objects;
-
+/**
+ * @author stumper66
+ * @contributors lokka30
+ */
 public class EntityTransformListener implements Listener {
 
     private final LevelledMobs instance;
@@ -36,7 +38,8 @@ public class EntityTransformListener implements Listener {
         if (!livingEntity.getPersistentDataContainer().has(instance.levelManager.isLevelledKey, PersistentDataType.STRING))
             return;
 
-        final int level = Objects.requireNonNull(livingEntity.getPersistentDataContainer().get(instance.levelManager.levelKey, PersistentDataType.INTEGER));
+        final Integer level = livingEntity.getPersistentDataContainer().get(instance.levelManager.levelKey, PersistentDataType.INTEGER);
+        assert level != null;
 
         for (Entity transformedEntity : event.getTransformedEntities()) {
 

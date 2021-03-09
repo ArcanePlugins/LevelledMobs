@@ -12,6 +12,10 @@ import org.bukkit.event.entity.EntityTameEvent;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitRunnable;
 
+/**
+ * @author stumper66
+ * @contributors lokka30
+ */
 public class EntityTameListener implements Listener {
 
     private final LevelledMobs instance;

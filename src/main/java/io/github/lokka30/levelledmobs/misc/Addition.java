@@ -1,5 +1,8 @@
 package io.github.lokka30.levelledmobs.misc;
 
+/**
+ * @author lokka30
+ */
 public enum Addition {
 
     // Prefix of ATTRIBUTE if it is a Minecraft vanilla attribute like GENERIC_MOVEMENT_SPEED

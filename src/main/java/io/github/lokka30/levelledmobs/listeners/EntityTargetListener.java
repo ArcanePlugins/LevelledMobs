@@ -9,6 +9,10 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.persistence.PersistentDataType;
 
+/**
+ * @author stumper66
+ * @contributors lokka30
+ */
 public class EntityTargetListener implements Listener {
 
     private final LevelledMobs instance;

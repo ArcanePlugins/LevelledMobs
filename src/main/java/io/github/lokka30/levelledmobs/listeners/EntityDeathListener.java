@@ -15,6 +15,10 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 
+/**
+ * @author lokka30
+ * @contributors stumper66
+ */
 public class EntityDeathListener implements Listener {
 
     private final LevelledMobs instance;
@@ -43,15 +47,13 @@ public class EntityDeathListener implements Listener {
             if (event.getDroppedExp() > 0) {
                 event.setDroppedExp(instance.levelManager.getLevelledExpDrops(livingEntity, event.getDroppedExp()));
             }
-        }
-        else if (instance.settingsCfg.getBoolean("use-custom-item-drops-for-mobs")){
+        } else if (instance.settingsCfg.getBoolean("use-custom-item-drops-for-mobs")){
             final List<ItemStack> drops = new ArrayList<>();
             final CustomDropResult result = instance.customDropsHandler.getCustomItemDrops(livingEntity, -1, drops, false, false);
             if (result == CustomDropResult.HAS_OVERRIDE){
                 event.getDrops().clear();
                 event.getDrops().addAll(drops);
-            }
-            else if (!drops.isEmpty())
+            } else if (!drops.isEmpty())
                 event.getDrops().addAll(drops);
         }
     }

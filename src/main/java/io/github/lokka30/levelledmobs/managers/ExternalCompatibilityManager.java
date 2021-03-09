@@ -9,6 +9,8 @@ import java.util.HashMap;
 
 /**
  * This class handles compatibility with other plugins such as EliteMobs and Citizens
+ *
+ * @author lokka30
  */
 public class ExternalCompatibilityManager {
 

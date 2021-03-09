@@ -13,6 +13,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.TreeMap;
 
+/**
+ * @author lokka30
+ * @contributors stumper66, Hugo5551
+ */
 public final class Utils {
 
     /**
@@ -143,8 +147,7 @@ public final class Utils {
                 //noinspection deprecation
                 return zombie.isBaby();
             }
-        }
-        else if (livingEntity instanceof Ageable){
+        } else if (livingEntity instanceof Ageable){
             return !(((Ageable) livingEntity).isAdult());
         }
 

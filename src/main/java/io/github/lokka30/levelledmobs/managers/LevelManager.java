@@ -30,6 +30,10 @@ import java.math.RoundingMode;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
+/**
+ * @author lokka30
+ * @contributors stumper66, Eyrian2010, iCodinqs, deiphiz, CoolBoy, Esophose, 7smile7, Shevchik, Hugo5551
+ */
 public class LevelManager {
 
     private final LevelledMobs instance;
@@ -195,8 +199,7 @@ public class LevelManager {
             if (finalLevel >= maxLevel) {
                 finalLevel = maxLevel;
                 useOnlyNegative = true;
-            }
-            else if (finalLevel <= minLevel) {
+            } else if (finalLevel <= minLevel) {
                 finalLevel = minLevel;
             }
 
@@ -213,8 +216,7 @@ public class LevelManager {
         //Ensure the final level is within level min/max caps
         if (finalLevel > maxLevel) {
             finalLevel = maxLevel;
-        }
-        else if (finalLevel < minLevel) {
+        } else if (finalLevel < minLevel) {
             finalLevel = minLevel;
         }
 
@@ -249,8 +251,7 @@ public class LevelManager {
         else if (biasFactor > 0){
             if (biasFactor > 10) biasFactor = 10;
             return generateLevelWithBias(minLevel, maxLevel, biasFactor);
-        }
-        else
+        } else
             return ThreadLocalRandom.current().nextInt(minLevel, maxLevel + 1);
     }
 
@@ -322,8 +323,7 @@ public class LevelManager {
                 levels[0] = Utils.getDefaultIfNull(instance.entityTypesLevelOverride_Min, reinforcementsStr, levels[0]);
             if (instance.entityTypesLevelOverride_Max.containsKey(reinforcementsStr))
                 levels[1] = Utils.getDefaultIfNull(instance.entityTypesLevelOverride_Max, reinforcementsStr, levels[1]);
-        }
-        else if (isAdult) {
+        } else if (isAdult) {
             if (instance.entityTypesLevelOverride_Min.containsKey(entityTypeStr))
                 levels[0] = Utils.getDefaultIfNull(instance.entityTypesLevelOverride_Min, entityTypeStr, levels[0]);
             if (instance.entityTypesLevelOverride_Max.containsKey(entityTypeStr))
@@ -364,8 +364,7 @@ public class LevelManager {
         if (mobYLocation >= yEnd){
             useLevel = maxLevel;
             skipYPeriod = true;
-        }
-        else if (mobYLocation <= yStart){
+        } else if (mobYLocation <= yStart){
             skipYPeriod = true;
         }
 
@@ -391,8 +390,7 @@ public class LevelManager {
             if (useLevel >= maxLevel) {
                 useLevel = maxLevel;
                 useOnlyNegative = true;
-            }
-            else if (useLevel <= minLevel) {
+            } else if (useLevel <= minLevel) {
                 useLevel = minLevel;
             }
 
@@ -420,8 +418,7 @@ public class LevelManager {
 
         if (this.levelNumsListCache.containsKey(levelNum)) {
             levelNum = this.levelNumsListCache.get(levelNum);
-        }
-        else {
+        } else {
             levelNum = new LevelNumbersWithBias(minLevel, maxLevel, factor);
             levelNum.populateData();
             this.levelNumsListCache.put(levelNum, levelNum);

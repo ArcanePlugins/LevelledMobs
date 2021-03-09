@@ -13,6 +13,8 @@ import java.util.List;
 
 /**
  * This class handles the command execution of '/levelledmobs'.
+ *
+ * @author lokka30
  */
 public class LevelledMobsCommand implements CommandExecutor, TabCompleter {
 
