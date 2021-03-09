@@ -167,10 +167,6 @@ public class LevelManager {
     public int generateDistanceFromSpawnLevel(final LivingEntity livingEntity, final DebugInfo debugInfo, final CreatureSpawnEvent.SpawnReason spawnReason, final int minLevel, final int maxLevel) {
         final boolean isBabyEntity = Utils.isBabyZombie(livingEntity);
 
-        //final int minLevel = instance.configUtils.getMinLevel(livingEntity.getType(), livingEntity.getWorld(), !isBabyEntity, debugInfo, spawnReason);
-        //final int maxLevel = instance.configUtils.getMaxLevel(livingEntity.getType(), livingEntity.getWorld(), !isBabyEntity, debugInfo, spawnReason);
-
-
         if (debugInfo != null) {
             debugInfo.minLevel = minLevel;
             debugInfo.maxLevel = maxLevel;
@@ -225,9 +221,6 @@ public class LevelManager {
 
     // this is now the main entry point that determines the level for all criteria
     public int generateLevel(final LivingEntity livingEntity, final DebugInfo debugInfo, final CreatureSpawnEvent.SpawnReason spawnReason) {
-
-        //TODO: change this to use the defined levelling system from settings.yml
-        // fow now we'll just use the global min / max
 
         final boolean isAdultEntity = !Utils.isBabyZombie(livingEntity);
         final int[] levels = getMinAndMaxLevels(livingEntity, livingEntity.getType(), isAdultEntity, livingEntity.getWorld().getName(), debugInfo, spawnReason);
