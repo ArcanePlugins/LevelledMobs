@@ -23,6 +23,7 @@ public class ExternalCompatibilityManager {
     private final HashMap<ExternalCompatibility, Boolean> externalCompatibilityMap = new HashMap<>();
 
     public enum ExternalCompatibility {
+        DANGEROUS_CAVES,
         MYTHIC_MOBS,
         ELITE_MOBS, ELITE_MOBS_NPCS, ELITE_MOBS_SUPER_MOBS,
         INFERNAL_MOBS,
