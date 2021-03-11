@@ -118,6 +118,9 @@ public class LevelManager {
                         || livingEntity.getType() == EntityType.DROPPED_ITEM
                         || livingEntity.getType() == EntityType.PAINTING
 
+                        // DangerousCaves plugin compatibility
+                        || (livingEntity.hasMetadata("DangerousCaves") && instance.externalCompatibilityManager.isExternalCompatibilityEnabled(ExternalCompatibilityManager.ExternalCompatibility.DANGEROUS_CAVES))
+
                         // EliteMobs plugin compatibility
                         || (livingEntity.hasMetadata("Elitemob") && instance.externalCompatibilityManager.isExternalCompatibilityEnabled(ExternalCompatibilityManager.ExternalCompatibility.ELITE_MOBS))
                         || (livingEntity.hasMetadata("Elitemobs_NPC") && instance.externalCompatibilityManager.isExternalCompatibilityEnabled(ExternalCompatibilityManager.ExternalCompatibility.ELITE_MOBS_NPCS))
