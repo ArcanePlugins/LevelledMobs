@@ -232,4 +232,4 @@ other:
 # This value is used when this file is loaded to check if this file is most likely incompatible.
 # The value must match exactly what version the plugin ships the default file with.
 # Don't change this unless you know what you're doing!
-file-version: 1
+file-version: 2

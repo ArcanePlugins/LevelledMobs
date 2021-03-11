@@ -22,7 +22,7 @@ import java.util.stream.IntStream;
 public final class FileLoader {
 
     public static final int SETTINGS_FILE_VERSION = 28; // Last changed: b289
-    public static final int MESSAGES_FILE_VERSION = 1; // Last changed: v2.1.0
+    public static final int MESSAGES_FILE_VERSION = 2; // Last changed: v2.3.0
     public static final int CUSTOMDROPS_FILE_VERSION = 5; // Last changed: b280
 
     private FileLoader() {
@@ -115,6 +115,7 @@ public final class FileLoader {
         public String simpleValue;
         public List<String> valueList;
         public int depth;
+        public boolean hasValue;
 
         public FieldInfo(String value, int depth) {
             this.simpleValue = value;
@@ -164,6 +165,7 @@ public final class FileLoader {
 
         boolean isSettings = to.getName().equalsIgnoreCase("settings.yml");
         boolean isCustomDrops = to.getName().equalsIgnoreCase("customdrops.yml");
+        final List<String> processedKeys = new ArrayList<>();
 
         // version 20 = 1.34 - last version before 2.0
         final List<String> version20KeysToKeep = Arrays.asList(
@@ -192,7 +194,6 @@ public final class FileLoader {
 
             final SortedMap<String, FieldInfo> oldConfigMap = getMapFromConfig(oldConfigLines);
             final SortedMap<String, FieldInfo> newConfigMap = getMapFromConfig(newConfigLines);
-
             final List<String> currentKey = new ArrayList<>();
             int keysMatched = 0;
             int valuesUpdated = 0;
@@ -264,6 +265,24 @@ public final class FileLoader {
                                 continue;
                             }
 
+                            final String parentKey = getParentKey(key);
+                            if (fi.hasValue && parentKey != null && !processedKeys.contains(parentKey)){
+                                // here's where we add values from the old config not present in the new
+                                for (String oldValue : oldConfigMap.keySet()){
+                                    if (!oldValue.startsWith(parentKey)) continue;
+                                    if (newConfigMap.containsKey(oldValue)) continue;
+                                    if (!isEntitySameSubkey(parentKey, oldValue)) continue;
+
+                                    FieldInfo fiOld = oldConfigMap.get(oldValue);
+                                    if (fiOld.isList()) continue;
+                                    final String padding = getPadding(depth * 2);
+                                    final String newline = padding + getEndingKey(oldValue) + ": " + fiOld.simpleValue;
+                                    newConfigLines.add(currentLine + 1, newline);
+                                    Utils.logger.info("&fFile Loader: &8(Migration) &7Adding key: &b" + oldValue + "&7, value: &r" + fiOld.simpleValue + "&7.");
+                                }
+                                processedKeys.add(parentKey);
+                            }
+
                             if (!value.equals(migratedValue)) {
                                 valuesUpdated++;
                                 Utils.logger.info("&fFile Loader: &8(Migration) &7Current key: &b" + key + "&7, replacing: &r" + value + "&7, with: &r" + migratedValue + "&7.");
@@ -322,6 +341,35 @@ public final class FileLoader {
         }
     }
 
+    private static String getPadding(int space){
+        final StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < space; i++)
+            sb.append(" ");
+
+        return sb.toString();
+    }
+
+    private static boolean isEntitySameSubkey(final String key1, final String key2){
+        final int lastPeriod = key2.lastIndexOf(".");
+        final String checkKey = lastPeriod > 0 ? key2.substring(0, lastPeriod) : key2;
+
+        return (key1.equalsIgnoreCase(checkKey));
+    }
+
+    private static String getEndingKey(String input){
+        final int lastPeriod = input.lastIndexOf(".");
+        if (lastPeriod < 0) return input;
+
+        return input.substring(lastPeriod + 1);
+    }
+
+    private static String getParentKey(String input){
+        final int lastPeriod = input.lastIndexOf(".");
+        if (lastPeriod < 0) return null;
+
+        return input.substring(0, lastPeriod);
+    }
+
     private static int getFirstNonCommentLine(List<String> input){
         for (int lineNum = 0; lineNum < input.size(); lineNum++) {
             final String line = input.get(lineNum).replace("\t", "").trim();
@@ -337,6 +385,7 @@ public final class FileLoader {
         //final Map<String, FieldInfo> configMap = new HashMap<>();
         final SortedMap<String, FieldInfo> configMap = new TreeMap<>();
         final List<String> currentKey = new ArrayList<>();
+        final String regexPattern = "^[^':]*:.*";
 
         int lineNum = -1;
         for (String line : input) {
@@ -346,9 +395,12 @@ public final class FileLoader {
             line = line.replace("\t", "").trim();
             if (line.startsWith("#") || line.isEmpty()) continue;
 
-            if (line.contains(":")) {
-                final String[] lineSplit = line.split(":", 2);
-                String key = lineSplit[0].replace("\t", "").trim();
+            //if (line.contains(":")) {
+            if (line.matches(regexPattern)) {
+                //final String[] lineSplit = line.split(regexPattern, 2);
+                int firstColon = line.indexOf(":");
+                boolean hasValues = line.length() > firstColon + 1;
+                String key = line.substring(0, firstColon).replace("\t", "").trim();
                 final String origKey = key;
 
                 if (origKey.startsWith("-")) {
@@ -376,13 +428,13 @@ public final class FileLoader {
                     key = getKeyFromList(currentKey, key);
                 }
 
-                int splitLength = lineSplit.length;
-                if (splitLength == 2 && lineSplit[1].isEmpty()) splitLength = 1;
-                if (splitLength == 1) {
+                if (!hasValues) {
                     currentKey.add(origKey);
-                } else if (splitLength == 2) {
-                    final String value = lineSplit[1].trim();
-                    configMap.put(key, new FieldInfo(value, depth));
+                } else {
+                    final String value = line.substring(firstColon + 1).trim();
+                    final FieldInfo fi = new FieldInfo(value, depth);
+                    fi.hasValue = true;
+                    configMap.put(key, fi);
                 }
             } else if (line.startsWith("-")) {
                 final String key = getKeyFromList(currentKey, null);
