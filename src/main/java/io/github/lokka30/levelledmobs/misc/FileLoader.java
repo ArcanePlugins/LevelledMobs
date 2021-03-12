@@ -163,6 +163,7 @@ public final class FileLoader {
 
     private static void copyYmlValues(File from, File to, int oldVersion) {
 
+        final String regexPattern = "^[^':]*:.*";
         boolean isSettings = to.getName().equalsIgnoreCase("settings.yml");
         boolean isCustomDrops = to.getName().equalsIgnoreCase("customdrops.yml");
         final List<String> processedKeys = new ArrayList<>();
@@ -205,9 +206,12 @@ public final class FileLoader {
                     final int depth = getFieldDepth(line);
                     if (line.trim().startsWith("#") || line.trim().isEmpty()) continue;
 
-                    if (line.contains(":")) {
-                        final String[] lineSplit = line.split(":", 2);
-                        String key = lineSplit[0].replace("\t", "").trim();
+                    //if (line.contains(":")) {
+                    if (line.matches(regexPattern)) {
+                        //final String[] lineSplit = line.split(":", 2);
+                        int firstColon = line.indexOf(":");
+                        boolean hasValues = line.length() > firstColon + 1;
+                        String key = line.substring(0, firstColon).replace("\t", "").trim();
                         final String keyOnly = key;
 
                         if (depth == 0)
@@ -218,9 +222,7 @@ public final class FileLoader {
                         } else
                             key = getKeyFromList(currentKey, key);
 
-                        int splitLength = lineSplit.length;
-                        if (splitLength == 2 && lineSplit[1].isEmpty()) splitLength = 1;
-                        if (splitLength == 1) {
+                        if (!hasValues) {
                             currentKey.add(keyOnly);
 
                             if (isSettings && oldVersion <= 20 && !version20KeysToKeep.contains(key)) continue;
@@ -229,21 +231,21 @@ public final class FileLoader {
                             if (oldConfigMap.containsKey(key) && newConfigMap.containsKey(key) && oldConfigMap.get(key).isList()) {
                                 final FieldInfo fiOld = oldConfigMap.get(key);
                                 final FieldInfo fiNew = newConfigMap.get(key);
-                                if (fiNew.isList()) {
+                                if (fiOld.isList()) {
                                     // add any values present in old list that might not be present in new
-                                    final String padding = IntStream.range(1, (depth + 1) * 3 - 1).mapToObj(index -> "" + ' ').collect(Collectors.joining());
+                                    final String padding = getPadding((depth + 1) * 2);
                                     for (String oldValue : fiOld.valueList) {
-                                        if (!fiNew.valueList.contains(oldValue)) {
+                                        if (!fiNew.isList() || !fiNew.valueList.contains(oldValue)) {
                                             final String newline = padding + "- " + oldValue; // + "\r\n" + line;
                                             newConfigLines.add(currentLine + 1, newline);
-                                            Utils.logger.info("added array value: " + oldValue);
+                                            Utils.logger.info("&fFile Loader: &8(Migration) &7Added array value: &b" + oldValue);
                                         }
                                     }
                                 }
                             }
-                        } else if (splitLength == 2 && oldConfigMap.containsKey(key)) {
+                        } else if (hasValues && oldConfigMap.containsKey(key)) {
                             keysMatched++;
-                            final String value = lineSplit[1].trim();
+                            final String value = line.substring(firstColon + 1).trim();
                             final FieldInfo fi = oldConfigMap.get(key);
                             final String migratedValue = fi.simpleValue;
 
@@ -397,7 +399,6 @@ public final class FileLoader {
 
             //if (line.contains(":")) {
             if (line.matches(regexPattern)) {
-                //final String[] lineSplit = line.split(regexPattern, 2);
                 int firstColon = line.indexOf(":");
                 boolean hasValues = line.length() > firstColon + 1;
                 String key = line.substring(0, firstColon).replace("\t", "").trim();
@@ -430,6 +431,7 @@ public final class FileLoader {
 
                 if (!hasValues) {
                     currentKey.add(origKey);
+                    if (!configMap.containsKey(key)) configMap.put(key, new FieldInfo(null, depth));
                 } else {
                     final String value = line.substring(firstColon + 1).trim();
                     final FieldInfo fi = new FieldInfo(value, depth);
