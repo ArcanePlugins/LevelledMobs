@@ -166,6 +166,7 @@ public final class FileLoader {
         final String regexPattern = "^[^':]*:.*";
         boolean isSettings = to.getName().equalsIgnoreCase("settings.yml");
         boolean isCustomDrops = to.getName().equalsIgnoreCase("customdrops.yml");
+        boolean showMessages = !to.getName().equalsIgnoreCase("messages.yml");
         final List<String> processedKeys = new ArrayList<>();
 
         // version 20 = 1.34 - last version before 2.0
@@ -227,18 +228,35 @@ public final class FileLoader {
 
                             if (isSettings && oldVersion <= 20 && !version20KeysToKeep.contains(key)) continue;
 
-                            // arrays go here:
-                            if (oldConfigMap.containsKey(key) && newConfigMap.containsKey(key) && oldConfigMap.get(key).isList()) {
+                            if (oldConfigMap.containsKey(key) && newConfigMap.containsKey(key)) {
                                 final FieldInfo fiOld = oldConfigMap.get(key);
                                 final FieldInfo fiNew = newConfigMap.get(key);
+                                final String padding = getPadding((depth + 1) * 2);
+                                // arrays go here:
                                 if (fiOld.isList()) {
                                     // add any values present in old list that might not be present in new
-                                    final String padding = getPadding((depth + 1) * 2);
                                     for (String oldValue : fiOld.valueList) {
                                         if (!fiNew.isList() || !fiNew.valueList.contains(oldValue)) {
                                             final String newline = padding + "- " + oldValue; // + "\r\n" + line;
                                             newConfigLines.add(currentLine + 1, newline);
-                                            Utils.logger.info("&fFile Loader: &8(Migration) &7Added array value: &b" + oldValue);
+                                            if (showMessages) Utils.logger.info("&fFile Loader: &8(Migration) &7Added array value: &b" + oldValue);
+                                        }
+                                    }
+                                }
+                                else {
+                                    // non-array values go here.  Loop thru and find any subkeys under here
+                                    final int numOfPeriods = countPeriods(key);
+                                    for (final String enumeratedKey : oldConfigMap.keySet()){
+                                        final int numOfPeriods_Enumerated = countPeriods(enumeratedKey);
+                                        if (enumeratedKey.startsWith(key) && numOfPeriods_Enumerated == numOfPeriods + 1 && !newConfigMap.containsKey(enumeratedKey)){
+                                            final FieldInfo fi = oldConfigMap.get(enumeratedKey);
+                                            if (!fi.isList() && fi.simpleValue != null){
+                                                final String newPadding = getPadding(depth * 2);
+                                                final String newline = padding + getEndingKey(enumeratedKey) + ": " + fi.simpleValue;
+                                                newConfigLines.add(currentLine + 1, newline);
+                                                if (showMessages) Utils.logger.info("&fFile Loader: &8(Migration) &7Adding key: &b" + enumeratedKey + "&7, value: &r" + fi.simpleValue + "&7.");
+                                                processedKeys.add(key);
+                                            }
                                         }
                                     }
                                 }
@@ -261,7 +279,7 @@ public final class FileLoader {
                                     oldConfigMap.containsKey(useCustomDrops) &&
                                     oldConfigMap.get(useCustomDrops).simpleValue.equalsIgnoreCase("true")){
 
-                                Utils.logger.info("&fFile Loader: &8(Migration) &7Current key: &b" + key + "&7, resetting to: &rfalse&7.");
+                                if (showMessages) Utils.logger.info("&fFile Loader: &8(Migration) &7Current key: &b" + key + "&7, resetting to: &rfalse&7.");
                                 newConfigMap.get(useCustomDrops).simpleValue = "false";
                                 valuesUpdated++;
                                 continue;
@@ -280,14 +298,14 @@ public final class FileLoader {
                                     final String padding = getPadding(depth * 2);
                                     final String newline = padding + getEndingKey(oldValue) + ": " + fiOld.simpleValue;
                                     newConfigLines.add(currentLine + 1, newline);
-                                    Utils.logger.info("&fFile Loader: &8(Migration) &7Adding key: &b" + oldValue + "&7, value: &r" + fiOld.simpleValue + "&7.");
+                                    if (showMessages) Utils.logger.info("&fFile Loader: &8(Migration) &7Adding key: &b" + oldValue + "&7, value: &r" + fiOld.simpleValue + "&7.");
                                 }
                                 processedKeys.add(parentKey);
                             }
 
                             if (!value.equals(migratedValue)) {
                                 valuesUpdated++;
-                                Utils.logger.info("&fFile Loader: &8(Migration) &7Current key: &b" + key + "&7, replacing: &r" + value + "&7, with: &r" + migratedValue + "&7.");
+                                if (showMessages) Utils.logger.info("&fFile Loader: &8(Migration) &7Current key: &b" + key + "&7, replacing: &r" + value + "&7, with: &r" + migratedValue + "&7.");
                                 line = line.replace(value, migratedValue);
                                 newConfigLines.set(currentLine, line);
                             } else
@@ -301,7 +319,7 @@ public final class FileLoader {
                         if (oldConfigMap.containsKey(key) && oldConfigMap.get(key).isList() && !oldConfigMap.get(key).valueList.contains(value)) {
                             newConfigLines.remove(currentLine);
                             currentLine--;
-                            Utils.logger.info("&fFile Loader: &8(Migration) &7Current key: &b" + key + "&7, removing value: &r" + value + "&7.");
+                            if (showMessages) Utils.logger.info("&fFile Loader: &8(Migration) &7Current key: &b" + key + "&7, removing value: &r" + value + "&7.");
                         }
                     }
                 } // loop to next line
@@ -343,7 +361,17 @@ public final class FileLoader {
         }
     }
 
-    private static String getPadding(int space){
+    private static int countPeriods(final String text){
+        int count = 0;
+
+        for (int i = 0; i < text.length(); i++){
+            if (text.charAt(i) == '.') count++;
+        }
+
+        return count;
+    }
+
+    private static String getPadding(final int space){
         final StringBuilder sb = new StringBuilder();
         for (int i = 0; i < space; i++)
             sb.append(" ");

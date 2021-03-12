@@ -643,30 +643,6 @@ overriden-entities:
 no-drop-multipler-entities:
 
 
-# ||-------------------------------------------------------||
-# ||  ADVANCED USERS ONLY
-# ||  Assign Priority
-#
-#     There are several different settings which allow
-#     you to adjust your mobs level and stats based
-#     on the following settings, which are also in their
-#     suggested default priorities
-#
-#      ENTITY | entitytype-level-override
-#             | These settings fine-tune specific mobs
-#       WORLD | world-level-override
-#             | These settings override the minimum and
-#             | maximum levels in specific worlds
-#      GLOBAL | fine-tuning
-#             | The GLOBAL setting refers to the figures
-#             | listed in fine-tuning
-#
-# ||-------------------------------------------------------||
-assign_priority:
-  1: entity
-  2: world
-  3: global
-
 
 #
 #
