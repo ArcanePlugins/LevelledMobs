@@ -544,7 +544,7 @@ ALL_NETHER_MOBS:
 # as it could potentially break your LevelledMobs plugin
 # entirely or wipe your customdrops.yml file.
 #
-file-version: 5
+file-version: 6
 
 
 #
