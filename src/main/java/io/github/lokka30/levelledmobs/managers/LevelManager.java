@@ -722,6 +722,8 @@ public class LevelManager {
 
                     try {
                         ProtocolLibrary.getProtocolManager().sendServerPacket(player, packet);
+                    } catch (IllegalArgumentException ex) {
+                        Utils.debugLog(instance, "Nametags", "IllegalArgumentException caught whilst trying to sendServerPacket");
                     } catch (InvocationTargetException ex) {
                         Utils.logger.error("Unable to update nametag packet for player &b" + player.getName() + "&7! Stack trace:");
                         ex.printStackTrace();
