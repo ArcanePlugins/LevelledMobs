@@ -559,15 +559,18 @@ no-level-conditions:
 # ||-------------------------------------------------------||
 entitytype-level-override:
   enabled: false
+  # NOTE: | The entities below are commented out by default and thus
+  #       | will not take effect, remove the '#' character if you
+  #       | want LM to recognise these settings.
   min-level:
-    ENDER_DRAGON: 5
-    WITHER: 3
-    BABY_ZOMBIE: 1
+  #    ENDER_DRAGON: 5
+  #    WITHER: 3
+  #    BABY_ZOMBIE: 1
   max-level:
-    ENDER_DRAGON: 7
-    WITHER: 6
-    BABY_ZOMBIE: 1
-    ZOMBIE_REINFORCEMENTS: 2
+#    ENDER_DRAGON: 7
+#    WITHER: 6
+#    BABY_ZOMBIE: 1
+#    ZOMBIE_REINFORCEMENTS: 2
 
 
 # ||-------------------------------------------------------||
@@ -602,12 +605,15 @@ entitytype-level-override:
 # ||-------------------------------------------------------||
 world-level-override:
   enabled: false
+  # NOTE: | The worlds below are commented out by default and thus
+  #       | will not take effect, remove the '#' character if you
+  #       | want LM to recognise these settings.
   min-level:
-    example_world: 1
-    example_world_the_end: 5
+  #   example_world: 1
+  #   example_world_the_end: 5
   max-level:
-    example_world: 5
-    example_world_nether: 8
+  #   example_world: 5
+  #   example_world_nether: 8
 
 
 # ||-------------------------------------------------------||
