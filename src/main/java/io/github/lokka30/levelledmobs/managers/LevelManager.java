@@ -232,12 +232,12 @@ public class LevelManager {
 
         // option 2: spawn distance levelling
         if (instance.settingsCfg.getBoolean("y-distance-levelling.active")){
-            return generateDistanceFromSpawnLevel(livingEntity, debugInfo, spawnReason, minLevel, maxLevel);
+            return generateYCoordinateLevel(livingEntity.getLocation().getBlockY(), minLevel, maxLevel);
         }
 
         // option 3: y distance levelling
         if (instance.settingsCfg.getBoolean("spawn-distance-levelling.active")) {
-            return generateYCoordinateLevel(livingEntity.getLocation().getBlockY(), minLevel, maxLevel);
+            return generateDistanceFromSpawnLevel(livingEntity, debugInfo, spawnReason, minLevel, maxLevel);
         }
 
         int biasFactor = instance.settingsCfg.getInt("fine-tuning.lower-mob-level-bias-factor", 0);

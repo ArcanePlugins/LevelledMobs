@@ -16,7 +16,6 @@ public class MythicMobsListener implements Listener {
 
     public MythicMobsListener(final LevelledMobs instance) {
         this.instance = instance;
-        Utils.logger.info("MM listener instantiated");
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
