@@ -302,9 +302,11 @@ public class LevelManager {
             levels[1] = Utils.getDefaultIfNull(instance.worldLevelOverride_Max, worldName, -1);
         }
 
-        if (levels[0] > -1) debugInfo.minLevel = levels[0];
-        if (levels[1] > -1) debugInfo.maxLevel = levels[1];
-        if (levels[0] > -1 || levels[1] > -1) debugInfo.rule = MobProcessReason.ENTITY;
+        if (debugInfo != null) {
+            if (levels[0] > -1) debugInfo.minLevel = levels[0];
+            if (levels[1] > -1) debugInfo.maxLevel = levels[1];
+            if (levels[0] > -1 || levels[1] > -1) debugInfo.rule = MobProcessReason.ENTITY;
+        }
 
         return levels;
     }

@@ -3,6 +3,7 @@ package io.github.lokka30.levelledmobs.managers;
 import io.github.lokka30.levelledmobs.LevelledMobs;
 import io.lumine.xikage.mythicmobs.MythicMobs;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 
 import java.util.HashMap;
@@ -56,6 +57,7 @@ public class ExternalCompatibilityManager {
     }
 
     public static boolean isMythicMob(final LivingEntity livingEntity) {
-        return MythicMobs.inst().getAPIHelper().isMythicMob(livingEntity);
+        //return MythicMobs.inst().getAPIHelper().isMythicMob(livingEntity);
+        return MythicMobs.inst().getMobManager().isActiveMob(io.lumine.xikage.mythicmobs.adapters.bukkit.BukkitAdapter.adapt(livingEntity));
     }
 }

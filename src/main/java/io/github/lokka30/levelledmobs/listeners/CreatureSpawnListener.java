@@ -29,8 +29,6 @@ public class CreatureSpawnListener implements Listener {
 
     private final LevelledMobs instance;
     private final HashSet<String> forcedTypes = new HashSet<>(Arrays.asList("ENDER_DRAGON", "PHANTOM"));
-
-
     public CreatureSpawnListener(final LevelledMobs instance) {
         this.instance = instance;
     }
@@ -99,7 +97,7 @@ public class CreatureSpawnListener implements Listener {
      */
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void onCreatureSpawn(final CreatureSpawnEvent event) {
-        // spawned using summon command.  It will get processed directly
+        // spawned using summon command.  It will get processed directly.  However 3rd party plugins like MM use custom as well
         if (event.getSpawnReason() == SpawnReason.CUSTOM) return;
 
         // process the spawns after 1 tick so other plugins have a chance to process them, such as mythic mobs
@@ -120,12 +118,7 @@ public class CreatureSpawnListener implements Listener {
         if (livingEntity.getPersistentDataContainer().has(instance.levelManager.levelKey, PersistentDataType.INTEGER))
             return -1;
 
-        // MythicMobs compatibility
-        if (!override && ExternalCompatibilityManager.hasMythicMobsInstalled()
-                && instance.externalCompatibilityManager.isExternalCompatibilityEnabled(ExternalCompatibilityManager.ExternalCompatibility.MYTHIC_MOBS)
-                && ExternalCompatibilityManager.isMythicMob(livingEntity)) {
-            return -1;
-        }
+        // MythicMobs compatibility now handled from MythicMobsListener class
 
         //Check the 'worlds list' to see if the mob is allowed to be levelled in the world it spawned in
         if (!override && !ModalList.isEnabledInList(instance.settingsCfg, "allowed-worlds-list", livingEntity.getWorld().getName())) {

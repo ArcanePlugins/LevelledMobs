@@ -259,6 +259,9 @@ public class LevelledMobs extends JavaPlugin {
         pluginManager.registerEvents(new EntityTargetListener(this), this);
         pluginManager.registerEvents(new PlayerJoinListener(this), this);
         pluginManager.registerEvents(new EntityTameListener(this), this);
+
+        if (ExternalCompatibilityManager.hasMythicMobsInstalled())
+            pluginManager.registerEvents(new MythicMobsListener(this), this);
     }
 
     private void registerCommands() {

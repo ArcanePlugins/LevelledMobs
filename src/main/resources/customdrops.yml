@@ -489,10 +489,10 @@ ZOMBIFIED_PIGLIN:
 #      drop-table:
 #        1:
 #          - MATERIAL
-#            Customized Attributes
+#              Customized Attributes
 #        table_name:
 #          - MATERIAL
-#            Customized Attributes
+#              Customized Attributes
 #      ENTITYTYPE:
 #        usedroptable: 1
 #        Customized Attributes
@@ -591,12 +591,12 @@ file-version: 6
 #drop-table:
 #  basic_overworld:
 #    - stick:
-#      groupid: 3
+#        groupid: 3
 #    - mossy_cobblestone:
-#      groupid: 3
+#        groupid: 3
 #  basic_nether:
 #    - soul_soil:
-#      groupid: 4
+#        groupid: 4
 #    - soul_sand:
-#      groupid: 4
+#        groupid: 4
 #
