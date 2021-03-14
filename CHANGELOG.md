@@ -1,21 +1,94 @@
 # Changelog
 
-## v?.?.? b286
+## v2.3.1 b318
+
+### Notes:
+
+* This update makes some critical fixes to a few bugs left in v2.3.0. Please update as soon as possible.
+* This update was not thoroughly tested. Production servers are recommended to quickly test this version beforehand.
+
+### Changelog:
+
+* @stumper66 fixed MythicMobs compatibility
+* @stumper66 fixed call stack with null reference.
+* @stumper66 fixed y-level and spawn-distance-levelling.
+
+***
+
+## v2.3.0 b315
+
+### READ! Very Important:
+
+#### CustomDrops users!
+
+* If you do not use custom drops, ignore this!
+  * Your old customdrops.yml file has been **reset**, and all of the contents of that file have been moved to **
+    customdrops.yml.old**. Custom drops have received a bunch of new features and fixes, especially a plethora of
+    helpful comments to assist you in configuring the system. **You must manually transfer your old custom drops if you
+    want to keep them.** In addition, **the customdrops setting has been disabled in settings.yml, you must re-enable
+    this if you want customdrops to work.**
+  * Please, pay close attention when migrating these.
+  * If you have any issues with this update, please join the Discord and our support team will respond to you as soon as
+    they can.
 
 ### Notes:
 
 * Updated `settings.yml` - the auto update checker will automatically update it for you, unless you do it manually
+* Updated `customdrops.yml` - see 'IMPORTANT' section above.
+* Overhauled the config comments for settings.yml, messages.yml and customdrops.yml! This should significantly help
+  users in configuring the files.
 
 ### Changelog:
 
-LOKKA NOTE: test if creature-nametag 'disabled' works!
+#### Config Comments Overhaul!
 
-#### Code Cleanup
+* @Oathkeeper led a big change to the config files in making the config comments purely amazing! These should assist
+  people in configuring the files far more than previously. @stumper66 and @lokka30 assisted in this.
+* @Oathkeeper also fixed a bunch of spelling and grammar errors in settings.yml.
 
-* Trimmed a lot of unnecessary code.
-* External compatibilities are now handled by **ExternalCompatibilityManager**. The relevant part of the settings file
-  has also been cleaned up. (lokka30)
-* Fixed spelling and grammar errors in settings.yml - thanks @Oathkeeper! (@Oathkeeper)
+#### 1.16+ RGB Hex Colors Support!
+
+* @lokka30 updated MicroLib to support RGB hex color codes, LevelledMobs now uses this system.
+  * Servers running 1.16 or newer may use hex color codes anywhere you can use standard color codes too. :)
+  * RGB hex colors are a 1.16 feature from Minecraft, we can't add it to older versions.
+  * If your server is older than 1.16, don't worry, this feature won't disturb compatibility with your server in any
+    capacity.
+
+#### Other new features!
+
+* @stumper66 added the optional `/override` argument to `/lm summon`, which overrides the min & max level limits.
+* @lokka30 added compatibility with the DangerousCaves plugin (untested). Thanks to @gaugt980131gg2 for suggesting this.
+
+#### Bug Fixes!
+
+* @Shevchik supplied the code to fix the null name tags issue. Thanks!
+* @stumper66 fixed a bunch of issues relating to the config migrator system.
+* @lokka30 suppressed `IllegalArgumentException` for `LevelManager#updateNametag`. Thanks to Phthiscicus for reporting
+  the error.
+* @lokka30 fixed the nametag async task for not accounting for players quitting the server.
+* @lokka30 fixed custom drops no being reloaded properly with the `/lm reload` command.
+* @lokka30 fixed nametags not being updated force-updated when players teleport within the same world.
+* @lokka30 suppressed `ConcurrentModificationException` for `LevelManager#updateNametag`. Thanks to the handful of users
+  that reported the error.
+* @lokka30 fixed a `NullPointerException` when WorldGuardManager was unable to provide a region set.
+
+#### Code Improvements!
+
+* @stumper66 improved the direction code in the `/lm summon` command.
+* @stumper66 improved the enchantment code for the Custom Drops system.
+* @stumper66 made `drops.yml` and `attributes.yml` no longer copy inside the config directory, it now runs hidden inside
+  the plugin itself!
+* @lokka30 added author and contributors to each class.
+* @lokka30 made external compatibilities now handled by **ExternalCompatibilityManager**. The relevant part of the
+  settings file has also been cleaned up.
+* @lokka30 and @stumper66 worked on the EntityTameListener code. Taming mobs now considers the 'don't tame levelled
+  mobs' setting.
+* @lokka30 made armor stands, item frames, paintings and dropped items force-blocked in the code so that they should be
+  impossible to level.
+* @lokka30 removed the 'nametagContainsHealthPlaceholders' code, since it is too difficult to update and it is not
+  necessary to keep anyways.
+* @lokka30 replaced the rick-roll at the bottom of settings.yml - you brilliant people don't deserve that ;)
+* @stumper66 and @lokka30 made a bunch of other code improvements - there are too many small changes to list.
 
 ***
 

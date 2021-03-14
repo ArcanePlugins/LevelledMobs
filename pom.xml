@@ -6,7 +6,7 @@
 
     <groupId>io.github.lokka30</groupId>
     <artifactId>LevelledMobs</artifactId>
-    <version>b301 indev</version>
+    <version>b319</version>
 
     <packaging>jar</packaging>
 
@@ -38,11 +38,11 @@
                     <relocations>
                         <relocation>
                             <pattern>org.bstats</pattern>
-                            <shadedPattern>io.github.lokka30.levelledmobs.bstats</shadedPattern>
+                            <shadedPattern>me.lokka30.levelledmobs.bstats</shadedPattern>
                         </relocation>
                         <relocation>
                             <pattern>me.lokka30.microlib</pattern>
-                            <shadedPattern>io.github.lokka30.levelledmobs.microlib</shadedPattern>
+                            <shadedPattern>me.lokka30.levelledmobs.microlib</shadedPattern>
                         </relocation>
                     </relocations>
                 </configuration>
@@ -128,7 +128,7 @@
         <dependency>
             <groupId>io.lumine.xikage</groupId>
             <artifactId>MythicMobs</artifactId>
-            <version>4.9.1</version>
+            <version>4.11.0-BETA</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>

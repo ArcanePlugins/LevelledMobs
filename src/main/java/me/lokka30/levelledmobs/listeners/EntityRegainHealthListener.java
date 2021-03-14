@@ -1,0 +1,37 @@
+package me.lokka30.levelledmobs.listeners;
+
+import me.lokka30.levelledmobs.LevelledMobs;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityRegainHealthEvent;
+import org.bukkit.persistence.PersistentDataType;
+
+/**
+ * @author konsolas
+ * @contributors lokka30
+ */
+public class EntityRegainHealthListener implements Listener {
+
+    private final LevelledMobs instance;
+
+    public EntityRegainHealthListener(final LevelledMobs instance) {
+        this.instance = instance;
+    }
+
+    // When the mob regains health, try to update their nametag.
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
+    public void onEntityRegainHealth(final EntityRegainHealthEvent event) {
+        if (event.getEntity() instanceof LivingEntity) {
+            final LivingEntity livingEntity = (LivingEntity) event.getEntity();
+
+            // Make sure the mob is levelled
+            if (!livingEntity.getPersistentDataContainer().has(instance.levelManager.isLevelledKey, PersistentDataType.STRING))
+                return;
+
+            instance.levelManager.updateNametagWithDelay(livingEntity, livingEntity.getWorld().getPlayers(), 1);
+        }
+    }
+
+}

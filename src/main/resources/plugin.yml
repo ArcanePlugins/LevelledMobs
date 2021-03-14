@@ -1,7 +1,7 @@
 name: LevelledMobs
 version: ${project.version}
-main: io.github.lokka30.levelledmobs.LevelledMobs
-softdepend: [ WorldEdit, WorldGuard, ProtocolLib ]
+main: me.lokka30.levelledmobs.LevelledMobs
+softdepend: [ WorldEdit, WorldGuard, ProtocolLib, MythicMobs ]
 api-version: '1.13'
 load: POSTWORLD
 author: lokka30
@@ -21,6 +21,7 @@ permissions:
     children:
       levelledmobs.compatibility-notice: true
       levelledmobs.command.*: true
+      levelledmobs.debug: true
 
   levelledmobs.command.*:
     description: 'Access to all LevelledMobs commands.'
@@ -74,4 +75,8 @@ permissions:
 
   levelledmobs.command.compatibility:
     description: 'Access to `/levelledmobs compatibility`.'
+    default: op
+
+  levelledmobs.debug:
+    description: 'Ability to utilise debug functionality.'
     default: op

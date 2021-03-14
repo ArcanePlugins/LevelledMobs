@@ -7,24 +7,30 @@
 # |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 # ||
 # || Main Developers:
-# ||  Lokka30 (Original Author)
-# ||  Stumper66 (Developer since v2)
+# ||  lokka30 (Author, developer)
+# ||  stumper66 (Developer since v2)
 # ||
 # || Other Contributors:
 # ||  Eyrian, iCodinqs, deiphiz, CoolBoy,
-# ||  Esophose, 7smile7, Hugo5551, konsolas
+# ||  Esophose, 7smile7, UltimaOath, Hugo5551,
+# ||  konsolas
+# ||
 # || Special Thanks
-# ||  ArcanePlugins Developers and Bug-Testers
+# ||  ArcanePlugins developers and testers,
+# ||  Donators, patrons, and other supporters,
 # ||  SpigotMC, ProtocolLib, PaperMC, and bStats
 # ||
 # |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 # ||
 # || Important Links:
-# ||  Official SpigotMC
+# ||  SpigotMC Resource Page (View info and download the plugin)
 # ||   https://www.spigotmc.org/resources/levelledmobs-for-1-14-x-1-16-x.74304/
 # ||
-# ||  Official ArcanePlugins Discord
+# ||  ArcanePlugins Discord (Have a chat or ask for assistance with the plugin)
 # ||   https://discord.gg/RQ8M4A5
+# ||
+# ||  Wiki on GitHub (Documentation)
+# ||   https://github.com/lokka30/LevelledMobs/wiki
 # ||
 # || Useful Resources:
 # ||  YAML-Parser (Check your config for syntax errors)
@@ -32,9 +38,11 @@
 # ||
 # || Dependencies:
 # ||  ProtocolLib
-# ||   A soft dependency, used to apply nametags to mobs
-# ||   Without this, mobs will not spawn with their nametags visible
-# ||   https://www.spigotmc.org/resources/protocollib.1997/
+# ||   A 'soft dependency': not *required*, but *highly* recommended.
+# ||   ProtocolLib is utilised by LevelledMobs to apply custom name
+# ||   tags on levelled mobs. Without this, the plugin will
+# ||   not show the custom name tags on levelled mobs.
+# ||   Download: https://www.spigotmc.org/resources/protocollib.1997/
 # ||
 # |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 #
@@ -42,8 +50,9 @@
 # |||||||||||||||||||||||||||||||||||||||||||||||||||||
 # ||  Section 01 - Mob Nametags
 # ||
-# ||  NOTE: You must have ProtocolLib installed for
-# ||  this featureset to function.
+# ||  NOTE: You must have ProtocolLib installed
+# ||  for this featureset to function.
+# ||  Download: https://www.spigotmc.org/resources/protocollib.1997/
 # |||||||||||||||||||||||||||||||||||||||||||||||||||||
 #
 # ||-------------------------------------------------------||
@@ -51,10 +60,12 @@
 #     mobs head, using packets to emulate a nametag
 #     without actually applying one to the mob to
 #     prevent conflicts with other plugins.
+#     This means the client is essentially 'tricked'
+#     into thinking the mob has that nametag, but
+#     the server itself has no idea that is the case.
 #
 #     You can use the following placeholders when
 #     crafting your creatures nametag:
-#
 #                   %level% | The mobs current level
 #             %displayname% | The mobs name; will show
 #                           | nametag name if tagged (recommended)
@@ -86,8 +97,9 @@ creature-death-nametag: '&8[&7Level %level%&8 | &f%displayname%&8]'
 #      false | The nametags remain hidden until you are
 #            | fairly close and looking directly at it (Default)
 #
-#     Unfortunately, there are no other options, due to
-#     limitations established in Minecraft itself.
+#     As much as we would like to have a 'you can see the
+#     nametag if you can see the mob' option, unfortunately
+#     Minecraft itself limits us to just these two options.
 # ||-------------------------------------------------------||
 creature-nametag-always-visible: false
 
@@ -113,8 +125,7 @@ entity-name-override:
   CREEPER: 'Creeper'
   BABY_ZOMBIE: 'Baby Zombie'
 # Here are some further examples below,
-# uncomment them to take effect
-
+# uncomment them to take effect:
 #  ENDER_DRAGON: '&5&lEnder Dragon'
 #  PHANTOM: 'disabled'
 
@@ -158,7 +169,7 @@ assert-entity-validity-with-nametag-packets: true
 #     their nametags, or if the tags have not updated.
 #     By default, this is set to 6 seconds.
 #     It is not recommended that you change this setting
-#     unless you understand what you are doing
+#     unless you understand exactly what you are doing.
 # ||-------------------------------------------------------||
 nametag-auto-update-task-period: 6
 
@@ -336,23 +347,32 @@ creeper-max-damage-radius: 5
 #     design and plugin layout is different, so this section
 #     gives you near absolute control over how your mobs
 #     level. You are even given the ability to make
-#     per-mod adjustments at the end for higher flexibility
+#     per-mod adjustments at the end for higher flexibility.
+#     Note that few of these values take effect on existing
+#     levelled mobs, you may want to run '/lm kill all *' if
+#     you want to clear old levelled mobs and let the new ones
+#     spawn in.
 #
 #      fine-tuning:
 #        min-level:
-#             | The Minimum level that mobs
-#             | will naturally spawn at
+#             | The minimum level that mobs
+#             | will naturally spawn at.
+#             | Note: this value is safe to change,
+#             | avoid huge numbers. Ask a dev if unsure.
 #        max-level:
-#             | The Maximum level that mobs
-#             | will naturally spawn at
+#             | The maximum level that mobs
+#             | will naturally spawn at.
+#             | Note: this value is safe to change,
+#             | avoid huge numbers. Ask a dev if unsure.
 #        lower-mob-level-bias-factor:
 #             | This setting will make lower-level mobs
 #             | spawn more frequently when higher than 0
 #             | The value can be any number between
 #             | 0 (Disabled) or 10
 #        additions:
-#             | You can set any of these 'additions'
-#             | to 0 to Disable the particular setting
+#             | This is where LevelledMobs makes mobs more difficult.
+#             | Check the FAQ page on the Wiki to learn how it works.
+#             | Set any of these values to zero to disable it.
 #          max-health:
 #               | This is the maximum health that can be
 #               | added to a naturally generated mob
@@ -360,19 +380,20 @@ creeper-max-damage-radius: 5
 #               | settings which set artificial limits on
 #               | The max-health of a mob. Make sure
 #               | to check your server settings files for any
-#               | imposed caps, as we cannot circumvent that
+#               | imposed caps, as we cannot circumvent that.
 #          movement-speed:
 #               | This is the maximum movement
-#               | speed added to a mob
+#               | speed added to a mob.
 #               | This setting is HIGHLY sensative to any edits.
 #               | It is recommended that you make adjustments
-#               | no larger than 0.1, and do not increase the
-#               | speed beyond 0.4, as the mobs become too fast
+#               | no larger than 0.03, and do not increase the
+#               | speed beyond 0.15, as the mobs become too fast
+#               | for the Minecraft AI to be at all effective.
 #          attack-damage:
 #               | This is the maximum additional attack
-#               | damage added to mob attacks
-#               | This by default adds four hearts
-#               | of damage to every attack at max level
+#               | damage added to mob attacks.
+#               | This by default makes the highest level
+#               | mob deal 4 extra hearts of damage than normal.
 #          ranged-attack-damage:
 #               | This is the maximum additional ranged
 #               | attack damage added to mob attacks
@@ -381,12 +402,12 @@ creeper-max-damage-radius: 5
 #               | no larger than 0.25 at a time
 #          item-drop:
 #               | This is a multiplier applied to every
-#               | mob item that drops upon it's demise
+#               | mob item that drops upon their demise.
 #               | You can made additional adjustments to
-#               | specific items multiplied in customdrops.yml
+#               | specific items multiplied in customdrops.yml.
 #          xp-drop:
 #               | This is a multiplier applied to all xp
-#               | dropped by a mob upon it's demise
+#               | dropped by a mob upon their demise.
 #        custom_mob_level:
 #          EntityType:
 #               | Reference https://tinyurl.com/SpigotMCEntityTypes
@@ -418,7 +439,7 @@ fine-tuning:
 
     custom_mob_level:
 # Below represents an example of a customized PIGLIN
-# Uncomment it to take effect!
+# Un-comment it to take effect!
 #      PIGLIN:
 #        max-health: 30
 #        movement-speed: 0.2
@@ -538,15 +559,18 @@ no-level-conditions:
 # ||-------------------------------------------------------||
 entitytype-level-override:
   enabled: false
+  # NOTE: | The entities below are commented out by default and thus
+  #       | will not take effect, remove the '#' character if you
+  #       | want LM to recognise these settings.
   min-level:
-    ENDER_DRAGON: 5
-    WITHER: 3
-    BABY_ZOMBIE: 1
+  #    ENDER_DRAGON: 5
+  #    WITHER: 3
+  #    BABY_ZOMBIE: 1
   max-level:
-    ENDER_DRAGON: 7
-    WITHER: 6
-    BABY_ZOMBIE: 1
-    ZOMBIE_REINFORCEMENTS: 2
+#    ENDER_DRAGON: 7
+#    WITHER: 6
+#    BABY_ZOMBIE: 1
+#    ZOMBIE_REINFORCEMENTS: 2
 
 
 # ||-------------------------------------------------------||
@@ -581,12 +605,15 @@ entitytype-level-override:
 # ||-------------------------------------------------------||
 world-level-override:
   enabled: false
+  # NOTE: | The worlds below are commented out by default and thus
+  #       | will not take effect, remove the '#' character if you
+  #       | want LM to recognise these settings.
   min-level:
-    example_world: 1
-    example_world_the_end: 5
+  #   example_world: 1
+  #   example_world_the_end: 5
   max-level:
-    example_world: 5
-    example_world_nether: 8
+  #   example_world: 5
+  #   example_world_nether: 8
 
 
 # ||-------------------------------------------------------||
@@ -622,30 +649,6 @@ overriden-entities:
 no-drop-multipler-entities:
 
 
-# ||-------------------------------------------------------||
-# ||  ADVANCED USERS ONLY
-# ||  Assign Priority
-#
-#     There are several different settings which allow
-#     you to adjust your mobs level and stats based
-#     on the following settings, which are also in their
-#     suggested default priorities
-#
-#      ENTITY | entitytype-level-override
-#             | These settings fine-tune specific mobs
-#       WORLD | world-level-override
-#             | These settings override the minimum and
-#             | maximum levels in specific worlds
-#      GLOBAL | fine-tuning
-#             | The GLOBAL setting refers to the figures
-#             | listed in fine-tuning
-#
-# ||-------------------------------------------------------||
-assign_priority:
-  1: entity
-  2: world
-  3: global
-
 
 #
 #
@@ -664,16 +667,24 @@ assign_priority:
 #     from applying levels to the spawned creature.
 #
 #      external-compatibilites:
-#                  MYTHIC_MOBS: | Metadata: mythic_mobs
-#                   ELITE_MOBS: | Metadata: Elitemob
-#              ELITE_MOBS_NPCS: | Metadata: Elitemobs_NPC
-#        ELITE_MOBS_SUPER_MOBS: | Metadata: Supermob
-#                INFERNAL_MOBS: | Metadata: infernalMetadata
-#                     CITIZENS: | Metadata: NPC
-#                  SHOPKEEPERS: | Metadata: shopkeeper
+#              DANGEROUS_CAVES: | Metadata: 'DangerousCaves'
+#                  MYTHIC_MOBS: | Metadata: 'mythic_mobs'
+#                   ELITE_MOBS: | Metadata: 'Elitemob'
+#              ELITE_MOBS_NPCS: | Metadata: 'Elitemobs_NPC'
+#        ELITE_MOBS_SUPER_MOBS: | Metadata: 'Supermob'
+#                INFERNAL_MOBS: | Metadata: 'infernalMetadata'
+#                     CITIZENS: | Metadata: 'NPC'
+#                  SHOPKEEPERS: | Metadata: 'shopkeeper'
+#
+#  || IMPORTANT:
+#  |  If you have 'DANGEROUS_CAVES' set to 'true' below,
+#  |  the DangerousCaves plugin must have the 'add-metadata'
+#  |  option in their config set to 'true' as well, else LM
+#  |  won't know if a mob was spawned by them.
 #
 # ||-------------------------------------------------------||
 external-compatibilities:
+  DANGEROUS_CAVES: true
   MYTHIC_MOBS: true
   ELITE_MOBS: true
   ELITE_MOBS_NPCS: true
