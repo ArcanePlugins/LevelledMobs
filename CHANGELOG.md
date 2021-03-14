@@ -1,5 +1,20 @@
 # Changelog
 
+## v2.3.1 b318
+
+### Notes:
+
+* This update makes some critical fixes to a few bugs left in v2.3.0. Please update as soon as possible.
+* This update was not thoroughly tested. Production servers are recommended to quickly test this version beforehand.
+
+### Changelog:
+
+* @stumper66 fixed MythicMobs compatibility
+* @stumper66 fixed call stack with null reference.
+* @stumper66 fixed y-level and spawn-distance-levelling.
+
+***
+
 ## v2.3.0 b315
 
 ### READ! Very Important:
