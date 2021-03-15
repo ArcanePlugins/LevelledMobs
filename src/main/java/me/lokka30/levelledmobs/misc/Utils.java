@@ -135,7 +135,7 @@ public final class Utils {
         return newList;
     }
 
-    public static boolean isBabyZombie(final LivingEntity livingEntity) {
+    public static boolean isBabyMob(final LivingEntity livingEntity) {
 
         if (livingEntity instanceof Zombie) {
             // for backwards compatibility

@@ -12,28 +12,28 @@ import java.util.List;
 public class CompatibilitySubcommand implements Subcommand {
 
     @Override
-    public void parseSubcommand(LevelledMobs instance, CommandSender sender, String label, String[] args) {
+    public void parseSubcommand(LevelledMobs main, CommandSender sender, String label, String[] args) {
         if (sender.hasPermission("levelledmobs.command.compatibility")) {
             if (args.length == 1) {
-                List<String> messages = instance.messagesCfg.getStringList("command.levelledmobs.compatibility.notice");
-                messages = Utils.replaceAllInList(messages, "%prefix%", instance.configUtils.getPrefix());
+                List<String> messages = main.messagesCfg.getStringList("command.levelledmobs.compatibility.notice");
+                messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.getPrefix());
                 messages = Utils.colorizeAllInList(messages);
                 messages.forEach(sender::sendMessage);
-                instance.companion.checkCompatibility();
+                main.companion.checkCompatibility();
             } else {
-                List<String> messages = instance.messagesCfg.getStringList("command.levelledmobs.compatibility.usage");
-                messages = Utils.replaceAllInList(messages, "%prefix%", instance.configUtils.getPrefix());
+                List<String> messages = main.messagesCfg.getStringList("command.levelledmobs.compatibility.usage");
+                messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.getPrefix());
                 messages = Utils.replaceAllInList(messages, "%label%", label);
                 messages = Utils.colorizeAllInList(messages);
                 messages.forEach(sender::sendMessage);
             }
         } else {
-            instance.configUtils.sendNoPermissionMsg(sender);
+            main.configUtils.sendNoPermissionMsg(sender);
         }
     }
 
     @Override
-    public List<String> parseTabCompletions(LevelledMobs instance, CommandSender sender, String[] args) {
+    public List<String> parseTabCompletions(LevelledMobs main, CommandSender sender, String[] args) {
         // This subcommand has no tab completions.
         return null;
     }

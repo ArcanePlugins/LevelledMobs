@@ -8,17 +8,16 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
-import org.bukkit.persistence.PersistentDataType;
 
 /**
  * @author lokka30
  */
 public class EntityNametagListener implements Listener {
 
-    private final LevelledMobs instance;
+    private final LevelledMobs main;
 
-    public EntityNametagListener(final LevelledMobs instance) {
-        this.instance = instance;
+    public EntityNametagListener(final LevelledMobs main) {
+        this.main = main;
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
@@ -32,10 +31,9 @@ public class EntityNametagListener implements Listener {
                 return;
 
             // Must be a levelled mob
-            if (!livingEntity.getPersistentDataContainer().has(instance.levelManager.isLevelledKey, PersistentDataType.STRING))
-                return;
+            if (!main.levelInterface.isLevelled(livingEntity)) return;
 
-            instance.levelManager.updateNametagWithDelay(livingEntity, livingEntity.getWorld().getPlayers(), 2L);
+            main.levelManager.updateNametagWithDelay(livingEntity, livingEntity.getWorld().getPlayers(), 2L);
         }
     }
 }

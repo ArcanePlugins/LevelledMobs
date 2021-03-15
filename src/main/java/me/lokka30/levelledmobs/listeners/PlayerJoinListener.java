@@ -14,10 +14,10 @@ import java.util.List;
  */
 public class PlayerJoinListener implements Listener {
 
-    private final LevelledMobs instance;
+    private final LevelledMobs main;
 
-    public PlayerJoinListener(final LevelledMobs instance) {
-        this.instance = instance;
+    public PlayerJoinListener(final LevelledMobs main) {
+        this.main = main;
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
@@ -27,14 +27,14 @@ public class PlayerJoinListener implements Listener {
         if (!event.getPlayer().hasPermission("levelledmobs.compatibility-notice")) return;
 
         // There must be possible incompatibilities
-        if (instance.incompatibilitiesAmount == 0) return;
+        if (main.incompatibilitiesAmount == 0) return;
 
         // Must be enabled in messages cfg
-        if (!instance.messagesCfg.getBoolean("other.compatibility-notice.enabled")) return;
+        if (!main.messagesCfg.getBoolean("other.compatibility-notice.enabled")) return;
 
-        List<String> messages = instance.messagesCfg.getStringList("other.compatibility-notice.messages");
-        messages = Utils.replaceAllInList(messages, "%prefix%", instance.configUtils.getPrefix());
-        messages = Utils.replaceAllInList(messages, "%incompatibilities%", instance.incompatibilitiesAmount + "");
+        List<String> messages = main.messagesCfg.getStringList("other.compatibility-notice.messages");
+        messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.getPrefix());
+        messages = Utils.replaceAllInList(messages, "%incompatibilities%", main.incompatibilitiesAmount + "");
         messages = Utils.colorizeAllInList(messages);
         messages.forEach(event.getPlayer()::sendMessage);
     }

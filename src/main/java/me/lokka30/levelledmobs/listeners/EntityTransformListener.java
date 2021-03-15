@@ -17,17 +17,17 @@ import org.bukkit.persistence.PersistentDataType;
  */
 public class EntityTransformListener implements Listener {
 
-    private final LevelledMobs instance;
+    private final LevelledMobs main;
 
-    public EntityTransformListener(final LevelledMobs instance) {
-        this.instance = instance;
+    public EntityTransformListener(final LevelledMobs main) {
+        this.main = main;
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void onTransform(final EntityTransformEvent event) {
 
         // is level inheritance enabled?
-        if (!instance.settingsCfg.getBoolean("level-inheritance")) return;
+        if (!main.settingsCfg.getBoolean("level-inheritance")) return;
 
         // is the original entity a living entity
         if (!(event.getEntity() instanceof LivingEntity)) return;
@@ -35,10 +35,9 @@ public class EntityTransformListener implements Listener {
         final LivingEntity livingEntity = (LivingEntity) event.getEntity();
 
         // is the original entity levelled
-        if (!livingEntity.getPersistentDataContainer().has(instance.levelManager.isLevelledKey, PersistentDataType.STRING))
-            return;
+        if (!main.levelInterface.isLevelled(livingEntity)) return;
 
-        final Integer level = livingEntity.getPersistentDataContainer().get(instance.levelManager.levelKey, PersistentDataType.INTEGER);
+        final Integer level = livingEntity.getPersistentDataContainer().get(main.levelManager.levelKey, PersistentDataType.INTEGER);
         assert level != null;
 
         for (Entity transformedEntity : event.getTransformedEntities()) {
@@ -47,12 +46,12 @@ public class EntityTransformListener implements Listener {
 
             final LivingEntity transformedLivingEntity = (LivingEntity) transformedEntity;
 
-            if (!instance.levelManager.isLevellable(transformedLivingEntity)) {
-                instance.levelManager.updateNametagWithDelay(transformedLivingEntity, null, livingEntity.getWorld().getPlayers(), 1);
+            if (!main.levelManager.isLevellable(transformedLivingEntity)) {
+                main.levelManager.updateNametagWithDelay(transformedLivingEntity, null, livingEntity.getWorld().getPlayers(), 1);
                 continue;
             }
 
-            instance.levelManager.creatureSpawnListener.processMobSpawn(transformedLivingEntity, CreatureSpawnEvent.SpawnReason.CUSTOM, level, MobProcessReason.TRANSFORM, false);
+            main.levelManager.creatureSpawnListener.processMobSpawn(transformedLivingEntity, CreatureSpawnEvent.SpawnReason.CUSTOM, level, MobProcessReason.TRANSFORM, false);
         }
     }
 }

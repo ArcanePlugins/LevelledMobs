@@ -8,7 +8,6 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.persistence.PersistentDataType;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -21,10 +20,10 @@ import java.util.List;
  */
 public class EntityDeathListener implements Listener {
 
-    private final LevelledMobs instance;
+    private final LevelledMobs main;
 
-    public EntityDeathListener(final LevelledMobs instance) {
-        this.instance = instance;
+    public EntityDeathListener(final LevelledMobs main) {
+        this.main = main;
     }
 
     // These entities will be forced not to have levelled drops
@@ -38,19 +37,19 @@ public class EntityDeathListener implements Listener {
 
         final LivingEntity livingEntity = event.getEntity();
 
-        if (livingEntity.getPersistentDataContainer().has(instance.levelManager.isLevelledKey, PersistentDataType.STRING)) {
+        if (main.levelInterface.isLevelled(livingEntity)) {
 
             // Set levelled item drops
-            instance.levelManager.getLevelledItemDrops(livingEntity, event.getDrops());
+            main.levelManager.getLevelledItemDrops(livingEntity, event.getDrops());
 
             // Set levelled exp drops
             if (event.getDroppedExp() > 0) {
-                event.setDroppedExp(instance.levelManager.getLevelledExpDrops(livingEntity, event.getDroppedExp()));
+                event.setDroppedExp(main.levelManager.getLevelledExpDrops(livingEntity, event.getDroppedExp()));
             }
-        } else if (instance.settingsCfg.getBoolean("use-custom-item-drops-for-mobs")){
+        } else if (main.settingsCfg.getBoolean("use-custom-item-drops-for-mobs")) {
             final List<ItemStack> drops = new ArrayList<>();
-            final CustomDropResult result = instance.customDropsHandler.getCustomItemDrops(livingEntity, -1, drops, false, false);
-            if (result == CustomDropResult.HAS_OVERRIDE){
+            final CustomDropResult result = main.customDropsHandler.getCustomItemDrops(livingEntity, -1, drops, false, false);
+            if (result == CustomDropResult.HAS_OVERRIDE) {
                 event.getDrops().clear();
                 event.getDrops().addAll(drops);
             } else if (!drops.isEmpty())

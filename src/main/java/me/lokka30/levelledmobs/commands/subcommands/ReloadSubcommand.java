@@ -16,45 +16,45 @@ import java.util.List;
 public class ReloadSubcommand implements Subcommand {
 
     @Override
-    public void parseSubcommand(LevelledMobs instance, CommandSender sender, String label, String[] args) {
+    public void parseSubcommand(LevelledMobs main, CommandSender sender, String label, String[] args) {
         if (sender.hasPermission("levelledmobs.command.reload")) {
-            List<String> reloadStartedMsg = instance.messagesCfg.getStringList("command.levelledmobs.reload.started");
-            reloadStartedMsg = Utils.replaceAllInList(reloadStartedMsg, "%prefix%", instance.configUtils.getPrefix());
+            List<String> reloadStartedMsg = main.messagesCfg.getStringList("command.levelledmobs.reload.started");
+            reloadStartedMsg = Utils.replaceAllInList(reloadStartedMsg, "%prefix%", main.configUtils.getPrefix());
             reloadStartedMsg = Utils.colorizeAllInList(reloadStartedMsg);
             reloadStartedMsg.forEach(sender::sendMessage);
 
-            instance.companion.loadFiles();
+            main.companion.loadFiles();
 
-            List<String> reloadFinishedMsg = instance.messagesCfg.getStringList("command.levelledmobs.reload.finished");
-            reloadFinishedMsg = Utils.replaceAllInList(reloadFinishedMsg, "%prefix%", instance.configUtils.getPrefix());
+            List<String> reloadFinishedMsg = main.messagesCfg.getStringList("command.levelledmobs.reload.finished");
+            reloadFinishedMsg = Utils.replaceAllInList(reloadFinishedMsg, "%prefix%", main.configUtils.getPrefix());
             reloadFinishedMsg = Utils.colorizeAllInList(reloadFinishedMsg);
 
             if (ExternalCompatibilityManager.hasProtocolLibInstalled()) {
-                if (ExternalCompatibilityManager.hasProtocolLibInstalled() && (instance.levelManager.nametagAutoUpdateTask == null || instance.levelManager.nametagAutoUpdateTask.isCancelled()))
-                    instance.levelManager.startNametagAutoUpdateTask();
-                else if (!ExternalCompatibilityManager.hasProtocolLibInstalled() && instance.levelManager.nametagAutoUpdateTask != null && !instance.levelManager.nametagAutoUpdateTask.isCancelled())
-                    instance.levelManager.stopNametagAutoUpdateTask();
+                if (ExternalCompatibilityManager.hasProtocolLibInstalled() && (main.levelManager.nametagAutoUpdateTask == null || main.levelManager.nametagAutoUpdateTask.isCancelled()))
+                    main.levelManager.startNametagAutoUpdateTask();
+                else if (!ExternalCompatibilityManager.hasProtocolLibInstalled() && main.levelManager.nametagAutoUpdateTask != null && !main.levelManager.nametagAutoUpdateTask.isCancelled())
+                    main.levelManager.stopNametagAutoUpdateTask();
             }
 
-            if (instance.settingsCfg.getBoolean("debug-entity-damage") && !instance.configUtils.debugEntityDamageWasEnabled) {
-                instance.configUtils.debugEntityDamageWasEnabled = true;
-                Bukkit.getPluginManager().registerEvents(instance.entityDamageDebugListener, instance);
-            } else if (!instance.settingsCfg.getBoolean("debug-entity-damage") && instance.configUtils.debugEntityDamageWasEnabled) {
-                instance.configUtils.debugEntityDamageWasEnabled = false;
-                HandlerList.unregisterAll(instance.entityDamageDebugListener);
+            if (main.settingsCfg.getBoolean("debug-entity-damage") && !main.configUtils.debugEntityDamageWasEnabled) {
+                main.configUtils.debugEntityDamageWasEnabled = true;
+                Bukkit.getPluginManager().registerEvents(main.entityDamageDebugListener, main);
+            } else if (!main.settingsCfg.getBoolean("debug-entity-damage") && main.configUtils.debugEntityDamageWasEnabled) {
+                main.configUtils.debugEntityDamageWasEnabled = false;
+                HandlerList.unregisterAll(main.entityDamageDebugListener);
             }
 
-            instance.levelManager.levelNumsListCache.clear();
-            instance.levelManager.levelNumsListCacheOrder.clear();
+            main.levelManager.levelNumsListCache.clear();
+            main.levelManager.levelNumsListCacheOrder.clear();
 
             reloadFinishedMsg.forEach(sender::sendMessage);
         } else {
-            instance.configUtils.sendNoPermissionMsg(sender);
+            main.configUtils.sendNoPermissionMsg(sender);
         }
     }
 
     @Override
-    public List<String> parseTabCompletions(LevelledMobs instance, CommandSender sender, String[] args) {
+    public List<String> parseTabCompletions(LevelledMobs main, CommandSender sender, String[] args) {
         return null; //No tab completions.
     }
 }

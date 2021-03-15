@@ -11,7 +11,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
-import org.bukkit.persistence.PersistentDataType;
 
 import java.util.Collections;
 
@@ -20,10 +19,10 @@ import java.util.Collections;
  */
 public class PlayerJoinWorldNametagListener implements Listener {
 
-    private final LevelledMobs instance;
+    private final LevelledMobs main;
 
-    public PlayerJoinWorldNametagListener(final LevelledMobs instance) {
-        this.instance = instance;
+    public PlayerJoinWorldNametagListener(final LevelledMobs main) {
+        this.main = main;
     }
 
     private void updateNametagsInWorld(final Player player, final World world) {
@@ -35,15 +34,13 @@ public class PlayerJoinWorldNametagListener implements Listener {
                 if (!livingEntity.isValid()) continue;
 
                 // mob must be levelled
-                if (!livingEntity.getPersistentDataContainer().has(instance.levelManager.isLevelledKey, PersistentDataType.STRING)) {
-                    continue;
-                }
+                if (!main.levelInterface.isLevelled(livingEntity)) continue;
 
-                final String nametag = instance.levelManager.getNametag(livingEntity, false);
+                final String nametag = main.levelManager.getNametag(livingEntity, false);
 
                 //Send nametag packet
                 //This also must be delayed by 1 tick
-                instance.levelManager.updateNametagWithDelay(livingEntity, nametag, Collections.singletonList(player), 1);
+                main.levelManager.updateNametagWithDelay(livingEntity, nametag, Collections.singletonList(player), 1);
             }
         }
     }

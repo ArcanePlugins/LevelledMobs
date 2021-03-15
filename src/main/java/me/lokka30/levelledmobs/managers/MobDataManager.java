@@ -15,17 +15,17 @@ import java.util.Objects;
  */
 public class MobDataManager {
 
-    private final LevelledMobs instance;
+    private final LevelledMobs main;
 
-    public MobDataManager(final LevelledMobs instance) {
-        this.instance = instance;
+    public MobDataManager(final LevelledMobs main) {
+        this.main = main;
     }
 
     public Object getAttributeDefaultValue(final EntityType entityType, final Attribute attribute) {
         final String path = entityType.toString() + "." + attribute.toString();
 
-        if (instance.attributesCfg.contains(path)) {
-            return instance.attributesCfg.get(path);
+        if (main.attributesCfg.contains(path)) {
+            return main.attributesCfg.get(path);
         } else {
             return null;
         }
@@ -34,13 +34,13 @@ public class MobDataManager {
     public final boolean isLevelledDropManaged(final EntityType entityType, final Material material) {
         // Head drops
         if (material.toString().endsWith("_HEAD") || material.toString().endsWith("_SKULL")) {
-            if (!instance.settingsCfg.getBoolean("mobs-multiply-head-drops")) {
+            if (!main.settingsCfg.getBoolean("mobs-multiply-head-drops")) {
                 return false;
             }
         }
 
         // Check list
-        return instance.dropsCfg.getStringList(entityType.toString()).contains(material.toString());
+        return main.dropsCfg.getStringList(entityType.toString()).contains(material.toString());
     }
 
     public void setAdditionsForLevel(final LivingEntity livingEntity, final Attribute attribute, final Addition addition, final int currentLevel, final boolean useBaseValue) {
@@ -56,17 +56,17 @@ public class MobDataManager {
     }
 
     public final double getAdditionsForLevel(final LivingEntity livingEntity, final Addition addition, final int currentLevel) {
-        final int minLevel = instance.settingsCfg.getInt("fine-tuning.min-level");
-        final int maxLevel = instance.settingsCfg.getInt("fine-tuning.max-level");
+        final int minLevel = main.settingsCfg.getInt("fine-tuning.min-level");
+        final int maxLevel = main.settingsCfg.getInt("fine-tuning.max-level");
         final double range = (double) maxLevel - minLevel - 1;
         final double percent = (double) currentLevel / range;
 
-        final boolean isAdult = !(livingEntity instanceof Ageable) || ((Ageable)livingEntity).isAdult();
+        final boolean isAdult = !(livingEntity instanceof Ageable) || ((Ageable) livingEntity).isAdult();
         final String entityCheckName = isAdult ?
                 livingEntity.getName().replace(" ", "_").toUpperCase() :
                 "BABY_" + livingEntity.getName().replace(" ", "_").toUpperCase();
-        final double maxOverridenEntity = instance.settingsCfg.getDouble(addition.getMaxAdditionConfigPath(entityCheckName), -100.0); // in case negative number are allowed
-        final double max = instance.settingsCfg.getDouble(addition.getMaxAdditionConfigPath());
+        final double maxOverridenEntity = main.settingsCfg.getDouble(addition.getMaxAdditionConfigPath(entityCheckName), -100.0); // in case negative number are allowed
+        final double max = main.settingsCfg.getDouble(addition.getMaxAdditionConfigPath());
         //Utils.logger.info(String.format("cl: %s, lmin: %s, lmax: %s, max: %s, percent: %s, test: %s", currentLevel, minLevel, maxLevel, max, percent, addition.getMaxAdditionConfigPath()));
 
         return maxOverridenEntity > -100.0 ?

@@ -13,19 +13,19 @@ import java.util.TreeSet;
  * @author stumper66
  */
 public class CustomItemDrop implements Cloneable {
-    public int minLevel;
-    public int maxLevel;
-    public int groupId;
-    public int customModelDataId;
-    public double dropChance;
+    public int minLevel = -1;
+    public int maxLevel = -1;
+    public int groupId = -1;
+    public int customModelDataId = -1;
+    public double dropChance = 0.2; // default drop chance if not specified
     public boolean noMultiplier;
     public boolean noSpawner;
     public boolean isEquipped;
     public String customName;
     public List<String> lore;
-    public final Set<String> excludedMobs;
+    public final Set<String> excludedMobs = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
     private int damage;
-    private int amount;
+    private int amount = 1;
     private boolean hasAmountRange;
     private boolean hasDamageRange;
     private int amountRangeMin;
@@ -35,22 +35,16 @@ public class CustomItemDrop implements Cloneable {
     private Material material;
     private ItemStack itemStack;
 
-    public CustomItemDrop(){
-        this.minLevel = -1;
-        this.maxLevel = -1;
-        this.groupId = -1;
-        this.customModelDataId = -1;
-        this.amount = 1;
-        this.dropChance = 0.2; // default drop chance if not specified
-        this.excludedMobs = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+    public CustomItemDrop() {
     }
 
-    public CustomItemDrop cloneItem(){
+    public CustomItemDrop cloneItem() {
         CustomItemDrop copy = null;
         try {
             copy = (CustomItemDrop) super.clone();
             copy.itemStack = this.itemStack.clone();
-        } catch (Exception ignored){ }
+        } catch (Exception ignored) {
+        }
 
         return copy;
     }

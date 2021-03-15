@@ -23,7 +23,7 @@ import java.util.*;
 public class SummonSubcommand implements Subcommand {
 
     @Override
-    public void parseSubcommand(final LevelledMobs instance, final CommandSender sender, final String label, final String[] args) {
+    public void parseSubcommand(final LevelledMobs main, final CommandSender sender, final String label, final String[] args) {
         boolean useOverride = false;
         final List<String> useArgs = new ArrayList<>();
         for (final String arg : args) {
@@ -35,17 +35,17 @@ public class SummonSubcommand implements Subcommand {
 
         final String[] useArgs2 = new String[useArgs.size()];
         useArgs.toArray(useArgs2);
-        parseSubcommand2(instance, sender, label, useArgs2, useOverride);
+        parseSubcommand2(main, sender, label, useArgs2, useOverride);
     }
 
-    private void parseSubcommand2(final LevelledMobs instance, final CommandSender sender, final String label, final String[] args, final boolean override) {
+    private void parseSubcommand2(final LevelledMobs main, final CommandSender sender, final String label, final String[] args, final boolean override) {
         if (!sender.hasPermission("levelledmobs.command.summon")) {
-            instance.configUtils.sendNoPermissionMsg(sender);
+            main.configUtils.sendNoPermissionMsg(sender);
             return;
         }
 
         if (args.length < 4) {
-            sendMainUsage(sender, label, instance);
+            sendMainUsage(sender, label, main);
             return;
         }
 
@@ -53,8 +53,8 @@ public class SummonSubcommand implements Subcommand {
         try {
             amount = Integer.parseInt(args[1]);
         } catch (NumberFormatException ex) {
-            List<String> messages = instance.messagesCfg.getStringList("command.levelledmobs.summon.invalid-amount");
-            messages = Utils.replaceAllInList(messages, "%prefix%", instance.configUtils.getPrefix());
+            List<String> messages = main.messagesCfg.getStringList("command.levelledmobs.summon.invalid-amount");
+            messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.getPrefix());
             messages = Utils.colorizeAllInList(messages);
             messages = Utils.replaceAllInList(messages, "%amount%", args[1]); // This is after colorize so that args[1] is not colorized.
             messages.forEach(sender::sendMessage);
@@ -65,8 +65,8 @@ public class SummonSubcommand implements Subcommand {
         try {
             entityType = EntityType.valueOf(args[2].toUpperCase());
         } catch (IllegalArgumentException ex) {
-            List<String> messages = instance.messagesCfg.getStringList("command.levelledmobs.summon.invalid-entity-type");
-            messages = Utils.replaceAllInList(messages, "%prefix%", instance.configUtils.getPrefix());
+            List<String> messages = main.messagesCfg.getStringList("command.levelledmobs.summon.invalid-entity-type");
+            messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.getPrefix());
             messages = Utils.colorizeAllInList(messages);
             messages = Utils.replaceAllInList(messages, "%entityType%", args[2]); // This is after colorize so that args[2] is not colorized.
             messages.forEach(sender::sendMessage);
@@ -77,8 +77,8 @@ public class SummonSubcommand implements Subcommand {
         try {
             level = Integer.parseInt(args[3]);
         } catch (NumberFormatException ex) {
-            List<String> messages = instance.messagesCfg.getStringList("command.levelledmobs.summon.invalid-level");
-            messages = Utils.replaceAllInList(messages, "%prefix%", instance.configUtils.getPrefix());
+            List<String> messages = main.messagesCfg.getStringList("command.levelledmobs.summon.invalid-level");
+            messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.getPrefix());
             messages = Utils.colorizeAllInList(messages);
             messages = Utils.replaceAllInList(messages, "%level%", args[3]); // This is after colorize so that args[3] is not colorized.
             messages.forEach(sender::sendMessage);
@@ -98,8 +98,8 @@ public class SummonSubcommand implements Subcommand {
                     summonType = SummonType.AT_LOCATION;
                     break;
                 default:
-                    List<String> messages = instance.messagesCfg.getStringList("command.levelledmobs.summon.invalid-summon-type");
-                    messages = Utils.replaceAllInList(messages, "%prefix%", instance.configUtils.getPrefix());
+                    List<String> messages = main.messagesCfg.getStringList("command.levelledmobs.summon.invalid-summon-type");
+                    messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.getPrefix());
                     messages = Utils.colorizeAllInList(messages);
                     messages = Utils.replaceAllInList(messages, "%summonType%", args[4]); // This is after colorize so args[4] is not colorized.
                     messages.forEach(sender::sendMessage);
@@ -113,17 +113,17 @@ public class SummonSubcommand implements Subcommand {
 
                 if (args.length == 4 || args.length == 5) {
 
-                    summonMobs(instance, entityType, amount, sender, level, player.getLocation(), summonType, player, override);
+                    summonMobs(main, entityType, amount, sender, level, player.getLocation(), summonType, player, override);
                 } else {
-                    List<String> messages = instance.messagesCfg.getStringList("command.levelledmobs.summon.here.usage");
-                    messages = Utils.replaceAllInList(messages, "%prefix%", instance.configUtils.getPrefix());
+                    List<String> messages = main.messagesCfg.getStringList("command.levelledmobs.summon.here.usage");
+                    messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.getPrefix());
                     messages = Utils.replaceAllInList(messages, "%label%", label);
                     messages = Utils.colorizeAllInList(messages);
                     messages.forEach(sender::sendMessage);
                 }
             } else {
-                List<String> messages = instance.messagesCfg.getStringList("command.levelledmobs.summon.invalid-summon-type-console");
-                messages = Utils.replaceAllInList(messages, "%prefix%", instance.configUtils.getPrefix());
+                List<String> messages = main.messagesCfg.getStringList("command.levelledmobs.summon.invalid-summon-type-console");
+                messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.getPrefix());
                 messages = Utils.colorizeAllInList(messages);
                 messages.forEach(sender::sendMessage);
             }
@@ -143,18 +143,18 @@ public class SummonSubcommand implements Subcommand {
                 }
 
                 if (offline) {
-                    List<String> messages = instance.messagesCfg.getStringList("common.player-offline");
-                    messages = Utils.replaceAllInList(messages, "%prefix%", instance.configUtils.getPrefix());
+                    List<String> messages = main.messagesCfg.getStringList("common.player-offline");
+                    messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.getPrefix());
                     messages = Utils.colorizeAllInList(messages);
                     messages = Utils.replaceAllInList(messages, "%player%", args[5]); // This is after colorize so that args[5] is not colorized.
                     messages.forEach(sender::sendMessage);
                     return;
                 }
 
-                summonMobs(instance, entityType, amount, sender, level, target.getLocation(), summonType, target, override);
+                summonMobs(main, entityType, amount, sender, level, target.getLocation(), summonType, target, override);
             } else {
-                List<String> messages = instance.messagesCfg.getStringList("command.levelledmobs.summon.atPlayer.usage");
-                messages = Utils.replaceAllInList(messages, "%prefix%", instance.configUtils.getPrefix());
+                List<String> messages = main.messagesCfg.getStringList("command.levelledmobs.summon.atPlayer.usage");
+                messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.getPrefix());
                 messages = Utils.replaceAllInList(messages, "%label%", label);
                 messages = Utils.colorizeAllInList(messages);
                 messages.forEach(sender::sendMessage);
@@ -168,8 +168,8 @@ public class SummonSubcommand implements Subcommand {
                         final Player player = (Player) sender;
                         worldName = player.getWorld().getName();
                     } else {
-                        List<String> messages = instance.messagesCfg.getStringList("command.levelledmobs.summon.atLocation.usage-console");
-                        messages = Utils.replaceAllInList(messages, "%prefix%", instance.configUtils.getPrefix());
+                        List<String> messages = main.messagesCfg.getStringList("command.levelledmobs.summon.atLocation.usage-console");
+                        messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.getPrefix());
                         messages = Utils.replaceAllInList(messages, "%label%", label);
                         messages = Utils.colorizeAllInList(messages);
                         messages.forEach(sender::sendMessage);
@@ -179,8 +179,8 @@ public class SummonSubcommand implements Subcommand {
                     World world = Bukkit.getWorld(args[8]);
 
                     if (world == null) {
-                        List<String> messages = instance.messagesCfg.getStringList("command.levelledmobs.summon.atLocation.invalid-world");
-                        messages = Utils.replaceAllInList(messages, "%prefix%", instance.configUtils.getPrefix());
+                        List<String> messages = main.messagesCfg.getStringList("command.levelledmobs.summon.atLocation.invalid-world");
+                        messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.getPrefix());
                         messages = Utils.colorizeAllInList(messages);
                         messages = Utils.replaceAllInList(messages, "%world%", args[8]); //This is after colorize so that args[8] is not colorized.
                         messages.forEach(sender::sendMessage);
@@ -193,16 +193,16 @@ public class SummonSubcommand implements Subcommand {
                 Location location = getRelativeLocation(sender, args[5], args[6], args[7], worldName);
 
                 if (location == null) {
-                    List<String> messages = instance.messagesCfg.getStringList("command.levelledmobs.summon.atLocation.invalid-location");
-                    messages = Utils.replaceAllInList(messages, "%prefix%", instance.configUtils.getPrefix());
+                    List<String> messages = main.messagesCfg.getStringList("command.levelledmobs.summon.atLocation.invalid-location");
+                    messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.getPrefix());
                     messages = Utils.colorizeAllInList(messages);
                     messages.forEach(sender::sendMessage);
                 } else {
-                    summonMobs(instance, entityType, amount, sender, level, location, summonType, null, override);
+                    summonMobs(main, entityType, amount, sender, level, location, summonType, null, override);
                 }
             } else {
-                List<String> messages = instance.messagesCfg.getStringList("command.levelledmobs.summon.atLocation.usage");
-                messages = Utils.replaceAllInList(messages, "%prefix%", instance.configUtils.getPrefix());
+                List<String> messages = main.messagesCfg.getStringList("command.levelledmobs.summon.atLocation.usage");
+                messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.getPrefix());
                 messages = Utils.replaceAllInList(messages, "%label%", label);
                 messages = Utils.colorizeAllInList(messages);
                 messages.forEach(sender::sendMessage);
@@ -211,7 +211,7 @@ public class SummonSubcommand implements Subcommand {
     }
 
     @Override
-    public List<String> parseTabCompletions(final LevelledMobs instance, final CommandSender sender, final String[] args) {
+    public List<String> parseTabCompletions(final LevelledMobs main, final CommandSender sender, final String[] args) {
 
         // len:    1      2        3        4       5          6            7   8     9     10
         // arg:    0      1        2        3       4          5            6   7     8     9
@@ -294,30 +294,30 @@ public class SummonSubcommand implements Subcommand {
         AT_LOCATION
     }
 
-    private void sendMainUsage(final CommandSender sender, final String label, final LevelledMobs instance) {
+    private void sendMainUsage(final CommandSender sender, final String label, final LevelledMobs main) {
 
-        List<String> messages = instance.messagesCfg.getStringList("command.levelledmobs.summon.usage");
-        messages = Utils.replaceAllInList(messages, "%prefix%", instance.configUtils.getPrefix());
+        List<String> messages = main.messagesCfg.getStringList("command.levelledmobs.summon.usage");
+        messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.getPrefix());
         messages = Utils.replaceAllInList(messages, "%label%", label);
         messages = Utils.colorizeAllInList(messages);
         messages.forEach(sender::sendMessage);
     }
 
-    private void summonMobs(final LevelledMobs instance, final EntityType entityType, int amount, final CommandSender sender,
+    private void summonMobs(final LevelledMobs main, final EntityType entityType, int amount, final CommandSender sender,
                             int level, Location location, final SummonType summonType, final Player target, final boolean override) {
-        if (override || instance.levelManager.isLevellable(entityType)) {
+        if (override || main.levelManager.isLevellable(entityType)) {
 
             if (location == null || location.getWorld() == null) {
-                List<String> messages = instance.messagesCfg.getStringList("command.levelledmobs.summon.invalid-location");
-                messages = Utils.replaceAllInList(messages, "%prefix%", instance.configUtils.getPrefix());
+                List<String> messages = main.messagesCfg.getStringList("command.levelledmobs.summon.invalid-location");
+                messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.getPrefix());
                 messages = Utils.colorizeAllInList(messages);
                 messages.forEach(sender::sendMessage);
                 return;
             }
 
             if (amount < 1) {
-                List<String> messages = instance.messagesCfg.getStringList("command.levelledmobs.summon.amount-limited.min");
-                messages = Utils.replaceAllInList(messages, "%prefix%", instance.configUtils.getPrefix());
+                List<String> messages = main.messagesCfg.getStringList("command.levelledmobs.summon.amount-limited.min");
+                messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.getPrefix());
                 messages = Utils.colorizeAllInList(messages);
                 messages.forEach(sender::sendMessage);
             }
@@ -326,14 +326,14 @@ public class SummonSubcommand implements Subcommand {
             if (amount > maxAmount) {
                 amount = maxAmount;
 
-                List<String> messages = instance.messagesCfg.getStringList("command.levelledmobs.summon.amount-limited.max");
-                messages = Utils.replaceAllInList(messages, "%prefix%", instance.configUtils.getPrefix());
+                List<String> messages = main.messagesCfg.getStringList("command.levelledmobs.summon.amount-limited.max");
+                messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.getPrefix());
                 messages = Utils.replaceAllInList(messages, "%maxAmount%", maxAmount + "");
                 messages = Utils.colorizeAllInList(messages);
                 messages.forEach(sender::sendMessage);
             }
 
-            final int[] levels = instance.levelManager.getMinAndMaxLevels(null, entityType, true, location.getWorld().getName(), null, CreatureSpawnEvent.SpawnReason.CUSTOM);
+            final int[] levels = main.levelManager.getMinAndMaxLevels(null, entityType, true, location.getWorld().getName(), null, CreatureSpawnEvent.SpawnReason.CUSTOM);
             final int minLevel = levels[0];
             final int maxLevel = levels[1];
 
@@ -342,8 +342,8 @@ public class SummonSubcommand implements Subcommand {
             if (level < minLevel && !sender.hasPermission("levelledmobs.command.summon.bypass-level-limit") && !override) {
                 level = minLevel;
 
-                List<String> messages = instance.messagesCfg.getStringList("command.levelledmobs.summon.level-limited.min");
-                messages = Utils.replaceAllInList(messages, "%prefix%", instance.configUtils.getPrefix());
+                List<String> messages = main.messagesCfg.getStringList("command.levelledmobs.summon.level-limited.min");
+                messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.getPrefix());
                 messages = Utils.replaceAllInList(messages, "%minLevel%", minLevel + "");
                 messages = Utils.colorizeAllInList(messages);
                 messages.forEach(sender::sendMessage);
@@ -353,8 +353,8 @@ public class SummonSubcommand implements Subcommand {
             if (level > maxLevel && !sender.hasPermission("levelledmobs.command.summon.bypass-level-limit") && !override) {
                 level = maxLevel;
 
-                List<String> messages = instance.messagesCfg.getStringList("command.levelledmobs.summon.level-limited.max");
-                messages = Utils.replaceAllInList(messages, "%prefix%", instance.configUtils.getPrefix());
+                List<String> messages = main.messagesCfg.getStringList("command.levelledmobs.summon.level-limited.max");
+                messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.getPrefix());
                 messages = Utils.replaceAllInList(messages, "%maxLevel%", maxLevel + "");
                 messages = Utils.colorizeAllInList(messages);
                 messages.forEach(sender::sendMessage);
@@ -365,7 +365,7 @@ public class SummonSubcommand implements Subcommand {
             }
 
             if (summonType == SummonType.HERE || summonType == SummonType.AT_PLAYER) {
-                final int distFromPlayer = instance.settingsCfg.getInt("summon-command-spawn-distance-from-player", 5);
+                final int distFromPlayer = main.settingsCfg.getInt("summon-command-spawn-distance-from-player", 5);
                 if (distFromPlayer > 0) {
                     int useDistFromPlayer = distFromPlayer;
                     final double direction = target.getEyeLocation().getYaw();
@@ -388,16 +388,16 @@ public class SummonSubcommand implements Subcommand {
 
             for (int i = 0; i < amount; i++) {
                 Entity entity = Objects.requireNonNull(location.getWorld()).spawnEntity(location, entityType);
-                final int mobLevel = instance.levelManager.creatureSpawnListener.processMobSpawn(
+                final int mobLevel = main.levelManager.creatureSpawnListener.processMobSpawn(
                         (LivingEntity) entity, CreatureSpawnEvent.SpawnReason.CUSTOM, level, MobProcessReason.SUMMON, override);
-                if (mobLevel >= 0 && instance.settingsCfg.getBoolean("use-custom-item-drops-for-mobs"))
-                    instance.levelManager.creatureSpawnListener.processMobEquipment((LivingEntity) entity, mobLevel);
+                if (mobLevel >= 0 && main.settingsCfg.getBoolean("use-custom-item-drops-for-mobs"))
+                    main.levelManager.creatureSpawnListener.processMobEquipment((LivingEntity) entity, mobLevel);
             }
 
             switch (summonType) {
                 case HERE:
-                    List<String> hereSuccessmessages = instance.messagesCfg.getStringList("command.levelledmobs.summon.here.success");
-                    hereSuccessmessages = Utils.replaceAllInList(hereSuccessmessages, "%prefix%", instance.configUtils.getPrefix());
+                    List<String> hereSuccessmessages = main.messagesCfg.getStringList("command.levelledmobs.summon.here.success");
+                    hereSuccessmessages = Utils.replaceAllInList(hereSuccessmessages, "%prefix%", main.configUtils.getPrefix());
                     hereSuccessmessages = Utils.replaceAllInList(hereSuccessmessages, "%amount%", amount + "");
                     hereSuccessmessages = Utils.replaceAllInList(hereSuccessmessages, "%level%", level + "");
                     hereSuccessmessages = Utils.replaceAllInList(hereSuccessmessages, "%entity%", entityType.toString());
@@ -406,8 +406,8 @@ public class SummonSubcommand implements Subcommand {
                     break;
 
                 case AT_LOCATION:
-                    List<String> atLocationSuccessMessages = instance.messagesCfg.getStringList("command.levelledmobs.summon.atLocation.success");
-                    atLocationSuccessMessages = Utils.replaceAllInList(atLocationSuccessMessages, "%prefix%", instance.configUtils.getPrefix());
+                    List<String> atLocationSuccessMessages = main.messagesCfg.getStringList("command.levelledmobs.summon.atLocation.success");
+                    atLocationSuccessMessages = Utils.replaceAllInList(atLocationSuccessMessages, "%prefix%", main.configUtils.getPrefix());
                     atLocationSuccessMessages = Utils.replaceAllInList(atLocationSuccessMessages, "%amount%", amount + "");
                     atLocationSuccessMessages = Utils.replaceAllInList(atLocationSuccessMessages, "%level%", level + "");
                     atLocationSuccessMessages = Utils.replaceAllInList(atLocationSuccessMessages, "%entity%", entityType.toString());
@@ -420,8 +420,8 @@ public class SummonSubcommand implements Subcommand {
                     break;
 
                 case AT_PLAYER:
-                    List<String> atPlayerSuccessMessages = instance.messagesCfg.getStringList("command.levelledmobs.summon.atPlayer.success");
-                    atPlayerSuccessMessages = Utils.replaceAllInList(atPlayerSuccessMessages, "%prefix%", instance.configUtils.getPrefix());
+                    List<String> atPlayerSuccessMessages = main.messagesCfg.getStringList("command.levelledmobs.summon.atPlayer.success");
+                    atPlayerSuccessMessages = Utils.replaceAllInList(atPlayerSuccessMessages, "%prefix%", main.configUtils.getPrefix());
                     atPlayerSuccessMessages = Utils.replaceAllInList(atPlayerSuccessMessages, "%amount%", amount + "");
                     atPlayerSuccessMessages = Utils.replaceAllInList(atPlayerSuccessMessages, "%level%", level + "");
                     atPlayerSuccessMessages = Utils.replaceAllInList(atPlayerSuccessMessages, "%entity%", entityType.toString());
@@ -434,8 +434,8 @@ public class SummonSubcommand implements Subcommand {
                     throw new IllegalStateException("Unexpected SummonType value of " + summonType.toString() + "!");
             }
         } else {
-            List<String> messages = instance.messagesCfg.getStringList("command.levelledmobs.summon.not-levellable");
-            messages = Utils.replaceAllInList(messages, "%prefix%", instance.configUtils.getPrefix());
+            List<String> messages = main.messagesCfg.getStringList("command.levelledmobs.summon.not-levellable");
+            messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.getPrefix());
             messages = Utils.replaceAllInList(messages, "%entity%", entityType.toString());
             messages = Utils.colorizeAllInList(messages);
             messages.forEach(sender::sendMessage);
