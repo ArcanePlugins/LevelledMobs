@@ -264,10 +264,7 @@ level-inheritance: true
 # ||-------------------------------------------------------||
 spawn-distance-levelling:
   active: false
-  variance:
-    enabled: true
-    min: 0
-    max: 2
+  variance: 2
   increase-level-distance: 200
   start-distance: 0
 

@@ -169,51 +169,18 @@ public class LevelManager {
             debugInfo.maxLevel = maxLevel;
         }
 
-        //Get distance between entity spawn point and world spawn
-        final int entityDistance = (int) livingEntity.getWorld().getSpawnLocation().distance(livingEntity.getLocation());
+        final int distanceFromSpawn = (int) livingEntity.getWorld().getSpawnLocation().distance(livingEntity.getLocation());
+        final int startDistance = main.settingsCfg.getInt("spawn-distance-levelling.start-distance", 0);
+        final int levelDistance = Math.max(distanceFromSpawn - startDistance, 0);
+        final int increaseLevelDistance = main.settingsCfg.getInt("spawn-distance-levelling.increase-level-distance", 200);
 
-        //Make mobs start leveling from start distance
-        int levelDistance = entityDistance - main.settingsCfg.getInt("spawn-distance-levelling.start-distance");
-        if (levelDistance < 0) levelDistance = 0;
+        int variance = main.settingsCfg.getInt("spawn-distance-levelling.variance", 2);
+        if (variance != 0) {
+            variance = ThreadLocalRandom.current().nextInt(0, variance + 1);
+        }
 
         //Get the level thats meant to be at a given distance
-        int finalLevel = (levelDistance / main.settingsCfg.getInt("spawn-distance-levelling.increase-level-distance")) + minLevel;
-
-        //Check if there should be a variance in level
-        if (main.settingsCfg.getBoolean("spawn-distance-levelling.variance.enabled")) {
-            //The maximum amount of variation.
-            final int maxVariation = main.settingsCfg.getInt("spawn-distance-levelling.variance.max");
-
-            //A random number between min and max which determines the amount of variation that will take place
-            final int change = ThreadLocalRandom.current().nextInt(0, maxVariation + 1);
-
-            boolean useOnlyNegative = false;
-
-            if (finalLevel >= maxLevel) {
-                finalLevel = maxLevel;
-                useOnlyNegative = true;
-            } else if (finalLevel <= minLevel) {
-                finalLevel = minLevel;
-            }
-
-            //Start variation. First check if variation is positive or negative towards the original level amount.
-            if (!useOnlyNegative || ThreadLocalRandom.current().nextBoolean()) {
-                //Positive. Add the variation to the final level
-                finalLevel = finalLevel + change;
-            } else {
-                //Negative. Subtract the variation from the final level
-                finalLevel = finalLevel - change;
-            }
-        }
-
-        //Ensure the final level is within level min/max caps
-        if (finalLevel > maxLevel) {
-            finalLevel = maxLevel;
-        } else if (finalLevel < minLevel) {
-            finalLevel = minLevel;
-        }
-
-        return finalLevel;
+        return Math.min((levelDistance / increaseLevelDistance) + minLevel + variance, maxLevel);
     }
 
     // this is now the main entry point that determines the level for all criteria
@@ -224,25 +191,30 @@ public class LevelManager {
         final int minLevel = levels[0];
         final int maxLevel = levels[1];
 
-        // option 2: y distance levelling
+        // system 2: y distance levelling
         if (main.settingsCfg.getBoolean("y-distance-levelling.active")) {
             return generateYCoordinateLevel(livingEntity.getLocation().getBlockY(), minLevel, maxLevel);
         }
 
-        // option 3: spawn distance levelling
+        // system 3: spawn distance levelling
         if (main.settingsCfg.getBoolean("spawn-distance-levelling.active")) {
             return generateDistanceFromSpawnLevel(livingEntity, debugInfo, spawnReason, minLevel, maxLevel);
         }
 
+        // system 1: random levelling
         int biasFactor = main.settingsCfg.getInt("fine-tuning.lower-mob-level-bias-factor", 0);
 
-        if (minLevel == maxLevel)
+        if (minLevel == maxLevel) {
             return minLevel;
-        else if (biasFactor > 0) {
-            if (biasFactor > 10) biasFactor = 10;
+        } else if (biasFactor > 0) {
+            if (biasFactor > 10) {
+                biasFactor = 10;
+            }
+
             return generateLevelWithBias(minLevel, maxLevel, biasFactor);
-        } else
+        } else {
             return ThreadLocalRandom.current().nextInt(minLevel, maxLevel + 1);
+        }
     }
 
     public int[] getMinAndMaxLevels(final LivingEntity le, final EntityType entityType, final boolean isAdultEntity, final String worldName,
@@ -376,7 +348,7 @@ public class LevelManager {
             useLevel = maxLevel - useLevel + 1;
         }
 
-        if (variance > 0){
+        if (variance > 0) {
             boolean useOnlyNegative = false;
 
             if (useLevel >= maxLevel) {
@@ -388,39 +360,42 @@ public class LevelManager {
 
             final int change = ThreadLocalRandom.current().nextInt(0, variance + 1);
 
-            //Start variation. First check if variation is positive or negative towards the original level amount.
+            // Start variation. First check if variation is positive or negative towards the original level amount.
             if (!useOnlyNegative || ThreadLocalRandom.current().nextBoolean()) {
-                //Positive. Add the variation to the final level
+                // Positive. Add the variation to the final level
                 useLevel += change;
             } else {
-                //Negative. Subtract the variation from the final level
+                // Negative. Subtract the variation from the final level
                 useLevel -= change;
             }
         }
 
-        if (useLevel < minLevel) useLevel = minLevel;
-        else if (useLevel > maxLevel) useLevel = maxLevel;
+        if (useLevel < minLevel) {
+            useLevel = minLevel;
+        } else if (useLevel > maxLevel) {
+            useLevel = maxLevel;
+        }
 
         return useLevel;
     }
 
-    private int generateLevelWithBias(final int minLevel, final int maxLevel, final int factor){
+    private int generateLevelWithBias(final int minLevel, final int maxLevel, final int factor) {
 
         LevelNumbersWithBias levelNum = new LevelNumbersWithBias(minLevel, maxLevel, factor);
 
-        if (this.levelNumsListCache.containsKey(levelNum)) {
-            levelNum = this.levelNumsListCache.get(levelNum);
+        if (levelNumsListCache.containsKey(levelNum)) {
+            levelNum = levelNumsListCache.get(levelNum);
         } else {
             levelNum = new LevelNumbersWithBias(minLevel, maxLevel, factor);
             levelNum.populateData();
-            this.levelNumsListCache.put(levelNum, levelNum);
-            this.levelNumsListCacheOrder.addLast(levelNum);
+            levelNumsListCache.put(levelNum, levelNum);
+            levelNumsListCacheOrder.addLast(levelNum);
         }
 
-        if (this.levelNumsListCache.size() > maxLevelNumsCache) {
-            LevelNumbersWithBias oldest = this.levelNumsListCacheOrder.getFirst();
-            this.levelNumsListCache.remove(oldest);
-            this.levelNumsListCacheOrder.removeFirst();
+        if (levelNumsListCache.size() > maxLevelNumsCache) {
+            LevelNumbersWithBias oldest = levelNumsListCacheOrder.getFirst();
+            levelNumsListCache.remove(oldest);
+            levelNumsListCacheOrder.removeFirst();
         }
 
         return levelNum.getNumberWithinLimits();

@@ -33,10 +33,15 @@ public class CreatureSpawnListener implements Listener {
         this.main = main;
     }
 
+    /**
+     * This listener handles death nametags
+     *
+     * @param event PlayerDeathEvent
+     */
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void onPlayerDeath(final PlayerDeathEvent event) {
-        String nametag = main.settingsCfg.getString("creature-death-nametag", "&8[&7Level %level%&8 | &f%displayname%&8]");
-        if (Utils.isNullOrEmpty(nametag))
+        String deathNametag = main.settingsCfg.getString("creature-death-nametag", "&8[&7Level %level%&8 | &f%displayname%&8]");
+        if (Utils.isNullOrEmpty(deathNametag))
             return; // if they want retain the stock message they are configure it with an empty string
 
         final EntityDamageEvent entityDamageEvent = event.getEntity().getLastDamageCause();
@@ -48,24 +53,24 @@ public class CreatureSpawnListener implements Listener {
         LivingEntity killer;
 
         if (damager instanceof Projectile) {
-            killer = (LivingEntity) ((Projectile)damager).getShooter();
-        } else if (!(damager instanceof LivingEntity)) return;
-        else{
+            killer = (LivingEntity) ((Projectile) damager).getShooter();
+        } else if (!(damager instanceof LivingEntity)) {
+            return;
+        } else {
             killer = (LivingEntity) damager;
         }
 
         if (killer == null) return;
         if (!main.levelInterface.isLevelled(killer)) return;
 
-        final String newMessage = Utils.replaceEx(event.getDeathMessage(), killer.getName(), main.levelManager.getNametag(killer, true));
-        event.setDeathMessage(newMessage);
+        event.setDeathMessage(Utils.replaceEx(event.getDeathMessage(), killer.getName(), main.levelManager.getNametag(killer, true)));
     }
 
     /**
      * This listens for entities that are not passed thrrough CreatureSpawnEvent,
      * such as Phantoms and Ender Dragons, which server owners may want to have levelled.
      *
-     * @param event EntitySpawnEvent, the event to listen to
+     * @param event EntitySpawnEvent
      */
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void onEntitySpawn(final EntitySpawnEvent event) {
@@ -294,8 +299,4 @@ public class CreatureSpawnListener implements Listener {
             }
         }
     }
-
-    //Generates a level.
-    //Uses ThreadLocalRandom.current().nextInt(min, max + 1). + 1 is because ThreadLocalRandom is usually exclusive of the uppermost value.
-
 }

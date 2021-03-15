@@ -28,8 +28,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
-// I sincerely apologise to whoever is reading this code. - lokka30
-
 /**
  * This subcommand is considered dangerous as it spawns in all types of 'living entities' on the first loaded world at coordinates (0, 512, 0). It also freezes the server for a moment.
  *
