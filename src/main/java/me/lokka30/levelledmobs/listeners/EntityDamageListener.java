@@ -19,10 +19,10 @@ import java.util.Objects;
  */
 public class EntityDamageListener implements Listener {
 
-    private final LevelledMobs instance;
+    private final LevelledMobs main;
 
-    public EntityDamageListener(final LevelledMobs instance) {
-        this.instance = instance;
+    public EntityDamageListener(final LevelledMobs main) {
+        this.main = main;
     }
 
     // When the mob is damaged, update their nametag.
@@ -34,11 +34,10 @@ public class EntityDamageListener implements Listener {
             LivingEntity livingEntity = (LivingEntity) entity;
 
             //Make sure the mob is levelled
-            if (!livingEntity.getPersistentDataContainer().has(instance.levelManager.isLevelledKey, PersistentDataType.STRING))
-                return;
+            if (!main.levelInterface.isLevelled(livingEntity)) return;
 
             // Update their nametag with a 1 tick delay so that their health after the damage is shown
-            instance.levelManager.updateNametagWithDelay(livingEntity, livingEntity.getWorld().getPlayers(), 1);
+            main.levelManager.updateNametagWithDelay(livingEntity, livingEntity.getWorld().getPlayers(), 1);
         }
     }
 
@@ -49,18 +48,16 @@ public class EntityDamageListener implements Listener {
             final Projectile projectile = (Projectile) e.getDamager();
             if (projectile.getShooter() instanceof LivingEntity) {
                 final LivingEntity livingEntity = (LivingEntity) projectile.getShooter();
-                if (instance.levelManager.isLevellable(livingEntity)) {
+                if (main.levelManager.isLevellable(livingEntity)) {
 
                     //if the entity doesn't contain a level, skip this.
-                    if (livingEntity.getPersistentDataContainer().get(instance.levelManager.isLevelledKey, PersistentDataType.STRING) == null) {
-                        return;
-                    }
+                    if (!main.levelInterface.isLevelled(livingEntity)) return;
 
                     //get their level
-                    final int level = Objects.requireNonNull(livingEntity.getPersistentDataContainer().get(instance.levelManager.levelKey, PersistentDataType.INTEGER));
+                    final int level = Objects.requireNonNull(livingEntity.getPersistentDataContainer().get(main.levelManager.levelKey, PersistentDataType.INTEGER));
 
                     //set their damage
-                    e.setDamage(e.getDamage() + instance.mobDataManager.getAdditionsForLevel(livingEntity, Addition.CUSTOM_RANGED_ATTACK_DAMAGE, level));
+                    e.setDamage(e.getDamage() + main.mobDataManager.getAdditionsForLevel(livingEntity, Addition.CUSTOM_RANGED_ATTACK_DAMAGE, level));
                 }
             }
         }

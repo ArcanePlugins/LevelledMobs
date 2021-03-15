@@ -43,51 +43,51 @@ public class GenerateMobDataSubcommand implements Subcommand {
     private boolean acknowledged = false;
 
     @Override
-    public void parseSubcommand(LevelledMobs instance, CommandSender sender, String label, String[] args) {
+    public void parseSubcommand(LevelledMobs main, CommandSender sender, String label, String[] args) {
         if (sender instanceof ConsoleCommandSender) {
             if (args.length == 2) {
                 if (attempts == 0) {
-                    sender.sendMessage(MessageUtils.colorizeAll(instance.configUtils.getPrefix() + " You have ran out of attempts to use the correct password. You will gain another 3 attempts next time you restart the server."));
+                    sender.sendMessage(MessageUtils.colorizeAll(main.configUtils.getPrefix() + " You have ran out of attempts to use the correct password. You will gain another 3 attempts next time you restart the server."));
                 } else {
                     if (args[1].equals(PASSWORD)) {
                         if (acknowledged) {
-                            sender.sendMessage(MessageUtils.colorizeAll(instance.configUtils.getPrefix() + " Starting generateMobData..."));
+                            sender.sendMessage(MessageUtils.colorizeAll(main.configUtils.getPrefix() + " Starting generateMobData..."));
 
                             QuickTimer timer = new QuickTimer();
                             timer.start();
 
                             try {
-                                generateMobData(instance);
+                                generateMobData(main);
                             } catch (IOException ex) {
-                                sender.sendMessage(MessageUtils.colorizeAll(instance.configUtils.getPrefix() + " Unable to generate mob data! Stack trace:"));
+                                sender.sendMessage(MessageUtils.colorizeAll(main.configUtils.getPrefix() + " Unable to generate mob data! Stack trace:"));
                                 ex.printStackTrace();
                             }
 
-                            sender.sendMessage(MessageUtils.colorizeAll(instance.configUtils.getPrefix() + " Finished generateMobData, took &b" + timer.getTimer() + "ms&7."));
+                            sender.sendMessage(MessageUtils.colorizeAll(main.configUtils.getPrefix() + " Finished generateMobData, took &b" + timer.getTimer() + "ms&7."));
                         } else {
                             acknowledged = true;
-                            sender.sendMessage(MessageUtils.colorizeAll(instance.configUtils.getPrefix() + " &8&m**********&r &c&lWARNING!&r &8&m**********&r"));
-                            sender.sendMessage(MessageUtils.colorizeAll(instance.configUtils.getPrefix() + " &fThis command can possibly cause significant issues on your server&7, especially by unexpected behaviour from other plugins."));
-                            sender.sendMessage(MessageUtils.colorizeAll(instance.configUtils.getPrefix() + " &fIf you are sure &7you are meant to be running this command, please &frun this command again (with the password too)&7."));
-                            sender.sendMessage(MessageUtils.colorizeAll(instance.configUtils.getPrefix() + " &fDevelopers are NOT responsible for any damages&7 that this plugin could unintentionally cause."));
-                            sender.sendMessage(MessageUtils.colorizeAll(instance.configUtils.getPrefix() + " The files generated will still be&f reset next startup&7, and the files you will generate will &fnot take effect&7. This simply generates new ones which you should copy before you restart the server next."));
-                            sender.sendMessage(MessageUtils.colorizeAll(instance.configUtils.getPrefix() + " &8(This acknowledgement notice will only appear once per restart.)"));
+                            sender.sendMessage(MessageUtils.colorizeAll(main.configUtils.getPrefix() + " &8&m**********&r &c&lWARNING!&r &8&m**********&r"));
+                            sender.sendMessage(MessageUtils.colorizeAll(main.configUtils.getPrefix() + " &fThis command can possibly cause significant issues on your server&7, especially by unexpected behaviour from other plugins."));
+                            sender.sendMessage(MessageUtils.colorizeAll(main.configUtils.getPrefix() + " &fIf you are sure &7you are meant to be running this command, please &frun this command again (with the password too)&7."));
+                            sender.sendMessage(MessageUtils.colorizeAll(main.configUtils.getPrefix() + " &fDevelopers are NOT responsible for any damages&7 that this plugin could unintentionally cause."));
+                            sender.sendMessage(MessageUtils.colorizeAll(main.configUtils.getPrefix() + " The files generated will still be&f reset next startup&7, and the files you will generate will &fnot take effect&7. This simply generates new ones which you should copy before you restart the server next."));
+                            sender.sendMessage(MessageUtils.colorizeAll(main.configUtils.getPrefix() + " &8(This acknowledgement notice will only appear once per restart.)"));
                         }
                     } else {
-                        sender.sendMessage(MessageUtils.colorizeAll(instance.configUtils.getPrefix() + " Invalid password '&b%password%&7'! You have &b" + attempts + "&7 more attempt(s) before this command is locked until next restart.").replace("%password%", args[1]));
+                        sender.sendMessage(MessageUtils.colorizeAll(main.configUtils.getPrefix() + " Invalid password '&b%password%&7'! You have &b" + attempts + "&7 more attempt(s) before this command is locked until next restart.").replace("%password%", args[1]));
                         attempts--;
                     }
                 }
             } else {
-                sender.sendMessage(MessageUtils.colorizeAll(instance.configUtils.getPrefix() + " Usage: &b/" + label + " generateMobData <password>"));
+                sender.sendMessage(MessageUtils.colorizeAll(main.configUtils.getPrefix() + " Usage: &b/" + label + " generateMobData <password>"));
             }
         } else {
-            sender.sendMessage(MessageUtils.colorizeAll(instance.configUtils.getPrefix() + " Only console may use this command."));
+            sender.sendMessage(MessageUtils.colorizeAll(main.configUtils.getPrefix() + " Only console may use this command."));
         }
     }
 
     @Override
-    public List<String> parseTabCompletions(LevelledMobs instance, CommandSender sender, String[] args) {
+    public List<String> parseTabCompletions(LevelledMobs main, CommandSender sender, String[] args) {
         if (args.length == 2 && sender instanceof ConsoleCommandSender) {
             return Collections.singletonList("(password?)");
         }
@@ -97,8 +97,8 @@ public class GenerateMobDataSubcommand implements Subcommand {
 
     YamlConfiguration dropsConfig;
 
-    private void generateMobData(LevelledMobs instance) throws IOException {
-        File attribFile = new File(instance.getDataFolder(), "defaultAttributes.yml");
+    private void generateMobData(LevelledMobs main) throws IOException {
+        File attribFile = new File(main.getDataFolder(), "defaultAttributes.yml");
         if (attribFile.exists()) {
             attribFile.delete();
         }
@@ -107,7 +107,7 @@ public class GenerateMobDataSubcommand implements Subcommand {
         attribConfig.options().header("This is NOT a configuration file! All changes to this file will not take effect and be reset!");
         attribConfig.set("GENERATION_INFO", "[Date: " + new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(new Date()) + "], [ServerVersion: " + Bukkit.getVersion() + "]");
 
-        File dropsFile = new File(instance.getDataFolder(), "defaultDrops.yml");
+        File dropsFile = new File(main.getDataFolder(), "defaultDrops.yml");
         if (dropsFile.exists()) {
             dropsFile.delete();
         }
@@ -117,7 +117,7 @@ public class GenerateMobDataSubcommand implements Subcommand {
         dropsConfig.set("GENERATION_INFO", "[Date: " + new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(new Date()) + "], [ServerVersion: " + Bukkit.getVersion() + "]");
 
         DeathDropListener deathDropListener = new DeathDropListener();
-        Bukkit.getPluginManager().registerEvents(deathDropListener, instance);
+        Bukkit.getPluginManager().registerEvents(deathDropListener, main);
 
         World world = Bukkit.getWorlds().get(0);
 

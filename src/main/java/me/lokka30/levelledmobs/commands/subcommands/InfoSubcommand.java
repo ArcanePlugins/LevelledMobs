@@ -15,17 +15,17 @@ import java.util.Objects;
 public class InfoSubcommand implements Subcommand {
 
     @Override
-    public void parseSubcommand(LevelledMobs instance, CommandSender sender, String label, String[] args) {
+    public void parseSubcommand(LevelledMobs main, CommandSender sender, String label, String[] args) {
         if (sender.hasPermission("levelledmobs.command.info")) {
             if (args.length == 1) {
-                String version = instance.getDescription().getVersion();
-                String description = instance.getDescription().getDescription();
+                String version = main.getDescription().getVersion();
+                String description = main.getDescription().getDescription();
                 List<String> supportedVersions = Utils.getSupportedServerVersions();
                 List<String> codeContributors = Arrays.asList("stumper66", "Eyrian", "iCodinqs", "deiphiz", "CoolBoy", "Esophose",
                         "7smile7", "UltimaOath", "konsolas", "Shevchik", "Hugo5551", "bStats Project", "SpigotMC Project");
-                String listSeparator = Objects.requireNonNull(instance.messagesCfg.getString("command.levelledmobs.info.listSeparator"), "messages.yml: command.levelledmobs.info.listSeparator is undefined");
+                String listSeparator = Objects.requireNonNull(main.messagesCfg.getString("command.levelledmobs.info.listSeparator"), "messages.yml: command.levelledmobs.info.listSeparator is undefined");
 
-                List<String> aboutMsg = instance.messagesCfg.getStringList("command.levelledmobs.info.about");
+                List<String> aboutMsg = main.messagesCfg.getStringList("command.levelledmobs.info.about");
                 aboutMsg = Utils.replaceAllInList(aboutMsg, "%version%", version);
                 aboutMsg = Utils.replaceAllInList(aboutMsg, "%description%", description);
                 aboutMsg = Utils.replaceAllInList(aboutMsg, "%supportedVersions%", String.join(listSeparator, supportedVersions));
@@ -33,19 +33,19 @@ public class InfoSubcommand implements Subcommand {
                 aboutMsg = Utils.colorizeAllInList(aboutMsg);
                 aboutMsg.forEach(sender::sendMessage);
             } else {
-                List<String> usageMsg = instance.messagesCfg.getStringList("command.levelledmobs.info.usage");
-                usageMsg = Utils.replaceAllInList(usageMsg, "%prefix%", instance.configUtils.getPrefix());
+                List<String> usageMsg = main.messagesCfg.getStringList("command.levelledmobs.info.usage");
+                usageMsg = Utils.replaceAllInList(usageMsg, "%prefix%", main.configUtils.getPrefix());
                 usageMsg = Utils.replaceAllInList(usageMsg, "%label%", label);
                 usageMsg = Utils.colorizeAllInList(usageMsg);
                 usageMsg.forEach(sender::sendMessage);
             }
         } else {
-            instance.configUtils.sendNoPermissionMsg(sender);
+            main.configUtils.sendNoPermissionMsg(sender);
         }
     }
 
     @Override
-    public List<String> parseTabCompletions(LevelledMobs instance, CommandSender sender, String[] args) {
+    public List<String> parseTabCompletions(LevelledMobs main, CommandSender sender, String[] args) {
         // This subcommand has no tab completions.
         return null;
     }

@@ -15,7 +15,6 @@ import java.util.HashMap;
 public class ExternalCompatibilityManager {
 
     private final LevelledMobs main;
-
     public ExternalCompatibilityManager(final LevelledMobs main) {
         this.main = main;
     }

@@ -18,47 +18,44 @@ import org.bukkit.scheduler.BukkitRunnable;
  */
 public class EntityTameListener implements Listener {
 
-    private final LevelledMobs instance;
+    private final LevelledMobs main;
 
-    public EntityTameListener(final LevelledMobs instance) {
-        this.instance = instance;
+    public EntityTameListener(final LevelledMobs main) {
+        this.main = main;
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     private void onEntityTameEvent(EntityTameEvent event) {
         final LivingEntity livingEntity = event.getEntity();
 
-        if (instance.settingsCfg.getBoolean("no-level-conditions.tamed")) {
-            Utils.debugLog(instance, "EntityTameListener", "no-level-conditions.tamed = true");
+        if (main.settingsCfg.getBoolean("no-level-conditions.tamed")) {
+            Utils.debugLog(main, "EntityTameListener", "no-level-conditions.tamed = true");
 
             // if mob was levelled then remove it
+            if (livingEntity.getPersistentDataContainer().has(main.levelManager.levelKey, PersistentDataType.INTEGER))
+                livingEntity.getPersistentDataContainer().remove(main.levelManager.levelKey);
 
-            if (livingEntity.getPersistentDataContainer().has(instance.levelManager.isLevelledKey, PersistentDataType.STRING))
-                livingEntity.getPersistentDataContainer().remove(instance.levelManager.isLevelledKey);
-            if (livingEntity.getPersistentDataContainer().has(instance.levelManager.levelKey, PersistentDataType.INTEGER))
-                livingEntity.getPersistentDataContainer().remove(instance.levelManager.levelKey);
-
-            instance.levelManager.updateNametagWithDelay(livingEntity,
+            main.levelManager.updateNametagWithDelay(livingEntity,
                     livingEntity.getCustomName(),
                     livingEntity.getWorld().getPlayers(),
                     1);
 
-            Utils.debugLog(instance, "EntityTameListener", "Removed level of tamed mob");
+            Utils.debugLog(main, "EntityTameListener", "Removed level of tamed mob");
             return;
         }
 
-        Utils.debugLog(instance, "EntityTameListener", "Applying level to tamed mob");
+        Utils.debugLog(main, "EntityTameListener", "Applying level to tamed mob");
         int level = -1;
-        if (livingEntity.getPersistentDataContainer().has(instance.levelManager.levelKey, PersistentDataType.INTEGER)) {
-            Object temp = livingEntity.getPersistentDataContainer().get(instance.levelManager.levelKey, PersistentDataType.INTEGER);
+        if (livingEntity.getPersistentDataContainer().has(main.levelManager.levelKey, PersistentDataType.INTEGER)) {
+            Object temp = livingEntity.getPersistentDataContainer().get(main.levelManager.levelKey, PersistentDataType.INTEGER);
             if (temp != null) level = (int) temp;
         }
 
         int finalLevel = level;
         new BukkitRunnable() {
             public void run() {
-                instance.levelManager.creatureSpawnListener.processMobSpawn(livingEntity, CreatureSpawnEvent.SpawnReason.DEFAULT, finalLevel, MobProcessReason.TAME, false);
+                main.levelManager.creatureSpawnListener.processMobSpawn(livingEntity, CreatureSpawnEvent.SpawnReason.DEFAULT, finalLevel, MobProcessReason.TAME, false);
             }
-        }.runTaskLater(instance, 1L);
+        }.runTaskLater(main, 1L);
     }
 }

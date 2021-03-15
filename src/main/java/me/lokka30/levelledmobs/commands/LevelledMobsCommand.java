@@ -18,10 +18,10 @@ import java.util.List;
  */
 public class LevelledMobsCommand implements CommandExecutor, TabCompleter {
 
-    private final LevelledMobs instance;
+    private final LevelledMobs main;
 
-    public LevelledMobsCommand(final LevelledMobs instance) {
-        this.instance = instance;
+    public LevelledMobsCommand(final LevelledMobs main) {
+        this.main = main;
     }
 
     private final InfoSubcommand infoSubcommand = new InfoSubcommand();
@@ -38,42 +38,42 @@ public class LevelledMobsCommand implements CommandExecutor, TabCompleter {
             } else {
                 switch (args[0].toLowerCase()) {
                     case "kill":
-                        killSubcommand.parseSubcommand(instance, sender, label, args);
+                        killSubcommand.parseSubcommand(main, sender, label, args);
                         break;
                     case "reload":
-                        reloadSubcommand.parseSubcommand(instance, sender, label, args);
+                        reloadSubcommand.parseSubcommand(main, sender, label, args);
                         break;
                     case "summon":
-                        summonSubcommand.parseSubcommand(instance, sender, label, args);
+                        summonSubcommand.parseSubcommand(main, sender, label, args);
                         break;
                     case "info":
-                        infoSubcommand.parseSubcommand(instance, sender, label, args);
+                        infoSubcommand.parseSubcommand(main, sender, label, args);
                         break;
                     case "compatibility":
-                        compatibilitySubcommand.parseSubcommand(instance, sender, label, args);
+                        compatibilitySubcommand.parseSubcommand(main, sender, label, args);
                         break;
                     case "generatemobdata":
-                        generateMobDataSubcommand.parseSubcommand(instance, sender, label, args);
+                        generateMobDataSubcommand.parseSubcommand(main, sender, label, args);
                         break;
                     default:
                         sendMainUsage(sender, label);
                 }
 			}
 		} else {
-			instance.configUtils.sendNoPermissionMsg(sender);
-		}
+            main.configUtils.sendNoPermissionMsg(sender);
+        }
 		return true;
 	}
 
 	private void sendMainUsage(CommandSender sender, String label) {
-		List<String> mainUsage = instance.messagesCfg.getStringList("command.levelledmobs.main-usage");
+        List<String> mainUsage = main.messagesCfg.getStringList("command.levelledmobs.main-usage");
 
-		mainUsage = Utils.replaceAllInList(mainUsage, "%prefix%", instance.configUtils.getPrefix());
-		mainUsage = Utils.replaceAllInList(mainUsage, "%label%", label);
-		mainUsage = Utils.colorizeAllInList(mainUsage);
+        mainUsage = Utils.replaceAllInList(mainUsage, "%prefix%", main.configUtils.getPrefix());
+        mainUsage = Utils.replaceAllInList(mainUsage, "%label%", label);
+        mainUsage = Utils.colorizeAllInList(mainUsage);
 
-		mainUsage.forEach(sender::sendMessage);
-	}
+        mainUsage.forEach(sender::sendMessage);
+    }
 
 	@Override
 	public List<String> onTabComplete(CommandSender sender, Command cmd, String alias, String[] args) {
@@ -100,11 +100,11 @@ public class LevelledMobsCommand implements CommandExecutor, TabCompleter {
         } else {
 			switch (args[0].toLowerCase()) {
                 case "summon":
-                    return summonSubcommand.parseTabCompletions(instance, sender, args);
+                    return summonSubcommand.parseTabCompletions(main, sender, args);
                 case "kill":
-                    return killSubcommand.parseTabCompletions(instance, sender, args);
+                    return killSubcommand.parseTabCompletions(main, sender, args);
                 case "generatemobdata":
-                    return generateMobDataSubcommand.parseTabCompletions(instance, sender, args);
+                    return generateMobDataSubcommand.parseTabCompletions(main, sender, args);
                 // missing subcommands don't have tab completions.
                 default:
                     return null;
