@@ -556,16 +556,17 @@ no-level-conditions:
 #     Reference https://tinyurl.com/SpigotMCEntityTypes
 #     For proper mob names to use in place of 'EntityType'
 #     For example, PIGLIN or PIGLIN_BRUTE
+#     The entities below are commented out by default and thus
+#     will not take effect, remove the '#' character if you
+#     want LevelledMobs to recognize these settings once
+#     you have enabled the system.
 # ||-------------------------------------------------------||
 entitytype-level-override:
   enabled: false
-  # NOTE: | The entities below are commented out by default and thus
-  #       | will not take effect, remove the '#' character if you
-  #       | want LM to recognise these settings.
   min-level:
-  #    ENDER_DRAGON: 5
-  #    WITHER: 3
-  #    BABY_ZOMBIE: 1
+#    ENDER_DRAGON: 5
+#    WITHER: 3
+#    BABY_ZOMBIE: 1
   max-level:
 #    ENDER_DRAGON: 7
 #    WITHER: 6
@@ -601,19 +602,20 @@ entitytype-level-override:
 #               | world 'example_world' to spawn
 #
 #     Don't forget to change 'enabled' to true if you
-#     wish to activate this setting
+#     wish to activate this setting.
+#     The worlds below are commented out by default and thus
+#     will not take effect, remove the '#' character if you
+#     want LevelledMobs to recognize these settings once
+#     you have enabled the system.
 # ||-------------------------------------------------------||
 world-level-override:
   enabled: false
-  # NOTE: | The worlds below are commented out by default and thus
-  #       | will not take effect, remove the '#' character if you
-  #       | want LM to recognise these settings.
   min-level:
-  #   example_world: 1
-  #   example_world_the_end: 5
+  #  example_world: 1
+  #  example_world_the_end: 5
   max-level:
-  #   example_world: 5
-  #   example_world_nether: 8
+  #  example_world: 5
+  #  example_world_nether: 8
 
 
 # ||-------------------------------------------------------||
@@ -663,8 +665,8 @@ no-drop-multipler-entities:
 #     By default, all compatibilities are set to true.
 #     It is recommended that you do not change these
 #     settings without understanding what you are doing.
-#     Disabling a compatibility will prevent LevelledMobs
-#     from applying levels to the spawned creature.
+#     Disabling a compatibility will allow LevelledMobs to
+#     apply levels to the creatures spawned by that plugin.
 #
 #      external-compatibilites:
 #              DANGEROUS_CAVES: | Metadata: 'DangerousCaves'

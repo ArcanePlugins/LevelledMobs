@@ -562,7 +562,6 @@ file-version: 6
 #
 #all_levellable_mobs: #Selected all Levelled Mobs
 #  exclude: 'all_nether_mobs;ENDERMAN;ENDERMITE;SHULKER' #Remove the Nether mobs and the End mobs
-#  usedroptable: 'basic_overworld' #Apply the drop-table basic_overworld defined below
 #  - diamond: #Selected a diamond as my custom drop
 #      minlevel: 1 #Any EntityType or Universal Group --
 #      maxlevel: 15 #-- who are LVL1-15 has a chance to drop
@@ -583,17 +582,21 @@ file-version: 6
 #      enchantments: #The sword should come pre-enchanted
 #        unbreaking: 1
 #        sharpness: 2
+#      name: 'Herobrine Blade' #And finally a custom name for the sword
 #      lore: #The sword gets a bit of 'flavor text'
 #        - 'Lost many updates ago'
 #        - 'and found once more.'
-#      name: 'Herobrine Blade' #And finally a custom name for the sword
+#
+#all_levellable_mobs: #Selected all Levlled Mobs
+#  exclude: 'all_nether_mobs;ENDERMAN;ENDERMITE;SHULKER' #Remove the Nether mobs and the End mobs
+#  usedroptable: basic_overworld
 #
 #drop-table:
 #  basic_overworld:
 #    - stick:
-#        groupid: 3
+#        groupid: overworld
 #    - mossy_cobblestone:
-#        groupid: 3
+#        groupid: overworld
 #  basic_nether:
 #    - soul_soil:
 #        groupid: 4
