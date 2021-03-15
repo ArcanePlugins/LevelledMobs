@@ -608,11 +608,11 @@ entitytype-level-override:
 world-level-override:
   enabled: false
   min-level:
-  #  example_world: 1
-  #  example_world_the_end: 5
+#    example_world: 1
+#    example_world_the_end: 5
   max-level:
-  #  example_world: 5
-  #  example_world_nether: 8
+#    example_world: 5
+#    example_world_nether: 8
 
 
 # ||-------------------------------------------------------||
