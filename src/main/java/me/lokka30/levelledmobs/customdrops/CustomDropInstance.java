@@ -1,5 +1,6 @@
 package me.lokka30.levelledmobs.customdrops;
 
+import org.apache.commons.lang.NullArgumentException;
 import org.bukkit.entity.EntityType;
 
 import java.util.ArrayList;
@@ -29,6 +30,15 @@ public class CustomDropInstance {
 
     public boolean getIsGroup() {
         return this.entityGroup != null;
+    }
+
+    public void combineDrop(CustomDropInstance dropInstance){
+        if (dropInstance == null) throw new NullArgumentException("dropInstance");
+
+        this.overrideStockDrops = dropInstance.overrideStockDrops;
+        if (dropInstance.utilizesGroupIds) this.utilizesGroupIds = true;
+
+        this.customItems.addAll(dropInstance.customItems);
     }
 
     public String getMobOrGroupName() {

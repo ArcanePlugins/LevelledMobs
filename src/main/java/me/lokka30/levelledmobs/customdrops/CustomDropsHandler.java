@@ -310,10 +310,18 @@ public class CustomDropsHandler {
                 } // end if not entity table
 
                 if (!dropInstance.customItems.isEmpty()) {
-                    if (isUniversalGroup)
-                        customDropsitems_groups.put(universalGroup, dropInstance);
-                    else
-                        customDropsitems.put(entityType, dropInstance);
+                    if (isUniversalGroup) {
+                        if (customDropsitems_groups.containsKey(universalGroup))
+                            customDropsitems_groups.get(universalGroup).combineDrop(dropInstance);
+                        else
+                            customDropsitems_groups.put(universalGroup, dropInstance);
+                    }
+                    else {
+                        if (customDropsitems.containsKey(entityType))
+                            customDropsitems.get(entityType).combineDrop(dropInstance);
+                        else
+                            customDropsitems.put(entityType, dropInstance);
+                    }
                 }
             } // next mob or group
         } // next root item from file
