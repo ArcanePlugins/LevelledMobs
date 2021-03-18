@@ -35,7 +35,7 @@ public class CustomDropInstance {
     public void combineDrop(CustomDropInstance dropInstance){
         if (dropInstance == null) throw new NullArgumentException("dropInstance");
 
-        this.overrideStockDrops = dropInstance.overrideStockDrops;
+        if (dropInstance.overrideStockDrops) this.overrideStockDrops = true;
         if (dropInstance.utilizesGroupIds) this.utilizesGroupIds = true;
 
         this.customItems.addAll(dropInstance.customItems);
