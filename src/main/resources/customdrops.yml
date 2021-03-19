@@ -208,6 +208,15 @@
 #      this within Section 05 - Demonstrations
 # ||-------------------------------------------------------||
 
+defaults:
+  chance: 0.2
+  amount: 1
+  minlevel: -1
+  maxlevel: -1
+  custommodeldata: -1
+  nomultiplier: false
+  nospawner: false
+  equipped: false
 
 #
 # |||||||||||||||||||||||||||||||||||||||||||||||||||||
@@ -524,7 +533,7 @@ drop-table:
         nomultiplier: true
         nospawner: true
         groupid: 2
-      
+
 PIG;CHICKEN;COW:
   usedroptable: 1
 
