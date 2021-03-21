@@ -19,6 +19,7 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.entity.*;
 import org.bukkit.event.entity.CreatureSpawnEvent;
+import org.bukkit.inventory.AbstractHorseInventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -514,9 +515,10 @@ public class LevelManager {
 
         Utils.debugLog(main, "LevelManager#getLevelledItemDrops", "1: Method called. " + currentDrops.size() + " drops will be analysed.");
 
+        // removed as redundant
         // Must be a levelled mob
-        if (!main.levelInterface.isLevelled(livingEntity))
-            return;
+        //if (!main.levelInterface.isLevelled(livingEntity))
+        //    return;
 
         Utils.debugLog(main, "LevelManager#getLevelledItemDrops", "2: LivingEntity is a levelled mob.");
 
@@ -532,7 +534,7 @@ public class LevelManager {
         if (main.settingsCfg.getBoolean("use-custom-item-drops-for-mobs") &&
                 main.customDropsHandler.getCustomItemDrops(livingEntity, level, customDrops, true, false) == CustomDropResult.HAS_OVERRIDE) {
             Utils.debugLog(main, "LevelManager#getLevelledItemDrops", "4: custom drop has override");
-            currentDrops.clear();
+            removeVanillaDrops(livingEntity, currentDrops);
             currentDrops.addAll(customDrops);
             return;
         }
@@ -560,6 +562,28 @@ public class LevelManager {
         }
 
         if (!customDrops.isEmpty()) currentDrops.addAll(customDrops);
+    }
+
+    public void removeVanillaDrops(final LivingEntity livingEntity, final List<ItemStack> drops){
+        boolean hadSaddle = false;
+        List<ItemStack> chestItems = null;
+
+        if (livingEntity instanceof ChestedHorse && ((ChestedHorse)livingEntity).isCarryingChest()){
+            final AbstractHorseInventory inv = ((ChestedHorse) livingEntity).getInventory();
+            chestItems = Arrays.asList(inv.getContents());
+        }
+        else if (livingEntity instanceof Vehicle){
+            for (final ItemStack itemStack : drops){
+                if (itemStack.getType().equals(Material.SADDLE)){
+                    hadSaddle = true;
+                    break;
+                }
+            }
+        }
+
+        drops.clear();
+        if (chestItems != null) drops.addAll(chestItems);
+        if (hadSaddle) drops.add(new ItemStack(Material.SADDLE));
     }
 
     //Calculates the XP dropped when a levellable creature dies.
