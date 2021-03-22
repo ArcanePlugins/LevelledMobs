@@ -42,6 +42,7 @@ public class LevelManager {
     final public HashMap<LevelNumbersWithBias, LevelNumbersWithBias> levelNumsListCache = new HashMap<>();
     final public LinkedList<LevelNumbersWithBias> levelNumsListCacheOrder = new LinkedList<>();
     private final static int maxLevelNumsCache = 10;
+    final private List<Material> vehicleNoMultiplierItems;
 
     public LevelManager(final LevelledMobs main) {
         this.main = main;
@@ -61,6 +62,14 @@ public class LevelManager {
             this.levelNumsListCache.put(lnwb, lnwb);
             this.levelNumsListCacheOrder.addFirst(lnwb);
         }
+
+        this.vehicleNoMultiplierItems = Arrays.asList(
+                Material.SADDLE,
+                Material.LEATHER_HORSE_ARMOR,
+                Material.IRON_HORSE_ARMOR,
+                Material.GOLDEN_HORSE_ARMOR,
+                Material.DIAMOND_HORSE_ARMOR
+        );
     }
 
     public final NamespacedKey levelKey; // This stores the mob's level.
@@ -514,14 +523,12 @@ public class LevelManager {
     // This sets the levelled currentDrops on a levelled mob that just died.
     public void getLevelledItemDrops(final LivingEntity livingEntity, final List<ItemStack> currentDrops) {
 
-        Utils.debugLog(main, "LevelManager#getLevelledItemDrops", "1: Method called. " + currentDrops.size() + " drops will be analysed.");
+        // this accomodates chested animals, saddles and armor on ridable creatures
+        final List<ItemStack> dropsToMultiply = getDropsToMultiply(livingEntity, currentDrops);
 
-        // removed as redundant
-        // Must be a levelled mob
-        //if (!main.levelInterface.isLevelled(livingEntity))
-        //    return;
+        Utils.debugLog(main, "LevelManager#getLevelledItemDrops", "1: Method called. " + dropsToMultiply.size() + " drops will be analysed.");
 
-        Utils.debugLog(main, "LevelManager#getLevelledItemDrops", "2: LivingEntity is a levelled mob.");
+        //Utils.debugLog(main, "LevelManager#getLevelledItemDrops", "2: LivingEntity is a levelled mob.");
 
         // Get their level
         final int level = Objects.requireNonNull(livingEntity.getPersistentDataContainer().get(levelKey, PersistentDataType.INTEGER));
@@ -535,8 +542,8 @@ public class LevelManager {
         if (main.settingsCfg.getBoolean("use-custom-item-drops-for-mobs") &&
                 main.customDropsHandler.getCustomItemDrops(livingEntity, level, customDrops, true, false) == CustomDropResult.HAS_OVERRIDE) {
             Utils.debugLog(main, "LevelManager#getLevelledItemDrops", "4: custom drop has override");
-            removeVanillaDrops(livingEntity, currentDrops);
-            currentDrops.addAll(customDrops);
+            removeVanillaDrops(livingEntity, dropsToMultiply);
+            dropsToMultiply.addAll(customDrops);
             return;
         }
 
@@ -547,8 +554,8 @@ public class LevelManager {
             Utils.debugLog(main, "LevelManager#getLevelledItemDrops", "4: Item drop addition is +" + addition + ".");
 
             // Modify current drops
-            Utils.debugLog(main, "LevelManager#getLevelledItemDrops", "5: Scanning " + currentDrops.size() + " items...");
-            for (ItemStack currentDrop : currentDrops) {
+            Utils.debugLog(main, "LevelManager#getLevelledItemDrops", "5: Scanning " + dropsToMultiply.size() + " items...");
+            for (ItemStack currentDrop : dropsToMultiply) {
                 Utils.debugLog(main, "LevelManager#getLevelledItemDrops", "6: Scanning drop " + currentDrop.getType().toString() + " with current amount " + currentDrop.getAmount() + "...");
 
                 if (main.mobDataManager.isLevelledDropManaged(livingEntity.getType(), currentDrop.getType())) {
@@ -562,7 +569,36 @@ public class LevelManager {
             }
         }
 
-        if (!customDrops.isEmpty()) currentDrops.addAll(customDrops);
+        if (!customDrops.isEmpty()) dropsToMultiply.addAll(customDrops);
+    }
+
+    private List<ItemStack> getDropsToMultiply(final LivingEntity livingEntity, final List<ItemStack> drops){
+        final List<ItemStack> results = new ArrayList<>(drops.size());
+        results.addAll(drops);
+
+        // we only need to check for chested animals and 'vehicles' since they can have saddles and armor
+        // those items shouldn't get multiplied
+
+        if (livingEntity instanceof ChestedHorse && ((ChestedHorse)livingEntity).isCarryingChest()){
+            final AbstractHorseInventory inv = ((ChestedHorse) livingEntity).getInventory();
+            final ItemStack[] chestItems = inv.getContents();
+            // look thru the animal's inventory for leather. That is the only item that will get duplicated
+            for (final ItemStack item : chestItems){
+                if (item.getType().equals(Material.LEATHER))
+                    return Arrays.asList(item);
+            }
+        }
+
+        if (!(livingEntity instanceof Vehicle)) return results;
+
+        for (int i = results.size() - 1; i >= 0; i--){
+            // remove horse armor or saddles
+            final ItemStack item = results.get(i);
+            if (this.vehicleNoMultiplierItems.contains(item.getType())) // saddle or horse armor
+                results.remove(i);
+        }
+
+        return results;
     }
 
     public void removeVanillaDrops(final LivingEntity livingEntity, final List<ItemStack> drops){
