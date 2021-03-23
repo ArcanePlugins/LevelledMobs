@@ -8,6 +8,7 @@ import org.bukkit.entity.Ageable;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 
+import javax.annotation.Nullable;
 import java.util.Objects;
 
 /**
@@ -21,6 +22,7 @@ public class MobDataManager {
         this.main = main;
     }
 
+    @Nullable
     public Object getAttributeDefaultValue(final EntityType entityType, final Attribute attribute) {
         final String path = entityType.toString() + "." + attribute.toString();
 
@@ -44,9 +46,12 @@ public class MobDataManager {
     }
 
     public void setAdditionsForLevel(final LivingEntity livingEntity, final Attribute attribute, final Addition addition, final int currentLevel, final boolean useBaseValue) {
-        final double defaultValue = useBaseValue ?
-                Objects.requireNonNull(livingEntity.getAttribute(attribute)).getBaseValue () :
-                (double) getAttributeDefaultValue(livingEntity.getType(), attribute);
+        double defaultValue = Objects.requireNonNull(livingEntity.getAttribute(attribute)).getBaseValue();
+        if (!useBaseValue){
+            Object valueTemp = getAttributeDefaultValue(livingEntity.getType(), attribute);
+            if (valueTemp != null) defaultValue = (double) valueTemp;
+        }
+
         double tempValue = defaultValue + getAdditionsForLevel(livingEntity, addition, currentLevel);
         if (attribute.equals(Attribute.GENERIC_MAX_HEALTH) && tempValue > 2048.0){
             // max health has hard limit of 2048
