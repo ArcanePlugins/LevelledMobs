@@ -26,6 +26,7 @@ import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
+import javax.annotation.Nonnull;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -572,6 +573,7 @@ public class LevelManager {
         if (!customDrops.isEmpty()) dropsToMultiply.addAll(customDrops);
     }
 
+    @Nonnull
     private List<ItemStack> getDropsToMultiply(final LivingEntity livingEntity, final List<ItemStack> drops){
         final List<ItemStack> results = new ArrayList<>(drops.size());
         results.addAll(drops);
@@ -587,6 +589,10 @@ public class LevelManager {
                 if (item.getType().equals(Material.LEATHER))
                     return Arrays.asList(item);
             }
+
+            // if we made it here it didn't drop leather so don't return anything
+            results.clear();
+            return results;
         }
 
         if (!(livingEntity instanceof Vehicle)) return results;
