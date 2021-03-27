@@ -1,5 +1,8 @@
 package me.lokka30.levelledmobs.customdrops;
 
+/**
+ * @author stumper66
+ */
 public class CustomDropsDefaults {
     public double chance;
     public int amount;
@@ -13,7 +16,7 @@ public class CustomDropsDefaults {
     public String groupId;
     public boolean override;
 
-    public CustomDropsDefaults(){
+    public CustomDropsDefaults() {
         // these are the defaults of the defaults
         this.chance = 0.2;
         this.amount = 1;
@@ -25,7 +28,7 @@ public class CustomDropsDefaults {
         this.equipped = false;
     }
 
-    public void setDefaultsFromDropItem(CustomItemDrop drop){
+    public void setDefaultsFromDropItem(CustomItemDrop drop) {
         this.chance = drop.dropChance;
         this.amount = drop.getAmount();
         this.minLevel = drop.minLevel;

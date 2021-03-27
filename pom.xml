@@ -6,7 +6,7 @@
 
     <groupId>io.github.lokka30</groupId>
     <artifactId>LevelledMobs</artifactId>
-    <version>2.3.2 b327</version>
+    <version>b328</version>
 
     <packaging>jar</packaging>
 
@@ -130,6 +130,11 @@
             <artifactId>MythicMobs</artifactId>
             <version>4.11.0-BETA</version>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jetbrains</groupId>
+            <artifactId>annotations</artifactId>
+            <version>16.0.2</version>
         </dependency>
     </dependencies>
 </project>

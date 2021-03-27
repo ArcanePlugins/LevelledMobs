@@ -4,6 +4,10 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.HashSet;
 
 public class MobLevelEvent extends Event implements Cancellable {
 
@@ -36,21 +40,41 @@ public class MobLevelEvent extends Event implements Cancellable {
      * levelled.
      * <p>
      * NORMAL: Spawned naturally, by a spawn egg, etc.
-     * SUMMON: Spawned using the '/lm summon' command.
-     * RE_LEVEL: When an existing levelled mob has its level changed.
+     * CHANGED_LEVEL: When an existing levelled mob has its level changed.
      */
     public enum LevelCause {
-        NORMAL, SUMMON, RE_LEVEL
+        NORMAL,
+        CHANGED_LEVEL
+    }
+
+    /**
+     * Any additional information that other plugins may want to
+     * account for in MobLevelEvent should be stated when the Event
+     * is called.
+     * Multiple 'Additional Information's can be specified when the
+     * event is called, by using the HashSet.
+     * <p>
+     * CHANGED_LEVEL_FROM_TRANSFORM: The entity was transformed (e.g.,
+     * from a Zombie to a Drowned), and
+     * was re-levelled.
+     * CHANGED_LEVEL_FROM_TAME:      The entity was tamed (e.g. Wolf),
+     * and was re-levelled.
+     */
+    public enum AdditionalInformation {
+        CHANGED_LEVEL_FROM_TRANSFORM,
+        CHANGED_LEVEL_FROM_TAME //TODO is changing tamed level even required?
     }
 
     private final LivingEntity entity;
     private int level;
     private final LevelCause levelCause;
+    private final HashSet<AdditionalInformation> additionalInformation;
 
-    public MobLevelEvent(LivingEntity entity, int level, LevelCause levelCause) {
+    public MobLevelEvent(@NotNull LivingEntity entity, int level, @NotNull LevelCause levelCause, @Nullable HashSet<AdditionalInformation> additionalInformation) {
         this.entity = entity;
         this.level = level;
         this.levelCause = levelCause;
+        this.additionalInformation = additionalInformation;
     }
 
     public LivingEntity getEntity() {
@@ -63,6 +87,10 @@ public class MobLevelEvent extends Event implements Cancellable {
 
     public LevelCause getCause() {
         return levelCause;
+    }
+
+    public HashSet<AdditionalInformation> getAdditionalInformation() {
+        return additionalInformation;
     }
 
     public void setLevel(int level) {
