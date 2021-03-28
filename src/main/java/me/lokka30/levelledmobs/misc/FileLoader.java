@@ -4,6 +4,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.util.FileUtil;
 import org.yaml.snakeyaml.Yaml;
+import sun.util.resources.cldr.es.CalendarData_es_UY;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -41,7 +42,7 @@ public final class FileLoader {
         cfg.options().copyDefaults(true);
 
         final int fileVersion = cfg.getInt("file-version");
-        final boolean isCustomDrops = cfgName.equals("customdrops");
+        final boolean isCustomDrops = cfgName.equals("customdrops.yml");
 
         MigrateBehavior migrateBehavior = MigrateBehavior.MIGRATE;
         if (isCustomDrops && fileVersion < 6)

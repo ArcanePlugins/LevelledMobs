@@ -1,5 +1,7 @@
 package me.lokka30.levelledmobs.misc;
 
+import sun.util.resources.cldr.es.CalendarData_es_UY;
+
 import javax.annotation.Nonnull;
 import java.io.File;
 import java.io.IOException;
@@ -136,6 +138,23 @@ public class FileMigrator {
 
                     keySections_New = buildKeySections(newConfigLines);
                 }
+            }
+
+            // build an index so we can modify the collection as we enumerate thru it
+            List<String> newSectionIndex = new ArrayList<>(keySections_New.keySet());
+
+            // this will remove any sample code that the user removed from theirs
+            for (int i = 0; i < newSectionIndex.size(); i++){
+                final String key = newSectionIndex.get(i);
+                if (key.startsWith("file-version") || key.startsWith("defaults")) continue;
+                if (!keySections_Old.containsKey(key)){
+                    final KeySectionInfo section = keySections_New.get(key);
+                    for (int t = section.lines.size(); t >= 0; t--)
+                        newConfigLines.remove(section.lineNumber);
+                }
+
+                // this is so we refresh the line index numbers
+                keySections_New = buildKeySections(newConfigLines);
             }
 
             Files.write(to.toPath(), newConfigLines, StandardCharsets.UTF_8, StandardOpenOption.TRUNCATE_EXISTING);
