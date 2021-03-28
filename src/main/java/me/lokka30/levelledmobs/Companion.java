@@ -78,16 +78,16 @@ public class Companion {
         FileLoader.saveResourceIfNotExists(main, new File(main.getDataFolder(), "license.txt"));
 
         // load configurations
-        main.settingsCfg = FileLoader.loadFile(main, "settings", FileLoader.SETTINGS_FILE_VERSION, FileLoader.MigrateBehavior.MIGRATE);
+        main.settingsCfg = FileLoader.loadFile(main, "settings", FileLoader.SETTINGS_FILE_VERSION);
 
         if (main.settingsCfg != null) // only load if settings were loaded successfully
-            main.messagesCfg = FileLoader.loadFile(main, "messages", FileLoader.MESSAGES_FILE_VERSION, FileLoader.MigrateBehavior.MIGRATE);
+            main.messagesCfg = FileLoader.loadFile(main, "messages", FileLoader.MESSAGES_FILE_VERSION);
         else {
             // had an issue reading the file.  Disable the plugin now
             return false;
         }
 
-        main.customDropsCfg = FileLoader.loadFile(main, "customdrops", FileLoader.CUSTOMDROPS_FILE_VERSION, FileLoader.MigrateBehavior.RESET);
+        main.customDropsCfg = FileLoader.loadFile(main, "customdrops", FileLoader.CUSTOMDROPS_FILE_VERSION);
 
         main.configUtils.entityTypesLevelOverride_Min = main.configUtils.getMapFromConfigSection("entitytype-level-override.min-level");
         main.configUtils.entityTypesLevelOverride_Max = main.configUtils.getMapFromConfigSection("entitytype-level-override.max-level");

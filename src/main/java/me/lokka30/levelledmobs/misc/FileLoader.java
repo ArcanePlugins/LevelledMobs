@@ -16,13 +16,13 @@ public final class FileLoader {
 
     public static final int SETTINGS_FILE_VERSION = 28; // Last changed: b289
     public static final int MESSAGES_FILE_VERSION = 2; // Last changed: v2.3.0
-    public static final int CUSTOMDROPS_FILE_VERSION = 6; // Last changed: b312
+    public static final int CUSTOMDROPS_FILE_VERSION = 7; // Last changed: 2.4.0 b328
 
     private FileLoader() {
         throw new UnsupportedOperationException();
     }
 
-    public static YamlConfiguration loadFile(final Plugin plugin, String cfgName, final int compatibleVersion, final MigrateBehavior migrateBehavior) {
+    public static YamlConfiguration loadFile(final Plugin plugin, String cfgName, final int compatibleVersion) {
         cfgName = cfgName + ".yml";
 
         Utils.logger.info("&fFile Loader: &7Loading file '&b" + cfgName + "&7'...");
@@ -41,6 +41,11 @@ public final class FileLoader {
         cfg.options().copyDefaults(true);
 
         final int fileVersion = cfg.getInt("file-version");
+        final boolean isCustomDrops = cfgName.equals("customdrops");
+
+        MigrateBehavior migrateBehavior = MigrateBehavior.MIGRATE;
+        if (isCustomDrops && fileVersion < 6)
+            migrateBehavior = MigrateBehavior.RESET;
 
         if (fileVersion < compatibleVersion && (migrateBehavior == MigrateBehavior.MIGRATE || migrateBehavior == MigrateBehavior.RESET)) {
             final File backedupFile = new File(plugin.getDataFolder(), cfgName + ".v" + fileVersion + ".old");
@@ -54,7 +59,10 @@ public final class FileLoader {
             if (migrateBehavior == MigrateBehavior.MIGRATE) {
                 // copy supported values from old file to new
                 Utils.logger.info("&fFile Loader: &8(Migration) &7Migrating &b" + cfgName + "&7 from old version to new version.");
-                FileMigrator.copyYmlValues(backedupFile, file, fileVersion);
+                if (isCustomDrops)
+                    FileMigrator.copyCustomDrops(backedupFile, file);
+                else
+                    FileMigrator.copyYmlValues(backedupFile, file, fileVersion);
             }
 
             // reload cfg from the updated values

@@ -2,10 +2,13 @@ package me.lokka30.levelledmobs.misc;
 
 import javax.annotation.Nonnull;
 import java.io.File;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author stumper66
@@ -63,6 +66,18 @@ public class FileMigrator {
         }
     }
 
+    private static class KeySectionInfo{
+        public KeySectionInfo(){
+            this.lines = new LinkedList<>();
+        }
+
+        public int lineNumber;
+        @Nonnull
+        final public List<String> lines;
+        public int sectionNumber;
+        public int sectionStartingLine;
+    }
+
     private static String getKeyFromList(List<String> list, String currentKey){
         if (list.size() == 0) return currentKey;
 
@@ -70,6 +85,145 @@ public class FileMigrator {
         if (currentKey != null) result += "." + currentKey;
 
         return result;
+    }
+
+    protected static void copyCustomDrops(final File from, final File to){
+        TreeMap<String, KeySectionInfo> keySections_Old;
+        TreeMap<String, KeySectionInfo> keySections_New;
+
+        try {
+            final List<String> oldConfigLines = Files.readAllLines(from.toPath(), StandardCharsets.UTF_8);
+            final List<String> newConfigLines = Files.readAllLines(to.toPath(), StandardCharsets.UTF_8);
+
+            keySections_Old = buildKeySections(oldConfigLines);
+            keySections_New = buildKeySections(newConfigLines);
+
+            for (final String key : keySections_Old.keySet()){
+                final KeySectionInfo oldSection = keySections_Old.get(key);
+                if (keySections_New.containsKey(key)){
+                    // overwrite new section if different
+                    final KeySectionInfo newSection = keySections_New.get(key);
+
+                    if (!doSectionsContainSameLines(oldSection, newSection)) {
+                        for (int i = 0; i < newSection.lines.size(); i++)
+                            newConfigLines.remove(newSection.lineNumber + 1);
+
+                        for (int i = oldSection.lines.size() - 1; i >= 0; i--) {
+                            newConfigLines.add(newSection.lineNumber + 1, oldSection.lines.get(i));
+                        }
+
+                        keySections_New = buildKeySections(newConfigLines);
+                    }
+                }
+                else {
+                    // write the section into the new config, starting in corresponding new section
+                    int insertAt = newConfigLines.size();
+                    if (oldSection.sectionNumber > 0){
+                        for (final String temp : keySections_New.keySet()){
+                            final KeySectionInfo tempSection = keySections_New.get(temp);
+                            if (tempSection.sectionNumber == oldSection.sectionNumber && tempSection.sectionStartingLine > 0){
+                                insertAt = tempSection.sectionStartingLine;
+                            }
+                        }
+                    }
+
+                    newConfigLines.add(insertAt, key);
+                    for (int i = oldSection.lines.size() - 1; i >= 0; i--) {
+                        insertAt++;
+                        newConfigLines.add(insertAt, oldSection.lines.get(i));
+                    }
+                    newConfigLines.add(insertAt + 1, "");
+
+                    keySections_New = buildKeySections(newConfigLines);
+                }
+            }
+
+            Files.write(to.toPath(), newConfigLines, StandardCharsets.UTF_8, StandardOpenOption.TRUNCATE_EXISTING);
+            Utils.logger.info("&fFile Loader: &8(Migration) &7Migrated &b" + to.getName() + "&7 successfully.");
+        }
+        catch (IOException e){
+            Utils.logger.error("&fFile Loader: &8(Migration) &7Failed to migrate &b" + to.getName() + "&7! Stack trace:");
+            e.printStackTrace();
+        }
+    }
+
+    private static boolean doSectionsContainSameLines(final KeySectionInfo section1, final KeySectionInfo section2){
+        if (section1.lines.size() != section2.lines.size()) return false;
+
+        for (int i = 0; i < section1.lines.size(); i++){
+            if (!section1.lines.get(i).equals(section2.lines.get(i))) return false;
+        }
+
+        return true;
+    }
+
+    private static TreeMap<String, KeySectionInfo> buildKeySections(final List<String> contents){
+
+        final TreeMap<String, KeySectionInfo> sections = new TreeMap<>();
+        KeySectionInfo keySection = null;
+        String keyName = null;
+        int sectionNumber = 0;
+        int sectionStartingLine = 0;
+        boolean foundNonComment = false;
+
+        for (int i = 0; i < contents.size(); i++){
+            final String origline = contents.get(i);
+
+            final int depth = getFieldDepth(origline);
+            final String line = origline.replace("\t", "").trim();
+
+            if (line.startsWith("# ||  Section")){
+                final int foundSectionNumber = extractSectionNumber(line);
+                if (foundSectionNumber > 0) sectionNumber = foundSectionNumber;
+                sectionStartingLine = 0;
+            }
+
+            if (sectionStartingLine == 0 && sectionNumber > 0 && line.startsWith("# ||||")) {
+                sectionStartingLine = i + 2;
+                foundNonComment = false;
+            }
+
+            if (line.startsWith("#") || line.isEmpty()) continue;
+
+            if (!foundNonComment){
+                if (sectionStartingLine > 0) sectionStartingLine = i;
+                foundNonComment = true;
+            }
+
+            if (depth == 0){
+                if (keySection != null)
+                    sections.put(keyName, keySection);
+
+                keySection = new KeySectionInfo();
+                keySection.lineNumber = i;
+                keySection.sectionNumber = sectionNumber;
+                keySection.sectionStartingLine = sectionStartingLine;
+                keyName = line;
+            }
+            else if (keySection != null){
+                keySection.lines.add(origline);
+            }
+        }
+
+        if (keySection != null)
+            sections.put(keyName, keySection);
+
+        return sections;
+    }
+
+    private static int extractSectionNumber(final String input){
+        final Pattern p = Pattern.compile("# \\|\\|\\s{2}Section (\\d{2})");
+        final Matcher m = p.matcher(input);
+        if (m.find() && m.groupCount() == 1){
+            String temp = m.group(1);
+            if (temp.length() > 1 && temp.charAt(0) == '0')
+                temp = temp.substring(1);
+
+            if (Utils.isInteger(temp))
+                return Integer.parseInt(temp);
+        }
+
+        return 0;
     }
 
     protected static void copyYmlValues(File from, File to, int oldVersion) {

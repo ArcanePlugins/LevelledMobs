@@ -587,7 +587,7 @@ public class LevelManager {
             // look thru the animal's inventory for leather. That is the only item that will get duplicated
             for (final ItemStack item : chestItems){
                 if (item.getType().equals(Material.LEATHER))
-                    return Arrays.asList(item);
+                    return Collections.singletonList(item);
             }
 
             // if we made it here it didn't drop leather so don't return anything
