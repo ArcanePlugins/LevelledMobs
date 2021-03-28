@@ -74,11 +74,29 @@ public class CreatureSpawnListener implements Listener {
      */
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void onEntitySpawn(final EntitySpawnEvent event) {
-        if (!(event.getEntity() instanceof LivingEntity)) return;
-
         if (!forcedTypes.contains(event.getEntityType().toString())) return;
 
+        if (!(event.getEntity() instanceof LivingEntity)) return;
         final LivingEntity livingEntity = (LivingEntity) event.getEntity();
+
+        //TODO uncomment following code when ready
+        /*
+        if(main.levelInterface.getLevellableState(livingEntity) == LevelInterface.LevellableState.ALLOWED) {
+            //delay this so it can skip default levelling if the mob was already levelled (e.g. summoned)
+            //ran 1 tick later (20th of a second), asynchronously (on different thread).
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    if(!main.levelInterface.isLevelled(livingEntity)) {
+                        final int level = main.levelInterface.generateLevelForMob(livingEntity);
+                        main.levelInterface.applyLevelToMob(livingEntity, level, false, false);
+                    }
+                }
+            }.runTaskLaterAsynchronously(main, 1);
+        }
+         */
+
+        //TODO move the following code
         final int mobLevel = processMobSpawn(livingEntity, SpawnReason.DEFAULT, -1, MobProcessReason.NONE, false);
         if (mobLevel >= 0 && main.settingsCfg.getBoolean("use-custom-item-drops-for-mobs"))
             processMobEquipment(livingEntity, mobLevel);

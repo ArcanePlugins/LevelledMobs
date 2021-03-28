@@ -80,7 +80,12 @@ public final class Utils {
         return new String(chars, 0, count);
     }
 
-    //Integer check
+    /**
+     * Check if str is an integer
+     *
+     * @param str str to check
+     * @return if str is an integer (e.g. "1234" = true, "hello" = false)
+     */
     public static boolean isInteger(final String str) {
         if (isNullOrEmpty(str)) return false;
 
