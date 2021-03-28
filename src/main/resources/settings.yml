@@ -732,6 +732,13 @@ use-custom-item-drops-for-mobs: false
 #        convertingZombieVillager:
 #             | Zombie Villagers in
 #             | the process of transforming
+#       ensure-mobs-are-levelled-on-chunk-load:
+#          | This makes LM have a janitor run through
+#          | all entities in a chunk when a chunk is
+#          | loaded on your server to ensure that
+#          | the mobs that *should* be levelled,
+#          | *are* levelled. This is a must-have
+#          | if you have passive mobs levelled.
 # ||-------------------------------------------------------||
 summon-command-spawn-distance-from-player: 5
 kill-skip-conditions:
@@ -739,6 +746,7 @@ kill-skip-conditions:
   tamed: true
   leashed: true
   convertingZombieVillager: true
+ensure-mobs-are-levelled-on-chunk-load: true
 
 
 # ||-------------------------------------------------------||
