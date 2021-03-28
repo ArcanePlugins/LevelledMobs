@@ -113,7 +113,7 @@ public class CustomDropsHandler {
                 }
                 Utils.logger.info("   " + sb.toString());
             } else if (!equippedOnly) {
-                Utils.logger.info(String.format("&8 --- &7Vanilla drop count: &b%s&7, custom items added: &b%s&7.", preCount, postCount - preCount));
+                Utils.logger.info(String.format("&8 --- &7Custom items added: &b%s&7.", postCount - preCount));
             }
         }
 
