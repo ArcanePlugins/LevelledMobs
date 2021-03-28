@@ -23,7 +23,7 @@ public final class FileLoader {
         throw new UnsupportedOperationException();
     }
 
-    public static YamlConfiguration loadFile(final Plugin plugin, String cfgName, final int compatibleVersion) {
+    public static YamlConfiguration loadFile(final Plugin plugin, String cfgName, final int compatibleVersion, final boolean customDropsEnabled) {
         cfgName = cfgName + ".yml";
 
         Utils.logger.info("&fFile Loader: &7Loading file '&b" + cfgName + "&7'...");
@@ -45,8 +45,6 @@ public final class FileLoader {
         final boolean isCustomDrops = cfgName.equals("customdrops.yml");
 
         MigrateBehavior migrateBehavior = MigrateBehavior.MIGRATE;
-        if (isCustomDrops && fileVersion < 6)
-            migrateBehavior = MigrateBehavior.RESET;
 
         if (fileVersion < compatibleVersion && (migrateBehavior == MigrateBehavior.MIGRATE || migrateBehavior == MigrateBehavior.RESET)) {
             final File backedupFile = new File(plugin.getDataFolder(), cfgName + ".v" + fileVersion + ".old");
@@ -61,7 +59,7 @@ public final class FileLoader {
                 // copy supported values from old file to new
                 Utils.logger.info("&fFile Loader: &8(Migration) &7Migrating &b" + cfgName + "&7 from old version to new version.");
                 if (isCustomDrops)
-                    FileMigrator.copyCustomDrops(backedupFile, file);
+                    FileMigrator.copyCustomDrops(backedupFile, file, fileVersion, customDropsEnabled);
                 else
                     FileMigrator.copyYmlValues(backedupFile, file, fileVersion);
             }

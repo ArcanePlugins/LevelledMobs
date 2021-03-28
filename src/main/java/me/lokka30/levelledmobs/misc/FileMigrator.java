@@ -89,7 +89,7 @@ public class FileMigrator {
         return result;
     }
 
-    protected static void copyCustomDrops(final File from, final File to){
+    protected static void copyCustomDrops(final File from, final File to, final int fileVersion, final boolean customDropsEnabled){
         TreeMap<String, KeySectionInfo> keySections_Old;
         TreeMap<String, KeySectionInfo> keySections_New;
 
@@ -120,6 +120,13 @@ public class FileMigrator {
                 else {
                     // write the section into the new config, starting in corresponding new section
                     int insertAt = newConfigLines.size();
+                    if (fileVersion < 6){
+                        if (key.toUpperCase().startsWith("ALL_"))
+                            oldSection.sectionNumber = 2; // universal groups section
+                        else
+                            oldSection.sectionNumber = 3; // entity types section
+                    }
+
                     if (oldSection.sectionNumber > 0){
                         for (final String temp : keySections_New.keySet()){
                             final KeySectionInfo tempSection = keySections_New.get(temp);
@@ -130,7 +137,8 @@ public class FileMigrator {
                     }
 
                     newConfigLines.add(insertAt, key);
-                    for (int i = oldSection.lines.size() - 1; i >= 0; i--) {
+                    // for (int i = oldSection.lines.size() - 1; i >= 0; i--) {
+                    for (int i = 0; i < oldSection.lines.size(); i++) {
                         insertAt++;
                         newConfigLines.add(insertAt, oldSection.lines.get(i));
                     }
@@ -143,18 +151,23 @@ public class FileMigrator {
             // build an index so we can modify the collection as we enumerate thru it
             List<String> newSectionIndex = new ArrayList<>(keySections_New.keySet());
 
-            // this will remove any sample code that the user removed from theirs
-            for (int i = 0; i < newSectionIndex.size(); i++){
-                final String key = newSectionIndex.get(i);
-                if (key.startsWith("file-version") || key.startsWith("defaults")) continue;
-                if (!keySections_Old.containsKey(key)){
+            // if they don't have custom drops enabled we'll leave all the samples in there
+            if (customDropsEnabled) {
+                // this will remove any sample code that the user removed from theirs
+                for (int i = 0; i < newSectionIndex.size(); i++) {
+                    final String key = newSectionIndex.get(i);
+                    if (key.startsWith("file-version") || key.startsWith("defaults")) continue;
                     final KeySectionInfo section = keySections_New.get(key);
-                    for (int t = section.lines.size(); t >= 0; t--)
-                        newConfigLines.remove(section.lineNumber);
-                }
 
-                // this is so we refresh the line index numbers
-                keySections_New = buildKeySections(newConfigLines);
+                    // don't remove empty array keys
+                    if (!keySections_Old.containsKey(key) && section.lines.size() == 1 && !section.lines.get(0).trim().equals("-")) {
+                        for (int t = section.lines.size(); t >= 0; t--)
+                            newConfigLines.remove(section.lineNumber);
+                    }
+
+                    // this is so we refresh the line index numbers
+                    keySections_New = buildKeySections(newConfigLines);
+                }
             }
 
             Files.write(to.toPath(), newConfigLines, StandardCharsets.UTF_8, StandardOpenOption.TRUNCATE_EXISTING);
