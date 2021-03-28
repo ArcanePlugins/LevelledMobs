@@ -167,9 +167,13 @@ public class Companion {
         pluginManager.registerEvents(new EntityTargetListener(main), main);
         pluginManager.registerEvents(new PlayerJoinListener(main), main);
         pluginManager.registerEvents(new EntityTameListener(main), main);
+        main.chunkLoadListener = new ChunkLoadListener(main);
 
         if (ExternalCompatibilityManager.hasMythicMobsInstalled())
             pluginManager.registerEvents(new MythicMobsListener(main), main);
+
+        if (main.settingsCfg.getBoolean("ensure-mobs-are-levelled-on-chunk-load"))
+            pluginManager.registerEvents(main.chunkLoadListener, main);
     }
 
     protected void registerCommands() {

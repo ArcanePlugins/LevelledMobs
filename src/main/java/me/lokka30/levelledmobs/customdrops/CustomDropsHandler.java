@@ -464,12 +464,18 @@ public class CustomDropsHandler {
             if (!item.setAmountRangeFromString(itemInfoConfiguration.getString("amount")))
                 Utils.logger.warning(String.format("Invalid number or number range for amount on %s, %s", dropInstance.getMobOrGroupName(), itemInfoConfiguration.getString("amount")));
         }
-        if (itemInfoConfiguration.getDouble("chance", -1.0) > -1.0)
-            item.dropChance = itemInfoConfiguration.getDouble("chance");
-        if (itemInfoConfiguration.getInt("minlevel", -1) > -1)
-            item.minLevel = itemInfoConfiguration.getInt("minlevel");
-        if (itemInfoConfiguration.getInt("maxlevel", -1) > -1)
-            item.maxLevel = itemInfoConfiguration.getInt("maxlevel");
+
+        item.dropChance = itemInfoConfiguration.getDouble("chance", this.defaults.chance);
+        item.minLevel = itemInfoConfiguration.getInt("minlevel", this.defaults.minLevel);
+        item.maxLevel = itemInfoConfiguration.getInt("maxlevel", this.defaults.maxLevel);
+        item.isEquipped = itemInfoConfiguration.getBoolean("equipped", this.defaults.equipped);
+        item.noMultiplier = itemInfoConfiguration.getBoolean("nomultiplier", this.defaults.noMultiplier);
+        item.noSpawner = itemInfoConfiguration.getBoolean("nospawner", this.defaults.noSpawner);
+        item.customModelDataId = itemInfoConfiguration.getInt("custommodeldata", this.defaults.customModelData);
+
+        if (!Utils.isNullOrEmpty(itemInfoConfiguration.getString("override")))
+            dropInstance.overrideStockDrops = itemInfoConfiguration.getBoolean("override");
+
         if (!Utils.isNullOrEmpty(itemInfoConfiguration.getString("groupid"))) {
             item.groupId = itemInfoConfiguration.getString("groupid");
             dropInstance.utilizesGroupIds = true;
@@ -480,24 +486,15 @@ public class CustomDropsHandler {
         }
         if (!itemInfoConfiguration.getStringList("lore").isEmpty())
             item.lore = itemInfoConfiguration.getStringList("lore");
-        if (itemInfoConfiguration.getBoolean("nomultiplier"))
-            item.noMultiplier = itemInfoConfiguration.getBoolean("nomultiplier");
-        if (itemInfoConfiguration.getBoolean("nospawner"))
-            item.noSpawner = itemInfoConfiguration.getBoolean("nospawner");
         if (!Utils.isNullOrEmpty(itemInfoConfiguration.getString("name")))
             item.customName = itemInfoConfiguration.getString("name");
-        if (itemInfoConfiguration.getBoolean("equipped"))
-            item.isEquipped = itemInfoConfiguration.getBoolean("equipped");
-        if (itemInfoConfiguration.getBoolean("override"))
-            dropInstance.overrideStockDrops = true;
+
         if (!Utils.isNullOrEmpty(itemInfoConfiguration.getString("excludemobs"))) {
             String[] excludes = Objects.requireNonNull(itemInfoConfiguration.getString("excludemobs")).split(";");
             item.excludedMobs.clear();
             for (final String exclude : excludes)
                 item.excludedMobs.add(exclude.trim());
         }
-        if (itemInfoConfiguration.getInt("custommodeldata", -1) > -1)
-            item.customModelDataId = itemInfoConfiguration.getInt("custommodeldata");
 
         final Object enchantmentsSection = itemInfoConfiguration.get("enchantments");
         if (enchantmentsSection != null){
@@ -538,7 +535,7 @@ public class CustomDropsHandler {
             }
         }
 
-        if (item.customModelDataId > -1){
+        if (item.customModelDataId != this.defaults.customModelData){
             final ItemMeta meta = item.getItemStack().getItemMeta();
             if (meta != null) {
                 meta.setCustomModelData(item.customModelDataId);

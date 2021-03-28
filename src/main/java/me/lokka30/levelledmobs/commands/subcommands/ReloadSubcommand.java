@@ -44,6 +44,14 @@ public class ReloadSubcommand implements Subcommand {
                 HandlerList.unregisterAll(main.entityDamageDebugListener);
             }
 
+            if (main.settingsCfg.getBoolean("ensure-mobs-are-levelled-on-chunk-load") && !main.configUtils.chunkLoadListenerWasEnabled) {
+                main.configUtils.chunkLoadListenerWasEnabled = true;
+                Bukkit.getPluginManager().registerEvents(main.chunkLoadListener, main);
+            } else if (!main.settingsCfg.getBoolean("ensure-mobs-are-levelled-on-chunk-load") && main.configUtils.chunkLoadListenerWasEnabled) {
+                main.configUtils.chunkLoadListenerWasEnabled = false;
+                HandlerList.unregisterAll(main.chunkLoadListener);
+            }
+
             main.levelManager.levelNumsListCache.clear();
             main.levelManager.levelNumsListCacheOrder.clear();
 

@@ -101,6 +101,8 @@ public class FileMigrator {
             keySections_New = buildKeySections(newConfigLines);
 
             for (final String key : keySections_Old.keySet()){
+                if (key.startsWith("file-version")) continue;
+
                 final KeySectionInfo oldSection = keySections_Old.get(key);
                 if (keySections_New.containsKey(key)){
                     // overwrite new section if different
@@ -404,10 +406,13 @@ public class FileMigrator {
                             }
 
                             if (!value.equals(migratedValue)) {
-                                valuesUpdated++;
-                                if (showMessages) Utils.logger.info("&fFile Loader: &8(Migration) &7Current key: &b" + key + "&7, replacing: &r" + value + "&7, with: &r" + migratedValue + "&7.");
-                                line = line.replace(value, migratedValue);
-                                newConfigLines.set(currentLine, line);
+                                if (migratedValue != null) {
+                                    valuesUpdated++;
+                                    if (showMessages)
+                                        Utils.logger.info("&fFile Loader: &8(Migration) &7Current key: &b" + key + "&7, replacing: &r" + value + "&7, with: &r" + migratedValue + "&7.");
+                                    line = line.replace(value, migratedValue);
+                                    newConfigLines.set(currentLine, line);
+                                }
                             } else
                                 valuesMatched++;
                         }
