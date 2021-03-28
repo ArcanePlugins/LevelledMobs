@@ -284,7 +284,17 @@ public class FileMigrator {
         // version 2.1.0 - these fields should be reset to default
         final List<String> version24Resets = Arrays.asList(
                 "fine-tuning.additions.movement-speed",
-                "fine-tuning.additions.attack-damage"
+                "fine-tuning.additions.attack-damage",
+                "world-level-override.min-level.example_world_123",
+                "world-level-override.max-level.example_world_123",
+                "world-level-override.max-level.example_world_456"
+        );
+
+        // version 2.2.0 - these fields should be reset to default
+        final List<String> version26Resets = Arrays.asList(
+                "world-level-override.min-level.example_world_123",
+                "world-level-override.max-level.example_world_123",
+                "world-level-override.max-level.example_world_456"
         );
 
         final String useCustomDrops = "use-custom-item-drops-for-mobs";
@@ -347,6 +357,9 @@ public class FileMigrator {
                                     // non-array values go here.  Loop thru and find any subkeys under here
                                     final int numOfPeriods = countPeriods(key);
                                     for (final String enumeratedKey : oldConfigMap.keySet()){
+                                        if (isSettings && oldVersion > 20 && oldVersion <= 24 && version24Resets.contains(enumeratedKey)) continue;
+                                        if (isSettings && oldVersion > 24 && oldVersion <= 26 && version26Resets.contains(enumeratedKey)) continue;
+
                                         final int numOfPeriods_Enumerated = countPeriods(enumeratedKey);
                                         if (enumeratedKey.startsWith(key) && numOfPeriods_Enumerated == numOfPeriods + 1 && !newConfigMap.containsKey(enumeratedKey)){
                                             final FileMigrator.FieldInfo fi = oldConfigMap.get(enumeratedKey);
@@ -370,7 +383,8 @@ public class FileMigrator {
                                 final String migratedValue = fi.simpleValue;
 
                                 if (isSettings && oldVersion <= 20 && !version20KeysToKeep.contains(key)) continue;
-                                if (isSettings && oldVersion < 24 && version24Resets.contains(key)) continue;
+                                if (isSettings && oldVersion > 20 && oldVersion <= 24 && version24Resets.contains(key)) continue;
+                                if (isSettings && oldVersion > 24 && oldVersion <= 26 && version26Resets.contains(key)) continue;
                                 if (key.startsWith("file-version")) continue;
                                 if (isSettings && key.equalsIgnoreCase("creature-nametag") && oldVersion > 20 && oldVersion < 26
                                         && migratedValue.equals("'&8[&7Level %level%&8 | &f%displayname%&8 | &c%health%&8/&c%max_health% %heart_symbol%&8]'")) {
@@ -394,6 +408,8 @@ public class FileMigrator {
                                     if (!oldValue.startsWith(parentKey)) continue;
                                     if (newConfigMap.containsKey(oldValue)) continue;
                                     if (!isEntitySameSubkey(parentKey, oldValue)) continue;
+                                    if (isSettings && oldVersion > 20 && oldVersion <= 24 && version24Resets.contains(oldValue)) continue;
+                                    if (isSettings && oldVersion > 24 && oldVersion <= 26 && version26Resets.contains(oldValue)) continue;
 
                                     FileMigrator.FieldInfo fiOld = oldConfigMap.get(oldValue);
                                     if (fiOld.isList()) continue;
