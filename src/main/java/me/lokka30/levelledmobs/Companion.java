@@ -24,6 +24,12 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * This class contains methods used by the main class.
+ *
+ * @author lokka30
+ * @contributors stumper66
+ */
 public class Companion {
 
     private final LevelledMobs main;

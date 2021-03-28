@@ -1,5 +1,6 @@
 package me.lokka30.levelledmobs.listeners;
 
+import me.lokka30.levelledmobs.LevelInterface;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.managers.LevelManager;
 import me.lokka30.levelledmobs.misc.*;
@@ -103,11 +104,26 @@ public class CreatureSpawnListener implements Listener {
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
-    public void onChunkLoad(final ChunkLoadEvent event){
-        for (final Entity entity : event.getChunk().getEntities()){
-            if (!(entity instanceof LivingEntity)) continue;
+    public void onChunkLoad(final ChunkLoadEvent event) {
 
+        if (!main.settingsCfg.getBoolean("ensure-mobs-are-levelled-on-chunk-load", true)) return;
+
+        // Check each entity in the chunk
+        for (final Entity entity : event.getChunk().getEntities()) {
+
+            // Must be a *living* entity
+            if (!(entity instanceof LivingEntity)) continue;
             LivingEntity livingEntity = (LivingEntity) entity;
+
+            // Make sure they aren't levelled
+            if (main.levelInterface.isLevelled(livingEntity)) continue;
+
+            // Make sure the config says they are levellable
+            if (main.levelInterface.getLevellableState(livingEntity) != LevelInterface.LevellableState.ALLOWED)
+                continue;
+
+            //TODO move the following code
+            // For some reason they aren't levelled - let's fix that!
             final int mobLevel = processMobSpawn(livingEntity, SpawnReason.DEFAULT, -1, MobProcessReason.NONE, false);
             if (mobLevel >= 0 && main.settingsCfg.getBoolean("use-custom-item-drops-for-mobs"))
                 processMobEquipment(livingEntity, mobLevel);
@@ -298,22 +314,23 @@ public class CreatureSpawnListener implements Listener {
 
         boolean hadMainItem = false;
 
-        for (ItemStack itemStack : items){
+        for (ItemStack itemStack : items) {
             Material material = itemStack.getType();
-            if (EnchantmentTarget.ARMOR_FEET.includes(material))
+            if (EnchantmentTarget.ARMOR_FEET.includes(material)) {
                 ee.setBoots(itemStack, true);
-            else if (EnchantmentTarget.ARMOR_LEGS.includes(material))
+            } else if (EnchantmentTarget.ARMOR_LEGS.includes(material)) {
                 ee.setLeggings(itemStack, true);
-            else if (EnchantmentTarget.ARMOR_TORSO.includes(material))
+            } else if (EnchantmentTarget.ARMOR_TORSO.includes(material)) {
                 ee.setChestplate(itemStack, true);
-            else if (EnchantmentTarget.ARMOR_HEAD.includes(material))
+            } else if (EnchantmentTarget.ARMOR_HEAD.includes(material)) {
                 ee.setHelmet(itemStack, true);
-            else {
+            } else {
                 if (!hadMainItem) {
                     ee.setItemInMainHand(itemStack);
                     hadMainItem = true;
-                } else
+                } else {
                     ee.setItemInOffHand(itemStack);
+                }
             }
         }
     }
