@@ -1,5 +1,37 @@
 # Changelog
 
+## v2.4.0 b332
+
+### Notes:
+
+* A huge thank-you to Stumper and Oath for developing and testing this update!
+
+### Changelog:
+
+- Huge amount of code improvements. Significant things to note is the package has changed from '
+  io.github.lokka30.levelledmobs' to 'me.lokka30.levelledmobs' to suit my other new plugins. (lokka30)
+- Renamed default inbuilt data files (lokka30)
+- Removed isLevelledKey, instead use LevelInterface#isLevelled(LivingEntity) (lokka30)
+- Improved Utils#isBabyMob and the methods which use it. Should allow for more 'BABY' variants of entities to be
+  configured. (lokka30)
+- if raw meat has been specified in customdrops and the mob is killed by fire, the drop becomes cooked meat (stumper66)
+- overhauled custom drops debug messages (stumper66)
+- added a defaults section to customdrops.yml. Eliminates the need to specify repeated attributes constantly (stumper66)
+- customdrops.yml - Added Default Config Comments (Oathkeeper)
+- groupIds in customdrops.yml are completely strings now (was internally an int in one place) (stumper66)
+- older versions of customdrops.yml will now be migrated. No more resets (stumper66)
+- fixed customdrops issues, settings migration issues from old versions (stumper66)
+- moved chunkload listener to it's own class and will unload itself if disabled (stumper66)
+- customdrops.yml: when utilizing a drop-table and individual entities, the drop-table would get used but the individual
+  entity would be ignored (stumper66)
+- custom drops improvements. When override is used on an entity in customdrops, it will no longer remove saddles and any
+  chest contents from a chested animal. Also fixed a bug where override was not applying to mobs that were levelled (
+  stumper66)
+- when a levelled animal mob is killed, any chested items, armor, etc will not be multiplied anymore, only vanilla
+  drops (stumper66)
+
+***
+
 ## v2.3.1 b318
 
 ### Notes:
