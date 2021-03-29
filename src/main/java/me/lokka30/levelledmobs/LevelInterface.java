@@ -33,7 +33,7 @@ public class LevelInterface {
      * The following entity types MUST be not levellable.
      * Stored as Strings since older versions may not contain certain entity type constants
      */
-    public HashSet<String> FORCED_BLOCKED_ENTITY_TYPES = new HashSet<>(Arrays.asList("PLAYER", "UNKNOWN", "ARMOR_STAND", "NPC"));
+    public final HashSet<String> FORCED_BLOCKED_ENTITY_TYPES = new HashSet<>(Arrays.asList("PLAYER", "UNKNOWN", "ARMOR_STAND", "NPC"));
 
     /**
      * The following entity types must be manually ALLOWED in 'getLevellableState'.

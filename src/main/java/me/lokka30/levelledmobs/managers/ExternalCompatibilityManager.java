@@ -112,7 +112,7 @@ public class ExternalCompatibilityManager {
     }
 
     /**
-     * @param livingEntity mob to check
+     * @param location location to check regions of
      * @return if WorldGuard is installed & region of entity blocks levelling (flag derived)
      */
     public static boolean checkWorldGuard(final Location location, final LevelledMobs main) {
