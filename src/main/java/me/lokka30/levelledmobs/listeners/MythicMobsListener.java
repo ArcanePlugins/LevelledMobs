@@ -20,7 +20,7 @@ public class MythicMobsListener implements Listener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     void onMythicMobSpawnEvent(MythicMobSpawnEvent event) {
-        if (!main.externalCompatibilityManager.isExternalCompatibilityEnabled(ExternalCompatibilityManager.ExternalCompatibility.MYTHIC_MOBS))
+        if (!ExternalCompatibilityManager.isExternalCompatibilityEnabled(ExternalCompatibilityManager.ExternalCompatibility.MYTHIC_MOBS))
             return;
 
         if (!(event.getEntity() instanceof LivingEntity)) return;

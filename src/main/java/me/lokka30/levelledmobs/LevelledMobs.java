@@ -26,7 +26,6 @@ public class LevelledMobs extends JavaPlugin {
     public LevelInterface levelInterface = new LevelInterface(this);
     public LevelManager levelManager;
     public MobDataManager mobDataManager = new MobDataManager(this);
-    public ExternalCompatibilityManager externalCompatibilityManager = new ExternalCompatibilityManager(this);
     public WorldGuardManager worldGuardManager;
     public CustomDropsHandler customDropsHandler;
     public ChunkLoadListener chunkLoadListener;

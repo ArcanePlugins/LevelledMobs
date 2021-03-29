@@ -11,11 +11,7 @@ import me.lokka30.levelledmobs.listeners.CreatureSpawnListener;
 import me.lokka30.levelledmobs.misc.*;
 import me.lokka30.microlib.MessageUtils;
 import org.apache.commons.lang.WordUtils;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.NamespacedKey;
-import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.entity.*;
@@ -76,102 +72,8 @@ public class LevelManager {
     public final NamespacedKey levelKey; // This stores the mob's level.
     public final NamespacedKey isSpawnerKey; //This is stored on levelled mobs to tell plugins that a mob was created from a spawner
 
-    public final HashSet<String> forcedTypes = new HashSet<>(Arrays.asList("GHAST", "MAGMA_CUBE", "HOGLIN", "SHULKER", "PHANTOM", "ENDER_DRAGON", "SLIME", "MAGMA_CUBE", "ZOMBIFIED_PIGLIN"));
-
     public final static int maxCreeperBlastRadius = 100;
     public CreatureSpawnListener creatureSpawnListener;
-
-    public boolean isLevellable(final EntityType entityType) {
-        // Don't level these
-        if (
-                entityType == EntityType.PLAYER
-                        || entityType == EntityType.UNKNOWN
-                        || entityType == EntityType.ARMOR_STAND
-                        || entityType == EntityType.ITEM_FRAME
-                        || entityType == EntityType.DROPPED_ITEM
-                        || entityType == EntityType.PAINTING
-        ) return false;
-
-        // Check if the entity is blacklisted. If not, continue.
-        if (!ModalList.isEnabledInList(main.settingsCfg, "allowed-entities-list", entityType.toString()))
-            return false;
-
-        // Check if the entity is overriden. If so, force it to be levelled.
-        if (main.settingsCfg.getStringList("overriden-entities").contains(entityType.toString())) return true;
-
-        // These entities don't implement Monster or Boss and thus must be forced to return true
-        if (forcedTypes.contains(entityType.toString())) {
-            return true;
-        }
-
-        // Grab the Entity class, which is used to check for certain assignments
-        Class<? extends Entity> entityClass = entityType.getEntityClass();
-        if (entityClass == null) return false;
-
-        return Monster.class.isAssignableFrom(entityClass)
-                || Boss.class.isAssignableFrom(entityClass)
-                || main.settingsCfg.getBoolean("level-passive");
-    }
-
-    //Checks if an entity can be levelled.
-    public boolean isLevellable(final LivingEntity livingEntity) {
-
-        // Ignore these entity types and metadatas
-        if (livingEntity.getType() == EntityType.PLAYER
-                || livingEntity.getType() == EntityType.UNKNOWN
-                || livingEntity.getType() == EntityType.ARMOR_STAND
-                || livingEntity.getType() == EntityType.ITEM_FRAME
-                || livingEntity.getType() == EntityType.DROPPED_ITEM
-                || livingEntity.getType() == EntityType.PAINTING
-
-                // DangerousCaves plugin compatibility
-                || (livingEntity.hasMetadata("DangerousCaves") && main.externalCompatibilityManager.isExternalCompatibilityEnabled(ExternalCompatibilityManager.ExternalCompatibility.DANGEROUS_CAVES))
-
-                // EliteMobs plugin compatibility
-                || (livingEntity.hasMetadata("Elitemob") && main.externalCompatibilityManager.isExternalCompatibilityEnabled(ExternalCompatibilityManager.ExternalCompatibility.ELITE_MOBS))
-                || (livingEntity.hasMetadata("Elitemobs_NPC") && main.externalCompatibilityManager.isExternalCompatibilityEnabled(ExternalCompatibilityManager.ExternalCompatibility.ELITE_MOBS_NPCS))
-                || (livingEntity.hasMetadata("Supermob") && main.externalCompatibilityManager.isExternalCompatibilityEnabled(ExternalCompatibilityManager.ExternalCompatibility.ELITE_MOBS_SUPER_MOBS))
-
-                //InfernalMobs plugin compatibility)
-                || (livingEntity.hasMetadata("infernalMetadata") && main.externalCompatibilityManager.isExternalCompatibilityEnabled(ExternalCompatibilityManager.ExternalCompatibility.INFERNAL_MOBS))
-
-                // Citizens plugin compatibility
-                || (livingEntity.hasMetadata("NPC") && main.externalCompatibilityManager.isExternalCompatibilityEnabled(ExternalCompatibilityManager.ExternalCompatibility.CITIZENS))
-
-                // Shopkeepers plugin compatibility
-                || (livingEntity.hasMetadata("shopkeeper") && main.externalCompatibilityManager.isExternalCompatibilityEnabled(ExternalCompatibilityManager.ExternalCompatibility.SHOPKEEPERS))
-        ) {
-            return false;
-        }
-
-        // Check 'no level conditions'
-        if (livingEntity.getCustomName() != null && main.settingsCfg.getBoolean("no-level-conditions.nametagged")) {
-            return false;
-        }
-        if (livingEntity instanceof Tameable && ((Tameable) livingEntity).isTamed() && main.settingsCfg.getBoolean("no-level-conditions.tamed")) {
-            return false;
-        }
-
-        // Check WorldGuard flag.
-        if (ExternalCompatibilityManager.hasWorldGuardInstalled() && !main.worldGuardManager.regionAllowsLevelling(livingEntity))
-            return false;
-
-        // Check for overrides
-        if (main.settingsCfg.getStringList("overriden-entities").contains(livingEntity.getType().toString()))
-            return true;
-
-        //Check allowed entities for normal entity types
-        if (!ModalList.isEnabledInList(main.settingsCfg, "allowed-entities-list", livingEntity.getType().toString()))
-            return false;
-
-        // Specific allowed entities check for BABIES
-        if (Utils.isBabyMob(livingEntity)) {
-            if (!ModalList.isEnabledInList(main.settingsCfg, "allowed-entities-list", "BABY_" + livingEntity.getType().toString()))
-                return false;
-        }
-
-        return isLevellable(livingEntity.getType());
-    }
 
     public int generateDistanceFromSpawnLevel(final LivingEntity livingEntity, final DebugInfo debugInfo, final CreatureSpawnEvent.SpawnReason spawnReason, final int minLevel, final int maxLevel) {
         final boolean isBabyEntity = Utils.isBabyMob(livingEntity);

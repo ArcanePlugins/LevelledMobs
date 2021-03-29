@@ -13,7 +13,6 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.*;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
-import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
@@ -156,7 +155,7 @@ public class CreatureSpawnListener implements Listener {
         final DebugInfo debugInfo = main.settingsCfg.getBoolean("debug-show-spawned-mobs") ?
                 new DebugInfo() : null;
 
-        if (override || main.levelManager.isLevellable(livingEntity)) {
+        if (override || main.levelInterface.getLevellableState(livingEntity) == LevelInterface.LevellableState.ALLOWED) {
 
             // if spawned naturally it will be -1.  If used summon with specific level specified or if using the slime child system then it will be >= 0
             // all level logic should now be in LevelManager.java

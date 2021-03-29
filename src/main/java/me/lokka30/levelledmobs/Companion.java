@@ -107,7 +107,7 @@ public class Companion {
         main.dropsCfg = loadEmbeddedResource("defaultDrops.yml");
 
         main.configUtils.load();
-        main.externalCompatibilityManager.load();
+        ExternalCompatibilityManager.load(main);
 
         // remove legacy files if they exist
         final String[] legacyFile = {"attributes.yml", "drops.yml"};
