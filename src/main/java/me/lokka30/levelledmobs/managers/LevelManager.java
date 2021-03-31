@@ -526,6 +526,8 @@ public class LevelManager {
 
         // this accomodates chested animals, saddles and armor on ridable creatures
         final List<ItemStack> dropsToMultiply = getDropsToMultiply(livingEntity, currentDrops);
+        List<ItemStack> customDrops = null;
+        currentDrops.clear();
 
         Utils.debugLog(main, "LevelManager#getLevelledItemDrops", "1: Method called. " + dropsToMultiply.size() + " drops will be analysed.");
 
@@ -540,17 +542,14 @@ public class LevelManager {
                         main.configUtils.noDropMultiplierEntities.contains(livingEntity.getType().toString());
 
         if (main.settingsCfg.getBoolean("use-custom-item-drops-for-mobs")) {
-            final List<ItemStack> customDrops = new LinkedList<>();
+            customDrops = new LinkedList<>();
+            // custom drops also get multiplied in the custom drops handler
             final CustomDropResult dropResult = main.customDropsHandler.getCustomItemDrops(livingEntity, level, customDrops, true, false);
 
             if (dropResult == CustomDropResult.HAS_OVERRIDE) {
                 Utils.debugLog(main, "LevelManager#getLevelledItemDrops", "4: custom drop has override");
-                if (!customDrops.isEmpty()) currentDrops.addAll(customDrops);
                 removeVanillaDrops(livingEntity, dropsToMultiply);
-                return;
             }
-
-            if (!customDrops.isEmpty()) currentDrops.addAll(customDrops);
         }
 
         if (!doNotMultiplyDrops && !dropsToMultiply.isEmpty()) {
@@ -564,6 +563,9 @@ public class LevelManager {
             for (final ItemStack currentDrop : dropsToMultiply)
                 multiplyDrop(livingEntity, currentDrop, addition, false);
         }
+
+        if (!customDrops.isEmpty()) currentDrops.addAll(customDrops);
+        if (!dropsToMultiply.isEmpty()) currentDrops.addAll(dropsToMultiply);
     }
 
     public void multiplyDrop(LivingEntity livingEntity, final ItemStack currentDrop, final int addition, final boolean isCustomDrop){

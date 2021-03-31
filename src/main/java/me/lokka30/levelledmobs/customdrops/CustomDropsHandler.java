@@ -92,7 +92,8 @@ public class CustomDropsHandler {
             if (!customDropsitems_groups.containsKey(group)) continue;
 
             processingInfo.dropInstance = customDropsitems_groups.get(group);
-            customDropResult = processingInfo.dropInstance.overrideStockDrops? CustomDropResult.HAS_OVERRIDE : CustomDropResult.NO_OVERRIDE;
+            //customDropResult = processingInfo.dropInstance.overrideStockDrops? CustomDropResult.HAS_OVERRIDE : CustomDropResult.NO_OVERRIDE;
+            if (processingInfo.dropInstance.overrideStockDrops) customDropResult = CustomDropResult.HAS_OVERRIDE;
 
             // if we are using groupIds then shuffle the list so it doesn't potentially drop the same item each time
             if (processingInfo.dropInstance.utilizesGroupIds)
@@ -103,7 +104,8 @@ public class CustomDropsHandler {
 
         if (customDropsitems.containsKey(livingEntity.getType())){
             processingInfo.dropInstance = customDropsitems.get(livingEntity.getType());
-            customDropResult = processingInfo.dropInstance.overrideStockDrops? CustomDropResult.HAS_OVERRIDE : CustomDropResult.NO_OVERRIDE;
+            //customDropResult = processingInfo.dropInstance.overrideStockDrops? CustomDropResult.HAS_OVERRIDE : CustomDropResult.NO_OVERRIDE;
+            if (processingInfo.dropInstance.overrideStockDrops) customDropResult = CustomDropResult.HAS_OVERRIDE;
 
             // if we are using groupIds then shuffle the list so it doesn't potentially drop the same item each time
             if (processingInfo.dropInstance.utilizesGroupIds)
