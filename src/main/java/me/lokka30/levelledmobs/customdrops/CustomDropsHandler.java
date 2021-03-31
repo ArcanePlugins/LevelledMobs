@@ -92,7 +92,7 @@ public class CustomDropsHandler {
             if (!customDropsitems_groups.containsKey(group)) continue;
 
             processingInfo.dropInstance = customDropsitems_groups.get(group);
-            if (processingInfo.dropInstance.overrideStockDrops) customDropResult = CustomDropResult.HAS_OVERRIDE;
+            customDropResult = processingInfo.dropInstance.overrideStockDrops? CustomDropResult.HAS_OVERRIDE : CustomDropResult.NO_OVERRIDE;
 
             // if we are using groupIds then shuffle the list so it doesn't potentially drop the same item each time
             if (processingInfo.dropInstance.utilizesGroupIds)
@@ -103,7 +103,7 @@ public class CustomDropsHandler {
 
         if (customDropsitems.containsKey(livingEntity.getType())){
             processingInfo.dropInstance = customDropsitems.get(livingEntity.getType());
-            if (processingInfo.dropInstance.overrideStockDrops) customDropResult = CustomDropResult.HAS_OVERRIDE;
+            customDropResult = processingInfo.dropInstance.overrideStockDrops? CustomDropResult.HAS_OVERRIDE : CustomDropResult.NO_OVERRIDE;
 
             // if we are using groupIds then shuffle the list so it doesn't potentially drop the same item each time
             if (processingInfo.dropInstance.utilizesGroupIds)
@@ -172,11 +172,13 @@ public class CustomDropsHandler {
             }
 
             if (didNotMakeChance && !info.equippedOnly && instance.settingsCfg.getStringList("debug-misc").contains("custom-drops")) {
-                final ItemStack itemStack = info.deathByFire ? getCookedVariantOfMeat(drop.getItemStack()) : drop.getItemStack();
-                Utils.logger.info(String.format(
-                        "&8 - &7item: &b%s&7, amount: &b%s&7, chance: &b%s&7, chanceRole: &b%s&7, dropped: &bfalse&7.",
-                        itemStack.getType().name(), drop.getAmountAsString(), drop.dropChance, chanceRole)
-                );
+                if (instance.settingsCfg.getStringList("debug-misc").contains("custom-drops")){
+                    final ItemStack itemStack = info.deathByFire ? getCookedVariantOfMeat(drop.getItemStack()) : drop.getItemStack();
+                    Utils.logger.info(String.format(
+                            "&8 - &7item: &b%s&7, amount: &b%s&7, chance: &b%s&7, chanceRole: &b%s&7, dropped: &bfalse&7.",
+                            itemStack.getType().name(), drop.getAmountAsString(), drop.dropChance, chanceRole)
+                    );
+                }
             }
             if (didNotMakeChance) continue;
             // if we made it this far then the item will be dropped
@@ -195,9 +197,11 @@ public class CustomDropsHandler {
 
             if (newItem.getAmount() != newDropAmount) newItem.setAmount(newDropAmount);
 
-            Utils.logger.info(String.format(
-                    "&8 - &7item: &b%s&7, amount: &b%s&7, newAmount: &b%s&7, chance: &b%s&7, chanceRole: &b%s&7, dropped: &btrue&7.",
-                    newItem.getType().name(), drop.getAmountAsString(), newDropAmount, drop.dropChance, chanceRole));
+            if (instance.settingsCfg.getStringList("debug-misc").contains("custom-drops")){
+                Utils.logger.info(String.format(
+                        "&8 - &7item: &b%s&7, amount: &b%s&7, newAmount: &b%s&7, chance: &b%s&7, chanceRole: &b%s&7, dropped: &btrue&7.",
+                        newItem.getType().name(), drop.getAmountAsString(), newDropAmount, drop.dropChance, chanceRole));
+            }
 
             int damage = drop.getDamage();
             if (drop.getHasDamageRange())

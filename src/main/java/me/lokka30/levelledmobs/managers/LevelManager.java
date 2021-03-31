@@ -545,7 +545,9 @@ public class LevelManager {
 
             if (dropResult == CustomDropResult.HAS_OVERRIDE) {
                 Utils.debugLog(main, "LevelManager#getLevelledItemDrops", "4: custom drop has override");
+                if (!customDrops.isEmpty()) currentDrops.addAll(customDrops);
                 removeVanillaDrops(livingEntity, dropsToMultiply);
+                return;
             }
 
             if (!customDrops.isEmpty()) currentDrops.addAll(customDrops);
