@@ -538,17 +538,20 @@ public class LevelManager {
         final boolean doNotMultiplyDrops =
                 (Utils.isBabyMob(livingEntity) && main.configUtils.noDropMultiplierEntities.contains("BABY_" + livingEntity.getType().toString())) ||
                         main.configUtils.noDropMultiplierEntities.contains(livingEntity.getType().toString());
-        final List<ItemStack> customDrops = new ArrayList<>();
 
-        if (main.settingsCfg.getBoolean("use-custom-item-drops-for-mobs") &&
-                main.customDropsHandler.getCustomItemDrops(livingEntity, level, customDrops, true, false) == CustomDropResult.HAS_OVERRIDE) {
-            Utils.debugLog(main, "LevelManager#getLevelledItemDrops", "4: custom drop has override");
-            removeVanillaDrops(livingEntity, dropsToMultiply);
-            dropsToMultiply.addAll(customDrops);
-            return;
+        if (main.settingsCfg.getBoolean("use-custom-item-drops-for-mobs")) {
+            final List<ItemStack> customDrops = new LinkedList<>();
+            final CustomDropResult dropResult = main.customDropsHandler.getCustomItemDrops(livingEntity, level, customDrops, true, false);
+
+            if (dropResult == CustomDropResult.HAS_OVERRIDE) {
+                Utils.debugLog(main, "LevelManager#getLevelledItemDrops", "4: custom drop has override");
+                removeVanillaDrops(livingEntity, dropsToMultiply);
+            }
+
+            if (!customDrops.isEmpty()) currentDrops.addAll(customDrops);
         }
 
-        if (!doNotMultiplyDrops) {
+        if (!doNotMultiplyDrops && !dropsToMultiply.isEmpty()) {
             // Get currentDrops added per level value
             final int addition = BigDecimal.valueOf(main.mobDataManager.getAdditionsForLevel(livingEntity, Addition.CUSTOM_ITEM_DROP, level))
                     .setScale(0, RoundingMode.HALF_DOWN).intValueExact(); // truncate double to int
@@ -556,21 +559,22 @@ public class LevelManager {
 
             // Modify current drops
             Utils.debugLog(main, "LevelManager#getLevelledItemDrops", "5: Scanning " + dropsToMultiply.size() + " items...");
-            for (ItemStack currentDrop : dropsToMultiply) {
-                Utils.debugLog(main, "LevelManager#getLevelledItemDrops", "6: Scanning drop " + currentDrop.getType().toString() + " with current amount " + currentDrop.getAmount() + "...");
-
-                if (main.mobDataManager.isLevelledDropManaged(livingEntity.getType(), currentDrop.getType())) {
-                    int useAmount = currentDrop.getAmount() + (currentDrop.getAmount() * addition);
-                    if (useAmount > currentDrop.getMaxStackSize()) useAmount = currentDrop.getMaxStackSize();
-                    currentDrop.setAmount(useAmount);
-                    Utils.debugLog(main, "LevelManager#getLevelledItemDrops", "7: Item was managed. New amount: " + currentDrop.getAmount() + ".");
-                } else {
-                    Utils.debugLog(main, "LevelManager#getLevelledItemDrops", "7: Item was unmanaged.");
-                }
-            }
+            for (final ItemStack currentDrop : dropsToMultiply)
+                multiplyDrop(livingEntity, currentDrop, addition, false);
         }
+    }
 
-        if (!customDrops.isEmpty()) dropsToMultiply.addAll(customDrops);
+    public void multiplyDrop(LivingEntity livingEntity, final ItemStack currentDrop, final int addition, final boolean isCustomDrop){
+        Utils.debugLog(main, "LevelManager#getLevelledItemDrops", "6: Scanning drop " + currentDrop.getType().toString() + " with current amount " + currentDrop.getAmount() + "...");
+
+        if (isCustomDrop || main.mobDataManager.isLevelledDropManaged(livingEntity.getType(), currentDrop.getType())) {
+            int useAmount = currentDrop.getAmount() + (currentDrop.getAmount() * addition);
+            if (useAmount > currentDrop.getMaxStackSize()) useAmount = currentDrop.getMaxStackSize();
+            currentDrop.setAmount(useAmount);
+            Utils.debugLog(main, "LevelManager#getLevelledItemDrops", "7: Item was managed. New amount: " + currentDrop.getAmount() + ".");
+        } else {
+            Utils.debugLog(main, "LevelManager#getLevelledItemDrops", "7: Item was unmanaged.");
+        }
     }
 
     @Nonnull

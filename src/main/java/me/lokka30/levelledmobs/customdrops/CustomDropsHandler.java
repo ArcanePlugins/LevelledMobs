@@ -56,49 +56,60 @@ public class CustomDropsHandler {
 
     public CustomDropResult getCustomItemDrops(final LivingEntity livingEntity, final int level, final List<ItemStack> drops, final boolean isLevellable, final boolean equippedOnly){
 
-        final int preCount = drops.size();
         final List<CustomDropsUniversalGroups> applicableGroups = getApllicableGroupsForMob(livingEntity, isLevellable);
         final boolean isSpawner = livingEntity.getPersistentDataContainer().has(instance.levelManager.isSpawnerKey, PersistentDataType.STRING);
         CustomDropResult customDropResult = CustomDropResult.NO_OVERRIDE;
+        final CustomDropProcessingInfo processingInfo = new CustomDropProcessingInfo();
+        processingInfo.livingEntity = livingEntity;
+        processingInfo.equippedOnly = equippedOnly;
+        processingInfo.isSpawner = isSpawner;
+        processingInfo.level = level;
+        processingInfo.newDrops = drops;
+        processingInfo.addition = BigDecimal.valueOf(instance.mobDataManager.getAdditionsForLevel(livingEntity, Addition.CUSTOM_ITEM_DROP, level))
+                .setScale(0, RoundingMode.HALF_DOWN).intValueExact(); // truncate double to int
 
-        boolean deathByFire = false;
+        processingInfo.doNotMultiplyDrops =
+                (Utils.isBabyMob(livingEntity) && instance.configUtils.noDropMultiplierEntities.contains("BABY_" + livingEntity.getType().toString())) ||
+                        instance.configUtils.noDropMultiplierEntities.contains(livingEntity.getType().toString());
+
         if (livingEntity.getLastDamageCause() != null){
             final EntityDamageEvent.DamageCause damageCause = livingEntity.getLastDamageCause().getCause();
-            deathByFire = (damageCause == EntityDamageEvent.DamageCause.FIRE ||
+            processingInfo.deathByFire = (damageCause == EntityDamageEvent.DamageCause.FIRE ||
                     damageCause == EntityDamageEvent.DamageCause.FIRE_TICK ||
                     damageCause == EntityDamageEvent.DamageCause.LAVA);
         }
 
         if (!equippedOnly && instance.settingsCfg.getStringList("debug-misc").contains("custom-drops")) {
-            ArrayList<String> applicableGroupsNames = new ArrayList<>();
+            List<String> applicableGroupsNames = new LinkedList<>();
             applicableGroups.forEach(applicableGroup -> applicableGroupsNames.add(applicableGroup.toString()));
 
-            Utils.logger.info("&7Custom drops for " + livingEntity.getName());
+            String mobLevel = level > 0 ? " (level " + level + ")" : "";
+            Utils.logger.info("&7Custom drops for " + livingEntity.getName() + mobLevel);
             Utils.logger.info("&8- &7Groups: &b" + String.join("&7, &b", applicableGroupsNames) + "&7.");
         }
 
         for (final CustomDropsUniversalGroups group : applicableGroups){
             if (!customDropsitems_groups.containsKey(group)) continue;
 
-            CustomDropInstance dropInstance = customDropsitems_groups.get(group);
-            if (dropInstance.overrideStockDrops) customDropResult = CustomDropResult.HAS_OVERRIDE;
+            processingInfo.dropInstance = customDropsitems_groups.get(group);
+            if (processingInfo.dropInstance.overrideStockDrops) customDropResult = CustomDropResult.HAS_OVERRIDE;
 
             // if we are using groupIds then shuffle the list so it doesn't potentially drop the same item each time
-            if (dropInstance.utilizesGroupIds)
-                Collections.shuffle(dropInstance.customItems);
+            if (processingInfo.dropInstance.utilizesGroupIds)
+                Collections.shuffle(processingInfo.dropInstance.customItems);
 
-            getCustomItemDrops2(livingEntity, level, dropInstance, drops, isSpawner, equippedOnly, deathByFire);
+            getCustomItemDrops2(processingInfo);
         }
 
         if (customDropsitems.containsKey(livingEntity.getType())){
-            CustomDropInstance dropInstance = customDropsitems.get(livingEntity.getType());
-            if (dropInstance.overrideStockDrops) customDropResult = CustomDropResult.HAS_OVERRIDE;
+            processingInfo.dropInstance = customDropsitems.get(livingEntity.getType());
+            if (processingInfo.dropInstance.overrideStockDrops) customDropResult = CustomDropResult.HAS_OVERRIDE;
 
             // if we are using groupIds then shuffle the list so it doesn't potentially drop the same item each time
-            if (dropInstance.utilizesGroupIds)
-                Collections.shuffle(dropInstance.customItems);
+            if (processingInfo.dropInstance.utilizesGroupIds)
+                Collections.shuffle(processingInfo.dropInstance.customItems);
 
-            getCustomItemDrops2(livingEntity, level, dropInstance, drops, isSpawner, equippedOnly, deathByFire);
+            getCustomItemDrops2(processingInfo);
         }
 
         final int postCount = drops.size();
@@ -113,37 +124,35 @@ public class CustomDropsHandler {
                 }
                 Utils.logger.info("   " + sb.toString());
             } else if (!equippedOnly) {
-                Utils.logger.info(String.format("&8 --- &7Custom items added: &b%s&7.", postCount - preCount));
+                Utils.logger.info(String.format("&8 --- &7Custom items added: &b%s&7.", postCount));
             }
         }
 
         return customDropResult;
     }
 
-    private void getCustomItemDrops2(final LivingEntity livingEntity, final int level, final CustomDropInstance dropInstance,
-                                     final List<ItemStack> newDrops, final boolean isSpawner, final boolean equippedOnly,
-                                     final boolean deathByFire){
+    private void getCustomItemDrops2(final CustomDropProcessingInfo info){
 
-        for (final CustomItemDrop drop : dropInstance.customItems){
-            if (equippedOnly && !drop.isEquipped) continue;
+        for (final CustomItemDrop drop : info.dropInstance.customItems){
+            if (info.equippedOnly && !drop.isEquipped) continue;
 
-            if (drop.excludedMobs.contains(livingEntity.getName())){
-                if (!equippedOnly && instance.settingsCfg.getStringList("debug-misc").contains("custom-drops")) {
+            if (drop.excludedMobs.contains(info.livingEntity.getName())){
+                if (!info.equippedOnly && instance.settingsCfg.getStringList("debug-misc").contains("custom-drops")) {
                     Utils.logger.info(String.format(
-                            "&8 - &7Mob: &b%s&7, item: %s, mob was excluded", livingEntity.getName(), drop.getMaterial().name()));
+                            "&8 - &7Mob: &b%s&7, item: %s, mob was excluded", info.livingEntity.getName(), drop.getMaterial().name()));
                 }
                 continue;
             }
 
             boolean doDrop = true;
-            if (drop.maxLevel > -1 && level > drop.maxLevel) doDrop = false;
-            if (drop.minLevel > -1 && level < drop.minLevel) doDrop = false;
-            if (drop.noSpawner && isSpawner)  doDrop = false;
+            if (drop.maxLevel > -1 && info.level > drop.maxLevel) doDrop = false;
+            if (drop.minLevel > -1 && info.level < drop.minLevel) doDrop = false;
+            if (drop.noSpawner && info.isSpawner)  doDrop = false;
             if (!doDrop){
-                if (!equippedOnly && instance.settingsCfg.getStringList("debug-misc").contains("custom-drops")) {
-                    final ItemStack itemStack = deathByFire ? getCookedVariantOfMeat(drop.getItemStack()) : drop.getItemStack();
+                if (!info.equippedOnly && instance.settingsCfg.getStringList("debug-misc").contains("custom-drops")) {
+                    final ItemStack itemStack = info.deathByFire ? getCookedVariantOfMeat(drop.getItemStack()) : drop.getItemStack();
                     Utils.logger.info(String.format("&8- &7level: &b%s&7, fromSpawner: &b%s&7, item: &b%s&7, minL: &b%s&7, maxL: &b%s&7, nospawner: &b%s&7, dropped: &bfalse",
-                            level, isSpawner, itemStack.getType().name(), drop.minLevel, drop.maxLevel, drop.noSpawner));
+                            info.level, info.isSpawner, itemStack.getType().name(), drop.minLevel, drop.maxLevel, drop.noSpawner));
                 }
                 continue;
             }
@@ -158,29 +167,37 @@ public class CustomDropsHandler {
             double chanceRole = 0.0;
 
             if (drop.dropChance < 1.0){
-                if (!drop.noMultiplier) {
-                    final int addition = BigDecimal.valueOf(instance.mobDataManager.getAdditionsForLevel(livingEntity, Addition.CUSTOM_ITEM_DROP, level))
-                            .setScale(0, RoundingMode.HALF_DOWN).intValueExact(); // truncate double to int
-                    newDropAmount = newDropAmount + (newDropAmount * addition);
-                }
-
                 chanceRole = (double) ThreadLocalRandom.current().nextInt(0, 100001) * 0.00001;
                 if (1.0 - chanceRole >= drop.dropChance) didNotMakeChance = true;
             }
 
-            if (!equippedOnly && instance.settingsCfg.getStringList("debug-misc").contains("custom-drops")) {
-                final ItemStack itemStack = deathByFire ? getCookedVariantOfMeat(drop.getItemStack()) : drop.getItemStack();
+            if (didNotMakeChance && !info.equippedOnly && instance.settingsCfg.getStringList("debug-misc").contains("custom-drops")) {
+                final ItemStack itemStack = info.deathByFire ? getCookedVariantOfMeat(drop.getItemStack()) : drop.getItemStack();
                 Utils.logger.info(String.format(
-                        "&8 - &7item: &b%s&7, amount: &b%s&7, newAmount: &b%s&7, chance: &b%s&7, chanceRole: &b%s&7, dropped: &b%s&7.",
-                        itemStack.getType().name(), drop.getAmountAsString(), newDropAmount, drop.dropChance, chanceRole, !didNotMakeChance)
+                        "&8 - &7item: &b%s&7, amount: &b%s&7, chance: &b%s&7, chanceRole: &b%s&7, dropped: &bfalse&7.",
+                        itemStack.getType().name(), drop.getAmountAsString(), drop.dropChance, chanceRole)
                 );
             }
             if (didNotMakeChance) continue;
-
             // if we made it this far then the item will be dropped
-            final ItemStack newItem = deathByFire ?
+
+            final ItemStack newItem = info.deathByFire ?
                     getCookedVariantOfMeat(drop.getItemStack().clone()) :
                     drop.getItemStack().clone();
+
+            newItem.setAmount(newDropAmount);
+
+            if (!drop.noMultiplier && !info.doNotMultiplyDrops) {
+                instance.levelManager.multiplyDrop(info.livingEntity, newItem, info.addition, true);
+                newDropAmount = newItem.getAmount();
+            }
+            else if (newDropAmount > newItem.getMaxStackSize()) newDropAmount = newItem.getMaxStackSize();
+
+            if (newItem.getAmount() != newDropAmount) newItem.setAmount(newDropAmount);
+
+            Utils.logger.info(String.format(
+                    "&8 - &7item: &b%s&7, amount: &b%s&7, newAmount: &b%s&7, chance: &b%s&7, chanceRole: &b%s&7, dropped: &btrue&7.",
+                    newItem.getType().name(), drop.getAmountAsString(), newDropAmount, drop.dropChance, chanceRole));
 
             int damage = drop.getDamage();
             if (drop.getHasDamageRange())
@@ -194,10 +211,7 @@ public class CustomDropsHandler {
                 }
             }
 
-            if (newDropAmount > newItem.getMaxStackSize()) newDropAmount = newItem.getMaxStackSize();
-            if (newDropAmount != 1) newItem.setAmount(newDropAmount);
-
-            newDrops.add(newItem);
+            info.newDrops.add(newItem);
         }
     }
 
