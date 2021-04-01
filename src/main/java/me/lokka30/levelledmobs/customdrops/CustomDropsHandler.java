@@ -282,6 +282,30 @@ public class CustomDropsHandler {
         return groups;
     }
 
+
+    private void processDefaults(MemorySection ms){
+        Map<String, Object> vals = ms.getValues(false);
+        ConfigurationSection cs = objectToConfigurationSection(vals);
+
+        if (cs == null){
+            Utils.logger.warning("cs was null");
+            return;
+        }
+
+        // configure bogus items so we can utilize the existing attribute parse logic
+        CustomItemDrop drop = new CustomItemDrop(this.defaults);
+        drop.setMaterial(Material.STICK);
+        CustomDropInstance dropInstance = new CustomDropInstance(EntityType.AREA_EFFECT_CLOUD);
+        dropInstance.customItems.add(drop);
+
+        // this sets the drop and dropinstance defaults
+        parseCustomDropsAttributes(drop, cs, dropInstance);
+
+        // now we'll use the attributes here for defaults
+        this.defaults.setDefaultsFromDropItem(drop);
+        this.defaults.override = dropInstance.overrideStockDrops;
+    }
+
     private void parseCustomDrops(final ConfigurationSection config){
         final TreeMap<String, CustomDropInstance> customItemGroups = new TreeMap<>();
 
@@ -399,29 +423,6 @@ public class CustomDropsHandler {
         }
     }
 
-    private void processDefaults(MemorySection ms){
-        Map<String, Object> vals = ms.getValues(false);
-        ConfigurationSection cs = objectToConfigurationSection(vals);
-
-        if (cs == null){
-            Utils.logger.warning("cs was null");
-            return;
-        }
-
-        // configure bogus items so we can utilize the existing attribute parse logic
-        CustomItemDrop drop = new CustomItemDrop(this.defaults);
-        drop.setMaterial(Material.STICK);
-        CustomDropInstance dropInstance = new CustomDropInstance(EntityType.AREA_EFFECT_CLOUD);
-        dropInstance.customItems.add(drop);
-
-        // this sets the drop and dropinstance defaults
-        parseCustomDropsAttributes(drop, cs, dropInstance);
-
-        // now we'll use the attributes here for defaults
-        this.defaults.setDefaultsFromDropItem(drop);
-        this.defaults.override = dropInstance.overrideStockDrops;
-    }
-
     private void parseCustomDrops2(final List<?> itemConfigurations, final CustomDropInstance dropInstance){
 
         if (itemConfigurations == null) {
@@ -456,6 +457,9 @@ public class CustomDropsHandler {
 
             for (final Map.Entry<String,Object> itemEntry : itemConfiguration.getValues(false).entrySet()) {
                 final String materialName = itemEntry.getKey();
+
+                if (checkForMobOverride(itemEntry, dropInstance)) continue;
+
                 final ConfigurationSection itemInfoConfiguration = objectToConfigurationSection(itemEntry.getValue());
                 if (itemInfoConfiguration == null) {
                     continue;
@@ -577,6 +581,18 @@ public class CustomDropsHandler {
             Utils.logger.warning("couldn't parse Config of type: " + object.getClass().getSimpleName() + ", value: " + object.toString());
             return null;
         }
+    }
+
+    private boolean checkForMobOverride(final Map.Entry<String,Object> itemEntry, CustomDropInstance dropInstance){
+        if (itemEntry.getKey().equalsIgnoreCase("override")){
+            final Object value = itemEntry.getValue();
+            if (value.getClass().equals(Boolean.class)) {
+                dropInstance.overrideStockDrops = (boolean) value;
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private void showCustomDropsDebugInfo(){

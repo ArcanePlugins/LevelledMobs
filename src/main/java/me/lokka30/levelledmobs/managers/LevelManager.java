@@ -526,7 +526,7 @@ public class LevelManager {
 
         // this accomodates chested animals, saddles and armor on ridable creatures
         final List<ItemStack> dropsToMultiply = getDropsToMultiply(livingEntity, currentDrops);
-        List<ItemStack> customDrops = null;
+        final List<ItemStack> customDrops = new LinkedList<>();
         currentDrops.clear();
 
         Utils.debugLog(main, "LevelManager#getLevelledItemDrops", "1: Method called. " + dropsToMultiply.size() + " drops will be analysed.");
@@ -542,7 +542,6 @@ public class LevelManager {
                         main.configUtils.noDropMultiplierEntities.contains(livingEntity.getType().toString());
 
         if (main.settingsCfg.getBoolean("use-custom-item-drops-for-mobs")) {
-            customDrops = new LinkedList<>();
             // custom drops also get multiplied in the custom drops handler
             final CustomDropResult dropResult = main.customDropsHandler.getCustomItemDrops(livingEntity, level, customDrops, true, false);
 
