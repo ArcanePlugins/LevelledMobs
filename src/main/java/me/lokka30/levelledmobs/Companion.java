@@ -56,10 +56,8 @@ public class Companion {
         final List<String> incompatibilities = new ArrayList<>();
 
         // Check the MC version of the server.
-        final String currentServerVersion = Bukkit.getVersion();
-        boolean isRunningSupportedVersion = VersionUtils.isOneFourteen();
-        if (!isRunningSupportedVersion) {
-            incompatibilities.add("Your server version &8(&b" + currentServerVersion + "&8)&7 is unsupported by &bLevelledMobs v" + main.getDescription().getVersion() + "&7!" +
+        if (!VersionUtils.isOneFourteen()) {
+            incompatibilities.add("Your server version &8(&b" + Bukkit.getVersion() + "&8)&7 is unsupported by &bLevelledMobs v" + main.getDescription().getVersion() + "&7!" +
                     "Compatible MC versions: &b" + String.join(", ", Utils.getSupportedServerVersions()) + "&7.");
         }
 
@@ -196,7 +194,7 @@ public class Companion {
         if (main.settingsCfg.getBoolean("use-update-checker")) {
             final UpdateChecker updateChecker = new UpdateChecker(main, 74304);
             updateChecker.getLatestVersion(latestVersion -> {
-                if (!updateChecker.getCurrentVersion().equals(latestVersion)) {
+                if (!updateChecker.getCurrentVersion().split(" ")[0].equals(latestVersion)) { // split since for whatever reason Spigot API doesn't tell us what is after the space
                     Utils.logger.warning("&fUpdate Checker: &7The plugin has an update available! You're running &bv" + updateChecker.getCurrentVersion() + "&7, latest version is &bv" + latestVersion + "&7.");
                 }
             });
