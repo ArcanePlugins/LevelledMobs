@@ -146,6 +146,9 @@ public class CustomDropsHandler {
                 continue;
             }
 
+            final boolean hasGroupId = !Utils.isNullOrEmpty(drop.groupId);
+            if (hasGroupId && info.groupIDsProcessed.contains(drop.groupId)) continue;
+
             boolean doDrop = true;
             if (drop.maxLevel > -1 && info.level > drop.maxLevel) doDrop = false;
             if (drop.minLevel > -1 && info.level < drop.minLevel) doDrop = false;
@@ -216,6 +219,8 @@ public class CustomDropsHandler {
                     newItem.setItemMeta(meta);
                 }
             }
+
+            if (hasGroupId) info.groupIDsProcessed.add(drop.groupId);
 
             info.newDrops.add(newItem);
         }
