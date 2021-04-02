@@ -4,21 +4,19 @@ import me.lokka30.levelledmobs.LevelInterface;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.managers.LevelManager;
 import me.lokka30.levelledmobs.misc.*;
-import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
-import org.bukkit.enchantments.EnchantmentTarget;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.*;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
-import org.bukkit.inventory.EntityEquipment;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Objects;
 
 /**
  * @author lokka30
@@ -99,7 +97,7 @@ public class CreatureSpawnListener implements Listener {
         //TODO move the following code
         final int mobLevel = processMobSpawn(livingEntity, SpawnReason.DEFAULT, -1, MobProcessReason.NONE, false);
         if (mobLevel >= 0 && main.settingsCfg.getBoolean("use-custom-item-drops-for-mobs"))
-            processMobEquipment(livingEntity, mobLevel);
+            main.levelInterface.applyLevelledEquipment(livingEntity, mobLevel);
     }
 
     /**
@@ -118,7 +116,7 @@ public class CreatureSpawnListener implements Listener {
             public void run() {
                 final int mobLevel = processMobSpawn(event.getEntity(), event.getSpawnReason(), -1, MobProcessReason.NONE, false);
                 if (mobLevel >= 0 && main.settingsCfg.getBoolean("use-custom-item-drops-for-mobs"))
-                    processMobEquipment(event.getEntity(), mobLevel);
+                    main.levelInterface.applyLevelledEquipment(event.getEntity(), mobLevel);
             }
         }.runTaskLater(main, 1L);
     }
@@ -274,36 +272,5 @@ public class CreatureSpawnListener implements Listener {
         }
 
         return level;
-    }
-
-    public void processMobEquipment(final LivingEntity livingEntity, final int level){
-        List<ItemStack> items = new ArrayList<>();
-        main.customDropsHandler.getCustomItemDrops(livingEntity, level, items, true, true);
-        if (items.isEmpty()) return;
-
-        EntityEquipment ee = livingEntity.getEquipment();
-        if (ee == null) return;
-
-        boolean hadMainItem = false;
-
-        for (ItemStack itemStack : items) {
-            Material material = itemStack.getType();
-            if (EnchantmentTarget.ARMOR_FEET.includes(material)) {
-                ee.setBoots(itemStack, true);
-            } else if (EnchantmentTarget.ARMOR_LEGS.includes(material)) {
-                ee.setLeggings(itemStack, true);
-            } else if (EnchantmentTarget.ARMOR_TORSO.includes(material)) {
-                ee.setChestplate(itemStack, true);
-            } else if (EnchantmentTarget.ARMOR_HEAD.includes(material)) {
-                ee.setHelmet(itemStack, true);
-            } else {
-                if (!hadMainItem) {
-                    ee.setItemInMainHand(itemStack);
-                    hadMainItem = true;
-                } else {
-                    ee.setItemInOffHand(itemStack);
-                }
-            }
-        }
     }
 }

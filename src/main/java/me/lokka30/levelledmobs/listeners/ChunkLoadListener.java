@@ -41,7 +41,7 @@ public class ChunkLoadListener implements Listener {
             // For some reason they aren't levelled - let's fix that!
             final int mobLevel = instance.levelManager.creatureSpawnListener.processMobSpawn(livingEntity, CreatureSpawnEvent.SpawnReason.DEFAULT, -1, MobProcessReason.NONE, false);
             if (mobLevel >= 0 && instance.settingsCfg.getBoolean("use-custom-item-drops-for-mobs"))
-                instance.levelManager.creatureSpawnListener.processMobEquipment(livingEntity, mobLevel);
+                instance.levelInterface.applyLevelledEquipment(livingEntity, mobLevel);
         }
     }
 }
