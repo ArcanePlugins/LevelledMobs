@@ -14,13 +14,14 @@ public class CustomDropProcessingInfo {
 
     public LivingEntity livingEntity;
     public int level;
-    public CustomDropInstance dropInstance;
     public List<ItemStack> newDrops;
     public boolean isSpawner;
     public boolean equippedOnly;
     public boolean deathByFire;
     public int addition;
     public boolean doNotMultiplyDrops;
+    public boolean hasOverride;
     @Nonnull
     public List<String> groupIDsProcessed;
+    public List<CustomItemDrop> combinedDrops;
 }

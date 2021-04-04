@@ -58,7 +58,7 @@ public class CustomDropsHandler {
 
         final List<CustomDropsUniversalGroups> applicableGroups = getApllicableGroupsForMob(livingEntity, isLevellable);
         final boolean isSpawner = livingEntity.getPersistentDataContainer().has(instance.levelManager.isSpawnerKey, PersistentDataType.STRING);
-        CustomDropResult customDropResult = CustomDropResult.NO_OVERRIDE;
+        //CustomDropResult customDropResult = CustomDropResult.NO_OVERRIDE;
         final CustomDropProcessingInfo processingInfo = new CustomDropProcessingInfo();
         processingInfo.livingEntity = livingEntity;
         processingInfo.equippedOnly = equippedOnly;
@@ -88,31 +88,15 @@ public class CustomDropsHandler {
             Utils.logger.info("&8- &7Groups: &b" + String.join("&7, &b", applicableGroupsNames) + "&7.");
         }
 
+        final List<CustomDropsUniversalGroups> groupsList = new LinkedList<>();
         for (final CustomDropsUniversalGroups group : applicableGroups){
             if (!customDropsitems_groups.containsKey(group)) continue;
 
-            processingInfo.dropInstance = customDropsitems_groups.get(group);
-            //customDropResult = processingInfo.dropInstance.overrideStockDrops? CustomDropResult.HAS_OVERRIDE : CustomDropResult.NO_OVERRIDE;
-            if (processingInfo.dropInstance.overrideStockDrops) customDropResult = CustomDropResult.HAS_OVERRIDE;
-
-            // if we are using groupIds then shuffle the list so it doesn't potentially drop the same item each time
-            if (processingInfo.dropInstance.utilizesGroupIds)
-                Collections.shuffle(processingInfo.dropInstance.customItems);
-
-            getCustomItemDrops2(processingInfo);
+            groupsList.add(group);
         }
 
-        if (customDropsitems.containsKey(livingEntity.getType())){
-            processingInfo.dropInstance = customDropsitems.get(livingEntity.getType());
-            //customDropResult = processingInfo.dropInstance.overrideStockDrops? CustomDropResult.HAS_OVERRIDE : CustomDropResult.NO_OVERRIDE;
-            if (processingInfo.dropInstance.overrideStockDrops) customDropResult = CustomDropResult.HAS_OVERRIDE;
-
-            // if we are using groupIds then shuffle the list so it doesn't potentially drop the same item each time
-            if (processingInfo.dropInstance.utilizesGroupIds)
-                Collections.shuffle(processingInfo.dropInstance.customItems);
-
-            getCustomItemDrops2(processingInfo);
-        }
+        buildDropsListFromGroupsAndEntity(groupsList, livingEntity.getType(), processingInfo);
+        getCustomItemDrops2(processingInfo); // payload
 
         final int postCount = drops.size();
 
@@ -130,12 +114,39 @@ public class CustomDropsHandler {
             }
         }
 
-        return customDropResult;
+        return processingInfo.hasOverride ?
+                CustomDropResult.HAS_OVERRIDE : CustomDropResult.NO_OVERRIDE;
+    }
+
+    private void buildDropsListFromGroupsAndEntity(final List<CustomDropsUniversalGroups> groups, final EntityType entityType, final CustomDropProcessingInfo processingInfo){
+        final List<CustomItemDrop> drops = new LinkedList<>();
+        boolean usesGroupIds = false;
+        boolean hasOverride = false;
+
+        for (CustomDropsUniversalGroups group : groups){
+            CustomDropInstance dropInstance = customDropsitems_groups.get(group);
+            drops.addAll(dropInstance.customItems);
+            if (dropInstance.utilizesGroupIds) usesGroupIds = true;
+            if (dropInstance.overrideStockDrops) hasOverride = true;
+        }
+
+        if (customDropsitems.containsKey(entityType)){
+            CustomDropInstance dropInstance = customDropsitems.get(entityType);
+            drops.addAll(dropInstance.customItems);
+            if (dropInstance.utilizesGroupIds) usesGroupIds = true;
+            if (dropInstance.overrideStockDrops) hasOverride = true;
+        }
+
+        if (usesGroupIds)
+            Collections.shuffle(drops);
+
+        processingInfo.combinedDrops = drops;
+        processingInfo.hasOverride = hasOverride;
     }
 
     private void getCustomItemDrops2(final CustomDropProcessingInfo info){
 
-        for (final CustomItemDrop drop : info.dropInstance.customItems){
+        for (final CustomItemDrop drop : info.combinedDrops){
             if (info.equippedOnly && !drop.isEquipped) continue;
 
             if (drop.excludedMobs.contains(info.livingEntity.getName())){
