@@ -620,7 +620,9 @@ public class LevelManager {
 
         if (livingEntity instanceof ChestedHorse && ((ChestedHorse)livingEntity).isCarryingChest()){
             final AbstractHorseInventory inv = ((ChestedHorse) livingEntity).getInventory();
-            chestItems = Arrays.asList(inv.getContents());
+            chestItems = new LinkedList<>();
+            Collections.addAll(chestItems, inv.getContents());
+            chestItems.add(new ItemStack(Material.CHEST));
         }
         else if (livingEntity instanceof Vehicle){
             for (final ItemStack itemStack : drops){

@@ -50,7 +50,7 @@ public class CustomDropsHandler {
 
         buildUniversalGroups();
 
-        if (instance.settingsCfg.getBoolean("use-custom-item-drops-for-mobs") && instance.customDropsCfg != null)
+        if (instance.settingsCfg.getBoolean("use-custom-item-drops-for-mobs"))
             parseCustomDrops(instance.customDropsCfg);
     }
 
@@ -287,19 +287,18 @@ public class CustomDropsHandler {
         return groups;
     }
 
-
     private void processDefaults(MemorySection ms){
         Map<String, Object> vals = ms.getValues(false);
         ConfigurationSection cs = objectToConfigurationSection(vals);
 
         if (cs == null){
-            Utils.logger.warning("cs was null");
+            Utils.logger.warning("Unable to process defaults, cs was null");
             return;
         }
 
         // configure bogus items so we can utilize the existing attribute parse logic
         CustomItemDrop drop = new CustomItemDrop(this.defaults);
-        drop.setMaterial(Material.STICK);
+        drop.setMaterial(Material.AIR);
         CustomDropInstance dropInstance = new CustomDropInstance(EntityType.AREA_EFFECT_CLOUD);
         dropInstance.customItems.add(drop);
 
@@ -313,6 +312,11 @@ public class CustomDropsHandler {
 
     private void parseCustomDrops(final ConfigurationSection config){
         final TreeMap<String, CustomDropInstance> customItemGroups = new TreeMap<>();
+
+        final Object defaultObj = config.get("defaults");
+        if (defaultObj != null && defaultObj.getClass().equals(MemorySection.class)){
+            processDefaults((MemorySection) defaultObj);
+        }
 
         if (config.get("drop-table") != null) {
             final MemorySection ms = (MemorySection) config.get("drop-table");
@@ -353,8 +357,8 @@ public class CustomDropsHandler {
                     dropInstance = new CustomDropInstance(universalGroup);
                 } else if (!isEntityTable) {
                     if (mobTypeOrGroup.equalsIgnoreCase("defaults")){
-                        final Object msTemp = config.get(item);
-                        if (msTemp != null) processDefaults((MemorySection) msTemp);
+//                        final Object msTemp = config.get(item);
+//                        if (msTemp != null) processDefaults((MemorySection) msTemp);
                         continue;
                     }
                     try {
@@ -381,24 +385,14 @@ public class CustomDropsHandler {
                         if (ms == null) continue;
 
                         final String useEntityDropId = ms.getString("usedroptable");
-                        if (!customItemGroups.containsKey(useEntityDropId))
+                        if (useEntityDropId != null && !customItemGroups.containsKey(useEntityDropId))
                             Utils.logger.warning("Did not find droptable id match for name: " + useEntityDropId);
+                        else if (useEntityDropId == null)
+                            Utils.logger.warning("Found a drop-table reference with no id!");
                         else {
                             final CustomDropInstance refDrop = customItemGroups.get(useEntityDropId);
                             for (CustomItemDrop itemDrop : refDrop.customItems)
                                 dropInstance.customItems.add(itemDrop.cloneItem());
-
-                            // process any further customizations
-                            if (config.get(item) instanceof MemorySection){
-                                final MemorySection ms2 = (MemorySection) config.get(item);
-                                if (ms2 != null) {
-                                    final Map<String, Object> values = ms2.getValues(false);
-                                    final ConfigurationSection cs = objectToConfigurationSection(values);
-
-                                    for (final CustomItemDrop itemDrop : dropInstance.customItems)
-                                        parseCustomDropsAttributes(itemDrop, cs, dropInstance);
-                                }
-                            }
                         }
                     }
                 } // end if not entity table
@@ -435,7 +429,6 @@ public class CustomDropsHandler {
         }
 
         for (final Object itemObject : itemConfigurations) {
-
             if (itemObject instanceof String) {
                 // just the string was given
                 final CustomItemDrop item = new CustomItemDrop(this.defaults);
@@ -446,21 +439,24 @@ public class CustomDropsHandler {
                     continue;
                 }
 
-                Material material;
-                try {
-                    material = Material.valueOf(materialName.toUpperCase());
-                } catch (Exception e) {
-                    Utils.logger.warning(String.format("Invalid material type specified in customdrops.yml for: %s, %s", dropInstance.getMobOrGroupName(), materialName));
-                    continue;
-                }
-                item.setMaterial(material);
-                dropInstance.customItems.add(item);
+                addMaterialToDrop(materialName, dropInstance, item);
                 continue;
             }
             final ConfigurationSection itemConfiguration = objectToConfigurationSection(itemObject);
             if (itemConfiguration == null) continue;
 
-            for (final Map.Entry<String,Object> itemEntry : itemConfiguration.getValues(false).entrySet()) {
+            final Set<Map.Entry<String, Object>> ItemsToCheck = itemConfiguration.getValues(false).entrySet();
+
+            if (ItemsToCheck.isEmpty() && itemObject.getClass().equals(LinkedHashMap.class)){
+                // empty list means a material name was provided with no attributes
+                final LinkedHashMap<String, Object> materials = (LinkedHashMap<String, Object>) itemObject;
+                for (final String materialName :  materials.keySet()){
+                    final CustomItemDrop item = new CustomItemDrop(this.defaults);
+                    addMaterialToDrop(materialName, dropInstance, item);
+                }
+            }
+
+            for (final Map.Entry<String,Object> itemEntry : ItemsToCheck) {
                 final String materialName = itemEntry.getKey();
 
                 if (checkForMobOverride(itemEntry, dropInstance)) continue;
@@ -471,17 +467,7 @@ public class CustomDropsHandler {
                 }
 
                 final CustomItemDrop item = new CustomItemDrop(this.defaults);
-
-                Material material;
-                try {
-                    material = Material.valueOf(materialName.toUpperCase());
-                } catch (Exception e) {
-                    Utils.logger.warning(String.format("Invalid material type specified in customdrops.yml for: %s, %s", dropInstance.getMobOrGroupName(), materialName));
-                    continue;
-                }
-
-                item.setMaterial(material);
-                dropInstance.customItems.add(item);
+                addMaterialToDrop(materialName, dropInstance, item);
 
                 parseCustomDropsAttributes(item, itemInfoConfiguration, dropInstance);
             }
@@ -588,6 +574,19 @@ public class CustomDropsHandler {
         }
     }
 
+    private void addMaterialToDrop(final String materialName, CustomDropInstance dropInstance, CustomItemDrop item){
+        Material material;
+        try {
+            material = Material.valueOf(materialName.toUpperCase());
+        } catch (Exception e) {
+            Utils.logger.warning(String.format("Invalid material type specified in customdrops.yml for: %s, %s", dropInstance.getMobOrGroupName(), materialName));
+            return;
+        }
+
+        item.setMaterial(material);
+        dropInstance.customItems.add(item);
+    }
+
     private boolean checkForMobOverride(final Map.Entry<String,Object> itemEntry, CustomDropInstance dropInstance){
         if (itemEntry.getKey().equalsIgnoreCase("override")){
             final Object value = itemEntry.getValue();
@@ -639,6 +638,7 @@ public class CustomDropsHandler {
             sb.append(item.getDamageAsString());
         }
         if (!item.excludedMobs.isEmpty()) sb.append(", hasExcludes");
+        if (item.isEquipped) sb.append(", equip");
 
         Utils.logger.info(sb.toString());
         sb.setLength(0);
