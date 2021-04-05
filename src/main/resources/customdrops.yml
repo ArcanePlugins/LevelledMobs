@@ -244,6 +244,7 @@ defaults:
   nomultiplier: false
   nospawner: false
   equipped: false
+  override: false
 
 #
 # |||||||||||||||||||||||||||||||||||||||||||||||||||||

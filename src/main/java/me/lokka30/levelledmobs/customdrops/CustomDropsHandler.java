@@ -50,56 +50,53 @@ public class CustomDropsHandler {
 
         buildUniversalGroups();
 
-        if (instance.settingsCfg.getBoolean("use-custom-item-drops-for-mobs") && instance.customDropsCfg != null)
+        if (instance.settingsCfg.getBoolean("use-custom-item-drops-for-mobs"))
             parseCustomDrops(instance.customDropsCfg);
     }
 
     public CustomDropResult getCustomItemDrops(final LivingEntity livingEntity, final int level, final List<ItemStack> drops, final boolean isLevellable, final boolean equippedOnly){
 
-        final int preCount = drops.size();
         final List<CustomDropsUniversalGroups> applicableGroups = getApllicableGroupsForMob(livingEntity, isLevellable);
         final boolean isSpawner = livingEntity.getPersistentDataContainer().has(instance.levelManager.isSpawnerKey, PersistentDataType.STRING);
-        CustomDropResult customDropResult = CustomDropResult.NO_OVERRIDE;
+        //CustomDropResult customDropResult = CustomDropResult.NO_OVERRIDE;
+        final CustomDropProcessingInfo processingInfo = new CustomDropProcessingInfo();
+        processingInfo.livingEntity = livingEntity;
+        processingInfo.equippedOnly = equippedOnly;
+        processingInfo.isSpawner = isSpawner;
+        processingInfo.level = level;
+        processingInfo.newDrops = drops;
+        processingInfo.addition = BigDecimal.valueOf(instance.mobDataManager.getAdditionsForLevel(livingEntity, Addition.CUSTOM_ITEM_DROP, level))
+                .setScale(0, RoundingMode.HALF_DOWN).intValueExact(); // truncate double to int
 
-        boolean deathByFire = false;
+        processingInfo.doNotMultiplyDrops =
+                (Utils.isBabyMob(livingEntity) && instance.configUtils.noDropMultiplierEntities.contains("BABY_" + livingEntity.getType().toString())) ||
+                        instance.configUtils.noDropMultiplierEntities.contains(livingEntity.getType().toString());
+
         if (livingEntity.getLastDamageCause() != null){
             final EntityDamageEvent.DamageCause damageCause = livingEntity.getLastDamageCause().getCause();
-            deathByFire = (damageCause == EntityDamageEvent.DamageCause.FIRE ||
+            processingInfo.deathByFire = (damageCause == EntityDamageEvent.DamageCause.FIRE ||
                     damageCause == EntityDamageEvent.DamageCause.FIRE_TICK ||
                     damageCause == EntityDamageEvent.DamageCause.LAVA);
         }
 
         if (!equippedOnly && instance.settingsCfg.getStringList("debug-misc").contains("custom-drops")) {
-            ArrayList<String> applicableGroupsNames = new ArrayList<>();
+            List<String> applicableGroupsNames = new LinkedList<>();
             applicableGroups.forEach(applicableGroup -> applicableGroupsNames.add(applicableGroup.toString()));
 
-            Utils.logger.info("&7Custom drops for " + livingEntity.getName());
+            String mobLevel = level > 0 ? " (level " + level + ")" : "";
+            Utils.logger.info("&7Custom drops for " + livingEntity.getName() + mobLevel);
             Utils.logger.info("&8- &7Groups: &b" + String.join("&7, &b", applicableGroupsNames) + "&7.");
         }
 
+        final List<CustomDropsUniversalGroups> groupsList = new LinkedList<>();
         for (final CustomDropsUniversalGroups group : applicableGroups){
             if (!customDropsitems_groups.containsKey(group)) continue;
 
-            CustomDropInstance dropInstance = customDropsitems_groups.get(group);
-            if (dropInstance.overrideStockDrops) customDropResult = CustomDropResult.HAS_OVERRIDE;
-
-            // if we are using groupIds then shuffle the list so it doesn't potentially drop the same item each time
-            if (dropInstance.utilizesGroupIds)
-                Collections.shuffle(dropInstance.customItems);
-
-            getCustomItemDrops2(livingEntity, level, dropInstance, drops, isSpawner, equippedOnly, deathByFire);
+            groupsList.add(group);
         }
 
-        if (customDropsitems.containsKey(livingEntity.getType())){
-            CustomDropInstance dropInstance = customDropsitems.get(livingEntity.getType());
-            if (dropInstance.overrideStockDrops) customDropResult = CustomDropResult.HAS_OVERRIDE;
-
-            // if we are using groupIds then shuffle the list so it doesn't potentially drop the same item each time
-            if (dropInstance.utilizesGroupIds)
-                Collections.shuffle(dropInstance.customItems);
-
-            getCustomItemDrops2(livingEntity, level, dropInstance, drops, isSpawner, equippedOnly, deathByFire);
-        }
+        buildDropsListFromGroupsAndEntity(groupsList, livingEntity.getType(), processingInfo);
+        getCustomItemDrops2(processingInfo); // payload
 
         final int postCount = drops.size();
 
@@ -113,37 +110,73 @@ public class CustomDropsHandler {
                 }
                 Utils.logger.info("   " + sb.toString());
             } else if (!equippedOnly) {
-                Utils.logger.info(String.format("&8 --- &7Custom items added: &b%s&7.", postCount - preCount));
+                Utils.logger.info(String.format("&8 --- &7Custom items added: &b%s&7.", postCount));
             }
         }
 
-        return customDropResult;
+        return processingInfo.hasOverride ?
+                CustomDropResult.HAS_OVERRIDE : CustomDropResult.NO_OVERRIDE;
     }
 
-    private void getCustomItemDrops2(final LivingEntity livingEntity, final int level, final CustomDropInstance dropInstance,
-                                     final List<ItemStack> newDrops, final boolean isSpawner, final boolean equippedOnly,
-                                     final boolean deathByFire){
+    private void buildDropsListFromGroupsAndEntity(final List<CustomDropsUniversalGroups> groups, final EntityType entityType, final CustomDropProcessingInfo processingInfo){
+        final List<CustomItemDrop> drops = new LinkedList<>();
+        boolean usesGroupIds = false;
+        boolean hasOverride = false;
 
-        for (final CustomItemDrop drop : dropInstance.customItems){
-            if (equippedOnly && !drop.isEquipped) continue;
+        for (CustomDropsUniversalGroups group : groups){
+            CustomDropInstance dropInstance = customDropsitems_groups.get(group);
+            drops.addAll(dropInstance.customItems);
+            if (dropInstance.utilizesGroupIds) usesGroupIds = true;
+            if (dropInstance.overrideStockDrops) hasOverride = true;
+        }
 
-            if (drop.excludedMobs.contains(livingEntity.getName())){
-                if (!equippedOnly && instance.settingsCfg.getStringList("debug-misc").contains("custom-drops")) {
+        if (customDropsitems.containsKey(entityType)){
+            CustomDropInstance dropInstance = customDropsitems.get(entityType);
+            drops.addAll(dropInstance.customItems);
+            if (dropInstance.utilizesGroupIds) usesGroupIds = true;
+            if (dropInstance.overrideStockDrops) hasOverride = true;
+        }
+
+        if (usesGroupIds)
+            Collections.shuffle(drops);
+
+        if (entityType.equals(EntityType.PIG)){
+            StringBuilder sb = new StringBuilder();
+            for (CustomItemDrop item : drops){
+                if (sb.length() > 0) sb.append(", ");
+                sb.append(item.getMaterial().name());
+            }
+        }
+
+        processingInfo.combinedDrops = drops;
+        processingInfo.hasOverride = hasOverride;
+    }
+
+    private void getCustomItemDrops2(final CustomDropProcessingInfo info){
+
+        for (final CustomItemDrop drop : info.combinedDrops){
+            if (info.equippedOnly && !drop.isEquipped) continue;
+
+            if (drop.excludedMobs.contains(info.livingEntity.getName())){
+                if (!info.equippedOnly && instance.settingsCfg.getStringList("debug-misc").contains("custom-drops")) {
                     Utils.logger.info(String.format(
-                            "&8 - &7Mob: &b%s&7, item: %s, mob was excluded", livingEntity.getName(), drop.getMaterial().name()));
+                            "&8 - &7Mob: &b%s&7, item: %s, mob was excluded", info.livingEntity.getName(), drop.getMaterial().name()));
                 }
                 continue;
             }
 
+            final boolean hasGroupId = !Utils.isNullOrEmpty(drop.groupId);
+            if (hasGroupId && info.groupIDsProcessed.contains(drop.groupId)) continue;
+
             boolean doDrop = true;
-            if (drop.maxLevel > -1 && level > drop.maxLevel) doDrop = false;
-            if (drop.minLevel > -1 && level < drop.minLevel) doDrop = false;
-            if (drop.noSpawner && isSpawner)  doDrop = false;
+            if (drop.maxLevel > -1 && info.level > drop.maxLevel) doDrop = false;
+            if (drop.minLevel > -1 && info.level < drop.minLevel) doDrop = false;
+            if (drop.noSpawner && info.isSpawner)  doDrop = false;
             if (!doDrop){
-                if (!equippedOnly && instance.settingsCfg.getStringList("debug-misc").contains("custom-drops")) {
-                    final ItemStack itemStack = deathByFire ? getCookedVariantOfMeat(drop.getItemStack()) : drop.getItemStack();
+                if (!info.equippedOnly && instance.settingsCfg.getStringList("debug-misc").contains("custom-drops")) {
+                    final ItemStack itemStack = info.deathByFire ? getCookedVariantOfMeat(drop.getItemStack()) : drop.getItemStack();
                     Utils.logger.info(String.format("&8- &7level: &b%s&7, fromSpawner: &b%s&7, item: &b%s&7, minL: &b%s&7, maxL: &b%s&7, nospawner: &b%s&7, dropped: &bfalse",
-                            level, isSpawner, itemStack.getType().name(), drop.minLevel, drop.maxLevel, drop.noSpawner));
+                            info.level, info.isSpawner, itemStack.getType().name(), drop.minLevel, drop.maxLevel, drop.noSpawner));
                 }
                 continue;
             }
@@ -158,29 +191,41 @@ public class CustomDropsHandler {
             double chanceRole = 0.0;
 
             if (drop.dropChance < 1.0){
-                if (!drop.noMultiplier) {
-                    final int addition = BigDecimal.valueOf(instance.mobDataManager.getAdditionsForLevel(livingEntity, Addition.CUSTOM_ITEM_DROP, level))
-                            .setScale(0, RoundingMode.HALF_DOWN).intValueExact(); // truncate double to int
-                    newDropAmount = newDropAmount + (newDropAmount * addition);
-                }
-
                 chanceRole = (double) ThreadLocalRandom.current().nextInt(0, 100001) * 0.00001;
                 if (1.0 - chanceRole >= drop.dropChance) didNotMakeChance = true;
             }
 
-            if (!equippedOnly && instance.settingsCfg.getStringList("debug-misc").contains("custom-drops")) {
-                final ItemStack itemStack = deathByFire ? getCookedVariantOfMeat(drop.getItemStack()) : drop.getItemStack();
-                Utils.logger.info(String.format(
-                        "&8 - &7item: &b%s&7, amount: &b%s&7, newAmount: &b%s&7, chance: &b%s&7, chanceRole: &b%s&7, dropped: &b%s&7.",
-                        itemStack.getType().name(), drop.getAmountAsString(), newDropAmount, drop.dropChance, chanceRole, !didNotMakeChance)
-                );
+            if (didNotMakeChance && !info.equippedOnly && instance.settingsCfg.getStringList("debug-misc").contains("custom-drops")) {
+                if (instance.settingsCfg.getStringList("debug-misc").contains("custom-drops")){
+                    final ItemStack itemStack = info.deathByFire ? getCookedVariantOfMeat(drop.getItemStack()) : drop.getItemStack();
+                    Utils.logger.info(String.format(
+                            "&8 - &7item: &b%s&7, amount: &b%s&7, chance: &b%s&7, chanceRole: &b%s&7, dropped: &bfalse&7.",
+                            itemStack.getType().name(), drop.getAmountAsString(), drop.dropChance, chanceRole)
+                    );
+                }
             }
             if (didNotMakeChance) continue;
-
             // if we made it this far then the item will be dropped
-            final ItemStack newItem = deathByFire ?
+
+            final ItemStack newItem = info.deathByFire ?
                     getCookedVariantOfMeat(drop.getItemStack().clone()) :
                     drop.getItemStack().clone();
+
+            newItem.setAmount(newDropAmount);
+
+            if (!drop.noMultiplier && !info.doNotMultiplyDrops) {
+                instance.levelManager.multiplyDrop(info.livingEntity, newItem, info.addition, true);
+                newDropAmount = newItem.getAmount();
+            }
+            else if (newDropAmount > newItem.getMaxStackSize()) newDropAmount = newItem.getMaxStackSize();
+
+            if (newItem.getAmount() != newDropAmount) newItem.setAmount(newDropAmount);
+
+            if (instance.settingsCfg.getStringList("debug-misc").contains("custom-drops")){
+                Utils.logger.info(String.format(
+                        "&8 - &7item: &b%s&7, amount: &b%s&7, newAmount: &b%s&7, chance: &b%s&7, chanceRole: &b%s&7, dropped: &btrue&7.",
+                        newItem.getType().name(), drop.getAmountAsString(), newDropAmount, drop.dropChance, chanceRole));
+            }
 
             int damage = drop.getDamage();
             if (drop.getHasDamageRange())
@@ -194,10 +239,9 @@ public class CustomDropsHandler {
                 }
             }
 
-            if (newDropAmount > newItem.getMaxStackSize()) newDropAmount = newItem.getMaxStackSize();
-            if (newDropAmount != 1) newItem.setAmount(newDropAmount);
+            if (hasGroupId) info.groupIDsProcessed.add(drop.groupId);
 
-            newDrops.add(newItem);
+            info.newDrops.add(newItem);
         }
     }
 
@@ -262,8 +306,36 @@ public class CustomDropsHandler {
         return groups;
     }
 
+    private void processDefaults(MemorySection ms){
+        Map<String, Object> vals = ms.getValues(false);
+        ConfigurationSection cs = objectToConfigurationSection(vals);
+
+        if (cs == null){
+            Utils.logger.warning("Unable to process defaults, cs was null");
+            return;
+        }
+
+        // configure bogus items so we can utilize the existing attribute parse logic
+        CustomItemDrop drop = new CustomItemDrop(this.defaults);
+        drop.setMaterial(Material.AIR);
+        CustomDropInstance dropInstance = new CustomDropInstance(EntityType.AREA_EFFECT_CLOUD);
+        dropInstance.customItems.add(drop);
+
+        // this sets the drop and dropinstance defaults
+        parseCustomDropsAttributes(drop, cs, dropInstance);
+
+        // now we'll use the attributes here for defaults
+        this.defaults.setDefaultsFromDropItem(drop);
+        this.defaults.override = dropInstance.overrideStockDrops;
+    }
+
     private void parseCustomDrops(final ConfigurationSection config){
         final TreeMap<String, CustomDropInstance> customItemGroups = new TreeMap<>();
+
+        final Object defaultObj = config.get("defaults");
+        if (defaultObj != null && defaultObj.getClass().equals(MemorySection.class)){
+            processDefaults((MemorySection) defaultObj);
+        }
 
         if (config.get("drop-table") != null) {
             final MemorySection ms = (MemorySection) config.get("drop-table");
@@ -304,8 +376,8 @@ public class CustomDropsHandler {
                     dropInstance = new CustomDropInstance(universalGroup);
                 } else if (!isEntityTable) {
                     if (mobTypeOrGroup.equalsIgnoreCase("defaults")){
-                        final Object msTemp = config.get(item);
-                        if (msTemp != null) processDefaults((MemorySection) msTemp);
+//                        final Object msTemp = config.get(item);
+//                        if (msTemp != null) processDefaults((MemorySection) msTemp);
                         continue;
                     }
                     try {
@@ -332,24 +404,16 @@ public class CustomDropsHandler {
                         if (ms == null) continue;
 
                         final String useEntityDropId = ms.getString("usedroptable");
-                        if (!customItemGroups.containsKey(useEntityDropId))
+                        if (useEntityDropId != null && !customItemGroups.containsKey(useEntityDropId))
                             Utils.logger.warning("Did not find droptable id match for name: " + useEntityDropId);
+                        else if (useEntityDropId == null)
+                            Utils.logger.warning("Found a drop-table reference with no id!");
                         else {
                             final CustomDropInstance refDrop = customItemGroups.get(useEntityDropId);
                             for (CustomItemDrop itemDrop : refDrop.customItems)
                                 dropInstance.customItems.add(itemDrop.cloneItem());
-
-                            // process any further customizations
-                            if (config.get(item) instanceof MemorySection){
-                                final MemorySection ms2 = (MemorySection) config.get(item);
-                                if (ms2 != null) {
-                                    final Map<String, Object> values = ms2.getValues(false);
-                                    final ConfigurationSection cs = objectToConfigurationSection(values);
-
-                                    for (final CustomItemDrop itemDrop : dropInstance.customItems)
-                                        parseCustomDropsAttributes(itemDrop, cs, dropInstance);
-                                }
-                            }
+                            if (refDrop.utilizesGroupIds) dropInstance.utilizesGroupIds = true;
+                            if (refDrop.overrideStockDrops) dropInstance.overrideStockDrops = true;
                         }
                     }
                 } // end if not entity table
@@ -379,29 +443,6 @@ public class CustomDropsHandler {
         }
     }
 
-    private void processDefaults(MemorySection ms){
-        Map<String, Object> vals = ms.getValues(false);
-        ConfigurationSection cs = objectToConfigurationSection(vals);
-
-        if (cs == null){
-            Utils.logger.warning("cs was null");
-            return;
-        }
-
-        // configure bogus items so we can utilize the existing attribute parse logic
-        CustomItemDrop drop = new CustomItemDrop(this.defaults);
-        drop.setMaterial(Material.STICK);
-        CustomDropInstance dropInstance = new CustomDropInstance(EntityType.AREA_EFFECT_CLOUD);
-        dropInstance.customItems.add(drop);
-
-        // this sets the drop and dropinstance defaults
-        parseCustomDropsAttributes(drop, cs, dropInstance);
-
-        // now we'll use the attributes here for defaults
-        this.defaults.setDefaultsFromDropItem(drop);
-        this.defaults.override = dropInstance.overrideStockDrops;
-    }
-
     private void parseCustomDrops2(final List<?> itemConfigurations, final CustomDropInstance dropInstance){
 
         if (itemConfigurations == null) {
@@ -409,7 +450,6 @@ public class CustomDropsHandler {
         }
 
         for (final Object itemObject : itemConfigurations) {
-
             if (itemObject instanceof String) {
                 // just the string was given
                 final CustomItemDrop item = new CustomItemDrop(this.defaults);
@@ -420,39 +460,35 @@ public class CustomDropsHandler {
                     continue;
                 }
 
-                Material material;
-                try {
-                    material = Material.valueOf(materialName.toUpperCase());
-                } catch (Exception e) {
-                    Utils.logger.warning(String.format("Invalid material type specified in customdrops.yml for: %s, %s", dropInstance.getMobOrGroupName(), materialName));
-                    continue;
-                }
-                item.setMaterial(material);
-                dropInstance.customItems.add(item);
+                addMaterialToDrop(materialName, dropInstance, item);
                 continue;
             }
             final ConfigurationSection itemConfiguration = objectToConfigurationSection(itemObject);
             if (itemConfiguration == null) continue;
 
-            for (final Map.Entry<String,Object> itemEntry : itemConfiguration.getValues(false).entrySet()) {
+            final Set<Map.Entry<String, Object>> ItemsToCheck = itemConfiguration.getValues(false).entrySet();
+
+            if (ItemsToCheck.isEmpty() && itemObject.getClass().equals(LinkedHashMap.class)){
+                // empty list means a material name was provided with no attributes
+                final LinkedHashMap<String, Object> materials = (LinkedHashMap<String, Object>) itemObject;
+                for (final String materialName :  materials.keySet()){
+                    final CustomItemDrop item = new CustomItemDrop(this.defaults);
+                    addMaterialToDrop(materialName, dropInstance, item);
+                }
+            }
+
+            for (final Map.Entry<String,Object> itemEntry : ItemsToCheck) {
                 final String materialName = itemEntry.getKey();
+
+                if (checkForMobOverride(itemEntry, dropInstance)) continue;
+
                 final ConfigurationSection itemInfoConfiguration = objectToConfigurationSection(itemEntry.getValue());
                 if (itemInfoConfiguration == null) {
                     continue;
                 }
 
                 final CustomItemDrop item = new CustomItemDrop(this.defaults);
-
-                Material material;
-                try {
-                    material = Material.valueOf(materialName.toUpperCase());
-                } catch (Exception e) {
-                    Utils.logger.warning(String.format("Invalid material type specified in customdrops.yml for: %s, %s", dropInstance.getMobOrGroupName(), materialName));
-                    continue;
-                }
-
-                item.setMaterial(material);
-                dropInstance.customItems.add(item);
+                addMaterialToDrop(materialName, dropInstance, item);
 
                 parseCustomDropsAttributes(item, itemInfoConfiguration, dropInstance);
             }
@@ -559,19 +595,46 @@ public class CustomDropsHandler {
         }
     }
 
+    private void addMaterialToDrop(final String materialName, CustomDropInstance dropInstance, CustomItemDrop item){
+        Material material;
+        try {
+            material = Material.valueOf(materialName.toUpperCase());
+        } catch (Exception e) {
+            Utils.logger.warning(String.format("Invalid material type specified in customdrops.yml for: %s, %s", dropInstance.getMobOrGroupName(), materialName));
+            return;
+        }
+
+        item.setMaterial(material);
+        dropInstance.customItems.add(item);
+    }
+
+    private boolean checkForMobOverride(final Map.Entry<String,Object> itemEntry, CustomDropInstance dropInstance){
+        if (itemEntry.getKey().equalsIgnoreCase("override")){
+            final Object value = itemEntry.getValue();
+            if (value.getClass().equals(Boolean.class)) {
+                dropInstance.overrideStockDrops = (boolean) value;
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     private void showCustomDropsDebugInfo(){
         for (final EntityType ent : customDropsitems.keySet()) {
-            final String override = customDropsitems.get(ent).overrideStockDrops ? " (override)" : "";
+            final CustomDropInstance dropInstance = customDropsitems.get(ent);
+            final String override = dropInstance.overrideStockDrops ? " (override)" : "";
             Utils.logger.info("mob: " + ent.name() + override);
-            for (final CustomItemDrop item : customDropsitems.get(ent).customItems) {
+            for (final CustomItemDrop item : dropInstance.customItems) {
                 showCustomDropsDebugInfo2(item);
             }
         }
 
         for (final CustomDropsUniversalGroups group : customDropsitems_groups.keySet()) {
-            final String override = customDropsitems_groups.get(group).overrideStockDrops ? " (override)" : "";
+            final CustomDropInstance dropInstance = customDropsitems_groups.get(group);
+            final String override = dropInstance.overrideStockDrops ? " (override)" : "";
             Utils.logger.info("group: " + group.name() + override);
-            for (final CustomItemDrop item : customDropsitems_groups.get(group).customItems) {
+            for (final CustomItemDrop item : dropInstance.customItems) {
                 showCustomDropsDebugInfo2(item);
             }
         }
@@ -598,6 +661,8 @@ public class CustomDropsHandler {
             sb.append(item.getDamageAsString());
         }
         if (!item.excludedMobs.isEmpty()) sb.append(", hasExcludes");
+        if (item.isEquipped) sb.append(", equip");
+        if (!Utils.isNullOrEmpty(item.groupId)) sb.append(", gId");
 
         Utils.logger.info(sb.toString());
         sb.setLength(0);

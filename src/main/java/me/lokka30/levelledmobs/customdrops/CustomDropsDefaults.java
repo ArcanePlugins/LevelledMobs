@@ -26,6 +26,7 @@ public class CustomDropsDefaults {
         this.noMultiplier = false;
         this.noSpawner = false;
         this.equipped = false;
+        this.override = false;
     }
 
     public void setDefaultsFromDropItem(CustomItemDrop drop) {

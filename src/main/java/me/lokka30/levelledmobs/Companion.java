@@ -194,7 +194,10 @@ public class Companion {
         if (main.settingsCfg.getBoolean("use-update-checker")) {
             final UpdateChecker updateChecker = new UpdateChecker(main, 74304);
             updateChecker.getLatestVersion(latestVersion -> {
-                if (!updateChecker.getCurrentVersion().split(" ")[0].equals(latestVersion)) { // split since for whatever reason Spigot API doesn't tell us what is after the space
+                final boolean methodOne = !updateChecker.getCurrentVersion().equals(latestVersion);
+                final boolean methodTwo = !updateChecker.getCurrentVersion().split(" ")[0].equals(latestVersion); // split since for whatever reason Spigot API doesn't like the space character
+
+                if (methodOne || methodTwo) {
                     Utils.logger.warning("&fUpdate Checker: &7The plugin has an update available! You're running &bv" + updateChecker.getCurrentVersion() + "&7, latest version is &bv" + latestVersion + "&7.");
                 }
             });

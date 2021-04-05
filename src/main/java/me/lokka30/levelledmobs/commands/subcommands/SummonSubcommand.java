@@ -382,7 +382,9 @@ public class SummonSubcommand implements Subcommand {
                         if (direction >= 135.0D && direction <= 224.9D) newZ -= useDistFromPlayer;
                         if (direction >= 315.0D || direction <= 44.9D) newZ += useDistFromPlayer;
                         location = new Location(location.getWorld(), newX, location.getBlockY(), newZ);
-                        if (location.getBlock().isPassable()) break; // found an open spot
+                        Location location_YMinus1 = new Location(location.getWorld(), newX, location.getBlockY() - 1, newZ);
+                        if (location.getBlock().isPassable() && location_YMinus1.getBlock().isPassable())
+                            break; // found an open spot
                     }
                 }
             }
