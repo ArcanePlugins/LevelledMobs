@@ -140,6 +140,14 @@ public class CustomDropsHandler {
         if (usesGroupIds)
             Collections.shuffle(drops);
 
+        if (entityType.equals(EntityType.PIG)){
+            StringBuilder sb = new StringBuilder();
+            for (CustomItemDrop item : drops){
+                if (sb.length() > 0) sb.append(", ");
+                sb.append(item.getMaterial().name());
+            }
+        }
+
         processingInfo.combinedDrops = drops;
         processingInfo.hasOverride = hasOverride;
     }
@@ -404,6 +412,8 @@ public class CustomDropsHandler {
                             final CustomDropInstance refDrop = customItemGroups.get(useEntityDropId);
                             for (CustomItemDrop itemDrop : refDrop.customItems)
                                 dropInstance.customItems.add(itemDrop.cloneItem());
+                            if (refDrop.utilizesGroupIds) dropInstance.utilizesGroupIds = true;
+                            if (refDrop.overrideStockDrops) dropInstance.overrideStockDrops = true;
                         }
                     }
                 } // end if not entity table
@@ -612,17 +622,19 @@ public class CustomDropsHandler {
 
     private void showCustomDropsDebugInfo(){
         for (final EntityType ent : customDropsitems.keySet()) {
-            final String override = customDropsitems.get(ent).overrideStockDrops ? " (override)" : "";
+            final CustomDropInstance dropInstance = customDropsitems.get(ent);
+            final String override = dropInstance.overrideStockDrops ? " (override)" : "";
             Utils.logger.info("mob: " + ent.name() + override);
-            for (final CustomItemDrop item : customDropsitems.get(ent).customItems) {
+            for (final CustomItemDrop item : dropInstance.customItems) {
                 showCustomDropsDebugInfo2(item);
             }
         }
 
         for (final CustomDropsUniversalGroups group : customDropsitems_groups.keySet()) {
-            final String override = customDropsitems_groups.get(group).overrideStockDrops ? " (override)" : "";
+            final CustomDropInstance dropInstance = customDropsitems_groups.get(group);
+            final String override = dropInstance.overrideStockDrops ? " (override)" : "";
             Utils.logger.info("group: " + group.name() + override);
-            for (final CustomItemDrop item : customDropsitems_groups.get(group).customItems) {
+            for (final CustomItemDrop item : dropInstance.customItems) {
                 showCustomDropsDebugInfo2(item);
             }
         }
@@ -650,6 +662,7 @@ public class CustomDropsHandler {
         }
         if (!item.excludedMobs.isEmpty()) sb.append(", hasExcludes");
         if (item.isEquipped) sb.append(", equip");
+        if (!Utils.isNullOrEmpty(item.groupId)) sb.append(", gId");
 
         Utils.logger.info(sb.toString());
         sb.setLength(0);
