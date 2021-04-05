@@ -1,5 +1,30 @@
 # Changelog
 
+## v2.4.2 b348
+
+### Changelog:
+
+* I hope this fixes the update checker. (lokka30)
+
+***
+
+## v2.4.1 b347
+
+### Notes:
+
+- All changes by **stumper66** this update - with thorough testing by **Oathkeeper**. Thank you both!
+
+### Changelog:
+
+- fixed customdrops not dropping in certain scenarios
+- fixed dup bug with donkeys with chests
+- fixed customdrops that use groupIds not randomizing the list properly
+- summon command checks for 2 block height room before summoning
+- defaults not working in certain scenarios
+- more customdrop related bugs squashed
+
+***
+
 ## v2.4.0 b332
 
 ### Notes:
