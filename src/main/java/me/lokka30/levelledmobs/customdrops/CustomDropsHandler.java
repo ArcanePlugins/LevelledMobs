@@ -40,7 +40,7 @@ public class CustomDropsHandler {
     public HashSet<EntityType> groups_AquaticMobs;
     public HashSet<EntityType> groups_PassiveMobs;
     public HashSet<EntityType> groups_NetherMobs;
-    public CustomDropsDefaults defaults;
+    public final CustomDropsDefaults defaults;
 
     public CustomDropsHandler(final LevelledMobs instance) {
         this.instance = instance;

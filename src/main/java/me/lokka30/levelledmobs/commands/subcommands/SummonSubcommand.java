@@ -1,5 +1,6 @@
 package me.lokka30.levelledmobs.commands.subcommands;
 
+import me.lokka30.levelledmobs.LevelInterface;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.misc.MobProcessReason;
 import me.lokka30.levelledmobs.misc.Utils;
@@ -305,7 +306,7 @@ public class SummonSubcommand implements Subcommand {
 
     private void summonMobs(final LevelledMobs main, final EntityType entityType, int amount, final CommandSender sender,
                             int level, Location location, final SummonType summonType, final Player target, final boolean override) {
-        if (override || main.levelManager.isLevellable(entityType)) {
+        if (override || main.levelInterface.getLevellableState(entityType) == LevelInterface.LevellableState.ALLOWED) {
 
             if (location == null || location.getWorld() == null) {
                 List<String> messages = main.messagesCfg.getStringList("command.levelledmobs.summon.invalid-location");
@@ -393,7 +394,7 @@ public class SummonSubcommand implements Subcommand {
                 final int mobLevel = main.levelManager.creatureSpawnListener.processMobSpawn(
                         (LivingEntity) entity, CreatureSpawnEvent.SpawnReason.CUSTOM, level, MobProcessReason.SUMMON, override);
                 if (mobLevel >= 0 && main.settingsCfg.getBoolean("use-custom-item-drops-for-mobs"))
-                    main.levelManager.creatureSpawnListener.processMobEquipment((LivingEntity) entity, mobLevel);
+                    main.levelInterface.applyLevelledEquipment((LivingEntity) entity, mobLevel);
             }
 
             switch (summonType) {

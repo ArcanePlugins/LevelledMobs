@@ -3,7 +3,6 @@ package me.lokka30.levelledmobs.listeners;
 import me.lokka30.levelledmobs.LevelInterface;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.misc.MobProcessReason;
-import me.lokka30.levelledmobs.misc.Utils;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
@@ -11,7 +10,6 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.world.ChunkLoadEvent;
-import sun.util.resources.cldr.es.CalendarData_es_UY;
 
 public class ChunkLoadListener implements Listener {
     private final LevelledMobs instance;
@@ -43,7 +41,7 @@ public class ChunkLoadListener implements Listener {
             // For some reason they aren't levelled - let's fix that!
             final int mobLevel = instance.levelManager.creatureSpawnListener.processMobSpawn(livingEntity, CreatureSpawnEvent.SpawnReason.DEFAULT, -1, MobProcessReason.NONE, false);
             if (mobLevel >= 0 && instance.settingsCfg.getBoolean("use-custom-item-drops-for-mobs"))
-                instance.levelManager.creatureSpawnListener.processMobEquipment(livingEntity, mobLevel);
+                instance.levelInterface.applyLevelledEquipment(livingEntity, mobLevel);
         }
     }
 }

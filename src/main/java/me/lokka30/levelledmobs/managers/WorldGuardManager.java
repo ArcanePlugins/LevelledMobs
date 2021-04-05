@@ -102,6 +102,20 @@ public class WorldGuardManager {
         return regionManager.getApplicableRegions(blockVector);
     }
 
+    // Get all regions at a location
+    public ApplicableRegionSet getRegionSet(final Location location) {
+        if (location.getWorld() == null) return null;
+
+        final RegionContainer regionContainer = WorldGuard.getInstance().getPlatform().getRegionContainer();
+        final RegionManager regionManager = regionContainer.get(BukkitAdapter.adapt(location.getWorld()));
+
+        assert regionManager != null;
+
+        BlockVector3 blockVector = BlockVector3.at(location.getX(), location.getY(), location.getZ());
+
+        return regionManager.getApplicableRegions(blockVector);
+    }
+
     //Sorts a RegionSet by priority, lowest to highest.
     public ProtectedRegion[] sortRegionsByPriority(final ApplicableRegionSet regionSet) {
         if (regionSet == null) return null;
@@ -181,6 +195,16 @@ public class WorldGuardManager {
 
     public boolean regionAllowsLevelling(final LivingEntity livingEntity) {
         final ProtectedRegion[] regions = sortRegionsByPriority(getRegionSet(livingEntity));
+
+        for (final ProtectedRegion region : regions) {
+            return region.getFlag(WorldGuardManager.allowLevelledMobsFlag) != StateFlag.State.DENY;
+        }
+
+        return true;
+    }
+
+    public boolean regionAllowsLevelling(final Location location) {
+        final ProtectedRegion[] regions = sortRegionsByPriority(getRegionSet(location));
 
         for (final ProtectedRegion region : regions) {
             return region.getFlag(WorldGuardManager.allowLevelledMobsFlag) != StateFlag.State.DENY;

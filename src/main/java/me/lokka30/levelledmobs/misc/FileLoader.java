@@ -4,7 +4,6 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.util.FileUtil;
 import org.yaml.snakeyaml.Yaml;
-import sun.util.resources.cldr.es.CalendarData_es_UY;
 
 import java.io.File;
 import java.io.FileInputStream;

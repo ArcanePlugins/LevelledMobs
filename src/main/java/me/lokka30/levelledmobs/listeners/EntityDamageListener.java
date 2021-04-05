@@ -1,5 +1,6 @@
 package me.lokka30.levelledmobs.listeners;
 
+import me.lokka30.levelledmobs.LevelInterface;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.misc.Addition;
 import org.bukkit.entity.Entity;
@@ -48,7 +49,7 @@ public class EntityDamageListener implements Listener {
             final Projectile projectile = (Projectile) e.getDamager();
             if (projectile.getShooter() instanceof LivingEntity) {
                 final LivingEntity livingEntity = (LivingEntity) projectile.getShooter();
-                if (main.levelManager.isLevellable(livingEntity)) {
+                if (main.levelInterface.getLevellableState(livingEntity) == LevelInterface.LevellableState.ALLOWED) {
 
                     //if the entity doesn't contain a level, skip this.
                     if (!main.levelInterface.isLevelled(livingEntity)) return;

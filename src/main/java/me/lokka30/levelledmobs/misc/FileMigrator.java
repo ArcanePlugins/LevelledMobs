@@ -1,7 +1,5 @@
 package me.lokka30.levelledmobs.misc;
 
-import sun.util.resources.cldr.es.CalendarData_es_UY;
-
 import javax.annotation.Nonnull;
 import java.io.File;
 import java.io.IOException;
@@ -156,8 +154,7 @@ public class FileMigrator {
             // if they don't have custom drops enabled we'll leave all the samples in there
             if (customDropsEnabled) {
                 // this will remove any sample code that the user removed from theirs
-                for (int i = 0; i < newSectionIndex.size(); i++) {
-                    final String key = newSectionIndex.get(i);
+                for (final String key : newSectionIndex) {
                     if (key.startsWith("file-version") || key.startsWith("defaults")) continue;
                     final KeySectionInfo section = keySections_New.get(key);
 
