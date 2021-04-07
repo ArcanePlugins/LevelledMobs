@@ -24,7 +24,7 @@ public class CustomDropInstance {
 
     final public EntityType associatedMob;
     final public CustomDropsUniversalGroups entityGroup;
-    final public List<CustomItemDrop> customItems;
+    final public List<CustomDropItem> customItems;
     public boolean overrideStockDrops;
     public boolean utilizesGroupIds;
 

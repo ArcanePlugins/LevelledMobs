@@ -71,7 +71,7 @@ public class LevelInterface {
         /*
         Compatibility with other plugins: users may want to stop LM from acting on mobs modified by other plugins.
          */
-        if (ExternalCompatibilityManager.checkMythicMobs(livingEntity))
+        if (ExternalCompatibilityManager.hasMythicMobsInstalled() && ExternalCompatibilityManager.checkMythicMobs(livingEntity))
             return LevellableState.DENIED_CONFIGURATION_COMPATIBILITY_MYTHIC_MOBS;
         if (ExternalCompatibilityManager.checkDangerousCaves(livingEntity))
             return LevellableState.DENIED_CONFIGURATION_COMPATIBILITY_DANGEROUS_CAVES;
@@ -293,8 +293,12 @@ public class LevelInterface {
      * @param livingEntity a levelled mob to apply levelled equipment to
      * @param level        the level of the levelled mob
      */
-    public void applyLevelledEquipment(@NotNull LivingEntity livingEntity, int level) {
-        Validate.isTrue(isLevelled(livingEntity), "Entity must be levelled.");
+    public void applyLevelledEquipment(@NotNull final LivingEntity livingEntity, final int level) {
+        if (!isLevelled(livingEntity)){
+            // if you summon a mob and it isn't levelled due to a config rule (baby zombies exempt for example)
+            // then we'll be here with a non-levelled entity
+            return;
+        }
         Validate.isTrue(level >= 0, "Level must be greater than or equal to zero.");
 
         List<ItemStack> items = new ArrayList<>();
