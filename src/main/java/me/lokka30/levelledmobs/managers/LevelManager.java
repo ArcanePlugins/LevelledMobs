@@ -647,6 +647,9 @@ public class LevelManager {
 
                     try {
                         chatSerializer = WrappedDataWatcher.Registry.getChatComponentSerializer(true);
+                    } catch (ConcurrentModificationException ex) {
+                        Utils.debugLog(main, "LevelManagerUpdateNametag", "ConcurrentModificationException caught, skipping nametag update of " + entity.getName() + ".");
+                        return;
                     } catch (IllegalArgumentException ex) {
                         Utils.debugLog(main, "LevelManagerUpdateNametag", "Registry is empty, skipping nametag update of " + entity.getName() + ".");
                         return;
