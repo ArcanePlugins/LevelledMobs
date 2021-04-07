@@ -170,14 +170,8 @@ public class CustomDropsHandler {
 
     private void getCustomItemsFromDropInstance(final CustomDropProcessingInfo info){
 
-        if (!info.equippedOnly) removeEquippedItemsFromDrops(info);
-
         for (final int itemPriority : info.prioritizedDrops.keySet()){
             final List<CustomDropItem> items = info.prioritizedDrops.get(itemPriority);
-
-            if (info.equippedOnly && info.livingEntity.getType().equals(EntityType.ZOMBIE)){
-                Utils.logger.info("checking equipment for pri: " + itemPriority + ", count: " + items.size());
-            }
 
             for (final CustomDropItem drop : items)
                 getDropsFromCustomDropItem(info, drop);
@@ -312,23 +306,6 @@ public class CustomDropsHandler {
         }
 
         info.newDrops.add(newItem);
-    }
-
-    private void removeEquippedItemsFromDrops(final CustomDropProcessingInfo info){
-        Utils.logger.info("checking for isEquipped key on item count: " + info.newDrops.size());
-
-        for (int i = info.newDrops.size() - 1; i >= 0; i--){
-            final ItemStack itemStack = info.newDrops.get(i);
-            if (!itemStack.hasItemMeta()) continue;
-
-            ItemMeta meta = itemStack.getItemMeta();
-            if (meta == null) continue;
-            Object isEquipped = meta.getPersistentDataContainer().get(this.isEquippedKey, PersistentDataType.INTEGER);
-            if (isEquipped != null) {
-                Utils.logger.info("Removing item " + itemStack.getType().name());
-                info.newDrops.remove(i);
-            }
-        }
     }
 
     private ItemStack getCookedVariantOfMeat(final ItemStack itemStack){
