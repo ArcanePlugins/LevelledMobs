@@ -41,14 +41,12 @@ public class CustomDropsHandler {
     public HashSet<EntityType> groups_PassiveMobs;
     public HashSet<EntityType> groups_NetherMobs;
     public final CustomDropsDefaults defaults;
-    public final NamespacedKey isEquippedKey;
 
     public CustomDropsHandler(final LevelledMobs instance) {
         this.instance = instance;
         this.customDropsitems = new TreeMap<>();
         this.customDropsitems_groups = new TreeMap<>();
         this.defaults = new CustomDropsDefaults();
-        this.isEquippedKey = new NamespacedKey(instance, "isEquipped");
 
         buildUniversalGroups();
 
@@ -71,7 +69,7 @@ public class CustomDropsHandler {
                 .setScale(0, RoundingMode.HALF_DOWN).intValueExact(); // truncate double to int
 
         processingInfo.doNotMultiplyDrops =
-                (Utils.isBabyMob(livingEntity) && instance.configUtils.noDropMultiplierEntities.contains("BABY_" + livingEntity.getType().toString())) ||
+                (Utils.isBabyMob(livingEntity) && instance.configUtils.noDropMultiplierEntities.contains("BABY_" + livingEntity.getType())) ||
                         instance.configUtils.noDropMultiplierEntities.contains(livingEntity.getType().toString());
 
         if (livingEntity.getLastDamageCause() != null){
@@ -110,7 +108,7 @@ public class CustomDropsHandler {
                     if (sb.length() > 0) sb.append(", ");
                     sb.append(drop.getType().name());
                 }
-                Utils.logger.info("   " + sb.toString());
+                Utils.logger.info("   " + sb);
             } else if (!equippedOnly) {
                 Utils.logger.info(String.format("&8 --- &7Custom items added: &b%s&7.", postCount));
             }
@@ -196,7 +194,7 @@ public class CustomDropsHandler {
             if (info.groupIDsDroppedAlready.containsKey(drop.groupId))
                 count = info.groupIDsDroppedAlready.get(drop.groupId);
 
-            if (drop.maxDropGroup > 0 && drop.maxDropGroup >= count || drop.maxDropGroup == 0 && count > 0){
+            if (drop.maxDropGroup > 0 && count >= drop.maxDropGroup || drop.maxDropGroup == 0 && count > 0){
                 if (instance.settingsCfg.getStringList("debug-misc").contains("custom-drops")) {
                     Utils.logger.info(String.format("&8- &7level: &b%s&7, item: &b%s&7, gId: &b%s&7, maxDropGroup: &b%s&7, groupDropCount: &b%s&7, dropped: &bfalse",
                             info.level, drop.getMaterial().name(), drop.groupId, drop.maxDropGroup, count));
@@ -294,15 +292,6 @@ public class CustomDropsHandler {
                     1;
 
             info.groupIDsDroppedAlready.put(drop.groupId, count);
-        }
-
-        if (info.equippedOnly) {
-            Utils.logger.info(info.livingEntity.getName() + ", adding item " + newItem.getType().name());
-            final ItemMeta meta = newItem.getItemMeta();
-            if (meta != null){
-                meta.getPersistentDataContainer().set(this.isEquippedKey, PersistentDataType.INTEGER, 1);
-                newItem.setItemMeta(meta);
-            }
         }
 
         info.newDrops.add(newItem);
@@ -654,7 +643,7 @@ public class CustomDropsHandler {
             result.addDefaults((Map<String, Object>) object);
             return result.getDefaultSection();
         } else {
-            Utils.logger.warning("couldn't parse Config of type: " + object.getClass().getSimpleName() + ", value: " + object.toString());
+            Utils.logger.warning("couldn't parse Config of type: " + object.getClass().getSimpleName() + ", value: " + object);
             return null;
         }
     }
@@ -730,9 +719,10 @@ public class CustomDropsHandler {
             sb.append(item.equippedSpawnChance);
         }
         if (!Utils.isNullOrEmpty(item.groupId)) {
-            sb.append(", gId");
+            sb.append(", gId: ");
+            sb.append(item.groupId);
             if (item.maxDropGroup > 0){
-                sb.append("maxDropGroup: ");
+                sb.append(", maxDropGroup: ");
                 sb.append(item.maxDropGroup);
             }
         }
@@ -753,7 +743,7 @@ public class CustomDropsHandler {
             }
         }
 
-        if (sb.length() > 0) Utils.logger.info("         " + sb.toString());
+        if (sb.length() > 0) Utils.logger.info("         " + sb);
     }
 
     private void buildUniversalGroups(){

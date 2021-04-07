@@ -237,6 +237,7 @@
 #
 defaults:
   chance: 0.2
+  equippedspawnchance: 1.0
   amount: 1
   minlevel: -1
   maxlevel: -1
@@ -245,6 +246,8 @@ defaults:
   nospawner: false
   equipped: false
   override: false
+  maxdropgroup: 1
+  priority: 0
 
 #
 # |||||||||||||||||||||||||||||||||||||||||||||||||||||

@@ -440,7 +440,7 @@ public class LevelManager {
         Utils.debugLog(main, "LevelManager#getLevelledItemDrops", "3: Entity level is " + level + ".");
 
         final boolean doNotMultiplyDrops =
-                (Utils.isBabyMob(livingEntity) && main.configUtils.noDropMultiplierEntities.contains("BABY_" + livingEntity.getType().toString())) ||
+                (Utils.isBabyMob(livingEntity) && main.configUtils.noDropMultiplierEntities.contains("BABY_" + livingEntity.getType())) ||
                         main.configUtils.noDropMultiplierEntities.contains(livingEntity.getType().toString());
 
         if (main.settingsCfg.getBoolean("use-custom-item-drops-for-mobs")) {
@@ -470,7 +470,7 @@ public class LevelManager {
     }
 
     public void multiplyDrop(LivingEntity livingEntity, final ItemStack currentDrop, final int addition, final boolean isCustomDrop){
-        Utils.debugLog(main, "LevelManager#getLevelledItemDrops", "6: Scanning drop " + currentDrop.getType().toString() + " with current amount " + currentDrop.getAmount() + "...");
+        Utils.debugLog(main, "LevelManager#getLevelledItemDrops", "6: Scanning drop " + currentDrop.getType() + " with current amount " + currentDrop.getAmount() + "...");
 
         if (isCustomDrop || main.mobDataManager.isLevelledDropManaged(livingEntity.getType(), currentDrop.getType())) {
             int useAmount = currentDrop.getAmount() + (currentDrop.getAmount() * addition);
@@ -571,10 +571,10 @@ public class LevelManager {
         String entityName = WordUtils.capitalizeFully(livingEntity.getType().toString().toLowerCase().replaceAll("_", " "));
 
         // Baby zombies can have specific nametags in entity-name-override
-        if (Utils.isBabyMob(livingEntity) && main.settingsCfg.contains("entity-name-override.BABY_" + livingEntity.getType().toString())) {
-            entityName = main.settingsCfg.getString("entity-name-override.BABY_" + livingEntity.getType().toString());
-        } else if (main.settingsCfg.contains("entity-name-override." + livingEntity.getType().toString())) {
-            entityName = main.settingsCfg.getString("entity-name-override." + livingEntity.getType().toString());
+        if (Utils.isBabyMob(livingEntity) && main.settingsCfg.contains("entity-name-override.BABY_" + livingEntity.getType())) {
+            entityName = main.settingsCfg.getString("entity-name-override.BABY_" + livingEntity.getType());
+        } else if (main.settingsCfg.contains("entity-name-override." + livingEntity.getType())) {
+            entityName = main.settingsCfg.getString("entity-name-override." + livingEntity.getType());
         }
         if (entityName == null || entityName.isEmpty() || entityName.equalsIgnoreCase("disabled")) return null;
 
@@ -619,70 +619,61 @@ public class LevelManager {
      *   - @7smile7 (https://www.spigotmc.org/members/7smile7.43809/)
      */
     public void updateNametag(final LivingEntity entity, final String nametag, final List<Player> players) {
+
         if (!ExternalCompatibilityManager.hasProtocolLibInstalled()) return;
+        if (entity == null) return;
+        if (main.settingsCfg.getBoolean("assert-entity-validity-with-nametag-packets") && !entity.isValid())
+            return;
 
-        BukkitTask task = new BukkitRunnable() {
-            @Override
-            public void run() {
+        final WrappedDataWatcher dataWatcher;
+        final WrappedDataWatcher.Serializer chatSerializer;
 
-                for (Player player : players) {
+        try {
+            dataWatcher = WrappedDataWatcher.getEntityWatcher(entity).deepClone();
+        } catch (ConcurrentModificationException ex) {
+            Utils.debugLog(main, "LevelManagerUpdateNametag", "Concurrent modification occured, skipping nametag update of " + entity.getName() + ".");
+            return;
+        }
 
-                    // async task, so make sure the player & entity are valid
-                    if (!player.isOnline()) continue;
-                    if (entity == null) return;
+        try {
+            chatSerializer = WrappedDataWatcher.Registry.getChatComponentSerializer(true);
+        } catch (ConcurrentModificationException ex) {
+            Utils.debugLog(main, "LevelManagerUpdateNametag", "ConcurrentModificationException caught, skipping nametag update of " + entity.getName() + ".");
+            return;
+        } catch (IllegalArgumentException ex) {
+            Utils.debugLog(main, "LevelManagerUpdateNametag", "Registry is empty, skipping nametag update of " + entity.getName() + ".");
+            return;
+        }
 
-                    if (main.settingsCfg.getBoolean("assert-entity-validity-with-nametag-packets") && !entity.isValid())
-                        return;
+        final WrappedDataWatcher.WrappedDataWatcherObject watcherObject = new WrappedDataWatcher.WrappedDataWatcherObject(2, chatSerializer);
 
-                    final WrappedDataWatcher dataWatcher;
+        Optional<Object> optional;
+        if (Utils.isNullOrEmpty(nametag)) {
+            optional = Optional.empty();
+        } else {
+            optional = Optional.of(WrappedChatComponent.fromChatMessage(nametag)[0].getHandle());
+        }
 
-                    try {
-                        dataWatcher = WrappedDataWatcher.getEntityWatcher(entity).deepClone();
-                    } catch (ConcurrentModificationException ex) {
-                        Utils.debugLog(main, "LevelManagerUpdateNametag", "Concurrent modification occured, skipping nametag update of " + entity.getName() + ".");
-                        return;
-                    }
+        dataWatcher.setObject(watcherObject, optional);
+        dataWatcher.setObject(3, !Utils.isNullOrEmpty(nametag) && entity.isCustomNameVisible() || main.settingsCfg.getBoolean("creature-nametag-always-visible"));
 
-                    final WrappedDataWatcher.Serializer chatSerializer;
+        final PacketContainer packet = ProtocolLibrary.getProtocolManager().createPacket(PacketType.Play.Server.ENTITY_METADATA);
+        packet.getWatchableCollectionModifier().write(0, dataWatcher.getWatchableObjects());
+        packet.getIntegers().write(0, entity.getEntityId());
+        if (!entity.isValid()) return;
 
-                    try {
-                        chatSerializer = WrappedDataWatcher.Registry.getChatComponentSerializer(true);
-                    } catch (ConcurrentModificationException ex) {
-                        Utils.debugLog(main, "LevelManagerUpdateNametag", "ConcurrentModificationException caught, skipping nametag update of " + entity.getName() + ".");
-                        return;
-                    } catch (IllegalArgumentException ex) {
-                        Utils.debugLog(main, "LevelManagerUpdateNametag", "Registry is empty, skipping nametag update of " + entity.getName() + ".");
-                        return;
-                    }
+        for (Player player : players) {
+            if (!player.isOnline()) continue;
 
-                    final WrappedDataWatcher.WrappedDataWatcherObject watcherObject = new WrappedDataWatcher.WrappedDataWatcherObject(2, chatSerializer);
-
-                    Optional<Object> optional;
-                    if (Utils.isNullOrEmpty(nametag)) {
-                        optional = Optional.empty();
-                    } else {
-                        optional = Optional.of(WrappedChatComponent.fromChatMessage(nametag)[0].getHandle());
-                    }
-
-                    dataWatcher.setObject(watcherObject, optional);
-
-                    dataWatcher.setObject(3, !Utils.isNullOrEmpty(nametag) && entity.isCustomNameVisible() || main.settingsCfg.getBoolean("creature-nametag-always-visible"));
-
-                    final PacketContainer packet = ProtocolLibrary.getProtocolManager().createPacket(PacketType.Play.Server.ENTITY_METADATA);
-                    packet.getWatchableCollectionModifier().write(0, dataWatcher.getWatchableObjects());
-                    packet.getIntegers().write(0, entity.getEntityId());
-
-                    try {
-                        ProtocolLibrary.getProtocolManager().sendServerPacket(player, packet);
-                    } catch (IllegalArgumentException ex) {
-                        Utils.debugLog(main, "Nametags", "IllegalArgumentException caught whilst trying to sendServerPacket");
-                    } catch (InvocationTargetException ex) {
-                        Utils.logger.error("Unable to update nametag packet for player &b" + player.getName() + "&7! Stack trace:");
-                        ex.printStackTrace();
-                    }
-                }
+            try {
+                ProtocolLibrary.getProtocolManager().sendServerPacket(player, packet);
+            } catch (IllegalArgumentException ex) {
+                Utils.debugLog(main, "Nametags", "IllegalArgumentException caught whilst trying to sendServerPacket");
+            } catch (InvocationTargetException ex) {
+                Utils.logger.error("Unable to update nametag packet for player &b" + player.getName() + "&7! Stack trace:");
+                ex.printStackTrace();
             }
-        }.runTaskAsynchronously(main);
+        }
     }
 
     public BukkitTask nametagAutoUpdateTask;

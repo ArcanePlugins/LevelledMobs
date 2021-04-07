@@ -314,18 +314,24 @@ public class LevelInterface {
             Material material = itemStack.getType();
             if (EnchantmentTarget.ARMOR_FEET.includes(material)) {
                 equipment.setBoots(itemStack, true);
+                equipment.setBootsDropChance(0);
             } else if (EnchantmentTarget.ARMOR_LEGS.includes(material)) {
                 equipment.setLeggings(itemStack, true);
+                equipment.setLeggingsDropChance(0);
             } else if (EnchantmentTarget.ARMOR_TORSO.includes(material)) {
                 equipment.setChestplate(itemStack, true);
+                equipment.setChestplateDropChance(0);
             } else if (EnchantmentTarget.ARMOR_HEAD.includes(material)) {
                 equipment.setHelmet(itemStack, true);
+                equipment.setHelmetDropChance(0);
             } else {
                 if (!hadMainItem) {
                     equipment.setItemInMainHand(itemStack);
+                    equipment.setItemInMainHandDropChance(0);
                     hadMainItem = true;
                 } else {
                     equipment.setItemInOffHand(itemStack);
+                    equipment.setItemInOffHandDropChance(0);
                 }
             }
         }
