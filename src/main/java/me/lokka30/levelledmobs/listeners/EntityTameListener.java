@@ -32,13 +32,7 @@ public class EntityTameListener implements Listener {
             Utils.debugLog(main, "EntityTameListener", "no-level-conditions.tamed = true");
 
             // if mob was levelled then remove it
-            if (livingEntity.getPersistentDataContainer().has(main.levelManager.levelKey, PersistentDataType.INTEGER))
-                livingEntity.getPersistentDataContainer().remove(main.levelManager.levelKey);
-
-            main.levelManager.updateNametagWithDelay(livingEntity,
-                    livingEntity.getCustomName(),
-                    livingEntity.getWorld().getPlayers(),
-                    1);
+            main.levelInterface.removeLevel(livingEntity);
 
             Utils.debugLog(main, "EntityTameListener", "Removed level of tamed mob");
             return;

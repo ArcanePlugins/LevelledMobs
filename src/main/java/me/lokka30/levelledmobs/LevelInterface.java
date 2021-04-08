@@ -9,6 +9,8 @@ import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.attribute.Attribute;
+import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.enchantments.EnchantmentTarget;
 import org.bukkit.entity.*;
 import org.bukkit.inventory.EntityEquipment;
@@ -32,7 +34,6 @@ import java.util.List;
 public class LevelInterface {
 
     private final LevelledMobs main;
-
     public LevelInterface(@NotNull final LevelledMobs main) {
         this.main = main;
     }
@@ -59,6 +60,7 @@ public class LevelInterface {
      * @param livingEntity target mob
      * @return if the mob is allowed to be levelled (yes/no), with reason
      */
+    @NotNull
     public LevellableState getLevellableState(@NotNull LivingEntity livingEntity) {
         /*
         Certain entity types are force-blocked, regardless of what the user has configured.
@@ -129,6 +131,7 @@ public class LevelInterface {
      * @param entityType target entity type
      * @return of the mob is allowed to be levelled (yes/no), with reason
      */
+    @NotNull
     public LevellableState getLevellableState(@NotNull EntityType entityType) {
         /*
         Certain entity types are force-blocked, regardless of what the user has configured.
@@ -176,6 +179,7 @@ public class LevelInterface {
      * @param location   target location
      * @return if the mob is allowed to be levelled (yes/no), with reason
      */
+    @NotNull
     public LevellableState getLevellableState(@NotNull EntityType entityType, @NotNull Location location) {
 
         // Check EntityType
@@ -335,6 +339,44 @@ public class LevelInterface {
                 }
             }
         }
+    }
+
+    /**
+     * Un-level a mob.
+     *
+     * @param livingEntity levelled mob to un-level
+     */
+    public void removeLevel(@NotNull LivingEntity livingEntity) {
+        assert isLevelled(livingEntity);
+
+        // remove PDC value
+        if (livingEntity.getPersistentDataContainer().has(main.levelManager.levelKey, PersistentDataType.INTEGER))
+            livingEntity.getPersistentDataContainer().remove(main.levelManager.levelKey);
+
+        // reset attributes
+        for (Attribute attribute : Attribute.values()) {
+            final AttributeInstance attInst = livingEntity.getAttribute(attribute);
+
+            if (attInst == null) continue;
+
+            Object defaultValueObj = main.mobDataManager.getAttributeDefaultValue(livingEntity.getType(), attribute);
+            if (defaultValueObj == null) continue;
+
+            double defaultValue;
+            if (defaultValueObj instanceof Double) {
+                defaultValue = (Double) defaultValueObj;
+            } else {
+                continue;
+            }
+
+            attInst.setBaseValue(defaultValue);
+        }
+
+        // update nametag
+        main.levelManager.updateNametagWithDelay(livingEntity,
+                livingEntity.getCustomName(),
+                livingEntity.getWorld().getPlayers(),
+                1);
     }
 
     /**
