@@ -660,10 +660,10 @@ public class LevelManager {
         final PacketContainer packet = ProtocolLibrary.getProtocolManager().createPacket(PacketType.Play.Server.ENTITY_METADATA);
         packet.getWatchableCollectionModifier().write(0, dataWatcher.getWatchableObjects());
         packet.getIntegers().write(0, entity.getEntityId());
-        if (!entity.isValid()) return;
 
         for (Player player : players) {
             if (!player.isOnline()) continue;
+            if (!entity.isValid()) return;
 
             try {
                 ProtocolLibrary.getProtocolManager().sendServerPacket(player, packet);
@@ -692,7 +692,7 @@ public class LevelManager {
 
                     for (final Entity entity : player.getWorld().getEntities()) {
 
-                        if (entity == null) continue; // async task, entity can despawn whilst it is running
+                        if (!entity.isValid()) continue; // async task, entity can despawn whilst it is running
 
                         // Mob must be a livingentity that is ...living.
                         if (!(entity instanceof LivingEntity)) continue;
