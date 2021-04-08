@@ -191,19 +191,23 @@ public class Companion {
     }
 
     //Check for updates on the Spigot page.
-    public List<String> updateResult = null;
+    public List<String> updateResult = new ArrayList<>();
     protected void checkUpdates() {
         if (main.settingsCfg.getBoolean("use-update-checker", true)) {
             final UpdateChecker updateChecker = new UpdateChecker(main, 74304);
             updateChecker.getLatestVersion(latestVersion -> {
                 final String currentVersion = updateChecker.getCurrentVersion().split(" ")[0];
                 if (!currentVersion.equals(latestVersion)) {
-                    updateResult = main.messagesCfg.getStringList("other.update-notice.messages");
 
-                    if (updateResult == null) // server owner didn't configure it. for some reason config#getStringList doesn't allow defaults ????
+                    // for some reason config#getStringList doesn't allow defaults??
+                    if (main.messagesCfg.contains("other.update-notice.messages")) {
+                        updateResult = main.messagesCfg.getStringList("other.update-notice.messages");
+                    } else {
                         updateResult = Arrays.asList(
                                 "&b&nLevelledMobs Update Checker Notice:",
-                                "&7Your &bLevelledMobs&7 version is &boutdated&7! Please update to &bv%latestVersion%&7 as soon as possible. &8(&7You''re running &bv%currentVersion%&8)");
+                                "&7Your &bLevelledMobs&7 version is &boutdated&7! Please update to" +
+                                        "&bv%latestVersion%&7 as soon as possible. &8(&7You''re running &bv%currentVersion%&8)");
+                    }
 
                     updateResult = Utils.replaceAllInList(updateResult, "%currentVersion%", currentVersion);
                     updateResult = Utils.replaceAllInList(updateResult, "%latestVersion%", latestVersion);
