@@ -220,7 +220,10 @@ public class Companion {
                     if (main.messagesCfg.getBoolean("other.update-notice.send-on-join", true)) {
                         Bukkit.getOnlinePlayers().forEach(onlinePlayer -> {
                             if (onlinePlayer.hasPermission("levelledmobs.receive-update-notifications")) {
-                                updateResult.forEach(onlinePlayer::sendMessage);
+                                for (String msg : updateResult) {
+                                    onlinePlayer.sendMessage(msg);
+                                }
+                                //updateResult.forEach(onlinePlayer::sendMessage); //compiler didn't like this
                             }
                         });
                     }

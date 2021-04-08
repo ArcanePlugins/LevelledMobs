@@ -205,7 +205,7 @@ public class LevelInterface {
      * @return a level for the entity
      */
     public int generateLevel(@NotNull LivingEntity livingEntity) {
-        //TODO
+        // TODO
         return -1;
     }
 
