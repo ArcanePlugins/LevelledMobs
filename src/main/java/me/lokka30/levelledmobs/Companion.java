@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -190,12 +191,35 @@ public class Companion {
     }
 
     //Check for updates on the Spigot page.
+    public List<String> updateResult = null;
     protected void checkUpdates() {
-        if (main.settingsCfg.getBoolean("use-update-checker")) {
+        if (main.settingsCfg.getBoolean("use-update-checker", true)) {
             final UpdateChecker updateChecker = new UpdateChecker(main, 74304);
             updateChecker.getLatestVersion(latestVersion -> {
-                if (!updateChecker.getCurrentVersion().split(" ")[0].equals(latestVersion)) {
-                    Utils.logger.warning("&fUpdate Checker: &7The plugin has an update available! You're running &bv" + updateChecker.getCurrentVersion() + "&7, latest version is &bv" + latestVersion + "&7.");
+                final String currentVersion = updateChecker.getCurrentVersion().split(" ")[0];
+                if (!currentVersion.equals(latestVersion)) {
+                    updateResult = main.messagesCfg.getStringList("other.update-notice.messages");
+
+                    if (updateResult == null) // server owner didn't configure it. for some reason config#getStringList doesn't allow defaults ????
+                        updateResult = Arrays.asList(
+                                "&b&nLevelledMobs Update Checker Notice:",
+                                "&7Your &bLevelledMobs&7 version is &boutdated&7! Please update to &bv%latestVersion%&7 as soon as possible. &8(&7You''re running &bv%currentVersion%&8)");
+
+                    updateResult = Utils.replaceAllInList(updateResult, "%currentVersion%", currentVersion);
+                    updateResult = Utils.replaceAllInList(updateResult, "%latestVersion%", latestVersion);
+                    updateResult = Utils.colorizeAllInList(updateResult);
+
+                    if (main.messagesCfg.getBoolean("other.update-notice.send-in-console", true))
+                        updateResult.forEach(Utils.logger::warning);
+
+                    // notify any players that may be online already
+                    if (main.messagesCfg.getBoolean("other.update-notice.send-on-join", true)) {
+                        Bukkit.getOnlinePlayers().forEach(onlinePlayer -> {
+                            if (onlinePlayer.hasPermission("levelledmobs.receive-update-notifications")) {
+                                updateResult.forEach(onlinePlayer::sendMessage);
+                            }
+                        });
+                    }
                 }
             });
         }

@@ -15,8 +15,8 @@ import java.io.FileInputStream;
 public final class FileLoader {
 
     public static final int SETTINGS_FILE_VERSION = 28; // Last changed: b289
-    public static final int MESSAGES_FILE_VERSION = 2; // Last changed: v2.3.0
-    public static final int CUSTOMDROPS_FILE_VERSION = 7; // Last changed: 2.4.0 b328
+    public static final int MESSAGES_FILE_VERSION = 3; // Last changed: b353
+    public static final int CUSTOMDROPS_FILE_VERSION = 7; // Last changed: b328
 
     private FileLoader() {
         throw new UnsupportedOperationException();

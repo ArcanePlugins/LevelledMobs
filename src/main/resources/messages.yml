@@ -217,7 +217,7 @@ command:
 
 #
 # |||||||||||||||||||||||||||||||||||||||||||||||||||||
-# ||  Section 06 - Compatibility Warning System
+# ||  Section 06 - Other Messages
 # |||||||||||||||||||||||||||||||||||||||||||||||||||||
 #
 other:
@@ -228,8 +228,14 @@ other:
       - '&8 &m->&r &b%incompatibilities% &7possible incompatibilities were found. Please run ''&b/levelledmobs compatibility&7'' to check them.'
       - '&8 &m->&7 This message is sent as you have the permission &blevelledmobs.compatibility-notice&7. You can disable this message in &bmessages.yml&7.'
       - '&8 &m->&7 Please ensure you have followed all instructions on the plugin''s Wiki page.'
+  update-notice:
+    messages:
+      - '&b&nLevelledMobs Update Checker Notice:'
+      - '&7Your &bLevelledMobs&7 version is &boutdated&7! Please update to &bv%latestVersion%&7 as soon as possible. &8(&7You''re running &bv%currentVersion%&8)'
+    send-in-console: true
+    send-on-join: true
 
 # This value is used when this file is loaded to check if this file is most likely incompatible.
 # The value must match exactly what version the plugin ships the default file with.
 # Don't change this unless you know what you're doing!
-file-version: 2
+file-version: 3
