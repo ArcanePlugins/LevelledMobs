@@ -1,12 +1,15 @@
 package me.lokka30.levelledmobs.customdrops;
 
+import org.bukkit.inventory.ItemFlag;
+
+import java.util.List;
+
 /**
  * @author stumper66
  */
 public class CustomDropsDefaults {
     public boolean noMultiplier;
     public boolean noSpawner;
-    public boolean equipped;
     public boolean override;
     public int amount;
     public int priority;
@@ -18,6 +21,7 @@ public class CustomDropsDefaults {
     public double equippedSpawnChance;
     public String groupId;
     public String damage;
+    public List<ItemFlag> itemFlags;
 
     public CustomDropsDefaults() {
         // these are the defaults of the defaults
@@ -27,11 +31,10 @@ public class CustomDropsDefaults {
         this.maxLevel = -1;
         this.customModelData = -1;
         this.priority = 0;
-        this.equippedSpawnChance = 1.0;
+        this.equippedSpawnChance = 0.0;
         this.maxDropGroup = 0;
         this.noMultiplier = false;
         this.noSpawner = false;
-        this.equipped = false;
         this.override = false;
     }
 
@@ -41,11 +44,10 @@ public class CustomDropsDefaults {
         this.minLevel = drop.minLevel;
         this.maxLevel = drop.maxLevel;
         this.customModelData = drop.customModelDataId;
-        this.noMultiplier = drop.noMultiplier;
-        this.noSpawner = drop.noSpawner;
-        this.equipped = drop.isEquipped;
         this.priority = drop.priority;
         this.equippedSpawnChance = drop.equippedSpawnChance;
         this.maxDropGroup = drop.maxDropGroup;
+        this.noMultiplier = drop.noMultiplier;
+        this.noSpawner = drop.noSpawner;
     }
 }

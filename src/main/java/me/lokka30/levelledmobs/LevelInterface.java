@@ -247,8 +247,9 @@ public class LevelInterface {
      */
     public void applyLevelToMob(@NotNull LivingEntity livingEntity, int level, boolean isSummoned, boolean bypassLimits) {
         Validate.isTrue(level >= 0, "Level must be greater than or equal to zero.");
-        if (!bypassLimits)
+        if (!bypassLimits && !isSummoned) {
             Validate.isTrue(getLevellableState(livingEntity) == LevellableState.ALLOWED, "Mob must be levellable or bypassLimits must be true");
+        }
 
         if (isSummoned) {
             SummonedMobPreLevelEvent summonedMobPreLevelEvent = new SummonedMobPreLevelEvent(livingEntity, level);

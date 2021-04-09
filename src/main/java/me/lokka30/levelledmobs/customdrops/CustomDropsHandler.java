@@ -16,6 +16,7 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.*;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -109,7 +110,10 @@ public class CustomDropsHandler {
 
         if (instance.settingsCfg.getStringList("debug-misc").contains("custom-drops")) {
             if (equippedOnly && !drops.isEmpty()){
-                Utils.logger.info("&7Custom equipment for " + livingEntity.getName());
+                if (level > -1)
+                    Utils.logger.info(String.format("&7Custom equipment for %s (%s)", livingEntity.getName(), level));
+                else
+                    Utils.logger.info("&7Custom equipment for " + livingEntity.getName());
                 StringBuilder sb = new StringBuilder();
                 for (final ItemStack drop : drops) {
                     if (sb.length() > 0) sb.append(", ");
@@ -185,7 +189,7 @@ public class CustomDropsHandler {
 
     private void getDropsFromCustomDropItem(final CustomDropProcessingInfo info, final CustomDropItem drop){
 
-        if (info.equippedOnly && !drop.isEquipped) return;
+        if (info.equippedOnly && drop.equippedSpawnChance <= 0.0) return;
 
         if (drop.excludedMobs.contains(info.livingEntity.getName())){
             if (!info.equippedOnly && instance.settingsCfg.getStringList("debug-misc").contains("custom-drops")) {
@@ -212,7 +216,7 @@ public class CustomDropsHandler {
 
         boolean doDrop = true;
 
-        if (info.equippedOnly && drop.isEquipped && drop.equippedSpawnChance < 1.0) {
+        if (info.equippedOnly && drop.equippedSpawnChance < 1.0) {
             final double chanceRole = (double) ThreadLocalRandom.current().nextInt(0, 100001) * 0.00001;
             if (1.0 - chanceRole >= drop.equippedSpawnChance){
                 if (instance.settingsCfg.getStringList("debug-misc").contains("custom-drops")) {
@@ -244,7 +248,7 @@ public class CustomDropsHandler {
         boolean didNotMakeChance = false;
         double chanceRole = 0.0;
 
-        if (!drop.isEquipped && drop.dropChance < 1.0){
+        if (drop.dropChance < 1.0){
             chanceRole = (double) ThreadLocalRandom.current().nextInt(0, 100001) * 0.00001;
             if (1.0 - chanceRole >= drop.dropChance) didNotMakeChance = true;
         }
@@ -559,12 +563,12 @@ public class CustomDropsHandler {
         }
 
         item.dropChance = itemInfoConfiguration.getDouble("chance", this.defaults.chance);
-        item.equippedSpawnChance = itemInfoConfiguration.getDouble("equippedspawnchance", this.defaults.equippedSpawnChance);
+        checkEquippedChance(item, itemInfoConfiguration);
+        parseItemFlags(item, itemInfoConfiguration.getString("itemflags"), dropInstance);
         item.priority = itemInfoConfiguration.getInt("priority", this.defaults.priority);
         item.maxDropGroup = itemInfoConfiguration.getInt("maxdropgroup", this.defaults.maxDropGroup);
         item.minLevel = itemInfoConfiguration.getInt("minlevel", this.defaults.minLevel);
         item.maxLevel = itemInfoConfiguration.getInt("maxlevel", this.defaults.maxLevel);
-        item.isEquipped = itemInfoConfiguration.getBoolean("equipped", this.defaults.equipped);
         item.noMultiplier = itemInfoConfiguration.getBoolean("nomultiplier", this.defaults.noMultiplier);
         item.noSpawner = itemInfoConfiguration.getBoolean("nospawner", this.defaults.noSpawner);
         item.customModelDataId = itemInfoConfiguration.getInt("custommodeldata", this.defaults.customModelData);
@@ -613,31 +617,76 @@ public class CustomDropsHandler {
             }
         } // end enchantments
 
-        // set item attributes, etc here:
+        applyMetaAttributes(item);
+    }
+
+    private void applyMetaAttributes(final CustomDropItem item){
+        final ItemMeta meta = item.getItemStack().getItemMeta();
+        if (meta == null) return;
+
+        boolean madeChanges = false;
 
         if (item.lore != null && !item.lore.isEmpty()){
-            final ItemMeta meta = item.getItemStack().getItemMeta();
-            if (meta != null) {
-                meta.setLore(Utils.colorizeAllInList(item.lore));
-                item.getItemStack().setItemMeta(meta);
-            }
+            meta.setLore(Utils.colorizeAllInList(item.lore));
+            item.getItemStack().setItemMeta(meta);
+            madeChanges = true;
         }
 
         if (item.customName != null && !"".equals(item.customName)){
-            final ItemMeta meta = item.getItemStack().getItemMeta();
-            if (meta != null) {
-                meta.setDisplayName(MessageUtils.colorizeAll(item.customName));
-                item.getItemStack().setItemMeta(meta);
-            }
+            meta.setDisplayName(MessageUtils.colorizeAll(item.customName));
+            item.getItemStack().setItemMeta(meta);
+            madeChanges = true;
         }
 
         if (item.customModelDataId != this.defaults.customModelData){
-            final ItemMeta meta = item.getItemStack().getItemMeta();
-            if (meta != null) {
-                meta.setCustomModelData(item.customModelDataId);
-                item.getItemStack().setItemMeta(meta);
+            meta.setCustomModelData(item.customModelDataId);
+            item.getItemStack().setItemMeta(meta);
+            madeChanges = true;
+        }
+
+        if (item.itemFlags != null && !item.itemFlags.isEmpty()){
+            for (final ItemFlag flag : item.itemFlags)
+                meta.addItemFlags(flag);
+
+            madeChanges = true;
+        }
+
+        if (madeChanges)
+            item.getItemStack().setItemMeta(meta);
+    }
+
+    private void parseItemFlags(final CustomDropItem item, final String itemFlags, final CustomDropInstance dropInstance){
+        if (Utils.isNullOrEmpty(itemFlags)) return;
+        List<ItemFlag> flagList = new LinkedList<>();
+
+        for (final String flag : itemFlags.replace(',',';').split(";")){
+            try{
+                ItemFlag newFlag = ItemFlag.valueOf(flag.trim().toUpperCase());
+                flagList.add(newFlag);
+            }
+            catch (Exception e){
+                Utils.logger.warning(String.format("Invalid itemflag: %s, item: %s, mobOrGroup: %s",
+                        flag, item.getMaterial().name(), dropInstance.getMobOrGroupName()));
             }
         }
+
+        if (flagList.size() > 0) item.itemFlags = flagList;
+    }
+
+    private void checkEquippedChance(final CustomDropItem item, final ConfigurationSection itemInfoConfiguration){
+        final String temp = itemInfoConfiguration.getString("equipped");
+        if (Utils.isNullOrEmpty(temp)) return;
+
+        if ("false".equalsIgnoreCase(temp)){
+            item.equippedSpawnChance = 0.0;
+            return;
+        }
+        else if ("true".equalsIgnoreCase(temp)){
+            item.equippedSpawnChance = 1.0;
+            return;
+        }
+
+        item.equippedSpawnChance = itemInfoConfiguration.getDouble("equipped", this.defaults.equippedSpawnChance);
     }
 
     private ConfigurationSection objectToConfigurationSection(final Object object){
@@ -721,7 +770,7 @@ public class CustomDropsHandler {
             sb.append(item.getDamageAsString());
         }
         if (!item.excludedMobs.isEmpty()) sb.append(", hasExcludes");
-        if (item.isEquipped) {
+        if (item.equippedSpawnChance > 0.0) {
             sb.append(", equipChance: ");
             sb.append(item.equippedSpawnChance);
         }
@@ -736,6 +785,10 @@ public class CustomDropsHandler {
         if (item.priority > 0) {
             sb.append(", pri: ");
             sb.append(item.priority);
+        }
+        if (item.itemFlags != null && !item.itemFlags.isEmpty()){
+            sb.append(", itemflags: ");
+            sb.append(item.itemFlags.size());
         }
 
         Utils.logger.info(sb.toString());

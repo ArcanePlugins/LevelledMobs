@@ -10,6 +10,7 @@ import me.lokka30.levelledmobs.misc.FileLoader;
 import me.lokka30.levelledmobs.misc.Utils;
 import me.lokka30.microlib.UpdateChecker;
 import me.lokka30.microlib.VersionUtils;
+import org.apache.maven.artifact.versioning.ComparableVersion;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.command.PluginCommand;
@@ -23,6 +24,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -197,7 +199,24 @@ public class Companion {
             final UpdateChecker updateChecker = new UpdateChecker(main, 74304);
             updateChecker.getLatestVersion(latestVersion -> {
                 final String currentVersion = updateChecker.getCurrentVersion().split(" ")[0];
-                if (!currentVersion.equals(latestVersion)) {
+
+                ComparableVersion thisVersion = new ComparableVersion(currentVersion);
+                ComparableVersion spigotVersion = new ComparableVersion(latestVersion);
+
+                final boolean isOutOfDate = (thisVersion.compareTo(spigotVersion) < 0);
+                final boolean isNewerVersion =(thisVersion.compareTo(spigotVersion) > 0);
+
+                if (isNewerVersion){
+                    updateResult = Collections.singletonList(
+                            "&7Your &bLevelledMobs&7 version is &ba pre-release&7. Latest release version is &bv%latestVersion%&7. &8(&7You're running &bv%currentVersion%&8)");
+
+                    updateResult = Utils.replaceAllInList(updateResult, "%currentVersion%", currentVersion);
+                    updateResult = Utils.replaceAllInList(updateResult, "%latestVersion%", latestVersion);
+                    updateResult = Utils.colorizeAllInList(updateResult);
+
+                    updateResult.forEach(Utils.logger::warning);
+                }
+                else if (isOutOfDate) {
 
                     // for some reason config#getStringList doesn't allow defaults??
                     if (main.messagesCfg.contains("other.update-notice.messages")) {
