@@ -99,17 +99,17 @@ public class LevelInterface {
          */
         // Overriden entities.
         if (Utils.isBabyMob(livingEntity)) {
-            if (!main.settingsCfg.getStringList("overriden-entities").contains("BABY_" + livingEntity.getType().toString()))
+            if (!main.settingsCfg.getStringList("overriden-entities").contains("BABY_" + livingEntity.getType()))
                 return LevellableState.DENIED_CONFIGURATION_BLOCKED_ENTITY_TYPE;
         }
 
         // Check ModalList
         if (Utils.isBabyMob(livingEntity)) {
-            if (!ModalList.isEnabledInList(main.settingsCfg, "allowed-entities-list", "BABY_" + livingEntity.getType().toString()))
+            if (!ModalList.isEnabledInList(main.settingsCfg, "allowed-entities-list", "BABY_" + livingEntity.getType()))
                 return LevellableState.DENIED_CONFIGURATION_BLOCKED_ENTITY_TYPE;
         }
 
-        return getLevellableState(livingEntity.getType());
+        return getLevellableState(livingEntity.getType(), livingEntity.getLocation());
     }
 
     /**
@@ -180,6 +180,12 @@ public class LevelInterface {
         // Check EntityType
         LevellableState entityTypeState = getLevellableState(entityType);
         if (entityTypeState != LevellableState.ALLOWED) return entityTypeState;
+
+        // Check worlds
+        //noinspection ConstantConditions
+        if (!ModalList.isEnabledInList(main.settingsCfg, "allowed-worlds-list", location.getWorld().getName())) {
+            return LevellableState.DENIED_CONFIGURATION_BLOCKED_WORLD;
+        }
 
         // Check WorldGuard
         if (ExternalCompatibilityManager.checkWorldGuard(location, main))
@@ -267,7 +273,7 @@ public class LevelInterface {
         }.runTaskLater(main, 1);
 
         Utils.debugLog(main, "ApplyLevelSuccess", String.join(", ", Arrays.asList(
-                "Applied level to a " + livingEntity.getType().toString(),
+                "Applied level to a " + livingEntity.getType(),
                 "world: " + livingEntity.getWorld().getName(),
                 "level: " + level,
                 "isSummoned: " + isSummoned,

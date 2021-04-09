@@ -71,11 +71,10 @@ public class EntitySpawnListener implements Listener {
         final LivingEntity livingEntity = (LivingEntity) event.getEntity();
 
         final LevelInterface.LevellableState levellableState = getLevellableState(event);
-
         if (levellableState == LevelInterface.LevellableState.ALLOWED) {
             main.levelInterface.applyLevelToMob(livingEntity, main.levelInterface.generateLevel(livingEntity), false, false);
         } else {
-            Utils.debugLog(main, "ApplyLevelFail", "Entity " + event.getEntityType().toString() + " in wo" +
+            Utils.debugLog(main, "ApplyLevelFail", "Entity " + event.getEntityType() + " in wo" +
                     "rld " + livingEntity.getWorld().getName() + " was not levelled -> Levellable state: " + levellableState.toString());
 
             // Check if the mob is already levelled - if so, remove their level
