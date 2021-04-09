@@ -109,6 +109,18 @@ public class LevelInterface {
                 return LevellableState.DENIED_CONFIGURATION_BLOCKED_ENTITY_TYPE;
         }
 
+        /*
+        Check spawn reason
+         */
+        // They might not have the SpawnReasonKey, make sure they do before checking it.
+        if (livingEntity.getPersistentDataContainer().has(main.levelManager.spawnReasonKey, PersistentDataType.STRING)) {
+            String spawnReason = livingEntity.getPersistentDataContainer().get(main.levelManager.spawnReasonKey, PersistentDataType.STRING);
+
+            if (!ModalList.isEnabledInList(main.settingsCfg, "allowed-spawn-reasons-list", spawnReason)) {
+                return LevelInterface.LevellableState.DENIED_CONFIGURATION_BLOCKED_SPAWN_REASON;
+            }
+        }
+
         return getLevellableState(livingEntity.getType(), livingEntity.getLocation());
     }
 

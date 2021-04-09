@@ -97,12 +97,16 @@ public class EntitySpawnListener implements Listener {
         if (event instanceof CreatureSpawnEvent) {
             CreatureSpawnEvent creatureSpawnEvent = (CreatureSpawnEvent) event;
 
+            Utils.debugLog(main, "EntitySpawnListener", "YES CreatureSpawnListener: " + event.getEntityType() + ", with spawnReason " + creatureSpawnEvent.getSpawnReason() + ".");
+
             if (!ModalList.isEnabledInList(main.settingsCfg, "allowed-spawn-reasons-list", creatureSpawnEvent.getSpawnReason().toString())) {
                 return LevelInterface.LevellableState.DENIED_CONFIGURATION_BLOCKED_SPAWN_REASON;
             }
 
             // Whilst we're here, unrelated, add in the spawner key to the mob
             livingEntity.getPersistentDataContainer().set(main.levelManager.spawnReasonKey, PersistentDataType.STRING, creatureSpawnEvent.getSpawnReason().toString());
+        } else {
+            Utils.debugLog(main, "EntitySpawnListener", "NO CreatureSpawnListener: " + event.getEntityType());
         }
 
         return LevelInterface.LevellableState.ALLOWED;
