@@ -14,6 +14,7 @@ import org.bukkit.configuration.MemoryConfiguration;
 import org.bukkit.configuration.MemorySection;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.*;
+import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
@@ -54,10 +55,16 @@ public class CustomDropsHandler {
             parseCustomDrops(instance.customDropsCfg);
     }
 
-    public CustomDropResult getCustomItemDrops(final LivingEntity livingEntity, final int level, final List<ItemStack> drops, final boolean isLevellable, final boolean equippedOnly){
+    public CustomDropResult getCustomItemDrops(final LivingEntity livingEntity, final int level, final List<ItemStack> drops, final boolean isLevellable, final boolean equippedOnly) {
 
         final List<CustomDropsUniversalGroups> applicableGroups = getApllicableGroupsForMob(livingEntity, isLevellable);
-        final boolean isSpawner = livingEntity.getPersistentDataContainer().has(instance.levelManager.isSpawnerKey, PersistentDataType.STRING);
+
+        boolean isSpawner = false;
+        if (livingEntity.getPersistentDataContainer().has(instance.levelManager.spawnReasonKey, PersistentDataType.STRING)) {
+            //noinspection ConstantConditions
+            isSpawner = livingEntity.getPersistentDataContainer().get(instance.levelManager.spawnReasonKey, PersistentDataType.STRING).equals(CreatureSpawnEvent.SpawnReason.SPAWNER.toString());
+        }
+
         //CustomDropResult customDropResult = CustomDropResult.NO_OVERRIDE;
         final CustomDropProcessingInfo processingInfo = new CustomDropProcessingInfo();
         processingInfo.livingEntity = livingEntity;

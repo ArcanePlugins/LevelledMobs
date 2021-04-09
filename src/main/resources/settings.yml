@@ -767,8 +767,6 @@ ensure-mobs-are-levelled-on-chunk-load: true
 # ||-------------------------------------------------------||
 use-update-checker: true
 debug-entity-damage: false
-debug-show-spawned-mobs: false
-debug-show-mobs-not-levellable: false
 debug-misc: [ ]
 file-version: 28
 

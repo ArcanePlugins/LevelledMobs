@@ -60,8 +60,7 @@ public class KillSubcommand implements Subcommand {
                         }
 
                         if ("/nodrops".equalsIgnoreCase(args[2])) {
-                            useNoDrops = true;
-                            parseKillAll(sender, Bukkit.getWorlds(), main, useNoDrops);
+                            parseKillAll(sender, Bukkit.getWorlds(), main, true);
                         }
                         else {
                             World world = Bukkit.getWorld(args[2]);

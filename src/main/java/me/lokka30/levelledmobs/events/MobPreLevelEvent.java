@@ -9,7 +9,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.HashSet;
 
-public class MobLevelEvent extends Event implements Cancellable {
+public class MobPreLevelEvent extends Event implements Cancellable {
 
     private static final HandlerList HANDLERS = new HandlerList();
 
@@ -49,7 +49,7 @@ public class MobLevelEvent extends Event implements Cancellable {
 
     /**
      * Any additional information that other plugins may want to
-     * account for in MobLevelEvent should be stated when the Event
+     * account for in MobPreLevelEvent should be stated when the Event
      * is called.
      * Multiple 'Additional Information's can be specified when the
      * event is called, by using the HashSet.
@@ -70,7 +70,7 @@ public class MobLevelEvent extends Event implements Cancellable {
     private final LevelCause levelCause;
     private final HashSet<AdditionalInformation> additionalInformation;
 
-    public MobLevelEvent(@NotNull LivingEntity entity, int level, @NotNull LevelCause levelCause, @Nullable HashSet<AdditionalInformation> additionalInformation) {
+    public MobPreLevelEvent(@NotNull LivingEntity entity, int level, @NotNull LevelCause levelCause, @Nullable HashSet<AdditionalInformation> additionalInformation) {
         this.entity = entity;
         this.level = level;
         this.levelCause = levelCause;

@@ -45,6 +45,8 @@ public final class FileLoader {
 
         MigrateBehavior migrateBehavior = MigrateBehavior.MIGRATE;
 
+        //TODO Condition 'migrateBehavior == MigrateBehavior.MIGRATE || migrateBehavior == MigrateBehavior.RESET' is always 'true' when reached
+        //TODO Condition 'migrateBehavior == MigrateBehavior.MIGRATE' is always 'true' when reached
         if (fileVersion < compatibleVersion && (migrateBehavior == MigrateBehavior.MIGRATE || migrateBehavior == MigrateBehavior.RESET)) {
             final File backedupFile = new File(plugin.getDataFolder(), cfgName + ".v" + fileVersion + ".old");
 
@@ -54,6 +56,7 @@ public final class FileLoader {
             // overwrite settings.yml from new version
             plugin.saveResource(file.getName(), true);
 
+            //TODO Condition 'migrateBehavior == MigrateBehavior.MIGRATE' is always 'true'
             if (migrateBehavior == MigrateBehavior.MIGRATE) {
                 // copy supported values from old file to new
                 Utils.logger.info("&fFile Loader: &8(Migration) &7Migrating &b" + cfgName + "&7 from old version to new version.");
@@ -66,6 +69,7 @@ public final class FileLoader {
             // reload cfg from the updated values
             cfg = YamlConfiguration.loadConfiguration(file);
 
+            //TODO Condition 'migrateBehavior == MigrateBehavior.RESET' is always 'false'
             if (migrateBehavior == MigrateBehavior.RESET) {
                 Utils.logger.warning("&fFile Loader: &8(Migration) &b" + cfgName + "&7 has been reset to default values.");
             }

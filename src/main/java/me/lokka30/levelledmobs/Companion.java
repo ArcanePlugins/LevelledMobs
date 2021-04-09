@@ -147,7 +147,7 @@ public class Companion {
         Utils.logger.info("&fListeners: &7Registering event listeners...");
 
         main.levelManager = new LevelManager(main);
-        main.levelManager.creatureSpawnListener = new CreatureSpawnListener(main); // we're saving this reference so the summon command has access to it
+        main.levelManager.entitySpawnListener = new EntitySpawnListener(main); // we're saving this reference so the summon command has access to it
         main.entityDamageDebugListener = new EntityDamageDebugListener(main);
 
         if (main.settingsCfg.getBoolean("debug-entity-damage")) {
@@ -156,7 +156,7 @@ public class Companion {
             pluginManager.registerEvents(main.entityDamageDebugListener, main);
         }
 
-        pluginManager.registerEvents(main.levelManager.creatureSpawnListener, main);
+        pluginManager.registerEvents(main.levelManager.entitySpawnListener, main);
         pluginManager.registerEvents(new EntityDamageListener(main), main);
         pluginManager.registerEvents(new EntityDeathListener(main), main);
         pluginManager.registerEvents(new EntityRegainHealthListener(main), main);
@@ -223,7 +223,7 @@ public class Companion {
                                 for (String msg : updateResult) {
                                     onlinePlayer.sendMessage(msg);
                                 }
-                                //updateResult.forEach(onlinePlayer::sendMessage); //compiler didn't like this
+                                //updateResult.forEach(onlinePlayer::sendMessage); //compiler didn't like this :(
                             }
                         });
                     }

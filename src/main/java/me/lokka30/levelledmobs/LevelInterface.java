@@ -1,28 +1,23 @@
 package me.lokka30.levelledmobs;
 
-import me.lokka30.levelledmobs.events.MobLevelEvent;
-import me.lokka30.levelledmobs.events.SummonedMobLevelEvent;
+import me.lokka30.levelledmobs.events.MobPreLevelEvent;
+import me.lokka30.levelledmobs.events.SummonedMobPreLevelEvent;
 import me.lokka30.levelledmobs.managers.ExternalCompatibilityManager;
+import me.lokka30.levelledmobs.misc.Addition;
 import me.lokka30.levelledmobs.misc.ModalList;
 import me.lokka30.levelledmobs.misc.Utils;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
-import org.bukkit.enchantments.EnchantmentTarget;
 import org.bukkit.entity.*;
-import org.bukkit.inventory.EntityEquipment;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.List;
 
 /**
  * Welcome to the LevelInterface,
@@ -206,7 +201,7 @@ public class LevelInterface {
      */
     public int generateLevel(@NotNull LivingEntity livingEntity) {
         // TODO
-        return -1;
+        return main.levelManager.generateLevel(livingEntity);
     }
 
     /**
@@ -234,34 +229,57 @@ public class LevelInterface {
      */
     public void applyLevelToMob(@NotNull LivingEntity livingEntity, int level, boolean isSummoned, boolean bypassLimits) {
         Validate.isTrue(level >= 0, "Level must be greater than or equal to zero.");
+        if (!bypassLimits)
+            Validate.isTrue(getLevellableState(livingEntity) == LevellableState.ALLOWED, "Mob must be levellable or bypassLimits must be true");
 
         if (isSummoned) {
-            SummonedMobLevelEvent summonedMobLevelEvent = new SummonedMobLevelEvent(livingEntity, level);
-            Bukkit.getPluginManager().callEvent(summonedMobLevelEvent);
-            if (summonedMobLevelEvent.isCancelled()) return;
+            SummonedMobPreLevelEvent summonedMobPreLevelEvent = new SummonedMobPreLevelEvent(livingEntity, level);
+            Bukkit.getPluginManager().callEvent(summonedMobPreLevelEvent);
+            if (summonedMobPreLevelEvent.isCancelled()) return;
         } else {
-            MobLevelEvent mobLevelEvent = new MobLevelEvent(livingEntity, level, MobLevelEvent.LevelCause.NORMAL, null);
-            Bukkit.getPluginManager().callEvent(mobLevelEvent);
-            if (mobLevelEvent.isCancelled()) return;
+            MobPreLevelEvent mobPreLevelEvent = new MobPreLevelEvent(livingEntity, level, MobPreLevelEvent.LevelCause.NORMAL, null);
+            Bukkit.getPluginManager().callEvent(mobPreLevelEvent);
+            if (mobPreLevelEvent.isCancelled()) return;
         }
-
-        long delay = isSummoned ? 0 : 1; // no need to delay if summoned. 1 tick delay if not summoned, so LM can ensure it is safe to level a mob.
 
         new BukkitRunnable() {
             @Override
             public void run() {
-                //TODO process mob spawn
-                livingEntity.getPersistentDataContainer().set(main.levelManager.levelKey, PersistentDataType.INTEGER, 1); //todo check if this is the right awy
+                if (livingEntity.getPersistentDataContainer().has(main.levelManager.noLevelKey, PersistentDataType.STRING)) {
+                    Utils.debugLog(main, "ApplyLevelFail", "Entity " + livingEntity.getType() + " had noLevelKey attached");
+                    return;
+                }
 
-                applyLevelledEquipment(livingEntity, level);
+                livingEntity.getPersistentDataContainer().set(main.levelManager.levelKey, PersistentDataType.INTEGER, level);
+
+                main.levelManager.applyLevelledAttributes(livingEntity, level, Addition.ATTRIBUTE_ATTACK_DAMAGE);
+                main.levelManager.applyLevelledAttributes(livingEntity, level, Addition.ATTRIBUTE_MAX_HEALTH);
+                main.levelManager.applyLevelledAttributes(livingEntity, level, Addition.ATTRIBUTE_MOVEMENT_SPEED);
+
+                if (livingEntity instanceof Creeper) {
+                    main.levelManager.applyCreeperBlastRadius((Creeper) livingEntity, level);
+                }
+
+                main.levelManager.updateNametag(livingEntity, level);
+
+                main.levelManager.applyLevelledEquipment(livingEntity, level);
             }
-        }.runTaskLater(main, delay);
+        }.runTaskLater(main, 1);
+
+        Utils.debugLog(main, "ApplyLevelSuccess", String.join(", ", Arrays.asList(
+                "Applied level to a " + livingEntity.getType().toString(),
+                "world: " + livingEntity.getWorld().getName(),
+                "level: " + level,
+                "isSummoned: " + isSummoned,
+                "bypassLimits: " + bypassLimits,
+                "isBabyEntity: " + Utils.isBabyMob(livingEntity)
+        )));
     }
 
     /**
      * Check if a LivingEntity is a levelled mob or not.
-     * This is determined *after* MobLevelEvent.
-     *
+     * This is determined *after* MobPreLevelEvent.
+     * <p>
      * Thread-safety intended, but not tested.
      *
      * @param livingEntity living entity to check
@@ -285,59 +303,6 @@ public class LevelInterface {
             return livingEntity.getPersistentDataContainer().get(main.levelManager.levelKey, PersistentDataType.INTEGER);
         } else {
             throw new IllegalStateException("Mob is not levelled!");
-        }
-    }
-
-    /**
-     * Add configured equipment to the levelled mob
-     * LivingEntity MUST be a levelled mob
-     *
-     * Thread-safety unknown.
-     *
-     * @param livingEntity a levelled mob to apply levelled equipment to
-     * @param level        the level of the levelled mob
-     */
-    public void applyLevelledEquipment(@NotNull final LivingEntity livingEntity, final int level) {
-        if (!isLevelled(livingEntity)){
-            // if you summon a mob and it isn't levelled due to a config rule (baby zombies exempt for example)
-            // then we'll be here with a non-levelled entity
-            return;
-        }
-        Validate.isTrue(level >= 0, "Level must be greater than or equal to zero.");
-
-        List<ItemStack> items = new ArrayList<>();
-        main.customDropsHandler.getCustomItemDrops(livingEntity, level, items, true, true);
-        if (items.isEmpty()) return;
-
-        EntityEquipment equipment = livingEntity.getEquipment();
-        if (equipment == null) return;
-
-        boolean hadMainItem = false;
-
-        for (ItemStack itemStack : items) {
-            Material material = itemStack.getType();
-            if (EnchantmentTarget.ARMOR_FEET.includes(material)) {
-                equipment.setBoots(itemStack, true);
-                equipment.setBootsDropChance(0);
-            } else if (EnchantmentTarget.ARMOR_LEGS.includes(material)) {
-                equipment.setLeggings(itemStack, true);
-                equipment.setLeggingsDropChance(0);
-            } else if (EnchantmentTarget.ARMOR_TORSO.includes(material)) {
-                equipment.setChestplate(itemStack, true);
-                equipment.setChestplateDropChance(0);
-            } else if (EnchantmentTarget.ARMOR_HEAD.includes(material)) {
-                equipment.setHelmet(itemStack, true);
-                equipment.setHelmetDropChance(0);
-            } else {
-                if (!hadMainItem) {
-                    equipment.setItemInMainHand(itemStack);
-                    equipment.setItemInMainHandDropChance(0);
-                    hadMainItem = true;
-                } else {
-                    equipment.setItemInOffHand(itemStack);
-                    equipment.setItemInOffHandDropChance(0);
-                }
-            }
         }
     }
 
@@ -410,6 +375,13 @@ public class LevelInterface {
          * of such entity type from being levelled
          */
         DENIED_CONFIGURATION_BLOCKED_ENTITY_TYPE,
+
+        /**
+         * settings.yml has been configured to block mobs
+         * that spawn with a specific SpawnReason through
+         * CreatureSpawnEvent.
+         */
+        DENIED_CONFIGURATION_BLOCKED_SPAWN_REASON,
 
         /**
          * settings.yml has been configured to block
