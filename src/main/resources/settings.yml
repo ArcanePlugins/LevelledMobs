@@ -775,17 +775,13 @@ file-version: 28
 console-commands-on-lvl-mob-death:
   ZOMBIE:
     natural-caused:
-      "4, 2, 5-9":
-        - 'airdrop start %world% %location%'
-      "min-4":
-        - 'say A mob was killed at %location% in world %world%'
-      "11-max": # levels can be assigned to multiple command groups
-        - 'say A level %level% mob was killed naturally.'
+      alllevels:
+        - "time set night"
     player-caused:
       "1-20":
-        - 'gm 1'
+        - 'effect give %player% minecraft:nausea 100 1'
       "alllevels":
-        - 'gm 2'
+        - 'effect give %player% minecraft:health_boost 100 1'
 
 
 # And that's the end of the file! Congratulations!
