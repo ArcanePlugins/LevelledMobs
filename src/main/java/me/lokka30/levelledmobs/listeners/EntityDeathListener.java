@@ -45,6 +45,10 @@ public class EntityDeathListener implements Listener {
             if (event.getDroppedExp() > 0) {
                 event.setDroppedExp(main.levelManager.getLevelledExpDrops(livingEntity, event.getDroppedExp()));
             }
+
+            //Run commands
+            main.levelManager.execCommands(livingEntity);
+
         } else if (main.settingsCfg.getBoolean("use-custom-item-drops-for-mobs")) {
             final List<ItemStack> drops = new ArrayList<>();
             final CustomDropResult result = main.customDropsHandler.getCustomItemDrops(livingEntity, -1, drops, false, false);

@@ -772,6 +772,21 @@ debug-show-mobs-not-levellable: false
 debug-misc: [ ]
 file-version: 28
 
+console-commands-on-lvl-mob-death:
+  ZOMBIE:
+    natural-caused:
+      "4, 2, 5-9":
+        - 'airdrop start %world% %location%'
+      "min-4":
+        - 'say A mob was killed at %location% in world %world%'
+      "11-max": # levels can be assigned to multiple command groups
+        - 'say A level %level% mob was killed naturally.'
+    player-caused:
+      "1-20":
+        - 'gm 1'
+      "alllevels":
+        - 'gm 2'
+
 
 # And that's the end of the file! Congratulations!
 #

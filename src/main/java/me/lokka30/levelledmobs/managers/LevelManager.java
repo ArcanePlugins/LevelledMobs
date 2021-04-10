@@ -14,6 +14,7 @@ import org.apache.commons.lang.WordUtils;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.*;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.inventory.AbstractHorseInventory;
@@ -23,6 +24,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -31,7 +33,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * @author lokka30
- * @contributors stumper66, Eyrian2010, iCodinqs, deiphiz, CoolBoy, Esophose, 7smile7, Shevchik, Hugo5551
+ * @contributors stumper66, Eyrian2010, iCodinqs, deiphiz, CoolBoy, Esophose, 7smile7, Shevchik, Hugo5551, limzikiki
  */
 public class LevelManager {
 
@@ -548,6 +550,122 @@ public class LevelManager {
         } else {
             return xp;
         }
+    }
+
+    /**
+     * Executes commands that are suitable for this entity
+     *
+     * @param livingEntity     entity that was killed
+     * @author limzikiki
+     */
+    public void execCommands(final LivingEntity livingEntity){
+        if(main.levelInterface.isLevelled(livingEntity)){
+            //Get section that contains all data related to mob kill commands
+            final ConfigurationSection configs = main.settingsCfg.getConfigurationSection("console-commands-on-lvl-mob-death");
+            if(configs != null) {
+                final Set<String> entities = configs.getKeys(false);
+                for (String entityType: entities) {
+                    Utils.debugLog(main,  "LevelManager#execCommands", "entity execCommandCheck:"+entityType+":"+ livingEntity.getType().getName());
+                    if(EntityType.valueOf(entityType) == livingEntity.getType()){
+                        final Player player = livingEntity.getKiller();
+                        if(player == null){
+                            final ConfigurationSection natCaused = configs.getConfigurationSection(entityType+".natural-caused");
+                            if(natCaused != null){
+                                execCommands(livingEntity, natCaused);
+                            }
+                        }else {
+                            final ConfigurationSection playerCaused = configs.getConfigurationSection(entityType + ".player-caused");
+                            if (playerCaused != null) {
+                                execCommands(livingEntity, playerCaused);
+                            }
+                        }
+                    }
+                }
+            }else{
+                throw new Error("Error reading 'console-commands-on-lvl-mob-death'");
+            }
+        }
+    }
+    /**
+     * Executes commands that are suitable for this entity,
+     * configs should contain only levels and corresponding commands
+     *
+     * @param entity     entity that was killed
+     * @param configs    configs containing only levels and corresponding commands
+     * @author limzikiki
+     */
+    public void execCommands(final LivingEntity entity, @Nonnull final ConfigurationSection configs) {
+
+        final boolean isAdult = Utils.isBabyMob(entity);
+        final int entityLevel = Objects.requireNonNull(entity.getPersistentDataContainer().get(levelKey, PersistentDataType.INTEGER));
+        final int[] minAndMaxLevels = getMinAndMaxLevels(entity, entity.getType(), isAdult, entity.getWorld().getName(), null, null);
+
+        final Set<String> commands = new HashSet<>();
+
+        final Set<String> configLevels = configs.getKeys(false);
+
+        configLevels.forEach((String configLevel) -> {
+            // Checks for the keywords
+            if (configLevel.equals("alllevels") || configLevel.equals("min") || configLevel.equals("max")) {
+                commands.addAll(configs.getStringList(configLevel));
+                return;
+            }
+
+            // Split the levels by ', '
+            final String[] levels = configLevel.split(", ");
+            for (String level : levels) {
+                Utils.debugLog(main, "LevelManager#execCommands", level);
+                // Split the levels by '-'
+                final String[] levelRange = level.split("-");
+                if (levelRange.length == 1) {
+                    // Executes when level is not a range
+                    if (Integer.parseInt(level) == entityLevel) {
+                        commands.addAll(configs.getStringList(level));
+                    }
+                } else if (levelRange.length == 2) {
+                    // Executes when level is a range
+                    int[] intLevelRange = new int[2];
+
+                    if (levelRange[0].equals("min")) {
+                        intLevelRange[0] = minAndMaxLevels[0];
+                    } else {
+                        intLevelRange[0] = Integer.parseInt(levelRange[0]);
+                    }
+
+                    if (levelRange[1].equals("max")) {
+                        intLevelRange[1] = minAndMaxLevels[1];
+                    } else {
+                        intLevelRange[1] = Integer.parseInt(levelRange[1]);
+                    }
+
+                    if ((intLevelRange[0] <= entityLevel) && (intLevelRange[1] >= entityLevel)) {
+                        commands.addAll(configs.getStringList(level));
+                    }
+                } else {
+                    throw new Error("Wrong level was provided to console-commands-on-lvl-mob-death");
+                }
+            }
+        });
+
+        final Player player = entity.getKiller();
+        // Replace placeholders
+        for(String command: commands){
+            String finnalCommand = command;
+
+            if(player != null){
+                // %player% placeholder
+                finnalCommand = Utils.replaceEx(finnalCommand, "%player%", player.getName());
+            }
+
+            // %level% placeholder
+            finnalCommand = Utils.replaceEx(finnalCommand, "%level%", String.valueOf(entityLevel));
+
+            // %world% placeholder
+            finnalCommand = Utils.replaceEx(finnalCommand, "%world%", entity.getWorld().getName());
+
+            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), finnalCommand);
+        }
+
     }
 
     // When the persistent data container levelled key has been set on the entity already (i.e. when they are damaged)
