@@ -9,6 +9,7 @@ import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.customdrops.CustomDropResult;
 import me.lokka30.levelledmobs.listeners.EntitySpawnListener;
 import me.lokka30.levelledmobs.misc.Addition;
+import me.lokka30.levelledmobs.misc.DebugType;
 import me.lokka30.levelledmobs.misc.LevelNumbersWithBias;
 import me.lokka30.levelledmobs.misc.Utils;
 import me.lokka30.microlib.MessageUtils;
@@ -387,20 +388,18 @@ public class LevelManager {
     }
 
     // This sets the levelled currentDrops on a levelled mob that just died.
-    public void getLevelledItemDrops(final LivingEntity livingEntity, final List<ItemStack> currentDrops) {
+    public void setLevelledItemDrops(final LivingEntity livingEntity, final List<ItemStack> currentDrops) {
 
         // this accomodates chested animals, saddles and armor on ridable creatures
         final List<ItemStack> dropsToMultiply = getDropsToMultiply(livingEntity, currentDrops);
         final List<ItemStack> customDrops = new LinkedList<>();
         currentDrops.clear();
 
-        Utils.debugLog(main, "LevelManager#getLevelledItemDrops", "1: Method called. " + dropsToMultiply.size() + " drops will be analysed.");
-
-        //Utils.debugLog(main, "LevelManager#getLevelledItemDrops", "2: LivingEntity is a levelled mob.");
+        Utils.debugLog(main, DebugType.SET_LEVELLED_ITEM_DROPS, "1: Method called. " + dropsToMultiply.size() + " drops will be analysed.");
 
         // Get their level
         final int level = Objects.requireNonNull(livingEntity.getPersistentDataContainer().get(levelKey, PersistentDataType.INTEGER));
-        Utils.debugLog(main, "LevelManager#getLevelledItemDrops", "3: Entity level is " + level + ".");
+        Utils.debugLog(main, DebugType.SET_LEVELLED_ITEM_DROPS, "3: Entity level is " + level + ".");
 
         final boolean doNotMultiplyDrops =
                 (Utils.isBabyMob(livingEntity) && main.configUtils.noDropMultiplierEntities.contains("BABY_" + livingEntity.getType())) ||
@@ -411,7 +410,7 @@ public class LevelManager {
             final CustomDropResult dropResult = main.customDropsHandler.getCustomItemDrops(livingEntity, level, customDrops, true, false);
 
             if (dropResult == CustomDropResult.HAS_OVERRIDE) {
-                Utils.debugLog(main, "LevelManager#getLevelledItemDrops", "4: custom drop has override");
+                Utils.debugLog(main, DebugType.SET_LEVELLED_ITEM_DROPS, "4: custom drop has override");
                 removeVanillaDrops(livingEntity, dropsToMultiply);
             }
         }
@@ -420,10 +419,10 @@ public class LevelManager {
             // Get currentDrops added per level value
             final int addition = BigDecimal.valueOf(main.mobDataManager.getAdditionsForLevel(livingEntity, Addition.CUSTOM_ITEM_DROP, level))
                     .setScale(0, RoundingMode.HALF_DOWN).intValueExact(); // truncate double to int
-            Utils.debugLog(main, "LevelManager#getLevelledItemDrops", "4: Item drop addition is +" + addition + ".");
+            Utils.debugLog(main, DebugType.SET_LEVELLED_ITEM_DROPS, "4: Item drop addition is +" + addition + ".");
 
             // Modify current drops
-            Utils.debugLog(main, "LevelManager#getLevelledItemDrops", "5: Scanning " + dropsToMultiply.size() + " items...");
+            Utils.debugLog(main, DebugType.SET_LEVELLED_ITEM_DROPS, "5: Scanning " + dropsToMultiply.size() + " items...");
             for (final ItemStack currentDrop : dropsToMultiply)
                 multiplyDrop(livingEntity, currentDrop, addition, false);
         }
@@ -433,15 +432,15 @@ public class LevelManager {
     }
 
     public void multiplyDrop(LivingEntity livingEntity, final ItemStack currentDrop, final int addition, final boolean isCustomDrop){
-        Utils.debugLog(main, "LevelManager#getLevelledItemDrops", "6: Scanning drop " + currentDrop.getType() + " with current amount " + currentDrop.getAmount() + "...");
+        Utils.debugLog(main, DebugType.SET_LEVELLED_ITEM_DROPS, "6: Scanning drop " + currentDrop.getType() + " with current amount " + currentDrop.getAmount() + "...");
 
         if (isCustomDrop || main.mobDataManager.isLevelledDropManaged(livingEntity.getType(), currentDrop.getType())) {
             int useAmount = currentDrop.getAmount() + (currentDrop.getAmount() * addition);
             if (useAmount > currentDrop.getMaxStackSize()) useAmount = currentDrop.getMaxStackSize();
             currentDrop.setAmount(useAmount);
-            Utils.debugLog(main, "LevelManager#getLevelledItemDrops", "7: Item was managed. New amount: " + currentDrop.getAmount() + ".");
+            Utils.debugLog(main, DebugType.SET_LEVELLED_ITEM_DROPS, "7: Item was managed. New amount: " + currentDrop.getAmount() + ".");
         } else {
-            Utils.debugLog(main, "LevelManager#getLevelledItemDrops", "7: Item was unmanaged.");
+            Utils.debugLog(main, DebugType.SET_LEVELLED_ITEM_DROPS, "7: Item was unmanaged.");
         }
     }
 
@@ -594,17 +593,17 @@ public class LevelManager {
         try {
             dataWatcher = WrappedDataWatcher.getEntityWatcher(entity).deepClone();
         } catch (ConcurrentModificationException ex) {
-            Utils.debugLog(main, "LevelManagerUpdateNametag", "Concurrent modification occured, skipping nametag update of " + entity.getName() + ".");
+            Utils.debugLog(main, DebugType.UPDATE_NAMETAG, "Concurrent modification occured, skipping nametag update of " + entity.getName() + ".");
             return;
         }
 
         try {
             chatSerializer = WrappedDataWatcher.Registry.getChatComponentSerializer(true);
         } catch (ConcurrentModificationException ex) {
-            Utils.debugLog(main, "LevelManagerUpdateNametag", "ConcurrentModificationException caught, skipping nametag update of " + entity.getName() + ".");
+            Utils.debugLog(main, DebugType.UPDATE_NAMETAG, "ConcurrentModificationException caught, skipping nametag update of " + entity.getName() + ".");
             return;
         } catch (IllegalArgumentException ex) {
-            Utils.debugLog(main, "LevelManagerUpdateNametag", "Registry is empty, skipping nametag update of " + entity.getName() + ".");
+            Utils.debugLog(main, DebugType.UPDATE_NAMETAG, "Registry is empty, skipping nametag update of " + entity.getName() + ".");
             return;
         }
 
@@ -631,7 +630,7 @@ public class LevelManager {
             try {
                 ProtocolLibrary.getProtocolManager().sendServerPacket(player, packet);
             } catch (IllegalArgumentException ex) {
-                Utils.debugLog(main, "Nametags", "IllegalArgumentException caught whilst trying to sendServerPacket");
+                Utils.debugLog(main, DebugType.UPDATE_NAMETAG, "IllegalArgumentException caught whilst trying to sendServerPacket");
             } catch (InvocationTargetException ex) {
                 Utils.logger.error("Unable to update nametag packet for player &b" + player.getName() + "&7! Stack trace:");
                 ex.printStackTrace();

@@ -5,6 +5,7 @@ import me.lokka30.levelledmobs.events.MobPreLevelEvent;
 import me.lokka30.levelledmobs.events.SummonedMobPreLevelEvent;
 import me.lokka30.levelledmobs.managers.ExternalCompatibilityManager;
 import me.lokka30.levelledmobs.misc.Addition;
+import me.lokka30.levelledmobs.misc.DebugType;
 import me.lokka30.levelledmobs.misc.ModalList;
 import me.lokka30.levelledmobs.misc.Utils;
 import org.apache.commons.lang.Validate;
@@ -261,7 +262,7 @@ public class LevelInterface {
             @Override
             public void run() {
                 if (livingEntity.getPersistentDataContainer().has(main.levelManager.noLevelKey, PersistentDataType.STRING)) {
-                    Utils.debugLog(main, "ApplyLevelFail", "Entity " + livingEntity.getType() + " had noLevelKey attached");
+                    Utils.debugLog(main, DebugType.APPLY_LEVEL_FAIL, "Entity " + livingEntity.getType() + " had noLevelKey attached");
                     return;
                 }
 
@@ -281,7 +282,7 @@ public class LevelInterface {
                 MobPostLevelEvent.LevelCause levelCause = isSummoned ? MobPostLevelEvent.LevelCause.SUMMONED : MobPostLevelEvent.LevelCause.NORMAL;
                 Bukkit.getPluginManager().callEvent(new MobPostLevelEvent(livingEntity, level, levelCause, additionalLevelInformation));
 
-                Utils.debugLog(main, "ApplyLevelSuccess", String.join(", ", Arrays.asList(
+                Utils.debugLog(main, DebugType.APPLY_LEVEL_SUCCESS, String.join(", ", Arrays.asList(
                         "Applied level to a " + livingEntity.getType(),
                         "world: " + livingEntity.getWorld().getName(),
                         "level: " + level,

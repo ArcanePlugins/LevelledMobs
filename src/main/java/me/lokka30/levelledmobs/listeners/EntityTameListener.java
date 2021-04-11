@@ -2,6 +2,7 @@ package me.lokka30.levelledmobs.listeners;
 
 import me.lokka30.levelledmobs.LevelInterface;
 import me.lokka30.levelledmobs.LevelledMobs;
+import me.lokka30.levelledmobs.misc.DebugType;
 import me.lokka30.levelledmobs.misc.Utils;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
@@ -30,16 +31,16 @@ public class EntityTameListener implements Listener {
         final LivingEntity livingEntity = event.getEntity();
 
         if (main.settingsCfg.getBoolean("no-level-conditions.tamed")) {
-            Utils.debugLog(main, "EntityTameListener", "no-level-conditions.tamed = true");
+            Utils.debugLog(main, DebugType.ENTITY_TAME, "no-level-conditions.tamed = true");
 
             // if mob was levelled then remove it
             main.levelInterface.removeLevel(livingEntity);
 
-            Utils.debugLog(main, "EntityTameListener", "Removed level of tamed mob");
+            Utils.debugLog(main, DebugType.ENTITY_TAME, "Removed level of tamed mob");
             return;
         }
 
-        Utils.debugLog(main, "EntityTameListener", "Applying level to tamed mob");
+        Utils.debugLog(main, DebugType.ENTITY_TAME, "Applying level to tamed mob");
         int level = -1;
         if (livingEntity.getPersistentDataContainer().has(main.levelManager.levelKey, PersistentDataType.INTEGER)) {
             Object temp = livingEntity.getPersistentDataContainer().get(main.levelManager.levelKey, PersistentDataType.INTEGER);
