@@ -176,4 +176,15 @@ public final class Utils {
             logger.info("&8[&bDebug: " + debugType + "&8]&7 " + msg);
         }
     }
+
+    /**
+     * If object1 is null, return object2
+     *
+     * @param object1 a nullable object
+     * @param object2 a non-nullable object
+     * @return object2 if object1 is null, otherwise, object1
+     */
+    public static Object getNonNull(@Nullable Object object1, @NotNull Object object2) {
+        return object1 == null ? object2 : object1;
+    }
 }

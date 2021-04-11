@@ -18,8 +18,10 @@ import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 
 /**
  * Welcome to the LevelInterface,
@@ -169,8 +171,8 @@ public class LevelInterface {
         Check Entity Type
          */
         // Overriden entities.
-        if (main.settingsCfg.getStringList("overriden-entities").contains(entityType.toString()))
-            return LevellableState.DENIED_CONFIGURATION_BLOCKED_ENTITY_TYPE;
+        if (((List<String>) Utils.getNonNull(main.settingsCfg.getStringList("overriden-entities"), new ArrayList<>()))
+                .contains(entityType.toString())) return LevellableState.DENIED_CONFIGURATION_BLOCKED_ENTITY_TYPE;
 
         // Check ModalList
         if (!ModalList.isEnabledInList(main.settingsCfg, "allowed-entities-list", entityType.toString()))

@@ -521,7 +521,7 @@ public class LevelManager {
     // When the persistent data container levelled key has not been set on the entity yet (i.e. for use in EntitySpawnListener)
     public String getNametag(final LivingEntity livingEntity, final int level, final boolean isDeathNametag) {
         // If show label for default levelled mobs is disabled and the mob is the min level, then don't modify their tag.
-        if (!main.settingsCfg.getBoolean("show-label-for-default-levelled-mobs") && level == main.settingsCfg.getInt("fine-tuning.min-level")) {
+        if (!main.settingsCfg.getBoolean("show-label-for-default-levelled-mobs", true) && level == main.settingsCfg.getInt("fine-tuning.min-level", 1)) {
             return livingEntity.getCustomName(); // CustomName can be null, that is meant to be the case.
         }
 
