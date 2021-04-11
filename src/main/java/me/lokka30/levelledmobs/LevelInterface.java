@@ -107,8 +107,25 @@ public class LevelInterface {
 
         // Check ModalList
         if (Utils.isBabyMob(livingEntity)) {
-            if (!ModalList.isEnabledInList(main.settingsCfg, "allowed-entities-list", "BABY_" + livingEntity.getType()))
-                return LevellableState.DENIED_CONFIGURATION_BLOCKED_ENTITY_TYPE;
+            boolean isBabyVariantNotLevellable = !ModalList.isEnabledInList(main.settingsCfg, "allowed-entities-list", "BABY_" + livingEntity.getType());
+            if (main.settingsCfg.getBoolean("allowed-entities-list.babyMobsInheritAdultSetting", true)) {
+                // if baby is specified, use that setting. otherwise, use adult setting.
+                if (main.settingsCfg.getStringList("allowed-entities-list.list").contains("BABY_" + livingEntity.getType())) {
+                    if (isBabyVariantNotLevellable) {
+                        return LevellableState.DENIED_CONFIGURATION_BLOCKED_ENTITY_TYPE;
+                    }
+                } else {
+                    // use adult setting
+                    if (!ModalList.isEnabledInList(main.settingsCfg, "allowed-entities-list", livingEntity.getType().toString())) {
+                        return LevellableState.DENIED_CONFIGURATION_BLOCKED_ENTITY_TYPE;
+                    }
+                }
+            } else {
+                // use baby setting
+                if (isBabyVariantNotLevellable) {
+                    return LevellableState.DENIED_CONFIGURATION_BLOCKED_ENTITY_TYPE;
+                }
+            }
         }
 
         /*

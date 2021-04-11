@@ -188,10 +188,17 @@ nametag-auto-update-task-period: 6
 #      WHITELIST | Only entities listed below will be levelled
 #            ALL | All permitted entities are levelled,
 #                | ignoring the list below
-#
 #      mode: 'BLACKLIST'
+#
 #      list:
-#        - VILLAGER
+#        - VILLAGER, ...etc...
+#
+#      babyMobsInheritAdultSetting: | If a baby mob, such as a
+#                                   | Baby Zombie spawns, and its
+#                                   | adult variant (Zombie) spawns,
+#                                   | should it inherit its adult's
+#                                   | status, unless the baby variant
+#                                   | has been specified? (true/false)
 # ||-------------------------------------------------------||
 allowed-entities-list:
   mode: 'BLACKLIST'
@@ -203,6 +210,7 @@ allowed-entities-list:
     - RAVAGER
     - PHANTOM
     - BABY_ZOMBIE
+  babyMobsInheritAdultSetting: true
 
 
 # ||-------------------------------------------------------||
