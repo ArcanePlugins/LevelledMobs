@@ -318,11 +318,8 @@ public class LevelInterface {
      */
     @SuppressWarnings("ConstantConditions")
     public int getLevelOfMob(@NotNull LivingEntity livingEntity) {
-        if (livingEntity.getPersistentDataContainer().has(main.levelManager.levelKey, PersistentDataType.STRING)) {
-            return livingEntity.getPersistentDataContainer().get(main.levelManager.levelKey, PersistentDataType.INTEGER);
-        } else {
-            throw new IllegalStateException("Mob is not levelled!");
-        }
+        assert isLevelled(livingEntity);
+        return livingEntity.getPersistentDataContainer().get(main.levelManager.levelKey, PersistentDataType.INTEGER);
     }
 
     /**
