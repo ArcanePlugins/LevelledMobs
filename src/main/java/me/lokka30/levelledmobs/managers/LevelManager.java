@@ -593,17 +593,17 @@ public class LevelManager {
         try {
             dataWatcher = WrappedDataWatcher.getEntityWatcher(entity).deepClone();
         } catch (ConcurrentModificationException ex) {
-            Utils.debugLog(main, DebugType.UPDATE_NAMETAG, "Concurrent modification occured, skipping nametag update of " + entity.getName() + ".");
+            Utils.debugLog(main, DebugType.UPDATE_NAMETAG_FAIL, "Concurrent modification occured, skipping nametag update of " + entity.getName() + ".");
             return;
         }
 
         try {
             chatSerializer = WrappedDataWatcher.Registry.getChatComponentSerializer(true);
         } catch (ConcurrentModificationException ex) {
-            Utils.debugLog(main, DebugType.UPDATE_NAMETAG, "ConcurrentModificationException caught, skipping nametag update of " + entity.getName() + ".");
+            Utils.debugLog(main, DebugType.UPDATE_NAMETAG_FAIL, "ConcurrentModificationException caught, skipping nametag update of " + entity.getName() + ".");
             return;
         } catch (IllegalArgumentException ex) {
-            Utils.debugLog(main, DebugType.UPDATE_NAMETAG, "Registry is empty, skipping nametag update of " + entity.getName() + ".");
+            Utils.debugLog(main, DebugType.UPDATE_NAMETAG_FAIL, "Registry is empty, skipping nametag update of " + entity.getName() + ".");
             return;
         }
 
@@ -628,9 +628,10 @@ public class LevelManager {
             if (!entity.isValid()) return;
 
             try {
+                Utils.debugLog(main, DebugType.UPDATE_NAMETAG_SUCCESS, "Nametag packet sent for " + entity.getName() + " to " + player.getName() + ".");
                 ProtocolLibrary.getProtocolManager().sendServerPacket(player, packet);
             } catch (IllegalArgumentException ex) {
-                Utils.debugLog(main, DebugType.UPDATE_NAMETAG, "IllegalArgumentException caught whilst trying to sendServerPacket");
+                Utils.debugLog(main, DebugType.UPDATE_NAMETAG_FAIL, "IllegalArgumentException caught whilst trying to sendServerPacket");
             } catch (InvocationTargetException ex) {
                 Utils.logger.error("Unable to update nametag packet for player &b" + player.getName() + "&7! Stack trace:");
                 ex.printStackTrace();

@@ -37,7 +37,15 @@ public enum DebugType {
 
     /**
      * Logged when LM is adjusting the
-     * nametag of a levelled mob
+     * nametag of a levelled mob,
+     * but fails to do so
      */
-    UPDATE_NAMETAG
+    UPDATE_NAMETAG_FAIL,
+
+    /**
+     * Logged when LM is adjusting the
+     * nametag of a levelled mob,
+     * and succeeds in doing so
+     */
+    UPDATE_NAMETAG_SUCCESS
 }
