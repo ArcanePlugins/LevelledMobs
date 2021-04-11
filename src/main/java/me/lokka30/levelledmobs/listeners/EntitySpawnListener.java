@@ -13,6 +13,9 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.*;
 import org.bukkit.persistence.PersistentDataType;
 
+import java.util.Collections;
+import java.util.HashSet;
+
 /**
  * @author lokka30
  * @contributors stumper66
@@ -72,7 +75,7 @@ public class EntitySpawnListener implements Listener {
 
         final LevelInterface.LevellableState levellableState = getLevellableState(event);
         if (levellableState == LevelInterface.LevellableState.ALLOWED) {
-            main.levelInterface.applyLevelToMob(livingEntity, main.levelInterface.generateLevel(livingEntity), false, false);
+            main.levelInterface.applyLevelToMob(livingEntity, main.levelInterface.generateLevel(livingEntity), false, false, new HashSet<>(Collections.singletonList(LevelInterface.AdditionalLevelInformation.NOT_APPLICABLE)));
         } else {
             Utils.debugLog(main, "ApplyLevelFail", "Entity " + event.getEntityType() + " in wo" +
                     "rld " + livingEntity.getWorld().getName() + " was not levelled -> Levellable state: " + levellableState.toString());

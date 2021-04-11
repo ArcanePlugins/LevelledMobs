@@ -1,5 +1,6 @@
 package me.lokka30.levelledmobs.listeners;
 
+import me.lokka30.levelledmobs.LevelInterface;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.misc.Utils;
 import org.bukkit.entity.LivingEntity;
@@ -8,6 +9,9 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityTameEvent;
 import org.bukkit.persistence.PersistentDataType;
+
+import java.util.Collections;
+import java.util.HashSet;
 
 /**
  * @author stumper66
@@ -42,6 +46,6 @@ public class EntityTameListener implements Listener {
             if (temp != null) level = (int) temp;
         }
 
-        main.levelInterface.applyLevelToMob(livingEntity, level, false, false);
+        main.levelInterface.applyLevelToMob(livingEntity, level, false, false, new HashSet<>(Collections.singletonList(LevelInterface.AdditionalLevelInformation.FROM_TAME_LISTENER)));
     }
 }

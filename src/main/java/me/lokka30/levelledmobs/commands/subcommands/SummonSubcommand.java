@@ -393,7 +393,7 @@ public class SummonSubcommand implements Subcommand {
                 Entity entity = location.getWorld().spawnEntity(location, entityType);
 
                 if (entity instanceof LivingEntity) {
-                    main.levelInterface.applyLevelToMob((LivingEntity) entity, level, true, override);
+                    main.levelInterface.applyLevelToMob((LivingEntity) entity, level, true, override, new HashSet<>(Collections.singletonList(LevelInterface.AdditionalLevelInformation.NOT_APPLICABLE)));
                 }
             }
 
@@ -434,7 +434,7 @@ public class SummonSubcommand implements Subcommand {
                     atPlayerSuccessMessages.forEach(sender::sendMessage);
                     break;
                 default:
-                    throw new IllegalStateException("Unexpected SummonType value of " + summonType.toString() + "!");
+                    throw new IllegalStateException("Unexpected SummonType value of " + summonType + "!");
             }
         } else {
             List<String> messages = main.messagesCfg.getStringList("command.levelledmobs.summon.not-levellable");

@@ -2,7 +2,6 @@ package me.lokka30.levelledmobs.events;
 
 import me.lokka30.levelledmobs.LevelInterface;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
@@ -10,7 +9,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.HashSet;
 
-public class MobPreLevelEvent extends Event implements Cancellable {
+public class MobPostLevelEvent extends Event {
 
     private static final HandlerList HANDLERS = new HandlerList();
 
@@ -23,18 +22,6 @@ public class MobPreLevelEvent extends Event implements Cancellable {
         return HANDLERS;
     }
 
-    private boolean cancelled = false;
-
-    @Override
-    public boolean isCancelled() {
-        return cancelled;
-    }
-
-    @Override
-    public void setCancelled(boolean cancelled) {
-        this.cancelled = cancelled;
-    }
-
     /**
      * When a mob is levelled, the following enum is used to
      * allow plugins to find the cause of the mob being
@@ -45,7 +32,8 @@ public class MobPreLevelEvent extends Event implements Cancellable {
      */
     public enum LevelCause {
         NORMAL,
-        CHANGED_LEVEL
+        CHANGED_LEVEL,
+        SUMMONED
     }
 
     private final LivingEntity entity;
@@ -53,7 +41,7 @@ public class MobPreLevelEvent extends Event implements Cancellable {
     private final LevelCause levelCause;
     private final HashSet<LevelInterface.AdditionalLevelInformation> additionalInformation;
 
-    public MobPreLevelEvent(@NotNull LivingEntity entity, int level, @NotNull LevelCause levelCause, @Nullable HashSet<LevelInterface.AdditionalLevelInformation> additionalInformation) {
+    public MobPostLevelEvent(@NotNull LivingEntity entity, int level, @NotNull LevelCause levelCause, @Nullable HashSet<LevelInterface.AdditionalLevelInformation> additionalInformation) {
         this.entity = entity;
         this.level = level;
         this.levelCause = levelCause;

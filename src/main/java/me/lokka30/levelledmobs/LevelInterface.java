@@ -1,5 +1,6 @@
 package me.lokka30.levelledmobs;
 
+import me.lokka30.levelledmobs.events.MobPostLevelEvent;
 import me.lokka30.levelledmobs.events.MobPreLevelEvent;
 import me.lokka30.levelledmobs.events.SummonedMobPreLevelEvent;
 import me.lokka30.levelledmobs.managers.ExternalCompatibilityManager;
@@ -207,8 +208,6 @@ public class LevelInterface {
     }
 
     /**
-     * (!) Incomplete Method - please do not use (!)
-     *
      * This method generates a level for the mob. It utilises the levelling mode
      * specified by the administrator through the settings.yml configuration.
      *
@@ -218,13 +217,10 @@ public class LevelInterface {
      * @return a level for the entity
      */
     public int generateLevel(@NotNull LivingEntity livingEntity) {
-        // TODO
         return main.levelManager.generateLevel(livingEntity);
     }
 
     /**
-     * (!) Incomplete Method - please do not use (!)
-     * <p>
      * This method applies a level to the target mob.
      * <p>
      * You can run this method on a mob regardless if
@@ -245,7 +241,7 @@ public class LevelInterface {
      * @param isSummoned   if the mob was spawned by LevelledMobs, not by the server
      * @param bypassLimits whether LM should disregard max level, etc.
      */
-    public void applyLevelToMob(@NotNull LivingEntity livingEntity, int level, boolean isSummoned, boolean bypassLimits) {
+    public void applyLevelToMob(@NotNull LivingEntity livingEntity, int level, boolean isSummoned, boolean bypassLimits, @NotNull HashSet<AdditionalLevelInformation> additionalLevelInformation) {
         Validate.isTrue(level >= 0, "Level must be greater than or equal to zero.");
         if (!bypassLimits && !isSummoned) {
             Validate.isTrue(getLevellableState(livingEntity) == LevellableState.ALLOWED, "Mob must be levellable or bypassLimits must be true");
@@ -256,7 +252,7 @@ public class LevelInterface {
             Bukkit.getPluginManager().callEvent(summonedMobPreLevelEvent);
             if (summonedMobPreLevelEvent.isCancelled()) return;
         } else {
-            MobPreLevelEvent mobPreLevelEvent = new MobPreLevelEvent(livingEntity, level, MobPreLevelEvent.LevelCause.NORMAL, null);
+            MobPreLevelEvent mobPreLevelEvent = new MobPreLevelEvent(livingEntity, level, MobPreLevelEvent.LevelCause.NORMAL, additionalLevelInformation);
             Bukkit.getPluginManager().callEvent(mobPreLevelEvent);
             if (mobPreLevelEvent.isCancelled()) return;
         }
@@ -280,19 +276,29 @@ public class LevelInterface {
                 }
 
                 main.levelManager.updateNametag(livingEntity, level);
-
                 main.levelManager.applyLevelledEquipment(livingEntity, level);
+
+                MobPostLevelEvent.LevelCause levelCause = isSummoned ? MobPostLevelEvent.LevelCause.SUMMONED : MobPostLevelEvent.LevelCause.NORMAL;
+                Bukkit.getPluginManager().callEvent(new MobPostLevelEvent(livingEntity, level, levelCause, additionalLevelInformation));
+
+                Utils.debugLog(main, "ApplyLevelSuccess", String.join(", ", Arrays.asList(
+                        "Applied level to a " + livingEntity.getType(),
+                        "world: " + livingEntity.getWorld().getName(),
+                        "level: " + level,
+                        "isSummoned: " + isSummoned,
+                        "bypassLimits: " + bypassLimits,
+                        "isBabyEntity: " + Utils.isBabyMob(livingEntity)
+                )));
             }
         }.runTaskLater(main, 1);
+    }
 
-        Utils.debugLog(main, "ApplyLevelSuccess", String.join(", ", Arrays.asList(
-                "Applied level to a " + livingEntity.getType(),
-                "world: " + livingEntity.getWorld().getName(),
-                "level: " + level,
-                "isSummoned: " + isSummoned,
-                "bypassLimits: " + bypassLimits,
-                "isBabyEntity: " + Utils.isBabyMob(livingEntity)
-        )));
+    public enum AdditionalLevelInformation {
+        NOT_APPLICABLE,
+
+        FROM_CHUNK_LISTENER,
+        FROM_TRANSFORM_LISTENER,
+        FROM_TAME_LISTENER
     }
 
     /**

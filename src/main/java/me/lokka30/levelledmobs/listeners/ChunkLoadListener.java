@@ -9,6 +9,9 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.world.ChunkLoadEvent;
 
+import java.util.Collections;
+import java.util.HashSet;
+
 public class ChunkLoadListener implements Listener {
     private final LevelledMobs main;
 
@@ -36,7 +39,7 @@ public class ChunkLoadListener implements Listener {
                 continue;
 
             // Make the mob a levelled mob.
-            main.levelInterface.applyLevelToMob(livingEntity, main.levelInterface.generateLevel(livingEntity), false, false);
+            main.levelInterface.applyLevelToMob(livingEntity, main.levelInterface.generateLevel(livingEntity), false, false, new HashSet<>(Collections.singletonList(LevelInterface.AdditionalLevelInformation.FROM_CHUNK_LISTENER)));
         }
     }
 }

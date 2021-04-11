@@ -10,6 +10,9 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityTransformEvent;
 import org.bukkit.persistence.PersistentDataType;
 
+import java.util.Collections;
+import java.util.HashSet;
+
 /**
  * @author stumper66
  * @contributors lokka30
@@ -50,7 +53,7 @@ public class EntityTransformListener implements Listener {
                 continue;
             }
 
-            main.levelInterface.applyLevelToMob(transformedLivingEntity, level, false, false);
+            main.levelInterface.applyLevelToMob(transformedLivingEntity, level, false, false, new HashSet<>(Collections.singletonList(LevelInterface.AdditionalLevelInformation.FROM_TRANSFORM_LISTENER)));
         }
     }
 }
