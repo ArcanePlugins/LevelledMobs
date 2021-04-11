@@ -101,34 +101,10 @@ public class LevelInterface {
         /*
         Check Entity Type
          */
-        // Overriden entities.
-        if (Utils.isBabyMob(livingEntity)) {
-            if (!main.settingsCfg.getStringList("overriden-entities").contains("BABY_" + livingEntity.getType()))
-                return LevellableState.DENIED_CONFIGURATION_BLOCKED_ENTITY_TYPE;
-        }
 
-        // Check ModalList
-        if (Utils.isBabyMob(livingEntity)) {
-            boolean isBabyVariantNotLevellable = !ModalList.isEnabledInList(main.settingsCfg, "allowed-entities-list", "BABY_" + livingEntity.getType());
-            if (main.settingsCfg.getBoolean("allowed-entities-list.babyMobsInheritAdultSetting", true)) {
-                // if baby is specified, use that setting. otherwise, use adult setting.
-                if (main.settingsCfg.getStringList("allowed-entities-list.list").contains("BABY_" + livingEntity.getType())) {
-                    if (isBabyVariantNotLevellable) {
-                        return LevellableState.DENIED_CONFIGURATION_BLOCKED_ENTITY_TYPE;
-                    }
-                } else {
-                    // use adult setting
-                    if (!ModalList.isEnabledInList(main.settingsCfg, "allowed-entities-list", livingEntity.getType().toString())) {
-                        return LevellableState.DENIED_CONFIGURATION_BLOCKED_ENTITY_TYPE;
-                    }
-                }
-            } else {
-                // use baby setting
-                if (isBabyVariantNotLevellable) {
-                    return LevellableState.DENIED_CONFIGURATION_BLOCKED_ENTITY_TYPE;
-                }
-            }
-        }
+            // Check ModalList
+        if (Utils.isBabyMob(livingEntity) && shouldBabyMobBeDenied(livingEntity))
+            return LevellableState.DENIED_CONFIGURATION_BLOCKED_ENTITY_TYPE;
 
         /*
         Check spawn reason
@@ -144,6 +120,24 @@ public class LevelInterface {
 
         return getLevellableState(livingEntity.getType(), livingEntity.getLocation());
     }
+
+    private boolean shouldBabyMobBeDenied(final LivingEntity livingEntity){
+        final boolean babyMobsInheritAdultSetting = main.settingsCfg.getBoolean("allowed-entities-list.babyMobsInheritAdultSetting", true);
+        final boolean isBabyVariantNotLevellable = !ModalList.isEnabledInList(main.settingsCfg, "allowed-entities-list", "BABY_" + livingEntity.getType());
+
+        if (!babyMobsInheritAdultSetting)
+            return isBabyVariantNotLevellable;
+
+        // if baby is specified, use that setting. otherwise, use adult setting.
+        if (main.settingsCfg.getStringList("allowed-entities-list.list").contains("BABY_" + livingEntity.getType()))
+            return isBabyVariantNotLevellable;
+
+        if (!ModalList.isEnabledInList(main.settingsCfg, "allowed-entities-list", livingEntity.getType().toString()))
+            return true;
+
+        return false;
+    }
+
 
     /**
      * Check if a mob is allowed to be levelled, according to the
