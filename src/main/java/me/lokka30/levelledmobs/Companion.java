@@ -103,7 +103,7 @@ public class Companion {
         main.configUtils.worldLevelOverride_Min = main.configUtils.getMapFromConfigSection("world-level-override.min-level");
         main.configUtils.worldLevelOverride_Max = main.configUtils.getMapFromConfigSection("world-level-override.max-level");
         main.configUtils.noDropMultiplierEntities = main.configUtils.getSetFromConfigSection("no-drop-multipler-entities");
-
+        main.configUtils.overridenEntities = main.configUtils.getSetFromConfigSection("overriden-entities");
         main.attributesCfg = loadEmbeddedResource("defaultAttributes.yml");
         main.dropsCfg = loadEmbeddedResource("defaultDrops.yml");
 

@@ -18,10 +18,8 @@ import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.List;
 
 /**
  * Welcome to the LevelInterface,
@@ -132,10 +130,7 @@ public class LevelInterface {
         if (main.settingsCfg.getStringList("allowed-entities-list.list").contains("BABY_" + livingEntity.getType()))
             return isBabyVariantNotLevellable;
 
-        if (!ModalList.isEnabledInList(main.settingsCfg, "allowed-entities-list", livingEntity.getType().toString()))
-            return true;
-
-        return false;
+        return !ModalList.isEnabledInList(main.settingsCfg, "allowed-entities-list", livingEntity.getType().toString());
     }
 
 
@@ -165,8 +160,8 @@ public class LevelInterface {
         Check Entity Type
          */
         // Overriden entities.
-        if (((List<String>) Utils.getNonNull(main.settingsCfg.getStringList("overriden-entities"), new ArrayList<>()))
-                .contains(entityType.toString())) return LevellableState.DENIED_CONFIGURATION_BLOCKED_ENTITY_TYPE;
+        if (main.configUtils.overridenEntities.contains(entityType.toString()))
+            return LevellableState.ALLOWED;
 
         // Check ModalList
         if (!ModalList.isEnabledInList(main.settingsCfg, "allowed-entities-list", entityType.toString()))
@@ -174,6 +169,11 @@ public class LevelInterface {
 
         // Entity types that have to be manually checked
         if (OTHER_HOSTILE_MOBS.contains(entityType.toString())) return LevellableState.ALLOWED;
+
+        // if override level has been specified for min or max then allow it
+        if (main.configUtils.entityTypesLevelOverride_Min.containsKey(entityType.toString()) ||
+                main.configUtils.entityTypesLevelOverride_Max.containsKey(entityType.toString()))
+            return LevellableState.ALLOWED;
 
         /*
         Check Entity Class

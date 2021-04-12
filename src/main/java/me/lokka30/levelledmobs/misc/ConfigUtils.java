@@ -29,6 +29,7 @@ public class ConfigUtils {
     public TreeMap<String, Integer> worldLevelOverride_Min;
     public TreeMap<String, Integer> worldLevelOverride_Max;
     public Set<String> noDropMultiplierEntities;
+    public Set<String> overridenEntities;
 
     public void load() {
         // anything less than 3 breaks the formula
