@@ -296,11 +296,11 @@ public class LevelInterface {
                 Bukkit.getPluginManager().callEvent(new MobPostLevelEvent(livingEntity, level, levelCause, additionalLevelInformation));
 
                 final StringBuilder sb = new StringBuilder();
-                sb.append("Mob:");
-                sb.append(livingEntity.getType());
-                sb.append(", world:");
+                sb.append("entity: ");
+                sb.append(livingEntity.getName());
+                sb.append(", world: ");
                 sb.append(livingEntity.getWorld().getName());
-                sb.append(", lvl:");
+                sb.append(", level: ");
                 sb.append(level);
                 if (isSummoned) sb.append(" (summoned)");
                 if (bypassLimits) sb.append(" (limit bypass)");
