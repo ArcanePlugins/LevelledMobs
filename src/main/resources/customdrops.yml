@@ -139,14 +139,10 @@
 #              | apply the spread. Ensure you understand how Minecraft's
 #              | item durability system works before using this value!
 #          equipped:
-#             true | If set to true, the mob will attempt to equip the
-#                  | item it has spawned with. This is most useful for
-#                  | weapons, armor, and potions, though it will attempt
-#                  | to equipt any item into it's hand. Remember...
-#                  | Most mobs have either two hands or no hands!
-#            false | If set to false, the mob will simply hold the drops
-#                  | in their inventory to be dropped upon death.
-#                  | This is set to false by default.
+#                  | Used to determine the chance for an entity to equip
+#                  | the item(s) it spawns with. 0.0 (Default) is a zero
+#                  | chance, while 1.0 is 100% chance to ATTEMPT to equip.
+#                  | Some items will not equip to an entity.
 #          override:
 #             true | If set to true, the mob will not drop it's vanilla
 #                  | drops, and will instead reference this custom drops
@@ -221,9 +217,8 @@
 # These default values also affect any drop crafted
 # in Section 04 - Drop Tables.
 # To disable any of the default values below,
-# replace the value with '-1'. By default: 'nomultiplier',
-# 'nospawner', and 'equipped' are set to false.
-# 
+# replace the value with '-1'.
+#
 #  Default Config Values for Reference
 #    defaults:
 #     chance: 0.2
@@ -233,7 +228,10 @@
 #     custommodeldata: -1
 #     nomultiplier: false
 #     nospawner: false
-#     equipped: false
+#     equipped: 0.0
+#     override: false
+#     maxdropgroup: 1
+#     priority: 0
 #
 defaults:
   chance: 0.2
@@ -244,7 +242,7 @@ defaults:
   custommodeldata: -1
   nomultiplier: false
   nospawner: false
-  equipped: false
+  equipped: 0.0
   override: false
   maxdropgroup: 1
   priority: 0
@@ -258,285 +256,285 @@ defaults:
 # changes to that groups' custom drops.
 #
 all_mobs:
-  - 
+  -
 
 all_levellable_mobs:
-  - 
+  -
 
 all_hostile_mobs:
-  - 
+  -
 
 all_passive_mobs:
-  - 
+  -
 
 all_overworld_mobs:
-  - 
+  -
 
 all_nether_mobs:
-  - 
+  -
 
 all_flying_mobs:
-  - 
+  -
 
 all_ground_mobs:
-  - 
+  -
 
 all_aquatic_mobs:
-  - 
+  -
 
 
-#
-# |||||||||||||||||||||||||||||||||||||||||||||||||||||
-# ||  Section 03 - Configure EntityTypes
-# |||||||||||||||||||||||||||||||||||||||||||||||||||||
-#
-# You may leave any EntityType empty to make no
-# changes to that Entitys' custom drops.
-#
+    #
+    # |||||||||||||||||||||||||||||||||||||||||||||||||||||
+    # ||  Section 03 - Configure EntityTypes
+    # |||||||||||||||||||||||||||||||||||||||||||||||||||||
+    #
+    # You may leave any EntityType empty to make no
+    # changes to that Entitys' custom drops.
+  #
 BAT:
-  - 
+  -
 
 BEE:
-  - 
+  -
 
 BLAZE:
-  - 
+  -
 
 CAT:
-  - 
+  -
 
 CAVE_SPIDER:
-  - 
+  -
 
 CHICKEN:
-  - 
+  -
 
 COD:
-  - 
+  -
 
 COW:
-  - 
+  -
 
 CREEPER:
-  - 
+  -
 
 DOLPHIN:
-  - 
+  -
 
 DONKEY:
-  - 
+  -
 
 DROWNED:
-  - 
+  -
 
 ELDER_GUARDIAN:
-  - 
+  -
 
 ENDER_DRAGON:
-  - 
+  -
 
 ENDERMAN:
-  - 
+  -
 
 ENDERMITE:
-  - 
+  -
 
 EVOKER:
-  - 
+  -
 
 FOX:
-  - 
+  -
 
 GHAST:
-  - 
+  -
 
 GUARDIAN:
-  - 
+  -
 
 HOGLIN:
-  - 
+  -
 
 HORSE:
-  - 
+  -
 
 HUSK:
-  - 
+  -
 
 ILLUSIONER:
-  - 
+  -
 
 IRON_GOLEM:
-  - 
+  -
 
 LLAMA:
-  - 
+  -
 
 MAGMA_CUBE:
-  - 
+  -
 
 MULE:
-  - 
+  -
 
 MUSHROOM_COW:
-  - 
+  -
 
 OCELOT:
-  - 
+  -
 
 PANDA:
-  - 
+  -
 
 PARROT:
-  - 
+  -
 
 PHANTOM:
-  - 
+  -
 
 PIG:
-  - 
+  -
 
 PIGLIN:
-  - 
+  -
 
 PIGLIN_BRUTE:
-  - 
+  -
 
 PILLAGER:
-  - 
+  -
 
 POLAR_BEAR:
-  - 
+  -
 
 PUFFERFISH:
-  - 
+  -
 
 RABBIT:
-  - 
+  -
 
 RAVAGER:
-  - 
+  -
 
 SALMON:
-  - 
+  -
 
 SHEEP:
-  - 
+  -
 
 SHULKER:
-  - 
+  -
 
 SILVERFISH:
-  - 
+  -
 
 SKELETON:
-  - 
+  -
 
 SKELETON_HORSE:
-  - 
+  -
 
 SLIME:
-  - 
+  -
 
 SNOWMAN:
-  - 
+  -
 
 SPIDER:
-  - 
+  -
 
 SQUID:
-  - 
+  -
 
 STRAY:
-  - 
+  -
 
 STRIDER:
-  - 
+  -
 
 TRADER_LLAMA:
-  - 
+  -
 
 TROPICAL_FISH:
-  - 
+  -
 
 TURTLE:
-  - 
+  -
 
 VEX:
-  - 
+  -
 
 VILLAGER:
-  - 
+  -
 
 VINDICATOR:
-  - 
+  -
 
 WANDERING_TRADER:
-  - 
+  -
 
 WITCH:
-  - 
+  -
 
 WITHER:
-  - 
+  -
 
 WITHER_SKELETON:
-  - 
+  -
 
 WOLF:
-  - 
+  -
 
 ZOGLIN:
-  - 
+  -
 
 ZOMBIE:
-  - 
+  -
 
 ZOMBIE_HORSE:
-  - 
+  -
 
 ZOMBIE_VILLAGER:
-  - 
+  -
 
 ZOMBIFIED_PIGLIN:
   -
 
 
-#
-# |||||||||||||||||||||||||||||||||||||||||||||||||||||
-# ||  Section 04 - Drop Tables
-# ||  ADVANCED USERS ONLY
-# |||||||||||||||||||||||||||||||||||||||||||||||||||||
-#
-# ||-------------------------------------------------------||
-# ||  Drop Table System
-#
-#     This system allows you to establish sets of items, each
-#     with their own drop parameters, to apply to an EntityType
-#     or Universal Group. This makes applying multiple items
-#     or tables to an EntityType easy by transforming the set
-#     to a single line of configuration, making for less
-#     copy/paste and more flexibility in making large changes
-#     across multiple EntityTypes or Universal Groups.
-#
-#     Please reference 'Customizable Attributes' in the preface
-#     at the top of this file for crafting a custom drop to
-#     add to your drop table. There are examples in the
-#     Section 06 - Demonstrations below. You my use a numbered list
-#     or give each table it's own title. You may override any
-#     drop attribute of specific items by specifying it after
-#     'usedroptable:' within an EntityType or Universal Group.
-#
-#      drop-table:
-#        1:
-#          - MATERIAL
-#              Customized Attributes
-#        table_name:
-#          - MATERIAL
-#              Customized Attributes
-#      ENTITYTYPE:
-#        usedroptable: 1
-#        Customized Attributes
-# ||-------------------------------------------------------||#
+    #
+    # |||||||||||||||||||||||||||||||||||||||||||||||||||||
+    # ||  Section 04 - Drop Tables
+    # ||  ADVANCED USERS ONLY
+    # |||||||||||||||||||||||||||||||||||||||||||||||||||||
+    #
+    # ||-------------------------------------------------------||
+    # ||  Drop Table System
+    #
+    #     This system allows you to establish sets of items, each
+    #     with their own drop parameters, to apply to an EntityType
+    #     or Universal Group. This makes applying multiple items
+    #     or tables to an EntityType easy by transforming the set
+    #     to a single line of configuration, making for less
+    #     copy/paste and more flexibility in making large changes
+    #     across multiple EntityTypes or Universal Groups.
+    #
+    #     Please reference 'Customizable Attributes' in the preface
+    #     at the top of this file for crafting a custom drop to
+    #     add to your drop table. There are examples in the
+    #     Section 06 - Demonstrations below. You my use a numbered list
+    #     or give each table it's own title. You may override any
+    #     drop attribute of specific items by specifying it after
+    #     'usedroptable:' within an EntityType or Universal Group.
+    #
+    #      drop-table:
+    #        1:
+    #          - MATERIAL
+    #              Customized Attributes
+    #        table_name:
+    #          - MATERIAL
+    #              Customized Attributes
+    #      ENTITYTYPE:
+    #        usedroptable: 1
+    #        Customized Attributes
+  # ||-------------------------------------------------------||#
 drop-table:
   1:
     - STICK:
@@ -565,12 +563,15 @@ drop-table:
         nospawner: true
         groupid: 2
 
-PIG;CHICKEN;COW:
-  usedroptable: 1
+# Below are examples of drop-tables applying to
+# different sets of entities. Uncomment them to use
+# or craft your own drop-tables!
 
-ALL_NETHER_MOBS:
-  exclude: WITHER_SKELETON;MAGMA_CUBE
-  usedroptable: basic_nether
+#PIG;CHICKEN;COW:
+#  usedroptable: 1
+#ALL_NETHER_MOBS:
+#  exclude: WITHER_SKELETON;MAGMA_CUBE
+#  usedroptable: basic_nether
 
 
 #
@@ -584,14 +585,14 @@ ALL_NETHER_MOBS:
 # as it could potentially break your LevelledMobs plugin
 # entirely or wipe your customdrops.yml file.
 #
-file-version: 7
+file-version: 8
 
 
 #
 # |||||||||||||||||||||||||||||||||||||||||||||||||||||
 # ||  Section 06 - Demonstrations
 # |||||||||||||||||||||||||||||||||||||||||||||||||||||
-# 
+#
 # Below are some examples of different EntityTypes and
 # Universal Groups which utilize all the different
 # options available within custom drops. You can use
@@ -617,7 +618,7 @@ file-version: 7
 #      nomultiplier: true
 #      nospawner: true
 #      groupid: 1 #The material is also part of the set 'group 1'
-#      equipped: true #The mob attempt to equip the item
+#      equipped: 0.5 #The mob 50% chance to equip the item
 #      damage: 150 #The sword comes pre-damaged with 150pts
 #      enchantments: #The sword should come pre-enchanted
 #        unbreaking: 1

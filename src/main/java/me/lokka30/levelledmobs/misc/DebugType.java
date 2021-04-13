@@ -43,6 +43,13 @@ public enum DebugType {
     UPDATE_NAMETAG_FAIL,
 
     /**
+     * Logged when LM is processing
+     * a entity tame event but is
+     * denied due to conditions
+     */
+    ENTITY_TRANSFORM_FAIL,
+
+    /**
      * Logged when LM is adjusting the
      * nametag of a levelled mob,
      * and succeeds in doing so

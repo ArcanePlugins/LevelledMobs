@@ -295,14 +295,18 @@ public class LevelInterface {
                 MobPostLevelEvent.LevelCause levelCause = isSummoned ? MobPostLevelEvent.LevelCause.SUMMONED : MobPostLevelEvent.LevelCause.NORMAL;
                 Bukkit.getPluginManager().callEvent(new MobPostLevelEvent(livingEntity, level, levelCause, additionalLevelInformation));
 
-                Utils.debugLog(main, DebugType.APPLY_LEVEL_SUCCESS, String.join(", ", Arrays.asList(
-                        "Applied level to a " + livingEntity.getType(),
-                        "world: " + livingEntity.getWorld().getName(),
-                        "level: " + level,
-                        "isSummoned: " + isSummoned,
-                        "bypassLimits: " + bypassLimits,
-                        "isBabyEntity: " + Utils.isBabyMob(livingEntity)
-                )));
+                final StringBuilder sb = new StringBuilder();
+                sb.append("Mob:");
+                sb.append(livingEntity.getType());
+                sb.append(", world:");
+                sb.append(livingEntity.getWorld().getName());
+                sb.append(", lvl:");
+                sb.append(level);
+                if (isSummoned) sb.append(" (summoned)");
+                if (bypassLimits) sb.append(" (limit bypass)");
+                if (Utils.isBabyMob(livingEntity)) sb.append(" (baby)");
+
+                Utils.debugLog(main, DebugType.APPLY_LEVEL_SUCCESS, sb.toString());
             }
         }.runTaskLater(main, 1);
     }

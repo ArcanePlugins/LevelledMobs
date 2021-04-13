@@ -32,13 +32,13 @@ public class EntityTransformListener implements Listener {
 
         // is level inheritance enabled?
         if (!main.settingsCfg.getBoolean("level-inheritance")) {
-            Utils.debugLog(main, DebugType.ENTITY_TAME,  event.getEntity().getType().name() + ": level-inheritance not enabled");
+            Utils.debugLog(main, DebugType.ENTITY_TRANSFORM_FAIL,  event.getEntity().getType().name() + ": level-inheritance not enabled");
             return;
         }
 
         // is the original entity a living entity
         if (!(event.getEntity() instanceof LivingEntity)) {
-            Utils.debugLog(main, DebugType.ENTITY_TAME, event.getEntity().getType().name() + ": entity was not an instance of LivingEntity");
+            Utils.debugLog(main, DebugType.ENTITY_TRANSFORM_FAIL, event.getEntity().getType().name() + ": entity was not an instance of LivingEntity");
             return;
         }
 
@@ -46,7 +46,7 @@ public class EntityTransformListener implements Listener {
 
         // is the original entity levelled
         if (!main.levelInterface.isLevelled(livingEntity)) {
-            Utils.debugLog(main, DebugType.ENTITY_TAME, livingEntity.getType().name() + ": original entity was not levelled");
+            Utils.debugLog(main, DebugType.ENTITY_TRANSFORM_FAIL, livingEntity.getType().name() + ": original entity was not levelled");
             return;
         }
 
@@ -56,7 +56,7 @@ public class EntityTransformListener implements Listener {
         for (Entity transformedEntity : event.getTransformedEntities()) {
 
             if (!(transformedEntity instanceof LivingEntity)) {
-                Utils.debugLog(main, DebugType.ENTITY_TAME, event.getEntity().getType().name() + ": entity was not an instance of LivingEntity (loop)");
+                Utils.debugLog(main, DebugType.ENTITY_TRANSFORM_FAIL, event.getEntity().getType().name() + ": entity was not an instance of LivingEntity (loop)");
                 continue;
             }
 
@@ -64,12 +64,11 @@ public class EntityTransformListener implements Listener {
 
             final LevelInterface.LevellableState levelledState = main.levelInterface.getLevellableState(transformedLivingEntity);
             if (levelledState != LevelInterface.LevellableState.ALLOWED) {
-                Utils.debugLog(main, DebugType.ENTITY_TAME, transformedEntity.getType().name() + ": transformed entity was not levellable, reason: " + levelledState);
+                Utils.debugLog(main, DebugType.ENTITY_TRANSFORM_FAIL, transformedEntity.getType().name() + ": transformed entity was not levellable, reason: " + levelledState);
                 main.levelManager.updateNametagWithDelay(transformedLivingEntity, null, livingEntity.getWorld().getPlayers(), 1);
                 continue;
             }
 
-            Utils.debugLog(main, DebugType.ENTITY_TAME, transformedEntity.getType().name() + ": applying level " + level + " to transformed mob");
             main.levelInterface.applyLevelToMob(
                     transformedLivingEntity,
                     level,

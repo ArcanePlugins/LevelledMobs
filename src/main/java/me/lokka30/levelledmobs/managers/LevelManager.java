@@ -5,6 +5,7 @@ import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import com.comphenix.protocol.wrappers.WrappedDataWatcher;
+import me.lokka30.levelledmobs.LevelInterface;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.customdrops.CustomDropResult;
 import me.lokka30.levelledmobs.listeners.EntitySpawnListener;
@@ -515,7 +516,8 @@ public class LevelManager {
     // When the persistent data container levelled key has been set on the entity already (i.e. when they are damaged)
     public String getNametag(final LivingEntity livingEntity, final boolean isDeathNametag) {
         return getNametag(livingEntity, Objects.requireNonNull(
-                livingEntity.getPersistentDataContainer().get(levelKey, PersistentDataType.INTEGER)), isDeathNametag);
+                livingEntity.getPersistentDataContainer().get(levelKey, PersistentDataType.INTEGER),
+                "entity must be levelled"), isDeathNametag);
     }
 
     // When the persistent data container levelled key has not been set on the entity yet (i.e. for use in EntitySpawnListener)
@@ -660,18 +662,38 @@ public class LevelManager {
                         // Mob must be a livingentity that is ...living.
                         if (!(entity instanceof LivingEntity)) continue;
                         final LivingEntity livingEntity = (LivingEntity) entity;
+                        final boolean isLevelled = main.levelInterface.isLevelled(livingEntity);
 
-                        // Mob must be levelled
-                        if (!main.levelInterface.isLevelled(livingEntity)) continue;
-
-                        //if within distance, update nametag.
-                        if (livingEntity.getLocation().distanceSquared(location) <= maxDistance) {
+                        // if the mob isn't levelled then see if it qualifies to be levelled
+                        if (!isLevelled && main.levelInterface.getLevellableState(livingEntity) == LevelInterface.LevellableState.ALLOWED) {
+                            // can't apply the level from an async task
+                            applyLevelToMobFromAsync(livingEntity);
+                        }
+                        else if (isLevelled && livingEntity.getLocation().distanceSquared(location) <= maxDistance){
+                            //if within distance, update nametag.
                             main.levelManager.updateNametag(livingEntity, main.levelManager.getNametag(livingEntity, false), Collections.singletonList(player));
                         }
                     }
                 }
             }
         }.runTaskTimerAsynchronously(main, 0, 20 * period);
+    }
+
+    private void applyLevelToMobFromAsync(final LivingEntity livingEntity){
+        BukkitRunnable applyLevelTask = new BukkitRunnable() {
+            @Override
+            public void run() {
+                main.levelInterface.applyLevelToMob(
+                        livingEntity,
+                        main.levelInterface.generateLevel(livingEntity),
+                        false,
+                        false,
+                        new HashSet<>(Collections.singletonList(LevelInterface.AdditionalLevelInformation.NOT_APPLICABLE))
+                );
+            }
+        };
+
+        applyLevelTask.runTask(main);
     }
 
     public void stopNametagAutoUpdateTask() {
