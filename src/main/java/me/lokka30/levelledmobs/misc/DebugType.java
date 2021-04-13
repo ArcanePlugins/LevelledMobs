@@ -54,5 +54,11 @@ public enum DebugType {
      * nametag of a levelled mob,
      * and succeeds in doing so
      */
-    UPDATE_NAMETAG_SUCCESS
+    UPDATE_NAMETAG_SUCCESS,
+
+    /**
+     * Misc events related
+     * to an entity
+     */
+    ENTITY_MISC
 }

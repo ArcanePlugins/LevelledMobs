@@ -49,6 +49,13 @@ public class LevelManager {
     final public LinkedList<LevelNumbersWithBias> levelNumsListCacheOrder = new LinkedList<>();
     private final static int maxLevelNumsCache = 10;
     final private List<Material> vehicleNoMultiplierItems;
+    public final NamespacedKey levelKey; // This stores the mob's level.
+    public final NamespacedKey spawnReasonKey; //This is stored on levelled mobs to tell how a mob was spawned
+    public final NamespacedKey noLevelKey; // This key tells LM not to level the mob in future
+    public final NamespacedKey wasBabyMobKey; // This key tells LM not to level the mob in future
+
+    public final static int maxCreeperBlastRadius = 100;
+    public EntitySpawnListener entitySpawnListener;
 
     public LevelManager(final LevelledMobs main) {
         this.main = main;
@@ -56,6 +63,7 @@ public class LevelManager {
         levelKey = new NamespacedKey(main, "level");
         spawnReasonKey = new NamespacedKey(main, "spawnReason");
         noLevelKey = new NamespacedKey(main, "noLevel");
+        wasBabyMobKey = new NamespacedKey(main, "wasBabyMob");
 
         final int factor = main.settingsCfg.getInt("fine-tuning.lower-mob-level-bias-factor", 0);
         if (factor > 0) {
@@ -78,13 +86,6 @@ public class LevelManager {
                 Material.DIAMOND_HORSE_ARMOR
         );
     }
-
-    public final NamespacedKey levelKey; // This stores the mob's level.
-    public final NamespacedKey spawnReasonKey; //This is stored on levelled mobs to tell how a mob was spawned
-    public final NamespacedKey noLevelKey; // This key tells LM not to level the mob in future
-
-    public final static int maxCreeperBlastRadius = 100;
-    public EntitySpawnListener entitySpawnListener;
 
     public int generateDistanceFromSpawnLevel(final LivingEntity livingEntity, final int minLevel, final int maxLevel) {
         final boolean isBabyEntity = Utils.isBabyMob(livingEntity);
@@ -665,7 +666,12 @@ public class LevelManager {
                         final boolean isLevelled = main.levelInterface.isLevelled(livingEntity);
 
                         // if the mob isn't levelled then see if it qualifies to be levelled
-                        if (!isLevelled && main.levelInterface.getLevellableState(livingEntity) == LevelInterface.LevellableState.ALLOWED) {
+                        if (!isLevelled &&
+                            !Utils.isBabyMob(livingEntity) &&
+                            livingEntity.getPersistentDataContainer().has(main.levelManager.wasBabyMobKey, PersistentDataType.INTEGER) &&
+                            main.levelInterface.getLevellableState(livingEntity) == LevelInterface.LevellableState.ALLOWED) {
+                            // if the mob was a baby at some point, aged and now is eligable for levelling, we'll apply a level to it now
+                            Utils.debugLog(main, DebugType.ENTITY_MISC, livingEntity.getName() + " was a baby and is now an adult, applying levelling rules");
                             // can't apply the level from an async task
                             applyLevelToMobFromAsync(livingEntity);
                         }
@@ -683,6 +689,8 @@ public class LevelManager {
         BukkitRunnable applyLevelTask = new BukkitRunnable() {
             @Override
             public void run() {
+                livingEntity.getPersistentDataContainer().remove(main.levelManager.wasBabyMobKey);
+
                 main.levelInterface.applyLevelToMob(
                         livingEntity,
                         main.levelInterface.generateLevel(livingEntity),

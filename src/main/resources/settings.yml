@@ -170,7 +170,7 @@ assert-entity-validity-with-nametag-packets: true
 #     This setting will check the area near players for
 #     any entities which should be levelled or are missing
 #     their correct nametags for whatever reason.
-#
+#     
 #     By default, this is set to 6 seconds.
 #     It is not recommended that you change this setting
 #     unless you understand exactly what you are doing.
@@ -227,12 +227,12 @@ allowed-entities-list:
     - RAVAGER
     - PHANTOM
     - BABY_ZOMBIE
-  #    - BABY_HUSK
-  #    - BABY_DROWNED
-  #    - BABY_ZOMBIE_VILLAGER
-  #    - BABY_PIGLIN
-  #    - BABY_HOGLIN
-  #    - BABY_ZOMBIFIED_PIGLIN
+#    - BABY_HUSK
+#    - BABY_DROWNED
+#    - BABY_ZOMBIE_VILLAGER
+#    - BABY_PIGLIN
+#    - BABY_HOGLIN
+#    - BABY_ZOMBIFIED_PIGLIN
   babyMobsInheritAdultSetting: true
 
 
@@ -458,8 +458,8 @@ fine-tuning:
     item-drop: 3
     xp-drop: 2
 
-    # Below represents an example of a customized PIGLIN
-    # Un-comment it to take effect!
+# Below represents an example of a customized PIGLIN
+# Un-comment it to take effect!
     custom_mob_level:
 #      PIGLIN:
 #        max-health: 30
@@ -585,9 +585,9 @@ no-level-conditions:
 entitytype-level-override:
   enabled: false
   min-level:
-  #    ENDER_DRAGON: 5
-  #    WITHER: 3
-  #    BABY_ZOMBIE: 1
+#    ENDER_DRAGON: 5
+#    WITHER: 3
+#    BABY_ZOMBIE: 1
   max-level:
 #    ENDER_DRAGON: 7
 #    WITHER: 6
@@ -632,8 +632,8 @@ entitytype-level-override:
 world-level-override:
   enabled: false
   min-level:
-  #    example_world: 1
-  #    example_world_the_end: 5
+#    example_world: 1
+#    example_world_the_end: 5
   max-level:
 #    example_world: 5
 #    example_world_nether: 8
@@ -804,7 +804,8 @@ ensure-mobs-are-levelled-on-chunk-load: true
 #                 'UPDATE_NAMETAG' | Reports when the nametag of an entity was updated
 #                   'CUSTOM-DROPS' | Reports all CustomDrops related debug options
 #          'ENTITY_TRANSFORM_FAIL' | Reports when an entity, when transformed, did not receive a level
-#
+#                    'ENTITY_MISC' | Reports when an unlevelled baby mob has aged and gets levelled
+#     
 # ||-------------------------------------------------------||
 use-update-checker: true
 debug-entity-damage: false

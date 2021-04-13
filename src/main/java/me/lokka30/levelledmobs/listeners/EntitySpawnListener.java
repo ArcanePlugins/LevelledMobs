@@ -6,6 +6,7 @@ import me.lokka30.levelledmobs.misc.DebugType;
 import me.lokka30.levelledmobs.misc.ModalList;
 import me.lokka30.levelledmobs.misc.Utils;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
@@ -76,10 +77,10 @@ public class EntitySpawnListener implements Listener {
         // Must be a LivingEntity.
         if (!(event.getEntity() instanceof LivingEntity)) return;
         final LivingEntity livingEntity = (LivingEntity) event.getEntity();
-
         final LevelInterface.LevellableState levellableState = getLevellableState(event);
         if (levellableState == LevelInterface.LevellableState.ALLOWED) {
-            main.levelInterface.applyLevelToMob(livingEntity, main.levelInterface.generateLevel(livingEntity), false, false, new HashSet<>(Collections.singletonList(LevelInterface.AdditionalLevelInformation.NOT_APPLICABLE)));
+            main.levelInterface.applyLevelToMob(livingEntity, main.levelInterface.generateLevel(livingEntity),
+                    false, false, new HashSet<>(Collections.singletonList(LevelInterface.AdditionalLevelInformation.NOT_APPLICABLE)));
         } else {
             Utils.debugLog(main, DebugType.APPLY_LEVEL_FAIL, "Entity " + event.getEntityType() + " in wo" +
                     "rld " + livingEntity.getWorld().getName() + " was not levelled -> Levellable state: " + levellableState);
@@ -87,6 +88,10 @@ public class EntitySpawnListener implements Listener {
             // Check if the mob is already levelled - if so, remove their level
             if (main.levelInterface.isLevelled(livingEntity)) {
                 main.levelInterface.removeLevel(livingEntity);
+            }
+            else if (Utils.isBabyMob(livingEntity)) {
+                // add a tag so we can potentially level the mob when/if it ages
+                livingEntity.getPersistentDataContainer().set(main.levelManager.wasBabyMobKey, PersistentDataType.INTEGER, 1);
             }
         }
     }
