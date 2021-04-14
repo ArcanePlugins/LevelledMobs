@@ -20,6 +20,7 @@ public class InfoSubcommand implements Subcommand {
             if (args.length == 1) {
                 String version = main.getDescription().getVersion();
                 String description = main.getDescription().getDescription();
+                assert description != null;
                 List<String> supportedVersions = Utils.getSupportedServerVersions();
                 List<String> codeContributors = Arrays.asList("stumper66", "Eyrian", "iCodinqs", "deiphiz", "CoolBoy", "Esophose",
                         "7smile7", "UltimaOath", "konsolas", "Shevchik", "Hugo5551", "limzikiki", "bStats Project", "SpigotMC Project");

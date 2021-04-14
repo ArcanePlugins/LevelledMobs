@@ -950,15 +950,13 @@ public class LevelManager {
     }
 }
 
-class CustomMobCommand{
-    public String commandName;
-    public String command;
-    public int minLevel;
-    public int maxLevel;
-    public double chance;
-    public boolean playerCaused;
+class CustomMobCommand {
+    public final String commandName, command;
+    public final int minLevel, maxLevel;
+    public final double chance;
+    public final boolean playerCaused;
 
-    public CustomMobCommand(String commandName,String command, int minLevel, int maxLevel,double chance,boolean playerCaused){
+    public CustomMobCommand(String commandName, String command, int minLevel, int maxLevel, double chance, boolean playerCaused) {
         this.commandName = commandName;
         this.command = command;
         this.minLevel = minLevel;

@@ -70,7 +70,7 @@ public class EntityDamageDebugListener implements Listener {
         for (Attribute attribute : Attribute.values()) {
             AttributeInstance attributeInstance = livingEntity.getAttribute(attribute);
             if (attributeInstance == null) continue;
-            send(player, "&8&m->&b Attribute." + attribute.toString() + ": &7" + Utils.round(attributeInstance.getBaseValue()));
+            send(player, "&8&m->&b Attribute." + attribute + ": &7" + Utils.round(attributeInstance.getBaseValue()));
         }
 
         // Print unique values (per-mob)

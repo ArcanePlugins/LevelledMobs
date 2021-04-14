@@ -6,7 +6,6 @@ import me.lokka30.levelledmobs.misc.DebugType;
 import me.lokka30.levelledmobs.misc.ModalList;
 import me.lokka30.levelledmobs.misc.Utils;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
