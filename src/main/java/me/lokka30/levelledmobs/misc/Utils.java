@@ -7,6 +7,8 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Ageable;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Zombie;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -31,10 +33,12 @@ public final class Utils {
      *
      * @return list
      */
+    @NotNull
     public static List<String> getSupportedServerVersions() {
         return Arrays.asList("1.14", "1.15", "1.16");
     }
 
+    @NotNull
     public static final MicroLogger logger = new MicroLogger("&b&lLevelledMobs: &7");
 
     /**
@@ -56,9 +60,7 @@ public final class Utils {
      * @return modified message
      * @author stumper66
      */
-    public static String replaceEx(final String message, final String replaceWhat, final String replaceTo) {
-        if (message == null || replaceWhat == null) return null;
-
+    public static String replaceEx(@NotNull final String message, @NotNull final String replaceWhat, @NotNull final String replaceTo) {
         int count, position0, position1;
         count = position0 = 0;
         String upperString = message.toUpperCase();
@@ -86,7 +88,7 @@ public final class Utils {
      * @param str str to check
      * @return if str is an integer (e.g. "1234" = true, "hello" = false)
      */
-    public static boolean isInteger(final String str) {
+    public static boolean isInteger(@Nullable final String str) {
         if (isNullOrEmpty(str)) return false;
 
         try {
@@ -97,7 +99,7 @@ public final class Utils {
         }
     }
 
-    public static boolean isDouble(final String str) {
+    public static boolean isDouble(@Nullable final String str) {
         if (isNullOrEmpty(str)) return false;
 
         try {
@@ -108,21 +110,23 @@ public final class Utils {
         }
     }
 
-    public static boolean isNullOrEmpty(final String str) {
+    public static boolean isNullOrEmpty(@Nullable final String str) {
         return (str == null || str.isEmpty());
     }
 
-    public static int getDefaultIfNull(final YamlConfiguration cfg, final  String path, final int def) {
+    public static int getDefaultIfNull(@NotNull final YamlConfiguration cfg, @NotNull final String path, final int def) {
         return cfg.contains(path) ? cfg.getInt(path) : def;
     }
 
-    public static int getDefaultIfNull(final TreeMap<String, Integer> map, final String item, final int def) {
+    public static int getDefaultIfNull(@NotNull final TreeMap<String, Integer> map, @NotNull final String item, final int def) {
         return map.getOrDefault(item, def);
     }
 
+    @NotNull
     public static final List<String> oneToNine = Arrays.asList("1", "2", "3", "4", "5", "6", "7", "8", "9");
 
-    public static List<String> replaceAllInList(final List<String> oldList, final String replaceWhat, final String replaceTo) {
+    @NotNull
+    public static List<String> replaceAllInList(@NotNull final List<String> oldList, @NotNull final String replaceWhat, @NotNull final String replaceTo) {
         final List<String> newList = new ArrayList<>();
         for (final String string : oldList) {
             newList.add(string.replace(replaceWhat, replaceTo));
@@ -130,7 +134,8 @@ public final class Utils {
         return newList;
     }
 
-    public static List<String> colorizeAllInList(final List<String> oldList) {
+    @NotNull
+    public static List<String> colorizeAllInList(@NotNull final List<String> oldList) {
         final List<String> newList = new ArrayList<>(oldList.size());
 
         for (final String string : oldList) {
@@ -140,7 +145,7 @@ public final class Utils {
         return newList;
     }
 
-    public static boolean isBabyMob(final LivingEntity livingEntity) {
+    public static boolean isBabyMob(@NotNull final LivingEntity livingEntity) {
 
         if (livingEntity instanceof Zombie) {
             // for backwards compatibility
@@ -162,13 +167,24 @@ public final class Utils {
     /**
      * Sends a debug message to console if enabled in settings
      *
-     * @param instance LevelledMobs class
-     * @param location Reference to whereabouts the debug log is called so that it can be traced back easily
-     * @param msg      Message to help de-bugging
+     * @param instance  LevelledMobs class
+     * @param debugType Reference to whereabouts the debug log is called so that it can be traced back easily
+     * @param msg       Message to help de-bugging
      */
-    public static void debugLog(final LevelledMobs instance, final String location, final String msg) {
-        if (instance.settingsCfg.getStringList("debug-misc").contains(location)) {
-            logger.info("&f&l[DEBUG]&7 &8[" + location + "&8]&7 " + msg);
+    public static void debugLog(@NotNull final LevelledMobs instance, @NotNull final DebugType debugType, @NotNull final String msg) {
+        if (instance.settingsCfg.getStringList("debug-misc").contains(debugType.toString())) {
+            logger.info("&8[&bDebug: " + debugType + "&8]&7 " + msg);
         }
+    }
+
+    /**
+     * If object1 is null, return object2
+     *
+     * @param object1 a nullable object
+     * @param object2 a non-nullable object
+     * @return object2 if object1 is null, otherwise, object1
+     */
+    public static Object getNonNull(@Nullable Object object1, @NotNull Object object2) {
+        return object1 == null ? object2 : object1;
     }
 }

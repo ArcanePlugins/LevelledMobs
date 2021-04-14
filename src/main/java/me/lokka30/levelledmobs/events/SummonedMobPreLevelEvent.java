@@ -5,7 +5,7 @@ import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
-public class SummonedMobLevelEvent extends Event implements Cancellable {
+public class SummonedMobPreLevelEvent extends Event implements Cancellable {
 
     private static final HandlerList HANDLERS = new HandlerList();
 
@@ -33,7 +33,7 @@ public class SummonedMobLevelEvent extends Event implements Cancellable {
     private final LivingEntity entity;
     private int level;
 
-    public SummonedMobLevelEvent(LivingEntity entity, int level) {
+    public SummonedMobPreLevelEvent(LivingEntity entity, int level) {
         this.entity = entity;
         this.level = level;
     }

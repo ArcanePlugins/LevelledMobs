@@ -22,6 +22,7 @@ permissions:
       levelledmobs.compatibility-notice: true
       levelledmobs.command.*: true
       levelledmobs.debug: true
+      levelledmobs.receive-update-notifications: true
 
   levelledmobs.command.*:
     description: 'Access to all LevelledMobs commands.'
@@ -33,6 +34,10 @@ permissions:
       levelledmobs.command.reload: true
       levelledmobs.command.info: true
       levelledmobs.command.compatibility: true
+
+  levelledmobs.receive-update-notifications:
+    description: 'Receive update checker notifications in chat on join, if enabled.'
+    default: op
 
   levelledmobs.compatibility-notice:
     description: 'Ability to view the compatibility notice on join if any possible incompatibilities are found on startup.'

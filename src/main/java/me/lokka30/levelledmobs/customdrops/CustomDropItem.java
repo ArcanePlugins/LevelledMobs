@@ -2,6 +2,7 @@ package me.lokka30.levelledmobs.customdrops;
 
 import me.lokka30.levelledmobs.misc.Utils;
 import org.bukkit.Material;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 
 import java.lang.reflect.Field;
@@ -12,22 +13,25 @@ import java.util.TreeSet;
 /**
  * @author stumper66
  */
-public class CustomItemDrop implements Cloneable {
+public class CustomDropItem implements Cloneable {
     public int minLevel;
     public int maxLevel;
-    public String groupId;
     public int customModelDataId;
+    public int priority;
+    public int maxDropGroup;
+    public double equippedSpawnChance;
     public double dropChance;
     public boolean noMultiplier;
     public boolean noSpawner;
-    public boolean isEquipped;
+    public String groupId;
     public String customName;
     public List<String> lore;
     public final Set<String> excludedMobs = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
-    private int damage;
-    private int amount;
+    public List<ItemFlag> itemFlags;
     private boolean hasAmountRange;
     private boolean hasDamageRange;
+    private int damage;
+    private int amount;
     private int amountRangeMin;
     private int amountRangeMax;
     private int damageRangeMin;
@@ -35,21 +39,23 @@ public class CustomItemDrop implements Cloneable {
     private Material material;
     private ItemStack itemStack;
 
-    public CustomItemDrop(CustomDropsDefaults defaults) {
+    public CustomDropItem(CustomDropsDefaults defaults) {
         this.amount = defaults.amount;
         if (!Utils.isNullOrEmpty(defaults.damage)) this.setDamageRangeFromString(defaults.damage);
         this.customModelDataId = defaults.customModelData;
         this.dropChance = defaults.chance;
-        this.isEquipped = defaults.equipped;
         this.maxLevel = defaults.maxLevel;
         this.minLevel = defaults.minLevel;
         this.groupId = defaults.groupId;
+        this.maxDropGroup = defaults.maxDropGroup;
+        this.equippedSpawnChance = defaults.equippedSpawnChance;
+        this.noMultiplier = defaults.noMultiplier;
     }
 
-    public CustomItemDrop cloneItem() {
-        CustomItemDrop copy = null;
+    public CustomDropItem cloneItem() {
+        CustomDropItem copy = null;
         try {
-            copy = (CustomItemDrop) super.clone();
+            copy = (CustomDropItem) super.clone();
             copy.itemStack = this.itemStack.clone();
         } catch (Exception ignored) {
         }

@@ -14,9 +14,9 @@ import java.io.FileInputStream;
  */
 public final class FileLoader {
 
-    public static final int SETTINGS_FILE_VERSION = 28; // Last changed: b289
-    public static final int MESSAGES_FILE_VERSION = 2; // Last changed: v2.3.0
-    public static final int CUSTOMDROPS_FILE_VERSION = 7; // Last changed: 2.4.0 b328
+    public static final int SETTINGS_FILE_VERSION = 29; // Last changed: 2.5.0 b371
+    public static final int MESSAGES_FILE_VERSION = 3; // Last changed: b353
+    public static final int CUSTOMDROPS_FILE_VERSION = 8; // Last changed: 2.5.0 b371
 
     private FileLoader() {
         throw new UnsupportedOperationException();
@@ -43,9 +43,7 @@ public final class FileLoader {
         final int fileVersion = cfg.getInt("file-version");
         final boolean isCustomDrops = cfgName.equals("customdrops.yml");
 
-        MigrateBehavior migrateBehavior = MigrateBehavior.MIGRATE;
-
-        if (fileVersion < compatibleVersion && (migrateBehavior == MigrateBehavior.MIGRATE || migrateBehavior == MigrateBehavior.RESET)) {
+        if (fileVersion < compatibleVersion) {
             final File backedupFile = new File(plugin.getDataFolder(), cfgName + ".v" + fileVersion + ".old");
 
             // copy to old file
@@ -54,21 +52,15 @@ public final class FileLoader {
             // overwrite settings.yml from new version
             plugin.saveResource(file.getName(), true);
 
-            if (migrateBehavior == MigrateBehavior.MIGRATE) {
-                // copy supported values from old file to new
-                Utils.logger.info("&fFile Loader: &8(Migration) &7Migrating &b" + cfgName + "&7 from old version to new version.");
-                if (isCustomDrops)
-                    FileMigrator.copyCustomDrops(backedupFile, file, fileVersion, customDropsEnabled);
-                else
-                    FileMigrator.copyYmlValues(backedupFile, file, fileVersion);
-            }
+            // copy supported values from old file to new
+            Utils.logger.info("&fFile Loader: &8(Migration) &7Migrating &b" + cfgName + "&7 from old version to new version.");
+            if (isCustomDrops)
+                FileMigrator.copyCustomDrops(backedupFile, file, fileVersion, customDropsEnabled);
+            else
+                FileMigrator.copyYmlValues(backedupFile, file, fileVersion);
 
             // reload cfg from the updated values
             cfg = YamlConfiguration.loadConfiguration(file);
-
-            if (migrateBehavior == MigrateBehavior.RESET) {
-                Utils.logger.warning("&fFile Loader: &8(Migration) &b" + cfgName + "&7 has been reset to default values.");
-            }
 
         } else {
             checkFileVersion(file, compatibleVersion, cfg.getInt("file-version"));
@@ -98,14 +90,5 @@ public final class FileLoader {
 
         Utils.logger.error("&fFile Loader: &7The version of &b" + file.getName() + "&7 you have installed is " + what + "! Fix this as soon as possible, else the plugin will most likely malfunction.");
         Utils.logger.error("&fFile Loader: &8(&7You have &bv" + installedVersion + "&7 installed but you are meant to be running &bv" + compatibleVersion + "&8)");
-    }
-
-    /**
-     * @author stumper66
-     */
-    public enum MigrateBehavior {
-        IGNORE,
-        MIGRATE,
-        RESET
     }
 }

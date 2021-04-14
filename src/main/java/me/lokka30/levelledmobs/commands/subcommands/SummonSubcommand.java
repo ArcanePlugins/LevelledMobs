@@ -2,7 +2,6 @@ package me.lokka30.levelledmobs.commands.subcommands;
 
 import me.lokka30.levelledmobs.LevelInterface;
 import me.lokka30.levelledmobs.LevelledMobs;
-import me.lokka30.levelledmobs.misc.MobProcessReason;
 import me.lokka30.levelledmobs.misc.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -13,7 +12,6 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.entity.CreatureSpawnEvent;
 
 import java.util.*;
 
@@ -334,7 +332,7 @@ public class SummonSubcommand implements Subcommand {
                 messages.forEach(sender::sendMessage);
             }
 
-            final int[] levels = main.levelManager.getMinAndMaxLevels(null, entityType, true, location.getWorld().getName(), null, CreatureSpawnEvent.SpawnReason.CUSTOM);
+            final int[] levels = main.levelManager.getMinAndMaxLevels(null, entityType, true, location.getWorld().getName());
             final int minLevel = levels[0];
             final int maxLevel = levels[1];
 
@@ -390,11 +388,13 @@ public class SummonSubcommand implements Subcommand {
             }
 
             for (int i = 0; i < amount; i++) {
-                Entity entity = Objects.requireNonNull(location.getWorld()).spawnEntity(location, entityType);
-                final int mobLevel = main.levelManager.creatureSpawnListener.processMobSpawn(
-                        (LivingEntity) entity, CreatureSpawnEvent.SpawnReason.CUSTOM, level, MobProcessReason.SUMMON, override);
-                if (mobLevel >= 0 && main.settingsCfg.getBoolean("use-custom-item-drops-for-mobs"))
-                    main.levelInterface.applyLevelledEquipment((LivingEntity) entity, mobLevel);
+                assert location.getWorld() != null;
+
+                Entity entity = location.getWorld().spawnEntity(location, entityType);
+
+                if (entity instanceof LivingEntity) {
+                    main.levelInterface.applyLevelToMob((LivingEntity) entity, level, true, override, new HashSet<>(Collections.singletonList(LevelInterface.AdditionalLevelInformation.NOT_APPLICABLE)));
+                }
             }
 
             switch (summonType) {
@@ -434,7 +434,7 @@ public class SummonSubcommand implements Subcommand {
                     atPlayerSuccessMessages.forEach(sender::sendMessage);
                     break;
                 default:
-                    throw new IllegalStateException("Unexpected SummonType value of " + summonType.toString() + "!");
+                    throw new IllegalStateException("Unexpected SummonType value of " + summonType + "!");
             }
         } else {
             List<String> messages = main.messagesCfg.getStringList("command.levelledmobs.summon.not-levellable");
