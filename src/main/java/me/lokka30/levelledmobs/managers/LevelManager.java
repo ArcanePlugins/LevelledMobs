@@ -19,6 +19,7 @@ import org.apache.commons.lang.WordUtils;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.enchantments.EnchantmentTarget;
 import org.bukkit.entity.*;
 import org.bukkit.event.entity.CreatureSpawnEvent;
@@ -40,7 +41,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * @author lokka30
- * @contributors stumper66, Eyrian2010, iCodinqs, deiphiz, CoolBoy, Esophose, 7smile7, Shevchik, Hugo5551
+ * @contributors stumper66, Eyrian2010, iCodinqs, deiphiz, CoolBoy, Esophose, 7smile7, Shevchik, Hugo5551, limzikiki
  */
 public class LevelManager {
 
@@ -514,6 +515,113 @@ public class LevelManager {
         }
     }
 
+    /**
+     * Executes commands that are suitable for this entity
+     *
+     * @param livingEntity     entity that was killed
+     * @author limzikiki
+     */
+    public void execCommands(final LivingEntity livingEntity){
+        if(main.levelInterface.isLevelled(livingEntity)){
+            //Get section that contains all data related to mob kill commands
+            final ConfigurationSection configs = main.customCommands;
+            if(configs != null) {
+                final Set<String> entities = configs.getKeys(false);
+                for (String entityType: entities) {
+                    if(entityType.equals("file-version")) continue;
+                    if(entityType.equals("ALL")){
+                        serilalizeConfigsForCommands(livingEntity, configs, entityType);
+                    }
+                    if(EntityType.valueOf(entityType) == livingEntity.getType()){
+                        serilalizeConfigsForCommands(livingEntity, configs, entityType);
+                    }
+                }
+            }else{
+                throw new Error("Error reading 'customCommands.yml'");
+            }
+        }
+    }
+
+    private void serilalizeConfigsForCommands(LivingEntity livingEntity, ConfigurationSection configs, String entityType) {
+        final List<Map<?, ?>> entityConfigs = configs.getMapList(entityType);
+        final ConfigurationSection commandsName = configs.getConfigurationSection(entityType);
+
+        Utils.debugLog(main, "LevelManager#execCommands", entityConfigs.toString());
+
+        entityConfigs.forEach(elem->{
+            Utils.debugLog(main, "LevelManager#execCommands", elem.keySet().toString());
+            final String commandName = (String) elem.keySet().iterator().next();
+            final Map<String, Object> commandConfigs = (Map<String, Object>) elem.get(commandName);
+            Utils.debugLog(main, "LevelManager#execCommands", commandConfigs.keySet().toString());
+            final String command = (String) commandConfigs.get("command");
+            int minLevel = (int) commandConfigs.getOrDefault("minLevel", 0);
+            int maxLevel = (int) commandConfigs.getOrDefault("maxLevel", Integer.MAX_VALUE);
+            double chance = (double) commandConfigs.getOrDefault("chance", 1.0);
+            boolean playerCaused = (boolean) commandConfigs.getOrDefault("playerCaused", true);
+
+            final CustomMobCommand commandInstance = new CustomMobCommand(commandName, command, minLevel, maxLevel, chance, playerCaused);
+
+            execCommands(livingEntity, commandInstance);
+
+        });
+    }
+
+    /**
+     * Executes commands that are suitable for this entity,
+     * configs should contain only levels and corresponding commands
+     *
+     * @param entity     entity that was killed
+     * @param configs    configs containing only levels and corresponding commands
+     * @author limzikiki
+     */
+    public void execCommands(final LivingEntity entity, @Nonnull final CustomMobCommand configs) {
+
+        final boolean isAdult = Utils.isBabyMob(entity);
+        final int entityLevel = Objects.requireNonNull(entity.getPersistentDataContainer().get(levelKey, PersistentDataType.INTEGER));
+        final boolean isPlayerCaused = entity.getKiller() != null;
+
+        final String commandName = configs.commandName;
+
+        final String command = configs.command;
+        final int minLevel = configs.minLevel;
+        final int maxLevel = configs.maxLevel;
+        final boolean playerCaused = configs.playerCaused;
+        final double chance = configs.chance;
+
+        if (chance < 1.0) {
+            double chanceRole = ThreadLocalRandom.current().nextInt(0, 100001) * 0.0001;
+            if (1.0 - chanceRole >= chance) return;
+        }
+
+        if (isPlayerCaused != playerCaused) return;
+
+        if (minLevel >= entityLevel || maxLevel <= entityLevel) return;
+
+        final Player player = entity.getKiller();
+
+        // Replace placeholders
+        String finalCommand = command;
+
+        if (isPlayerCaused) {
+            // %player% placeholder
+            finalCommand = Utils.replaceEx(finalCommand, "%player%", player.getName());
+        }
+
+        // %level% placeholder
+        finalCommand = Utils.replaceEx(finalCommand, "%level%", String.valueOf(entityLevel));
+
+        // %world% placeholder
+        finalCommand = Utils.replaceEx(finalCommand, "%world%", entity.getWorld().getName());
+
+        // %location% placeholder
+        final String location = entity.getLocation().getBlockX() + " " + entity.getLocation().getBlockY() + " " + entity.getLocation().getBlockZ();
+        finalCommand = Utils.replaceEx(finalCommand, "%location%", location);
+
+        Utils.debugLog(main, "LevelManager#execCommands", "Command" + finalCommand);
+        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), finalCommand);
+    }
+
+
     // When the persistent data container levelled key has been set on the entity already (i.e. when they are damaged)
     public String getNametag(final LivingEntity livingEntity, final boolean isDeathNametag) {
         return getNametag(livingEntity, Objects.requireNonNull(
@@ -841,5 +949,23 @@ public class LevelManager {
                 }
             }
         }
+    }
+}
+
+class CustomMobCommand{
+    public String commandName;
+    public String command;
+    public int minLevel;
+    public int maxLevel;
+    public double chance;
+    public boolean playerCaused;
+
+    public CustomMobCommand(String commandName,String command, int minLevel, int maxLevel,double chance,boolean playerCaused){
+        this.commandName = commandName;
+        this.command = command;
+        this.minLevel = minLevel;
+        this.maxLevel = maxLevel;
+        this.chance = chance;
+        this.playerCaused = playerCaused;
     }
 }
