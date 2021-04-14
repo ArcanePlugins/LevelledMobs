@@ -1,5 +1,107 @@
 # Changelog
 
+***
+
+## v2.5.0 b372
+
+### Notes:
+
+#### It's not actually a troll update.
+
+At first, we intended to release this update with only improvements to the existing code - we wouldn't really have a
+changelog that would make anyone happy, so we nicknamed it the 'troll' update whilst in development.
+
+Instead, we have not only improved the code by quite a significant margin, but fix a bunch of bugs, and added a few new
+features.
+
+In the coming updates 2.6 and 2.7, we plan on adding some *significant* stuff to this plugin. This update was
+essentially a stepping stone for them - the code for LM was too messy and becoming a bit of a headache to work with, so
+here's 2.5, which aims to fix most of the issue. :)
+
+#### Developers!
+
+* The LevelInterface is a new (and *far* easier) way for developers of other plugins to directly interact with
+  LevelledMobs and the decisions it makes.
+* Our hope is that this will unlock new possibilities with LevelledMobs, such as 'addons' and other integrations. We
+  plan to expand on this class over time.
+* Three new events have been added to LevelledMobs - check the changelog below if you're interested.
+
+### Changelog:
+
+#### Added LevelInterface
+
+* Improves a lot of messy code, relocated from other classes, primarily LevelManager.java.
+
+#### New Events
+
+* Another treat for other developers: LM now has three new events!
+  * MobPreLevelEvent
+    * Called when a mob is being considered for levelling.
+  * SummonedMobPreLevelEvent
+    * Called when a summoned mob is being considered for levelling (through `/lm summon`).
+  * MobPostLevelEvent
+    * Called when a mob has been levelled. Unlike the two events above, this one is not cancellable, since the event is
+      called *after* LM has tampered with the entity.
+
+#### Custom Drops Improvements
+
+by @stumper66
+
+* Added new attributes: equipped, priority, maxdropgroup
+* Added item flags to custom drops.
+* Fixed null reference error when using summon command and you get a baby mob
+* Code cleanup: removed MigrateBehavior enum, cleaned up customdrops attribute processing
+* Fixed a bunch of other bugs.
+
+#### Update Checker Improvements
+
+by @lokka30
+
+* Added customisable multiline messages for update checker.
+* Update checker now informs players with permission (OP by default) when they join, if an LM update is available. Can
+  be toggled in messages.yml
+* Allowed toggle of sending update checker messages to console in messages.yml
+* Added permission 'levelledmobs.receive-update-notifications', self explanatory.
+
+#### Code Cleanup
+
+A *lot* of code cleanup was done for this release. Helps us and other developers out :)
+
+* Replaced isSpawnerKey with spawnReasonKey. This also affected the 'SpawnReason.REINFORCEMENTS' level determination.
+* Renamed current events to contain 'PRE', more fitting as they are called *before* the mobs are actually levelled. Will
+  add a 'POST' event soon.. hopefully.
+* Renamed instance variable in ChunkLoadListener.java
+* CreatureSpawnListener upgrades:
+  * Renamed to EntitySpawnListener.java, more fitting with the new changes.
+  * Cleaned up the event handlers
+  * Cleaned and relocated the messy 'processMobSpawn' method, its code is now split in both LevelInterface.java and
+    LevelManager.java, mainly LevelManager.
+* MythicMobsListener now attaches a 'noLevelKey' persistent data NamespacedKey to a mob, telling LM not to level it.
+  This will stick with the mob over restarts
+* Removed excess debug settings, simply using 'debug entity damage' and 'debug misc' instead.
+* Other general code cleanup.
+
+#### Other Changes
+
+* @stumper66 added the `/nodrops` option to the `kill all` subcommand
+* @lokka30 made it so Guardians now have their attack damage modified
+* @lokka30 patched the concurrent modification exception (Reported by @oathkeeper)
+* @lokka30 made improvements to the entity nametag validity issue
+* @lokka30 fixed how 'un-levelling' a mob didn't revert its attributes
+* @lokka30 added 'DebugType', a universal enum for debug logging
+* @lokka30 added nullability annotations to a bunch of methods
+* @lokka30 made it so skipped death message handling if initial death message is null
+* @stumper66 fixed missing specified defaults in LevelManager.java#524 (Thanks to GetSirius55 for reporting)
+* @stumper66 nametag update task now checks for unlevelled mobs and levels them if applicable
+* @stumper66 updated customdrops.yml and settings.yml with new comments and more
+* @stumper66 added new debug enum ENTITY_TRANSFORM_FAIL
+* @stumper66 shortened debug messages
+* @stumper66 corrected spacing issues in customdrops.yml and settings.yml
+* @stumper66 changed nametag updater task to only apply levels to formallly unlevelled baby mobs
+* @stumper66 added debug type: ENTITY_MISC. So far only used for the above condition
+
+***
+
 ## v2.4.2 b348
 
 ### Changelog:
