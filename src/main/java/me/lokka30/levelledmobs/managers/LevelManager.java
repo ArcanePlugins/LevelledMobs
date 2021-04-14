@@ -524,15 +524,12 @@ public class LevelManager {
     public void execCommands(final LivingEntity livingEntity){
         if(main.levelInterface.isLevelled(livingEntity)){
             //Get section that contains all data related to mob kill commands
-            final ConfigurationSection configs = main.customCommands;
+            final ConfigurationSection configs = main.customCommandsCfg;
             if(configs != null) {
                 final Set<String> entities = configs.getKeys(false);
                 for (String entityType: entities) {
-                    if(entityType.equals("file-version")) continue;
-                    if(entityType.equals("ALL")){
-                        serilalizeConfigsForCommands(livingEntity, configs, entityType);
-                    }
-                    if(EntityType.valueOf(entityType) == livingEntity.getType()){
+                    if (entityType.equals("file-version")) continue;
+                    if (entityType.equals("ALL") || EntityType.valueOf(entityType) == livingEntity.getType()) {
                         serilalizeConfigsForCommands(livingEntity, configs, entityType);
                     }
                 }
@@ -546,13 +543,13 @@ public class LevelManager {
         final List<Map<?, ?>> entityConfigs = configs.getMapList(entityType);
         final ConfigurationSection commandsName = configs.getConfigurationSection(entityType);
 
-        Utils.debugLog(main, "LevelManager#execCommands", entityConfigs.toString());
+        Utils.debugLog(main, DebugType.CUSTOM_COMMANDS, entityConfigs.toString());
 
-        entityConfigs.forEach(elem->{
-            Utils.debugLog(main, "LevelManager#execCommands", elem.keySet().toString());
+        entityConfigs.forEach(elem -> {
+            Utils.debugLog(main, DebugType.CUSTOM_COMMANDS, elem.keySet().toString());
             final String commandName = (String) elem.keySet().iterator().next();
             final Map<String, Object> commandConfigs = (Map<String, Object>) elem.get(commandName);
-            Utils.debugLog(main, "LevelManager#execCommands", commandConfigs.keySet().toString());
+            Utils.debugLog(main, DebugType.CUSTOM_COMMANDS, commandConfigs.keySet().toString());
             final String command = (String) commandConfigs.get("command");
             int minLevel = (int) commandConfigs.getOrDefault("minLevel", 0);
             int maxLevel = (int) commandConfigs.getOrDefault("maxLevel", Integer.MAX_VALUE);
@@ -578,7 +575,8 @@ public class LevelManager {
 
         final boolean isAdult = Utils.isBabyMob(entity);
         final int entityLevel = Objects.requireNonNull(entity.getPersistentDataContainer().get(levelKey, PersistentDataType.INTEGER));
-        final boolean isPlayerCaused = entity.getKiller() != null;
+        //noinspection ConstantConditions
+        final boolean isPlayerCaused = (entity.getKiller() != null) && (entity.getKiller() instanceof Player);
 
         final String commandName = configs.commandName;
 
@@ -617,7 +615,7 @@ public class LevelManager {
         final String location = entity.getLocation().getBlockX() + " " + entity.getLocation().getBlockY() + " " + entity.getLocation().getBlockZ();
         finalCommand = Utils.replaceEx(finalCommand, "%location%", location);
 
-        Utils.debugLog(main, "LevelManager#execCommands", "Command" + finalCommand);
+        Utils.debugLog(main, DebugType.CUSTOM_COMMANDS, "Command: " + finalCommand);
         Bukkit.dispatchCommand(Bukkit.getConsoleSender(), finalCommand);
     }
 

@@ -60,5 +60,11 @@ public enum DebugType {
      * Misc events related
      * to an entity
      */
-    ENTITY_MISC
+    ENTITY_MISC,
+
+    /**
+     * When custom commands
+     * are being executed
+     */
+    CUSTOM_COMMANDS
 }

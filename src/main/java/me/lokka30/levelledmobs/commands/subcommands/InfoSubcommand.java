@@ -22,7 +22,7 @@ public class InfoSubcommand implements Subcommand {
                 String description = main.getDescription().getDescription();
                 List<String> supportedVersions = Utils.getSupportedServerVersions();
                 List<String> codeContributors = Arrays.asList("stumper66", "Eyrian", "iCodinqs", "deiphiz", "CoolBoy", "Esophose",
-                        "7smile7", "UltimaOath", "konsolas", "Shevchik", "Hugo5551", "bStats Project", "SpigotMC Project");
+                        "7smile7", "UltimaOath", "konsolas", "Shevchik", "Hugo5551", "limzikiki", "bStats Project", "SpigotMC Project");
                 String listSeparator = Objects.requireNonNull(main.messagesCfg.getString("command.levelledmobs.info.listSeparator"), "messages.yml: command.levelledmobs.info.listSeparator is undefined");
 
                 List<String> aboutMsg = main.messagesCfg.getStringList("command.levelledmobs.info.about");

@@ -98,7 +98,7 @@ public class Companion {
 
         main.customDropsCfg = FileLoader.loadFile(main, "customdrops", FileLoader.CUSTOMDROPS_FILE_VERSION, customDropsEnabled);
 
-        main.customCommands = FileLoader.loadFile(main, "customCommands", FileLoader.CUSTOMCOMMANDS_FILE_VERSION, false);
+        main.customCommandsCfg = FileLoader.loadFile(main, "customCommands", FileLoader.CUSTOMCOMMANDS_FILE_VERSION, false);
 
         main.configUtils.entityTypesLevelOverride_Min = main.configUtils.getMapFromConfigSection("entitytype-level-override.min-level");
         main.configUtils.entityTypesLevelOverride_Max = main.configUtils.getMapFromConfigSection("entitytype-level-override.max-level");
