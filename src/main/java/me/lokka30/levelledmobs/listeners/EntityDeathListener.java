@@ -39,7 +39,7 @@ public class EntityDeathListener implements Listener {
         if (main.levelInterface.isLevelled(livingEntity)) {
 
             // Set levelled item drops
-            main.levelManager.getLevelledItemDrops(livingEntity, event.getDrops());
+            main.levelManager.setLevelledItemDrops(livingEntity, event.getDrops());
 
             // Set levelled exp drops
             if (event.getDroppedExp() > 0) {

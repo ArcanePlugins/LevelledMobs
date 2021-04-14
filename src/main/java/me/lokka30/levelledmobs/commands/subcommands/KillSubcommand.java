@@ -26,6 +26,14 @@ public class KillSubcommand implements Subcommand {
             return;
         }
 
+        boolean useNoDrops = false;
+        for (final String arg : args) {
+            if ("/nodrops".equalsIgnoreCase(arg)) {
+                useNoDrops = true;
+                break;
+            }
+        }
+
         if (args.length > 1) {
             switch (args[1].toLowerCase()) {
                 case "all":
@@ -37,7 +45,7 @@ public class KillSubcommand implements Subcommand {
                     if (args.length == 2) {
                         if (sender instanceof Player) {
                             final Player player = (Player) sender;
-                            parseKillAll(sender, Collections.singletonList(player.getWorld()), main);
+                            parseKillAll(sender, Collections.singletonList(player.getWorld()), main, useNoDrops);
                         } else {
                             List<String> messages = main.messagesCfg.getStringList("command.levelledmobs.kill.all.usage-console");
                             messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.getPrefix());
@@ -45,23 +53,27 @@ public class KillSubcommand implements Subcommand {
                             messages = Utils.colorizeAllInList(messages);
                             messages.forEach(sender::sendMessage);
                         }
-                    } else if (args.length == 3) {
+                    } else if (args.length == 3 || args.length == 4) {
                         if (args[2].equals("*")) {
-                            parseKillAll(sender, Bukkit.getWorlds(), main);
+                            parseKillAll(sender, Bukkit.getWorlds(), main, useNoDrops);
                             return;
                         }
 
-                        World world = Bukkit.getWorld(args[2]);
-                        if (world == null) {
-                            List<String> messages = main.messagesCfg.getStringList("command.levelledmobs.kill.all.invalid-world");
-                            messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.getPrefix());
-                            messages = Utils.colorizeAllInList(messages);
-                            messages = Utils.replaceAllInList(messages, "%world%", args[2]); //This is after the list is colourised to ensure that an input of a world name '&aGreen' will not be colourised.
-                            messages.forEach(sender::sendMessage);
-                            return;
+                        if ("/nodrops".equalsIgnoreCase(args[2])) {
+                            parseKillAll(sender, Bukkit.getWorlds(), main, true);
                         }
-
-                        parseKillAll(sender, Collections.singletonList(world), main);
+                        else {
+                            World world = Bukkit.getWorld(args[2]);
+                            if (world == null) {
+                                List<String> messages = main.messagesCfg.getStringList("command.levelledmobs.kill.all.invalid-world");
+                                messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.getPrefix());
+                                messages = Utils.colorizeAllInList(messages);
+                                messages = Utils.replaceAllInList(messages, "%world%", args[2]); //This is after the list is colourised to ensure that an input of a world name '&aGreen' will not be colourised.
+                                messages.forEach(sender::sendMessage);
+                                return;
+                            }
+                            parseKillAll(sender, Collections.singletonList(world), main, useNoDrops);
+                        }
                     } else {
                         List<String> messages = main.messagesCfg.getStringList("command.levelledmobs.kill.all.usage");
                         messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.getPrefix());
@@ -124,7 +136,10 @@ public class KillSubcommand implements Subcommand {
                                         if (skipKillingEntity(main, livingEntity)) {
                                             skipped++;
                                         } else {
-                                            livingEntity.setHealth(0.0);
+                                            if (useNoDrops)
+                                                livingEntity.remove();
+                                            else
+                                                livingEntity.setHealth(0.0);
                                             killed++;
                                         }
                                     }
@@ -169,15 +184,18 @@ public class KillSubcommand implements Subcommand {
             return Arrays.asList("all", "near");
         }
 
-        if (args.length == 3) {
+        if (args.length == 3 || args.length == 4) {
             if (args[1].equalsIgnoreCase("all")) {
                 if (sender.hasPermission("levelledmobs.command.kill.all")) {
                     List<String> worlds = new ArrayList<>();
 
-                    for (World world : Bukkit.getWorlds()) {
-                        worlds.add("*");
-                        if (ModalList.isEnabledInList(main.settingsCfg, "allowed-worlds-list", world.getName())) {
-                            worlds.add(world.getName());
+                    worlds.add("/nodrops");
+                    if (args.length == 3 ) {
+                        for (World world : Bukkit.getWorlds()) {
+                            worlds.add("*");
+                            if (ModalList.isEnabledInList(main.settingsCfg, "allowed-worlds-list", world.getName())) {
+                                worlds.add(world.getName());
+                            }
                         }
                     }
 
@@ -194,7 +212,7 @@ public class KillSubcommand implements Subcommand {
         return null;
     }
 
-    private void sendUsageMsg(CommandSender sender, String label, LevelledMobs instance) {
+    private void sendUsageMsg(final CommandSender sender, final String label, final LevelledMobs instance) {
         List<String> messages = instance.messagesCfg.getStringList("command.levelledmobs.kill.usage");
         messages = Utils.replaceAllInList(messages, "%prefix%", instance.configUtils.getPrefix());
         messages = Utils.replaceAllInList(messages, "%label%", label);
@@ -202,7 +220,7 @@ public class KillSubcommand implements Subcommand {
         messages.forEach(sender::sendMessage);
     }
 
-    private void parseKillAll(CommandSender sender, List<World> worlds, LevelledMobs main) {
+    private void parseKillAll(final CommandSender sender, final List<World> worlds, final LevelledMobs main, final boolean useNoDrops) {
         int killed = 0;
         int skipped = 0;
 
@@ -214,7 +232,10 @@ public class KillSubcommand implements Subcommand {
                         if (skipKillingEntity(main, livingEntity)) {
                             skipped++;
                         } else {
-                            livingEntity.setHealth(0.0);
+                            if (useNoDrops)
+                                livingEntity.remove();
+                            else
+                                livingEntity.setHealth(0.0);
                             killed++;
                         }
                     }

@@ -10,6 +10,7 @@ import me.lokka30.levelledmobs.misc.FileLoader;
 import me.lokka30.levelledmobs.misc.Utils;
 import me.lokka30.microlib.UpdateChecker;
 import me.lokka30.microlib.VersionUtils;
+import org.apache.maven.artifact.versioning.ComparableVersion;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.command.PluginCommand;
@@ -22,6 +23,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -102,7 +105,7 @@ public class Companion {
         main.configUtils.worldLevelOverride_Min = main.configUtils.getMapFromConfigSection("world-level-override.min-level");
         main.configUtils.worldLevelOverride_Max = main.configUtils.getMapFromConfigSection("world-level-override.max-level");
         main.configUtils.noDropMultiplierEntities = main.configUtils.getSetFromConfigSection("no-drop-multipler-entities");
-
+        main.configUtils.overridenEntities = main.configUtils.getSetFromConfigSection("overriden-entities");
         main.attributesCfg = loadEmbeddedResource("defaultAttributes.yml");
         main.dropsCfg = loadEmbeddedResource("defaultDrops.yml");
 
@@ -148,7 +151,7 @@ public class Companion {
         Utils.logger.info("&fListeners: &7Registering event listeners...");
 
         main.levelManager = new LevelManager(main);
-        main.levelManager.creatureSpawnListener = new CreatureSpawnListener(main); // we're saving this reference so the summon command has access to it
+        main.levelManager.entitySpawnListener = new EntitySpawnListener(main); // we're saving this reference so the summon command has access to it
         main.entityDamageDebugListener = new EntityDamageDebugListener(main);
 
         if (main.settingsCfg.getBoolean("debug-entity-damage")) {
@@ -157,7 +160,7 @@ public class Companion {
             pluginManager.registerEvents(main.entityDamageDebugListener, main);
         }
 
-        pluginManager.registerEvents(main.levelManager.creatureSpawnListener, main);
+        pluginManager.registerEvents(main.levelManager.entitySpawnListener, main);
         pluginManager.registerEvents(new EntityDamageListener(main), main);
         pluginManager.registerEvents(new EntityDeathListener(main), main);
         pluginManager.registerEvents(new EntityRegainHealthListener(main), main);
@@ -192,12 +195,59 @@ public class Companion {
     }
 
     //Check for updates on the Spigot page.
+    public List<String> updateResult = new ArrayList<>();
     protected void checkUpdates() {
-        if (main.settingsCfg.getBoolean("use-update-checker")) {
+        if (main.settingsCfg.getBoolean("use-update-checker", true)) {
             final UpdateChecker updateChecker = new UpdateChecker(main, 74304);
             updateChecker.getLatestVersion(latestVersion -> {
-                if (!updateChecker.getCurrentVersion().split(" ")[0].equals(latestVersion)) {
-                    Utils.logger.warning("&fUpdate Checker: &7The plugin has an update available! You're running &bv" + updateChecker.getCurrentVersion() + "&7, latest version is &bv" + latestVersion + "&7.");
+                final String currentVersion = updateChecker.getCurrentVersion().split(" ")[0];
+
+                ComparableVersion thisVersion = new ComparableVersion(currentVersion);
+                ComparableVersion spigotVersion = new ComparableVersion(latestVersion);
+
+                final boolean isOutOfDate = (thisVersion.compareTo(spigotVersion) < 0);
+                final boolean isNewerVersion =(thisVersion.compareTo(spigotVersion) > 0);
+
+                if (isNewerVersion){
+                    updateResult = Collections.singletonList(
+                            "&7Your &bLevelledMobs&7 version is &ba pre-release&7. Latest release version is &bv%latestVersion%&7. &8(&7You're running &bv%currentVersion%&8)");
+
+                    updateResult = Utils.replaceAllInList(updateResult, "%currentVersion%", currentVersion);
+                    updateResult = Utils.replaceAllInList(updateResult, "%latestVersion%", latestVersion);
+                    updateResult = Utils.colorizeAllInList(updateResult);
+
+                    updateResult.forEach(Utils.logger::warning);
+                }
+                else if (isOutOfDate) {
+
+                    // for some reason config#getStringList doesn't allow defaults??
+                    if (main.messagesCfg.contains("other.update-notice.messages")) {
+                        updateResult = main.messagesCfg.getStringList("other.update-notice.messages");
+                    } else {
+                        updateResult = Arrays.asList(
+                                "&b&nLevelledMobs Update Checker Notice:",
+                                "&7Your &bLevelledMobs&7 version is &boutdated&7! Please update to" +
+                                        "&bv%latestVersion%&7 as soon as possible. &8(&7You''re running &bv%currentVersion%&8)");
+                    }
+
+                    updateResult = Utils.replaceAllInList(updateResult, "%currentVersion%", currentVersion);
+                    updateResult = Utils.replaceAllInList(updateResult, "%latestVersion%", latestVersion);
+                    updateResult = Utils.colorizeAllInList(updateResult);
+
+                    if (main.messagesCfg.getBoolean("other.update-notice.send-in-console", true))
+                        updateResult.forEach(Utils.logger::warning);
+
+                    // notify any players that may be online already
+                    if (main.messagesCfg.getBoolean("other.update-notice.send-on-join", true)) {
+                        Bukkit.getOnlinePlayers().forEach(onlinePlayer -> {
+                            if (onlinePlayer.hasPermission("levelledmobs.receive-update-notifications")) {
+                                for (String msg : updateResult) {
+                                    onlinePlayer.sendMessage(msg);
+                                }
+                                //updateResult.forEach(onlinePlayer::sendMessage); //compiler didn't like this :(
+                            }
+                        });
+                    }
                 }
             });
         }

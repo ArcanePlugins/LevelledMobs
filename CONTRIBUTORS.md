@@ -1,12 +1,18 @@
 # For Contributors
-I would appreciate if contributors follow these in order to save time cleaning up code from PRs.
+We would *highly* appreciate if contributors followed these requests, as it will save the lead developers a lot of time having to clean up PRs.
 
-* Please use curly braces everywhere except for simple return statements. Use `if(cond) { do; }` instead of `if(cond) do`;
-* Although other regions of the world spell 'leveled' (2 'l' characters), this resource uses 3 characters: 'levelled'. Please use the same spelling. (Australian English)
-* Please provide a comment to whatever degree you wish explaining what your method does if it isn't self explanatory. This is so other contributors and myself understand how it functions.
-* Please do not commit any IDE settings change unless you feel they are a significant improvement.
-* Please do not have your IDE automatically rearrange code (unless what you are rearranging is messy)
+# Code
+* Where `else` statements are included, please use curly brackets (`{`, `}`) to maintain a clear structure of the code.
+* Include javadocs and comments to your code wherever possible, unless it is obviously self-explanatory (e.g. 'changeWoolColor(Block)`)
+* Please do not commit any personal IDE settings change unless you feel they are a significant improvement.
+* Do not use automatic code re-arranging from your IDE. We've purposely laid out methods and variables in certain areas, and functions such as IntelliJ's 'relocate code' mess with it.
 
-Completely optional as I will go over the code myself and fix what doesn't abide by these requests, but it would be helpful if contributors followed.
+# Language
+Wherever possible, use American English (`en-us`) spelling, with exception to the name, `LevelledMobs`, which was spelt originally with Australian English (`en-au`) and shall continue to be, to prevent breaking any resources which depend on this spelling. American English uses `leveled` (two total `l` characters), compared to Australian English's `levelled` (three total `l` characters).
 
-Any contributions must fall under the same license.
+# Ownership
+* Any contributions must fall under the same license described in `LICENSE.md`.
+* You are expected to own or clearly credit the code you have contributed.
+
+# Conclusion
+Although following this guide is optional, it is highly appreciated by the developers of the resource, since we will have to fix or even reject contributions that don't follow it.

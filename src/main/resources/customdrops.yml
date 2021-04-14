@@ -139,14 +139,10 @@
 #              | apply the spread. Ensure you understand how Minecraft's
 #              | item durability system works before using this value!
 #          equipped:
-#             true | If set to true, the mob will attempt to equip the
-#                  | item it has spawned with. This is most useful for
-#                  | weapons, armor, and potions, though it will attempt
-#                  | to equipt any item into it's hand. Remember...
-#                  | Most mobs have either two hands or no hands!
-#            false | If set to false, the mob will simply hold the drops
-#                  | in their inventory to be dropped upon death.
-#                  | This is set to false by default.
+#                  | Used to determine the chance for an entity to equip
+#                  | the item(s) it spawns with. 0.0 (Default) is a zero
+#                  | chance, while 1.0 is 100% chance to ATTEMPT to equip.
+#                  | Some items will not equip to an entity.
 #          override:
 #             true | If set to true, the mob will not drop it's vanilla
 #                  | drops, and will instead reference this custom drops
@@ -221,8 +217,7 @@
 # These default values also affect any drop crafted
 # in Section 04 - Drop Tables.
 # To disable any of the default values below,
-# replace the value with '-1'. By default: 'nomultiplier',
-# 'nospawner', and 'equipped' are set to false.
+# replace the value with '-1'.
 # 
 #  Default Config Values for Reference
 #    defaults:
@@ -233,18 +228,24 @@
 #     custommodeldata: -1
 #     nomultiplier: false
 #     nospawner: false
-#     equipped: false
+#     equipped: 0.0
+#     override: false
+#     maxdropgroup: 1
+#     priority: 0
 #
 defaults:
   chance: 0.2
+  equippedspawnchance: 1.0
   amount: 1
   minlevel: -1
   maxlevel: -1
   custommodeldata: -1
   nomultiplier: false
   nospawner: false
-  equipped: false
+  equipped: 0.0
   override: false
+  maxdropgroup: 1
+  priority: 0
 
 #
 # |||||||||||||||||||||||||||||||||||||||||||||||||||||
@@ -562,12 +563,15 @@ drop-table:
         nospawner: true
         groupid: 2
 
-PIG;CHICKEN;COW:
-  usedroptable: 1
+# Below are examples of drop-tables applying to
+# different sets of entities. Uncomment them to use
+# or craft your own drop-tables!
 
-ALL_NETHER_MOBS:
-  exclude: WITHER_SKELETON;MAGMA_CUBE
-  usedroptable: basic_nether
+#PIG;CHICKEN;COW:
+#  usedroptable: 1
+#ALL_NETHER_MOBS:
+#  exclude: WITHER_SKELETON;MAGMA_CUBE
+#  usedroptable: basic_nether
 
 
 #
@@ -581,7 +585,7 @@ ALL_NETHER_MOBS:
 # as it could potentially break your LevelledMobs plugin
 # entirely or wipe your customdrops.yml file.
 #
-file-version: 7
+file-version: 8
 
 
 #
@@ -614,7 +618,7 @@ file-version: 7
 #      nomultiplier: true
 #      nospawner: true
 #      groupid: 1 #The material is also part of the set 'group 1'
-#      equipped: true #The mob attempt to equip the item
+#      equipped: 0.5 #The mob 50% chance to equip the item
 #      damage: 150 #The sword comes pre-damaged with 150pts
 #      enchantments: #The sword should come pre-enchanted
 #        unbreaking: 1

@@ -3,12 +3,11 @@ package me.lokka30.levelledmobs.listeners;
 import io.lumine.xikage.mythicmobs.api.bukkit.events.MythicMobSpawnEvent;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.managers.ExternalCompatibilityManager;
-import me.lokka30.levelledmobs.misc.MobProcessReason;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.CreatureSpawnEvent;
+import org.bukkit.persistence.PersistentDataType;
 
 public class MythicMobsListener implements Listener {
 
@@ -25,8 +24,8 @@ public class MythicMobsListener implements Listener {
 
         if (!(event.getEntity() instanceof LivingEntity)) return;
 
-        main.levelManager.creatureSpawnListener.processMobSpawn(
-                (LivingEntity) event.getEntity(), CreatureSpawnEvent.SpawnReason.CUSTOM, -1, MobProcessReason.NONE, false
-        );
+        final LivingEntity livingEntity = (LivingEntity) event.getEntity();
+
+        livingEntity.getPersistentDataContainer().set(main.levelManager.noLevelKey, PersistentDataType.STRING, "true");
     }
 }

@@ -44,9 +44,7 @@ public final class FileLoader {
         final int fileVersion = cfg.getInt("file-version");
         final boolean isCustomDrops = cfgName.equals("customdrops.yml");
 
-        MigrateBehavior migrateBehavior = MigrateBehavior.MIGRATE;
-
-        if (fileVersion < compatibleVersion && (migrateBehavior == MigrateBehavior.MIGRATE || migrateBehavior == MigrateBehavior.RESET)) {
+        if (fileVersion < compatibleVersion) {
             final File backedupFile = new File(plugin.getDataFolder(), cfgName + ".v" + fileVersion + ".old");
 
             // copy to old file
@@ -55,21 +53,15 @@ public final class FileLoader {
             // overwrite settings.yml from new version
             plugin.saveResource(file.getName(), true);
 
-            if (migrateBehavior == MigrateBehavior.MIGRATE) {
-                // copy supported values from old file to new
-                Utils.logger.info("&fFile Loader: &8(Migration) &7Migrating &b" + cfgName + "&7 from old version to new version.");
-                if (isCustomDrops)
-                    FileMigrator.copyCustomDrops(backedupFile, file, fileVersion, customDropsEnabled);
-                else
-                    FileMigrator.copyYmlValues(backedupFile, file, fileVersion);
-            }
+            // copy supported values from old file to new
+            Utils.logger.info("&fFile Loader: &8(Migration) &7Migrating &b" + cfgName + "&7 from old version to new version.");
+            if (isCustomDrops)
+                FileMigrator.copyCustomDrops(backedupFile, file, fileVersion, customDropsEnabled);
+            else
+                FileMigrator.copyYmlValues(backedupFile, file, fileVersion);
 
             // reload cfg from the updated values
             cfg = YamlConfiguration.loadConfiguration(file);
-
-            if (migrateBehavior == MigrateBehavior.RESET) {
-                Utils.logger.warning("&fFile Loader: &8(Migration) &b" + cfgName + "&7 has been reset to default values.");
-            }
 
         } else {
             checkFileVersion(file, compatibleVersion, cfg.getInt("file-version"));
@@ -99,14 +91,5 @@ public final class FileLoader {
 
         Utils.logger.error("&fFile Loader: &7The version of &b" + file.getName() + "&7 you have installed is " + what + "! Fix this as soon as possible, else the plugin will most likely malfunction.");
         Utils.logger.error("&fFile Loader: &8(&7You have &bv" + installedVersion + "&7 installed but you are meant to be running &bv" + compatibleVersion + "&8)");
-    }
-
-    /**
-     * @author stumper66
-     */
-    public enum MigrateBehavior {
-        IGNORE,
-        MIGRATE,
-        RESET
     }
 }

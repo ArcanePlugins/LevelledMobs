@@ -81,7 +81,8 @@
 #                  %tiered% | Color text based on the level of the mob
 #
 #     You can disable the nametag system entirely by
-#     changing the creature-nametag to 'disabled'
+#     changing either the creature-nametag or
+#     creature-death-nametag to 'disabled'
 #     If a player dies to a mob, creature-death-nametag
 #     name will be used for any death messages.
 # ||-------------------------------------------------------||
@@ -100,6 +101,7 @@ creature-death-nametag: '&8[&7Level %level%&8 | &f%displayname%&8]'
 #     As much as we would like to have a 'you can see the
 #     nametag if you can see the mob' option, unfortunately
 #     Minecraft itself limits us to just these two options.
+#     Got it all figured out? Commit and ye' shall be praised.
 # ||-------------------------------------------------------||
 creature-nametag-always-visible: false
 
@@ -111,6 +113,8 @@ creature-nametag-always-visible: false
 #     nametags, you can do so below. You can disable the
 #     mobs nametag by changing it to 'disabled', as well
 #     as impliment Minecraft's color codes.
+#     You may also prefix any entity with 'BABY_' to
+#     specify the baby variant of the mob.
 #
 #     The format below consists of the mob name, and
 #     their replacement name.
@@ -161,12 +165,12 @@ assert-entity-validity-with-nametag-packets: true
 
 # ||-------------------------------------------------------||
 # ||  ADVANCED USERS ONLY
-# ||  Automatic Asynchronous Nametag Update
+# ||  Automatic Asynchronous Nametag and Levelling Update
 #
-#     This setting forces the nametag to update itself
-#     every X seconds. This is meant to resolve any issues
-#     where mobs for whatever reason do not spawn with
-#     their nametags, or if the tags have not updated.
+#     This setting will check the area near players for
+#     any entities which should be levelled or are missing
+#     their correct nametags for whatever reason.
+#     
 #     By default, this is set to 6 seconds.
 #     It is not recommended that you change this setting
 #     unless you understand exactly what you are doing.
@@ -188,10 +192,30 @@ nametag-auto-update-task-period: 6
 #      WHITELIST | Only entities listed below will be levelled
 #            ALL | All permitted entities are levelled,
 #                | ignoring the list below
-#
 #      mode: 'BLACKLIST'
-#      list:
+#
+#      list: (Default)
 #        - VILLAGER
+#        - WANDERING_TRADER
+#        - ENDER_DRAGON
+#        - WITHER
+#        - RAVAGER
+#        - PHANTOM
+#        - BABY_ZOMBIE
+#
+#      babyMobsInheritAdultSetting:
+#               | This setting applies to entities
+#               | which are listed in 'allowed-entities-list'
+#          true | If you add an entity to the list,
+#               | the setting will apply to the baby variant
+#               | as well as the adult. For example: ZOMBIE
+#               | would apply to both ZOMBIE and BABY_ZOMBIE.
+#         false | If you add an entity to the list,
+#               | this setting will check for any BABY_ variant
+#               | entity listed below, and will not apply the
+#               | setting unless it's specifically listed.
+#               | For example: listing ZOMBIE and not BABY_ZOMBIE
+#               | will only apply this list to the adult ZOMBIE.
 # ||-------------------------------------------------------||
 allowed-entities-list:
   mode: 'BLACKLIST'
@@ -203,6 +227,13 @@ allowed-entities-list:
     - RAVAGER
     - PHANTOM
     - BABY_ZOMBIE
+#    - BABY_HUSK
+#    - BABY_DROWNED
+#    - BABY_ZOMBIE_VILLAGER
+#    - BABY_PIGLIN
+#    - BABY_HOGLIN
+#    - BABY_ZOMBIFIED_PIGLIN
+  babyMobsInheritAdultSetting: true
 
 
 # ||-------------------------------------------------------||
@@ -246,15 +277,8 @@ level-inheritance: true
 #         false | Disable Distance
 #               | from Spawn Levelling (Default)
 #        variance:
-#          enabled:
-#             true | Enable the Variance System (Default)
-#            false | Disable the Variance System
-#          min:
-#              | The minimum amount of
-#              | variance when levelling a mob
-#          max:
-#              | The maximum amount of
-#              | variance when levelling a mob
+#              | Add a +/- variance to any mob
+#              | spawned using this system
 #          increase-level-distance:
 #              | Mob level will increase by one
 #              | for every X blocks from spawn
@@ -434,9 +458,9 @@ fine-tuning:
     item-drop: 3
     xp-drop: 2
 
-    custom_mob_level:
 # Below represents an example of a customized PIGLIN
 # Un-comment it to take effect!
+    custom_mob_level:
 #      PIGLIN:
 #        max-health: 30
 #        movement-speed: 0.2
@@ -764,13 +788,29 @@ ensure-mobs-are-levelled-on-chunk-load: true
 #     spam, and terminal config errors if not used as instructed.
 #     The update task runs ASYNC and only once at server
 #     startup, and should not affect performance.
+#     Debug-Misc is a powerful tool to get to the bottom of any
+#     potential issues LevelledMobs might have producing the
+#     mob you intend. It is not recommended that you enable
+#     any of these settings without coordinating with the
+#     LevelledMobs developers and support, as they will
+#     typically flood your console with messages.
+#
+#            'APPLY_LEVEL_SUCCESS' | Reports when level applied successfully
+#               'APPLY_LEVEL_FAIL' | Reports when level was not applied
+#                   'ENTITY_SPAWN' | Reports when an entity has been spawned
+#     'RANGED_DAMAGE_MODIFICATION' | Reports when LM adjusts ranged damage output
+#                    'ENTITY_TAME' | Reports when an entity has been tamed
+#        'SET_LEVELLED_ITEM_DROPS' | Reports when LM adjusts item or experience drops
+#                 'UPDATE_NAMETAG' | Reports when the nametag of an entity was updated
+#                   'CUSTOM-DROPS' | Reports all CustomDrops related debug options
+#          'ENTITY_TRANSFORM_FAIL' | Reports when an entity, when transformed, did not receive a level
+#                    'ENTITY_MISC' | Reports when an unlevelled baby mob has aged and gets levelled
+#     
 # ||-------------------------------------------------------||
 use-update-checker: true
 debug-entity-damage: false
-debug-show-spawned-mobs: false
-debug-show-mobs-not-levellable: false
 debug-misc: [ ]
-file-version: 28
+file-version: 29
 
 # And that's the end of the file! Congratulations!
 #
