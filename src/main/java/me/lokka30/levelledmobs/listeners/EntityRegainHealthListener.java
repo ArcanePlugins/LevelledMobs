@@ -8,6 +8,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
 
 /**
+ * TODO Describe...
+ *
  * @author konsolas
  * @contributors lokka30
  */

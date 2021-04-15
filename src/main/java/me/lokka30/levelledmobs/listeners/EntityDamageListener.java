@@ -16,6 +16,8 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.jetbrains.annotations.NotNull;
 
 /**
+ * TODO Describe...
+ *
  * @author lokka30
  */
 public class EntityDamageListener implements Listener {

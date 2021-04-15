@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * TODO Describe...
+ *
  * @author stumper66
  */
 public class CustomDropInstance {

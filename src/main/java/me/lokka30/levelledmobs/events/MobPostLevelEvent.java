@@ -9,6 +9,11 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.HashSet;
 
+/**
+ * TODO Describe...
+ *
+ * @author lokka30
+ */
 public class MobPostLevelEvent extends Event {
 
     private static final HandlerList HANDLERS = new HandlerList();

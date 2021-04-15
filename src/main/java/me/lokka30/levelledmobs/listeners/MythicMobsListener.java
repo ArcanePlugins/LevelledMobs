@@ -9,6 +9,11 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.persistence.PersistentDataType;
 
+/**
+ * TODO Describe...
+ *
+ * @author stumper66
+ */
 public class MythicMobsListener implements Listener {
 
     private final LevelledMobs main;

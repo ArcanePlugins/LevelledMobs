@@ -5,6 +5,8 @@ import org.bukkit.inventory.ItemFlag;
 import java.util.List;
 
 /**
+ * TODO Describe...
+ *
  * @author stumper66
  */
 public class CustomDropsDefaults {

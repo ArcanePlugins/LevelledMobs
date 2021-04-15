@@ -10,6 +10,8 @@ import org.bukkit.event.HandlerList;
 import java.util.List;
 
 /**
+ * TODO Describe...
+ *
  * @author lokka30
  * @contributors stumper66
  */

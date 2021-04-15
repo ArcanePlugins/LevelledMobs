@@ -20,6 +20,8 @@ import java.util.UUID;
 
 /**
  * This class is used for debugging the plugin.
+ * When an entity is punched, a player with permission
+ * will receive a bunch of data about the mob.
  *
  * @author lokka30
  * @contributors stumper66

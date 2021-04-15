@@ -16,8 +16,11 @@ import org.bukkit.entity.Player;
 import java.util.*;
 
 /**
+ * TODO Describe...
+ *
  * @author stumper66
  * @contributors lokka30
+ * @since v2.0.0
  */
 public class SummonSubcommand implements Subcommand {
 

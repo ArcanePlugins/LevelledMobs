@@ -12,6 +12,12 @@ import org.bukkit.event.world.ChunkLoadEvent;
 import java.util.Collections;
 import java.util.HashSet;
 
+/**
+ * TODO Describe...
+ *
+ * @author stumper66
+ * @contributors lokka30
+ */
 public class ChunkLoadListener implements Listener {
     private final LevelledMobs main;
 

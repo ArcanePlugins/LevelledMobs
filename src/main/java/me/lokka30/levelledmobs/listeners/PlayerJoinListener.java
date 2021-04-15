@@ -11,6 +11,8 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import java.util.List;
 
 /**
+ * TODO Describe...
+ *
  * @author lokka30
  */
 public class PlayerJoinListener implements Listener {

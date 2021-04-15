@@ -19,6 +19,10 @@ import java.util.Collections;
 import java.util.HashSet;
 
 /**
+ * This class handles mob spawning on the server,
+ * forming the starting point of the 'levelling'
+ * process
+ *
  * @author lokka30
  * @contributors stumper66
  */

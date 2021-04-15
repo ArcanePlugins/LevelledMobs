@@ -9,6 +9,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityTargetEvent;
 
 /**
+ * TODO Describe...
+ *
  * @author stumper66
  * @contributors lokka30
  */

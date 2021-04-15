@@ -40,8 +40,12 @@ import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
+ * TODO Describe...
+ *
  * @author lokka30
- * @contributors stumper66, Eyrian2010, iCodinqs, deiphiz, CoolBoy, Esophose, 7smile7, Shevchik, Hugo5551, limzikiki
+ * @contributors stumper66, Eyrian2010, iCodinqs, deiphiz,
+ * CoolBoy, Esophose, 7smile7, Shevchik, Hugo5551,
+ * limzikiki
  */
 public class LevelManager {
 
@@ -950,6 +954,11 @@ public class LevelManager {
     }
 }
 
+/**
+ * TODO Describe...
+ *
+ * @author limzikiki
+ */
 class CustomMobCommand {
     public final String commandName, command;
     public final int minLevel, maxLevel;

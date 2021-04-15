@@ -8,6 +8,8 @@ import org.bukkit.configuration.ConfigurationSection;
 import java.util.*;
 
 /**
+ * TODO Describe...
+ *
  * @author lokka30
  * @contributors stumper66
  */

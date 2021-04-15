@@ -12,6 +12,8 @@ import javax.annotation.Nullable;
 import java.util.Objects;
 
 /**
+ * TODO Describe...
+ *
  * @author lokka30
  */
 public class MobDataManager {

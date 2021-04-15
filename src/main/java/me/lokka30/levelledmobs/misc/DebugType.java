@@ -1,5 +1,11 @@
 package me.lokka30.levelledmobs.misc;
 
+/**
+ * TODO Describe...
+ *
+ * @author lokka30
+ * @contributors stumper66, UltimaOath, limzikiki
+ */
 public enum DebugType {
     /**
      * Logged when LM is checking if a mob

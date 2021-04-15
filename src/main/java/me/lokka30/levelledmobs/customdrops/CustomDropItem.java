@@ -11,6 +11,8 @@ import java.util.Set;
 import java.util.TreeSet;
 
 /**
+ * TODO Describe...
+ *
  * @author stumper66
  */
 public class CustomDropItem implements Cloneable {

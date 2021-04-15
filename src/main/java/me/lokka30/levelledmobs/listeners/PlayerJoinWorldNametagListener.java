@@ -15,6 +15,8 @@ import org.bukkit.event.player.PlayerTeleportEvent;
 import java.util.Collections;
 
 /**
+ * TODO Describe...
+ *
  * @author lokka30
  */
 public class PlayerJoinWorldNametagListener implements Listener {

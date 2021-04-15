@@ -1,6 +1,8 @@
 package me.lokka30.levelledmobs.misc;
 
 /**
+ * TODO Describe...
+ *
  * @author lokka30
  */
 public enum Addition {

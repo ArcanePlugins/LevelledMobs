@@ -27,6 +27,9 @@ import java.util.HashSet;
  * for LM itself AND other plugins to
  * apply and modify the main functions
  * of LevelledMobs.
+ *
+ * @author lokka30
+ * @contributors stumper66
  */
 public class LevelInterface {
 

@@ -1,13 +1,20 @@
 package me.lokka30.levelledmobs.rules;
 
+import me.lokka30.levelledmobs.misc.ModalList;
+
 import java.util.List;
 import java.util.Map;
 
+/**
+ * TODO Describe...
+ *
+ * @author stumper66
+ * @contributors lokka30
+ */
 public class RulesInfo {
     public boolean enabled;
     public List<String> entities;
-    public ListModeEnum allowedWorlds_Mode;
-    public List<String> allowedWorlds_List;
+    public ModalList allowedWorlds;
     public int levelMin;
     public int levelMax;
     public int maxRandomVariance;
@@ -22,6 +29,5 @@ public class RulesInfo {
     public List<String> overridenEntities;
     public List<String> noDropMultiplerEntities;
     public AttributesMultipliers multipliers;
-    public ListModeEnum allowedEntities_Mode;
-    public List<String> allowedEntities_List;
+    public ModalList allowedEntities;
 }

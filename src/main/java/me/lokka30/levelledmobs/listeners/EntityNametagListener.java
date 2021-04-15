@@ -10,6 +10,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 
 /**
+ * TODO Describe...
+ *
  * @author lokka30
  */
 public class EntityNametagListener implements Listener {

@@ -10,6 +10,11 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.HashSet;
 
+/**
+ * TODO Describe...
+ *
+ * @author lokka30
+ */
 public class MobPreLevelEvent extends Event implements Cancellable {
 
     private static final HandlerList HANDLERS = new HandlerList();

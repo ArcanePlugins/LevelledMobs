@@ -9,8 +9,10 @@ import java.io.File;
 import java.io.FileInputStream;
 
 /**
+ * TODO Describe...
+ *
  * @author lokka30
- * @contributors stumper66
+ * @contributors stumper66, limzikiki
  */
 public final class FileLoader {
 

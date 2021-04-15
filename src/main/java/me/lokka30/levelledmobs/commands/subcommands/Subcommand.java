@@ -6,6 +6,8 @@ import org.bukkit.command.CommandSender;
 import java.util.List;
 
 /**
+ * TODO Describe...
+ *
  * @author lokka30
  */
 public interface Subcommand {
