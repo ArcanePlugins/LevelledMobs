@@ -233,8 +233,23 @@ public class LevelInterface {
      * @param livingEntity the entity to generate a level for
      * @return a level for the entity
      */
-    public int generateLevel(@NotNull LivingEntity livingEntity) {
+    public int generateLevel(@NotNull final LivingEntity livingEntity) {
         return main.levelManager.generateLevel(livingEntity);
+    }
+
+    /**
+     * This method generates a level for the mob. It utilises the levelling mode
+     * specified by the administrator through the settings.yml configuration.
+     *
+     * Thread-safety intended, but not tested.
+     *
+     * @param livingEntity the entity to generate a level for
+     * @param minLevel the minimum level to be used for the mob
+     * @param maxLevel the maximum level to be used for the mob
+     * @return a level for the entity
+     */
+    public int generateLevel(@NotNull final LivingEntity livingEntity, final int minLevel, final int maxLevel) {
+        return main.levelManager.generateLevel(livingEntity, minLevel, maxLevel);
     }
 
     /**

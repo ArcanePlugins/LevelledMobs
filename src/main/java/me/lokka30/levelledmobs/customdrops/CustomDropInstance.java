@@ -7,7 +7,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * TODO Describe...
+ * Holds a mob or group instance and associates it
+ * with a list of custom drop items.
+ * This is where the override for a mob / group is set
  *
  * @author stumper66
  */

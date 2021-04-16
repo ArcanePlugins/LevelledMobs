@@ -5,7 +5,8 @@ import org.bukkit.inventory.ItemFlag;
 import java.util.List;
 
 /**
- * TODO Describe...
+ * Holds all default values for either all custom
+ * drop items
  *
  * @author stumper66
  */

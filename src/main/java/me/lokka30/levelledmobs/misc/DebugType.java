@@ -72,5 +72,11 @@ public enum DebugType {
      * When custom commands
      * are being executed
      */
-    CUSTOM_COMMANDS
+    CUSTOM_COMMANDS,
+
+    /**
+     * Logged when LM is processing a mob
+     * from a creature spawner
+     **/
+    MOB_SPAWNER
 }

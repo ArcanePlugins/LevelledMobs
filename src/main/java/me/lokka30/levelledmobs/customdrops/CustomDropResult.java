@@ -1,7 +1,8 @@
 package me.lokka30.levelledmobs.customdrops;
 
 /**
- * TODO Describe...
+ * Used internally to determine if the mob's
+ * vanilla items should be removed or not
  *
  * @author stumper66
  */

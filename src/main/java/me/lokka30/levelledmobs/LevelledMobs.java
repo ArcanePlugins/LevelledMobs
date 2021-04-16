@@ -1,6 +1,7 @@
 package me.lokka30.levelledmobs;
 
 import me.lokka30.levelledmobs.customdrops.CustomDropsHandler;
+import me.lokka30.levelledmobs.listeners.BlockPlaceListener;
 import me.lokka30.levelledmobs.listeners.ChunkLoadListener;
 import me.lokka30.levelledmobs.listeners.EntityDamageDebugListener;
 import me.lokka30.levelledmobs.managers.ExternalCompatibilityManager;
@@ -30,6 +31,7 @@ public class LevelledMobs extends JavaPlugin {
     public WorldGuardManager worldGuardManager;
     public CustomDropsHandler customDropsHandler;
     public ChunkLoadListener chunkLoadListener;
+    public BlockPlaceListener blockPlaceListener;
     public final Companion companion = new Companion(this);
 
     // Configuration

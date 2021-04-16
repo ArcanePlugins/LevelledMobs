@@ -111,11 +111,19 @@ public class LevelManager {
 
     // this is now the main entry point that determines the level for all criteria
     public int generateLevel(final LivingEntity livingEntity) {
+        return generateLevel(livingEntity, -1, -1);
+    }
+
+    public int generateLevel(final LivingEntity livingEntity, final int minLevel_Pre, final int maxLevel_Pre) {
+        int minLevel = minLevel_Pre;
+        int maxLevel = maxLevel_Pre;
 
         final boolean isAdultEntity = !Utils.isBabyMob(livingEntity);
-        final int[] levels = getMinAndMaxLevels(livingEntity, livingEntity.getType(), isAdultEntity, livingEntity.getWorld().getName());
-        final int minLevel = levels[0];
-        final int maxLevel = levels[1];
+        if (minLevel == -1 || maxLevel == -1) {
+            final int[] levels = getMinAndMaxLevels(livingEntity, livingEntity.getType(), isAdultEntity, livingEntity.getWorld().getName());
+            if (minLevel == -1) minLevel = levels[0];
+            if (maxLevel == -1) maxLevel = levels[1];
+        }
 
         // system 2: y distance levelling
         if (main.settingsCfg.getBoolean("y-distance-levelling.active")) {

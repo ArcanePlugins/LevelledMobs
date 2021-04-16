@@ -11,7 +11,8 @@ import java.util.Set;
 import java.util.TreeSet;
 
 /**
- * TODO Describe...
+ * This holds all the attributes set for a
+ * custom drop item
  *
  * @author stumper66
  */

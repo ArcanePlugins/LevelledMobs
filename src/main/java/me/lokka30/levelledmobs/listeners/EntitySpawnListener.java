@@ -5,9 +5,8 @@ import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.misc.DebugType;
 import me.lokka30.levelledmobs.misc.ModalList;
 import me.lokka30.levelledmobs.misc.Utils;
-import org.bukkit.entity.Entity;
+import org.bukkit.block.CreatureSpawner;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -35,51 +34,48 @@ public class EntitySpawnListener implements Listener {
     }
 
     /**
-     * This listener handles death nametags
-     *
-     * @param event PlayerDeathEvent
-     */
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
-    public void onPlayerDeath(final PlayerDeathEvent event) {
-        if (event.getDeathMessage() == null) return;
-
-        String deathNametag = main.settingsCfg.getString("creature-death-nametag", "&8[&7Level %level%&8 | &f%displayname%&8]");
-        if (Utils.isNullOrEmpty(deathNametag))
-            return; // if they want retain the stock message they are configure it with an empty string
-
-        final EntityDamageEvent entityDamageEvent = event.getEntity().getLastDamageCause();
-        if (entityDamageEvent == null || entityDamageEvent.isCancelled() || !(entityDamageEvent instanceof EntityDamageByEntityEvent)) {
-            return;
-        }
-
-        Entity damager = ((EntityDamageByEntityEvent) entityDamageEvent).getDamager();
-        LivingEntity killer;
-
-        if (damager instanceof Projectile) {
-            killer = (LivingEntity) ((Projectile) damager).getShooter();
-        } else if (!(damager instanceof LivingEntity)) {
-            return;
-        } else {
-            killer = (LivingEntity) damager;
-        }
-
-        if (killer == null) return;
-        if (!main.levelInterface.isLevelled(killer)) return;
-
-        event.setDeathMessage(Utils.replaceEx(event.getDeathMessage(), killer.getName(), main.levelManager.getNametag(killer, true)));
-    }
-
-    /**
      * This listens for entities that spawn in the server
      *
      * @param event EntitySpawnEvent
      */
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
-    public void onEntitySpawn(final EntitySpawnEvent event) {
+    public void onSpawnerSpawn(final SpawnerSpawnEvent event) {
+        if (!(event.getEntity() instanceof LivingEntity)) return;
 
+        final CreatureSpawner cs = event.getSpawner();
+        final LivingEntity livingEntity = (LivingEntity) event.getEntity();
+        if (!cs.getPersistentDataContainer().has(main.blockPlaceListener.keySpawner, PersistentDataType.INTEGER)){
+            Utils.debugLog(main, DebugType.MOB_SPAWNER, "Spawned mob from vanilla spawner: " + event.getEntityType());
+            preprocessMob(livingEntity, event);
+            return;
+        }
+
+        // mob was spawned from a custom LM spawner
+        final Integer minLevel = cs.getPersistentDataContainer().get(main.blockPlaceListener.keySpawner_MinLevel, PersistentDataType.INTEGER);
+        final Integer maxLevel = cs.getPersistentDataContainer().get(main.blockPlaceListener.keySpawner_MaxLevel, PersistentDataType.INTEGER);
+        final int useMinLevel = minLevel == null ? -1 : minLevel;
+        final int useMaxLevel = maxLevel == null ? -1 : maxLevel;
+        final int generatedLevel = main.levelInterface.generateLevel(livingEntity, useMinLevel, useMaxLevel);
+
+        Utils.debugLog(main, DebugType.MOB_SPAWNER, String.format(
+                "Spawned mob from LM spawner: %s, minLevel: %s, maxLevel: %s, generatedLevel: %s",
+                event.getEntityType(), useMinLevel, useMaxLevel, generatedLevel));
+
+        main.levelInterface.applyLevelToMob(livingEntity, generatedLevel,
+                false, true, new HashSet<>(Collections.singletonList(LevelInterface.AdditionalLevelInformation.NOT_APPLICABLE)));
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
+    public void onEntitySpawn(final EntitySpawnEvent event) {
         // Must be a LivingEntity.
         if (!(event.getEntity() instanceof LivingEntity)) return;
-        final LivingEntity livingEntity = (LivingEntity) event.getEntity();
+        if (event instanceof CreatureSpawnEvent && ((CreatureSpawnEvent)event).getSpawnReason().equals(CreatureSpawnEvent.SpawnReason.SPAWNER))
+            return;
+
+        preprocessMob((LivingEntity) event.getEntity(), event);
+    }
+
+    private void preprocessMob(@NotNull final LivingEntity livingEntity, @NotNull final EntitySpawnEvent event){
         final LevelInterface.LevellableState levellableState = getLevellableState(event);
         if (levellableState == LevelInterface.LevellableState.ALLOWED) {
             main.levelInterface.applyLevelToMob(livingEntity, main.levelInterface.generateLevel(livingEntity),
@@ -112,6 +108,10 @@ public class EntitySpawnListener implements Listener {
 
         if (event instanceof CreatureSpawnEvent) {
             CreatureSpawnEvent creatureSpawnEvent = (CreatureSpawnEvent) event;
+
+            // the mob gets processed via SpawnerSpawnEvent
+            if (((CreatureSpawnEvent) event).getSpawnReason().equals(CreatureSpawnEvent.SpawnReason.SPAWNER))
+                return LevelInterface.LevellableState.DENIED_OTHER;
 
             Utils.debugLog(main, DebugType.ENTITY_SPAWN, "instanceof CreatureSpawnListener: " + event.getEntityType() + ", with spawnReason " + creatureSpawnEvent.getSpawnReason() + ".");
 

@@ -1,5 +1,14 @@
 # Changelog
 
+## v2.6.0 b377
+
+### Changelog:
+
+* Added mob spawners.  Use with command /lm spawner
+* Added debug type: MOB_SPAWNER
+
+***
+
 ***
 
 ## v2.5.0 b372

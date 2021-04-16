@@ -182,10 +182,29 @@ command:
         usage:
           - '%prefix% Usage: &b/%label% kill near <radius>'
 
+#
+# |||||||||||||||||||||||||||||||||||||||||||||||||||||
+# ||  Section 05 - Spawner Command Messages
+# |||||||||||||||||||||||||||||||||||||||||||||||||||||
+#
+
+    spawner:
+      usage:
+        - '%prefix% Usage: &b%label%&7 spawner &b/minlevel&7 1 &b/maxlevel&7 10 &b/name&7 "My customized LM spawner" &b/customDropsId&7 Id1'
+      no-value:
+        - '%prefix% No value was specified for: &b%keyname%&7'
+      invalid-value:
+        - '%prefix% Invalid value for &b%keyname%&7, must be a number'
+      inventory-full:
+        - '%prefix% &4Your inventory is full!'
+      spawner-give-message:
+        - '%prefix% Gave you a LM spawner, minLevel: &b%minlevel%&7, maxLevel: &b%maxlevel%&7'
+      spawner-give-message-console:
+        - '%prefix% Gave &b%playername%&7 a LM spawner, minLevel &b%minlevel%&7, maxLevel: &b%maxlevel%&7'
 
 #
 # |||||||||||||||||||||||||||||||||||||||||||||||||||||
-# ||  Section 05 - System Command Messages
+# ||  Section 06 - System Command Messages
 # |||||||||||||||||||||||||||||||||||||||||||||||||||||
 #
     reload:
@@ -217,7 +236,7 @@ command:
 
 #
 # |||||||||||||||||||||||||||||||||||||||||||||||||||||
-# ||  Section 06 - Other Messages
+# ||  Section 07 - Other Messages
 # |||||||||||||||||||||||||||||||||||||||||||||||||||||
 #
 other:

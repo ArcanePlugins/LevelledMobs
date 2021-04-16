@@ -31,7 +31,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * TODO Describe...
+ * The main class that holds useful functions for
+ * parsing, instantizing and more of custom drop items
  *
  * @author stumper66
  */

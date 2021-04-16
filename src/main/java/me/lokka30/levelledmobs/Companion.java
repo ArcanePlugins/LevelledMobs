@@ -153,6 +153,7 @@ public class Companion {
         main.levelManager = new LevelManager(main);
         main.levelManager.entitySpawnListener = new EntitySpawnListener(main); // we're saving this reference so the summon command has access to it
         main.entityDamageDebugListener = new EntityDamageDebugListener(main);
+        main.blockPlaceListener = new BlockPlaceListener(main);
 
         if (main.settingsCfg.getBoolean("debug-entity-damage")) {
             // we'll load and unload this listener based on the above setting when reloading
@@ -170,6 +171,8 @@ public class Companion {
         pluginManager.registerEvents(new EntityTargetListener(main), main);
         pluginManager.registerEvents(new PlayerJoinListener(main), main);
         pluginManager.registerEvents(new EntityTameListener(main), main);
+        pluginManager.registerEvents(new PlayerDeathListener(main), main);
+        pluginManager.registerEvents(main.blockPlaceListener, main);
         main.chunkLoadListener = new ChunkLoadListener(main);
 
         if (ExternalCompatibilityManager.hasMythicMobsInstalled())

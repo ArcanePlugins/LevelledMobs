@@ -9,7 +9,10 @@ import java.util.Map;
 import java.util.TreeMap;
 
 /**
- * TODO Describe...
+ * Used to store information when a custom drop item
+ * is being requested either during mob spawn in for
+ * equipped items or after mob death to get the items
+ * the mob will potentially drop
  *
  * @author stumper66
  */

@@ -7,7 +7,9 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * TODO Describe...
+ * Holds lists of entity types that are only present in
+ * minecraft 1.16 and newer.  Must be a separate class
+ * to maintain compatibility with older versions
  *
  * @author stumper66
  */
