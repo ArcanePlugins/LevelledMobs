@@ -11,6 +11,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.*;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 
@@ -33,13 +34,22 @@ public class EntitySpawnListener implements Listener {
         this.main = main;
     }
 
-    /**
-     * This listens for entities that spawn in the server
-     *
-     * @param event EntitySpawnEvent
-     */
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
-    public void onSpawnerSpawn(final SpawnerSpawnEvent event) {
+    public void onEntitySpawn(final EntitySpawnEvent event) {
+        // Must be a LivingEntity.
+        if (!(event.getEntity() instanceof LivingEntity)) return;
+
+        if (event instanceof SpawnerSpawnEvent) {
+            onSpawnerSpawn((SpawnerSpawnEvent) event);
+            return;
+        }
+        if (event instanceof CreatureSpawnEvent && ((CreatureSpawnEvent)event).getSpawnReason().equals(CreatureSpawnEvent.SpawnReason.SPAWNER))
+            return;
+
+        preprocessMob((LivingEntity) event.getEntity(), event);
+    }
+
+    private void onSpawnerSpawn(final SpawnerSpawnEvent event) {
         if (!(event.getEntity() instanceof LivingEntity)) return;
 
         final CreatureSpawner cs = event.getSpawner();
@@ -65,17 +75,8 @@ public class EntitySpawnListener implements Listener {
                 false, true, new HashSet<>(Collections.singletonList(LevelInterface.AdditionalLevelInformation.NOT_APPLICABLE)));
     }
 
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
-    public void onEntitySpawn(final EntitySpawnEvent event) {
-        // Must be a LivingEntity.
-        if (!(event.getEntity() instanceof LivingEntity)) return;
-        if (event instanceof CreatureSpawnEvent && ((CreatureSpawnEvent)event).getSpawnReason().equals(CreatureSpawnEvent.SpawnReason.SPAWNER))
-            return;
-
-        preprocessMob((LivingEntity) event.getEntity(), event);
-    }
-
     private void preprocessMob(@NotNull final LivingEntity livingEntity, @NotNull final EntitySpawnEvent event){
+
         final LevelInterface.LevellableState levellableState = getLevellableState(event);
         if (levellableState == LevelInterface.LevellableState.ALLOWED) {
             main.levelInterface.applyLevelToMob(livingEntity, main.levelInterface.generateLevel(livingEntity),

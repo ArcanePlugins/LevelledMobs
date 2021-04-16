@@ -58,7 +58,6 @@ public class SpawnerSubCommand implements Subcommand{
             }
             else if (customNameStartFlag > -1 && !arg.startsWith("/") && arg.endsWith("\""))
                 customNameEndFlag = i;
-            //Utils.logger.info("arg" + i + " '" + arg + "'");
         }
 
         if (minLevelFlag > -1){
@@ -91,7 +90,14 @@ public class SpawnerSubCommand implements Subcommand{
             if (customName == null) return;
         }
 
-        if (minLevel == -1 || maxLevel == -1) return;
+        if (minLevel == -1 && maxLevel == -1) {
+            List<String> messages = main.messagesCfg.getStringList("command.levelledmobs.spawner.no-level-specified");
+            messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.getPrefix());
+            messages = Utils.replaceAllInList(messages, "%label%", label);
+            messages = Utils.colorizeAllInList(messages);
+            messages.forEach(sender::sendMessage);
+            return;
+        }
 
         generateSpawner(player, minLevel, maxLevel, null, customName, label);
     }
@@ -174,11 +180,7 @@ public class SpawnerSubCommand implements Subcommand{
         message = Utils.replaceAllInList(message, "%maxlevel%", String.valueOf(maxLevel));
         message = Utils.replaceAllInList(message, "%playername%", player.getDisplayName());
         message = Utils.colorizeAllInList(message);
-        Utils.logger.info(message.get(0));
-
-        //String message = String.format(" a LM spawner, minLevel: %s, maxLevel: %s", minLevel, maxLevel);
-        //player.sendMessage("gave you" + message);
-        //Utils.logger.info("gave " + player.getName() + message);
+        if (!message.isEmpty()) Utils.logger.info(message.get(0));
     }
 
     @Override

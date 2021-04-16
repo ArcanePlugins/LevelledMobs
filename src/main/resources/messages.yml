@@ -195,6 +195,8 @@ command:
         - '%prefix% No value was specified for: &b%keyname%&7'
       invalid-value:
         - '%prefix% Invalid value for &b%keyname%&7, must be a number'
+      no-level-specified:
+        - '%prefix% You must specify minLevel and/or maxLevel'
       inventory-full:
         - '%prefix% &4Your inventory is full!'
       spawner-give-message:
