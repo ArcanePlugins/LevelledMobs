@@ -1,11 +1,13 @@
 # Changelog
 
-## v2.6.0 b377
+## v2.6.0 b379
 
 ### Changelog:
 
 * Added mob spawners.  Use with command /lm spawner
+* Added a new section in messages.yml to support the new command
 * Added debug type: MOB_SPAWNER
+* Added customdrop attribute: droponlywhenkilledbyplayer
 
 ***
 

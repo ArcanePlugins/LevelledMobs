@@ -23,13 +23,16 @@ public class CustomDropProcessingInfo {
 
     public LivingEntity livingEntity;
     public int level;
-    public List<ItemStack> newDrops;
+    public int addition;
     public boolean isSpawner;
     public boolean equippedOnly;
     public boolean deathByFire;
-    public int addition;
+    public boolean wasKilledByPlayer;
     public boolean doNotMultiplyDrops;
     public boolean hasOverride;
+    public boolean hasCustomDropId;
+    public String customDropId;
+    public List<ItemStack> newDrops;
     @Nonnull
     final public Map<String, Integer> groupIDsDroppedAlready;
     //public List<CustomDropItem> combinedDrops;

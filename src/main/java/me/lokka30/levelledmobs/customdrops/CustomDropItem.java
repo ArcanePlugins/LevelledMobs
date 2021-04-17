@@ -26,6 +26,7 @@ public class CustomDropItem implements Cloneable {
     public double dropChance;
     public boolean noMultiplier;
     public boolean noSpawner;
+    public boolean dropOnlyWhenKilledByPlayer;
     public String groupId;
     public String customName;
     public List<String> lore;

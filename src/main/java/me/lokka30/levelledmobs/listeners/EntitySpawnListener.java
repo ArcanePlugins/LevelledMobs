@@ -5,14 +5,19 @@ import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.misc.DebugType;
 import me.lokka30.levelledmobs.misc.ModalList;
 import me.lokka30.levelledmobs.misc.Utils;
+import org.bukkit.*;
 import org.bukkit.block.CreatureSpawner;
+import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.*;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.BlockDataMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
@@ -61,18 +66,44 @@ public class EntitySpawnListener implements Listener {
         }
 
         // mob was spawned from a custom LM spawner
+        createParticleEffect(cs.getLocation().add(0, 1, 0));
         final Integer minLevel = cs.getPersistentDataContainer().get(main.blockPlaceListener.keySpawner_MinLevel, PersistentDataType.INTEGER);
         final Integer maxLevel = cs.getPersistentDataContainer().get(main.blockPlaceListener.keySpawner_MaxLevel, PersistentDataType.INTEGER);
         final int useMinLevel = minLevel == null ? -1 : minLevel;
         final int useMaxLevel = maxLevel == null ? -1 : maxLevel;
         final int generatedLevel = main.levelInterface.generateLevel(livingEntity, useMinLevel, useMaxLevel);
+        String customDropId = null;
+        if (cs.getPersistentDataContainer().has(main.blockPlaceListener.keySpawner_CustomDropId, PersistentDataType.STRING)){
+            customDropId = cs.getPersistentDataContainer().get(main.blockPlaceListener.keySpawner_CustomDropId, PersistentDataType.STRING);
+            if (!Utils.isNullOrEmpty(customDropId))
+                livingEntity.getPersistentDataContainer().set(main.blockPlaceListener.keySpawner_CustomDropId, PersistentDataType.STRING, customDropId);
+        }
 
         Utils.debugLog(main, DebugType.MOB_SPAWNER, String.format(
-                "Spawned mob from LM spawner: %s, minLevel: %s, maxLevel: %s, generatedLevel: %s",
-                event.getEntityType(), useMinLevel, useMaxLevel, generatedLevel));
+                "Spawned mob from LM spawner: %s, minLevel: %s, maxLevel: %s, generatedLevel: %s%s",
+                event.getEntityType(), useMinLevel, useMaxLevel, generatedLevel, (customDropId == null ? "" : ", dropid: " + customDropId)));
 
         main.levelInterface.applyLevelToMob(livingEntity, generatedLevel,
                 false, true, new HashSet<>(Collections.singletonList(LevelInterface.AdditionalLevelInformation.NOT_APPLICABLE)));
+    }
+
+    private void createParticleEffect(final Location location){
+        final World world = location.getWorld();
+        if (world == null) return;
+
+        final BukkitRunnable runnable = new BukkitRunnable() {
+            @Override
+            public void run() {
+                try {
+                    for (int i = 0; i < 10; i++) {
+                        world.spawnParticle(Particle.SOUL, location, 20, 0, 0, 0, 0.1);
+                        Thread.sleep(50);
+                    }
+                } catch (InterruptedException ignored) { }
+            }
+        };
+
+        runnable.run();
     }
 
     private void preprocessMob(@NotNull final LivingEntity livingEntity, @NotNull final EntitySpawnEvent event){

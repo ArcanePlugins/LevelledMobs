@@ -41,6 +41,7 @@ public class CustomDropsHandler {
 
     public final TreeMap<EntityType, CustomDropInstance> customDropsitems;
     public final TreeMap<CustomDropsUniversalGroups, CustomDropInstance> customDropsitems_groups;
+    public final TreeMap<String, CustomDropInstance> customDropIDs;
     public HashSet<EntityType> groups_HostileMobs;
     public HashSet<EntityType> groups_AquaticMobs;
     public HashSet<EntityType> groups_PassiveMobs;
@@ -51,6 +52,7 @@ public class CustomDropsHandler {
         this.instance = instance;
         this.customDropsitems = new TreeMap<>();
         this.customDropsitems_groups = new TreeMap<>();
+        this.customDropIDs = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
         this.defaults = new CustomDropsDefaults();
 
         buildUniversalGroups();
@@ -76,8 +78,13 @@ public class CustomDropsHandler {
         processingInfo.isSpawner = isSpawner;
         processingInfo.level = level;
         processingInfo.newDrops = drops;
+        processingInfo.wasKilledByPlayer = livingEntity.getKiller() != null;
         processingInfo.addition = BigDecimal.valueOf(instance.mobDataManager.getAdditionsForLevel(livingEntity, Addition.CUSTOM_ITEM_DROP, level))
                 .setScale(0, RoundingMode.HALF_DOWN).intValueExact(); // truncate double to int
+        if (equippedOnly && livingEntity.getPersistentDataContainer().has(instance.blockPlaceListener.keySpawner_CustomDropId, PersistentDataType.STRING)){
+            processingInfo.customDropId = livingEntity.getPersistentDataContainer().get(instance.blockPlaceListener.keySpawner_CustomDropId, PersistentDataType.STRING);
+            processingInfo.hasCustomDropId = !Utils.isNullOrEmpty(processingInfo.customDropId);
+        }
 
         processingInfo.doNotMultiplyDrops =
                 (Utils.isBabyMob(livingEntity) && instance.configUtils.noDropMultiplierEntities.contains("BABY_" + livingEntity.getType())) ||
@@ -182,17 +189,32 @@ public class CustomDropsHandler {
 
     private void getCustomItemsFromDropInstance(final CustomDropProcessingInfo info){
 
-        for (final int itemPriority : info.prioritizedDrops.keySet()){
-            final List<CustomDropItem> items = info.prioritizedDrops.get(itemPriority);
+        Utils.logger.info("equipped only: " + info.equippedOnly + ", hascustomdropid: " + info.hasCustomDropId);
 
-            for (final CustomDropItem drop : items)
-                getDropsFromCustomDropItem(info, drop);
+        if (info.equippedOnly && info.hasCustomDropId){
+            if (!this.customDropIDs.containsKey(info.customDropId)){
+                Utils.logger.warning("custom drop id '" + info.customDropId + "' was not found in customdrops");
+                return;
+            }
+
+            final CustomDropInstance instance = this.customDropIDs.get(info.customDropId);
+            for (final CustomDropItem item : instance.customItems)
+                getDropsFromCustomDropItem(info, item);
+        }
+        else {
+            for (final int itemPriority : info.prioritizedDrops.keySet()) {
+                final List<CustomDropItem> items = info.prioritizedDrops.get(itemPriority);
+
+                for (final CustomDropItem drop : items)
+                    getDropsFromCustomDropItem(info, drop);
+            }
         }
     }
 
     private void getDropsFromCustomDropItem(final CustomDropProcessingInfo info, final CustomDropItem drop){
 
         if (info.equippedOnly && drop.equippedSpawnChance <= 0.0) return;
+        if (!info.equippedOnly && drop.dropOnlyWhenKilledByPlayer && !info.wasKilledByPlayer) return;
 
         if (drop.excludedMobs.contains(info.livingEntity.getName())){
             if (!info.equippedOnly && instance.settingsCfg.getStringList("debug-misc").contains("custom-drops")) {
@@ -411,8 +433,10 @@ public class CustomDropsHandler {
                 for (final String itemGroupName : itemGroups.keySet()) {
                     final CustomDropInstance dropInstance = new CustomDropInstance(EntityType.AREA_EFFECT_CLOUD); // entity type doesn't matter
                     parseCustomDrops2((List<?>) itemGroups.get(itemGroupName), dropInstance);
-                    if (!dropInstance.customItems.isEmpty())
+                    if (!dropInstance.customItems.isEmpty()) {
                         customItemGroups.put(itemGroupName, dropInstance);
+                        this.customDropIDs.put(itemGroupName, dropInstance);
+                    }
                 }
             }
         }
@@ -575,6 +599,7 @@ public class CustomDropsHandler {
         item.noMultiplier = itemInfoConfiguration.getBoolean("nomultiplier", this.defaults.noMultiplier);
         item.noSpawner = itemInfoConfiguration.getBoolean("nospawner", this.defaults.noSpawner);
         item.customModelDataId = itemInfoConfiguration.getInt("custommodeldata", this.defaults.customModelData);
+        item.dropOnlyWhenKilledByPlayer = itemInfoConfiguration.getBoolean("droponlywhenkilledbyplayer", this.defaults.dropOnlyWhenKilledByPlayer);
 
         if (!Utils.isNullOrEmpty(itemInfoConfiguration.getString("override")))
             dropInstance.overrideStockDrops = itemInfoConfiguration.getBoolean("override");

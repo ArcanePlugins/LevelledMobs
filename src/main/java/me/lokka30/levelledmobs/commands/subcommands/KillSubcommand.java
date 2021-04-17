@@ -8,10 +8,7 @@ import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.*;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 /**
  * TODO Describe...
@@ -91,7 +88,7 @@ public class KillSubcommand implements Subcommand {
                         return;
                     }
 
-                    if (args.length == 3) {
+                    if (args.length == 3 || args.length == 4) {
                         if (sender instanceof Player) {
                             Player player = (Player) sender;
 
@@ -182,36 +179,55 @@ public class KillSubcommand implements Subcommand {
     @Override
     public List<String> parseTabCompletions(LevelledMobs main, CommandSender sender, String[] args) {
 
+        boolean containsNoDrops = false;
+
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < args.length; i++){
+            if ("/nodrops".equalsIgnoreCase(args[i])) {
+                containsNoDrops = true;
+                break;
+            }
+
+//            if (i > 0) sb.append(", ");
+//            sb.append(i);
+//            sb.append(" '");
+//            sb.append(args[i]);
+//            sb.append("'");
+        }
+        //Utils.logger.info(sb.toString());
+
         if (args.length == 2) {
             return Arrays.asList("all", "near");
         }
 
-        if (args.length == 3 || args.length == 4) {
-            if (args[1].equalsIgnoreCase("all")) {
-                if (sender.hasPermission("levelledmobs.command.kill.all")) {
-                    List<String> worlds = new ArrayList<>();
+        if (args[1].equalsIgnoreCase("all") && (args.length == 3 || args.length == 4)) {
+            if (sender.hasPermission("levelledmobs.command.kill.all")) {
+                List<String> worlds = new LinkedList<>();
 
-                    worlds.add("/nodrops");
-                    if (args.length == 3 ) {
-                        for (World world : Bukkit.getWorlds()) {
-                            worlds.add("*");
-                            if (ModalList.isEnabledInList(main.settingsCfg, "allowed-worlds-list", world.getName())) {
-                                worlds.add(world.getName());
-                            }
+                if (!containsNoDrops) worlds.add("/nodrops");
+                if (args.length == 3 ) {
+                    for (World world : Bukkit.getWorlds()) {
+                        worlds.add("*");
+                        if (ModalList.isEnabledInList(main.settingsCfg, "allowed-worlds-list", world.getName())) {
+                            worlds.add(world.getName());
                         }
                     }
+                }
 
-                    return worlds;
-                }
-            } else if (args[1].equalsIgnoreCase("near")) {
-                if (sender.hasPermission("levelledmobs.command.kill.near")) {
-                    return Utils.oneToNine;
-                }
+                return worlds;
+            }
+        }
+        if (args[1].equalsIgnoreCase("near") && args.length == 3) {
+            if (sender.hasPermission("levelledmobs.command.kill.near")) {
+                return Utils.oneToNine;
             }
         }
 
+        if (!containsNoDrops)
+            return Collections.singletonList("/nodrops");
+
         // Nothing to suggest.
-        return null;
+        return Collections.singletonList("");
     }
 
     private void sendUsageMsg(final CommandSender sender, final String label, final LevelledMobs instance) {

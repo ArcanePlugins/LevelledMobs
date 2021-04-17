@@ -1,6 +1,7 @@
 package me.lokka30.levelledmobs.listeners;
 
 import me.lokka30.levelledmobs.LevelledMobs;
+import me.lokka30.levelledmobs.misc.Utils;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.block.Block;
@@ -14,6 +15,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 
+import java.lang.reflect.UndeclaredThrowableException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -66,7 +68,10 @@ public class BlockPlaceListener implements Listener {
                 if (sourcePdc.has(key, PersistentDataType.STRING)){
                     final String valueStr = sourcePdc.get(key, PersistentDataType.STRING);
                     if (valueStr != null) targetPdc.set(key, PersistentDataType.STRING, valueStr);
+                    Utils.logger.info("added key " + key.getKey() + ", is null: " + (valueStr == null));
                 }
+                else
+                    Utils.logger.info("key not present: " + key.getKey());
             }
         }
 

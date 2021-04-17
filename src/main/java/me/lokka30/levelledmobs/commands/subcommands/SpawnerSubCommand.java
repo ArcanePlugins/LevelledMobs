@@ -43,7 +43,9 @@ public class SpawnerSubCommand implements Subcommand{
         int customNameFlag = -1;
         int customNameStartFlag = -1;
         int customNameEndFlag = -1;
+        int customDropIdFlag = -1;
         String customName = null;
+        String customDropId = null;
 
         for (int i = 1; i < args.length; i++){
             final String arg = args[i].toLowerCase();
@@ -58,6 +60,8 @@ public class SpawnerSubCommand implements Subcommand{
             }
             else if (customNameStartFlag > -1 && !arg.startsWith("/") && arg.endsWith("\""))
                 customNameEndFlag = i;
+            else if ("/customdropid".equalsIgnoreCase(arg))
+                customDropIdFlag = i;
         }
 
         if (minLevelFlag > -1){
@@ -90,6 +94,10 @@ public class SpawnerSubCommand implements Subcommand{
             if (customName == null) return;
         }
 
+        if (customDropIdFlag > -1){
+            customDropId = parseFlagValue(sender, "customdropid", customDropIdFlag, args, false, label);
+        }
+
         if (minLevel == -1 && maxLevel == -1) {
             List<String> messages = main.messagesCfg.getStringList("command.levelledmobs.spawner.no-level-specified");
             messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.getPrefix());
@@ -99,7 +107,7 @@ public class SpawnerSubCommand implements Subcommand{
             return;
         }
 
-        generateSpawner(player, minLevel, maxLevel, null, customName, label);
+        generateSpawner(player, minLevel, maxLevel, customDropId, customName, label);
     }
 
     private String parseFlagValue(final CommandSender sender, final String keyName, final int argNumber, final String[] args, final boolean mustBeNumber, final String label){
@@ -126,7 +134,7 @@ public class SpawnerSubCommand implements Subcommand{
         return args[argNumber + 1];
     }
 
-    private void generateSpawner(Player player, final int minLevel, final int maxLevel, final String customDropsId, final String customName, final String label){
+    private void generateSpawner(Player player, final int minLevel, final int maxLevel, final String customDropId, final String customName, final String label){
         final ItemStack item = new ItemStack(Material.SPAWNER);
         final ItemMeta meta = item.getItemMeta();
         if (meta != null){
@@ -138,16 +146,18 @@ public class SpawnerSubCommand implements Subcommand{
             meta.getPersistentDataContainer().set(main.blockPlaceListener.keySpawner, PersistentDataType.INTEGER, 1);
             meta.getPersistentDataContainer().set(main.blockPlaceListener.keySpawner_MinLevel, PersistentDataType.INTEGER, minLevel);
             meta.getPersistentDataContainer().set(main.blockPlaceListener.keySpawner_MaxLevel, PersistentDataType.INTEGER, maxLevel);
+            if (!Utils.isNullOrEmpty(customDropId))
+                meta.getPersistentDataContainer().set(main.blockPlaceListener.keySpawner_CustomDropId, PersistentDataType.STRING, customDropId);
             item.setItemMeta(meta);
         }
 
         int useInvSlotNum = player.getInventory().getHeldItemSlot();
-        if (player.getInventory().getItem(useInvSlotNum) != null) //  && !player.getInventory().getItem(useInvSlotNum).getType().equals(Material.AIR)
+        if (player.getInventory().getItem(useInvSlotNum) != null)
             useInvSlotNum = -1;
 
         if (useInvSlotNum == -1) {
             for (int i = 0; i <= 35; i++) {
-                if (player.getInventory().getItem(i) == null) { // || player.getInventory().getItem(i).getType().equals(Material.AIR)
+                if (player.getInventory().getItem(i) == null) {
                     useInvSlotNum = i;
                     break;
                 }
@@ -185,17 +195,16 @@ public class SpawnerSubCommand implements Subcommand{
 
     @Override
     public List<String> parseTabCompletions(final LevelledMobs main, final CommandSender sender, final String[] args) {
-        List<String> CommandsList = new ArrayList<>(Arrays.asList("/minlevel", "/maxlevel", "/name"));
-        int quotesStart = 0;
-        StringBuilder sb = new StringBuilder();
+        List<String> CommandsList = new ArrayList<>(Arrays.asList("/minlevel", "/maxlevel", "/name", "/customdropid"));
+        boolean inQuotes = false;
 
         for (int i = 1; i < args.length; i++) {
             final String arg = args[i].toLowerCase();
 
             if (arg.startsWith("\"") && !arg.endsWith("\""))
-                quotesStart = i;
-            else if (quotesStart > 0 && arg.endsWith("\""))
-                quotesStart = -1;
+                inQuotes = true;
+            else if (inQuotes && arg.endsWith("\""))
+                inQuotes = false;
 
             if ("/minlevel".equalsIgnoreCase(arg))
                 CommandsList.remove("/minlevel");
@@ -203,11 +212,13 @@ public class SpawnerSubCommand implements Subcommand{
                 CommandsList.remove("/maxlevel");
             else if ("/name".equalsIgnoreCase(arg))
                 CommandsList.remove("/name");
+            else if ("/customdropid".equalsIgnoreCase(arg))
+                CommandsList.remove("/customdropid");
         }
 
         final String lastArg = args[args.length - 1];
 
-        if (quotesStart > 0 || !lastArg.equals("") || args[args.length - 2].startsWith("/"))
+        if (inQuotes || lastArg.length() > 0 && lastArg.charAt(lastArg.length() - 1) == '\"')
             return Collections.singletonList("");
 
         return CommandsList;

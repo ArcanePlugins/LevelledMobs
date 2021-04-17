@@ -14,6 +14,7 @@ public class CustomDropsDefaults {
     public boolean noMultiplier;
     public boolean noSpawner;
     public boolean override;
+    public boolean dropOnlyWhenKilledByPlayer;
     public int amount;
     public int priority;
     public int minLevel;
@@ -39,6 +40,7 @@ public class CustomDropsDefaults {
         this.noMultiplier = false;
         this.noSpawner = false;
         this.override = false;
+        this.dropOnlyWhenKilledByPlayer = false;
     }
 
     public void setDefaultsFromDropItem(CustomDropItem drop) {
@@ -52,5 +54,6 @@ public class CustomDropsDefaults {
         this.maxDropGroup = drop.maxDropGroup;
         this.noMultiplier = drop.noMultiplier;
         this.noSpawner = drop.noSpawner;
+        this.dropOnlyWhenKilledByPlayer = drop.dropOnlyWhenKilledByPlayer;
     }
 }
