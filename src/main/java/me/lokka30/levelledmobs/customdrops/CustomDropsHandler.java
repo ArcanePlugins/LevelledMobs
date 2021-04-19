@@ -290,7 +290,7 @@ public class CustomDropsHandler {
         if (didNotMakeChance) return;
         // if we made it this far then the item will be dropped
 
-        final ItemStack newItem = info.deathByFire ?
+        ItemStack newItem = info.deathByFire ?
                 getCookedVariantOfMeat(drop.getItemStack().clone()) :
                 drop.getItemStack().clone();
 
@@ -329,6 +329,9 @@ public class CustomDropsHandler {
 
             info.groupIDsDroppedAlready.put(drop.groupId, count);
         }
+
+        if (newItem.getType().equals(Material.PLAYER_HEAD))
+            newItem = instance.mobHeadManager.getMobHeadFromPlayerHead(newItem, info.livingEntity);
 
         info.newDrops.add(newItem);
     }

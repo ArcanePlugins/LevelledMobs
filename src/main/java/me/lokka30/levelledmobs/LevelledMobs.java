@@ -4,10 +4,7 @@ import me.lokka30.levelledmobs.customdrops.CustomDropsHandler;
 import me.lokka30.levelledmobs.listeners.BlockPlaceListener;
 import me.lokka30.levelledmobs.listeners.ChunkLoadListener;
 import me.lokka30.levelledmobs.listeners.EntityDamageDebugListener;
-import me.lokka30.levelledmobs.managers.ExternalCompatibilityManager;
-import me.lokka30.levelledmobs.managers.LevelManager;
-import me.lokka30.levelledmobs.managers.MobDataManager;
-import me.lokka30.levelledmobs.managers.WorldGuardManager;
+import me.lokka30.levelledmobs.managers.*;
 import me.lokka30.levelledmobs.misc.ConfigUtils;
 import me.lokka30.levelledmobs.misc.Utils;
 import me.lokka30.microlib.QuickTimer;
@@ -33,6 +30,7 @@ public class LevelledMobs extends JavaPlugin {
     public ChunkLoadListener chunkLoadListener;
     public BlockPlaceListener blockPlaceListener;
     public final Companion companion = new Companion(this);
+    public final MobHeadManager mobHeadManager = new MobHeadManager(this);
 
     // Configuration
     public YamlConfiguration settingsCfg;

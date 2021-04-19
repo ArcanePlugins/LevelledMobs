@@ -1,0 +1,706 @@
+Mobs:
+  - Name: Rabbit
+    Variant: White
+    DisplayName: '&eWhite Rabbit Head'
+    ID: 3a978cd5-66e8-4824-8020-f9c0bd363c94
+    Texture: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTU0MmQ3MTYwOTg3MTQ4YTVkOGUyMGU0NjliZDliM2MyYTM5NDZjN2ZiNTkyM2Y1NWI5YmVhZTk5MTg1ZiJ9fX0='
+  - Name: Ocelot
+    Variant: ''
+    DisplayName: '&eOcelot Head'
+    ID: 69ac5cf8-a3e1-49c3-92c7-af7767f1586b
+    Texture: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTY1N2NkNWMyOTg5ZmY5NzU3MGZlYzRkZGNkYzY5MjZhNjhhMzM5MzI1MGMxYmUxZjBiMTE0YTFkYjEifX19'
+  - Name: Panda
+    Variant: Playful
+    DisplayName: '&ePanda[Playful] Head'
+    ID: f061c450-344c-4a7c-bdf9-2a70d45822f6
+    Texture: 'eyJ0aW1lc3RhbXAiOjE1NjUyMTI0MTU0MDQsInByb2ZpbGVJZCI6Ijg0Zjk2ZjBmYTVkYzRlNTliZGM1OWYzYmVhMDBhNDkwIiwicHJvZmlsZU5hbWUiOiJab21iaWVfU3RyaWtlciIsInRleHR1cmVzIjp7IlNLSU4iOnsidXJsIjoiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS83NzY4ZTdiMjhhM2ExYjMyOGNmNDBhZTgwYmEwNTA2MTk4MTMwMTk4ZDg1NTU3MzhkMGEwNWE0MzMxNjI5ZTAzIn19fQ'
+  - Name: Zombie
+    Variant: ''
+    DisplayName: vanilla
+    ID: vanilla
+    Texture: vanilla
+  - Name: Villager
+    Variant: Weaponsmith
+    DisplayName: '&eVillager[Weaponsmith] Head'
+    ID: a38033c3-2bc3-4d23-82fc-03eaeb9aa01b
+    Texture: 'eyJ0aW1lc3RhbXAiOjE1NzY4MDgxNjUxMzUsInByb2ZpbGVJZCI6Ijg0Zjk2ZjBmYTVkYzRlNTliZGM1OWYzYmVhMDBhNDkwIiwicHJvZmlsZU5hbWUiOiJab21iaWVfU3RyaWtlciIsInRleHR1cmVzIjp7IlNLSU4iOnsidXJsIjoiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS84N2YwY2YxMTQwMGUzZWVkODc2MTVlY2Q3YTA5OTg3MzhiNThlMzBmYzYzNjZmMDc3OTllMWQ3ZDY0YjkyNTMifX19'
+  - Name: Polar_Bear
+    Variant: ''
+    DisplayName: '&ePolar Bear Head'
+    ID: 368419e7-0057-4dc4-862a-caa8d5154796
+    Texture: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDQ2ZDIzZjA0ODQ2MzY5ZmEyYTM3MDJjMTBmNzU5MTAxYWY3YmZlODQxOTk2NjQyOTUzM2NkODFhMTFkMmIifX19'
+  - Name: Cat
+    Variant: Black
+    DisplayName: '&eBlack Cat Head'
+    ID: 2030affc-81ab-49b0-3bb2-49552f799d73
+    Texture: 'eyJ0aW1lc3RhbXAiOjE1NjUzMjE3MjUxMTQsInByb2ZpbGVJZCI6Ijg0Zjk2ZjBmYTVkYzRlNTliZGM1OWYzYmVhMDBhNDkwIiwicHJvZmlsZU5hbWUiOiJab21iaWVfU3RyaWtlciIsInRleHR1cmVzIjp7IlNLSU4iOnsidXJsIjoiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS81M2UyYTZhOGFhOTZmZmQ5ZWUyNDkwOWIxMGY0ZGZjYzA1YzQyN2IwMjFkNzgyMWQxNDFlZDNmYzY4YTEwNjc4In19fQ'
+  - Name: Panda
+    Variant: Lazy
+    DisplayName: '&ePanda[Lazy] Head'
+    ID: f061c450-341c-4a7c-bdf7-2a70d45822f9
+    Texture: 'eyJ0aW1lc3RhbXAiOjE1NjUyMTIzNDU1OTcsInByb2ZpbGVJZCI6Ijg0Zjk2ZjBmYTVkYzRlNTliZGM1OWYzYmVhMDBhNDkwIiwicHJvZmlsZU5hbWUiOiJab21iaWVfU3RyaWtlciIsInRleHR1cmVzIjp7IlNLSU4iOnsidXJsIjoiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS9kYjIzZmZhZjQyOWNmNjRlYWViZDFjNmE3MmIzY2E1N2MzNjIyOGIzNWIzNDcyOGRmZTQ0MGEzOTQ2Mzc2N2Q4In19fQ'
+  - Name: Sheep
+    Variant: White
+    DisplayName: '&eWhite Sheep Head'
+    ID: 5ac388b4-f0b1-4b17-af3c-c2afb4df7e12
+    Texture: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjMxZjljY2M2YjNlMzJlY2YxM2I4YTExYWMyOWNkMzNkMThjOTVmYzczZGI4YTY2YzVkNjU3Y2NiOGJlNzAifX19'
+  - Name: Sheep
+    Variant: Yellow
+    DisplayName: '&eYellow Sheep Head'
+    ID: 8bf2ed0c-5ecc-4f39-9c6e-1be94040f5bc
+    Texture: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjZhNDExMmRmMWU0YmNlMmE1ZTI4NDE3ZjNhYWZmNzljZDY2ZTg4NWMzNzI0NTU0MTAyY2VmOGViOCJ9fX0='
+  - Name: MushroomCow
+    Variant: Brown
+    DisplayName: '&eMooshroom[Brown] Head'
+    ID: 0fba3370-1812-40d3-b4a4-06636e068f8b
+    Texture: 'eyJ0aW1lc3RhbXAiOjE1NjQ2MTQ2MzA5MDksInByb2ZpbGVJZCI6Ijg0Zjk2ZjBmYTVkYzRlNTliZGM1OWYzYmVhMDBhNDkwIiwicHJvZmlsZU5hbWUiOiJab21iaWVfU3RyaWtlciIsInRleHR1cmVzIjp7IlNLSU4iOnsidXJsIjoiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS8yYjg5YTZiMTdlMzRjNjBmMTE4ODlhMTBiOGY4NTkxNjk5YWRlNGEzY2I1NmZiNjc3ZWFkMzE4YmY1NGJhNDNjIn19fQ=='
+  - Name: Villager
+    Variant: Shepherd
+    DisplayName: '&eVillager[Shepherd] Head'
+    ID: a38033c3-22c3-4d23-86fc-03eaeb9aa01b
+    Texture: 'eyJ0aW1lc3RhbXAiOjE1NzY4MDgxMTg1MjQsInByb2ZpbGVJZCI6Ijg0Zjk2ZjBmYTVkYzRlNTliZGM1OWYzYmVhMDBhNDkwIiwicHJvZmlsZU5hbWUiOiJab21iaWVfU3RyaWtlciIsInRleHR1cmVzIjp7IlNLSU4iOnsidXJsIjoiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS9mMDIzYjNhNDBjYTQ5Y2I1YjVlYTY1MzVlOTNmNzA5NGYxOGI3MjA0NGQ5NTU4MDU1NDE2MWJhYzg5NmFiMTVjIn19fQ'
+  - Name: Sheep
+    Variant: Blue
+    DisplayName: '&eBlue Sheep Head'
+    ID: f69de8f4-a1bd-485e-a587-28c676163442
+    Texture: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDllYzIyODE4ZDFmYmZjODE2N2ZiZTM2NzI4YjI4MjQwZTM0ZTE2NDY5YTI5MjlkMDNmZGY1MTFiZjJjYTEifX19'
+  - Name: Vex
+    Variant: ''
+    DisplayName: '&eVex Head'
+    ID: 09fc3b6f-5c13-40f2-bd0f-d63d4171bcbb
+    Texture: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNWU3MzMwYzdkNWNkOGEwYTU1YWI5ZTk1MzIxNTM1YWM3YWUzMGZlODM3YzM3ZWE5ZTUzYmVhN2JhMmRlODZiIn19fQ=='
+  - Name: Horse
+    Variant: White
+    DisplayName: '&eWhite Horse Head'
+    ID: 7ade5a13-ec58-4341-9ff6-9501e44e33e3
+    Texture: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjBhMmRiMmYxZWI5M2U1OTc4ZDJkYzkxYTc0ZGY0M2Q3Yjc1ZDllYzBlNjk0ZmQ3ZjJhNjUyZmJkMTUifX19'
+  - Name: Silverfish
+    Variant: ''
+    DisplayName: '&eSilverfish Head'
+    ID: 7760f85e-1a3b-4723-8d5c-4e7c8b079f13
+    Texture: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZGE5MWRhYjgzOTFhZjVmZGE1NGFjZDJjMGIxOGZiZDgxOWI4NjVlMWE4ZjFkNjIzODEzZmE3NjFlOTI0NTQwIn19fQ=='
+  - Name: Villager
+    Variant: ''
+    DisplayName: '&eVillager Head'
+    ID: 834e4f81-46d6-4e90-9e60-39bdf4a68c48
+    Texture: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODIyZDhlNzUxYzhmMmZkNGM4OTQyYzQ0YmRiMmY1Y2E0ZDhhZThlNTc1ZWQzZWIzNGMxOGE4NmU5M2IifX19'
+  - Name: Cat
+    Variant: Tabby
+    DisplayName: '&eTabby Cat Head'
+    ID: 2030a11c-81ab-43b0-3332-49552f799d73
+    Texture: 'eyJ0aW1lc3RhbXAiOjE1NjUzMjE2OTEzOTgsInByb2ZpbGVJZCI6Ijg0Zjk2ZjBmYTVkYzRlNTliZGM1OWYzYmVhMDBhNDkwIiwicHJvZmlsZU5hbWUiOiJab21iaWVfU3RyaWtlciIsInRleHR1cmVzIjp7IlNLSU4iOnsidXJsIjoiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS8zNTY2Njg3YTlmYzRhN2ZhNmJkZGY1YzE0ZDM2ODE2NTRiM2IzMDRmZmQyMzNlOGNkMGNlYWU1MjI0NDA2ODRlIn19fQ'
+  - Name: Cat
+    Variant: Ginger
+    DisplayName: '&e[OLD]Ginger Cat Head'
+    ID: ae801ca9-fcf0-4f21-b4dd-1281b868e796
+    Texture: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTc1NWU3ZGYwNGQxOGIzMWQ2M2MxN2Y0YTdiNGM3MzkyNGJkNjI2NWRhNjllMTEzZWRkZDk3NTE2ZmM3In19fQ=='
+  - Name: Villager
+    Variant: Zombie_Librarian
+    DisplayName: '&eZombie Librarian Villager Head'
+    ID: fa2368c1-5299-43cb-84c0-40adaa25cb40
+    Texture: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDRmMDhlYmQ0ZTI1Y2RhM2FkZTQ1Yjg2MzM3OGFkMzc3ZjE4YzUxMGRiNGQyOGU4MmJiMjQ0NTE0MzliMzczNCJ9fX0='
+  - Name: Trader_Llama
+    Variant: Brown
+    DisplayName: '&eBrown Trader Llama Head'
+    ID: aaa3b3aa-c25c-40ae-b9d4-216d61464cd0
+    Texture: 'eyJ0aW1lc3RhbXAiOjE1NzY4MDYxODQ1MzgsInByb2ZpbGVJZCI6Ijg0Zjk2ZjBmYTVkYzRlNTliZGM1OWYzYmVhMDBhNDkwIiwicHJvZmlsZU5hbWUiOiJab21iaWVfU3RyaWtlciIsInRleHR1cmVzIjp7IlNLSU4iOnsidXJsIjoiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS9mOGVkNmE1ZDcyMjQzNWRiNTE5YTA3YjJlMDJhNDQ4NzU1YWUzZDYxMDc3OTRlMDRhM2JiYWRhMThiNjYwMWMwIn19fQ='
+  - Name: Panda
+    Variant: Normal
+    DisplayName: '&ePanda[Normal] Head'
+    ID: f361c450-341c-4a7c-bdf7-2a73d45822f6
+    Texture: 'eyJ0aW1lc3RhbXAiOjE1NjUyMTIzNDU1OTcsInByb2ZpbGVJZCI6Ijg0Zjk2ZjBmYTVkYzRlNTliZGM1OWYzYmVhMDBhNDkwIiwicHJvZmlsZU5hbWUiOiJab21iaWVfU3RyaWtlciIsInRleHR1cmVzIjp7IlNLSU4iOnsidXJsIjoiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS9kYjIzZmZhZjQyOWNmNjRlYWViZDFjNmE3MmIzY2E1N2MzNjIyOGIzNWIzNDcyOGRmZTQ0MGEzOTQ2Mzc2N2Q4In19fQ'
+  - Name: Llama
+    Variant: Creamy
+    DisplayName: '&eCreamy Llama Head'
+    ID: 4607d400-aaa1-47c6-9e22-fff78ddf50e0
+    Texture: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGQ2N2ZkNGJmZjI5MzI2OWNiOTA4OTc0ZGNhODNjMzM0ODVlNDM1ZWQ1YThlMWRiZDY1MjFjNjE2ODcxNDAifX19'
+  - Name: Llama
+    Variant: Gray
+    DisplayName: '&eGray Llama Head'
+    ID: 93f9568a-c230-482b-a26a-8e2a74fe7690
+    Texture: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2YyNGU1NmZkOWZmZDcxMzNkYTZkMWYzZTJmNDU1OTUyYjFkYTQ2MjY4NmY3NTNjNTk3ZWU4MjI5OWEifX19'
+  - Name: Villager
+    Variant: Librarian
+    DisplayName: '&eVillager[Librarian] Head'
+    ID: a38033c3-22c3-4d23-86fc-03eaeb9aa014
+    Texture: 'eyJ0aW1lc3RhbXAiOjE1NzY4MDgwNzQ5NTQsInByb2ZpbGVJZCI6Ijg0Zjk2ZjBmYTVkYzRlNTliZGM1OWYzYmVhMDBhNDkwIiwicHJvZmlsZU5hbWUiOiJab21iaWVfU3RyaWtlciIsInRleHR1cmVzIjp7IlNLSU4iOnsidXJsIjoiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS9kYzc4NGYwYWVhY2I4NjdhYjU2M2Q5NWRkNWVjNjQ5NmU4N2ZjMjFmZjc5OGNhYmNhMmE4OTc0Y2M0OWU4ZTU2In19fQ'
+  - Name: Iron_Golem
+    Variant: ''
+    DisplayName: '&eIron Golem Head'
+    ID: d23f3607-25a0-4c22-860a-0e6fb9a16412
+    Texture: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODkwOTFkNzllYTBmNTllZjdlZjk0ZDdiYmE2ZTVmMTdmMmY3ZDQ1NzJjNDRmOTBmNzZjNDgxOWE3MTQifX19'
+  - Name: Sheep
+    Variant: Lime
+    DisplayName: '&eLime Sheep Head'
+    ID: a663374b-47e7-469a-864f-7c5a0d49f6d6
+    Texture: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTJhMjQ0OGY1OGE0OTEzMzI0MzRlODVjNDVkNzg2ZDg3NDM5N2U4MzBhM2E3ODk0ZTZkOTI2OTljNDJiMzAifX19'
+  - Name: Parrot
+    Variant: Red
+    DisplayName: '&eRed Parrot Head'
+    ID: fb78b8ea-9c34-4a8c-8eeb-c11d0a3a6ae0
+    Texture: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTRiYThkNjZmZWNiMTk5MmU5NGI4Njg3ZDZhYjRhNTMyMGFiNzU5NGFjMTk0YTI2MTVlZDRkZjgxOGVkYmMzIn19fQ=='
+  - Name: Cat
+    Variant: Persian
+    DisplayName: '&ePersian Cat Head'
+    ID: 2030a11c-81ab-49b0-3332-49552f7b9d73
+    Texture: 'eyJ0aW1lc3RhbXAiOjE1NjUzMjE1MzUyOTksInByb2ZpbGVJZCI6Ijg0Zjk2ZjBmYTVkYzRlNTliZGM1OWYzYmVhMDBhNDkwIiwicHJvZmlsZU5hbWUiOiJab21iaWVfU3RyaWtlciIsInRleHR1cmVzIjp7IlNLSU4iOnsidXJsIjoiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS8xZWY2ODU4NzVjMmMxMjAzYWQ5MTY2NzZmZDYwY2MwY2ExNWQwZjQwNTA4ZTljMTRhM2I3MDYxYzZkODk4NzdjIn19fQ'
+  - Name: Parrot
+    Variant: Blue
+    DisplayName: '&eBlue Parrot Head'
+    ID: 3c35efae-bc44-4497-9175-5d7a3e03109c
+    Texture: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYWNhNTgwYjA1MWM2M2JlMjlkYTU0NWE5YWE3ZmY3ZTEzNmRmNzdhODFjNjdkYzFlZTllNjE3MGMxNGZiMzEwIn19fQ=='
+  - Name: Cod
+    Variant: ''
+    DisplayName: '&eCod Head'
+    ID: 512d6218-cdf1-476c-9507-c9ea98574623
+    Texture: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzg5MmQ3ZGQ2YWFkZjM1Zjg2ZGEyN2ZiNjNkYTRlZGRhMjExZGY5NmQyODI5ZjY5MTQ2MmE0ZmIxY2FiMCJ9fX0='
+  - Name: Sheep
+    Variant: Red
+    DisplayName: '&eRed Sheep Head'
+    ID: 71b8b9d8-fa5b-42df-b15f-e125ae28d9b0
+    Texture: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODM5YWY0NzdlYjYyNzgxNWY3MjNhNTY2MjU1NmVjOWRmY2JhYjVkNDk0ZDMzOGJkMjE0MjMyZjIzZTQ0NiJ9fX0='
+  - Name: Rabbit
+    Variant: Salt_and_Pepper
+    DisplayName: '&eSalt and Pepper Rabbit Head'
+    ID: 0a627a07-debd-4225-8afe-bbcb061b6adf
+    Texture: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZmZlY2M2YjVlNmVhNWNlZDc0YzQ2ZTc2MjdiZTNmMDgyNjMyN2ZiYTI2Mzg2YzZjYzc4NjMzNzJlOWJjIn19fQ=='
+  - Name: Stray
+    Variant: ''
+    DisplayName: '&eStray Head'
+    ID: 2bfa9704-7778-4b93-a2e0-444b52cf783a
+    Texture: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzhkZGY3NmU1NTVkZDVjNGFhOGEwYTVmYzU4NDUyMGNkNjNkNDg5YzI1M2RlOTY5ZjdmMjJmODVhOWEyZDU2In19fQ=='
+  - Name: Phantom
+    Variant: ''
+    DisplayName: '&ePhantom Head'
+    ID: c7276ecb-caea-47c0-922a-50ff26209f0b
+    Texture: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzQ2ODMwZGE1ZjgzYTNhYWVkODM4YTk5MTU2YWQ3ODFhNzg5Y2ZjZjEzZTI1YmVlZjdmNTRhODZlNGZhNCJ9fX0='
+  - Name: Cat
+    Variant: Calico
+    DisplayName: '&eCalico Cat Head'
+    ID: 2030a11c-86ab-49f0-3332-49552f799d73
+    Texture: 'eyJ0aW1lc3RhbXAiOjE1NjUzMjE2MTU1OTIsInByb2ZpbGVJZCI6Ijg0Zjk2ZjBmYTVkYzRlNTliZGM1OWYzYmVhMDBhNDkwIiwicHJvZmlsZU5hbWUiOiJab21iaWVfU3RyaWtlciIsInRleHR1cmVzIjp7IlNLSU4iOnsidXJsIjoiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS8xYzFmZTU1MGIxZGMwZTBkYzEyZDkxMGU1NmY2OGVhOTk5NzEyZWIwZjc1YTU1YWU5MjJhNjBkNzc4NWRiMmJkIn19fQ'
+  - Name: Pig
+    Variant: ''
+    DisplayName: '&ePig Head'
+    ID: bffb9c02-b8d0-4358-bac2-4bf8591f1388
+    Texture: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjIxNjY4ZWY3Y2I3OWRkOWMyMmNlM2QxZjNmNGNiNmUyNTU5ODkzYjZkZjRhNDY5NTE0ZTY2N2MxNmFhNCJ9fX0='
+  - Name: Rabbit
+    Variant: Black
+    DisplayName: '&eBlack Rabbit Head'
+    ID: 198fd44f-37be-479b-bdbd-d6b74e20ec69
+    Texture: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzJjNTgxMTZhMTQ3ZDFhOWEyNjI2OTIyNGE4YmUxODRmZThlNWYzZjNkZjliNjE3NTEzNjlhZDg3MzgyZWM5In19fQ=='
+  - Name: Rabbit
+    Variant: Toast
+    DisplayName: '&eToast Rabbit Head'
+    ID: 2c04206a-1dbb-461b-b4d4-9e4bd2901c7f
+    Texture: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzJmYzNiNzQ2NjY1NDVmMmQ0MWJjMmI1MzQwZTFkZjY5ZGQyNWUyYTdlMmIzNGVmZDFhOTUzMTFhN2Q2YyJ9fX0='
+  - Name: Panda
+    Variant: Brown
+    DisplayName: '&ePanda[Brown] Head'
+    ID: f061c450-341c-4a7c-bdf7-2a70d42222f6
+    Texture: 'eyJ0aW1lc3RhbXAiOjE1NjUyMTE4MjcyOTYsInByb2ZpbGVJZCI6Ijg0Zjk2ZjBmYTVkYzRlNTliZGM1OWYzYmVhMDBhNDkwIiwicHJvZmlsZU5hbWUiOiJab21iaWVfU3RyaWtlciIsInRleHR1cmVzIjp7IlNLSU4iOnsidXJsIjoiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS9iYzBjNWZjMGE5Y2Y2Mjk2Y2UzZTcyNzUyMzVhNzkwN2QzZDllMTFkZmJlZDNmNTEwNTFiNDlhMDc0NzJjZGVjIn19fQ'
+  - Name: Drowned
+    Variant: ''
+    DisplayName: '&eDrowned Head'
+    ID: 17bbc41e-be73-468b-854a-670f7a6972fc
+    Texture: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzNmN2NjZjYxZGJjM2Y5ZmU5YTYzMzNjZGUwYzBlMTQzOTllYjJlZWE3MWQzNGNmMjIzYjNhY2UyMjA1MSJ9fX0='
+  - Name: Cat
+    Variant: Siamese
+    DisplayName: '&eSiamese Cat Head'
+    ID: 2030a11c-81ab-49b0-3332-49552fa99d73
+    Texture: 'eyJ0aW1lc3RhbXAiOjE1NjUzMjEzNjQ0NzYsInByb2ZpbGVJZCI6Ijg0Zjk2ZjBmYTVkYzRlNTliZGM1OWYzYmVhMDBhNDkwIiwicHJvZmlsZU5hbWUiOiJab21iaWVfU3RyaWtlciIsInRleHR1cmVzIjp7IlNLSU4iOnsidXJsIjoiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS8zNjk5NDBkN2JiMmViYTFjZWZjODIwZDI3MWIyNGMxODMyMjQ1MmRlMjljZmFjZDU0NmE2YzlhZjUxZmNiNWMzIn19fQ'
+  - Name: Bee
+    Variant: ''
+    DisplayName: '&eBee Head'
+    ID: 3b08d8ef-beee-4bee-beee-a655302c389f
+    Texture: 'eyJ0aW1lc3RhbXAiOjE1NzY4MDUzOTc5NjgsInByb2ZpbGVJZCI6Ijg0Zjk2ZjBmYTVkYzRlNTliZGM1OWYzYmVhMDBhNDkwIiwicHJvZmlsZU5hbWUiOiJab21iaWVfU3RyaWtlciIsInRleHR1cmVzIjp7IlNLSU4iOnsidXJsIjoiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS84NWVhODNjNTUyNGYyM2RjYWU4M2RmNTIzODRjMDllNTA3NmM3YmFhM2Q4MTI1NTBhMjA2MmMzYTJmNTA1MWQyIn19fQ'
+  - Name: Cat
+    Variant: AllBack
+    DisplayName: '&eAll-Black Cat Head'
+    ID: 2b64711c-81ab-bbbb-3bb2-49552f799d73
+    Texture: 'eyJ0aW1lc3RhbXAiOjE1NjUzMjE0Mzk4NDAsInByb2ZpbGVJZCI6Ijg0Zjk2ZjBmYTVkYzRlNTliZGM1OWYzYmVhMDBhNDkwIiwicHJvZmlsZU5hbWUiOiJab21iaWVfU3RyaWtlciIsInRleHR1cmVzIjp7IlNLSU4iOnsidXJsIjoiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS82M2RlYjk1MmFlMmQxMDc2OGM5ZjE4NTY4MGJhY2Y3MWY2MzljMzY3MWE2MzU2MjljODNiNzRhZTc2YzVlN2M2In19fQ'
+  - Name: Ghast
+    Variant: ''
+    DisplayName: '&eGhast Head'
+    ID: e8c871a0-dbd4-4d75-9ff7-f1b2c0e8d27e
+    Texture: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOGI2YTcyMTM4ZDY5ZmJiZDJmZWEzZmEyNTFjYWJkODcxNTJlNGYxYzk3ZTVmOTg2YmY2ODU1NzFkYjNjYzAifX19'
+  - Name: Sheep
+    Variant: Light_Gray
+    DisplayName: '&eSilver Sheep Head'
+    ID: 597f03f8-654e-42bd-bc0d-d59386606da7
+    Texture: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2UxYWM2ODM5OTNiZTM1NTEyZTFiZTMxZDFmNGY5OGU1ODNlZGIxNjU4YTllMjExOTJjOWIyM2I1Y2NjZGMzIn19fQ=='
+  - Name: Sheep
+    Variant: Gray
+    DisplayName: '&eGray Sheep Head'
+    ID: e9814a95-7327-4d2b-9fbc-482427168225
+    Texture: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDI4N2ViNTAxMzkxZjI3NTM4OWYxNjZlYzlmZWJlYTc1ZWM0YWU5NTFiODhiMzhjYWU4N2RmN2UyNGY0YyJ9fX0='
+  - Name: Villager
+    Variant: Zombie_Nitwit
+    DisplayName: '&eZombie Nitwit Villager Head'
+    ID: 614cb8ea-bb85-4e0a-96fb-f2d83273d06a
+    Texture: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzdlODM4Y2NjMjY3NzZhMjE3YzY3ODM4NmY2YTY1NzkxZmU4Y2RhYjhjZTljYTRhYzZiMjgzOTdhNGQ4MWMyMiJ9fX0='
+  - Name: Villager
+    Variant: Armorer
+    DisplayName: '&eVillager[Armorer] Head'
+    ID: bc30e3c3-47c3-4d23-86fc-06eaeb9aa014
+    Texture: 'eyJ0aW1lc3RhbXAiOjE1NzY4MDc3MzMwMzIsInByb2ZpbGVJZCI6Ijg0Zjk2ZjBmYTVkYzRlNTliZGM1OWYzYmVhMDBhNDkwIiwicHJvZmlsZU5hbWUiOiJab21iaWVfU3RyaWtlciIsInRleHR1cmVzIjp7IlNLSU4iOnsidXJsIjoiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS83NWY1NmM3OWZjMDQ1NDI5NzE2NDYwYTVjZGZmZTYyNzQ2YmEwYTk5ZmRjZDBhODZjZWIzMjNlYjdiOTgwYzliIn19fQ'
+  - Name: Evoker
+    Variant: ''
+    DisplayName: '&eEvoker Head'
+    ID: 4acf06c3-e591-41b7-b895-115b3bc791b1
+    Texture: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzQzMzMyMmUyY2NiZDljNTVlZjQxZDk2ZjM4ZGJjNjY2YzgwMzA0NWIyNDM5MWFjOTM5MWRjY2FkN2NkIn19fQ=='
+  - Name: Slime
+    Variant: ''
+    DisplayName: '&eSlime Head'
+    ID: a7dfa2a8-4097-45ac-bf2d-b6191ec352ef
+    Texture: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTZhZDIwZmMyZDU3OWJlMjUwZDNkYjY1OWM4MzJkYTJiNDc4YTczYTY5OGI3ZWExMGQxOGM5MTYyZTRkOWI1In19fQ=='
+  - Name: Wither
+    Variant: ''
+    DisplayName: ""
+    ID: ""
+    Texture: ""
+  - Name: Panda
+    Variant: Weak
+    DisplayName: '&ePanda[Weak] Head'
+    ID: f061c450-381c-4a7c-bdf7-2a70d45821f6
+    Texture: 'eyJ0aW1lc3RhbXAiOjE1NjUyMTI0NDc5NjcsInByb2ZpbGVJZCI6Ijg0Zjk2ZjBmYTVkYzRlNTliZGM1OWYzYmVhMDBhNDkwIiwicHJvZmlsZU5hbWUiOiJab21iaWVfU3RyaWtlciIsInRleHR1cmVzIjp7IlNLSU4iOnsidXJsIjoiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS9kZjJjMjJkMGM0YzQyYjQ5MTFmZTVmM2EwY2ZmOGM2YjIwYTdiYTgxZGYyNzk3ZmI0Zjc4YTkyMzljNjJlMzkwIn19fQ'
+  - Name: Magma_Cube
+    Variant: ''
+    DisplayName: '&eMagma Cube Head'
+    ID: 128b47df-8c26-42fc-91b7-30a846caf40e
+    Texture: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzg5NTdkNTAyM2M5MzdjNGM0MWFhMjQxMmQ0MzQxMGJkYTIzY2Y3OWE5ZjZhYjM2Yjc2ZmVmMmQ3YzQyOSJ9fX0='
+  - Name: Rabbit
+    Variant: Black_and_White
+    DisplayName: '&eBlack and White Rabbit Head'
+    ID: 703b54b8-d40f-487b-a17d-713ba1ea8527
+    Texture: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2I4Y2ZmNGIxNWI4Y2EzN2UyNTc1MGYzNDU3MThmMjg5Y2IyMmM1YjNhZDIyNjI3YTcxMjIzZmFjY2MifX19'
+  - Name: Creeper
+    Variant: ''
+    DisplayName: vanilla
+    ID: vanilla
+    Texture: vanilla
+  - Name: Dolphin
+    Variant: ''
+    DisplayName: '&eDolphin Head'
+    ID: daef31b6-89af-4f69-948e-6120e17d2fc9
+    Texture: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOGU5Njg4Yjk1MGQ4ODBiNTViN2FhMmNmY2Q3NmU1YTBmYTk0YWFjNmQxNmY3OGU4MzNmNzQ0M2VhMjlmZWQzIn19fQ=='
+  - Name: Sheep
+    Variant: Purple
+    DisplayName: '&ePurple Sheep Head'
+    ID: c2219329-0558-48ec-a0cc-51b07789c184
+    Texture: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYWU1Mjg2N2FmZWYzOGJiMTRhMjZkMTQyNmM4YzBmMTE2YWQzNDc2MWFjZDkyZTdhYWUyYzgxOWEwZDU1Yjg1In19fQ=='
+  - Name: Villager
+    Variant: Zombie_Farmer
+    DisplayName: '&eZombie Farmer Villager Head'
+    ID: 573bd8d0-f9a1-4885-af08-7c554b45e767
+    Texture: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2ZmMDQ4MmZkMzJmYWIyY2U5ZjVmYTJlMmQ5YjRkYzc1NjFkYTQyMjE1MmM5OWZjODA0YjkxMzljYWYyNTZiIn19fQ=='
+  - Name: Sheep
+    Variant: Orange
+    DisplayName: '&eOrange Sheep Head'
+    ID: d8df8e0a-1bc5-46ef-ad5d-87ae578ef818
+    Texture: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjA5ODM5N2EyNzBiNGMzZDJiMWU1NzRiOGNmZDNjYzRlYTM0MDkwNjZjZWZlMzFlYTk5MzYzM2M5ZDU3NiJ9fX0='
+  - Name: Creeper
+    Variant: Charged
+    DisplayName: '&eCharged Creeper Head'
+    ID: 46f5c80a-e615-4f1f-ac8c-e02d7c67d710
+    Texture: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjJjZWIzOWRkNGRlMjRhN2FkZmUyOTFhM2EwY2ZjN2NmNGY2NDVkZTU5YjYwM2ZjZmUwNmM2YjVhMDZlMjYifX19'
+  - Name: Spider
+    Variant: ''
+    DisplayName: '&eSpider Head'
+    ID: caafc438-4d2c-42f1-a986-ed79d24f143b
+    Texture: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2Q1NDE1NDFkYWFmZjUwODk2Y2QyNThiZGJkZDRjZjgwYzNiYTgxNjczNTcyNjA3OGJmZTM5MzkyN2U1N2YxIn19fQ=='
+  - Name: Cat
+    Variant: British_ShortHair
+    DisplayName: '&eBritish Shorthair Cat Head'
+    ID: 2030a112-81ab-49b0-3332-49552f799d73
+    Texture: 'eyJ0aW1lc3RhbXAiOjE1NjUzMjE0NzA1MjEsInByb2ZpbGVJZCI6Ijg0Zjk2ZjBmYTVkYzRlNTliZGM1OWYzYmVhMDBhNDkwIiwicHJvZmlsZU5hbWUiOiJab21iaWVfU3RyaWtlciIsInRleHR1cmVzIjp7IlNLSU4iOnsidXJsIjoiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS8yN2NmODk5NWQ5ODliYzI5N2UxMTIxZWNhMTg1YTNlYmVmZjQxZDQ5YWYyNzEyYjhjNTcxYmI5NzNjMzIyZjA0In19fQ'
+  - Name: Vindicator
+    Variant: ''
+    DisplayName: '&eVindicator Head'
+    ID: df6eabbb-588b-4820-bacd-025806a8bae8
+    Texture: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGY2ZmI4OWQxYzYzMWJkN2U3OWZlMTg1YmExYTY3MDU0MjVmNWMzMWE1ZmY2MjY1MjFlMzk1ZDRhNmY3ZTIifX19'
+  - Name: Sheep
+    Variant: Pink
+    DisplayName: '&ePink Sheep Head'
+    ID: 29c0911d-695a-4c31-817f-3a065a7144b7
+    Texture: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMmFjNzRhMmI5YjkxNDUyZTU2ZmExZGRhNWRiODEwNzc4NTZlNDlmMjdjNmUyZGUxZTg0MWU1Yzk1YTZmYzVhYiJ9fX0='
+  - Name: Rabbit
+    Variant: Brown
+    DisplayName: '&eBrown Rabbit Head'
+    ID: 44deb6f8-adc8-4679-a994-c07d77a97da1
+    Texture: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvN2QxMTY5YjI2OTRhNmFiYTgyNjM2MDk5MjM2NWJjZGE1YTEwYzg5YTNhYTJiNDhjNDM4NTMxZGQ4Njg1YzNhNyJ9fX0='
+  - Name: Elder_Guardian
+    Variant: ''
+    DisplayName: '&eElder Guardian Head'
+    ID: effa6786-a077-42f2-8775-2ead63c4ea4c
+    Texture: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWM3OTc0ODJhMTRiZmNiODc3MjU3Y2IyY2ZmMWI2ZTZhOGI4NDEzMzM2ZmZiNGMyOWE2MTM5Mjc4YjQzNmIifX19'
+  - Name: Horse
+    Variant: Dark_Brown
+    DisplayName: '&eDark Brown Horse Head'
+    ID: 8eed27c5-8d0d-4e56-b9a9-ec2a8b207e2c
+    Texture: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDJlYjk2N2FiOTRmZGQ0MWE2MzI1ZjEyNzdkNmRjMDE5MjI2ZTVjZjM0OTc3ZWVlNjk1OTdmYWZjZjVlIn19fQ=='
+  - Name: Illusioner
+    Variant: ''
+    DisplayName: '&eIllusioner Head'
+    ID: 3e6c1253-7016-4db2-ac31-2bc0f8c0657b
+    Texture: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWM2NzhjOWY0YzZkZDRkOTkxOTMwZjgyZTZlN2Q4Yjg5YjI4OTFmMzVjYmE0OGE0YjE4NTM5YmJlN2VjOTI3In19fQ=='
+  - Name: Sheep
+    Variant: Brown
+    DisplayName: '&eBrown Sheep Head'
+    ID: 6b15f355-f988-4c09-869a-f6603ac8739a
+    Texture: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTU1YWQ2ZTVkYjU2OTJkODdmNTE1MTFmNGUwOWIzOWZmOWNjYjNkZTdiNDgxOWE3Mzc4ZmNlODU1M2I4In19fQ=='
+  - Name: Turtle
+    Variant: ''
+    DisplayName: '&eTurtle Head'
+    ID: d22e5c5e-1444-4bfa-9b7f-ea6cb02a8569
+    Texture: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMGE0MDUwZTdhYWNjNDUzOTIwMjY1OGZkYzMzOWRkMTgyZDdlMzIyZjlmYmNjNGQ1Zjk5YjU3MThhIn19fQ=='
+  - Name: Cat
+    Variant: Jellie
+    DisplayName: '&eJellie Cat Head'
+    ID: 2030a21c-81ab-49b0-3332-49552f799d73
+    Texture: 'eyJ0aW1lc3RhbXAiOjE1NjUzMjE1NzUzOTcsInByb2ZpbGVJZCI6Ijg0Zjk2ZjBmYTVkYzRlNTliZGM1OWYzYmVhMDBhNDkwIiwicHJvZmlsZU5hbWUiOiJab21iaWVfU3RyaWtlciIsInRleHR1cmVzIjp7IlNLSU4iOnsidXJsIjoiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS9jNGQ5ZGQwODdkYzcyZTNmMWYyNTVmZmQyOTUxN2FlOWIzYWJmYzgwNzVhY2Y4ZjFmNzU3NmNmMzhhNDhmNmJhIn19fQ'
+  - Name: Tropical_Fish
+    Variant: ''
+    DisplayName: '&eTropical Fish Head'
+    ID: 7da93a8e-c42c-4dff-b9c6-01f659807576
+    Texture: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTc5ZTQ4ZDgxNGFhM2JjOTg0ZThhNmZkNGZiMTcwYmEwYmI0ODkzZjRiYmViZGU1ZmRmM2Y4Zjg3MWNiMjkyZiJ9fX0='
+  - Name: Witch
+    Variant: ''
+    DisplayName: '&eWitch Head'
+    ID: a93f8517-c2b3-4bac-81b6-367d8734a79e
+    Texture: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODllOGI1ZjE1YTliMjlhMWUzODljOTUyMThmZDM3OTVmMzI4NzJlNWFlZTk0NjRhNzY0OTVjNTI3ZDIyNDUifX19'
+  - Name: Sheep
+    Variant: Rainbow
+    DisplayName: '&eRainbow Sheep Head'
+    ID: bcea22f3-8e5c-4ce0-bf2e-9099424f3714
+    Texture: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNmM0Y2JmMmRhYzQyZGUzYjJjYmZkMGFhMWRjNDAzNjNiNmQzZDViNTczNmIyYTc4OGMwNWQxYjRhYmIxOWU3In19fQ=='
+  - Name: Ender_Dragon
+    Variant: ''
+    DisplayName: vanilla
+    ID: vanilla
+    Texture: vanilla
+  - Name: Pufferfish
+    Variant: ''
+    DisplayName: '&ePufferfish Head'
+    ID: f7e68f1e-3f55-4166-9e04-65d40663436c
+    Texture: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTcxNTI4NzZiYzNhOTZkZDJhMjI5OTI0NWVkYjNiZWVmNjQ3YzhhNTZhYzg4NTNhNjg3YzNlN2I1ZDhiYiJ9fX0='
+  - Name: Piglin_Brute
+    Variant: ''
+    DisplayName: '&ePiglin Brute Head'
+    ID: 3b084bb4-4c14-4be4-b0a7-a6553c4c389f
+    Texture: 'ewogICJ0aW1lc3RhbXAiIDogMTYwMTQ5MTEwMjYyNywKICAicHJvZmlsZUlkIiA6ICI4NGY5NmYwZmE1ZGM0ZTU5YmRjNTlmM2JlYTAwYTQ5MCIsCiAgInByb2ZpbGVOYW1lIiA6ICJab21iaWVfU3RyaWtlciIsCiAgInRleHR1cmVzIiA6IHsKICAgICJTS0lOIiA6IHsKICAgICAgInVybCIgOiAiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS81OTY1YWY4OWM4ZTQzYjI1MDc5OGQ0Njk4M2E0Y2QxY2U0M2U5MDk4OTJiYmNiMmFlZTNkYzAxN2Q2MzljODYiCiAgICB9CiAgfQp9'
+  - Name: Pillager
+    Variant: ''
+    DisplayName: '&ePillager Head'
+    ID: f061c450-361c-4a7c-bdf7-2a70d45892f6
+    Texture: 'eyJ0aW1lc3RhbXAiOjE1NjQ2MTM5OTQ0NDAsInByb2ZpbGVJZCI6Ijg0Zjk2ZjBmYTVkYzRlNTliZGM1OWYzYmVhMDBhNDkwIiwicHJvZmlsZU5hbWUiOiJab21iaWVfU3RyaWtlciIsInRleHR1cmVzIjp7IlNLSU4iOnsidXJsIjoiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS83OTQzMmJjZTcwOTFjMDIwZTEwNTk0YzZlNDc5OGZiNjZkMGU1M2MyZTU0YjM2ZDNmOTYzMmI5NmEyNWMyNmY1In19fQ'
+  - Name: Cat
+    Variant: Ragdoll
+    DisplayName: '&eRagdoll Cat Head'
+    ID: 20b0a11c-81ab-49b0-3332-49552f729d73
+    Texture: 'eyJ0aW1lc3RhbXAiOjE1NjUzMjE1MDIyNDIsInByb2ZpbGVJZCI6Ijg0Zjk2ZjBmYTVkYzRlNTliZGM1OWYzYmVhMDBhNDkwIiwicHJvZmlsZU5hbWUiOiJab21iaWVfU3RyaWtlciIsInRleHR1cmVzIjp7IlNLSU4iOnsidXJsIjoiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS80OGZjZjc1NmFhNjY1MWI4NjU0NGQ3NzU3YTUwYjQ2ZWFhYzU5YzM0YjNiN2ZhN2Y2NjUwZDNlZDA1NGU3MDI0In19fQ'
+  - Name: Villager
+    Variant: Farmer
+    DisplayName: '&eVillager[Farmer] Head'
+    ID: bc3033c3-52c3-4d23-86fc-03eaeb9aa014
+    Texture: 'eyJ0aW1lc3RhbXAiOjE1NzY4MDc5NTc2MzYsInByb2ZpbGVJZCI6Ijg0Zjk2ZjBmYTVkYzRlNTliZGM1OWYzYmVhMDBhNDkwIiwicHJvZmlsZU5hbWUiOiJab21iaWVfU3RyaWtlciIsInRleHR1cmVzIjp7IlNLSU4iOnsidXJsIjoiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS82MDUzYjBhOTYwZjI1NTQyNDI4NzI5ODE1M2Y0YjU5ZGRjNTM0Mjc0ZDJlODA0Yzk4NWZmODYwOWJkZDQyMzI1In19fQ'
+  - Name: Wandering_Trader
+    Variant: ''
+    DisplayName: '&eWandering Trader Head'
+    ID: f061c450-161c-4a7c-bdf7-2a70d45892f6
+    Texture: 'eyJ0aW1lc3RhbXAiOjE1NjQ2MTM0NTM4MDIsInByb2ZpbGVJZCI6Ijg0Zjk2ZjBmYTVkYzRlNTliZGM1OWYzYmVhMDBhNDkwIiwicHJvZmlsZU5hbWUiOiJab21iaWVfU3RyaWtlciIsInRleHR1cmVzIjp7IlNLSU4iOnsidXJsIjoiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS9jZWU4MGE1ZWJhYjFlNmFjOGM4YjUzMzM0YTYwOWVjODkzMjg0MmZjZDUwNDlkYzJlMjFkYzM1NjA0ZWRjMjVkIn19fQ'
+  - Name: Parrot
+    Variant: Cyan
+    DisplayName: '&eCyan Parrot Head'
+    ID: 26e0a0f4-44fe-46f2-928e-238d2aeacfa2
+    Texture: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMmI5NGYyMzZjNGE2NDJlYjJiY2RjMzU4OWI5YzNjNGEwYjViZDVkZjljZDVkNjhmMzdmOGM4M2Y4ZTNmMSJ9fX0='
+  - Name: Villager
+    Variant: Cleric
+    DisplayName: '&eVillager[Cleric] Head'
+    ID: bc30e3c3-55c3-4323-86fc-03eaeb9aa014
+    Texture: 'eyJ0aW1lc3RhbXAiOjE1NzY4MDc4OTIzNTAsInByb2ZpbGVJZCI6Ijg0Zjk2ZjBmYTVkYzRlNTliZGM1OWYzYmVhMDBhNDkwIiwicHJvZmlsZU5hbWUiOiJab21iaWVfU3RyaWtlciIsInRleHR1cmVzIjp7IlNLSU4iOnsidXJsIjoiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS84NDc4OTQ4MzU4YTZmMmViMjgwNzVjY2Q5ODc5NWQ3ZTVkODMzYzlhZmNjODFkMWY3MWEzYjk1ODA4OGRmNmIzIn19fQ'
+  - Name: Wolf
+    Variant: Tamed
+    DisplayName: '&eTamed Wolf Head'
+    ID: 38a890f4-8ec6-4e45-8169-4a6c0a5ba32e
+    Texture: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWQ4MzczMWQ3N2Y1NGY1ZDRmOTNkZGQ5OWI5NDc2ZTRmMWZlNWI3ZTEzMThmMWUxNjI2ZjdkM2ZhM2FhODQ3In19fQ=='
+  - Name: Donkey
+    Variant: ''
+    DisplayName: '&eDonkey Head'
+    ID: aab32140-51d3-4b1f-80e3-6d0963a8e65c
+    Texture: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZGZiNmMzYzA1MmNmNzg3ZDIzNmEyOTE1ZjgwNzJiNzdjNTQ3NDk3NzE1ZDFkMmY4Y2JjOWQyNDFkODhhIn19fQ=='
+  - Name: Hoglin
+    Variant: ''
+    DisplayName: '&eHoglin Head'
+    ID: 3b086664-4c34-4be4-b0a7-a655344c389f
+    Texture: 'ewogICJ0aW1lc3RhbXAiIDogMTU5MTY1Njg5NTc1NSwKICAicHJvZmlsZUlkIiA6ICI4NGY5NmYwZmE1ZGM0ZTU5YmRjNTlmM2JlYTAwYTQ5MCIsCiAgInByb2ZpbGVOYW1lIiA6ICJab21iaWVfU3RyaWtlciIsCiAgInRleHR1cmVzIiA6IHsKICAgICJTS0lOIiA6IHsKICAgICAgInVybCIgOiAiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS85YmE2ZTI0MDViNDNlNzc4MTRmZGYyMDgyOGRhM2RhMjQyY2YzMDQxYzgzZDlkNGJkYmY3YmRhN2ViN2VjMzU3IgogICAgfQogIH0KfQ=='
+  - Name: Horse
+    Variant: Brown
+    DisplayName: '&eBrown Horse Head'
+    ID: a9870478-3026-49ab-b64b-da127754a798
+    Texture: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOGE1ZmFiYmNiYzU0ODE5NzZmYjkzOGE1MTllYWQ1OWVlZWUyYTA3MWRmMjk3Mzg0YThmZTk2Nzg4YTlkZjVhNiJ9fX0='
+  - Name: Llama
+    Variant: White
+    DisplayName: '&eWhite Llama Head'
+    ID: 8b2c68f2-d666-445a-acb6-2477471a751c
+    Texture: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODAyNzdlNmIzZDlmNzgxOWVmYzdkYTRiNDI3NDVmN2FiOWE2M2JhOGYzNmQ2Yjg0YTdhMjUwYzZkMWEzNThlYiJ9fX0='
+  - Name: Guardian
+    Variant: ''
+    DisplayName: '&eGuardian Head'
+    ID: 1ba7f8ee-b511-48d1-a498-a8499d37b26f
+    Texture: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZGZiNjc1Y2I1YTdlM2ZkMjVlMjlkYTgyNThmMjRmYzAyMGIzZmE5NTAzNjJiOGJjOGViMjUyZTU2ZTc0In19fQ=='
+  - Name: Bat
+    Variant: ''
+    DisplayName: '&eBat Head'
+    ID: e4c5dfef-bbcc-4012-9f74-879d28fff431
+    Texture: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGNmMWIzYjNmNTM5ZDJmNjNjMTcyZTk0Y2FjZmFhMzkxZThiMzg1Y2RkNjMzZjNiOTkxYzc0ZTQ0YjI4In19fQ=='
+  - Name: Sheep
+    Variant: Cyan
+    DisplayName: '&eCyan Sheep Head'
+    ID: a13f55bf-ee36-4240-9498-2598eaaab4a0
+    Texture: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDZmNmM3ZTdmZDUxNGNlMGFjYzY4NTkzMjI5ZTQwZmNjNDM1MmI4NDE2NDZlNGYwZWJjY2NiMGNlMjNkMTYifX19'
+  - Name: Enderman
+    Variant: ''
+    DisplayName: '&eEnderman Head'
+    ID: dedaf353-b99a-44a3-b654-2e7e099764ce
+    Texture: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvN2E1OWJiMGE3YTMyOTY1YjNkOTBkOGVhZmE4OTlkMTgzNWY0MjQ1MDllYWRkNGU2YjcwOWFkYTUwYjljZiJ9fX0='
+  - Name: Horse
+    Variant: Creamy
+    DisplayName: '&eCreamy Horse Head'
+    ID: 00025a2a-eff7-40a5-8489-d8a8f40d7989
+    Texture: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjI4ZDFhYjRiZTFlMjhiN2I0NjFmZGVhNDYzODFhYzM2M2E3ZTVjMzU5MWM5ZTVkMjY4M2ZiZTFlYzlmY2QzIn19fQ=='
+  - Name: Salmon
+    Variant: ''
+    DisplayName: '&eSalmon Head'
+    ID: 8c986470-776d-4991-9a4d-4ccd14888c06
+    Texture: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOGFlYjIxYTI1ZTQ2ODA2Y2U4NTM3ZmJkNjY2ODI4MWNmMTc2Y2VhZmU5NWFmOTBlOTRhNWZkODQ5MjQ4NzgifX19'
+  - Name: Villager
+    Variant: Fisherman
+    DisplayName: '&eVillager[Fisherman] Head'
+    ID: 3c8033c3-52c3-4d23-86fc-03eaeb9aa014
+    Texture: 'eyJ0aW1lc3RhbXAiOjE1NzY4MDgwMTAzMjYsInByb2ZpbGVJZCI6Ijg0Zjk2ZjBmYTVkYzRlNTliZGM1OWYzYmVhMDBhNDkwIiwicHJvZmlsZU5hbWUiOiJab21iaWVfU3RyaWtlciIsInRleHR1cmVzIjp7IlNLSU4iOnsidXJsIjoiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS9kYjQ0MjI1YmFjMjAzZDIwMzc2MWM5NDVlMjU2ZDFkYzU3YTI1OWNiZDdlOTkzMjY4MDdmMjIxOGNjNzE3MzBjIn19fQ'
+  - Name: Cave_Spider
+    Variant: ''
+    DisplayName: '&eCave Spider Head'
+    ID: b0b18a7e-49af-452e-afae-56554ac259d1
+    Texture: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDE2NDVkZmQ3N2QwOTkyMzEwN2IzNDk2ZTk0ZWViNWMzMDMyOWY5N2VmYzk2ZWQ3NmUyMjZlOTgyMjQifX19'
+  - Name: Sheep
+    Variant: Black
+    DisplayName: '&eBlack Sheep Head'
+    ID: ede424d0-f810-4704-9424-db3c4afc402a
+    Texture: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzI2NTIwODNmMjhlZDFiNjFmOWI5NjVkZjFhYmYwMTBmMjM0NjgxYzIxNDM1OTUxYzY3ZDg4MzY0NzQ5ODIyIn19fQ=='
+  - Name: Skeleton
+    Variant: ''
+    DisplayName: vanilla
+    ID: vanilla
+    Texture: vanilla
+  - Name: Villager
+    Variant: Zombie_Cleric_
+    DisplayName: '&eZombie Cleric Villager Head'
+    ID: 7506a75e-136f-471c-8032-c3950b4a5561
+    Texture: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTI4YzJiYWQ1Mzg5Y2IzNTkyYjU2NWIzYzQ3ZWNjMTg5ZTA1NDJhODc4MzUwMjhkNjE0OGJiZTMzNDU2NDUifX19'
+  - Name: Rabbit
+    Variant: Gold
+    DisplayName: '&eGold Rabbit Head'
+    ID: 30552a92-f7af-42a0-b4b5-eae1d175bbe7
+    Texture: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzk3N2EzMjY2YmYzYjllYWYxN2U1YTAyZWE1ZmJiNDY4MDExNTk4NjNkZDI4OGI5M2U2YzEyYzljYiJ9fX0='
+  - Name: Villager
+    Variant: Zombie_Butcher
+    DisplayName: '&eZombie Butcher Villager Head'
+    ID: ba0907e5-5de9-4461-9da7-84ca6f9e7912
+    Texture: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTYxZjE5ZmZkOGFlNDI1NzkyYzRiMTgxNzU2YWRmZjhkNDgxNzRhZWVmNThhMGYzMjdhMjhjNzQyYzcyNDQyIn19fQ=='
+  - Name: Zoglin
+    Variant: ''
+    DisplayName: '&eZoglin Head'
+    ID: 3b084554-4c34-4be4-b0a7-a655344c389f
+    Texture: 'ewogICJ0aW1lc3RhbXAiIDogMTU5MTY1NjgwNzI1MywKICAicHJvZmlsZUlkIiA6ICI4NGY5NmYwZmE1ZGM0ZTU5YmRjNTlmM2JlYTAwYTQ5MCIsCiAgInByb2ZpbGVOYW1lIiA6ICJab21iaWVfU3RyaWtlciIsCiAgInRleHR1cmVzIiA6IHsKICAgICJTS0lOIiA6IHsKICAgICAgInVybCIgOiAiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS8yNGVkZTkwOTgxOGM0NWVhMDFhY2U4MDU2YTdmNTgyOWU0NmY4M2Y1MDdkNWI5NjM4MDcxZTY5ZTVjZTc0YWE5IgogICAgfQogIH0KfQ=='
+  - Name: Wolf
+    Variant: Wild
+    DisplayName: '&eWild Wolf Head'
+    ID: 0d0cb002-321b-406c-8fec-bae45a85a8d6
+    Texture: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTk1Y2JiNGY3NWVhODc2MTdmMmY3MTNjNmQ0OWRhYzMyMDliYTFiZDRiOTM2OTY1NGIxNDU5ZWExNTMxNyJ9fX0='
+  - Name: Wither_Skeleton
+    Variant: ''
+    DisplayName: vanilla
+    ID: vanilla
+    Texture: vanilla
+  - Name: MushroomCow
+    Variant: ''
+    DisplayName: '&eMooshroom Head'
+    ID: 0fba3370-1842-40d3-b4a4-06636e068f8b
+    Texture: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDBiYzYxYjk3NTdhN2I4M2UwM2NkMjUwN2EyMTU3OTEzYzJjZjAxNmU3YzA5NmE0ZDZjZjFmZTFiOGRiIn19fQ=='
+  - Name: Cat
+    Variant: Siamese
+    DisplayName: '&e[OLD]Siamese Cat Head'
+    ID: 2030a11c-21ae-49f0-acd2-49552fa99d73
+    Texture: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYWI4ODFjMzliM2FmZGNjNzlmOTFmZTVkZTNjZGQwMTViYzMzNTM4NDNmNTkxZjRkMjNjZDMwMjdkZTRlNiJ9fX0='
+  - Name: Horse
+    Variant: Black
+    DisplayName: '&eBlack Horse Head'
+    ID: d7e5febe-38f8-45b3-b4c1-02293affa78f
+    Texture: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjRiN2ZjNWY3YTlkZGZkZDFhYTc5MzE3NDEwZmMxOTI5ZjkxYmRkZjk4NTg1OTM4YTJhNTYxOTlhNjMzY2MifX19'
+  - Name: Villager
+    Variant: Cartographer
+    DisplayName: '&eVillager[Cartographer] Head'
+    ID: bc30e3c3-55c3-4d23-86fc-03eaeb9aa014
+    Texture: 'eyJ0aW1lc3RhbXAiOjE1NzY4MDc4NjEwNzUsInByb2ZpbGVJZCI6Ijg0Zjk2ZjBmYTVkYzRlNTliZGM1OWYzYmVhMDBhNDkwIiwicHJvZmlsZU5hbWUiOiJab21iaWVfU3RyaWtlciIsInRleHR1cmVzIjp7IlNLSU4iOnsidXJsIjoiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS8zYWZkMDUzMDZkOTI3MGRjOGJmOWZkOGJjMzYyYzFlM2RkZjUyYzYzOWEwYzA1MmJmNmQwNWJmNDA1NDUzMWUyIn19fQ'
+  - Name: Horse
+    Variant: Skeleton
+    DisplayName: '&eSkeleton Horse Head'
+    ID: c59c4764-93b0-457f-8706-31dcffd77ac2
+    Texture: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDdlZmZjZTM1MTMyYzg2ZmY3MmJjYWU3N2RmYmIxZDIyNTg3ZTk0ZGYzY2JjMjU3MGVkMTdjZjg5NzNhIn19fQ=='
+  - Name: Endermite
+    Variant: ''
+    DisplayName: '&eEndermite Head'
+    ID: 6938b147-1eb7-441e-9056-8c4707b93ed4
+    Texture: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODRhYWZmYTRjMDllMmVhZmI4NWQzNTIyMTIyZGIwYWE0NTg3NGJlYTRlM2Y1ZTc1NjZiNGQxNjZjN2RmOCJ9fX0='
+  - Name: Cat
+    Variant: White
+    DisplayName: '&eWhite Cat Head'
+    ID: 2030a11c-81ab-49b0-3332-4d552f799d73
+    Texture: 'eyJ0aW1lc3RhbXAiOjE1NjUzMjE2NTA1ODMsInByb2ZpbGVJZCI6Ijg0Zjk2ZjBmYTVkYzRlNTliZGM1OWYzYmVhMDBhNDkwIiwicHJvZmlsZU5hbWUiOiJab21iaWVfU3RyaWtlciIsInRleHR1cmVzIjp7IlNLSU4iOnsidXJsIjoiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS9iMGQzMGI5ZWNkYjYxOGE4MmQ0N2FjNjhmYmZjOTQzMmQ0NmFiMjAwMTViZDNiMmRlMGRlNDNhZWRjMmNjNmFhIn19fQ'
+  - Name: Ravager
+    Variant: ''
+    DisplayName: '&eRavager Head'
+    ID: f061c450-341c-4a7c-bdf7-2a74d45892f6
+    Texture: 'eyJ0aW1lc3RhbXAiOjE1NjQ2MTUxMzQ1MzYsInByb2ZpbGVJZCI6Ijg0Zjk2ZjBmYTVkYzRlNTliZGM1OWYzYmVhMDBhNDkwIiwicHJvZmlsZU5hbWUiOiJab21iaWVfU3RyaWtlciIsInRleHR1cmVzIjp7IlNLSU4iOnsidXJsIjoiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS8xZjNmNzQyNjI5MjhkNTZiNWI0MDY2OTQ1YjhjYjYzMGZlNTI0MzU0NzcwNjQ2ZDUzMDc3YWU5NWU1OTkwMWNjIn19fQ'
+  - Name: Giant
+    Variant: ''
+    DisplayName: '&eGiant Head'
+    ID: e8c871a0-dba4-4d75-99f7-f1b9c0e8d27e
+    Texture: 'ewogICJ0aW1lc3RhbXAiIDogMTYwMTQ5MDk4NzAxNiwKICAicHJvZmlsZUlkIiA6ICI4NGY5NmYwZmE1ZGM0ZTU5YmRjNTlmM2JlYTAwYTQ5MCIsCiAgInByb2ZpbGVOYW1lIiA6ICJab21iaWVfU3RyaWtlciIsCiAgInRleHR1cmVzIiA6IHsKICAgICJTS0lOIiA6IHsKICAgICAgInVybCIgOiAiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS83OTcxNWM2OGI3ODFjMGFkNGViMTZmOWQ3Y2Y0NTkwYzM4NTAzNDkwYzkwNTRkMTUwOGUyMzJkMjRiMGJhYmE5IgogICAgfQogIH0KfQ=='
+  - Name: Villager
+    Variant: Butcher
+    DisplayName: '&eVillager[Butcher] Head'
+    ID: bc30e3c3-17c3-4d23-86fc-03eaeb9aa014
+    Texture: 'eyJ0aW1lc3RhbXAiOjE1NzY4MDc4MjcwMjQsInByb2ZpbGVJZCI6Ijg0Zjk2ZjBmYTVkYzRlNTliZGM1OWYzYmVhMDBhNDkwIiwicHJvZmlsZU5hbWUiOiJab21iaWVfU3RyaWtlciIsInRleHR1cmVzIjp7IlNLSU4iOnsidXJsIjoiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS8zZTA1OWRiNDc0Y2Y1OTFkM2Y4NDVhZTVhYzEyNWU3Mjc1OWZhYzlhZDc0YmM5ODQ3NjViNTRlMjdjMWI4MDMwIn19fQ'
+  - Name: Villager
+    Variant: Fletcher
+    DisplayName: '&eVillager[Fletcher] Head'
+    ID: 3c8033c3-22c3-4d23-86fc-03eaeb9aa014
+    Texture: 'eyJ0aW1lc3RhbXAiOjE1NzY4MDgwNDMzMTgsInByb2ZpbGVJZCI6Ijg0Zjk2ZjBmYTVkYzRlNTliZGM1OWYzYmVhMDBhNDkwIiwicHJvZmlsZU5hbWUiOiJab21iaWVfU3RyaWtlciIsInRleHR1cmVzIjp7IlNLSU4iOnsidXJsIjoiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS8yZTUwN2VlZmMwZDFmMGY0NzExYjgyZmU5MzEwODU5MmRjNWI1ZGU2ZjgzZmZlMzhhNmE1ZjA3MDhjMTA0ODVkIn19fQ'
+  - Name: Sheep
+    Variant: Magenta
+    DisplayName: '&eMagenta Sheep Head'
+    ID: 3c1a8e29-ed57-4532-b6e0-37b2500ade45
+    Texture: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTgzNjU2NWM3ODk3ZDQ5YTcxYmMxODk4NmQxZWE2NTYxMzIxYTBiYmY3MTFkNDFhNTZjZTNiYjJjMjE3ZTdhIn19fQ=='
+  - Name: Horse
+    Variant: Gray
+    DisplayName: '&eGray Horse Head'
+    ID: beb5a0a0-0a96-4315-9fdc-4c5c59c97fce
+    Texture: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDEzODEzZGQ0NWVkMGVmODM4NDQ4Y2Y2ZjYzMWMxNTdjMjNmOTY1MGM1YWU0NTFlOTc4YTUzMzgzMzEyZmUifX19'
+  - Name: Squid
+    Variant: ''
+    DisplayName: '&eSquid Head'
+    ID: d5187627-541c-4ad6-8020-35e3dffe295f
+    Texture: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMDE0MzNiZTI0MjM2NmFmMTI2ZGE0MzRiODczNWRmMWViNWIzY2IyY2VkZTM5MTQ1OTc0ZTljNDgzNjA3YmFjIn19fQ=='
+  - Name: Villager
+    Variant: Zombie_Smith
+    DisplayName: '&eZombie Smith Villager Head'
+    ID: f061c450-161c-4a7c-bdf7-2a70d42892f6
+    Texture: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTE2MTU1ZmNmMzY2Y2Y0ZTA2Y2U1ZGZmYzQ4Y2E1NGU4ZWE0OGRmZTUyNTM1OGI2MTJkYzQ0ZmQ0MzIifX19'
+  - Name: Chicken
+    Variant: ''
+    DisplayName: '&eChicken Head'
+    ID: 0d579158-bfd4-4845-beb3-7b5eb056987f
+    Texture: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTYzODQ2OWE1OTljZWVmNzIwNzUzNzYwMzI0OGE5YWIxMWZmNTkxZmQzNzhiZWE0NzM1YjM0NmE3ZmFlODkzIn19fQ=='
+  - Name: Parrot
+    Variant: Green
+    DisplayName: '&eGreen Parrot Head'
+    ID: 9b7d7bcc-21d0-435c-9ccd-dc907008fcbc
+    Texture: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYWI5YTM2YzU1ODlmM2EyZTU5YzFjYWE5YjNiODhmYWRhNzY3MzJiZGI0YTc5MjYzODhhOGMwODhiYmJjYiJ9fX0='
+  - Name: Sheep
+    Variant: Light_Blue
+    DisplayName: '&eLight Blue Sheep Head'
+    ID: dfacccb8-18b6-4843-9dd7-6cab888f46d4
+    Texture: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWM4YTk3YTM4ODU2NTE0YTE2NDEzZTJjOTk1MjEyODlmNGM1MzYzZGM4MmZjOWIyODM0Y2ZlZGFjNzhiODkifX19'
+  - Name: Blaze
+    Variant: ''
+    DisplayName: '&eBlaze Head'
+    ID: e4d745ba-8ad2-4059-b047-0f1fe48f2425
+    Texture: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjc4ZWYyZTRjZjJjNDFhMmQxNGJmZGU5Y2FmZjEwMjE5ZjViMWJmNWIzNWE0OWViNTFjNjQ2Nzg4MmNiNWYwIn19fQ=='
+  - Name: Llama
+    Variant: Brown
+    DisplayName: '&eBrown Llama Head'
+    ID: 9953b3aa-c25c-40ae-b9d4-216d61464cd0
+    Texture: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzJiMWVjZmY3N2ZmZTNiNTAzYzMwYTU0OGViMjNhMWEwOGZhMjZmZDY3Y2RmZjM4OTg1NWQ3NDkyMTM2OCJ9fX0='
+  - Name: Sheep
+    Variant: Green
+    DisplayName: '&eGreen Sheep Head'
+    ID: bd0e32b6-4d05-4940-b3fe-a2be1346d778
+    Texture: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTAxNzIxNWM3ZjhkYjgyMDQwYWEyYzQ3Mjk4YjY2NTQxYzJlYjVmN2Y5MzA0MGE1ZDIzZDg4ZjA2ODdkNGIzNCJ9fX0='
+  - Name: Cat
+    Variant: Red
+    DisplayName: '&eRed Cat Head'
+    ID: 2f30a11c-81fb-49b0-3332-49552f799d23
+    Texture: 'eyJ0aW1lc3RhbXAiOjE1NjUzMjE3NjEyMjAsInByb2ZpbGVJZCI6Ijg0Zjk2ZjBmYTVkYzRlNTliZGM1OWYzYmVhMDBhNDkwIiwicHJvZmlsZU5hbWUiOiJab21iaWVfU3RyaWtlciIsInRleHR1cmVzIjp7IlNLSU4iOnsidXJsIjoiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS82OTNkZjQwZTQ3YzhkMjk1ODJjNzliYTE1MWI1YTVhZTMxYmM2ZWYzNDlhZGNiOWEyNTk5NWZlZTNmYzE2MmI5In19fQ'
+  - Name: Shulker
+    Variant: ''
+    DisplayName: '&eShulker Head'
+    ID: 1d71be7c-4cf6-4560-973e-36971ddb040e
+    Texture: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjFkMzUzNGQyMWZlODQ5OTI2MmRlODdhZmZiZWFjNGQyNWZmZGUzNWM4YmRjYTA2OWU2MWUxNzg3ZmYyZiJ9fX0='
+  - Name: Fox
+    Variant: Snow
+    DisplayName: '&eFox[Snow] Head'
+    ID: f061c110-391c-4a7c-bdf7-2a70d41122f6
+    Texture: 'eyJ0aW1lc3RhbXAiOjE1NjQ3MTQ4MDIyNTQsInByb2ZpbGVJZCI6Ijg0Zjk2ZjBmYTVkYzRlNTliZGM1OWYzYmVhMDBhNDkwIiwicHJvZmlsZU5hbWUiOiJab21iaWVfU3RyaWtlciIsInRleHR1cmVzIjp7IlNLSU4iOnsidXJsIjoiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS8yYWM5NTU0NWU1NDFiNDU0Y2NlNWRjYTcwNTZlNjIzZDI5NGM4NjZmM2I1MTM0NjVhYmE2NjQ2NTdmZDU2YTNiIn19fQ'
+  - Name: Parrot
+    Variant: Gray
+    DisplayName: '&eGray Parrot Head'
+    ID: 78010bcf-d16f-4525-be61-28f4d4194304
+    Texture: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvM2Q2ZjRhMjFlMGQ2MmFmODI0Zjg3MDhhYzYzNDEwZjFhMDFiYmI0MWQ3ZjRhNzAyZDk0NjljNjExMzIyMiJ9fX0='
+  - Name: Zombie_Horse
+    Variant: ''
+    DisplayName: '&eZombie Horse Head'
+    ID: 1e43546c-8667-4305-be50-0ab0f8e4c3e0
+    Texture: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDIyOTUwZjJkM2VmZGRiMThkZTg2ZjhmNTVhYzUxOGRjZTczZjEyYTZlMGY4NjM2ZDU1MWQ4ZWI0ODBjZWVjIn19fQ=='
+  - Name: Piglin
+    Variant: ''
+    DisplayName: '&ePiglin Head'
+    ID: 3b084444-4c34-4be4-b0a7-a655344c389f
+    Texture: 'ewogICJ0aW1lc3RhbXAiIDogMTU5MTY1NTgyMjM1MCwKICAicHJvZmlsZUlkIiA6ICI4NGY5NmYwZmE1ZGM0ZTU5YmRjNTlmM2JlYTAwYTQ5MCIsCiAgInByb2ZpbGVOYW1lIiA6ICJab21iaWVfU3RyaWtlciIsCiAgInRleHR1cmVzIiA6IHsKICAgICJTS0lOIiA6IHsKICAgICAgInVybCIgOiAiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS8xOGNjYTgyNjQyYjlkMmFkMWQ3YzQyMjU1OTdkYmY0NjVkZmEwZTAwNjc2Y2JlNGY1OWZhOGIzYWIyMjE1Yzg2IgogICAgfQogIH0KfQ=='
+  - Name: Husk
+    Variant: ''
+    DisplayName: '&eHusk Head'
+    ID: da422aa3-9025-445f-ae0e-a6a8f4b24d1a
+    Texture: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzc3MDY4MWQxYTI1NWZiNGY3NTQ3OTNhYTA1NWIyMjA0NDFjZGFiOWUxMTQxZGZhNTIzN2I0OTkzMWQ5YjkxYyJ9fX0='
+  - Name: Panda
+    Variant: Aggressive
+    DisplayName: '&ePanda[Agressive] Head'
+    ID: f061c450-341c-4a7c-bdf7-2a71d45822f6
+    Texture: 'eyJ0aW1lc3RhbXAiOjE1NjUyMTIzMDUzNTgsInByb2ZpbGVJZCI6Ijg0Zjk2ZjBmYTVkYzRlNTliZGM1OWYzYmVhMDBhNDkwIiwicHJvZmlsZU5hbWUiOiJab21iaWVfU3RyaWtlciIsInRleHR1cmVzIjp7IlNLSU4iOnsidXJsIjoiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS9mM2NhMGRiZjliM2M4YjcxMGI0OTM4OTc4ZTk0Y2ZjYTIzN2YwMmViM2E5YjdkNmQzZGZmNjA2NTAxYTdiYWMxIn19fQ'
+  - Name: Zombie_Pigman
+    Variant: ''
+    DisplayName: '&eZombie Pigman Head'
+    ID: 3b08d8ef-4c34-4bee-b0a7-a655302c389f
+    Texture: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzRlOWM2ZTk4NTgyZmZkOGZmOGZlYjMzMjJjZDE4NDljNDNmYjE2YjE1OGFiYjExY2E3YjQyZWRhNzc0M2ViIn19fQ=='
+  - Name: Panda
+    Variant: Worried
+    DisplayName: '&ePanda[Worried] Head'
+    ID: f061c450-391c-4a7c-bdf7-2a70d45822f6
+    Texture: 'eyJ0aW1lc3RhbXAiOjE1NjUyMTI0ODYzMjQsInByb2ZpbGVJZCI6Ijg0Zjk2ZjBmYTVkYzRlNTliZGM1OWYzYmVhMDBhNDkwIiwicHJvZmlsZU5hbWUiOiJab21iaWVfU3RyaWtlciIsInRleHR1cmVzIjp7IlNLSU4iOnsidXJsIjoiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS9kYmVmZjEyNDExYzdhYmY1OWU4ZDNiZTc0ZjlhYThjMDU3NzQ5YTE3NDUyNzk5Zjk1Mjg5NTkzOWRjYzFlZTIwIn19fQ'
+  - Name: Fox
+    Variant: Normal
+    DisplayName: '&eFox Head'
+    ID: f061c110-391c-4a7c-bdf7-2a70d45822f6
+    Texture: 'eyJ0aW1lc3RhbXAiOjE1NjQ3MTQ3NTY0MjAsInByb2ZpbGVJZCI6Ijg0Zjk2ZjBmYTVkYzRlNTliZGM1OWYzYmVhMDBhNDkwIiwicHJvZmlsZU5hbWUiOiJab21iaWVfU3RyaWtlciIsInRleHR1cmVzIjp7IlNLSU4iOnsidXJsIjoiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS83Mzk4ZWQ5ZmExYzFjYzYxMTc2OWMxNDI3YmFmNzQwZGZkMzE1ZTdmNzQ4ZDYxMmYzYTYzYjUzNjA2ODY3YTlmIn19fQ'
+  - Name: Cow
+    Variant: ''
+    DisplayName: '&eCow Head'
+    ID: b32d23be-aeca-4f40-a813-a13fbbec4372
+    Texture: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNWQ2YzZlZGE5NDJmN2Y1ZjcxYzMxNjFjNzMwNmY0YWVkMzA3ZDgyODk1ZjlkMmIwN2FiNDUyNTcxOGVkYzUifX19'
+  - Name: Cat
+    Variant: Cat
+    DisplayName: '&e[OLD]Black Cat Head'
+    ID: 30696a4b-b87b-4446-a821-5bc127ba4993
+    Texture: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjJhNjYyZjJhZTdkZWJlZTY1MjkyYzJiZjQyZmJiMDliOTdiMmZmYmRiMjcwNTIwYzJkYjk2ZTUxZDg5NDUifX19'
+  - Name: Horse
+    Variant: Chestnut
+    DisplayName: '&eChestnut Horse Head'
+    ID: deafd397-245c-4a90-8220-7280178632a4
+    Texture: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjY2YjJiMzJkMzE1MzljNzM4M2Q5MjNiYWU0ZmFhZjY1ZGE2NzE1Y2Q1MjZjMzVkMmU0ZTY4MjVkYTExZmIifX19'
+  - Name: Salmon
+    Variant: ''
+    DisplayName: '&eSalmon Head'
+    ID: 8c986470-776d-4991-9a4d-4ccd14888c06
+    Texture: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOGFlYjIxYTI1ZTQ2ODA2Y2U4NTM3ZmJkNjY2ODI4MWNmMTc2Y2VhZmU5NWFmOTBlOTRhNWZkODQ5MjQ4NzgifX19'
