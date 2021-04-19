@@ -10,7 +10,6 @@ import me.lokka30.levelledmobs.misc.FileLoader;
 import me.lokka30.levelledmobs.misc.Utils;
 import me.lokka30.microlib.UpdateChecker;
 import me.lokka30.microlib.VersionUtils;
-import org.apache.maven.artifact.versioning.ComparableVersion;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.command.PluginCommand;
@@ -108,6 +107,7 @@ public class Companion {
         main.configUtils.overridenEntities = main.configUtils.getSetFromConfigSection("overriden-entities");
         main.attributesCfg = loadEmbeddedResource("defaultAttributes.yml");
         main.dropsCfg = loadEmbeddedResource("defaultDrops.yml");
+        //noinspection ConstantConditions
         main.mobHeadManager.loadTextures(loadEmbeddedResource("textures.yml"));
 
         main.configUtils.load();
@@ -206,13 +206,10 @@ public class Companion {
             updateChecker.getLatestVersion(latestVersion -> {
                 final String currentVersion = updateChecker.getCurrentVersion().split(" ")[0];
 
-                ComparableVersion thisVersion = new ComparableVersion(currentVersion);
-                ComparableVersion spigotVersion = new ComparableVersion(latestVersion);
+                final boolean isOutOfDate = !currentVersion.equals(latestVersion);
+                final boolean isNewerVersion = currentVersion.contains("indev");
 
-                final boolean isOutOfDate = (thisVersion.compareTo(spigotVersion) < 0);
-                final boolean isNewerVersion =(thisVersion.compareTo(spigotVersion) > 0);
-
-                if (isNewerVersion){
+                if (isNewerVersion) {
                     updateResult = Collections.singletonList(
                             "&7Your &bLevelledMobs&7 version is &ba pre-release&7. Latest release version is &bv%latestVersion%&7. &8(&7You're running &bv%currentVersion%&8)");
 

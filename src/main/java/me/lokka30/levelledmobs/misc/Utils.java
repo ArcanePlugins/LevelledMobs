@@ -10,10 +10,7 @@ import org.bukkit.entity.Zombie;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.TreeMap;
+import java.util.*;
 
 /**
  * TODO Describe...
@@ -188,5 +185,35 @@ public final class Utils {
      */
     public static Object getNonNull(@Nullable Object object1, @NotNull Object object2) {
         return object1 == null ? object2 : object1;
+    }
+
+    /**
+     * Puts the string into lowercase and makes
+     * every character that starts a word a
+     * capital letter.
+     * <p>
+     * e.g. from: wiTheR sKeLeTOn
+     * to: Wither Skeleton
+     *
+     * @param str string to capitalize
+     */
+    public static String capitalize(String str) {
+        StringBuilder builder = new StringBuilder();
+        String[] words = str.toLowerCase(Locale.ROOT).split(" "); // each word separated from str
+        int index = 0; // current word being processed in str
+        for (String word : words) {
+            builder
+                    .append(str.substring(0, 1).toUpperCase()) // capitalize first letter
+                    .append(str.substring(1)); // append the rest of the word
+
+            // if there is another word to capitalize, then add a space
+            if (index != (words.length - 1)) {
+                builder.append(" ");
+            }
+
+            index++;
+        }
+
+        return builder.toString();
     }
 }

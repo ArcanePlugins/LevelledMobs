@@ -11,7 +11,12 @@ import org.jetbrains.annotations.Nullable;
 import java.util.HashSet;
 
 /**
- * TODO Describe...
+ * This event is fired *before*
+ * a mob has been levelled. Note
+ * that it does not fire when the
+ * mob was spawned using `/lm
+ * summon`, instead see Summoned-
+ * -MobPreLevelEvent.
  *
  * @author lokka30
  */

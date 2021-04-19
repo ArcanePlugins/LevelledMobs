@@ -14,8 +14,6 @@ import me.lokka30.levelledmobs.misc.DebugType;
 import me.lokka30.levelledmobs.misc.LevelNumbersWithBias;
 import me.lokka30.levelledmobs.misc.Utils;
 import me.lokka30.microlib.MessageUtils;
-import org.apache.commons.lang.Validate;
-import org.apache.commons.lang.WordUtils;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
@@ -651,7 +649,7 @@ public class LevelManager {
         final String roundedMaxHealthInt = maxHealth == null ? "?" : (int) Utils.round(maxHealth.getBaseValue()) + "";
 
         String nametag = isDeathNametag ? main.settingsCfg.getString("creature-death-nametag") : main.settingsCfg.getString("creature-nametag");
-        String entityName = WordUtils.capitalizeFully(livingEntity.getType().toString().toLowerCase().replaceAll("_", " "));
+        String entityName = Utils.capitalize(livingEntity.getType().toString().toLowerCase().replaceAll("_", " "));
 
         // Baby zombies can have specific nametags in entity-name-override
         if (Utils.isBabyMob(livingEntity) && main.settingsCfg.contains("entity-name-override.BABY_" + livingEntity.getType())) {
@@ -832,7 +830,7 @@ public class LevelManager {
     }
 
     public void applyLevelledAttributes(final LivingEntity livingEntity, final int level, final Addition addition) {
-        Validate.isTrue(main.levelInterface.isLevelled(livingEntity), "Mob must be levelled.");
+        assert main.levelInterface.isLevelled(livingEntity);
 
         // This functionality should be added into the enum.
         Attribute attribute;
@@ -920,7 +918,7 @@ public class LevelManager {
             // then we'll be here with a non-levelled entity
             return;
         }
-        Validate.isTrue(level >= 0, "Level must be greater than or equal to zero.");
+        assert level >= 0;
 
         // Custom Drops must be enabled.
         if (!main.settingsCfg.getBoolean("use-custom-item-drops-for-mobs")) return;

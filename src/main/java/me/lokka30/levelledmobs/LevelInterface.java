@@ -8,7 +8,6 @@ import me.lokka30.levelledmobs.misc.Addition;
 import me.lokka30.levelledmobs.misc.DebugType;
 import me.lokka30.levelledmobs.misc.ModalList;
 import me.lokka30.levelledmobs.misc.Utils;
-import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.attribute.Attribute;
@@ -274,10 +273,8 @@ public class LevelInterface {
      * @param bypassLimits whether LM should disregard max level, etc.
      */
     public void applyLevelToMob(@NotNull LivingEntity livingEntity, int level, boolean isSummoned, boolean bypassLimits, @NotNull HashSet<AdditionalLevelInformation> additionalLevelInformation) {
-        Validate.isTrue(level >= 0, "Level must be greater than or equal to zero.");
-        if (!bypassLimits && !isSummoned) {
-            Validate.isTrue(getLevellableState(livingEntity) == LevellableState.ALLOWED, "Mob must be levellable or bypassLimits must be true");
-        }
+        assert level >= 0;
+        assert bypassLimits || isSummoned || getLevellableState(livingEntity) == LevellableState.ALLOWED;
 
         if (isSummoned) {
             SummonedMobPreLevelEvent summonedMobPreLevelEvent = new SummonedMobPreLevelEvent(livingEntity, level);

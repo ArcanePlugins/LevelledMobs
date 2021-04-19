@@ -8,7 +8,10 @@ import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.*;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * TODO Describe...
@@ -182,8 +185,8 @@ public class KillSubcommand implements Subcommand {
         boolean containsNoDrops = false;
 
         StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < args.length; i++){
-            if ("/nodrops".equalsIgnoreCase(args[i])) {
+        for (String arg : args) {
+            if ("/nodrops".equalsIgnoreCase(arg)) {
                 containsNoDrops = true;
                 break;
             }

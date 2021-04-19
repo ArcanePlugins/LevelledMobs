@@ -6,7 +6,9 @@ import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
 /**
- * TODO Describe...
+ * This event is fired *before* a mob has
+ * been levelled, but only if it was
+ * spawned using the `/lm summon` command.
  *
  * @author lokka30
  */

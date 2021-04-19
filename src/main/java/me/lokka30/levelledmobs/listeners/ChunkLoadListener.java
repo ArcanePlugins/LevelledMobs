@@ -19,8 +19,8 @@ import java.util.HashSet;
  * @contributors lokka30
  */
 public class ChunkLoadListener implements Listener {
-    private final LevelledMobs main;
 
+    private final LevelledMobs main;
     public ChunkLoadListener(final LevelledMobs main) {
         this.main = main;
     }

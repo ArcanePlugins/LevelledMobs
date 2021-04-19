@@ -19,6 +19,12 @@ import org.jetbrains.annotations.Nullable;
 import java.lang.reflect.Field;
 import java.util.*;
 
+/**
+ * TODO Describe...
+ *
+ * @author stumper66
+ * @contributors none
+ */
 public class MobHeadManager {
 
     public MobHeadManager(final LevelledMobs main){
@@ -46,8 +52,7 @@ public class MobHeadManager {
             EntityType entityType;
             try{
                 entityType = EntityType.valueOf(mob.name.toUpperCase());
-            }
-            catch (Exception e){
+            } catch (Exception e){
                 //Utils.logger.warning("Invalid mob in textures.yml: " + mob.name);
                 continue;
             }

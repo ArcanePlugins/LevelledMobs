@@ -15,10 +15,15 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 
-import java.lang.reflect.UndeclaredThrowableException;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * TODO Describe...
+ *
+ * @author stumper66
+ * @contributors none
+ */
 public class BlockPlaceListener implements Listener {
     private final LevelledMobs main;
     final public NamespacedKey keySpawner;
@@ -63,14 +68,12 @@ public class BlockPlaceListener implements Listener {
                     final Integer valueInt = sourcePdc.get(key, PersistentDataType.INTEGER);
                     if (valueInt != null) targetPdc.set(key, PersistentDataType.INTEGER, valueInt);
                 }
-            }
-            else {
+            } else {
                 if (sourcePdc.has(key, PersistentDataType.STRING)){
                     final String valueStr = sourcePdc.get(key, PersistentDataType.STRING);
                     if (valueStr != null) targetPdc.set(key, PersistentDataType.STRING, valueStr);
                     Utils.logger.info("added key " + key.getKey() + ", is null: " + (valueStr == null));
-                }
-                else
+                } else
                     Utils.logger.info("key not present: " + key.getKey());
             }
         }

@@ -1,7 +1,7 @@
 package me.lokka30.levelledmobs.customdrops;
 
 /**
- * This is the list of groups that can be assocaited
+ * This is the list of groups that can be associated
  * with one of more custom drop items
  *
  * @author stumper66

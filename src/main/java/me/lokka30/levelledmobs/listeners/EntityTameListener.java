@@ -23,7 +23,6 @@ import java.util.HashSet;
 public class EntityTameListener implements Listener {
 
     private final LevelledMobs main;
-
     public EntityTameListener(final LevelledMobs main) {
         this.main = main;
     }

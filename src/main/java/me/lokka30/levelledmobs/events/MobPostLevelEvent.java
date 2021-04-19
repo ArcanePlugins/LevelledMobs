@@ -10,7 +10,8 @@ import org.jetbrains.annotations.Nullable;
 import java.util.HashSet;
 
 /**
- * TODO Describe...
+ * This event is fired *after* a mob is levelled.
+ * Other plugins can cancel this event.
  *
  * @author lokka30
  */

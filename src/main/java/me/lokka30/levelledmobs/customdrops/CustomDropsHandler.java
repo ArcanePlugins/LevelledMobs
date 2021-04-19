@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * The main class that holds useful functions for
+ * The main CustomDropsclass that holds useful functions for
  * parsing, instantizing and more of custom drop items
  *
  * @author stumper66
