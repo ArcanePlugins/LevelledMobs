@@ -8,6 +8,7 @@ import me.lokka30.levelledmobs.managers.LevelManager;
 import me.lokka30.levelledmobs.managers.WorldGuardManager;
 import me.lokka30.levelledmobs.misc.FileLoader;
 import me.lokka30.levelledmobs.misc.Utils;
+import me.lokka30.levelledmobs.misc.VersionInfo;
 import me.lokka30.microlib.UpdateChecker;
 import me.lokka30.microlib.VersionUtils;
 import org.bstats.bukkit.Metrics;
@@ -17,14 +18,8 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.PluginManager;
 
 import javax.annotation.Nullable;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.io.*;
+import java.util.*;
 
 /**
  * This class contains methods used by the main class.
@@ -38,9 +33,12 @@ public class Companion {
 
     public Companion(final LevelledMobs main) {
         this.main = main;
+        this.updateResult = new LinkedList<>();
     }
 
-    private final PluginManager pluginManager = Bukkit.getPluginManager();
+
+    final private PluginManager pluginManager = Bukkit.getPluginManager();
+    public List<String> updateResult;
 
     protected void checkWorldGuard() {
         // Hook into WorldGuard, register LM's flags.
@@ -199,17 +197,32 @@ public class Companion {
     }
 
     //Check for updates on the Spigot page.
-    public List<String> updateResult = new ArrayList<>();
     protected void checkUpdates() {
         if (main.settingsCfg.getBoolean("use-update-checker", true)) {
             final UpdateChecker updateChecker = new UpdateChecker(main, 74304);
             updateChecker.getLatestVersion(latestVersion -> {
                 final String currentVersion = updateChecker.getCurrentVersion().split(" ")[0];
 
-                final boolean isOutOfDate = !currentVersion.equals(latestVersion);
-                final boolean isNewerVersion = currentVersion.contains("indev");
+                VersionInfo thisVersion;
+                VersionInfo spigotVersion;
+                boolean isOutOfDate;
+                boolean isNewerVersion;
 
-                if (isNewerVersion) {
+                try {
+                    thisVersion = new VersionInfo(currentVersion);
+                    spigotVersion = new VersionInfo(latestVersion);
+
+                    isOutOfDate = (thisVersion.compareTo(spigotVersion) < 0);
+                    isNewerVersion =(thisVersion.compareTo(spigotVersion) > 0);
+                }
+                catch (InvalidObjectException e){
+                    Utils.logger.warning("Got exception creating version objects: " + e.getMessage());
+
+                    isOutOfDate = !currentVersion.equals(latestVersion);
+                    isNewerVersion = currentVersion.contains("indev");
+                }
+
+                if (isNewerVersion){
                     updateResult = Collections.singletonList(
                             "&7Your &bLevelledMobs&7 version is &ba pre-release&7. Latest release version is &bv%latestVersion%&7. &8(&7You're running &bv%currentVersion%&8)");
 
@@ -253,6 +266,7 @@ public class Companion {
             });
         }
     }
+
 
     protected void shutDownAsyncTasks() {
         Utils.logger.info("&fTasks: &7Shutting down other async tasks...");

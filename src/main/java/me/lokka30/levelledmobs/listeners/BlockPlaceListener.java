@@ -19,7 +19,9 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * TODO Describe...
+ * Listens for blocks being placed
+ * for the sole reason of transferring
+ * PDC data to a placed LM spawner
  *
  * @author stumper66
  * @contributors none
@@ -68,13 +70,9 @@ public class BlockPlaceListener implements Listener {
                     final Integer valueInt = sourcePdc.get(key, PersistentDataType.INTEGER);
                     if (valueInt != null) targetPdc.set(key, PersistentDataType.INTEGER, valueInt);
                 }
-            } else {
-                if (sourcePdc.has(key, PersistentDataType.STRING)){
-                    final String valueStr = sourcePdc.get(key, PersistentDataType.STRING);
-                    if (valueStr != null) targetPdc.set(key, PersistentDataType.STRING, valueStr);
-                    Utils.logger.info("added key " + key.getKey() + ", is null: " + (valueStr == null));
-                } else
-                    Utils.logger.info("key not present: " + key.getKey());
+            } else if (sourcePdc.has(key, PersistentDataType.STRING)){
+                final String valueStr = sourcePdc.get(key, PersistentDataType.STRING);
+                if (valueStr != null) targetPdc.set(key, PersistentDataType.STRING, valueStr);
             }
         }
 

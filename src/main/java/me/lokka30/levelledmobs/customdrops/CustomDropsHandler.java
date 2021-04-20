@@ -735,7 +735,11 @@ public class CustomDropsHandler {
         }
     }
 
-    private void addMaterialToDrop(final String materialName, CustomDropInstance dropInstance, CustomDropItem item){
+    private void addMaterialToDrop(String materialName, CustomDropInstance dropInstance, CustomDropItem item){
+
+        materialName = Utils.replaceEx(materialName, "mob_head", "player_head");
+        materialName = Utils.replaceEx(materialName, "mobhead", "player_head");
+
         Material material;
         try {
             material = Material.valueOf(materialName.toUpperCase());

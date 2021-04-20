@@ -6,7 +6,7 @@
 
     <groupId>io.github.lokka30</groupId>
     <artifactId>LevelledMobs</artifactId>
-    <version>2.6.0 b380</version>
+    <version>2.6.0 b381</version>
     <packaging>jar</packaging>
 
     <name>LevelledMobs</name>
@@ -23,7 +23,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.7.0</version>
+                <version>3.8.1</version>
                 <configuration>
                     <source>1.8</source>
                     <target>1.8</target>
@@ -102,6 +102,8 @@
         <dependency>
             <groupId>com.mojang</groupId>
             <artifactId>authlib</artifactId>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/libs/authlib-1.5.25.jar</systemPath>
             <version>1.5.25</version>
         </dependency>
         <dependency>

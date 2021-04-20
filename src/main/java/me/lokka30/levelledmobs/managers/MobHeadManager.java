@@ -28,16 +28,16 @@ import java.util.*;
 public class MobHeadManager {
 
     public MobHeadManager(final LevelledMobs main){
-        //this.main = main;
+        this.main = main;
     }
 
-    //final private LevelledMobs main;
+    final private LevelledMobs main;
     private Map<EntityType, Map<String, MobDataInfo>> mobMap;
 
     public void loadTextures(final YamlConfiguration textureData){
         mobMap = new LinkedHashMap<>();
 
-        List<LinkedHashMap<String, Object>> lst = (List<LinkedHashMap<String, Object>>) textureData.getList("Mobs");
+        final List<LinkedHashMap<String, Object>> lst = (List<LinkedHashMap<String, Object>>) textureData.getList("Mobs");
         if (lst == null) return;
 
         for (final LinkedHashMap<String, Object> item : lst){
@@ -64,10 +64,10 @@ public class MobHeadManager {
     }
 
     public ItemStack getMobHeadFromPlayerHead(final ItemStack playerHead, final LivingEntity livingEntity){
-        Material vanillaMaterial = checkForVanillaHeads(livingEntity.getType());
+        final Material vanillaMaterial = checkForVanillaHeads(livingEntity);
         if (vanillaMaterial != Material.AIR) {
-            ItemStack newItem = new ItemStack(vanillaMaterial, playerHead.getAmount());
-            ItemMeta meta = playerHead.getItemMeta();
+            final ItemStack newItem = new ItemStack(vanillaMaterial, playerHead.getAmount());
+            final ItemMeta meta = playerHead.getItemMeta();
             if (meta != null){
                 ItemMeta newMeta = meta.clone();
                 newItem.setItemMeta(meta);
@@ -80,7 +80,7 @@ public class MobHeadManager {
             return playerHead;
         }
 
-        Map<String, MobDataInfo> mobDatas = this.mobMap.get(livingEntity.getType());
+        final Map<String, MobDataInfo> mobDatas = this.mobMap.get(livingEntity.getType());
         MobDataInfo mobData = null;
 
         if (mobDatas.size() > 1){
@@ -90,7 +90,7 @@ public class MobHeadManager {
 
         if (mobData == null){
             // grab first one
-            for (String variant : mobDatas.keySet()){
+            for (final String variant : mobDatas.keySet()){
                 mobData = mobDatas.get(variant);
                 break;
             }
@@ -99,11 +99,18 @@ public class MobHeadManager {
         if (mobData == null) return playerHead;
 
         final String code = mobData.textureCode;
-        final UUID id = UUID.fromString(mobData.id);
+        UUID id;
+        try {
+            id = UUID.fromString(mobData.id);
+        }
+        catch (IllegalArgumentException e){
+            Utils.logger.warning("mob: " + livingEntity.getName() + ", exception getting UUID for mob head. " + e.getMessage());
+            return playerHead;
+        }
         final GameProfile profile = new GameProfile(id, null);
         profile.getProperties().put("textures", new Property("textures", code));
 
-        SkullMeta meta = (SkullMeta)playerHead.getItemMeta();
+        SkullMeta meta = (SkullMeta) playerHead.getItemMeta();
         if (meta == null) return playerHead;
 
         Field profileField;
@@ -112,7 +119,13 @@ public class MobHeadManager {
             profileField.setAccessible(true);
             profileField.set(meta, profile);
         } catch (NoSuchFieldException | IllegalArgumentException | IllegalAccessException e1) {
-            e1.printStackTrace();
+            Utils.logger.warning("Unable to set meta data in profile class for mob " + livingEntity.getName());
+        }
+
+        if (!Utils.isNullOrEmpty(livingEntity.getCustomName())) {
+            String name = main.messagesCfg.getString("other.mob-head-drop-name", "%mob_name%'s head");
+            name = Utils.replaceEx(name, "%mob_name%", livingEntity.getCustomName());
+            mobData.displayName = name;
         }
 
         meta.setDisplayName(MessageUtils.colorizeAll(mobData.displayName));
@@ -122,8 +135,8 @@ public class MobHeadManager {
     }
 
     @NotNull
-    private Material checkForVanillaHeads(final EntityType et){
-        switch (et){
+    private Material checkForVanillaHeads(final LivingEntity livingEntity){
+        switch (livingEntity.getType()){
             case ENDER_DRAGON:
                 return Material.DRAGON_HEAD;
             case ZOMBIE:
@@ -131,7 +144,10 @@ public class MobHeadManager {
             case SKELETON:
                 return Material.SKELETON_SKULL;
             case WITHER_SKELETON:
+            case WITHER:
                 return Material.WITHER_SKELETON_SKULL;
+            case CREEPER:
+                if (!((Creeper) livingEntity).isPowered()) return Material.CREEPER_HEAD;
             default:
                 return Material.AIR;
         }
@@ -147,10 +163,9 @@ public class MobHeadManager {
             return mobDatas.get(dyeColor.name());
         }
 
-        if (et.equals(EntityType.CREEPER)){
-            final Creeper creeper = (Creeper) livingEntity;
-            return mobDatas.get(creeper.isPowered() ? "Charged" : "");
-        }
+        // uncharged creepers already got processed
+        if (et.equals(EntityType.CREEPER))
+            return mobDatas.get("Charged");
 
         if (et.equals(EntityType.CAT)){
             final Cat cat = (Cat) livingEntity;

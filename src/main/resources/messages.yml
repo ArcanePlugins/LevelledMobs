@@ -256,6 +256,9 @@ other:
     send-in-console: true
     send-on-join: true
 
+  # when a mob is named, is killed and drops a head, this will be the name used for it
+  mob-head-drop-name: '%mob_name%''s head'
+
 # This value is used when this file is loaded to check if this file is most likely incompatible.
 # The value must match exactly what version the plugin ships the default file with.
 # Don't change this unless you know what you're doing!
