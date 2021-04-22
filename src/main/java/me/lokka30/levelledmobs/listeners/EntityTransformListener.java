@@ -19,7 +19,6 @@ import java.util.HashSet;
  * TODO Describe...
  *
  * @author stumper66
- * @contributors lokka30
  */
 public class EntityTransformListener implements Listener {
 

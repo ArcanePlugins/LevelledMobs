@@ -17,7 +17,6 @@ import java.util.List;
  * TODO Describe...
  *
  * @author stumper66
- * @contributors lokka30
  */
 public class KillSubcommand implements Subcommand {
 

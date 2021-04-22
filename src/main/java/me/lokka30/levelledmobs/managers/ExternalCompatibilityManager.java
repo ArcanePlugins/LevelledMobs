@@ -57,7 +57,7 @@ public class ExternalCompatibilityManager {
 
     /**
      * @param livingEntity mob to check
-     * @return if Dangerous Caves compatibility enabled & entity is from DangerousCaves
+     * @return if Dangerous Caves compatibility enabled and entity is from DangerousCaves
      */
     public static boolean checkDangerousCaves(final LivingEntity livingEntity) {
         return ExternalCompatibilityManager.isExternalCompatibilityEnabled(ExternalCompatibility.DANGEROUS_CAVES)
@@ -66,7 +66,7 @@ public class ExternalCompatibilityManager {
 
     /**
      * @param livingEntity mob to check
-     * @return if MythicMobs compatibility enabled & entity is from MythicMobs
+     * @return if MythicMobs compatibility enabled and entity is from MythicMobs
      */
     public static boolean checkMythicMobs(final LivingEntity livingEntity) {
         return ExternalCompatibilityManager.isExternalCompatibilityEnabled(ExternalCompatibility.MYTHIC_MOBS)
@@ -75,7 +75,7 @@ public class ExternalCompatibilityManager {
 
     /**
      * @param livingEntity mob to check
-     * @return if EliteMobs compatibility enabled & entity is from EliteMobs
+     * @return if EliteMobs compatibility enabled and entity is from EliteMobs
      */
     public static boolean checkEliteMobs(final LivingEntity livingEntity) {
         return
@@ -86,7 +86,7 @@ public class ExternalCompatibilityManager {
 
     /**
      * @param livingEntity mob to check
-     * @return if InfernalMobs compatibility enabled & entity is from InfernalMobs
+     * @return if InfernalMobs compatibility enabled and entity is from InfernalMobs
      */
     public static boolean checkInfernalMobs(final LivingEntity livingEntity) {
         return ExternalCompatibilityManager.isExternalCompatibilityEnabled(ExternalCompatibility.INFERNAL_MOBS)
@@ -95,7 +95,7 @@ public class ExternalCompatibilityManager {
 
     /**
      * @param livingEntity mob to check
-     * @return if Citizens compatibility enabled & entity is from Citizens
+     * @return if Citizens compatibility enabled and entity is from Citizens
      */
     public static boolean checkCitizens(final LivingEntity livingEntity) {
         return ExternalCompatibilityManager.isExternalCompatibilityEnabled(ExternalCompatibility.CITIZENS)
@@ -104,7 +104,7 @@ public class ExternalCompatibilityManager {
 
     /**
      * @param livingEntity mob to check
-     * @return if Shopkeepers compatibility enabled & entity is from Shopkeepers
+     * @return if Shopkeepers compatibility enabled and entity is from Shopkeepers
      */
     public static boolean checkShopkeepers(final LivingEntity livingEntity) {
         return ExternalCompatibilityManager.isExternalCompatibilityEnabled(ExternalCompatibility.SHOPKEEPERS)
@@ -113,7 +113,8 @@ public class ExternalCompatibilityManager {
 
     /**
      * @param location location to check regions of
-     * @return if WorldGuard is installed & region of entity blocks levelling (flag derived)
+     * @param main the main LevelledMobs instance
+     * @return if WorldGuard is installed and region of entity blocks levelling (flag derived)
      */
     public static boolean checkWorldGuard(final Location location, final LevelledMobs main) {
         return ExternalCompatibilityManager.hasWorldGuardInstalled()

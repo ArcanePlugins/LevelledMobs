@@ -28,7 +28,7 @@ import java.util.HashSet;
  * of LevelledMobs.
  *
  * @author lokka30
- * @contributors stumper66
+ * @since 2.5
  */
 public class LevelInterface {
 
@@ -271,6 +271,7 @@ public class LevelInterface {
      * @param level        the level the mob should have
      * @param isSummoned   if the mob was spawned by LevelledMobs, not by the server
      * @param bypassLimits whether LM should disregard max level, etc.
+     * @param additionalLevelInformation used to determine the source event
      */
     public void applyLevelToMob(@NotNull LivingEntity livingEntity, int level, boolean isSummoned, boolean bypassLimits, @NotNull HashSet<AdditionalLevelInformation> additionalLevelInformation) {
         assert level >= 0;

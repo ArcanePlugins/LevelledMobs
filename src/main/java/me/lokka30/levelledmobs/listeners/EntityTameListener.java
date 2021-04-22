@@ -18,7 +18,6 @@ import java.util.HashSet;
  * TODO Describe...
  *
  * @author stumper66
- * @contributors lokka30
  */
 public class EntityTameListener implements Listener {
 

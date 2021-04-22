@@ -11,7 +11,6 @@ import org.bukkit.event.entity.EntityRegainHealthEvent;
  * TODO Describe...
  *
  * @author konsolas
- * @contributors lokka30
  */
 public class EntityRegainHealthListener implements Listener {
 

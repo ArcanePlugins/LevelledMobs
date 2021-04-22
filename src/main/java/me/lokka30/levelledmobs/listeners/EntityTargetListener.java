@@ -12,7 +12,6 @@ import org.bukkit.event.entity.EntityTargetEvent;
  * TODO Describe...
  *
  * @author stumper66
- * @contributors lokka30
  */
 public class EntityTargetListener implements Listener {
 

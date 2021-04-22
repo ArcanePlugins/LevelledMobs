@@ -9,7 +9,6 @@ import java.util.Map;
  * TODO Describe...
  *
  * @author stumper66
- * @contributors lokka30
  */
 public class RulesInfo {
     public boolean enabled;

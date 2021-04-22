@@ -1,14 +1,12 @@
 package me.lokka30.levelledmobs.misc;
 
-import org.apache.commons.lang.NullArgumentException;
-
 import java.io.InvalidObjectException;
 import java.util.LinkedList;
 import java.util.List;
 
 public class VersionInfo implements Comparable<VersionInfo> {
     public VersionInfo(final String version) throws InvalidObjectException {
-        if (version == null) throw new NullArgumentException("version");
+        if (version == null) throw new NullPointerException("version can't be null");
 
         this.versionStr = version;
         String[] split = version.split("\\.");

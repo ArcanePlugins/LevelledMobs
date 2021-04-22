@@ -16,7 +16,6 @@ import java.util.HashSet;
  * TODO Describe...
  *
  * @author stumper66
- * @contributors lokka30
  */
 public class ChunkLoadListener implements Listener {
 

@@ -7,6 +7,7 @@ import me.lokka30.levelledmobs.listeners.EntityDamageDebugListener;
 import me.lokka30.levelledmobs.managers.*;
 import me.lokka30.levelledmobs.misc.ConfigUtils;
 import me.lokka30.levelledmobs.misc.Utils;
+import me.lokka30.levelledmobs.rules.RulesManager;
 import me.lokka30.microlib.QuickTimer;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -16,8 +17,7 @@ import org.bukkit.plugin.java.JavaPlugin;
  * This is the main class of the plugin. Bukkit will call onLoad and onEnable on startup, and onDisable on shutdown.
  *
  * @author lokka30
- * @contributors stumper66, limzikiki
- * @since the beginning :)
+ * @since 1.0
  */
 public class LevelledMobs extends JavaPlugin {
 
@@ -31,6 +31,7 @@ public class LevelledMobs extends JavaPlugin {
     public BlockPlaceListener blockPlaceListener;
     public final Companion companion = new Companion(this);
     public final MobHeadManager mobHeadManager = new MobHeadManager(this);
+    public final RulesManager rulesManager = new RulesManager(this);
 
     // Configuration
     public YamlConfiguration settingsCfg;

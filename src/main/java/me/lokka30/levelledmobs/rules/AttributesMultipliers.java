@@ -4,7 +4,6 @@ package me.lokka30.levelledmobs.rules;
  * TODO Describe...
  *
  * @author stumper66
- * @contributors lokka30
  */
 public class AttributesMultipliers {
     public Integer maxHealth;

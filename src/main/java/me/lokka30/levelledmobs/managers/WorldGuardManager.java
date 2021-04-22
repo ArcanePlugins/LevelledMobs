@@ -25,7 +25,6 @@ import java.util.Objects;
  * TODO Describe...
  *
  * @author Eyrian2010
- * @contributors lokka30, stumper66
  */
 public class WorldGuardManager {
 

@@ -16,7 +16,6 @@ import java.util.*;
  * TODO Describe...
  *
  * @author lokka30
- * @contributors stumper66, Hugo5551
  */
 public final class Utils {
 
@@ -196,6 +195,7 @@ public final class Utils {
      * to: Wither Skeleton
      *
      * @param str string to capitalize
+     * @return a string with each word capitalized
      */
     public static String capitalize(String str) {
         StringBuilder builder = new StringBuilder();

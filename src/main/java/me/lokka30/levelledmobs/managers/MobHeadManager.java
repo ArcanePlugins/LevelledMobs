@@ -23,7 +23,6 @@ import java.util.*;
  * TODO Describe...
  *
  * @author stumper66
- * @contributors none
  */
 public class MobHeadManager {
 

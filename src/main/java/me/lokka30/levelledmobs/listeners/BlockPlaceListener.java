@@ -24,7 +24,6 @@ import java.util.List;
  * PDC data to a placed LM spawner
  *
  * @author stumper66
- * @contributors none
  */
 public class BlockPlaceListener implements Listener {
     private final LevelledMobs main;

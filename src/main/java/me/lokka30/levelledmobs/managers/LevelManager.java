@@ -41,7 +41,6 @@ import java.util.concurrent.ThreadLocalRandom;
  * TODO Describe...
  *
  * @author lokka30
- * @contributors stumper66, Eyrian2010, iCodinqs, deiphiz,
  * CoolBoy, Esophose, 7smile7, Shevchik, Hugo5551,
  * limzikiki
  */

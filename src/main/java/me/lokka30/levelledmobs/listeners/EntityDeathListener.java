@@ -18,7 +18,6 @@ import java.util.List;
  * TODO Describe...
  *
  * @author lokka30
- * @contributors stumper66
  */
 public class EntityDeathListener implements Listener {
 

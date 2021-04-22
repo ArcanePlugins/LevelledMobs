@@ -1,0 +1,95 @@
+presets:
+  1:
+    preset-type: 'conditions'
+    value:
+      entities: ['all_levelled_mobs']
+  2:
+    preset-type: 'worlds'
+    value:
+      mode: 'WHITELIST'
+      list: ['world', 'world_nether']
+  3:
+    type: 'strategies'
+    value:
+      distance-from-spawn:
+        increase-level-distance: 200
+        start-distance: 0
+        spawn-location:
+          x: default
+          z: default
+
+      y-coordinate:
+        start: 100 # Min level starts at Y=100
+        end: 20    # Max level ends at Y=20
+        period: 0 # Blocks per level increase
+
+default-rule:
+  worlds:
+    preset: 2
+  strategies:
+    preset: 3
+  calculation:
+    custom-variables:
+      ydlPercent: '(1 - (%y-coordinate% / 50))'
+      sdlPercent: '(%y-coordinate% / 50)'
+    formula: '(%ydlPercent% * %y-distance-level%) + (%sdlPercent% * %spawn-distance-level%)' # Will prioritise y-lvl as you get deeper
+  restrictions:
+    minLevel: 1
+    maxLevel: 10
+  conditions:
+    preset: 1
+  nametag: '&8[&7Level %mob-lvl%&8 | &f%entity-name%&8 | &c%entity-health-rounded%&8/&c%entity-max-health-rounded%&8]'
+  max-random-variance: 1
+
+custom-rules:
+  - enabled: true
+    worlds:
+      mode: 'WHITELIST'
+      list: ['world_nether']
+    strategies:
+      random:
+        bias: 0.3
+    calculation:
+      formula: '%weighted-random-level%'
+    level-limits:
+      min: 1
+      max: 10
+    max-random-variance: 2
+    conditions:
+      entities: ['all_nether_mobs']
+  - enabled: true
+    entities: ['all_passive_mobs']
+    worlds:
+      mode: 'WHITELIST'
+      list: ['world']
+    strategies:
+      random:
+        bias-factor: 0.3
+    calculation:
+      formula: '%random-level%'
+    level-limits:
+      min: 1
+      max: 10
+    max-random-variance: 2
+  - enabled: false
+    worlds:
+      mode: 'WHITELIST'
+      list: ['world_the_end']
+    strategies:
+      random:
+        bias-factor: false
+    calculation:
+      formula: '%random-level%'
+    conditions:
+      entities: ['all_ender_mobs']
+      chance: 0.5
+      biomes: ['JUNGLE']
+    restrictions:
+      minLevel: 7
+      maxLevel: 10
+    max-random-variance: 0
+
+# Systems Currently Missing:
+# - attributes
+# - events
+# - tasks

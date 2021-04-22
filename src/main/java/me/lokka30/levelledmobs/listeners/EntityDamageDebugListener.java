@@ -24,7 +24,6 @@ import java.util.UUID;
  * will receive a bunch of data about the mob.
  *
  * @author lokka30
- * @contributors stumper66
  */
 public class EntityDamageDebugListener implements Listener {
 

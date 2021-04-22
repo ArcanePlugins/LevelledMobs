@@ -29,7 +29,6 @@ import java.util.HashSet;
  * process
  *
  * @author lokka30
- * @contributors stumper66
  */
 public class EntitySpawnListener implements Listener {
 
