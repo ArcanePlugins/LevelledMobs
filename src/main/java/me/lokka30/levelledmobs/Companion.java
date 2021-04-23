@@ -30,7 +30,7 @@ public class Companion {
 
     private final LevelledMobs main;
 
-    public Companion(final LevelledMobs main) {
+    Companion(final LevelledMobs main) {
         this.main = main;
         this.updateResult = new LinkedList<>();
     }
@@ -39,7 +39,7 @@ public class Companion {
     final private PluginManager pluginManager = Bukkit.getPluginManager();
     public List<String> updateResult;
 
-    protected void checkWorldGuard() {
+    void checkWorldGuard() {
         // Hook into WorldGuard, register LM's flags.
         // This cannot be moved to onEnable (stated in WorldGuard's documentation). It MUST be ran in onLoad.
         if (ExternalCompatibilityManager.hasWorldGuardInstalled()) {
@@ -128,7 +128,7 @@ public class Companion {
     }
 
     @Nullable
-    protected YamlConfiguration loadEmbeddedResource(final String filename) {
+    YamlConfiguration loadEmbeddedResource(final String filename) {
         YamlConfiguration result = null;
         final InputStream inputStream = main.getResource(filename);
         if (inputStream == null) return null;
@@ -145,7 +145,7 @@ public class Companion {
         return result;
     }
 
-    protected void registerListeners() {
+    void registerListeners() {
         Utils.logger.info("&fListeners: &7Registering event listeners...");
 
         main.levelManager = new LevelManager(main);
@@ -180,7 +180,7 @@ public class Companion {
             pluginManager.registerEvents(main.chunkLoadListener, main);
     }
 
-    protected void registerCommands() {
+    void registerCommands() {
         Utils.logger.info("&fCommands: &7Registering commands...");
 
         final PluginCommand levelledMobsCommand = main.getCommand("levelledmobs");
@@ -191,12 +191,12 @@ public class Companion {
         }
     }
 
-    protected void setupMetrics() {
+    void setupMetrics() {
         new Metrics(main, 6269);
     }
 
     //Check for updates on the Spigot page.
-    protected void checkUpdates() {
+    void checkUpdates() {
         if (main.settingsCfg.getBoolean("use-update-checker", true)) {
             final UpdateChecker updateChecker = new UpdateChecker(main, 74304);
             updateChecker.getLatestVersion(latestVersion -> {
@@ -212,7 +212,7 @@ public class Companion {
                     spigotVersion = new VersionInfo(latestVersion);
 
                     isOutOfDate = (thisVersion.compareTo(spigotVersion) < 0);
-                    isNewerVersion =(thisVersion.compareTo(spigotVersion) > 0);
+                    isNewerVersion = (thisVersion.compareTo(spigotVersion) > 0);
                 }
                 catch (InvalidObjectException e){
                     Utils.logger.warning("Got exception creating version objects: " + e.getMessage());
@@ -266,8 +266,7 @@ public class Companion {
         }
     }
 
-
-    protected void shutDownAsyncTasks() {
+    void shutDownAsyncTasks() {
         Utils.logger.info("&fTasks: &7Shutting down other async tasks...");
         Bukkit.getScheduler().cancelTasks(main);
     }

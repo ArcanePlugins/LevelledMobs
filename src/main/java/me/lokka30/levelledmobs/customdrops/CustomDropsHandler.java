@@ -189,8 +189,6 @@ public class CustomDropsHandler {
 
     private void getCustomItemsFromDropInstance(final CustomDropProcessingInfo info){
 
-        Utils.logger.info("equipped only: " + info.equippedOnly + ", hascustomdropid: " + info.hasCustomDropId);
-
         if (info.equippedOnly && info.hasCustomDropId){
             if (!this.customDropIDs.containsKey(info.customDropId)){
                 Utils.logger.warning("custom drop id '" + info.customDropId + "' was not found in customdrops");

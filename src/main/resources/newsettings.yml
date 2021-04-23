@@ -1,3 +1,5 @@
+file-version: 1
+
 presets:
   1:
     preset-type: 'conditions'
@@ -9,7 +11,7 @@ presets:
       mode: 'WHITELIST'
       list: ['world', 'world_nether']
   3:
-    type: 'strategies'
+    preset-type: 'strategies'
     value:
       distance-from-spawn:
         increase-level-distance: 200
@@ -67,9 +69,9 @@ custom-rules:
         bias-factor: 0.3
     calculation:
       formula: '%random-level%'
-    level-limits:
-      min: 1
-      max: 10
+    restrictions:
+      minLevel: 1
+      maxLevel: 10
     max-random-variance: 2
   - enabled: false
     worlds:
