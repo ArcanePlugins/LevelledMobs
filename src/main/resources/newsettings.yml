@@ -50,7 +50,7 @@ custom-rules:
       list: ['world_nether']
     strategies:
       random:
-        bias: 0.3
+        bias-factor: 0.3
     calculation:
       formula: '%weighted-random-level%'
     level-limits:

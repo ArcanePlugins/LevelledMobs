@@ -11,59 +11,68 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.*;
 
 public class RulesManager {
     public RulesManager(final LevelledMobs main){
         //this.main = main;
+        this.rulePresets = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
     }
 
     //final private LevelledMobs main;
-    private RuleParsingInfo parsingInfo;
-    private static final String c_Max_Random_Variance = "max-random-variance";
-    private static final String c_Worlds = "worlds";
-    private static final String c_Calculation = "calculation";
-    private static final String c_Strategies = "strategies";
-    private static final String c_Conditions = "conditions";
+    private RuleInfo parsingInfo;
+    private final Map<String, RuleInfo> rulePresets;
 
     public void parseRulesMain(final YamlConfiguration config){
+        final List<RuleInfo> presets = parsePresets(config.get("presets"));
+        for (RuleInfo ri : presets)
+            this.rulePresets.put(ri.presetName, ri);
+
         parseDefaults(config.get("default-rule"));
-        RuleParsingInfo defaults = this.parsingInfo;
-        final List<RuleParsingInfo> customRules = parseCustomRules(config.get("custom-rules"));
-        final List<RuleParsingInfo> presets = parsePresets(config.get("presets"));
+        RuleInfo defaults = parseDefaults(config.get("default-rule"));
+        final List<RuleInfo> customRules = parseCustomRules(config.get("custom-rules"));
 
         Utils.logger.info("--------------------------------- default values below -------------------------------");
         showAllValues(defaults);
-        for (RuleParsingInfo rpi : customRules) {
-            Utils.logger.info("--------------------------------- custom-rule below ----------------------------------");
+        for (RuleInfo rpi : presets) {
+            Utils.logger.info("--------------------------------- preset rule below ----------------------------------");
             showAllValues(rpi);
         }
-        for (RuleParsingInfo rpi : presets) {
-            Utils.logger.info("--------------------------------- preset rule below ----------------------------------");
+        for (RuleInfo rpi : customRules) {
+            Utils.logger.info("--------------------------------- custom-rule below ----------------------------------");
             showAllValues(rpi);
         }
         Utils.logger.info("--------------------------------------------------------------------------------------");
     }
 
-    private void parseDefaults(final Object objDefaults) {
+    @NotNull
+    private RuleInfo parseDefaults(final Object objDefaults) {
+        this.parsingInfo = new RuleInfo();
+        parsingInfo.minLevel = 1;
+        parsingInfo.maxLevel = 10;
+
         final ConfigurationSection cs = objectToConfigurationSection(objDefaults);
         if (cs == null){
             Utils.logger.info("default-rule section was null");
-            return;
+            return this.parsingInfo;
         }
 
-        this.parsingInfo = new RuleParsingInfo();
         parseValues(cs);
+        if (parsingInfo.minLevel == null) parsingInfo.minLevel = 1;
+        if (parsingInfo.maxLevel == null) parsingInfo.maxLevel = 10;
+
+        return this.parsingInfo;
     }
 
     @NotNull
-    private List<RuleParsingInfo> parsePresets(final Object objPresets){
+    private List<RuleInfo> parsePresets(final Object objPresets){
         final ConfigurationSection cs = objectToConfigurationSection(objPresets);
-        final List<RuleParsingInfo> results = new LinkedList<>();
+        final List<RuleInfo> results = new LinkedList<>();
         if (cs == null) return results;
 
         for (final String key : cs.getKeys(false)){
-            this.parsingInfo = new RuleParsingInfo();
+            this.parsingInfo = new RuleInfo();
             final ConfigurationSection cs_Key = objectToConfigurationSection(cs.get(key));
             if (cs_Key == null){
                 Utils.logger.warning("nothing was specified for preset: " + key);
@@ -73,7 +82,6 @@ public class RulesManager {
             this.parsingInfo.presetType = parsePresetType(cs_Key, key);
             if (this.parsingInfo.presetType == PresetType.NONE) continue;
 
-            this.parsingInfo.isPreset = true;
             this.parsingInfo.presetName = key;
             parsePresets_Value(objectToConfigurationSection(cs_Key.get("value")));
 
@@ -94,7 +102,7 @@ public class RulesManager {
             parseStrategies(cs);
     }
 
-    private PresetType parsePresetType(final ConfigurationSection cs, final String key){
+    private PresetType parsePresetType(@NotNull final ConfigurationSection cs, final String key){
         final String preset = cs.getString("preset-type");
         PresetType presetType = PresetType.NONE;
         if (preset == null){
@@ -112,23 +120,31 @@ public class RulesManager {
         return presetType;
     }
 
-    private void showAllValues(final RuleParsingInfo pi){
+    private void showAllValues(@NotNull final RuleInfo pi){
         // this is only used for dev work
 
+        SortedMap<String, String> values = new TreeMap();
+
+        Utils.logger.info("id: " + pi.getInternalId());
         try {
             for(final Field f : pi.getClass().getDeclaredFields()) {
+                if (!Modifier.isPublic(f.getModifiers())) continue;
                 final Object value = f.get(pi);
-                    Utils.logger.info("name: " + f.getName() + ", value: " + (value == null ? "(null)" : value));
+                    values.put(f.getName(), f.getName() + ", value: " + (value == null ? "(null)" : value));
             }
         }
         catch (Exception e){
             e.printStackTrace();
         }
+
+        for (final String key : values.keySet()){
+            Utils.logger.info(values.get(key));
+        }
     }
 
     @NotNull
-    private List<RuleParsingInfo> parseCustomRules(final Object rulesSection) {
-        final List<RuleParsingInfo> results = new LinkedList<>();
+    private List<RuleInfo> parseCustomRules(final Object rulesSection) {
+        final List<RuleInfo> results = new LinkedList<>();
         if (rulesSection == null) return results;
 
         for (final LinkedHashMap<String, Object> hashMap : (List<LinkedHashMap<String, Object>>)(rulesSection)){
@@ -138,7 +154,7 @@ public class RulesManager {
                 continue;
             }
 
-            this.parsingInfo = new RuleParsingInfo();
+            this.parsingInfo = new RuleInfo();
             parseValues(cs);
             results.add(this.parsingInfo);
         }
@@ -148,17 +164,42 @@ public class RulesManager {
 
     private void parseValues(final ConfigurationSection cs){
         parsingInfo.ruleIsEnabled = cs.getBoolean("enabled", true);
-        parseWorldList(objectToConfigurationSection(cs.get(c_Worlds)));
-        parseStrategies(objectToConfigurationSection(cs.get(c_Strategies)));
-        parseCalculation(cs.get(c_Calculation));
         parseCustomVariables(cs.get("calculation.custom-variables"));
-        parseConditions(objectToConfigurationSection(cs.get(c_Conditions)));
 
-        parsingInfo.maxRandomVariance = cs.getInt(c_Max_Random_Variance, 0);
-        parsingInfo.minLevel = cs.getInt("restrictions.minLevel", 1);
-        parsingInfo.maxLevel = cs.getInt("restrictions.maxLevel", 10);
-        parsingInfo.minLevel = cs.getInt("level-limits.min", parsingInfo.minLevel);
-        parsingInfo.maxLevel = cs.getInt("level-limits.max", parsingInfo.maxLevel);
+        parseWorldList(objectToConfigurationSection(cs.get("worlds")));
+        parseStrategies(objectToConfigurationSection(cs.get("strategies")));
+        parseCalculation(objectToConfigurationSection(cs.get("calculation")));
+        parseConditions(objectToConfigurationSection(cs.get("conditions")));
+        parseLevelLimits(objectToConfigurationSection(cs.get("level-limits")));
+        parseRestrictions(objectToConfigurationSection(cs.get("restrictions")));
+
+        parsingInfo.maxRandomVariance = cs.getInt("max-random-variance", 0);
+        parsingInfo.nametag = cs.getString("nametag");
+    }
+
+    private void parseLevelLimits(final ConfigurationSection cs){
+        if (cs == null) return;
+
+        if (cs.getString("min") != null)
+            parsingInfo.minLevel = cs.getInt("min");
+        if (cs.getString("max") != null)
+            parsingInfo.maxLevel = cs.getInt("max");
+    }
+
+    private void parseRestrictions(final ConfigurationSection cs){
+        if (cs == null) return;
+
+        if (cs.getString("minLevel") != null)
+            parsingInfo.minLevel = cs.getInt("minLevel");
+        if (cs.getString("maxLevel") != null)
+            parsingInfo.maxLevel = cs.getInt("maxLevel");
+
+        // check for all lower case keys
+
+        if (cs.getString("minlevel") != null)
+            parsingInfo.minLevel = cs.getInt("minlevel");
+        if (cs.getString("maxlevel") != null)
+            parsingInfo.maxLevel = cs.getInt("maxlevel");
     }
 
     private void parseCustomVariables(final Object customVariablesObj){
@@ -175,13 +216,31 @@ public class RulesManager {
     private void parseConditions(final ConfigurationSection conditions){
         if (conditions  == null) return;
 
-        parsingInfo.calculation_Entities = conditions.getStringList("entities");
-        if (parsingInfo.calculation_Entities.isEmpty() && !Utils.isNullOrEmpty(conditions.getString("entities")))
-            parsingInfo.calculation_Entities.add(conditions.getString("entities"));
+
+        if (!Utils.isNullOrEmpty(conditions.getString("preset"))){
+            final String presetName = conditions.getString("preset");
+
+            if (this.rulePresets.containsKey(presetName)) {
+                final RuleInfo mergingPreset = this.rulePresets.get(presetName);
+                if (mergingPreset.presetType == PresetType.CONDITIONS)
+                    parsingInfo.mergePresetRules(mergingPreset);
+                else
+                    Utils.logger.warning(String.format("rule id: %s, specified CONDITIONS preset '%s' but it was of type %s",
+                            parsingInfo.getInternalId(), presetName, mergingPreset.presetType));
+            }
+            else
+                Utils.logger.warning(String.format("rule id: %s, specified non-existant preset '%s'",
+                        parsingInfo.getInternalId(), presetName));
+        }
+
+        if (conditions.getString("chance") != null)
+            parsingInfo.conditions_Chance = conditions.getDouble("chance");
+
+        parsingInfo.conditions_Entities.addAll(getListOrItemFromConfig("entities", conditions));
+        parsingInfo.conditions_Biomes.addAll(getListOrItemFromConfig("biomes", conditions));
     }
 
-    private void parseCalculation(final Object calculationObj){
-        final ConfigurationSection calculation = objectToConfigurationSection(calculationObj);
+    private void parseCalculation(final ConfigurationSection calculation){
         if (calculation  == null) return;
 
         parsingInfo.calculation_Formula = calculation.getString("formula");
@@ -190,7 +249,22 @@ public class RulesManager {
     private void parseStrategies(final ConfigurationSection strategies){
         if (strategies == null) return;
 
-        parsingInfo.strategies_Preset = strategies.getString("preset");
+        if (!Utils.isNullOrEmpty(strategies.getString("preset"))){
+            final String presetName = strategies.getString("preset");
+            if (this.rulePresets.containsKey(presetName)) {
+                final RuleInfo mergingPreset = this.rulePresets.get(presetName);
+                if (mergingPreset.presetType == PresetType.STRATEGIES)
+                    parsingInfo.mergePresetRules(mergingPreset);
+                else
+                    Utils.logger.warning(String.format("rule id: %s, specified STRATEGIES preset '%s' but it was of type %s",
+                            parsingInfo.getInternalId(), presetName, mergingPreset.presetType));
+            }
+            else
+                Utils.logger.warning(String.format("rule id: %s, specified non-existant preset '%s'",
+                        parsingInfo.getInternalId(), presetName));
+        }
+
+        parseStategiesRandom(objectToConfigurationSection(strategies.get("random")));
 
         ConfigurationSection cs_SpawnDistance = objectToConfigurationSection(strategies.get("distance-from-spawn"));
         if (cs_SpawnDistance != null){
@@ -219,16 +293,41 @@ public class RulesManager {
         }
     }
 
+    private void parseStategiesRandom(final ConfigurationSection cs){
+        if (cs == null) return;
+
+        parsingInfo.random_BiasFactor = cs.getDouble("bias-factor");
+    }
+
     private void parseWorldList(final ConfigurationSection worlds){
         if (worlds == null) return;
 
-        parsingInfo.worlds_UsePreset = worlds.getString("preset");
-        parsingInfo.worlds_Mode = worlds.getString("mode");
-        parsingInfo.worlds_List.addAll(worlds.getStringList("list"));
+        if (!Utils.isNullOrEmpty(worlds.getString("preset"))){
+            final String presetName = worlds.getString("preset");
+            if (this.rulePresets.containsKey(presetName)) {
+                final RuleInfo mergingPreset = this.rulePresets.get(presetName);
+                if (mergingPreset.presetType == PresetType.WORLDS)
+                    parsingInfo.mergePresetRules(mergingPreset);
+                else
+                    Utils.logger.warning(String.format("rule id: %s, specified WORLDS preset '%s' but it was of type %s",
+                            parsingInfo.getInternalId(), presetName, mergingPreset.presetType));
+            }
+            else
+                Utils.logger.warning(String.format("rule id: %s, specified non-existant preset '%s'",
+                        parsingInfo.getInternalId(), presetName));
+        }
 
-        // this will allow the user to use an arraylist or a single string
-        if (parsingInfo.worlds_List.isEmpty() && worlds.getString("list") != null)
-            parsingInfo.worlds_List.add(worlds.getString("list"));
+        parsingInfo.worlds_Mode = worlds.getString("mode");
+        parsingInfo.worlds_List.addAll(getListOrItemFromConfig("list", worlds));
+    }
+
+    @NotNull
+    private static List<String> getListOrItemFromConfig(final String name, final ConfigurationSection cs){
+        List<String> result = cs.getStringList(name);
+        if (result.isEmpty() && !Utils.isNullOrEmpty(cs.getString(name)))
+            result.add(cs.getString(name));
+
+        return result;
     }
 
     @Nullable
