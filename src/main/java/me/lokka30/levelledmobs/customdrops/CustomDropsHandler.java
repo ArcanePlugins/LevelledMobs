@@ -1,14 +1,12 @@
 package me.lokka30.levelledmobs.customdrops;
 
 import me.lokka30.levelledmobs.LevelledMobs;
-import me.lokka30.levelledmobs.compatibility.MC1_16_Compat;
 import me.lokka30.levelledmobs.misc.Addition;
+import me.lokka30.levelledmobs.misc.CustomUniversalGroups;
 import me.lokka30.levelledmobs.misc.Utils;
 import me.lokka30.microlib.MessageUtils;
-import me.lokka30.microlib.VersionUtils;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
-import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.MemoryConfiguration;
 import org.bukkit.configuration.MemorySection;
@@ -22,13 +20,10 @@ import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 
-import javax.annotation.Nonnull;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * The main CustomDropsclass that holds useful functions for
@@ -40,12 +35,8 @@ public class CustomDropsHandler {
     private final LevelledMobs instance;
 
     public final TreeMap<EntityType, CustomDropInstance> customDropsitems;
-    public final TreeMap<CustomDropsUniversalGroups, CustomDropInstance> customDropsitems_groups;
+    public final TreeMap<CustomUniversalGroups, CustomDropInstance> customDropsitems_groups;
     public final TreeMap<String, CustomDropInstance> customDropIDs;
-    public HashSet<EntityType> groups_HostileMobs;
-    public HashSet<EntityType> groups_AquaticMobs;
-    public HashSet<EntityType> groups_PassiveMobs;
-    public HashSet<EntityType> groups_NetherMobs;
     public final CustomDropsDefaults defaults;
 
     public CustomDropsHandler(final LevelledMobs instance) {
@@ -55,15 +46,13 @@ public class CustomDropsHandler {
         this.customDropIDs = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
         this.defaults = new CustomDropsDefaults();
 
-        buildUniversalGroups();
-
         if (instance.settingsCfg.getBoolean("use-custom-item-drops-for-mobs"))
             parseCustomDrops(instance.customDropsCfg);
     }
 
     public CustomDropResult getCustomItemDrops(final LivingEntity livingEntity, final int level, final List<ItemStack> drops, final boolean isLevellable, final boolean equippedOnly) {
 
-        final List<CustomDropsUniversalGroups> applicableGroups = getApllicableGroupsForMob(livingEntity, isLevellable);
+        final List<CustomUniversalGroups> applicableGroups = instance.companion.getApllicableGroupsForMob(livingEntity, isLevellable);
 
         boolean isSpawner = false;
         if (livingEntity.getPersistentDataContainer().has(instance.levelManager.spawnReasonKey, PersistentDataType.STRING)) {
@@ -106,8 +95,8 @@ public class CustomDropsHandler {
             Utils.logger.info("&8- &7Groups: &b" + String.join("&7, &b", applicableGroupsNames) + "&7.");
         }
 
-        final List<CustomDropsUniversalGroups> groupsList = new LinkedList<>();
-        for (final CustomDropsUniversalGroups group : applicableGroups){
+        final List<CustomUniversalGroups> groupsList = new LinkedList<>();
+        for (final CustomUniversalGroups group : applicableGroups){
             if (!customDropsitems_groups.containsKey(group)) continue;
 
             groupsList.add(group);
@@ -139,13 +128,13 @@ public class CustomDropsHandler {
                 CustomDropResult.HAS_OVERRIDE : CustomDropResult.NO_OVERRIDE;
     }
 
-    private void buildDropsListFromGroupsAndEntity(final List<CustomDropsUniversalGroups> groups, final EntityType entityType, final CustomDropProcessingInfo processingInfo){
+    private void buildDropsListFromGroupsAndEntity(final List<CustomUniversalGroups> groups, final EntityType entityType, final CustomDropProcessingInfo processingInfo){
         //final List<CustomDropItem> drops = new LinkedList<>();
         final Map<Integer, List<CustomDropItem>> drops = new HashMap<>();
         boolean usesGroupIds = false;
         boolean hasOverride = false;
 
-        for (CustomDropsUniversalGroups group : groups){
+        for (CustomUniversalGroups group : groups){
             CustomDropInstance dropInstance = customDropsitems_groups.get(group);
             //drops.addAll(dropInstance.customItems);
             for (final CustomDropItem item : dropInstance.customItems){
@@ -353,48 +342,6 @@ public class CustomDropsHandler {
         }
     }
 
-    @Nonnull
-    private List<CustomDropsUniversalGroups> getApllicableGroupsForMob(final LivingEntity le, final boolean isLevelled){
-        final List<CustomDropsUniversalGroups> groups = new ArrayList<>();
-        groups.add(CustomDropsUniversalGroups.ALL_MOBS);
-
-        if (isLevelled) groups.add(CustomDropsUniversalGroups.ALL_LEVELLABLE_MOBS);
-        final EntityType eType = le.getType();
-
-        if (le instanceof Monster || le instanceof Boss || groups_HostileMobs.contains(eType)){
-            groups.add(CustomDropsUniversalGroups.ALL_HOSTILE_MOBS);
-        }
-
-        if (le instanceof WaterMob || groups_AquaticMobs.contains(eType)){
-            groups.add(CustomDropsUniversalGroups.ALL_AQUATIC_MOBS);
-        }
-
-        if (le.getWorld().getEnvironment().equals(World.Environment.NORMAL)){
-            groups.add(CustomDropsUniversalGroups.ALL_OVERWORLD_MOBS);
-        } else if (le.getWorld().getEnvironment().equals(World.Environment.NETHER)){
-            groups.add(CustomDropsUniversalGroups.ALL_NETHER_MOBS);
-        }
-
-        if (le instanceof Flying || eType.equals(EntityType.PARROT) || eType.equals(EntityType.BAT)){
-            groups.add(CustomDropsUniversalGroups.ALL_FLYING_MOBS);
-        }
-
-        // why bats aren't part of Flying interface is beyond me
-        if (!(le instanceof Flying) && !(le instanceof WaterMob) && !(le instanceof Boss) && !(eType.equals(EntityType.BAT))){
-            groups.add(CustomDropsUniversalGroups.ALL_GROUND_MOBS);
-        }
-
-        if (le instanceof WaterMob || groups_AquaticMobs.contains(eType)){
-            groups.add(CustomDropsUniversalGroups.ALL_AQUATIC_MOBS);
-        }
-
-        if (le instanceof Animals || le instanceof WaterMob || groups_PassiveMobs.contains(eType)){
-            groups.add(CustomDropsUniversalGroups.ALL_PASSIVE_MOBS);
-        }
-
-        return groups;
-    }
-
     private void processDefaults(MemorySection ms){
         Map<String, Object> vals = ms.getValues(false);
         ConfigurationSection cs = objectToConfigurationSection(vals);
@@ -452,14 +399,14 @@ public class CustomDropsHandler {
                 if ("".equals(mobTypeOrGroup)) continue;
                 if (mobTypeOrGroup.startsWith("file-version")) continue;
 
-                CustomDropsUniversalGroups universalGroup = null;
+                CustomUniversalGroups universalGroup = null;
                 final boolean isEntityTable = (mobTypeOrGroup.equalsIgnoreCase("drop-table"));
                 final boolean isUniversalGroup = mobTypeOrGroup.toLowerCase().startsWith("all_");
                 CustomDropInstance dropInstance;
 
                 if (isUniversalGroup) {
                     try {
-                        universalGroup = CustomDropsUniversalGroups.valueOf(mobTypeOrGroup.toUpperCase());
+                        universalGroup = CustomUniversalGroups.valueOf(mobTypeOrGroup.toUpperCase());
                     } catch (Exception e) {
                         Utils.logger.warning("invalid universal group in customdrops.yml: " + mobTypeOrGroup);
                         continue;
@@ -772,7 +719,7 @@ public class CustomDropsHandler {
             }
         }
 
-        for (final CustomDropsUniversalGroups group : customDropsitems_groups.keySet()) {
+        for (final CustomUniversalGroups group : customDropsitems_groups.keySet()) {
             final CustomDropInstance dropInstance = customDropsitems_groups.get(group);
             final String override = dropInstance.overrideStockDrops ? " (override)" : "";
             Utils.logger.info("group: " + group.name() + override);
@@ -837,38 +784,5 @@ public class CustomDropsHandler {
         }
 
         if (sb.length() > 0) Utils.logger.info("         " + sb);
-    }
-
-    private void buildUniversalGroups(){
-
-        // include interfaces: Monster, Boss
-        groups_HostileMobs = Stream.of(
-                EntityType.ENDER_DRAGON,
-                EntityType.GHAST,
-                EntityType.MAGMA_CUBE,
-                EntityType.PHANTOM,
-                EntityType.SHULKER,
-                EntityType.SLIME
-        ).collect(Collectors.toCollection(HashSet::new));
-
-        if (VersionUtils.isOneSixteen())
-            groups_HostileMobs.addAll(MC1_16_Compat.getHostileMobs());
-
-        // include interfaces: Animals, WaterMob
-        groups_PassiveMobs = Stream.of(
-                EntityType.IRON_GOLEM,
-                EntityType.SNOWMAN
-        ).collect(Collectors.toCollection(HashSet::new));
-
-        if (VersionUtils.isOneSixteen())
-            groups_HostileMobs.addAll(MC1_16_Compat.getPassiveMobs());
-
-        // include interfaces: WaterMob
-        groups_AquaticMobs = Stream.of(
-                EntityType.DROWNED,
-                EntityType.ELDER_GUARDIAN,
-                EntityType.GUARDIAN,
-                EntityType.TURTLE
-        ).collect(Collectors.toCollection(HashSet::new));
     }
 }

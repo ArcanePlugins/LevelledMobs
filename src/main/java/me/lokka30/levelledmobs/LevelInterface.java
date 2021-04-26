@@ -8,6 +8,8 @@ import me.lokka30.levelledmobs.misc.Addition;
 import me.lokka30.levelledmobs.misc.DebugType;
 import me.lokka30.levelledmobs.misc.ModalList;
 import me.lokka30.levelledmobs.misc.Utils;
+import me.lokka30.levelledmobs.rules.MobCustomNameStatusEnum;
+import me.lokka30.levelledmobs.rules.RulesManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.attribute.Attribute;
@@ -33,8 +35,10 @@ import java.util.HashSet;
 public class LevelInterface {
 
     private final LevelledMobs main;
+    private final RulesManager rulesManager;
     public LevelInterface(@NotNull final LevelledMobs main) {
         this.main = main;
+        this.rulesManager = main.rulesManager;
     }
 
     /**
@@ -91,7 +95,7 @@ public class LevelInterface {
         Check 'No Level Conditions'
          */
         // Nametagged mobs.
-        if (livingEntity.getCustomName() != null && main.settingsCfg.getBoolean("no-level-conditions.nametagged"))
+        if (livingEntity.getCustomName() != null && rulesManager.mobCustomNameStatus(livingEntity) == MobCustomNameStatusEnum.NOT_NAMETAGGED)
             return LevellableState.DENIED_CONFIGURATION_CONDITION_NAMETAGGED;
 
         // Tamed mobs.

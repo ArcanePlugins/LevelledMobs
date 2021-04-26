@@ -1,5 +1,6 @@
 package me.lokka30.levelledmobs.customdrops;
 
+import me.lokka30.levelledmobs.misc.CustomUniversalGroups;
 import org.bukkit.entity.EntityType;
 
 import java.util.ArrayList;
@@ -19,14 +20,14 @@ public class CustomDropInstance {
         this.customItems = new ArrayList<>();
     }
 
-    public CustomDropInstance(final CustomDropsUniversalGroups entityGroup){
+    public CustomDropInstance(final CustomUniversalGroups entityGroup){
         this.associatedMob = null;
         this.entityGroup = entityGroup;
         this.customItems = new ArrayList<>();
     }
 
     final public EntityType associatedMob;
-    final public CustomDropsUniversalGroups entityGroup;
+    final public CustomUniversalGroups entityGroup;
     final public List<CustomDropItem> customItems;
     public boolean overrideStockDrops;
     public boolean utilizesGroupIds;

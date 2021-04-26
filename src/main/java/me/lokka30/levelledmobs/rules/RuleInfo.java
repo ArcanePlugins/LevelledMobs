@@ -1,6 +1,6 @@
 package me.lokka30.levelledmobs.rules;
 
-import me.lokka30.levelledmobs.misc.Utils;
+import me.lokka30.levelledmobs.misc.CustomUniversalGroups;
 import me.lokka30.levelledmobs.rules.strategies.LevellingStrategy;
 import org.jetbrains.annotations.NotNull;
 
@@ -12,14 +12,16 @@ public class RuleInfo {
         this.ruleIsEnabled = true;
         this.presetType = PresetType.NONE;
         this.worlds_List = new LinkedList<>();
-        this.conditions_Entities = new LinkedList<>();
+        this.conditions_Entities = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
         this.levellingStrategies = new LinkedList<>();
         this.calculation_CustomVariables = new TreeMap<>();
         this.conditions_Biomes = new LinkedList<>();
+        this.conditions_MobCustomnameStatus = MobCustomNameStatusEnum.NOT_SPECIFIED;
     }
 
     private final UUID internalId;
     public boolean ruleIsEnabled;
+    public MobCustomNameStatusEnum conditions_MobCustomnameStatus;
     public Integer minLevel;
     public Integer maxLevel;
     public int maxRandomVariance;
@@ -35,7 +37,7 @@ public class RuleInfo {
     @NotNull
     public Map<String, String> calculation_CustomVariables;
     @NotNull
-    public List<String> conditions_Entities;
+    public Map<String, CustomUniversalGroups> conditions_Entities;
     @NotNull
     public List<String> worlds_List;
     @NotNull

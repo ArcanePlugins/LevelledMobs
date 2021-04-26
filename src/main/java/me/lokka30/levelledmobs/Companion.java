@@ -1,11 +1,13 @@
 package me.lokka30.levelledmobs;
 
 import me.lokka30.levelledmobs.commands.LevelledMobsCommand;
+import me.lokka30.levelledmobs.compatibility.MC1_16_Compat;
 import me.lokka30.levelledmobs.customdrops.CustomDropsHandler;
 import me.lokka30.levelledmobs.listeners.*;
 import me.lokka30.levelledmobs.managers.ExternalCompatibilityManager;
 import me.lokka30.levelledmobs.managers.LevelManager;
 import me.lokka30.levelledmobs.managers.WorldGuardManager;
+import me.lokka30.levelledmobs.misc.CustomUniversalGroups;
 import me.lokka30.levelledmobs.misc.FileLoader;
 import me.lokka30.levelledmobs.misc.Utils;
 import me.lokka30.levelledmobs.misc.VersionInfo;
@@ -13,13 +15,18 @@ import me.lokka30.microlib.UpdateChecker;
 import me.lokka30.microlib.VersionUtils;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
+import org.bukkit.World;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.*;
 import org.bukkit.plugin.PluginManager;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.*;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * This class contains methods used by the main class.
@@ -33,9 +40,13 @@ public class Companion {
     Companion(final LevelledMobs main) {
         this.main = main;
         this.updateResult = new LinkedList<>();
+        buildUniversalGroups();
     }
 
-
+    public HashSet<EntityType> groups_HostileMobs;
+    public HashSet<EntityType> groups_AquaticMobs;
+    public HashSet<EntityType> groups_PassiveMobs;
+    public HashSet<EntityType> groups_NetherMobs;
     final private PluginManager pluginManager = Bukkit.getPluginManager();
     public List<String> updateResult;
 
@@ -94,8 +105,7 @@ public class Companion {
 
         main.customDropsCfg = FileLoader.loadFile(main, "customdrops", FileLoader.CUSTOMDROPS_FILE_VERSION, customDropsEnabled);
         main.customCommandsCfg = FileLoader.loadFile(main, "customCommands", FileLoader.CUSTOMCOMMANDS_FILE_VERSION, false);
-        main.rulesManager.parseRulesMain(FileLoader.loadFile(main, "newsettings", FileLoader.NEWSETTINGS_FILE_VERSION, false));
-
+        main.rulesParsingManager.parseRulesMain(FileLoader.loadFile(main, "rules", FileLoader.RULES_FILE_VERSION, false));
         main.configUtils.entityTypesLevelOverride_Min = main.configUtils.getMapFromConfigSection("entitytype-level-override.min-level");
         main.configUtils.entityTypesLevelOverride_Max = main.configUtils.getMapFromConfigSection("entitytype-level-override.max-level");
         main.configUtils.worldLevelOverride_Min = main.configUtils.getMapFromConfigSection("world-level-override.min-level");
@@ -269,5 +279,80 @@ public class Companion {
     void shutDownAsyncTasks() {
         Utils.logger.info("&fTasks: &7Shutting down other async tasks...");
         Bukkit.getScheduler().cancelTasks(main);
+    }
+
+    @Nonnull
+    public List<CustomUniversalGroups> getApllicableGroupsForMob(final LivingEntity le, final boolean isLevelled){
+        final List<CustomUniversalGroups> groups = new ArrayList<>();
+        groups.add(CustomUniversalGroups.ALL_MOBS);
+
+        if (isLevelled) groups.add(CustomUniversalGroups.ALL_LEVELLABLE_MOBS);
+        final EntityType eType = le.getType();
+
+        if (le instanceof Monster || le instanceof Boss || groups_HostileMobs.contains(eType)){
+            groups.add(CustomUniversalGroups.ALL_HOSTILE_MOBS);
+        }
+
+        if (le instanceof WaterMob || groups_AquaticMobs.contains(eType)){
+            groups.add(CustomUniversalGroups.ALL_AQUATIC_MOBS);
+        }
+
+        if (le.getWorld().getEnvironment().equals(World.Environment.NORMAL)){
+            groups.add(CustomUniversalGroups.ALL_OVERWORLD_MOBS);
+        } else if (le.getWorld().getEnvironment().equals(World.Environment.NETHER)){
+            groups.add(CustomUniversalGroups.ALL_NETHER_MOBS);
+        }
+
+        if (le instanceof Flying || eType.equals(EntityType.PARROT) || eType.equals(EntityType.BAT)){
+            groups.add(CustomUniversalGroups.ALL_FLYING_MOBS);
+        }
+
+        // why bats aren't part of Flying interface is beyond me
+        if (!(le instanceof Flying) && !(le instanceof WaterMob) && !(le instanceof Boss) && !(eType.equals(EntityType.BAT))){
+            groups.add(CustomUniversalGroups.ALL_GROUND_MOBS);
+        }
+
+        if (le instanceof WaterMob || groups_AquaticMobs.contains(eType)){
+            groups.add(CustomUniversalGroups.ALL_AQUATIC_MOBS);
+        }
+
+        if (le instanceof Animals || le instanceof WaterMob || groups_PassiveMobs.contains(eType)){
+            groups.add(CustomUniversalGroups.ALL_PASSIVE_MOBS);
+        }
+
+        return groups;
+    }
+
+    private void buildUniversalGroups(){
+
+        // include interfaces: Monster, Boss
+        groups_HostileMobs = Stream.of(
+                EntityType.ENDER_DRAGON,
+                EntityType.GHAST,
+                EntityType.MAGMA_CUBE,
+                EntityType.PHANTOM,
+                EntityType.SHULKER,
+                EntityType.SLIME
+        ).collect(Collectors.toCollection(HashSet::new));
+
+        if (VersionUtils.isOneSixteen())
+            groups_HostileMobs.addAll(MC1_16_Compat.getHostileMobs());
+
+        // include interfaces: Animals, WaterMob
+        groups_PassiveMobs = Stream.of(
+                EntityType.IRON_GOLEM,
+                EntityType.SNOWMAN
+        ).collect(Collectors.toCollection(HashSet::new));
+
+        if (VersionUtils.isOneSixteen())
+            groups_HostileMobs.addAll(MC1_16_Compat.getPassiveMobs());
+
+        // include interfaces: WaterMob
+        groups_AquaticMobs = Stream.of(
+                EntityType.DROWNED,
+                EntityType.ELDER_GUARDIAN,
+                EntityType.GUARDIAN,
+                EntityType.TURTLE
+        ).collect(Collectors.toCollection(HashSet::new));
     }
 }

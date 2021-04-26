@@ -4,7 +4,7 @@ presets:
   1:
     preset-type: 'conditions'
     value:
-      entities: ['all_levelled_mobs']
+      entities: ['all_levellable_mobs']
   2:
     preset-type: 'worlds'
     value:
@@ -59,6 +59,7 @@ custom-rules:
     max-random-variance: 2
     conditions:
       entities: ['all_nether_mobs']
+      mob-customname-status: nametagged
   - enabled: true
     entities: ['all_passive_mobs']
     worlds:
