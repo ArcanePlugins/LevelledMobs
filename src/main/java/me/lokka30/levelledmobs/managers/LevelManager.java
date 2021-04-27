@@ -149,9 +149,8 @@ public class LevelManager {
     }
 
     public int[] getMinAndMaxLevels(final LivingEntity livingEntity, final EntityType entityType, final boolean isAdultEntity, final String worldName) {
-        // option 1: global levelling (default)
-        int minLevel = Utils.getDefaultIfNull(main.settingsCfg, "fine-tuning.min-level", 1);
-        int maxLevel = Utils.getDefaultIfNull(main.settingsCfg, "fine-tuning.max-level", 10);
+        int minLevel = main.rulesManager.getRule_MobMinLevel(livingEntity);
+        int maxLevel = main.rulesManager.getRule_MobMaxLevel(livingEntity);
 
         // world guard regions take precedence over any other min / max settings
         // livingEntity is null if passed from summon mobs command
@@ -647,7 +646,7 @@ public class LevelManager {
         final String roundedMaxHealth = maxHealth == null ? "?" : Utils.round(maxHealth.getBaseValue()) + "";
         final String roundedMaxHealthInt = maxHealth == null ? "?" : (int) Utils.round(maxHealth.getBaseValue()) + "";
 
-        String nametag = isDeathNametag ? main.settingsCfg.getString("creature-death-nametag") : main.settingsCfg.getString("creature-nametag");
+        String nametag = isDeathNametag ? main.rulesManager.getRule_Nametag_CreatureDeath(livingEntity) : main.rulesManager.getRule_Nametag(livingEntity);
         String entityName = Utils.capitalize(livingEntity.getType().toString().toLowerCase().replaceAll("_", " "));
 
         // Baby zombies can have specific nametags in entity-name-override

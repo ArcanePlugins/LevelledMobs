@@ -13,21 +13,27 @@ public class RuleInfo {
         this.presetType = PresetType.NONE;
         this.worlds_List = new LinkedList<>();
         this.conditions_Entities = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+        this.conditions_ExcludeEntities = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
         this.levellingStrategies = new LinkedList<>();
         this.calculation_CustomVariables = new TreeMap<>();
         this.conditions_Biomes = new LinkedList<>();
         this.conditions_MobCustomnameStatus = MobCustomNameStatusEnum.NOT_SPECIFIED;
+        this.conditions_MobTamedStatus = MobTamedStatusEnum.NOT_SPECIFIED;
     }
 
     private final UUID internalId;
     public boolean ruleIsEnabled;
     public MobCustomNameStatusEnum conditions_MobCustomnameStatus;
-    public Integer minLevel;
-    public Integer maxLevel;
+    public MobTamedStatusEnum conditions_MobTamedStatus;
+    public Integer conditions_MinLevel;
+    public Integer conditions_MaxLevel;
+    public Integer restrictions_MinLevel;
+    public Integer restrictions_MaxLevel;
     public int maxRandomVariance;
     public double random_BiasFactor;
     public Double conditions_Chance;
     public String nametag;
+    public String nametag_CreateDeath;
     public String presetName;
     public String worlds_Mode;
     public String calculation_Formula;
@@ -38,6 +44,8 @@ public class RuleInfo {
     public Map<String, String> calculation_CustomVariables;
     @NotNull
     public Map<String, CustomUniversalGroups> conditions_Entities;
+    @NotNull
+    public Map<String, CustomUniversalGroups> conditions_ExcludeEntities;
     @NotNull
     public List<String> worlds_List;
     @NotNull

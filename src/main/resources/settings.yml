@@ -47,48 +47,6 @@
 # |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 #
 #
-# |||||||||||||||||||||||||||||||||||||||||||||||||||||
-# ||  Section 01 - Mob Nametags
-# ||
-# ||  NOTE: You must have ProtocolLib installed
-# ||  for this featureset to function.
-# ||  Download: https://www.spigotmc.org/resources/protocollib.1997/
-# |||||||||||||||||||||||||||||||||||||||||||||||||||||
-#
-# ||-------------------------------------------------------||
-#     These creature nametags appear above the levelled
-#     mobs head, using packets to emulate a nametag
-#     without actually applying one to the mob to
-#     prevent conflicts with other plugins.
-#     This means the client is essentially 'tricked'
-#     into thinking the mob has that nametag, but
-#     the server itself has no idea that is the case.
-#
-#     You can use the following placeholders when
-#     crafting your creatures nametag:
-#                   %level% | The mobs current level
-#             %displayname% | The mobs name; will show
-#                           | nametag name if tagged (recommended)
-#                %typename% | The mobs name; will NOT show
-#                           | nametag name if tagged
-#                  %health% | The mobs current health in decimal form
-#          %health_rounded% | The mobs current health,
-#                           | rounded to nearest whole number
-#              %max_health% | The mobs max health
-#      %max_health_rounded% | The mobs max health,
-#                           | rounded to nearest whole number
-#            %heart_symbol% | A predefined heart character symbol
-#                  %tiered% | Color text based on the level of the mob
-#
-#     You can disable the nametag system entirely by
-#     changing either the creature-nametag or
-#     creature-death-nametag to 'disabled'
-#     If a player dies to a mob, creature-death-nametag
-#     name will be used for any death messages.
-# ||-------------------------------------------------------||
-creature-nametag: '&8[%tiered%Level %level%&8 | &f%displayname%&8 | &c%health%&8/&c%max_health% %heart_symbol%&8]'
-creature-death-nametag: '&8[&7Level %level%&8 | &f%displayname%&8]'
-
 
 # ||-------------------------------------------------------||
 # ||  Should the nametag always be visible?
@@ -447,8 +405,6 @@ creeper-max-damage-radius: 5
 #            item-drop: 2
 # ||-------------------------------------------------------||
 fine-tuning:
-  min-level: 1
-  max-level: 10
   lower-mob-level-bias-factor: 0
   additions:
     max-health: 25
@@ -523,25 +479,6 @@ allowed-spawn-reasons-list:
   mode: 'ALL'
   list:
     - 'SPAWNER'
-
-
-# ||-------------------------------------------------------||
-# ||  Do-Not-Level Conditions
-#
-#      nametagged: | Mobs who have had a nametag used
-#                  | on them to change their names
-#           tamed: | Mobs who have been tamed as a pet
-#
-#     To remove or prevent levels on mobs who have been
-#     tamed or nametagged, change their setting below
-#     to true. To allow mobs to level regardless whether
-#     they are tamed or tagged, change the setting below
-#     to false. By default, they are false and true respectively.
-# ||-------------------------------------------------------||
-no-level-conditions:
-  nametagged: false
-  tamed: true
-
 
 # ||-------------------------------------------------------||
 # ||  ADVANCED USERS ONLY

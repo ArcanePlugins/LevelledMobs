@@ -9,6 +9,7 @@ import me.lokka30.levelledmobs.misc.DebugType;
 import me.lokka30.levelledmobs.misc.ModalList;
 import me.lokka30.levelledmobs.misc.Utils;
 import me.lokka30.levelledmobs.rules.MobCustomNameStatusEnum;
+import me.lokka30.levelledmobs.rules.MobTamedStatusEnum;
 import me.lokka30.levelledmobs.rules.RulesManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -65,6 +66,11 @@ public class LevelInterface {
      */
     @NotNull
     public LevellableState getLevellableState(@NotNull LivingEntity livingEntity) {
+        return getLevellableState(livingEntity, false);
+    }
+
+    @NotNull
+    LevellableState getLevellableState(@NotNull LivingEntity livingEntity, final boolean skipGroupCheck) {
         /*
         Certain entity types are force-blocked, regardless of what the user has configured.
         This is also ran in getLevellableState(EntityType), however it is important that this is ensured
@@ -95,11 +101,13 @@ public class LevelInterface {
         Check 'No Level Conditions'
          */
         // Nametagged mobs.
-        if (livingEntity.getCustomName() != null && rulesManager.mobCustomNameStatus(livingEntity) == MobCustomNameStatusEnum.NOT_NAMETAGGED)
+        if (livingEntity.getCustomName() != null &&
+                rulesManager.getRule_MobCustomNameStatus(livingEntity, skipGroupCheck) == MobCustomNameStatusEnum.NOT_NAMETAGGED)
             return LevellableState.DENIED_CONFIGURATION_CONDITION_NAMETAGGED;
 
         // Tamed mobs.
-        if (livingEntity instanceof Tameable && ((Tameable) livingEntity).isTamed() && main.settingsCfg.getBoolean("no-level-conditions.tamed"))
+        if (livingEntity instanceof Tameable && ((Tameable) livingEntity).isTamed() &&
+                rulesManager.getRule_MobTamedStatus(livingEntity, skipGroupCheck) == MobTamedStatusEnum.NOT_TAMED)
             return LevellableState.DENIED_CONFIGURATION_CONDITION_TAMED;
 
         /*

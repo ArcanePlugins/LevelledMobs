@@ -282,11 +282,16 @@ public class Companion {
     }
 
     @Nonnull
-    public List<CustomUniversalGroups> getApllicableGroupsForMob(final LivingEntity le, final boolean isLevelled){
+    public List<CustomUniversalGroups> getApllicableGroupsForMob(final LivingEntity le, final boolean isLevelled, final boolean isCustomDrops){
         final List<CustomUniversalGroups> groups = new ArrayList<>();
         groups.add(CustomUniversalGroups.ALL_MOBS);
 
-        if (isLevelled) groups.add(CustomUniversalGroups.ALL_LEVELLABLE_MOBS);
+        //final boolean isLevellable = (main.levelInterface.getLevellableState(le, true) == LevelInterface.LevellableState.ALLOWED);
+        final boolean isLevellable = true; // if we're here then it is levellable?
+
+        //if (isLevelled || isLevellable)
+        if (isLevelled || !isCustomDrops)
+            groups.add(CustomUniversalGroups.ALL_LEVELLABLE_MOBS);
         final EntityType eType = le.getType();
 
         if (le instanceof Monster || le instanceof Boss || groups_HostileMobs.contains(eType)){

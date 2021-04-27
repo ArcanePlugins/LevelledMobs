@@ -23,7 +23,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class LevelledMobs extends JavaPlugin {
 
     // Manager classes
-    public final LevelInterface levelInterface = new LevelInterface(this);
+    public LevelInterface levelInterface;
     public LevelManager levelManager;
     public final MobDataManager mobDataManager = new MobDataManager(this);
     public WorldGuardManager worldGuardManager;
@@ -63,6 +63,7 @@ public class LevelledMobs extends JavaPlugin {
     public void onEnable() {
         final QuickTimer timer = new QuickTimer();
 
+        this.levelInterface = new LevelInterface(this);
         companion.checkCompatibility();
         if (!companion.loadFiles()) {
             // had fatal error reading required files

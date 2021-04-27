@@ -52,7 +52,7 @@ public class CustomDropsHandler {
 
     public CustomDropResult getCustomItemDrops(final LivingEntity livingEntity, final int level, final List<ItemStack> drops, final boolean isLevellable, final boolean equippedOnly) {
 
-        final List<CustomUniversalGroups> applicableGroups = instance.companion.getApllicableGroupsForMob(livingEntity, isLevellable);
+        final List<CustomUniversalGroups> applicableGroups = instance.companion.getApllicableGroupsForMob(livingEntity, isLevellable, true);
 
         boolean isSpawner = false;
         if (livingEntity.getPersistentDataContainer().has(instance.levelManager.spawnReasonKey, PersistentDataType.STRING)) {

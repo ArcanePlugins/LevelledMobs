@@ -57,9 +57,10 @@ public class RulesParsingManager {
     @NotNull
     private RuleInfo parseDefaults(final Object objDefaults) {
         this.parsingInfo = new RuleInfo();
-        parsingInfo.minLevel = 1;
-        parsingInfo.maxLevel = 10;
+        parsingInfo.restrictions_MinLevel = 1;
+        parsingInfo.restrictions_MaxLevel = 10;
         parsingInfo.conditions_MobCustomnameStatus = MobCustomNameStatusEnum.EITHER;
+        parsingInfo.conditions_MobTamedStatus = MobTamedStatusEnum.EITHER;
 
         final ConfigurationSection cs = objectToConfigurationSection(objDefaults);
         if (cs == null){
@@ -68,9 +69,6 @@ public class RulesParsingManager {
         }
 
         parseValues(cs);
-        if (parsingInfo.minLevel == null) parsingInfo.minLevel = 1;
-        if (parsingInfo.maxLevel == null) parsingInfo.maxLevel = 10;
-
         return this.parsingInfo;
     }
 
@@ -184,31 +182,32 @@ public class RulesParsingManager {
 
         parsingInfo.maxRandomVariance = cs.getInt("max-random-variance", 0);
         parsingInfo.nametag = cs.getString("nametag");
+        parsingInfo.nametag_CreateDeath = cs.getString("creature-death-nametag");
     }
 
     private void parseLevelLimits(final ConfigurationSection cs){
         if (cs == null) return;
 
         if (cs.getString("min") != null)
-            parsingInfo.minLevel = cs.getInt("min");
+            parsingInfo.conditions_MinLevel = cs.getInt("min");
         if (cs.getString("max") != null)
-            parsingInfo.maxLevel = cs.getInt("max");
+            parsingInfo.conditions_MaxLevel = cs.getInt("max");
     }
 
     private void parseRestrictions(final ConfigurationSection cs){
         if (cs == null) return;
 
         if (cs.getString("minLevel") != null)
-            parsingInfo.minLevel = cs.getInt("minLevel");
+            parsingInfo.restrictions_MinLevel = cs.getInt("minLevel");
         if (cs.getString("maxLevel") != null)
-            parsingInfo.maxLevel = cs.getInt("maxLevel");
+            parsingInfo.restrictions_MaxLevel = cs.getInt("maxLevel");
 
         // check for all lower case keys
 
         if (cs.getString("minlevel") != null)
-            parsingInfo.minLevel = cs.getInt("minlevel");
+            parsingInfo.restrictions_MinLevel = cs.getInt("minlevel");
         if (cs.getString("maxlevel") != null)
-            parsingInfo.maxLevel = cs.getInt("maxlevel");
+            parsingInfo.restrictions_MaxLevel = cs.getInt("maxlevel");
     }
 
     private void parseCustomVariables(final Object customVariablesObj){
@@ -241,6 +240,11 @@ public class RulesParsingManager {
                         parsingInfo.getInternalId(), presetName));
         }
 
+        if (conditions.getString("minLevel") != null)
+            parsingInfo.conditions_MinLevel = conditions.getInt("minLevel");
+        if (conditions.getString("maxLevel") != null)
+            parsingInfo.conditions_MaxLevel = conditions.getInt("maxLevel");
+
         if (conditions.getString("chance") != null)
             parsingInfo.conditions_Chance = conditions.getDouble("chance");
         final String mobCustomNameStatus = conditions.getString("mob-customname-status");
@@ -249,7 +253,17 @@ public class RulesParsingManager {
                 parsingInfo.conditions_MobCustomnameStatus = MobCustomNameStatusEnum.valueOf(mobCustomNameStatus.toUpperCase());
             }
             catch (Exception e){
-                Utils.logger.warning("Invalid value for ");
+                Utils.logger.warning("Invalid value for " + mobCustomNameStatus);
+            }
+        }
+
+        final String mobTamedStatus = conditions.getString("mob-tamed-status");
+        if (mobTamedStatus != null) {
+            try{
+                parsingInfo.conditions_MobTamedStatus = MobTamedStatusEnum.valueOf(mobTamedStatus.toUpperCase());
+            }
+            catch (Exception e){
+                Utils.logger.warning("Invalid value for " + mobTamedStatus);
             }
         }
 
@@ -266,6 +280,21 @@ public class RulesParsingManager {
             else
                 parsingInfo.conditions_Entities.put(entityOrGroup, CustomUniversalGroups.NOT_APPLICABLE);
         }
+
+        for (final String entityOrGroup : getListOrItemFromConfig("exclude_entities", conditions)){
+            if (entityOrGroup.toLowerCase().startsWith("all")){
+                try{
+                    final CustomUniversalGroups group = CustomUniversalGroups.valueOf(entityOrGroup.toUpperCase());
+                    parsingInfo.conditions_ExcludeEntities.put(entityOrGroup, group);
+                }
+                catch (IllegalArgumentException e){
+                    Utils.logger.warning("invalid group for rule id: " + parsingInfo.getInternalId() + ", name: " + entityOrGroup);
+                }
+            }
+            else
+                parsingInfo.conditions_ExcludeEntities.put(entityOrGroup, CustomUniversalGroups.NOT_APPLICABLE);
+        }
+
         parsingInfo.conditions_Biomes.addAll(getListOrItemFromConfig("biomes", conditions));
     }
 
