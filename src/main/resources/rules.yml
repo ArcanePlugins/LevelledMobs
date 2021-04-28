@@ -4,7 +4,9 @@ presets:
   1:
     preset-type: 'conditions'
     value:
-      entities: ['all_levellable_mobs']
+      entities:
+        mode: 'BLACKLIST'
+        list: ['all_passive_mobs']
   2:
     preset-type: 'worlds'
     value:
@@ -44,7 +46,16 @@ default-rule:
   creature-death-nametag: '&8[&7Level %mob-lvl%&8 | &f%entity-name%&8]'
   max-random-variance: 1
   creature-nametag-always-visible: false
-
+  entity-name-override:
+    ZOMBIE: 'Undead'
+    CREEPER: 'Mr Self Destruct'
+    BABY_ZOMBIE: 'Baby Undead'
+  allowed-entities:
+    mode: 'BLACKLIST'
+    list: [ 'VILLAGER','WANDERING_TRADER','ENDER_DRAGON','WITHER','RAVAGER','PHANTOM','BABY_ZOMBIE' ]
+  baby-mobs-inherit-adult-setting: true
+  level-inheritance: true
+  creeper-max-damage-radius: 5
 custom-rules:
   - enabled: true
     worlds:

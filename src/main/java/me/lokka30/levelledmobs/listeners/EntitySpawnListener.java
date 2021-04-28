@@ -48,10 +48,16 @@ public class EntitySpawnListener implements Listener {
             onSpawnerSpawn((SpawnerSpawnEvent) event);
             return;
         }
-        if (event instanceof CreatureSpawnEvent && ((CreatureSpawnEvent)event).getSpawnReason().equals(CreatureSpawnEvent.SpawnReason.SPAWNER))
-            return;
+        if (event instanceof CreatureSpawnEvent){
+            final CreatureSpawnEvent spawnEvent = (CreatureSpawnEvent) event;
+
+            if (spawnEvent.getSpawnReason().equals(CreatureSpawnEvent.SpawnReason.SPAWNER) ||
+                spawnEvent.getSpawnReason().equals(CreatureSpawnEvent.SpawnReason.SLIME_SPLIT))
+                return;
+        }
 
         final LivingEntityWrapper lmEntity = new LivingEntityWrapper((LivingEntity) event.getEntity(), main);
+
         preprocessMob(lmEntity, event);
     }
 
@@ -108,9 +114,9 @@ public class EntitySpawnListener implements Listener {
         runnable.run();
     }
 
-    private void preprocessMob(@NotNull final LivingEntityWrapper lmEntity, @NotNull final EntitySpawnEvent event){
+    public void preprocessMob(@NotNull final LivingEntityWrapper lmEntity, @NotNull final EntitySpawnEvent event){
 
-        final LevelInterface.LevellableState levellableState = getLevellableState(event);
+        final LevelInterface.LevellableState levellableState = getLevellableState(lmEntity, event);
         if (levellableState == LevelInterface.LevellableState.ALLOWED) {
             main.levelInterface.applyLevelToMob(lmEntity, main.levelInterface.generateLevel(lmEntity),
                     false, false, new HashSet<>(Collections.singletonList(LevelInterface.AdditionalLevelInformation.NOT_APPLICABLE)));
@@ -130,10 +136,7 @@ public class EntitySpawnListener implements Listener {
     }
 
     @NotNull
-    private LevelInterface.LevellableState getLevellableState(@NotNull final EntitySpawnEvent event) {
-        assert event.getEntity() instanceof LivingEntity;
-        LivingEntityWrapper lmEntity = new LivingEntityWrapper((LivingEntity) event.getEntity(), main);
-
+    private LevelInterface.LevellableState getLevellableState(final LivingEntityWrapper lmEntity, @NotNull final EntitySpawnEvent event) {
         LevelInterface.LevellableState levellableState = main.levelInterface.getLevellableState(lmEntity);
 
         if (levellableState != LevelInterface.LevellableState.ALLOWED) {

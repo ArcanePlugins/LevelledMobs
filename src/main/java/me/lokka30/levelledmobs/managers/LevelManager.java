@@ -10,6 +10,9 @@ import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.customdrops.CustomDropResult;
 import me.lokka30.levelledmobs.listeners.EntitySpawnListener;
 import me.lokka30.levelledmobs.misc.*;
+import me.lokka30.levelledmobs.rules.strategies.LevellingStrategy;
+import me.lokka30.levelledmobs.rules.strategies.SpawnDistanceStrategy;
+import me.lokka30.levelledmobs.rules.strategies.YDistanceStrategy;
 import me.lokka30.microlib.MessageUtils;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
@@ -86,13 +89,26 @@ public class LevelManager {
         );
     }
 
-    public int generateDistanceFromSpawnLevel(final LivingEntityWrapper lmEntity, final int minLevel, final int maxLevel) {
-        final int distanceFromSpawn = (int) lmEntity.getLivingEntity().getWorld().getSpawnLocation().distance(lmEntity.getLivingEntity().getLocation());
-        final int startDistance = main.settingsCfg.getInt("spawn-distance-levelling.start-distance", 0);
-        final int levelDistance = Math.max(distanceFromSpawn - startDistance, 0);
-        final int increaseLevelDistance = main.settingsCfg.getInt("spawn-distance-levelling.increase-level-distance", 200);
+    public int generateDistanceFromSpawnLevel(final LivingEntityWrapper lmEntity, final int minLevel, final int maxLevel, final SpawnDistanceStrategy spawnDistanceStrategy) {
+        Location spawnLocation = lmEntity.getLivingEntity().getWorld().getSpawnLocation();
 
-        int variance = main.settingsCfg.getInt("spawn-distance-levelling.variance", 2);
+        if (spawnDistanceStrategy.spawnLocation_Z != null || spawnDistanceStrategy.spawnLocation_X != null) {
+            final double useX = spawnDistanceStrategy.spawnLocation_X == null ? spawnLocation.getX() : spawnDistanceStrategy.spawnLocation_X;
+            final double useZ = spawnDistanceStrategy.spawnLocation_Z == null ? spawnLocation.getX() : spawnDistanceStrategy.spawnLocation_Z;
+
+            spawnLocation = new Location(
+                    lmEntity.getLivingEntity().getWorld(),
+                    useX,
+                    spawnLocation.getY(),
+                    useZ);
+        }
+
+        final int distanceFromSpawn = (int) spawnLocation.distance(lmEntity.getLivingEntity().getLocation());
+        final int startDistance = spawnDistanceStrategy.startDistance;
+        final int levelDistance = Math.max(distanceFromSpawn - startDistance, 0);
+        final int increaseLevelDistance = spawnDistanceStrategy.increaseLevelDistance;
+
+        int variance = spawnDistanceStrategy.variance;
         if (variance != 0) {
             variance = ThreadLocalRandom.current().nextInt(0, variance + 1);
         }
@@ -116,14 +132,12 @@ public class LevelManager {
             if (maxLevel == -1) maxLevel = levels[1];
         }
 
-        // system 2: y distance levelling
-        if (main.settingsCfg.getBoolean("y-distance-levelling.active")) {
-            return generateYCoordinateLevel(lmEntity.getLivingEntity().getLocation().getBlockY(), minLevel, maxLevel);
-        }
+        LevellingStrategy levellingStrategy = main.rulesManager.getRule_LevellingStrategy(lmEntity);
 
-        // system 3: spawn distance levelling
-        if (main.settingsCfg.getBoolean("spawn-distance-levelling.active")) {
-            return generateDistanceFromSpawnLevel(lmEntity, minLevel, maxLevel);
+        if (levellingStrategy instanceof YDistanceStrategy)
+            return generateYCoordinateLevel(lmEntity, minLevel, maxLevel, (YDistanceStrategy) levellingStrategy);
+        else if (levellingStrategy instanceof SpawnDistanceStrategy) {
+            return generateDistanceFromSpawnLevel(lmEntity, minLevel, maxLevel, (SpawnDistanceStrategy)levellingStrategy);
         }
 
         // system 1: random levelling
@@ -226,16 +240,20 @@ public class LevelManager {
         return levels;
     }
 
-    public int generateYCoordinateLevel(final int mobYLocation, final int minLevel, final int maxLevel) {
-        final int yPeriod = main.settingsCfg.getInt("y-distance-levelling.y-period", 0);
-        final int variance = main.settingsCfg.getInt("y-distance-levelling.variance", 0);
-        int yStart = main.settingsCfg.getInt("y-distance-levelling.starting-y-level", 100);
-        int yEnd = main.settingsCfg.getInt("y-distance-levelling.ending-y-level", 20);
+    // public int generateYCoordinateLevel(final int mobYLocation, final int minLevel, final int maxLevel) {
+    public int generateYCoordinateLevel(final LivingEntityWrapper lmEntity, final int minLevel, final int maxLevel, final YDistanceStrategy yDistanceStrategy) {
+
+        int mobYLocation = lmEntity.getLivingEntity().getLocation().getBlockY();
+
+        final int yPeriod = yDistanceStrategy.yPeriod;
+        final int variance = yDistanceStrategy.yPeriod;
+        int yStart = yDistanceStrategy.startingYLevel;
+        int yEnd = yDistanceStrategy.endingYLevel;
 
         final boolean isAscending = (yEnd > yStart);
         if (!isAscending) {
             yStart = yEnd;
-            yEnd = main.settingsCfg.getInt("y-distance-levelling.starting-y-level", 100);
+            yEnd = yDistanceStrategy.startingYLevel;
         }
 
         int useLevel = minLevel;
@@ -636,9 +654,7 @@ public class LevelManager {
 
     // When the persistent data container levelled key has been set on the entity already (i.e. when they are damaged)
     public String getNametag(final LivingEntityWrapper lmEntity, final boolean isDeathNametag) {
-        return getNametag(lmEntity, Objects.requireNonNull(
-                lmEntity.getPDC().get(levelKey, PersistentDataType.INTEGER),
-                "entity must be levelled"), isDeathNametag);
+        return getNametag(lmEntity, lmEntity.getMobLevel(), isDeathNametag);
     }
 
     // When the persistent data container levelled key has not been set on the entity yet (i.e. for use in EntitySpawnListener)
@@ -656,12 +672,10 @@ public class LevelManager {
         String entityName = Utils.capitalize(lmEntity.getTypeName()).toLowerCase().replaceAll("_", " ");
 
         // Baby zombies can have specific nametags in entity-name-override
-        if (lmEntity.isBabyMob() && main.settingsCfg.contains("entity-name-override.BABY_" + lmEntity.getTypeName())) {
-            entityName = main.settingsCfg.getString("entity-name-override.BABY_" + lmEntity.getTypeName());
-        } else if (main.settingsCfg.contains("entity-name-override." + lmEntity.getTypeName())) {
-            entityName = main.settingsCfg.getString("entity-name-override." + lmEntity.getTypeName());
-        }
-        if (entityName == null || entityName.isEmpty() || entityName.equalsIgnoreCase("disabled")) return null;
+        final String overridenName = main.rulesManager.getRule_EntityOverriddenName(lmEntity);
+        if (overridenName != null) entityName = overridenName;
+
+        if (entityName.isEmpty() || entityName.equalsIgnoreCase("disabled")) return null;
 
         final String displayName = lmEntity.getLivingEntity().getCustomName() == null ? MessageUtils.colorizeAll(entityName) : lmEntity.getLivingEntity().getCustomName();
 
@@ -785,22 +799,20 @@ public class LevelManager {
 
                         // Mob must be a livingentity that is ...living.
                         if (!(entity instanceof LivingEntity)) continue;
-                        final LivingEntity livingEntity = (LivingEntity) entity;
-                        final boolean isLevelled = main.levelInterface.isLevelled(livingEntity);
+                        LivingEntityWrapper lmEntity = new LivingEntityWrapper((LivingEntity) entity, main);
 
                         // if the mob isn't levelled then see if it qualifies to be levelled
-                        if (!isLevelled &&
-                            !Utils.isBabyMob_temp(livingEntity) &&
-                            livingEntity.getPersistentDataContainer().has(main.levelManager.wasBabyMobKey, PersistentDataType.INTEGER) &&
-                            main.levelInterface.getLevellableState_temp(livingEntity) == LevelInterface.LevellableState.ALLOWED) {
+                        if (!lmEntity.isLevelled() &&
+                                !lmEntity.isBabyMob() &&
+                                lmEntity.getPDC().has(main.levelManager.wasBabyMobKey, PersistentDataType.INTEGER) &&
+                                main.levelInterface.getLevellableState(lmEntity) == LevelInterface.LevellableState.ALLOWED) {
                             // if the mob was a baby at some point, aged and now is eligable for levelling, we'll apply a level to it now
-                            Utils.debugLog(main, DebugType.ENTITY_MISC, livingEntity.getName() + " was a baby and is now an adult, applying levelling rules");
+                            Utils.debugLog(main, DebugType.ENTITY_MISC, lmEntity.getLivingEntity().getName() + " was a baby and is now an adult, applying levelling rules");
                             // can't apply the level from an async task
-                            applyLevelToMobFromAsync(livingEntity);
+                            applyLevelToMobFromAsync(lmEntity);
                         }
-                        else if (isLevelled && livingEntity.getLocation().distanceSquared(location) <= maxDistance){
+                        else if (lmEntity.isLevelled() && lmEntity.getLivingEntity().getLocation().distanceSquared(location) <= maxDistance){
                             //if within distance, update nametag.
-                            final LivingEntityWrapper lmEntity = new LivingEntityWrapper(livingEntity, main);
                             main.levelManager.updateNametag(
                                     lmEntity, main.levelManager.getNametag(lmEntity, false), Collections.singletonList(player)
                             );
@@ -811,9 +823,7 @@ public class LevelManager {
         }.runTaskTimerAsynchronously(main, 0, 20 * period);
     }
 
-    private void applyLevelToMobFromAsync(final LivingEntity livingEntity){
-        LivingEntityWrapper lmEntity = new LivingEntityWrapper(livingEntity, main);
-
+    private void applyLevelToMobFromAsync(final LivingEntityWrapper lmEntity){
         BukkitRunnable applyLevelTask = new BukkitRunnable() {
             @Override
             public void run() {
@@ -879,14 +889,16 @@ public class LevelManager {
         }
     }
 
-    public void applyCreeperBlastRadius(Creeper creeper, int level) {
-        final int creeperMaxDamageRadius = main.settingsCfg.getInt("creeper-max-damage-radius", 3);
+    public void applyCreeperBlastRadius(LivingEntityWrapper lmEntity, int level) {
+        final int creeperMaxDamageRadius = main.rulesManager.getRule_CreeperMaxBlastRadius(lmEntity);
+        Creeper creeper = (Creeper) lmEntity.getLivingEntity();
 
         if (creeperMaxDamageRadius == 3) return;
 
-        final double levelDiff = main.settingsCfg.getInt("fine-tuning.max-level", 10) - main.settingsCfg.getInt("fine-tuning.min-level", 1);
-        final double maxBlastDiff = main.settingsCfg.getInt("creeper-max-damage-radius", 3) - 3;
-        final double useLevel = level - main.settingsCfg.getInt("fine-tuning.min-level", 1);
+        final int minMobLevel = main.rulesManager.getRule_MobMinLevel(lmEntity);
+        final double levelDiff = main.rulesManager.getRule_MobMaxLevel(lmEntity) - minMobLevel;
+        final double maxBlastDiff = creeperMaxDamageRadius - 3;
+        final double useLevel = level - minMobLevel;
         final double percent = useLevel / levelDiff;
         int blastRadius = (int) Math.round(maxBlastDiff * percent) + 3;
 
@@ -907,7 +919,7 @@ public class LevelManager {
     public void updateNametag(LivingEntityWrapper lmEntity, int level) {
         if (!main.settingsCfg.getBoolean("show-label-for-default-levelled-mobs") && level == 1) {
             // Don't show the label for default levelled mobs, since the server owner configured it this way
-            main.levelManager.updateNametag(lmEntity, "", lmEntity.getLivingEntity().getWorld().getPlayers());
+            main.levelManager.updateNametag(lmEntity, main.levelManager.getNametag(lmEntity, level, false));
             return;
         }
 

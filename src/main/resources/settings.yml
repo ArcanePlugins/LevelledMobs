@@ -49,34 +49,6 @@
 #
 
 # ||-------------------------------------------------------||
-# ||  Customize Mob Names
-#
-#     If you wish to change the name of mobs used for
-#     nametags, you can do so below. You can disable the
-#     mobs nametag by changing it to 'disabled', as well
-#     as impliment Minecraft's color codes.
-#     You may also prefix any entity with 'BABY_' to
-#     specify the baby variant of the mob.
-#
-#     The format below consists of the mob name, and
-#     their replacement name.
-#     Reference https://tinyurl.com/SpigotMCEntityTypes
-#     To find the correct mob name to use when selecting it.
-#
-#      entity-name-override:
-#        EntityType:'New Name'
-# ||-------------------------------------------------------||
-entity-name-override:
-  WITHER: 'Wither'
-  CREEPER: 'Creeper'
-  BABY_ZOMBIE: 'Baby Zombie'
-# Here are some further examples below,
-# uncomment them to take effect:
-#  ENDER_DRAGON: '&5&lEnder Dragon'
-#  PHANTOM: 'disabled'
-
-
-# ||-------------------------------------------------------||
 # ||  Should Level 1 mobs display a nametag?
 #
 #        true | Default-Levelled mobs
@@ -120,151 +92,6 @@ assert-entity-validity-with-nametag-packets: true
 nametag-auto-update-task-period: 6
 
 
-#
-#
-# |||||||||||||||||||||||||||||||||||||||||||||||||||||
-# ||  Section 02 - Levelling Mobs
-# |||||||||||||||||||||||||||||||||||||||||||||||||||||
-#
-# ||-------------------------------------------------------||
-# ||  Levellable Entities
-#
-#      BLACKLIST | All permitted entities are levelled,
-#                | excluding the list below
-#      WHITELIST | Only entities listed below will be levelled
-#            ALL | All permitted entities are levelled,
-#                | ignoring the list below
-#      mode: 'BLACKLIST'
-#
-#      list: (Default)
-#        - VILLAGER
-#        - WANDERING_TRADER
-#        - ENDER_DRAGON
-#        - WITHER
-#        - RAVAGER
-#        - PHANTOM
-#        - BABY_ZOMBIE
-#
-#      babyMobsInheritAdultSetting:
-#               | This setting applies to entities
-#               | which are listed in 'allowed-entities-list'
-#          true | If you add an entity to the list,
-#               | the setting will apply to the baby variant
-#               | as well as the adult. For example: ZOMBIE
-#               | would apply to both ZOMBIE and BABY_ZOMBIE.
-#         false | If you add an entity to the list,
-#               | this setting will check for any BABY_ variant
-#               | entity listed below, and will not apply the
-#               | setting unless it's specifically listed.
-#               | For example: listing ZOMBIE and not BABY_ZOMBIE
-#               | will only apply this list to the adult ZOMBIE.
-# ||-------------------------------------------------------||
-allowed-entities-list:
-  mode: 'BLACKLIST'
-  list:
-    - VILLAGER
-    - WANDERING_TRADER
-    - ENDER_DRAGON
-    - WITHER
-    - RAVAGER
-    - PHANTOM
-    - BABY_ZOMBIE
-#    - BABY_HUSK
-#    - BABY_DROWNED
-#    - BABY_ZOMBIE_VILLAGER
-#    - BABY_PIGLIN
-#    - BABY_HOGLIN
-#    - BABY_ZOMBIFIED_PIGLIN
-  babyMobsInheritAdultSetting: true
-
-
-# ||-------------------------------------------------------||
-# ||  Should Passive creatures be levelled?
-#
-#     Passive creatures are mobs which are not by
-#     default hostile towards the player. This
-#     includes mobs such as the pigs and villagers.
-#
-#       true | Passive mobs will be levelled like any other mob
-#      false | Passive mobs will NOT be levelled (Default)
-# ||-------------------------------------------------------||
-level-passive: false
-
-
-# ||-------------------------------------------------------||
-# ||  Should transformed mobs inherit the
-# ||  level of the original mob?
-#
-#     An example of a transformed mob would be a
-#     Large Slime breaking into Small Slimes, or
-#     when a Zombie converts to a Drowned or Husk.
-#
-#      true | The transformed mob will inherit the
-#           | level of the previous mob (Default)
-#     false | The transformed mob will generate a
-#           | new level based on current settings
-# ||-------------------------------------------------------||
-level-inheritance: true
-
-
-# ||-------------------------------------------------------||
-# ||  Levelling System: Distance from Spawn
-# ||  You may not use both this levelling
-# ||  system and Y-Levelling
-#
-#      spawn-distance-levelling:
-#        active:
-#          true | Enable Distance
-#               | from Spawn Levelling
-#         false | Disable Distance
-#               | from Spawn Levelling (Default)
-#        variance:
-#              | Add a +/- variance to any mob
-#              | spawned using this system
-#          increase-level-distance:
-#              | Mob level will increase by one
-#              | for every X blocks from spawn
-#          start-distance:
-#              | Mob level will not begin to
-#              | increase until X blocks from spawn
-# ||-------------------------------------------------------||
-spawn-distance-levelling:
-  active: false
-  variance: 2
-  increase-level-distance: 200
-  start-distance: 0
-
-
-# ||-------------------------------------------------------||
-# ||  Levelling System: Y-Levelling
-# ||  You may not use both this levelling
-# ||  system and Distance from Spawn
-#
-#      y-distance-levelling:
-#        active:
-#          true | Enable Y-Distance Levelling
-#         false | Disable Y-Distance Levelling (Default)
-#      starting-y-level:
-#          | The Y-Height where the weakest,
-#          | low level mobs spawn
-#      ending-y-level:
-#          | The Y-Height where the strongest,
-#          | high level mobs spawn
-#      y-period:
-#          | From starting-y-level going down,
-#          | increase level every X blocks
-#      variance:
-#          | Add a +/- variance to any mob
-#          | spawned using this system
-# ||-------------------------------------------------------||
-y-distance-levelling:
-  active: false
-  starting-y-level: 100
-  ending-y-level: 20
-  y-period: 0
-  variance: 0
-
-
 # ||-------------------------------------------------------||
 # ||  ADVANCED USERS ONLY
 # ||  Mob Head Drop Multiplier
@@ -279,21 +106,6 @@ y-distance-levelling:
 #     false | PLAYER_HEADS will NOT be multipled (Default)
 # ||-------------------------------------------------------||
 mobs-multiply-head-drops: false
-
-
-# ||-------------------------------------------------------||
-# ||  ADVANCED USERS ONLY
-# ||  Creeper Explosion Radius
-#
-#     Vanilla Minecraft has a Creeper explosion marked
-#     at a radius of 3, our default is 5
-#     WARNING: You can crash your server or at the least
-#     create a giant crater if the explosion radius is
-#     too large for your server or players to handle.
-#     It is recommended not to change this value, as it
-#     has been playtested to be a good middle ground.
-# ||-------------------------------------------------------||
-creeper-max-damage-radius: 5
 
 
 # ||-------------------------------------------------------||
@@ -408,35 +220,6 @@ fine-tuning:
 #        xp-drop: 3
 #        ranged-attack-damage: 2.5
 #        item-drop: 4
-
-
-#
-#
-# |||||||||||||||||||||||||||||||||||||||||||||||||||||
-# ||  Section 03 - World Settings and Exceptions
-# |||||||||||||||||||||||||||||||||||||||||||||||||||||
-#
-# ||-------------------------------------------------------||
-# ||  Allowed Worlds Settings
-#
-#      BLACKLIST | All worlds are levelled,
-#                | excluding the list below
-#      WHITELIST | Only worlds listed below will be levelled
-#            ALL | All worlds are levelled,
-#                | ignoring the list below
-#
-#      mode: 'BLACKLIST'
-#      list:
-#        - 'world'
-#        - 'world_nether'
-#        - 'world_the_end'
-#        - 'world_herobrine'
-#
-#     By default, ALL worlds are levelled.
-# ||-------------------------------------------------------||
-allowed-worlds-list:
-  mode: 'ALL'
-  list:
 
 
 # ||-------------------------------------------------------||

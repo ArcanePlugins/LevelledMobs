@@ -1,22 +1,22 @@
 package me.lokka30.levelledmobs.rules;
 
 import me.lokka30.levelledmobs.misc.CachedModalList;
-import me.lokka30.levelledmobs.misc.CustomUniversalGroups;
+import me.lokka30.levelledmobs.misc.Utils;
 import me.lokka30.levelledmobs.rules.strategies.LevellingStrategy;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
 public class RuleInfo {
-    public RuleInfo(){
-        this.internalId = UUID.randomUUID().toString().substring(24);
+    public RuleInfo(final String id){
+        this.internalId = id;
+
         this.ruleIsEnabled = true;
         this.presetType = PresetType.NONE;
-        this.worlds = new CachedModalList();
-        this.conditions_Biomes = new CachedModalList();
-        this.conditions_Entities = new CachedModalList();
         this.levellingStrategies = new LinkedList<>();
-        this.calculation_CustomVariables = new TreeMap<>();
+        this.calculation_CustomVariables = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+        this.entityNameOverrides = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
         this.conditions_MobCustomnameStatus = MobCustomNameStatusEnum.NOT_SPECIFIED;
         this.conditions_MobTamedStatus = MobTamedStatusEnum.NOT_SPECIFIED;
     }
@@ -24,7 +24,10 @@ public class RuleInfo {
     private final String internalId;
     public boolean ruleIsEnabled;
     public Boolean CreatureNametagAlwaysVisible;
+    public Boolean babyMobsInheritAdultSetting;
+    public Boolean mobLevelInheritance;
     public int maxRandomVariance;
+    public Integer creeperMaxDamageRadius;
     public Integer conditions_MinLevel;
     public Integer conditions_MaxLevel;
     public Integer restrictions_MinLevel;
@@ -43,10 +46,10 @@ public class RuleInfo {
     @NotNull
     public Map<String, String> calculation_CustomVariables;
     @NotNull
+    public Map<String, String> entityNameOverrides;
+    public CachedModalList allowedEntities;
     public CachedModalList worlds;
-    @NotNull
     public CachedModalList conditions_Entities;
-    @NotNull
     public CachedModalList conditions_Biomes;
 
     public String getInternalId(){
@@ -58,7 +61,7 @@ public class RuleInfo {
 
         if (preset.presetType == PresetType.CONDITIONS){
             this.conditions_Biomes = preset.conditions_Biomes;
-            this.conditions_Entities = preset.conditions_Entities;
+            this.conditions_Entities = preset.conditions_Entities.cloneItem();
             this.conditions_Chance = preset.conditions_Chance;
         }
         else if (preset.presetType == PresetType.WORLDS){

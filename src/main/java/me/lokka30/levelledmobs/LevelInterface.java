@@ -71,6 +71,12 @@ public class LevelInterface {
         if (FORCED_BLOCKED_ENTITY_TYPES.contains(lmEntity.getTypeName()))
             return LevellableState.DENIED_FORCE_BLOCKED_ENTITY_TYPE;
 
+        if (!rulesManager.getRule_IsMobInAnyAllowedLists(lmEntity))
+            return LevellableState.DENIED_NO_APPLICABLE_RULES;
+
+        if (!rulesManager.getRule_IsMobAllowedInEntityOverride(lmEntity))
+            return LevellableState.DENIED_CONFIGURATION_BLOCKED_ENTITY_TYPE;
+
         /*
         Compatibility with other plugins: users may want to stop LM from acting on mobs modified by other plugins.
          */
@@ -102,17 +108,7 @@ public class LevelInterface {
                 rulesManager.getRule_MobTamedStatus(lmEntity) == MobTamedStatusEnum.NOT_TAMED)
             return LevellableState.DENIED_CONFIGURATION_CONDITION_TAMED;
 
-        /*
-        Check Entity Type
-         */
 
-            // Check ModalList
-        if (lmEntity.isBabyMob() && shouldBabyMobBeDenied(lmEntity))
-            return LevellableState.DENIED_CONFIGURATION_BLOCKED_ENTITY_TYPE;
-
-        /*
-        Check spawn reason
-         */
         // They might not have the SpawnReasonKey, make sure they do before checking it.
         if (lmEntity.getPDC().has(main.levelManager.spawnReasonKey, PersistentDataType.STRING)) {
             String spawnReason = lmEntity.getPDC().get(main.levelManager.spawnReasonKey, PersistentDataType.STRING);
@@ -123,27 +119,6 @@ public class LevelInterface {
         }
 
         return getLevellableState(lmEntity.getLivingEntity().getType(), lmEntity.getLivingEntity().getLocation());
-    }
-
-    private boolean shouldBabyMobBeDenied(final LivingEntityWrapper lmEntity){
-        final boolean babyMobsInheritAdultSetting = main.settingsCfg.getBoolean("allowed-entities-list.babyMobsInheritAdultSetting", true);
-        final boolean isBabyVariantNotLevellable = !ModalList.isEnabledInList(main.settingsCfg, "allowed-entities-list", "BABY_" + lmEntity.getLivingEntity().getType());
-
-        if (!babyMobsInheritAdultSetting)
-            return isBabyVariantNotLevellable;
-
-        // if baby is specified, use that setting. otherwise, use adult setting.
-        if (main.settingsCfg.getStringList("allowed-entities-list.list").contains("BABY_" + lmEntity.getLivingEntity().getType()))
-            return isBabyVariantNotLevellable;
-
-        return !ModalList.isEnabledInList(main.settingsCfg, "allowed-entities-list", lmEntity.getTypeName());
-    }
-
-    // TODO: rename the below function once all calling functions have been converted
-    @NotNull
-    public LevellableState getLevellableState_temp(@NotNull LivingEntity livingEntity) {
-        final LivingEntityWrapper lmEntity = new LivingEntityWrapper(livingEntity, main);
-        return getLevellableState(lmEntity);
     }
 
     /**
@@ -179,6 +154,7 @@ public class LevelInterface {
         if (!ModalList.isEnabledInList(main.settingsCfg, "allowed-entities-list", entityType.toString()))
             return LevellableState.DENIED_CONFIGURATION_BLOCKED_ENTITY_TYPE;
 
+
         // Entity types that have to be manually checked
         if (OTHER_HOSTILE_MOBS.contains(entityType.toString())) return LevellableState.ALLOWED;
 
@@ -191,7 +167,8 @@ public class LevelInterface {
         Check Entity Class
         */
         Class<? extends Entity> entityClass = entityType.getEntityClass();
-        if (entityClass == null) return LevellableState.DENIED_CONFIGURATION_BLOCKED_ENTITY_TYPE;
+        if (entityClass == null)
+            return LevellableState.DENIED_CONFIGURATION_BLOCKED_ENTITY_TYPE;
 
         return Monster.class.isAssignableFrom(entityClass)
                 || Boss.class.isAssignableFrom(entityClass)
@@ -297,6 +274,8 @@ public class LevelInterface {
             if (mobPreLevelEvent.isCancelled()) return;
         }
 
+        //new Throwable().printStackTrace();
+
         new BukkitRunnable() {
             @Override
             public void run() {
@@ -312,8 +291,8 @@ public class LevelInterface {
                 main.levelManager.applyLevelledAttributes(lmEntity, Addition.ATTRIBUTE_MAX_HEALTH);
                 main.levelManager.applyLevelledAttributes(lmEntity, Addition.ATTRIBUTE_MOVEMENT_SPEED);
 
-                if (lmEntity instanceof Creeper) {
-                    main.levelManager.applyCreeperBlastRadius((Creeper) lmEntity, level);
+                if (lmEntity.getLivingEntity() instanceof Creeper) {
+                    main.levelManager.applyCreeperBlastRadius(lmEntity, level);
                 }
 
                 main.levelManager.updateNametag(lmEntity, lmEntity.getMobLevel());
@@ -502,6 +481,12 @@ public class LevelInterface {
          * tamed mobs from being levelled.
          */
         DENIED_CONFIGURATION_CONDITION_TAMED,
+
+        /**
+         * If no rules in the rule list applied to the mob
+         * then it will be denied
+         */
+        DENIED_NO_APPLICABLE_RULES,
 
         /**
          * When a reason is not applicable, use this.

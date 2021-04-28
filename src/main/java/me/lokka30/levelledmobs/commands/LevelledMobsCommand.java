@@ -31,6 +31,7 @@ public class LevelledMobsCommand implements CommandExecutor, TabCompleter {
     private final CompatibilitySubcommand compatibilitySubcommand = new CompatibilitySubcommand();
     private final GenerateMobDataSubcommand generateMobDataSubcommand = new GenerateMobDataSubcommand();
     private final SpawnerSubCommand spawnerSubCommand;
+    private final ShowSubcommand showSubcommand = new ShowSubcommand();
 
     public boolean onCommand(final CommandSender sender, final Command command, final String label, final String[] args) {
         if (sender.hasPermission("levelledmobs.command")) {
@@ -59,6 +60,9 @@ public class LevelledMobsCommand implements CommandExecutor, TabCompleter {
                     case "spawner":
                         spawnerSubCommand.parseSubcommand(main, sender, label, args);
                         break;
+                    case "show":
+                        showSubcommand.parseSubcommand(main, sender, label, args);
+                        break;
                     default:
                         sendMainUsage(sender, label);
                 }
@@ -84,24 +88,20 @@ public class LevelledMobsCommand implements CommandExecutor, TabCompleter {
 		if (args.length == 1) {
 			List<String> suggestions = new ArrayList<>();
 
-			if (sender.hasPermission("levelledmobs.command.summon")) {
+			if (sender.hasPermission("levelledmobs.command.summon"))
 				suggestions.add("summon");
-            }
-            if (sender.hasPermission("levelledmobs.command.kill")) {
+            if (sender.hasPermission("levelledmobs.command.kill"))
                 suggestions.add("kill");
-            }
-            if (sender.hasPermission("levelledmobs.command.reload")) {
+            if (sender.hasPermission("levelledmobs.command.reload"))
                 suggestions.add("reload");
-            }
-            if (sender.hasPermission("levelledmobs.command.info")) {
+            if (sender.hasPermission("levelledmobs.command.info"))
                 suggestions.add("info");
-            }
-            if (sender.hasPermission("levelledmobs.command.compatibility")) {
+            if (sender.hasPermission("levelledmobs.command.compatibility"))
                 suggestions.add("compatibility");
-            }
-            if (sender.hasPermission("levelledmobs.command.compatibility.spawner")){
+            if (sender.hasPermission("levelledmobs.command.compatibility.spawner"))
                 suggestions.add("spawner");
-            }
+            if (sender.hasPermission("levelledmobs.command.show"))
+                suggestions.add("show");
 
             return suggestions;
         } else {

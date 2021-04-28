@@ -1,14 +1,12 @@
 package me.lokka30.levelledmobs.misc;
 
 import me.lokka30.levelledmobs.LevelledMobs;
+import me.lokka30.levelledmobs.rules.RuleInfo;
 import org.bukkit.World;
 import org.bukkit.entity.*;
 import org.bukkit.persistence.PersistentDataContainer;
-import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -18,6 +16,7 @@ public class LivingEntityWrapper {
         this.main = main;
         this.livingEntity = livingEntity;
         this.applicableGroups = new LinkedList<>();
+        this.applicableRules = new LinkedList<>();
     }
 
     private final LevelledMobs main;
@@ -27,12 +26,16 @@ public class LivingEntityWrapper {
     private boolean hasCache;
     private boolean groupsAreBuilt;
     private Integer mobLevel;
+    @NotNull
+    private List<RuleInfo> applicableRules;
 
     private void buildCache(){
         if (main.levelInterface.isLevelled(livingEntity))
             this.mobLevel = main.levelInterface.getLevelOfMob(livingEntity);
         else
             this.mobLevel = null;
+
+        this.applicableRules = main.rulesManager.getApplicableRules(this);
 
         this.hasCache = true;
     }
@@ -41,6 +44,7 @@ public class LivingEntityWrapper {
         this.hasCache = false;
         this.groupsAreBuilt = false;
         this.applicableGroups.clear();
+        this.applicableRules.clear();
     }
 
     @NotNull
@@ -56,7 +60,6 @@ public class LivingEntityWrapper {
     @NotNull
     public List<CustomUniversalGroups> getApplicableGroups(){
         if (!groupsAreBuilt){
-            //Utils.logger.warning("building groups for " + getTypeName());
             this.applicableGroups = buildApllicableGroupsForMob();
             groupsAreBuilt = true;
         }
@@ -64,11 +67,18 @@ public class LivingEntityWrapper {
         return this.applicableGroups;
     }
 
-    @Nullable
+    public List<RuleInfo> getApplicableRules(){
+        if (!hasCache) buildCache();
+
+        return this.applicableRules;
+    }
+
     public int getMobLevel(){
         if (!hasCache) buildCache();
 
-        return this.mobLevel;
+        return this.mobLevel == null ?
+                -1 :
+                this.mobLevel;
     }
 
     public boolean isLevelled(){
@@ -105,7 +115,13 @@ public class LivingEntityWrapper {
         return false;
     }
 
-    @Nonnull
+    public String getNameIfBaby(){
+        return this.isBabyMob() ?
+                "BABY_" + getTypeName() :
+                getTypeName();
+    }
+
+    @NotNull
     private List<CustomUniversalGroups> buildApllicableGroupsForMob(){
         final List<CustomUniversalGroups> groups = new ArrayList<>();
         groups.add(CustomUniversalGroups.ALL_MOBS);

@@ -23,43 +23,36 @@ public class RulesParsingManager {
     final private LevelledMobs main;
     private RuleInfo parsingInfo;
     @NotNull
-    private final Map<String, RuleInfo> rulePresets;
+    public final Map<String, RuleInfo> rulePresets;
+    public List<RuleInfo> customRules;
+    public RuleInfo defaultRule;
 
     public void parseRulesMain(final YamlConfiguration config){
         if (config == null) return;
 
         this.rulePresets.clear();
+        this.main.rulesManager.rulesInEffect.clear();
 
         final List<RuleInfo> presets = parsePresets(config.get("presets"));
         for (RuleInfo ri : presets)
             this.rulePresets.put(ri.presetName, ri);
 
-        parseDefaults(config.get("default-rule"));
-        RuleInfo defaults = parseDefaults(config.get("default-rule"));
-        this.main.rulesManager.rulesInEffect.add(defaults);
-        final List<RuleInfo> customRules = parseCustomRules(config.get("custom-rules"));
+        this.defaultRule = parseDefaults(config.get("default-rule"));
+        this.main.rulesManager.rulesInEffect.add(defaultRule);
+        this.customRules = parseCustomRules(config.get("custom-rules"));
         this.main.rulesManager.rulesInEffect.addAll(customRules);
-
-        Utils.logger.info("--------------------------------- default values below -------------------------------");
-        showAllValues(defaults);
-        for (RuleInfo rpi : presets) {
-            Utils.logger.info("--------------------------------- preset rule below ----------------------------------");
-            showAllValues(rpi);
-        }
-        for (RuleInfo rpi : customRules) {
-            Utils.logger.info("--------------------------------- custom-rule below ----------------------------------");
-            showAllValues(rpi);
-        }
-        Utils.logger.info("--------------------------------------------------------------------------------------");
     }
 
     @NotNull
     private RuleInfo parseDefaults(final Object objDefaults) {
-        this.parsingInfo = new RuleInfo();
+        this.parsingInfo = new RuleInfo("defaults");
         parsingInfo.restrictions_MinLevel = 1;
         parsingInfo.restrictions_MaxLevel = 10;
         parsingInfo.conditions_MobCustomnameStatus = MobCustomNameStatusEnum.EITHER;
         parsingInfo.conditions_MobTamedStatus = MobTamedStatusEnum.EITHER;
+        parsingInfo.babyMobsInheritAdultSetting = true;
+        parsingInfo.mobLevelInheritance = true;
+        parsingInfo.creeperMaxDamageRadius = 5;
 
         final ConfigurationSection cs = objectToConfigurationSection(objDefaults);
         if (cs == null){
@@ -78,13 +71,13 @@ public class RulesParsingManager {
         if (cs == null) return results;
 
         for (final String key : cs.getKeys(false)){
-            this.parsingInfo = new RuleInfo();
             final ConfigurationSection cs_Key = objectToConfigurationSection(cs.get(key));
             if (cs_Key == null){
                 Utils.logger.warning("nothing was specified for preset: " + key);
                 continue;
             }
 
+            this.parsingInfo = new RuleInfo("preset " + key);
             this.parsingInfo.presetType = parsePresetType(cs_Key, key);
             if (this.parsingInfo.presetType == PresetType.NONE) continue;
 
@@ -134,16 +127,18 @@ public class RulesParsingManager {
         if (listMode == null) listMode = "";
         switch (listMode.toUpperCase()) {
             case "ALL":
-                cachedModalList.listMode = ModalListMode.ALL;
+                cachedModalList.listMode = ModalListMode.ALL; break;
             case "BLACKLIST":
-                cachedModalList.listMode = ModalListMode.BLACKLIST;
+                cachedModalList.listMode = ModalListMode.BLACKLIST; break;
             case "WHITELIST":
+                cachedModalList.listMode = ModalListMode.WHITELIST; break;
             default:
                 cachedModalList.listMode = ModalListMode.WHITELIST;
                 if ("".equals(listMode))
                     Utils.logger.warning("No list mode was specified");
                 else
                     Utils.logger.warning("Invalid list mode: " + listMode);
+                break;
         }
 
         final List<String> items = cs.getStringList("list");
@@ -167,28 +162,6 @@ public class RulesParsingManager {
         return cachedModalList;
     }
 
-    private void showAllValues(@NotNull final RuleInfo pi){
-        // this is only used for dev work
-
-        SortedMap<String, String> values = new TreeMap<>();
-
-        Utils.logger.info("id: " + pi.getInternalId());
-        try {
-            for(final Field f : pi.getClass().getDeclaredFields()) {
-                if (!Modifier.isPublic(f.getModifiers())) continue;
-                final Object value = f.get(pi);
-                    values.put(f.getName(), f.getName() + ", value: " + (value == null ? "(null)" : value));
-            }
-        }
-        catch (Exception e){
-            e.printStackTrace();
-        }
-
-        for (final String key : values.keySet()){
-            Utils.logger.info(values.get(key));
-        }
-    }
-
     @NotNull
     private List<RuleInfo> parseCustomRules(final Object rulesSection) {
         final List<RuleInfo> results = new LinkedList<>();
@@ -201,7 +174,7 @@ public class RulesParsingManager {
                 continue;
             }
 
-            this.parsingInfo = new RuleInfo();
+            this.parsingInfo = new RuleInfo("rule " + results.size());
             parseValues(cs);
             results.add(this.parsingInfo);
         }
@@ -219,12 +192,31 @@ public class RulesParsingManager {
         parseConditions(objectToConfigurationSection(cs.get("conditions")));
         parseLevelLimits(objectToConfigurationSection(cs.get("level-limits")));
         parseRestrictions(objectToConfigurationSection(cs.get("restrictions")));
+        parseEntityNameOverride(objectToConfigurationSection(cs.get("entity-name-override")));
+        if (cs.get("allowed-entities") != null)
+            parsingInfo.allowedEntities = buildCachedModalList(objectToConfigurationSection(cs.get("allowed-entities")));
 
         parsingInfo.maxRandomVariance = cs.getInt("max-random-variance", 0);
         parsingInfo.nametag = cs.getString("nametag");
         parsingInfo.nametag_CreatureDeath = cs.getString("creature-death-nametag");
         if (cs.getString("creature-nametag-always-visible") != null)
             parsingInfo.CreatureNametagAlwaysVisible = cs.getBoolean("creature-nametag-always-visible");
+        if (cs.getString("baby-mobs-inherit-adult-setting") != null)
+            parsingInfo.babyMobsInheritAdultSetting = cs.getBoolean("baby-mobs-inherit-adult-setting");
+        if (cs.getString("level-inheritance") != null)
+            parsingInfo.mobLevelInheritance = cs.getBoolean("level-inheritance");
+        if (cs.getString("creeper-max-damage-radius") != null)
+            parsingInfo.creeperMaxDamageRadius = cs.getInt("creeper-max-damage-radius");
+    }
+
+    private void parseEntityNameOverride(final ConfigurationSection cs){
+        if (cs == null) return;
+
+        for (final String name : cs.getKeys(false)){
+            final String value = cs.getString(name);
+
+            parsingInfo.entityNameOverrides.put(name, value);
+        }
     }
 
     private void parseLevelLimits(final ConfigurationSection cs){
@@ -309,8 +301,10 @@ public class RulesParsingManager {
             }
         }
 
-        parsingInfo.conditions_Entities = buildCachedModalList(objectToConfigurationSection(conditions.get("entities")));
-        parsingInfo.conditions_Biomes = buildCachedModalList(objectToConfigurationSection(conditions.get("biomes")));
+        if (conditions.get("entities") != null)
+            parsingInfo.conditions_Entities = buildCachedModalList(objectToConfigurationSection(conditions.get("entities")));
+        if (conditions.get("biomes") != null)
+            parsingInfo.conditions_Biomes = buildCachedModalList(objectToConfigurationSection(conditions.get("biomes")));
     }
 
     private void parseCalculation(final ConfigurationSection calculation){
