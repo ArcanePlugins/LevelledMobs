@@ -3,6 +3,7 @@ package me.lokka30.levelledmobs.managers;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.misc.Addition;
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
+import me.lokka30.levelledmobs.misc.Utils;
 import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Ageable;
@@ -64,8 +65,8 @@ public class MobDataManager {
     }
 
     public final double getAdditionsForLevel(final LivingEntityWrapper lmEntity, final Addition addition) {
-        final int minLevel = main.settingsCfg.getInt("fine-tuning.min-level");
-        final int maxLevel = main.settingsCfg.getInt("fine-tuning.max-level");
+        final int minLevel = main.rulesManager.getRule_MobMinLevel(lmEntity);
+        final int maxLevel = main.rulesManager.getRule_MobMaxLevel(lmEntity);
         final double range = (double) maxLevel - minLevel - 1;
         final double percent = (double) lmEntity.getMobLevel() / range;
 

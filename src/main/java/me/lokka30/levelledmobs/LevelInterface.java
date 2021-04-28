@@ -118,7 +118,23 @@ public class LevelInterface {
             }
         }
 
-        return getLevellableState(lmEntity.getLivingEntity().getType(), lmEntity.getLivingEntity().getLocation());
+        //LevellableState entityTypeState = getLevellableState(entityType);
+        //if (entityTypeState != LevellableState.ALLOWED) return entityTypeState;
+
+        // Check worlds
+        //noinspection ConstantConditions
+//        if (!ModalList.isEnabledInList(main.settingsCfg, "allowed-worlds-list", location.getWorld().getName())) {
+//            return LevellableState.DENIED_CONFIGURATION_BLOCKED_WORLD;
+//        }
+
+
+        // Check WorldGuard
+        if (ExternalCompatibilityManager.checkWorldGuard(lmEntity.getLivingEntity().getLocation(), main))
+            return LevellableState.DENIED_CONFIGURATION_COMPATIBILITY_WORLD_GUARD;
+
+        return LevellableState.ALLOWED;
+
+        //return getLevellableState(lmEntity.getLivingEntity().getType(), lmEntity.getLivingEntity().getLocation());
     }
 
     /**
@@ -150,11 +166,6 @@ public class LevelInterface {
         if (main.configUtils.overridenEntities.contains(entityType.toString()))
             return LevellableState.ALLOWED;
 
-        // Check ModalList
-        if (!ModalList.isEnabledInList(main.settingsCfg, "allowed-entities-list", entityType.toString()))
-            return LevellableState.DENIED_CONFIGURATION_BLOCKED_ENTITY_TYPE;
-
-
         // Entity types that have to be manually checked
         if (OTHER_HOSTILE_MOBS.contains(entityType.toString())) return LevellableState.ALLOWED;
 
@@ -174,40 +185,6 @@ public class LevelInterface {
                 || Boss.class.isAssignableFrom(entityClass)
                 || main.settingsCfg.getBoolean("level-passive")
                 ? LevellableState.ALLOWED : LevellableState.DENIED_CONFIGURATION_BLOCKED_ENTITY_TYPE;
-    }
-
-    /**
-     * Check if a mob is allowed to be levelled, according to the
-     * user's configuration.
-     * Developers, please ensure you understand that this method
-     * does not account for certain things such as 'is mob tamed?',
-     * which the user may have disabled, and this method is unable to
-     * factor that in. Where possible, use isLevellable(LivingEntity).
-     *
-     * Thread-safety intended, but not tested.
-     *
-     * @param entityType target entity type
-     * @param location   target location
-     * @return if the mob is allowed to be levelled (yes/no), with reason
-     */
-    @NotNull
-    public LevellableState getLevellableState(@NotNull EntityType entityType, @NotNull Location location) {
-
-        // Check EntityType
-        LevellableState entityTypeState = getLevellableState(entityType);
-        if (entityTypeState != LevellableState.ALLOWED) return entityTypeState;
-
-        // Check worlds
-        //noinspection ConstantConditions
-        if (!ModalList.isEnabledInList(main.settingsCfg, "allowed-worlds-list", location.getWorld().getName())) {
-            return LevellableState.DENIED_CONFIGURATION_BLOCKED_WORLD;
-        }
-
-        // Check WorldGuard
-        if (ExternalCompatibilityManager.checkWorldGuard(location, main))
-            return LevellableState.DENIED_CONFIGURATION_COMPATIBILITY_WORLD_GUARD;
-
-        return LevellableState.ALLOWED;
     }
 
     /**
