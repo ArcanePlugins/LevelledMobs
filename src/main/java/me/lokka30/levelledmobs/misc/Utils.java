@@ -143,7 +143,7 @@ public final class Utils {
         return newList;
     }
 
-    public static boolean isBabyMob(@NotNull final LivingEntity livingEntity) {
+    public static boolean isBabyMob_temp(@NotNull final LivingEntity livingEntity) {
 
         if (livingEntity instanceof Zombie) {
             // for backwards compatibility

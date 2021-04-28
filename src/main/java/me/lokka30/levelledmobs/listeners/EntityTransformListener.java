@@ -3,6 +3,7 @@ package me.lokka30.levelledmobs.listeners;
 import me.lokka30.levelledmobs.LevelInterface;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.misc.DebugType;
+import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
 import me.lokka30.levelledmobs.misc.Utils;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -61,17 +62,17 @@ public class EntityTransformListener implements Listener {
                 continue;
             }
 
-            final LivingEntity transformedLivingEntity = (LivingEntity) transformedEntity;
+            final LivingEntityWrapper transformedLmEntity = new LivingEntityWrapper((LivingEntity) transformedEntity, main);
 
-            final LevelInterface.LevellableState levelledState = main.levelInterface.getLevellableState(transformedLivingEntity);
+            final LevelInterface.LevellableState levelledState = main.levelInterface.getLevellableState(transformedLmEntity);
             if (levelledState != LevelInterface.LevellableState.ALLOWED) {
                 Utils.debugLog(main, DebugType.ENTITY_TRANSFORM_FAIL, transformedEntity.getType().name() + ": transformed entity was not levellable, reason: " + levelledState);
-                main.levelManager.updateNametagWithDelay(transformedLivingEntity, null, livingEntity.getWorld().getPlayers(), 1);
+                main.levelManager.updateNametagWithDelay(transformedLmEntity, 1);
                 continue;
             }
 
             main.levelInterface.applyLevelToMob(
-                    transformedLivingEntity,
+                    transformedLmEntity,
                     level,
                     false,
                     false,

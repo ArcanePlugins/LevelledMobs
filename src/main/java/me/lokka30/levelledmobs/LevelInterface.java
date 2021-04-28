@@ -4,10 +4,7 @@ import me.lokka30.levelledmobs.events.MobPostLevelEvent;
 import me.lokka30.levelledmobs.events.MobPreLevelEvent;
 import me.lokka30.levelledmobs.events.SummonedMobPreLevelEvent;
 import me.lokka30.levelledmobs.managers.ExternalCompatibilityManager;
-import me.lokka30.levelledmobs.misc.Addition;
-import me.lokka30.levelledmobs.misc.DebugType;
-import me.lokka30.levelledmobs.misc.ModalList;
-import me.lokka30.levelledmobs.misc.Utils;
+import me.lokka30.levelledmobs.misc.*;
 import me.lokka30.levelledmobs.rules.MobCustomNameStatusEnum;
 import me.lokka30.levelledmobs.rules.MobTamedStatusEnum;
 import me.lokka30.levelledmobs.rules.RulesManager;
@@ -61,53 +58,48 @@ public class LevelInterface {
      * <p>
      * Thread-safety intended, but not tested.
      *
-     * @param livingEntity target mob
+     * @param lmEntity target mob
      * @return if the mob is allowed to be levelled (yes/no), with reason
      */
     @NotNull
-    public LevellableState getLevellableState(@NotNull LivingEntity livingEntity) {
-        return getLevellableState(livingEntity, false);
-    }
-
-    @NotNull
-    LevellableState getLevellableState(@NotNull LivingEntity livingEntity, final boolean skipGroupCheck) {
+    public LevellableState getLevellableState(@NotNull LivingEntityWrapper lmEntity) {
         /*
         Certain entity types are force-blocked, regardless of what the user has configured.
         This is also ran in getLevellableState(EntityType), however it is important that this is ensured
         before all other checks are made.
          */
-        if (FORCED_BLOCKED_ENTITY_TYPES.contains(livingEntity.getType().toString()))
+        if (FORCED_BLOCKED_ENTITY_TYPES.contains(lmEntity.getTypeName()))
             return LevellableState.DENIED_FORCE_BLOCKED_ENTITY_TYPE;
 
         /*
         Compatibility with other plugins: users may want to stop LM from acting on mobs modified by other plugins.
          */
-        if (ExternalCompatibilityManager.hasMythicMobsInstalled() && ExternalCompatibilityManager.checkMythicMobs(livingEntity))
+        if (ExternalCompatibilityManager.hasMythicMobsInstalled() && ExternalCompatibilityManager.checkMythicMobs(lmEntity))
             return LevellableState.DENIED_CONFIGURATION_COMPATIBILITY_MYTHIC_MOBS;
-        if (ExternalCompatibilityManager.checkDangerousCaves(livingEntity))
+        if (ExternalCompatibilityManager.checkDangerousCaves(lmEntity))
             return LevellableState.DENIED_CONFIGURATION_COMPATIBILITY_DANGEROUS_CAVES;
-        if (ExternalCompatibilityManager.checkEliteMobs(livingEntity))
+        if (ExternalCompatibilityManager.checkEliteMobs(lmEntity))
             return LevellableState.DENIED_CONFIGURATION_COMPATIBILITY_ELITE_MOBS;
-        if (ExternalCompatibilityManager.checkInfernalMobs(livingEntity))
+        if (ExternalCompatibilityManager.checkInfernalMobs(lmEntity))
             return LevellableState.DENIED_CONFIGURATION_COMPATIBILITY_INFERNAL_MOBS;
-        if (ExternalCompatibilityManager.checkCitizens(livingEntity))
+        if (ExternalCompatibilityManager.checkCitizens(lmEntity))
             return LevellableState.DENIED_CONFIGURATION_COMPATIBILITY_CITIZENS;
-        if (ExternalCompatibilityManager.checkShopkeepers(livingEntity))
+        if (ExternalCompatibilityManager.checkShopkeepers(lmEntity))
             return LevellableState.DENIED_CONFIGURATION_COMPATIBILITY_SHOPKEEPERS;
-        if (ExternalCompatibilityManager.checkWorldGuard(livingEntity.getLocation(), main))
+        if (ExternalCompatibilityManager.checkWorldGuard(lmEntity.getLivingEntity().getLocation(), main))
             return LevellableState.DENIED_CONFIGURATION_COMPATIBILITY_WORLD_GUARD;
 
         /*
         Check 'No Level Conditions'
          */
         // Nametagged mobs.
-        if (livingEntity.getCustomName() != null &&
-                rulesManager.getRule_MobCustomNameStatus(livingEntity, skipGroupCheck) == MobCustomNameStatusEnum.NOT_NAMETAGGED)
+        if (lmEntity.getLivingEntity().getCustomName() != null &&
+                rulesManager.getRule_MobCustomNameStatus(lmEntity) == MobCustomNameStatusEnum.NOT_NAMETAGGED)
             return LevellableState.DENIED_CONFIGURATION_CONDITION_NAMETAGGED;
 
         // Tamed mobs.
-        if (livingEntity instanceof Tameable && ((Tameable) livingEntity).isTamed() &&
-                rulesManager.getRule_MobTamedStatus(livingEntity, skipGroupCheck) == MobTamedStatusEnum.NOT_TAMED)
+        if (lmEntity instanceof Tameable && ((Tameable) lmEntity).isTamed() &&
+                rulesManager.getRule_MobTamedStatus(lmEntity) == MobTamedStatusEnum.NOT_TAMED)
             return LevellableState.DENIED_CONFIGURATION_CONDITION_TAMED;
 
         /*
@@ -115,38 +107,44 @@ public class LevelInterface {
          */
 
             // Check ModalList
-        if (Utils.isBabyMob(livingEntity) && shouldBabyMobBeDenied(livingEntity))
+        if (lmEntity.isBabyMob() && shouldBabyMobBeDenied(lmEntity))
             return LevellableState.DENIED_CONFIGURATION_BLOCKED_ENTITY_TYPE;
 
         /*
         Check spawn reason
          */
         // They might not have the SpawnReasonKey, make sure they do before checking it.
-        if (livingEntity.getPersistentDataContainer().has(main.levelManager.spawnReasonKey, PersistentDataType.STRING)) {
-            String spawnReason = livingEntity.getPersistentDataContainer().get(main.levelManager.spawnReasonKey, PersistentDataType.STRING);
+        if (lmEntity.getPDC().has(main.levelManager.spawnReasonKey, PersistentDataType.STRING)) {
+            String spawnReason = lmEntity.getPDC().get(main.levelManager.spawnReasonKey, PersistentDataType.STRING);
 
             if (!ModalList.isEnabledInList(main.settingsCfg, "allowed-spawn-reasons-list", spawnReason)) {
                 return LevelInterface.LevellableState.DENIED_CONFIGURATION_BLOCKED_SPAWN_REASON;
             }
         }
 
-        return getLevellableState(livingEntity.getType(), livingEntity.getLocation());
+        return getLevellableState(lmEntity.getLivingEntity().getType(), lmEntity.getLivingEntity().getLocation());
     }
 
-    private boolean shouldBabyMobBeDenied(final LivingEntity livingEntity){
+    private boolean shouldBabyMobBeDenied(final LivingEntityWrapper lmEntity){
         final boolean babyMobsInheritAdultSetting = main.settingsCfg.getBoolean("allowed-entities-list.babyMobsInheritAdultSetting", true);
-        final boolean isBabyVariantNotLevellable = !ModalList.isEnabledInList(main.settingsCfg, "allowed-entities-list", "BABY_" + livingEntity.getType());
+        final boolean isBabyVariantNotLevellable = !ModalList.isEnabledInList(main.settingsCfg, "allowed-entities-list", "BABY_" + lmEntity.getLivingEntity().getType());
 
         if (!babyMobsInheritAdultSetting)
             return isBabyVariantNotLevellable;
 
         // if baby is specified, use that setting. otherwise, use adult setting.
-        if (main.settingsCfg.getStringList("allowed-entities-list.list").contains("BABY_" + livingEntity.getType()))
+        if (main.settingsCfg.getStringList("allowed-entities-list.list").contains("BABY_" + lmEntity.getLivingEntity().getType()))
             return isBabyVariantNotLevellable;
 
-        return !ModalList.isEnabledInList(main.settingsCfg, "allowed-entities-list", livingEntity.getType().toString());
+        return !ModalList.isEnabledInList(main.settingsCfg, "allowed-entities-list", lmEntity.getTypeName());
     }
 
+    // TODO: rename the below function once all calling functions have been converted
+    @NotNull
+    public LevellableState getLevellableState_temp(@NotNull LivingEntity livingEntity) {
+        final LivingEntityWrapper lmEntity = new LivingEntityWrapper(livingEntity, main);
+        return getLevellableState(lmEntity);
+    }
 
     /**
      * Check if a mob is allowed to be levelled, according to the
@@ -241,11 +239,11 @@ public class LevelInterface {
      *
      * Thread-safety intended, but not tested.
      *
-     * @param livingEntity the entity to generate a level for
+     * @param lmEntity the entity to generate a level for
      * @return a level for the entity
      */
-    public int generateLevel(@NotNull final LivingEntity livingEntity) {
-        return main.levelManager.generateLevel(livingEntity);
+    public int generateLevel(@NotNull final LivingEntityWrapper lmEntity) {
+        return main.levelManager.generateLevel(lmEntity);
     }
 
     /**
@@ -254,13 +252,13 @@ public class LevelInterface {
      *
      * Thread-safety intended, but not tested.
      *
-     * @param livingEntity the entity to generate a level for
+     * @param lmEntity the entity to generate a level for
      * @param minLevel the minimum level to be used for the mob
      * @param maxLevel the maximum level to be used for the mob
      * @return a level for the entity
      */
-    public int generateLevel(@NotNull final LivingEntity livingEntity, final int minLevel, final int maxLevel) {
-        return main.levelManager.generateLevel(livingEntity, minLevel, maxLevel);
+    public int generateLevel(@NotNull final LivingEntityWrapper lmEntity, final int minLevel, final int maxLevel) {
+        return main.levelManager.generateLevel(lmEntity, minLevel, maxLevel);
     }
 
     /**
@@ -279,22 +277,22 @@ public class LevelInterface {
      * <p>
      * Thread-safety intended, but not tested.
      *
-     * @param livingEntity target mob
+     * @param lmEntity target mob
      * @param level        the level the mob should have
      * @param isSummoned   if the mob was spawned by LevelledMobs, not by the server
      * @param bypassLimits whether LM should disregard max level, etc.
      * @param additionalLevelInformation used to determine the source event
      */
-    public void applyLevelToMob(@NotNull LivingEntity livingEntity, int level, boolean isSummoned, boolean bypassLimits, @NotNull HashSet<AdditionalLevelInformation> additionalLevelInformation) {
+    public void applyLevelToMob(@NotNull LivingEntityWrapper lmEntity, int level, boolean isSummoned, boolean bypassLimits, @NotNull HashSet<AdditionalLevelInformation> additionalLevelInformation) {
         assert level >= 0;
-        assert bypassLimits || isSummoned || getLevellableState(livingEntity) == LevellableState.ALLOWED;
+        assert bypassLimits || isSummoned || getLevellableState(lmEntity) == LevellableState.ALLOWED;
 
         if (isSummoned) {
-            SummonedMobPreLevelEvent summonedMobPreLevelEvent = new SummonedMobPreLevelEvent(livingEntity, level);
+            SummonedMobPreLevelEvent summonedMobPreLevelEvent = new SummonedMobPreLevelEvent(lmEntity.getLivingEntity(), level);
             Bukkit.getPluginManager().callEvent(summonedMobPreLevelEvent);
             if (summonedMobPreLevelEvent.isCancelled()) return;
         } else {
-            MobPreLevelEvent mobPreLevelEvent = new MobPreLevelEvent(livingEntity, level, MobPreLevelEvent.LevelCause.NORMAL, additionalLevelInformation);
+            MobPreLevelEvent mobPreLevelEvent = new MobPreLevelEvent(lmEntity.getLivingEntity(), level, MobPreLevelEvent.LevelCause.NORMAL, additionalLevelInformation);
             Bukkit.getPluginManager().callEvent(mobPreLevelEvent);
             if (mobPreLevelEvent.isCancelled()) return;
         }
@@ -302,37 +300,38 @@ public class LevelInterface {
         new BukkitRunnable() {
             @Override
             public void run() {
-                if (livingEntity.getPersistentDataContainer().has(main.levelManager.noLevelKey, PersistentDataType.STRING)) {
-                    Utils.debugLog(main, DebugType.APPLY_LEVEL_FAIL, "Entity " + livingEntity.getType() + " had noLevelKey attached");
+                if (lmEntity.getPDC().has(main.levelManager.noLevelKey, PersistentDataType.STRING)) {
+                    Utils.debugLog(main, DebugType.APPLY_LEVEL_FAIL, "Entity " + lmEntity.getTypeName() + " had noLevelKey attached");
                     return;
                 }
 
-                livingEntity.getPersistentDataContainer().set(main.levelManager.levelKey, PersistentDataType.INTEGER, level);
+                lmEntity.getPDC().set(main.levelManager.levelKey, PersistentDataType.INTEGER, level);
+                lmEntity.invalidateCache();
 
-                main.levelManager.applyLevelledAttributes(livingEntity, level, Addition.ATTRIBUTE_ATTACK_DAMAGE);
-                main.levelManager.applyLevelledAttributes(livingEntity, level, Addition.ATTRIBUTE_MAX_HEALTH);
-                main.levelManager.applyLevelledAttributes(livingEntity, level, Addition.ATTRIBUTE_MOVEMENT_SPEED);
+                main.levelManager.applyLevelledAttributes(lmEntity, Addition.ATTRIBUTE_ATTACK_DAMAGE);
+                main.levelManager.applyLevelledAttributes(lmEntity, Addition.ATTRIBUTE_MAX_HEALTH);
+                main.levelManager.applyLevelledAttributes(lmEntity, Addition.ATTRIBUTE_MOVEMENT_SPEED);
 
-                if (livingEntity instanceof Creeper) {
-                    main.levelManager.applyCreeperBlastRadius((Creeper) livingEntity, level);
+                if (lmEntity instanceof Creeper) {
+                    main.levelManager.applyCreeperBlastRadius((Creeper) lmEntity, level);
                 }
 
-                main.levelManager.updateNametag(livingEntity, level);
-                main.levelManager.applyLevelledEquipment(livingEntity, level);
+                main.levelManager.updateNametag(lmEntity, lmEntity.getMobLevel());
+                main.levelManager.applyLevelledEquipment(lmEntity, lmEntity.getMobLevel());
 
                 MobPostLevelEvent.LevelCause levelCause = isSummoned ? MobPostLevelEvent.LevelCause.SUMMONED : MobPostLevelEvent.LevelCause.NORMAL;
-                Bukkit.getPluginManager().callEvent(new MobPostLevelEvent(livingEntity, level, levelCause, additionalLevelInformation));
+                Bukkit.getPluginManager().callEvent(new MobPostLevelEvent(lmEntity, levelCause, additionalLevelInformation));
 
                 final StringBuilder sb = new StringBuilder();
                 sb.append("entity: ");
-                sb.append(livingEntity.getName());
+                sb.append(lmEntity.getLivingEntity().getName());
                 sb.append(", world: ");
-                sb.append(livingEntity.getWorld().getName());
+                sb.append(lmEntity.getWorldName());
                 sb.append(", level: ");
                 sb.append(level);
                 if (isSummoned) sb.append(" (summoned)");
                 if (bypassLimits) sb.append(" (limit bypass)");
-                if (Utils.isBabyMob(livingEntity)) sb.append(" (baby)");
+                if (lmEntity.isBabyMob()) sb.append(" (baby)");
 
                 Utils.debugLog(main, DebugType.APPLY_LEVEL_SUCCESS, sb.toString());
             }
@@ -377,22 +376,22 @@ public class LevelInterface {
     /**
      * Un-level a mob.
      *
-     * @param livingEntity levelled mob to un-level
+     * @param lmEntity levelled mob to un-level
      */
-    public void removeLevel(@NotNull LivingEntity livingEntity) {
-        assert isLevelled(livingEntity);
+    public void removeLevel(@NotNull LivingEntityWrapper lmEntity) {
+        assert lmEntity.isLevelled();
 
         // remove PDC value
-        if (livingEntity.getPersistentDataContainer().has(main.levelManager.levelKey, PersistentDataType.INTEGER))
-            livingEntity.getPersistentDataContainer().remove(main.levelManager.levelKey);
+        if (lmEntity.getPDC().has(main.levelManager.levelKey, PersistentDataType.INTEGER))
+            lmEntity.getPDC().remove(main.levelManager.levelKey);
 
         // reset attributes
         for (Attribute attribute : Attribute.values()) {
-            final AttributeInstance attInst = livingEntity.getAttribute(attribute);
+            final AttributeInstance attInst = lmEntity.getLivingEntity().getAttribute(attribute);
 
             if (attInst == null) continue;
 
-            Object defaultValueObj = main.mobDataManager.getAttributeDefaultValue(livingEntity.getType(), attribute);
+            Object defaultValueObj = main.mobDataManager.getAttributeDefaultValue(lmEntity.getLivingEntity().getType(), attribute);
             if (defaultValueObj == null) continue;
 
             double defaultValue;
@@ -406,9 +405,8 @@ public class LevelInterface {
         }
 
         // update nametag
-        main.levelManager.updateNametagWithDelay(livingEntity,
-                livingEntity.getCustomName(),
-                livingEntity.getWorld().getPlayers(),
+        main.levelManager.updateNametagWithDelay(lmEntity,
+                lmEntity.getLivingEntity().getCustomName(),
                 1);
     }
 

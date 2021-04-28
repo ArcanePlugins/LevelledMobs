@@ -2,6 +2,7 @@ package me.lokka30.levelledmobs.listeners;
 
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.customdrops.CustomDropResult;
+import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -9,10 +10,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 
 /**
  * TODO Describe...
@@ -35,26 +33,26 @@ public class EntityDeathListener implements Listener {
         if (bypassDrops.contains(event.getEntityType().toString()))
             return;
 
-        final LivingEntity livingEntity = event.getEntity();
+        final LivingEntityWrapper lmEntity = new LivingEntityWrapper(event.getEntity(), main);
 
-        if (main.levelInterface.isLevelled(livingEntity)) {
+        if (lmEntity.isLevelled()) {
 
             // Set levelled item drops
-            main.levelManager.setLevelledItemDrops(livingEntity, event.getDrops());
+            main.levelManager.setLevelledItemDrops(lmEntity, event.getDrops());
 
             // Set levelled exp drops
             if (event.getDroppedExp() > 0) {
-                event.setDroppedExp(main.levelManager.getLevelledExpDrops(livingEntity, event.getDroppedExp()));
+                event.setDroppedExp(main.levelManager.getLevelledExpDrops(lmEntity, event.getDroppedExp()));
             }
 
             //Run commands
-            main.levelManager.execCommands(livingEntity);
+            main.levelManager.execCommands(lmEntity);
 
         } else if (main.settingsCfg.getBoolean("use-custom-item-drops-for-mobs")) {
-            final List<ItemStack> drops = new ArrayList<>();
-            final CustomDropResult result = main.customDropsHandler.getCustomItemDrops(livingEntity, -1, drops, false, false);
+            final List<ItemStack> drops = new LinkedList<>();
+            final CustomDropResult result = main.customDropsHandler.getCustomItemDrops(lmEntity, drops, false);
             if (result == CustomDropResult.HAS_OVERRIDE)
-                main.levelManager.removeVanillaDrops(livingEntity, event.getDrops());
+                main.levelManager.removeVanillaDrops(lmEntity, event.getDrops());
 
             event.getDrops().addAll(drops);
         }

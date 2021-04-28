@@ -1,6 +1,7 @@
 package me.lokka30.levelledmobs.listeners;
 
 import me.lokka30.levelledmobs.LevelledMobs;
+import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
 import me.lokka30.levelledmobs.misc.Utils;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -48,8 +49,10 @@ public class PlayerDeathListener implements Listener {
             killer = (LivingEntity) damager;
 
         if (killer == null) return;
-        if (!main.levelInterface.isLevelled(killer)) return;
 
-        event.setDeathMessage(Utils.replaceEx(event.getDeathMessage(), killer.getName(), main.levelManager.getNametag(killer, true)));
+        final LivingEntityWrapper lmKiller = new LivingEntityWrapper(killer, main);
+        if (!lmKiller.isLevelled()) return;
+
+        event.setDeathMessage(Utils.replaceEx(event.getDeathMessage(), killer.getName(), main.levelManager.getNametag(lmKiller, true)));
     }
 }

@@ -1,6 +1,7 @@
 package me.lokka30.levelledmobs.listeners;
 
 import me.lokka30.levelledmobs.LevelledMobs;
+import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -36,13 +37,13 @@ public class PlayerJoinWorldNametagListener implements Listener {
                 if (!livingEntity.isValid()) continue;
 
                 // mob must be levelled
-                if (!main.levelInterface.isLevelled(livingEntity)) continue;
-
-                final String nametag = main.levelManager.getNametag(livingEntity, false);
+                final LivingEntityWrapper lmEntity = new LivingEntityWrapper(livingEntity, main);
+                if (!lmEntity.isLevelled()) continue;
 
                 //Send nametag packet
                 //This also must be delayed by 1 tick
-                main.levelManager.updateNametagWithDelay(livingEntity, nametag, Collections.singletonList(player), 1);
+                // public void updateNametagWithDelay(final LivingEntityWrapper lmEntity, final List<Player> playerList, final long delay) {
+                main.levelManager.updateNametagWithDelay(lmEntity, Collections.singletonList(player), 1);
             }
         }
     }

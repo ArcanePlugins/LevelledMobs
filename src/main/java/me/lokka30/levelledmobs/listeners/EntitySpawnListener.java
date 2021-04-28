@@ -3,6 +3,7 @@ package me.lokka30.levelledmobs.listeners;
 import me.lokka30.levelledmobs.LevelInterface;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.misc.DebugType;
+import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
 import me.lokka30.levelledmobs.misc.ModalList;
 import me.lokka30.levelledmobs.misc.Utils;
 import org.bukkit.Location;
@@ -50,17 +51,19 @@ public class EntitySpawnListener implements Listener {
         if (event instanceof CreatureSpawnEvent && ((CreatureSpawnEvent)event).getSpawnReason().equals(CreatureSpawnEvent.SpawnReason.SPAWNER))
             return;
 
-        preprocessMob((LivingEntity) event.getEntity(), event);
+        final LivingEntityWrapper lmEntity = new LivingEntityWrapper((LivingEntity) event.getEntity(), main);
+        preprocessMob(lmEntity, event);
     }
 
     private void onSpawnerSpawn(final SpawnerSpawnEvent event) {
         if (!(event.getEntity() instanceof LivingEntity)) return;
 
         final CreatureSpawner cs = event.getSpawner();
-        final LivingEntity livingEntity = (LivingEntity) event.getEntity();
+        final LivingEntityWrapper lmEntity = new LivingEntityWrapper((LivingEntity) event.getEntity(), main);
+
         if (!cs.getPersistentDataContainer().has(main.blockPlaceListener.keySpawner, PersistentDataType.INTEGER)){
             Utils.debugLog(main, DebugType.MOB_SPAWNER, "Spawned mob from vanilla spawner: " + event.getEntityType());
-            preprocessMob(livingEntity, event);
+            preprocessMob(lmEntity, event);
             return;
         }
 
@@ -70,19 +73,19 @@ public class EntitySpawnListener implements Listener {
         final Integer maxLevel = cs.getPersistentDataContainer().get(main.blockPlaceListener.keySpawner_MaxLevel, PersistentDataType.INTEGER);
         final int useMinLevel = minLevel == null ? -1 : minLevel;
         final int useMaxLevel = maxLevel == null ? -1 : maxLevel;
-        final int generatedLevel = main.levelInterface.generateLevel(livingEntity, useMinLevel, useMaxLevel);
+        final int generatedLevel = main.levelInterface.generateLevel(lmEntity, useMinLevel, useMaxLevel);
         String customDropId = null;
         if (cs.getPersistentDataContainer().has(main.blockPlaceListener.keySpawner_CustomDropId, PersistentDataType.STRING)){
             customDropId = cs.getPersistentDataContainer().get(main.blockPlaceListener.keySpawner_CustomDropId, PersistentDataType.STRING);
             if (!Utils.isNullOrEmpty(customDropId))
-                livingEntity.getPersistentDataContainer().set(main.blockPlaceListener.keySpawner_CustomDropId, PersistentDataType.STRING, customDropId);
+                lmEntity.getPDC().set(main.blockPlaceListener.keySpawner_CustomDropId, PersistentDataType.STRING, customDropId);
         }
 
         Utils.debugLog(main, DebugType.MOB_SPAWNER, String.format(
                 "Spawned mob from LM spawner: %s, minLevel: %s, maxLevel: %s, generatedLevel: %s%s",
                 event.getEntityType(), useMinLevel, useMaxLevel, generatedLevel, (customDropId == null ? "" : ", dropid: " + customDropId)));
 
-        main.levelInterface.applyLevelToMob(livingEntity, generatedLevel,
+        main.levelInterface.applyLevelToMob(lmEntity, generatedLevel,
                 false, true, new HashSet<>(Collections.singletonList(LevelInterface.AdditionalLevelInformation.NOT_APPLICABLE)));
     }
 
@@ -105,23 +108,23 @@ public class EntitySpawnListener implements Listener {
         runnable.run();
     }
 
-    private void preprocessMob(@NotNull final LivingEntity livingEntity, @NotNull final EntitySpawnEvent event){
+    private void preprocessMob(@NotNull final LivingEntityWrapper lmEntity, @NotNull final EntitySpawnEvent event){
 
         final LevelInterface.LevellableState levellableState = getLevellableState(event);
         if (levellableState == LevelInterface.LevellableState.ALLOWED) {
-            main.levelInterface.applyLevelToMob(livingEntity, main.levelInterface.generateLevel(livingEntity),
+            main.levelInterface.applyLevelToMob(lmEntity, main.levelInterface.generateLevel(lmEntity),
                     false, false, new HashSet<>(Collections.singletonList(LevelInterface.AdditionalLevelInformation.NOT_APPLICABLE)));
         } else {
             Utils.debugLog(main, DebugType.APPLY_LEVEL_FAIL, "Entity " + event.getEntityType() + " in wo" +
-                    "rld " + livingEntity.getWorld().getName() + " was not levelled -> Levellable state: " + levellableState);
+                    "rld " + lmEntity.getWorldName() + " was not levelled -> Levellable state: " + levellableState);
 
             // Check if the mob is already levelled - if so, remove their level
-            if (main.levelInterface.isLevelled(livingEntity)) {
-                main.levelInterface.removeLevel(livingEntity);
+            if (lmEntity.isLevelled()) {
+                main.levelInterface.removeLevel(lmEntity);
             }
-            else if (Utils.isBabyMob(livingEntity)) {
+            else if (lmEntity.isBabyMob()) {
                 // add a tag so we can potentially level the mob when/if it ages
-                livingEntity.getPersistentDataContainer().set(main.levelManager.wasBabyMobKey, PersistentDataType.INTEGER, 1);
+                lmEntity.getPDC().set(main.levelManager.wasBabyMobKey, PersistentDataType.INTEGER, 1);
             }
         }
     }
@@ -129,9 +132,9 @@ public class EntitySpawnListener implements Listener {
     @NotNull
     private LevelInterface.LevellableState getLevellableState(@NotNull final EntitySpawnEvent event) {
         assert event.getEntity() instanceof LivingEntity;
-        LivingEntity livingEntity = (LivingEntity) event.getEntity();
+        LivingEntityWrapper lmEntity = new LivingEntityWrapper((LivingEntity) event.getEntity(), main);
 
-        LevelInterface.LevellableState levellableState = main.levelInterface.getLevellableState(livingEntity);
+        LevelInterface.LevellableState levellableState = main.levelInterface.getLevellableState(lmEntity);
 
         if (levellableState != LevelInterface.LevellableState.ALLOWED) {
             return levellableState;
@@ -151,7 +154,7 @@ public class EntitySpawnListener implements Listener {
             }
 
             // Whilst we're here, unrelated, add in the spawner key to the mob
-            livingEntity.getPersistentDataContainer().set(main.levelManager.spawnReasonKey, PersistentDataType.STRING, creatureSpawnEvent.getSpawnReason().toString());
+            lmEntity.getPDC().set(main.levelManager.spawnReasonKey, PersistentDataType.STRING, creatureSpawnEvent.getSpawnReason().toString());
         } else {
             Utils.debugLog(main, DebugType.ENTITY_SPAWN, "not instanceof CreatureSpawnListener: " + event.getEntityType());
         }

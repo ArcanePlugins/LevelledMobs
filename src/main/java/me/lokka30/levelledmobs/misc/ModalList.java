@@ -30,23 +30,23 @@ public class ModalList {
     }
 
     public static boolean isEnabledInList(final YamlConfiguration cfg, final String path, final String item) {
-        if (cfg.contains(path + ".mode")) {
-            @SuppressWarnings("ConstantConditions")
-            final ListMode listMode = ModalList.fromString(cfg.getString(path + ".mode"));
-
-            switch (listMode) {
-                case ALL:
-                    return true;
-                case WHITELIST:
-                    return cfg.getStringList(path + ".list").contains(item);
-                case BLACKLIST:
-                    return !cfg.getStringList(path + ".list").contains(item);
-                default:
-                    throw new IllegalStateException("Invalid ListMode " + listMode + "!");
-            }
-        } else {
+        if (!cfg.contains(path + ".mode")) {
             Utils.logger.error("&c(Is your settings.yml file outdated?) &7ModalListMode is unset at path '&b" + path + ".mode&7'! The plugin will malfunction until you fix this!");
             return false;
+        }
+
+        @SuppressWarnings("ConstantConditions")
+        final ListMode listMode = ModalList.fromString(cfg.getString(path + ".mode"));
+
+        switch (listMode) {
+            case ALL:
+                return true;
+            case WHITELIST:
+                return cfg.getStringList(path + ".list").contains(item);
+            case BLACKLIST:
+                return !cfg.getStringList(path + ".list").contains(item);
+            default:
+                throw new IllegalStateException("Invalid ListMode " + listMode + "!");
         }
     }
 }

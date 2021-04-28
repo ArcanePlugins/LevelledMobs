@@ -2,6 +2,7 @@ package me.lokka30.levelledmobs.managers;
 
 import io.lumine.xikage.mythicmobs.MythicMobs;
 import me.lokka30.levelledmobs.LevelledMobs;
+import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.LivingEntity;
@@ -50,65 +51,65 @@ public class ExternalCompatibilityManager {
         return Bukkit.getPluginManager().getPlugin("WorldGuard") != null;
     }
 
-    public static boolean isMythicMob(final LivingEntity livingEntity) {
+    public static boolean isMythicMob(final LivingEntityWrapper lmEntity) {
         //return MythicMobs.inst().getAPIHelper().isMythicMob(livingEntity);
-        return MythicMobs.inst().getMobManager().isActiveMob(io.lumine.xikage.mythicmobs.adapters.bukkit.BukkitAdapter.adapt(livingEntity));
+        return MythicMobs.inst().getMobManager().isActiveMob(io.lumine.xikage.mythicmobs.adapters.bukkit.BukkitAdapter.adapt(lmEntity.getLivingEntity()));
     }
 
     /**
-     * @param livingEntity mob to check
+     * @param lmEntity mob to check
      * @return if Dangerous Caves compatibility enabled and entity is from DangerousCaves
      */
-    public static boolean checkDangerousCaves(final LivingEntity livingEntity) {
+    public static boolean checkDangerousCaves(final LivingEntityWrapper lmEntity) {
         return ExternalCompatibilityManager.isExternalCompatibilityEnabled(ExternalCompatibility.DANGEROUS_CAVES)
-                && livingEntity.hasMetadata("DangerousCaves");
+                && lmEntity.getLivingEntity().hasMetadata("DangerousCaves");
     }
 
     /**
-     * @param livingEntity mob to check
+     * @param lmEntity mob to check
      * @return if MythicMobs compatibility enabled and entity is from MythicMobs
      */
-    public static boolean checkMythicMobs(final LivingEntity livingEntity) {
+    public static boolean checkMythicMobs(final LivingEntityWrapper lmEntity) {
         return ExternalCompatibilityManager.isExternalCompatibilityEnabled(ExternalCompatibility.MYTHIC_MOBS)
-                && isMythicMob(livingEntity);
+                && isMythicMob(lmEntity);
     }
 
     /**
-     * @param livingEntity mob to check
+     * @param lmEntity mob to check
      * @return if EliteMobs compatibility enabled and entity is from EliteMobs
      */
-    public static boolean checkEliteMobs(final LivingEntity livingEntity) {
+    public static boolean checkEliteMobs(final LivingEntityWrapper lmEntity) {
         return
-                (ExternalCompatibilityManager.isExternalCompatibilityEnabled(ExternalCompatibility.ELITE_MOBS) && (livingEntity.hasMetadata("Elitemob")))
-                        || (ExternalCompatibilityManager.isExternalCompatibilityEnabled(ExternalCompatibility.ELITE_MOBS_NPCS) && (livingEntity.hasMetadata("Elitemobs_NPC")))
-                        || (ExternalCompatibilityManager.isExternalCompatibilityEnabled(ExternalCompatibility.ELITE_MOBS_SUPER_MOBS) && (livingEntity.hasMetadata("Supermob")));
+                (ExternalCompatibilityManager.isExternalCompatibilityEnabled(ExternalCompatibility.ELITE_MOBS) && (lmEntity.getLivingEntity().hasMetadata("Elitemob")))
+                        || (ExternalCompatibilityManager.isExternalCompatibilityEnabled(ExternalCompatibility.ELITE_MOBS_NPCS) && (lmEntity.getLivingEntity().hasMetadata("Elitemobs_NPC")))
+                        || (ExternalCompatibilityManager.isExternalCompatibilityEnabled(ExternalCompatibility.ELITE_MOBS_SUPER_MOBS) && (lmEntity.getLivingEntity().hasMetadata("Supermob")));
     }
 
     /**
-     * @param livingEntity mob to check
+     * @param lmEntity mob to check
      * @return if InfernalMobs compatibility enabled and entity is from InfernalMobs
      */
-    public static boolean checkInfernalMobs(final LivingEntity livingEntity) {
+    public static boolean checkInfernalMobs(final LivingEntityWrapper lmEntity) {
         return ExternalCompatibilityManager.isExternalCompatibilityEnabled(ExternalCompatibility.INFERNAL_MOBS)
-                && livingEntity.hasMetadata("infernalMetadata");
+                && lmEntity.getLivingEntity().hasMetadata("infernalMetadata");
     }
 
     /**
-     * @param livingEntity mob to check
+     * @param lmEntity mob to check
      * @return if Citizens compatibility enabled and entity is from Citizens
      */
-    public static boolean checkCitizens(final LivingEntity livingEntity) {
+    public static boolean checkCitizens(final LivingEntityWrapper lmEntity) {
         return ExternalCompatibilityManager.isExternalCompatibilityEnabled(ExternalCompatibility.CITIZENS)
-                && livingEntity.hasMetadata("NPC");
+                && lmEntity.getLivingEntity().hasMetadata("NPC");
     }
 
     /**
-     * @param livingEntity mob to check
+     * @param lmEntity mob to check
      * @return if Shopkeepers compatibility enabled and entity is from Shopkeepers
      */
-    public static boolean checkShopkeepers(final LivingEntity livingEntity) {
+    public static boolean checkShopkeepers(final LivingEntityWrapper lmEntity) {
         return ExternalCompatibilityManager.isExternalCompatibilityEnabled(ExternalCompatibility.SHOPKEEPERS)
-                && livingEntity.hasMetadata("shopkeeper");
+                && lmEntity.getLivingEntity().hasMetadata("shopkeeper");
     }
 
     /**

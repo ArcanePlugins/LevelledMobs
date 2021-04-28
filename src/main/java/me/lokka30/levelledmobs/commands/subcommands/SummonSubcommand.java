@@ -2,6 +2,7 @@ package me.lokka30.levelledmobs.commands.subcommands;
 
 import me.lokka30.levelledmobs.LevelInterface;
 import me.lokka30.levelledmobs.LevelledMobs;
+import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
 import me.lokka30.levelledmobs.misc.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -334,7 +335,9 @@ public class SummonSubcommand implements Subcommand {
                 messages.forEach(sender::sendMessage);
             }
 
-            final int[] levels = main.levelManager.getMinAndMaxLevels(null, entityType, true, location.getWorld().getName());
+            //final int[] levels = main.levelManager.getMinAndMaxLevels(null, entityType, true, location.getWorld().getName());
+            // TODO: figure out how to make this work with the new rules system
+            final int[] levels = new int[] {1, 10};
             final int minLevel = levels[0];
             final int maxLevel = levels[1];
 
@@ -395,7 +398,8 @@ public class SummonSubcommand implements Subcommand {
                 Entity entity = location.getWorld().spawnEntity(location, entityType);
 
                 if (entity instanceof LivingEntity) {
-                    main.levelInterface.applyLevelToMob((LivingEntity) entity, level, true, override, new HashSet<>(Collections.singletonList(LevelInterface.AdditionalLevelInformation.NOT_APPLICABLE)));
+                    LivingEntityWrapper lmEntity = new LivingEntityWrapper((LivingEntity) entity, main);
+                    main.levelInterface.applyLevelToMob(lmEntity, level, true, override, new HashSet<>(Collections.singletonList(LevelInterface.AdditionalLevelInformation.NOT_APPLICABLE)));
                 }
             }
 

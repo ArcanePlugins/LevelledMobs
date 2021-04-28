@@ -281,53 +281,6 @@ public class Companion {
         Bukkit.getScheduler().cancelTasks(main);
     }
 
-    @Nonnull
-    public List<CustomUniversalGroups> getApllicableGroupsForMob(final LivingEntity le, final boolean isLevelled, final boolean isCustomDrops){
-        final List<CustomUniversalGroups> groups = new ArrayList<>();
-        groups.add(CustomUniversalGroups.ALL_MOBS);
-
-        //final boolean isLevellable = (main.levelInterface.getLevellableState(le, true) == LevelInterface.LevellableState.ALLOWED);
-        final boolean isLevellable = true; // if we're here then it is levellable?
-
-        //if (isLevelled || isLevellable)
-        if (isLevelled || !isCustomDrops)
-            groups.add(CustomUniversalGroups.ALL_LEVELLABLE_MOBS);
-        final EntityType eType = le.getType();
-
-        if (le instanceof Monster || le instanceof Boss || groups_HostileMobs.contains(eType)){
-            groups.add(CustomUniversalGroups.ALL_HOSTILE_MOBS);
-        }
-
-        if (le instanceof WaterMob || groups_AquaticMobs.contains(eType)){
-            groups.add(CustomUniversalGroups.ALL_AQUATIC_MOBS);
-        }
-
-        if (le.getWorld().getEnvironment().equals(World.Environment.NORMAL)){
-            groups.add(CustomUniversalGroups.ALL_OVERWORLD_MOBS);
-        } else if (le.getWorld().getEnvironment().equals(World.Environment.NETHER)){
-            groups.add(CustomUniversalGroups.ALL_NETHER_MOBS);
-        }
-
-        if (le instanceof Flying || eType.equals(EntityType.PARROT) || eType.equals(EntityType.BAT)){
-            groups.add(CustomUniversalGroups.ALL_FLYING_MOBS);
-        }
-
-        // why bats aren't part of Flying interface is beyond me
-        if (!(le instanceof Flying) && !(le instanceof WaterMob) && !(le instanceof Boss) && !(eType.equals(EntityType.BAT))){
-            groups.add(CustomUniversalGroups.ALL_GROUND_MOBS);
-        }
-
-        if (le instanceof WaterMob || groups_AquaticMobs.contains(eType)){
-            groups.add(CustomUniversalGroups.ALL_AQUATIC_MOBS);
-        }
-
-        if (le instanceof Animals || le instanceof WaterMob || groups_PassiveMobs.contains(eType)){
-            groups.add(CustomUniversalGroups.ALL_PASSIVE_MOBS);
-        }
-
-        return groups;
-    }
-
     private void buildUniversalGroups(){
 
         // include interfaces: Monster, Boss

@@ -26,14 +26,14 @@ import java.util.List;
  * @author stumper66
  */
 public class BlockPlaceListener implements Listener {
-    private final LevelledMobs main;
+    //private final LevelledMobs main;
     final public NamespacedKey keySpawner;
     final public NamespacedKey keySpawner_MinLevel;
     final public NamespacedKey keySpawner_MaxLevel;
     final public NamespacedKey keySpawner_CustomDropId;
 
     public BlockPlaceListener(final LevelledMobs main) {
-        this.main = main;
+        //this.main = main;
         keySpawner = new NamespacedKey(main, "spawner");
         keySpawner_MinLevel = new NamespacedKey(main, "minlevel");
         keySpawner_MaxLevel = new NamespacedKey(main, "maxlevel");

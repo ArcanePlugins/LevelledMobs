@@ -1,5 +1,6 @@
 package me.lokka30.levelledmobs.customdrops;
 
+import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.inventory.ItemStack;
 
@@ -21,8 +22,7 @@ public class CustomDropProcessingInfo {
         this.groupIDsDroppedAlready = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
     }
 
-    public LivingEntity livingEntity;
-    public int level;
+    public LivingEntityWrapper lmEntity;
     public int addition;
     public boolean isSpawner;
     public boolean equippedOnly;

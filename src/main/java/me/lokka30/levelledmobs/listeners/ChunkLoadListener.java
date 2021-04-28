@@ -2,6 +2,7 @@ package me.lokka30.levelledmobs.listeners;
 
 import me.lokka30.levelledmobs.LevelInterface;
 import me.lokka30.levelledmobs.LevelledMobs;
+import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
@@ -34,17 +35,23 @@ public class ChunkLoadListener implements Listener {
 
             // Must be a *living* entity
             if (!(entity instanceof LivingEntity)) continue;
-            LivingEntity livingEntity = (LivingEntity) entity;
+            LivingEntityWrapper lmEntity = new LivingEntityWrapper((LivingEntity) entity, main);
 
             // Make sure they aren't levelled
-            if (main.levelInterface.isLevelled(livingEntity)) continue;
+            if (lmEntity.isLevelled()) continue;
 
             // Make sure the config says they are levellable
-            if (main.levelInterface.getLevellableState(livingEntity) != LevelInterface.LevellableState.ALLOWED)
+            if (main.levelInterface.getLevellableState(lmEntity) != LevelInterface.LevellableState.ALLOWED)
                 continue;
 
             // Make the mob a levelled mob.
-            main.levelInterface.applyLevelToMob(livingEntity, main.levelInterface.generateLevel(livingEntity), false, false, new HashSet<>(Collections.singletonList(LevelInterface.AdditionalLevelInformation.FROM_CHUNK_LISTENER)));
+            main.levelInterface.applyLevelToMob(
+                    lmEntity,
+                    main.levelInterface.generateLevel(lmEntity),
+                    false,
+                    false,
+                    new HashSet<>(Collections.singletonList(LevelInterface.AdditionalLevelInformation.FROM_CHUNK_LISTENER))
+            );
         }
     }
 }

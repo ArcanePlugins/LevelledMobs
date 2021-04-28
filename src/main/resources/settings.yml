@@ -49,22 +49,6 @@
 #
 
 # ||-------------------------------------------------------||
-# ||  Should the nametag always be visible?
-#
-#       true | The nametags are always visible, even
-#            | through blocks, when you enter their range
-#      false | The nametags remain hidden until you are
-#            | fairly close and looking directly at it (Default)
-#
-#     As much as we would like to have a 'you can see the
-#     nametag if you can see the mob' option, unfortunately
-#     Minecraft itself limits us to just these two options.
-#     Got it all figured out? Commit and ye' shall be praised.
-# ||-------------------------------------------------------||
-creature-nametag-always-visible: false
-
-
-# ||-------------------------------------------------------||
 # ||  Customize Mob Names
 #
 #     If you wish to change the name of mobs used for

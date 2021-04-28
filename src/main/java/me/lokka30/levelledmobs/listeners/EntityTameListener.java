@@ -3,6 +3,7 @@ package me.lokka30.levelledmobs.listeners;
 import me.lokka30.levelledmobs.LevelInterface;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.misc.DebugType;
+import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
 import me.lokka30.levelledmobs.misc.Utils;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
@@ -28,13 +29,13 @@ public class EntityTameListener implements Listener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     private void onEntityTameEvent(EntityTameEvent event) {
-        final LivingEntity livingEntity = event.getEntity();
+        final LivingEntityWrapper lmEntity = new LivingEntityWrapper(event.getEntity(), main);
 
         if (main.settingsCfg.getBoolean("no-level-conditions.tamed")) {
             Utils.debugLog(main, DebugType.ENTITY_TAME, "no-level-conditions.tamed = true");
 
             // if mob was levelled then remove it
-            main.levelInterface.removeLevel(livingEntity);
+            main.levelInterface.removeLevel(lmEntity);
 
             Utils.debugLog(main, DebugType.ENTITY_TAME, "Removed level of tamed mob");
             return;
@@ -42,11 +43,15 @@ public class EntityTameListener implements Listener {
 
         Utils.debugLog(main, DebugType.ENTITY_TAME, "Applying level to tamed mob");
         int level = -1;
-        if (livingEntity.getPersistentDataContainer().has(main.levelManager.levelKey, PersistentDataType.INTEGER)) {
-            Object temp = livingEntity.getPersistentDataContainer().get(main.levelManager.levelKey, PersistentDataType.INTEGER);
-            if (temp != null) level = (int) temp;
-        }
+        if (lmEntity.isLevelled())
+            level = lmEntity.getMobLevel();
 
-        main.levelInterface.applyLevelToMob(livingEntity, level, false, false, new HashSet<>(Collections.singletonList(LevelInterface.AdditionalLevelInformation.FROM_TAME_LISTENER)));
+        main.levelInterface.applyLevelToMob(
+                lmEntity,
+                level,
+                false,
+                false,
+                new HashSet<>(Collections.singletonList(LevelInterface.AdditionalLevelInformation.FROM_TAME_LISTENER))
+        );
     }
 }

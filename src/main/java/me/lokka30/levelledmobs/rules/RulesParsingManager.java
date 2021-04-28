@@ -1,8 +1,7 @@
 package me.lokka30.levelledmobs.rules;
 
 import me.lokka30.levelledmobs.LevelledMobs;
-import me.lokka30.levelledmobs.misc.CustomUniversalGroups;
-import me.lokka30.levelledmobs.misc.Utils;
+import me.lokka30.levelledmobs.misc.*;
 import me.lokka30.levelledmobs.rules.strategies.SpawnDistanceStrategy;
 import me.lokka30.levelledmobs.rules.strategies.YDistanceStrategy;
 import org.bukkit.configuration.ConfigurationSection;
@@ -127,6 +126,47 @@ public class RulesParsingManager {
         return presetType;
     }
 
+    private CachedModalList buildCachedModalList(final ConfigurationSection cs){
+        CachedModalList cachedModalList = new CachedModalList();
+        if (cs == null) return cachedModalList;
+
+        String listMode = cs.getString("mode");
+        if (listMode == null) listMode = "";
+        switch (listMode.toUpperCase()) {
+            case "ALL":
+                cachedModalList.listMode = ModalListMode.ALL;
+            case "BLACKLIST":
+                cachedModalList.listMode = ModalListMode.BLACKLIST;
+            case "WHITELIST":
+            default:
+                cachedModalList.listMode = ModalListMode.WHITELIST;
+                if ("".equals(listMode))
+                    Utils.logger.warning("No list mode was specified");
+                else
+                    Utils.logger.warning("Invalid list mode: " + listMode);
+        }
+
+        final List<String> items = cs.getStringList("list");
+        if (items.isEmpty() && cs.getString("list") != null)
+            items.add(cs.getString("list"));
+
+        for (final String item : items){
+            if (item.toLowerCase().startsWith("all_")){
+                try{
+                    final CustomUniversalGroups group = CustomUniversalGroups.valueOf(item.toUpperCase());
+                    cachedModalList.groups.add(group);
+                }
+                catch (IllegalArgumentException e){
+                    Utils.logger.warning("Invalid custom group: " + item);
+                }
+            }
+            else
+                cachedModalList.items.put(item, null);
+        }
+
+        return cachedModalList;
+    }
+
     private void showAllValues(@NotNull final RuleInfo pi){
         // this is only used for dev work
 
@@ -182,7 +222,9 @@ public class RulesParsingManager {
 
         parsingInfo.maxRandomVariance = cs.getInt("max-random-variance", 0);
         parsingInfo.nametag = cs.getString("nametag");
-        parsingInfo.nametag_CreateDeath = cs.getString("creature-death-nametag");
+        parsingInfo.nametag_CreatureDeath = cs.getString("creature-death-nametag");
+        if (cs.getString("creature-nametag-always-visible") != null)
+            parsingInfo.CreatureNametagAlwaysVisible = cs.getBoolean("creature-nametag-always-visible");
     }
 
     private void parseLevelLimits(final ConfigurationSection cs){
@@ -267,35 +309,8 @@ public class RulesParsingManager {
             }
         }
 
-        for (final String entityOrGroup : getListOrItemFromConfig("entities", conditions)){
-            if (entityOrGroup.toLowerCase().startsWith("all")){
-                try{
-                    final CustomUniversalGroups group = CustomUniversalGroups.valueOf(entityOrGroup.toUpperCase());
-                    parsingInfo.conditions_Entities.put(entityOrGroup, group);
-                }
-                catch (IllegalArgumentException e){
-                    Utils.logger.warning("invalid group for rule id: " + parsingInfo.getInternalId() + ", name: " + entityOrGroup);
-                }
-            }
-            else
-                parsingInfo.conditions_Entities.put(entityOrGroup, CustomUniversalGroups.NOT_APPLICABLE);
-        }
-
-        for (final String entityOrGroup : getListOrItemFromConfig("exclude_entities", conditions)){
-            if (entityOrGroup.toLowerCase().startsWith("all")){
-                try{
-                    final CustomUniversalGroups group = CustomUniversalGroups.valueOf(entityOrGroup.toUpperCase());
-                    parsingInfo.conditions_ExcludeEntities.put(entityOrGroup, group);
-                }
-                catch (IllegalArgumentException e){
-                    Utils.logger.warning("invalid group for rule id: " + parsingInfo.getInternalId() + ", name: " + entityOrGroup);
-                }
-            }
-            else
-                parsingInfo.conditions_ExcludeEntities.put(entityOrGroup, CustomUniversalGroups.NOT_APPLICABLE);
-        }
-
-        parsingInfo.conditions_Biomes.addAll(getListOrItemFromConfig("biomes", conditions));
+        parsingInfo.conditions_Entities = buildCachedModalList(objectToConfigurationSection(conditions.get("entities")));
+        parsingInfo.conditions_Biomes = buildCachedModalList(objectToConfigurationSection(conditions.get("biomes")));
     }
 
     private void parseCalculation(final ConfigurationSection calculation){
@@ -375,8 +390,8 @@ public class RulesParsingManager {
                         parsingInfo.getInternalId(), presetName));
         }
 
-        parsingInfo.worlds_Mode = worlds.getString("mode");
-        parsingInfo.worlds_List.addAll(getListOrItemFromConfig("list", worlds));
+        if (worlds.getString("list") != null)
+            parsingInfo.worlds = buildCachedModalList(worlds);
     }
 
     @NotNull

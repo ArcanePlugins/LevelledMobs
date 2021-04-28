@@ -1,5 +1,6 @@
 package me.lokka30.levelledmobs.rules;
 
+import me.lokka30.levelledmobs.misc.CachedModalList;
 import me.lokka30.levelledmobs.misc.CustomUniversalGroups;
 import me.lokka30.levelledmobs.rules.strategies.LevellingStrategy;
 import org.jetbrains.annotations.NotNull;
@@ -8,50 +9,47 @@ import java.util.*;
 
 public class RuleInfo {
     public RuleInfo(){
-        this.internalId = UUID.randomUUID();
+        this.internalId = UUID.randomUUID().toString().substring(24);
         this.ruleIsEnabled = true;
         this.presetType = PresetType.NONE;
-        this.worlds_List = new LinkedList<>();
-        this.conditions_Entities = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
-        this.conditions_ExcludeEntities = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+        this.worlds = new CachedModalList();
+        this.conditions_Biomes = new CachedModalList();
+        this.conditions_Entities = new CachedModalList();
         this.levellingStrategies = new LinkedList<>();
         this.calculation_CustomVariables = new TreeMap<>();
-        this.conditions_Biomes = new LinkedList<>();
         this.conditions_MobCustomnameStatus = MobCustomNameStatusEnum.NOT_SPECIFIED;
         this.conditions_MobTamedStatus = MobTamedStatusEnum.NOT_SPECIFIED;
     }
 
-    private final UUID internalId;
+    private final String internalId;
     public boolean ruleIsEnabled;
-    public MobCustomNameStatusEnum conditions_MobCustomnameStatus;
-    public MobTamedStatusEnum conditions_MobTamedStatus;
+    public Boolean CreatureNametagAlwaysVisible;
+    public int maxRandomVariance;
     public Integer conditions_MinLevel;
     public Integer conditions_MaxLevel;
     public Integer restrictions_MinLevel;
     public Integer restrictions_MaxLevel;
-    public int maxRandomVariance;
     public double random_BiasFactor;
     public Double conditions_Chance;
     public String nametag;
-    public String nametag_CreateDeath;
+    public String nametag_CreatureDeath;
     public String presetName;
-    public String worlds_Mode;
     public String calculation_Formula;
+    public MobCustomNameStatusEnum conditions_MobCustomnameStatus;
+    public MobTamedStatusEnum conditions_MobTamedStatus;
     public PresetType presetType;
     @NotNull
     public List<LevellingStrategy> levellingStrategies;
     @NotNull
     public Map<String, String> calculation_CustomVariables;
     @NotNull
-    public Map<String, CustomUniversalGroups> conditions_Entities;
+    public CachedModalList worlds;
     @NotNull
-    public Map<String, CustomUniversalGroups> conditions_ExcludeEntities;
+    public CachedModalList conditions_Entities;
     @NotNull
-    public List<String> worlds_List;
-    @NotNull
-    public List<String> conditions_Biomes;
+    public CachedModalList conditions_Biomes;
 
-    public UUID getInternalId(){
+    public String getInternalId(){
         return this.internalId;
     }
 
@@ -64,8 +62,7 @@ public class RuleInfo {
             this.conditions_Chance = preset.conditions_Chance;
         }
         else if (preset.presetType == PresetType.WORLDS){
-            this.worlds_List = preset.worlds_List;
-            this.worlds_Mode = preset.worlds_Mode;
+            this.worlds = preset.worlds;
         }
         else if (preset.presetType == PresetType.STRATEGIES){
             this.levellingStrategies.addAll(preset.levellingStrategies);

@@ -40,9 +40,10 @@ default-rule:
     maxLevel: 10
   conditions:
     preset: 1
-  nametag: '&8[%tiered%Level %level%&8 | &f%displayname%&8 | &c%health%&8/&c%max_health% %heart_symbol%&8]'
-  creature-death-nametag: '&8[&7Level %level%&8 | &f%displayname%&8]'
+  nametag: '&8[&7Level %mob-lvl%&8 | &f%entity-name%&8 | &c%entity-health-rounded%&8/&c%entity-max-health-rounded%&8]'
+  creature-death-nametag: '&8[&7Level %mob-lvl%&8 | &f%entity-name%&8]'
   max-random-variance: 1
+  creature-nametag-always-visible: false
 
 custom-rules:
   - enabled: true
@@ -59,11 +60,12 @@ custom-rules:
       max: 10
     max-random-variance: 2
     conditions:
-      entities: ['all_nether_mobs']
+      entities:
+        mode: 'WHITELIST'
+        list: ['all_nether_mobs']
       mob-customname-status: nametagged
       mob-tamed-status: tamed
   - enabled: true
-    entities: ['all_passive_mobs']
     worlds:
       mode: 'WHITELIST'
       list: ['world']
@@ -72,6 +74,10 @@ custom-rules:
         bias-factor: 0.3
     calculation:
       formula: '%random-level%'
+    conditions:
+      entities:
+        mode: 'WHITELIST'
+        list: ['all_passive_mobs']
     restrictions:
       minLevel: 1
       maxLevel: 10
@@ -86,9 +92,13 @@ custom-rules:
     calculation:
       formula: '%random-level%'
     conditions:
-      entities: ['all_ender_mobs']
+      entities:
+        mode: 'WHITELIST'
+        list: ['all_ender_mobs']
       chance: 0.5
-      biomes: ['JUNGLE']
+      biomes:
+        mode: 'WHITELIST'
+        list: ['JUNGLE']
     restrictions:
       minLevel: 7
       maxLevel: 10
