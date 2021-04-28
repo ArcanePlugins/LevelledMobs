@@ -6,7 +6,6 @@ import me.lokka30.levelledmobs.misc.DebugType;
 import me.lokka30.levelledmobs.misc.ModalList;
 import me.lokka30.levelledmobs.misc.Utils;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
@@ -38,32 +37,36 @@ public class EntitySpawnListener implements Listener {
      */
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void onPlayerDeath(final PlayerDeathEvent event) {
-        if (event.getDeathMessage() == null) return;
+        final String deathMessage = event.getDeathMessage();
+        if (Utils.isNullOrEmpty(deathMessage)) return;
 
-        String deathNametag = main.settingsCfg.getString("creature-death-nametag", "&8[&7Level %level%&8 | &f%displayname%&8]");
-        if (Utils.isNullOrEmpty(deathNametag))
-            return; // if they want retain the stock message they are configure it with an empty string
+        if (main.settingsCfg.getString("creature-death-nametag", "disabled").equalsIgnoreCase("disabled")) return;
 
         final EntityDamageEvent entityDamageEvent = event.getEntity().getLastDamageCause();
-        if (entityDamageEvent == null || entityDamageEvent.isCancelled() || !(entityDamageEvent instanceof EntityDamageByEntityEvent)) {
+        if (entityDamageEvent == null || entityDamageEvent.isCancelled() || !(entityDamageEvent instanceof EntityDamageByEntityEvent))
             return;
-        }
 
-        Entity damager = ((EntityDamageByEntityEvent) entityDamageEvent).getDamager();
+        final Entity damager = ((EntityDamageByEntityEvent) entityDamageEvent).getDamager();
         LivingEntity killer;
 
         if (damager instanceof Projectile) {
             killer = (LivingEntity) ((Projectile) damager).getShooter();
-        } else if (!(damager instanceof LivingEntity)) {
-            return;
-        } else {
+        } else if (damager instanceof LivingEntity) {
             killer = (LivingEntity) damager;
+        } else {
+            return;
         }
-
         if (killer == null) return;
         if (!main.levelInterface.isLevelled(killer)) return;
 
-        event.setDeathMessage(Utils.replaceEx(event.getDeathMessage(), killer.getName(), main.levelManager.getNametag(killer, true)));
+        if (Utils.isNullOrEmpty(killer.getName())) {
+            return;
+        }
+
+        final String deathNametag = main.levelManager.getNametag(killer, true);
+        if (Utils.isNullOrEmpty(deathNametag)) return;
+
+        event.setDeathMessage(Utils.replaceEx(deathMessage, killer.getName(), deathNametag));
     }
 
     /**
