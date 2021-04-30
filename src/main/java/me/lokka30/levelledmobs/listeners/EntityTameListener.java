@@ -15,8 +15,7 @@ import java.util.Collections;
 import java.util.HashSet;
 
 /**
- * @author stumper66
- * @contributors lokka30
+ * @author stumper66, lokka30
  */
 public class EntityTameListener implements Listener {
 
@@ -47,6 +46,7 @@ public class EntityTameListener implements Listener {
             if (temp != null) level = (int) temp;
         }
 
+        if (level == -1) level = main.levelInterface.generateLevel(livingEntity);
         main.levelInterface.applyLevelToMob(livingEntity, level, false, false, new HashSet<>(Collections.singletonList(LevelInterface.AdditionalLevelInformation.FROM_TAME_LISTENER)));
     }
 }

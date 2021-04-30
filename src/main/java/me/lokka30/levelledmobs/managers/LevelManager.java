@@ -14,7 +14,6 @@ import me.lokka30.levelledmobs.misc.DebugType;
 import me.lokka30.levelledmobs.misc.LevelNumbersWithBias;
 import me.lokka30.levelledmobs.misc.Utils;
 import me.lokka30.microlib.MessageUtils;
-import org.apache.commons.lang.Validate;
 import org.apache.commons.lang.WordUtils;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
@@ -714,7 +713,7 @@ public class LevelManager {
     }
 
     public void applyLevelledAttributes(final LivingEntity livingEntity, final int level, final Addition addition) {
-        Validate.isTrue(main.levelInterface.isLevelled(livingEntity), "Mob must be levelled.");
+        assert main.levelInterface.isLevelled(livingEntity); //Mob must be levelled.
 
         // This functionality should be added into the enum.
         Attribute attribute;
@@ -802,7 +801,7 @@ public class LevelManager {
             // then we'll be here with a non-levelled entity
             return;
         }
-        Validate.isTrue(level >= 0, "Level must be greater than or equal to zero.");
+        assert level >= 0; //Level must be greater than or equal to zero.
 
         // Custom Drops must be enabled.
         if (!main.settingsCfg.getBoolean("use-custom-item-drops-for-mobs")) return;
