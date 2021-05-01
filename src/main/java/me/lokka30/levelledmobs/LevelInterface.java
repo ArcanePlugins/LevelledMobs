@@ -9,7 +9,6 @@ import me.lokka30.levelledmobs.rules.MobCustomNameStatusEnum;
 import me.lokka30.levelledmobs.rules.MobTamedStatusEnum;
 import me.lokka30.levelledmobs.rules.RulesManager;
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.entity.*;
@@ -71,11 +70,8 @@ public class LevelInterface {
         if (FORCED_BLOCKED_ENTITY_TYPES.contains(lmEntity.getTypeName()))
             return LevellableState.DENIED_FORCE_BLOCKED_ENTITY_TYPE;
 
-        if (!rulesManager.getRule_IsMobInAnyAllowedLists(lmEntity))
+        if (lmEntity.getApplicableRules().isEmpty())
             return LevellableState.DENIED_NO_APPLICABLE_RULES;
-
-        if (!rulesManager.getRule_IsMobAllowedInEntityOverride(lmEntity))
-            return LevellableState.DENIED_CONFIGURATION_BLOCKED_ENTITY_TYPE;
 
         /*
         Compatibility with other plugins: users may want to stop LM from acting on mobs modified by other plugins.
@@ -94,6 +90,16 @@ public class LevelInterface {
             return LevellableState.DENIED_CONFIGURATION_COMPATIBILITY_SHOPKEEPERS;
         if (ExternalCompatibilityManager.checkWorldGuard(lmEntity.getLivingEntity().getLocation(), main))
             return LevellableState.DENIED_CONFIGURATION_COMPATIBILITY_WORLD_GUARD;
+
+        if (lmEntity.isMobOfExternalType()) {
+            lmEntity.invalidateCache();
+
+            if (rulesManager.getRule_IsMobAllowedInEntityOverride(lmEntity))
+                return LevellableState.DENIED_CONFIGURATION_BLOCKED_ENTITY_TYPE;
+        }
+
+        if (!rulesManager.getRule_IsMobAllowedInEntityOverride(lmEntity))
+            return LevellableState.DENIED_CONFIGURATION_BLOCKED_ENTITY_TYPE;
 
         /*
         Check 'No Level Conditions'
@@ -118,23 +124,11 @@ public class LevelInterface {
             }
         }
 
-        //LevellableState entityTypeState = getLevellableState(entityType);
-        //if (entityTypeState != LevellableState.ALLOWED) return entityTypeState;
-
-        // Check worlds
-        //noinspection ConstantConditions
-//        if (!ModalList.isEnabledInList(main.settingsCfg, "allowed-worlds-list", location.getWorld().getName())) {
-//            return LevellableState.DENIED_CONFIGURATION_BLOCKED_WORLD;
-//        }
-
-
         // Check WorldGuard
         if (ExternalCompatibilityManager.checkWorldGuard(lmEntity.getLivingEntity().getLocation(), main))
             return LevellableState.DENIED_CONFIGURATION_COMPATIBILITY_WORLD_GUARD;
 
         return LevellableState.ALLOWED;
-
-        //return getLevellableState(lmEntity.getLivingEntity().getType(), lmEntity.getLivingEntity().getLocation());
     }
 
     /**

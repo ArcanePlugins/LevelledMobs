@@ -8,7 +8,6 @@ import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Ageable;
 import org.bukkit.entity.EntityType;
-import org.bukkit.entity.LivingEntity;
 
 import javax.annotation.Nullable;
 import java.util.Objects;
@@ -61,6 +60,7 @@ public class MobDataManager {
             // max health has hard limit of 2048
             tempValue = 2048.0;
         }
+
         Objects.requireNonNull(lmEntity.getLivingEntity().getAttribute(attribute)).setBaseValue(tempValue);
     }
 
@@ -70,16 +70,32 @@ public class MobDataManager {
         final double range = (double) maxLevel - minLevel - 1;
         final double percent = (double) lmEntity.getMobLevel() / range;
 
-        final boolean isAdult = !(lmEntity.getLivingEntity() instanceof Ageable) || ((Ageable) lmEntity.getLivingEntity()).isAdult();
-        final String entityCheckName = isAdult ?
-                lmEntity.getLivingEntity().getName().replace(" ", "_").toUpperCase() :
-                "BABY_" + lmEntity.getLivingEntity().getName().replace(" ", "_").toUpperCase();
-        final double maxOverridenEntity = main.settingsCfg.getDouble(addition.getMaxAdditionConfigPath(entityCheckName), -100.0); // in case negative number are allowed
-        final double max = main.settingsCfg.getDouble(addition.getMaxAdditionConfigPath());
-        //Utils.logger.info(String.format("cl: %s, lmin: %s, lmax: %s, max: %s, percent: %s, test: %s", currentLevel, minLevel, maxLevel, max, percent, addition.getMaxAdditionConfigPath()));
+        double attributeValue = 0;
+        if (lmEntity.getFineTuningAttributes() != null){
+            switch (addition){
+                case CUSTOM_XP_DROP:
+                    if (lmEntity.getFineTuningAttributes().xpDrop != null) attributeValue = lmEntity.getFineTuningAttributes().xpDrop;
+                    break;
+                case CUSTOM_ITEM_DROP:
+                    if (lmEntity.getFineTuningAttributes().itemDrop != null) attributeValue = lmEntity.getFineTuningAttributes().itemDrop;
+                    break;
+                case ATTRIBUTE_MAX_HEALTH:
+                    if (lmEntity.getFineTuningAttributes().maxHealth != null) attributeValue = lmEntity.getFineTuningAttributes().maxHealth;
+                    break;
+                case ATTRIBUTE_ATTACK_DAMAGE:
+                    if (lmEntity.getFineTuningAttributes().attackDamage != null) attributeValue = lmEntity.getFineTuningAttributes().attackDamage;
+                    break;
+                case ATTRIBUTE_MOVEMENT_SPEED:
+                    if (lmEntity.getFineTuningAttributes().movementSpeed != null) attributeValue = lmEntity.getFineTuningAttributes().movementSpeed;
+                    break;
+                case CUSTOM_RANGED_ATTACK_DAMAGE:
+                    if (lmEntity.getFineTuningAttributes().rangedAttackDamage != null) attributeValue = lmEntity.getFineTuningAttributes().rangedAttackDamage;
+                    break;
+            }
+        }
 
-        return maxOverridenEntity > -100.0 ?
-                percent * maxOverridenEntity :
-                percent * max;
+        Utils.logger.info("getAdditionsForLevel " + addition + ", percent: " + percent + ", value: " + attributeValue);
+
+        return percent * attributeValue;
     }
 }

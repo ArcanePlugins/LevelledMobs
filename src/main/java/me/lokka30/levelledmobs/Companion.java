@@ -118,7 +118,6 @@ public class Companion {
         main.mobHeadManager.loadTextures(loadEmbeddedResource("textures.yml"));
 
         main.configUtils.load();
-        ExternalCompatibilityManager.load(main);
 
         // remove legacy files if they exist
         final String[] legacyFile = {"attributes.yml", "drops.yml"};

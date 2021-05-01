@@ -1,11 +1,15 @@
 package me.lokka30.levelledmobs.misc;
 
 import me.lokka30.levelledmobs.LevelledMobs;
+import me.lokka30.levelledmobs.managers.ExternalCompatibilityManager;
+import me.lokka30.levelledmobs.rules.FineTuningAttributes;
 import me.lokka30.levelledmobs.rules.RuleInfo;
 import org.bukkit.World;
 import org.bukkit.entity.*;
 import org.bukkit.persistence.PersistentDataContainer;
+import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -17,6 +21,7 @@ public class LivingEntityWrapper {
         this.livingEntity = livingEntity;
         this.applicableGroups = new LinkedList<>();
         this.applicableRules = new LinkedList<>();
+        this.mobExternalType = ExternalCompatibilityManager.ExternalCompatibility.NOT_APPLICABLE;
     }
 
     private final LevelledMobs main;
@@ -28,6 +33,8 @@ public class LivingEntityWrapper {
     private Integer mobLevel;
     @NotNull
     private List<RuleInfo> applicableRules;
+    private ExternalCompatibilityManager.ExternalCompatibility mobExternalType;
+    private FineTuningAttributes fineTuningAttributes;
 
     private void buildCache(){
         if (main.levelInterface.isLevelled(livingEntity))
@@ -35,9 +42,9 @@ public class LivingEntityWrapper {
         else
             this.mobLevel = null;
 
-        this.applicableRules = main.rulesManager.getApplicableRules(this);
-
         this.hasCache = true;
+        this.applicableRules = main.rulesManager.getApplicableRules(this);
+        this.fineTuningAttributes = main.rulesManager.getFineTuningAttributes(this);
     }
 
     public void invalidateCache(){
@@ -65,6 +72,12 @@ public class LivingEntityWrapper {
         }
 
         return this.applicableGroups;
+    }
+
+    public FineTuningAttributes getFineTuningAttributes(){
+        if (!hasCache) buildCache();
+
+        return this.fineTuningAttributes;
     }
 
     public List<RuleInfo> getApplicableRules(){
@@ -119,6 +132,30 @@ public class LivingEntityWrapper {
         return this.isBabyMob() ?
                 "BABY_" + getTypeName() :
                 getTypeName();
+    }
+
+    public void setMobExternalType(final ExternalCompatibilityManager.ExternalCompatibility externalType){
+        this.mobExternalType = externalType;
+    }
+
+    public ExternalCompatibilityManager.ExternalCompatibility getMobExternalType(){
+        return this.mobExternalType;
+    }
+
+    public boolean isMobOfExternalType(){
+        return this.mobExternalType != null;
+    }
+
+    public boolean hasOverridenEntityName(){
+        return livingEntity.getPersistentDataContainer().has(main.levelManager.overridenEntityNameKey, PersistentDataType.STRING);
+    }
+
+    public String getOverridenEntityName(){
+        return livingEntity.getPersistentDataContainer().get(main.levelManager.overridenEntityNameKey, PersistentDataType.STRING);
+    }
+
+    public void setOverridenEntityName(final String name){
+        livingEntity.getPersistentDataContainer().set(main.levelManager.overridenEntityNameKey, PersistentDataType.STRING, name);
     }
 
     @NotNull

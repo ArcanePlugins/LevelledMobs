@@ -8,6 +8,7 @@ import me.lokka30.levelledmobs.rules.strategies.LevellingStrategy;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -20,11 +21,6 @@ public class RulesManager {
     //private final LevelledMobs main;
     @NotNull
     public final List<RuleInfo> rulesInEffect;
-
-    public boolean getRule_IsMobInAnyAllowedLists(final LivingEntityWrapper lmEntity){
-        // if no conditions mentioned the entity type or group then return false
-        return !lmEntity.getApplicableRules().isEmpty();
-    }
 
     public boolean getRule_IsMobAllowedInEntityOverride(final LivingEntityWrapper lmEntity){
         // check if it should be denied thru the entity override list
@@ -41,6 +37,31 @@ public class RulesManager {
                 allowedEntitiesList == null ||
                 !babyMobsInheritAdultSetting && lmEntity.isBabyMob() && allowedEntitiesList.isLivingEntityInList(lmEntity, true)) ||
                 allowedEntitiesList.isLivingEntityInList(lmEntity, babyMobsInheritAdultSetting);
+    }
+
+    public FineTuningAttributes getFineTuningAttributes(final LivingEntityWrapper lmEntity){
+        FineTuningAttributes defaultAttribs = null;
+        FineTuningAttributes mobAttribs = null;
+
+        for (final RuleInfo ruleInfo : lmEntity.getApplicableRules()){
+            if (ruleInfo.defaultFineTuning != null){
+                if (defaultAttribs == null)
+                    defaultAttribs = ruleInfo.defaultFineTuning;
+                else
+                    defaultAttribs.mergeAttributes(ruleInfo.defaultFineTuning);
+
+                if (ruleInfo.fineTuning != null && ruleInfo.fineTuning.containsKey(lmEntity.getNameIfBaby())){
+                    final FineTuningAttributes tempAttribs = ruleInfo.fineTuning.get(lmEntity.getNameIfBaby());
+                    if (mobAttribs == null)
+                        mobAttribs = tempAttribs;
+                    else
+                        mobAttribs.mergeAttributes(tempAttribs);
+                }
+            }
+        }
+
+        if (defaultAttribs != null) defaultAttribs.mergeAttributes(mobAttribs);
+        return defaultAttribs;
     }
 
     public int getRule_CreeperMaxBlastRadius(final LivingEntityWrapper lmEntity){
@@ -110,6 +131,7 @@ public class RulesManager {
         return maxLevel;
     }
 
+    @NotNull
     public String getRule_Nametag(final LivingEntityWrapper lmEntity){
         String nametag = "";
         for (final RuleInfo ruleInfo : lmEntity.getApplicableRules()) {
@@ -119,6 +141,7 @@ public class RulesManager {
         return nametag;
     }
 
+    @NotNull
     public String getRule_Nametag_CreatureDeath(final LivingEntityWrapper lmEntity){
         String nametag = "";
         for (final RuleInfo ruleInfo : lmEntity.getApplicableRules()) {
@@ -139,19 +162,54 @@ public class RulesManager {
         return creatureNametagAlwaysVisible;
     }
 
+    @Nullable
+    public String getRule_TieredPlaceholder(final LivingEntityWrapper lmEntity){
+        List<TieredColoringInfo> coloringInfo = null;
+        String tieredText = null;
+
+        for (final RuleInfo ruleInfo : lmEntity.getApplicableRules()){
+            if (ruleInfo.tieredColoringInfos != null) coloringInfo = ruleInfo.tieredColoringInfos;
+        }
+
+        if (coloringInfo == null) return  null;
+
+        final int mobLevel = lmEntity.getMobLevel();
+        for (TieredColoringInfo info : coloringInfo){
+            if (info.isDefault) tieredText = info.text;
+            if (mobLevel >= info.minLevel && mobLevel <= info.maxLevel){
+                tieredText = info.text;
+                break;
+            }
+        }
+
+        return tieredText;
+    }
+
+    @Nullable
     public String getRule_EntityOverriddenName(final LivingEntityWrapper lmEntity){
-        String overridenName = null;
+        // TODO if using a name list for a mob it will change every time they get hit
+
+        List<String> overridenNames = null;
         final String checkName = lmEntity.isBabyMob() ?
                 "baby_" + lmEntity.getTypeName() : lmEntity.getTypeName();
 
         for (final RuleInfo ruleInfo : lmEntity.getApplicableRules()){
             if (ruleInfo.entityNameOverrides.containsKey(checkName))
-                overridenName = ruleInfo.entityNameOverrides.get(checkName);
+                overridenNames = ruleInfo.entityNameOverrides.get(checkName);
         }
 
-        return overridenName;
+        if (overridenNames == null || overridenNames.isEmpty())
+            return null;
+        else if (overridenNames.size() > 1) {
+            Collections.shuffle(overridenNames);
+            // set a PDC key with the name otherwise the name will constantly change
+            lmEntity.setOverridenEntityName(overridenNames.get(0));
+        }
+
+        return overridenNames.get(0);
     }
 
+    @NotNull
     public List<RuleInfo> getApplicableRules(final LivingEntityWrapper lmEntity){
         List<RuleInfo> rules = new LinkedList<>();
 
@@ -173,20 +231,18 @@ public class RulesManager {
             return false;
         }
         if (ri.conditions_MinLevel != null && (!lmEntity.isLevelled() || ri.conditions_MinLevel < lmEntity.getMobLevel())) {
-            Utils.logger.info(lmEntity.getTypeName() + ", rule id: " + ri.getInternalId() + ", didn't meet minlevel criteria of " + ri.conditions_MinLevel);
+            //Utils.logger.info(lmEntity.getTypeName() + ", rule id: " + ri.getInternalId() + ", didn't meet minlevel criteria of " + ri.conditions_MinLevel);
             return false;
         }
         if (ri.conditions_MaxLevel != null && (!lmEntity.isLevelled() || ri.conditions_MaxLevel > lmEntity.getMobLevel())) {
-            Utils.logger.info(lmEntity.getTypeName() + ", rule id: " + ri.getInternalId() + ", didn't meet maxlevel criteria of " +  + ri.conditions_MaxLevel);
+            //Utils.logger.info(lmEntity.getTypeName() + ", rule id: " + ri.getInternalId() + ", didn't meet maxlevel criteria of " +  + ri.conditions_MaxLevel);
             return false;
         }
         if (ri.worlds != null && !ri.worlds.isEnabledInList(lmEntity.getWorldName())) {
-            Utils.logger.info(lmEntity.getTypeName() + ", rule id: " + ri.getInternalId() + ", denied from world list");
+            //Utils.logger.info(lmEntity.getTypeName() + ", rule id: " + ri.getInternalId() + ", denied from world list");
             return false;
         }
 
-        // TODO: add more rule constraints like entity overrides, etc
-
-        return true;
+        return !lmEntity.isMobOfExternalType() || ri.conditions_ApplyPlugins == null || ri.conditions_ApplyPlugins.isEnabledInList(lmEntity.getMobExternalType().toString());
     }
 }

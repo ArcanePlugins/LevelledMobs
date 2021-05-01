@@ -189,14 +189,7 @@ public class KillSubcommand implements Subcommand {
                 containsNoDrops = true;
                 break;
             }
-
-//            if (i > 0) sb.append(", ");
-//            sb.append(i);
-//            sb.append(" '");
-//            sb.append(args[i]);
-//            sb.append("'");
         }
-        //Utils.logger.info(sb.toString());
 
         if (args.length == 2) {
             return Arrays.asList("all", "near");

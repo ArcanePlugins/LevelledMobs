@@ -202,24 +202,6 @@ mobs-multiply-head-drops: false
 # ||-------------------------------------------------------||
 fine-tuning:
   lower-mob-level-bias-factor: 0
-  additions:
-    max-health: 25
-    movement-speed: 0.1
-    attack-damage: 4
-    ranged-attack-damage: 1.5
-    item-drop: 3
-    xp-drop: 2
-
-# Below represents an example of a customized PIGLIN
-# Un-comment it to take effect!
-    custom_mob_level:
-#      PIGLIN:
-#        max-health: 30
-#        movement-speed: 0.2
-#        attack-damage: 6
-#        xp-drop: 3
-#        ranged-attack-damage: 2.5
-#        item-drop: 4
 
 
 # ||-------------------------------------------------------||
@@ -374,51 +356,6 @@ overriden-entities:
 #        - EntityType
 # ||-------------------------------------------------------||
 no-drop-multipler-entities:
-
-
-
-#
-#
-# |||||||||||||||||||||||||||||||||||||||||||||||||||||
-# ||  Section 04 - Compatibility and Other Settings
-# |||||||||||||||||||||||||||||||||||||||||||||||||||||
-#
-# ||-------------------------------------------------------||
-# ||  ADVANCED USERS ONLY
-# ||  External Plugin Compatibility
-#
-#     By default, all compatibilities are set to true.
-#     It is recommended that you do not change these
-#     settings without understanding what you are doing.
-#     Disabling a compatibility will allow LevelledMobs to
-#     apply levels to the creatures spawned by that plugin.
-#
-#      external-compatibilites:
-#              DANGEROUS_CAVES: | Metadata: 'DangerousCaves'
-#                  MYTHIC_MOBS: | Metadata: 'mythic_mobs'
-#                   ELITE_MOBS: | Metadata: 'Elitemob'
-#              ELITE_MOBS_NPCS: | Metadata: 'Elitemobs_NPC'
-#        ELITE_MOBS_SUPER_MOBS: | Metadata: 'Supermob'
-#                INFERNAL_MOBS: | Metadata: 'infernalMetadata'
-#                     CITIZENS: | Metadata: 'NPC'
-#                  SHOPKEEPERS: | Metadata: 'shopkeeper'
-#
-#  || IMPORTANT:
-#  |  If you have 'DANGEROUS_CAVES' set to 'true' below,
-#  |  the DangerousCaves plugin must have the 'add-metadata'
-#  |  option in their config set to 'true' as well, else LM
-#  |  won't know if a mob was spawned by them.
-#
-# ||-------------------------------------------------------||
-external-compatibilities:
-  DANGEROUS_CAVES: true
-  MYTHIC_MOBS: true
-  ELITE_MOBS: true
-  ELITE_MOBS_NPCS: true
-  ELITE_MOBS_SUPER_MOBS: true
-  INFERNAL_MOBS: true
-  CITIZENS: true
-  SHOPKEEPERS: true
 
 
 # ||-------------------------------------------------------||

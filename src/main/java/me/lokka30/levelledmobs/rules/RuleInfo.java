@@ -1,10 +1,10 @@
 package me.lokka30.levelledmobs.rules;
 
+import me.lokka30.levelledmobs.managers.ExternalCompatibilityManager;
 import me.lokka30.levelledmobs.misc.CachedModalList;
-import me.lokka30.levelledmobs.misc.Utils;
 import me.lokka30.levelledmobs.rules.strategies.LevellingStrategy;
+import org.bukkit.entity.EntityType;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
@@ -15,7 +15,6 @@ public class RuleInfo {
         this.ruleIsEnabled = true;
         this.presetType = PresetType.NONE;
         this.levellingStrategies = new LinkedList<>();
-        this.calculation_CustomVariables = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
         this.entityNameOverrides = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
         this.conditions_MobCustomnameStatus = MobCustomNameStatusEnum.NOT_SPECIFIED;
         this.conditions_MobTamedStatus = MobTamedStatusEnum.NOT_SPECIFIED;
@@ -43,14 +42,18 @@ public class RuleInfo {
     public PresetType presetType;
     @NotNull
     public List<LevellingStrategy> levellingStrategies;
-    @NotNull
     public Map<String, String> calculation_CustomVariables;
     @NotNull
-    public Map<String, String> entityNameOverrides;
+    public Map<String, List<String>> entityNameOverrides;
+    public List<TieredColoringInfo> tieredColoringInfos;
+    public List<ExternalCompatibilityManager.ExternalCompatibility> enabledExtCompats;
     public CachedModalList allowedEntities;
     public CachedModalList worlds;
     public CachedModalList conditions_Entities;
     public CachedModalList conditions_Biomes;
+    public CachedModalList conditions_ApplyPlugins;
+    public FineTuningAttributes defaultFineTuning;
+    public Map<String, FineTuningAttributes> fineTuning;
 
     public String getInternalId(){
         return this.internalId;

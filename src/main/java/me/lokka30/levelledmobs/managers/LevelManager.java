@@ -55,6 +55,7 @@ public class LevelManager {
     public final NamespacedKey spawnReasonKey; //This is stored on levelled mobs to tell how a mob was spawned
     public final NamespacedKey noLevelKey; // This key tells LM not to level the mob in future
     public final NamespacedKey wasBabyMobKey; // This key tells LM not to level the mob in future
+    public final NamespacedKey overridenEntityNameKey;
 
     public final static int maxCreeperBlastRadius = 100;
     public EntitySpawnListener entitySpawnListener;
@@ -66,6 +67,7 @@ public class LevelManager {
         spawnReasonKey = new NamespacedKey(main, "spawnReason");
         noLevelKey = new NamespacedKey(main, "noLevel");
         wasBabyMobKey = new NamespacedKey(main, "wasBabyMob");
+        overridenEntityNameKey = new NamespacedKey(main, "overridenEntityName");
 
         final int factor = main.settingsCfg.getInt("fine-tuning.lower-mob-level-bias-factor", 0);
         if (factor > 0) {
@@ -126,6 +128,8 @@ public class LevelManager {
         int minLevel = minLevel_Pre;
         int maxLevel = maxLevel_Pre;
 
+
+
         if (minLevel == -1 || maxLevel == -1) {
             final int[] levels = getMinAndMaxLevels(lmEntity);
             if (minLevel == -1) minLevel = levels[0];
@@ -158,6 +162,7 @@ public class LevelManager {
 
     public int[] getMinAndMaxLevels(final @Nullable LivingEntityWrapper lmEntity) {
         // final EntityType entityType, final boolean isAdultEntity, final String worldName
+        // if called from summon command then lmEntity is null
         int minLevel = main.rulesManager.getRule_MobMinLevel(lmEntity);
         int maxLevel = main.rulesManager.getRule_MobMaxLevel(lmEntity);
 
@@ -431,7 +436,7 @@ public class LevelManager {
         Utils.debugLog(main, DebugType.SET_LEVELLED_ITEM_DROPS, "1: Method called. " + dropsToMultiply.size() + " drops will be analysed.");
 
         // Get their level
-        final int level = Objects.requireNonNull(lmEntity.getPDC().get(levelKey, PersistentDataType.INTEGER));
+        final int level = lmEntity.getMobLevel();
         Utils.debugLog(main, DebugType.SET_LEVELLED_ITEM_DROPS, "3: Entity level is " + level + ".");
 
         final boolean doNotMultiplyDrops =
@@ -659,10 +664,11 @@ public class LevelManager {
 
     // When the persistent data container levelled key has not been set on the entity yet (i.e. for use in EntitySpawnListener)
     public String getNametag(final LivingEntityWrapper lmEntity, final int level, final boolean isDeathNametag) {
+
         // If show label for default levelled mobs is disabled and the mob is the min level, then don't modify their tag.
-        if (!main.settingsCfg.getBoolean("show-label-for-default-levelled-mobs", true) && level == main.settingsCfg.getInt("fine-tuning.min-level", 1)) {
-            return lmEntity.getLivingEntity().getCustomName(); // CustomName can be null, that is meant to be the case.
-        }
+//        if (!main.settingsCfg.getBoolean("show-label-for-default-levelled-mobs", true) && level == main.settingsCfg.getInt("fine-tuning.min-level", 1)) {
+//            return lmEntity.getLivingEntity().getCustomName(); // CustomName can be null, that is meant to be the case.
+//        }
 
         final AttributeInstance maxHealth = lmEntity.getLivingEntity().getAttribute(Attribute.GENERIC_MAX_HEALTH);
         final String roundedMaxHealth = maxHealth == null ? "?" : Utils.round(maxHealth.getBaseValue()) + "";
@@ -672,11 +678,13 @@ public class LevelManager {
         String entityName = Utils.capitalize(lmEntity.getTypeName()).toLowerCase().replaceAll("_", " ");
 
         // Baby zombies can have specific nametags in entity-name-override
-        final String overridenName = main.rulesManager.getRule_EntityOverriddenName(lmEntity);
+
+        final String overridenName = lmEntity.hasOverridenEntityName() ?
+                lmEntity.getOverridenEntityName() :
+                main.rulesManager.getRule_EntityOverriddenName(lmEntity);
+
         if (overridenName != null) entityName = overridenName;
-
         if (entityName.isEmpty() || entityName.equalsIgnoreCase("disabled")) return null;
-
         final String displayName = lmEntity.getLivingEntity().getCustomName() == null ? MessageUtils.colorizeAll(entityName) : lmEntity.getLivingEntity().getCustomName();
 
         // ignore if 'disabled'
@@ -684,12 +692,8 @@ public class LevelManager {
             return lmEntity.getLivingEntity().getCustomName(); // CustomName can be null, that is meant to be the case.
 
         // %tiered% placeholder
-        int minLevel = main.settingsCfg.getInt("fine-tuning.min-level", 1);
-        int maxLevel = main.settingsCfg.getInt("fine-tuning.max-level", 10);
-        double levelPercent = (double) level / (double) (maxLevel - minLevel);
-        ChatColor tier = ChatColor.GREEN;
-        if (levelPercent >= 0.66666666) tier = ChatColor.RED;
-        else if (levelPercent >= 0.33333333) tier = ChatColor.GOLD;
+        String tieredPlaceholder = main.rulesManager.getRule_TieredPlaceholder(lmEntity);
+        if (tieredPlaceholder == null) tieredPlaceholder = "";
 
         // replace them placeholders ;)
         nametag = nametag.replace("%mob-lvl%", level + "");
@@ -699,7 +703,7 @@ public class LevelManager {
         nametag = nametag.replace("%entity-max-health%", roundedMaxHealth);
         nametag = nametag.replace("%entity-max-health-rounded%", roundedMaxHealthInt);
         nametag = nametag.replace("%heart_symbol%", "❤");
-        nametag = nametag.replace("%tiered%", tier.toString());
+        nametag = nametag.replace("%tiered%", tieredPlaceholder);
         nametag = MessageUtils.colorizeAll(nametag);
 
         // This is after colorize so that color codes in nametags dont get translated

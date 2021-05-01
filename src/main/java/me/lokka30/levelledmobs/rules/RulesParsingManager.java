@@ -1,17 +1,17 @@
 package me.lokka30.levelledmobs.rules;
 
 import me.lokka30.levelledmobs.LevelledMobs;
+import me.lokka30.levelledmobs.managers.ExternalCompatibilityManager;
 import me.lokka30.levelledmobs.misc.*;
 import me.lokka30.levelledmobs.rules.strategies.SpawnDistanceStrategy;
 import me.lokka30.levelledmobs.rules.strategies.YDistanceStrategy;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.MemoryConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.EntityType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 import java.util.*;
 
 public class RulesParsingManager {
@@ -53,6 +53,11 @@ public class RulesParsingManager {
         parsingInfo.babyMobsInheritAdultSetting = true;
         parsingInfo.mobLevelInheritance = true;
         parsingInfo.creeperMaxDamageRadius = 5;
+        parsingInfo.tieredColoringInfos = new ArrayList<>(4);
+        parsingInfo.tieredColoringInfos.add(TieredColoringInfo.createFromString("1-3", "&a"));
+        parsingInfo.tieredColoringInfos.add(TieredColoringInfo.createFromString("1-3", "&e"));
+        parsingInfo.tieredColoringInfos.add(TieredColoringInfo.createFromString("1-3", "&c"));
+        parsingInfo.tieredColoringInfos.add(TieredColoringInfo.createDefault("&1"));
 
         final ConfigurationSection cs = objectToConfigurationSection(objDefaults);
         if (cs == null){
@@ -186,13 +191,15 @@ public class RulesParsingManager {
         parsingInfo.ruleIsEnabled = cs.getBoolean("enabled", true);
         parseCustomVariables(cs.get("calculation.custom-variables"));
 
-        parseWorldList(objectToConfigurationSection(cs.get("worlds")));
         parseStrategies(objectToConfigurationSection(cs.get("strategies")));
         parseCalculation(objectToConfigurationSection(cs.get("calculation")));
         parseConditions(objectToConfigurationSection(cs.get("conditions")));
         parseLevelLimits(objectToConfigurationSection(cs.get("level-limits")));
         parseRestrictions(objectToConfigurationSection(cs.get("restrictions")));
         parseEntityNameOverride(objectToConfigurationSection(cs.get("entity-name-override")));
+        parseTieredColoring(objectToConfigurationSection(cs.get("tiered-coloring")));
+        parseExternalCompat(objectToConfigurationSection(cs.get("level-plugins")));
+
         if (cs.get("allowed-entities") != null)
             parsingInfo.allowedEntities = buildCachedModalList(objectToConfigurationSection(cs.get("allowed-entities")));
 
@@ -209,13 +216,61 @@ public class RulesParsingManager {
             parsingInfo.creeperMaxDamageRadius = cs.getInt("creeper-max-damage-radius");
     }
 
-    private void parseEntityNameOverride(final ConfigurationSection cs){
+    private void parseExternalCompat(final ConfigurationSection cs){
+        if (cs == null) return;
+
+        final List<ExternalCompatibilityManager.ExternalCompatibility> results = new LinkedList<>();
+
+        for (final String key : cs.getKeys(false)){
+            boolean value = cs.getBoolean(key);
+            if (!value) continue;
+
+            ExternalCompatibilityManager.ExternalCompatibility compat;
+            try{
+                compat = ExternalCompatibilityManager.ExternalCompatibility.valueOf(key.toUpperCase());
+                results.add(compat);
+            }
+            catch (IllegalArgumentException e){
+                Utils.logger.warning("Invalid level-plugins key: " + key);
+            }
+        }
+
+        if (!results.isEmpty()) parsingInfo.enabledExtCompats = results;
+    }
+
+    private void parseTieredColoring(final ConfigurationSection cs){
         if (cs == null) return;
 
         for (final String name : cs.getKeys(false)){
             final String value = cs.getString(name);
 
-            parsingInfo.entityNameOverrides.put(name, value);
+            if (!Utils.isNullOrEmpty(name) && value != null){
+                TieredColoringInfo coloringInfo;
+
+                if ("default".equalsIgnoreCase(name))
+                    coloringInfo = TieredColoringInfo.createDefault(value);
+                else
+                    coloringInfo = TieredColoringInfo.createFromString(name, value);
+
+                if (coloringInfo != null) {
+                    if (parsingInfo.tieredColoringInfos == null) parsingInfo.tieredColoringInfos = new LinkedList<>();
+                    parsingInfo.tieredColoringInfos.add(coloringInfo);
+                }
+            }
+        }
+    }
+
+    private void parseEntityNameOverride(final ConfigurationSection cs){
+        if (cs == null) return;
+
+        for (final String name : cs.getKeys(false)){
+            final List<String> names = cs.getStringList(name);
+            if (!names.isEmpty())
+                parsingInfo.entityNameOverrides.put(name, names);
+            else if (cs.getString(name) != null) {
+                names.add(cs.getString(name));
+                parsingInfo.entityNameOverrides.put(name, names);
+            }
         }
     }
 
@@ -230,6 +285,8 @@ public class RulesParsingManager {
 
     private void parseRestrictions(final ConfigurationSection cs){
         if (cs == null) return;
+
+        parseFineTuning(objectToConfigurationSection(cs.get("fine-tuning")));
 
         if (cs.getString("minLevel") != null)
             parsingInfo.restrictions_MinLevel = cs.getInt("minLevel");
@@ -248,11 +305,14 @@ public class RulesParsingManager {
         final ConfigurationSection customVariables = objectToConfigurationSection(customVariablesObj);
         if (customVariables == null) return;
 
+        final Map<String, String> variables = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+
         for (final String key : customVariables.getKeys(true)){
             final String customVariable = customVariables.getString(key);
-            if (!Utils.isNullOrEmpty(customVariable))
-                parsingInfo.calculation_CustomVariables.put(key, customVariable);
+            if (!Utils.isNullOrEmpty(customVariable)) variables.put(key, customVariable);
         }
+
+        if (!variables.isEmpty()) parsingInfo.calculation_CustomVariables = variables;
     }
 
     private void parseConditions(final ConfigurationSection conditions){
@@ -273,6 +333,8 @@ public class RulesParsingManager {
                 Utils.logger.warning(String.format("rule id: %s, specified non-existant preset '%s'",
                         parsingInfo.getInternalId(), presetName));
         }
+
+        parseWorldList(objectToConfigurationSection(conditions.get("worlds")));
 
         if (conditions.getString("minLevel") != null)
             parsingInfo.conditions_MinLevel = conditions.getInt("minLevel");
@@ -305,6 +367,8 @@ public class RulesParsingManager {
             parsingInfo.conditions_Entities = buildCachedModalList(objectToConfigurationSection(conditions.get("entities")));
         if (conditions.get("biomes") != null)
             parsingInfo.conditions_Biomes = buildCachedModalList(objectToConfigurationSection(conditions.get("biomes")));
+        if (conditions.get("apply-plugins") != null)
+            parsingInfo.conditions_ApplyPlugins = buildCachedModalList(objectToConfigurationSection(conditions.get("apply-plugins")));
     }
 
     private void parseCalculation(final ConfigurationSection calculation){
@@ -358,6 +422,60 @@ public class RulesParsingManager {
 
             this.parsingInfo.levellingStrategies.add(yDistanceStrategy);
         }
+    }
+
+    private void parseFineTuning(final ConfigurationSection cs){
+        if (cs == null) return;
+
+        parsingInfo.defaultFineTuning = parseFineTuningValues(cs);
+
+        final ConfigurationSection cs_Custom = objectToConfigurationSection(cs.get("custom-mob-level"));
+        if (cs_Custom == null) return;
+
+        final Map<String, FineTuningAttributes> fineTuning = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+
+        for (final String mobName : cs_Custom.getKeys(false)){
+            String checkName = mobName;
+            if (checkName.toLowerCase().startsWith("baby_"))
+                checkName = checkName.substring(5);
+
+            EntityType entityType;
+            try{
+                entityType = EntityType.valueOf(checkName.toUpperCase());
+            }
+            catch (IllegalArgumentException e){
+                Utils.logger.warning("Invalid entity type: " + mobName + " for fine-tuning in rule: " + parsingInfo.getInternalId());
+                continue;
+            }
+
+            final FineTuningAttributes attribs = parseFineTuningValues(objectToConfigurationSection(cs_Custom.get(mobName)));
+            if (attribs == null) continue;
+
+            attribs.applicableEntity = entityType;
+            fineTuning.put(checkName, attribs);
+        }
+
+        if (!fineTuning.isEmpty()) parsingInfo.fineTuning = fineTuning;
+    }
+
+    private FineTuningAttributes parseFineTuningValues(final ConfigurationSection cs){
+        if (cs == null) return null;
+
+        FineTuningAttributes attribs = new FineTuningAttributes();
+        if (cs.getString("max-health") != null)
+            attribs.maxHealth = cs.getInt("max-health");
+        if (cs.getString("movement-speed") != null)
+            attribs.movementSpeed = cs.getDouble("movement-speed");
+        if (cs.getString("attack-damage") != null)
+            attribs.attackDamage = cs.getInt("attack-damage");
+        if (cs.getString("ranged-attack-damage") != null)
+            attribs.rangedAttackDamage = cs.getDouble("ranged-attack-damage");
+        if (cs.getString("item-drop") != null)
+            attribs.itemDrop = cs.getInt("item-drop");
+        if (cs.getString("xp-drop") != null)
+            attribs.xpDrop = cs.getInt("xp-drop");
+
+        return attribs;
     }
 
     private void parseStategiesRandom(final ConfigurationSection cs){

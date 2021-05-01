@@ -1,5 +1,157 @@
-file-version: 1
-
+#              _                   _ _          _ __  __       _
+#             | |    _____   _____| | | ___  __| |  \/  | ___ | |__  ___
+#             | |   / _ \ \ / / _ \ | |/ _ \/ _` | |\/| |/ _ \| '_ \/ __|
+#             | |__|  __/\ V /  __/ | |  __/ (_| | |  | | (_) | |_) \__ \
+#             |_____\___| \_/ \___|_|_|\___|\__,_|_|  |_|\___/|_.__/|___/
+#                       The Ultimate RPG Levelled Mobs Solution
+#                               _____       _
+#                              |  __ \     | |
+#                              | |__) |   _| | ___  ___
+#                              |  _  / | | | |/ _ \/ __|
+#                              | | \ \ |_| | |  __/\__ \
+#                              |_|  \_\__,_|_|\___||___/
+#
+# |.-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.|
+# lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\|
+#'|    `-'     `-'     `-'     `-'     `-'     `-'     `-'     `-'     `-'     `-'    | 
+# |  Main Developers:                    |  Other Contributors:                       |
+# |    lokka30 [Author / Developer]      |    Eyrian, iCodinqs, deiphiz, CoolBoy,     |
+# |    stumper66 [Developer since v2.0]  |    Esophose, 7smile7, UltimaOath, Huge5551,|
+# |                                      |    konsolas                                |
+# |----------------------------------+---+--------------------------------------------|
+# |  ArcanePlugins Support Discord   |  Special Thanks:                               |
+# |    https://discord.gg/RQ8M4A5    |    ArcanePlugins Developers and Testers!       |
+# |                                  |    Donators, Patrons, and other supporters!    |
+# |                                  |    SpigotMC, PaperMC, ProtocolLib, and bStats! |
+# |                                  |                                                |
+# |.-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.|
+# lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\|
+#'|    `-'     `-'     `-'     `-'     `-'     `-'     `-'     `-'     `-'     `-'    |
+# |  Useful Resources:                                                                |
+# |    ArcanePlugins Discord                                                          |
+# |      Get fast support, questions answered, and submit suggestions!                |
+# |        https://discord.gg/RQ8M4A5                                                 |
+# |                                                                                   |
+# |    LevelledMobs GitHub                                                            |
+# |      Browse the code and wiki resources for LevelledMobs                          |
+# |        https://github.com/lokka30/LevelledMobs/                                   |
+# |                                                                                   |
+# |    YAML-Parser                                                                    |
+# |      Check your config files for any YAML errors.                                 |
+# |      Good first step before seeking support!                                      |
+# |        https://yaml-online-parser.appspot.com/                                    |
+# |                                                                                   |
+# |  Dependencies:                                                                    |
+# |    ProtocolLib:                                                                   |
+# |      A 'soft dependency'; Not *required* but highly recommended.                  |
+# |      Without this, the plugin will not show LM's nametags.                        |
+# |      https://www.spigotmc.org/resources/protocollib.1997/                         |
+# |                                                                                   |
+# |  Recommended Configuration:                                                       |
+# |    LevelledMobs is tested using the latest PaperMC and SpigotMC Server Software.  |
+# |    While other solutions may work, compatability is not guarenteed.               |
+# |                                                                                   |
+# |.-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.|
+# lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\|
+#'|    `-'     `-'     `-'     `-'     `-'     `-'     `-'     `-'     `-'     `-'    |
+# |  Configuration/                                                                   |
+# |       +- Section 01 / Presets                                                     |
+# |       ¦  +- What are presets?                                                     |
+# |          ¦  +- preset-type                                                        |
+# |          ¦  +- value                                                              |
+# |       ¦  +- Examples                                                              |
+# |       +- Section 02 / Default Levelling Rules                                     |
+# |       ¦  +- worlds                                                                |
+# |          ¦  +- mode                                                               |
+# |          ¦  +- list                                                               |
+# |       ¦  +- strategies                                                            |
+# |          ¦  +- distance-from-spawn                                                |
+# |          ¦  +- y-coordinate                                                       |
+# |       ¦  +- calculation                                                           |
+# |          ¦  +- custom-variables                                                   |
+# |          ¦  +- formula                                                            |
+# |       ¦  +- restrictions                                                          |
+# |          ¦  +- minLevel                                                           |
+# |          ¦  +- maxLevel                                                           |
+# |       ¦  +- conditions                                                            |
+# |          ¦  +- mode                                                               |
+# |          ¦  +- list                                                               |
+# |       ¦  +- nametag                                                               |
+# |       ¦  +- creature-death-nametag                                                |
+# |       ¦  +- max-random-variance                                                   |
+# |       ¦  +- creature-nametag-always-visible                                       |
+# |       ¦  +- entity-name-override                                                  |
+# |       ¦  +- allowed-entities                                                      |
+# |          ¦  +- mode                                                               |
+# |          ¦  +- list                                                               |
+# |       ¦  +- baby-mobs-inherit-adult-setting                                       |
+# |       ¦  +- level-inheritance                                                     |
+# |       ¦  +- creeper-max-damage-radius                                             |
+# |       +- Section 03 / Custom Levelling Rules                                      |
+# |       ¦  +- Enabling and formatting                                               |
+# |                                                                                   |
+# |.-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.|
+# lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\|
+#'|    `-'     `-'     `-'     `-'     `-'     `-'     `-'     `-'     `-'     `-'    |
+# |                                                                                   |
+# |||---------------------------------------------------------------------------------|
+# ||  Establishing Presets
+# ||  
+# ||  This system allows you to store details that you intend to access often, or when
+# ||  crafting custom-rules. You do not HAVE to use the preset system, however it is
+# ||  highly recommended to prevent your file from being filled with repeating info!
+# ||  Presets can be named anything alphanumeric.
+# ||  As always: respect the spacing and formatting!
+# ||
+# ||
+# ||  There are currently THREE(3) different kinds of 'preset-type':
+# ||
+# ||      conditions | Any content listed under the 'conditions:' default-rule
+# ||                 | may be placed within this preset-type. This includes:
+# ||                 | entities, chance, biome, <unknown>
+# ||                 | See examples below of properly configured value.
+# ||                 |
+# ||          worlds | Any content listed under the 'worlds:' default-rule
+# ||                 | may be placed within this preset-type. This system uses
+# ||                 | the BLACKLIST/WHITELIST/ALL MODE/LIST configuration.
+# ||                 | See examples below of properly configured value.
+# ||                 |
+# ||      strategies | Any content listed under the 'strategies:' default-rule
+# ||                 | may be placed within this preset-type. This includes:
+# ||                 | distance-from-spawn, y-coordinate, <unknown>
+# ||                 | See examples below of properly configured value.
+# ||                 |
+# ||
+# ||  EXAMPLES
+# ||    presets:
+# ||      1:
+# ||        preset-type: 'conditions'
+# ||        value:
+# ||          entities:
+# ||            mode: 'BLACKLIST'
+# ||            list: ['all_passive_mobs']
+# ||      2:
+# ||        preset-type: 'worlds'
+# ||        value:
+# ||          mode: 'WHITELIST'
+# ||          list: ['world', 'world_nether']
+# ||      3:
+# ||        preset-type: 'strategies'
+# ||        value:
+# ||          distance-from-spawn:
+# ||            increase-level-distance: 200
+# ||            start-distance: 0
+# ||            spawn-location:
+# ||              x: default
+# ||              z: default
+# ||    
+# ||          y-coordinate:
+# ||            start: 100 # Min level starts at Y=100
+# ||            end: 20    # Max level ends at Y=20
+# ||            period: 0 # Blocks per level increase
+# ||
+# |||---------------------------------------------------------------------------------|
+# |                                                                                   |
 presets:
   1:
     preset-type: 'conditions'
@@ -27,35 +179,106 @@ presets:
         end: 20    # Max level ends at Y=20
         period: 0 # Blocks per level increase
 
+
+# |                                                                                   |
+# |||---------------------------------------------------------------------------------|
+# ||  Default Levelling Rules (Lowest Priority)
+# ||  
+# ||  All values in this section must be defined, as this is where LevelledMobs gets
+# ||  the information to apply to entities. If an entity is not customized further under
+# ||  'custom-rules', then it will use these values.
+# ||  The default value uses the default preset system to 'fill in' three of the
+# ||  requirements: 'worlds', 'strategies', and 'conditions'. You may choose to
+# ||  remove the preset and include your own details. Ensure to match the formatting
+# ||  of each section; refer to the example comments in Presets above to match!
+# ||  The new levelling system utilizes a mixed levelling system which combines
+# ||  both Y-LVLling and Spawn-LVLling together to create the level.
+# ||
+# ||  We also now allow you to create your own formula to level the entities, though
+# ||  we do not recommend that you alter this setting without some proper math knowledge.
+# ||  The default settings have been playtested.
+# ||  
+# |||---------------------------------------------------------------------------------|
+# |                                                                                   |
 default-rule:
   worlds:
     preset: 2
+
   strategies:
     preset: 3
+
   calculation:
     custom-variables:
       ydlPercent: '(1 - (%y-coordinate% / 50))'
       sdlPercent: '(%y-coordinate% / 50)'
     formula: '(%ydlPercent% * %y-distance-level%) + (%sdlPercent% * %spawn-distance-level%)' # Will prioritise y-lvl as you get deeper
+
   restrictions:
     minLevel: 1
     maxLevel: 10
+    fine-tuning:
+      max-health: 25
+      movement-speed: 0.1
+      attack-damage: 4
+      ranged-attack-damage: 1.5
+      item-drop: 3
+      xp-drop: 2
+
   conditions:
     preset: 1
+
   nametag: '&8[&7Level %mob-lvl%&8 | &f%entity-name%&8 | &c%entity-health-rounded%&8/&c%entity-max-health-rounded%&8]'
+
   creature-death-nametag: '&8[&7Level %mob-lvl%&8 | &f%entity-name%&8]'
+
   max-random-variance: 1
+
   creature-nametag-always-visible: false
+
   entity-name-override:
     ZOMBIE: 'Undead'
     CREEPER: 'Mr Self Destruct'
     BABY_ZOMBIE: 'Baby Undead'
+
   allowed-entities:
     mode: 'BLACKLIST'
     list: [ 'VILLAGER','WANDERING_TRADER','ENDER_DRAGON','WITHER','RAVAGER','PHANTOM','BABY_ZOMBIE' ]
+
   baby-mobs-inherit-adult-setting: true
+
   level-inheritance: true
+
   creeper-max-damage-radius: 5
+
+  tiered-coloring:
+    1-3: '&a'     # green
+    4-6: '&e'     # yellow
+    7-10: '&c'    # red
+    default: '&1' # dark blue
+
+  level-plugins:
+    DANGEROUS_CAVES: false
+    MYTHIC_MOBS: false
+    ELITE_MOBS: false
+    ELITE_MOBS_NPCS: false
+    ELITE_MOBS_SUPER_MOBS: false
+    INFERNAL_MOBS: false
+    CITIZENS: false
+    SHOPKEEPERS: false
+
+
+# |                                                                                   |
+# |||---------------------------------------------------------------------------------|
+# ||| ADVANCED USERS ONLY
+# ||  Custom Rules / Higher Priority
+# ||  
+# ||  Here is where the coffee is made...
+# ||  Every individual entity, or entity-group, can be customized beyond the 'defaults'
+# ||  listed above. Any setting set here will override the default value, allowing you
+# ||  to adjust each entity down to what formula is uses to level itself, UNFINISHED THOUGHT
+# ||  
+# |||---------------------------------------------------------------------------------|
+# |                                                                                   |
 custom-rules:
   - enabled: true
     worlds:
@@ -76,6 +299,7 @@ custom-rules:
         list: ['all_nether_mobs']
       mob-customname-status: nametagged
       mob-tamed-status: tamed
+
   - enabled: true
     worlds:
       mode: 'WHITELIST'
@@ -93,6 +317,7 @@ custom-rules:
       minLevel: 1
       maxLevel: 10
     max-random-variance: 2
+
   - enabled: false
     worlds:
       mode: 'WHITELIST'
@@ -114,8 +339,29 @@ custom-rules:
       minLevel: 7
       maxLevel: 10
     max-random-variance: 0
+  - enabled: false
+    restrictions:
+      minLevel: 40
+      maxLevel: 50
+    conditions:
+      apply-plugins:
+        mode: 'WHITELIST'
+        list: ['DANGEROUS_CAVES', 'MYTHIC_MOBS']
+  - enabled: false
+    restrictions:
+      fine-tuning:
+        max-health: 40 # all mobs in the below biomes will have 40 max health
+      custom-mob-level:
+        ZOMBIE:
+          max-health: 30 # all zombies in the below biomes get 30 max health
+          movement-speed: 0.2
+          attack-damage: 6
+          xp-drop: 3
+          item-drop: 4
+    conditions:
+      biomes:
+        mode: 'WHITELIST'
+        list: [ 'MOUNTAINS', 'DARK_FOREST' ]
 
-# Systems Currently Missing:
-# - attributes
-# - events
-# - tasks
+
+file-version: 1
