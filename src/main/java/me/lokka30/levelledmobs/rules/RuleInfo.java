@@ -2,6 +2,7 @@ package me.lokka30.levelledmobs.rules;
 
 import me.lokka30.levelledmobs.managers.ExternalCompatibilityManager;
 import me.lokka30.levelledmobs.misc.CachedModalList;
+import me.lokka30.levelledmobs.misc.LevelNumbersWithBias;
 import me.lokka30.levelledmobs.rules.strategies.LevellingStrategy;
 import org.bukkit.entity.EntityType;
 import org.jetbrains.annotations.NotNull;
@@ -31,6 +32,7 @@ public class RuleInfo {
     public Integer conditions_MaxLevel;
     public Integer restrictions_MinLevel;
     public Integer restrictions_MaxLevel;
+    public Integer lowerMobLevelBiasFactor;
     public double random_BiasFactor;
     public Double conditions_Chance;
     public String nametag;

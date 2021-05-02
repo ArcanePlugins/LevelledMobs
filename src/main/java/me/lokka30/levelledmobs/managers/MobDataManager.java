@@ -65,10 +65,11 @@ public class MobDataManager {
     }
 
     public final double getAdditionsForLevel(final LivingEntityWrapper lmEntity, final Addition addition) {
-        final int minLevel = main.rulesManager.getRule_MobMinLevel(lmEntity);
-        final int maxLevel = main.rulesManager.getRule_MobMaxLevel(lmEntity);
-        final double range = (double) maxLevel - minLevel - 1;
-        final double percent = (double) lmEntity.getMobLevel() / range;
+        final double minLevel = main.rulesManager.getRule_MobMinLevel(lmEntity);
+        final double maxLevel = main.rulesManager.getRule_MobMaxLevel(lmEntity);
+//        final double range = (double) maxLevel - minLevel - 1;
+//        final double percent = (double) lmEntity.getMobLevel() / range;
+
 
         double attributeValue = 0;
         if (lmEntity.getFineTuningAttributes() != null){
@@ -94,8 +95,6 @@ public class MobDataManager {
             }
         }
 
-        Utils.logger.info("getAdditionsForLevel " + addition + ", percent: " + percent + ", value: " + attributeValue);
-
-        return percent * attributeValue;
+        return attributeValue * ((double) lmEntity.getMobLevel() / (maxLevel - minLevel + 1));
     }
 }

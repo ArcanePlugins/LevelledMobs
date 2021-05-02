@@ -128,8 +128,6 @@ public class LevelManager {
         int minLevel = minLevel_Pre;
         int maxLevel = maxLevel_Pre;
 
-
-
         if (minLevel == -1 || maxLevel == -1) {
             final int[] levels = getMinAndMaxLevels(lmEntity);
             if (minLevel == -1) minLevel = levels[0];
@@ -145,19 +143,16 @@ public class LevelManager {
         }
 
         // system 1: random levelling
-        int biasFactor = main.settingsCfg.getInt("fine-tuning.lower-mob-level-bias-factor", 0);
 
-        if (minLevel == maxLevel) {
+        if (minLevel == maxLevel)
             return minLevel;
-        } else if (biasFactor > 0) {
-            if (biasFactor > 10) {
-                biasFactor = 10;
-            }
 
-            return generateLevelWithBias(minLevel, maxLevel, biasFactor);
-        } else {
+        LevelNumbersWithBias levelNumbersWithBias = main.rulesManager.getRule_LowerMobLevelBiasFactor(lmEntity, minLevel, maxLevel);
+
+        if (levelNumbersWithBias != null)
+            return levelNumbersWithBias.getNumberWithinLimits();
+        else
             return ThreadLocalRandom.current().nextInt(minLevel, maxLevel + 1);
-        }
     }
 
     public int[] getMinAndMaxLevels(final @Nullable LivingEntityWrapper lmEntity) {
@@ -316,28 +311,6 @@ public class LevelManager {
         }
 
         return useLevel;
-    }
-
-    private int generateLevelWithBias(final int minLevel, final int maxLevel, final int factor) {
-
-        LevelNumbersWithBias levelNum = new LevelNumbersWithBias(minLevel, maxLevel, factor);
-
-        if (levelNumsListCache.containsKey(levelNum)) {
-            levelNum = levelNumsListCache.get(levelNum);
-        } else {
-            levelNum = new LevelNumbersWithBias(minLevel, maxLevel, factor);
-            levelNum.populateData();
-            levelNumsListCache.put(levelNum, levelNum);
-            levelNumsListCacheOrder.addLast(levelNum);
-        }
-
-        if (levelNumsListCache.size() > maxLevelNumsCache) {
-            LevelNumbersWithBias oldest = levelNumsListCacheOrder.getFirst();
-            levelNumsListCache.remove(oldest);
-            levelNumsListCacheOrder.removeFirst();
-        }
-
-        return levelNum.getNumberWithinLimits();
     }
 
     public int[] generateWorldGuardRegionLevel(final LivingEntityWrapper lmEntity) {

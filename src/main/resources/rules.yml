@@ -212,7 +212,6 @@ default-rule:
       ydlPercent: '(1 - (%y-coordinate% / 50))'
       sdlPercent: '(%y-coordinate% / 50)'
     formula: '(%ydlPercent% * %y-distance-level%) + (%sdlPercent% * %spawn-distance-level%)' # Will prioritise y-lvl as you get deeper
-
   restrictions:
     minLevel: 1
     maxLevel: 10
@@ -223,6 +222,7 @@ default-rule:
       ranged-attack-damage: 1.5
       item-drop: 3
       xp-drop: 2
+
 
   conditions:
     preset: 1

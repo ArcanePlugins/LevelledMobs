@@ -77,5 +77,17 @@ public enum DebugType {
      * Logged when LM is processing a mob
      * from a creature spawner
      **/
-    MOB_SPAWNER
+    MOB_SPAWNER,
+
+    DENIED_RULE_ENTITIES_LIST,
+
+    DENIED_RULE_MINLEVEL,
+
+    DENIED_RULE_MAXLEVEL,
+
+    DENIED_RULE_WORLD_LIST,
+
+    DENIED_RULE_BIOME_LIST,
+
+    DENIED_RULE_PLUGIN_COMPAT
 }

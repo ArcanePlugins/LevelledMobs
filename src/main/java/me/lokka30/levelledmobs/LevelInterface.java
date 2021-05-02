@@ -94,7 +94,7 @@ public class LevelInterface {
         if (lmEntity.isMobOfExternalType()) {
             lmEntity.invalidateCache();
 
-            if (rulesManager.getRule_IsMobAllowedInEntityOverride(lmEntity))
+            if (!rulesManager.getRule_IsMobAllowedInEntityOverride(lmEntity))
                 return LevellableState.DENIED_CONFIGURATION_BLOCKED_ENTITY_TYPE;
         }
 
