@@ -45,7 +45,7 @@ public class LevelNumbersWithBias {
         if (!this.numberList.isEmpty()) this.numberList.clear();
 
         int useFavor = maxLevel + 10 - factor;
-        for (int i = minLevel; i < maxLevel; i++) {
+        for (int i = minLevel; i <= maxLevel; i++) {
             for (int t = 0; t < useFavor; t++) {
                 this.numberList.add(i);
             }
