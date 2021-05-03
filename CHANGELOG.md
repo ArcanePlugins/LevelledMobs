@@ -2,6 +2,29 @@
 
 ***
 
+## v2.5.1 b389
+
+### Announcement:
+
+* The LevelledMobs team has been working on **LevelledMobs 3**! This update will significantly extend the capability and
+  customisability of the plugin, through adding a new major configuration system called the **Rules System**. With such
+  a large new feature, we need help to test it - if you're willing to help,
+  please [join our Discord](https://discord.io/arcaneplugins) and let us know. Thanks :)
+
+### Notes:
+
+* This update has been tested to a moderate extent - thank you, @Oathkeeper for your generous testing!
+* No configuration changes this update.
+
+### Changelog:
+
+* Fixes missing `=` symbol in the code, that previously made max level mobs impossible (@Asttear)
+* Removed Validate usage (@stumper66, @lokka30)
+* Fixes EntityTameListener not levelling mobs properly due to a value of `-1` (@stumper66)
+* Fixes console error concerning death nametag (@Asttear (reporter), @lokka30)
+
+***
+
 ## v2.5.0 b372
 
 ### Notes:
