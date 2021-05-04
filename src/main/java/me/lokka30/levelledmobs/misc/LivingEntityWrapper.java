@@ -6,10 +6,10 @@ import me.lokka30.levelledmobs.rules.FineTuningAttributes;
 import me.lokka30.levelledmobs.rules.RuleInfo;
 import org.bukkit.World;
 import org.bukkit.entity.*;
+import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -22,6 +22,7 @@ public class LivingEntityWrapper {
         this.applicableGroups = new LinkedList<>();
         this.applicableRules = new LinkedList<>();
         this.mobExternalType = ExternalCompatibilityManager.ExternalCompatibility.NOT_APPLICABLE;
+        this.spawnReason = CreatureSpawnEvent.SpawnReason.DEFAULT;
     }
 
     private final LevelledMobs main;
@@ -35,6 +36,7 @@ public class LivingEntityWrapper {
     private List<RuleInfo> applicableRules;
     private ExternalCompatibilityManager.ExternalCompatibility mobExternalType;
     private FineTuningAttributes fineTuningAttributes;
+    private CreatureSpawnEvent.SpawnReason spawnReason;
 
     private void buildCache(){
         if (main.levelInterface.isLevelled(livingEntity))
@@ -67,7 +69,7 @@ public class LivingEntityWrapper {
     @NotNull
     public List<CustomUniversalGroups> getApplicableGroups(){
         if (!groupsAreBuilt){
-            this.applicableGroups = buildApllicableGroupsForMob();
+            this.applicableGroups = buildApplicableGroupsForMob();
             groupsAreBuilt = true;
         }
 
@@ -128,6 +130,23 @@ public class LivingEntityWrapper {
         return false;
     }
 
+    public CreatureSpawnEvent.SpawnReason getSpawnReason() {
+        if (livingEntity.getPersistentDataContainer().has(main.levelManager.spawnReasonKey, PersistentDataType.STRING)){
+            return CreatureSpawnEvent.SpawnReason.valueOf(
+                    livingEntity.getPersistentDataContainer().get(main.levelManager.spawnReasonKey, PersistentDataType.STRING)
+            );
+        }
+
+        return this.spawnReason;
+    }
+
+    public void setSpawnReason(final CreatureSpawnEvent.SpawnReason spawnReason){
+        if (!livingEntity.getPersistentDataContainer().has(main.levelManager.spawnReasonKey, PersistentDataType.STRING)){
+            livingEntity.getPersistentDataContainer().set(main.levelManager.spawnReasonKey, PersistentDataType.STRING, spawnReason.toString());
+        }
+        this.spawnReason = spawnReason;
+    }
+
     public String getNameIfBaby(){
         return this.isBabyMob() ?
                 "BABY_" + getTypeName() :
@@ -159,7 +178,7 @@ public class LivingEntityWrapper {
     }
 
     @NotNull
-    private List<CustomUniversalGroups> buildApllicableGroupsForMob(){
+    private List<CustomUniversalGroups> buildApplicableGroupsForMob(){
         final List<CustomUniversalGroups> groups = new ArrayList<>();
         groups.add(CustomUniversalGroups.ALL_MOBS);
 

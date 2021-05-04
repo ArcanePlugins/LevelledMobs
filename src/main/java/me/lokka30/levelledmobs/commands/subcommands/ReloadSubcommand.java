@@ -59,6 +59,7 @@ public class ReloadSubcommand implements Subcommand {
 
         main.levelManager.levelNumsListCache.clear();
         main.levelManager.levelNumsListCacheOrder.clear();
+        main.customDropsHandler.loadDrops();
 
         reloadFinishedMsg.forEach(sender::sendMessage);
     }

@@ -7,7 +7,6 @@ import me.lokka30.levelledmobs.listeners.*;
 import me.lokka30.levelledmobs.managers.ExternalCompatibilityManager;
 import me.lokka30.levelledmobs.managers.LevelManager;
 import me.lokka30.levelledmobs.managers.WorldGuardManager;
-import me.lokka30.levelledmobs.misc.CustomUniversalGroups;
 import me.lokka30.levelledmobs.misc.FileLoader;
 import me.lokka30.levelledmobs.misc.Utils;
 import me.lokka30.levelledmobs.misc.VersionInfo;
@@ -15,13 +14,11 @@ import me.lokka30.microlib.UpdateChecker;
 import me.lokka30.microlib.VersionUtils;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
-import org.bukkit.World;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.*;
 import org.bukkit.plugin.PluginManager;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.*;
 import java.util.*;
@@ -106,12 +103,6 @@ public class Companion {
         main.customDropsCfg = FileLoader.loadFile(main, "customdrops", FileLoader.CUSTOMDROPS_FILE_VERSION, customDropsEnabled);
         main.customCommandsCfg = FileLoader.loadFile(main, "customCommands", FileLoader.CUSTOMCOMMANDS_FILE_VERSION, false);
         main.rulesParsingManager.parseRulesMain(FileLoader.loadFile(main, "rules", FileLoader.RULES_FILE_VERSION, false));
-        main.configUtils.entityTypesLevelOverride_Min = main.configUtils.getMapFromConfigSection("entitytype-level-override.min-level");
-        main.configUtils.entityTypesLevelOverride_Max = main.configUtils.getMapFromConfigSection("entitytype-level-override.max-level");
-        main.configUtils.worldLevelOverride_Min = main.configUtils.getMapFromConfigSection("world-level-override.min-level");
-        main.configUtils.worldLevelOverride_Max = main.configUtils.getMapFromConfigSection("world-level-override.max-level");
-        main.configUtils.noDropMultiplierEntities = main.configUtils.getSetFromConfigSection("no-drop-multipler-entities");
-        main.configUtils.overridenEntities = main.configUtils.getSetFromConfigSection("overriden-entities");
         main.attributesCfg = loadEmbeddedResource("defaultAttributes.yml");
         main.dropsCfg = loadEmbeddedResource("defaultDrops.yml");
         //noinspection ConstantConditions
@@ -131,6 +122,7 @@ public class Companion {
         }
 
         // build custom drops
+        main.customDropsHandler = new CustomDropsHandler(main);
         main.customDropsHandler = new CustomDropsHandler(main);
 
         return true;
@@ -198,6 +190,12 @@ public class Companion {
         } else {
             levelledMobsCommand.setExecutor(new LevelledMobsCommand(main));
         }
+    }
+
+    void loadSpigotConfig(){
+        main.levelManager.attributeMaxHealthMax = Bukkit.getServer().spigot().getConfig().getDouble("settings.attribute.maxHealth.max", 2048.0);
+        main.levelManager.attributeMovementSpeedMax = Bukkit.getServer().spigot().getConfig().getDouble("settings.attribute.movementSpeed.max", 2048.0);
+        main.levelManager.attributeAttackDamageMax = Bukkit.getServer().spigot().getConfig().getDouble("settings.attribute.attackDamage.max", 2048.0);
     }
 
     void setupMetrics() {

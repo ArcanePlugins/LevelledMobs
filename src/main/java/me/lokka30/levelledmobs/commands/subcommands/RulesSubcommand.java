@@ -139,6 +139,13 @@ public class RulesSubcommand implements Subcommand {
                 if (!Modifier.isPublic(f.getModifiers())) continue;
                 if (f.get(pi) == null) continue;
                 final Object value = f.get(pi);
+                if (value.toString().equalsIgnoreCase("NOT_SPECIFIED")) continue;
+                if (value.toString().equalsIgnoreCase("{}")) continue;
+                if (value.toString().equalsIgnoreCase("[]")) continue;
+                if (value.toString().equalsIgnoreCase("0")) continue;
+                if (value.toString().equalsIgnoreCase("0.0")) continue;
+                if (value.toString().equalsIgnoreCase("false")) continue;
+                if (value.toString().equalsIgnoreCase("NONE")) continue;
                 values.put(f.getName(), f.getName() + ", value: " + value);
                 // values.put(f.getName(), f.getName() + ", value: " + (value == null ? "(null)" : value));
             }

@@ -5,6 +5,7 @@ import me.lokka30.levelledmobs.misc.Addition;
 import me.lokka30.levelledmobs.misc.CustomUniversalGroups;
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
 import me.lokka30.levelledmobs.misc.Utils;
+import me.lokka30.levelledmobs.rules.RuleInfo;
 import me.lokka30.microlib.MessageUtils;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -48,7 +49,20 @@ public class CustomDropsHandler {
         this.customDropIDs = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
         this.defaults = new CustomDropsDefaults();
 
-        if (instance.settingsCfg.getBoolean("use-custom-item-drops-for-mobs"))
+        loadDrops();
+    }
+
+    public void loadDrops(){
+        boolean isDropsEnabledForAnyRule = false;
+
+        for (final RuleInfo ruleInfo : instance.rulesManager.rulesInEffect){
+            if (ruleInfo.useCustomItemDropsForMobs != null && ruleInfo.useCustomItemDropsForMobs){
+                isDropsEnabledForAnyRule = true;
+                break;
+            }
+        }
+
+        if (isDropsEnabledForAnyRule)
             parseCustomDrops(instance.customDropsCfg);
     }
 
@@ -73,9 +87,7 @@ public class CustomDropsHandler {
             processingInfo.hasCustomDropId = !Utils.isNullOrEmpty(processingInfo.customDropId);
         }
 
-        processingInfo.doNotMultiplyDrops =
-                (lmEntity.isBabyMob() && instance.configUtils.noDropMultiplierEntities.contains("BABY_" + lmEntity.getTypeName())) ||
-                        instance.configUtils.noDropMultiplierEntities.contains(lmEntity.getTypeName());
+        processingInfo.doNotMultiplyDrops = instance.rulesManager.getRule_CheckIfNoDropMultiplierEntitiy(lmEntity);
 
         if (lmEntity.getLivingEntity().getLastDamageCause() != null){
             final EntityDamageEvent.DamageCause damageCause = lmEntity.getLivingEntity().getLastDamageCause().getCause();

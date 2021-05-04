@@ -9,6 +9,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.MemoryConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.EntityType;
+import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -106,6 +107,7 @@ public class RulesParsingManager {
             parseStrategies(cs);
     }
 
+    @NotNull
     private PresetType parsePresetType(@NotNull final ConfigurationSection cs, final String key){
         final String preset = cs.getString("preset-type");
         PresetType presetType = PresetType.NONE;
@@ -121,30 +123,43 @@ public class RulesParsingManager {
             Utils.logger.warning("Invalid preset type: " + preset);
         }
 
+        buildCachedModalListOfString(cs);
+
         return presetType;
     }
 
-    private CachedModalList buildCachedModalList(final ConfigurationSection cs){
-        CachedModalList cachedModalList = new CachedModalList();
+    @NotNull
+    private CachedModalList<CreatureSpawnEvent.SpawnReason> buildCachedModalListOfSpawnReason(final ConfigurationSection cs){
+        CachedModalList<CreatureSpawnEvent.SpawnReason> cachedModalList = new CachedModalList<>();
         if (cs == null) return cachedModalList;
+        if (cs.getString("mode") == null && cs.getString("list") == null) return cachedModalList;
 
-        String listMode = cs.getString("mode");
-        if (listMode == null) listMode = "";
-        switch (listMode.toUpperCase()) {
-            case "ALL":
-                cachedModalList.listMode = ModalListMode.ALL; break;
-            case "BLACKLIST":
-                cachedModalList.listMode = ModalListMode.BLACKLIST; break;
-            case "WHITELIST":
-                cachedModalList.listMode = ModalListMode.WHITELIST; break;
-            default:
-                cachedModalList.listMode = ModalListMode.WHITELIST;
-                if ("".equals(listMode))
-                    Utils.logger.warning("No list mode was specified");
-                else
-                    Utils.logger.warning("Invalid list mode: " + listMode);
-                break;
+        cachedModalList.listMode = getModalListMode(cs.getString("mode"), cs.getCurrentPath());
+
+        final List<String> items = cs.getStringList("list");
+        if (items.isEmpty() && cs.getString("list") != null)
+            items.add(cs.getString("list"));
+
+        for (final String item : items){
+            try{
+                final CreatureSpawnEvent.SpawnReason reason = CreatureSpawnEvent.SpawnReason.valueOf(item.toUpperCase());
+                cachedModalList.items.add(reason);
+            }
+            catch (IllegalArgumentException e){
+                Utils.logger.warning("Invalid spawn reason: " + item);
+            }
         }
+
+        return cachedModalList;
+    }
+
+    @NotNull
+    private CachedModalList<String> buildCachedModalListOfString(final ConfigurationSection cs){
+        CachedModalList<String> cachedModalList = new CachedModalList<>(new TreeSet<>(String.CASE_INSENSITIVE_ORDER));
+        if (cs == null) return cachedModalList;
+        if (cs.getString("mode") == null && cs.getString("list") == null) return cachedModalList;
+
+        cachedModalList.listMode = getModalListMode(cs.getString("mode"), cs.getCurrentPath());
 
         final List<String> items = cs.getStringList("list");
         if (items.isEmpty() && cs.getString("list") != null)
@@ -154,17 +169,37 @@ public class RulesParsingManager {
             if (item.toLowerCase().startsWith("all_")){
                 try{
                     final CustomUniversalGroups group = CustomUniversalGroups.valueOf(item.toUpperCase());
-                    cachedModalList.groups.add(group);
+                    cachedModalList.items.add(group.toString());
                 }
                 catch (IllegalArgumentException e){
                     Utils.logger.warning("Invalid custom group: " + item);
                 }
             }
             else
-                cachedModalList.items.put(item, null);
+                cachedModalList.items.add(item);
         }
 
         return cachedModalList;
+    }
+
+    @NotNull
+    private ModalListMode getModalListMode(final String item, final String path){
+        if (item == null || "".equals(item)){
+            Utils.logger.warning("No list mode was specified, " + path);
+            return ModalListMode.ALL;
+        }
+
+        switch (item.toUpperCase()) {
+            case "ALL":
+                return ModalListMode.ALL;
+            case "BLACKLIST":
+                return ModalListMode.BLACKLIST;
+            case "WHITELIST":
+                return ModalListMode.WHITELIST;
+            default:
+                Utils.logger.warning("Invalid list mode: " + item);
+                return ModalListMode.ALL;
+        }
     }
 
     @NotNull
@@ -200,8 +235,11 @@ public class RulesParsingManager {
         parseTieredColoring(objectToConfigurationSection(cs.get("tiered-coloring")));
         parseExternalCompat(objectToConfigurationSection(cs.get("level-plugins")));
 
+        if (cs.getString("no-drop-multipler-entities") != null)
+        parsingInfo.conditions_NoDropEntities = buildCachedModalListOfString(objectToConfigurationSection(cs.get("no-drop-multipler-entities")));
+
         if (cs.get("allowed-entities") != null)
-            parsingInfo.allowedEntities = buildCachedModalList(objectToConfigurationSection(cs.get("allowed-entities")));
+            parsingInfo.allowedEntities = buildCachedModalListOfString(objectToConfigurationSection(cs.get("allowed-entities")));
 
         parsingInfo.maxRandomVariance = cs.getInt("max-random-variance", 0);
         parsingInfo.nametag = cs.getString("nametag");
@@ -214,6 +252,8 @@ public class RulesParsingManager {
             parsingInfo.mobLevelInheritance = cs.getBoolean("level-inheritance");
         if (cs.getString("creeper-max-damage-radius") != null)
             parsingInfo.creeperMaxDamageRadius = cs.getInt("creeper-max-damage-radius");
+        if (cs.getString("use-custom-item-drops-for-mobs") != null)
+            parsingInfo.useCustomItemDropsForMobs = cs.getBoolean("use-custom-item-drops-for-mobs");
     }
 
     private void parseExternalCompat(final ConfigurationSection cs){
@@ -363,12 +403,16 @@ public class RulesParsingManager {
             }
         }
 
+        if (conditions.getString("allowed-spawn-reasons") != null)
+            parsingInfo.conditions_SpawnReasons = buildCachedModalListOfSpawnReason(objectToConfigurationSection(conditions.get("allowed-spawn-reasons")));
+        if (conditions.getString("custom-names") != null)
+            parsingInfo.conditions_CustomNames = buildCachedModalListOfString(objectToConfigurationSection(conditions.get("custom-names")));
         if (conditions.get("entities") != null)
-            parsingInfo.conditions_Entities = buildCachedModalList(objectToConfigurationSection(conditions.get("entities")));
+            parsingInfo.conditions_Entities = buildCachedModalListOfString(objectToConfigurationSection(conditions.get("entities")));
         if (conditions.get("biomes") != null)
-            parsingInfo.conditions_Biomes = buildCachedModalList(objectToConfigurationSection(conditions.get("biomes")));
+            parsingInfo.conditions_Biomes = buildCachedModalListOfString(objectToConfigurationSection(conditions.get("biomes")));
         if (conditions.get("apply-plugins") != null)
-            parsingInfo.conditions_ApplyPlugins = buildCachedModalList(objectToConfigurationSection(conditions.get("apply-plugins")));
+            parsingInfo.conditions_ApplyPlugins = buildCachedModalListOfString(objectToConfigurationSection(conditions.get("apply-plugins")));
     }
 
     private void parseCalculation(final ConfigurationSection calculation){
@@ -503,7 +547,7 @@ public class RulesParsingManager {
         }
 
         if (worlds.getString("list") != null)
-            parsingInfo.worlds = buildCachedModalList(worlds);
+            parsingInfo.worlds = buildCachedModalListOfString(worlds);
     }
 
     @NotNull

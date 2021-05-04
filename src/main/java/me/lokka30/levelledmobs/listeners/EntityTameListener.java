@@ -5,12 +5,10 @@ import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.misc.DebugType;
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
 import me.lokka30.levelledmobs.misc.Utils;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityTameEvent;
-import org.bukkit.persistence.PersistentDataType;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -45,6 +43,11 @@ public class EntityTameListener implements Listener {
         int level = -1;
         if (lmEntity.isLevelled())
             level = lmEntity.getMobLevel();
+
+        if (level == -1) {
+            level = main.levelInterface.generateLevel(lmEntity);
+            lmEntity.invalidateCache();
+        }
 
         main.levelInterface.applyLevelToMob(
                 lmEntity,

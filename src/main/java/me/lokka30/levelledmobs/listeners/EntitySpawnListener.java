@@ -4,7 +4,6 @@ import me.lokka30.levelledmobs.LevelInterface;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.misc.DebugType;
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
-import me.lokka30.levelledmobs.misc.ModalList;
 import me.lokka30.levelledmobs.misc.Utils;
 import org.bukkit.Location;
 import org.bukkit.Particle;
@@ -48,15 +47,21 @@ public class EntitySpawnListener implements Listener {
             onSpawnerSpawn((SpawnerSpawnEvent) event);
             return;
         }
+
+        CreatureSpawnEvent.SpawnReason spawnReason = CreatureSpawnEvent.SpawnReason.DEFAULT;
+
         if (event instanceof CreatureSpawnEvent){
             final CreatureSpawnEvent spawnEvent = (CreatureSpawnEvent) event;
 
             if (spawnEvent.getSpawnReason().equals(CreatureSpawnEvent.SpawnReason.SPAWNER) ||
                 spawnEvent.getSpawnReason().equals(CreatureSpawnEvent.SpawnReason.SLIME_SPLIT))
                 return;
+
+            spawnReason = spawnEvent.getSpawnReason();
         }
 
         final LivingEntityWrapper lmEntity = new LivingEntityWrapper((LivingEntity) event.getEntity(), main);
+        lmEntity.setSpawnReason(spawnReason);
 
         preprocessMob(lmEntity, event);
     }
@@ -66,6 +71,7 @@ public class EntitySpawnListener implements Listener {
 
         final CreatureSpawner cs = event.getSpawner();
         final LivingEntityWrapper lmEntity = new LivingEntityWrapper((LivingEntity) event.getEntity(), main);
+        lmEntity.setSpawnReason(CreatureSpawnEvent.SpawnReason.SPAWNER);
 
         if (!cs.getPersistentDataContainer().has(main.blockPlaceListener.keySpawner, PersistentDataType.INTEGER)){
             Utils.debugLog(main, DebugType.MOB_SPAWNER, "Spawned mob from vanilla spawner: " + event.getEntityType());
@@ -151,13 +157,6 @@ public class EntitySpawnListener implements Listener {
                 return LevelInterface.LevellableState.DENIED_OTHER;
 
             Utils.debugLog(main, DebugType.ENTITY_SPAWN, "instanceof CreatureSpawnListener: " + event.getEntityType() + ", with spawnReason " + creatureSpawnEvent.getSpawnReason() + ".");
-
-            if (!ModalList.isEnabledInList(main.settingsCfg, "allowed-spawn-reasons-list", creatureSpawnEvent.getSpawnReason().toString())) {
-                return LevelInterface.LevellableState.DENIED_CONFIGURATION_BLOCKED_SPAWN_REASON;
-            }
-
-            // Whilst we're here, unrelated, add in the spawner key to the mob
-            lmEntity.getPDC().set(main.levelManager.spawnReasonKey, PersistentDataType.STRING, creatureSpawnEvent.getSpawnReason().toString());
         } else {
             Utils.debugLog(main, DebugType.ENTITY_SPAWN, "not instanceof CreatureSpawnListener: " + event.getEntityType());
         }

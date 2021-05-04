@@ -48,7 +48,7 @@ public class EntityDeathListener implements Listener {
             //Run commands
             main.levelManager.execCommands(lmEntity);
 
-        } else if (main.settingsCfg.getBoolean("use-custom-item-drops-for-mobs")) {
+        } else if (main.rulesManager.getRule_UseCustomDropsForMob(lmEntity)) {
             final List<ItemStack> drops = new LinkedList<>();
             final CustomDropResult result = main.customDropsHandler.getCustomItemDrops(lmEntity, drops, false);
             if (result == CustomDropResult.HAS_OVERRIDE)

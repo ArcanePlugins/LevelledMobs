@@ -4,9 +4,6 @@ import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.microlib.MessageUtils;
 import me.lokka30.microlib.MicroLogger;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Ageable;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Zombie;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -196,5 +193,40 @@ public final class Utils {
         }
 
         return builder.toString();
+    }
+
+    public static boolean isLivingEntityInModalList(final CachedModalList<String> list, final LivingEntityWrapper lmEntity) {
+        return isLivingEntityInModalList(list, lmEntity, false);
+    }
+
+    public static boolean isLivingEntityInModalList(final CachedModalList<String> list, final LivingEntityWrapper lmEntity, final boolean checkBabyMobs) {
+        switch (list.listMode) {
+            case WHITELIST:
+                final String checkName = checkBabyMobs ?
+                        lmEntity.getNameIfBaby() :
+                        lmEntity.getTypeName();
+
+                for (CustomUniversalGroups group : lmEntity.getApplicableGroups()) {
+                    if (list.items.contains(group.toString())) return true;
+                }
+                return list.items.contains(checkName);
+            case BLACKLIST:
+                boolean isInGroup = false;
+                for (CustomUniversalGroups group : lmEntity.getApplicableGroups()) {
+                    if (list.items.contains(group.toString())) {
+                        isInGroup = true;
+                        break;
+                    }
+                }
+
+                // for denies we'll check for both baby and adult variants regardless of baby-mobs-inherit-adult-setting
+                if (list.items.contains(lmEntity.getTypeName()) || list.items.contains(lmEntity.getNameIfBaby()))
+                    isInGroup = true;
+
+                return !isInGroup;
+            default:
+                // mode = all
+                return true;
+        }
     }
 }

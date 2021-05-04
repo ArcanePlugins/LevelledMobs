@@ -212,6 +212,9 @@ default-rule:
       ydlPercent: '(1 - (%y-coordinate% / 50))'
       sdlPercent: '(%y-coordinate% / 50)'
     formula: '(%ydlPercent% * %y-distance-level%) + (%sdlPercent% * %spawn-distance-level%)' # Will prioritise y-lvl as you get deeper
+  no-drop-multipler-entities:
+    mode: 'BLACKLIST'
+    list: ['ENDER_DRAGON']
   restrictions:
     minLevel: 1
     maxLevel: 10
@@ -249,6 +252,8 @@ default-rule:
   level-inheritance: true
 
   creeper-max-damage-radius: 5
+
+  use-custom-item-drops-for-mobs: false
 
   tiered-coloring:
     1-3: '&a'     # green
@@ -330,7 +335,7 @@ custom-rules:
     conditions:
       entities:
         mode: 'WHITELIST'
-        list: ['all_ender_mobs']
+        list: ['all_mobs']
       chance: 0.5
       biomes:
         mode: 'WHITELIST'
@@ -362,6 +367,17 @@ custom-rules:
       biomes:
         mode: 'WHITELIST'
         list: [ 'MOUNTAINS', 'DARK_FOREST' ]
+  - enabled: false
+    restrictions:
+      minLevel: 1
+      maxLevel: 10
+      fine-tuning:
+        max-health: 300
+        movement-speed: 1.0
+    conditions:
+      custom-names:
+        mode: 'WHITELIST'
+        list: [ 'LASSIE', 'JIMMY' ]
 
 
 file-version: 1

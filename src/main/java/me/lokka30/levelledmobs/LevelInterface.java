@@ -114,16 +114,6 @@ public class LevelInterface {
                 rulesManager.getRule_MobTamedStatus(lmEntity) == MobTamedStatusEnum.NOT_TAMED)
             return LevellableState.DENIED_CONFIGURATION_CONDITION_TAMED;
 
-
-        // They might not have the SpawnReasonKey, make sure they do before checking it.
-        if (lmEntity.getPDC().has(main.levelManager.spawnReasonKey, PersistentDataType.STRING)) {
-            String spawnReason = lmEntity.getPDC().get(main.levelManager.spawnReasonKey, PersistentDataType.STRING);
-
-            if (!ModalList.isEnabledInList(main.settingsCfg, "allowed-spawn-reasons-list", spawnReason)) {
-                return LevelInterface.LevellableState.DENIED_CONFIGURATION_BLOCKED_SPAWN_REASON;
-            }
-        }
-
         // Check WorldGuard
         if (ExternalCompatibilityManager.checkWorldGuard(lmEntity.getLivingEntity().getLocation(), main))
             return LevellableState.DENIED_CONFIGURATION_COMPATIBILITY_WORLD_GUARD;
@@ -157,16 +147,18 @@ public class LevelInterface {
         Check Entity Type
          */
         // Overriden entities.
-        if (main.configUtils.overridenEntities.contains(entityType.toString()))
-            return LevellableState.ALLOWED;
+        // TODO: make this compatible with summon
+        // if (main.configUtils.overridenEntities.contains(entityType.toString()))
+//        if (main.rulesManager.getRule_IsMobAllowedInEntityOverride(lmEntity))
+//            return LevellableState.ALLOWED;
 
         // Entity types that have to be manually checked
         if (OTHER_HOSTILE_MOBS.contains(entityType.toString())) return LevellableState.ALLOWED;
 
         // if override level has been specified for min or max then allow it
-        if (main.configUtils.entityTypesLevelOverride_Min.containsKey(entityType.toString()) ||
-                main.configUtils.entityTypesLevelOverride_Max.containsKey(entityType.toString()))
-            return LevellableState.ALLOWED;
+//        if (main.configUtils.entityTypesLevelOverride_Min.containsKey(entityType.toString()) ||
+//                main.configUtils.entityTypesLevelOverride_Max.containsKey(entityType.toString()))
+//            return LevellableState.ALLOWED;
 
         /*
         Check Entity Class

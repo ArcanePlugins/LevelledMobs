@@ -72,6 +72,7 @@ public class LevelledMobs extends JavaPlugin {
         }
         companion.registerListeners();
         companion.registerCommands();
+        companion.loadSpigotConfig();
 
         Utils.logger.info("&fStart-up: &7Running misc procedures...");
         if (ExternalCompatibilityManager.hasProtocolLibInstalled()) levelManager.startNametagAutoUpdateTask();

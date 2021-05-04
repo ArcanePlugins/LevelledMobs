@@ -20,7 +20,6 @@ import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.enchantments.EnchantmentTarget;
 import org.bukkit.entity.*;
-import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.inventory.AbstractHorseInventory;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
@@ -56,6 +55,9 @@ public class LevelManager {
     public final NamespacedKey noLevelKey; // This key tells LM not to level the mob in future
     public final NamespacedKey wasBabyMobKey; // This key tells LM not to level the mob in future
     public final NamespacedKey overridenEntityNameKey;
+    public double attributeMaxHealthMax = 2048.0;
+    public double attributeMovementSpeedMax = 2048.0;
+    public double attributeAttackDamageMax = 2048.0;
 
     public final static int maxCreeperBlastRadius = 100;
     public EntitySpawnListener entitySpawnListener;
@@ -158,6 +160,8 @@ public class LevelManager {
     public int[] getMinAndMaxLevels(final @Nullable LivingEntityWrapper lmEntity) {
         // final EntityType entityType, final boolean isAdultEntity, final String worldName
         // if called from summon command then lmEntity is null
+
+        // TODO: ignore all these null
         int minLevel = main.rulesManager.getRule_MobMinLevel(lmEntity);
         int maxLevel = main.rulesManager.getRule_MobMaxLevel(lmEntity);
 
@@ -169,75 +173,10 @@ public class LevelManager {
             if (levels[1] > -1) maxLevel = levels[1];
         }
 
-        // config will decide which takes precedence; entity override or world override
-
-        if (lmEntity != null && main.settingsCfg.getBoolean("world-level-override.enabled")) {
-            final int[] levels = getWorldLevelOverride(lmEntity.getWorldName());
-            if (levels[0] > -1) minLevel = levels[0];
-            if (levels[1] > -1) maxLevel = levels[1];
-        }
-
-        if (lmEntity != null && main.settingsCfg.getBoolean("entitytype-level-override.enabled")) {
-            final int[] levels = getEntityTypeOverride(lmEntity.getLivingEntity(), lmEntity.getLivingEntity().getType(), !lmEntity.isBabyMob());
-            if (levels[0] > -1) minLevel = levels[0];
-            if (levels[1] > -1) maxLevel = levels[1];
-        }
-
         // this will prevent an unhandled exception:
         if (minLevel > maxLevel) minLevel = maxLevel;
 
         return new int[]{ minLevel, maxLevel };
-    }
-
-    private int[] getWorldLevelOverride(final String worldName) {
-
-        final int[] levels = new int[]{-1, -1};
-
-        if (main.configUtils.worldLevelOverride_Min.containsKey(worldName)) {
-            levels[0] = Utils.getDefaultIfNull(main.configUtils.worldLevelOverride_Min, worldName, -1);
-        }
-
-        if (main.configUtils.worldLevelOverride_Max.containsKey(worldName)) {
-            levels[1] = Utils.getDefaultIfNull(main.configUtils.worldLevelOverride_Max, worldName, -1);
-        }
-
-        return levels;
-    }
-
-    private int[] getEntityTypeOverride(@Nullable final LivingEntity livingEntity, final EntityType entityType, final boolean isAdult) {
-        final String entityTypeStr = entityType.toString();
-        final String reinforcementsStr = entityTypeStr + "_REINFORCEMENTS";
-
-        final int[] levels = new int[]{-1, -1};
-
-        boolean isReinforcements = false;
-        if (livingEntity != null) {
-            if (livingEntity.getPersistentDataContainer().has(main.levelManager.spawnReasonKey, PersistentDataType.STRING)) {
-                //noinspection ConstantConditions
-                isReinforcements = livingEntity.getPersistentDataContainer().get(main.levelManager.spawnReasonKey, PersistentDataType.STRING).equals(CreatureSpawnEvent.SpawnReason.REINFORCEMENTS.toString());
-            }
-        }
-
-        if (isReinforcements) {
-            if (main.configUtils.entityTypesLevelOverride_Min.containsKey(reinforcementsStr))
-                levels[0] = Utils.getDefaultIfNull(main.configUtils.entityTypesLevelOverride_Min, reinforcementsStr, levels[0]);
-            if (main.configUtils.entityTypesLevelOverride_Max.containsKey(reinforcementsStr))
-                levels[1] = Utils.getDefaultIfNull(main.configUtils.entityTypesLevelOverride_Max, reinforcementsStr, levels[1]);
-        } else if (isAdult) {
-            if (main.configUtils.entityTypesLevelOverride_Min.containsKey(entityTypeStr))
-                levels[0] = Utils.getDefaultIfNull(main.configUtils.entityTypesLevelOverride_Min, entityTypeStr, levels[0]);
-            if (main.configUtils.entityTypesLevelOverride_Max.containsKey(entityTypeStr))
-                levels[1] = Utils.getDefaultIfNull(main.configUtils.entityTypesLevelOverride_Max, entityTypeStr, levels[1]);
-        }
-        // babies here:
-        else if (main.configUtils.entityTypesLevelOverride_Min.containsKey("baby_" + entityTypeStr)) {
-            if (main.configUtils.entityTypesLevelOverride_Min.containsKey("baby_" + entityTypeStr))
-                levels[0] = Utils.getDefaultIfNull(main.configUtils.entityTypesLevelOverride_Min, "baby_" + entityTypeStr, levels[0]);
-            if (main.configUtils.entityTypesLevelOverride_Max.containsKey("baby_" + entityTypeStr))
-                levels[1] = Utils.getDefaultIfNull(main.configUtils.entityTypesLevelOverride_Max, "baby_" + entityTypeStr, levels[1]);
-        }
-
-        return levels;
     }
 
     // public int generateYCoordinateLevel(final int mobYLocation, final int minLevel, final int maxLevel) {
@@ -331,46 +270,6 @@ public class LevelManager {
         //return instance.levelManager.generateYCoordinateLevel(livingEntity.getLocation().getBlockY(), levels[0], levels[1]);
     }
 
-    public int getEntityOverrideLevel(final LivingEntity livingEntity, final CreatureSpawnEvent.SpawnReason spawnReason, int level, final boolean override, final boolean isAdult) {
-
-        if (!main.settingsCfg.getBoolean("entitytype-level-override.enabled")) return -1;
-
-        final String entityTypeStr = livingEntity.getType().toString();
-        final String worldName = livingEntity.getWorld().getName();
-        int minLevel = Utils.getDefaultIfNull(main.settingsCfg, "fine-tuning.min-level", 1);
-        int maxLevel = Utils.getDefaultIfNull(main.settingsCfg, "fine-tuning.max-level", 10);
-        boolean foundValue = false;
-
-        // min level
-        if (spawnReason == CreatureSpawnEvent.SpawnReason.REINFORCEMENTS && main.configUtils.entityTypesLevelOverride_Min.containsKey(entityTypeStr + "_REINFORCEMENTS")) {
-            minLevel = Utils.getDefaultIfNull(main.configUtils.entityTypesLevelOverride_Min, entityTypeStr + "_REINFORCEMENTS", minLevel);
-            foundValue = true;
-        } else if (isAdult && main.configUtils.entityTypesLevelOverride_Max.containsKey(entityTypeStr)) {
-            minLevel = Utils.getDefaultIfNull(main.configUtils.entityTypesLevelOverride_Min, entityTypeStr, minLevel);
-            foundValue = true;
-        } else if (!isAdult && main.configUtils.entityTypesLevelOverride_Max.containsKey("baby_" + entityTypeStr)) {
-            minLevel = Utils.getDefaultIfNull(main.configUtils.entityTypesLevelOverride_Min, "baby_" + entityTypeStr, minLevel);
-            foundValue = true;
-        }
-
-        // max level
-        if (spawnReason == CreatureSpawnEvent.SpawnReason.REINFORCEMENTS && main.configUtils.entityTypesLevelOverride_Min.containsKey(entityTypeStr + "_REINFORCEMENTS")) {
-            maxLevel = Utils.getDefaultIfNull(main.configUtils.entityTypesLevelOverride_Max, entityTypeStr + "_REINFORCEMENTS", maxLevel);
-            foundValue = true;
-        } else if (isAdult && main.configUtils.entityTypesLevelOverride_Max.containsKey(entityTypeStr)) {
-            maxLevel = Utils.getDefaultIfNull(main.configUtils.entityTypesLevelOverride_Max, entityTypeStr, maxLevel);
-            foundValue = true;
-        } else if (!isAdult && main.configUtils.entityTypesLevelOverride_Max.containsKey("baby_" + entityTypeStr)) {
-            maxLevel = Utils.getDefaultIfNull(main.configUtils.entityTypesLevelOverride_Max, "baby_" + entityTypeStr, maxLevel);
-            foundValue = true;
-        }
-
-        if (foundValue)
-            return ThreadLocalRandom.current().nextInt(minLevel, maxLevel + 1);
-        else
-            return -1;
-    }
-
     public void updateNametagWithDelay(final LivingEntityWrapper lmEntity, final String nametag, final long delay) {
         new BukkitRunnable() {
             public void run() {
@@ -412,11 +311,9 @@ public class LevelManager {
         final int level = lmEntity.getMobLevel();
         Utils.debugLog(main, DebugType.SET_LEVELLED_ITEM_DROPS, "3: Entity level is " + level + ".");
 
-        final boolean doNotMultiplyDrops =
-                (lmEntity.isBabyMob() && main.configUtils.noDropMultiplierEntities.contains("BABY_" + lmEntity.getTypeName())) ||
-                        main.configUtils.noDropMultiplierEntities.contains(lmEntity.getTypeName());
+        final boolean doNotMultiplyDrops = !main.rulesManager.getRule_CheckIfNoDropMultiplierEntitiy(lmEntity);
 
-        if (main.settingsCfg.getBoolean("use-custom-item-drops-for-mobs")) {
+        if (main.rulesManager.getRule_UseCustomDropsForMob(lmEntity)) {
             // custom drops also get multiplied in the custom drops handler
             final CustomDropResult dropResult = main.customDropsHandler.getCustomItemDrops(lmEntity, customDrops, false);
 
@@ -661,7 +558,7 @@ public class LevelManager {
         final String displayName = lmEntity.getLivingEntity().getCustomName() == null ? MessageUtils.colorizeAll(entityName) : lmEntity.getLivingEntity().getCustomName();
 
         // ignore if 'disabled'
-        if (nametag == null || nametag.isEmpty() || nametag.equalsIgnoreCase("disabled"))
+        if (nametag.isEmpty() || nametag.equalsIgnoreCase("disabled"))
             return lmEntity.getLivingEntity().getCustomName(); // CustomName can be null, that is meant to be the case.
 
         // %tiered% placeholder
@@ -922,7 +819,7 @@ public class LevelManager {
         assert level >= 0;
 
         // Custom Drops must be enabled.
-        if (!main.settingsCfg.getBoolean("use-custom-item-drops-for-mobs")) return;
+        if (!main.rulesManager.getRule_UseCustomDropsForMob(lmEntity)) return;
 
         List<ItemStack> items = new ArrayList<>();
         main.customDropsHandler.getCustomItemDrops(lmEntity, items, true);

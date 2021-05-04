@@ -107,172 +107,6 @@ nametag-auto-update-task-period: 6
 # ||-------------------------------------------------------||
 mobs-multiply-head-drops: false
 
-# ||-------------------------------------------------------||
-# ||  Allowed Spawn Reasons
-#
-#      BLACKLIST | All mobs spawns are levelled,
-#                | excluding the reasons below
-#      WHITELIST | Only mobs spawn reasons below will be levelled
-#            ALL | All mob spawn reasons are levelled,
-#                | ignoring the list below
-#
-#      mode: 'ALL'
-#      list:
-#        - 'SPAWNER'
-#
-#     By default, ALL mobs are levelled
-#
-#     Reference
-#     https://tinyurl.com/SpigotMCCreatureSpawnEvents
-#     For a list of all possible spawn reasons
-#     to use in the list below
-# ||-------------------------------------------------------||
-allowed-spawn-reasons-list:
-  mode: 'ALL'
-  list:
-    - 'SPAWNER'
-
-# ||-------------------------------------------------------||
-# ||  ADVANCED USERS ONLY
-# ||  Entity Level Override
-#
-#     When enabled, any mob listed below will use their
-#     customized minimum and maximum when spawning
-#     overriding the global settings AND the
-#     world-level-override settings below.
-#
-#      entitytype-level-override:
-#        enabled:
-#           true | Use the customized minimum and
-#                | maximums for mobs listed below
-#          false | Use the global minimum and
-#                | maximum for all mobs (Default)
-#        min-level:
-#          EntityType: 1
-#               | This consists of the 'EntityType: X' list
-#               | Where X is the minimum level for
-#               | the EntityType to spawn
-#        max-level:
-#          EntityType: 10
-#               | This consists of the 'EntityType: Y' list
-#               | Where Y is the maximum level for
-#               | the EntityType to spawn
-#
-#     The default list below, while not enabled by
-#     default, has been play tested to function well
-#     with default configuration. Don't forget to
-#     change 'enabled' to true if you want to activate
-#     any changes you've made here.
-#     Reference https://tinyurl.com/SpigotMCEntityTypes
-#     For proper mob names to use in place of 'EntityType'
-#     For example, PIGLIN or PIGLIN_BRUTE
-#     The entities below are commented out by default and thus
-#     will not take effect, remove the '#' character if you
-#     want LevelledMobs to recognize these settings once
-#     you have enabled the system.
-# ||-------------------------------------------------------||
-entitytype-level-override:
-  enabled: false
-  min-level:
-#    ENDER_DRAGON: 5
-#    WITHER: 3
-#    BABY_ZOMBIE: 1
-  max-level:
-#    ENDER_DRAGON: 7
-#    WITHER: 6
-#    BABY_ZOMBIE: 1
-#    ZOMBIE_REINFORCEMENTS: 2
-
-
-# ||-------------------------------------------------------||
-# ||  ADVANCED USERS ONLY
-# ||  World Level Override
-#
-#     When enabled, any world listed below will use
-#     their customized minimum and maximum when
-#     spawning, overriding the global settings.
-#
-#      world-level-override:
-#        enabled:
-#           true | Use the customized minimum and
-#                | maximums for worlds listed below
-#          false | Use the global minimum and
-#                | maximum for all mobs (Default)
-#                | Unless entity-type-override above
-#                | has been enabled
-#        min-level:
-#          example_world:
-#               | This consists of the 'world: X' list
-#               | Where X is the minimum level for the
-#               | world 'example_world' to spawn
-#        max-level:
-#          example_world:
-#               | This consists of the 'world: Y' list
-#               | Where Y is the maximum level for the
-#               | world 'example_world' to spawn
-#
-#     Don't forget to change 'enabled' to true if you
-#     wish to activate this setting.
-#     The worlds below are commented out by default and thus
-#     will not take effect, remove the '#' character if you
-#     want LevelledMobs to recognize these settings once
-#     you have enabled the system.
-# ||-------------------------------------------------------||
-world-level-override:
-  enabled: false
-  min-level:
-#    example_world: 1
-#    example_world_the_end: 5
-  max-level:
-#    example_world: 5
-#    example_world_nether: 8
-
-
-# ||-------------------------------------------------------||
-# ||  ADVANCED USERS ONLY
-# ||  Force-Levelled Mobs
-#
-#     Any mob listed below will be levelled regardless
-#     of any setting listed above or below.
-#     Reference https://tinyurl.com/SpigotMCEntityTypes
-#     For proper mob names to use in place of 'EntityType'.
-#     For example, PIGLIN or PIGLIN_BRUTE
-#
-#      overriden-entities:
-#        - EntityType
-# ||-------------------------------------------------------||
-overriden-entities:
-
-
-# ||-------------------------------------------------------||
-# ||  ADVANCED USERS ONLY
-# ||  Force No-Multiply Item and XP Drops
-#
-#     Any mob listed below will will not have their
-#     drops, items or xp, multiply regardless of
-#     any setting listed above or below.
-#     Reference https://tinyurl.com/SpigotMCEntityTypes
-#     For proper mob names to use in place of 'EntityType'.
-#     For example, PIGLIN or PIGLIN_BRUTE
-#
-#      overriden-entities:
-#        - EntityType
-# ||-------------------------------------------------------||
-no-drop-multipler-entities:
-
-
-# ||-------------------------------------------------------||
-# ||  ADVANCED USERS ONLY
-# ||  Use CustomDrops (customdrops.yml)
-#
-#     The CustomDrops system is highly configurable and
-#     allows for incredible fine-tuning to drops
-#     The file customdrops.yml located within the same
-#     folder as this file will have more details
-#     By default, this is set to false
-# ||-------------------------------------------------------||
-use-custom-item-drops-for-mobs: false
-
 
 # ||-------------------------------------------------------||
 # ||  ADVANCED USERS ONLY
@@ -349,7 +183,17 @@ ensure-mobs-are-levelled-on-chunk-load: true
 #                   'CUSTOM-DROPS' | Reports all CustomDrops related debug options
 #          'ENTITY_TRANSFORM_FAIL' | Reports when an entity, when transformed, did not receive a level
 #                    'ENTITY_MISC' | Reports when an unlevelled baby mob has aged and gets levelled
-#     
+#                'CUSTOM_COMMANDS'
+#                    'MOB_SPAWNER'
+#      'DENIED_RULE_ENTITIES_LIST'
+#           'DENIED_RULE_MINLEVEL'
+#           'DENIED_RULE_MAXLEVEL'
+#         'DENIED_RULE_WORLD_LIST'
+#         'DENIED_RULE_BIOME_LIST'
+#      'DENIED_RULE_PLUGIN_COMPAT'
+#       'DENIED_RULE_SPAWN_REASON'
+#        'DENIED_RULE_CUSTOM_NAME'
+#
 # ||-------------------------------------------------------||
 use-update-checker: true
 debug-entity-damage: false

@@ -3,11 +3,10 @@ package me.lokka30.levelledmobs.managers;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.misc.Addition;
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
-import me.lokka30.levelledmobs.misc.Utils;
 import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
-import org.bukkit.entity.Ageable;
 import org.bukkit.entity.EntityType;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 import java.util.Objects;
@@ -48,7 +47,7 @@ public class MobDataManager {
         return main.dropsCfg.getStringList(entityType.toString()).contains(material.toString());
     }
 
-    public void setAdditionsForLevel(final LivingEntityWrapper lmEntity, final Attribute attribute, final Addition addition, final boolean useBaseValue) {
+    public void setAdditionsForLevel(@NotNull final LivingEntityWrapper lmEntity, final Attribute attribute, final Addition addition, final boolean useBaseValue) {
         double defaultValue = Objects.requireNonNull(lmEntity.getLivingEntity().getAttribute(attribute)).getBaseValue();
         if (!useBaseValue){
             Object valueTemp = getAttributeDefaultValue(lmEntity.getLivingEntity().getType(), attribute);
@@ -56,10 +55,12 @@ public class MobDataManager {
         }
 
         double tempValue = defaultValue + getAdditionsForLevel(lmEntity, addition);
-        if (attribute.equals(Attribute.GENERIC_MAX_HEALTH) && tempValue > 2048.0){
-            // max health has hard limit of 2048
-            tempValue = 2048.0;
-        }
+        if (attribute.equals(Attribute.GENERIC_MAX_HEALTH) && tempValue > main.levelManager.attributeMaxHealthMax)
+            tempValue = main.levelManager.attributeMaxHealthMax;
+        else if (attribute.equals(Attribute.GENERIC_MOVEMENT_SPEED) && tempValue > main.levelManager.attributeMovementSpeedMax)
+            tempValue = main.levelManager.attributeMovementSpeedMax;
+        else if (attribute.equals(Attribute.GENERIC_ATTACK_DAMAGE) && tempValue > main.levelManager.attributeAttackDamageMax)
+            tempValue = main.levelManager.attributeAttackDamageMax;
 
         Objects.requireNonNull(lmEntity.getLivingEntity().getAttribute(attribute)).setBaseValue(tempValue);
     }

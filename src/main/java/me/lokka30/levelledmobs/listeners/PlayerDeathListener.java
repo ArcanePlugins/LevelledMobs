@@ -30,10 +30,6 @@ public class PlayerDeathListener implements Listener {
     public void onPlayerDeath(final PlayerDeathEvent event) {
         if (event.getDeathMessage() == null) return;
 
-        final String deathNametag = main.settingsCfg.getString("creature-death-nametag", "&8[&7Level %level%&8 | &f%displayname%&8]");
-        if (Utils.isNullOrEmpty(deathNametag))
-            return; // if they want retain the stock message they are configure it with an empty string
-
         final EntityDamageEvent entityDamageEvent = event.getEntity().getLastDamageCause();
         if (entityDamageEvent == null || entityDamageEvent.isCancelled() || !(entityDamageEvent instanceof EntityDamageByEntityEvent))
             return;
@@ -48,11 +44,14 @@ public class PlayerDeathListener implements Listener {
         else
             killer = (LivingEntity) damager;
 
-        if (killer == null) return;
+        if (killer == null || Utils.isNullOrEmpty(killer.getName())) return;
 
         final LivingEntityWrapper lmKiller = new LivingEntityWrapper(killer, main);
         if (!lmKiller.isLevelled()) return;
 
-        event.setDeathMessage(Utils.replaceEx(event.getDeathMessage(), killer.getName(), main.levelManager.getNametag(lmKiller, true)));
+        final String deathMessage = main.levelManager.getNametag(lmKiller, true);
+        if (Utils.isNullOrEmpty(deathMessage) || "disabled".equalsIgnoreCase(deathMessage)) return;
+
+        event.setDeathMessage(Utils.replaceEx(event.getDeathMessage(), killer.getName(), deathMessage));
     }
 }
