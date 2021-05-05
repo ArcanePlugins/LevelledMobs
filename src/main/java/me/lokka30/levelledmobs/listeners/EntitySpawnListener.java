@@ -80,6 +80,10 @@ public class EntitySpawnListener implements Listener {
         // Must be a LivingEntity.
         if (!(event.getEntity() instanceof LivingEntity)) return;
         final LivingEntity livingEntity = (LivingEntity) event.getEntity();
+
+        // when spawned from spawner it creates two events, SpawnerSpawnEvent and CreatureSpawnEvent
+        if (event instanceof SpawnerSpawnEvent) return;
+
         final LevelInterface.LevellableState levellableState = getLevellableState(event);
         if (levellableState == LevelInterface.LevellableState.ALLOWED) {
             main.levelInterface.applyLevelToMob(livingEntity, main.levelInterface.generateLevel(livingEntity),
