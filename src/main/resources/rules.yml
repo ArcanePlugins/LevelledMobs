@@ -154,19 +154,17 @@
 # |                                                                                   |
 presets:
   1:
-    preset-type: 'conditions'
-    value:
+    conditions:
       entities:
         mode: 'BLACKLIST'
         list: ['all_passive_mobs']
   2:
-    preset-type: 'worlds'
-    value:
-      mode: 'WHITELIST'
-      list: ['world', 'world_nether']
+    conditions:
+      worlds:
+        mode: 'WHITELIST'
+        list: ['world', 'world_nether']
   3:
-    preset-type: 'strategies'
-    value:
+    strategies:
       distance-from-spawn:
         increase-level-distance: 200
         start-distance: 0
@@ -201,11 +199,7 @@ presets:
 # |||---------------------------------------------------------------------------------|
 # |                                                                                   |
 default-rule:
-  worlds:
-    preset: 2
-
-  strategies:
-    preset: 3
+  use-preset: 1, 2, 3 # exclude passive mobs, worlds whitelist, levelling strategies
 
   calculation:
     custom-variables:
@@ -225,10 +219,6 @@ default-rule:
       ranged-attack-damage: 1.5
       item-drop: 3
       xp-drop: 2
-
-
-  conditions:
-    preset: 1
 
   nametag: '&8[&7Level %mob-lvl%&8 | &f%entity-name%&8 | &c%entity-health-rounded%&8/&c%entity-max-health-rounded%&8]'
 

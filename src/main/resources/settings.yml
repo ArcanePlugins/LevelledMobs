@@ -1,152 +1,132 @@
-#   __                    _  _         _  _____       _
-#  |  |    ___  _ _  ___ | || | ___  _| ||     | ___ | |_  ___
-#  |  |__ | -_|| | || -_|| || || -_|| . || | | || . || . ||_ -|
-#  |_____||___| \_/ |___||_||_||___||___||_|_|_||___||___||___|
-#            The Ultimate RPG Levelled Mobs Solution
+#              _                   _ _          _ __  __       _
+#             | |    _____   _____| | | ___  __| |  \/  | ___ | |__  ___
+#             | |   / _ \ \ / / _ \ | |/ _ \/ _` | |\/| |/ _ \| '_ \/ __|
+#             | |__|  __/\ V /  __/ | |  __/ (_| | |  | | (_) | |_) \__ \
+#             |_____\___| \_/ \___|_|_|\___|\__,_|_|  |_|\___/|_.__/|___/
+#                       The Ultimate RPG Levelled Mobs Solution
+#                           _____     _   _   _ 
+#                          |   __|___| |_| |_|_|___ ___ ___
+#                          |__   | -_|  _|  _| |   | . |_ -|
+#                          |_____|___|_| |_| |_|_|_|_  |___|
+#                                                  |___|   
 #
-# |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
-# ||
-# || Main Developers:
-# ||  lokka30 (Author, developer)
-# ||  stumper66 (Developer since v2)
-# ||
-# || Other Contributors:
-# ||  Eyrian, iCodinqs, deiphiz, CoolBoy,
-# ||  Esophose, 7smile7, UltimaOath, Hugo5551,
-# ||  konsolas
-# ||
-# || Special Thanks
-# ||  ArcanePlugins developers and testers,
-# ||  Donators, patrons, and other supporters,
-# ||  SpigotMC, ProtocolLib, PaperMC, and bStats
-# ||
-# |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
-# ||
-# || Important Links:
-# ||  SpigotMC Resource Page (View info and download the plugin)
-# ||   https://www.spigotmc.org/resources/levelledmobs-for-1-14-x-1-16-x.74304/
-# ||
-# ||  ArcanePlugins Discord (Have a chat or ask for assistance with the plugin)
-# ||   https://discord.gg/RQ8M4A5
-# ||
-# ||  Wiki on GitHub (Documentation)
-# ||   https://github.com/lokka30/LevelledMobs/wiki
-# ||
-# || Useful Resources:
-# ||  YAML-Parser (Check your config for syntax errors)
-# ||   https://yaml-online-parser.appspot.com/
-# ||
-# || Dependencies:
-# ||  ProtocolLib
-# ||   A 'soft dependency': not *required*, but *highly* recommended.
-# ||   ProtocolLib is utilised by LevelledMobs to apply custom name
-# ||   tags on levelled mobs. Without this, the plugin will
-# ||   not show the custom name tags on levelled mobs.
-# ||   Download: https://www.spigotmc.org/resources/protocollib.1997/
-# ||
-# |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
-#
-#
-
-# ||-------------------------------------------------------||
-# ||  Should Level 1 mobs display a nametag?
-#
-#        true | Default-Levelled mobs
-#             | will display a nametag (Default)
-#       false | Default-Levelled mobs
-#             | will NOT display a nametag
-# ||-------------------------------------------------------||
-show-label-for-default-levelled-mobs: true
-
-
-# ||-------------------------------------------------------||
+# |.-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.|
+# lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\|
+#'|    `-'     `-'     `-'     `-'     `-'     `-'     `-'     `-'     `-'     `-'    | 
+# |  Main Developers:                    |  Other Contributors:                       |
+# |    lokka30 [Author / Developer]      |    Eyrian, iCodinqs, deiphiz, CoolBoy,     |
+# |    stumper66 [Developer since v2.0]  |    Esophose, 7smile7, UltimaOath, Huge5551,|
+# |                                      |    konsolas                                |
+# |----------------------------------+---+--------------------------------------------|
+# |  ArcanePlugins Support Discord   |  Special Thanks:                               |
+# |    https://discord.gg/RQ8M4A5    |    ArcanePlugins Developers and Testers!       |
+# |                                  |    Donators, Patrons, and other supporters!    |
+# |                                  |    SpigotMC, PaperMC, ProtocolLib, and bStats! |
+# |                                  |                                                |
+# |.-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.|
+# lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\|
+#'|    `-'     `-'     `-'     `-'     `-'     `-'     `-'     `-'     `-'     `-'    |
+# |  Useful Resources:                                                                |
+# |    ArcanePlugins Discord                                                          |
+# |      Get fast support, questions answered, and submit suggestions!                |
+# |        https://discord.gg/RQ8M4A5                                                 |
+# |                                                                                   |
+# |    LevelledMobs GitHub                                                            |
+# |      Browse the code and wiki resources for LevelledMobs                          |
+# |        https://github.com/lokka30/LevelledMobs/                                   |
+# |                                                                                   |
+# |    YAML-Parser                                                                    |
+# |      Check your config files for any YAML errors.                                 |
+# |      Good first step before seeking support!                                      |
+# |        https://yaml-online-parser.appspot.com/                                    |
+# |                                                                                   |
+# |  Dependencies:                                                                    |
+# |    ProtocolLib:                                                                   |
+# |      A 'soft dependency'; Not *required* but highly recommended.                  |
+# |      Without this, the plugin will not show LM's nametags.                        |
+# |      https://www.spigotmc.org/resources/protocollib.1997/                         |
+# |                                                                                   |
+# |  Recommended Configuration:                                                       |
+# |    LevelledMobs is tested using the latest PaperMC and SpigotMC Server Software.  |
+# |    While other solutions may work, compatability is not guarenteed.               |
+# |                                                                                   |
+# |.-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.|
+# lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\|
+#'|    `-'     `-'     `-'     `-'     `-'     `-'     `-'     `-'     `-'     `-'    |
+# |                                                                                   |
+# |||---------------------------------------------------------------------------------|
 # ||  ADVANCED USERS ONLY
 # ||  Should nametag packets be ignored if the mob has died?
-#
-#        true | Packets will be ignored once the
-#             | mob has reached zero health
-#       false | Packets will continue to be sent
-#             | when mob has reached zero health
-#             | This is not recommended
-#
-#     This system attempts to fix any conflicts with
-#     plugins similar to ViaBackwards. It is not
-#     recommended that you change this setting unless
-#     you understand what you are doing
-# ||-------------------------------------------------------||
+# ||
+# ||     true | Packets will be ignored once the entity has reached zero health.
+# ||    false | Packets will continue to be sent once entity has reached zero health.
+# ||          | This is not recommended
+# ||
+# ||  This system attempts to fix any conflicts with plugins similar to ViaBackwards.
+# ||  It is not recommended that you change this setting unless you fully
+# ||  understand what you are doing.
+# ||
+# |||---------------------------------------------------------------------------------|
 assert-entity-validity-with-nametag-packets: true
 
 
-# ||-------------------------------------------------------||
+# |||---------------------------------------------------------------------------------|
 # ||  ADVANCED USERS ONLY
 # ||  Automatic Asynchronous Nametag and Levelling Update
-#
-#     This setting will check the area near players for
-#     any entities which should be levelled or are missing
-#     their correct nametags for whatever reason.
-#     
-#     By default, this is set to 6 seconds.
-#     It is not recommended that you change this setting
-#     unless you understand exactly what you are doing.
-# ||-------------------------------------------------------||
+# ||
+# ||  This setting will check the area near players for any entities which should have
+# ||  been levelled, or are missing their LM attributes for whatever reason.
+# ||
+# ||  By default, this is set to 6 seconds.
+# ||  It is not recommended that you change this setting unless you fully
+# ||  understand exactly what you are doing.
+# ||
+# |||---------------------------------------------------------------------------------|
 nametag-auto-update-task-period: 6
 
 
-# ||-------------------------------------------------------||
+# |||---------------------------------------------------------------------------------|
 # ||  ADVANCED USERS ONLY
 # ||  Mob Head Drop Multiplier
-#
-#     On some servers, PLAYER_HEADS are too valuable of
-#     a resource to be multiplied with the standard
-#     item drops. That's why this setting exists, to
-#     decide whether you want to multiply.
-#
-#      true | PLAYER_HEADS will be multiplied
-#           | using item-drop set below
-#     false | PLAYER_HEADS will NOT be multipled (Default)
-# ||-------------------------------------------------------||
+# ||
+# ||  On some servers, PLAYER_HEADS are too valuable of a resource to be multiplied
+# ||  with the standard item drops. That is why this setting exists: to decide
+# ||  whether you want head/skull drops to be multiplied alongside the item multiplier.
+# ||
+# ||   true | PLAYER_HEADS will be multiplied using item-drop value
+# ||  false | PLAYER_HEADS will NOT be multipled (Default)
+# ||
+# |||---------------------------------------------------------------------------------|
 mobs-multiply-head-drops: false
 
 
-# ||-------------------------------------------------------||
+# |||---------------------------------------------------------------------------------|
 # ||  ADVANCED USERS ONLY
 # ||  Miscellaneous LevelledMobs Settings
-#
-#      summon-command-spawn-distance-from-player:
-#        | This setting establishes how far away from
-#        | a player a mob will spawn when you use the
-#        | LevelledMobs '/lm summon' command
-#        | By default, the radius is 5 blocks
-#      kill-skip-conditions:
-#        | When using '/lm kill' command, any mob
-#        | with the following tags set to true will
-#        | be automatically skipped. This is useful
-#        | to prevent pets or other unintended deaths,
-#        | and it is recommended that you do not adjust
-#        | these settings without understanding what
-#        | you are doing
-#        nametagged:
-#             | Mobs with a nametag appplied
-#        tamed:
-#             | Mobs who have been tamed
-#        leashed:
-#             | Mobs currently attached to a leash
-#        convertingZombieVillager:
-#             | Zombie Villagers in
-#             | the process of transforming
-#      ensure-mobs-are-levelled-on-chunk-load:
-#          | This makes LM have a janitor run through
-#          | all entities in a chunk when a chunk is
-#          | loaded on your server to ensure that
-#          | the mobs that *should* be levelled,
-#          | *are* levelled.
-#          | WARNING: If you have 'level-passive' enabled,
-#          | DO NOT disable this, since a weird bug we believe
-#          | caused by the server software makes only a small
-#          | portion of passive mob spawns known to this plugin.
-#          | Disabling this could improve performance, although
-#          | not much. We recommend you leave this enabled.
-# ||-------------------------------------------------------||
+# ||
+# ||   summon-command-spawn-distance-from-player:
+# ||     | This setting establishes how far away from a player an entity will spawn
+# ||     | when you use LevelledMobs' "/lm summon" command.
+# ||     | By default, the radius is 5 blocks.
+# ||   kill-skip-conditions:
+# ||     | When using '/lm kill' command, any entity with the following tags set to
+# ||     | true will automatically be skipped. This is useful to prevent pets or
+# ||     | other unintended deaths, and it is recommended that you do not adjust
+# ||     | these settings without understanding what you are doing.
+# ||     nametagged:
+# ||          | Entities with a nametag already applied
+# ||     tamed:
+# ||          | Entities who have been already tamed
+# ||     leashed:
+# ||          | Entities currently attached to a leash
+# ||     convertingZombieVillager:
+# ||          | Zombie Villagers in the process of transforming.
+# ||   ensure-mobs-are-levelled-on-chunk-load:
+# ||       | This janitor-system runs through all entities in a loaded chunk to ensure
+# ||       | entities which *should* be levelled *are* levelled.
+# ||       | We recommend that you do not change this setting.
+# ||
+# |||---------------------------------------------------------------------------------|
 summon-command-spawn-distance-from-player: 5
 kill-skip-conditions:
   nametagged: true
@@ -156,55 +136,48 @@ kill-skip-conditions:
 ensure-mobs-are-levelled-on-chunk-load: true
 
 
-# ||-------------------------------------------------------||
+# |||---------------------------------------------------------------------------------|
 # ||  ADVANCED USERS ONLY
 # ||  Updates and Debug Settings
-#
-#     You should only change these settings by the
-#     direction of an official LevelledMobs developer,
-#     as these could result in a broken plugin, console
-#     spam, and terminal config errors if not used as instructed.
-#     The update task runs ASYNC and only once at server
-#     startup, and should not affect performance.
-#     Debug-Misc is a powerful tool to get to the bottom of any
-#     potential issues LevelledMobs might have producing the
-#     mob you intend. It is not recommended that you enable
-#     any of these settings without coordinating with the
-#     LevelledMobs developers and support, as they will
-#     typically flood your console with messages.
-#
-#            'APPLY_LEVEL_SUCCESS' | Reports when level applied successfully
-#               'APPLY_LEVEL_FAIL' | Reports when level was not applied
-#                   'ENTITY_SPAWN' | Reports when an entity has been spawned
-#     'RANGED_DAMAGE_MODIFICATION' | Reports when LM adjusts ranged damage output
-#                    'ENTITY_TAME' | Reports when an entity has been tamed
-#        'SET_LEVELLED_ITEM_DROPS' | Reports when LM adjusts item or experience drops
-#                 'UPDATE_NAMETAG' | Reports when the nametag of an entity was updated
-#                   'CUSTOM-DROPS' | Reports all CustomDrops related debug options
-#          'ENTITY_TRANSFORM_FAIL' | Reports when an entity, when transformed, did not receive a level
-#                    'ENTITY_MISC' | Reports when an unlevelled baby mob has aged and gets levelled
-#                'CUSTOM_COMMANDS'
-#                    'MOB_SPAWNER'
-#      'DENIED_RULE_ENTITIES_LIST'
-#           'DENIED_RULE_MINLEVEL'
-#           'DENIED_RULE_MAXLEVEL'
-#         'DENIED_RULE_WORLD_LIST'
-#         'DENIED_RULE_BIOME_LIST'
-#      'DENIED_RULE_PLUGIN_COMPAT'
-#       'DENIED_RULE_SPAWN_REASON'
-#        'DENIED_RULE_CUSTOM_NAME'
-#
+# ||
+# ||  You should only change these settings by the direction of an official LevelledMobs
+# ||  developer, as they produce plenty of console spam and could potentially break
+# ||  your plugin due to an incorrect value.
+# ||
+# ||  The update task runs asynchronously (Async), and is only conducted once when the
+# ||  server starts up, and should not affect performance in any way.
+# ||
+# ||  The Debug-Misc setting is a very powerful tool to get to the bottom of any potential
+# ||  issues LevelledMobs might encounter while attempting to apply rules and levels.
+# ||  It will also report nearly every way LevelledMobs interacts with an entity depending
+# ||  on which tag you use. The tags listed below consist of the entire tree of possible
+# ||  options. It is NOT RECOMMENDED that you use this system without direction from a
+# ||  LevelledMobs Developer while diagnosing any potential issues, and should not be left
+# ||  on to prevent console-spam.
+# ||
+# ||          'APPLY_LEVEL_SUCCESS' | Reports when level applied successfully
+# ||             'APPLY_LEVEL_FAIL' | Reports when level was not applied
+# ||                 'ENTITY_SPAWN' | Reports when an entity has been spawned
+# ||   'RANGED_DAMAGE_MODIFICATION' | Reports when LM adjusts ranged damage output
+# ||                  'ENTITY_TAME' | Reports when an entity has been tamed
+# ||      'SET_LEVELLED_ITEM_DROPS' | Reports when LM adjusts item or experience drops
+# ||               'UPDATE_NAMETAG' | Reports when the nametag of an entity was updated
+# ||                 'CUSTOM-DROPS' | Reports all CustomDrops related debug options
+# ||        'ENTITY_TRANSFORM_FAIL' | Reports when an entity, when transformed, did not receive a level
+# ||                  'ENTITY_MISC' | Reports when an unlevelled baby mob has aged and gets levelled
+# ||              'CUSTOM_COMMANDS'
+# ||                  'MOB_SPAWNER'
+# ||    'DENIED_RULE_ENTITIES_LIST'
+# ||         'DENIED_RULE_MINLEVEL'
+# ||         'DENIED_RULE_MAXLEVEL'
+# ||       'DENIED_RULE_WORLD_LIST'
+# ||       'DENIED_RULE_BIOME_LIST'
+# ||    'DENIED_RULE_PLUGIN_COMPAT'
+# ||     'DENIED_RULE_SPAWN_REASON'
+# ||      'DENIED_RULE_CUSTOM_NAME'
+# ||
 # ||-------------------------------------------------------||
 use-update-checker: true
 debug-entity-damage: false
 debug-misc: [ ]
 file-version: 29
-
-# And that's the end of the file! Congratulations!
-#
-#   /\_/\  (
-#  ( ^.^ ) _)
-#    \"/  (
-#  ( | | )
-# (__d b__)
-#

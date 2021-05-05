@@ -76,56 +76,22 @@ public class RulesParsingManager {
         final List<RuleInfo> results = new LinkedList<>();
         if (cs == null) return results;
 
+        int count = -1;
         for (final String key : cs.getKeys(false)){
+            count++;
             final ConfigurationSection cs_Key = objectToConfigurationSection(cs.get(key));
             if (cs_Key == null){
                 Utils.logger.warning("nothing was specified for preset: " + key);
                 continue;
             }
 
-            this.parsingInfo = new RuleInfo("preset " + key);
-            this.parsingInfo.presetType = parsePresetType(cs_Key, key);
-            if (this.parsingInfo.presetType == PresetType.NONE) continue;
-
+            this.parsingInfo = new RuleInfo("preset " + count);
             this.parsingInfo.presetName = key;
-            parsePresets_Value(objectToConfigurationSection(cs_Key.get("value")));
-
+            parseValues(cs_Key);
             results.add(this.parsingInfo);
         }
 
         return results;
-    }
-
-    private void parsePresets_Value(final ConfigurationSection cs){
-        if (cs == null) return;
-
-        if (this.parsingInfo.presetType == PresetType.CONDITIONS)
-            parseConditions(cs);
-        else if (this.parsingInfo.presetType == PresetType.WORLDS)
-            parseWorldList(cs);
-        else if (this.parsingInfo.presetType == PresetType.STRATEGIES)
-            parseStrategies(cs);
-    }
-
-    @NotNull
-    private PresetType parsePresetType(@NotNull final ConfigurationSection cs, final String key){
-        final String preset = cs.getString("preset-type");
-        PresetType presetType = PresetType.NONE;
-        if (preset == null){
-            Utils.logger.warning("No preset type was specified for preset: " + key);
-            return presetType;
-        }
-
-        try{
-            presetType = PresetType.valueOf(preset.toUpperCase());
-        }
-        catch (Exception e){
-            Utils.logger.warning("Invalid preset type: " + preset);
-        }
-
-        buildCachedModalListOfString(cs);
-
-        return presetType;
     }
 
     @NotNull
@@ -210,7 +176,7 @@ public class RulesParsingManager {
         for (final LinkedHashMap<String, Object> hashMap : (List<LinkedHashMap<String, Object>>)(rulesSection)){
             ConfigurationSection cs = objectToConfigurationSection(hashMap);
             if (cs == null) {
-                Utils.logger.info("cs was null (parsing rules)");
+                Utils.logger.info("cs was null (parsing custom-rules)");
                 continue;
             }
 
@@ -223,6 +189,9 @@ public class RulesParsingManager {
     }
 
     private void parseValues(final ConfigurationSection cs){
+        if (cs.getString("use-preset") != null)
+            mergePreset(cs);
+
         parsingInfo.ruleIsEnabled = cs.getBoolean("enabled", true);
         parseCustomVariables(cs.get("calculation.custom-variables"));
 
@@ -254,6 +223,26 @@ public class RulesParsingManager {
             parsingInfo.creeperMaxDamageRadius = cs.getInt("creeper-max-damage-radius");
         if (cs.getString("use-custom-item-drops-for-mobs") != null)
             parsingInfo.useCustomItemDropsForMobs = cs.getBoolean("use-custom-item-drops-for-mobs");
+    }
+
+    private void mergePreset(final ConfigurationSection cs){
+
+        final String presetName = cs.getString("use-preset");
+        if (Utils.isNullOrEmpty(presetName)) {
+            Utils.logger.info(parsingInfo.getInternalId() + ", no preset name was specified");
+            return;
+        }
+
+        final String[] names = presetName.split(",");
+        for (String checkName : names) {
+            checkName = checkName.trim();
+            if (!rulePresets.containsKey(checkName)) {
+                Utils.logger.info(parsingInfo.getInternalId() + ", specified preset name '" + checkName + "' was none was found");
+                continue;
+            }
+
+            this.parsingInfo.mergePresetRules(rulePresets.get(checkName));
+        }
     }
 
     private void parseExternalCompat(final ConfigurationSection cs){
@@ -358,22 +347,6 @@ public class RulesParsingManager {
     private void parseConditions(final ConfigurationSection conditions){
         if (conditions  == null) return;
 
-        if (!Utils.isNullOrEmpty(conditions.getString("preset"))){
-            final String presetName = conditions.getString("preset");
-
-            if (this.rulePresets.containsKey(presetName)) {
-                final RuleInfo mergingPreset = this.rulePresets.get(presetName);
-                if (mergingPreset.presetType == PresetType.CONDITIONS)
-                    parsingInfo.mergePresetRules(mergingPreset);
-                else
-                    Utils.logger.warning(String.format("rule id: %s, specified CONDITIONS preset '%s' but it was of type %s",
-                            parsingInfo.getInternalId(), presetName, mergingPreset.presetType));
-            }
-            else
-                Utils.logger.warning(String.format("rule id: %s, specified non-existant preset '%s'",
-                        parsingInfo.getInternalId(), presetName));
-        }
-
         parseWorldList(objectToConfigurationSection(conditions.get("worlds")));
 
         if (conditions.getString("minLevel") != null)
@@ -423,21 +396,6 @@ public class RulesParsingManager {
 
     private void parseStrategies(final ConfigurationSection strategies){
         if (strategies == null) return;
-
-        if (!Utils.isNullOrEmpty(strategies.getString("preset"))){
-            final String presetName = strategies.getString("preset");
-            if (this.rulePresets.containsKey(presetName)) {
-                final RuleInfo mergingPreset = this.rulePresets.get(presetName);
-                if (mergingPreset.presetType == PresetType.STRATEGIES)
-                    parsingInfo.mergePresetRules(mergingPreset);
-                else
-                    Utils.logger.warning(String.format("rule id: %s, specified STRATEGIES preset '%s' but it was of type %s",
-                            parsingInfo.getInternalId(), presetName, mergingPreset.presetType));
-            }
-            else
-                Utils.logger.warning(String.format("rule id: %s, specified non-existant preset '%s'",
-                        parsingInfo.getInternalId(), presetName));
-        }
 
         parseStategiesRandom(objectToConfigurationSection(strategies.get("random")));
 
@@ -530,21 +488,6 @@ public class RulesParsingManager {
 
     private void parseWorldList(final ConfigurationSection worlds){
         if (worlds == null) return;
-
-        if (!Utils.isNullOrEmpty(worlds.getString("preset"))){
-            final String presetName = worlds.getString("preset");
-            if (this.rulePresets.containsKey(presetName)) {
-                final RuleInfo mergingPreset = this.rulePresets.get(presetName);
-                if (mergingPreset.presetType == PresetType.WORLDS)
-                    parsingInfo.mergePresetRules(mergingPreset);
-                else
-                    Utils.logger.warning(String.format("rule id: %s, specified WORLDS preset '%s' but it was of type %s",
-                            parsingInfo.getInternalId(), presetName, mergingPreset.presetType));
-            }
-            else
-                Utils.logger.warning(String.format("rule id: %s, specified non-existant preset '%s'",
-                        parsingInfo.getInternalId(), presetName));
-        }
 
         if (worlds.getString("list") != null)
             parsingInfo.worlds = buildCachedModalListOfString(worlds);
