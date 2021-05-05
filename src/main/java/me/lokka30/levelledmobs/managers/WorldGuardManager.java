@@ -15,11 +15,10 @@ import com.sk89q.worldguard.protection.regions.RegionContainer;
 import me.lokka30.levelledmobs.misc.Utils;
 import org.bukkit.Location;
 import org.bukkit.entity.LivingEntity;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * TODO Describe...
@@ -88,6 +87,7 @@ public class WorldGuardManager {
     }
 
     //Get all regions at an Entities' location.
+    @Nullable
     public ApplicableRegionSet getRegionSet(final LivingEntity livingEntity) {
         final Location location = livingEntity.getLocation();
 
@@ -104,6 +104,7 @@ public class WorldGuardManager {
     }
 
     // Get all regions at a location
+    @Nullable
     public ApplicableRegionSet getRegionSet(final Location location) {
         if (location.getWorld() == null) return null;
 
@@ -118,6 +119,7 @@ public class WorldGuardManager {
     }
 
     //Sorts a RegionSet by priority, lowest to highest.
+    @Nullable
     public ProtectedRegion[] sortRegionsByPriority(final ApplicableRegionSet regionSet) {
         if (regionSet == null) return null;
 
@@ -174,6 +176,7 @@ public class WorldGuardManager {
 
 
     //Generate level based on WorldGuard region flags.
+    @NotNull
     public int[] getRegionLevel(final LivingEntity livingEntity) {
         final int[] levels = new int[]{ -1, -1};
 
@@ -212,5 +215,25 @@ public class WorldGuardManager {
         }
 
         return true;
+    }
+
+    @NotNull
+    public static List<String> GetWorldGuardRegionsForLocation(@NotNull final Location location) {
+        final List<String> wg_Regions = new LinkedList<>();
+
+        if (location.getWorld() == null) return wg_Regions;
+        final com.sk89q.worldedit.world.World world = BukkitAdapter.adapt(location.getWorld());
+
+        final BlockVector3 position = BlockVector3.at(location.getBlockX(), location.getBlockY(), location.getBlockZ());
+
+        final RegionContainer container = WorldGuard.getInstance().getPlatform().getRegionContainer();
+        final RegionManager regions = container.get(world);
+        if (regions == null) return wg_Regions;
+
+        final ApplicableRegionSet set = regions.getApplicableRegions(position);
+        for (final ProtectedRegion region : set)
+            wg_Regions.add(region.getId());
+
+        return wg_Regions;
     }
 }

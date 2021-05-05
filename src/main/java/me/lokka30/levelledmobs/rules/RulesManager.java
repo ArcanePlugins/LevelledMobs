@@ -46,7 +46,7 @@ public class RulesManager {
             if (ruleInfo.conditions_NoDropEntities != null) entitiesList = ruleInfo.conditions_NoDropEntities;
         }
 
-        return entitiesList == null || !entitiesList.isEnabledInList(lmEntity.getNameIfBaby());
+        return entitiesList != null && entitiesList.isEnabledInList(lmEntity.getNameIfBaby());
     }
 
     public boolean getRule_UseCustomDropsForMob(final LivingEntityWrapper lmEntity){
@@ -259,47 +259,73 @@ public class RulesManager {
     private boolean isRuleApplicable(final LivingEntityWrapper lmEntity, final RuleInfo ri){
 
         if (ri.conditions_Entities != null && !Utils.isLivingEntityInModalList(ri.conditions_Entities, lmEntity)) {
-            Utils.debugLog(main, DebugType.DENIED_RULE_ENTITIES_LIST, String.format("%s, mob: %s", ri.getInternalId(), lmEntity.getTypeName()));
+            Utils.debugLog(main, DebugType.DENIED_RULE_ENTITIES_LIST, String.format("%s, mob: %s", ri.getRuleName(), lmEntity.getTypeName()));
             return false;
         }
         if (ri.conditions_MinLevel != null && (!lmEntity.isLevelled() || ri.conditions_MinLevel < lmEntity.getMobLevel())) {
             Utils.debugLog(main, DebugType.DENIED_RULE_MAXLEVEL, String.format("%s, mob: %s, mob lvl: %s, rule minlvl: %s",
-                    ri.getInternalId(), lmEntity.getTypeName(), lmEntity.getMobLevel(), ri.conditions_MinLevel));
+                    ri.getRuleName(), lmEntity.getTypeName(), lmEntity.getMobLevel(), ri.conditions_MinLevel));
             return false;
         }
         if (ri.conditions_MaxLevel != null && (!lmEntity.isLevelled() || ri.conditions_MaxLevel > lmEntity.getMobLevel())) {
             Utils.debugLog(main, DebugType.DENIED_RULE_MAXLEVEL, String.format("%s, mob: %s, mob lvl: %s, rule maxlvl: %s",
-                    ri.getInternalId(), lmEntity.getTypeName(), lmEntity.getMobLevel(), ri.conditions_MaxLevel));
+                    ri.getRuleName(), lmEntity.getTypeName(), lmEntity.getMobLevel(), ri.conditions_MaxLevel));
             return false;
         }
         if (ri.worlds != null && !ri.worlds.isEnabledInList(lmEntity.getWorldName())) {
             Utils.debugLog(main, DebugType.DENIED_RULE_WORLD_LIST, String.format("%s, mob: %s, mob world: %s",
-                    ri.getInternalId(), lmEntity.getTypeName(), lmEntity.getLivingEntity().getWorld().getName()));
+                    ri.getRuleName(), lmEntity.getTypeName(), lmEntity.getLivingEntity().getWorld().getName()));
             return false;
         }
 
         if (ri.conditions_Biomes != null && !ri.conditions_Biomes.isEnabledInList(lmEntity.getLivingEntity().getLocation().getBlock().getBiome().toString())) {
             Utils.debugLog(main, DebugType.DENIED_RULE_BIOME_LIST, String.format("%s, mob: %s, mob biome: %s",
-                    ri.getInternalId(), lmEntity.getTypeName(), lmEntity.getLivingEntity().getLocation().getBlock().getBiome().name()));
+                    ri.getRuleName(), lmEntity.getTypeName(), lmEntity.getLivingEntity().getLocation().getBlock().getBiome().name()));
             return false;
         }
 
         if (ri.conditions_CustomNames != null && lmEntity.getLivingEntity().getCustomName() != null &&
                 !ri.conditions_CustomNames.isEnabledInList(lmEntity.getLivingEntity().getCustomName())) {
             Utils.debugLog(main, DebugType.DENIED_RULE_CUSTOM_NAME, String.format("%s, mob: %s, name: %s",
-                    ri.getInternalId(), lmEntity.getTypeName(), lmEntity.getLivingEntity().getCustomName()));
+                    ri.getRuleName(), lmEntity.getTypeName(), lmEntity.getLivingEntity().getCustomName()));
             return false;
         }
 
         if (ri.conditions_SpawnReasons != null && !ri.conditions_SpawnReasons.isEnabledInList(lmEntity.getSpawnReason())){
             Utils.debugLog(main, DebugType.DENIED_RULE_SPAWN_REASON, String.format("%s, mob: %s, spawn reason: %s",
-                    ri.getInternalId(), lmEntity.getTypeName(), lmEntity.getSpawnReason()));
+                    ri.getRuleName(), lmEntity.getTypeName(), lmEntity.getSpawnReason()));
             return false;
         }
 
         if (lmEntity.isMobOfExternalType() && ri.conditions_ApplyPlugins != null && !ri.conditions_ApplyPlugins.isEnabledInList(lmEntity.getMobExternalType().toString())){
             Utils.debugLog(main, DebugType.DENIED_RULE_PLUGIN_COMPAT, String.format("%s, mob: %s, mob plugin: %s",
-                    ri.getInternalId(), lmEntity.getTypeName(), lmEntity.getMobExternalType().toString()));
+                    ri.getRuleName(), lmEntity.getTypeName(), lmEntity.getMobExternalType()));
+            return false;
+        }
+
+        if (ri.conditions_WGRegions != null){
+            boolean isInList = false;
+            if (lmEntity.getSpawnedWGRegions() != null) {
+                for (final String regionName : lmEntity.getSpawnedWGRegions()) {
+                    if (ri.conditions_WGRegions.isEnabledInList(regionName)) {
+                        isInList = true;
+                        break;
+                    }
+                }
+            }
+            if (!isInList){
+                // TODO: add debug info
+                return false;
+            }
+        }
+
+        if (ri.conditions_ApplyAboveY != null && lmEntity.getLivingEntity().getLocation().getBlockY() < ri.conditions_ApplyAboveY){
+            // TODO: add debug info
+            return false;
+        }
+
+        if (ri.conditions_ApplyBelowY != null && lmEntity.getLivingEntity().getLocation().getBlockY() > ri.conditions_ApplyBelowY){
+            // TODO: add debug info
             return false;
         }
 

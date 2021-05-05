@@ -2,7 +2,6 @@ package me.lokka30.levelledmobs.rules;
 
 import me.lokka30.levelledmobs.managers.ExternalCompatibilityManager;
 import me.lokka30.levelledmobs.misc.CachedModalList;
-import me.lokka30.levelledmobs.misc.Utils;
 import me.lokka30.levelledmobs.rules.strategies.LevellingStrategy;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.jetbrains.annotations.NotNull;
@@ -13,16 +12,17 @@ import java.util.*;
 
 public class RuleInfo {
     public RuleInfo(final String id){
-        this.internalId = id;
+        this.ruleName = id;
 
         this.ruleIsEnabled = true;
         this.levellingStrategies = new LinkedList<>();
         this.entityNameOverrides = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+        this.ruleSourceNames = new TreeMap<>();
         this.conditions_MobCustomnameStatus = MobCustomNameStatusEnum.NOT_SPECIFIED;
         this.conditions_MobTamedStatus = MobTamedStatusEnum.NOT_SPECIFIED;
     }
 
-    private final String internalId;
+    private String ruleName;
     public boolean ruleIsEnabled;
     public Boolean CreatureNametagAlwaysVisible;
     public Boolean babyMobsInheritAdultSetting;
@@ -35,6 +35,8 @@ public class RuleInfo {
     public Integer restrictions_MinLevel;
     public Integer restrictions_MaxLevel;
     public Integer lowerMobLevelBiasFactor;
+    public Integer conditions_ApplyAboveY;
+    public Integer conditions_ApplyBelowY;
     public double random_BiasFactor;
     public Double conditions_Chance;
     public String nametag;
@@ -48,6 +50,8 @@ public class RuleInfo {
     public Map<String, String> calculation_CustomVariables;
     @NotNull
     public Map<String, List<String>> entityNameOverrides;
+    @NotNull
+    public final Map<String, String> ruleSourceNames;
     public List<TieredColoringInfo> tieredColoringInfos;
     public List<ExternalCompatibilityManager.ExternalCompatibility> enabledExtCompats;
     public CachedModalList<String> allowedEntities;
@@ -57,12 +61,17 @@ public class RuleInfo {
     public CachedModalList<String> conditions_ApplyPlugins;
     public CachedModalList<String> conditions_CustomNames;
     public CachedModalList<String> conditions_NoDropEntities;
+    public CachedModalList<String> conditions_WGRegions;
     public CachedModalList<CreatureSpawnEvent.SpawnReason> conditions_SpawnReasons;
     public FineTuningAttributes defaultFineTuning;
     public Map<String, FineTuningAttributes> fineTuning;
 
-    public String getInternalId(){
-        return this.internalId;
+    public String getRuleName(){
+        return this.ruleName;
+    }
+
+    public void setRuleName(final String name){
+        this.ruleName = name;
     }
 
     public void mergePresetRules(RuleInfo preset){
@@ -80,49 +89,11 @@ public class RuleInfo {
                 if (f.get(preset) instanceof Integer && ((Integer) f.get(preset)) == 0) continue;
                 if (f.get(preset) instanceof Double && ((Double) f.get(preset)) == 0.0) continue;
 
-                Utils.logger.info("--- setting value for " + f.getName());
                 this.getClass().getDeclaredField(f.getName()).set(this, f.get(preset));
+                this.ruleSourceNames.put(f.getName(), preset.ruleName);
             }
         }
-        catch (IllegalAccessException | NoSuchFieldException e){
-            Utils.logger.warning("got exception on field " + e.getMessage());
-        }
-
-
-//        this.CreatureNametagAlwaysVisible = preset.CreatureNametagAlwaysVisible;
-//        this.babyMobsInheritAdultSetting = preset.babyMobsInheritAdultSetting;
-//        this.mobLevelInheritance = preset.mobLevelInheritance;
-//        this.useCustomItemDropsForMobs = preset.useCustomItemDropsForMobs;
-//        this.maxRandomVariance = preset.maxRandomVariance;
-//        this.creeperMaxDamageRadius = preset.creeperMaxDamageRadius;
-//        this.conditions_MinLevel = preset.conditions_MinLevel;
-//        this.conditions_MaxLevel = preset.conditions_MaxLevel;
-//        this.restrictions_MinLevel = preset.restrictions_MinLevel;
-//        this.restrictions_MaxLevel = preset.restrictions_MaxLevel;
-//        this.lowerMobLevelBiasFactor = preset.lowerMobLevelBiasFactor;
-//        this.random_BiasFactor = preset.random_BiasFactor;
-//        this.conditions_Chance = preset.conditions_Chance;
-//        this.nametag = preset.nametag;
-//        this.nametag_CreatureDeath = preset.nametag_CreatureDeath;
-//        this.presetName = preset.presetName;
-//        this.calculation_Formula = preset.calculation_Formula;
-//        this.conditions_MobCustomnameStatus = preset.conditions_MobCustomnameStatus;
-//        this.conditions_MobTamedStatus =preset. conditions_MobTamedStatus;
-//        this.levellingStrategies = preset.levellingStrategies;
-//        this.calculation_CustomVariables = preset.calculation_CustomVariables;
-//        this.entityNameOverrides = preset.entityNameOverrides;
-//        this.tieredColoringInfos = preset.tieredColoringInfos;
-//        this.enabledExtCompats = preset.enabledExtCompats;
-//        this.allowedEntities = preset.allowedEntities;
-//        this.worlds = preset.worlds;
-//        this.conditions_Entities = preset.conditions_Entities;
-//        this.conditions_Biomes = preset.conditions_Biomes;
-//        this.conditions_ApplyPlugins = preset.conditions_ApplyPlugins;
-//        this.conditions_CustomNames = preset.conditions_CustomNames;
-//        this.conditions_NoDropEntities = preset.conditions_NoDropEntities;
-//        this.conditions_SpawnReasons = preset.conditions_SpawnReasons;
-//        this.defaultFineTuning = preset.defaultFineTuning;
-//        this.fineTuning = preset.fineTuning;
+        catch (IllegalAccessException | NoSuchFieldException ignored){}
     }
 }
 

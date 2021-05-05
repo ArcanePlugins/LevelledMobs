@@ -237,22 +237,23 @@ public class KillSubcommand implements Subcommand {
         int killed = 0;
         int skipped = 0;
 
-        for (World world : worlds) {
-            for (Entity entity : world.getEntities()) {
-                if (entity instanceof LivingEntity) {
-                    LivingEntity livingEntity = (LivingEntity) entity;
-                    if (main.levelInterface.isLevelled(livingEntity)) {
-                        if (skipKillingEntity(main, livingEntity)) {
-                            skipped++;
-                        } else {
-                            if (useNoDrops)
-                                livingEntity.remove();
-                            else
-                                livingEntity.setHealth(0.0);
-                            killed++;
-                        }
-                    }
+        for (final World world : worlds) {
+            for (final Entity entity : world.getEntities()) {
+                if (!(entity instanceof LivingEntity)) continue;
+                final LivingEntity livingEntity = (LivingEntity) entity;
+                if (!main.levelInterface.isLevelled(livingEntity)) continue;
+
+                if (skipKillingEntity(main, livingEntity)) {
+                    skipped++;
+                    continue;
                 }
+
+                if (useNoDrops)
+                    livingEntity.remove();
+                else
+                    livingEntity.setHealth(0.0);
+
+                killed++;
             }
         }
 

@@ -220,9 +220,9 @@ default-rule:
       item-drop: 3
       xp-drop: 2
 
-  nametag: '&8[&7Level %mob-lvl%&8 | &f%entity-name%&8 | &c%entity-health-rounded%&8/&c%entity-max-health-rounded%&8]'
+  nametag: '&8[%tiered%Level %mob-lvl%&8 | &f%entity-name%&8 | &c%entity-health-rounded%&8/&c%entity-max-health-rounded%&8]'
 
-  creature-death-nametag: '&8[&7Level %mob-lvl%&8 | &f%entity-name%&8]'
+  creature-death-nametag: '&8[%tiered%Level %mob-lvl%&8 | &f%entity-name%&8]'
 
   max-random-variance: 1
 
@@ -276,6 +276,7 @@ default-rule:
 # |                                                                                   |
 custom-rules:
   - enabled: true
+    name: 'nether only stuff'
     worlds:
       mode: 'WHITELIST'
       list: ['world_nether']
@@ -295,7 +296,8 @@ custom-rules:
       mob-customname-status: nametagged
       mob-tamed-status: tamed
 
-  - enabled: true
+  - enabled: false
+    name: 'enable passive levelling'
     worlds:
       mode: 'WHITELIST'
       list: ['world']

@@ -6,6 +6,8 @@ import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
 import me.lokka30.levelledmobs.rules.RuleInfo;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
@@ -148,5 +150,12 @@ public class ExternalCompatibilityManager {
     public static boolean checkWorldGuard(final Location location, final LevelledMobs main) {
         return ExternalCompatibilityManager.hasWorldGuardInstalled()
                 && !main.worldGuardManager.regionAllowsLevelling(location);
+    }
+
+    @Nullable
+    public static List<String> getWGRegionsAtLocation(@NotNull final Location location){
+        if (!ExternalCompatibilityManager.hasWorldGuardInstalled()) return null;
+
+        return WorldGuardManager.GetWorldGuardRegionsForLocation(location);
     }
 }

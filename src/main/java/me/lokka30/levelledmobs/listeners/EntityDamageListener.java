@@ -5,10 +5,7 @@ import me.lokka30.levelledmobs.misc.Addition;
 import me.lokka30.levelledmobs.misc.DebugType;
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
 import me.lokka30.levelledmobs.misc.Utils;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Guardian;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Projectile;
+import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -47,7 +44,7 @@ public class EntityDamageListener implements Listener {
     @EventHandler(ignoreCancelled = true, priority = EventPriority.NORMAL)
     public void onRangedDamage(final EntityDamageByEntityEvent event) {
         processRangedDamage(event);
-        processGuardianDamage(event);
+        processOtherRangedDamage(event);
     }
 
     private void processRangedDamage(@NotNull final EntityDamageByEntityEvent event) {
@@ -69,17 +66,24 @@ public class EntityDamageListener implements Listener {
         Utils.debugLog(main, DebugType.RANGED_DAMAGE_MODIFICATION, "New rangedDamage: " + event.getDamage());
     }
 
-    private void processGuardianDamage(@NotNull final EntityDamageByEntityEvent event) {
-        if (!(event.getDamager() instanceof Guardian)) return;
-        final Guardian guardian = (Guardian) event.getDamager();
+    private void processOtherRangedDamage(@NotNull final EntityDamageByEntityEvent event) {
+        if (!(event.getDamager() instanceof LivingEntity)) return;
+        final LivingEntity livingEntity = (LivingEntity) event.getDamager();
 
-        if (!guardian.isValid()) return;
-        if (!main.levelInterface.isLevelled(guardian)) return;
+        if (
+                !(livingEntity instanceof Guardian) &&
+                !(livingEntity instanceof Ghast) &&
+                !(livingEntity instanceof Wither)
+            )
+            return;
 
-        Utils.debugLog(main, DebugType.RANGED_DAMAGE_MODIFICATION, "Range attack damage modified for " + guardian.getName() + ":");
+        if (!livingEntity.isValid()) return;
+        if (!main.levelInterface.isLevelled(livingEntity)) return;
+
+        Utils.debugLog(main, DebugType.RANGED_DAMAGE_MODIFICATION, "Range attack damage modified for " + livingEntity.getName() + ":");
         Utils.debugLog(main, DebugType.RANGED_DAMAGE_MODIFICATION, "Previous guardianDamage: " + event.getDamage());
         //final int level = main.levelInterface.getLevelOfMob(guardian);
-        final LivingEntityWrapper lmEntity = new LivingEntityWrapper(guardian, main);
+        final LivingEntityWrapper lmEntity = new LivingEntityWrapper(livingEntity, main);
         event.setDamage(event.getDamage() + main.mobDataManager.getAdditionsForLevel(lmEntity, Addition.CUSTOM_RANGED_ATTACK_DAMAGE)); // use ranged attack damage value
         Utils.debugLog(main, DebugType.RANGED_DAMAGE_MODIFICATION, "New guardianDamage: " + event.getDamage());
     }

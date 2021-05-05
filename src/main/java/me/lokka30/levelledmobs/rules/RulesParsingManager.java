@@ -193,6 +193,8 @@ public class RulesParsingManager {
             mergePreset(cs);
 
         parsingInfo.ruleIsEnabled = cs.getBoolean("enabled", true);
+        if (cs.getString("name") != null)
+            parsingInfo.setRuleName(cs.getString("name"));
         parseCustomVariables(cs.get("calculation.custom-variables"));
 
         parseStrategies(objectToConfigurationSection(cs.get("strategies")));
@@ -229,7 +231,7 @@ public class RulesParsingManager {
 
         final String presetName = cs.getString("use-preset");
         if (Utils.isNullOrEmpty(presetName)) {
-            Utils.logger.info(parsingInfo.getInternalId() + ", no preset name was specified");
+            Utils.logger.info(parsingInfo.getRuleName() + ", no preset name was specified");
             return;
         }
 
@@ -237,7 +239,7 @@ public class RulesParsingManager {
         for (String checkName : names) {
             checkName = checkName.trim();
             if (!rulePresets.containsKey(checkName)) {
-                Utils.logger.info(parsingInfo.getInternalId() + ", specified preset name '" + checkName + "' was none was found");
+                Utils.logger.info(parsingInfo.getRuleName() + ", specified preset name '" + checkName + "' was none was found");
                 continue;
             }
 
@@ -376,6 +378,12 @@ public class RulesParsingManager {
             }
         }
 
+        if (conditions.getString("apply-above-y") != null)
+            parsingInfo.conditions_ApplyAboveY = conditions.getInt("apply-above-y");
+        if (conditions.getString("apply-below-y") != null)
+            parsingInfo.conditions_ApplyBelowY = conditions.getInt("apply-below-y");
+        if (conditions.getString("allowed-worldguard-regions") != null)
+            parsingInfo.conditions_WGRegions = buildCachedModalListOfString(objectToConfigurationSection(conditions.get("allowed-worldguard-regions")));
         if (conditions.getString("allowed-spawn-reasons") != null)
             parsingInfo.conditions_SpawnReasons = buildCachedModalListOfSpawnReason(objectToConfigurationSection(conditions.get("allowed-spawn-reasons")));
         if (conditions.getString("custom-names") != null)
@@ -446,7 +454,7 @@ public class RulesParsingManager {
                 entityType = EntityType.valueOf(checkName.toUpperCase());
             }
             catch (IllegalArgumentException e){
-                Utils.logger.warning("Invalid entity type: " + mobName + " for fine-tuning in rule: " + parsingInfo.getInternalId());
+                Utils.logger.warning("Invalid entity type: " + mobName + " for fine-tuning in rule: " + parsingInfo.getRuleName());
                 continue;
             }
 

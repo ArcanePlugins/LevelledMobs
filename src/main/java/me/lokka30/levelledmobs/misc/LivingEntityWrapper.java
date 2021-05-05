@@ -10,6 +10,7 @@ import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -34,17 +35,18 @@ public class LivingEntityWrapper {
     private Integer mobLevel;
     @NotNull
     private List<RuleInfo> applicableRules;
+    private List<String> spawnedWGRegions;
     private ExternalCompatibilityManager.ExternalCompatibility mobExternalType;
     private FineTuningAttributes fineTuningAttributes;
     private CreatureSpawnEvent.SpawnReason spawnReason;
 
     private void buildCache(){
-        if (main.levelInterface.isLevelled(livingEntity))
-            this.mobLevel = main.levelInterface.getLevelOfMob(livingEntity);
-        else
-            this.mobLevel = null;
+        this.mobLevel = main.levelInterface.isLevelled(livingEntity) ?
+                main.levelInterface.getLevelOfMob(livingEntity) : null;
+        this.spawnedWGRegions = ExternalCompatibilityManager.getWGRegionsAtLocation(livingEntity.getLocation());
 
         this.hasCache = true;
+        // the lines below must remain after hasCache = true to prevent stack overflow
         this.applicableRules = main.rulesManager.getApplicableRules(this);
         this.fineTuningAttributes = main.rulesManager.getFineTuningAttributes(this);
     }
@@ -76,12 +78,14 @@ public class LivingEntityWrapper {
         return this.applicableGroups;
     }
 
+    @Nullable
     public FineTuningAttributes getFineTuningAttributes(){
         if (!hasCache) buildCache();
 
         return this.fineTuningAttributes;
     }
 
+    @NotNull
     public List<RuleInfo> getApplicableRules(){
         if (!hasCache) buildCache();
 
@@ -130,6 +134,7 @@ public class LivingEntityWrapper {
         return false;
     }
 
+    @NotNull
     public CreatureSpawnEvent.SpawnReason getSpawnReason() {
         if (livingEntity.getPersistentDataContainer().has(main.levelManager.spawnReasonKey, PersistentDataType.STRING)){
             return CreatureSpawnEvent.SpawnReason.valueOf(
@@ -147,6 +152,7 @@ public class LivingEntityWrapper {
         this.spawnReason = spawnReason;
     }
 
+    @NotNull
     public String getNameIfBaby(){
         return this.isBabyMob() ?
                 "BABY_" + getTypeName() :
@@ -157,6 +163,7 @@ public class LivingEntityWrapper {
         this.mobExternalType = externalType;
     }
 
+    @NotNull
     public ExternalCompatibilityManager.ExternalCompatibility getMobExternalType(){
         return this.mobExternalType;
     }
@@ -169,8 +176,23 @@ public class LivingEntityWrapper {
         return livingEntity.getPersistentDataContainer().has(main.levelManager.overridenEntityNameKey, PersistentDataType.STRING);
     }
 
+    @Nullable
     public String getOverridenEntityName(){
         return livingEntity.getPersistentDataContainer().get(main.levelManager.overridenEntityNameKey, PersistentDataType.STRING);
+    }
+
+    @Nullable
+    public List<String> getSpawnedWGRegions(){
+        if (!hasCache) buildCache();
+
+        return this.spawnedWGRegions;
+    }
+
+    @NotNull
+    public String getWGRegionName(){
+        if (this.spawnedWGRegions.isEmpty()) return "";
+        return this.spawnedWGRegions.get(0) == null ?
+                "" : this.spawnedWGRegions.get(0);
     }
 
     public void setOverridenEntityName(final String name){

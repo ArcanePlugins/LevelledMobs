@@ -309,7 +309,7 @@ public class LevelManager {
 
         // Get their level
         final int level = lmEntity.getMobLevel();
-        Utils.debugLog(main, DebugType.SET_LEVELLED_ITEM_DROPS, "3: Entity level is " + level + ".");
+        Utils.debugLog(main, DebugType.SET_LEVELLED_ITEM_DROPS, "3: Entity " + lmEntity.getTypeName() + " level is " + level + ".");
 
         final boolean doNotMultiplyDrops = !main.rulesManager.getRule_CheckIfNoDropMultiplierEntitiy(lmEntity);
 
@@ -558,7 +558,7 @@ public class LevelManager {
         final String displayName = lmEntity.getLivingEntity().getCustomName() == null ? MessageUtils.colorizeAll(entityName) : lmEntity.getLivingEntity().getCustomName();
 
         // ignore if 'disabled'
-        if (nametag.isEmpty() || nametag.equalsIgnoreCase("disabled"))
+        if (nametag.isEmpty() || nametag.equalsIgnoreCase("disabled") || nametag.equalsIgnoreCase("none"))
             return lmEntity.getLivingEntity().getCustomName(); // CustomName can be null, that is meant to be the case.
 
         // %tiered% placeholder
@@ -574,6 +574,7 @@ public class LevelManager {
         nametag = nametag.replace("%entity-max-health-rounded%", roundedMaxHealthInt);
         nametag = nametag.replace("%heart_symbol%", "❤");
         nametag = nametag.replace("%tiered%", tieredPlaceholder);
+        nametag = nametag.replace("%wg_region%", lmEntity.getWGRegionName());
         nametag = MessageUtils.colorizeAll(nametag);
 
         // This is after colorize so that color codes in nametags dont get translated

@@ -133,7 +133,7 @@ public class RulesSubcommand implements Subcommand {
     private void showAllValues(@NotNull final RuleInfo pi){
         final SortedMap<String, String> values = new TreeMap<>();
 
-        Utils.logger.info("id: " + pi.getInternalId());
+        Utils.logger.info("id: " + pi.getRuleName());
         try {
             for(final Field f : pi.getClass().getDeclaredFields()) {
                 if (!Modifier.isPublic(f.getModifiers())) continue;
@@ -146,8 +146,8 @@ public class RulesSubcommand implements Subcommand {
                 if (value.toString().equalsIgnoreCase("0.0")) continue;
                 if (value.toString().equalsIgnoreCase("false")) continue;
                 if (value.toString().equalsIgnoreCase("NONE")) continue;
-                values.put(f.getName(), f.getName() + ", value: " + value);
-                // values.put(f.getName(), f.getName() + ", value: " + (value == null ? "(null)" : value));
+                final String showValue = f.getName() + ", value: " + value;
+                values.put(f.getName(), showValue);
             }
         }
         catch (Exception e){
@@ -180,6 +180,7 @@ public class RulesSubcommand implements Subcommand {
                     if (!Modifier.isPublic(f.getModifiers())) continue;
                     if (f.get(pi) == null) continue;
                     if (printedKeys.contains(f.getName())) continue;
+                    if (f.getName().equals("ruleSourceNames")) continue;
                     final Object value = f.get(pi);
                     if (value instanceof Map && ((Map<?, ?>) value).isEmpty()) continue;
                     if (value instanceof List && ((List<?>) value).isEmpty()) continue;
@@ -187,7 +188,11 @@ public class RulesSubcommand implements Subcommand {
                             ("NONE".equals(value.toString()) || "NOT_SPECIFIED".equals(value.toString()))) continue;
                     if (f.getName().equals("ruleIsEnabled")) continue;
 
-                    values.put(f.getName(), f.getName() + ", value: " + value);
+                    String showValue = f.getName() + ", value: " + value;
+                    showValue += ", &1source: " + (
+                            pi.ruleSourceNames.containsKey(f.getName()) ? pi.ruleSourceNames.get(f.getName()) : pi.getRuleName()
+                    );
+                    values.put(f.getName(), showValue);
 
                     printedKeys.add(f.getName());
                 }
