@@ -4,6 +4,7 @@ import me.lokka30.levelledmobs.LevelInterface;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.misc.DebugType;
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
+import me.lokka30.levelledmobs.misc.QueueItem;
 import me.lokka30.levelledmobs.misc.Utils;
 import org.bukkit.Location;
 import org.bukkit.Particle;
@@ -43,41 +44,17 @@ public class EntitySpawnListener implements Listener {
         // Must be a LivingEntity.
         if (!(event.getEntity() instanceof LivingEntity)) return;
 
-        if (event instanceof SpawnerSpawnEvent) {
-            onSpawnerSpawn((SpawnerSpawnEvent) event);
-            return;
-        }
-
-        CreatureSpawnEvent.SpawnReason spawnReason = CreatureSpawnEvent.SpawnReason.DEFAULT;
-
-        if (event instanceof CreatureSpawnEvent){
-            final CreatureSpawnEvent spawnEvent = (CreatureSpawnEvent) event;
-
-            if (spawnEvent.getSpawnReason().equals(CreatureSpawnEvent.SpawnReason.SPAWNER) ||
-                spawnEvent.getSpawnReason().equals(CreatureSpawnEvent.SpawnReason.SLIME_SPLIT))
-                return;
-
-            spawnReason = spawnEvent.getSpawnReason();
-        }
-
         final LivingEntityWrapper lmEntity = new LivingEntityWrapper((LivingEntity) event.getEntity(), main);
-        lmEntity.setSpawnReason(spawnReason);
 
-        preprocessMob(lmEntity, event);
+        // here we will process the mob from an async thread which directs it back to preprocessMob(..)
+        main.queueManager.addToQueue(new QueueItem(lmEntity, event));
     }
 
-    private void onSpawnerSpawn(final SpawnerSpawnEvent event) {
-        if (!(event.getEntity() instanceof LivingEntity)) return;
+    private void lmSpawnerSpawn(final LivingEntityWrapper lmEntity, final SpawnerSpawnEvent event) {
 
+        //final LivingEntityWrapper lmEntity = new LivingEntityWrapper((LivingEntity) event.getEntity(), main);
+        //lmEntity.setSpawnReason(CreatureSpawnEvent.SpawnReason.SPAWNER);
         final CreatureSpawner cs = event.getSpawner();
-        final LivingEntityWrapper lmEntity = new LivingEntityWrapper((LivingEntity) event.getEntity(), main);
-        lmEntity.setSpawnReason(CreatureSpawnEvent.SpawnReason.SPAWNER);
-
-        if (!cs.getPersistentDataContainer().has(main.blockPlaceListener.keySpawner, PersistentDataType.INTEGER)){
-            Utils.debugLog(main, DebugType.MOB_SPAWNER, "Spawned mob from vanilla spawner: " + event.getEntityType());
-            preprocessMob(lmEntity, event);
-            return;
-        }
 
         // mob was spawned from a custom LM spawner
         createParticleEffect(cs.getLocation().add(0, 1, 0));
@@ -120,7 +97,33 @@ public class EntitySpawnListener implements Listener {
         runnable.run();
     }
 
-    public void preprocessMob(@NotNull final LivingEntityWrapper lmEntity, @NotNull final EntitySpawnEvent event){
+    public void preprocessMob(LivingEntityWrapper lmEntity, @NotNull final EntitySpawnEvent event){
+
+        CreatureSpawnEvent.SpawnReason spawnReason = CreatureSpawnEvent.SpawnReason.DEFAULT;
+
+        if (event instanceof SpawnerSpawnEvent) {
+            SpawnerSpawnEvent spawnEvent = (SpawnerSpawnEvent) event;
+
+            if (spawnEvent.getSpawner().getPersistentDataContainer().has(main.blockPlaceListener.keySpawner, PersistentDataType.INTEGER)){
+                lmEntity.setSpawnReason(CreatureSpawnEvent.SpawnReason.SPAWNER);
+                lmSpawnerSpawn(lmEntity, spawnEvent);
+                return;
+            }
+
+            Utils.debugLog(main, DebugType.MOB_SPAWNER, "Spawned mob from vanilla spawner: " + event.getEntityType());
+            spawnReason = CreatureSpawnEvent.SpawnReason.SPAWNER;
+        }
+        else if (event instanceof CreatureSpawnEvent){
+            final CreatureSpawnEvent spawnEvent = (CreatureSpawnEvent) event;
+
+            if (spawnEvent.getSpawnReason().equals(CreatureSpawnEvent.SpawnReason.SPAWNER) ||
+                    spawnEvent.getSpawnReason().equals(CreatureSpawnEvent.SpawnReason.SLIME_SPLIT))
+                return;
+
+            spawnReason = spawnEvent.getSpawnReason();
+        }
+
+        lmEntity.setSpawnReason(spawnReason);
 
         final LevelInterface.LevellableState levellableState = getLevellableState(lmEntity, event);
         if (levellableState == LevelInterface.LevellableState.ALLOWED) {

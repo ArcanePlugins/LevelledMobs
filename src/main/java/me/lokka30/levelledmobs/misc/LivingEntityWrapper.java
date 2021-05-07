@@ -190,7 +190,7 @@ public class LivingEntityWrapper {
 
     @NotNull
     public String getWGRegionName(){
-        if (this.spawnedWGRegions.isEmpty()) return "";
+        if (this.spawnedWGRegions == null || this.spawnedWGRegions.isEmpty()) return "";
         return this.spawnedWGRegions.get(0) == null ?
                 "" : this.spawnedWGRegions.get(0);
     }

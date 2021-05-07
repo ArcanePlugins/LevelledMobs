@@ -229,11 +229,25 @@ public class LevelInterface {
 
         if (isSummoned) {
             SummonedMobPreLevelEvent summonedMobPreLevelEvent = new SummonedMobPreLevelEvent(lmEntity.getLivingEntity(), level);
-            Bukkit.getPluginManager().callEvent(summonedMobPreLevelEvent);
+
+            final BukkitRunnable runnable = new BukkitRunnable() {
+                @Override
+                public void run() {
+                    Bukkit.getPluginManager().callEvent(summonedMobPreLevelEvent);
+                }
+            };
+            runnable.runTask(main);
+
             if (summonedMobPreLevelEvent.isCancelled()) return;
         } else {
             MobPreLevelEvent mobPreLevelEvent = new MobPreLevelEvent(lmEntity.getLivingEntity(), level, MobPreLevelEvent.LevelCause.NORMAL, additionalLevelInformation);
-            Bukkit.getPluginManager().callEvent(mobPreLevelEvent);
+            final BukkitRunnable runnable = new BukkitRunnable() {
+                @Override
+                public void run() {
+                    Bukkit.getPluginManager().callEvent(mobPreLevelEvent);
+                }
+            };
+            runnable.runTask(main);
             if (mobPreLevelEvent.isCancelled()) return;
         }
 
