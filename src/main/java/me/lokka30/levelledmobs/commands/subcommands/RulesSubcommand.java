@@ -138,6 +138,7 @@ public class RulesSubcommand implements Subcommand {
             for(final Field f : pi.getClass().getDeclaredFields()) {
                 if (!Modifier.isPublic(f.getModifiers())) continue;
                 if (f.get(pi) == null) continue;
+                if (f.getName().equals("ruleSourceNames")) continue;
                 final Object value = f.get(pi);
                 if (value.toString().equalsIgnoreCase("NOT_SPECIFIED")) continue;
                 if (value.toString().equalsIgnoreCase("{}")) continue;

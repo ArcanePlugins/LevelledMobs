@@ -118,7 +118,38 @@ public class LevelManager {
         }
 
         //Get the level thats meant to be at a given distance
-        return Math.min((levelDistance / increaseLevelDistance) + minLevel + variance, maxLevel);
+        final int spawnDistanceAssignment = Math.min((levelDistance / increaseLevelDistance) + minLevel + variance, maxLevel);
+        if (!spawnDistanceStrategy.blendedLevellingEnabled)
+            return spawnDistanceAssignment;
+
+        return generateBlendedLevel(lmEntity, spawnDistanceStrategy, spawnDistanceAssignment, minLevel, maxLevel);
+    }
+
+    private int generateBlendedLevel(final LivingEntityWrapper lmEntity, SpawnDistanceStrategy spawnDistanceStrategy,
+                                     final int spawnDistanceLevelAssignment, final int minLevel, final int maxLevel){
+        final int currentYPos = lmEntity.getLivingEntity().getLocation().getBlockY();
+        final Location spawnLocation = lmEntity.getLivingEntity().getWorld().getSpawnLocation();
+
+        double result;
+
+        if (spawnDistanceStrategy.scaleDownward) {
+            result = ((((
+                    (double) spawnDistanceStrategy.transition_Y_Height - (double) currentYPos) /
+                    (double) spawnDistanceStrategy.multiplierPeriod) * spawnDistanceStrategy.lvlMultiplier)
+                    * (double) spawnDistanceLevelAssignment);
+        }
+        else {
+            result = ((((
+                    (double) spawnDistanceStrategy.transition_Y_Height - (double) currentYPos) /
+                    (double) spawnDistanceStrategy.multiplierPeriod) * (spawnDistanceStrategy.lvlMultiplier * -1.0))
+                    * (double) spawnDistanceLevelAssignment);
+        }
+
+        result = Utils.round(Math.floor(result) + spawnDistanceLevelAssignment);
+        if (result < minLevel) result = minLevel;
+        else if (result > maxLevel) result = maxLevel;
+
+        return (int) result;
     }
 
     // this is now the main entry point that determines the level for all criteria
@@ -140,9 +171,8 @@ public class LevelManager {
 
         if (levellingStrategy instanceof YDistanceStrategy)
             return generateYCoordinateLevel(lmEntity, minLevel, maxLevel, (YDistanceStrategy) levellingStrategy);
-        else if (levellingStrategy instanceof SpawnDistanceStrategy) {
+        else if (levellingStrategy instanceof SpawnDistanceStrategy)
             return generateDistanceFromSpawnLevel(lmEntity, minLevel, maxLevel, (SpawnDistanceStrategy)levellingStrategy);
-        }
 
         // system 1: random levelling
 
@@ -534,11 +564,6 @@ public class LevelManager {
 
     // When the persistent data container levelled key has not been set on the entity yet (i.e. for use in EntitySpawnListener)
     public String getNametag(final LivingEntityWrapper lmEntity, final int level, final boolean isDeathNametag) {
-
-        // If show label for default levelled mobs is disabled and the mob is the min level, then don't modify their tag.
-//        if (!main.settingsCfg.getBoolean("show-label-for-default-levelled-mobs", true) && level == main.settingsCfg.getInt("fine-tuning.min-level", 1)) {
-//            return lmEntity.getLivingEntity().getCustomName(); // CustomName can be null, that is meant to be the case.
-//        }
 
         final AttributeInstance maxHealth = lmEntity.getLivingEntity().getAttribute(Attribute.GENERIC_MAX_HEALTH);
         final String roundedMaxHealth = maxHealth == null ? "?" : Utils.round(maxHealth.getBaseValue()) + "";

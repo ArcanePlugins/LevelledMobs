@@ -116,7 +116,6 @@ public class RulesManager {
         for (final RuleInfo ruleInfo : lmEntity.getApplicableRules()){
             if (!ruleInfo.levellingStrategies.isEmpty())
                 levellingStrategy = ruleInfo.levellingStrategies.get(0);
-            // TODO: allow multiple levelling strategies
         }
 
         return levellingStrategy;

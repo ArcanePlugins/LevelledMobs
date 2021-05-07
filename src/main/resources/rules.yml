@@ -171,12 +171,19 @@ presets:
         spawn-location:
           x: default
           z: default
+        blended-levelling:
+          enabled: true
+          transition-y-height: 64
+          lvl-multiplier: 0.05
+          multiplier-period: 5
+          scale-downward: true
 
+  4:
+    strategies:
       y-coordinate:
         start: 100 # Min level starts at Y=100
         end: 20    # Max level ends at Y=20
         period: 0 # Blocks per level increase
-
 
 # |                                                                                   |
 # |||---------------------------------------------------------------------------------|

@@ -412,13 +412,9 @@ public class RulesParsingManager {
             SpawnDistanceStrategy spawnDistanceStrategy = new SpawnDistanceStrategy();
             spawnDistanceStrategy.increaseLevelDistance = cs_SpawnDistance.getInt("increase-level-distance");
             spawnDistanceStrategy.startDistance = cs_SpawnDistance.getInt("start-distance");
-
-            String temp = cs_SpawnDistance.getString("spawn-location.x");
-            if (!Utils.isNullOrEmpty(temp) && !"default".equalsIgnoreCase(temp) && Utils.isInteger(temp))
-                spawnDistanceStrategy.spawnLocation_X = Integer.parseInt(temp);
-            temp = cs_SpawnDistance.getString("spawn-location.z");
-            if (!Utils.isNullOrEmpty(temp) && !"default".equalsIgnoreCase(temp) && Utils.isInteger(temp))
-                spawnDistanceStrategy.spawnLocation_Z = Integer.parseInt(temp);
+            spawnDistanceStrategy.spawnLocation_X = parseOptionalSpawnCoordinate("spawn-location.x", cs_SpawnDistance);
+            spawnDistanceStrategy.spawnLocation_Z = parseOptionalSpawnCoordinate("spawn-location.z", cs_SpawnDistance);
+            parseBlendedLevelling(objectToConfigurationSection(cs_SpawnDistance.get("blended-levelling")), spawnDistanceStrategy);
 
             this.parsingInfo.levellingStrategies.add(spawnDistanceStrategy);
         }
@@ -432,6 +428,23 @@ public class RulesParsingManager {
 
             this.parsingInfo.levellingStrategies.add(yDistanceStrategy);
         }
+    }
+
+    private void parseBlendedLevelling(final ConfigurationSection cs, final @NotNull SpawnDistanceStrategy spawnDistanceStrategy){
+        if (cs == null) return;
+
+        spawnDistanceStrategy.blendedLevellingEnabled = cs.getBoolean("enabled");
+        spawnDistanceStrategy.transition_Y_Height = cs.getInt("transition-y-height");
+        spawnDistanceStrategy.lvlMultiplier = cs.getDouble("lvl-multiplier");
+        spawnDistanceStrategy.multiplierPeriod = cs.getInt("multiplier-period");
+        spawnDistanceStrategy.scaleDownward = cs.getBoolean("scale-downward");
+    }
+
+    private Integer parseOptionalSpawnCoordinate(final String path, final ConfigurationSection cs){
+        if (cs.getString(path) == null) return null;
+        if ("default".equalsIgnoreCase(cs.getString(path))) return null;
+
+        return (cs.getInt(path));
     }
 
     private void parseFineTuning(final ConfigurationSection cs){
