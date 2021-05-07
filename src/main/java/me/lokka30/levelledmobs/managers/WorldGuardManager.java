@@ -15,6 +15,8 @@ import com.sk89q.worldguard.protection.regions.RegionContainer;
 import me.lokka30.levelledmobs.misc.Utils;
 import org.bukkit.Location;
 import org.bukkit.entity.LivingEntity;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -87,53 +89,71 @@ public class WorldGuardManager {
     }
 
     //Get all regions at an Entities' location.
-    public ApplicableRegionSet getRegionSet(final LivingEntity livingEntity) {
+    @NotNull
+    public List<ProtectedRegion> getRegionSet(final LivingEntity livingEntity) {
+        final List<ProtectedRegion> results = new ArrayList<>();
         final Location location = livingEntity.getLocation();
-
-        if (location.getWorld() == null) return null;
 
         final RegionContainer regionContainer = WorldGuard.getInstance().getPlatform().getRegionContainer();
         final RegionManager regionManager = regionContainer.get(BukkitAdapter.adapt(livingEntity.getWorld()));
 
-        assert regionManager != null;
+        if (regionManager == null) return results;
 
-        BlockVector3 blockVector = BlockVector3.at(location.getX(), location.getY(), location.getZ());
+        final ProtectedRegion globalRegion = regionManager.getRegion("__global__");
+        if (location.getWorld() == null) {
+            if (globalRegion != null) results.add(globalRegion);
+            return results;
+        }
 
-        return regionManager.getApplicableRegions(blockVector);
+        final BlockVector3 blockVector = BlockVector3.at(location.getX(), location.getY(), location.getZ());
+        if (globalRegion != null) results.add(globalRegion);
+        for (final ProtectedRegion region : regionManager.getApplicableRegions(blockVector))
+            results.add(region);
+
+        return results;
     }
 
     // Get all regions at a location
-    public ApplicableRegionSet getRegionSet(final Location location) {
-        if (location.getWorld() == null) return null;
+    @NotNull
+    public List<ProtectedRegion> getRegionSet(final Location location) {
+        final List<ProtectedRegion> results = new ArrayList<>();
+        if (location.getWorld() == null) return results;
 
         final RegionContainer regionContainer = WorldGuard.getInstance().getPlatform().getRegionContainer();
         final RegionManager regionManager = regionContainer.get(BukkitAdapter.adapt(location.getWorld()));
 
-        assert regionManager != null;
+        if (regionManager == null) return results;
 
-        BlockVector3 blockVector = BlockVector3.at(location.getX(), location.getY(), location.getZ());
+        final ProtectedRegion globalRegion = regionManager.getRegion("__global__");
+        if (location.getWorld() == null) {
+            if (globalRegion != null) results.add(globalRegion);
+            return results;
+        }
 
-        return regionManager.getApplicableRegions(blockVector);
+        final BlockVector3 blockVector = BlockVector3.at(location.getX(), location.getY(), location.getZ());
+        final ApplicableRegionSet regionSet = regionManager.getApplicableRegions(blockVector);
+        if (globalRegion != null) results.add(globalRegion);
+        for (final ProtectedRegion region : regionSet)
+            results.add(region);
+
+        return results;
     }
 
     //Sorts a RegionSet by priority, lowest to highest.
-    public ProtectedRegion[] sortRegionsByPriority(final ApplicableRegionSet regionSet) {
+    @Nullable
+    public ProtectedRegion[] sortRegionsByPriority(final List<ProtectedRegion> regionSet) {
         if (regionSet == null) return null;
 
         ProtectedRegion[] protectedRegions = new ProtectedRegion[0];
-        final List<ProtectedRegion> protectedRegionList = new ArrayList<>();
 
         if (regionSet.size() == 0) {
             return protectedRegions;
         } else if (regionSet.size() == 1) {
             protectedRegions = new ProtectedRegion[1];
-            return regionSet.getRegions().toArray(protectedRegions);
+            return regionSet.toArray(protectedRegions);
         }
 
-        for (final ProtectedRegion region : regionSet) {
-            protectedRegionList.add(region);
-        }
-
+        final List<ProtectedRegion> protectedRegionList = new ArrayList<>(regionSet);
         protectedRegionList.sort(Comparator.comparingInt(ProtectedRegion::getPriority));
 
         return protectedRegionList.toArray(protectedRegions);
@@ -196,6 +216,8 @@ public class WorldGuardManager {
     public boolean regionAllowsLevelling(final LivingEntity livingEntity) {
         final ProtectedRegion[] regions = sortRegionsByPriority(getRegionSet(livingEntity));
 
+        if (regions == null) return true;
+
         for (final ProtectedRegion region : regions) {
             return region.getFlag(WorldGuardManager.allowLevelledMobsFlag) != StateFlag.State.DENY;
         }
@@ -206,10 +228,15 @@ public class WorldGuardManager {
     public boolean regionAllowsLevelling(final Location location) {
         final ProtectedRegion[] regions = sortRegionsByPriority(getRegionSet(location));
 
+        if (regions == null) return true;
+
+        StateFlag.State state = null;
+
         for (final ProtectedRegion region : regions) {
-            return region.getFlag(WorldGuardManager.allowLevelledMobsFlag) != StateFlag.State.DENY;
+            StateFlag.State foundState = region.getFlag(WorldGuardManager.allowLevelledMobsFlag);
+            if (foundState != null) state = foundState;
         }
 
-        return true;
+        return state == null || state == StateFlag.State.ALLOW;
     }
 }
