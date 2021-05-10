@@ -2,6 +2,7 @@ package me.lokka30.levelledmobs.commands.subcommands;
 
 import me.lokka30.levelledmobs.LevelInterface;
 import me.lokka30.levelledmobs.LevelledMobs;
+import me.lokka30.levelledmobs.misc.LivingEntityPlaceHolder;
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
 import me.lokka30.levelledmobs.misc.Utils;
 import org.bukkit.Bukkit;
@@ -17,7 +18,7 @@ import org.bukkit.entity.Player;
 import java.util.*;
 
 /**
- * TODO Describe...
+ * Summons a levelled mob with a specific level and criteria
  *
  * @author stumper66
  * @since v2.0.0
@@ -115,7 +116,17 @@ public class SummonSubcommand implements Subcommand {
 
                 if (args.length == 4 || args.length == 5) {
 
-                    summonMobs(main, entityType, amount, sender, level, player.getLocation(), summonType, player, override);
+                    if (player.getLocation().getWorld() == null) {
+                        List<String> messages = main.messagesCfg.getStringList("common.player-offline");
+                        messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.getPrefix());
+                        messages = Utils.colorizeAllInList(messages);
+                        messages = Utils.replaceAllInList(messages, "%player%", player.getDisplayName());
+                        messages.forEach(sender::sendMessage);
+                        return;
+                    }
+
+                    final LivingEntityPlaceHolder lmPlaceHolder = new LivingEntityPlaceHolder(entityType, player.getLocation(), player.getLocation().getWorld(), main);
+                    summonMobs(lmPlaceHolder, amount, sender, level, summonType, player, override);
                 } else {
                     List<String> messages = main.messagesCfg.getStringList("command.levelledmobs.summon.here.usage");
                     messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.getPrefix());
@@ -133,6 +144,9 @@ public class SummonSubcommand implements Subcommand {
             if (args.length == 6) {
 
                 boolean offline = false;
+                Location location = null;
+                World world = null;
+
                 final Player target = Bukkit.getPlayer(args[5]);
                 if (target == null) {
                     offline = true;
@@ -142,9 +156,11 @@ public class SummonSubcommand implements Subcommand {
                     if (!player.canSee(target) && !player.isOp()) {
                         offline = true;
                     }
+                    location = (target.getLocation());
+                    world = location.getWorld();
                 }
 
-                if (offline) {
+                if (offline || world == null) {
                     List<String> messages = main.messagesCfg.getStringList("common.player-offline");
                     messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.getPrefix());
                     messages = Utils.colorizeAllInList(messages);
@@ -153,7 +169,8 @@ public class SummonSubcommand implements Subcommand {
                     return;
                 }
 
-                summonMobs(main, entityType, amount, sender, level, target.getLocation(), summonType, target, override);
+                final LivingEntityPlaceHolder lmPlaceHolder = new LivingEntityPlaceHolder(entityType, location, world, main);
+                summonMobs(lmPlaceHolder, amount, sender, level, summonType, target, override);
             } else {
                 List<String> messages = main.messagesCfg.getStringList("command.levelledmobs.summon.atPlayer.usage");
                 messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.getPrefix());
@@ -194,13 +211,14 @@ public class SummonSubcommand implements Subcommand {
 
                 Location location = getRelativeLocation(sender, args[5], args[6], args[7], worldName);
 
-                if (location == null) {
+                if (location == null || location.getWorld() == null) {
                     List<String> messages = main.messagesCfg.getStringList("command.levelledmobs.summon.atLocation.invalid-location");
                     messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.getPrefix());
                     messages = Utils.colorizeAllInList(messages);
                     messages.forEach(sender::sendMessage);
                 } else {
-                    summonMobs(main, entityType, amount, sender, level, location, summonType, null, override);
+                    LivingEntityPlaceHolder lmPlaceHolder = new LivingEntityPlaceHolder(entityType, location, location.getWorld(), main);
+                    summonMobs(lmPlaceHolder, amount, sender, level, summonType, null, override);
                 }
             } else {
                 List<String> messages = main.messagesCfg.getStringList("command.levelledmobs.summon.atLocation.usage");
@@ -305,17 +323,13 @@ public class SummonSubcommand implements Subcommand {
         messages.forEach(sender::sendMessage);
     }
 
-    private void summonMobs(final LevelledMobs main, final EntityType entityType, int amount, final CommandSender sender,
-                            int level, Location location, final SummonType summonType, final Player target, final boolean override) {
-        if (override || main.levelInterface.getLevellableState(entityType) == LevelInterface.LevellableState.ALLOWED) {
+    private void summonMobs(final LivingEntityPlaceHolder lmPlaceHolder, int amount, final CommandSender sender,
+                            int level, final SummonType summonType, final Player target, final boolean override) {
 
-            if (location == null || location.getWorld() == null) {
-                List<String> messages = main.messagesCfg.getStringList("command.levelledmobs.summon.invalid-location");
-                messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.getPrefix());
-                messages = Utils.colorizeAllInList(messages);
-                messages.forEach(sender::sendMessage);
-                return;
-            }
+        final LevelledMobs main = lmPlaceHolder.getMainInstance();
+        Location location = lmPlaceHolder.getLocation();
+
+        if (override || main.levelInterface.getLevellableState(lmPlaceHolder) == LevelInterface.LevellableState.ALLOWED) {
 
             if (amount < 1) {
                 List<String> messages = main.messagesCfg.getStringList("command.levelledmobs.summon.amount-limited.min");
@@ -335,13 +349,9 @@ public class SummonSubcommand implements Subcommand {
                 messages.forEach(sender::sendMessage);
             }
 
-            //final int[] levels = main.levelManager.getMinAndMaxLevels(null, entityType, true, location.getWorld().getName());
-            // TODO: figure out how to make this work with the new rules system
-            final int[] levels = new int[] {1, 10};
+            final int[] levels = main.levelManager.getMinAndMaxLevels(lmPlaceHolder);
             final int minLevel = levels[0];
             final int maxLevel = levels[1];
-
-            //int minLevel = instance.configUtils.getMinLevel(entityType, location.getWorld(), true, null, CreatureSpawnEvent.SpawnReason.CUSTOM);
 
             if (level < minLevel && !sender.hasPermission("levelledmobs.command.summon.bypass-level-limit") && !override) {
                 level = minLevel;
@@ -395,7 +405,7 @@ public class SummonSubcommand implements Subcommand {
             for (int i = 0; i < amount; i++) {
                 assert location.getWorld() != null;
 
-                Entity entity = location.getWorld().spawnEntity(location, entityType);
+                Entity entity = location.getWorld().spawnEntity(location, lmPlaceHolder.getEntityType());
 
                 if (entity instanceof LivingEntity) {
                     LivingEntityWrapper lmEntity = new LivingEntityWrapper((LivingEntity) entity, main);
@@ -409,7 +419,7 @@ public class SummonSubcommand implements Subcommand {
                     hereSuccessmessages = Utils.replaceAllInList(hereSuccessmessages, "%prefix%", main.configUtils.getPrefix());
                     hereSuccessmessages = Utils.replaceAllInList(hereSuccessmessages, "%amount%", amount + "");
                     hereSuccessmessages = Utils.replaceAllInList(hereSuccessmessages, "%level%", level + "");
-                    hereSuccessmessages = Utils.replaceAllInList(hereSuccessmessages, "%entity%", entityType.toString());
+                    hereSuccessmessages = Utils.replaceAllInList(hereSuccessmessages, "%entity%", lmPlaceHolder.getTypeName());
                     hereSuccessmessages = Utils.colorizeAllInList(hereSuccessmessages);
                     hereSuccessmessages.forEach(sender::sendMessage);
                     break;
@@ -419,11 +429,11 @@ public class SummonSubcommand implements Subcommand {
                     atLocationSuccessMessages = Utils.replaceAllInList(atLocationSuccessMessages, "%prefix%", main.configUtils.getPrefix());
                     atLocationSuccessMessages = Utils.replaceAllInList(atLocationSuccessMessages, "%amount%", amount + "");
                     atLocationSuccessMessages = Utils.replaceAllInList(atLocationSuccessMessages, "%level%", level + "");
-                    atLocationSuccessMessages = Utils.replaceAllInList(atLocationSuccessMessages, "%entity%", entityType.toString());
+                    atLocationSuccessMessages = Utils.replaceAllInList(atLocationSuccessMessages, "%entity%", lmPlaceHolder.getTypeName());
                     atLocationSuccessMessages = Utils.replaceAllInList(atLocationSuccessMessages, "%x%", location.getBlockX() + "");
                     atLocationSuccessMessages = Utils.replaceAllInList(atLocationSuccessMessages, "%y%", location.getBlockY() + "");
                     atLocationSuccessMessages = Utils.replaceAllInList(atLocationSuccessMessages, "%z%", location.getBlockZ() + "");
-                    atLocationSuccessMessages = Utils.replaceAllInList(atLocationSuccessMessages, "%world%", location.getWorld().getName());
+                    atLocationSuccessMessages = Utils.replaceAllInList(atLocationSuccessMessages, "%world%", location.getWorld() == null ? "(null)" : location.getWorld().getName());
                     atLocationSuccessMessages = Utils.colorizeAllInList(atLocationSuccessMessages);
                     atLocationSuccessMessages.forEach(sender::sendMessage);
                     break;
@@ -433,7 +443,7 @@ public class SummonSubcommand implements Subcommand {
                     atPlayerSuccessMessages = Utils.replaceAllInList(atPlayerSuccessMessages, "%prefix%", main.configUtils.getPrefix());
                     atPlayerSuccessMessages = Utils.replaceAllInList(atPlayerSuccessMessages, "%amount%", amount + "");
                     atPlayerSuccessMessages = Utils.replaceAllInList(atPlayerSuccessMessages, "%level%", level + "");
-                    atPlayerSuccessMessages = Utils.replaceAllInList(atPlayerSuccessMessages, "%entity%", entityType.toString());
+                    atPlayerSuccessMessages = Utils.replaceAllInList(atPlayerSuccessMessages, "%entity%", lmPlaceHolder.getTypeName());
                     atPlayerSuccessMessages = Utils.replaceAllInList(atPlayerSuccessMessages, "%targetUsername%", target.getName());
                     atPlayerSuccessMessages = Utils.replaceAllInList(atPlayerSuccessMessages, "%targetDisplayname%", target.getDisplayName());
                     atPlayerSuccessMessages = Utils.colorizeAllInList(atPlayerSuccessMessages);
@@ -445,7 +455,7 @@ public class SummonSubcommand implements Subcommand {
         } else {
             List<String> messages = main.messagesCfg.getStringList("command.levelledmobs.summon.not-levellable");
             messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.getPrefix());
-            messages = Utils.replaceAllInList(messages, "%entity%", entityType.toString());
+            messages = Utils.replaceAllInList(messages, "%entity%", lmPlaceHolder.getTypeName());
             messages = Utils.colorizeAllInList(messages);
             messages.forEach(sender::sendMessage);
         }

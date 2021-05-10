@@ -1,9 +1,11 @@
 package me.lokka30.levelledmobs.misc;
 
 import me.lokka30.levelledmobs.LevelledMobs;
+import me.lokka30.levelledmobs.LivingEntityInterface;
 import me.lokka30.levelledmobs.managers.ExternalCompatibilityManager;
 import me.lokka30.levelledmobs.rules.FineTuningAttributes;
 import me.lokka30.levelledmobs.rules.RuleInfo;
+import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.*;
 import org.bukkit.event.entity.CreatureSpawnEvent;
@@ -16,7 +18,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-public class LivingEntityWrapper {
+public class LivingEntityWrapper implements LivingEntityInterface {
     public LivingEntityWrapper(final @NotNull LivingEntity livingEntity, final @NotNull LevelledMobs main){
         this.main = main;
         this.livingEntity = livingEntity;
@@ -40,10 +42,15 @@ public class LivingEntityWrapper {
     private FineTuningAttributes fineTuningAttributes;
     private CreatureSpawnEvent.SpawnReason spawnReason;
 
+    @NotNull
+    public LevelledMobs getMainInstance(){
+        return this.main;
+    }
+
     private void buildCache(){
         this.mobLevel = main.levelInterface.isLevelled(livingEntity) ?
                 main.levelInterface.getLevelOfMob(livingEntity) : null;
-        this.spawnedWGRegions = ExternalCompatibilityManager.getWGRegionsAtLocation(livingEntity.getLocation());
+        this.spawnedWGRegions = ExternalCompatibilityManager.getWGRegionsAtLocation(this);
 
         this.hasCache = true;
         // the lines below must remain after hasCache = true to prevent stack overflow
@@ -104,6 +111,20 @@ public class LivingEntityWrapper {
         if (!hasCache) buildCache();
 
         return this.mobLevel != null;
+    }
+
+    @NotNull
+    public World getWorld(){
+        return this.livingEntity.getWorld();
+    }
+
+    @NotNull
+    public Location getLocation(){
+        return this.livingEntity.getLocation();
+    }
+
+    public EntityType getEntityType(){
+        return this.livingEntity.getType();
     }
 
     @NotNull
@@ -204,8 +225,7 @@ public class LivingEntityWrapper {
         final List<CustomUniversalGroups> groups = new ArrayList<>();
         groups.add(CustomUniversalGroups.ALL_MOBS);
 
-        //final boolean isLevellable = (main.levelInterface.getLevellableState(le, true) == LevelInterface.LevellableState.ALLOWED);
-        final boolean isLevellable = true; // if we're here then it is levellable?
+        final boolean isLevellable = true;
 
         //if (isLevelled || isLevellable)
         if (this.mobLevel != null)

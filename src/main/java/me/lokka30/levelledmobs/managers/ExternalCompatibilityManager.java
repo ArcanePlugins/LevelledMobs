@@ -2,6 +2,7 @@ package me.lokka30.levelledmobs.managers;
 
 import io.lumine.xikage.mythicmobs.MythicMobs;
 import me.lokka30.levelledmobs.LevelledMobs;
+import me.lokka30.levelledmobs.LivingEntityInterface;
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
 import me.lokka30.levelledmobs.rules.RuleInfo;
 import org.bukkit.Bukkit;
@@ -53,9 +54,8 @@ public class ExternalCompatibilityManager {
     }
 
     public static boolean isMythicMob(final LivingEntityWrapper lmEntity) {
-        final boolean isExternalType = MythicMobs.inst().getMobManager().isActiveMob(io.lumine.xikage.mythicmobs.adapters.bukkit.BukkitAdapter.adapt(lmEntity.getLivingEntity()));
 
-        return isExternalType;
+        return MythicMobs.inst().getMobManager().isActiveMob(io.lumine.xikage.mythicmobs.adapters.bukkit.BukkitAdapter.adapt(lmEntity.getLivingEntity()));
     }
 
     /**
@@ -153,9 +153,9 @@ public class ExternalCompatibilityManager {
     }
 
     @Nullable
-    public static List<String> getWGRegionsAtLocation(@NotNull final Location location){
+    public static List<String> getWGRegionsAtLocation(@NotNull final LivingEntityInterface lmInterface){
         if (!ExternalCompatibilityManager.hasWorldGuardInstalled()) return null;
 
-        return WorldGuardManager.GetWorldGuardRegionsForLocation(location);
+        return WorldGuardManager.GetWorldGuardRegionsForLocation(lmInterface);
     }
 }

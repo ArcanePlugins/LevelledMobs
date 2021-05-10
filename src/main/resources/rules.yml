@@ -208,11 +208,6 @@ presets:
 default-rule:
   use-preset: 1, 2, 3 # exclude passive mobs, worlds whitelist, levelling strategies
 
-  calculation:
-    custom-variables:
-      ydlPercent: '(1 - (%y-coordinate% / 50))'
-      sdlPercent: '(%y-coordinate% / 50)'
-    formula: '(%ydlPercent% * %y-distance-level%) + (%sdlPercent% * %spawn-distance-level%)' # Will prioritise y-lvl as you get deeper
   no-drop-multipler-entities:
     mode: 'BLACKLIST'
     list: ['ENDER_DRAGON']

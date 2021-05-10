@@ -57,21 +57,33 @@ public class LevelInterface {
      * <p>
      * Thread-safety intended, but not tested.
      *
-     * @param lmEntity target mob
+     * @param lmInterface target mob
      * @return if the mob is allowed to be levelled (yes/no), with reason
      */
     @NotNull
-    public LevellableState getLevellableState(@NotNull LivingEntityWrapper lmEntity) {
+    public LevellableState getLevellableState(@NotNull LivingEntityInterface lmInterface) {
         /*
         Certain entity types are force-blocked, regardless of what the user has configured.
         This is also ran in getLevellableState(EntityType), however it is important that this is ensured
         before all other checks are made.
          */
-        if (FORCED_BLOCKED_ENTITY_TYPES.contains(lmEntity.getTypeName()))
+        if (FORCED_BLOCKED_ENTITY_TYPES.contains(lmInterface.getTypeName()))
             return LevellableState.DENIED_FORCE_BLOCKED_ENTITY_TYPE;
 
-        if (lmEntity.getApplicableRules().isEmpty())
+        if (lmInterface.getApplicableRules().isEmpty())
             return LevellableState.DENIED_NO_APPLICABLE_RULES;
+
+        // Check WorldGuard
+        if (ExternalCompatibilityManager.checkWorldGuard(lmInterface.getLocation(), main))
+            return LevellableState.DENIED_CONFIGURATION_COMPATIBILITY_WORLD_GUARD;
+
+        if (!rulesManager.getRule_IsMobAllowedInEntityOverride(lmInterface))
+            return LevellableState.DENIED_CONFIGURATION_BLOCKED_ENTITY_TYPE;
+
+        if (!(lmInterface instanceof LivingEntityWrapper))
+            return LevellableState.ALLOWED;
+
+        LivingEntityWrapper lmEntity = (LivingEntityWrapper) lmInterface;
 
         /*
         Compatibility with other plugins: users may want to stop LM from acting on mobs modified by other plugins.
@@ -94,12 +106,9 @@ public class LevelInterface {
         if (lmEntity.isMobOfExternalType()) {
             lmEntity.invalidateCache();
 
-            if (!rulesManager.getRule_IsMobAllowedInEntityOverride(lmEntity))
+            if (!rulesManager.getRule_IsMobAllowedInEntityOverride(lmInterface))
                 return LevellableState.DENIED_CONFIGURATION_BLOCKED_ENTITY_TYPE;
         }
-
-        if (!rulesManager.getRule_IsMobAllowedInEntityOverride(lmEntity))
-            return LevellableState.DENIED_CONFIGURATION_BLOCKED_ENTITY_TYPE;
 
         /*
         Check 'No Level Conditions'
@@ -114,63 +123,7 @@ public class LevelInterface {
                 rulesManager.getRule_MobTamedStatus(lmEntity) == MobTamedStatusEnum.NOT_TAMED)
             return LevellableState.DENIED_CONFIGURATION_CONDITION_TAMED;
 
-        // Check WorldGuard
-        if (ExternalCompatibilityManager.checkWorldGuard(lmEntity.getLivingEntity().getLocation(), main))
-            return LevellableState.DENIED_CONFIGURATION_COMPATIBILITY_WORLD_GUARD;
-
         return LevellableState.ALLOWED;
-    }
-
-    /**
-     * Check if a mob is allowed to be levelled, according to the
-     * user's configuration.
-     * Developers, please ensure you understand that this method
-     * does not account for certain things such as 'is mob tamed?',
-     * WorldGuard regions, blocked worlds, etc,
-     * which the user may have disabled, and this method is unable to
-     * factor that in. Where possible, use isLevellable(LivingEntity).
-     *
-     * Thread-safety intended, but not tested.
-     *
-     * @param entityType target entity type
-     * @return of the mob is allowed to be levelled (yes/no), with reason
-     */
-    @NotNull
-    public LevellableState getLevellableState(@NotNull EntityType entityType) {
-        /*
-        Certain entity types are force-blocked, regardless of what the user has configured.
-         */
-        if (FORCED_BLOCKED_ENTITY_TYPES.contains(entityType.toString()))
-            return LevellableState.DENIED_FORCE_BLOCKED_ENTITY_TYPE;
-
-        /*
-        Check Entity Type
-         */
-        // Overriden entities.
-        // TODO: make this compatible with summon
-        // if (main.configUtils.overridenEntities.contains(entityType.toString()))
-//        if (main.rulesManager.getRule_IsMobAllowedInEntityOverride(lmEntity))
-//            return LevellableState.ALLOWED;
-
-        // Entity types that have to be manually checked
-        if (OTHER_HOSTILE_MOBS.contains(entityType.toString())) return LevellableState.ALLOWED;
-
-        // if override level has been specified for min or max then allow it
-//        if (main.configUtils.entityTypesLevelOverride_Min.containsKey(entityType.toString()) ||
-//                main.configUtils.entityTypesLevelOverride_Max.containsKey(entityType.toString()))
-//            return LevellableState.ALLOWED;
-
-        /*
-        Check Entity Class
-        */
-        Class<? extends Entity> entityClass = entityType.getEntityClass();
-        if (entityClass == null)
-            return LevellableState.DENIED_CONFIGURATION_BLOCKED_ENTITY_TYPE;
-
-        return Monster.class.isAssignableFrom(entityClass)
-                || Boss.class.isAssignableFrom(entityClass)
-                || main.settingsCfg.getBoolean("level-passive")
-                ? LevellableState.ALLOWED : LevellableState.DENIED_CONFIGURATION_BLOCKED_ENTITY_TYPE;
     }
 
     /**

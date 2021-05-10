@@ -1,6 +1,8 @@
 package me.lokka30.levelledmobs.rules;
 
 import me.lokka30.levelledmobs.LevelledMobs;
+import me.lokka30.levelledmobs.LivingEntityInterface;
+import me.lokka30.levelledmobs.managers.ExternalCompatibilityManager;
 import me.lokka30.levelledmobs.misc.*;
 import me.lokka30.levelledmobs.rules.strategies.LevellingStrategy;
 import org.jetbrains.annotations.NotNull;
@@ -39,6 +41,16 @@ public class RulesManager {
         return levelNumbersWithBias;
     }
 
+    public int getRule_MaxRandomVariance(final LivingEntityWrapper lmEntity){
+        int result = 0;
+
+        for (final RuleInfo ruleInfo : lmEntity.getApplicableRules()){
+            if (ruleInfo.maxRandomVariance != null) result = ruleInfo.maxRandomVariance;
+        }
+
+        return result;
+    }
+
     public boolean getRule_CheckIfNoDropMultiplierEntitiy(final LivingEntityWrapper lmEntity){
         CachedModalList<String> entitiesList = null;
 
@@ -58,21 +70,29 @@ public class RulesManager {
         return result;
     }
 
-    public boolean getRule_IsMobAllowedInEntityOverride(final LivingEntityWrapper lmEntity){
+    public boolean getRule_IsMobAllowedInEntityOverride(final LivingEntityInterface lmInterface){
         // check if it should be denied thru the entity override list
         boolean babyMobsInheritAdultSetting = true; // default
         CachedModalList<String> allowedEntitiesList = null;
-        for (final RuleInfo ruleInfo : lmEntity.getApplicableRules()){
+        for (final RuleInfo ruleInfo : lmInterface.getApplicableRules()){
             if (ruleInfo.allowedEntities != null)
                 allowedEntitiesList = ruleInfo.allowedEntities;
             if (ruleInfo.babyMobsInheritAdultSetting != null)
                 babyMobsInheritAdultSetting = ruleInfo.babyMobsInheritAdultSetting;
         }
 
-        return (
-                allowedEntitiesList == null ||
-                !babyMobsInheritAdultSetting && lmEntity.isBabyMob() && Utils.isLivingEntityInModalList(allowedEntitiesList, lmEntity, true)) ||
-                Utils.isLivingEntityInModalList(allowedEntitiesList, lmEntity, babyMobsInheritAdultSetting);
+        if (lmInterface instanceof LivingEntityWrapper) {
+            LivingEntityWrapper lmEntity = (LivingEntityWrapper) lmInterface;
+            return (
+                    allowedEntitiesList == null ||
+                            !babyMobsInheritAdultSetting && lmEntity.isBabyMob() && Utils.isLivingEntityInModalList(allowedEntitiesList, lmEntity, true)) ||
+                    Utils.isLivingEntityInModalList(allowedEntitiesList, lmEntity, babyMobsInheritAdultSetting);
+        }
+        else {
+            return (
+                    allowedEntitiesList == null || allowedEntitiesList.isEnabledInList(lmInterface.getTypeName())
+            );
+        }
     }
 
     public FineTuningAttributes getFineTuningAttributes(final LivingEntityWrapper lmEntity){
@@ -148,18 +168,20 @@ public class RulesManager {
         return result;
     }
 
-    public int getRule_MobMinLevel(final LivingEntityWrapper lmEntity){
-        int minLevel = -1;
-        for (final RuleInfo ruleInfo : lmEntity.getApplicableRules()) {
+    public int getRule_MobMinLevel(final LivingEntityInterface lmInterface){
+        int minLevel = 1;
+
+        for (final RuleInfo ruleInfo : lmInterface.getApplicableRules()) {
             if (ruleInfo.restrictions_MinLevel != null) minLevel = ruleInfo.restrictions_MinLevel;
         }
 
         return minLevel;
     }
 
-    public int getRule_MobMaxLevel(final LivingEntityWrapper lmEntity){
-        int maxLevel = -1;
-        for (final RuleInfo ruleInfo : lmEntity.getApplicableRules()) {
+    public int getRule_MobMaxLevel(final LivingEntityInterface lmInterface){
+        int maxLevel = 10;
+
+        for (final RuleInfo ruleInfo : lmInterface.getApplicableRules()) {
             if (ruleInfo.restrictions_MaxLevel != null) maxLevel = ruleInfo.restrictions_MaxLevel;
         }
 
@@ -244,23 +266,22 @@ public class RulesManager {
     }
 
     @NotNull
-    public List<RuleInfo> getApplicableRules(final LivingEntityWrapper lmEntity){
-        List<RuleInfo> rules = new LinkedList<>();
+    public List<RuleInfo> getApplicableRules(final LivingEntityInterface lmInterface){
+        final List<RuleInfo> rules = new LinkedList<>();
 
         for (final RuleInfo ruleInfo : rulesInEffect) {
             if (!ruleInfo.ruleIsEnabled) continue;
-            if (isRuleApplicable(lmEntity, ruleInfo)) rules.add(ruleInfo);
+            if (lmInterface instanceof LivingEntityWrapper && !isRuleApplicable_Entity((LivingEntityWrapper) lmInterface, ruleInfo))
+                continue;
+            if (!isRuleApplicable_Interface(lmInterface, ruleInfo)) continue;
+
+            rules.add(ruleInfo);
         }
 
         return rules;
     }
 
-    private boolean isRuleApplicable(final LivingEntityWrapper lmEntity, final RuleInfo ri){
-
-        if (ri.conditions_Entities != null && !Utils.isLivingEntityInModalList(ri.conditions_Entities, lmEntity)) {
-            Utils.debugLog(main, DebugType.DENIED_RULE_ENTITIES_LIST, String.format("%s, mob: %s", ri.getRuleName(), lmEntity.getTypeName()));
-            return false;
-        }
+    private boolean isRuleApplicable_Entity(final LivingEntityWrapper lmEntity, final RuleInfo ri){
         if (ri.conditions_MinLevel != null && (!lmEntity.isLevelled() || ri.conditions_MinLevel < lmEntity.getMobLevel())) {
             Utils.debugLog(main, DebugType.DENIED_RULE_MAXLEVEL, String.format("%s, mob: %s, mob lvl: %s, rule minlvl: %s",
                     ri.getRuleName(), lmEntity.getTypeName(), lmEntity.getMobLevel(), ri.conditions_MinLevel));
@@ -269,17 +290,6 @@ public class RulesManager {
         if (ri.conditions_MaxLevel != null && (!lmEntity.isLevelled() || ri.conditions_MaxLevel > lmEntity.getMobLevel())) {
             Utils.debugLog(main, DebugType.DENIED_RULE_MAXLEVEL, String.format("%s, mob: %s, mob lvl: %s, rule maxlvl: %s",
                     ri.getRuleName(), lmEntity.getTypeName(), lmEntity.getMobLevel(), ri.conditions_MaxLevel));
-            return false;
-        }
-        if (ri.worlds != null && !ri.worlds.isEnabledInList(lmEntity.getWorldName())) {
-            Utils.debugLog(main, DebugType.DENIED_RULE_WORLD_LIST, String.format("%s, mob: %s, mob world: %s",
-                    ri.getRuleName(), lmEntity.getTypeName(), lmEntity.getLivingEntity().getWorld().getName()));
-            return false;
-        }
-
-        if (ri.conditions_Biomes != null && !ri.conditions_Biomes.isEnabledInList(lmEntity.getLivingEntity().getLocation().getBlock().getBiome().toString())) {
-            Utils.debugLog(main, DebugType.DENIED_RULE_BIOME_LIST, String.format("%s, mob: %s, mob biome: %s",
-                    ri.getRuleName(), lmEntity.getTypeName(), lmEntity.getLivingEntity().getLocation().getBlock().getBiome().name()));
             return false;
         }
 
@@ -302,10 +312,42 @@ public class RulesManager {
             return false;
         }
 
+        return true;
+    }
+
+    private boolean isRuleApplicable_Interface(final LivingEntityInterface lmInterface, final RuleInfo ri){
+
+        if (lmInterface instanceof LivingEntityWrapper) {
+            if (ri.conditions_Entities != null && !Utils.isLivingEntityInModalList(ri.conditions_Entities, (LivingEntityWrapper) lmInterface)) {
+                Utils.debugLog(main, DebugType.DENIED_RULE_ENTITIES_LIST, String.format("%s, mob: %s", ri.getRuleName(), lmInterface.getEntityType().name()));
+                return false;
+            }
+        }
+        else {
+            // can't check groups if not a living entity wrapper
+            if (ri.conditions_Entities != null && !ri.conditions_Entities.isEnabledInList(lmInterface.getEntityType().name())) {
+                Utils.debugLog(main, DebugType.DENIED_RULE_ENTITIES_LIST, String.format("%s, mob: %s", ri.getRuleName(), lmInterface.getEntityType().name()));
+                return false;
+            }
+        }
+
+        if (ri.worlds != null && !ri.worlds.isEnabledInList(lmInterface.getWorld().getName())) {
+            Utils.debugLog(main, DebugType.DENIED_RULE_WORLD_LIST, String.format("%s, mob: %s, mob world: %s",
+                    ri.getRuleName(), lmInterface.getEntityType().name(), lmInterface.getWorld().getName()));
+            return false;
+        }
+
+        if (ri.conditions_Biomes != null && !ri.conditions_Biomes.isEnabledInList(lmInterface.getLocation().getBlock().getBiome().toString())) {
+            Utils.debugLog(main, DebugType.DENIED_RULE_BIOME_LIST, String.format("%s, mob: %s, mob biome: %s",
+                    ri.getRuleName(), lmInterface.getEntityType().name(), lmInterface.getLocation().getBlock().getBiome().name()));
+            return false;
+        }
+
         if (ri.conditions_WGRegions != null){
             boolean isInList = false;
-            if (lmEntity.getSpawnedWGRegions() != null) {
-                for (final String regionName : lmEntity.getSpawnedWGRegions()) {
+            final List<String> wgRegions = ExternalCompatibilityManager.getWGRegionsAtLocation(lmInterface);
+            if (wgRegions != null) {
+                for (final String regionName : wgRegions) {
                     if (ri.conditions_WGRegions.isEnabledInList(regionName)) {
                         isInList = true;
                         break;
@@ -318,12 +360,12 @@ public class RulesManager {
             }
         }
 
-        if (ri.conditions_ApplyAboveY != null && lmEntity.getLivingEntity().getLocation().getBlockY() < ri.conditions_ApplyAboveY){
+        if (ri.conditions_ApplyAboveY != null && lmInterface.getLocation().getBlockY() < ri.conditions_ApplyAboveY){
             // TODO: add debug info
             return false;
         }
 
-        if (ri.conditions_ApplyBelowY != null && lmEntity.getLivingEntity().getLocation().getBlockY() > ri.conditions_ApplyBelowY){
+        if (ri.conditions_ApplyBelowY != null && lmInterface.getLocation().getBlockY() > ri.conditions_ApplyBelowY){
             // TODO: add debug info
             return false;
         }

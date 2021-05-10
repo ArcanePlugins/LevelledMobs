@@ -30,7 +30,7 @@ public class RuleInfo {
     public Boolean babyMobsInheritAdultSetting;
     public Boolean mobLevelInheritance;
     public Boolean useCustomItemDropsForMobs;
-    public int maxRandomVariance;
+    public Integer maxRandomVariance;
     public Integer creeperMaxDamageRadius;
     public Integer conditions_MinLevel;
     public Integer conditions_MaxLevel;
@@ -44,12 +44,10 @@ public class RuleInfo {
     public String nametag;
     public String nametag_CreatureDeath;
     public String presetName;
-    public String calculation_Formula;
     public MobCustomNameStatusEnum conditions_MobCustomnameStatus;
     public MobTamedStatusEnum conditions_MobTamedStatus;
     @NotNull
     public List<LevellingStrategy> levellingStrategies;
-    public Map<String, String> calculation_CustomVariables;
     @NotNull
     public Map<String, List<String>> entityNameOverrides;
     @NotNull

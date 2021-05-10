@@ -7,6 +7,7 @@ import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 import me.lokka30.levelledmobs.LevelInterface;
 import me.lokka30.levelledmobs.LevelledMobs;
+import me.lokka30.levelledmobs.LivingEntityInterface;
 import me.lokka30.levelledmobs.customdrops.CustomDropResult;
 import me.lokka30.levelledmobs.listeners.EntitySpawnListener;
 import me.lokka30.levelledmobs.misc.*;
@@ -93,65 +94,6 @@ public class LevelManager {
         );
     }
 
-    public int generateDistanceFromSpawnLevel(final LivingEntityWrapper lmEntity, final int minLevel, final int maxLevel, final SpawnDistanceStrategy spawnDistanceStrategy) {
-        Location spawnLocation = lmEntity.getLivingEntity().getWorld().getSpawnLocation();
-
-        if (spawnDistanceStrategy.spawnLocation_Z != null || spawnDistanceStrategy.spawnLocation_X != null) {
-            final double useX = spawnDistanceStrategy.spawnLocation_X == null ? spawnLocation.getX() : spawnDistanceStrategy.spawnLocation_X;
-            final double useZ = spawnDistanceStrategy.spawnLocation_Z == null ? spawnLocation.getX() : spawnDistanceStrategy.spawnLocation_Z;
-
-            spawnLocation = new Location(
-                    lmEntity.getLivingEntity().getWorld(),
-                    useX,
-                    spawnLocation.getY(),
-                    useZ);
-        }
-
-        final int distanceFromSpawn = (int) spawnLocation.distance(lmEntity.getLivingEntity().getLocation());
-        final int startDistance = spawnDistanceStrategy.startDistance;
-        final int levelDistance = Math.max(distanceFromSpawn - startDistance, 0);
-        final int increaseLevelDistance = spawnDistanceStrategy.increaseLevelDistance;
-
-        int variance = spawnDistanceStrategy.variance;
-        if (variance != 0) {
-            variance = ThreadLocalRandom.current().nextInt(0, variance + 1);
-        }
-
-        //Get the level thats meant to be at a given distance
-        final int spawnDistanceAssignment = Math.min((levelDistance / increaseLevelDistance) + minLevel + variance, maxLevel);
-        if (!spawnDistanceStrategy.blendedLevellingEnabled)
-            return spawnDistanceAssignment;
-
-        return generateBlendedLevel(lmEntity, spawnDistanceStrategy, spawnDistanceAssignment, minLevel, maxLevel);
-    }
-
-    private int generateBlendedLevel(final LivingEntityWrapper lmEntity, SpawnDistanceStrategy spawnDistanceStrategy,
-                                     final int spawnDistanceLevelAssignment, final int minLevel, final int maxLevel){
-        final int currentYPos = lmEntity.getLivingEntity().getLocation().getBlockY();
-        final Location spawnLocation = lmEntity.getLivingEntity().getWorld().getSpawnLocation();
-
-        double result;
-
-        if (spawnDistanceStrategy.scaleDownward) {
-            result = ((((
-                    (double) spawnDistanceStrategy.transition_Y_Height - (double) currentYPos) /
-                    (double) spawnDistanceStrategy.multiplierPeriod) * spawnDistanceStrategy.lvlMultiplier)
-                    * (double) spawnDistanceLevelAssignment);
-        }
-        else {
-            result = ((((
-                    (double) spawnDistanceStrategy.transition_Y_Height - (double) currentYPos) /
-                    (double) spawnDistanceStrategy.multiplierPeriod) * (spawnDistanceStrategy.lvlMultiplier * -1.0))
-                    * (double) spawnDistanceLevelAssignment);
-        }
-
-        result = Utils.round(Math.floor(result) + spawnDistanceLevelAssignment);
-        if (result < minLevel) result = minLevel;
-        else if (result > maxLevel) result = maxLevel;
-
-        return (int) result;
-    }
-
     // this is now the main entry point that determines the level for all criteria
     public int generateLevel(final LivingEntityWrapper lmEntity) {
         return generateLevel(lmEntity, -1, -1);
@@ -169,36 +111,33 @@ public class LevelManager {
 
         LevellingStrategy levellingStrategy = main.rulesManager.getRule_LevellingStrategy(lmEntity);
 
-        if (levellingStrategy instanceof YDistanceStrategy)
-            return generateYCoordinateLevel(lmEntity, minLevel, maxLevel, (YDistanceStrategy) levellingStrategy);
-        else if (levellingStrategy instanceof SpawnDistanceStrategy)
-            return generateDistanceFromSpawnLevel(lmEntity, minLevel, maxLevel, (SpawnDistanceStrategy)levellingStrategy);
+        if (levellingStrategy instanceof YDistanceStrategy || levellingStrategy instanceof SpawnDistanceStrategy)
+            return levellingStrategy.generateLevel(lmEntity, minLevel, maxLevel);
 
-        // system 1: random levelling
+        // if no levelling strategy was selected then we just use a random number between min and max
 
         if (minLevel == maxLevel)
             return minLevel;
 
-        LevelNumbersWithBias levelNumbersWithBias = main.rulesManager.getRule_LowerMobLevelBiasFactor(lmEntity, minLevel, maxLevel);
-
+        final LevelNumbersWithBias levelNumbersWithBias = main.rulesManager.getRule_LowerMobLevelBiasFactor(lmEntity, minLevel, maxLevel);
         if (levelNumbersWithBias != null)
             return levelNumbersWithBias.getNumberWithinLimits();
-        else
-            return ThreadLocalRandom.current().nextInt(minLevel, maxLevel + 1);
+
+        return ThreadLocalRandom.current().nextInt(minLevel, maxLevel + 1);
     }
 
-    public int[] getMinAndMaxLevels(final @Nullable LivingEntityWrapper lmEntity) {
+    @NotNull
+    public int[] getMinAndMaxLevels(final @NotNull LivingEntityInterface lmInterface) {
         // final EntityType entityType, final boolean isAdultEntity, final String worldName
         // if called from summon command then lmEntity is null
 
-        // TODO: ignore all these null
-        int minLevel = main.rulesManager.getRule_MobMinLevel(lmEntity);
-        int maxLevel = main.rulesManager.getRule_MobMaxLevel(lmEntity);
+        int minLevel = main.rulesManager.getRule_MobMinLevel(lmInterface);
+        int maxLevel = main.rulesManager.getRule_MobMaxLevel(lmInterface);
 
         // world guard regions take precedence over any other min / max settings
         // livingEntity is null if passed from summon mobs command
-        if (lmEntity != null && ExternalCompatibilityManager.hasWorldGuardInstalled() && main.worldGuardManager.checkRegionFlags(lmEntity.getLivingEntity())) {
-            final int[] levels = generateWorldGuardRegionLevel(lmEntity);
+        if (ExternalCompatibilityManager.hasWorldGuardInstalled() && main.worldGuardManager.checkRegionFlags(lmInterface)) {
+            final int[] levels = generateWorldGuardRegionLevel(lmInterface);
             if (levels[0] > -1) minLevel = levels[0];
             if (levels[1] > -1) maxLevel = levels[1];
         }
@@ -209,95 +148,8 @@ public class LevelManager {
         return new int[]{ minLevel, maxLevel };
     }
 
-    // public int generateYCoordinateLevel(final int mobYLocation, final int minLevel, final int maxLevel) {
-    public int generateYCoordinateLevel(final LivingEntityWrapper lmEntity, final int minLevel, final int maxLevel, final YDistanceStrategy yDistanceStrategy) {
-
-        int mobYLocation = lmEntity.getLivingEntity().getLocation().getBlockY();
-
-        final int yPeriod = yDistanceStrategy.yPeriod;
-        final int variance = yDistanceStrategy.yPeriod;
-        int yStart = yDistanceStrategy.startingYLevel;
-        int yEnd = yDistanceStrategy.endingYLevel;
-
-        final boolean isAscending = (yEnd > yStart);
-        if (!isAscending) {
-            yStart = yEnd;
-            yEnd = yDistanceStrategy.startingYLevel;
-        }
-
-        int useLevel = minLevel;
-        boolean skipYPeriod = false;
-
-        if (mobYLocation >= yEnd){
-            useLevel = maxLevel;
-            skipYPeriod = true;
-        } else if (mobYLocation <= yStart){
-            skipYPeriod = true;
-        }
-
-        if (!skipYPeriod) {
-            final double diff = yEnd - yStart;
-            double useMobYLocation =  mobYLocation - yStart;
-
-            if (yPeriod > 0) {
-                useLevel = (int) (useMobYLocation / (double) yPeriod);
-            } else {
-                double percent = useMobYLocation / diff;
-                useLevel = (int) Math.ceil((maxLevel - minLevel + 1) * percent);
-            }
-        }
-
-        if (!isAscending) {
-            useLevel = maxLevel - useLevel + 1;
-        }
-
-        if (variance > 0) {
-            boolean useOnlyNegative = false;
-
-            if (useLevel >= maxLevel) {
-                useLevel = maxLevel;
-                useOnlyNegative = true;
-            } else if (useLevel <= minLevel) {
-                useLevel = minLevel;
-            }
-
-            final int change = ThreadLocalRandom.current().nextInt(0, variance + 1);
-
-            // Start variation. First check if variation is positive or negative towards the original level amount.
-            if (!useOnlyNegative || ThreadLocalRandom.current().nextBoolean()) {
-                // Positive. Add the variation to the final level
-                useLevel += change;
-            } else {
-                // Negative. Subtract the variation from the final level
-                useLevel -= change;
-            }
-        }
-
-        if (useLevel < minLevel) {
-            useLevel = minLevel;
-        } else if (useLevel > maxLevel) {
-            useLevel = maxLevel;
-        }
-
-        return useLevel;
-    }
-
-    public int[] generateWorldGuardRegionLevel(final LivingEntityWrapper lmEntity) {
-        return main.worldGuardManager.getRegionLevel(lmEntity.getLivingEntity());
-
-        //TODO Do we need the code below?
-
-        // standard issue, generate random levels based upon max and min flags in worldguard
-
-//        final int biasFactor = instance.settingsCfg.getInt("fine-tuning.lower-mob-level-bias-factor", 0);
-//        if (biasFactor > 0)
-//            return generateLevelWithBias(levels[0], levels[1], biasFactor);
-//        else
-//            return levels[0] + Math.round(new Random().nextFloat() * (levels[1] - levels[0]));
-
-
-        // generate level based on y distance but use min and max values from world guard
-        //return instance.levelManager.generateYCoordinateLevel(livingEntity.getLocation().getBlockY(), levels[0], levels[1]);
+    public int[] generateWorldGuardRegionLevel(final LivingEntityInterface lmInterface) {
+        return main.worldGuardManager.getRegionLevel(lmInterface);
     }
 
     public void updateNametagWithDelay(final LivingEntityWrapper lmEntity, final String nametag, final long delay) {
@@ -563,6 +415,7 @@ public class LevelManager {
     }
 
     // When the persistent data container levelled key has not been set on the entity yet (i.e. for use in EntitySpawnListener)
+    @Nullable
     public String getNametag(final LivingEntityWrapper lmEntity, final int level, final boolean isDeathNametag) {
 
         final AttributeInstance maxHealth = lmEntity.getLivingEntity().getAttribute(Attribute.GENERIC_MAX_HEALTH);
@@ -570,7 +423,7 @@ public class LevelManager {
         final String roundedMaxHealthInt = maxHealth == null ? "?" : (int) Utils.round(maxHealth.getBaseValue()) + "";
 
         String nametag = isDeathNametag ? main.rulesManager.getRule_Nametag_CreatureDeath(lmEntity) : main.rulesManager.getRule_Nametag(lmEntity);
-        String entityName = Utils.capitalize(lmEntity.getTypeName()).toLowerCase().replaceAll("_", " ");
+        String entityName = Utils.capitalize(lmEntity.getTypeName().toLowerCase().replaceAll("_", " "));
 
         // Baby zombies can have specific nametags in entity-name-override
 

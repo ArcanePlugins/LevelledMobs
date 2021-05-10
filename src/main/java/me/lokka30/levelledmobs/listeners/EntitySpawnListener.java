@@ -94,10 +94,10 @@ public class EntitySpawnListener implements Listener {
             }
         };
 
-        runnable.run();
+        runnable.runTaskAsynchronously(main);
     }
 
-    public void preprocessMob(LivingEntityWrapper lmEntity, @NotNull final EntitySpawnEvent event){
+    public void preprocessMob(final LivingEntityWrapper lmEntity, @NotNull final EntitySpawnEvent event){
 
         CreatureSpawnEvent.SpawnReason spawnReason = CreatureSpawnEvent.SpawnReason.DEFAULT;
 
@@ -130,7 +130,7 @@ public class EntitySpawnListener implements Listener {
             main.levelInterface.applyLevelToMob(lmEntity, main.levelInterface.generateLevel(lmEntity),
                     false, false, new HashSet<>(Collections.singletonList(LevelInterface.AdditionalLevelInformation.NOT_APPLICABLE)));
         } else {
-            Utils.debugLog(main, DebugType.APPLY_LEVEL_FAIL, "Entity " + event.getEntityType() + " in wo" +
+            Utils.debugLog(main, DebugType.APPLY_LEVEL_FAIL, "Entity " + lmEntity.getNameIfBaby() + " in wo" +
                     "rld " + lmEntity.getWorldName() + " was not levelled -> Levellable state: " + levellableState);
 
             // Check if the mob is already levelled - if so, remove their level

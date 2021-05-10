@@ -195,10 +195,8 @@ public class RulesParsingManager {
         parsingInfo.ruleIsEnabled = cs.getBoolean("enabled", true);
         if (cs.getString("name") != null)
             parsingInfo.setRuleName(cs.getString("name"));
-        parseCustomVariables(cs.get("calculation.custom-variables"));
 
         parseStrategies(objectToConfigurationSection(cs.get("strategies")));
-        parseCalculation(objectToConfigurationSection(cs.get("calculation")));
         parseConditions(objectToConfigurationSection(cs.get("conditions")));
         parseLevelLimits(objectToConfigurationSection(cs.get("level-limits")));
         parseRestrictions(objectToConfigurationSection(cs.get("restrictions")));
@@ -212,7 +210,8 @@ public class RulesParsingManager {
         if (cs.get("allowed-entities") != null)
             parsingInfo.allowedEntities = buildCachedModalListOfString(objectToConfigurationSection(cs.get("allowed-entities")));
 
-        parsingInfo.maxRandomVariance = cs.getInt("max-random-variance", 0);
+        if (cs.getString("max-random-variance") != null)
+            parsingInfo.maxRandomVariance = cs.getInt("max-random-variance", 0);
         parsingInfo.nametag = cs.getString("nametag");
         parsingInfo.nametag_CreatureDeath = cs.getString("creature-death-nametag");
         if (cs.getString("creature-nametag-always-visible") != null)
@@ -332,20 +331,6 @@ public class RulesParsingManager {
             parsingInfo.restrictions_MaxLevel = cs.getInt("maxlevel");
     }
 
-    private void parseCustomVariables(final Object customVariablesObj){
-        final ConfigurationSection customVariables = objectToConfigurationSection(customVariablesObj);
-        if (customVariables == null) return;
-
-        final Map<String, String> variables = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
-
-        for (final String key : customVariables.getKeys(true)){
-            final String customVariable = customVariables.getString(key);
-            if (!Utils.isNullOrEmpty(customVariable)) variables.put(key, customVariable);
-        }
-
-        if (!variables.isEmpty()) parsingInfo.calculation_CustomVariables = variables;
-    }
-
     private void parseConditions(final ConfigurationSection conditions){
         if (conditions  == null) return;
 
@@ -394,12 +379,6 @@ public class RulesParsingManager {
             parsingInfo.conditions_Biomes = buildCachedModalListOfString(objectToConfigurationSection(conditions.get("biomes")));
         if (conditions.get("apply-plugins") != null)
             parsingInfo.conditions_ApplyPlugins = buildCachedModalListOfString(objectToConfigurationSection(conditions.get("apply-plugins")));
-    }
-
-    private void parseCalculation(final ConfigurationSection calculation){
-        if (calculation  == null) return;
-
-        parsingInfo.calculation_Formula = calculation.getString("formula");
     }
 
     private void parseStrategies(final ConfigurationSection strategies){
