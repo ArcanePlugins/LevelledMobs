@@ -89,7 +89,7 @@ public class WorldGuardManager {
     //Get all regions at an Entities' location.
     @NotNull
     public List<ProtectedRegion> getRegionSet(final LivingEntityInterface lmInterface) {
-        final List<ProtectedRegion> results = new ArrayList<>();
+        final List<ProtectedRegion> results = new LinkedList<>();
         final Location location = lmInterface.getLocation();
 
         final RegionContainer regionContainer = WorldGuard.getInstance().getPlatform().getRegionContainer();
@@ -114,7 +114,7 @@ public class WorldGuardManager {
     // Get all regions at a location
     @NotNull
     public List<ProtectedRegion> getRegionSet(final Location location) {
-        final List<ProtectedRegion> results = new ArrayList<>();
+        final List<ProtectedRegion> results = new LinkedList<>();
         if (location.getWorld() == null) return results;
 
         final RegionContainer regionContainer = WorldGuard.getInstance().getPlatform().getRegionContainer();

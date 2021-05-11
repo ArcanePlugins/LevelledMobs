@@ -246,6 +246,7 @@ defaults:
   override: false
   maxdropgroup: 1
   priority: 0
+  player-caused: false
 
 #
 # |||||||||||||||||||||||||||||||||||||||||||||||||||||

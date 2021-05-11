@@ -15,7 +15,8 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -33,7 +34,7 @@ public class EntityDamageDebugListener implements Listener {
         this.main = main;
     }
 
-    private final ArrayList<UUID> delay = new ArrayList<>();
+    private final List<UUID> delay = new LinkedList<>();
 
     //This class is used to debug levellable mobs. It simply displays their current attributes, current health and current level.
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)

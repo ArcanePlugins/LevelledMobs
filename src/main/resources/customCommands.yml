@@ -1,9 +1,0 @@
-file-version: 1
-
-#ZOMBIE:
-#  - customCommand:
-#      command: "gm 1 %player%"
-#      minLevel: 0
-#      maxLevel: 10
-#      chance: 0.5
-#      playerCaused: true # default true

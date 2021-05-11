@@ -18,7 +18,6 @@ import me.lokka30.microlib.MessageUtils;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.enchantments.EnchantmentTarget;
 import org.bukkit.entity.*;
 import org.bukkit.inventory.AbstractHorseInventory;
@@ -302,128 +301,19 @@ public class LevelManager {
         }
     }
 
-    /**
-     * Executes commands that are suitable for this entity
-     *
-     * @param lmEntity     entity that was killed
-     * @author limzikiki
-     */
-    public void execCommands(final LivingEntityWrapper lmEntity){
-        if(lmEntity.isLevelled()){
-            //Get section that contains all data related to mob kill commands
-            final ConfigurationSection configs = main.customCommandsCfg;
-            if(configs != null) {
-                final Set<String> entities = configs.getKeys(false);
-                for (String entityType: entities) {
-                    if (entityType.equals("file-version")) continue;
-                    if (entityType.equals("ALL") || EntityType.valueOf(entityType) == lmEntity.getLivingEntity().getType()) {
-                        serilalizeConfigsForCommands(lmEntity, configs, entityType);
-                    }
-                }
-            }else{
-                throw new Error("Error reading 'customCommands.yml'");
-            }
-        }
-    }
-
-    private void serilalizeConfigsForCommands(LivingEntityWrapper lmEntity, ConfigurationSection configs, String entityType) {
-        final List<Map<?, ?>> entityConfigs = configs.getMapList(entityType);
-        final ConfigurationSection commandsName = configs.getConfigurationSection(entityType);
-
-        Utils.debugLog(main, DebugType.CUSTOM_COMMANDS, entityConfigs.toString());
-
-        entityConfigs.forEach(elem -> {
-            Utils.debugLog(main, DebugType.CUSTOM_COMMANDS, elem.keySet().toString());
-            final String commandName = (String) elem.keySet().iterator().next();
-            final Map<String, Object> commandConfigs = (Map<String, Object>) elem.get(commandName);
-            Utils.debugLog(main, DebugType.CUSTOM_COMMANDS, commandConfigs.keySet().toString());
-            final String command = (String) commandConfigs.get("command");
-            int minLevel = (int) commandConfigs.getOrDefault("minLevel", 0);
-            int maxLevel = (int) commandConfigs.getOrDefault("maxLevel", Integer.MAX_VALUE);
-            double chance = (double) commandConfigs.getOrDefault("chance", 1.0);
-            boolean playerCaused = (boolean) commandConfigs.getOrDefault("playerCaused", true);
-
-            final CustomMobCommand commandInstance = new CustomMobCommand(commandName, command, minLevel, maxLevel, chance, playerCaused);
-
-            execCommands(lmEntity, commandInstance);
-
-        });
-    }
-
-    /**
-     * Executes commands that are suitable for this entity,
-     * configs should contain only levels and corresponding commands
-     *
-     * @param lmEntity     entity that was killed
-     * @param configs    configs containing only levels and corresponding commands
-     * @author limzikiki
-     */
-    public void execCommands(final LivingEntityWrapper lmEntity, @Nonnull final CustomMobCommand configs) {
-
-        final int entityLevel = lmEntity.getMobLevel();
-        //noinspection ConstantConditions
-        final boolean isPlayerCaused = (lmEntity.getLivingEntity().getKiller() != null) && (lmEntity.getLivingEntity().getKiller() instanceof Player);
-
-        final String commandName = configs.commandName;
-
-        final String command = configs.command;
-        final int minLevel = configs.minLevel;
-        final int maxLevel = configs.maxLevel;
-        final boolean playerCaused = configs.playerCaused;
-        final double chance = configs.chance;
-
-        if (chance < 1.0) {
-            double chanceRole = ThreadLocalRandom.current().nextInt(0, 100001) * 0.0001;
-            if (1.0 - chanceRole >= chance) return;
-        }
-
-        if (isPlayerCaused != playerCaused) return;
-
-        if (minLevel >= entityLevel || maxLevel <= entityLevel) return;
-
-        final Player player = lmEntity.getLivingEntity().getKiller();
-
-        // Replace placeholders
-        String finalCommand = command;
-
-        if (isPlayerCaused) {
-            // %player% placeholder
-            finalCommand = Utils.replaceEx(finalCommand, "%player%", player.getName());
-        }
-
-        // %level% placeholder
-        finalCommand = Utils.replaceEx(finalCommand, "%level%", String.valueOf(entityLevel));
-
-        // %world% placeholder
-        finalCommand = Utils.replaceEx(finalCommand, "%world%", lmEntity.getWorldName());
-
-        // %location% placeholder
-        final String location =
-                lmEntity.getLivingEntity().getLocation().getBlockX() + " " +
-                lmEntity.getLivingEntity().getLocation().getBlockY() + " " +
-                lmEntity.getLivingEntity().getLocation().getBlockZ();
-        finalCommand = Utils.replaceEx(finalCommand, "%location%", location);
-
-        Utils.debugLog(main, DebugType.CUSTOM_COMMANDS, "Command: " + finalCommand);
-        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), finalCommand);
-    }
-
-
-    // When the persistent data container levelled key has been set on the entity already (i.e. when they are damaged)
-    public String getNametag(final LivingEntityWrapper lmEntity, final boolean isDeathNametag) {
-        return getNametag(lmEntity, lmEntity.getMobLevel(), isDeathNametag);
+    public void updateNametag(final LivingEntityWrapper lmEntity){
+        updateNametag(
+                lmEntity,
+                getNametag(lmEntity, false)
+                );
     }
 
     // When the persistent data container levelled key has not been set on the entity yet (i.e. for use in EntitySpawnListener)
     @Nullable
-    public String getNametag(final LivingEntityWrapper lmEntity, final int level, final boolean isDeathNametag) {
-
-        final AttributeInstance maxHealth = lmEntity.getLivingEntity().getAttribute(Attribute.GENERIC_MAX_HEALTH);
-        final String roundedMaxHealth = maxHealth == null ? "?" : Utils.round(maxHealth.getBaseValue()) + "";
-        final String roundedMaxHealthInt = maxHealth == null ? "?" : (int) Utils.round(maxHealth.getBaseValue()) + "";
+    public String getNametag(final LivingEntityWrapper lmEntity, final boolean isDeathNametag) {
 
         String nametag = isDeathNametag ? main.rulesManager.getRule_Nametag_CreatureDeath(lmEntity) : main.rulesManager.getRule_Nametag(lmEntity);
-        String entityName = Utils.capitalize(lmEntity.getTypeName().toLowerCase().replaceAll("_", " "));
+        if ("disabled".equalsIgnoreCase(nametag) || "none".equalsIgnoreCase(nametag)) return null;
 
         // Baby zombies can have specific nametags in entity-name-override
 
@@ -431,34 +321,58 @@ public class LevelManager {
                 lmEntity.getOverridenEntityName() :
                 main.rulesManager.getRule_EntityOverriddenName(lmEntity);
 
-        if (overridenName != null) entityName = overridenName;
-        if (entityName.isEmpty() || entityName.equalsIgnoreCase("disabled")) return null;
-        final String displayName = lmEntity.getLivingEntity().getCustomName() == null ? MessageUtils.colorizeAll(entityName) : lmEntity.getLivingEntity().getCustomName();
+        String displayName = overridenName == null ?
+                Utils.capitalize(lmEntity.getTypeName().toLowerCase().replaceAll("_", " ")) :
+                MessageUtils.colorizeAll(overridenName);
+
+        if (lmEntity.getLivingEntity().getCustomName() != null)
+            displayName = lmEntity.getLivingEntity().getCustomName();
 
         // ignore if 'disabled'
-        if (nametag.isEmpty() || nametag.equalsIgnoreCase("disabled") || nametag.equalsIgnoreCase("none"))
+        if (nametag.isEmpty())
             return lmEntity.getLivingEntity().getCustomName(); // CustomName can be null, that is meant to be the case.
 
-        // %tiered% placeholder
-        String tieredPlaceholder = main.rulesManager.getRule_TieredPlaceholder(lmEntity);
-        if (tieredPlaceholder == null) tieredPlaceholder = "";
-
-        // replace them placeholders ;)
-        nametag = nametag.replace("%mob-lvl%", level + "");
-        nametag = nametag.replace("%entity-name%", entityName);
-        nametag = nametag.replace("%entity-health%", Utils.round(lmEntity.getLivingEntity().getHealth()) + "");
-        nametag = nametag.replace("%entity-health-rounded%", (int) Utils.round(lmEntity.getLivingEntity().getHealth()) + "");
-        nametag = nametag.replace("%entity-max-health%", roundedMaxHealth);
-        nametag = nametag.replace("%entity-max-health-rounded%", roundedMaxHealthInt);
-        nametag = nametag.replace("%heart_symbol%", "❤");
-        nametag = nametag.replace("%tiered%", tieredPlaceholder);
-        nametag = nametag.replace("%wg_region%", lmEntity.getWGRegionName());
-        nametag = MessageUtils.colorizeAll(nametag);
+        nametag = replaceStringPlaceholders(nametag, lmEntity);
 
         // This is after colorize so that color codes in nametags dont get translated
         nametag = nametag.replace("%displayname%", displayName);
 
         return nametag;
+    }
+
+    public String replaceStringPlaceholders(final String nametag, final LivingEntityWrapper lmEntity){
+        String result = nametag;
+
+        final AttributeInstance maxHealth = lmEntity.getLivingEntity().getAttribute(Attribute.GENERIC_MAX_HEALTH);
+        final String roundedMaxHealth = maxHealth == null ? "?" : Utils.round(maxHealth.getBaseValue()) + "";
+        final String roundedMaxHealthInt = maxHealth == null ? "?" : (int) Utils.round(maxHealth.getBaseValue()) + "";
+        String entityName = Utils.capitalize(lmEntity.getTypeName().toLowerCase().replaceAll("_", " "));
+
+        // %tiered% placeholder
+        String tieredPlaceholder = main.rulesManager.getRule_TieredPlaceholder(lmEntity);
+        if (tieredPlaceholder == null) tieredPlaceholder = "";
+
+        // %location% placeholder
+        final String locationStr = String.format("%s %s %s",
+                        lmEntity.getLivingEntity().getLocation().getBlockX(),
+                        lmEntity.getLivingEntity().getLocation().getBlockY(),
+                        lmEntity.getLivingEntity().getLocation().getBlockZ());
+
+        // replace them placeholders ;)
+        result = result.replace("%mob-lvl%", lmEntity.getMobLevel() + "");
+        result = result.replace("%entity-name%", entityName);
+        result = result.replace("%entity-health%", Utils.round(lmEntity.getLivingEntity().getHealth()) + "");
+        result = result.replace("%entity-health-rounded%", (int) Utils.round(lmEntity.getLivingEntity().getHealth()) + "");
+        result = result.replace("%entity-max-health%", roundedMaxHealth);
+        result = result.replace("%entity-max-health-rounded%", roundedMaxHealthInt);
+        result = result.replace("%heart_symbol%", "❤");
+        result = result.replace("%tiered%", tieredPlaceholder);
+        result = result.replace("%wg_region%", lmEntity.getWGRegionName());
+        result = result.replace("%world%", lmEntity.getWorldName());
+        result = result.replace("%location%", locationStr);
+        result = MessageUtils.colorizeAll(result);
+
+        return result;
     }
 
     public void updateNametag(final @NotNull LivingEntityWrapper lmEntity, final String nametag) {
@@ -669,17 +583,6 @@ public class LevelManager {
         creeper.setExplosionRadius(blastRadius);
     }
 
-    public void updateNametag(LivingEntityWrapper lmEntity, int level) {
-        if (!main.settingsCfg.getBoolean("show-label-for-default-levelled-mobs") && level == 1) {
-            // Don't show the label for default levelled mobs, since the server owner configured it this way
-            main.levelManager.updateNametag(lmEntity, main.levelManager.getNametag(lmEntity, level, false));
-            return;
-        }
-
-        final String nametag = main.levelManager.getNametag(lmEntity, level, false);
-        main.levelManager.updateNametagWithDelay(lmEntity, nametag, 1);
-    }
-
     /**
      * Add configured equipment to the levelled mob
      * LivingEntity MUST be a levelled mob
@@ -700,7 +603,7 @@ public class LevelManager {
         // Custom Drops must be enabled.
         if (!main.rulesManager.getRule_UseCustomDropsForMob(lmEntity)) return;
 
-        List<ItemStack> items = new ArrayList<>();
+        List<ItemStack> items = new LinkedList<>();
         main.customDropsHandler.getCustomItemDrops(lmEntity, items, true);
         if (items.isEmpty()) return;
 

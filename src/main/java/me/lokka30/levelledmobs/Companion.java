@@ -101,7 +101,6 @@ public class Companion {
         final boolean customDropsEnabled = main.settingsCfg.getBoolean("use-custom-item-drops-for-mobs");
 
         main.customDropsCfg = FileLoader.loadFile(main, "customdrops", FileLoader.CUSTOMDROPS_FILE_VERSION, customDropsEnabled);
-        main.customCommandsCfg = FileLoader.loadFile(main, "customCommands", FileLoader.CUSTOMCOMMANDS_FILE_VERSION, false);
         main.rulesParsingManager.parseRulesMain(FileLoader.loadFile(main, "rules", FileLoader.RULES_FILE_VERSION, false));
         main.attributesCfg = loadEmbeddedResource("defaultAttributes.yml");
         main.dropsCfg = loadEmbeddedResource("defaultDrops.yml");
@@ -122,7 +121,6 @@ public class Companion {
         }
 
         // build custom drops
-        main.customDropsHandler = new CustomDropsHandler(main);
         main.customDropsHandler = new CustomDropsHandler(main);
 
         return true;

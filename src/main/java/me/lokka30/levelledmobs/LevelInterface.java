@@ -225,7 +225,7 @@ public class LevelInterface {
                     main.levelManager.applyCreeperBlastRadius(lmEntity, level);
                 }
 
-                main.levelManager.updateNametag(lmEntity, lmEntity.getMobLevel());
+                main.levelManager.updateNametag(lmEntity);
                 main.levelManager.applyLevelledEquipment(lmEntity, lmEntity.getMobLevel());
 
                 MobPostLevelEvent.LevelCause levelCause = isSummoned ? MobPostLevelEvent.LevelCause.SUMMONED : MobPostLevelEvent.LevelCause.NORMAL;

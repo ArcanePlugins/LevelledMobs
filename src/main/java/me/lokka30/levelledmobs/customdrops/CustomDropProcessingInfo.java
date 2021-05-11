@@ -1,7 +1,6 @@
 package me.lokka30.levelledmobs.customdrops;
 
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.inventory.ItemStack;
 
 import javax.annotation.Nonnull;
@@ -35,6 +34,5 @@ public class CustomDropProcessingInfo {
     public List<ItemStack> newDrops;
     @Nonnull
     final public Map<String, Integer> groupIDsDroppedAlready;
-    //public List<CustomDropItem> combinedDrops;
-    public Map<Integer, List<CustomDropItem>> prioritizedDrops;
+    public Map<Integer, List<CustomDropBase>> prioritizedDrops;
 }

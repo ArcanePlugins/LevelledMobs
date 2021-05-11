@@ -2,8 +2,9 @@ package me.lokka30.levelledmobs.customdrops;
 
 import me.lokka30.levelledmobs.misc.CustomUniversalGroups;
 import org.bukkit.entity.EntityType;
+import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -17,18 +18,18 @@ public class CustomDropInstance {
     public CustomDropInstance(final EntityType associatedMob){
         this.associatedMob = associatedMob;
         this.entityGroup = null;
-        this.customItems = new ArrayList<>();
+        this.customItems = new LinkedList<>();
     }
 
     public CustomDropInstance(final CustomUniversalGroups entityGroup){
         this.associatedMob = null;
         this.entityGroup = entityGroup;
-        this.customItems = new ArrayList<>();
+        this.customItems = new LinkedList<>();
     }
 
     final public EntityType associatedMob;
     final public CustomUniversalGroups entityGroup;
-    final public List<CustomDropItem> customItems;
+    final public List<CustomDropBase> customItems;
     public boolean overrideStockDrops;
     public boolean utilizesGroupIds;
 
@@ -45,6 +46,7 @@ public class CustomDropInstance {
         this.customItems.addAll(dropInstance.customItems);
     }
 
+    @NotNull
     public String getMobOrGroupName() {
         if (this.associatedMob != null)
             return this.associatedMob.name();
@@ -54,6 +56,7 @@ public class CustomDropInstance {
             return ""; // this return should never happen
     }
 
+    @NotNull
     public String toString() {
         if (this.associatedMob != null) {
             return this.overrideStockDrops ?

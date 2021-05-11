@@ -87,7 +87,7 @@ public class LevelledMobsCommand implements CommandExecutor, TabCompleter {
 	@Override
 	public List<String> onTabComplete(CommandSender sender, Command cmd, String alias, String[] args) {
 		if (args.length == 1) {
-			List<String> suggestions = new ArrayList<>();
+			List<String> suggestions = new LinkedList<>();
 
 			if (sender.hasPermission("levelledmobs.command.summon"))
 				suggestions.add("summon");

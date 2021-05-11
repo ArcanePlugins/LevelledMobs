@@ -7,8 +7,6 @@ import org.bukkit.inventory.ItemStack;
 
 import java.lang.reflect.Field;
 import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
 
 /**
  * This holds all the attributes set for a
@@ -16,21 +14,14 @@ import java.util.TreeSet;
  *
  * @author stumper66
  */
-public class CustomDropItem implements Cloneable {
-    public int minLevel;
-    public int maxLevel;
+public class CustomDropItem extends CustomDropBase {
     public int customModelDataId;
-    public int priority;
     public int maxDropGroup;
     public double equippedSpawnChance;
-    public double dropChance;
     public boolean noMultiplier;
-    public boolean noSpawner;
-    public boolean dropOnlyWhenKilledByPlayer;
     public String groupId;
     public String customName;
     public List<String> lore;
-    public final Set<String> excludedMobs = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
     public List<ItemFlag> itemFlags;
     private boolean hasAmountRange;
     private boolean hasDamageRange;
@@ -47,7 +38,7 @@ public class CustomDropItem implements Cloneable {
         this.amount = defaults.amount;
         if (!Utils.isNullOrEmpty(defaults.damage)) this.setDamageRangeFromString(defaults.damage);
         this.customModelDataId = defaults.customModelData;
-        this.dropChance = defaults.chance;
+        this.chance = defaults.chance;
         this.maxLevel = defaults.maxLevel;
         this.minLevel = defaults.minLevel;
         this.groupId = defaults.groupId;
@@ -61,8 +52,7 @@ public class CustomDropItem implements Cloneable {
         try {
             copy = (CustomDropItem) super.clone();
             copy.itemStack = this.itemStack.clone();
-        } catch (Exception ignored) {
-        }
+        } catch (Exception ignored) {}
 
         return copy;
     }
