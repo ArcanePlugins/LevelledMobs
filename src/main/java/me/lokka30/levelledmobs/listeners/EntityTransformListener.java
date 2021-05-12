@@ -52,8 +52,6 @@ public class EntityTransformListener implements Listener {
         if (main.rulesManager.getRule_MobLevelInheritance(lmEntity)){
             useInheritance = true;
             level = lmEntity.getMobLevel();
-
-            Utils.logger.info("going to apply level " + level + " to " + event.getTransformedEntities().size() + " entities");
         }
 
         for (Entity transformedEntity : event.getTransformedEntities()) {

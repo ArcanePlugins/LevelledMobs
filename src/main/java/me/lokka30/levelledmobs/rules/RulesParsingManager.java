@@ -223,7 +223,11 @@ public class RulesParsingManager {
         if (cs.getString("creeper-max-damage-radius") != null)
             parsingInfo.creeperMaxDamageRadius = cs.getInt("creeper-max-damage-radius");
         if (cs.getString("use-custom-item-drops-for-mobs") != null)
-            parsingInfo.useCustomItemDropsForMobs = cs.getBoolean("use-custom-item-drops-for-mobs");
+            parsingInfo.customDrops_UseForMobs = cs.getBoolean("use-custom-item-drops-for-mobs");
+        if (cs.getString("custom-drops-override") != null)
+            parsingInfo.customDrops_UseOverride = cs.getBoolean("custom-drops-override");
+        if (cs.getString("use-droptable-id") != null)
+            parsingInfo.customDrop_DropTableId = cs.getString("use-droptable-id");
     }
 
     private void mergePreset(final ConfigurationSection cs){

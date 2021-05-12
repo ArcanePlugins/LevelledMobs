@@ -9,14 +9,14 @@
 #                          |__   | -_|  _|  _| |   | . |_ -|
 #                          |_____|___|_| |_| |_|_|_|_  |___|
 #                                                  |___|   
-#
-# |.-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.|
+#  .-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.
 # lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\|
 #'|    `-'     `-'     `-'     `-'     `-'     `-'     `-'     `-'     `-'     `-'    | 
 # |  Main Developers:                    |  Other Contributors:                       |
 # |    lokka30 [Author / Developer]      |    Eyrian, iCodinqs, deiphiz, CoolBoy,     |
 # |    stumper66 [Developer since v2.0]  |    Esophose, 7smile7, UltimaOath, Huge5551,|
-# |                                      |    konsolas                                |
+# |                                      |    konsolas, Shevchik, limzikiki           |
+# |                                      |                                            |
 # |----------------------------------+---+--------------------------------------------|
 # |  ArcanePlugins Support Discord   |  Special Thanks:                               |
 # |    https://discord.gg/RQ8M4A5    |    ArcanePlugins Developers and Testers!       |
@@ -162,21 +162,21 @@ ensure-mobs-are-levelled-on-chunk-load: true
 # ||                  'ENTITY_TAME' | Reports when an entity has been tamed
 # ||      'SET_LEVELLED_ITEM_DROPS' | Reports when LM adjusts item or experience drops
 # ||               'UPDATE_NAMETAG' | Reports when the nametag of an entity was updated
-# ||                 'CUSTOM-DROPS' | Reports all CustomDrops related debug options
+# ||                 'CUSTOM_DROPS' | Reports all CustomDrops related debug options
 # ||        'ENTITY_TRANSFORM_FAIL' | Reports when an entity, when transformed, did not receive a level
 # ||                  'ENTITY_MISC' | Reports when an unlevelled baby mob has aged and gets levelled
-# ||              'CUSTOM_COMMANDS'
-# ||                  'MOB_SPAWNER'
-# ||    'DENIED_RULE_ENTITIES_LIST'
-# ||         'DENIED_RULE_MINLEVEL'
-# ||         'DENIED_RULE_MAXLEVEL'
-# ||       'DENIED_RULE_WORLD_LIST'
-# ||       'DENIED_RULE_BIOME_LIST'
-# ||    'DENIED_RULE_PLUGIN_COMPAT'
-# ||     'DENIED_RULE_SPAWN_REASON'
-# ||      'DENIED_RULE_CUSTOM_NAME'
+# ||              'CUSTOM_COMMANDS' | Reports all CustomCommands related debug options
+# ||                  'MOB_SPAWNER' | Reports entities which have spawned from spawner cube
+# ||    'DENIED_RULE_ENTITIES_LIST' | Reports denied levelling due to excluded entity
+# ||         'DENIED_RULE_MINLEVEL' | Reports denied levelling due to min level
+# ||         'DENIED_RULE_MAXLEVEL' | Reports denied levelling due to max level
+# ||       'DENIED_RULE_WORLD_LIST' | Reports denied levelling due to excluded world
+# ||       'DENIED_RULE_BIOME_LIST' | Reports denied levelling due to excluded biome
+# ||    'DENIED_RULE_PLUGIN_COMPAT' | Reports denied levelling due to plugin compatability
+# ||     'DENIED_RULE_SPAWN_REASON' | Reports denied levelling due to 'other' spawn reason
+# ||      'DENIED_RULE_CUSTOM_NAME' | Reports denied levelling due to being nametagged
 # ||
-# ||-------------------------------------------------------||
+# |||---------------------------------------------------------------------------------|
 use-update-checker: true
 debug-entity-damage: false
 debug-misc: [ ]

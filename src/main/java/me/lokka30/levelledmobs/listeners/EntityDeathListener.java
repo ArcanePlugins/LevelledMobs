@@ -3,7 +3,6 @@ package me.lokka30.levelledmobs.listeners;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.customdrops.CustomDropResult;
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -44,7 +43,7 @@ public class EntityDeathListener implements Listener {
             if (event.getDroppedExp() > 0) {
                 event.setDroppedExp(main.levelManager.getLevelledExpDrops(lmEntity, event.getDroppedExp()));
             }
-        } else if (main.rulesManager.getRule_UseCustomDropsForMob(lmEntity)) {
+        } else if (main.rulesManager.getRule_UseCustomDropsForMob(lmEntity).useDrops) {
             final List<ItemStack> drops = new LinkedList<>();
             final CustomDropResult result = main.customDropsHandler.getCustomItemDrops(lmEntity, drops, false);
             if (result == CustomDropResult.HAS_OVERRIDE)

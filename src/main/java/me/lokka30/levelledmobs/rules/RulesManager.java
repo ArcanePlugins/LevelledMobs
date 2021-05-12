@@ -61,13 +61,16 @@ public class RulesManager {
         return entitiesList != null && entitiesList.isEnabledInList(lmEntity.getNameIfBaby());
     }
 
-    public boolean getRule_UseCustomDropsForMob(final LivingEntityWrapper lmEntity){
-        boolean result = false;
+    @NotNull
+    public CustomDropsRuleSet getRule_UseCustomDropsForMob(final LivingEntityWrapper lmEntity){
+        final CustomDropsRuleSet dropRules = new CustomDropsRuleSet();
         for (final RuleInfo ruleInfo : lmEntity.getApplicableRules()){
-            if (ruleInfo.useCustomItemDropsForMobs != null) result = ruleInfo.useCustomItemDropsForMobs;
+            if (ruleInfo.customDrops_UseForMobs != null) dropRules.useDrops = ruleInfo.customDrops_UseForMobs;
+            if (ruleInfo.customDrops_UseOverride != null) dropRules.override = ruleInfo.customDrops_UseOverride;
+            if (ruleInfo.customDrop_DropTableId != null) dropRules.useDropTableId = ruleInfo.customDrop_DropTableId;
         }
 
-        return result;
+        return dropRules;
     }
 
     public boolean getRule_IsMobAllowedInEntityOverride(final LivingEntityInterface lmInterface){

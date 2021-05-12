@@ -188,13 +188,11 @@ public class LevelManager {
 
         Utils.debugLog(main, DebugType.SET_LEVELLED_ITEM_DROPS, "1: Method called. " + dropsToMultiply.size() + " drops will be analysed.");
 
-        // Get their level
-        final int level = lmEntity.getMobLevel();
-        Utils.debugLog(main, DebugType.SET_LEVELLED_ITEM_DROPS, "3: Entity " + lmEntity.getTypeName() + " level is " + level + ".");
+        Utils.debugLog(main, DebugType.SET_LEVELLED_ITEM_DROPS, "3: Entity " + lmEntity.getTypeName() + " level is " + lmEntity.getMobLevel() + ".");
 
         final boolean doNotMultiplyDrops = !main.rulesManager.getRule_CheckIfNoDropMultiplierEntitiy(lmEntity);
 
-        if (main.rulesManager.getRule_UseCustomDropsForMob(lmEntity)) {
+        if (main.rulesManager.getRule_UseCustomDropsForMob(lmEntity).useDrops) {
             // custom drops also get multiplied in the custom drops handler
             final CustomDropResult dropResult = main.customDropsHandler.getCustomItemDrops(lmEntity, customDrops, false);
 
@@ -601,7 +599,7 @@ public class LevelManager {
         assert level >= 0;
 
         // Custom Drops must be enabled.
-        if (!main.rulesManager.getRule_UseCustomDropsForMob(lmEntity)) return;
+        if (!main.rulesManager.getRule_UseCustomDropsForMob(lmEntity).useDrops) return;
 
         List<ItemStack> items = new LinkedList<>();
         main.customDropsHandler.getCustomItemDrops(lmEntity, items, true);
@@ -637,26 +635,5 @@ public class LevelManager {
                 }
             }
         }
-    }
-}
-
-/**
- * TODO Describe...
- *
- * @author limzikiki
- */
-class CustomMobCommand {
-    public final String commandName, command;
-    public final int minLevel, maxLevel;
-    public final double chance;
-    public final boolean playerCaused;
-
-    public CustomMobCommand(String commandName, String command, int minLevel, int maxLevel, double chance, boolean playerCaused) {
-        this.commandName = commandName;
-        this.command = command;
-        this.minLevel = minLevel;
-        this.maxLevel = maxLevel;
-        this.chance = chance;
-        this.playerCaused = playerCaused;
     }
 }

@@ -16,10 +16,8 @@ import java.util.List;
  */
 public class CustomDropItem extends CustomDropBase {
     public int customModelDataId;
-    public int maxDropGroup;
     public double equippedSpawnChance;
     public boolean noMultiplier;
-    public String groupId;
     public String customName;
     public List<String> lore;
     public List<ItemFlag> itemFlags;

@@ -27,7 +27,8 @@ public class RuleInfo {
     public Boolean CreatureNametagAlwaysVisible;
     public Boolean babyMobsInheritAdultSetting;
     public Boolean mobLevelInheritance;
-    public Boolean useCustomItemDropsForMobs;
+    public Boolean customDrops_UseForMobs;
+    public Boolean customDrops_UseOverride;
     public Integer maxRandomVariance;
     public Integer creeperMaxDamageRadius;
     public Integer conditions_MinLevel;
@@ -42,6 +43,7 @@ public class RuleInfo {
     public String nametag;
     public String nametag_CreatureDeath;
     public String presetName;
+    public String customDrop_DropTableId;
     public MobCustomNameStatusEnum conditions_MobCustomnameStatus;
     public MobTamedStatusEnum conditions_MobTamedStatus;
     @NotNull
