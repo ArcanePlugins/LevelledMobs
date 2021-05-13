@@ -6,6 +6,7 @@ import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
 import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Tameable;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -25,14 +26,18 @@ public class MobDataManager {
     }
 
     @Nullable
-    public Object getAttributeDefaultValue(final EntityType entityType, final Attribute attribute) {
-        final String path = entityType.toString() + "." + attribute.toString();
-
-        if (main.attributesCfg.contains(path)) {
-            return main.attributesCfg.get(path);
-        } else {
-            return null;
+    public Object getAttributeDefaultValue(final LivingEntityWrapper lmEntity, final Attribute attribute) {
+        if (lmEntity.getLivingEntity() instanceof Tameable && ((Tameable) lmEntity.getLivingEntity()).isTamed()){
+            // if the tamed variant in the cfg then use it, otherwise check for untamed path
+            final String tamedPath = "TAMED_" + lmEntity.getTypeName() + "." + attribute;
+            if (main.attributesCfg.contains(tamedPath)) return main.attributesCfg.get(tamedPath);
         }
+
+        final String path = lmEntity.getTypeName() + "." + attribute;
+
+        return main.attributesCfg.contains(path) ?
+            main.attributesCfg.get(path) :
+            null;
     }
 
     public final boolean isLevelledDropManaged(final EntityType entityType, final Material material) {
@@ -50,7 +55,7 @@ public class MobDataManager {
     public void setAdditionsForLevel(@NotNull final LivingEntityWrapper lmEntity, final Attribute attribute, final Addition addition, final boolean useBaseValue) {
         double defaultValue = Objects.requireNonNull(lmEntity.getLivingEntity().getAttribute(attribute)).getBaseValue();
         if (!useBaseValue){
-            Object valueTemp = getAttributeDefaultValue(lmEntity.getLivingEntity().getType(), attribute);
+            Object valueTemp = getAttributeDefaultValue(lmEntity, attribute);
             if (valueTemp != null) defaultValue = (double) valueTemp;
         }
 
@@ -68,9 +73,6 @@ public class MobDataManager {
     public final double getAdditionsForLevel(final LivingEntityWrapper lmEntity, final Addition addition) {
         final double minLevel = main.rulesManager.getRule_MobMinLevel(lmEntity);
         final double maxLevel = main.rulesManager.getRule_MobMaxLevel(lmEntity);
-//        final double range = (double) maxLevel - minLevel - 1;
-//        final double percent = (double) lmEntity.getMobLevel() / range;
-
 
         double attributeValue = 0;
         if (lmEntity.getFineTuningAttributes() != null){

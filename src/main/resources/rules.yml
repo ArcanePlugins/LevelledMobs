@@ -285,11 +285,6 @@ custom-rules:
     strategies:
       random:
         bias-factor: 0.3
-    calculation:
-      formula: '%weighted-random-level%'
-    level-limits:
-      min: 1
-      max: 10
     max-random-variance: 2
     conditions:
       entities:
@@ -303,11 +298,6 @@ custom-rules:
     worlds:
       mode: 'WHITELIST'
       list: ['world']
-    strategies:
-      random:
-        bias-factor: 0.3
-    calculation:
-      formula: '%random-level%'
     conditions:
       entities:
         mode: 'WHITELIST'
@@ -321,16 +311,10 @@ custom-rules:
     worlds:
       mode: 'WHITELIST'
       list: ['world_the_end']
-    strategies:
-      random:
-        bias-factor: false
-    calculation:
-      formula: '%random-level%'
     conditions:
       entities:
         mode: 'WHITELIST'
         list: ['all_mobs']
-      chance: 0.5
       biomes:
         mode: 'WHITELIST'
         list: ['JUNGLE']

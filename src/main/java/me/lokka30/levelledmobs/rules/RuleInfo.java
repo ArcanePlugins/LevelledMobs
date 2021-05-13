@@ -29,6 +29,7 @@ public class RuleInfo {
     public Boolean mobLevelInheritance;
     public Boolean customDrops_UseForMobs;
     public Boolean customDrops_UseOverride;
+    public Boolean stopProcessingRules;
     public Integer maxRandomVariance;
     public Integer creeperMaxDamageRadius;
     public Integer conditions_MinLevel;

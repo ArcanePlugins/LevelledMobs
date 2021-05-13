@@ -198,7 +198,6 @@ public class RulesParsingManager {
 
         parseStrategies(objectToConfigurationSection(cs.get("strategies")));
         parseConditions(objectToConfigurationSection(cs.get("conditions")));
-        parseLevelLimits(objectToConfigurationSection(cs.get("level-limits")));
         parseRestrictions(objectToConfigurationSection(cs.get("restrictions")));
         parseEntityNameOverride(objectToConfigurationSection(cs.get("entity-name-override")));
         parseTieredColoring(objectToConfigurationSection(cs.get("tiered-coloring")));
@@ -228,6 +227,8 @@ public class RulesParsingManager {
             parsingInfo.customDrops_UseOverride = cs.getBoolean("custom-drops-override");
         if (cs.getString("use-droptable-id") != null)
             parsingInfo.customDrop_DropTableId = cs.getString("use-droptable-id");
+        if (cs.getString("stop-processing") != null)
+            parsingInfo.stopProcessingRules = cs.getBoolean("stop-processing");
     }
 
     private void mergePreset(final ConfigurationSection cs){
@@ -306,15 +307,6 @@ public class RulesParsingManager {
                 parsingInfo.entityNameOverrides.put(name, names);
             }
         }
-    }
-
-    private void parseLevelLimits(final ConfigurationSection cs){
-        if (cs == null) return;
-
-        if (cs.getString("min") != null)
-            parsingInfo.conditions_MinLevel = cs.getInt("min");
-        if (cs.getString("max") != null)
-            parsingInfo.conditions_MaxLevel = cs.getInt("max");
     }
 
     private void parseRestrictions(final ConfigurationSection cs){

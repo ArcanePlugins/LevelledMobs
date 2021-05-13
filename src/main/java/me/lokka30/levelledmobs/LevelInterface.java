@@ -300,7 +300,7 @@ public class LevelInterface {
 
             if (attInst == null) continue;
 
-            Object defaultValueObj = main.mobDataManager.getAttributeDefaultValue(lmEntity.getLivingEntity().getType(), attribute);
+            Object defaultValueObj = main.mobDataManager.getAttributeDefaultValue(lmEntity, attribute);
             if (defaultValueObj == null) continue;
 
             double defaultValue;

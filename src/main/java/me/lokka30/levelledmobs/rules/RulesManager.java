@@ -9,6 +9,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class RulesManager {
     public RulesManager(final LevelledMobs main) {
@@ -278,6 +279,11 @@ public class RulesManager {
                 continue;
             if (!isRuleApplicable_Interface(lmInterface, ruleInfo)) continue;
 
+            if (ruleInfo.stopProcessingRules != null && ruleInfo.stopProcessingRules) {
+                // TODO: // should we add a debug entry here?
+                break;
+            }
+
             rules.add(ruleInfo);
         }
 
@@ -371,6 +377,17 @@ public class RulesManager {
         if (ri.conditions_ApplyBelowY != null && lmInterface.getLocation().getBlockY() > ri.conditions_ApplyBelowY){
             // TODO: add debug info
             return false;
+        }
+
+        if (ri.conditions_Chance != null && ri.conditions_Chance < 1.0){
+            //new Throwable().printStackTrace();
+
+            final double chanceRole = (double) ThreadLocalRandom.current().nextInt(0, 100001) * 0.00001;
+            if (chanceRole < ri.conditions_Chance){
+                Utils.debugLog(main, DebugType.DENIED_RULE_CHANCE, String.format("%s, mob: %s, chance: %s, chance role: %s",
+                        ri.getRuleName(), lmInterface.getTypeName(), ri.conditions_Chance, chanceRole));
+                return false;
+            }
         }
 
         return true;
