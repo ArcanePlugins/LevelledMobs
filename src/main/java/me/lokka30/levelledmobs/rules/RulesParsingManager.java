@@ -39,9 +39,10 @@ public class RulesParsingManager {
             this.rulePresets.put(ri.presetName, ri);
 
         this.defaultRule = parseDefaults(config.get("default-rule"));
-        this.main.rulesManager.rulesInEffect.add(defaultRule);
+        this.main.rulesManager.rulesInEffect.put(Integer.MIN_VALUE, defaultRule);
         this.customRules = parseCustomRules(config.get("custom-rules"));
-        this.main.rulesManager.rulesInEffect.addAll(customRules);
+        for (final RuleInfo ruleInfo : customRules)
+            this.main.rulesManager.rulesInEffect.put(ruleInfo.rulePriority, ruleInfo);
     }
 
     @NotNull
@@ -229,6 +230,7 @@ public class RulesParsingManager {
             parsingInfo.customDrop_DropTableId = cs.getString("use-droptable-id");
         if (cs.getString("stop-processing") != null)
             parsingInfo.stopProcessingRules = cs.getBoolean("stop-processing");
+        parsingInfo.rulePriority = cs.getInt("priority", 0);
     }
 
     private void mergePreset(final ConfigurationSection cs){

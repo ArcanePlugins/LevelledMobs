@@ -30,6 +30,7 @@ public class RuleInfo {
     public Boolean customDrops_UseForMobs;
     public Boolean customDrops_UseOverride;
     public Boolean stopProcessingRules;
+    public int rulePriority;
     public Integer maxRandomVariance;
     public Integer creeperMaxDamageRadius;
     public Integer conditions_MinLevel;

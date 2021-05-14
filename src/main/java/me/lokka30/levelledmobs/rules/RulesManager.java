@@ -14,14 +14,14 @@ import java.util.concurrent.ThreadLocalRandom;
 public class RulesManager {
     public RulesManager(final LevelledMobs main) {
         this.main = main;
-        this.rulesInEffect = new LinkedList<>();
+        this.rulesInEffect = new TreeMap<>();
         this.levelNumbersWithBiasMapCache = new TreeMap<>();
     }
 
     private final LevelledMobs main;
-    @NotNull
-    public final List<RuleInfo> rulesInEffect;
     private final Map<String, LevelNumbersWithBias> levelNumbersWithBiasMapCache;
+    @NotNull
+    public final SortedMap<Integer, RuleInfo> rulesInEffect;
 
     @Nullable
     public LevelNumbersWithBias getRule_LowerMobLevelBiasFactor(final LivingEntityWrapper lmEntity, final int minLevel, final int maxLevel){
@@ -273,7 +273,9 @@ public class RulesManager {
     public List<RuleInfo> getApplicableRules(final LivingEntityInterface lmInterface){
         final List<RuleInfo> rules = new LinkedList<>();
 
-        for (final RuleInfo ruleInfo : rulesInEffect) {
+        for (final int rulePriority : rulesInEffect.keySet()) {
+            final RuleInfo ruleInfo = rulesInEffect.get(rulePriority);
+
             if (!ruleInfo.ruleIsEnabled) continue;
             if (lmInterface instanceof LivingEntityWrapper && !isRuleApplicable_Entity((LivingEntityWrapper) lmInterface, ruleInfo))
                 continue;
