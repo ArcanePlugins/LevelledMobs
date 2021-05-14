@@ -39,10 +39,15 @@ public class RulesParsingManager {
             this.rulePresets.put(ri.presetName, ri);
 
         this.defaultRule = parseDefaults(config.get("default-rule"));
-        this.main.rulesManager.rulesInEffect.put(Integer.MIN_VALUE, defaultRule);
+        this.main.rulesManager.rulesInEffect.put(Integer.MIN_VALUE, new LinkedList<>());
+        this.main.rulesManager.rulesInEffect.get(Integer.MIN_VALUE).add(defaultRule);
         this.customRules = parseCustomRules(config.get("custom-rules"));
-        for (final RuleInfo ruleInfo : customRules)
-            this.main.rulesManager.rulesInEffect.put(ruleInfo.rulePriority, ruleInfo);
+        for (final RuleInfo ruleInfo : customRules) {
+            if (!this.main.rulesManager.rulesInEffect.containsKey(ruleInfo.rulePriority))
+                this.main.rulesManager.rulesInEffect.put(ruleInfo.rulePriority, new LinkedList<>());
+
+            this.main.rulesManager.rulesInEffect.get(ruleInfo.rulePriority).add(ruleInfo);
+        }
     }
 
     @NotNull

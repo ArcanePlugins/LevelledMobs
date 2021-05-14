@@ -206,45 +206,51 @@ public class LevelInterface {
 
         //new Throwable().printStackTrace();
 
-        new BukkitRunnable() {
+//        new BukkitRunnable() {
+//            @Override
+//            public void run() {
+        if (lmEntity.getPDC().has(main.levelManager.noLevelKey, PersistentDataType.STRING)) {
+            Utils.debugLog(main, DebugType.APPLY_LEVEL_FAIL, "Entity " + lmEntity.getTypeName() + " had noLevelKey attached");
+            return;
+        }
+
+        lmEntity.getPDC().set(main.levelManager.levelKey, PersistentDataType.INTEGER, level);
+        lmEntity.invalidateCache();
+
+        main.levelManager.applyLevelledAttributes(lmEntity, Addition.ATTRIBUTE_ATTACK_DAMAGE);
+        main.levelManager.applyLevelledAttributes(lmEntity, Addition.ATTRIBUTE_MAX_HEALTH);
+        main.levelManager.applyLevelledAttributes(lmEntity, Addition.ATTRIBUTE_MOVEMENT_SPEED);
+
+        if (lmEntity.getLivingEntity() instanceof Creeper) {
+            main.levelManager.applyCreeperBlastRadius(lmEntity, level);
+        }
+
+        main.levelManager.updateNametag(lmEntity);
+        main.levelManager.applyLevelledEquipment(lmEntity, lmEntity.getMobLevel());
+
+        MobPostLevelEvent.LevelCause levelCause = isSummoned ? MobPostLevelEvent.LevelCause.SUMMONED : MobPostLevelEvent.LevelCause.NORMAL;
+        final BukkitRunnable runnable = new BukkitRunnable() {
             @Override
             public void run() {
-                if (lmEntity.getPDC().has(main.levelManager.noLevelKey, PersistentDataType.STRING)) {
-                    Utils.debugLog(main, DebugType.APPLY_LEVEL_FAIL, "Entity " + lmEntity.getTypeName() + " had noLevelKey attached");
-                    return;
-                }
-
-                lmEntity.getPDC().set(main.levelManager.levelKey, PersistentDataType.INTEGER, level);
-                lmEntity.invalidateCache();
-
-                main.levelManager.applyLevelledAttributes(lmEntity, Addition.ATTRIBUTE_ATTACK_DAMAGE);
-                main.levelManager.applyLevelledAttributes(lmEntity, Addition.ATTRIBUTE_MAX_HEALTH);
-                main.levelManager.applyLevelledAttributes(lmEntity, Addition.ATTRIBUTE_MOVEMENT_SPEED);
-
-                if (lmEntity.getLivingEntity() instanceof Creeper) {
-                    main.levelManager.applyCreeperBlastRadius(lmEntity, level);
-                }
-
-                main.levelManager.updateNametag(lmEntity);
-                main.levelManager.applyLevelledEquipment(lmEntity, lmEntity.getMobLevel());
-
-                MobPostLevelEvent.LevelCause levelCause = isSummoned ? MobPostLevelEvent.LevelCause.SUMMONED : MobPostLevelEvent.LevelCause.NORMAL;
                 Bukkit.getPluginManager().callEvent(new MobPostLevelEvent(lmEntity, levelCause, additionalLevelInformation));
-
-                final StringBuilder sb = new StringBuilder();
-                sb.append("entity: ");
-                sb.append(lmEntity.getLivingEntity().getName());
-                sb.append(", world: ");
-                sb.append(lmEntity.getWorldName());
-                sb.append(", level: ");
-                sb.append(level);
-                if (isSummoned) sb.append(" (summoned)");
-                if (bypassLimits) sb.append(" (limit bypass)");
-                if (lmEntity.isBabyMob()) sb.append(" (baby)");
-
-                Utils.debugLog(main, DebugType.APPLY_LEVEL_SUCCESS, sb.toString());
             }
-        }.runTaskLater(main, 1);
+        };
+        runnable.runTask(main);
+
+        final StringBuilder sb = new StringBuilder();
+        sb.append("entity: ");
+        sb.append(lmEntity.getLivingEntity().getName());
+        sb.append(", world: ");
+        sb.append(lmEntity.getWorldName());
+        sb.append(", level: ");
+        sb.append(level);
+        if (isSummoned) sb.append(" (summoned)");
+        if (bypassLimits) sb.append(" (limit bypass)");
+        if (lmEntity.isBabyMob()) sb.append(" (baby)");
+
+        Utils.debugLog(main, DebugType.APPLY_LEVEL_SUCCESS, sb.toString());
+        //    }
+        //}.runTaskLater(main, 1);
     }
 
     public enum AdditionalLevelInformation {

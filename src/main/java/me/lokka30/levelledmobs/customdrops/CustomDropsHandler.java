@@ -56,11 +56,14 @@ public class CustomDropsHandler {
     public void loadDrops(){
         boolean isDropsEnabledForAnyRule = false;
 
-        for (final RuleInfo ruleInfo : instance.rulesManager.rulesInEffect.values()){
-            if (ruleInfo.customDrops_UseForMobs != null && ruleInfo.customDrops_UseForMobs){
-                isDropsEnabledForAnyRule = true;
-                break;
+        for (final List<RuleInfo> rules : instance.rulesManager.rulesInEffect.values()){
+            for (final RuleInfo ruleInfo : rules) {
+                if (ruleInfo.customDrops_UseForMobs != null && ruleInfo.customDrops_UseForMobs) {
+                    isDropsEnabledForAnyRule = true;
+                    break;
+                }
             }
+            if (isDropsEnabledForAnyRule) break;
         }
 
         if (isDropsEnabledForAnyRule)
