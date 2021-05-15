@@ -5,6 +5,8 @@ import me.lokka30.levelledmobs.misc.Addition;
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
 import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
+import org.bukkit.attribute.AttributeInstance;
+import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Tameable;
 import org.jetbrains.annotations.NotNull;
@@ -26,7 +28,7 @@ public class MobDataManager {
     }
 
     @Nullable
-    public Object getAttributeDefaultValue(final LivingEntityWrapper lmEntity, final Attribute attribute) {
+    public Object getAttributeDefaultValue(@NotNull final LivingEntityWrapper lmEntity, final Attribute attribute) {
         if (lmEntity.getLivingEntity() instanceof Tameable && ((Tameable) lmEntity.getLivingEntity()).isTamed()){
             // if the tamed variant in the cfg then use it, otherwise check for untamed path
             final String tamedPath = "TAMED_" + lmEntity.getTypeName() + "." + attribute;
@@ -40,7 +42,7 @@ public class MobDataManager {
             null;
     }
 
-    public final boolean isLevelledDropManaged(final EntityType entityType, final Material material) {
+    public final boolean isLevelledDropManaged(final EntityType entityType, @NotNull final Material material) {
         // Head drops
         if (material.toString().endsWith("_HEAD") || material.toString().endsWith("_SKULL")) {
             if (!main.settingsCfg.getBoolean("mobs-multiply-head-drops")) {
@@ -52,26 +54,18 @@ public class MobDataManager {
         return main.dropsCfg.getStringList(entityType.toString()).contains(material.toString());
     }
 
-    public void setAdditionsForLevel(@NotNull final LivingEntityWrapper lmEntity, final Attribute attribute, final Addition addition, final boolean useBaseValue) {
+    public void setAdditionsForLevel(@NotNull final LivingEntityWrapper lmEntity, final Attribute attribute, final Addition addition) {
         double defaultValue = Objects.requireNonNull(lmEntity.getLivingEntity().getAttribute(attribute)).getBaseValue();
-        if (!useBaseValue){
-            Object valueTemp = getAttributeDefaultValue(lmEntity, attribute);
-            if (valueTemp != null) defaultValue = (double) valueTemp;
-        }
+        double additionValue = getAdditionsForLevel(lmEntity, addition);
 
-        double tempValue = defaultValue + getAdditionsForLevel(lmEntity, addition);
-        if (attribute.equals(Attribute.GENERIC_MAX_HEALTH) && tempValue > main.levelManager.attributeMaxHealthMax)
-            tempValue = main.levelManager.attributeMaxHealthMax;
-        else if (attribute.equals(Attribute.GENERIC_MOVEMENT_SPEED) && tempValue > main.levelManager.attributeMovementSpeedMax)
-            tempValue = main.levelManager.attributeMovementSpeedMax;
-        else if (attribute.equals(Attribute.GENERIC_ATTACK_DAMAGE) && tempValue > main.levelManager.attributeAttackDamageMax)
-            tempValue = main.levelManager.attributeAttackDamageMax;
+        if (additionValue == 0.0) return;
 
-        Objects.requireNonNull(lmEntity.getLivingEntity().getAttribute(attribute)).setBaseValue(tempValue);
+        final AttributeModifier mod = new AttributeModifier("health", additionValue, AttributeModifier.Operation.ADD_NUMBER);
+        final AttributeInstance attrib = lmEntity.getLivingEntity().getAttribute(attribute);
+        if (attrib != null) attrib.addModifier(mod);
     }
 
     public final double getAdditionsForLevel(final LivingEntityWrapper lmEntity, final Addition addition) {
-        final double minLevel = main.rulesManager.getRule_MobMinLevel(lmEntity);
         final double maxLevel = main.rulesManager.getRule_MobMaxLevel(lmEntity);
 
         double attributeValue = 0;
@@ -98,6 +92,6 @@ public class MobDataManager {
             }
         }
 
-        return attributeValue * ((double) lmEntity.getMobLevel() / (maxLevel - minLevel + 1));
+        return attributeValue * (((double) lmEntity.getMobLevel() - 1)/ maxLevel);
     }
 }

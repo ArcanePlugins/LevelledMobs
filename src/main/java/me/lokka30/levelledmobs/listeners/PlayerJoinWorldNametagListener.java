@@ -60,7 +60,7 @@ public class PlayerJoinWorldNametagListener implements Listener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void onTeleport(final PlayerTeleportEvent event) {
-        //noinspection ConstantConditions
-        updateNametagsInWorld(event.getPlayer(), event.getTo().getWorld());
+        if (event.getTo() != null && event.getTo().getWorld() != null)
+            updateNametagsInWorld(event.getPlayer(), event.getTo().getWorld());
     }
 }

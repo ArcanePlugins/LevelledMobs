@@ -61,26 +61,27 @@ public class EntityDamageDebugListener implements Listener {
         send(player, "&8&m+---+&r Debug information for &b" + livingEntity.getName() + "&r &8&m+---+&r");
 
         // Print non-attributes
-        send(player, "&f&nGlobal Values:");
-        send(player, "&8&m->&b Level: &7" + livingEntity.getPersistentDataContainer().get(main.levelManager.levelKey, PersistentDataType.INTEGER));
-        send(player, "&8&m->&b Current Health: &7" + Utils.round(livingEntity.getHealth()));
-        send(player, "&8&m->&b Nametag: &7" + livingEntity.getCustomName());
+        send(player, "&f&nGlobal Values:", false);
+        send(player, "&8&m->&b Level: &7" + livingEntity.getPersistentDataContainer().get(main.levelManager.levelKey, PersistentDataType.INTEGER), false);
+        send(player, "&8&m->&b Current Health: &7" + Utils.round(livingEntity.getHealth()), false);
+        send(player, "&8&m->&b Nametag: &7" + livingEntity.getCustomName(), false);
 
         // Print attributes
         player.sendMessage(" ");
-        send(player, "&f&nAttribute Values:");
-        for (Attribute attribute : Attribute.values()) {
-            AttributeInstance attributeInstance = livingEntity.getAttribute(attribute);
+        send(player, "&f&nAttribute Values:", false);
+        for (final Attribute attribute : Attribute.values()) {
+            final AttributeInstance attributeInstance = livingEntity.getAttribute(attribute);
             if (attributeInstance == null) continue;
-            send(player, "&8&m->&b Attribute." + attribute + ": &7" + Utils.round(attributeInstance.getBaseValue()));
+            final String attrib = attribute.toString().replace("GENERIC_", "");
+            send(player, "&8&m->&b " + attrib + ": &7" + Utils.round(attributeInstance.getValue()), false);
         }
 
-        // Print unique values (per-mob)
-        player.sendMessage(" ");
-        send(player, "&f&nUnique Values:");
         if (livingEntity instanceof Creeper) {
+            // Print unique values (per-mob)
+            player.sendMessage(" ");
+            send(player, "&f&nUnique Values:", false);
             final Creeper creeper = (Creeper) livingEntity;
-            send(player, "&8&m->&b Creeper Blast Radius: &7" + creeper.getExplosionRadius());
+            send(player, "&8&m->&b Creeper Blast Radius: &7" + creeper.getExplosionRadius(), false);
         }
 
         player.sendMessage(" ");
@@ -94,7 +95,14 @@ public class EntityDamageDebugListener implements Listener {
         }.runTaskLater(main, 40L);
     }
 
-    private void send(Player player, String message) {
-        player.sendMessage(MessageUtils.colorizeAll(main.configUtils.getPrefix() + "&7 " + message));
+    private void send(final Player player, final String message) {
+        send(player, message, true);
+    }
+
+    private void send(final Player player, final String message, final Boolean usePrefix) {
+        if (usePrefix)
+            player.sendMessage(MessageUtils.colorizeAll(main.configUtils.getPrefix() + "&7 " + message));
+        else
+            player.sendMessage(MessageUtils.colorizeAll(message));
     }
 }

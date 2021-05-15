@@ -14,6 +14,8 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
@@ -26,7 +28,7 @@ import java.util.*;
 public class SummonSubcommand implements Subcommand {
 
     @Override
-    public void parseSubcommand(final LevelledMobs main, final CommandSender sender, final String label, final String[] args) {
+    public void parseSubcommand(final LevelledMobs main, final CommandSender sender, final String label, @NotNull final String[] args) {
         boolean useOverride = false;
         final List<String> useArgs = new ArrayList<>();
         for (final String arg : args) {
@@ -41,7 +43,7 @@ public class SummonSubcommand implements Subcommand {
         parseSubcommand2(main, sender, label, useArgs2, useOverride);
     }
 
-    private void parseSubcommand2(final LevelledMobs main, final CommandSender sender, final String label, final String[] args, final boolean override) {
+    private void parseSubcommand2(final LevelledMobs main, @NotNull final CommandSender sender, final String label, final String[] args, final boolean override) {
         if (!sender.hasPermission("levelledmobs.command.summon")) {
             main.configUtils.sendNoPermissionMsg(sender);
             return;
@@ -195,7 +197,7 @@ public class SummonSubcommand implements Subcommand {
                         return;
                     }
                 } else { //args.length==9
-                    World world = Bukkit.getWorld(args[8]);
+                    final World world = Bukkit.getWorld(args[8]);
 
                     if (world == null) {
                         List<String> messages = main.messagesCfg.getStringList("command.levelledmobs.summon.atLocation.invalid-world");
@@ -231,7 +233,7 @@ public class SummonSubcommand implements Subcommand {
     }
 
     @Override
-    public List<String> parseTabCompletions(final LevelledMobs main, final CommandSender sender, final String[] args) {
+    public List<String> parseTabCompletions(final LevelledMobs main, final CommandSender sender, @NotNull final String[] args) {
 
         // len:    1      2        3        4       5          6            7   8     9     10
         // arg:    0      1        2        3       4          5            6   7     8     9
@@ -314,7 +316,7 @@ public class SummonSubcommand implements Subcommand {
         AT_LOCATION
     }
 
-    private void sendMainUsage(final CommandSender sender, final String label, final LevelledMobs main) {
+    private void sendMainUsage(@NotNull final CommandSender sender, final String label, @NotNull final LevelledMobs main) {
 
         List<String> messages = main.messagesCfg.getStringList("command.levelledmobs.summon.usage");
         messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.getPrefix());
@@ -323,7 +325,7 @@ public class SummonSubcommand implements Subcommand {
         messages.forEach(sender::sendMessage);
     }
 
-    private void summonMobs(final LivingEntityPlaceHolder lmPlaceHolder, int amount, final CommandSender sender,
+    private void summonMobs(@NotNull final LivingEntityPlaceHolder lmPlaceHolder, int amount, final CommandSender sender,
                             int level, final SummonType summonType, final Player target, final boolean override) {
 
         final LevelledMobs main = lmPlaceHolder.getMainInstance();
@@ -402,16 +404,22 @@ public class SummonSubcommand implements Subcommand {
                 }
             }
 
+            main.levelManager.summonedEntityType = lmPlaceHolder.getEntityType();
+            main.levelManager.summonedLocation = location;
+
             for (int i = 0; i < amount; i++) {
                 assert location.getWorld() != null;
 
-                Entity entity = location.getWorld().spawnEntity(location, lmPlaceHolder.getEntityType());
+                final Entity entity = location.getWorld().spawnEntity(location, lmPlaceHolder.getEntityType());
 
                 if (entity instanceof LivingEntity) {
-                    LivingEntityWrapper lmEntity = new LivingEntityWrapper((LivingEntity) entity, main);
+                    final LivingEntityWrapper lmEntity = new LivingEntityWrapper((LivingEntity) entity, main);
                     main.levelInterface.applyLevelToMob(lmEntity, level, true, override, new HashSet<>(Collections.singletonList(LevelInterface.AdditionalLevelInformation.NOT_APPLICABLE)));
                 }
             }
+
+            main.levelManager.summonedEntityType = EntityType.UNKNOWN;
+            main.levelManager.summonedLocation = null;
 
             switch (summonType) {
                 case HERE:
@@ -461,9 +469,9 @@ public class SummonSubcommand implements Subcommand {
         }
     }
 
+    @Nullable
     private Location getRelativeLocation(final CommandSender sender, final String xStr, final String yStr, final String zStr, final String worldName) {
         double x = 0, y = 0, z = 0;
-
         boolean xRelative = false, yRelative = false, zRelative = false;
 
         if (sender instanceof Player || sender instanceof BlockCommandSender) { //Player or Command blocks
@@ -549,7 +557,7 @@ public class SummonSubcommand implements Subcommand {
             }
         }
 
-        World world = Bukkit.getWorld(worldName);
+        final World world = Bukkit.getWorld(worldName);
         if (world == null) {
             return null;
         }
@@ -562,9 +570,9 @@ public class SummonSubcommand implements Subcommand {
 
         for (int i = 0; i < 20; i++) {
             //Creates 3x new Random()s for a different seed each time
-            double x = min + (max - min) * new Random().nextDouble();
-            double y = min + (max - min) * new Random().nextDouble();
-            double z = min + (max - min) * new Random().nextDouble();
+            final double x = min + (max - min) * new Random().nextDouble();
+            final double y = min + (max - min) * new Random().nextDouble();
+            final double z = min + (max - min) * new Random().nextDouble();
 
             Location newLocation = new Location(oldLocation.getWorld(), x, y, z);
             if (newLocation.getBlock().isPassable() && newLocation.add(0, 1, 0).getBlock().isPassable()) {

@@ -120,6 +120,13 @@ public class EntitySpawnListener implements Listener {
                     spawnEvent.getSpawnReason().equals(CreatureSpawnEvent.SpawnReason.SLIME_SPLIT))
                 return;
 
+            if (spawnEvent.getSpawnReason().equals(CreatureSpawnEvent.SpawnReason.CUSTOM) &&
+                    main.levelManager.summonedEntityType.equals(lmEntity.getEntityType()) &&
+                    areLocationsTheSame(main.levelManager.summonedLocation, lmEntity.getLocation())){
+                // the mob was spawned by the summon command and will get processed directly
+                return;
+            }
+
             spawnReason = spawnEvent.getSpawnReason();
         }
 
@@ -142,6 +149,15 @@ public class EntitySpawnListener implements Listener {
                 lmEntity.getPDC().set(main.levelManager.wasBabyMobKey, PersistentDataType.INTEGER, 1);
             }
         }
+    }
+
+    private static boolean areLocationsTheSame(final Location location1, final Location location2){
+        if (location1 == null || location2 == null) return false;
+        if (location1.getWorld() == null || location2.getWorld() == null) return false;
+
+        return  location1.getBlockX() == location2.getBlockX() &&
+                location1.getBlockY() == location2.getBlockY() &&
+                location1.getBlockZ() == location2.getBlockZ();
     }
 
     @NotNull

@@ -28,7 +28,7 @@ public class EntityDamageListener implements Listener {
 
     // When the mob is damaged, update their nametag.
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
-    public void onDamage(final EntityDamageEvent event) {
+    public void onDamage(@NotNull final EntityDamageEvent event) {
         if (!(event.getEntity() instanceof LivingEntity)) return;
 
         final LivingEntityWrapper lmEntity = new LivingEntityWrapper((LivingEntity) event.getEntity(), main);

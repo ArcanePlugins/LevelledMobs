@@ -374,7 +374,7 @@ public class FileMigrator {
                                     }
                                 }
                             }
-                        } else //noinspection ConstantConditions
+                        } else
                             if (hasValues && oldConfigMap.containsKey(key)) {
                                 keysMatched++;
                                 final String value = line.substring(firstColon + 1).trim();

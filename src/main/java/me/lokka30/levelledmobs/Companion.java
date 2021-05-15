@@ -104,8 +104,7 @@ public class Companion {
         main.rulesParsingManager.parseRulesMain(FileLoader.loadFile(main, "rules", FileLoader.RULES_FILE_VERSION, false));
         main.attributesCfg = loadEmbeddedResource("defaultAttributes.yml");
         main.dropsCfg = loadEmbeddedResource("defaultDrops.yml");
-        //noinspection ConstantConditions
-        main.mobHeadManager.loadTextures(loadEmbeddedResource("textures.yml"));
+        main.mobHeadManager.loadTextures(Objects.requireNonNull(loadEmbeddedResource("textures.yml")));
 
         main.configUtils.load();
 

@@ -30,6 +30,7 @@ public class RuleInfo {
     public Boolean customDrops_UseForMobs;
     public Boolean customDrops_UseOverride;
     public Boolean stopProcessingRules;
+    public Boolean useRandomLevelling;
     public int rulePriority;
     public Integer maxRandomVariance;
     public Integer creeperMaxDamageRadius;
@@ -40,7 +41,6 @@ public class RuleInfo {
     public Integer lowerMobLevelBiasFactor;
     public Integer conditions_ApplyAboveY;
     public Integer conditions_ApplyBelowY;
-    public double random_BiasFactor;
     public Double conditions_Chance;
     public String nametag;
     public String nametag_CreatureDeath;

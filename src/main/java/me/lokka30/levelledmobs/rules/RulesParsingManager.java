@@ -387,7 +387,8 @@ public class RulesParsingManager {
     private void parseStrategies(final ConfigurationSection strategies){
         if (strategies == null) return;
 
-        parseStategiesRandom(objectToConfigurationSection(strategies.get("random")));
+        if (strategies.getString("random") != null)
+            parsingInfo.useRandomLevelling = strategies.getBoolean("random");
 
         ConfigurationSection cs_SpawnDistance = objectToConfigurationSection(strategies.get("distance-from-spawn"));
         if (cs_SpawnDistance != null){
@@ -484,9 +485,13 @@ public class RulesParsingManager {
     }
 
     private void parseStategiesRandom(final ConfigurationSection cs){
-        if (cs == null) return;
+        if (cs == null) {
+            Utils.logger.info("random was null, " + parsingInfo.getRuleName());
+            return;
+        }
 
-        parsingInfo.random_BiasFactor = cs.getDouble("bias-factor");
+        // if they simply specified 'random:' then we enabled random levelling
+        parsingInfo.useRandomLevelling = true;
     }
 
     private void parseWorldList(final ConfigurationSection worlds){

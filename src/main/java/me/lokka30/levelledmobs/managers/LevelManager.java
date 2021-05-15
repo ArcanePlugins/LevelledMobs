@@ -46,8 +46,6 @@ import java.util.concurrent.ThreadLocalRandom;
 public class LevelManager {
 
     private final LevelledMobs main;
-    final public HashMap<LevelNumbersWithBias, LevelNumbersWithBias> levelNumsListCache = new HashMap<>();
-    final public LinkedList<LevelNumbersWithBias> levelNumsListCacheOrder = new LinkedList<>();
     private final static int maxLevelNumsCache = 10;
     final private List<Material> vehicleNoMultiplierItems;
     public final NamespacedKey levelKey; // This stores the mob's level.
@@ -58,6 +56,8 @@ public class LevelManager {
     public double attributeMaxHealthMax = 2048.0;
     public double attributeMovementSpeedMax = 2048.0;
     public double attributeAttackDamageMax = 2048.0;
+    public Location summonedLocation;
+    public EntityType summonedEntityType;
 
     public final static int maxCreeperBlastRadius = 100;
     public EntitySpawnListener entitySpawnListener;
@@ -70,19 +70,7 @@ public class LevelManager {
         noLevelKey = new NamespacedKey(main, "noLevel");
         wasBabyMobKey = new NamespacedKey(main, "wasBabyMob");
         overridenEntityNameKey = new NamespacedKey(main, "overridenEntityName");
-
-        final int factor = main.settingsCfg.getInt("fine-tuning.lower-mob-level-bias-factor", 0);
-        if (factor > 0) {
-            LevelNumbersWithBias lnwb = new LevelNumbersWithBias(
-                    main.settingsCfg.getInt("fine-tuning.min-level", 1),
-                    main.settingsCfg.getInt("fine-tuning.max-level", 10),
-                    factor
-            );
-
-            lnwb.populateData();
-            this.levelNumsListCache.put(lnwb, lnwb);
-            this.levelNumsListCacheOrder.addFirst(lnwb);
-        }
+        this.summonedEntityType = EntityType.UNKNOWN;
 
         this.vehicleNoMultiplierItems = Arrays.asList(
                 Material.SADDLE,
@@ -218,7 +206,7 @@ public class LevelManager {
         if (!dropsToMultiply.isEmpty()) currentDrops.addAll(dropsToMultiply);
     }
 
-    public void multiplyDrop(LivingEntityWrapper lmEntity, final ItemStack currentDrop, final int addition, final boolean isCustomDrop){
+    public void multiplyDrop(LivingEntityWrapper lmEntity, @NotNull final ItemStack currentDrop, final int addition, final boolean isCustomDrop){
         Utils.debugLog(main, DebugType.SET_LEVELLED_ITEM_DROPS, "6: Scanning drop " + currentDrop.getType() + " with current amount " + currentDrop.getAmount() + "...");
 
         if (isCustomDrop || main.mobDataManager.isLevelledDropManaged(lmEntity.getLivingEntity().getType(), currentDrop.getType())) {
@@ -232,7 +220,7 @@ public class LevelManager {
     }
 
     @Nonnull
-    private List<ItemStack> getDropsToMultiply(final LivingEntityWrapper lmEntity, final List<ItemStack> drops){
+    private List<ItemStack> getDropsToMultiply(@NotNull final LivingEntityWrapper lmEntity, @NotNull final List<ItemStack> drops){
         final List<ItemStack> results = new ArrayList<>(drops.size());
         results.addAll(drops);
 
@@ -265,7 +253,7 @@ public class LevelManager {
         return results;
     }
 
-    public void removeVanillaDrops(final LivingEntityWrapper lmEntity, final List<ItemStack> drops){
+    public void removeVanillaDrops(@NotNull final LivingEntityWrapper lmEntity, final List<ItemStack> drops){
         boolean hadSaddle = false;
         List<ItemStack> chestItems = null;
 
@@ -290,7 +278,7 @@ public class LevelManager {
     }
 
     //Calculates the XP dropped when a levellable creature dies.
-    public int getLevelledExpDrops(final LivingEntityWrapper lmEntity, final int xp) {
+    public int getLevelledExpDrops(@NotNull final LivingEntityWrapper lmEntity, final int xp) {
         if (lmEntity.isLevelled()) {
             final int level = lmEntity.getMobLevel();
             return (int) Math.round(xp + (xp * main.mobDataManager.getAdditionsForLevel(lmEntity, Addition.CUSTOM_XP_DROP)));
@@ -338,12 +326,12 @@ public class LevelManager {
         return nametag;
     }
 
-    public String replaceStringPlaceholders(final String nametag, final LivingEntityWrapper lmEntity){
+    public String replaceStringPlaceholders(final String nametag, @NotNull final LivingEntityWrapper lmEntity){
         String result = nametag;
 
         final AttributeInstance maxHealth = lmEntity.getLivingEntity().getAttribute(Attribute.GENERIC_MAX_HEALTH);
-        final String roundedMaxHealth = maxHealth == null ? "?" : Utils.round(maxHealth.getBaseValue()) + "";
-        final String roundedMaxHealthInt = maxHealth == null ? "?" : (int) Utils.round(maxHealth.getBaseValue()) + "";
+        final String roundedMaxHealth = maxHealth == null ? "?" : Utils.round(maxHealth.getValue()) + "";
+        final String roundedMaxHealthInt = maxHealth == null ? "?" : (int) Utils.round(maxHealth.getValue()) + "";
         String entityName = Utils.capitalize(lmEntity.getTypeName().toLowerCase().replaceAll("_", " "));
 
         // %tiered% placeholder
@@ -466,21 +454,24 @@ public class LevelManager {
                         if (!(entity instanceof LivingEntity)) continue;
                         LivingEntityWrapper lmEntity = new LivingEntityWrapper((LivingEntity) entity, main);
 
-                        // if the mob isn't levelled then see if it qualifies to be levelled
-                        if (!lmEntity.isLevelled() &&
-                                !lmEntity.isBabyMob() &&
-                                lmEntity.getPDC().has(main.levelManager.wasBabyMobKey, PersistentDataType.INTEGER) &&
-                                main.levelInterface.getLevellableState(lmEntity) == LevelInterface.LevellableState.ALLOWED) {
-                            // if the mob was a baby at some point, aged and now is eligable for levelling, we'll apply a level to it now
-                            Utils.debugLog(main, DebugType.ENTITY_MISC, lmEntity.getLivingEntity().getName() + " was a baby and is now an adult, applying levelling rules");
-                            // can't apply the level from an async task
-                            applyLevelToMobFromAsync(lmEntity);
-                        }
-                        else if (lmEntity.isLevelled() && lmEntity.getLivingEntity().getLocation().distanceSquared(location) <= maxDistance){
-                            //if within distance, update nametag.
-                            main.levelManager.updateNametag(
-                                    lmEntity, main.levelManager.getNametag(lmEntity, false), Collections.singletonList(player)
-                            );
+                        if (lmEntity.isLevelled()) {
+                            if (
+                                    location.getWorld() != null &&
+                                    location.getWorld().getName().equals(lmEntity.getWorld().getName()) &&
+                                            lmEntity.getLocation().distanceSquared(location) <= maxDistance) {
+                                //if within distance, update nametag.
+                                main.levelManager.updateNametag(lmEntity, main.levelManager.getNametag(lmEntity, false), Collections.singletonList(player));
+                            }
+                        } else {
+                            if (
+                                    !lmEntity.isBabyMob() &&
+                                            lmEntity.getPDC().has(main.levelManager.wasBabyMobKey, PersistentDataType.INTEGER) &&
+                                            main.levelInterface.getLevellableState(lmEntity) == LevelInterface.LevellableState.ALLOWED) {
+                                // if the mob was a baby at some point, aged and now is eligable for levelling, we'll apply a level to it now
+                                Utils.debugLog(main, DebugType.ENTITY_MISC, lmEntity.getTypeName() + " was a baby and is now an adult, applying levelling rules");
+                                // can't apply the level from an async task
+                                applyLevelToMobFromAsync(lmEntity);
+                            }
                         }
                     }
                 }
@@ -516,7 +507,7 @@ public class LevelManager {
         }
     }
 
-    public void applyLevelledAttributes(final LivingEntityWrapper lmEntity, final Addition addition) {
+    public void applyLevelledAttributes(@NotNull final LivingEntityWrapper lmEntity, @NotNull final Addition addition) {
         assert lmEntity.isLevelled();
 
         // This functionality should be added into the enum.
@@ -541,16 +532,13 @@ public class LevelManager {
         // Don't try to apply an addition to their attribute if they don't have it
         if (attrInst == null) return;
 
-        // For the MAX_HEALTH attr, must use the base value for Slimes
-        final boolean useBaseValue = (lmEntity.getLivingEntity() instanceof Slime) && attribute == Attribute.GENERIC_MAX_HEALTH;
-
         // Apply additions
-        main.mobDataManager.setAdditionsForLevel(lmEntity, attribute, addition, useBaseValue);
+        main.mobDataManager.setAdditionsForLevel(lmEntity, attribute, addition);
 
         // MAX_HEALTH specific: set health to max health
         if (attribute == Attribute.GENERIC_MAX_HEALTH) {
-            //noinspection ConstantConditions
-            lmEntity.getLivingEntity().setHealth(lmEntity.getLivingEntity().getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue());
+            final AttributeInstance attrib = lmEntity.getLivingEntity().getAttribute(Attribute.GENERIC_MAX_HEALTH);
+            if (attrib != null) lmEntity.getLivingEntity().setHealth(attrib.getValue());
         }
     }
 

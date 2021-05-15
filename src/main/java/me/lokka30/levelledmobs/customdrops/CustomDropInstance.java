@@ -62,11 +62,12 @@ public class CustomDropInstance {
             return this.overrideStockDrops ?
                     this.associatedMob.name() + " - override" :
                     this.associatedMob.name();
-        } else {
-            //noinspection ConstantConditions
+        } else if (this.entityGroup != null) {
             return this.overrideStockDrops ?
-                    this.entityGroup.toString() + " - override" :
+                    this.entityGroup + " - override" :
                     this.entityGroup.toString();
         }
+        else
+            return "CustomDropInstance";
     }
 }

@@ -138,7 +138,11 @@ public class RulesManager {
         LevellingStrategy levellingStrategy = null;
 
         for (final RuleInfo ruleInfo : lmEntity.getApplicableRules()){
-            if (!ruleInfo.levellingStrategies.isEmpty())
+            if (ruleInfo.useRandomLevelling != null && ruleInfo.useRandomLevelling) {
+                // specifying random in strategies will nullify any levelling systems to that point
+                levellingStrategy = null;
+            }
+            else if (!ruleInfo.levellingStrategies.isEmpty())
                 levellingStrategy = ruleInfo.levellingStrategies.get(0);
         }
 

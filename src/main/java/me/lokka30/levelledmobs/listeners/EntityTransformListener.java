@@ -80,6 +80,8 @@ public class EntityTransformListener implements Listener {
             }
             else
                 main.levelManager.entitySpawnListener.preprocessMob(transformedLmEntity, new EntitySpawnEvent(transformedEntity));
+
+            main.levelManager.updateNametag(lmEntity);
         }
     }
 }
