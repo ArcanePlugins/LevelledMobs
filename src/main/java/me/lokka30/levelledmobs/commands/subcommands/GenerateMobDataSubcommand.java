@@ -123,14 +123,14 @@ public class GenerateMobDataSubcommand implements Subcommand {
 
             // Don't spawn these in.
             if (entityType == EntityType.UNKNOWN || entityType == EntityType.PLAYER) {
-                Utils.logger.info("&f&lGenerateMobData: &7Skipping &b" + entityType.toString() + ".");
+                Utils.logger.info("&f&lGenerateMobData: &7Skipping &b" + entityType + ".");
                 continue;
             }
 
             Utils.logger.info("&f&lGenerateMobData: &7Processing &b" + entityType.toString() + ":");
 
             if (entityType.getEntityClass() == null) {
-                Utils.logger.info("&f&lGenerateMobData: &8[" + entityType.toString() + "&8] &7Entity Class is null! Skipping...");
+                Utils.logger.info("&f&lGenerateMobData: &8[" + entityType + "&8] &7Entity Class is null! Skipping...");
                 continue;
             }
 
@@ -138,29 +138,29 @@ public class GenerateMobDataSubcommand implements Subcommand {
             try {
                 entity = world.spawnEntity(new Location(world, 0, 512, 0), entityType);
             } catch (IllegalArgumentException ex) {
-                Utils.logger.info("&f&lGenerateMobData: &8[" + entityType.toString() + "&8] &7Unable to spawn entity! Skipping...");
+                Utils.logger.info("&f&lGenerateMobData: &8[" + entityType + "&8] &7Unable to spawn entity! Skipping...");
                 continue;
             }
 
             if (entity instanceof LivingEntity) {
-                Utils.logger.info("&f&lGenerateMobData: &8[" + entityType.toString() + "&8] &7Entity is a LivingEntity. Proceeding...");
+                Utils.logger.info("&f&lGenerateMobData: &8[" + entityType + "&8] &7Entity is a LivingEntity. Proceeding...");
 
                 LivingEntity livingEntity = (LivingEntity) entity;
 
                 for (Attribute attribute : Attribute.values()) {
                     if (livingEntity.getAttribute(attribute) != null) {
-                        Utils.logger.info("&f&lGenerateMobData: &8[" + entityType.toString() + "&8] &7Saving attribute &b" + attribute.toString() + "&7...");
-                        attribConfig.set(entityType.toString() + "." + attribute.toString(), Objects.requireNonNull(livingEntity.getAttribute(attribute)).getBaseValue());
+                        Utils.logger.info("&f&lGenerateMobData: &8[" + entityType + "&8] &7Saving attribute &b" + attribute + "&7...");
+                        attribConfig.set(entityType + "." + attribute, Objects.requireNonNull(livingEntity.getAttribute(attribute)).getBaseValue());
                     }
                 }
 
-                Utils.logger.info("&f&lGenerateMobData: &8[" + entityType.toString() + "&8] &7Finished with entity.");
+                Utils.logger.info("&f&lGenerateMobData: &8[" + entityType + "&8] &7Finished with entity.");
             } else {
-                Utils.logger.info("&f&lGenerateMobData: &8[" + entityType.toString() + "&8] &7Entity is not a LivingEntity, skipping...");
+                Utils.logger.info("&f&lGenerateMobData: &8[" + entityType + "&8] &7Entity is not a LivingEntity, skipping...");
             }
 
             entity.remove();
-            Utils.logger.info("&f&lGenerateMobData: &8[" + entityType.toString() + "&8] &7Done. Proceeding with next entity if it exists.");
+            Utils.logger.info("&f&lGenerateMobData: &8[" + entityType + "&8] &7Done. Proceeding with next entity if it exists.");
         }
         attribConfig.save(attribFile);
 
@@ -169,14 +169,14 @@ public class GenerateMobDataSubcommand implements Subcommand {
 
             // Don't spawn these in.
             if (entityType == EntityType.UNKNOWN || entityType == EntityType.PLAYER || entityType == EntityType.FISHING_HOOK || entityType == EntityType.LIGHTNING) {
-                Utils.logger.info("&f&lGenerateMobData: &7Skipping &b" + entityType.toString() + ".");
+                Utils.logger.info("&f&lGenerateMobData: &7Skipping &b" + entityType + ".");
                 continue;
             }
 
             Utils.logger.info("&f&lGenerateMobData: &7Processing &b" + entityType.toString() + ":");
 
             if (entityType.getEntityClass() == null) {
-                Utils.logger.info("&f&lGenerateMobData: &8[" + entityType.toString() + "&8] &7Entity Class is null! Skipping...");
+                Utils.logger.info("&f&lGenerateMobData: &8[" + entityType + "&8] &7Entity Class is null! Skipping...");
                 continue;
             }
 
@@ -184,13 +184,13 @@ public class GenerateMobDataSubcommand implements Subcommand {
             try {
                 entity = world.spawnEntity(new Location(world, 0, 512, 0), entityType);
             } catch (IllegalArgumentException ex) {
-                Utils.logger.info("&f&lGenerateMobData: &8[" + entityType.toString() + "&8] &7Unable to spawn entity! Skipping...");
+                Utils.logger.info("&f&lGenerateMobData: &8[" + entityType + "&8] &7Unable to spawn entity! Skipping...");
                 continue;
             }
 
             for (int i = 0; i < 25; i++) {
                 if (entity instanceof LivingEntity) {
-                    Utils.logger.info("&f&lGenerateMobData: &8[" + entityType.toString() + "&8] &7Processing mob " + entity.getType().toString() + "...");
+                    Utils.logger.info("&f&lGenerateMobData: &8[" + entityType + "&8] &7Processing mob " + entity.getType() + "...");
 
                     LivingEntity livingEntity = (LivingEntity) entity;
 
@@ -198,13 +198,13 @@ public class GenerateMobDataSubcommand implements Subcommand {
 
                     livingEntity.setHealth(0.0);
 
-                    Utils.logger.info("&f&lGenerateMobData: &8[" + entityType.toString() + "&8] &7Drops saved. Proceeding with next entity if it exists.");
+                    Utils.logger.info("&f&lGenerateMobData: &8[" + entityType + "&8] &7Drops saved. Proceeding with next entity if it exists.");
                 } else {
                     entity.remove();
                 }
             }
 
-            Utils.logger.info("&f&lGenerateMobData: &8[" + entityType.toString() + "&8] &7Done. Proceeding with next entity if it exists.");
+            Utils.logger.info("&f&lGenerateMobData: &8[" + entityType + "&8] &7Done. Proceeding with next entity if it exists.");
         }
         dropsConfig.save(dropsFile);
         Utils.logger.info("&f&lGenerateMobData: &7Complete!");
@@ -215,7 +215,7 @@ public class GenerateMobDataSubcommand implements Subcommand {
     private class DeathDropListener implements Listener {
         @EventHandler
         public void onDeath(final EntityDeathEvent event) {
-            Utils.logger.info("&f&lGenerateMobData: &8[Death] &7" + event.getEntityType().toString() + " died");
+            Utils.logger.info("&f&lGenerateMobData: &8[Death] &7" + event.getEntityType() + " died");
             for (ItemStack drop : event.getDrops()) {
                 final String path = event.getEntityType().toString();
                 final String dropType = drop.getType().toString();

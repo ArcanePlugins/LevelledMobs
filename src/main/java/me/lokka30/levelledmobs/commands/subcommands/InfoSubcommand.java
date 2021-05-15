@@ -27,6 +27,7 @@ public class InfoSubcommand implements Subcommand {
 
                 List<String> aboutMsg = main.messagesCfg.getStringList("command.levelledmobs.info.about");
                 aboutMsg = Utils.replaceAllInList(aboutMsg, "%version%", version);
+                assert description != null;
                 aboutMsg = Utils.replaceAllInList(aboutMsg, "%description%", description);
                 aboutMsg = Utils.replaceAllInList(aboutMsg, "%supportedVersions%", String.join(listSeparator, supportedVersions));
                 aboutMsg = Utils.replaceAllInList(aboutMsg, "%contributors%", String.join(listSeparator, codeContributors));

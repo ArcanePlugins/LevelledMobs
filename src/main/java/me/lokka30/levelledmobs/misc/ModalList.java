@@ -42,7 +42,7 @@ public class ModalList {
                 case BLACKLIST:
                     return !cfg.getStringList(path + ".list").contains(item);
                 default:
-                    throw new IllegalStateException("Invalid ListMode " + listMode.toString() + "!");
+                    throw new IllegalStateException("Invalid ListMode " + listMode + "!");
             }
         } else {
             Utils.logger.error("&c(Is your settings.yml file outdated?) &7ModalListMode is unset at path '&b" + path + ".mode&7'! The plugin will malfunction until you fix this!");

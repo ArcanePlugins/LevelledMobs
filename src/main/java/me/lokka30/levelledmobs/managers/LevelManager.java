@@ -665,18 +665,24 @@ public class LevelManager {
                         final boolean isLevelled = main.levelInterface.isLevelled(livingEntity);
 
                         // if the mob isn't levelled then see if it qualifies to be levelled
-                        if (!isLevelled &&
-                            !Utils.isBabyMob(livingEntity) &&
-                            livingEntity.getPersistentDataContainer().has(main.levelManager.wasBabyMobKey, PersistentDataType.INTEGER) &&
-                            main.levelInterface.getLevellableState(livingEntity) == LevelInterface.LevellableState.ALLOWED) {
-                            // if the mob was a baby at some point, aged and now is eligable for levelling, we'll apply a level to it now
-                            Utils.debugLog(main, DebugType.ENTITY_MISC, livingEntity.getName() + " was a baby and is now an adult, applying levelling rules");
-                            // can't apply the level from an async task
-                            applyLevelToMobFromAsync(livingEntity);
-                        }
-                        else if (isLevelled && livingEntity.getLocation().distanceSquared(location) <= maxDistance){
-                            //if within distance, update nametag.
-                            main.levelManager.updateNametag(livingEntity, main.levelManager.getNametag(livingEntity, false), Collections.singletonList(player));
+                        if (isLevelled) {
+                            //noinspection ConstantConditions
+                            if (
+                                    location.getWorld().getName().equals(livingEntity.getLocation().getWorld().getName()) &&
+                                            livingEntity.getLocation().distanceSquared(location) <= maxDistance) {
+                                //if within distance, update nametag.
+                                main.levelManager.updateNametag(livingEntity, main.levelManager.getNametag(livingEntity, false), Collections.singletonList(player));
+                            }
+                        } else {
+                            if (
+                                    !Utils.isBabyMob(livingEntity) &&
+                                            livingEntity.getPersistentDataContainer().has(main.levelManager.wasBabyMobKey, PersistentDataType.INTEGER) &&
+                                            main.levelInterface.getLevellableState(livingEntity) == LevelInterface.LevellableState.ALLOWED) {
+                                // if the mob was a baby at some point, aged and now is eligable for levelling, we'll apply a level to it now
+                                Utils.debugLog(main, DebugType.ENTITY_MISC, livingEntity.getName() + " was a baby and is now an adult, applying levelling rules");
+                                // can't apply the level from an async task
+                                applyLevelToMobFromAsync(livingEntity);
+                            }
                         }
                     }
                 }

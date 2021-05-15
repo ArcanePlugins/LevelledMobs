@@ -1,5 +1,31 @@
 # Changelog
 
+## v2.5.4 b401
+
+### Notice:
+
+The LevelledMobs team has been working on **LevelledMobs 3**! This update will significantly extend the capability and
+customisability of the plugin, through adding a new major configuration system called the **Rules System**. With such a
+large new feature, we need help to test it - if you're willing to help,
+please [join our Discord](https://discord.io/arcaneplugins) and let us know. Thanks :)
+
+### Notes:
+
+* Summary: **Improvement and fix for the Async Nametag Auto Update Task**
+* Testing depth: **Low**
+* Configuration changes: **None**
+
+### Changelog:
+
+* Fixed and improved the Async Nametag Auto Update Task
+  * [lokka30](https://www.spigotmc.org/members/lokka30.828699/) fixed a bug that caused errors when players teleported
+    to different worlds whilst the task analysed locations. Thank you to [MrMineToons](https://github.com/MrMineToons)
+    for reporting this!
+  * [lokka30](https://www.spigotmc.org/members/lokka30.828699/) rearranged some code in the task to make it cleaner to
+    see and work on.
+* [lokka30](https://www.spigotmc.org/members/lokka30.828699/) (IntelliJ, really) made general code cleanup concerning
+  unnecessary `toString()` calls for enum values
+
 ***
 
 ## v2.5.1 b389
