@@ -306,17 +306,7 @@ public class LevelInterface {
 
             if (attInst == null) continue;
 
-            Object defaultValueObj = main.mobDataManager.getAttributeDefaultValue(lmEntity, attribute);
-            if (defaultValueObj == null) continue;
-
-            double defaultValue;
-            if (defaultValueObj instanceof Double) {
-                defaultValue = (Double) defaultValueObj;
-            } else {
-                continue;
-            }
-
-            attInst.setBaseValue(defaultValue);
+            attInst.getModifiers().clear();
         }
 
         // update nametag

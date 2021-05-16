@@ -55,8 +55,12 @@ public class MobDataManager {
     }
 
     public void setAdditionsForLevel(@NotNull final LivingEntityWrapper lmEntity, final Attribute attribute, final Addition addition) {
-        double defaultValue = Objects.requireNonNull(lmEntity.getLivingEntity().getAttribute(attribute)).getBaseValue();
+        double defaultValue = main.settingsCfg.getBoolean("attributes-use-preset-base-values") ?
+                (double) Objects.requireNonNull(getAttributeDefaultValue(lmEntity, attribute)) :
+                Objects.requireNonNull(lmEntity.getLivingEntity().getAttribute(attribute)).getBaseValue();
         double additionValue = getAdditionsForLevel(lmEntity, addition);
+
+        getAdditionsForLevel(lmEntity, addition);
 
         if (additionValue == 0.0) return;
 

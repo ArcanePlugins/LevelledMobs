@@ -177,6 +177,9 @@ ensure-mobs-are-levelled-on-chunk-load: true
 # ||      'DENIED_RULE_CUSTOM_NAME' | Reports denied levelling due to being nametagged
 # ||
 # |||---------------------------------------------------------------------------------|
+
+attributes-use-preset-base-values: false
+
 use-update-checker: true
 debug-entity-damage: false
 debug-misc: [ ]

@@ -19,12 +19,14 @@ public class RulesParsingManager {
     public RulesParsingManager(final LevelledMobs main){
         this.main = main;
         this.rulePresets = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+        this.customRules = new LinkedList<>();
     }
 
     final private LevelledMobs main;
     private RuleInfo parsingInfo;
     @NotNull
     public final Map<String, RuleInfo> rulePresets;
+    @NotNull
     public List<RuleInfo> customRules;
     public RuleInfo defaultRule;
 
@@ -48,6 +50,16 @@ public class RulesParsingManager {
 
             this.main.rulesManager.rulesInEffect.get(ruleInfo.rulePriority).add(ruleInfo);
         }
+    }
+
+    @NotNull
+    public List<RuleInfo> getAllRules(){
+        List<RuleInfo> results = new LinkedList<>();
+        if (this.defaultRule != null) results.add(this.defaultRule);
+        results.addAll(this.rulePresets.values());
+        results.addAll(this.customRules);
+
+        return results;
     }
 
     @NotNull
