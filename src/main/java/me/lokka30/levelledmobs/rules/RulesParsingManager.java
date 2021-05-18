@@ -240,7 +240,6 @@ public class RulesParsingManager {
             }
 
             this.parsingInfo.mergePresetRules(rulePresets.get(checkName));
-            Utils.logger.info("merged preset: " + checkName + ", " + rulePresets.get(checkName).getRuleName());
         }
     }
 

@@ -37,7 +37,7 @@ public class EntityDamageListener implements Listener {
         if (!lmEntity.isLevelled()) return;
 
         // Update their nametag with a 1 tick delay so that their health after the damage is shown
-        main.levelManager.updateNametagWithDelay(lmEntity, 1);
+        main.levelManager.updateNametag_WithDelay(lmEntity);
     }
 
     // Check for levelled ranged damage.

@@ -1,10 +1,5 @@
 package me.lokka30.levelledmobs.managers;
 
-import com.comphenix.protocol.PacketType;
-import com.comphenix.protocol.ProtocolLibrary;
-import com.comphenix.protocol.events.PacketContainer;
-import com.comphenix.protocol.wrappers.WrappedChatComponent;
-import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 import me.lokka30.levelledmobs.LevelInterface;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.LivingEntityInterface;
@@ -30,7 +25,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.Nonnull;
-import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.*;
@@ -137,33 +131,6 @@ public class LevelManager {
 
     public int[] generateWorldGuardRegionLevel(final LivingEntityInterface lmInterface) {
         return main.worldGuardManager.getRegionLevel(lmInterface);
-    }
-
-    public void updateNametagWithDelay(final LivingEntityWrapper lmEntity, final String nametag, final long delay) {
-        new BukkitRunnable() {
-            public void run() {
-                if (lmEntity == null) return; // may have died/removed after the timer.
-                updateNametag(lmEntity, nametag);
-            }
-        }.runTaskLater(main, delay);
-    }
-
-    public void updateNametagWithDelay(final LivingEntityWrapper lmEntity, final long delay) {
-        new BukkitRunnable() {
-            public void run() {
-                if (lmEntity == null) return; // may have died/removed after the timer.
-                updateNametag(lmEntity, getNametag(lmEntity, false));
-            }
-        }.runTaskLater(main, delay);
-    }
-
-    public void updateNametagWithDelay(final LivingEntityWrapper lmEntity, final List<Player> playerList, final long delay) {
-        new BukkitRunnable() {
-            public void run() {
-                if (lmEntity == null) return; // may have died/removed after the timer.
-                updateNametag(lmEntity, getNametag(lmEntity, false), playerList);
-            }
-        }.runTaskLater(main, delay);
     }
 
     // This sets the levelled currentDrops on a levelled mob that just died.
@@ -287,13 +254,6 @@ public class LevelManager {
         }
     }
 
-    public void updateNametag(final LivingEntityWrapper lmEntity){
-        updateNametag(
-                lmEntity,
-                getNametag(lmEntity, false)
-                );
-    }
-
     // When the persistent data container levelled key has not been set on the entity yet (i.e. for use in EntitySpawnListener)
     @Nullable
     public String getNametag(final LivingEntityWrapper lmEntity, final boolean isDeathNametag) {
@@ -329,9 +289,11 @@ public class LevelManager {
     public String replaceStringPlaceholders(final String nametag, @NotNull final LivingEntityWrapper lmEntity){
         String result = nametag;
 
-        final AttributeInstance maxHealth = lmEntity.getLivingEntity().getAttribute(Attribute.GENERIC_MAX_HEALTH);
-        final String roundedMaxHealth = maxHealth == null ? "?" : Utils.round(maxHealth.getValue()) + "";
-        final String roundedMaxHealthInt = maxHealth == null ? "?" : (int) Utils.round(maxHealth.getValue()) + "";
+        //final AttributeInstance maxHealth = lmEntity.getLivingEntity().getAttribute(Attribute.GENERIC_MAX_HEALTH);
+        final double maxHealth = getMobAttributeValue(lmEntity, Attribute.GENERIC_MAX_HEALTH);
+        final double entityHealth = getMobHealth(lmEntity);
+        final String roundedMaxHealth = Utils.round(maxHealth) + "";
+        final String roundedMaxHealthInt = (int) Utils.round(maxHealth) + "";
         String entityName = Utils.capitalize(lmEntity.getTypeName().toLowerCase().replaceAll("_", " "));
 
         // %tiered% placeholder
@@ -347,8 +309,8 @@ public class LevelManager {
         // replace them placeholders ;)
         result = result.replace("%mob-lvl%", lmEntity.getMobLevel() + "");
         result = result.replace("%entity-name%", entityName);
-        result = result.replace("%entity-health%", Utils.round(lmEntity.getLivingEntity().getHealth()) + "");
-        result = result.replace("%entity-health-rounded%", (int) Utils.round(lmEntity.getLivingEntity().getHealth()) + "");
+        result = result.replace("%entity-health%", Utils.round(entityHealth) + "");
+        result = result.replace("%entity-health-rounded%", (int) Utils.round(entityHealth) + "");
         result = result.replace("%entity-max-health%", roundedMaxHealth);
         result = result.replace("%entity-max-health-rounded%", roundedMaxHealthInt);
         result = result.replace("%heart_symbol%", "❤");
@@ -361,8 +323,33 @@ public class LevelManager {
         return result;
     }
 
+    public void updateNametag_WithDelay(final LivingEntityWrapper lmEntity){
+        final BukkitRunnable runnable = new BukkitRunnable() {
+            @Override
+            public void run() {
+                updateNametag(
+                        lmEntity,
+                        getNametag(lmEntity, false)
+                );
+            }
+        };
+
+        runnable.runTaskLater(main, 1L);
+    }
+
+    public void updateNametag(final LivingEntityWrapper lmEntity){
+        updateNametag(
+                lmEntity,
+                getNametag(lmEntity, false)
+        );
+    }
+
     public void updateNametag(final @NotNull LivingEntityWrapper lmEntity, final String nametag) {
         updateNametag(lmEntity, nametag, lmEntity.getLivingEntity().getWorld().getPlayers());
+    }
+
+    public void updateNametag(final @NotNull LivingEntityWrapper lmEntity, final String nametag, final List<Player> players) {
+        main.queueManager_nametags.addToQueue(new QueueItem(lmEntity, nametag, players));
     }
 
     /*
@@ -374,63 +361,6 @@ public class LevelManager {
      *   - @Esophose (https://www.spigotmc.org/members/esophose.34168/)
      *   - @7smile7 (https://www.spigotmc.org/members/7smile7.43809/)
      */
-    public void updateNametag(final @NotNull LivingEntityWrapper lmEntity, final String nametag, final List<Player> players) {
-
-        if (!ExternalCompatibilityManager.hasProtocolLibInstalled()) return;
-        if (main.settingsCfg.getBoolean("assert-entity-validity-with-nametag-packets") && !lmEntity.getLivingEntity().isValid())
-            return;
-
-        final WrappedDataWatcher dataWatcher;
-        final WrappedDataWatcher.Serializer chatSerializer;
-
-        try {
-            dataWatcher = WrappedDataWatcher.getEntityWatcher(lmEntity.getLivingEntity()).deepClone();
-        } catch (ConcurrentModificationException ex) {
-            Utils.debugLog(main, DebugType.UPDATE_NAMETAG_FAIL, "Concurrent modification occured, skipping nametag update of " + lmEntity.getLivingEntity().getName() + ".");
-            return;
-        }
-
-        try {
-            chatSerializer = WrappedDataWatcher.Registry.getChatComponentSerializer(true);
-        } catch (ConcurrentModificationException ex) {
-            Utils.debugLog(main, DebugType.UPDATE_NAMETAG_FAIL, "ConcurrentModificationException caught, skipping nametag update of " + lmEntity.getLivingEntity().getName() + ".");
-            return;
-        } catch (IllegalArgumentException ex) {
-            Utils.debugLog(main, DebugType.UPDATE_NAMETAG_FAIL, "Registry is empty, skipping nametag update of " + lmEntity.getLivingEntity().getName() + ".");
-            return;
-        }
-
-        final WrappedDataWatcher.WrappedDataWatcherObject watcherObject = new WrappedDataWatcher.WrappedDataWatcherObject(2, chatSerializer);
-
-        Optional<Object> optional;
-        if (Utils.isNullOrEmpty(nametag)) {
-            optional = Optional.empty();
-        } else {
-            optional = Optional.of(WrappedChatComponent.fromChatMessage(nametag)[0].getHandle());
-        }
-
-        dataWatcher.setObject(watcherObject, optional);
-        dataWatcher.setObject(3, !Utils.isNullOrEmpty(nametag) && lmEntity.getLivingEntity().isCustomNameVisible() || main.rulesManager.getRule_CreatureNametagAlwaysVisible(lmEntity));
-
-        final PacketContainer packet = ProtocolLibrary.getProtocolManager().createPacket(PacketType.Play.Server.ENTITY_METADATA);
-        packet.getWatchableCollectionModifier().write(0, dataWatcher.getWatchableObjects());
-        packet.getIntegers().write(0, lmEntity.getLivingEntity().getEntityId());
-
-        for (Player player : players) {
-            if (!player.isOnline()) continue;
-            if (!lmEntity.getLivingEntity().isValid()) return;
-
-            try {
-                Utils.debugLog(main, DebugType.UPDATE_NAMETAG_SUCCESS, "Nametag packet sent for " + lmEntity.getLivingEntity().getName() + " to " + player.getName() + ".");
-                ProtocolLibrary.getProtocolManager().sendServerPacket(player, packet);
-            } catch (IllegalArgumentException ex) {
-                Utils.debugLog(main, DebugType.UPDATE_NAMETAG_FAIL, "IllegalArgumentException caught whilst trying to sendServerPacket");
-            } catch (InvocationTargetException ex) {
-                Utils.logger.error("Unable to update nametag packet for player &b" + player.getName() + "&7! Stack trace:");
-                ex.printStackTrace();
-            }
-        }
-    }
 
     public BukkitTask nametagAutoUpdateTask;
 
@@ -460,7 +390,7 @@ public class LevelManager {
                                     location.getWorld().getName().equals(lmEntity.getWorld().getName()) &&
                                             lmEntity.getLocation().distanceSquared(location) <= maxDistance) {
                                 //if within distance, update nametag.
-                                main.levelManager.updateNametag(lmEntity, main.levelManager.getNametag(lmEntity, false), Collections.singletonList(player));
+                                main.queueManager_nametags.addToQueue(new QueueItem(lmEntity, main.levelManager.getNametag(lmEntity, false), Collections.singletonList(player)));
                             }
                         } else {
                             if (
@@ -469,33 +399,14 @@ public class LevelManager {
                                             main.levelInterface.getLevellableState(lmEntity) == LevelInterface.LevellableState.ALLOWED) {
                                 // if the mob was a baby at some point, aged and now is eligable for levelling, we'll apply a level to it now
                                 Utils.debugLog(main, DebugType.ENTITY_MISC, lmEntity.getTypeName() + " was a baby and is now an adult, applying levelling rules");
-                                // can't apply the level from an async task
-                                applyLevelToMobFromAsync(lmEntity);
+
+                                main.queueManager_mobs.addToQueue(new QueueItem(lmEntity, null));
                             }
                         }
                     }
                 }
             }
         }.runTaskTimerAsynchronously(main, 0, 20 * period);
-    }
-
-    private void applyLevelToMobFromAsync(final LivingEntityWrapper lmEntity){
-        BukkitRunnable applyLevelTask = new BukkitRunnable() {
-            @Override
-            public void run() {
-                lmEntity.getPDC().remove(main.levelManager.wasBabyMobKey);
-
-                main.levelInterface.applyLevelToMob(
-                        lmEntity,
-                        main.levelInterface.generateLevel(lmEntity),
-                        false,
-                        false,
-                        new HashSet<>(Collections.singletonList(LevelInterface.AdditionalLevelInformation.NOT_APPLICABLE))
-                );
-            }
-        };
-
-        applyLevelTask.runTask(main);
     }
 
     public void stopNametagAutoUpdateTask() {
@@ -534,12 +445,6 @@ public class LevelManager {
 
         // Apply additions
         main.mobDataManager.setAdditionsForLevel(lmEntity, attribute, addition);
-
-        // MAX_HEALTH specific: set health to max health
-        if (attribute == Attribute.GENERIC_MAX_HEALTH) {
-            final AttributeInstance attrib = lmEntity.getLivingEntity().getAttribute(Attribute.GENERIC_MAX_HEALTH);
-            if (attrib != null) lmEntity.getLivingEntity().setHealth(attrib.getValue());
-        }
     }
 
     public void applyCreeperBlastRadius(LivingEntityWrapper lmEntity, int level) {
@@ -623,5 +528,25 @@ public class LevelManager {
                 }
             }
         }
+    }
+
+    public double getMobAttributeValue(final LivingEntityWrapper lmEntity, final Attribute attribute){
+        double result = 0.0;
+        synchronized (main.attributeSyncObject){
+            final AttributeInstance attrib = lmEntity.getLivingEntity().getAttribute(attribute);
+            if (attrib != null)
+                result = attrib.getValue();
+        }
+
+        return result;
+    }
+
+    public double getMobHealth(final LivingEntityWrapper lmEntity){
+        double result;
+        synchronized (main.attributeSyncObject){
+            result = lmEntity.getLivingEntity().getHealth();
+        }
+
+        return result;
     }
 }

@@ -34,7 +34,9 @@ public class LevelledMobs extends JavaPlugin {
     public final MobHeadManager mobHeadManager = new MobHeadManager(this);
     public final RulesParsingManager rulesParsingManager = new RulesParsingManager(this);
     public final RulesManager rulesManager = new RulesManager(this);
-    public final QueueManager queueManager = new QueueManager(this);
+    public final QueueManager_Mobs queueManager_mobs = new QueueManager_Mobs(this);
+    public final QueueManager_Nametags queueManager_nametags = new QueueManager_Nametags(this);
+    public final Object attributeSyncObject = new Object();
 
     // Configuration
     public YamlConfiguration settingsCfg;

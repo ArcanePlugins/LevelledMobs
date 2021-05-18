@@ -523,7 +523,7 @@ presets:
     apply-settings:
       multipliers:
         max-health: 3.0
-        movement-speed: 1.25
+        movement-speed: 0.6
         attack-damage: 2.5
         ranged-attack-damage: 2.0
         item-drop: 3

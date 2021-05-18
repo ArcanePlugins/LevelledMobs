@@ -11,12 +11,14 @@ import org.bukkit.Particle;
 import org.bukkit.World;
 import org.bukkit.block.CreatureSpawner;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntitySpawnEvent;
 import org.bukkit.event.entity.SpawnerSpawnEvent;
+import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
@@ -47,13 +49,10 @@ public class EntitySpawnListener implements Listener {
         final LivingEntityWrapper lmEntity = new LivingEntityWrapper((LivingEntity) event.getEntity(), main);
 
         // here we will process the mob from an async thread which directs it back to preprocessMob(..)
-        main.queueManager.addToQueue(new QueueItem(lmEntity, event));
+        main.queueManager_mobs.addToQueue(new QueueItem(lmEntity, event));
     }
 
     private void lmSpawnerSpawn(final LivingEntityWrapper lmEntity, final SpawnerSpawnEvent event) {
-
-        //final LivingEntityWrapper lmEntity = new LivingEntityWrapper((LivingEntity) event.getEntity(), main);
-        //lmEntity.setSpawnReason(CreatureSpawnEvent.SpawnReason.SPAWNER);
         final CreatureSpawner cs = event.getSpawner();
 
         // mob was spawned from a custom LM spawner
@@ -97,9 +96,10 @@ public class EntitySpawnListener implements Listener {
         runnable.runTaskAsynchronously(main);
     }
 
-    public void preprocessMob(final LivingEntityWrapper lmEntity, @NotNull final EntitySpawnEvent event){
+    public void preprocessMob(final LivingEntityWrapper lmEntity, @NotNull final Event event){
 
         CreatureSpawnEvent.SpawnReason spawnReason = CreatureSpawnEvent.SpawnReason.DEFAULT;
+        LevelInterface.AdditionalLevelInformation additionalInfo = LevelInterface.AdditionalLevelInformation.NOT_APPLICABLE;
 
         if (event instanceof SpawnerSpawnEvent) {
             SpawnerSpawnEvent spawnEvent = (SpawnerSpawnEvent) event;
@@ -110,7 +110,7 @@ public class EntitySpawnListener implements Listener {
                 return;
             }
 
-            Utils.debugLog(main, DebugType.MOB_SPAWNER, "Spawned mob from vanilla spawner: " + event.getEntityType());
+            Utils.debugLog(main, DebugType.MOB_SPAWNER, "Spawned mob from vanilla spawner: " + spawnEvent.getEntityType());
             spawnReason = CreatureSpawnEvent.SpawnReason.SPAWNER;
         }
         else if (event instanceof CreatureSpawnEvent){
@@ -129,13 +129,16 @@ public class EntitySpawnListener implements Listener {
 
             spawnReason = spawnEvent.getSpawnReason();
         }
+        else if (event instanceof ChunkLoadEvent)
+            additionalInfo = LevelInterface.AdditionalLevelInformation.FROM_CHUNK_LISTENER;
 
         lmEntity.setSpawnReason(spawnReason);
 
+        final HashSet<LevelInterface.AdditionalLevelInformation> additionalLevelInfo = new HashSet<>(Collections.singletonList(additionalInfo));
         final LevelInterface.LevellableState levellableState = getLevellableState(lmEntity, event);
         if (levellableState == LevelInterface.LevellableState.ALLOWED) {
             main.levelInterface.applyLevelToMob(lmEntity, main.levelInterface.generateLevel(lmEntity),
-                    false, false, new HashSet<>(Collections.singletonList(LevelInterface.AdditionalLevelInformation.NOT_APPLICABLE)));
+                    false, false, additionalLevelInfo);
         } else {
             Utils.debugLog(main, DebugType.APPLY_LEVEL_FAIL, "Entity " + lmEntity.getNameIfBaby() + " in wo" +
                     "rld " + lmEntity.getWorldName() + " was not levelled -> Levellable state: " + levellableState);
@@ -161,7 +164,7 @@ public class EntitySpawnListener implements Listener {
     }
 
     @NotNull
-    private LevelInterface.LevellableState getLevellableState(final LivingEntityWrapper lmEntity, @NotNull final EntitySpawnEvent event) {
+    private LevelInterface.LevellableState getLevellableState(final LivingEntityWrapper lmEntity, @NotNull final Event event) {
         LevelInterface.LevellableState levellableState = main.levelInterface.getLevellableState(lmEntity);
 
         if (levellableState != LevelInterface.LevellableState.ALLOWED) {
@@ -175,9 +178,9 @@ public class EntitySpawnListener implements Listener {
             if (((CreatureSpawnEvent) event).getSpawnReason().equals(CreatureSpawnEvent.SpawnReason.SPAWNER))
                 return LevelInterface.LevellableState.DENIED_OTHER;
 
-            Utils.debugLog(main, DebugType.ENTITY_SPAWN, "instanceof CreatureSpawnListener: " + event.getEntityType() + ", with spawnReason " + creatureSpawnEvent.getSpawnReason() + ".");
-        } else {
-            Utils.debugLog(main, DebugType.ENTITY_SPAWN, "not instanceof CreatureSpawnListener: " + event.getEntityType());
+            Utils.debugLog(main, DebugType.ENTITY_SPAWN, "instanceof CreatureSpawnListener: " + creatureSpawnEvent.getEntityType() + ", with spawnReason " + creatureSpawnEvent.getSpawnReason() + ".");
+        } else if (event instanceof EntitySpawnEvent) {
+            Utils.debugLog(main, DebugType.ENTITY_SPAWN, "not instanceof CreatureSpawnListener: " + ((EntitySpawnEvent)event).getEntityType());
         }
 
         return LevelInterface.LevellableState.ALLOWED;

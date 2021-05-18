@@ -108,9 +108,7 @@ public class LivingEntityWrapper implements LivingEntityInterface {
     }
 
     public boolean isLevelled(){
-        if (!hasCache) buildCache();
-
-        return this.mobLevel != null;
+        return main.levelInterface.isLevelled(this.livingEntity);
     }
 
     @NotNull

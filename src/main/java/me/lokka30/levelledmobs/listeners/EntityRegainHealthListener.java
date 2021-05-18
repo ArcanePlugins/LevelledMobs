@@ -31,7 +31,7 @@ public class EntityRegainHealthListener implements Listener {
         // Make sure the mob is levelled
         if (!lmEntity.isLevelled()) return;
 
-        main.levelManager.updateNametagWithDelay(lmEntity, 1);
+        main.levelManager.updateNametag_WithDelay(lmEntity);
     }
 
 }

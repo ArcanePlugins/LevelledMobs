@@ -10,6 +10,7 @@ import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Tameable;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -62,9 +63,6 @@ public class MobDataManager {
                 Objects.requireNonNull(lmEntity.getLivingEntity().getAttribute(attribute)).getBaseValue();
         double additionValue = getAdditionsForLevel(lmEntity, addition, defaultValue);
 
-        Utils.logger.info(String.format("%s, %s, default: %s, addition: %s",
-                lmEntity.getTypeName(), attribute.name(), defaultValue, additionValue));
-
         if (additionValue == 0.0) return;
 
         final AttributeModifier mod = new AttributeModifier("health", additionValue, AttributeModifier.Operation.ADD_NUMBER);
@@ -73,6 +71,11 @@ public class MobDataManager {
         if (attrib != null) {
             if (useStaticValues) attrib.setBaseValue(defaultValue);
             attrib.addModifier(mod);
+
+            // MAX_HEALTH specific: set health to max health
+            if (attribute == Attribute.GENERIC_MAX_HEALTH) {
+                lmEntity.getLivingEntity().setHealth(attrib.getValue());
+            }
         }
     }
 

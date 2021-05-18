@@ -8,9 +8,9 @@ import org.bukkit.scheduler.BukkitRunnable;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
-public class QueueManager {
+public class QueueManager_Mobs {
 
-    public QueueManager(final LevelledMobs main){
+    public QueueManager_Mobs(final LevelledMobs main){
         this.main = main;
         this.queue = new LinkedBlockingQueue<>();
     }
@@ -50,7 +50,6 @@ public class QueueManager {
     }
 
     private void main() throws InterruptedException{
-        Utils.logger.info("Starting Main thread");
         while (doThread) {
 
             QueueItem item = queue.poll(1000, TimeUnit.MILLISECONDS);

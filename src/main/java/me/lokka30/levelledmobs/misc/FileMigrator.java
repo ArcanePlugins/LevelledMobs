@@ -532,7 +532,6 @@ public class FileMigrator {
 
     @Nonnull
     private static SortedMap<String, FileMigrator.FieldInfo> getMapFromConfig(List<String> input) {
-        //final Map<String, FieldInfo> configMap = new HashMap<>();
         final SortedMap<String, FileMigrator.FieldInfo> configMap = new TreeMap<>();
         final List<String> currentKey = new ArrayList<>();
         final String regexPattern = "^[^':]*:.*";

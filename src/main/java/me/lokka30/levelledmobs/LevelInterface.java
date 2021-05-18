@@ -204,11 +204,6 @@ public class LevelInterface {
             if (mobPreLevelEvent.isCancelled()) return;
         }
 
-        //new Throwable().printStackTrace();
-
-//        new BukkitRunnable() {
-//            @Override
-//            public void run() {
         if (lmEntity.getPDC().has(main.levelManager.noLevelKey, PersistentDataType.STRING)) {
             Utils.debugLog(main, DebugType.APPLY_LEVEL_FAIL, "Entity " + lmEntity.getTypeName() + " had noLevelKey attached");
             return;
@@ -217,15 +212,24 @@ public class LevelInterface {
         lmEntity.getPDC().set(main.levelManager.levelKey, PersistentDataType.INTEGER, level);
         lmEntity.invalidateCache();
 
-        main.levelManager.applyLevelledAttributes(lmEntity, Addition.ATTRIBUTE_ATTACK_DAMAGE);
-        main.levelManager.applyLevelledAttributes(lmEntity, Addition.ATTRIBUTE_MAX_HEALTH);
-        main.levelManager.applyLevelledAttributes(lmEntity, Addition.ATTRIBUTE_MOVEMENT_SPEED);
+        // setting attributes should be only done in the main thread.
+        final BukkitRunnable applyAttribs = new BukkitRunnable() {
+            @Override
+            public void run() {
+                synchronized (main.attributeSyncObject) {
+                    main.levelManager.applyLevelledAttributes(lmEntity, Addition.ATTRIBUTE_ATTACK_DAMAGE);
+                    main.levelManager.applyLevelledAttributes(lmEntity, Addition.ATTRIBUTE_MAX_HEALTH);
+                    main.levelManager.applyLevelledAttributes(lmEntity, Addition.ATTRIBUTE_MOVEMENT_SPEED);
+                }
 
-        if (lmEntity.getLivingEntity() instanceof Creeper) {
-            main.levelManager.applyCreeperBlastRadius(lmEntity, level);
-        }
+                if (lmEntity.getLivingEntity() instanceof Creeper) {
+                    main.levelManager.applyCreeperBlastRadius(lmEntity, level);
+                }
+            }
+        };
+        applyAttribs.runTask(main);
 
-        main.levelManager.updateNametag(lmEntity);
+        main.levelManager.updateNametag_WithDelay(lmEntity);
         main.levelManager.applyLevelledEquipment(lmEntity, lmEntity.getMobLevel());
 
         MobPostLevelEvent.LevelCause levelCause = isSummoned ? MobPostLevelEvent.LevelCause.SUMMONED : MobPostLevelEvent.LevelCause.NORMAL;
@@ -249,8 +253,6 @@ public class LevelInterface {
         if (lmEntity.isBabyMob()) sb.append(" (baby)");
 
         Utils.debugLog(main, DebugType.APPLY_LEVEL_SUCCESS, sb.toString());
-        //    }
-        //}.runTaskLater(main, 1);
     }
 
     public enum AdditionalLevelInformation {
@@ -310,9 +312,7 @@ public class LevelInterface {
         }
 
         // update nametag
-        main.levelManager.updateNametagWithDelay(lmEntity,
-                lmEntity.getLivingEntity().getCustomName(),
-                1);
+        main.levelManager.updateNametag(lmEntity, lmEntity.getLivingEntity().getCustomName());
     }
 
     /**

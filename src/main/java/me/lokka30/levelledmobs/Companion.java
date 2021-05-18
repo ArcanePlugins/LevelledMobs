@@ -147,7 +147,8 @@ public class Companion {
         Utils.logger.info("&fListeners: &7Registering event listeners...");
 
         main.levelManager = new LevelManager(main);
-        main.queueManager.start();
+        main.queueManager_mobs.start();
+        main.queueManager_nametags.start();
         main.levelManager.entitySpawnListener = new EntitySpawnListener(main); // we're saving this reference so the summon command has access to it
         main.entityDamageDebugListener = new EntityDamageDebugListener(main);
         main.blockPlaceListener = new BlockPlaceListener(main);
@@ -162,7 +163,6 @@ public class Companion {
         pluginManager.registerEvents(new EntityDamageListener(main), main);
         pluginManager.registerEvents(new EntityDeathListener(main), main);
         pluginManager.registerEvents(new EntityRegainHealthListener(main), main);
-        pluginManager.registerEvents(new PlayerJoinWorldNametagListener(main), main);
         pluginManager.registerEvents(new EntityTransformListener(main), main);
         pluginManager.registerEvents(new EntityNametagListener(main), main);
         pluginManager.registerEvents(new EntityTargetListener(main), main);
@@ -273,7 +273,8 @@ public class Companion {
 
     void shutDownAsyncTasks() {
         Utils.logger.info("&fTasks: &7Shutting down other async tasks...");
-        main.queueManager.stop();
+        main.queueManager_mobs.stop();
+        main.queueManager_nametags.stop();
         Bukkit.getScheduler().cancelTasks(main);
     }
 

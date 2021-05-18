@@ -37,7 +37,7 @@ public class EntityNametagListener implements Listener {
             // Must be a levelled mob
             if (!lmEntity.isLevelled()) return;
 
-            main.levelManager.updateNametagWithDelay(lmEntity, 2L);
+            main.levelManager.updateNametag(lmEntity);
         }
     }
 }

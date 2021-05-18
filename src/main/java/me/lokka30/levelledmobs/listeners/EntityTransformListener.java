@@ -65,7 +65,7 @@ public class EntityTransformListener implements Listener {
             final LevelInterface.LevellableState levelledState = main.levelInterface.getLevellableState(transformedLmEntity);
             if (levelledState != LevelInterface.LevellableState.ALLOWED) {
                 Utils.debugLog(main, DebugType.ENTITY_TRANSFORM_FAIL, transformedEntity.getType().name() + ": transformed entity was not levellable, reason: " + levelledState);
-                main.levelManager.updateNametagWithDelay(transformedLmEntity, 1);
+                main.levelManager.updateNametag_WithDelay(transformedLmEntity);
                 continue;
             }
 
@@ -81,7 +81,7 @@ public class EntityTransformListener implements Listener {
             else
                 main.levelManager.entitySpawnListener.preprocessMob(transformedLmEntity, new EntitySpawnEvent(transformedEntity));
 
-            main.levelManager.updateNametag(lmEntity);
+            main.levelManager.updateNametag_WithDelay(lmEntity);
         }
     }
 }
