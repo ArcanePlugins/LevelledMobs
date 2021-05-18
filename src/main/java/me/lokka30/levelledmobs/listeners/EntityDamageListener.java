@@ -62,7 +62,7 @@ public class EntityDamageListener implements Listener {
         Utils.debugLog(main, DebugType.RANGED_DAMAGE_MODIFICATION, "Range attack damage modified for " + shooter.getLivingEntity().getName() + ":");
         Utils.debugLog(main, DebugType.RANGED_DAMAGE_MODIFICATION, "Previous rangedDamage: " + event.getDamage());
         //final int level = shooter.getMobLevel();
-        event.setDamage(event.getDamage() + main.mobDataManager.getAdditionsForLevel(shooter, Addition.CUSTOM_RANGED_ATTACK_DAMAGE));
+        event.setDamage(main.mobDataManager.getAdditionsForLevel(shooter, Addition.CUSTOM_RANGED_ATTACK_DAMAGE, event.getDamage()));
         Utils.debugLog(main, DebugType.RANGED_DAMAGE_MODIFICATION, "New rangedDamage: " + event.getDamage());
     }
 
@@ -84,7 +84,7 @@ public class EntityDamageListener implements Listener {
         Utils.debugLog(main, DebugType.RANGED_DAMAGE_MODIFICATION, "Previous guardianDamage: " + event.getDamage());
         //final int level = main.levelInterface.getLevelOfMob(guardian);
         final LivingEntityWrapper lmEntity = new LivingEntityWrapper(livingEntity, main);
-        event.setDamage(event.getDamage() + main.mobDataManager.getAdditionsForLevel(lmEntity, Addition.CUSTOM_RANGED_ATTACK_DAMAGE)); // use ranged attack damage value
+        event.setDamage(main.mobDataManager.getAdditionsForLevel(lmEntity, Addition.CUSTOM_RANGED_ATTACK_DAMAGE, event.getDamage())); // use ranged attack damage value
         Utils.debugLog(main, DebugType.RANGED_DAMAGE_MODIFICATION, "New guardianDamage: " + event.getDamage());
     }
 }

@@ -81,7 +81,7 @@ public class CustomDropsHandler {
                         lmEntity.getPDC().get(instance.levelManager.spawnReasonKey, PersistentDataType.STRING))
         );
         processingInfo.wasKilledByPlayer = lmEntity.getLivingEntity().getKiller() != null;
-        processingInfo.addition = BigDecimal.valueOf(instance.mobDataManager.getAdditionsForLevel(lmEntity, Addition.CUSTOM_ITEM_DROP))
+        processingInfo.addition = BigDecimal.valueOf(instance.mobDataManager.getAdditionsForLevel(lmEntity, Addition.CUSTOM_ITEM_DROP, 0.0))
                 .setScale(0, RoundingMode.HALF_DOWN).intValueExact(); // truncate double to int
         if (equippedOnly && lmEntity.getPDC().has(instance.blockPlaceListener.keySpawner_CustomDropId, PersistentDataType.STRING)){
             processingInfo.customDropId = lmEntity.getPDC().get(instance.blockPlaceListener.keySpawner_CustomDropId, PersistentDataType.STRING);

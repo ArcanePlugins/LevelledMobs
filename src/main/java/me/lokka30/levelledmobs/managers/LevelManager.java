@@ -192,7 +192,7 @@ public class LevelManager {
 
         if (!doNotMultiplyDrops && !dropsToMultiply.isEmpty()) {
             // Get currentDrops added per level value
-            final int addition = BigDecimal.valueOf(main.mobDataManager.getAdditionsForLevel(lmEntity, Addition.CUSTOM_ITEM_DROP))
+            final int addition = BigDecimal.valueOf(main.mobDataManager.getAdditionsForLevel(lmEntity, Addition.CUSTOM_ITEM_DROP, 0.0))
                     .setScale(0, RoundingMode.HALF_DOWN).intValueExact(); // truncate double to int
             Utils.debugLog(main, DebugType.SET_LEVELLED_ITEM_DROPS, "4: Item drop addition is +" + addition + ".");
 
@@ -281,7 +281,7 @@ public class LevelManager {
     public int getLevelledExpDrops(@NotNull final LivingEntityWrapper lmEntity, final int xp) {
         if (lmEntity.isLevelled()) {
             final int level = lmEntity.getMobLevel();
-            return (int) Math.round(xp + (xp * main.mobDataManager.getAdditionsForLevel(lmEntity, Addition.CUSTOM_XP_DROP)));
+            return (int) Math.round(xp + (xp * main.mobDataManager.getAdditionsForLevel(lmEntity, Addition.CUSTOM_XP_DROP, 0.0)));
         } else {
             return xp;
         }

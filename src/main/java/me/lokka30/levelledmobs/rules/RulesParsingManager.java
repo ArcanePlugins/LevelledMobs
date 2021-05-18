@@ -207,8 +207,7 @@ public class RulesParsingManager {
     }
 
     private void parseValues(final ConfigurationSection cs){
-        if (cs.getString("use-preset") != null)
-            mergePreset(cs);
+        mergePreset(cs);
 
         parsingInfo.ruleIsEnabled = cs.getBoolean("enabled", true);
         if (cs.getString("name") != null)
@@ -216,50 +215,24 @@ public class RulesParsingManager {
 
         parseStrategies(objectToConfigurationSection(cs.get("strategies")));
         parseConditions(objectToConfigurationSection(cs.get("conditions")));
-        parseRestrictions(objectToConfigurationSection(cs.get("restrictions")));
-        parseEntityNameOverride(objectToConfigurationSection(cs.get("entity-name-override")));
-        parseTieredColoring(objectToConfigurationSection(cs.get("tiered-coloring")));
-        parseExternalCompat(objectToConfigurationSection(cs.get("level-plugins")));
-
-        if (cs.getString("no-drop-multipler-entities") != null)
-        parsingInfo.conditions_NoDropEntities = buildCachedModalListOfString(objectToConfigurationSection(cs.get("no-drop-multipler-entities")));
+        parseApplySettings(objectToConfigurationSection(cs.get("apply-settings")));
 
         if (cs.get("allowed-entities") != null)
             parsingInfo.allowedEntities = buildCachedModalListOfString(objectToConfigurationSection(cs.get("allowed-entities")));
 
-        if (cs.getString("max-random-variance") != null)
-            parsingInfo.maxRandomVariance = cs.getInt("max-random-variance", 0);
-        parsingInfo.nametag = cs.getString("nametag");
-        parsingInfo.nametag_CreatureDeath = cs.getString("creature-death-nametag");
-        if (cs.getString("creature-nametag-always-visible") != null)
-            parsingInfo.CreatureNametagAlwaysVisible = cs.getBoolean("creature-nametag-always-visible");
-        if (cs.getString("baby-mobs-inherit-adult-setting") != null)
-            parsingInfo.babyMobsInheritAdultSetting = cs.getBoolean("baby-mobs-inherit-adult-setting");
-        if (cs.getString("level-inheritance") != null)
-            parsingInfo.mobLevelInheritance = cs.getBoolean("level-inheritance");
-        if (cs.getString("creeper-max-damage-radius") != null)
-            parsingInfo.creeperMaxDamageRadius = cs.getInt("creeper-max-damage-radius");
-        if (cs.getString("use-custom-item-drops-for-mobs") != null)
-            parsingInfo.customDrops_UseForMobs = cs.getBoolean("use-custom-item-drops-for-mobs");
-        if (cs.getString("custom-drops-override") != null)
-            parsingInfo.customDrops_UseOverride = cs.getBoolean("custom-drops-override");
-        if (cs.getString("use-droptable-id") != null)
-            parsingInfo.customDrop_DropTableId = cs.getString("use-droptable-id");
-        if (cs.getString("stop-processing") != null)
-            parsingInfo.stopProcessingRules = cs.getBoolean("stop-processing");
         parsingInfo.rulePriority = cs.getInt("priority", 0);
     }
 
     private void mergePreset(final ConfigurationSection cs){
+        if (cs == null) return;
 
-        final String presetName = cs.getString("use-preset");
-        if (Utils.isNullOrEmpty(presetName)) {
-            Utils.logger.info(parsingInfo.getRuleName() + ", no preset name was specified");
-            return;
-        }
+        final List<String> presets = cs.getStringList("use-preset");
+        if (presets.isEmpty() && cs.getString("use-preset") != null)
+            presets.addAll(Arrays.asList(Objects.requireNonNull(cs.getString("use-preset")).split(",")));
 
-        final String[] names = presetName.split(",");
-        for (String checkName : names) {
+        if (presets.isEmpty()) return;
+
+        for (String checkName : presets) {
             checkName = checkName.trim();
             if (!rulePresets.containsKey(checkName)) {
                 Utils.logger.info(parsingInfo.getRuleName() + ", specified preset name '" + checkName + "' was none was found");
@@ -267,6 +240,7 @@ public class RulesParsingManager {
             }
 
             this.parsingInfo.mergePresetRules(rulePresets.get(checkName));
+            Utils.logger.info("merged preset: " + checkName + ", " + rulePresets.get(checkName).getRuleName());
         }
     }
 
@@ -328,10 +302,12 @@ public class RulesParsingManager {
         }
     }
 
-    private void parseRestrictions(final ConfigurationSection cs){
+    private void parseApplySettings(final ConfigurationSection cs){
         if (cs == null) return;
 
-        parseFineTuning(objectToConfigurationSection(cs.get("fine-tuning")));
+        parseFineTuning(objectToConfigurationSection(cs.get("multipliers")));
+        parseEntityNameOverride(objectToConfigurationSection(cs.get("entity-name-override")));
+        parseTieredColoring(objectToConfigurationSection(cs.get("tiered-coloring")));
 
         if (cs.getString("minLevel") != null)
             parsingInfo.restrictions_MinLevel = cs.getInt("minLevel");
@@ -344,18 +320,40 @@ public class RulesParsingManager {
             parsingInfo.restrictions_MinLevel = cs.getInt("minlevel");
         if (cs.getString("maxlevel") != null)
             parsingInfo.restrictions_MaxLevel = cs.getInt("maxlevel");
+
+        if (cs.getString("no-drop-multipler-entities") != null)
+            parsingInfo.conditions_NoDropEntities = buildCachedModalListOfString(objectToConfigurationSection(cs.get("no-drop-multipler-entities")));
+        if (cs.getString("baby-mobs-inherit-adult-setting") != null)
+            parsingInfo.babyMobsInheritAdultSetting = cs.getBoolean("baby-mobs-inherit-adult-setting");
+        if (cs.getString("level-inheritance") != null)
+            parsingInfo.mobLevelInheritance = cs.getBoolean("level-inheritance");
+        if (cs.getString("creeper-max-damage-radius") != null)
+            parsingInfo.creeperMaxDamageRadius = cs.getInt("creeper-max-damage-radius");
+        if (cs.getString("use-custom-item-drops-for-mobs") != null)
+            parsingInfo.customDrops_UseForMobs = cs.getBoolean("use-custom-item-drops-for-mobs");
+        if (cs.getString("custom-drops-override") != null)
+            parsingInfo.customDrops_UseOverride = cs.getBoolean("custom-drops-override");
+        if (cs.getString("use-droptable-id") != null)
+            parsingInfo.customDrop_DropTableId = cs.getString("use-droptable-id");
+        parsingInfo.nametag = cs.getString("nametag");
+        parsingInfo.nametag_CreatureDeath = cs.getString("creature-death-nametag");
+        if (cs.getString("creature-nametag-always-visible") != null)
+            parsingInfo.CreatureNametagAlwaysVisible = cs.getBoolean("creature-nametag-always-visible");
     }
 
     private void parseConditions(final ConfigurationSection conditions){
         if (conditions  == null) return;
 
         parseWorldList(objectToConfigurationSection(conditions.get("worlds")));
+        parseExternalCompat(objectToConfigurationSection(conditions.get("level-plugins")));
 
         if (conditions.getString("minLevel") != null)
             parsingInfo.conditions_MinLevel = conditions.getInt("minLevel");
         if (conditions.getString("maxLevel") != null)
             parsingInfo.conditions_MaxLevel = conditions.getInt("maxLevel");
 
+        if (conditions.getString("stop-processing") != null)
+            parsingInfo.stopProcessingRules = conditions.getBoolean("stop-processing");
         if (conditions.getString("chance") != null)
             parsingInfo.conditions_Chance = conditions.getDouble("chance");
         final String mobCustomNameStatus = conditions.getString("mob-customname-status");
@@ -399,6 +397,8 @@ public class RulesParsingManager {
     private void parseStrategies(final ConfigurationSection strategies){
         if (strategies == null) return;
 
+        if (strategies.getString("max-random-variance") != null)
+            parsingInfo.maxRandomVariance = strategies.getInt("max-random-variance", 0);
         if (strategies.getString("random") != null)
             parsingInfo.useRandomLevelling = strategies.getBoolean("random");
 
@@ -481,11 +481,11 @@ public class RulesParsingManager {
 
         FineTuningAttributes attribs = new FineTuningAttributes();
         if (cs.getString("max-health") != null)
-            attribs.maxHealth = cs.getInt("max-health");
+            attribs.maxHealth = cs.getDouble("max-health");
         if (cs.getString("movement-speed") != null)
             attribs.movementSpeed = cs.getDouble("movement-speed");
         if (cs.getString("attack-damage") != null)
-            attribs.attackDamage = cs.getInt("attack-damage");
+            attribs.attackDamage = cs.getDouble("attack-damage");
         if (cs.getString("ranged-attack-damage") != null)
             attribs.rangedAttackDamage = cs.getDouble("ranged-attack-damage");
         if (cs.getString("item-drop") != null)

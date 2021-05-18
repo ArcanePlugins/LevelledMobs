@@ -2,6 +2,7 @@ package me.lokka30.levelledmobs.rules;
 
 import me.lokka30.levelledmobs.managers.ExternalCompatibilityManager;
 import me.lokka30.levelledmobs.misc.CachedModalList;
+import me.lokka30.levelledmobs.misc.Utils;
 import me.lokka30.levelledmobs.rules.strategies.LevellingStrategy;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.jetbrains.annotations.NotNull;
@@ -87,12 +88,24 @@ public class RuleInfo {
                 if (f.getName().equals("ruleSourceNames")) continue;
                 if (f.get(preset) == null) continue;
 
-                // skip default values such as false, 0, 0.0
-                if (f.get(preset) instanceof Boolean && !((Boolean) f.get(preset))) continue;
-                if (f.get(preset) instanceof Integer && ((Integer) f.get(preset)) == 0) continue;
-                if (f.get(preset) instanceof Double && ((Double) f.get(preset)) == 0.0) continue;
+                boolean skipSettingValue = false;
+                final Object presetValue = f.get(preset);
+                if (presetValue instanceof CachedModalList){
+                    CachedModalList<?> cachedModalList_preset = (CachedModalList<?>) presetValue;
+                    CachedModalList<?> thisCachedModalList = (CachedModalList<?>) this.getClass().getDeclaredField(f.getName()).get(this);
+                    if (thisCachedModalList != null) {
+                        thisCachedModalList.mergeCachedModal(cachedModalList_preset);
+                        skipSettingValue = true;
+                    }
+                }
 
-                this.getClass().getDeclaredField(f.getName()).set(this, f.get(preset));
+                // skip default values such as false, 0, 0.0
+                if (presetValue instanceof Boolean && !((Boolean) presetValue)) continue;
+                if (presetValue instanceof Integer && ((Integer) presetValue == 0)) continue;
+                if (presetValue instanceof Double && ((Double) presetValue == 0.0)) continue;
+
+                if (!skipSettingValue)
+                    this.getClass().getDeclaredField(f.getName()).set(this, presetValue);
                 this.ruleSourceNames.put(f.getName(), preset.ruleName);
             }
         }

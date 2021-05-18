@@ -44,4 +44,14 @@ public class CachedModalList<T extends Comparable<T>> implements Cloneable {
 
         return copy;
     }
+
+    public void mergeCachedModal(CachedModalList<?> cachedModalList){
+        if (this.listMode.equals(cachedModalList.listMode)){
+            this.items.addAll((Collection<? extends T>) cachedModalList.items);
+        }
+        else{
+            this.listMode = cachedModalList.listMode;
+            this.items = (Set<T>) cachedModalList.items;
+        }
+    }
 }

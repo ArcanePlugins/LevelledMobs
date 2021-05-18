@@ -3,6 +3,7 @@ package me.lokka30.levelledmobs.managers;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.misc.Addition;
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
+import me.lokka30.levelledmobs.misc.Utils;
 import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
@@ -55,21 +56,27 @@ public class MobDataManager {
     }
 
     public void setAdditionsForLevel(@NotNull final LivingEntityWrapper lmEntity, final Attribute attribute, final Addition addition) {
-        double defaultValue = main.settingsCfg.getBoolean("attributes-use-preset-base-values") ?
+        final boolean useStaticValues = main.settingsCfg.getBoolean("attributes-use-preset-base-values");
+        double defaultValue = useStaticValues ?
                 (double) Objects.requireNonNull(getAttributeDefaultValue(lmEntity, attribute)) :
                 Objects.requireNonNull(lmEntity.getLivingEntity().getAttribute(attribute)).getBaseValue();
-        double additionValue = getAdditionsForLevel(lmEntity, addition);
+        double additionValue = getAdditionsForLevel(lmEntity, addition, defaultValue);
 
-        getAdditionsForLevel(lmEntity, addition);
+        Utils.logger.info(String.format("%s, %s, default: %s, addition: %s",
+                lmEntity.getTypeName(), attribute.name(), defaultValue, additionValue));
 
         if (additionValue == 0.0) return;
 
         final AttributeModifier mod = new AttributeModifier("health", additionValue, AttributeModifier.Operation.ADD_NUMBER);
         final AttributeInstance attrib = lmEntity.getLivingEntity().getAttribute(attribute);
-        if (attrib != null) attrib.addModifier(mod);
+
+        if (attrib != null) {
+            if (useStaticValues) attrib.setBaseValue(defaultValue);
+            attrib.addModifier(mod);
+        }
     }
 
-    public final double getAdditionsForLevel(final LivingEntityWrapper lmEntity, final Addition addition) {
+    public final double getAdditionsForLevel(final LivingEntityWrapper lmEntity, final Addition addition, double defaultValue) {
         final double maxLevel = main.rulesManager.getRule_MobMaxLevel(lmEntity);
 
         double attributeValue = 0;
@@ -96,6 +103,11 @@ public class MobDataManager {
             }
         }
 
-        return attributeValue * (((double) lmEntity.getMobLevel() - 1)/ maxLevel);
+        // use old formula or item drops, xp drops
+        if (defaultValue == 0.0)
+            return attributeValue * (((double) lmEntity.getMobLevel() - 1)/ maxLevel);
+
+        // use revised formula for all attributes
+        return (defaultValue * attributeValue) * ((lmEntity.getMobLevel() - 1) / maxLevel);
     }
 }

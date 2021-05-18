@@ -9,11 +9,11 @@ import java.util.List;
 public class FineTuningAttributes {
     public EntityType applicableEntity;
 
-    public Integer maxHealth;
-    public Integer attackDamage;
+    public Double maxHealth;
+    public Double attackDamage;
     public Integer itemDrop;
-    public Integer xpDrop;
     public Double movementSpeed;
+    public Integer xpDrop;
     public Double rangedAttackDamage;
 
     public void mergeAttributes(final @Nullable FineTuningAttributes attributes){
