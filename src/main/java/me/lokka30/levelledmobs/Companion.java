@@ -188,6 +188,12 @@ public class Companion {
         }
     }
 
+    void loadSpigotConfig(){
+        main.levelManager.attributeMaxHealthMax = Bukkit.getServer().spigot().getConfig().getDouble("settings.attribute.maxHealth.max", 2048.0);
+        main.levelManager.attributeMovementSpeedMax = Bukkit.getServer().spigot().getConfig().getDouble("settings.attribute.movementSpeed.max", 2048.0);
+        main.levelManager.attributeAttackDamageMax = Bukkit.getServer().spigot().getConfig().getDouble("settings.attribute.attackDamage.max", 2048.0);
+    }
+
     protected void setupMetrics() {
         new Metrics(main, 6269);
     }

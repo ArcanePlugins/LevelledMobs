@@ -53,18 +53,20 @@ public class MobDataManager {
         }
 
         double tempValue = defaultValue + getAdditionsForLevel(livingEntity, addition, currentLevel);
-        if (attribute.equals(Attribute.GENERIC_MAX_HEALTH) && tempValue > 2048.0){
-            // max health has hard limit of 2048
-            tempValue = 2048.0;
-        }
+        if (attribute.equals(Attribute.GENERIC_MAX_HEALTH) && tempValue > main.levelManager.attributeMaxHealthMax)
+            tempValue = main.levelManager.attributeMaxHealthMax;
+        else if (attribute.equals(Attribute.GENERIC_MOVEMENT_SPEED) && tempValue > main.levelManager.attributeMovementSpeedMax)
+            tempValue = main.levelManager.attributeMovementSpeedMax;
+        else if (attribute.equals(Attribute.GENERIC_ATTACK_DAMAGE) && tempValue > main.levelManager.attributeAttackDamageMax)
+            tempValue = main.levelManager.attributeAttackDamageMax;
+
         Objects.requireNonNull(livingEntity.getAttribute(attribute)).setBaseValue(tempValue);
     }
 
     public final double getAdditionsForLevel(final LivingEntity livingEntity, final Addition addition, final int currentLevel) {
-        final int minLevel = main.settingsCfg.getInt("fine-tuning.min-level");
+        //final int minLevel = main.settingsCfg.getInt("fine-tuning.min-level");
         final int maxLevel = main.settingsCfg.getInt("fine-tuning.max-level");
-        final double range = (double) maxLevel - minLevel - 1;
-        final double percent = (double) currentLevel / range;
+        final double percent = (double) currentLevel / (double) maxLevel;
 
         final boolean isAdult = !(livingEntity instanceof Ageable) || ((Ageable) livingEntity).isAdult();
         final String entityCheckName = isAdult ?

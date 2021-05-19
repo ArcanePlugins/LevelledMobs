@@ -52,6 +52,9 @@ public class LevelManager {
     public final NamespacedKey spawnReasonKey; //This is stored on levelled mobs to tell how a mob was spawned
     public final NamespacedKey noLevelKey; // This key tells LM not to level the mob in future
     public final NamespacedKey wasBabyMobKey; // This key tells LM not to level the mob in future
+    public double attributeMaxHealthMax = 2048.0;
+    public double attributeMovementSpeedMax = 2048.0;
+    public double attributeAttackDamageMax = 2048.0;
 
     public final static int maxCreeperBlastRadius = 100;
     public EntitySpawnListener entitySpawnListener;

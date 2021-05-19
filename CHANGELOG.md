@@ -1,5 +1,30 @@
 # Changelog
 
+## v2.5.5 b407
+
+### Notice:
+
+The LevelledMobs team has been working on **LevelledMobs 3**! This update will significantly extend the capability and
+customisability of the plugin, through adding a new major configuration system called the **Rules System**. With such a
+large new feature, we need help to test it - if you're willing to help,
+please [join our Discord](https://discord.io/arcaneplugins) and let us know. Thanks :)
+
+### Notes:
+
+* Summary: **Fix for errors relating to fine-tuning section**
+* Testing depth: **Low**
+* Configuration changes: **None**
+
+### Changelog:
+
+* Fixed and improved the Async Nametag Auto Update Task
+  * [stumper66](https://www.spigotmc.org/members/stumper66.1118435/) Fix for errors when setting min and max level to the same value under the fine-tuning section
+  * [stumper66](https://www.spigotmc.org/members/stumper66.1118435/) Removed hard-coded max health limit of 2024 and now uses the spigot config value instead
+
+***
+
+## v2.5.1 b389
+
 ## v2.5.4 b401
 
 ### Notice:
