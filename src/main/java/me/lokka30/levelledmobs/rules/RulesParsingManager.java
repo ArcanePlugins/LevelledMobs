@@ -401,40 +401,56 @@ public class RulesParsingManager {
         if (strategies.getString("random") != null)
             parsingInfo.useRandomLevelling = strategies.getBoolean("random");
 
-        ConfigurationSection cs_SpawnDistance = objectToConfigurationSection(strategies.get("distance-from-spawn"));
-        if (cs_SpawnDistance != null){
-            SpawnDistanceStrategy spawnDistanceStrategy = new SpawnDistanceStrategy();
-            spawnDistanceStrategy.increaseLevelDistance = cs_SpawnDistance.getInt("increase-level-distance");
-            spawnDistanceStrategy.startDistance = cs_SpawnDistance.getInt("start-distance");
-            spawnDistanceStrategy.spawnLocation_X = parseOptionalSpawnCoordinate("spawn-location.x", cs_SpawnDistance);
-            spawnDistanceStrategy.spawnLocation_Z = parseOptionalSpawnCoordinate("spawn-location.z", cs_SpawnDistance);
-            parseBlendedLevelling(objectToConfigurationSection(cs_SpawnDistance.get("blended-levelling")), spawnDistanceStrategy);
-
-            this.parsingInfo.levellingStrategies.add(spawnDistanceStrategy);
-        }
-
         ConfigurationSection cs_YDistance = objectToConfigurationSection(strategies.get("y-coordinate"));
         if (cs_YDistance != null){
-            YDistanceStrategy yDistanceStrategy = new YDistanceStrategy();
-            yDistanceStrategy.startingYLevel = cs_YDistance.getInt("start");
-            yDistanceStrategy.endingYLevel = cs_YDistance.getInt("end");
-            yDistanceStrategy.yPeriod = cs_YDistance.getInt("period");
+            final YDistanceStrategy yDistanceStrategy = parsingInfo.levellingStrategy instanceof YDistanceStrategy ?
+                    (YDistanceStrategy) parsingInfo.levellingStrategy : new YDistanceStrategy();
+            if (cs_YDistance.getString("start") != null)
+                yDistanceStrategy.startingYLevel = cs_YDistance.getInt("start");
+            if (cs_YDistance.getString("end") != null)
+                yDistanceStrategy.endingYLevel = cs_YDistance.getInt("end");
+            if (cs_YDistance.getString("period") != null)
+                yDistanceStrategy.yPeriod = cs_YDistance.getInt("period");
 
-            this.parsingInfo.levellingStrategies.add(yDistanceStrategy);
+            this.parsingInfo.levellingStrategy = yDistanceStrategy;
+        }
+
+        ConfigurationSection cs_SpawnDistance = objectToConfigurationSection(strategies.get("distance-from-spawn"));
+        if (cs_SpawnDistance != null){
+            final SpawnDistanceStrategy spawnDistanceStrategy = parsingInfo.levellingStrategy instanceof SpawnDistanceStrategy ?
+                    (SpawnDistanceStrategy) parsingInfo.levellingStrategy : new SpawnDistanceStrategy();
+            if (cs_SpawnDistance.getString("increase-level-distance") != null)
+                spawnDistanceStrategy.increaseLevelDistance = cs_SpawnDistance.getInt("increase-level-distance");
+            if (cs_SpawnDistance.getString("start-distance") != null)
+                spawnDistanceStrategy.startDistance = cs_SpawnDistance.getInt("start-distance");
+            if (cs_SpawnDistance.getString("spawn-location.x") != null)
+                spawnDistanceStrategy.spawnLocation_X = parseOptionalSpawnCoordinate("spawn-location.x", cs_SpawnDistance);
+            if (cs_SpawnDistance.getString("spawn-location.z") != null)
+                spawnDistanceStrategy.spawnLocation_Z = parseOptionalSpawnCoordinate("spawn-location.z", cs_SpawnDistance);
+            if (cs_SpawnDistance.getString("blended-levelling") != null)
+                parseBlendedLevelling(objectToConfigurationSection(cs_SpawnDistance.get("blended-levelling")), spawnDistanceStrategy);
+
+            this.parsingInfo.levellingStrategy = spawnDistanceStrategy;
         }
     }
 
     private void parseBlendedLevelling(final ConfigurationSection cs, final @NotNull SpawnDistanceStrategy spawnDistanceStrategy){
         if (cs == null) return;
 
-        spawnDistanceStrategy.blendedLevellingEnabled = cs.getBoolean("enabled");
-        spawnDistanceStrategy.transition_Y_Height = cs.getInt("transition-y-height");
-        spawnDistanceStrategy.lvlMultiplier = cs.getDouble("lvl-multiplier");
-        spawnDistanceStrategy.multiplierPeriod = cs.getInt("multiplier-period");
-        spawnDistanceStrategy.scaleDownward = cs.getBoolean("scale-downward");
+        if (cs.getString("enabled") != null)
+            spawnDistanceStrategy.blendedLevellingEnabled = cs.getBoolean("enabled");
+        if (cs.getString("transition-y-height") != null)
+            spawnDistanceStrategy.transition_Y_Height = cs.getInt("transition-y-height");
+        if (cs.getString("lvl-multiplier") != null)
+            spawnDistanceStrategy.lvlMultiplier = cs.getDouble("lvl-multiplier");
+        if (cs.getString("multiplier-period") != null)
+            spawnDistanceStrategy.multiplierPeriod = cs.getInt("multiplier-period");
+        if (cs.getString("scale-downward") != null)
+            spawnDistanceStrategy.scaleDownward = cs.getBoolean("scale-downward");
     }
 
-    private Integer parseOptionalSpawnCoordinate(final String path, final ConfigurationSection cs){
+    @Nullable
+    private Integer parseOptionalSpawnCoordinate(final String path, @NotNull final ConfigurationSection cs){
         if (cs.getString(path) == null) return null;
         if ("default".equalsIgnoreCase(cs.getString(path))) return null;
 
@@ -513,7 +529,7 @@ public class RulesParsingManager {
     }
 
     @NotNull
-    private static List<String> getListOrItemFromConfig(final String name, final ConfigurationSection cs){
+    private static List<String> getListOrItemFromConfig(final String name, @NotNull final ConfigurationSection cs){
         List<String> result = cs.getStringList(name);
         if (result.isEmpty() && !Utils.isNullOrEmpty(cs.getString(name)))
             result.add(cs.getString(name));

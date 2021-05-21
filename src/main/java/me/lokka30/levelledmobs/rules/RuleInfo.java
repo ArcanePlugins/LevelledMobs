@@ -16,7 +16,6 @@ public class RuleInfo {
         this.ruleName = id;
 
         this.ruleIsEnabled = true;
-        this.levellingStrategies = new LinkedList<>();
         this.entityNameOverrides = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
         this.ruleSourceNames = new TreeMap<>();
         this.conditions_MobCustomnameStatus = MobCustomNameStatusEnum.NOT_SPECIFIED;
@@ -49,8 +48,7 @@ public class RuleInfo {
     public String customDrop_DropTableId;
     public MobCustomNameStatusEnum conditions_MobCustomnameStatus;
     public MobTamedStatusEnum conditions_MobTamedStatus;
-    @NotNull
-    public List<LevellingStrategy> levellingStrategies;
+    public LevellingStrategy levellingStrategy;
     @NotNull
     public Map<String, List<String>> entityNameOverrides;
     @NotNull
@@ -95,6 +93,12 @@ public class RuleInfo {
                     CachedModalList<?> thisCachedModalList = (CachedModalList<?>) this.getClass().getDeclaredField(f.getName()).get(this);
                     if (thisCachedModalList != null) {
                         thisCachedModalList.mergeCachedModal(cachedModalList_preset);
+                        skipSettingValue = true;
+                    }
+                }
+                if (presetValue instanceof LevellingStrategy) {
+                    if (this.levellingStrategy != null && this.levellingStrategy.getClass().equals(presetValue.getClass())) {
+                        this.levellingStrategy.mergeRule((LevellingStrategy) presetValue);
                         skipSettingValue = true;
                     }
                 }

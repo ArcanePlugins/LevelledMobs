@@ -10,25 +10,42 @@ import java.util.concurrent.ThreadLocalRandom;
  * @author stumper66
  */
 public class YDistanceStrategy implements LevellingStrategy {
-    public int startingYLevel;
-    public int endingYLevel;
-    public int yPeriod;
+    public Integer startingYLevel;
+    public Integer endingYLevel;
+    public Integer yPeriod;
+
+    public void mergeRule(final LevellingStrategy levellingStrategy){
+        if (levellingStrategy instanceof YDistanceStrategy)
+            mergeYDistanceStrategy((YDistanceStrategy) levellingStrategy);
+    }
+
+    public void mergeYDistanceStrategy(final YDistanceStrategy yds){
+        if (yds == null) return;
+
+        if (yds.startingYLevel != null) this.startingYLevel = yds.startingYLevel;
+        if (yds.endingYLevel != null) this.endingYLevel = yds.endingYLevel;
+        if (yds.yPeriod != null) this.yPeriod = yds.yPeriod;
+    }
 
     public String toString(){
         return String.format("start: %s, end: %s, yPeriod: %s",
-                startingYLevel, endingYLevel, yPeriod);
+                startingYLevel == null ? 0 : startingYLevel,
+                endingYLevel == null ? 0 : endingYLevel,
+                yPeriod == null ? 0 : yPeriod
+        );
     }
 
     public int generateLevel(final LivingEntityWrapper lmEntity, final int minLevel, final int maxLevel) {
 
         final int mobYLocation = lmEntity.getLivingEntity().getLocation().getBlockY();
-        int yStart = this.startingYLevel;
-        int yEnd = this.endingYLevel;
+        int yStart = this.startingYLevel == null ? 0 : this.startingYLevel;
+        int yEnd = this.endingYLevel == null ? 0 : this.endingYLevel;
+        final double yPeriod = this.yPeriod == null ? 0.0 : this.yPeriod;
 
         final boolean isAscending = (yEnd > yStart);
         if (!isAscending) {
             yStart = yEnd;
-            yEnd = this.startingYLevel;
+            yEnd = this.startingYLevel == null ? 0 : this.startingYLevel;
         }
 
         int useLevel = minLevel;
@@ -44,8 +61,8 @@ public class YDistanceStrategy implements LevellingStrategy {
             final double diff = yEnd - yStart;
             double useMobYLocation =  mobYLocation - yStart;
 
-            if (this.yPeriod > 0)
-                useLevel = (int) (useMobYLocation / (double) this.yPeriod);
+            if (yPeriod > 0)
+                useLevel = (int) (useMobYLocation / yPeriod);
             else {
                 double percent = useMobYLocation / diff;
                 useLevel = (int) Math.ceil((maxLevel - minLevel + 1) * percent);

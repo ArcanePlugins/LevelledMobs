@@ -178,4 +178,9 @@ public class CustomDropItem extends CustomDropBase {
     public void setItemStack(final ItemStack itemStack){
         this.itemStack = itemStack;
     }
+
+    public String toString(){
+        return String.format("%s, amount: %s, chance: %s, equipped: %s",
+                this.material.name(), this.getAmountAsString(), this.chance, this.equippedSpawnChance);
+    }
 }

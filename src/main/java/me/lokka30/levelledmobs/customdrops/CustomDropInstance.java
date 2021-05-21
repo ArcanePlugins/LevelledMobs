@@ -30,6 +30,7 @@ public class CustomDropInstance {
     final public EntityType associatedMob;
     final public CustomUniversalGroups entityGroup;
     final public List<CustomDropBase> customItems;
+    public Double overallChance;
     public boolean overrideStockDrops;
     public boolean utilizesGroupIds;
 

@@ -142,8 +142,12 @@ public class RulesManager {
                 // specifying random in strategies will nullify any levelling systems to that point
                 levellingStrategy = null;
             }
-            else if (!ruleInfo.levellingStrategies.isEmpty())
-                levellingStrategy = ruleInfo.levellingStrategies.get(0);
+            else if (ruleInfo.levellingStrategy != null) {
+                 if (levellingStrategy != null && levellingStrategy.getClass().equals(ruleInfo.levellingStrategy.getClass()))
+                     levellingStrategy.mergeRule(ruleInfo.levellingStrategy);
+                else
+                     levellingStrategy = ruleInfo.levellingStrategy;
+            }
         }
 
         return levellingStrategy;

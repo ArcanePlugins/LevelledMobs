@@ -62,8 +62,6 @@ public class PlayerJoinListener implements Listener {
     }
 
     private void updateNametagsInWorld(final Player player, final World world) {
-        Utils.logger.info("updating entitities: " + world.getEntities().size());
-
         for (final Entity entity : world.getEntities()) {
             if (!(entity instanceof LivingEntity)) continue;
 

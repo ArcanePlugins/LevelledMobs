@@ -487,6 +487,7 @@ presets:
   8: #This controls the Blended-Levelling system.
     name: 'LVLling Strategy - Blended Levelling'
     strategies:
+      distance-from-spawn:
         blended-levelling:
           enabled: true
           transition-y-height: 64

@@ -651,19 +651,6 @@ drop-table:
         nomultiplier: true
         nospawner: true
         groupid: 1
-  basic_nether:
-    - NETHERRACK:
-        amount: 1
-        chance: 1
-        nomultiplier: true
-        nospawner: true
-        groupid: 2
-    - SOUL_SAND:
-        amount: 1
-        chance: 1
-        nomultiplier: true
-        nospawner: true
-        groupid: 2
 
 
 # |||---------------------------------------------------------------------------------|

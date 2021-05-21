@@ -89,19 +89,20 @@ public class Companion {
         FileLoader.saveResourceIfNotExists(main, new File(main.getDataFolder(), "license.txt"));
 
         // load configurations
-        main.settingsCfg = FileLoader.loadFile(main, "settings", FileLoader.SETTINGS_FILE_VERSION, false);
+        main.settingsCfg = FileLoader.loadFile(main, "settings", FileLoader.SETTINGS_FILE_VERSION);
 
         if (main.settingsCfg != null) // only load if settings were loaded successfully
-            main.messagesCfg = FileLoader.loadFile(main, "messages", FileLoader.MESSAGES_FILE_VERSION, false);
+            main.messagesCfg = FileLoader.loadFile(main, "messages", FileLoader.MESSAGES_FILE_VERSION);
         else {
             // had an issue reading the file.  Disable the plugin now
             return false;
         }
 
-        final boolean customDropsEnabled = main.settingsCfg.getBoolean("use-custom-item-drops-for-mobs");
-
-        main.customDropsCfg = FileLoader.loadFile(main, "customdrops", FileLoader.CUSTOMDROPS_FILE_VERSION, customDropsEnabled);
-        main.rulesParsingManager.parseRulesMain(FileLoader.loadFile(main, "rules", FileLoader.RULES_FILE_VERSION, false));
+        main.customDropsHandler = new CustomDropsHandler(main);
+        main.rulesParsingManager.parseRulesMain(FileLoader.loadFile(main, "rules", FileLoader.RULES_FILE_VERSION));
+        main.customDropsHandler.customDropsParser.loadDrops(
+                FileLoader.loadFile(main, "customdrops", FileLoader.CUSTOMDROPS_FILE_VERSION)
+        );
         main.attributesCfg = loadEmbeddedResource("defaultAttributes.yml");
         main.dropsCfg = loadEmbeddedResource("defaultDrops.yml");
         main.mobHeadManager.loadTextures(Objects.requireNonNull(loadEmbeddedResource("textures.yml")));
@@ -118,9 +119,6 @@ public class Companion {
                 Utils.logger.warning("Unable to delete file " + lFile + ", " + e.getMessage());
             }
         }
-
-        // build custom drops
-        main.customDropsHandler = new CustomDropsHandler(main);
 
         return true;
     }

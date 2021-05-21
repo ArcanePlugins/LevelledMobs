@@ -43,7 +43,6 @@ public class LevelledMobs extends JavaPlugin {
     public YamlConfiguration messagesCfg;
     public YamlConfiguration attributesCfg;
     public YamlConfiguration dropsCfg;
-    public YamlConfiguration customDropsCfg;
     public final ConfigUtils configUtils = new ConfigUtils(this);
 
     // Misc
