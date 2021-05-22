@@ -248,7 +248,7 @@ public class CustomDropsHandler {
         boolean didNotMakeChance = false;
         double chanceRole = 0.0;
 
-        if (drop.dropChance < 1.0){
+        if (!info.equippedOnly && drop.dropChance < 1.0){
             chanceRole = (double) ThreadLocalRandom.current().nextInt(0, 100001) * 0.00001;
             if (1.0 - chanceRole >= drop.dropChance) didNotMakeChance = true;
         }
