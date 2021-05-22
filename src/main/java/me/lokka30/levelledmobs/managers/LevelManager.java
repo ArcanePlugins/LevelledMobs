@@ -21,6 +21,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
+import org.checkerframework.checker.guieffect.qual.UIType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -263,12 +264,10 @@ public class LevelManager {
 
         // Baby zombies can have specific nametags in entity-name-override
 
-        final String overridenName = lmEntity.hasOverridenEntityName() ?
-                lmEntity.getOverridenEntityName() :
-                main.rulesManager.getRule_EntityOverriddenName(lmEntity);
+        final String overridenName = main.rulesManager.getRule_EntityOverriddenName(lmEntity);
 
         String displayName = overridenName == null ?
-                Utils.capitalize(lmEntity.getTypeName().toLowerCase().replaceAll("_", " ")) :
+                Utils.capitalize(lmEntity.getTypeName().replaceAll("_", " ")) :
                 MessageUtils.colorizeAll(overridenName);
 
         if (lmEntity.getLivingEntity().getCustomName() != null)
@@ -278,7 +277,7 @@ public class LevelManager {
         if (nametag.isEmpty())
             return lmEntity.getLivingEntity().getCustomName(); // CustomName can be null, that is meant to be the case.
 
-        nametag = replaceStringPlaceholders(nametag, lmEntity);
+        nametag = replaceStringPlaceholders(nametag, lmEntity, displayName);
 
         // This is after colorize so that color codes in nametags dont get translated
         nametag = nametag.replace("%displayname%", displayName);
@@ -286,7 +285,7 @@ public class LevelManager {
         return nametag;
     }
 
-    public String replaceStringPlaceholders(final String nametag, @NotNull final LivingEntityWrapper lmEntity){
+    public String replaceStringPlaceholders(final String nametag, @NotNull final LivingEntityWrapper lmEntity, final String displayName){
         String result = nametag;
 
         //final AttributeInstance maxHealth = lmEntity.getLivingEntity().getAttribute(Attribute.GENERIC_MAX_HEALTH);
@@ -294,7 +293,8 @@ public class LevelManager {
         final double entityHealth = getMobHealth(lmEntity);
         final String roundedMaxHealth = Utils.round(maxHealth) + "";
         final String roundedMaxHealthInt = (int) Utils.round(maxHealth) + "";
-        String entityName = Utils.capitalize(lmEntity.getTypeName().toLowerCase().replaceAll("_", " "));
+        //String entityName = Utils.capitalize(lmEntity.getTypeName().replaceAll("_", " "));
+
 
         // %tiered% placeholder
         String tieredPlaceholder = main.rulesManager.getRule_TieredPlaceholder(lmEntity);
@@ -308,7 +308,7 @@ public class LevelManager {
 
         // replace them placeholders ;)
         result = result.replace("%mob-lvl%", lmEntity.getMobLevel() + "");
-        result = result.replace("%entity-name%", entityName);
+        result = result.replace("%entity-name%", displayName);
         result = result.replace("%entity-health%", Utils.round(entityHealth) + "");
         result = result.replace("%entity-health-rounded%", (int) Utils.round(entityHealth) + "");
         result = result.replace("%entity-max-health%", roundedMaxHealth);

@@ -2,7 +2,6 @@ package me.lokka30.levelledmobs.rules;
 
 import me.lokka30.levelledmobs.managers.ExternalCompatibilityManager;
 import me.lokka30.levelledmobs.misc.CachedModalList;
-import me.lokka30.levelledmobs.misc.Utils;
 import me.lokka30.levelledmobs.rules.strategies.LevellingStrategy;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.jetbrains.annotations.NotNull;
@@ -75,6 +74,7 @@ public class RuleInfo {
         this.ruleName = name;
     }
 
+    // this is only used for presets
     public void mergePresetRules(final RuleInfo preset){
         if (preset == null) return;
 
@@ -88,6 +88,12 @@ public class RuleInfo {
 
                 boolean skipSettingValue = false;
                 final Object presetValue = f.get(preset);
+
+                if (f.getName().equals("entityNameOverrides")){
+                    this.entityNameOverrides.putAll((Map<String, List<String>>) presetValue);
+                    skipSettingValue = true;
+                }
+
                 if (presetValue instanceof CachedModalList){
                     CachedModalList<?> cachedModalList_preset = (CachedModalList<?>) presetValue;
                     CachedModalList<?> thisCachedModalList = (CachedModalList<?>) this.getClass().getDeclaredField(f.getName()).get(this);

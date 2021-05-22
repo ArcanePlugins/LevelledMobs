@@ -1,12 +1,13 @@
 package me.lokka30.levelledmobs.rules;
 
+import me.lokka30.levelledmobs.customdrops.CustomCommand;
 import org.bukkit.entity.EntityType;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.LinkedList;
 import java.util.List;
 
-public class FineTuningAttributes {
+public class FineTuningAttributes implements Cloneable {
     public EntityType applicableEntity;
 
     public Double maxHealth;
@@ -46,5 +47,14 @@ public class FineTuningAttributes {
             return "No items";
         else
             return sb.toString();
+    }
+
+    public FineTuningAttributes cloneItem() {
+        FineTuningAttributes copy = null;
+        try {
+            copy = (FineTuningAttributes) super.clone();
+        } catch (Exception ignored) {}
+
+        return copy;
     }
 }

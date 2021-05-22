@@ -5,6 +5,7 @@ import me.lokka30.levelledmobs.LivingEntityInterface;
 import me.lokka30.levelledmobs.managers.ExternalCompatibilityManager;
 import me.lokka30.levelledmobs.misc.*;
 import me.lokka30.levelledmobs.rules.strategies.LevellingStrategy;
+import org.bukkit.World;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -22,6 +23,20 @@ public class RulesManager {
     private final Map<String, LevelNumbersWithBias> levelNumbersWithBiasMapCache;
     @NotNull
     public final SortedMap<Integer, List<RuleInfo>> rulesInEffect;
+
+    public boolean getRule_IsWorldAllowedInAnyRule(World world){
+        boolean result = false;
+
+        for (final RuleInfo ruleInfo : main.rulesParsingManager.getAllRules()){
+            if (!ruleInfo.ruleIsEnabled) continue;
+            if (ruleInfo.worlds.isEnabledInList(world.getName())){
+                result = true;
+                break;
+            }
+        }
+
+        return result;
+    }
 
     @Nullable
     public LevelNumbersWithBias getRule_LowerMobLevelBiasFactor(@NotNull final LivingEntityWrapper lmEntity, final int minLevel, final int maxLevel){
@@ -74,6 +89,7 @@ public class RulesManager {
         return dropRules;
     }
 
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public boolean getRule_IsMobAllowedInEntityOverride(@NotNull final LivingEntityInterface lmInterface){
         // check if it should be denied thru the entity override list
         boolean babyMobsInheritAdultSetting = true; // default
@@ -107,14 +123,14 @@ public class RulesManager {
             if (ruleInfo.defaultFineTuning == null) continue;
 
             if (defaultAttribs == null)
-                defaultAttribs = ruleInfo.defaultFineTuning;
+                defaultAttribs = ruleInfo.defaultFineTuning.cloneItem();
             else
                 defaultAttribs.mergeAttributes(ruleInfo.defaultFineTuning);
 
             if (ruleInfo.fineTuning != null && ruleInfo.fineTuning.containsKey(lmEntity.getNameIfBaby())){
                 final FineTuningAttributes tempAttribs = ruleInfo.fineTuning.get(lmEntity.getNameIfBaby());
                 if (mobAttribs == null)
-                    mobAttribs = tempAttribs;
+                    mobAttribs = tempAttribs.cloneItem();
                 else
                     mobAttribs.mergeAttributes(tempAttribs);
             }
@@ -146,7 +162,7 @@ public class RulesManager {
                  if (levellingStrategy != null && levellingStrategy.getClass().equals(ruleInfo.levellingStrategy.getClass()))
                      levellingStrategy.mergeRule(ruleInfo.levellingStrategy);
                 else
-                     levellingStrategy = ruleInfo.levellingStrategy;
+                     levellingStrategy = ruleInfo.levellingStrategy.cloneItem();
             }
         }
 
@@ -260,6 +276,9 @@ public class RulesManager {
     @Nullable
     public String getRule_EntityOverriddenName(@NotNull final LivingEntityWrapper lmEntity){
         List<String> overridenNames = null;
+
+        if (lmEntity.hasOverridenEntityName())
+            return lmEntity.getOverridenEntityName();
 
         for (final RuleInfo ruleInfo : lmEntity.getApplicableRules()){
             if (ruleInfo.entityNameOverrides.containsKey(lmEntity.getNameIfBaby()))

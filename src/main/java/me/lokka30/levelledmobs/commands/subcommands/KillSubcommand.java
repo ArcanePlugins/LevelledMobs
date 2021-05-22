@@ -1,7 +1,6 @@
 package me.lokka30.levelledmobs.commands.subcommands;
 
 import me.lokka30.levelledmobs.LevelledMobs;
-import me.lokka30.levelledmobs.misc.ModalList;
 import me.lokka30.levelledmobs.misc.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
@@ -203,9 +202,8 @@ public class KillSubcommand implements Subcommand {
                 if (args.length == 3 ) {
                     for (World world : Bukkit.getWorlds()) {
                         worlds.add("*");
-                        if (ModalList.isEnabledInList(main.settingsCfg, "allowed-worlds-list", world.getName())) {
+                        if (main.rulesManager.getRule_IsWorldAllowedInAnyRule(world))
                             worlds.add(world.getName());
-                        }
                     }
                 }
 

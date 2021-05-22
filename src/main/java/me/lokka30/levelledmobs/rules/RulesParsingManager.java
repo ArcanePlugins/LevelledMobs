@@ -334,8 +334,10 @@ public class RulesParsingManager {
             parsingInfo.customDrops_UseOverride = cs.getBoolean("custom-drops-override");
         if (cs.getString("use-droptable-id") != null)
             parsingInfo.customDrop_DropTableId = cs.getString("use-droptable-id");
-        parsingInfo.nametag = cs.getString("nametag");
-        parsingInfo.nametag_CreatureDeath = cs.getString("creature-death-nametag");
+        if (cs.getString("nametag") != null)
+            parsingInfo.nametag = cs.getString("nametag");
+        if (cs.getString("creature-death-nametag") != null)
+            parsingInfo.nametag_CreatureDeath = cs.getString("creature-death-nametag");
         if (cs.getString("creature-nametag-always-visible") != null)
             parsingInfo.CreatureNametagAlwaysVisible = cs.getBoolean("creature-nametag-always-visible");
     }

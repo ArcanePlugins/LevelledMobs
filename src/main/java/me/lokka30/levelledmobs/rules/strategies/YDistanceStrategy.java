@@ -97,4 +97,13 @@ public class YDistanceStrategy implements LevellingStrategy {
             return -change;
         }
     }
+
+    public YDistanceStrategy cloneItem() {
+        YDistanceStrategy copy = null;
+        try {
+            copy = (YDistanceStrategy) super.clone();
+        } catch (Exception ignored) {}
+
+        return copy;
+    }
 }

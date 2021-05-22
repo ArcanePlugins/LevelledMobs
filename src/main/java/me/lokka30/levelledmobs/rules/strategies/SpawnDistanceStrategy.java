@@ -1,12 +1,10 @@
 package me.lokka30.levelledmobs.rules.strategies;
 
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
-import me.lokka30.levelledmobs.misc.Utils;
 import org.bukkit.Location;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.lang.reflect.UndeclaredThrowableException;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -15,7 +13,7 @@ import java.util.concurrent.ThreadLocalRandom;
  * @author stumper66
  * @author lokka30
  */
-public class SpawnDistanceStrategy implements LevellingStrategy {
+public class SpawnDistanceStrategy implements LevellingStrategy, Cloneable {
     public Integer startDistance;
     public Integer increaseLevelDistance;
     public Integer spawnLocation_X;
@@ -131,5 +129,14 @@ public class SpawnDistanceStrategy implements LevellingStrategy {
         else if (result > maxLevel) result = maxLevel;
 
         return (int) result;
+    }
+
+    public SpawnDistanceStrategy cloneItem() {
+        SpawnDistanceStrategy copy = null;
+        try {
+            copy = (SpawnDistanceStrategy) super.clone();
+        } catch (Exception ignored) {}
+
+        return copy;
     }
 }

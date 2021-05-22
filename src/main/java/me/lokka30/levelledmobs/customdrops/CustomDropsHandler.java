@@ -2,6 +2,7 @@ package me.lokka30.levelledmobs.customdrops;
 
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.misc.*;
+import me.lokka30.microlib.MessageUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -385,7 +386,16 @@ public class CustomDropsHandler {
     }
 
     private void executeCommand(@NotNull final CustomCommand customCommand, @NotNull final CustomDropProcessingInfo info){
-        String command = main.levelManager.replaceStringPlaceholders(customCommand.command, info.lmEntity);
+        final String overridenName = main.rulesManager.getRule_EntityOverriddenName(info.lmEntity);
+
+        String displayName = overridenName == null ?
+                Utils.capitalize(info.lmEntity.getTypeName().replaceAll("_", " ")) :
+                MessageUtils.colorizeAll(overridenName);
+
+        if (info.lmEntity.getLivingEntity().getCustomName() != null)
+            displayName = info.lmEntity.getLivingEntity().getCustomName();
+
+        String command = main.levelManager.replaceStringPlaceholders(customCommand.command, info.lmEntity, displayName);
 
         final String playerName = info.wasKilledByPlayer ?
                 Objects.requireNonNull(info.lmEntity.getLivingEntity().getKiller()).getName() :
