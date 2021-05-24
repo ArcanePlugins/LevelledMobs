@@ -1,6 +1,7 @@
 package me.lokka30.levelledmobs.listeners;
 
 import me.lokka30.levelledmobs.LevelledMobs;
+import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
 import me.lokka30.levelledmobs.misc.Utils;
 import me.lokka30.microlib.MessageUtils;
 import org.bukkit.attribute.Attribute;
@@ -12,7 +13,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.LinkedList;
@@ -44,11 +44,11 @@ public class EntityDamageDebugListener implements Listener {
 
         // Make sure the mob is a LivingEntity and the attacker is a Player
         if (!(event.getEntity() instanceof LivingEntity) || !(event.getDamager() instanceof Player)) return;
-        final LivingEntity livingEntity = (LivingEntity) event.getEntity();
+        final LivingEntityWrapper lmEntity = new LivingEntityWrapper((LivingEntity) event.getEntity(), main);
         final Player player = (Player) event.getDamager();
 
         // Make sure the mob is levelled
-        if (!main.levelInterface.isLevelled(livingEntity)) return;
+        if (!lmEntity.isLevelled()) return;
 
         // Make sure the player has debug perm
         if (!player.hasPermission("levelledmobs.debug")) return;
@@ -58,29 +58,29 @@ public class EntityDamageDebugListener implements Listener {
 
         /* Now send them the debug message! :) */
 
-        send(player, "&8&m+---+&r Debug information for &b" + livingEntity.getName() + "&r &8&m+---+&r");
+        send(player, "&8&m+---+&r Debug information for &b" + lmEntity.getTypeName() + "&r &8&m+---+&r");
 
         // Print non-attributes
         send(player, "&f&nGlobal Values:", false);
-        send(player, "&8&m->&b Level: &7" + livingEntity.getPersistentDataContainer().get(main.levelManager.levelKey, PersistentDataType.INTEGER), false);
-        send(player, "&8&m->&b Current Health: &7" + Utils.round(livingEntity.getHealth()), false);
-        send(player, "&8&m->&b Nametag: &7" + livingEntity.getCustomName(), false);
+        send(player, "&8&m->&b Level: &7" + lmEntity.getMobLevel());
+        send(player, "&8&m->&b Current Health: &7" + Utils.round(lmEntity.getLivingEntity().getHealth()), false);
+        send(player, "&8&m->&b Nametag: &7" + lmEntity.getLivingEntity().getCustomName(), false);
 
         // Print attributes
         player.sendMessage(" ");
         send(player, "&f&nAttribute Values:", false);
         for (final Attribute attribute : Attribute.values()) {
-            final AttributeInstance attributeInstance = livingEntity.getAttribute(attribute);
+            final AttributeInstance attributeInstance = lmEntity.getLivingEntity().getAttribute(attribute);
             if (attributeInstance == null) continue;
             final String attrib = attribute.toString().replace("GENERIC_", "");
             send(player, "&8&m->&b " + attrib + ": &7" + Utils.round(attributeInstance.getValue()), false);
         }
 
-        if (livingEntity instanceof Creeper) {
+        if (lmEntity.getLivingEntity() instanceof Creeper) {
             // Print unique values (per-mob)
             player.sendMessage(" ");
             send(player, "&f&nUnique Values:", false);
-            final Creeper creeper = (Creeper) livingEntity;
+            final Creeper creeper = (Creeper) lmEntity.getLivingEntity();
             send(player, "&8&m->&b Creeper Blast Radius: &7" + creeper.getExplosionRadius(), false);
         }
 

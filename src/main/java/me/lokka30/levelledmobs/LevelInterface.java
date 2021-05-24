@@ -18,6 +18,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Objects;
 
 /**
  * Welcome to the LevelInterface,
@@ -204,12 +205,19 @@ public class LevelInterface {
             if (mobPreLevelEvent.isCancelled()) return;
         }
 
-        if (lmEntity.getPDC().has(main.levelManager.noLevelKey, PersistentDataType.STRING)) {
+        boolean hasNoLevelKey;
+        synchronized (lmEntity.pdcSyncObject) {
+            hasNoLevelKey = lmEntity.getPDC().has(main.levelManager.noLevelKey, PersistentDataType.STRING);
+        }
+
+        if (hasNoLevelKey) {
             Utils.debugLog(main, DebugType.APPLY_LEVEL_FAIL, "Entity " + lmEntity.getTypeName() + " had noLevelKey attached");
             return;
         }
 
-        lmEntity.getPDC().set(main.levelManager.levelKey, PersistentDataType.INTEGER, level);
+        synchronized (lmEntity.pdcSyncObject) {
+            lmEntity.getPDC().set(main.levelManager.levelKey, PersistentDataType.INTEGER, level);
+        }
         lmEntity.invalidateCache();
 
         // setting attributes should be only done in the main thread.
@@ -284,10 +292,9 @@ public class LevelInterface {
      * @param livingEntity the levelled mob to get the level of
      * @return the mob's level
      */
-    @SuppressWarnings("ConstantConditions")
     public int getLevelOfMob(@NotNull LivingEntity livingEntity) {
         assert isLevelled(livingEntity);
-        return livingEntity.getPersistentDataContainer().get(main.levelManager.levelKey, PersistentDataType.INTEGER);
+        return Objects.requireNonNull(livingEntity.getPersistentDataContainer().get(main.levelManager.levelKey, PersistentDataType.INTEGER), "levelKey was null");
     }
 
     /**
@@ -299,16 +306,20 @@ public class LevelInterface {
         assert lmEntity.isLevelled();
 
         // remove PDC value
-        if (lmEntity.getPDC().has(main.levelManager.levelKey, PersistentDataType.INTEGER))
-            lmEntity.getPDC().remove(main.levelManager.levelKey);
+        synchronized (lmEntity.pdcSyncObject) {
+            if (lmEntity.getPDC().has(main.levelManager.levelKey, PersistentDataType.INTEGER))
+                lmEntity.getPDC().remove(main.levelManager.levelKey);
+        }
 
         // reset attributes
-        for (Attribute attribute : Attribute.values()) {
-            final AttributeInstance attInst = lmEntity.getLivingEntity().getAttribute(attribute);
+        synchronized (main.attributeSyncObject) {
+            for (Attribute attribute : Attribute.values()) {
+                final AttributeInstance attInst = lmEntity.getLivingEntity().getAttribute(attribute);
 
-            if (attInst == null) continue;
+                if (attInst == null) continue;
 
-            attInst.getModifiers().clear();
+                attInst.getModifiers().clear();
+            }
         }
 
         // update nametag

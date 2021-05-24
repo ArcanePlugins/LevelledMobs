@@ -41,6 +41,7 @@ public class LivingEntityWrapper implements LivingEntityInterface {
     private ExternalCompatibilityManager.ExternalCompatibility mobExternalType;
     private FineTuningAttributes fineTuningAttributes;
     private CreatureSpawnEvent.SpawnReason spawnReason;
+    public final Object pdcSyncObject = new Object();
 
     @NotNull
     public LevelledMobs getMainInstance(){
@@ -48,8 +49,10 @@ public class LivingEntityWrapper implements LivingEntityInterface {
     }
 
     private void buildCache(){
-        this.mobLevel = main.levelInterface.isLevelled(livingEntity) ?
-                main.levelInterface.getLevelOfMob(livingEntity) : null;
+        synchronized (this.pdcSyncObject) {
+            this.mobLevel = main.levelInterface.isLevelled(livingEntity) ?
+                    main.levelInterface.getLevelOfMob(livingEntity) : null;
+        }
         this.spawnedWGRegions = ExternalCompatibilityManager.getWGRegionsAtLocation(this);
 
         this.hasCache = true;
@@ -107,8 +110,10 @@ public class LivingEntityWrapper implements LivingEntityInterface {
                 this.mobLevel;
     }
 
-    public boolean isLevelled(){
-        return main.levelInterface.isLevelled(this.livingEntity);
+    public boolean isLevelled() {
+        synchronized (this.pdcSyncObject) {
+            return main.levelInterface.isLevelled(this.livingEntity);
+        }
     }
 
     @NotNull
@@ -155,19 +160,24 @@ public class LivingEntityWrapper implements LivingEntityInterface {
 
     @NotNull
     public CreatureSpawnEvent.SpawnReason getSpawnReason() {
-        if (livingEntity.getPersistentDataContainer().has(main.levelManager.spawnReasonKey, PersistentDataType.STRING)){
-            return CreatureSpawnEvent.SpawnReason.valueOf(
-                    livingEntity.getPersistentDataContainer().get(main.levelManager.spawnReasonKey, PersistentDataType.STRING)
-            );
+        synchronized (this.pdcSyncObject) {
+            if (livingEntity.getPersistentDataContainer().has(main.levelManager.spawnReasonKey, PersistentDataType.STRING)) {
+                return CreatureSpawnEvent.SpawnReason.valueOf(
+                        livingEntity.getPersistentDataContainer().get(main.levelManager.spawnReasonKey, PersistentDataType.STRING)
+                );
+            }
         }
 
         return this.spawnReason;
     }
 
     public void setSpawnReason(final CreatureSpawnEvent.SpawnReason spawnReason){
-        if (!livingEntity.getPersistentDataContainer().has(main.levelManager.spawnReasonKey, PersistentDataType.STRING)){
-            livingEntity.getPersistentDataContainer().set(main.levelManager.spawnReasonKey, PersistentDataType.STRING, spawnReason.toString());
+        synchronized (this.pdcSyncObject) {
+            if (!livingEntity.getPersistentDataContainer().has(main.levelManager.spawnReasonKey, PersistentDataType.STRING)) {
+                livingEntity.getPersistentDataContainer().set(main.levelManager.spawnReasonKey, PersistentDataType.STRING, spawnReason.toString());
+            }
         }
+
         this.spawnReason = spawnReason;
     }
 
@@ -192,12 +202,16 @@ public class LivingEntityWrapper implements LivingEntityInterface {
     }
 
     public boolean hasOverridenEntityName(){
-        return livingEntity.getPersistentDataContainer().has(main.levelManager.overridenEntityNameKey, PersistentDataType.STRING);
+        synchronized (this.pdcSyncObject) {
+            return livingEntity.getPersistentDataContainer().has(main.levelManager.overridenEntityNameKey, PersistentDataType.STRING);
+        }
     }
 
     @Nullable
     public String getOverridenEntityName(){
-        return livingEntity.getPersistentDataContainer().get(main.levelManager.overridenEntityNameKey, PersistentDataType.STRING);
+        synchronized (this.pdcSyncObject) {
+            return livingEntity.getPersistentDataContainer().get(main.levelManager.overridenEntityNameKey, PersistentDataType.STRING);
+        }
     }
 
     @Nullable
@@ -215,7 +229,9 @@ public class LivingEntityWrapper implements LivingEntityInterface {
     }
 
     public void setOverridenEntityName(final String name){
-        livingEntity.getPersistentDataContainer().set(main.levelManager.overridenEntityNameKey, PersistentDataType.STRING, name);
+        synchronized (this.pdcSyncObject) {
+            livingEntity.getPersistentDataContainer().set(main.levelManager.overridenEntityNameKey, PersistentDataType.STRING, name);
+        }
     }
 
     @NotNull

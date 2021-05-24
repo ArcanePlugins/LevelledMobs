@@ -53,17 +53,20 @@ public class CustomDropsHandler {
         processingInfo.equippedOnly = equippedOnly;
         processingInfo.newDrops = drops;
         processingInfo.dropRules = main.rulesManager.getRule_UseCustomDropsForMob(lmEntity);
-        processingInfo.isSpawner = (lmEntity.getPDC().has(main.levelManager.spawnReasonKey, PersistentDataType.STRING) &&
-                CreatureSpawnEvent.SpawnReason.SPAWNER.toString().equals(
-                        lmEntity.getPDC().get(main.levelManager.spawnReasonKey, PersistentDataType.STRING))
-        );
+        synchronized (lmEntity.pdcSyncObject) {
+            processingInfo.isSpawner = (lmEntity.getPDC().has(main.levelManager.spawnReasonKey, PersistentDataType.STRING) &&
+                    CreatureSpawnEvent.SpawnReason.SPAWNER.toString().equals(
+                            lmEntity.getPDC().get(main.levelManager.spawnReasonKey, PersistentDataType.STRING))
+            );
+
+            if (equippedOnly && lmEntity.getPDC().has(main.blockPlaceListener.keySpawner_CustomDropId, PersistentDataType.STRING)){
+                processingInfo.customDropId = lmEntity.getPDC().get(main.blockPlaceListener.keySpawner_CustomDropId, PersistentDataType.STRING);
+                processingInfo.hasCustomDropId = !Utils.isNullOrEmpty(processingInfo.customDropId);
+            }
+        }
         processingInfo.wasKilledByPlayer = lmEntity.getLivingEntity().getKiller() != null;
         processingInfo.addition = BigDecimal.valueOf(main.mobDataManager.getAdditionsForLevel(lmEntity, Addition.CUSTOM_ITEM_DROP, 0.0))
                 .setScale(0, RoundingMode.HALF_DOWN).intValueExact(); // truncate double to int
-        if (equippedOnly && lmEntity.getPDC().has(main.blockPlaceListener.keySpawner_CustomDropId, PersistentDataType.STRING)){
-            processingInfo.customDropId = lmEntity.getPDC().get(main.blockPlaceListener.keySpawner_CustomDropId, PersistentDataType.STRING);
-            processingInfo.hasCustomDropId = !Utils.isNullOrEmpty(processingInfo.customDropId);
-        }
 
         processingInfo.doNotMultiplyDrops = main.rulesManager.getRule_CheckIfNoDropMultiplierEntitiy(lmEntity);
 
@@ -227,16 +230,21 @@ public class CustomDropsHandler {
             // not sure why someone would put a 0 percent chance, but maybe
             if (dropInstance.overallChance <= 0.0) return false;
 
-            if (info.lmEntity.getPDC().has(this.overallChanceKey, PersistentDataType.INTEGER)) {
-                final int value = Objects.requireNonNull(info.lmEntity.getPDC().get(this.overallChanceKey, PersistentDataType.INTEGER));
-                return value == 1;
+            synchronized (info.lmEntity.pdcSyncObject) {
+                if (info.lmEntity.getPDC().has(this.overallChanceKey, PersistentDataType.INTEGER)) {
+                    final int value = Objects.requireNonNull(info.lmEntity.getPDC().get(this.overallChanceKey, PersistentDataType.INTEGER));
+                    return value == 1;
+                }
             }
 
             // we'll roll the dice to see if we get any drops at all and store it in the PDC
             final double chanceRole = (double) ThreadLocalRandom.current().nextInt(0, 100001) * 0.00001;
             final boolean madeChance = 1.0 - chanceRole < dropInstance.overallChance;
-            if (info.equippedOnly)
-                info.lmEntity.getPDC().set(this.overallChanceKey, PersistentDataType.INTEGER, madeChance ? 1 : 0);
+            if (info.equippedOnly) {
+                synchronized (info.lmEntity.pdcSyncObject) {
+                    info.lmEntity.getPDC().set(this.overallChanceKey, PersistentDataType.INTEGER, madeChance ? 1 : 0);
+                }
+            }
 
             return madeChance;
         }

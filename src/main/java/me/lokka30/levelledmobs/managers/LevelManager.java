@@ -393,9 +393,13 @@ public class LevelManager {
                                 main.queueManager_nametags.addToQueue(new QueueItem(lmEntity, main.levelManager.getNametag(lmEntity, false), Collections.singletonList(player)));
                             }
                         } else {
+                            boolean wasBabyMob;
+                            synchronized (lmEntity.pdcSyncObject){
+                                wasBabyMob = lmEntity.getPDC().has(main.levelManager.wasBabyMobKey, PersistentDataType.INTEGER);
+                            }
                             if (
                                     !lmEntity.isBabyMob() &&
-                                            lmEntity.getPDC().has(main.levelManager.wasBabyMobKey, PersistentDataType.INTEGER) &&
+                                            wasBabyMob &&
                                             main.levelInterface.getLevellableState(lmEntity) == LevelInterface.LevellableState.ALLOWED) {
                                 // if the mob was a baby at some point, aged and now is eligable for levelling, we'll apply a level to it now
                                 Utils.debugLog(main, DebugType.ENTITY_MISC, lmEntity.getTypeName() + " was a baby and is now an adult, applying levelling rules");

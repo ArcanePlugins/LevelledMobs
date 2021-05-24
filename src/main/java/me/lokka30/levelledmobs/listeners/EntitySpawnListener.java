@@ -57,17 +57,22 @@ public class EntitySpawnListener implements Listener {
 
         // mob was spawned from a custom LM spawner
         createParticleEffect(cs.getLocation().add(0, 1, 0));
+
         final Integer minLevel = cs.getPersistentDataContainer().get(main.blockPlaceListener.keySpawner_MinLevel, PersistentDataType.INTEGER);
         final Integer maxLevel = cs.getPersistentDataContainer().get(main.blockPlaceListener.keySpawner_MaxLevel, PersistentDataType.INTEGER);
         final int useMinLevel = minLevel == null ? -1 : minLevel;
         final int useMaxLevel = maxLevel == null ? -1 : maxLevel;
         final int generatedLevel = main.levelInterface.generateLevel(lmEntity, useMinLevel, useMaxLevel);
         String customDropId = null;
-        if (cs.getPersistentDataContainer().has(main.blockPlaceListener.keySpawner_CustomDropId, PersistentDataType.STRING)){
+        if (cs.getPersistentDataContainer().has(main.blockPlaceListener.keySpawner_CustomDropId, PersistentDataType.STRING)) {
             customDropId = cs.getPersistentDataContainer().get(main.blockPlaceListener.keySpawner_CustomDropId, PersistentDataType.STRING);
-            if (!Utils.isNullOrEmpty(customDropId))
-                lmEntity.getPDC().set(main.blockPlaceListener.keySpawner_CustomDropId, PersistentDataType.STRING, customDropId);
+            if (!Utils.isNullOrEmpty(customDropId)) {
+                synchronized (lmEntity.pdcSyncObject) {
+                    lmEntity.getPDC().set(main.blockPlaceListener.keySpawner_CustomDropId, PersistentDataType.STRING, customDropId);
+                }
+            }
         }
+
 
         Utils.debugLog(main, DebugType.MOB_SPAWNER, String.format(
                 "Spawned mob from LM spawner: %s, minLevel: %s, maxLevel: %s, generatedLevel: %s%s",
@@ -149,7 +154,9 @@ public class EntitySpawnListener implements Listener {
             }
             else if (lmEntity.isBabyMob()) {
                 // add a tag so we can potentially level the mob when/if it ages
-                lmEntity.getPDC().set(main.levelManager.wasBabyMobKey, PersistentDataType.INTEGER, 1);
+                synchronized (lmEntity.pdcSyncObject) {
+                    lmEntity.getPDC().set(main.levelManager.wasBabyMobKey, PersistentDataType.INTEGER, 1);
+                }
             }
         }
     }
