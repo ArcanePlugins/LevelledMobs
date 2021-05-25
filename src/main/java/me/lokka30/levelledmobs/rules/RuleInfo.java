@@ -109,6 +109,9 @@ public class RuleInfo {
                     }
                 }
 
+                if (presetValue == MobCustomNameStatusEnum.NOT_SPECIFIED) continue;
+                if (presetValue == MobTamedStatusEnum.NOT_SPECIFIED) continue;
+
                 // skip default values such as false, 0, 0.0
                 if (presetValue instanceof Boolean && !((Boolean) presetValue)) continue;
                 if (presetValue instanceof Integer && ((Integer) presetValue == 0)) continue;

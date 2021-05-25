@@ -8,6 +8,7 @@ import me.lokka30.levelledmobs.managers.ExternalCompatibilityManager;
 import me.lokka30.levelledmobs.managers.LevelManager;
 import me.lokka30.levelledmobs.managers.WorldGuardManager;
 import me.lokka30.levelledmobs.misc.FileLoader;
+import me.lokka30.levelledmobs.misc.FileMigrator;
 import me.lokka30.levelledmobs.misc.Utils;
 import me.lokka30.levelledmobs.misc.VersionInfo;
 import me.lokka30.microlib.UpdateChecker;
@@ -81,12 +82,27 @@ public class Companion {
         }
     }
 
+    private int getSettingsVersion(){
+        final File file = new File(main.getDataFolder(), "settings.yml");
+        if (!file.exists()) return 0;
+
+        final YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
+        return cfg.getInt("file-version");
+    }
+
     // Note: also called by the reload subcommand.
     public boolean loadFiles() {
         Utils.logger.info("&fFile Loader: &7Loading files...");
 
         // save license.txt
         FileLoader.saveResourceIfNotExists(main, new File(main.getDataFolder(), "license.txt"));
+
+        main.rulesParsingManager.parseRulesMain(FileLoader.loadFile(main, "rules", FileLoader.RULES_FILE_VERSION));
+
+        final int settingsVersion = getSettingsVersion();
+        if (settingsVersion > 20 && settingsVersion < 30) { // anything older than 2.0 will not be migrated
+            FileMigrator.migrateSettingsToRules(main);
+        }
 
         // load configurations
         main.settingsCfg = FileLoader.loadFile(main, "settings", FileLoader.SETTINGS_FILE_VERSION);
@@ -99,7 +115,6 @@ public class Companion {
         }
 
         main.customDropsHandler = new CustomDropsHandler(main);
-        main.rulesParsingManager.parseRulesMain(FileLoader.loadFile(main, "rules", FileLoader.RULES_FILE_VERSION));
         main.customDropsHandler.customDropsParser.loadDrops(
                 FileLoader.loadFile(main, "customdrops", FileLoader.CUSTOMDROPS_FILE_VERSION)
         );

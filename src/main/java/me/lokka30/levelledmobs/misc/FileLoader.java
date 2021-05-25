@@ -3,6 +3,8 @@ package me.lokka30.levelledmobs.misc;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.util.FileUtil;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.File;
@@ -25,7 +27,8 @@ public final class FileLoader {
         throw new UnsupportedOperationException();
     }
 
-    public static YamlConfiguration loadFile(final Plugin plugin, String cfgName, final int compatibleVersion) {
+    @Nullable
+    public static YamlConfiguration loadFile(@NotNull final Plugin plugin, String cfgName, final int compatibleVersion) {
         cfgName = cfgName + ".yml";
 
         Utils.logger.info("&fFile Loader: &7Loading file '&b" + cfgName + "&7'...");
@@ -57,9 +60,9 @@ public final class FileLoader {
 
             // copy supported values from old file to new
             Utils.logger.info("&fFile Loader: &8(Migration) &7Migrating &b" + cfgName + "&7 from old version to new version.");
-            // TODO: remove isCustomDrops boolean argument
+
             if (isCustomDrops)
-                FileMigrator.copyCustomDrops(backedupFile, file, fileVersion, false);
+                FileMigrator.copyCustomDrops(backedupFile, file, fileVersion);
             else
                 FileMigrator.copyYmlValues(backedupFile, file, fileVersion);
 
@@ -73,7 +76,7 @@ public final class FileLoader {
         return cfg;
     }
 
-    public static void saveResourceIfNotExists(final Plugin instance, final File file) {
+    public static void saveResourceIfNotExists(final Plugin instance, @NotNull final File file) {
         if (!file.exists()) {
             Utils.logger.info("&fFile Loader: &7File '&b" + file.getName() + "&7' doesn't exist, creating it now...");
             instance.saveResource(file.getName(), false);

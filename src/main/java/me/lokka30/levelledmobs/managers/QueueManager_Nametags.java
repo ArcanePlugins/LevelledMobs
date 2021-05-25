@@ -108,8 +108,11 @@ public class QueueManager_Nametags {
         }
 
         dataWatcher.setObject(watcherObject, optional);
-        dataWatcher.setObject(3, !Utils.isNullOrEmpty(nametag) && lmEntity.getLivingEntity().isCustomNameVisible() ||
-                main.rulesManager.getRule_CreatureNametagAlwaysVisible(lmEntity));
+        if (nametag == null)
+            dataWatcher.setObject(3, false);
+        else
+            dataWatcher.setObject(3, !"".equals(nametag) && lmEntity.getLivingEntity().isCustomNameVisible() ||
+                    main.rulesManager.getRule_CreatureNametagAlwaysVisible(lmEntity));
 
         final PacketContainer packet = ProtocolLibrary.getProtocolManager().createPacket(PacketType.Play.Server.ENTITY_METADATA);
         packet.getWatchableCollectionModifier().write(0, dataWatcher.getWatchableObjects());

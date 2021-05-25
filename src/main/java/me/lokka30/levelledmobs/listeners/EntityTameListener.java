@@ -5,6 +5,7 @@ import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.misc.DebugType;
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
 import me.lokka30.levelledmobs.misc.Utils;
+import me.lokka30.levelledmobs.rules.MobTamedStatusEnum;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -29,7 +30,7 @@ public class EntityTameListener implements Listener {
     private void onEntityTameEvent(EntityTameEvent event) {
         final LivingEntityWrapper lmEntity = new LivingEntityWrapper(event.getEntity(), main);
 
-        if (main.settingsCfg.getBoolean("no-level-conditions.tamed")) {
+        if (main.rulesManager.getRule_MobTamedStatus(lmEntity) == MobTamedStatusEnum.NOT_TAMED) {
             Utils.debugLog(main, DebugType.ENTITY_TAME, "no-level-conditions.tamed = true");
 
             // if mob was levelled then remove it

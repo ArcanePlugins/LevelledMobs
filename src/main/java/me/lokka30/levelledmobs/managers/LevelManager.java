@@ -6,6 +6,8 @@ import me.lokka30.levelledmobs.LivingEntityInterface;
 import me.lokka30.levelledmobs.customdrops.CustomDropResult;
 import me.lokka30.levelledmobs.listeners.EntitySpawnListener;
 import me.lokka30.levelledmobs.misc.*;
+import me.lokka30.levelledmobs.rules.MobCustomNameStatusEnum;
+import me.lokka30.levelledmobs.rules.MobTamedStatusEnum;
 import me.lokka30.levelledmobs.rules.strategies.LevellingStrategy;
 import me.lokka30.levelledmobs.rules.strategies.SpawnDistanceStrategy;
 import me.lokka30.levelledmobs.rules.strategies.YDistanceStrategy;
@@ -367,14 +369,12 @@ public class LevelManager {
     public void startNametagAutoUpdateTask() {
         Utils.logger.info("&fTasks: &7Starting async nametag auto update task...");
 
-        final double maxDistance = Math.pow(128, 2); // square the distance we are using Location#distanceSquared. This is because it is faster than Location#distance since it does not need to sqrt which is taxing on the CPU.
         final long period = main.settingsCfg.getInt("nametag-auto-update-task-period"); // run every ? seconds.
 
         nametagAutoUpdateTask = new BukkitRunnable() {
             @Override
             public void run() {
                 for (final Player player : Bukkit.getOnlinePlayers()) {
-                    final Location location = player.getLocation();
 
                     for (final Entity entity : player.getWorld().getEntities()) {
 
@@ -384,15 +384,9 @@ public class LevelManager {
                         if (!(entity instanceof LivingEntity)) continue;
                         LivingEntityWrapper lmEntity = new LivingEntityWrapper((LivingEntity) entity, main);
 
-                        if (lmEntity.isLevelled()) {
-                            if (
-                                    location.getWorld() != null &&
-                                    location.getWorld().getName().equals(lmEntity.getWorld().getName()) &&
-                                            lmEntity.getLocation().distanceSquared(location) <= maxDistance) {
-                                //if within distance, update nametag.
-                                main.queueManager_nametags.addToQueue(new QueueItem(lmEntity, main.levelManager.getNametag(lmEntity, false), Collections.singletonList(player)));
-                            }
-                        } else {
+                        if (lmEntity.isLevelled())
+                            checkLevelledEntity(lmEntity, player);
+                        else {
                             boolean wasBabyMob;
                             synchronized (lmEntity.pdcSyncObject){
                                 wasBabyMob = lmEntity.getPDC().has(main.levelManager.wasBabyMobKey, PersistentDataType.INTEGER);
@@ -411,6 +405,27 @@ public class LevelManager {
                 }
             }
         }.runTaskTimerAsynchronously(main, 0, 20 * period);
+    }
+
+    private void checkLevelledEntity(@NotNull final LivingEntityWrapper lmEntity, @NotNull final Player player){
+        final double maxDistance = Math.pow(128, 2); // square the distance we are using Location#distanceSquared. This is because it is faster than Location#distance since it does not need to sqrt which is taxing on the CPU.
+        final Location location = player.getLocation();
+
+        if (lmEntity.getLivingEntity().getCustomName() != null && main.rulesManager.getRule_MobCustomNameStatus(lmEntity) == MobCustomNameStatusEnum.NOT_NAMETAGGED){
+            // mob has a nametag but is levelled so we'll remove it
+            main.levelInterface.removeLevel(lmEntity);
+        }
+        else if (lmEntity.isMobTamed() && main.rulesManager.getRule_MobTamedStatus(lmEntity) == MobTamedStatusEnum.NOT_TAMED){
+            // mob is tamed with a level but the rules don't allow it, remove the level
+            main.levelInterface.removeLevel(lmEntity);
+        }
+        else if (
+                location.getWorld() != null &&
+                        location.getWorld().getName().equals(lmEntity.getWorld().getName()) &&
+                        lmEntity.getLocation().distanceSquared(location) <= maxDistance) {
+            //if within distance, update nametag.
+            main.queueManager_nametags.addToQueue(new QueueItem(lmEntity, main.levelManager.getNametag(lmEntity, false), Collections.singletonList(player)));
+        }
     }
 
     public void stopNametagAutoUpdateTask() {

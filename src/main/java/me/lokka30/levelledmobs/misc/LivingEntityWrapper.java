@@ -188,6 +188,10 @@ public class LivingEntityWrapper implements LivingEntityInterface {
                 getTypeName();
     }
 
+    public boolean isMobTamed(){
+        return (this.livingEntity instanceof Tameable && ((Tameable) this.livingEntity).isTamed());
+    }
+
     public void setMobExternalType(final ExternalCompatibilityManager.ExternalCompatibility externalType){
         this.mobExternalType = externalType;
     }

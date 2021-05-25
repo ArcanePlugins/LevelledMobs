@@ -62,7 +62,7 @@ public class LevelInterface {
      * @return if the mob is allowed to be levelled (yes/no), with reason
      */
     @NotNull
-    public LevellableState getLevellableState(@NotNull LivingEntityInterface lmInterface) {
+    public LevellableState getLevellableState(@NotNull final LivingEntityInterface lmInterface) {
         /*
         Certain entity types are force-blocked, regardless of what the user has configured.
         This is also ran in getLevellableState(EntityType), however it is important that this is ensured
@@ -177,7 +177,7 @@ public class LevelInterface {
      * @param bypassLimits whether LM should disregard max level, etc.
      * @param additionalLevelInformation used to determine the source event
      */
-    public void applyLevelToMob(@NotNull LivingEntityWrapper lmEntity, int level, boolean isSummoned, boolean bypassLimits, @NotNull HashSet<AdditionalLevelInformation> additionalLevelInformation) {
+    public void applyLevelToMob(@NotNull final LivingEntityWrapper lmEntity, final int level, final boolean isSummoned, final boolean bypassLimits, @NotNull final HashSet<AdditionalLevelInformation> additionalLevelInformation) {
         assert level >= 0;
         assert bypassLimits || isSummoned || getLevellableState(lmEntity) == LevellableState.ALLOWED;
 
@@ -280,7 +280,7 @@ public class LevelInterface {
      * @param livingEntity living entity to check
      * @return if the mob is levelled or not
      */
-    public boolean isLevelled(@NotNull LivingEntity livingEntity) {
+    public boolean isLevelled(@NotNull final LivingEntity livingEntity) {
         return livingEntity.getPersistentDataContainer().has(main.levelManager.levelKey, PersistentDataType.INTEGER);
     }
 
@@ -292,7 +292,7 @@ public class LevelInterface {
      * @param livingEntity the levelled mob to get the level of
      * @return the mob's level
      */
-    public int getLevelOfMob(@NotNull LivingEntity livingEntity) {
+    public int getLevelOfMob(@NotNull final LivingEntity livingEntity) {
         assert isLevelled(livingEntity);
         return Objects.requireNonNull(livingEntity.getPersistentDataContainer().get(main.levelManager.levelKey, PersistentDataType.INTEGER), "levelKey was null");
     }
@@ -302,13 +302,15 @@ public class LevelInterface {
      *
      * @param lmEntity levelled mob to un-level
      */
-    public void removeLevel(@NotNull LivingEntityWrapper lmEntity) {
+    public void removeLevel(@NotNull final LivingEntityWrapper lmEntity) {
         assert lmEntity.isLevelled();
 
         // remove PDC value
         synchronized (lmEntity.pdcSyncObject) {
             if (lmEntity.getPDC().has(main.levelManager.levelKey, PersistentDataType.INTEGER))
                 lmEntity.getPDC().remove(main.levelManager.levelKey);
+            if (lmEntity.getPDC().has(main.levelManager.overridenEntityNameKey, PersistentDataType.STRING))
+                lmEntity.getPDC().remove(main.levelManager.overridenEntityNameKey);
         }
 
         // reset attributes
@@ -321,6 +323,11 @@ public class LevelInterface {
                 attInst.getModifiers().clear();
             }
         }
+
+        if (lmEntity.getLivingEntity() instanceof Creeper)
+            ((Creeper) lmEntity.getLivingEntity()).setExplosionRadius(3);
+
+        lmEntity.invalidateCache();
 
         // update nametag
         main.levelManager.updateNametag(lmEntity, lmEntity.getLivingEntity().getCustomName());

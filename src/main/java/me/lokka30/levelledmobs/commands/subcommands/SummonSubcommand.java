@@ -476,11 +476,10 @@ public class SummonSubcommand implements Subcommand {
 
         if (sender instanceof Player || sender instanceof BlockCommandSender) { //Player or Command blocks
             if (xStr.charAt(0) == '~') {
-                if (sender instanceof Player) {
+                if (sender instanceof Player)
                     x = ((Player) sender).getLocation().getX();
-                } else {
+                else
                     x = ((BlockCommandSender) sender).getBlock().getX();
-                }
 
                 if (xStr.length() > 1) {
                     double addition;
@@ -489,17 +488,16 @@ public class SummonSubcommand implements Subcommand {
                     } catch (NumberFormatException ex) {
                         return null;
                     }
-                    x = x + addition;
+                    x += addition;
                 }
 
                 xRelative = true;
             }
             if (yStr.charAt(0) == '~') {
-                if (sender instanceof Player) {
+                if (sender instanceof Player)
                     y = ((Player) sender).getLocation().getY();
-                } else {
+                else
                     y = ((BlockCommandSender) sender).getBlock().getY();
-                }
 
                 if (yStr.length() > 1) {
                     double addition;
@@ -509,17 +507,16 @@ public class SummonSubcommand implements Subcommand {
                         return null;
                     }
 
-                    y = y + addition;
+                    y += addition;
                 }
 
                 yRelative = true;
             }
             if (zStr.charAt(0) == '~') {
-                if (sender instanceof Player) {
+                if (sender instanceof Player)
                     z = ((Player) sender).getLocation().getZ();
-                } else {
+                else
                     z = ((BlockCommandSender) sender).getBlock().getZ();
-                }
 
                 if (zStr.length() > 1) {
                     double addition;
@@ -528,7 +525,7 @@ public class SummonSubcommand implements Subcommand {
                     } catch (NumberFormatException ex) {
                         return null;
                     }
-                    z = z + addition;
+                    z += addition;
                 }
 
                 zRelative = true;
@@ -558,15 +555,15 @@ public class SummonSubcommand implements Subcommand {
         }
 
         final World world = Bukkit.getWorld(worldName);
-        if (world == null) {
+        if (world == null)
             return null;
-        }
 
         return new Location(world, x, y, z);
     }
 
     private Location addVarianceToLocation(final Location oldLocation) {
-        double min = 0.5, max = 2.5;
+        final double min = 0.5;
+        final double max = 2.5;
 
         for (int i = 0; i < 20; i++) {
             //Creates 3x new Random()s for a different seed each time
@@ -574,10 +571,9 @@ public class SummonSubcommand implements Subcommand {
             final double y = min + (max - min) * new Random().nextDouble();
             final double z = min + (max - min) * new Random().nextDouble();
 
-            Location newLocation = new Location(oldLocation.getWorld(), x, y, z);
-            if (newLocation.getBlock().isPassable() && newLocation.add(0, 1, 0).getBlock().isPassable()) {
+            final Location newLocation = new Location(oldLocation.getWorld(), x, y, z);
+            if (newLocation.getBlock().isPassable() && newLocation.add(0, 1, 0).getBlock().isPassable())
                 return newLocation;
-            }
         }
 
         return oldLocation;
