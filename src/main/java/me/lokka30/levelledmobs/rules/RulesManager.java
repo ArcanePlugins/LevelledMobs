@@ -24,12 +24,13 @@ public class RulesManager {
     @NotNull
     public final SortedMap<Integer, List<RuleInfo>> rulesInEffect;
 
-    public boolean getRule_IsWorldAllowedInAnyRule(World world){
+    public boolean getRule_IsWorldAllowedInAnyRule(final World world){
+        if (world == null) return false;
         boolean result = false;
 
         for (final RuleInfo ruleInfo : main.rulesParsingManager.getAllRules()){
             if (!ruleInfo.ruleIsEnabled) continue;
-            if (ruleInfo.worlds.isEnabledInList(world.getName())){
+            if (ruleInfo.worlds != null && ruleInfo.worlds.isEnabledInList(world.getName())){
                 result = true;
                 break;
             }
