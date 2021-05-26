@@ -1,6 +1,7 @@
 package me.lokka30.levelledmobs.rules.strategies;
 
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -35,7 +36,7 @@ public class YDistanceStrategy implements LevellingStrategy {
         );
     }
 
-    public int generateLevel(final LivingEntityWrapper lmEntity, final int minLevel, final int maxLevel) {
+    public int generateLevel(@NotNull final LivingEntityWrapper lmEntity, final int minLevel, final int maxLevel) {
 
         final int mobYLocation = lmEntity.getLivingEntity().getLocation().getBlockY();
         int yStart = this.startingYLevel == null ? 0 : this.startingYLevel;
@@ -82,7 +83,7 @@ public class YDistanceStrategy implements LevellingStrategy {
         return useLevel;
     }
 
-    private int getVariance(final LivingEntityWrapper lmEntity, final boolean isAtMaxLevel){
+    private int getVariance(@NotNull final LivingEntityWrapper lmEntity, final boolean isAtMaxLevel){
         final int variance = lmEntity.getMainInstance().rulesManager.getRule_MaxRandomVariance(lmEntity);
         if (variance == 0) return 0;
 

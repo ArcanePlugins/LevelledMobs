@@ -3,12 +3,12 @@ package me.lokka30.levelledmobs.managers;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.misc.Addition;
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
+import me.lokka30.levelledmobs.misc.Utils;
 import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Tameable;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -29,7 +29,7 @@ public class MobDataManager {
 
     @Nullable
     public Object getAttributeDefaultValue(@NotNull final LivingEntityWrapper lmEntity, final Attribute attribute) {
-        if (lmEntity.getLivingEntity() instanceof Tameable && ((Tameable) lmEntity.getLivingEntity()).isTamed()){
+        if (lmEntity.isMobTamed()){
             // if the tamed variant in the cfg then use it, otherwise check for untamed path
             final String tamedPath = "TAMED_" + lmEntity.getTypeName() + "." + attribute;
             if (main.attributesCfg.contains(tamedPath)) return main.attributesCfg.get(tamedPath);
@@ -45,9 +45,8 @@ public class MobDataManager {
     public final boolean isLevelledDropManaged(final EntityType entityType, @NotNull final Material material) {
         // Head drops
         if (material.toString().endsWith("_HEAD") || material.toString().endsWith("_SKULL")) {
-            if (!main.settingsCfg.getBoolean("mobs-multiply-head-drops")) {
+            if (!main.settingsCfg.getBoolean("mobs-multiply-head-drops"))
                 return false;
-            }
         }
 
         // Check list
@@ -56,10 +55,10 @@ public class MobDataManager {
 
     public void setAdditionsForLevel(@NotNull final LivingEntityWrapper lmEntity, final Attribute attribute, final Addition addition) {
         final boolean useStaticValues = main.settingsCfg.getBoolean("attributes-use-preset-base-values");
-        double defaultValue = useStaticValues ?
+        final double defaultValue = useStaticValues ?
                 (double) Objects.requireNonNull(getAttributeDefaultValue(lmEntity, attribute)) :
                 Objects.requireNonNull(lmEntity.getLivingEntity().getAttribute(attribute)).getBaseValue();
-        double additionValue = getAdditionsForLevel(lmEntity, addition, defaultValue);
+        final double additionValue = getAdditionsForLevel(lmEntity, addition, defaultValue);
 
         if (additionValue == 0.0) return;
 

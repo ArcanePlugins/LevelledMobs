@@ -9,6 +9,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityTargetEvent;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * TODO Describe...
@@ -30,7 +31,7 @@ public class EntityTargetListener implements Listener {
      * @param event EntityTargetEvent
      */
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
-    public void onTarget(final EntityTargetEvent event) {
+    public void onTarget(@NotNull final EntityTargetEvent event) {
 
         // Must target a player and must be a living entity
         if (!(event.getTarget() instanceof Player) || !(event.getEntity() instanceof LivingEntity)) return;

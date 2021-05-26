@@ -27,15 +27,14 @@ public class RulesSubcommand implements Subcommand {
     private final LevelledMobs main;
 
     @Override
-    public void parseSubcommand(LevelledMobs main, CommandSender sender, String label, String[] args) {
+    public void parseSubcommand(final LevelledMobs main, @NotNull final CommandSender sender, final String label, final String[] args) {
         if (!sender.hasPermission("levelledmobs.command.rules")){
             main.configUtils.sendNoPermissionMsg(sender);
             return;
         }
 
-        if (args.length == 1){
+        if (args.length == 1)
             return;
-        }
 
         boolean showOnConsole = false;
         boolean findNearbyEntities = false;
@@ -58,7 +57,7 @@ public class RulesSubcommand implements Subcommand {
                 Utils.logger.info("--------------------------------- preset rule below ----------------------------------");
                 showAllValues(rpi, sender, showOnConsole);
             }
-            for (RuleInfo rpi : main.rulesParsingManager.customRules) {
+            for (final RuleInfo rpi : main.rulesParsingManager.customRules) {
                 Utils.logger.info("--------------------------------- custom-rule below ----------------------------------");
                 showAllValues(rpi, sender, showOnConsole);
             }
@@ -72,12 +71,11 @@ public class RulesSubcommand implements Subcommand {
 
             getMobBeingLookedAt((Player) sender, showOnConsole, findNearbyEntities);
         }
-        else if ("show_rule".equalsIgnoreCase(args[1])){
+        else if ("show_rule".equalsIgnoreCase(args[1]))
             showRule(sender, args);
-        }
     }
 
-    private void showRule(final CommandSender sender, final String[] args){
+    private void showRule(final CommandSender sender, @NotNull final String[] args){
         if (args.length < 3){
             sender.sendMessage("Must specify a rule name");
             return;
@@ -125,7 +123,7 @@ public class RulesSubcommand implements Subcommand {
         showAllValues(rule, sender, showOnConsole);
     }
 
-    private void getMobBeingLookedAt(Player player, final boolean showOnConsole, final boolean findNearbyEntities){
+    private void getMobBeingLookedAt(@NotNull final Player player, final boolean showOnConsole, final boolean findNearbyEntities){
         LivingEntity livingEntity = null;
         final Location eye = player.getEyeLocation();
         SortedMap<Double, LivingEntity> entities = new TreeMap<>();
@@ -181,7 +179,7 @@ public class RulesSubcommand implements Subcommand {
         }
     }
 
-    private void createParticleEffect(final Location location){
+    private void createParticleEffect(@NotNull final Location location){
         final World world = location.getWorld();
         if (world == null) return;
 
@@ -292,7 +290,7 @@ public class RulesSubcommand implements Subcommand {
     }
 
     @Override
-    public List<String> parseTabCompletions(final LevelledMobs main, final CommandSender sender, final String[] args) {
+    public List<String> parseTabCompletions(final LevelledMobs main, final CommandSender sender, @NotNull final String[] args) {
         final List<String> suggestions = new LinkedList<>();
 
         if (args.length == 2)

@@ -2,7 +2,6 @@ package me.lokka30.levelledmobs.misc;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
-import org.bukkit.event.entity.EntitySpawnEvent;
 
 import java.util.List;
 

@@ -12,6 +12,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.jetbrains.annotations.NotNull;
 
 public class PlayerDeathListener implements Listener {
 
@@ -27,7 +28,7 @@ public class PlayerDeathListener implements Listener {
      * @param event PlayerDeathEvent
      */
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
-    public void onPlayerDeath(final PlayerDeathEvent event) {
+    public void onPlayerDeath(@NotNull final PlayerDeathEvent event) {
         if (event.getDeathMessage() == null) return;
 
         final EntityDamageEvent entityDamageEvent = event.getEntity().getLastDamageCause();

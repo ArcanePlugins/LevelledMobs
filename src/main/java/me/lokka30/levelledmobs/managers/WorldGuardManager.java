@@ -61,34 +61,30 @@ public class WorldGuardManager {
             WorldGuardManager.customMinLevelFlag = customMinLevelFlag;
             WorldGuardManager.customMaxLevelFlag = customMaxLevelFlag;
 
-        } catch (FlagConflictException e) {
+        } catch (final FlagConflictException e) {
 
             final Flag<?> allowLevelledMobs = flagRegistry.get("LM-AllowLevelledMobs");
             final Flag<?> useCustomLevels = flagRegistry.get("LM-UseCustomLevels");
             final Flag<?> customMinLevel = flagRegistry.get("LM-CustomMinLevel");
             final Flag<?> customMaxLevel = flagRegistry.get("LM-CustomMaxLevel");
 
-            if (allowLevelledMobs instanceof StateFlag) {
+            if (allowLevelledMobs instanceof StateFlag)
                 WorldGuardManager.allowLevelledMobsFlag = (StateFlag) allowLevelledMobs;
-            }
 
-            if (customMinLevel instanceof StringFlag) {
+            if (customMinLevel instanceof StringFlag)
                 WorldGuardManager.customMinLevelFlag = (StringFlag) customMinLevel;
-            }
 
-            if (customMaxLevel instanceof StringFlag) {
+            if (customMaxLevel instanceof StringFlag)
                 WorldGuardManager.customMaxLevelFlag = (StringFlag) customMaxLevel;
-            }
 
-            if (useCustomLevels instanceof StateFlag) {
+            if (useCustomLevels instanceof StateFlag)
                 WorldGuardManager.useCustomLevelsFlag = (StateFlag) useCustomLevels;
-            }
         }
     }
 
     //Get all regions at an Entities' location.
     @NotNull
-    public List<ProtectedRegion> getRegionSet(final LivingEntityInterface lmInterface) {
+    public List<ProtectedRegion> getRegionSet(@NotNull final LivingEntityInterface lmInterface) {
         final List<ProtectedRegion> results = new LinkedList<>();
         final Location location = lmInterface.getLocation();
 
@@ -113,7 +109,7 @@ public class WorldGuardManager {
 
     // Get all regions at a location
     @NotNull
-    public List<ProtectedRegion> getRegionSet(final Location location) {
+    public List<ProtectedRegion> getRegionSet(@NotNull final Location location) {
         final List<ProtectedRegion> results = new LinkedList<>();
         if (location.getWorld() == null) return results;
 

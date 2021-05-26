@@ -121,12 +121,12 @@ public class RulesManager {
         FineTuningAttributes mobAttribs = null;
 
         for (final RuleInfo ruleInfo : lmEntity.getApplicableRules()){
-            if (ruleInfo.defaultFineTuning == null) continue;
-
-            if (defaultAttribs == null)
-                defaultAttribs = ruleInfo.defaultFineTuning.cloneItem();
-            else
-                defaultAttribs.mergeAttributes(ruleInfo.defaultFineTuning);
+            if (ruleInfo.defaultFineTuning != null) {
+                if (defaultAttribs == null)
+                    defaultAttribs = ruleInfo.defaultFineTuning.cloneItem();
+                else
+                    defaultAttribs.mergeAttributes(ruleInfo.defaultFineTuning);
+            }
 
             if (ruleInfo.fineTuning != null && ruleInfo.fineTuning.containsKey(lmEntity.getNameIfBaby())){
                 final FineTuningAttributes tempAttribs = ruleInfo.fineTuning.get(lmEntity.getNameIfBaby());
@@ -137,8 +137,12 @@ public class RulesManager {
             }
         }
 
-        if (defaultAttribs != null) defaultAttribs.mergeAttributes(mobAttribs);
-        return defaultAttribs;
+        if (defaultAttribs != null) {
+            defaultAttribs.mergeAttributes(mobAttribs);
+            return defaultAttribs;
+        }
+        else
+            return mobAttribs;
     }
 
     public int getRule_CreeperMaxBlastRadius(@NotNull final LivingEntityWrapper lmEntity){

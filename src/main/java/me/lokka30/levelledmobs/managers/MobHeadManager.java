@@ -3,6 +3,8 @@ package me.lokka30.levelledmobs.managers;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import me.lokka30.levelledmobs.LevelledMobs;
+import me.lokka30.levelledmobs.customdrops.CustomDropItem;
+import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
 import me.lokka30.levelledmobs.misc.Utils;
 import me.lokka30.microlib.MessageUtils;
 import org.bukkit.DyeColor;
@@ -33,7 +35,7 @@ public class MobHeadManager {
     final private LevelledMobs main;
     private Map<EntityType, Map<String, MobDataInfo>> mobMap;
 
-    public void loadTextures(final YamlConfiguration textureData){
+    public void loadTextures(@NotNull final YamlConfiguration textureData){
         mobMap = new LinkedHashMap<>();
 
         final List<LinkedHashMap<String, Object>> lst = (List<LinkedHashMap<String, Object>>) textureData.getList("Mobs");
@@ -62,52 +64,69 @@ public class MobHeadManager {
         }
     }
 
-    public ItemStack getMobHeadFromPlayerHead(final ItemStack playerHead, final LivingEntity livingEntity){
-        final Material vanillaMaterial = checkForVanillaHeads(livingEntity);
-        if (vanillaMaterial != Material.AIR) {
-            final ItemStack newItem = new ItemStack(vanillaMaterial, playerHead.getAmount());
-            final ItemMeta meta = playerHead.getItemMeta();
-            if (meta != null){
-                ItemMeta newMeta = meta.clone();
-                newItem.setItemMeta(meta);
-            }
-            return newItem;
-        }
+    public ItemStack getMobHeadFromPlayerHead(final ItemStack playerHead, final LivingEntityWrapper lmEntity, @NotNull final CustomDropItem dropItem){
 
-        if (!this.mobMap.containsKey(livingEntity.getType())){
-            Utils.logger.warning("Unable to get mob head for " + livingEntity.getName() + ", no texture data");
-            return playerHead;
-        }
-
-        final Map<String, MobDataInfo> mobDatas = this.mobMap.get(livingEntity.getType());
-        MobDataInfo mobData = null;
-
-        if (mobDatas.size() > 1){
-            MobDataInfo foundMob = getMobVariant(mobDatas, livingEntity);
-            if (foundMob != null) mobData = foundMob;
-        }
-
-        if (mobData == null){
-            // grab first one
-            for (final String variant : mobDatas.keySet()){
-                mobData = mobDatas.get(variant);
-                break;
-            }
-        }
-
-        if (mobData == null) return playerHead;
-
-        final String code = mobData.textureCode;
+        String textureCode;
         UUID id;
-        try {
-            id = UUID.fromString(mobData.id);
+        MobDataInfo mobData = null;
+        String displayName = dropItem.customName == null ?
+                lmEntity.getTypeName() : dropItem.customName;
+
+
+        if (dropItem.customPlayerHeadId == null) {
+            final Material vanillaMaterial = checkForVanillaHeads(lmEntity.getLivingEntity());
+            if (vanillaMaterial != Material.AIR) {
+                final ItemStack newItem = new ItemStack(vanillaMaterial, playerHead.getAmount());
+                final ItemMeta meta = playerHead.getItemMeta();
+                if (meta != null) {
+                    ItemMeta newMeta = meta.clone();
+                    newItem.setItemMeta(meta);
+                }
+                return newItem;
+            }
+
+            if (!this.mobMap.containsKey(lmEntity.getLivingEntity().getType())){
+                Utils.logger.warning("Unable to get mob head for " + lmEntity.getTypeName() + ", no texture data");
+                return playerHead;
+            }
+
+            final Map<String, MobDataInfo> mobDatas = this.mobMap.get(lmEntity.getEntityType());
+
+            if (mobDatas.size() > 1){
+                MobDataInfo foundMob = getMobVariant(mobDatas, lmEntity);
+                if (foundMob != null) mobData = foundMob;
+            }
+
+            if (mobData == null){
+                // grab first one
+                for (final String variant : mobDatas.keySet()){
+                    mobData = mobDatas.get(variant);
+                    break;
+                }
+            }
+
+            if (mobData == null) return playerHead;
+
+            textureCode = mobData.textureCode;
+            if (dropItem.customName == null)
+                displayName = mobData.displayName;
+
+            try {
+                id = UUID.fromString(mobData.id);
+            }
+            catch (IllegalArgumentException e){
+                Utils.logger.warning("mob: " + lmEntity.getTypeName() + ", exception getting UUID for mob head. " + e.getMessage());
+                return playerHead;
+            }
         }
-        catch (IllegalArgumentException e){
-            Utils.logger.warning("mob: " + livingEntity.getName() + ", exception getting UUID for mob head. " + e.getMessage());
-            return playerHead;
+        else {
+            id = dropItem.customPlayerHeadId;
+            textureCode = dropItem.mobHeadTexture;
         }
+
         final GameProfile profile = new GameProfile(id, null);
-        profile.getProperties().put("textures", new Property("textures", code));
+        if (textureCode != null)
+            profile.getProperties().put("textures", new Property("textures", textureCode));
 
         SkullMeta meta = (SkullMeta) playerHead.getItemMeta();
         if (meta == null) return playerHead;
@@ -118,23 +137,24 @@ public class MobHeadManager {
             profileField.setAccessible(true);
             profileField.set(meta, profile);
         } catch (NoSuchFieldException | IllegalArgumentException | IllegalAccessException e1) {
-            Utils.logger.warning("Unable to set meta data in profile class for mob " + livingEntity.getName());
+            Utils.logger.warning("Unable to set meta data in profile class for mob " + lmEntity.getTypeName());
         }
 
-        if (!Utils.isNullOrEmpty(livingEntity.getCustomName())) {
+        if (!Utils.isNullOrEmpty(lmEntity.getLivingEntity().getCustomName())) {
             String name = main.messagesCfg.getString("other.mob-head-drop-name", "%mob_name%'s head");
-            name = Utils.replaceEx(name, "%mob_name%", livingEntity.getCustomName());
-            mobData.displayName = name;
+            name = Utils.replaceEx(name, "%mob_name%", lmEntity.getLivingEntity().getCustomName());
+            displayName = name;
         }
 
-        meta.setDisplayName(MessageUtils.colorizeAll(mobData.displayName));
+        if (!Utils.isNullOrEmpty(displayName))
+            meta.setDisplayName(MessageUtils.colorizeAll(displayName));
         playerHead.setItemMeta(meta);
 
         return playerHead;
     }
 
     @NotNull
-    private Material checkForVanillaHeads(final LivingEntity livingEntity){
+    private Material checkForVanillaHeads(@NotNull final LivingEntity livingEntity){
         switch (livingEntity.getType()){
             case ENDER_DRAGON:
                 return Material.DRAGON_HEAD;
@@ -153,8 +173,9 @@ public class MobHeadManager {
     }
 
     @Nullable
-    private MobDataInfo getMobVariant(final Map<String, MobDataInfo> mobDatas, final LivingEntity livingEntity){
-        final EntityType et = livingEntity.getType();
+    private MobDataInfo getMobVariant(final Map<String, MobDataInfo> mobDatas, @NotNull final LivingEntityWrapper lmEntity){
+        final EntityType et = lmEntity.getEntityType();
+        final LivingEntity livingEntity = lmEntity.getLivingEntity();
 
         if (livingEntity instanceof Colorable){
             final DyeColor dyeColor = ((Colorable) livingEntity).getColor();
@@ -212,12 +233,12 @@ public class MobHeadManager {
 
         if (et.equals(EntityType.WOLF)){
             return mobDatas.get(
-                    ((Wolf) livingEntity).isTamed() ?
+                    lmEntity.isMobTamed() ?
                             "Tamed" : "Wild"
             );
         }
 
-        Utils.logger.warning("Had muliple variants for " + livingEntity.getName() + " in textures.yml");
+        Utils.logger.warning("Had muliple variants for " + lmEntity.getTypeName() + " in textures.yml");
         return null;
     }
 

@@ -32,7 +32,7 @@ public class ChunkLoadListener implements Listener {
 
             // Must be a *living* entity
             if (!(entity instanceof LivingEntity)) continue;
-            LivingEntityWrapper lmEntity = new LivingEntityWrapper((LivingEntity) entity, main);
+            final LivingEntityWrapper lmEntity = new LivingEntityWrapper((LivingEntity) entity, main);
 
             if (lmEntity.isLevelled()) continue;
 

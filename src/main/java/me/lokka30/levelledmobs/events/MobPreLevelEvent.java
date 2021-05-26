@@ -63,7 +63,7 @@ public class MobPreLevelEvent extends Event implements Cancellable {
     private final LevelCause levelCause;
     private final HashSet<LevelInterface.AdditionalLevelInformation> additionalInformation;
 
-    public MobPreLevelEvent(@NotNull LivingEntity entity, int level, @NotNull LevelCause levelCause, @Nullable HashSet<LevelInterface.AdditionalLevelInformation> additionalInformation) {
+    public MobPreLevelEvent(@NotNull final LivingEntity entity, final int level, @NotNull final LevelCause levelCause, @Nullable final HashSet<LevelInterface.AdditionalLevelInformation> additionalInformation) {
         this.entity = entity;
         this.level = level;
         this.levelCause = levelCause;

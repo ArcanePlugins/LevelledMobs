@@ -25,7 +25,7 @@ public class QueueManager_Mobs {
         doThread = true;
         isRunning = true;
 
-        BukkitRunnable bgThread = new BukkitRunnable(){
+        final BukkitRunnable bgThread = new BukkitRunnable(){
             @Override
             public void run() {
                 try {
@@ -52,7 +52,7 @@ public class QueueManager_Mobs {
     private void main() throws InterruptedException{
         while (doThread) {
 
-            QueueItem item = queue.poll(1000, TimeUnit.MILLISECONDS);
+            final QueueItem item = queue.poll(1000, TimeUnit.MILLISECONDS);
             if (item == null) continue;
 
             main.levelManager.entitySpawnListener.preprocessMob(item.lmEntity, item.event);

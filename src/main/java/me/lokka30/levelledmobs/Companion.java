@@ -74,9 +74,9 @@ public class Companion {
         }
 
         main.incompatibilitiesAmount = incompatibilities.size();
-        if (incompatibilities.isEmpty()) {
+        if (incompatibilities.isEmpty())
             Utils.logger.info("&fCompatibility Checker: &7No incompatibilities found.");
-        } else {
+        else {
             Utils.logger.warning("&fCompatibility Checker: &7Found the following possible incompatibilities:");
             incompatibilities.forEach(incompatibility -> Utils.logger.info("&8 - &7" + incompatibility));
         }

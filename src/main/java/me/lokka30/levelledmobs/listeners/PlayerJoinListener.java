@@ -14,6 +14,7 @@ import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
 import java.util.List;
@@ -32,7 +33,7 @@ public class PlayerJoinListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
-    public void onJoin(final PlayerJoinEvent event) {
+    public void onJoin(@NotNull final PlayerJoinEvent event) {
         parseCompatibilityChecker(event.getPlayer());
         parseUpdateChecker(event.getPlayer());
 
@@ -40,12 +41,12 @@ public class PlayerJoinListener implements Listener {
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
-    public void onChangeWorld(final PlayerChangedWorldEvent event) {
+    public void onChangeWorld(@NotNull final PlayerChangedWorldEvent event) {
         updateNametagsInWorldAsync(event.getPlayer(), event.getPlayer().getWorld());
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
-    public void onTeleport(final PlayerTeleportEvent event) {
+    public void onTeleport(@NotNull final PlayerTeleportEvent event) {
         if (event.getTo() != null && event.getTo().getWorld() != null)
             updateNametagsInWorldAsync(event.getPlayer(), event.getTo().getWorld());
     }
@@ -61,7 +62,7 @@ public class PlayerJoinListener implements Listener {
         runnable.runTaskAsynchronously(main);
     }
 
-    private void updateNametagsInWorld(final Player player, final World world) {
+    private void updateNametagsInWorld(final Player player, @NotNull final World world) {
         for (final Entity entity : world.getEntities()) {
             if (!(entity instanceof LivingEntity)) continue;
 
@@ -79,7 +80,7 @@ public class PlayerJoinListener implements Listener {
         }
     }
 
-    void parseCompatibilityChecker(Player player) {
+    void parseCompatibilityChecker(@NotNull final Player player) {
         // Player must have permission
         if (!player.hasPermission("levelledmobs.compatibility-notice")) return;
 
@@ -96,11 +97,8 @@ public class PlayerJoinListener implements Listener {
         messages.forEach(player::sendMessage);
     }
 
-    void parseUpdateChecker(Player player) {
-        if (main.messagesCfg.getBoolean("other.update-notice.send-on-join", true)) {
-            if (player.hasPermission("levelledmobs.receive-update-notifications")) {
-                main.companion.updateResult.forEach(player::sendMessage);
-            }
-        }
+    void parseUpdateChecker(final Player player) {
+        if (main.messagesCfg.getBoolean("other.update-notice.send-on-join", true) && player.hasPermission("levelledmobs.receive-update-notifications"))
+            main.companion.updateResult.forEach(player::sendMessage);
     }
 }

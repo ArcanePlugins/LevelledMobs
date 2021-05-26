@@ -47,7 +47,7 @@ public class MobPostLevelEvent extends Event {
     private final LevelCause levelCause;
     private final HashSet<LevelInterface.AdditionalLevelInformation> additionalInformation;
 
-    public MobPostLevelEvent(@NotNull LivingEntityWrapper lmEntity, @NotNull LevelCause levelCause, @Nullable HashSet<LevelInterface.AdditionalLevelInformation> additionalInformation) {
+    public MobPostLevelEvent(@NotNull final LivingEntityWrapper lmEntity, @NotNull final LevelCause levelCause, @Nullable final HashSet<LevelInterface.AdditionalLevelInformation> additionalInformation) {
         this.lmEntity = lmEntity;
         this.levelCause = levelCause;
         this.additionalInformation = additionalInformation;

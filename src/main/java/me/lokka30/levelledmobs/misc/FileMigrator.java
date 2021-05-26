@@ -147,7 +147,7 @@ public class FileMigrator {
         }
     }
 
-    private static void copyArrayList(final ArrayListMigratorInfo info){
+    private static void copyArrayList(@NotNull final ArrayListMigratorInfo info){
         int sourceSize = 0;
         int destSize = 0;
 

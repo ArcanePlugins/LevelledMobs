@@ -4,6 +4,7 @@ import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.microlib.MessageUtils;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
@@ -36,7 +37,7 @@ public class ConfigUtils {
         return MessageUtils.colorizeAll(Objects.requireNonNull(main.messagesCfg.getString("common.prefix")));
     }
 
-    public void sendNoPermissionMsg(CommandSender sender) {
+    public void sendNoPermissionMsg(@NotNull final CommandSender sender) {
         List<String> noPermissionMsg = main.messagesCfg.getStringList("common.no-permission");
 
         noPermissionMsg = Utils.replaceAllInList(noPermissionMsg, "%prefix%", getPrefix());

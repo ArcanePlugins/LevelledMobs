@@ -19,6 +19,7 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
@@ -41,17 +42,17 @@ public class GenerateMobDataSubcommand implements Subcommand {
     private boolean acknowledged = false;
 
     @Override
-    public void parseSubcommand(LevelledMobs main, CommandSender sender, String label, String[] args) {
+    public void parseSubcommand(final LevelledMobs main, final CommandSender sender, final String label, final String[] args) {
         if (sender instanceof ConsoleCommandSender) {
             if (args.length == 2) {
-                if (attempts == 0) {
+                if (attempts == 0)
                     sender.sendMessage(MessageUtils.colorizeAll(main.configUtils.getPrefix() + " You have ran out of attempts to use the correct password. You will gain another 3 attempts next time you restart the server."));
-                } else {
+                else {
                     if (args[1].equals(PASSWORD)) {
                         if (acknowledged) {
                             sender.sendMessage(MessageUtils.colorizeAll(main.configUtils.getPrefix() + " Starting generateMobData..."));
 
-                            QuickTimer timer = new QuickTimer();
+                            final QuickTimer timer = new QuickTimer();
                             timer.start();
 
                             try {
@@ -76,39 +77,36 @@ public class GenerateMobDataSubcommand implements Subcommand {
                         attempts--;
                     }
                 }
-            } else {
+            } else
                 sender.sendMessage(MessageUtils.colorizeAll(main.configUtils.getPrefix() + " Usage: &b/" + label + " generateMobData <password>"));
-            }
-        } else {
+        } else
             sender.sendMessage(MessageUtils.colorizeAll(main.configUtils.getPrefix() + " Only console may use this command."));
-        }
     }
 
     @Override
-    public List<String> parseTabCompletions(LevelledMobs main, CommandSender sender, String[] args) {
-        if (args.length == 2 && sender instanceof ConsoleCommandSender) {
+    public List<String> parseTabCompletions(final LevelledMobs main, final CommandSender sender, @NotNull final String[] args) {
+        if (args.length == 2 && sender instanceof ConsoleCommandSender)
             return Collections.singletonList("(password?)");
-        }
 
         return null;
     }
 
     YamlConfiguration dropsConfig;
 
-    private void generateMobData(LevelledMobs main) throws IOException {
-        File attribFile = new File(main.getDataFolder(), "defaultAttributes.yml");
-        if (attribFile.exists()) {
+    private void generateMobData(@NotNull final LevelledMobs main) throws IOException {
+        final File attribFile = new File(main.getDataFolder(), "defaultAttributes.yml");
+        if (attribFile.exists())
             attribFile.delete();
-        }
+
         attribFile.createNewFile();
         YamlConfiguration attribConfig = YamlConfiguration.loadConfiguration(attribFile);
         attribConfig.options().header("This is NOT a configuration file! All changes to this file will not take effect and be reset!");
         attribConfig.set("GENERATION_INFO", "[Date: " + new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(new Date()) + "], [ServerVersion: " + Bukkit.getVersion() + "]");
 
-        File dropsFile = new File(main.getDataFolder(), "defaultDrops.yml");
-        if (dropsFile.exists()) {
+        final File dropsFile = new File(main.getDataFolder(), "defaultDrops.yml");
+        if (dropsFile.exists())
             dropsFile.delete();
-        }
+
         dropsFile.createNewFile();
         dropsConfig = YamlConfiguration.loadConfiguration(dropsFile);
         dropsConfig.options().header("This is NOT a configuration file! All changes to this file will not take effect and be reset!");
@@ -117,9 +115,9 @@ public class GenerateMobDataSubcommand implements Subcommand {
         DeathDropListener deathDropListener = new DeathDropListener();
         Bukkit.getPluginManager().registerEvents(deathDropListener, main);
 
-        World world = Bukkit.getWorlds().get(0);
+        final World world = Bukkit.getWorlds().get(0);
 
-        for (EntityType entityType : EntityType.values()) {
+        for (final EntityType entityType : EntityType.values()) {
 
             // Don't spawn these in.
             if (entityType == EntityType.UNKNOWN || entityType == EntityType.PLAYER) {
@@ -145,9 +143,9 @@ public class GenerateMobDataSubcommand implements Subcommand {
             if (entity instanceof LivingEntity) {
                 Utils.logger.info("&f&lGenerateMobData: &8[" + entityType + "&8] &7Entity is a LivingEntity. Proceeding...");
 
-                LivingEntity livingEntity = (LivingEntity) entity;
+                final LivingEntity livingEntity = (LivingEntity) entity;
 
-                for (Attribute attribute : Attribute.values()) {
+                for (final Attribute attribute : Attribute.values()) {
                     if (livingEntity.getAttribute(attribute) != null) {
                         Utils.logger.info("&f&lGenerateMobData: &8[" + entityType + "&8] &7Saving attribute &b" + attribute + "&7...");
                         attribConfig.set(entityType + "." + attribute, Objects.requireNonNull(livingEntity.getAttribute(attribute)).getBaseValue());
@@ -155,9 +153,8 @@ public class GenerateMobDataSubcommand implements Subcommand {
                 }
 
                 Utils.logger.info("&f&lGenerateMobData: &8[" + entityType + "&8] &7Finished with entity.");
-            } else {
+            } else
                 Utils.logger.info("&f&lGenerateMobData: &8[" + entityType + "&8] &7Entity is not a LivingEntity, skipping...");
-            }
 
             entity.remove();
             Utils.logger.info("&f&lGenerateMobData: &8[" + entityType + "&8] &7Done. Proceeding with next entity if it exists.");
@@ -165,7 +162,7 @@ public class GenerateMobDataSubcommand implements Subcommand {
         attribConfig.save(attribFile);
 
         Utils.logger.info("&f&lGenerateMobData: &7Finished attributes. doing drops now");
-        for (EntityType entityType : EntityType.values()) {
+        for (final EntityType entityType : EntityType.values()) {
 
             // Don't spawn these in.
             if (entityType == EntityType.UNKNOWN || entityType == EntityType.PLAYER || entityType == EntityType.FISHING_HOOK || entityType == EntityType.LIGHTNING) {
@@ -192,16 +189,15 @@ public class GenerateMobDataSubcommand implements Subcommand {
                 if (entity instanceof LivingEntity) {
                     Utils.logger.info("&f&lGenerateMobData: &8[" + entityType + "&8] &7Processing mob " + entity.getType() + "...");
 
-                    LivingEntity livingEntity = (LivingEntity) entity;
+                    final LivingEntity livingEntity = (LivingEntity) entity;
 
                     if (livingEntity.getEquipment() != null) livingEntity.getEquipment().clear();
 
                     livingEntity.setHealth(0.0);
 
                     Utils.logger.info("&f&lGenerateMobData: &8[" + entityType + "&8] &7Drops saved. Proceeding with next entity if it exists.");
-                } else {
+                } else
                     entity.remove();
-                }
             }
 
             Utils.logger.info("&f&lGenerateMobData: &8[" + entityType + "&8] &7Done. Proceeding with next entity if it exists.");
@@ -214,13 +210,13 @@ public class GenerateMobDataSubcommand implements Subcommand {
 
     private class DeathDropListener implements Listener {
         @EventHandler
-        public void onDeath(final EntityDeathEvent event) {
+        public void onDeath(@NotNull final EntityDeathEvent event) {
             Utils.logger.info("&f&lGenerateMobData: &8[Death] &7" + event.getEntityType() + " died");
             for (ItemStack drop : event.getDrops()) {
                 final String path = event.getEntityType().toString();
                 final String dropType = drop.getType().toString();
 
-                List<String> dropsList = dropsConfig.getStringList(path);
+                final List<String> dropsList = dropsConfig.getStringList(path);
                 if (!dropsList.contains(dropType)) {
                     dropsList.add(dropType);
                     dropsConfig.set(path, dropsList);

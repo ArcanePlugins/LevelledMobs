@@ -8,6 +8,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
@@ -19,7 +20,7 @@ public class SpawnerSubCommand implements Subcommand{
     final private LevelledMobs main;
 
     @Override
-    public void parseSubcommand(final LevelledMobs main, final CommandSender sender, final String label, final String[] args) {
+    public void parseSubcommand(final LevelledMobs main, @NotNull final CommandSender sender, final String label, final String[] args) {
         if (!sender.hasPermission("levelledmobs.command.spawner")) {
             main.configUtils.sendNoPermissionMsg(sender);
             return;
@@ -55,9 +56,8 @@ public class SpawnerSubCommand implements Subcommand{
                 maxLevelFlag = i;
             else if ("/name".equalsIgnoreCase(arg))
                 customNameFlag = i;
-            else if (customNameFlag == i - 1 && arg.startsWith("\"")) {
+            else if (customNameFlag == i - 1 && arg.startsWith("\""))
                 customNameStartFlag = i;
-            }
             else if (customNameStartFlag > -1 && !arg.startsWith("/") && arg.endsWith("\""))
                 customNameEndFlag = i;
             else if ("/customdropid".equalsIgnoreCase(arg))
@@ -94,9 +94,8 @@ public class SpawnerSubCommand implements Subcommand{
             if (customName == null) return;
         }
 
-        if (customDropIdFlag > -1){
+        if (customDropIdFlag > -1)
             customDropId = parseFlagValue(sender, "customdropid", customDropIdFlag, args, false, label);
-        }
 
         if (minLevel == -1 && maxLevel == -1) {
             List<String> messages = main.messagesCfg.getStringList("command.levelledmobs.spawner.no-level-specified");
@@ -194,7 +193,7 @@ public class SpawnerSubCommand implements Subcommand{
     }
 
     @Override
-    public List<String> parseTabCompletions(final LevelledMobs main, final CommandSender sender, final String[] args) {
+    public List<String> parseTabCompletions(final LevelledMobs main, final CommandSender sender, @NotNull final String[] args) {
         List<String> CommandsList = new ArrayList<>(Arrays.asList("/minlevel", "/maxlevel", "/name", "/customdropid"));
         boolean inQuotes = false;
 

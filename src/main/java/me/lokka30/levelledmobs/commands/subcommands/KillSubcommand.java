@@ -265,7 +265,7 @@ public class KillSubcommand implements Subcommand {
     }
 
     private boolean skipKillingEntity(LevelledMobs main, LivingEntity livingEntity) {
-
+        // TODO: update this section to LM3 standards
         // Nametagged
         if (livingEntity.getCustomName() != null && main.settingsCfg.getBoolean("kill-skip-conditions.nametagged"))
             return true;

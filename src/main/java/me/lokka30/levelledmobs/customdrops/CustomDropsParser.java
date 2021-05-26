@@ -49,7 +49,7 @@ public class CustomDropsParser {
             parseCustomDrops(customDropsCfg);
     }
 
-    private void processDefaults(@NotNull MemorySection ms){
+    private void processDefaults(@NotNull final MemorySection ms){
         Map<String, Object> vals = ms.getValues(false);
         ConfigurationSection cs = objectToConfigurationSection(vals);
 
@@ -311,6 +311,16 @@ public class CustomDropsParser {
         item.noMultiplier = cs.getBoolean("nomultiplier", this.defaults.noMultiplier);
         item.noSpawner = cs.getBoolean("nospawner", this.defaults.noSpawner);
         item.customModelDataId = cs.getInt("custommodeldata", this.defaults.customModelData);
+        item.mobHeadTexture = cs.getString("mobhead-texture");
+        final String mobHeadIdStr = cs.getString("mobhead-id");
+        if (mobHeadIdStr != null){
+            try {
+                 item.customPlayerHeadId = UUID.fromString(mobHeadIdStr);
+            }
+            catch (Exception e){
+                Utils.logger.warning("Invalid UUID: " + mobHeadIdStr);
+            }
+        }
 
         if (!Utils.isNullOrEmpty(cs.getString("override")))
             dropInstance.overrideStockDrops = cs.getBoolean("override");
@@ -439,7 +449,7 @@ public class CustomDropsParser {
         }
     }
 
-    private boolean addMaterialToDrop(String materialName, CustomDropInstance dropInstance, CustomDropItem item){
+    private boolean addMaterialToDrop(String materialName, final CustomDropInstance dropInstance, final CustomDropItem item){
 
         materialName = Utils.replaceEx(materialName, "mob_head", "player_head");
         materialName = Utils.replaceEx(materialName, "mobhead", "player_head");
@@ -458,7 +468,7 @@ public class CustomDropsParser {
         return true;
     }
 
-    private boolean checkForMobOverride(@NotNull final Map.Entry<String,Object> itemEntry, CustomDropInstance dropInstance){
+    private boolean checkForMobOverride(@NotNull final Map.Entry<String,Object> itemEntry, final CustomDropInstance dropInstance){
         if (itemEntry.getKey().equalsIgnoreCase("override")){
             final Object value = itemEntry.getValue();
             if (value.getClass().equals(Boolean.class)) {

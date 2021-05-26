@@ -12,6 +12,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntitySpawnEvent;
 import org.bukkit.event.entity.EntityTransformEvent;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -30,7 +31,7 @@ public class EntityTransformListener implements Listener {
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
-    public void onTransform(final EntityTransformEvent event) {
+    public void onTransform(@NotNull final EntityTransformEvent event) {
 
         // is the original entity a living entity
         if (!(event.getEntity() instanceof LivingEntity)) {
@@ -38,7 +39,7 @@ public class EntityTransformListener implements Listener {
             return;
         }
 
-        LivingEntityWrapper lmEntity = new LivingEntityWrapper((LivingEntity) event.getEntity(), main);
+        final LivingEntityWrapper lmEntity = new LivingEntityWrapper((LivingEntity) event.getEntity(), main);
 
         // is the original entity levelled
         if (!lmEntity.isLevelled()) {
@@ -54,7 +55,7 @@ public class EntityTransformListener implements Listener {
             level = lmEntity.getMobLevel();
         }
 
-        for (Entity transformedEntity : event.getTransformedEntities()) {
+        for (final Entity transformedEntity : event.getTransformedEntities()) {
             if (!(transformedEntity instanceof LivingEntity)) {
                 Utils.debugLog(main, DebugType.ENTITY_TRANSFORM_FAIL, event.getEntity().getType().name() + ": entity was not an instance of LivingEntity (loop)");
                 continue;

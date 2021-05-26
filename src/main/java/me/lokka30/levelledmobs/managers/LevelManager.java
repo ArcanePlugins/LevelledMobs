@@ -23,7 +23,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
-import org.checkerframework.checker.guieffect.qual.UIType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -93,7 +92,7 @@ public class LevelManager {
             if (maxLevel == -1) maxLevel = levels[1];
         }
 
-        LevellingStrategy levellingStrategy = main.rulesManager.getRule_LevellingStrategy(lmEntity);
+        final LevellingStrategy levellingStrategy = main.rulesManager.getRule_LevellingStrategy(lmEntity);
 
         if (levellingStrategy instanceof YDistanceStrategy || levellingStrategy instanceof SpawnDistanceStrategy)
             return levellingStrategy.generateLevel(lmEntity, minLevel, maxLevel);
@@ -252,9 +251,9 @@ public class LevelManager {
         if (lmEntity.isLevelled()) {
             final int level = lmEntity.getMobLevel();
             return (int) Math.round(xp + (xp * main.mobDataManager.getAdditionsForLevel(lmEntity, Addition.CUSTOM_XP_DROP, 0.0)));
-        } else {
-            return xp;
         }
+        else
+            return xp;
     }
 
     // When the persistent data container levelled key has not been set on the entity yet (i.e. for use in EntitySpawnListener)
@@ -466,7 +465,7 @@ public class LevelManager {
         main.mobDataManager.setAdditionsForLevel(lmEntity, attribute, addition);
     }
 
-    public void applyCreeperBlastRadius(LivingEntityWrapper lmEntity, int level) {
+    public void applyCreeperBlastRadius(final LivingEntityWrapper lmEntity, int level) {
         final int creeperMaxDamageRadius = main.rulesManager.getRule_CreeperMaxBlastRadius(lmEntity);
         Creeper creeper = (Creeper) lmEntity.getLivingEntity();
 
@@ -513,17 +512,18 @@ public class LevelManager {
         // Custom Drops must be enabled.
         if (!main.rulesManager.getRule_UseCustomDropsForMob(lmEntity).useDrops) return;
 
-        List<ItemStack> items = new LinkedList<>();
+        final List<ItemStack> items = new LinkedList<>();
         main.customDropsHandler.getCustomItemDrops(lmEntity, items, true);
         if (items.isEmpty()) return;
 
-        EntityEquipment equipment = lmEntity.getLivingEntity().getEquipment();
+        final EntityEquipment equipment = lmEntity.getLivingEntity().getEquipment();
         if (equipment == null) return;
 
         boolean hadMainItem = false;
+        boolean hadPlayerHead = false;
 
-        for (ItemStack itemStack : items) {
-            Material material = itemStack.getType();
+        for (final ItemStack itemStack : items) {
+            final Material material = itemStack.getType();
             if (EnchantmentTarget.ARMOR_FEET.includes(material)) {
                 equipment.setBoots(itemStack, true);
                 equipment.setBootsDropChance(0);
@@ -533,9 +533,10 @@ public class LevelManager {
             } else if (EnchantmentTarget.ARMOR_TORSO.includes(material)) {
                 equipment.setChestplate(itemStack, true);
                 equipment.setChestplateDropChance(0);
-            } else if (EnchantmentTarget.ARMOR_HEAD.includes(material)) {
+            } else if (EnchantmentTarget.ARMOR_HEAD.includes(material) || material == Material.PLAYER_HEAD && !hadPlayerHead) {
                 equipment.setHelmet(itemStack, true);
                 equipment.setHelmetDropChance(0);
+                if (material == Material.PLAYER_HEAD) hadPlayerHead = true;
             } else {
                 if (!hadMainItem) {
                     equipment.setItemInMainHand(itemStack);
@@ -549,7 +550,7 @@ public class LevelManager {
         }
     }
 
-    public double getMobAttributeValue(final LivingEntityWrapper lmEntity, final Attribute attribute){
+    public double getMobAttributeValue(@NotNull final LivingEntityWrapper lmEntity, final Attribute attribute){
         double result = 0.0;
         synchronized (main.attributeSyncObject){
             final AttributeInstance attrib = lmEntity.getLivingEntity().getAttribute(attribute);
@@ -560,7 +561,7 @@ public class LevelManager {
         return result;
     }
 
-    public double getMobHealth(final LivingEntityWrapper lmEntity){
+    public double getMobHealth(@NotNull final LivingEntityWrapper lmEntity){
         double result;
         synchronized (main.attributeSyncObject){
             result = lmEntity.getLivingEntity().getHealth();

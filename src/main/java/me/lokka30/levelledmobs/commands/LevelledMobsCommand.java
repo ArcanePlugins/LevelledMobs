@@ -7,6 +7,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
@@ -34,7 +35,7 @@ public class LevelledMobsCommand implements CommandExecutor, TabCompleter {
     private final SpawnerSubCommand spawnerSubCommand;
     private final RulesSubcommand rulesSubcommand;
 
-    public boolean onCommand(final CommandSender sender, final Command command, final String label, final String[] args) {
+    public boolean onCommand(@NotNull final CommandSender sender, final Command command, final String label, final String[] args) {
         if (sender.hasPermission("levelledmobs.command")) {
             if (args.length == 0) {
                 sendMainUsage(sender, label);
@@ -74,7 +75,7 @@ public class LevelledMobsCommand implements CommandExecutor, TabCompleter {
 		return true;
 	}
 
-	private void sendMainUsage(CommandSender sender, String label) {
+	private void sendMainUsage(@NotNull final CommandSender sender, final String label) {
         List<String> mainUsage = main.messagesCfg.getStringList("command.levelledmobs.main-usage");
 
         mainUsage = Utils.replaceAllInList(mainUsage, "%prefix%", main.configUtils.getPrefix());
@@ -85,7 +86,7 @@ public class LevelledMobsCommand implements CommandExecutor, TabCompleter {
     }
 
 	@Override
-	public List<String> onTabComplete(CommandSender sender, Command cmd, String alias, String[] args) {
+	public List<String> onTabComplete(final CommandSender sender, final Command cmd, final String alias, @NotNull final String[] args) {
 		if (args.length == 1) {
 			List<String> suggestions = new LinkedList<>();
 

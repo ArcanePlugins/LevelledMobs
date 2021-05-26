@@ -37,7 +37,7 @@ public class QueueManager_Nametags {
         doThread = true;
         isRunning = true;
 
-        BukkitRunnable bgThread = new BukkitRunnable(){
+        final BukkitRunnable bgThread = new BukkitRunnable(){
             @Override
             public void run() {
                 try {
@@ -63,7 +63,7 @@ public class QueueManager_Nametags {
     private void main() throws InterruptedException{
         while (doThread) {
 
-            QueueItem item = queue.poll(1000, TimeUnit.MILLISECONDS);
+            final QueueItem item = queue.poll(1000, TimeUnit.MILLISECONDS);
             if (item == null) continue;
 
             updateNametag(item.lmEntity, item.nametag, item.players);
@@ -101,11 +101,10 @@ public class QueueManager_Nametags {
         final WrappedDataWatcher.WrappedDataWatcherObject watcherObject = new WrappedDataWatcher.WrappedDataWatcherObject(2, chatSerializer);
 
         Optional<Object> optional;
-        if (Utils.isNullOrEmpty(nametag)) {
+        if (Utils.isNullOrEmpty(nametag))
             optional = Optional.empty();
-        } else {
+        else
             optional = Optional.of(WrappedChatComponent.fromChatMessage(nametag)[0].getHandle());
-        }
 
         dataWatcher.setObject(watcherObject, optional);
         if (nametag == null)

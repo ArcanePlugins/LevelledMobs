@@ -29,7 +29,7 @@ public class ExternalCompatibilityManager {
         SHOPKEEPERS
     }
 
-    public static boolean isExternalCompatibilityEnabled(final ExternalCompatibility externalCompatibility, final LivingEntityWrapper lmEntity) {
+    public static boolean isExternalCompatibilityEnabled(final ExternalCompatibility externalCompatibility, @NotNull final LivingEntityWrapper lmEntity) {
         if (lmEntity.getApplicableRules().isEmpty()) return false;
 
         List<ExternalCompatibility> list = null;
@@ -53,7 +53,7 @@ public class ExternalCompatibilityManager {
         return Bukkit.getPluginManager().getPlugin("WorldGuard") != null;
     }
 
-    public static boolean isMythicMob(final LivingEntityWrapper lmEntity) {
+    public static boolean isMythicMob(@NotNull final LivingEntityWrapper lmEntity) {
 
         return MythicMobs.inst().getMobManager().isActiveMob(io.lumine.xikage.mythicmobs.adapters.bukkit.BukkitAdapter.adapt(lmEntity.getLivingEntity()));
     }

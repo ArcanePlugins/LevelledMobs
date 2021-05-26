@@ -2,6 +2,7 @@ package me.lokka30.levelledmobs.rules.strategies;
 
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
 import org.bukkit.Location;
+import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -61,7 +62,7 @@ public class SpawnDistanceStrategy implements LevellingStrategy, Cloneable {
         }
     }
 
-    public int generateLevel(final LivingEntityWrapper lmEntity, final int minLevel, final int maxLevel) {
+    public int generateLevel(@NotNull final LivingEntityWrapper lmEntity, final int minLevel, final int maxLevel) {
         Location spawnLocation = lmEntity.getLivingEntity().getWorld().getSpawnLocation();
 
         if (this.spawnLocation_Z != null || this.spawnLocation_X != null) {
@@ -80,9 +81,8 @@ public class SpawnDistanceStrategy implements LevellingStrategy, Cloneable {
         final int levelDistance = Math.max(distanceFromSpawn - startDistance, 0);
 
         int variance = lmEntity.getMainInstance().rulesManager.getRule_MaxRandomVariance(lmEntity);
-        if (variance > 0) {
+        if (variance > 0)
             variance = ThreadLocalRandom.current().nextInt(0, variance + 1);
-        }
 
         int increaseLevelDistance = this.increaseLevelDistance == null ? 1 : this.increaseLevelDistance;
         if (increaseLevelDistance == 0) increaseLevelDistance = 1;
@@ -95,7 +95,7 @@ public class SpawnDistanceStrategy implements LevellingStrategy, Cloneable {
         return generateBlendedLevel(lmEntity, spawnDistanceAssignment, minLevel, maxLevel);
     }
 
-    private int generateBlendedLevel(final LivingEntityWrapper lmEntity, final int spawnDistanceLevelAssignment, final int minLevel, final int maxLevel){
+    private int generateBlendedLevel(@NotNull final LivingEntityWrapper lmEntity, final int spawnDistanceLevelAssignment, final int minLevel, final int maxLevel){
         final int currentYPos = lmEntity.getLocation().getBlockY();
         final Location spawnLocation = lmEntity.getWorld().getSpawnLocation();
 

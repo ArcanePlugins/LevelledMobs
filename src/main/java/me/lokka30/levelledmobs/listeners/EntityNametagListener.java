@@ -10,6 +10,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * TODO Describe...
@@ -25,7 +26,7 @@ public class EntityNametagListener implements Listener {
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
-    public void onNametag(final PlayerInteractEntityEvent event) {
+    public void onNametag(@NotNull final PlayerInteractEntityEvent event) {
         if (event.getRightClicked() instanceof LivingEntity) {
             final Player player = event.getPlayer();
 

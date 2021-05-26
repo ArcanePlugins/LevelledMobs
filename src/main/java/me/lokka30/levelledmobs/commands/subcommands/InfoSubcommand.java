@@ -3,6 +3,7 @@ package me.lokka30.levelledmobs.commands.subcommands;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.misc.Utils;
 import org.bukkit.command.CommandSender;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 import java.util.List;
@@ -17,7 +18,7 @@ import java.util.Objects;
 public class InfoSubcommand implements Subcommand {
 
     @Override
-    public void parseSubcommand(LevelledMobs main, CommandSender sender, String label, String[] args) {
+    public void parseSubcommand(final LevelledMobs main, @NotNull final CommandSender sender, final String label, final String[] args) {
         if (sender.hasPermission("levelledmobs.command.info")) {
             if (args.length == 1) {
                 final String version = main.getDescription().getVersion();
@@ -42,13 +43,12 @@ public class InfoSubcommand implements Subcommand {
                 usageMsg = Utils.colorizeAllInList(usageMsg);
                 usageMsg.forEach(sender::sendMessage);
             }
-        } else {
+        } else
             main.configUtils.sendNoPermissionMsg(sender);
-        }
     }
 
     @Override
-    public List<String> parseTabCompletions(LevelledMobs main, CommandSender sender, String[] args) {
+    public List<String> parseTabCompletions(final LevelledMobs main, final CommandSender sender, final String[] args) {
         // This subcommand has no tab completions.
         return null;
     }

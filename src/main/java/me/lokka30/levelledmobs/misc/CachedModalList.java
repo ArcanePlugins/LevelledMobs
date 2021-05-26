@@ -2,8 +2,9 @@ package me.lokka30.levelledmobs.misc;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.TreeSet;
+import java.util.Set;
+import java.util.Collection;
 
 public class CachedModalList<T extends Comparable<T>> implements Cloneable {
     public CachedModalList(){
@@ -46,13 +47,12 @@ public class CachedModalList<T extends Comparable<T>> implements Cloneable {
         return copy;
     }
 
-    public void mergeCachedModal(CachedModalList<?> cachedModalList){
-        if (this.listMode.equals(cachedModalList.listMode)){
+    public void mergeCachedModal(@NotNull CachedModalList<?> cachedModalList){
+        if (this.listMode.equals(cachedModalList.listMode))
             this.items.addAll((Collection<? extends T>) cachedModalList.items);
-        }
         else{
             this.listMode = cachedModalList.listMode;
-            this.items = new TreeSet<T>((Collection<? extends T>) cachedModalList.items);
+            this.items = new TreeSet<>((Collection<? extends T>) cachedModalList.items);
         }
     }
 }

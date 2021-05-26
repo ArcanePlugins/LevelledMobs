@@ -1,7 +1,6 @@
 package me.lokka30.levelledmobs.misc;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -14,7 +13,7 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class LevelNumbersWithBias {
 
-    public LevelNumbersWithBias(int minLevel, int maxLevel, int factor){
+    public LevelNumbersWithBias(final int minLevel, final int maxLevel, final int factor){
         this.minLevel = minLevel;
         this.maxLevel = maxLevel;
         this.factor = factor;
@@ -62,7 +61,7 @@ public class LevelNumbersWithBias {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(final Object obj) {
         if (this == obj) return true;
         if (obj == null) return false;
         if (this.getClass() != obj.getClass()) return false;

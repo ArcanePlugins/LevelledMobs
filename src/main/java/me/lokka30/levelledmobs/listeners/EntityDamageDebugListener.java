@@ -14,6 +14,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -99,7 +100,7 @@ public class EntityDamageDebugListener implements Listener {
         send(player, message, true);
     }
 
-    private void send(final Player player, final String message, final Boolean usePrefix) {
+    private void send(final Player player, final String message, @NotNull final Boolean usePrefix) {
         if (usePrefix)
             player.sendMessage(MessageUtils.colorizeAll(main.configUtils.getPrefix() + "&7 " + message));
         else

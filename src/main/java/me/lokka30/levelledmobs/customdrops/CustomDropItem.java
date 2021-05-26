@@ -4,9 +4,11 @@ import me.lokka30.levelledmobs.misc.Utils;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * This holds all the attributes set for a
@@ -19,6 +21,7 @@ public class CustomDropItem extends CustomDropBase {
     public double equippedSpawnChance;
     public boolean noMultiplier;
     public String customName;
+    public String mobHeadTexture;
     public List<String> lore;
     public List<ItemFlag> itemFlags;
     private boolean hasAmountRange;
@@ -29,10 +32,11 @@ public class CustomDropItem extends CustomDropBase {
     private int amountRangeMax;
     private int damageRangeMin;
     private int damageRangeMax;
+    public UUID customPlayerHeadId;
     private Material material;
     private ItemStack itemStack;
 
-    public CustomDropItem(CustomDropsDefaults defaults) {
+    public CustomDropItem(@NotNull final CustomDropsDefaults defaults) {
         this.amount = defaults.amount;
         if (!Utils.isNullOrEmpty(defaults.damage)) this.setDamageRangeFromString(defaults.damage);
         this.customModelDataId = defaults.customModelData;
@@ -55,7 +59,7 @@ public class CustomDropItem extends CustomDropBase {
         return copy;
     }
 
-    private static String getContent(Object aClass, String name) throws NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
+    private static String getContent(@NotNull Object aClass, String name) throws NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
         Field declaredField = aClass.getClass().getDeclaredField(name);
         declaredField.setAccessible(true);
         return (String) declaredField.get(aClass);

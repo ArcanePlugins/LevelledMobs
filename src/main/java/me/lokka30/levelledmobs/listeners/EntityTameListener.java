@@ -10,6 +10,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityTameEvent;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -27,7 +28,7 @@ public class EntityTameListener implements Listener {
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
-    private void onEntityTameEvent(EntityTameEvent event) {
+    private void onEntityTameEvent(@NotNull final EntityTameEvent event) {
         final LivingEntityWrapper lmEntity = new LivingEntityWrapper(event.getEntity(), main);
 
         if (main.rulesManager.getRule_MobTamedStatus(lmEntity) == MobTamedStatusEnum.NOT_TAMED) {

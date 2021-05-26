@@ -1,6 +1,7 @@
 package me.lokka30.levelledmobs.customdrops;
 
 import org.bukkit.inventory.ItemFlag;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
@@ -43,7 +44,7 @@ public class CustomDropsDefaults {
         this.playerCausedOnly = false;
     }
 
-    public void setDefaultsFromDropItem(CustomDropItem drop) {
+    public void setDefaultsFromDropItem(@NotNull final CustomDropItem drop) {
         this.chance = drop.chance;
         this.amount = drop.getAmount();
         this.minLevel = drop.minLevel;

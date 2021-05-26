@@ -5,6 +5,7 @@ import me.lokka30.levelledmobs.misc.CachedModalList;
 import me.lokka30.levelledmobs.rules.strategies.LevellingStrategy;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -63,6 +64,7 @@ public class RuleInfo {
     public CachedModalList<String> conditions_NoDropEntities;
     public CachedModalList<String> conditions_WGRegions;
     public CachedModalList<CreatureSpawnEvent.SpawnReason> conditions_SpawnReasons;
+    @Nullable
     public FineTuningAttributes defaultFineTuning;
     public Map<String, FineTuningAttributes> fineTuning;
 

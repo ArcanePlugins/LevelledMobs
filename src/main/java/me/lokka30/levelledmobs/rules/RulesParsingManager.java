@@ -493,6 +493,7 @@ public class RulesParsingManager {
         if (!fineTuning.isEmpty()) parsingInfo.fineTuning = fineTuning;
     }
 
+    @Nullable
     private FineTuningAttributes parseFineTuningValues(final ConfigurationSection cs){
         if (cs == null) return null;
 

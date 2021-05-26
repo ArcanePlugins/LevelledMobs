@@ -120,7 +120,7 @@ public class LevelInterface {
             return LevellableState.DENIED_CONFIGURATION_CONDITION_NAMETAGGED;
 
         // Tamed mobs.
-        if (lmEntity instanceof Tameable && ((Tameable) lmEntity).isTamed() &&
+        if (lmEntity.isMobTamed() &&
                 rulesManager.getRule_MobTamedStatus(lmEntity) == MobTamedStatusEnum.NOT_TAMED)
             return LevellableState.DENIED_CONFIGURATION_CONDITION_TAMED;
 

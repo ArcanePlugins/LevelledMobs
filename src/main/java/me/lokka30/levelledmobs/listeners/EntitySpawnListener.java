@@ -42,7 +42,7 @@ public class EntitySpawnListener implements Listener {
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
-    public void onEntitySpawn(final EntitySpawnEvent event) {
+    public void onEntitySpawn(@NotNull final EntitySpawnEvent event) {
         // Must be a LivingEntity.
         if (!(event.getEntity() instanceof LivingEntity)) return;
 
@@ -52,7 +52,7 @@ public class EntitySpawnListener implements Listener {
         main.queueManager_mobs.addToQueue(new QueueItem(lmEntity, event));
     }
 
-    private void lmSpawnerSpawn(final LivingEntityWrapper lmEntity, final SpawnerSpawnEvent event) {
+    private void lmSpawnerSpawn(final LivingEntityWrapper lmEntity, @NotNull final SpawnerSpawnEvent event) {
         final CreatureSpawner cs = event.getSpawner();
 
         // mob was spawned from a custom LM spawner
@@ -82,7 +82,7 @@ public class EntitySpawnListener implements Listener {
                 false, true, new HashSet<>(Collections.singletonList(LevelInterface.AdditionalLevelInformation.NOT_APPLICABLE)));
     }
 
-    private void createParticleEffect(final Location location){
+    private void createParticleEffect(@NotNull final Location location){
         final World world = location.getWorld();
         if (world == null) return;
 
@@ -149,9 +149,9 @@ public class EntitySpawnListener implements Listener {
                     "rld " + lmEntity.getWorldName() + " was not levelled -> Levellable state: " + levellableState);
 
             // Check if the mob is already levelled - if so, remove their level
-            if (lmEntity.isLevelled()) {
+            if (lmEntity.isLevelled())
                 main.levelInterface.removeLevel(lmEntity);
-            }
+
             else if (lmEntity.isBabyMob()) {
                 // add a tag so we can potentially level the mob when/if it ages
                 synchronized (lmEntity.pdcSyncObject) {
@@ -174,9 +174,8 @@ public class EntitySpawnListener implements Listener {
     private LevelInterface.LevellableState getLevellableState(final LivingEntityWrapper lmEntity, @NotNull final Event event) {
         LevelInterface.LevellableState levellableState = main.levelInterface.getLevellableState(lmEntity);
 
-        if (levellableState != LevelInterface.LevellableState.ALLOWED) {
+        if (levellableState != LevelInterface.LevellableState.ALLOWED)
             return levellableState;
-        }
 
         if (event instanceof CreatureSpawnEvent) {
             CreatureSpawnEvent creatureSpawnEvent = (CreatureSpawnEvent) event;
@@ -186,9 +185,8 @@ public class EntitySpawnListener implements Listener {
                 return LevelInterface.LevellableState.DENIED_OTHER;
 
             Utils.debugLog(main, DebugType.ENTITY_SPAWN, "instanceof CreatureSpawnListener: " + creatureSpawnEvent.getEntityType() + ", with spawnReason " + creatureSpawnEvent.getSpawnReason() + ".");
-        } else if (event instanceof EntitySpawnEvent) {
+        } else if (event instanceof EntitySpawnEvent)
             Utils.debugLog(main, DebugType.ENTITY_SPAWN, "not instanceof CreatureSpawnListener: " + ((EntitySpawnEvent)event).getEntityType());
-        }
 
         return LevelInterface.LevellableState.ALLOWED;
     }

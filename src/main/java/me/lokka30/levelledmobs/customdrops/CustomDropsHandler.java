@@ -224,7 +224,7 @@ public class CustomDropsHandler {
         }
     }
 
-    private boolean checkOverallChance(final CustomDropProcessingInfo info){
+    private boolean checkOverallChance(@NotNull final CustomDropProcessingInfo info){
         for (final CustomDropInstance dropInstance : info.allDropInstances) {
             if (dropInstance.overallChance == null || dropInstance.overallChance >= 1.0) continue;
             // not sure why someone would put a 0 percent chance, but maybe
@@ -388,7 +388,7 @@ public class CustomDropsHandler {
         }
 
         if (newItem.getType().equals(Material.PLAYER_HEAD))
-            newItem = main.mobHeadManager.getMobHeadFromPlayerHead(newItem, info.lmEntity.getLivingEntity());
+            newItem = main.mobHeadManager.getMobHeadFromPlayerHead(newItem, info.lmEntity, dropItem);
 
         info.newDrops.add(newItem);
     }

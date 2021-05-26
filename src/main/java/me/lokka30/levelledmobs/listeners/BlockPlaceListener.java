@@ -13,6 +13,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 import java.util.List;
@@ -40,14 +41,14 @@ public class BlockPlaceListener implements Listener {
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
-    public void onBlockPlaceEvent(final BlockPlaceEvent event) {
+    public void onBlockPlaceEvent(@NotNull final BlockPlaceEvent event) {
         if (!event.getBlockPlaced().getType().equals(Material.SPAWNER)) return;
         if (!event.getItemInHand().getType().equals(Material.SPAWNER)) return;
 
         processMobSpawner(event.getItemInHand(), event.getBlockPlaced());
     }
 
-    private void processMobSpawner(final ItemStack invItem, final Block blockPlaced){
+    private void processMobSpawner(@NotNull final ItemStack invItem, final Block blockPlaced){
 
         final ItemMeta meta = invItem.getItemMeta();
         if (meta == null) return;

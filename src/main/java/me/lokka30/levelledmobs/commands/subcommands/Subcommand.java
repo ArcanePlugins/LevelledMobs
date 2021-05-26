@@ -12,7 +12,7 @@ import java.util.List;
  */
 public interface Subcommand {
 
-    void parseSubcommand(LevelledMobs main, CommandSender sender, String label, String[] args);
+    void parseSubcommand(final LevelledMobs main, final CommandSender sender, final String label, final String[] args);
 
-    List<String> parseTabCompletions(LevelledMobs main, CommandSender sender, String[] args);
+    List<String> parseTabCompletions(final LevelledMobs main, final CommandSender sender, final String[] args);
 }

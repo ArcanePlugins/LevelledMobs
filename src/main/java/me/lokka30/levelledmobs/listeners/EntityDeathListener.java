@@ -8,6 +8,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
@@ -28,7 +29,7 @@ public class EntityDeathListener implements Listener {
     final HashSet<String> bypassDrops = new HashSet<>(Arrays.asList("ARMOR_STAND", "ITEM_FRAME", "DROPPED_ITEM", "PAINTING"));
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.NORMAL)
-    public void onDeath(final EntityDeathEvent event) {
+    public void onDeath(@NotNull final EntityDeathEvent event) {
         if (bypassDrops.contains(event.getEntityType().toString()))
             return;
 

@@ -25,12 +25,12 @@ public class VersionInfo implements Comparable<VersionInfo> {
     final List<Integer> thisVerSplit;
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (o == null) return false;
         if (o == this) return true;
         if (!(o instanceof VersionInfo)) return false;
 
-        VersionInfo otherVersion = (VersionInfo) o;
+        final VersionInfo otherVersion = (VersionInfo) o;
         return this.versionStr.equals(((VersionInfo) o).getVersion());
     }
 
@@ -44,11 +44,11 @@ public class VersionInfo implements Comparable<VersionInfo> {
     }
 
     @Override
-    public int compareTo(VersionInfo v)
+    public int compareTo(final VersionInfo v)
     {
         for (int i = 0; i < 4; i++){
-            int compareInt = v.thisVerSplit.get(i);
-            int thisInt = this.thisVerSplit.get(i);
+            final int compareInt = v.thisVerSplit.get(i);
+            final int thisInt = this.thisVerSplit.get(i);
 
             if (thisInt > compareInt)
                 return 1;

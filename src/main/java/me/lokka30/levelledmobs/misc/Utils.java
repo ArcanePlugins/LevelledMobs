@@ -55,6 +55,7 @@ public final class Utils {
      * @return modified message
      * @author stumper66
      */
+    @NotNull
     public static String replaceEx(@NotNull final String message, @NotNull final String replaceWhat, @NotNull final String replaceTo) {
         int count, position0, position1;
         count = position0 = 0;
@@ -175,7 +176,8 @@ public final class Utils {
      * @param str string to capitalize
      * @return a string with each word capitalized
      */
-    public static String capitalize(final String str) {
+    @NotNull
+    public static String capitalize(@NotNull final String str) {
         final StringBuilder builder = new StringBuilder();
         final String[] words = str.toLowerCase(Locale.ROOT).split(" "); // each word separated from str
         for (int i = 0; i < words.length; i++) {
@@ -198,7 +200,7 @@ public final class Utils {
         return isLivingEntityInModalList(list, lmEntity, false);
     }
 
-    public static boolean isLivingEntityInModalList(final CachedModalList<String> list, final LivingEntityWrapper lmEntity, final boolean checkBabyMobs) {
+    public static boolean isLivingEntityInModalList(@NotNull final CachedModalList<String> list, final LivingEntityWrapper lmEntity, final boolean checkBabyMobs) {
         switch (list.listMode) {
             case WHITELIST:
                 final String checkName = checkBabyMobs ?

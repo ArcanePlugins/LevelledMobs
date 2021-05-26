@@ -7,6 +7,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * TODO Describe...
@@ -23,7 +24,7 @@ public class EntityRegainHealthListener implements Listener {
 
     // When the mob regains health, try to update their nametag.
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
-    public void onEntityRegainHealth(final EntityRegainHealthEvent event) {
+    public void onEntityRegainHealth(@NotNull final EntityRegainHealthEvent event) {
         if (!(event.getEntity() instanceof LivingEntity)) return;
 
         final LivingEntityWrapper lmEntity = new LivingEntityWrapper((LivingEntity) event.getEntity(), main);
