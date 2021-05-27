@@ -69,9 +69,6 @@ public class MobHeadManager {
         String textureCode;
         UUID id;
         MobDataInfo mobData = null;
-        String displayName = dropItem.customName == null ?
-                lmEntity.getTypeName() : dropItem.customName;
-
 
         if (dropItem.customPlayerHeadId == null) {
             final Material vanillaMaterial = checkForVanillaHeads(lmEntity.getLivingEntity());
@@ -108,8 +105,6 @@ public class MobHeadManager {
             if (mobData == null) return playerHead;
 
             textureCode = mobData.textureCode;
-            if (dropItem.customName == null)
-                displayName = mobData.displayName;
 
             try {
                 id = UUID.fromString(mobData.id);
@@ -140,14 +135,32 @@ public class MobHeadManager {
             Utils.logger.warning("Unable to set meta data in profile class for mob " + lmEntity.getTypeName());
         }
 
-        if (!Utils.isNullOrEmpty(lmEntity.getLivingEntity().getCustomName())) {
-            String name = main.messagesCfg.getString("other.mob-head-drop-name", "%mob_name%'s head");
-            name = Utils.replaceEx(name, "%mob_name%", lmEntity.getLivingEntity().getCustomName());
-            displayName = name;
-        }
+        String useName;
 
-        if (!Utils.isNullOrEmpty(displayName))
-            meta.setDisplayName(MessageUtils.colorizeAll(displayName));
+        if (!Utils.isNullOrEmpty(dropItem.customName)) {
+            String killerName = "";
+            final Player killerPlayer = lmEntity.getLivingEntity().getKiller();
+            if (killerPlayer != null)
+                killerName = killerPlayer.getDisplayName();
+            final String overridenName = main.rulesManager.getRule_EntityOverriddenName(lmEntity);
+            final String mobName = overridenName == null ?
+                    Utils.capitalize(lmEntity.getTypeName().replace("_", " ")) :
+                    overridenName;
+            useName = main.levelManager.replaceStringPlaceholders(dropItem.customName, lmEntity, mobName);
+
+            useName = MessageUtils.colorizeAll(useName);
+
+            String displayName = lmEntity.getLivingEntity().getCustomName() == null ?
+                    useName : lmEntity.getLivingEntity().getCustomName();
+
+            useName = useName.replace("%displayname%", displayName);
+            useName = useName.replace("%playername%", killerName);
+
+        }
+        else
+            useName = "Mob Head";
+
+        meta.setDisplayName(useName);
         playerHead.setItemMeta(meta);
 
         return playerHead;

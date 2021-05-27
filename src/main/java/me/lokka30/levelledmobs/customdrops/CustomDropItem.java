@@ -24,12 +24,8 @@ public class CustomDropItem extends CustomDropBase {
     public String mobHeadTexture;
     public List<String> lore;
     public List<ItemFlag> itemFlags;
-    private boolean hasAmountRange;
     private boolean hasDamageRange;
     private int damage;
-    private int amount;
-    private int amountRangeMin;
-    private int amountRangeMax;
     private int damageRangeMin;
     private int damageRangeMax;
     public UUID customPlayerHeadId;
@@ -37,7 +33,7 @@ public class CustomDropItem extends CustomDropBase {
     private ItemStack itemStack;
 
     public CustomDropItem(@NotNull final CustomDropsDefaults defaults) {
-        this.amount = defaults.amount;
+        super(defaults);
         if (!Utils.isNullOrEmpty(defaults.damage)) this.setDamageRangeFromString(defaults.damage);
         this.customModelDataId = defaults.customModelData;
         this.chance = defaults.chance;
@@ -65,28 +61,6 @@ public class CustomDropItem extends CustomDropBase {
         return (String) declaredField.get(aClass);
     }
 
-    public boolean setAmountRangeFromString(final String numberOrNumberRange){
-        if (numberOrNumberRange == null || numberOrNumberRange.isEmpty()) return false;
-
-        if (!numberOrNumberRange.contains("-")){
-            if (!Utils.isInteger(numberOrNumberRange)) return false;
-
-            this.amount = Integer.parseInt(numberOrNumberRange);
-            this.hasAmountRange = false;
-            return true;
-        }
-
-        final String[] nums = numberOrNumberRange.split("-");
-        if (nums.length != 2) return false;
-
-        if (!Utils.isInteger(nums[0].trim()) || !Utils.isInteger(nums[1].trim())) return false;
-        this.amountRangeMin = Integer.parseInt(nums[0].trim());
-        this.amountRangeMax = Integer.parseInt(nums[1].trim());
-        this.hasAmountRange = true;
-
-        return true;
-    }
-
     public boolean setDamageRangeFromString(final String numberOrNumberRange){
         if (numberOrNumberRange == null || numberOrNumberRange.isEmpty()) return false;
 
@@ -111,33 +85,11 @@ public class CustomDropItem extends CustomDropBase {
         return true;
     }
 
-    public int getAmount(){
-        return this.amount;
-    }
-
     public int getDamage() { return this.damage; }
-
-    public void setAmount(int amount){
-        this.amount = amount;
-        if (this.amount > 64) this.amount = 64;
-        if (this.amount < 1) this.amount = 1;
-    }
 
     public void setDamage(int damage){
         this.damage = damage;
         this.hasDamageRange = false;
-    }
-
-    public int getAmountRangeMin(){
-        return this.amountRangeMin;
-    }
-
-    public int getAmountRangeMax(){
-        return this.amountRangeMax;
-    }
-
-    public boolean getHasAmountRange(){
-        return this.hasAmountRange;
     }
 
     public int getDamageRangeMin(){
@@ -155,13 +107,6 @@ public class CustomDropItem extends CustomDropBase {
     public void setMaterial(final Material material){
         this.material = material;
         this.itemStack = new ItemStack(this.material, 1);
-    }
-
-    public String getAmountAsString(){
-        if (this.hasAmountRange)
-            return String.format("%s-%s", this.amountRangeMin, this.amountRangeMax);
-        else
-            return String.valueOf(this.amount);
     }
 
     public String getDamageAsString(){

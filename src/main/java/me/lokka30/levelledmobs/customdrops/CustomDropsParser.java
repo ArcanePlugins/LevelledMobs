@@ -262,7 +262,7 @@ public class CustomDropsParser {
 
                 CustomDropBase dropBase;
                 if ("customCommand".equalsIgnoreCase(materialName))
-                    dropBase = new CustomCommand();
+                    dropBase = new CustomCommand(defaults);
                 else {
                     final CustomDropItem item = new CustomDropItem(this.defaults);
                     if (!addMaterialToDrop(materialName, dropInstance, item)) continue;
@@ -286,10 +286,16 @@ public class CustomDropsParser {
             dropInstance.utilizesGroupIds = true;
         }
 
+        if (!Utils.isNullOrEmpty(cs.getString("amount"))) {
+            if (!dropBase.setAmountRangeFromString(cs.getString("amount")))
+                Utils.logger.warning(String.format("Invalid number or number range for amount on %s, %s", dropInstance.getMobOrGroupName(), cs.getString("amount")));
+        }
+
         if (dropBase instanceof CustomCommand) {
             CustomCommand customCommand = (CustomCommand) dropBase;
             customCommand.command = cs.getString("command");
             customCommand.commandName = cs.getString("name");
+            customCommand.ranged = cs.getString("ranged");
 
             if (Utils.isNullOrEmpty(customCommand.command))
                 Utils.logger.warning("no command was specified for custom command");
@@ -299,11 +305,6 @@ public class CustomDropsParser {
         }
 
         final CustomDropItem item = (CustomDropItem) dropBase;
-
-        if (!Utils.isNullOrEmpty(cs.getString("amount"))) {
-            if (!item.setAmountRangeFromString(cs.getString("amount")))
-                Utils.logger.warning(String.format("Invalid number or number range for amount on %s, %s", dropInstance.getMobOrGroupName(), cs.getString("amount")));
-        }
 
         checkEquippedChance(item, cs);
         parseItemFlags(item, cs.getString("itemflags"), dropInstance);

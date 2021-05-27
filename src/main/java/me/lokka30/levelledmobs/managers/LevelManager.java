@@ -289,19 +289,14 @@ public class LevelManager {
     public String replaceStringPlaceholders(final String nametag, @NotNull final LivingEntityWrapper lmEntity, final String displayName){
         String result = nametag;
 
-        //final AttributeInstance maxHealth = lmEntity.getLivingEntity().getAttribute(Attribute.GENERIC_MAX_HEALTH);
         final double maxHealth = getMobAttributeValue(lmEntity, Attribute.GENERIC_MAX_HEALTH);
         final double entityHealth = getMobHealth(lmEntity);
         final String roundedMaxHealth = Utils.round(maxHealth) + "";
         final String roundedMaxHealthInt = (int) Utils.round(maxHealth) + "";
-        //String entityName = Utils.capitalize(lmEntity.getTypeName().replaceAll("_", " "));
 
-
-        // %tiered% placeholder
         String tieredPlaceholder = main.rulesManager.getRule_TieredPlaceholder(lmEntity);
         if (tieredPlaceholder == null) tieredPlaceholder = "";
 
-        // %location% placeholder
         final String locationStr = String.format("%s %s %s",
                         lmEntity.getLivingEntity().getLocation().getBlockX(),
                         lmEntity.getLivingEntity().getLocation().getBlockY(),
@@ -309,7 +304,7 @@ public class LevelManager {
 
         // replace them placeholders ;)
         result = result.replace("%mob-lvl%", lmEntity.getMobLevel() + "");
-        result = result.replace("%entity-name%", displayName);
+        result = result.replace("%entity-name%", Utils.capitalize(lmEntity.getNameIfBaby().replace("_", " ")));
         result = result.replace("%entity-health%", Utils.round(entityHealth) + "");
         result = result.replace("%entity-health-rounded%", (int) Utils.round(entityHealth) + "");
         result = result.replace("%entity-max-health%", roundedMaxHealth);
@@ -533,7 +528,7 @@ public class LevelManager {
             } else if (EnchantmentTarget.ARMOR_TORSO.includes(material)) {
                 equipment.setChestplate(itemStack, true);
                 equipment.setChestplateDropChance(0);
-            } else if (EnchantmentTarget.ARMOR_HEAD.includes(material) || material == Material.PLAYER_HEAD && !hadPlayerHead) {
+            } else if (EnchantmentTarget.ARMOR_HEAD.includes(material) || material.name().endsWith("_HEAD") && !hadPlayerHead) {
                 equipment.setHelmet(itemStack, true);
                 equipment.setHelmetDropChance(0);
                 if (material == Material.PLAYER_HEAD) hadPlayerHead = true;

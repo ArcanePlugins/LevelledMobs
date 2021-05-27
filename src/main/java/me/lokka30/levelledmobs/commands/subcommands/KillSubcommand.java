@@ -6,6 +6,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.*;
+import org.bukkit.metadata.FixedMetadataValue;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -136,6 +137,8 @@ public class KillSubcommand implements Subcommand {
                                         if (skipKillingEntity(main, livingEntity)) {
                                             skipped++;
                                         } else {
+                                            livingEntity.setMetadata("noCommands", new FixedMetadataValue(main, 1));
+
                                             if (useNoDrops)
                                                 livingEntity.remove();
                                             else

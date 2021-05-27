@@ -9,6 +9,7 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.*;
 import org.bukkit.event.entity.CreatureSpawnEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
@@ -26,6 +27,7 @@ public class LivingEntityWrapper implements LivingEntityInterface {
         this.applicableRules = new LinkedList<>();
         this.mobExternalType = ExternalCompatibilityManager.ExternalCompatibility.NOT_APPLICABLE;
         this.spawnReason = CreatureSpawnEvent.SpawnReason.DEFAULT;
+        this.deathCause = EntityDamageEvent.DamageCause.CUSTOM;
     }
 
     private final LevelledMobs main;
@@ -41,6 +43,7 @@ public class LivingEntityWrapper implements LivingEntityInterface {
     private ExternalCompatibilityManager.ExternalCompatibility mobExternalType;
     private FineTuningAttributes fineTuningAttributes;
     private CreatureSpawnEvent.SpawnReason spawnReason;
+    public EntityDamageEvent.DamageCause deathCause;
     public final Object pdcSyncObject = new Object();
 
     @NotNull

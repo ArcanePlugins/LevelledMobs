@@ -253,6 +253,9 @@ public class CustomDropsHandler {
     }
 
     private void getDropsFromCustomDropItem(@NotNull final CustomDropProcessingInfo info, final CustomDropBase dropBase){
+        if (dropBase instanceof CustomCommand && info.lmEntity.getLivingEntity().hasMetadata("noCommands") ||
+            info.lmEntity.deathCause.equals(EntityDamageEvent.DamageCause.VOID))
+            return;
 
         if (info.equippedOnly && dropBase instanceof CustomCommand) return;
         if (info.equippedOnly && dropBase instanceof CustomDropItem && ((CustomDropItem) dropBase).equippedSpawnChance <= 0.0) return;
@@ -410,9 +413,41 @@ public class CustomDropsHandler {
             "";
 
         command = Utils.replaceEx(command, "%player%", playerName);
+        command = command.replace("%displayname%", displayName);
+        command = command.replace("%ranged%", processRangedCommand(command, customCommand.ranged));
 
-        Utils.debugLog(main, DebugType.CUSTOM_COMMANDS, "Command: " + command);
-        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
+        final int maxAllowedTimesToRun = main.settingsCfg.getInt("", 10);
+        int timesToRun = customCommand.getAmount();
+
+        if (customCommand.getHasAmountRange())
+            timesToRun = main.random.nextInt(customCommand.getAmountRangeMax() - customCommand.amountRangeMin + 1) + customCommand.amountRangeMin;
+
+        if (timesToRun > maxAllowedTimesToRun)
+            timesToRun = maxAllowedTimesToRun;
+
+        final String debugCommand = timesToRun > 1 ?
+                String.format("Command (%sx): ", timesToRun) : "Command: ";
+
+        Utils.debugLog(main, DebugType.CUSTOM_COMMANDS, debugCommand + command);
+
+        for (int i = 0; i < timesToRun; i++)
+            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
+    }
+
+    @NotNull
+    private String processRangedCommand(@NotNull final String command, final String ranged){
+        if (Utils.isNullOrEmpty(ranged)) return "";
+        if (!ranged.contains("-")) return ranged;
+
+        final String[] nums = ranged.split("-");
+        if (nums.length != 2) return command;
+
+        if (!Utils.isInteger(nums[0].trim()) || !Utils.isInteger(nums[1].trim())) return command;
+        int min = Integer.parseInt(nums[0].trim());
+        final int max = Integer.parseInt(nums[1].trim());
+        if (max < min) min = max;
+
+        return "" + (main.random.nextInt(max - min + 1) + min);
     }
 
     private ItemStack getCookedVariantOfMeat(@NotNull final ItemStack itemStack){

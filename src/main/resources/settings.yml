@@ -135,6 +135,7 @@ kill-skip-conditions:
   convertingZombieVillager: true
 ensure-mobs-are-levelled-on-chunk-load: true
 
+customcommand-amount-limit: 10
 
 # |||---------------------------------------------------------------------------------|
 # ||  ADVANCED USERS ONLY

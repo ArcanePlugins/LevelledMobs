@@ -65,8 +65,8 @@ public class RuleInfo {
     public CachedModalList<String> conditions_WGRegions;
     public CachedModalList<CreatureSpawnEvent.SpawnReason> conditions_SpawnReasons;
     @Nullable
-    public FineTuningAttributes defaultFineTuning;
-    public Map<String, FineTuningAttributes> fineTuning;
+    public FineTuningAttributes allMobMultipliers;
+    public Map<String, FineTuningAttributes> specificMobMultipliers;
 
     public String getRuleName(){
         return this.ruleName;

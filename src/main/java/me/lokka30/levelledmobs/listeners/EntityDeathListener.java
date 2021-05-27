@@ -3,9 +3,11 @@ package me.lokka30.levelledmobs.listeners;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.customdrops.CustomDropResult;
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
+import me.lokka30.levelledmobs.misc.Utils;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
@@ -34,6 +36,9 @@ public class EntityDeathListener implements Listener {
             return;
 
         final LivingEntityWrapper lmEntity = new LivingEntityWrapper(event.getEntity(), main);
+        final EntityDamageEvent damage = lmEntity.getLivingEntity().getLastDamageCause();
+        if (damage != null)
+            lmEntity.deathCause = damage.getCause();
 
         if (lmEntity.isLevelled()) {
 

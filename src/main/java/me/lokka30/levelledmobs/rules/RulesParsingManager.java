@@ -462,7 +462,7 @@ public class RulesParsingManager {
     private void parseFineTuning(final ConfigurationSection cs){
         if (cs == null) return;
 
-        parsingInfo.defaultFineTuning = parseFineTuningValues(cs);
+        parsingInfo.allMobMultipliers = parseFineTuningValues(cs);
 
         final ConfigurationSection cs_Custom = objectToConfigurationSection(cs.get("custom-mob-level"));
         if (cs_Custom == null) return;
@@ -490,7 +490,7 @@ public class RulesParsingManager {
             fineTuning.put(mobName, attribs);
         }
 
-        if (!fineTuning.isEmpty()) parsingInfo.fineTuning = fineTuning;
+        if (!fineTuning.isEmpty()) parsingInfo.specificMobMultipliers = fineTuning;
     }
 
     @Nullable

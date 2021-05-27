@@ -550,7 +550,7 @@ presets:
   16: #Manage the nametag details.
     name: 'APPLY - Nametag Settings'
     apply-settings:
-      nametag: '&8[%tiered%Level %mob-lvl%&8 | &f%entity-name%&8 | &c%entity-health-rounded%&8/&c%entity-max-health-rounded%&8]'
+      nametag: '&8[%tiered%Level %mob-lvl%&8 | &f%displayname%&8 | &c%entity-health-rounded%&8/&c%entity-max-health-rounded%&8]'
       creature-death-nametag: '&8[%tiered%Level %mob-lvl%&8 | &f%entity-name%&8]'
       creature-nametag-always-visible: false
     

@@ -116,33 +116,34 @@ public class RulesManager {
         }
     }
 
+    @Nullable
     public FineTuningAttributes getFineTuningAttributes(@NotNull final LivingEntityWrapper lmEntity){
-        FineTuningAttributes defaultAttribs = null;
-        FineTuningAttributes mobAttribs = null;
+        FineTuningAttributes allMobAttribs = null;
+        FineTuningAttributes thisMobAttribs = null;
 
         for (final RuleInfo ruleInfo : lmEntity.getApplicableRules()){
-            if (ruleInfo.defaultFineTuning != null) {
-                if (defaultAttribs == null)
-                    defaultAttribs = ruleInfo.defaultFineTuning.cloneItem();
+            if (ruleInfo.allMobMultipliers != null) {
+                if (allMobAttribs == null)
+                    allMobAttribs = ruleInfo.allMobMultipliers.cloneItem();
                 else
-                    defaultAttribs.mergeAttributes(ruleInfo.defaultFineTuning);
+                    allMobAttribs.mergeAttributes(ruleInfo.allMobMultipliers);
             }
 
-            if (ruleInfo.fineTuning != null && ruleInfo.fineTuning.containsKey(lmEntity.getNameIfBaby())){
-                final FineTuningAttributes tempAttribs = ruleInfo.fineTuning.get(lmEntity.getNameIfBaby());
-                if (mobAttribs == null)
-                    mobAttribs = tempAttribs.cloneItem();
+            if (ruleInfo.specificMobMultipliers != null && ruleInfo.specificMobMultipliers.containsKey(lmEntity.getNameIfBaby())){
+                final FineTuningAttributes tempAttribs = ruleInfo.specificMobMultipliers.get(lmEntity.getNameIfBaby());
+                if (thisMobAttribs == null)
+                    thisMobAttribs = tempAttribs.cloneItem();
                 else
-                    mobAttribs.mergeAttributes(tempAttribs);
+                    thisMobAttribs.mergeAttributes(tempAttribs);
             }
         }
 
-        if (defaultAttribs != null) {
-            defaultAttribs.mergeAttributes(mobAttribs);
-            return defaultAttribs;
+        if (allMobAttribs != null) {
+            allMobAttribs.mergeAttributes(thisMobAttribs);
+            return allMobAttribs;
         }
         else
-            return mobAttribs;
+            return thisMobAttribs;
     }
 
     public int getRule_CreeperMaxBlastRadius(@NotNull final LivingEntityWrapper lmEntity){
