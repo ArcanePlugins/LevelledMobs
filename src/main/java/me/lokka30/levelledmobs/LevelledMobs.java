@@ -14,7 +14,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.Random;
+import java.util.*;
 
 /**
  * This is the main class of the plugin. Bukkit will call onLoad and onEnable on startup, and onDisable on shutdown.
@@ -49,6 +49,7 @@ public class LevelledMobs extends JavaPlugin {
     public final ConfigUtils configUtils = new ConfigUtils(this);
 
     // Misc
+    public Map<String, Set<String>> customMobGroups;
     public EntityDamageDebugListener entityDamageDebugListener;
     public int incompatibilitiesAmount;
     private long loadTime;
@@ -68,6 +69,7 @@ public class LevelledMobs extends JavaPlugin {
         final QuickTimer timer = new QuickTimer();
 
         this.random = new Random();
+        this.customMobGroups = new TreeMap<>();
         this.levelInterface = new LevelInterface(this);
         companion.checkCompatibility();
         if (!companion.loadFiles()) {

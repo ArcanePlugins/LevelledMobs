@@ -31,7 +31,7 @@ public class CustomDropsHandler {
     private final LevelledMobs main;
 
     public final TreeMap<EntityType, CustomDropInstance> customDropsitems;
-    public final TreeMap<CustomUniversalGroups, CustomDropInstance> customDropsitems_groups;
+    public final TreeMap<String, CustomDropInstance> customDropsitems_groups;
     public final TreeMap<String, CustomDropInstance> customDropIDs;
     @Nullable
     public Map<String, CustomDropInstance> customItemGroups;
@@ -53,7 +53,7 @@ public class CustomDropsHandler {
         processingInfo.equippedOnly = equippedOnly;
         processingInfo.newDrops = drops;
         processingInfo.dropRules = main.rulesManager.getRule_UseCustomDropsForMob(lmEntity);
-        synchronized (lmEntity.pdcSyncObject) {
+        synchronized (lmEntity.getLivingEntity().getPersistentDataContainer()) {
             processingInfo.isSpawner = (lmEntity.getPDC().has(main.levelManager.spawnReasonKey, PersistentDataType.STRING) &&
                     CreatureSpawnEvent.SpawnReason.SPAWNER.toString().equals(
                             lmEntity.getPDC().get(main.levelManager.spawnReasonKey, PersistentDataType.STRING))
@@ -78,16 +78,15 @@ public class CustomDropsHandler {
         }
 
         if (!equippedOnly && main.settingsCfg.getStringList("debug-misc").contains("CUSTOM_DROPS")) {
-            List<String> applicableGroupsNames = new LinkedList<>();
-            lmEntity.getApplicableGroups().forEach(applicableGroup -> applicableGroupsNames.add(applicableGroup.toString()));
+            //List<String> applicableGroupsNames = new LinkedList<>(lmEntity.getApplicableGroups());
 
             String mobLevel = lmEntity.getMobLevel() > 0 ? " (level " + lmEntity.getMobLevel() + ")" : "";
             Utils.logger.info("&7Custom drops for " + lmEntity.getLivingEntity().getName() + mobLevel);
-            Utils.logger.info("&8- &7Groups: &b" + String.join("&7, &b", applicableGroupsNames) + "&7.");
+            Utils.logger.info("&8- &7Groups: &b" + String.join("&7, &b", lmEntity.getApplicableGroups()) + "&7.");
         }
 
-        final List<CustomUniversalGroups> groupsList = new LinkedList<>();
-        for (final CustomUniversalGroups group : lmEntity.getApplicableGroups()){
+        final List<String> groupsList = new LinkedList<>();
+        for (final String group : lmEntity.getApplicableGroups()){
             if (!customDropsitems_groups.containsKey(group)) continue;
 
             groupsList.add(group);
@@ -127,7 +126,7 @@ public class CustomDropsHandler {
                 CustomDropResult.HAS_OVERRIDE : CustomDropResult.NO_OVERRIDE;
     }
 
-    private boolean buildDropsListFromGroupsAndEntity(final List<CustomUniversalGroups> groups, final EntityType entityType, @NotNull final CustomDropProcessingInfo processingInfo){
+    private boolean buildDropsListFromGroupsAndEntity(final List<String> groups, final EntityType entityType, @NotNull final CustomDropProcessingInfo processingInfo){
         processingInfo.prioritizedDrops = new HashMap<>();
         processingInfo.hasOverride = false;
         boolean usesGroupIds = false;
@@ -153,7 +152,7 @@ public class CustomDropsHandler {
         }
 
         if (!overrideNonDropTableDrops) {
-            for (CustomUniversalGroups group : groups) {
+            for (String group : groups) {
                 final CustomDropInstance dropInstance = customDropsitems_groups.get(group);
                 processingInfo.allDropInstances.add(dropInstance);
 
@@ -230,7 +229,7 @@ public class CustomDropsHandler {
             // not sure why someone would put a 0 percent chance, but maybe
             if (dropInstance.overallChance <= 0.0) return false;
 
-            synchronized (info.lmEntity.pdcSyncObject) {
+            synchronized (info.lmEntity.getLivingEntity().getPersistentDataContainer()) {
                 if (info.lmEntity.getPDC().has(this.overallChanceKey, PersistentDataType.INTEGER)) {
                     final int value = Objects.requireNonNull(info.lmEntity.getPDC().get(this.overallChanceKey, PersistentDataType.INTEGER));
                     return value == 1;
@@ -241,7 +240,7 @@ public class CustomDropsHandler {
             final double chanceRole = (double) ThreadLocalRandom.current().nextInt(0, 100001) * 0.00001;
             final boolean madeChance = 1.0 - chanceRole < dropInstance.overallChance;
             if (info.equippedOnly) {
-                synchronized (info.lmEntity.pdcSyncObject) {
+                synchronized (info.lmEntity.getLivingEntity().getPersistentDataContainer()) {
                     info.lmEntity.getPDC().set(this.overallChanceKey, PersistentDataType.INTEGER, madeChance ? 1 : 0);
                 }
             }
@@ -414,7 +413,7 @@ public class CustomDropsHandler {
 
         command = Utils.replaceEx(command, "%player%", playerName);
         command = command.replace("%displayname%", displayName);
-        command = command.replace("%ranged%", processRangedCommand(command, customCommand.ranged));
+        command = processRangedCommand(command, customCommand);
 
         final int maxAllowedTimesToRun = main.settingsCfg.getInt("", 10);
         int timesToRun = customCommand.getAmount();
@@ -435,19 +434,29 @@ public class CustomDropsHandler {
     }
 
     @NotNull
-    private String processRangedCommand(@NotNull final String command, final String ranged){
-        if (Utils.isNullOrEmpty(ranged)) return "";
-        if (!ranged.contains("-")) return ranged;
+    private String processRangedCommand(@NotNull String command, final CustomCommand cc){
+        if (cc.rangedEntries.isEmpty()) return command;
 
-        final String[] nums = ranged.split("-");
-        if (nums.length != 2) return command;
+        for (final String rangedKey : cc.rangedEntries.keySet()) {
+            final String rangedValue = cc.rangedEntries.get(rangedKey);
+            if (!rangedValue.contains("-")) {
+                command = command.replace("%" + rangedKey + "%", rangedValue);
+                continue;
+            }
 
-        if (!Utils.isInteger(nums[0].trim()) || !Utils.isInteger(nums[1].trim())) return command;
-        int min = Integer.parseInt(nums[0].trim());
-        final int max = Integer.parseInt(nums[1].trim());
-        if (max < min) min = max;
+            final String[] nums = rangedValue.split("-");
+            if (nums.length != 2) continue;
 
-        return "" + (main.random.nextInt(max - min + 1) + min);
+            if (!Utils.isInteger(nums[0].trim()) || !Utils.isInteger(nums[1].trim())) continue;
+            int min = Integer.parseInt(nums[0].trim());
+            final int max = Integer.parseInt(nums[1].trim());
+            if (max < min) min = max;
+
+            final int rangedNum = main.random.nextInt(max - min + 1) + min;
+            command = command.replace("%" + rangedKey + "%", rangedNum + "");
+        }
+
+        return command;
     }
 
     private ItemStack getCookedVariantOfMeat(@NotNull final ItemStack itemStack){

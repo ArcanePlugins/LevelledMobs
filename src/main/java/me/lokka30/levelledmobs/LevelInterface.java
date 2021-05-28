@@ -206,7 +206,7 @@ public class LevelInterface {
         }
 
         boolean hasNoLevelKey;
-        synchronized (lmEntity.pdcSyncObject) {
+        synchronized (lmEntity.getLivingEntity().getPersistentDataContainer()) {
             hasNoLevelKey = lmEntity.getPDC().has(main.levelManager.noLevelKey, PersistentDataType.STRING);
         }
 
@@ -215,7 +215,7 @@ public class LevelInterface {
             return;
         }
 
-        synchronized (lmEntity.pdcSyncObject) {
+        synchronized (lmEntity.getLivingEntity().getPersistentDataContainer()) {
             lmEntity.getPDC().set(main.levelManager.levelKey, PersistentDataType.INTEGER, level);
         }
         lmEntity.invalidateCache();
@@ -224,15 +224,14 @@ public class LevelInterface {
         final BukkitRunnable applyAttribs = new BukkitRunnable() {
             @Override
             public void run() {
-                synchronized (main.attributeSyncObject) {
-                    main.levelManager.applyLevelledAttributes(lmEntity, Addition.ATTRIBUTE_ATTACK_DAMAGE);
-                    main.levelManager.applyLevelledAttributes(lmEntity, Addition.ATTRIBUTE_MAX_HEALTH);
-                    main.levelManager.applyLevelledAttributes(lmEntity, Addition.ATTRIBUTE_MOVEMENT_SPEED);
-                }
+            synchronized (main.attributeSyncObject) {
+                main.levelManager.applyLevelledAttributes(lmEntity, Addition.ATTRIBUTE_ATTACK_DAMAGE);
+                main.levelManager.applyLevelledAttributes(lmEntity, Addition.ATTRIBUTE_MAX_HEALTH);
+                main.levelManager.applyLevelledAttributes(lmEntity, Addition.ATTRIBUTE_MOVEMENT_SPEED);
+            }
 
-                if (lmEntity.getLivingEntity() instanceof Creeper) {
-                    main.levelManager.applyCreeperBlastRadius(lmEntity, level);
-                }
+            if (lmEntity.getLivingEntity() instanceof Creeper)
+                main.levelManager.applyCreeperBlastRadius(lmEntity, level);
             }
         };
         applyAttribs.runTask(main);
@@ -306,7 +305,7 @@ public class LevelInterface {
         assert lmEntity.isLevelled();
 
         // remove PDC value
-        synchronized (lmEntity.pdcSyncObject) {
+        synchronized (lmEntity.getLivingEntity().getPersistentDataContainer()) {
             if (lmEntity.getPDC().has(main.levelManager.levelKey, PersistentDataType.INTEGER))
                 lmEntity.getPDC().remove(main.levelManager.levelKey);
             if (lmEntity.getPDC().has(main.levelManager.overridenEntityNameKey, PersistentDataType.STRING))

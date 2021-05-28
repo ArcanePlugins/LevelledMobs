@@ -35,6 +35,9 @@ public class RulesParsingManager {
 
         this.rulePresets.clear();
         this.main.rulesManager.rulesInEffect.clear();
+        this.main.customMobGroups.clear();
+
+        parseCustomMobGroups(objectToConfigurationSection(config.get("mob-groups")));
 
         final List<RuleInfo> presets = parsePresets(config.get("presets"));
         for (RuleInfo ri : presets)
@@ -60,6 +63,17 @@ public class RulesParsingManager {
         results.addAll(this.customRules);
 
         return results;
+    }
+
+    private void parseCustomMobGroups(final ConfigurationSection cs){
+        if (cs == null) return;
+
+        for (final String groupName : cs.getKeys(false)){
+            final List<String> names = cs.getStringList(groupName);
+            final Set<String> groupMembers = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+            groupMembers.addAll(names);
+            main.customMobGroups.put(groupName, groupMembers);
+        }
     }
 
     @NotNull
@@ -116,18 +130,33 @@ public class RulesParsingManager {
     private CachedModalList<CreatureSpawnEvent.SpawnReason> buildCachedModalListOfSpawnReason(final ConfigurationSection cs){
         CachedModalList<CreatureSpawnEvent.SpawnReason> cachedModalList = new CachedModalList<>();
         if (cs == null) return cachedModalList;
-        if (cs.getString("mode") == null && cs.getString("list") == null) return cachedModalList;
+        if (cs.getString("allowed-list") == null &&
+            cs.getString("allowed-groups") == null &&
+            cs.getString("excluded-list") == null &&
+            cs.getString("excluded-groups") == null
+        )
+            return cachedModalList;
 
-        cachedModalList.listMode = getModalListMode(cs.getString("mode"), cs.getCurrentPath());
+        cachedModalList.doMerge = cs.getBoolean("merge");
 
-        final List<String> items = cs.getStringList("list");
-        if (items.isEmpty() && cs.getString("list") != null)
-            items.add(cs.getString("list"));
+        final List<String> allowedItems = getListFromConfigItem(cs,"allowed-list");
+        cachedModalList.allowedGroups = getSetOfGroups(cs,"allowed-groups");
+        final List<String> excludedItems = getListFromConfigItem(cs,"excluded-list");
+        cachedModalList.excludedGroups = getSetOfGroups(cs,"excluded-groups");
 
-        for (final String item : items){
+        for (final String item : allowedItems){
             try{
                 final CreatureSpawnEvent.SpawnReason reason = CreatureSpawnEvent.SpawnReason.valueOf(item.toUpperCase());
-                cachedModalList.items.add(reason);
+                cachedModalList.allowedList.add(reason);
+            }
+            catch (IllegalArgumentException e){
+                Utils.logger.warning("Invalid spawn reason: " + item);
+            }
+        }
+        for (final String item : excludedItems){
+            try{
+                final CreatureSpawnEvent.SpawnReason reason = CreatureSpawnEvent.SpawnReason.valueOf(item.toUpperCase());
+                cachedModalList.excludedList.add(reason);
             }
             catch (IllegalArgumentException e){
                 Utils.logger.warning("Invalid spawn reason: " + item);
@@ -139,51 +168,63 @@ public class RulesParsingManager {
 
     @NotNull
     private CachedModalList<String> buildCachedModalListOfString(final ConfigurationSection cs){
-        CachedModalList<String> cachedModalList = new CachedModalList<>(new TreeSet<>(String.CASE_INSENSITIVE_ORDER));
+        final CachedModalList<String> cachedModalList = new CachedModalList<>(new TreeSet<>(String.CASE_INSENSITIVE_ORDER), new TreeSet<>(String.CASE_INSENSITIVE_ORDER));
         if (cs == null) return cachedModalList;
-        if (cs.getString("mode") == null && cs.getString("list") == null) return cachedModalList;
+        if (cs.getString("allowed-list") == null &&
+            cs.getString("allowed-groups") == null &&
+            cs.getString("excluded-list") == null &&
+            cs.getString("excluded-groups") == null
+        )
+            return cachedModalList;
 
-        cachedModalList.listMode = getModalListMode(cs.getString("mode"), cs.getCurrentPath());
+        cachedModalList.doMerge = cs.getBoolean("merge");
 
-        final List<String> items = cs.getStringList("list");
-        if (items.isEmpty() && cs.getString("list") != null)
-            items.add(cs.getString("list"));
-
-        for (final String item : items){
-            if (item.toLowerCase().startsWith("all_")){
-                try{
-                    final CustomUniversalGroups group = CustomUniversalGroups.valueOf(item.toUpperCase());
-                    cachedModalList.items.add(group.toString());
-                }
-                catch (IllegalArgumentException e){
-                    Utils.logger.warning("Invalid custom group: " + item);
-                }
-            }
-            else
-                cachedModalList.items.add(item);
-        }
+        cachedModalList.allowedList.addAll(getListFromConfigItem(cs,"allowed-list"));
+        cachedModalList.allowedGroups = getSetOfGroups(cs,"allowed-groups");
+        cachedModalList.excludedList.addAll(getListFromConfigItem(cs,"excluded-list"));
+        cachedModalList.excludedGroups = getSetOfGroups(cs,"excluded-groups");
 
         return cachedModalList;
     }
 
     @NotNull
-    private ModalListMode getModalListMode(final String item, final String path){
-        if (item == null || "".equals(item)){
-            Utils.logger.warning("No list mode was specified, " + path);
-            return ModalListMode.ALL;
+    private Set<String> getSetOfGroups(@NotNull final ConfigurationSection cs, final String key){
+        final List<String> groups = cs.getStringList(key);
+        if (groups.isEmpty() && cs.getString(key) != null)
+            groups.add(cs.getString(key));
+
+        final Set<String> results = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+
+        for (final String group : groups) {
+            boolean invalidGroup = false;
+            if (group.toLowerCase().startsWith("all")) {
+                try {
+                    final CustomUniversalGroups customGroup = CustomUniversalGroups.valueOf(group.toUpperCase());
+                    results.add(group);
+                    continue;
+                } catch (IllegalArgumentException e) {
+                    invalidGroup = true;
+                }
+            }
+            if (main.customMobGroups.containsKey(group))
+                results.add(group);
+            else
+                invalidGroup = true;
+
+            if (invalidGroup)
+                Utils.logger.warning("Invalid group: " + group);
         }
 
-        switch (item.toUpperCase()) {
-            case "ALL":
-                return ModalListMode.ALL;
-            case "BLACKLIST":
-                return ModalListMode.BLACKLIST;
-            case "WHITELIST":
-                return ModalListMode.WHITELIST;
-            default:
-                Utils.logger.warning("Invalid list mode: " + item);
-                return ModalListMode.ALL;
-        }
+        return results;
+    }
+
+    @NotNull
+    private List<String> getListFromConfigItem(@NotNull final ConfigurationSection cs, final String key){
+        final List<String> result = cs.getStringList(key);
+        if (result.isEmpty() && cs.getString(key) != null)
+            result.add(cs.getString(key));
+
+        return result;
     }
 
     @NotNull
@@ -345,7 +386,7 @@ public class RulesParsingManager {
     private void parseConditions(final ConfigurationSection conditions){
         if (conditions  == null) return;
 
-        parseWorldList(objectToConfigurationSection(conditions.get("worlds")));
+        parsingInfo.conditions_Worlds = buildCachedModalListOfString(objectToConfigurationSection(conditions.get("worlds")));
         parseExternalCompat(objectToConfigurationSection(conditions.get("level-plugins")));
 
         if (conditions.getString("minLevel") != null)
@@ -522,13 +563,6 @@ public class RulesParsingManager {
 
         // if they simply specified 'random:' then we enabled random levelling
         parsingInfo.useRandomLevelling = true;
-    }
-
-    private void parseWorldList(final ConfigurationSection worlds){
-        if (worlds == null) return;
-
-        if (worlds.getString("list") != null)
-            parsingInfo.worlds = buildCachedModalListOfString(worlds);
     }
 
     @NotNull

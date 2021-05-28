@@ -249,6 +249,8 @@ public class KillSubcommand implements Subcommand {
                     continue;
                 }
 
+                livingEntity.setMetadata("noCommands", new FixedMetadataValue(main, 1));
+
                 if (useNoDrops)
                     livingEntity.remove();
                 else

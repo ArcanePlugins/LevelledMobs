@@ -2,6 +2,7 @@ package me.lokka30.levelledmobs.rules;
 
 import me.lokka30.levelledmobs.managers.ExternalCompatibilityManager;
 import me.lokka30.levelledmobs.misc.CachedModalList;
+import me.lokka30.levelledmobs.misc.Utils;
 import me.lokka30.levelledmobs.rules.strategies.LevellingStrategy;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.jetbrains.annotations.NotNull;
@@ -56,7 +57,7 @@ public class RuleInfo {
     public List<TieredColoringInfo> tieredColoringInfos;
     public List<ExternalCompatibilityManager.ExternalCompatibility> enabledExtCompats;
     public CachedModalList<String> allowedEntities;
-    public CachedModalList<String> worlds;
+    public CachedModalList<String> conditions_Worlds;
     public CachedModalList<String> conditions_Entities;
     public CachedModalList<String> conditions_Biomes;
     public CachedModalList<String> conditions_ApplyPlugins;
@@ -96,13 +97,25 @@ public class RuleInfo {
                     skipSettingValue = true;
                 }
 
+                if (f.getName().equals("allMobMultipliers")){
+                    FineTuningAttributes mergingPreset = (FineTuningAttributes) presetValue;
+                    if (this.allMobMultipliers == null)
+                        this.allMobMultipliers = mergingPreset.cloneItem();
+                    else
+                        this.allMobMultipliers.mergeAttributes(mergingPreset);
+                    skipSettingValue = true;
+                }
+
                 if (presetValue instanceof CachedModalList){
                     CachedModalList<?> cachedModalList_preset = (CachedModalList<?>) presetValue;
                     CachedModalList<?> thisCachedModalList = (CachedModalList<?>) this.getClass().getDeclaredField(f.getName()).get(this);
-                    if (thisCachedModalList != null) {
+
+                    if (thisCachedModalList != null && cachedModalList_preset.doMerge)
                         thisCachedModalList.mergeCachedModal(cachedModalList_preset);
-                        skipSettingValue = true;
-                    }
+                    else if (!cachedModalList_preset.isEmpty())
+                        this.getClass().getDeclaredField(f.getName()).set(this, cachedModalList_preset.clone());
+
+                    skipSettingValue = true;
                 }
                 if (presetValue instanceof LevellingStrategy) {
                     if (this.levellingStrategy != null && this.levellingStrategy.getClass().equals(presetValue.getClass())) {

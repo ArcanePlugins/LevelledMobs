@@ -291,6 +291,8 @@ public class LevelManager {
 
         final double maxHealth = getMobAttributeValue(lmEntity, Attribute.GENERIC_MAX_HEALTH);
         final double entityHealth = getMobHealth(lmEntity);
+        final int entityHealthRounded = entityHealth < 1.0 && entityHealth > 0.0 ?
+                1 : (int) Utils.round(entityHealth);
         final String roundedMaxHealth = Utils.round(maxHealth) + "";
         final String roundedMaxHealthInt = (int) Utils.round(maxHealth) + "";
 
@@ -306,7 +308,7 @@ public class LevelManager {
         result = result.replace("%mob-lvl%", lmEntity.getMobLevel() + "");
         result = result.replace("%entity-name%", Utils.capitalize(lmEntity.getNameIfBaby().replace("_", " ")));
         result = result.replace("%entity-health%", Utils.round(entityHealth) + "");
-        result = result.replace("%entity-health-rounded%", (int) Utils.round(entityHealth) + "");
+        result = result.replace("%entity-health-rounded%", entityHealthRounded + "");
         result = result.replace("%entity-max-health%", roundedMaxHealth);
         result = result.replace("%entity-max-health-rounded%", roundedMaxHealthInt);
         result = result.replace("%heart_symbol%", "❤");
@@ -382,7 +384,7 @@ public class LevelManager {
                             checkLevelledEntity(lmEntity, player);
                         else {
                             boolean wasBabyMob;
-                            synchronized (lmEntity.pdcSyncObject){
+                            synchronized (lmEntity.getLivingEntity().getPersistentDataContainer()){
                                 wasBabyMob = lmEntity.getPDC().has(main.levelManager.wasBabyMobKey, PersistentDataType.INTEGER);
                             }
                             if (
@@ -516,6 +518,7 @@ public class LevelManager {
 
         boolean hadMainItem = false;
         boolean hadPlayerHead = false;
+
 
         for (final ItemStack itemStack : items) {
             final Material material = itemStack.getType();

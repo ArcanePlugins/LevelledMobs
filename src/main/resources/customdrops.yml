@@ -8,369 +8,429 @@
 #                 |     |_ _ ___| |_ ___ _____|    \ ___ ___ ___ ___ 
 #                 |   --| | |_ -|  _| . |     |  |  |  _| . | . |_ -|
 #                 |_____|___|___|_| |___|_|_|_|____/|_| |___|  _|___|
-#                                                           |_|       
-# |.-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.|
-# lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\|
-#'|    `-'     `-'     `-'     `-'     `-'     `-'     `-'     `-'     `-'     `-'    | 
-# |  Main Developers:                    |  Other Contributors:                       |
-# |    lokka30 [Author / Developer]      |    Eyrian, iCodinqs, deiphiz, CoolBoy,     |
-# |    stumper66 [Developer since v2.0]  |    Esophose, 7smile7, UltimaOath, Huge5551,|
-# |                                      |    konsolas, Shevchik, limzikiki           |
-# |                                      |                                            |
-# |----------------------------------+---+--------------------------------------------|
-# |  ArcanePlugins Support Discord   |  Special Thanks:                               |
-# |    https://discord.gg/RQ8M4A5    |    ArcanePlugins Developers and Testers!       |
-# |                                  |    Donators, Patrons, and other supporters!    |
-# |                                  |    SpigotMC, PaperMC, ProtocolLib, and bStats! |
-# |                                  |                                                |
-# |.-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.|
-# lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\|
-#'|    `-'     `-'     `-'     `-'     `-'     `-'     `-'     `-'     `-'     `-'    |
-# |  Useful Resources:                                                                |
-# |    ArcanePlugins Discord                                                          |
-# |      Get fast support, questions answered, and submit suggestions!                |
-# |        https://discord.gg/RQ8M4A5                                                 |
-# |                                                                                   |
-# |    LevelledMobs GitHub                                                            |
-# |      Browse the code and wiki resources for LevelledMobs                          |
-# |        https://github.com/lokka30/LevelledMobs/                                   |
-# |                                                                                   |
-# |    YAML-Parser                                                                    |
-# |      Check your config files for any YAML errors.                                 |
-# |      Good first step before seeking support!                                      |
-# |        https://yaml-online-parser.appspot.com/                                    |
-# |                                                                                   |
-# |  Dependencies:                                                                    |
-# |    ProtocolLib:                                                                   |
-# |      A 'soft dependency'; Not *required* but highly recommended.                  |
-# |      Without this, the plugin will not show LM's nametags.                        |
-# |      https://www.spigotmc.org/resources/protocollib.1997/                         |
-# |                                                                                   |
-# |  Recommended Configuration:                                                       |
-# |    LevelledMobs is tested using the latest PaperMC and SpigotMC Server Software.  |
-# |    While other solutions may work, compatability is not guarenteed.               |
-# |                                                                                   |
-# |.-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.|
-# lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\|
-#'|    `-'     `-'     `-'     `-'     `-'     `-'     `-'     `-'     `-'     `-'    |
-# |  CustomDrops/                                                                     |
-# |       +- How To Use/                                                              |
-# |       ¦  +- Drop Attribute System [DAS]                                           |
-# |       ¦  +- Command Attribute System [CAS]                                        |
-# |       ¦  +- Drop Tables                                                           |
-# |       ¦  +- Universal Groups                                                      |
-# |       ¦                                                                           |
-# |       +- Section 01 / Default CustomDrops Settings                                |
-# |       +- Section 02 / Universal Group CustomDrops                                 |
-# |       +- Section 03 / EntityType CustomDrops                                      |
-# |       +- Section 04 / Drop Tables                                                 |
-# |       ¦                                                                           |
-# |       +- Section 05 / Advanced CustomDrops Settings                               |
-# |                                                                                   |
-# |.-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.|
-# lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\|
-#'|    `-'     `-'     `-'     `-'     `-'     `-'     `-'     `-'     `-'     `-'    |
-# |                                                                                   |
-# |||---------------------------------------------------------------------------------|
-# ||  How To Use - Drop Attributes System [DAS]
-# ||
-# ||  Each attribute listed below helps you to refine a custom-drop to apply to
-# ||  either an individual entity, universal group, or loot table. There are examples
-# ||  of how to apply these attributes below within this section. They match the
-# ||  formatting needed below.
-# ||
-# ||  NOTE: Unless 'override' is set for the drops, the EntityType will still process
-# ||  process it's vanilla Minecraft drops alongside the custom drops.
-# ||
-# ||   ---------------------------
-# ||   ||EntityType:
-# ||   ||  - MATERIAL:
-# ||   ||    minlevel: 1
-# ||   ||    maxlevel: 10
-# ||   ||    chance: 0.5
-# ||   ||    amount: 1
-# ||   ||    nomultiplier: true
-# ||   ||    nospawner: true
-# ||   ||    enchantments:
-# ||   ||      ENCHANTMENT: X
-# ||   ||    name: 'ItemName'
-# ||   ||    lore:
-# ||   ||      - 'Item'
-# ||   ||      - 'Lore'
-# ||   ||    equipped: 1.0
-# ||   ||    damage: 0
-# ||   ||    groupid: 1
-# ||   ||    maxdropgroup: 1
-# ||   ||    usedroptable: 1
-# ||   ||    custommodeldata: -1
-# ||   ||    override: false
-# ||   ---------------------------
-# ||
-# ||   EntityType:
-# ||     | Replace 'EntityType' with the name of the entity, or the universal group.
-# ||     | Reference https://tinyurl.com/SpigotMCEntityTypes for valid Entitytypes
-# ||     | List multiple entities by separating with semicolon. EX: 'ZOMBIE;HUSK:'
-# ||
-# ||   - MATERIAL:
-# ||     | Replace 'Material' with the name of the item you want to drop.
-# ||
-# ||   minlevel: / maxlevel:
-# ||     | You can specify what the minimum or maximum level an entity must be to
-# ||     | apply the particular custom-drop.
-# ||
-# ||   chance:
-# ||     | This is the chance of an item being dropped, between 0.0 -> 1.0
-# ||     | 0.0 is the same as 0%, with 1.0 being 100%. 0.5 would be 50%.
-# ||
-# ||   amount:
-# ||     | You can specify how many of the particular MATERIAL will drop, before any
-# ||     | possible item-multipliers are applied.
-# ||
-# ||   nomultiplier: / nospawner:
-# ||     | Both of these settings help limit how much and what type of entity will
-# ||     | drop the particular MATERIAL. 'nomultiplier', when set to true, will prevent
-# ||     | any item-multipliers from applying. 'nospawner', when set to true, will
-# ||     | prevent any entities spawned from a spawner cube from obtaining the custom
-# ||     | drops. This is useful to prevent farmed materials.
-# ||
-# ||   enchantments:
-# ||     ENCHANTMENT: X
-# ||     | Replace 'ENCHANTMENT' with the name of the enchantment you wish to apply
-# ||     | to the particular MATERIAL. For example: 'SHARPNESS:'
-# ||     | Replace 'X' with the strength of the enchantment you wish to apply.
-# ||     | to the listed ENCHANTMENT. For example: 'SHARPNESS: 3' would apply a level
-# ||     | three sharpness to the item. You can apply to any material, just just
-# ||     | the tools, armors, or weapons.
-# ||
-# ||   name: / lore:
-# ||     | You can provide any custom name or lore component to any particular MATERIAL.
-# ||     | With lore in particular, you can add multiple lines as demonstrated above.
-# ||     | When combined with the Command Attributes System [CAS] it is used as the
-# ||     | debug name to verify whether command has or has not been ran.
-# ||
-# ||   equipped:
-# ||     | This is the chance of an item being equipped by the entity in their hands,
-# ||     | between 0.0 or false, which is 0%, or 1.0 or true, which is 100%. You can
-# ||     | use true or false, or may specify the percent change like 0.5, which is 50%
-# ||
-# ||   damage:
-# ||     | This will pre-damage an item once it has been dropped by the entity. This
-# ||     | can be a static value, like 100, or a ranged value, like 100-300. The first
-# ||     | example will always damage 100pts, while the second will damage within able
-# ||     | range of 100 to 300pts of damage.
-# ||
-# ||   groupid: / maxdropgroup:
-# ||     | This is useful for having a group of drops process together, in order to have
-# ||     | potential sets of items to drop. This setting is useful when combined with the
-# ||     | next setting, 'maxdropgroup:', which will specify how many items within the
-# ||     | listed groupid are allowed to drop. For example, if an entity had two items
-# ||     | which could drop, with the same 'groupid:' and 'maxdropgroup:' set to 1, then
-# ||     | LM will process the items in the same groupid, and once the first item drops,
-# ||     | the other items are skipped. This is useful for establishing tiered drops.
-# ||
-# ||   usedroptable:
-# ||     | This will apply a drop-table, as built in Section 04 - Drop Tables, to an
-# ||     | EntityType or universal group. For more details, check the 'How To Use'
-# ||     | section below, or Section 04, regarding drop-tables.
-# ||
-# ||   custommodeldata:
-# ||     | ADVANCED USERS ONLY
-# ||     | This setting allows you to specify a custom model to apply to an item.
-# ||
-# ||   override:
-# ||     | This setting, when set to true, will use the custom-drops applied here and
-# ||     | will not drop the vanilla Minecraft drops for the entity. When set to false,
-# ||     | or not specified, it will process the vanilla drops alongside the custom drops.
-# ||
-# ||
-# |||---------------------------------------------------------------------------------|
-
-# |||---------------------------------------------------------------------------------|
-# ||  How To Use - Command Attributes System [CAS]
-# ||
-# ||  Each attribute listed below helps you to refine a command to run when an entity
-# ||  dies, either by a player or environmental. There are various examples of how to
-# ||  apply these attributes below in Section 06 - Demonstrations.
-# ||
-# ||  You can use these attributes within any of the sections below, including the
-# ||  universal groups, loot tables, and each individual entity. Below lists each of
-# ||  the attributes related to commands and how to use them.
-# ||
-# ||   ---------------------------
-# ||   ||EntityType:
-# ||   ||  - customCommand:
-# ||   ||    command: "/say %player% EntityKilled"
-# ||   ||    minlevel: 1
-# ||   ||    maxlevel: 10
-# ||   ||    chance: 0.5
-# ||   ||    amount: 1
-# ||   ||    name: 'ItemName'
-# ||   ||    nospawner: false
-# ||   ||    player-caused: true
-# ||   ---------------------------
-# ||
-# ||   - customCommand:
-# ||     | This is required to establish that the 'material' you wish to 'drop' is
-# ||     | infact a command. This cannot be changed to anything else.
-# ||
-# ||   command:
-# ||     | This would be the command you wish to run when the entity dies.
-# ||     | All commands are run irregardless of permission, and currently you can
-# ||     | include '%player%' to reference the player who killed entity.
-# ||     | This is a VERY powerful feature and you should ensure you are not causing
-# ||     | any potential lag due to these commands running in the background.
-# ||
-# ||   minlevel: / maxlevel:
-# ||     | You can specify what the minimum or maximum level an entity must be to
-# ||     | apply the particular command upon death.
-# ||
-# ||   chance:
-# ||     | This is the chance of the command being run, between 0.0 -> 1.0
-# ||     | 0.0 is the same as 0%, with 1.0 being 100%. 0.5 would be 50%.
-# ||
-# ||   amount:
-# ||     | You can specify how many times the command will run.
-# ||     | Multipliers do not apply to the Command Attributes System [CAS]
-# ||
-# ||   name:
-# ||     | When used alongside the Command Attributes System [CAS], the 'name:' is
-# ||     | referenced when conducting debugging, and is primarily used as a cleartext
-# ||     | to describe what the command does to make things easier to read.
-# ||
-# ||   nospawner:
-# ||     | When set to true, entities spawned from a spawner cube will not run the
-# ||     | command upon death as a naturally generated entity would.
-# ||
-# ||   player-caused:
-# ||     | When set to true, if an entity dies to environment (fall damage) or another
-# ||     | entity (mob v mob), the command will not run; requiring the death to be
-# ||     | specifically caused by the player. This, when combined with 'nospawner:',
-# ||     | this is useful to prevent mob farms from spamming commands unintentionally.
-# ||
-# |||---------------------------------------------------------------------------------|
-
-# |||---------------------------------------------------------------------------------|
-# ||  How To Use - Drop Tables
-# ||
-# ||  This system allows you to establish preset groups of items to process separate
-# ||  from other listed custom drops or commands, which can be applied to either
-# ||  EntityTypes or universal groups. This helps to reduce any clutter below by
-# ||  transforming lines upon lines of items into a single line item, using the
-# ||  'usedroptable:' line. You can reference any of the Drop or Command Attributes
-# ||  when crafting your drop table. Below shows the 'template' for crafting tables.
-# ||
-# ||
-# ||   ---------------------------
-# ||   ||drop-table:
-# ||   ||  tableName1:
-# ||   ||    attributes1:
-# ||   ||  tableName2:
-# ||   ||    attributes2:
-# ||   ---------------------------
-# ||
-# ||
-# ||   drop-table:
-# ||     | This is required to open the drop-table configuration. Do not change this line.
-# ||
-# ||   table-name:
-# ||     | This refers to the 'name' of the drop table to reference later. This can be
-# ||     | either text or numerical, but without spaces. Example: '1:', or 'NetherStuff:'
-# ||
-# ||   attributes:
-# ||     | This is a generic term for any of the attributes listed within the CAS or DAS.
-# ||     | Replace it with any of the attributes. Reference the CAS/DAS above.
-# ||
-# |||---------------------------------------------------------------------------------|
-
-# |||---------------------------------------------------------------------------------|
-# ||  How To Use - Universal Groups
-# ||
-# ||  For quicker selection of entities, we've crafted universal groups which match
-# ||  how vanilla Minecraft considers entities. Each of the groups below can have a
-# ||  further 'excludemobs:' which as name suggests allows you to exclude specific
-# ||  entities which are part of the group.
-# ||
-# ||
-# ||   ---------------------------
-# ||   ||universalGroup:
-# ||   ||  excludemobs: EntityType;EntityType
-# ||   ||  attributes:
-# ||   ---------------------------
-# ||
-# ||
-# ||   universalGroup:
-# ||     | This refers to one of the many possible universal groups, including:
-# ||     | all_levellable_mobs, all_nether_mobs, all_aquatic_mobs, etc.
-# ||     | For a complete list, check Section 02 - Universal Groups.
-# ||
-# ||   excludemobs:
-# ||     | Allows you to craft a list of entities to ignore from the universal group.
-# ||
-# ||   attributes:
-# ||     | This is a generic term for any of the attributes listed within the CAS or DAS.
-# ||     | Replace it with any of the attributes. Reference the CAS/DAS above.
-# ||
-# ||
-# ||  Types of Universal Groups
-# || 
-# ||   all_mobs
-# ||     | All entities, levelled or otherwise.
-# ||
-# ||   all_levellable_mobs
-# ||     | All levelled entities.
-# ||
-# ||   all_hostile_mobs
-# ||     | All hostile entities.
-# ||
-# ||   all_passive_mobs
-# ||     | All passive entities.
-# ||
-# ||   all_overworld_mobs
-# ||     | All levelled entities naturally spawned in Overworld.
-# ||
-# ||   all_nether_mobs
-# ||     | All levelled entities naturally spawned in Nether.
-# ||
-# ||   all_flying_mobs
-# ||     | All entities able to fly.
-# ||
-# ||   all_ground_mobs
-# ||     | All entities who cannot fly, swim (aka ground only).
-# ||
-# ||   all_aquatic_mobs
-# ||     | All underwater entities.
-# ||
-# ||
-# |||---------------------------------------------------------------------------------|
-
-
-
-# |||---------------------------------------------------------------------------------|
-# ||  Section 01 - Apply Default CustomDrops Settings
-# ||
-# ||  The prior two sections prepare you for this section and beyond. Here is where
-# ||  you would establish a baseline of custom-drops settings which would apply
-# ||  all entities and types, unless they are further customized in a section below
-# ||  these Default Settings.
-# ||
-# ||
-# ||   ---------------------------
-# ||   ||defaults: (Default Values)
-# ||   ||  chance: 0.2
-# ||   ||  amount: 1
-# ||   ||  minlevel: -1
-# ||   ||  maxlevel: -1
-# ||   ||  custommodeldata: -1
-# ||   ||  nomultiplier: false
-# ||   ||  nospawner: false
-# ||   ||  equipped: 0.0
-# ||   ||  override: false
-# ||   ||  maxdropgroup: 1
-# ||   ||  priority: 0
-# ||   ||  player-caused: true
-# ||   ---------------------------
-# ||
-# |||---------------------------------------------------------------------------------|
+#  _________________________________________________________|_|_______________________        
+# /.-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.\
+# lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\|\
+#'|    `-'     `-'     `-'     `-'     `-'     `-'     `-'     `-'     `-'     `-'    |\
+# |  Main Developers:                    |  Other Contributors:                       |\
+# |    lokka30 [Author / Developer]      |    Eyrian, iCodinqs, deiphiz, CoolBoy,     |\
+# |    stumper66 [Developer since v2.0]  |    Esophose, 7smile7, UltimaOath, Huge5551,|\
+# |                                      |    konsolas, Shevchik, limzikiki           |\
+# |                                      |                                            |\
+# |----------------------------------+---+--------------------------------------------|\
+# |  ArcanePlugins Support Discord   |  Special Thanks:                               |\
+# |    https://discord.gg/RQ8M4A5    |    ArcanePlugins Developers and Testers!       |\
+# |                                  |    Donators, Patrons, and other supporters!    |\
+# |                                  |    SpigotMC, PaperMC, ProtocolLib, and bStats! |\
+# |                                  |                                                |\
+# |.-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.|\
+# lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\|\
+#'|    `-'     `-'     `-'     `-'     `-'     `-'     `-'     `-'     `-'     `-'    |\
+# |  Useful Resources:                                                                |\
+# |    LevelledMobs Spigot                                                            |\
+# |      Download the latest updates or leave an honest review!                       |\
+# |        https://www.spigotmc.org/resources/levelledmobs-for-1-14-x-1-16-x.74304/   |\
+# |                                                                                   |\
+# |    LevelledMobs GitHub                                                            |\
+# |      Browse the code and wiki resources for LevelledMobs                          |\
+# |        https://github.com/lokka30/LevelledMobs/                                   |\
+# |                                                                                   |\
+# |    YAML-Parser                                                                    |\
+# |      Check your config files for any YAML errors.                                 |\
+# |      Good first step before seeking support!                                      |\
+# |        https://yaml-online-parser.appspot.com/                                    |\
+# |                                                                                   |\
+# |  Dependencies:                                                                    |\
+# |    ProtocolLib:                                                                   |\
+# |      A 'soft dependency'; Not *required* but highly recommended.                  |\
+# |      Without this, the plugin will not show LM's nametags.                        |\
+# |      https://www.spigotmc.org/resources/protocollib.1997/                         |\
+# |                                                                                   |\
+# |  Recommended Configuration:                                                       |\
+# |    LevelledMobs is tested using the latest PaperMC and SpigotMC Server Software.  |\
+# |    While other solutions may work, compatability is not guarenteed.               |\
+# |                                                                                   |\
+# |.-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.|\
+# lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\|\
+#'|    `-'     `-'     `-'     `-'     `-'     `-'     `-'     `-'     `-'     `-'    |\
+# |                       _____    _   _            ___                               |\
+# |                      |_   ____| |_| |___    ___|  _|                              |\
+# |                        | || .'| . | | -_|  | . |  _|                              |\
+# |                     ___|_||__,|___|_|___|  |___|_|                                |\
+# |                    |     |___ ___| |_ ___ ___| |_ ___                             |\
+# |                    |   --| . |   |  _| -_|   |  _|_ -|                            |\
+# |                    |_____|___|_|_|_| |___|_|_|_| |___|                            |\
+# |                                                                                   |\
+# |.-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.|\
+# lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\|\
+#'|    `-'     `-'     `-'     `-'     `-'     `-'     `-'     `-'     `-'     `-'    |\
+# |  CustomDrops/                                                                     |\
+# |       +- How To Use/                                                              |\
+# |       ¦  +- Drop Attribute System [DAS]                                           |\
+# |       ¦  +- Command Attribute System [CAS]                                        |\
+# |       ¦  +- Drop Tables                                                           |\
+# |       ¦  +- Universal Groups                                                      |\
+# |       ¦  ¦  +- Types of Universal Groups                                          |\
+# |       ¦                                                                           |\
+# |       +- Section 01 / Default CustomDrops Settings                                |\
+# |       +- Section 02 / Universal Group CustomDrops                                 ||\
+# |       +- Section 03 / EntityType CustomDrops                                      |||\
+# |       +- Section 04 / Drop Tables                                                 ||||\
+# |       ¦                                                                           |||||\
+# |       +- Section 05 / Advanced CustomDrops Settings                               ||||||\
+# |                                                                                   |||||||\
+# |.-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.||||||||\
+# lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\|||||||||\
+#'|    `-'     `-'     `-'     `-'     `-'     `-'     `-'     `-'     `-'     `-'    ||||||||||\
+# |||---------------------------------------------------------------------------------|||||||||||
+# |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+# |||-------------------------------------------------------------------------------------------|
+# ||  How To Use - Drop Attributes System [DAS]                                                 |
+# ||                                                                                            |
+# ||  Each attribute listed below helps you to refine a custom-drop to apply to                 |
+# ||  either an individual entity, universal group, or loot table. There are examples           |
+# ||  of how to apply these attributes below within this section. They match the                |
+# ||  formatting needed below. Ensure you match the spacing requirements!                       |
+# ||                                                                                            |
+# ||  NOTE: Unless 'override: true' is set for the drops, the EntityType will still process     |
+# ||  it's vanilla Minecraft drops alongside the custom drops.                                  |
+# ||                                                                                            |
+# ||   ---------------------------                                                              |
+# ||   ||EntityType:                                                                            |
+# ||   ||  overall_chance: 0.5                                                                  |
+# ||   ||  - MATERIAL:                                                                          |
+# ||   ||      minLevel: 1                                                                      |
+# ||   ||      maxLevel: 100                                                                    |
+# ||   ||      chance: 0.5                                                                      |
+# ||   ||      amount: 1-3                                                                      |
+# ||   ||      nomultiplier: true                                                               |
+# ||   ||      nospawner: true                                                                  |
+# ||   ||      enchantments:                                                                    |
+# ||   ||        ENCHANTMENT: X                                                                 |
+# ||   ||      name: "ItemName"                                                                 |
+# ||   ||      lore:                                                                            |
+# ||   ||        - "Item"                                                                       |
+# ||   ||        - "Lore"                                                                       |
+# ||   ||      equipped: 1.0                                                                    |
+# ||   ||      damage: 0                                                                        |
+# ||   ||      groupid: 1                                                                       |
+# ||   ||      maxdropgroup: 1                                                                  |
+# ||   ||      usedroptable: 1                                                                  |
+# ||   ||      custommodeldata: -1                                                              |
+# ||   ||      override: false                                                                  |
+# ||   ||  - PLAYER_HEAD:                                                                       |
+# ||   ||      equipped: 1.0                                                                    |
+# ||   ||      modhead-id: '61dab4ad-b60e-43c6-8873-38feabf458a3'                               |
+# ||   ||      modhead-texture: 'eyJ0ZXh0dX.....ZmYiJ9fX0='                                     |
+# ||   ||      name: "1-Up Mushroom"                                                            |
+# ||   ||      lore:                                                                            |
+# ||   ||      - "It'suh me! LevelledMobs!"                                                     |
+# ||   ---------------------------                                                              |
+# ||                                                                                            |
+# ||   EntityType:                                                                              |
+# ||     | Replace 'EntityType' with the name of the entity, or the universal group.            |
+# ||     | Reference https://tinyurl.com/SpigotMCEntityTypes for valid Entitytypes              |
+# ||     | List multiple entities by separating with semicolon. EX: 'ZOMBIE;HUSK:'              |
+# ||                                                                                            |
+# ||   - MATERIAL:                                                                              |
+# ||     | Replace 'MATERIAL' with the name of the item you want to drop.                       |
+# ||     | Using 'PLAYER_HEAD' instead will access the 'skull block' database!                  |
+# ||     | Connect using the UUID and TextureID for your favorite skull block                   |
+# ||     | And have it act as a new CustomDrop!                                                 |
+# ||                                                                                            |
+# ||   minLevel: / maxLevel:                                                                    |
+# ||     | You can specify what the minimum or maximum level an entity must be to               |
+# ||     | apply the particular custom-drop.                                                    |
+# ||                                                                                            |
+# ||   overall_chance:                                                                          |
+# ||     | This is the chance of any entity's CustomDrop being processed at all or skipped.     |
+# ||     | 0.0 is the same as 0%, with 1.0 being 100%. 0.5 would be 50%.                        |
+# ||                                                                                            |
+# ||   chance:                                                                                  |
+# ||     | This is the chance of each item or CustomCommand being dropped, between 0.0 -> 1.0   |
+# ||     | 0.0 is the same as 0%, with 1.0 being 100%. 0.5 would be 50%.                        |
+# ||                                                                                            |
+# ||   amount:                                                                                  |
+# ||     | You can specify how many of the particular MATERIAL will drop, before any            |
+# ||     | possible item-multipliers are applied. This value can be a range, such as '1-3'.     |
+# ||                                                                                            |
+# ||   nomultiplier: / nospawner:                                                               |
+# ||     | Both of these settings help limit how much and what type of entity will              |
+# ||     | drop the particular MATERIAL. 'nomultiplier', when set to true, will prevent         |
+# ||     | any item-multipliers from applying. 'nospawner', when set to true, will              |
+# ||     | prevent any entities spawned from a spawner cube from obtaining the custom           |
+# ||     | drops. This is useful to prevent farmed materials.                                   |
+# ||                                                                                            |
+# ||   enchantments:                                                                            |
+# ||     ENCHANTMENT: X                                                                         |
+# ||     | Replace 'ENCHANTMENT' with the name of the enchantment you wish to apply             |
+# ||     | to the particular MATERIAL. For example: 'SHARPNESS:'                                |
+# ||     | Replace 'X' with the strength of the enchantment you wish to apply.                  |
+# ||     | to the listed ENCHANTMENT. For example: 'SHARPNESS: 3' would apply a level           |
+# ||     | three sharpness to the item. You can apply to any material, just just                |
+# ||     | the tools, armors, or weapons.                                                       |
+# ||                                                                                            |
+# ||   name: / lore:                                                                            |
+# ||     | You can provide any custom name or lore component to any particular MATERIAL.        |
+# ||     | With lore in particular, you can add multiple lines as demonstrated above.           |
+# ||     | When combined with the Command Attributes System [CAS] it is used as the             |
+# ||     | debug name to verify whether command has or has not been ran.                        |
+# ||                                                                                            |
+# ||   equipped:                                                                                |
+# ||     | This is the chance of an item being equipped by the entity in their hands,           |
+# ||     | between 0.0 or false, which is 0%, or 1.0 or true, which is 100%. You can            |
+# ||     | use true or false, or may specify the percent change like 0.5, which is 50%.         |
+# ||     | When applied to a PLAYER_HEAD drop, it will equip the block as a helmet!             |
+# ||                                                                                            |
+# ||   damage:                                                                                  |
+# ||     | This will pre-damage an item once it has been dropped by the entity. This            |
+# ||     | can be a static value, like 100, or a ranged value, like 100-300. The first          |
+# ||     | example will always damage 100pts, while the second will damage within able          |
+# ||     | range of 100 to 300pts of damage.                                                    |
+# ||                                                                                            |
+# ||   groupid: / maxdropgroup:                                                                 |
+# ||     | This is useful for having a group of drops process together, in order to have        |
+# ||     | potential sets of items to drop. This setting is useful when combined with the       |
+# ||     | next setting, 'maxdropgroup:', which will specify how many items within the          |
+# ||     | listed groupid are allowed to drop. For example, if an entity had two items          |
+# ||     | which could drop, with the same 'groupid:' and 'maxdropgroup:' set to 1, then        |
+# ||     | LM will process the items in the same groupid, and once the first item drops,        |
+# ||     | the other items are skipped. This is useful for establishing tiered drops.           |
+# ||                                                                                            |
+# ||   usedroptable:                                                                            |
+# ||     | This will apply a drop-table, as built in Section 04 - Drop Tables, to an            |
+# ||     | EntityType or universal group. For more details, check the 'How To Use'              |
+# ||     | section below, or Section 04, regarding drop-tables.                                 |
+# ||                                                                                            |
+# ||   custommodeldata:                                                                         |
+# ||     | ADVANCED USERS ONLY                                                                  |
+# ||     | This setting allows you to specify a custom model to apply to an item.               |
+# ||                                                                                            |
+# ||   override:                                                                                |
+# ||     | This setting, when set to true, will use the custom-drops applied here and           |
+# ||     | will not drop the vanilla Minecraft drops for the entity. When set to false,         |
+# ||     | or not specified, it will process the vanilla drops alongside the custom drops.      |
+# ||                                                                                            |
+# ||   - PLAYER_HEAD:                                                                           |
+# ||     | Typing 'PLAYER_HEAD' instead of a MATERIAL will enable the PLAYER_HEAD drop system.  |
+# ||                                                                                            |
+# ||   mobhead-id: / mobhead-texture:                                                           |
+# ||     | When combined with PLAYER_HEAD, this system will grab the texture necessary          |
+# ||     | to display a custom mob head block. You can use either the UUID, Texture, or both.   |
+# ||     | We recommend the Custom Heads database of https://minecraft-heads.com/custom-heads/  |
+# ||     | to collect those details. 'mobhead-id:' represents the UUID, while 'mobhead-texture:'|
+# ||     | represents the texture file value; You only need one.                                |
+# ||                                                                                            |
+# |||-------------------------------------------------------------------------------------------|
+# |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+# |||-------------------------------------------------------------------------------------------|
+# ||  How To Use - Command Attributes System [CAS]                                              |
+# ||                                                                                            |
+# ||  Each attribute listed below helps you to refine a command to run when an entity           |
+# ||  dies, either by a player or environmental. There are various examples of how to           |
+# ||  apply these attributes below in Section 06 - Demonstrations.                              |
+# ||                                                                                            |
+# ||  You can use these attributes within any of the sections below, including the              |
+# ||  universal groups, loot tables, and each individual entity. Below lists each of            |
+# ||  the attributes related to commands and how to use them.                                   |
+# ||                                                                                            |
+# ||                   %mob-lvl% | The mobs level.                                              |
+# ||               %displayname% | The mobs name; will show nametag name if tagged              |
+# ||               %entity-name% | The mobs name; will NOT show nametag name if tagged.         |
+# ||         %entity-max-health% | The mobs max health.                                         |
+# || %entity-max-health-rounded% | The mobs max health, rounded.                                |
+# ||                 %wg_region% | The name of the WorldGuard region where event occured.       |
+# ||                     %world% | The name of the world where the event occurred.              |
+# ||                  %location% | The current location of the entity.                          |
+# ||                             | Presented as '(X, Y, Z)'                                     |
+# ||                                                                                            |
+# ||   ---------------------------                                                              |
+# ||   ||EntityType:                                                                            |
+# ||   ||  overall_chance: 0.5                                                                  |
+# ||   ||  - customCommand:                                                                     |
+# ||   ||      command: "effect give %player% strength %ranged%"                                |
+# ||   ||      ranged: 2-5                                                                      |
+# ||   ||      minLevel: 1                                                                      |
+# ||   ||      maxLevel: 100                                                                    |
+# ||   ||      amount: 1-3                                                                      |
+# ||   ||      chance: 0.5                                                                      |
+# ||   ||      name: 'ItemName'                                                                 |
+# ||   ||      nospawner: false                                                                 |
+# ||   ||      player-caused: true                                                              |
+# ||   ---------------------------                                                              |
+# ||                                                                                            |
+# ||   - customCommand:                                                                         |
+# ||     | This is required to establish that the 'material' you wish to 'drop' is              |
+# ||     | infact a command. This cannot be changed to anything else.                           |
+# ||                                                                                            |
+# ||   overall_chance:                                                                          |
+# ||     | This is the chance of any entity's CustomCommand being processed at all or skipped.  |
+# ||     | 0.0 is the same as 0%, with 1.0 being 100%. 0.5 would be 50%.                        |
+# ||                                                                                            |
+# ||   command:                                                                                 |
+# ||     | This would be the command you wish to run when the entity dies.                      |
+# ||     | All commands are run irregardless of permission, and currently you can               |
+# ||     | include '%player%' to reference the player who killed entity.                        |
+# ||     | This is a VERY powerful feature and you should ensure you are not causing            |
+# ||     | any potential lag due to these commands running in the background.                   |
+# ||                                                                                            |
+# ||   ranged:                                                                                  |
+# ||     | A special config which populates the tag '%ranged%' for use within the CAS.          |
+# ||     | In the example shown above, 'ranged:' is set as '2-5', and when used within the      |
+# ||     | 'command:', which gives the strength effect to the player for a period of times      |
+# ||     | randomly selected from the range, or 2 to 5 seconds.                                 |
+# ||                                                                                            |
+# ||   minlevel: / maxlevel:                                                                    |
+# ||     | You can specify what the minimum or maximum level an entity must be to               |
+# ||     | apply the particular command upon death.                                             |
+# ||                                                                                            |
+# ||   amount:                                                                                  |
+# ||     | This is the number of times the command will run. This can be a ranged value,        |
+# ||     | for example '1-3', which will randomly run the command X times within the range.     |
+# ||     | Limited by the setting 'customcommand-amount-limit:' located in 'settings.yml'.      |
+# ||     | THIS SYSTEM, IF INPROPERLY CONFIGURED, COULD RESULT IN A SERVER CRASH                |
+# ||     | DUE TO THE SUDDEN INFLUX OF COMMANDS BEING RUN UPON ENTITY DEATH. IF                 |
+# ||     | YOU NEED ASSISTANCE, VISIT THE SUPPORT DISCORD!                                      |
+# ||                                                                                            |
+# ||   chance:                                                                                  |
+# ||     | This is the chance of the command being run, between 0.0 -> 1.0                      |
+# ||     | 0.0 is the same as 0%, with 1.0 being 100%. 0.5 would be 50%.                        |
+# ||                                                                                            |
+# ||   name:                                                                                    |
+# ||     | When used alongside the Command Attributes System [CAS], the 'name:' is              |
+# ||     | referenced when conducting debugging, and is primarily used as a cleartext           |
+# ||     | to describe what the command does to make things easier to read.                     |
+# ||                                                                                            |
+# ||   nospawner:                                                                               |
+# ||     | When set to true, entities spawned from a spawner cube will not run the              |
+# ||     | command upon death as a naturally generated entity would.                            |
+# ||                                                                                            |
+# ||   player-caused:                                                                           |
+# ||     | When set to true, if an entity dies to environment (fall damage) or another          |
+# ||     | entity (mob v mob), the command will not run; requiring the death to be              |
+# ||     | specifically caused by the player. This, when combined with 'nospawner:',            |
+# ||     | this is useful to prevent mob farms from spamming commands unintentionally.          |
+# ||                                                                                            |
+# |||-------------------------------------------------------------------------------------------|
+# |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+# |||-------------------------------------------------------------------------------------------|
+# ||  How To Use - Drop Tables                                                                  |
+# ||                                                                                            |
+# ||  This system allows you to establish preset groups of items to process separate            |
+# ||  from other listed custom drops or commands, which can be applied to either                |
+# ||  EntityTypes or universal groups. This helps to reduce any clutter below by                |
+# ||  transforming lines upon lines of items into a single line item, using the                 |
+# ||  'usedroptable:' line. You can reference any of the Drop or Command Attributes             |
+# ||  when crafting your drop table. Below shows the 'template' for crafting tables.            |
+# ||                                                                                            |
+# ||   ---------------------------                                                              |
+# ||   ||drop-table:                                                                            |
+# ||   ||  tableName1:                                                                          |
+# ||   ||    attributes1:                                                                       |
+# ||   ||  tableName2:                                                                          |
+# ||   ||    attributes2:                                                                       |
+# ||   ---------------------------                                                              |
+# ||                                                                                            |
+# ||   drop-table:                                                                              |
+# ||     | This is required to open the drop-table configuration. Do not change this line.      |
+# ||                                                                                            |
+# ||   table-name:                                                                              |
+# ||     | This refers to the 'name' of the drop table to reference later. This can be          |
+# ||     | either text or numerical, but without spaces. Example: '1:', or 'NetherStuff:'       |
+# ||                                                                                            |
+# ||   attributes:                                                                              |
+# ||     | This is a generic term for any of the attributes listed within the CAS or DAS.       |
+# ||     | Replace it with any of the attributes. Reference the CAS/DAS above.                  |
+# ||                                                                                            |
+# |||-------------------------------------------------------------------------------------------|
+# |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+# |||-------------------------------------------------------------------------------------------|
+# ||  How To Use - Universal Groups                                                             |
+# ||                                                                                            |
+# ||  For quicker selection of entities, we've crafted universal groups which match             |
+# ||  how vanilla Minecraft considers entities. Each of the groups below can have a             |
+# ||  further 'excludemobs:' which as name suggests allows you to exclude specific              |
+# ||  entities which are part of the group.                                                     |
+# ||                                                                                            |
+# ||   ---------------------------                                                              |
+# ||   ||universalGroup:                                                                        |
+# ||   ||  excludemobs: EntityType;EntityType                                                   |
+# ||   ||  attributes:                                                                          |
+# ||   ---------------------------                                                              |
+# ||                                                                                            |
+# ||   universalGroup:                                                                          |
+# ||     | This refers to one of the many possible universal groups, including:                 |
+# ||     | all_levellable_mobs, all_nether_mobs, all_aquatic_mobs, etc.                         |
+# ||     | For a complete list, check Section 02 - Universal Groups.                            |
+# ||                                                                                            |
+# ||   excludemobs:                                                                             |
+# ||     | Allows you to craft a list of entities to ignore from the universal group.           |
+# ||                                                                                            |
+# ||   attributes:                                                                              |
+# ||     | This is a generic term for any of the attributes listed within the CAS or DAS.       |
+# ||     | Replace it with any of the attributes. Reference the CAS/DAS above.                  |
+# ||                                                                                            |
+# |||-------------------------------------------------------------------------------------------|
+# |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+# |||-------------------------------------------------------------------------------------------|
+# ||  How To Use - Types of Universal Groups                                                    |
+# ||                                                                                            |
+# ||   all_mobs                                                                                 |
+# ||     | All entities, levelled or otherwise.                                                 |
+# ||                                                                                            |
+# ||   all_levellable_mobs                                                                      |
+# ||     | All levelled entities.                                                               |
+# ||                                                                                            |
+# ||   all_hostile_mobs                                                                         |
+# ||     | All hostile entities.                                                                |
+# ||                                                                                            |
+# ||   all_passive_mobs                                                                         |
+# ||     | All passive entities.                                                                |
+# ||                                                                                            |
+# ||   all_overworld_mobs                                                                       |
+# ||     | All levelled entities naturally spawned in Overworld.                                |
+# ||                                                                                            |
+# ||   all_nether_mobs                                                                          |
+# ||     | All levelled entities naturally spawned in Nether.                                   |
+# ||                                                                                            |
+# ||   all_flying_mobs                                                                          |
+# ||     | All entities able to fly.                                                            |
+# ||                                                                                            |
+# ||   all_ground_mobs                                                                          |
+# ||     | All entities who cannot fly, swim (aka ground only).                                 |
+# ||                                                                                            |
+# ||   all_aquatic_mobs                                                                         |
+# ||     | All underwater entities.                                                             |
+# ||                                                                                            |
+# |||-------------------------------------------------------------------------------------------|
+# |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+# |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+# |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+# |||-------------------------------------------------------------------------------------------|
+# ||  Section 01 - Apply Default CustomDrops Settings                                           |
+# ||                                                                                            |
+# ||  The CAS/DAS systems described above prepare you for this section and beyond.              |
+# ||  Here is where you would establish a baseline of custom-drops settings which               |
+# ||  would apply all entities and types, unless they are further customized in a               |
+# ||  section below these Default Settings.                                                     |
+# ||                                                                                            |
+# ||   ---------------------------                                                              |
+# ||   ||defaults: (Default Values)                                                             |
+# ||   ||  chance: 0.2                                                                          |
+# ||   ||  amount: 1                                                                            |
+# ||   ||  minlevel: -1                                                                         |
+# ||   ||  maxlevel: -1                                                                         |
+# ||   ||  custommodeldata: -1                                                                  |
+# ||   ||  nomultiplier: false                                                                  |
+# ||   ||  nospawner: false                                                                     |
+# ||   ||  equipped: 0.0                                                                        |
+# ||   ||  override: false                                                                      |
+# ||   ||  maxdropgroup: 1                                                                      |
+# ||   ||  priority: 0                                                                          |
+# ||   ||  player-caused: true                                                                  |
+# ||   ---------------------------                                                              |
+# ||                                                                                            |
+# |||-------------------------------------------------------------------------------------------|
 defaults:
   chance: 0.2
   amount: 1
@@ -379,24 +439,24 @@ defaults:
   custommodeldata: -1
   nomultiplier: false
   nospawner: false
-  equipped: 0.0
+  equipped: 1.0
   override: false
   maxdropgroup: 1
   priority: 0
   player-caused: true
 
 
-# |||---------------------------------------------------------------------------------|
-# ||
-# ||  Section 02 - Universal Groups CustomDrops
-# ||
-# |||---------------------------------------------------------------------------------|
+# |||-------------------------------------------------------------------------------------------|
+# ||                                                                                            |
+# ||  Section 02 - Universal Groups CustomDrops                                                 |
+# ||                                                                                            |
+# |||-------------------------------------------------------------------------------------------|
 all_mobs:
   - 
 
 all_levellable_mobs:
   - 
-
+  
 all_hostile_mobs:
   - 
 
@@ -419,11 +479,11 @@ all_aquatic_mobs:
   - 
 
 
-# |||---------------------------------------------------------------------------------|
-# ||
-# ||  Section 03 - EntityType CustomDrops
-# ||
-# |||---------------------------------------------------------------------------------|
+# |||-------------------------------------------------------------------------------------------|
+# ||                                                                                            |
+# ||  Section 03 - EntityType CustomDrops                                                       |
+# ||                                                                                            |
+# |||-------------------------------------------------------------------------------------------|
 BAT:
   - 
 
@@ -632,13 +692,13 @@ ZOMBIFIED_PIGLIN:
   -
 
 
-# |||---------------------------------------------------------------------------------|
-# ||
-# ||  Section 04 - Drop Tables
-# ||
-# |||---------------------------------------------------------------------------------|
+# |||-------------------------------------------------------------------------------------------|
+# ||                                                                                            |
+# ||  Section 04 - Drop Tables                                                                  |
+# ||                                                                                            |
+# |||-------------------------------------------------------------------------------------------|
 drop-table:
-  1:
+  basic_overworld:
     - STICK:
         amount: 1
         chance: 1
@@ -651,13 +711,26 @@ drop-table:
         nomultiplier: true
         nospawner: true
         groupid: 1
+  basic_nether:
+    - NETHERRACK:
+        amount: 1
+        chance: 1
+        nomultiplier: true
+        nospawner: true
+        groupid: 2
+    - SOUL_SAND:
+        amount: 1
+        chance: 1
+        nomultiplier: true
+        nospawner: true
+        groupid: 2
 
 
-# |||---------------------------------------------------------------------------------|
-# ||
-# ||  Section 05 - Advanced CustomDrops Settings
-# ||  DO NOT EDIT BEYOND HERE WITHOUT DEVELOPER APPROVAL
-# ||
-# |||---------------------------------------------------------------------------------|
+# |||-------------------------------------------------------------------------------------------|
+# ||                                                                                            |
+# ||  Section 05 - Advanced CustomDrops Settings                                                |
+# ||  DO NOT EDIT BEYOND HERE WITHOUT DEVELOPER APPROVAL                                        |
+# ||                                                                                            |
+# |||-------------------------------------------------------------------------------------------|
 file-version: 8
 

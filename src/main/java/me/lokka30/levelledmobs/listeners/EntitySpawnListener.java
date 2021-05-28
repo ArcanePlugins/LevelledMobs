@@ -67,7 +67,7 @@ public class EntitySpawnListener implements Listener {
         if (cs.getPersistentDataContainer().has(main.blockPlaceListener.keySpawner_CustomDropId, PersistentDataType.STRING)) {
             customDropId = cs.getPersistentDataContainer().get(main.blockPlaceListener.keySpawner_CustomDropId, PersistentDataType.STRING);
             if (!Utils.isNullOrEmpty(customDropId)) {
-                synchronized (lmEntity.pdcSyncObject) {
+                synchronized (lmEntity.getLivingEntity().getPersistentDataContainer()) {
                     lmEntity.getPDC().set(main.blockPlaceListener.keySpawner_CustomDropId, PersistentDataType.STRING, customDropId);
                 }
             }
@@ -154,7 +154,7 @@ public class EntitySpawnListener implements Listener {
 
             else if (lmEntity.isBabyMob()) {
                 // add a tag so we can potentially level the mob when/if it ages
-                synchronized (lmEntity.pdcSyncObject) {
+                synchronized (lmEntity.getLivingEntity().getPersistentDataContainer()) {
                     lmEntity.getPDC().set(main.levelManager.wasBabyMobKey, PersistentDataType.INTEGER, 1);
                 }
             }

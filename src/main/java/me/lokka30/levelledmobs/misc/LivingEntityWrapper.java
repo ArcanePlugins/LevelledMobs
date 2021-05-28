@@ -15,15 +15,13 @@ import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 public class LivingEntityWrapper implements LivingEntityInterface {
     public LivingEntityWrapper(final @NotNull LivingEntity livingEntity, final @NotNull LevelledMobs main){
         this.main = main;
         this.livingEntity = livingEntity;
-        this.applicableGroups = new LinkedList<>();
+        this.applicableGroups = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
         this.applicableRules = new LinkedList<>();
         this.mobExternalType = ExternalCompatibilityManager.ExternalCompatibility.NOT_APPLICABLE;
         this.spawnReason = CreatureSpawnEvent.SpawnReason.DEFAULT;
@@ -33,7 +31,7 @@ public class LivingEntityWrapper implements LivingEntityInterface {
     private final LevelledMobs main;
     private final LivingEntity livingEntity;
     @NotNull
-    private List<CustomUniversalGroups> applicableGroups;
+    private Set<String> applicableGroups;
     private boolean hasCache;
     private boolean groupsAreBuilt;
     private Integer mobLevel;
@@ -44,7 +42,7 @@ public class LivingEntityWrapper implements LivingEntityInterface {
     private FineTuningAttributes fineTuningAttributes;
     private CreatureSpawnEvent.SpawnReason spawnReason;
     public EntityDamageEvent.DamageCause deathCause;
-    public final Object pdcSyncObject = new Object();
+    //public final Object pdcSyncObject = new Object();
 
     @NotNull
     public LevelledMobs getMainInstance(){
@@ -52,10 +50,9 @@ public class LivingEntityWrapper implements LivingEntityInterface {
     }
 
     private void buildCache(){
-        synchronized (this.pdcSyncObject) {
-            this.mobLevel = main.levelInterface.isLevelled(livingEntity) ?
-                    main.levelInterface.getLevelOfMob(livingEntity) : null;
-        }
+        this.mobLevel = main.levelInterface.isLevelled(livingEntity) ?
+                main.levelInterface.getLevelOfMob(livingEntity) : null;
+
         this.spawnedWGRegions = ExternalCompatibilityManager.getWGRegionsAtLocation(this);
 
         this.hasCache = true;
@@ -82,7 +79,7 @@ public class LivingEntityWrapper implements LivingEntityInterface {
     }
 
     @NotNull
-    public List<CustomUniversalGroups> getApplicableGroups(){
+    public Set<String> getApplicableGroups(){
         if (!groupsAreBuilt){
             this.applicableGroups = buildApplicableGroupsForMob();
             groupsAreBuilt = true;
@@ -114,9 +111,7 @@ public class LivingEntityWrapper implements LivingEntityInterface {
     }
 
     public boolean isLevelled() {
-        synchronized (this.pdcSyncObject) {
-            return main.levelInterface.isLevelled(this.livingEntity);
-        }
+        return main.levelInterface.isLevelled(this.livingEntity);
     }
 
     @NotNull
@@ -163,7 +158,7 @@ public class LivingEntityWrapper implements LivingEntityInterface {
 
     @NotNull
     public CreatureSpawnEvent.SpawnReason getSpawnReason() {
-        synchronized (this.pdcSyncObject) {
+        synchronized (this.livingEntity.getPersistentDataContainer()) {
             if (livingEntity.getPersistentDataContainer().has(main.levelManager.spawnReasonKey, PersistentDataType.STRING)) {
                 return CreatureSpawnEvent.SpawnReason.valueOf(
                         livingEntity.getPersistentDataContainer().get(main.levelManager.spawnReasonKey, PersistentDataType.STRING)
@@ -175,7 +170,7 @@ public class LivingEntityWrapper implements LivingEntityInterface {
     }
 
     public void setSpawnReason(final CreatureSpawnEvent.SpawnReason spawnReason){
-        synchronized (this.pdcSyncObject) {
+        synchronized (this.livingEntity.getPersistentDataContainer()) {
             if (!livingEntity.getPersistentDataContainer().has(main.levelManager.spawnReasonKey, PersistentDataType.STRING)) {
                 livingEntity.getPersistentDataContainer().set(main.levelManager.spawnReasonKey, PersistentDataType.STRING, spawnReason.toString());
             }
@@ -209,14 +204,14 @@ public class LivingEntityWrapper implements LivingEntityInterface {
     }
 
     public boolean hasOverridenEntityName(){
-        synchronized (this.pdcSyncObject) {
+        synchronized (this.livingEntity.getPersistentDataContainer()) {
             return livingEntity.getPersistentDataContainer().has(main.levelManager.overridenEntityNameKey, PersistentDataType.STRING);
         }
     }
 
     @Nullable
     public String getOverridenEntityName(){
-        synchronized (this.pdcSyncObject) {
+        synchronized (this.livingEntity.getPersistentDataContainer()) {
             return livingEntity.getPersistentDataContainer().get(main.levelManager.overridenEntityNameKey, PersistentDataType.STRING);
         }
     }
@@ -236,52 +231,58 @@ public class LivingEntityWrapper implements LivingEntityInterface {
     }
 
     public void setOverridenEntityName(final String name){
-        synchronized (this.pdcSyncObject) {
+        synchronized (this.getLivingEntity().getPersistentDataContainer()) {
             livingEntity.getPersistentDataContainer().set(main.levelManager.overridenEntityNameKey, PersistentDataType.STRING, name);
         }
     }
 
     @NotNull
-    private List<CustomUniversalGroups> buildApplicableGroupsForMob(){
-        final List<CustomUniversalGroups> groups = new ArrayList<>();
-        groups.add(CustomUniversalGroups.ALL_MOBS);
+    private Set<String> buildApplicableGroupsForMob(){
+        final Set<String> groups = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+
+        for (final String groupName : main.customMobGroups.keySet()){
+            final Set<String> mobNames = main.customMobGroups.get(groupName);
+            if (mobNames.contains(this.getTypeName()))
+                groups.add(groupName);
+        }
+
+        groups.add(CustomUniversalGroups.ALL_MOBS.toString());
 
         final boolean isLevellable = true;
 
-        //if (isLevelled || isLevellable)
         if (this.mobLevel != null)
-            groups.add(CustomUniversalGroups.ALL_LEVELLABLE_MOBS);
+            groups.add(CustomUniversalGroups.ALL_LEVELLABLE_MOBS.toString());
         final EntityType eType = livingEntity.getType();
 
         if (livingEntity instanceof Monster || livingEntity instanceof Boss || main.companion.groups_HostileMobs.contains(eType)){
-            groups.add(CustomUniversalGroups.ALL_HOSTILE_MOBS);
+            groups.add(CustomUniversalGroups.ALL_HOSTILE_MOBS.toString());
         }
 
         if (livingEntity instanceof WaterMob || main.companion.groups_AquaticMobs.contains(eType)){
-            groups.add(CustomUniversalGroups.ALL_AQUATIC_MOBS);
+            groups.add(CustomUniversalGroups.ALL_AQUATIC_MOBS.toString());
         }
 
         if (livingEntity.getWorld().getEnvironment().equals(World.Environment.NORMAL)){
-            groups.add(CustomUniversalGroups.ALL_OVERWORLD_MOBS);
+            groups.add(CustomUniversalGroups.ALL_OVERWORLD_MOBS.toString());
         } else if (livingEntity.getWorld().getEnvironment().equals(World.Environment.NETHER)){
-            groups.add(CustomUniversalGroups.ALL_NETHER_MOBS);
+            groups.add(CustomUniversalGroups.ALL_NETHER_MOBS.toString());
         }
 
         if (livingEntity instanceof Flying || eType.equals(EntityType.PARROT) || eType.equals(EntityType.BAT)){
-            groups.add(CustomUniversalGroups.ALL_FLYING_MOBS);
+            groups.add(CustomUniversalGroups.ALL_FLYING_MOBS.toString());
         }
 
         // why bats aren't part of Flying interface is beyond me
         if (!(livingEntity instanceof Flying) && !(livingEntity instanceof WaterMob) && !(livingEntity instanceof Boss) && !(eType.equals(EntityType.BAT))){
-            groups.add(CustomUniversalGroups.ALL_GROUND_MOBS);
+            groups.add(CustomUniversalGroups.ALL_GROUND_MOBS.toString());
         }
 
         if (livingEntity instanceof WaterMob || main.companion.groups_AquaticMobs.contains(eType)){
-            groups.add(CustomUniversalGroups.ALL_AQUATIC_MOBS);
+            groups.add(CustomUniversalGroups.ALL_AQUATIC_MOBS.toString());
         }
 
         if (livingEntity instanceof Animals || livingEntity instanceof WaterMob || main.companion.groups_PassiveMobs.contains(eType)){
-            groups.add(CustomUniversalGroups.ALL_PASSIVE_MOBS);
+            groups.add(CustomUniversalGroups.ALL_PASSIVE_MOBS.toString());
         }
 
         return groups;

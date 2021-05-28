@@ -30,7 +30,7 @@ public class RulesManager {
 
         for (final RuleInfo ruleInfo : main.rulesParsingManager.getAllRules()){
             if (!ruleInfo.ruleIsEnabled) continue;
-            if (ruleInfo.worlds != null && ruleInfo.worlds.isEnabledInList(world.getName())){
+            if (ruleInfo.conditions_Worlds != null && ruleInfo.conditions_Worlds.isEnabledInList(world.getName(), null)){
                 result = true;
                 break;
             }
@@ -75,7 +75,7 @@ public class RulesManager {
             if (ruleInfo.conditions_NoDropEntities != null) entitiesList = ruleInfo.conditions_NoDropEntities;
         }
 
-        return entitiesList != null && entitiesList.isEnabledInList(lmEntity.getNameIfBaby());
+        return entitiesList != null && entitiesList.isEnabledInList(lmEntity.getNameIfBaby(), lmEntity);
     }
 
     @NotNull
@@ -111,7 +111,7 @@ public class RulesManager {
         }
         else {
             return (
-                    allowedEntitiesList == null || allowedEntitiesList.isEnabledInList(lmInterface.getTypeName())
+                    allowedEntitiesList == null || allowedEntitiesList.isEnabledInList(lmInterface.getTypeName(), null)
             );
         }
     }
@@ -313,7 +313,9 @@ public class RulesManager {
                 if (!ruleInfo.ruleIsEnabled) continue;
                 if (lmInterface instanceof LivingEntityWrapper && !isRuleApplicable_Entity((LivingEntityWrapper) lmInterface, ruleInfo))
                     continue;
-                if (!isRuleApplicable_Interface(lmInterface, ruleInfo)) continue;
+
+                if (!isRuleApplicable_Interface(lmInterface, ruleInfo))
+                    continue;
 
                 if (ruleInfo.stopProcessingRules != null && ruleInfo.stopProcessingRules) {
                     // TODO: // should we add a debug entry here?
@@ -340,19 +342,19 @@ public class RulesManager {
         }
 
         if (ri.conditions_CustomNames != null && lmEntity.getLivingEntity().getCustomName() != null &&
-                !ri.conditions_CustomNames.isEnabledInList(lmEntity.getLivingEntity().getCustomName())) {
+                !ri.conditions_CustomNames.isEnabledInList(lmEntity.getLivingEntity().getCustomName(), lmEntity)) {
             Utils.debugLog(main, DebugType.DENIED_RULE_CUSTOM_NAME, String.format("%s, mob: %s, name: %s",
                     ri.getRuleName(), lmEntity.getTypeName(), lmEntity.getLivingEntity().getCustomName()));
             return false;
         }
 
-        if (ri.conditions_SpawnReasons != null && !ri.conditions_SpawnReasons.isEnabledInList(lmEntity.getSpawnReason())){
+        if (ri.conditions_SpawnReasons != null && !ri.conditions_SpawnReasons.isEnabledInList(lmEntity.getSpawnReason(), lmEntity)){
             Utils.debugLog(main, DebugType.DENIED_RULE_SPAWN_REASON, String.format("%s, mob: %s, spawn reason: %s",
                     ri.getRuleName(), lmEntity.getTypeName(), lmEntity.getSpawnReason()));
             return false;
         }
 
-        if (lmEntity.isMobOfExternalType() && ri.conditions_ApplyPlugins != null && !ri.conditions_ApplyPlugins.isEnabledInList(lmEntity.getMobExternalType().toString())){
+        if (lmEntity.isMobOfExternalType() && ri.conditions_ApplyPlugins != null && !ri.conditions_ApplyPlugins.isEnabledInList(lmEntity.getTypeName(), lmEntity)){
             Utils.debugLog(main, DebugType.DENIED_RULE_PLUGIN_COMPAT, String.format("%s, mob: %s, mob plugin: %s",
                     ri.getRuleName(), lmEntity.getTypeName(), lmEntity.getMobExternalType()));
             return false;
@@ -371,19 +373,19 @@ public class RulesManager {
         }
         else {
             // can't check groups if not a living entity wrapper
-            if (ri.conditions_Entities != null && !ri.conditions_Entities.isEnabledInList(lmInterface.getEntityType().name())) {
+            if (ri.conditions_Entities != null && !ri.conditions_Entities.isEnabledInList(lmInterface.getTypeName(), null)) {
                 Utils.debugLog(main, DebugType.DENIED_RULE_ENTITIES_LIST, String.format("%s, mob: %s", ri.getRuleName(), lmInterface.getEntityType().name()));
                 return false;
             }
         }
 
-        if (ri.worlds != null && !ri.worlds.isEnabledInList(lmInterface.getWorld().getName())) {
+        if (ri.conditions_Worlds != null && !ri.conditions_Worlds.isEnabledInList(lmInterface.getWorld().getName(), null)) {
             Utils.debugLog(main, DebugType.DENIED_RULE_WORLD_LIST, String.format("%s, mob: %s, mob world: %s",
                     ri.getRuleName(), lmInterface.getEntityType().name(), lmInterface.getWorld().getName()));
             return false;
         }
 
-        if (ri.conditions_Biomes != null && !ri.conditions_Biomes.isEnabledInList(lmInterface.getLocation().getBlock().getBiome().toString())) {
+        if (ri.conditions_Biomes != null && !ri.conditions_Biomes.isEnabledInList(lmInterface.getLocation().getBlock().getBiome().toString(), null)) {
             Utils.debugLog(main, DebugType.DENIED_RULE_BIOME_LIST, String.format("%s, mob: %s, mob biome: %s",
                     ri.getRuleName(), lmInterface.getEntityType().name(), lmInterface.getLocation().getBlock().getBiome().name()));
             return false;
@@ -394,7 +396,7 @@ public class RulesManager {
             final List<String> wgRegions = ExternalCompatibilityManager.getWGRegionsAtLocation(lmInterface);
             if (wgRegions != null) {
                 for (final String regionName : wgRegions) {
-                    if (ri.conditions_WGRegions.isEnabledInList(regionName)) {
+                    if (ri.conditions_WGRegions.isEnabledInList(regionName, null)) {
                         isInList = true;
                         break;
                     }

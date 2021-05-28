@@ -167,10 +167,10 @@ public class CustomDropsParser {
 
                 if (!dropInstance.customItems.isEmpty()) {
                     if (isUniversalGroup) {
-                        if (handler.customDropsitems_groups.containsKey(universalGroup))
-                            handler.customDropsitems_groups.get(universalGroup).combineDrop(dropInstance);
+                        if (handler.customDropsitems_groups.containsKey(universalGroup.toString()))
+                            handler.customDropsitems_groups.get(universalGroup.toString()).combineDrop(dropInstance);
                         else
-                            handler.customDropsitems_groups.put(universalGroup, dropInstance);
+                            handler.customDropsitems_groups.put(universalGroup.toString(), dropInstance);
                     }
                     else {
                         if (handler.customDropsitems.containsKey(entityType))
@@ -295,7 +295,7 @@ public class CustomDropsParser {
             CustomCommand customCommand = (CustomCommand) dropBase;
             customCommand.command = cs.getString("command");
             customCommand.commandName = cs.getString("name");
-            customCommand.ranged = cs.getString("ranged");
+            parseRangedVariables(customCommand, cs);
 
             if (Utils.isNullOrEmpty(customCommand.command))
                 Utils.logger.warning("no command was specified for custom command");
@@ -364,6 +364,17 @@ public class CustomDropsParser {
         } // end enchantments
 
         applyMetaAttributes(item);
+    }
+
+    private void parseRangedVariables(final CustomCommand cc, @NotNull final ConfigurationSection cs){
+        for (final String key : cs.getKeys(false)){
+            if (!key.toLowerCase().startsWith("ranged")) continue;
+
+            final String value = cs.getString(key);
+            if (Utils.isNullOrEmpty(value)) continue;
+
+            cc.rangedEntries.put(key, value);
+        }
     }
 
     private void applyMetaAttributes(@NotNull final CustomDropItem item){
@@ -492,11 +503,11 @@ public class CustomDropsParser {
             }
         }
 
-        for (final CustomUniversalGroups group : handler.customDropsitems_groups.keySet()) {
+        for (final String group : handler.customDropsitems_groups.keySet()) {
             final CustomDropInstance dropInstance = handler.customDropsitems_groups.get(group);
             final String override = dropInstance.overrideStockDrops ? " (override)" : "";
             final String overallChance = dropInstance.overallChance != null ? " (overall_chance: " + dropInstance.overallChance + ")" : "";
-            Utils.logger.info("group: " + group.name() + override + overallChance);
+            Utils.logger.info("group: " + group + override + overallChance);
             for (final CustomDropBase baseItem : dropInstance.customItems) {
                 showCustomDropsDebugInfo2(baseItem);
             }
