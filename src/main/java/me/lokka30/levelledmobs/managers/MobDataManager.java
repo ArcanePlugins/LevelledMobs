@@ -103,6 +103,8 @@ public class MobDataManager {
             }
         }
 
+        if (maxLevel == 0) return 0.0;
+
         // use old formula or item drops, xp drops
         if (defaultValue == 0.0)
             return attributeValue * (((double) lmEntity.getMobLevel() - 1)/ maxLevel);

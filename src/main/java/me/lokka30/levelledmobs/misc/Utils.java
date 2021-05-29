@@ -1,8 +1,10 @@
 package me.lokka30.levelledmobs.misc;
 
 import me.lokka30.levelledmobs.LevelledMobs;
+import me.lokka30.levelledmobs.rules.RulesManager;
 import me.lokka30.microlib.MessageUtils;
 import me.lokka30.microlib.MicroLogger;
+import org.bukkit.block.Biome;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -220,5 +222,23 @@ public final class Utils {
 
         return list.isBlacklist() || list.allowedList.contains(checkName) ||
                 lmEntity.isBabyMob() && list.allowedList.contains("baby_");
+    }
+
+    public static boolean isBiomeInModalList(@NotNull final CachedModalList<Biome> list, final Biome biome, final RulesManager rulesManager) {
+        if (list.isEmpty()) return true;
+
+        for (final String group : list.excludedGroups) {
+            if (rulesManager.biomeGroupMappings.containsKey(group) &&
+                    rulesManager.biomeGroupMappings.get(group).contains(biome.toString())) return false;
+        }
+        for (final String group : list.allowedGroups) {
+            if (rulesManager.biomeGroupMappings.containsKey(group) &&
+                    rulesManager.biomeGroupMappings.get(group).contains(biome.toString()))
+                return true;
+        }
+
+        if (list.excludedList.contains(biome)) return false;
+
+        return list.isBlacklist() || list.allowedList.contains(biome);
     }
 }

@@ -5,6 +5,7 @@ import me.lokka30.levelledmobs.managers.ExternalCompatibilityManager;
 import me.lokka30.levelledmobs.misc.*;
 import me.lokka30.levelledmobs.rules.strategies.SpawnDistanceStrategy;
 import me.lokka30.levelledmobs.rules.strategies.YDistanceStrategy;
+import org.bukkit.block.Biome;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.MemoryConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -129,12 +130,7 @@ public class RulesParsingManager {
     @NotNull
     private CachedModalList<CreatureSpawnEvent.SpawnReason> buildCachedModalListOfSpawnReason(final ConfigurationSection cs){
         CachedModalList<CreatureSpawnEvent.SpawnReason> cachedModalList = new CachedModalList<>();
-        if (cs == null) return cachedModalList;
-        if (cs.getString("allowed-list") == null &&
-            cs.getString("allowed-groups") == null &&
-            cs.getString("excluded-list") == null &&
-            cs.getString("excluded-groups") == null
-        )
+        if (cs == null || isCacheModalDeclarationEmpty(cs))
             return cachedModalList;
 
         cachedModalList.doMerge = cs.getBoolean("merge");
@@ -167,14 +163,58 @@ public class RulesParsingManager {
     }
 
     @NotNull
+    private CachedModalList<Biome> buildCachedModalListOfBiome(final ConfigurationSection cs){
+        CachedModalList<Biome> cachedModalList = new CachedModalList<>();
+        if (cs == null || isCacheModalDeclarationEmpty(cs))
+            return cachedModalList;
+
+        cachedModalList.doMerge = cs.getBoolean("merge");
+
+        final List<String> allowedItems = getListFromConfigItem(cs,"allowed-list");
+        cachedModalList.allowedGroups = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+        final List<String> excludedItems = getListFromConfigItem(cs,"excluded-list");
+        cachedModalList.excludedGroups = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+
+        for (final String group : cs.getStringList("allowed-groups")){
+            if (!main.rulesManager.biomeGroupMappings.containsKey(group))
+                Utils.logger.info("invalid biome group: " + group);
+            else
+                cachedModalList.allowedGroups.add(group);
+        }
+
+        for (final String group : cs.getStringList("excluded-groups")){
+            if (!main.rulesManager.biomeGroupMappings.containsKey(group))
+                Utils.logger.info("invalid biome group: " + group);
+            else
+                cachedModalList.excludedGroups.add(group);
+        }
+
+        for (final String item : allowedItems){
+            try{
+                final Biome biome = Biome.valueOf(item.toUpperCase());
+                cachedModalList.allowedList.add(biome);
+            }
+            catch (IllegalArgumentException e){
+                Utils.logger.warning("Invalid allowed biome: " + item);
+            }
+        }
+        for (final String item : excludedItems){
+            try{
+                final Biome biome = Biome.valueOf(item.toUpperCase());
+                cachedModalList.excludedList.add(biome);
+            }
+            catch (IllegalArgumentException e){
+                Utils.logger.warning("Invalid excluded biome: " + item);
+            }
+        }
+
+        return cachedModalList;
+    }
+
+    @NotNull
     private CachedModalList<String> buildCachedModalListOfString(final ConfigurationSection cs){
         final CachedModalList<String> cachedModalList = new CachedModalList<>(new TreeSet<>(String.CASE_INSENSITIVE_ORDER), new TreeSet<>(String.CASE_INSENSITIVE_ORDER));
-        if (cs == null) return cachedModalList;
-        if (cs.getString("allowed-list") == null &&
-            cs.getString("allowed-groups") == null &&
-            cs.getString("excluded-list") == null &&
-            cs.getString("excluded-groups") == null
-        )
+        if (cs == null || isCacheModalDeclarationEmpty(cs))
             return cachedModalList;
 
         cachedModalList.doMerge = cs.getBoolean("merge");
@@ -216,6 +256,15 @@ public class RulesParsingManager {
         }
 
         return results;
+    }
+
+    private boolean isCacheModalDeclarationEmpty(final ConfigurationSection cs){
+        return  (
+                cs.getString("allowed-list") == null || cs.getStringList("allowed-list").isEmpty() &&
+                cs.getString("allowed-groups") == null || cs.getStringList("allowed-groups").isEmpty() &&
+                cs.getString("excluded-list") == null || cs.getStringList("excluded-list").isEmpty() &&
+                cs.getString("excluded-groups") == null || cs.getStringList("excluded-groups").isEmpty()
+        );
     }
 
     @NotNull
@@ -431,7 +480,7 @@ public class RulesParsingManager {
         if (conditions.get("entities") != null)
             parsingInfo.conditions_Entities = buildCachedModalListOfString(objectToConfigurationSection(conditions.get("entities")));
         if (conditions.get("biomes") != null)
-            parsingInfo.conditions_Biomes = buildCachedModalListOfString(objectToConfigurationSection(conditions.get("biomes")));
+            parsingInfo.conditions_Biomes = buildCachedModalListOfBiome(objectToConfigurationSection(conditions.get("biomes")));
         if (conditions.get("apply-plugins") != null)
             parsingInfo.conditions_ApplyPlugins = buildCachedModalListOfString(objectToConfigurationSection(conditions.get("apply-plugins")));
     }
@@ -590,5 +639,4 @@ public class RulesParsingManager {
             return null;
         }
     }
-
 }

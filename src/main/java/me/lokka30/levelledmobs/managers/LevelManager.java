@@ -504,7 +504,7 @@ public class LevelManager {
             // then we'll be here with a non-levelled entity
             return;
         }
-        assert level >= 0;
+        if (level < 1) return;
 
         // Custom Drops must be enabled.
         if (!main.rulesManager.getRule_UseCustomDropsForMob(lmEntity).useDrops) return;

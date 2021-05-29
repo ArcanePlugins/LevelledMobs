@@ -178,7 +178,11 @@ public class LevelInterface {
      * @param additionalLevelInformation used to determine the source event
      */
     public void applyLevelToMob(@NotNull final LivingEntityWrapper lmEntity, final int level, final boolean isSummoned, final boolean bypassLimits, @NotNull final HashSet<AdditionalLevelInformation> additionalLevelInformation) {
-        assert level >= 0;
+        if (level <= 0){
+            // this is likely used by a rule to specify a mob not be levelled
+            return;
+        }
+
         assert bypassLimits || isSummoned || getLevellableState(lmEntity) == LevellableState.ALLOWED;
 
         if (isSummoned) {
@@ -280,7 +284,9 @@ public class LevelInterface {
      * @return if the mob is levelled or not
      */
     public boolean isLevelled(@NotNull final LivingEntity livingEntity) {
-        return livingEntity.getPersistentDataContainer().has(main.levelManager.levelKey, PersistentDataType.INTEGER);
+        synchronized (livingEntity.getPersistentDataContainer()) {
+            return livingEntity.getPersistentDataContainer().has(main.levelManager.levelKey, PersistentDataType.INTEGER);
+        }
     }
 
     /**
@@ -293,7 +299,9 @@ public class LevelInterface {
      */
     public int getLevelOfMob(@NotNull final LivingEntity livingEntity) {
         assert isLevelled(livingEntity);
-        return Objects.requireNonNull(livingEntity.getPersistentDataContainer().get(main.levelManager.levelKey, PersistentDataType.INTEGER), "levelKey was null");
+        synchronized (livingEntity.getPersistentDataContainer()) {
+            return Objects.requireNonNull(livingEntity.getPersistentDataContainer().get(main.levelManager.levelKey, PersistentDataType.INTEGER), "levelKey was null");
+        }
     }
 
     /**

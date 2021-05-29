@@ -2,11 +2,11 @@ package me.lokka30.levelledmobs.rules;
 
 import me.lokka30.levelledmobs.managers.ExternalCompatibilityManager;
 import me.lokka30.levelledmobs.misc.CachedModalList;
-import me.lokka30.levelledmobs.misc.Utils;
 import me.lokka30.levelledmobs.rules.strategies.LevellingStrategy;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.bukkit.block.Biome;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -59,7 +59,7 @@ public class RuleInfo {
     public CachedModalList<String> allowedEntities;
     public CachedModalList<String> conditions_Worlds;
     public CachedModalList<String> conditions_Entities;
-    public CachedModalList<String> conditions_Biomes;
+    public CachedModalList<Biome> conditions_Biomes;
     public CachedModalList<String> conditions_ApplyPlugins;
     public CachedModalList<String> conditions_CustomNames;
     public CachedModalList<String> conditions_NoDropEntities;
