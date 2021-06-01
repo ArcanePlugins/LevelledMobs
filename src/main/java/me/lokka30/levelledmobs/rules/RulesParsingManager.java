@@ -171,6 +171,7 @@ public class RulesParsingManager {
         cachedModalList.excludedGroups = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
 
         for (final String group : cs.getStringList("allowed-groups")){
+            if ("".equals(group.trim())) continue;
             if (!main.rulesManager.biomeGroupMappings.containsKey(group))
                 Utils.logger.info("invalid biome group: " + group);
             else
@@ -178,6 +179,7 @@ public class RulesParsingManager {
         }
 
         for (final String group : cs.getStringList("excluded-groups")){
+            if ("".equals(group.trim())) continue;
             if (!main.rulesManager.biomeGroupMappings.containsKey(group))
                 Utils.logger.info("invalid biome group: " + group);
             else
@@ -185,6 +187,7 @@ public class RulesParsingManager {
         }
 
         for (final String item : allowedItems){
+            if ("".equals(item.trim())) continue;
             try{
                 final Biome biome = Biome.valueOf(item.toUpperCase());
                 cachedModalList.allowedList.add(biome);
@@ -194,6 +197,7 @@ public class RulesParsingManager {
             }
         }
         for (final String item : excludedItems){
+            if ("".equals(item.trim())) continue;
             try{
                 final Biome biome = Biome.valueOf(item.toUpperCase());
                 cachedModalList.excludedList.add(biome);
@@ -214,9 +218,15 @@ public class RulesParsingManager {
 
         cachedModalList.doMerge = cs.getBoolean("merge");
 
-        cachedModalList.allowedList.addAll(getListFromConfigItem(cs,"allowed-list"));
+        for (final String item : getListFromConfigItem(cs,"allowed-list")) {
+            if ("".equals(item.trim())) continue;
+            cachedModalList.allowedList.add(item);
+        }
         cachedModalList.allowedGroups = getSetOfGroups(cs,"allowed-groups");
-        cachedModalList.excludedList.addAll(getListFromConfigItem(cs,"excluded-list"));
+        for (final String item : getListFromConfigItem(cs,"excluded-list")) {
+            if ("".equals(item.trim())) continue;
+            cachedModalList.excludedList.add(item);
+        }
         cachedModalList.excludedGroups = getSetOfGroups(cs,"excluded-groups");
 
         return cachedModalList;
@@ -231,6 +241,7 @@ public class RulesParsingManager {
         final Set<String> results = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
 
         for (final String group : groups) {
+            if ("".equals(group.trim())) continue;
             boolean invalidGroup = false;
             if (group.toLowerCase().startsWith("all")) {
                 try {
@@ -255,17 +266,17 @@ public class RulesParsingManager {
 
     private boolean isCacheModalDeclarationEmpty(final ConfigurationSection cs){
         return  (
-                cs.getString("allowed-list") == null || cs.getStringList("allowed-list").isEmpty() &&
-                cs.getString("allowed-groups") == null || cs.getStringList("allowed-groups").isEmpty() &&
-                cs.getString("excluded-list") == null || cs.getStringList("excluded-list").isEmpty() &&
-                cs.getString("excluded-groups") == null || cs.getStringList("excluded-groups").isEmpty()
+                cs.getStringList("allowed-list").isEmpty() && cs.getString("allowed-list") == null &&
+                cs.getStringList("allowed-groups").isEmpty() && cs.getString("allowed-groups") == null &&
+                cs.getStringList("excluded-list").isEmpty() && cs.getString("excluded-list") == null &&
+                cs.getStringList("excluded-groups").isEmpty() && cs.getString("excluded-groups") == null
         );
     }
 
     @NotNull
     private List<String> getListFromConfigItem(@NotNull final ConfigurationSection cs, final String key){
         final List<String> result = cs.getStringList(key);
-        if (result.isEmpty() && cs.getString(key) != null)
+        if (result.isEmpty() && cs.getString(key) != null && !"".equals(cs.getString(key)))
             result.add(cs.getString(key));
 
         return result;

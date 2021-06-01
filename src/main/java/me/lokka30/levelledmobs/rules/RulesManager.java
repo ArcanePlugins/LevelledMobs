@@ -331,7 +331,16 @@ public class RulesManager {
             }
         }
 
-        return applicableRules;
+        boolean hasWorldListSpecified = false;
+        for (final RuleInfo ri : applicableRules) {
+            if (ri.conditions_Worlds != null && !ri.conditions_Worlds.isEmpty()){
+                hasWorldListSpecified = true;
+                break;
+            }
+        }
+
+        return hasWorldListSpecified ?
+                applicableRules : Collections.emptyList();
     }
 
     private boolean isRuleApplicable_Entity(final LivingEntityWrapper lmEntity, @NotNull final RuleInfo ri){

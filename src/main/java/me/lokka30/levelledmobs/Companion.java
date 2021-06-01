@@ -200,9 +200,16 @@ public class Companion {
     }
 
     void loadSpigotConfig(){
-        main.levelManager.attributeMaxHealthMax = Bukkit.getServer().spigot().getConfig().getDouble("settings.attribute.maxHealth.max", 2048.0);
-        main.levelManager.attributeMovementSpeedMax = Bukkit.getServer().spigot().getConfig().getDouble("settings.attribute.movementSpeed.max", 2048.0);
-        main.levelManager.attributeAttackDamageMax = Bukkit.getServer().spigot().getConfig().getDouble("settings.attribute.attackDamage.max", 2048.0);
+        try {
+            main.levelManager.attributeMaxHealthMax = Bukkit.getServer().spigot().getConfig().getDouble("settings.attribute.maxHealth.max", 2048.0);
+            main.levelManager.attributeMovementSpeedMax = Bukkit.getServer().spigot().getConfig().getDouble("settings.attribute.movementSpeed.max", 2048.0);
+            main.levelManager.attributeAttackDamageMax = Bukkit.getServer().spigot().getConfig().getDouble("settings.attribute.attackDamage.max", 2048.0);
+        }
+        catch (NoSuchMethodError ignored) {
+            main.levelManager.attributeMaxHealthMax = Integer.MAX_VALUE;
+            main.levelManager.attributeMovementSpeedMax = Integer.MAX_VALUE;
+            main.levelManager.attributeAttackDamageMax = Integer.MAX_VALUE;
+        }
     }
 
     void setupMetrics() {

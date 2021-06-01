@@ -61,18 +61,22 @@ public class CachedModalList<T extends Comparable<T>> implements Cloneable {
         final StringBuilder sb = new StringBuilder();
         if (!this.allowedList.isEmpty()){
             if (sb.length() > 0) sb.append(", ");
+            sb.append("lst: ");
             sb.append(this.allowedList);
         }
         if (!this.allowedGroups.isEmpty()){
             if (sb.length() > 0) sb.append(", ");
+            sb.append("grps: ");
             sb.append(this.allowedGroups);
         }
         if (!this.excludedList.isEmpty()){
             if (sb.length() > 0) sb.append(", ");
+            sb.append("ex-lst: ");
             sb.append(this.excludedList);
         }
         if (!this.excludedGroups.isEmpty()){
             if (sb.length() > 0) sb.append(", ");
+            sb.append("ex-grps: ");
             sb.append(this.excludedGroups);
         }
 

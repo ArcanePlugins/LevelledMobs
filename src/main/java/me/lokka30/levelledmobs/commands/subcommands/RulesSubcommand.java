@@ -1,6 +1,7 @@
 package me.lokka30.levelledmobs.commands.subcommands;
 
 import me.lokka30.levelledmobs.LevelledMobs;
+import me.lokka30.levelledmobs.misc.CachedModalList;
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
 import me.lokka30.levelledmobs.misc.Utils;
 import me.lokka30.levelledmobs.rules.RuleInfo;
@@ -216,6 +217,7 @@ public class RulesSubcommand implements Subcommand {
                 if (value.toString().equalsIgnoreCase("0.0")) continue;
                 if (value.toString().equalsIgnoreCase("false")) continue;
                 if (value.toString().equalsIgnoreCase("NONE")) continue;
+                if (value instanceof CachedModalList<?> && ((CachedModalList<?>)value).isEmpty()) continue;
                 final String showValue = f.getName() + ", value: " + value;
                 values.put(f.getName(), showValue);
             }

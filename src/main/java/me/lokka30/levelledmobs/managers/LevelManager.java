@@ -148,7 +148,6 @@ public class LevelManager {
         Utils.debugLog(main, DebugType.SET_LEVELLED_ITEM_DROPS, "2: Entity " + lmEntity.getTypeName() + " level is " + lmEntity.getMobLevel() + ".");
 
         final boolean doNotMultiplyDrops = main.rulesManager.getRule_CheckIfNoDropMultiplierEntitiy(lmEntity);
-        Utils.logger.info("doNotMultiplyDrops: " + doNotMultiplyDrops + ", use drops: " + main.rulesManager.getRule_UseCustomDropsForMob(lmEntity).useDrops);
 
         if (main.rulesManager.getRule_UseCustomDropsForMob(lmEntity).useDrops) {
             // custom drops also get multiplied in the custom drops handler

@@ -109,6 +109,7 @@ public class RuleInfo {
                 if (presetValue instanceof CachedModalList){
                     CachedModalList<?> cachedModalList_preset = (CachedModalList<?>) presetValue;
                     CachedModalList<?> thisCachedModalList = (CachedModalList<?>) this.getClass().getDeclaredField(f.getName()).get(this);
+                    if (cachedModalList_preset.isEmpty()) continue;
 
                     if (thisCachedModalList != null && cachedModalList_preset.doMerge)
                         thisCachedModalList.mergeCachedModal(cachedModalList_preset);
@@ -120,8 +121,10 @@ public class RuleInfo {
                 if (presetValue instanceof LevellingStrategy) {
                     if (this.levellingStrategy != null && this.levellingStrategy.getClass().equals(presetValue.getClass())) {
                         this.levellingStrategy.mergeRule((LevellingStrategy) presetValue);
-                        skipSettingValue = true;
                     }
+                    else
+                        this.levellingStrategy = (LevellingStrategy) presetValue;
+                    skipSettingValue = true;
                 }
 
                 if (presetValue instanceof TieredColoringInfo){

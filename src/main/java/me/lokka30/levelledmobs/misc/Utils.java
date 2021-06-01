@@ -217,13 +217,14 @@ public final class Utils {
         for (final String group : lmEntity.getApplicableGroups()) {
             if (list.excludedGroups.contains(group)) return false;
         }
-        for (final String group : lmEntity.getApplicableGroups()) {
-            if (list.allowedGroups.contains(group)) return true;
-        }
 
         // for denies we'll check for both baby and adult variants regardless of baby-mobs-inherit-adult-setting
         if (list.excludedList.contains(lmEntity.getTypeName()) || list.excludedList.contains(lmEntity.getNameIfBaby()) ||
                 lmEntity.isBabyMob() && list.excludedList.contains("baby_")) return false;
+
+        for (final String group : lmEntity.getApplicableGroups()) {
+            if (list.allowedGroups.contains(group)) return true;
+        }
 
         return list.isBlacklist() || list.allowedList.contains(checkName) ||
                 lmEntity.isBabyMob() && list.allowedList.contains("baby_");
