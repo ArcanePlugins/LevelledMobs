@@ -48,6 +48,11 @@ public final class Utils {
         return Math.round(value * 100) / 100.00;
     }
 
+    public static double round(final double value, final int digits) {
+        final double scale = Math.pow(10, digits);
+        return Math.round(value * scale) / scale;
+    }
+
     /**
      * Replaces content of a message with case insensitivity.
      *

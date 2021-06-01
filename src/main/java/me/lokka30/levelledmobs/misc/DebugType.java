@@ -40,6 +40,8 @@ public enum DebugType {
      */
     SET_LEVELLED_ITEM_DROPS,
 
+    SET_LEVELLED_XP_DROPS,
+
     /**
      * Logged when LM is adjusting the
      * nametag of a levelled mob,

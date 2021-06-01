@@ -124,6 +124,11 @@ public class RuleInfo {
                     }
                 }
 
+                if (presetValue instanceof TieredColoringInfo){
+                    this.getClass().getDeclaredField(f.getName()).set(this, ((TieredColoringInfo)presetValue).cloneItem());
+                    skipSettingValue = true;
+                }
+
                 if (presetValue == MobCustomNameStatusEnum.NOT_SPECIFIED) continue;
                 if (presetValue == MobTamedStatusEnum.NOT_SPECIFIED) continue;
 

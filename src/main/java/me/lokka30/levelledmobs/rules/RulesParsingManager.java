@@ -87,11 +87,6 @@ public class RulesParsingManager {
         parsingInfo.babyMobsInheritAdultSetting = true;
         parsingInfo.mobLevelInheritance = true;
         parsingInfo.creeperMaxDamageRadius = 5;
-        parsingInfo.tieredColoringInfos = new ArrayList<>(4);
-        parsingInfo.tieredColoringInfos.add(TieredColoringInfo.createFromString("1-3", "&a"));
-        parsingInfo.tieredColoringInfos.add(TieredColoringInfo.createFromString("4-6", "&e"));
-        parsingInfo.tieredColoringInfos.add(TieredColoringInfo.createFromString("7-10", "&c"));
-        parsingInfo.tieredColoringInfos.add(TieredColoringInfo.createDefault("&1"));
 
         final ConfigurationSection cs = objectToConfigurationSection(objDefaults);
         if (cs == null){

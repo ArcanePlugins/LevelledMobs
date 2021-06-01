@@ -1,10 +1,11 @@
 package me.lokka30.levelledmobs.rules;
 
 import me.lokka30.levelledmobs.misc.Utils;
+import me.lokka30.levelledmobs.rules.strategies.SpawnDistanceStrategy;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class TieredColoringInfo {
+public class TieredColoringInfo implements Cloneable {
     public int minLevel;
     public int maxLevel;
     public String text;
@@ -52,5 +53,14 @@ public class TieredColoringInfo {
             return "default: " + this.text;
         else
             return String.format("%s-%s: %s", this.minLevel, this.maxLevel, this.text);
+    }
+
+    public TieredColoringInfo cloneItem() {
+        TieredColoringInfo copy = null;
+        try {
+            copy = (TieredColoringInfo) super.clone();
+        } catch (Exception ignored) {}
+
+        return copy;
     }
 }

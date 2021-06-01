@@ -6,6 +6,7 @@ import me.lokka30.levelledmobs.misc.Utils;
 import me.lokka30.microlib.MessageUtils;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
+import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.entity.Creeper;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -73,8 +74,27 @@ public class EntityDamageDebugListener implements Listener {
         for (final Attribute attribute : Attribute.values()) {
             final AttributeInstance attributeInstance = lmEntity.getLivingEntity().getAttribute(attribute);
             if (attributeInstance == null) continue;
-            final String attrib = attribute.toString().replace("GENERIC_", "");
-            send(player, "&8&m->&b " + attrib + ": &7" + Utils.round(attributeInstance.getValue()), false);
+            final StringBuilder sb = new StringBuilder();
+            sb.append("&8&m->&b ");
+            sb.append(attribute.toString().replace("GENERIC_", ""));
+            sb.append(": &7");
+            sb.append(Utils.round(attributeInstance.getValue()));
+
+            int count = 0;
+            for (final AttributeModifier mod : attributeInstance.getModifiers()){
+                if (count == 0) sb.append(" (");
+                else sb.append(", ");
+                if (mod.getOperation().equals(AttributeModifier.Operation.MULTIPLY_SCALAR_1))
+                    sb.append("* ");
+                else
+                    sb.append("+ ");
+                sb.append(Utils.round(mod.getAmount(), 5));
+
+                count++;
+            }
+            if (count > 0) sb.append(")");
+
+            send(player, sb.toString(), false);
         }
 
         if (lmEntity.getLivingEntity() instanceof Creeper) {

@@ -145,23 +145,24 @@ public class LevelManager {
 
         Utils.debugLog(main, DebugType.SET_LEVELLED_ITEM_DROPS, "1: Method called. " + dropsToMultiply.size() + " drops will be analysed.");
 
-        Utils.debugLog(main, DebugType.SET_LEVELLED_ITEM_DROPS, "3: Entity " + lmEntity.getTypeName() + " level is " + lmEntity.getMobLevel() + ".");
+        Utils.debugLog(main, DebugType.SET_LEVELLED_ITEM_DROPS, "2: Entity " + lmEntity.getTypeName() + " level is " + lmEntity.getMobLevel() + ".");
 
-        final boolean doNotMultiplyDrops = !main.rulesManager.getRule_CheckIfNoDropMultiplierEntitiy(lmEntity);
+        final boolean doNotMultiplyDrops = main.rulesManager.getRule_CheckIfNoDropMultiplierEntitiy(lmEntity);
+        Utils.logger.info("doNotMultiplyDrops: " + doNotMultiplyDrops + ", use drops: " + main.rulesManager.getRule_UseCustomDropsForMob(lmEntity).useDrops);
 
         if (main.rulesManager.getRule_UseCustomDropsForMob(lmEntity).useDrops) {
             // custom drops also get multiplied in the custom drops handler
             final CustomDropResult dropResult = main.customDropsHandler.getCustomItemDrops(lmEntity, customDrops, false);
 
             if (dropResult == CustomDropResult.HAS_OVERRIDE) {
-                Utils.debugLog(main, DebugType.SET_LEVELLED_ITEM_DROPS, "4: custom drop has override");
+                Utils.debugLog(main, DebugType.SET_LEVELLED_ITEM_DROPS, "3: custom drop has override");
                 removeVanillaDrops(lmEntity, dropsToMultiply);
             }
         }
 
         if (!doNotMultiplyDrops && !dropsToMultiply.isEmpty()) {
             // Get currentDrops added per level value
-            final int addition = BigDecimal.valueOf(main.mobDataManager.getAdditionsForLevel(lmEntity, Addition.CUSTOM_ITEM_DROP, 0.0))
+            final int addition = BigDecimal.valueOf(main.mobDataManager.getAdditionsForLevel(lmEntity, Addition.CUSTOM_ITEM_DROP, 2.0))
                     .setScale(0, RoundingMode.HALF_DOWN).intValueExact(); // truncate double to int
             Utils.debugLog(main, DebugType.SET_LEVELLED_ITEM_DROPS, "4: Item drop addition is +" + addition + ".");
 
@@ -249,8 +250,9 @@ public class LevelManager {
     //Calculates the XP dropped when a levellable creature dies.
     public int getLevelledExpDrops(@NotNull final LivingEntityWrapper lmEntity, final int xp) {
         if (lmEntity.isLevelled()) {
-            final int level = lmEntity.getMobLevel();
-            return (int) Math.round(xp + (xp * main.mobDataManager.getAdditionsForLevel(lmEntity, Addition.CUSTOM_XP_DROP, 0.0)));
+            final int newXp = (int) Math.round(xp + (xp * main.mobDataManager.getAdditionsForLevel(lmEntity, Addition.CUSTOM_XP_DROP, 3.0)));
+            Utils.debugLog(main, DebugType.SET_LEVELLED_XP_DROPS, lmEntity.getTypeName() );
+            return newXp;
         }
         else
             return xp;

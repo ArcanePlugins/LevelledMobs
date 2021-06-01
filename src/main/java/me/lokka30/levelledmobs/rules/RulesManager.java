@@ -76,7 +76,8 @@ public class RulesManager {
         CachedModalList<String> entitiesList = null;
 
         for (final RuleInfo ruleInfo : lmEntity.getApplicableRules()){
-            if (ruleInfo.conditions_NoDropEntities != null) entitiesList = ruleInfo.conditions_NoDropEntities;
+            if (ruleInfo.conditions_NoDropEntities != null)
+                entitiesList = ruleInfo.conditions_NoDropEntities;
         }
 
         return entitiesList != null && entitiesList.isEnabledInList(lmEntity.getNameIfBaby(), lmEntity);
