@@ -10,7 +10,7 @@ import java.util.concurrent.ThreadLocalRandom;
  *
  * @author stumper66
  */
-public class YDistanceStrategy implements LevellingStrategy {
+public class YDistanceStrategy implements LevellingStrategy, Cloneable {
     public Integer startingYLevel;
     public Integer endingYLevel;
     public Integer yPeriod;
@@ -29,7 +29,7 @@ public class YDistanceStrategy implements LevellingStrategy {
     }
 
     public String toString(){
-        return String.format("start: %s, end: %s, yPeriod: %s",
+        return String.format("ycoord: start: %s, end: %s, yPeriod: %s",
                 startingYLevel == null ? 0 : startingYLevel,
                 endingYLevel == null ? 0 : endingYLevel,
                 yPeriod == null ? 0 : yPeriod
@@ -42,7 +42,6 @@ public class YDistanceStrategy implements LevellingStrategy {
         int yStart = this.startingYLevel == null ? 0 : this.startingYLevel;
         int yEnd = this.endingYLevel == null ? 0 : this.endingYLevel;
         final double yPeriod = this.yPeriod == null ? 0.0 : this.yPeriod;
-
         final boolean isAscending = (yEnd > yStart);
         if (!isAscending) {
             yStart = yEnd;
@@ -66,7 +65,7 @@ public class YDistanceStrategy implements LevellingStrategy {
                 useLevel = (int) (useMobYLocation / yPeriod);
             else {
                 double percent = useMobYLocation / diff;
-                useLevel = (int) Math.ceil((maxLevel - minLevel + 1) * percent);
+                useLevel = (int) Math.ceil((maxLevel - 1) * percent);
             }
         }
 

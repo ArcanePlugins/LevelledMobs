@@ -228,9 +228,9 @@ public class RulesSubcommand implements Subcommand {
 
         for (final String key : values.keySet()){
             if (showOnConsole)
-                Utils.logger.info(values.get(key));
+                Utils.logger.info(Utils.colorizeAllInList(Collections.singletonList(values.get(key))).get(0));
             else
-                sender.sendMessage(values.get(key));
+                sender.sendMessage(Utils.colorizeAllInList(Collections.singletonList(values.get(key))).get(0));
         }
     }
 
