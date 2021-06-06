@@ -264,7 +264,9 @@ public class LevelManager {
         String nametag = isDeathNametag ? main.rulesManager.getRule_Nametag_CreatureDeath(lmEntity) : main.rulesManager.getRule_Nametag(lmEntity);
         if ("disabled".equalsIgnoreCase(nametag) || "none".equalsIgnoreCase(nametag)) return null;
 
-        // Baby zombies can have specific nametags in entity-name-override
+        // ignore if 'disabled'
+        if (nametag.isEmpty())
+            return lmEntity.getLivingEntity().getCustomName(); // CustomName can be null, that is meant to be the case.
 
         final String overridenName = main.rulesManager.getRule_EntityOverriddenName(lmEntity);
 
@@ -274,10 +276,6 @@ public class LevelManager {
 
         if (lmEntity.getLivingEntity().getCustomName() != null)
             displayName = lmEntity.getLivingEntity().getCustomName();
-
-        // ignore if 'disabled'
-        if (nametag.isEmpty())
-            return lmEntity.getLivingEntity().getCustomName(); // CustomName can be null, that is meant to be the case.
 
         nametag = replaceStringPlaceholders(nametag, lmEntity, displayName);
 

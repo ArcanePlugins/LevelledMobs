@@ -294,6 +294,8 @@ public class RulesManager {
         for (final RuleInfo ruleInfo : lmEntity.getApplicableRules()){
             if (ruleInfo.entityNameOverrides.containsKey(lmEntity.getNameIfBaby()))
                 overridenNames = ruleInfo.entityNameOverrides.get(lmEntity.getNameIfBaby());
+            else if (ruleInfo.entityNameOverrides.containsKey("all_entities"))
+                overridenNames = ruleInfo.entityNameOverrides.get("all_entities");
         }
 
         if (overridenNames == null || overridenNames.isEmpty())
@@ -304,7 +306,11 @@ public class RulesManager {
             lmEntity.setOverridenEntityName(overridenNames.get(0));
         }
 
-        return overridenNames.get(0);
+        final String entityName = Utils.capitalize(lmEntity.getNameIfBaby().replaceAll("_", " "));
+        String result = overridenNames.get(0);
+        result = result.replace("%entity-name%", entityName);
+        result = result.replace("%displayname%", (lmEntity.getLivingEntity().getCustomName() == null ? entityName : lmEntity.getLivingEntity().getCustomName()));
+        return result;
     }
 
     @NotNull
@@ -399,7 +405,6 @@ public class RulesManager {
             return false;
         }
 
-        // if (ri.conditions_Biomes != null && !ri.conditions_Biomes.isEnabledInList(lmInterface.getLocation().getBlock().getBiome(), null)) {
         if (ri.conditions_Biomes != null && !Utils.isBiomeInModalList(ri.conditions_Biomes, lmInterface.getLocation().getBlock().getBiome(), main.rulesManager)) {
             Utils.debugLog(main, DebugType.DENIED_RULE_BIOME_LIST, String.format("%s, mob: %s, mob biome: %s",
                     ri.getRuleName(), lmInterface.getEntityType().name(), lmInterface.getLocation().getBlock().getBiome().name()));

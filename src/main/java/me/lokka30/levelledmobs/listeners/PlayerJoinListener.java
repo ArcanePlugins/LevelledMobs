@@ -12,6 +12,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
@@ -38,6 +39,12 @@ public class PlayerJoinListener implements Listener {
         parseUpdateChecker(event.getPlayer());
 
         updateNametagsInWorldAsync(event.getPlayer(), event.getPlayer().getWorld());
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    private void onPlayerQuitEvent(final PlayerQuitEvent event){
+        if (main.papiManager != null)
+            main.papiManager.playedLoggedOut(event.getPlayer());
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)

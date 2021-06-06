@@ -40,6 +40,7 @@ public class LevelledMobs extends JavaPlugin {
     public final QueueManager_Nametags queueManager_nametags = new QueueManager_Nametags(this);
     public final Object attributeSyncObject = new Object();
     public Random random;
+    public PAPIManager papiManager;
 
     // Configuration
     public YamlConfiguration settingsCfg;

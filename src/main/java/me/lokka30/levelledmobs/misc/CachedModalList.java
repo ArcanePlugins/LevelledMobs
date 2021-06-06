@@ -39,15 +39,17 @@ public class CachedModalList<T extends Comparable<T>> implements Cloneable {
             for (final String group : lmEntity.getApplicableGroups()) {
                 if (this.excludedGroups.contains(group)) return false;
             }
+
+            if (this.excludedList.contains(item)) return false;
+
             for (final String group : lmEntity.getApplicableGroups()) {
                 if (this.allowedGroups.contains(group)) return true;
             }
         }
 
-        if (this.excludedList.contains(item))
-            return false;
+        if (this.excludedList.contains(item)) return false;
 
-        else return this.allowedList.contains(item);
+        return this.isBlacklist() || this.allowedList.contains(item);
     }
 
     public boolean isEmpty(){

@@ -40,6 +40,9 @@ public class EntityDeathListener implements Listener {
         if (damage != null)
             lmEntity.deathCause = damage.getCause();
 
+        if (lmEntity.getLivingEntity().getKiller() != null && main.papiManager != null)
+            main.papiManager.putEntityDeath(lmEntity.getLivingEntity().getKiller(), lmEntity);
+
         if (lmEntity.isLevelled()) {
 
             // Set levelled item drops

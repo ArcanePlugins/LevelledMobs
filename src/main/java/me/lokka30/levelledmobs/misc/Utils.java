@@ -237,13 +237,14 @@ public final class Utils {
             if (rulesManager.biomeGroupMappings.containsKey(group) &&
                     rulesManager.biomeGroupMappings.get(group).contains(biome.toString())) return false;
         }
+
+        if (list.excludedList.contains(biome)) return false;
+
         for (final String group : list.allowedGroups) {
             if (rulesManager.biomeGroupMappings.containsKey(group) &&
                     rulesManager.biomeGroupMappings.get(group).contains(biome.toString()))
                 return true;
         }
-
-        if (list.excludedList.contains(biome)) return false;
 
         return list.isBlacklist() || list.allowedList.contains(biome);
     }

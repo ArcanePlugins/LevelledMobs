@@ -30,6 +30,10 @@ public class RulesParsingManager {
     @NotNull
     public List<RuleInfo> customRules;
     public RuleInfo defaultRule;
+    private final static String ml_AllowedItems = "allowed-list";
+    private final static String ml_AllowedGroups = "allowed-groups";
+    private final static String ml_ExcludedItems = "excluded-list";
+    private final static String ml_ExcludedGroups = "excluded-groups";
 
     public void parseRulesMain(final YamlConfiguration config){
         if (config == null) return;
@@ -130,10 +134,10 @@ public class RulesParsingManager {
 
         cachedModalList.doMerge = cs.getBoolean("merge");
 
-        final List<String> allowedItems = getListFromConfigItem(cs,"allowed-list");
-        cachedModalList.allowedGroups = getSetOfGroups(cs,"allowed-groups");
-        final List<String> excludedItems = getListFromConfigItem(cs,"excluded-list");
-        cachedModalList.excludedGroups = getSetOfGroups(cs,"excluded-groups");
+        final List<String> allowedItems = getListFromConfigItem(cs, ml_AllowedItems);
+        cachedModalList.allowedGroups = getSetOfGroups(cs, ml_AllowedGroups);
+        final List<String> excludedItems = getListFromConfigItem(cs , ml_ExcludedItems);
+        cachedModalList.excludedGroups = getSetOfGroups(cs, ml_ExcludedGroups);
 
         for (final String item : allowedItems){
             try{
@@ -165,12 +169,12 @@ public class RulesParsingManager {
 
         cachedModalList.doMerge = cs.getBoolean("merge");
 
-        final List<String> allowedItems = getListFromConfigItem(cs,"allowed-list");
+        final List<String> allowedItems = getListFromConfigItem(cs, ml_AllowedItems);
         cachedModalList.allowedGroups = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
-        final List<String> excludedItems = getListFromConfigItem(cs,"excluded-list");
+        final List<String> excludedItems = getListFromConfigItem(cs, ml_ExcludedItems);
         cachedModalList.excludedGroups = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
 
-        for (final String group : cs.getStringList("allowed-groups")){
+        for (final String group : cs.getStringList(ml_AllowedGroups)){
             if ("".equals(group.trim())) continue;
             if (!main.rulesManager.biomeGroupMappings.containsKey(group))
                 Utils.logger.info("invalid biome group: " + group);
@@ -178,7 +182,7 @@ public class RulesParsingManager {
                 cachedModalList.allowedGroups.add(group);
         }
 
-        for (final String group : cs.getStringList("excluded-groups")){
+        for (final String group : cs.getStringList(ml_ExcludedGroups)){
             if ("".equals(group.trim())) continue;
             if (!main.rulesManager.biomeGroupMappings.containsKey(group))
                 Utils.logger.info("invalid biome group: " + group);
@@ -218,16 +222,16 @@ public class RulesParsingManager {
 
         cachedModalList.doMerge = cs.getBoolean("merge");
 
-        for (final String item : getListFromConfigItem(cs,"allowed-list")) {
+        for (final String item : getListFromConfigItem(cs, ml_AllowedItems)) {
             if ("".equals(item.trim())) continue;
             cachedModalList.allowedList.add(item);
         }
-        cachedModalList.allowedGroups = getSetOfGroups(cs,"allowed-groups");
-        for (final String item : getListFromConfigItem(cs,"excluded-list")) {
+        cachedModalList.allowedGroups = getSetOfGroups(cs, ml_AllowedGroups);
+        for (final String item : getListFromConfigItem(cs, ml_ExcludedItems)) {
             if ("".equals(item.trim())) continue;
             cachedModalList.excludedList.add(item);
         }
-        cachedModalList.excludedGroups = getSetOfGroups(cs,"excluded-groups");
+        cachedModalList.excludedGroups = getSetOfGroups(cs, ml_ExcludedGroups);
 
         return cachedModalList;
     }
@@ -266,10 +270,10 @@ public class RulesParsingManager {
 
     private boolean isCacheModalDeclarationEmpty(final ConfigurationSection cs){
         return  (
-                cs.getStringList("allowed-list").isEmpty() && cs.getString("allowed-list") == null &&
-                cs.getStringList("allowed-groups").isEmpty() && cs.getString("allowed-groups") == null &&
-                cs.getStringList("excluded-list").isEmpty() && cs.getString("excluded-list") == null &&
-                cs.getStringList("excluded-groups").isEmpty() && cs.getString("excluded-groups") == null
+                cs.getStringList(ml_AllowedItems).isEmpty() && cs.getString(ml_AllowedItems) == null &&
+                cs.getStringList(ml_ExcludedGroups).isEmpty() && cs.getString(ml_AllowedGroups) == null &&
+                cs.getStringList(ml_ExcludedItems).isEmpty() && cs.getString(ml_ExcludedItems) == null &&
+                cs.getStringList(ml_ExcludedGroups).isEmpty() && cs.getString(ml_ExcludedGroups) == null
         );
     }
 

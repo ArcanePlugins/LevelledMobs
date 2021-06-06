@@ -6,6 +6,7 @@ import me.lokka30.levelledmobs.customdrops.CustomDropsHandler;
 import me.lokka30.levelledmobs.listeners.*;
 import me.lokka30.levelledmobs.managers.ExternalCompatibilityManager;
 import me.lokka30.levelledmobs.managers.LevelManager;
+import me.lokka30.levelledmobs.managers.PAPIManager;
 import me.lokka30.levelledmobs.managers.WorldGuardManager;
 import me.lokka30.levelledmobs.misc.*;
 import me.lokka30.microlib.UpdateChecker;
@@ -180,6 +181,11 @@ public class Companion {
         pluginManager.registerEvents(new PlayerDeathListener(main), main);
         pluginManager.registerEvents(main.blockPlaceListener, main);
         main.chunkLoadListener = new ChunkLoadListener(main);
+
+        if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
+            main.papiManager = new PAPIManager(main);
+            main.papiManager.register();
+        }
 
         if (ExternalCompatibilityManager.hasMythicMobsInstalled())
             pluginManager.registerEvents(new MythicMobsListener(main), main);
