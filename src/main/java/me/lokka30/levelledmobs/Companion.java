@@ -179,6 +179,7 @@ public class Companion {
         pluginManager.registerEvents(new PlayerJoinListener(main), main);
         pluginManager.registerEvents(new EntityTameListener(main), main);
         pluginManager.registerEvents(new PlayerDeathListener(main), main);
+        pluginManager.registerEvents(new CombustListener(main), main);
         pluginManager.registerEvents(main.blockPlaceListener, main);
         main.chunkLoadListener = new ChunkLoadListener(main);
 

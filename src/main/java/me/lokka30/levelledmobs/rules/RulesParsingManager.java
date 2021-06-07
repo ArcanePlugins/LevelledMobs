@@ -440,6 +440,8 @@ public class RulesParsingManager {
             parsingInfo.nametag_CreatureDeath = cs.getString("creature-death-nametag");
         if (cs.getString("creature-nametag-always-visible") != null)
             parsingInfo.CreatureNametagAlwaysVisible = cs.getBoolean("creature-nametag-always-visible");
+        if (cs.getString("sunlight-burn-multiplier") != null)
+            parsingInfo.sunlightBurnMultiplier = cs.getDouble("sunlight-burn-multiplier");
     }
 
     private void parseConditions(final ConfigurationSection conditions){

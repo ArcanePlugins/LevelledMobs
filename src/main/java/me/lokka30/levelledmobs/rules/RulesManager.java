@@ -43,6 +43,17 @@ public class RulesManager {
         return result;
     }
 
+    public double getRule_SunlightBurnMultiplier(final LivingEntityWrapper lmEntity){
+        double result = 1.0;
+
+        for (final RuleInfo ruleInfo : lmEntity.getApplicableRules()){
+            if (ruleInfo.sunlightBurnMultiplier != null)
+                result = ruleInfo.sunlightBurnMultiplier;
+        }
+
+        return result;
+    }
+
     @Nullable
     public LevelNumbersWithBias getRule_LowerMobLevelBiasFactor(@NotNull final LivingEntityWrapper lmEntity, final int minLevel, final int maxLevel){
         Integer lowerMobLevelBiasFactor = null;
