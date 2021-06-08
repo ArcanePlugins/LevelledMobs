@@ -43,12 +43,18 @@
 # |  Dependencies:                                                                    |\
 # |    ProtocolLib:                                                                   |\
 # |      A 'soft dependency'; Not *required* but highly recommended.                  |\
-# |      Without this, the plugin will not show LM's nametags.                        |\
+# |      Without this, the plugin will not show LevelledMobs's nametags.              |\
+# |      Entities may still level without the nametag present.                        |\
 # |      https://www.spigotmc.org/resources/protocollib.1997/                         |\
 # |                                                                                   |\
 # |  Recommended Configuration:                                                       |\
-# |    LevelledMobs is tested using the latest PaperMC and SpigotMC Server Software.  |\
-# |    While other solutions may work, compatability is not guarenteed.               |\
+# |    LevelledMobs is tested using the latest PaperMC and SpigotMC server software.  |\
+# |    While other solutions may work, compatibility is not guarenteed.               |\
+# |    LevelledMobs comes ready-to-go out of the box with the default configuration,  |\
+# |    which has been playtested beforehand to provide an experience a bit harder     |\
+# |    than the HARD vanilla difficulty, taking into account the vanilla armors       |\
+# |    and weapons when combined with the vanilla enchantments, making the toughtest  |\
+# |    entities still challenging while not impossible.                               |\
 # |                                                                                   |\
 # |.-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.|\
 # lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\|\
@@ -222,6 +228,8 @@
 # ||     | represents the texture file value; You only need one.                                |
 # ||                                                                                            |
 # |||-------------------------------------------------------------------------------------------|
+
+# |||-------------------------------------------------------------------------------------------|
 # |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 # |||-------------------------------------------------------------------------------------------|
 # ||  How To Use - Command Attributes System [CAS]                                              |
@@ -248,8 +256,9 @@
 # ||   ||EntityType:                                                                            |
 # ||   ||  overall_chance: 0.5                                                                  |
 # ||   ||  - customCommand:                                                                     |
-# ||   ||      command: "effect give %player% strength %ranged%"                                |
-# ||   ||      ranged: 2-5                                                                      |
+# ||   ||      command: "effect give %player% strength %ranged_a% %ranged_b%"                   |
+# ||   ||      ranged_a: 2-5                                                                    |
+# ||   ||      ranged_b: 0-2                                                                    |
 # ||   ||      minLevel: 1                                                                      |
 # ||   ||      maxLevel: 100                                                                    |
 # ||   ||      amount: 1-3                                                                      |
@@ -274,11 +283,18 @@
 # ||     | This is a VERY powerful feature and you should ensure you are not causing            |
 # ||     | any potential lag due to these commands running in the background.                   |
 # ||                                                                                            |
-# ||   ranged:                                                                                  |
-# ||     | A special config which populates the tag '%ranged%' for use within the CAS.          |
-# ||     | In the example shown above, 'ranged:' is set as '2-5', and when used within the      |
-# ||     | 'command:', which gives the strength effect to the player for a period of times      |
-# ||     | randomly selected from the range, or 2 to 5 seconds.                                 |
+# ||   ranged_A/B/C/D:                                                                          |
+# ||     | A special config which populates the tag '%ranged_%' for use within the CAS.         |
+# ||     | This special tag connects to the config value of the same name. In the example       |
+# ||     | above, you have two 'ranged_' tags and two configs: 'ranged_a' and 'ranged_b'.       |
+# ||     | You can include as many 'ranged_' values and tags as you desire to use within        |
+# ||     | the CAS, so long as they match. This is useful for randomly applying a ranged        |
+# ||     | value into a command for flexibility. The example above demonstrates this, using     |
+# ||     | the command 'effect give %player% strength %ranged_a% %ranged_b%', where '%player%'  |
+# ||     | represents the player themselves, '%ranged_a%' would be a random value between       |
+# ||     | 2 and 5, while '%ranged_b%' would be a random value between 0 and 2. When applied    |
+# ||     | to the above effect, when a player kills an entity and the command runs, it will:    |
+# ||     | Apply effect Strength I, II, or III for anywhere between 2 and 5 seconds.            |
 # ||                                                                                            |
 # ||   minlevel: / maxlevel:                                                                    |
 # ||     | You can specify what the minimum or maximum level an entity must be to               |
@@ -312,6 +328,8 @@
 # ||     | this is useful to prevent mob farms from spamming commands unintentionally.          |
 # ||                                                                                            |
 # |||-------------------------------------------------------------------------------------------|
+
+# |||-------------------------------------------------------------------------------------------|
 # |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 # |||-------------------------------------------------------------------------------------------|
 # ||  How To Use - Drop Tables                                                                  |
@@ -343,6 +361,8 @@
 # ||     | Replace it with any of the attributes. Reference the CAS/DAS above.                  |
 # ||                                                                                            |
 # |||-------------------------------------------------------------------------------------------|
+
+# |||-------------------------------------------------------------------------------------------|
 # |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 # |||-------------------------------------------------------------------------------------------|
 # ||  How To Use - Universal Groups                                                             |
@@ -370,8 +390,6 @@
 # ||     | This is a generic term for any of the attributes listed within the CAS or DAS.       |
 # ||     | Replace it with any of the attributes. Reference the CAS/DAS above.                  |
 # ||                                                                                            |
-# |||-------------------------------------------------------------------------------------------|
-# |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 # |||-------------------------------------------------------------------------------------------|
 # ||  How To Use - Types of Universal Groups                                                    |
 # ||                                                                                            |
@@ -403,8 +421,10 @@
 # ||     | All underwater entities.                                                             |
 # ||                                                                                            |
 # |||-------------------------------------------------------------------------------------------|
-# |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
-# |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+
+
+
+# |||-------------------------------------------------------------------------------------------|
 # |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 # |||-------------------------------------------------------------------------------------------|
 # ||  Section 01 - Apply Default CustomDrops Settings                                           |

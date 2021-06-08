@@ -46,8 +46,8 @@ public class CombustListener implements Listener {
         }
 
         final LivingEntityWrapper lmEntity = new LivingEntityWrapper((LivingEntity) event.getEntity(), main);
-        double multiplier = main.rulesManager.getRule_SunlightBurnMultiplier(lmEntity);
-        if (multiplier == 1.0) return;
+        double multiplier = main.rulesManager.getRule_SunlightBurnIntensity(lmEntity);
+        if (multiplier == 0.0) return;
 
         double newHealth = lmEntity.getLivingEntity().getHealth() - multiplier;
         if (newHealth < 0.0) newHealth = 0.0;

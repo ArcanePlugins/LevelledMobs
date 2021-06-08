@@ -43,7 +43,7 @@ public class RuleInfo {
     public Integer conditions_ApplyAboveY;
     public Integer conditions_ApplyBelowY;
     public Double conditions_Chance;
-    public Double sunlightBurnMultiplier;
+    public Double sunlightBurnAmount;
     public String nametag;
     public String nametag_CreatureDeath;
     public String presetName;

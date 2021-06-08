@@ -43,12 +43,12 @@ public class RulesManager {
         return result;
     }
 
-    public double getRule_SunlightBurnMultiplier(final LivingEntityWrapper lmEntity){
-        double result = 1.0;
+    public double getRule_SunlightBurnIntensity(final LivingEntityWrapper lmEntity){
+        double result = 0.0;
 
         for (final RuleInfo ruleInfo : lmEntity.getApplicableRules()){
-            if (ruleInfo.sunlightBurnMultiplier != null)
-                result = ruleInfo.sunlightBurnMultiplier;
+            if (ruleInfo.sunlightBurnAmount != null)
+                result = ruleInfo.sunlightBurnAmount;
         }
 
         return result;

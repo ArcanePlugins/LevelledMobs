@@ -43,12 +43,18 @@
 # |  Dependencies:                                                                    |\
 # |    ProtocolLib:                                                                   |\
 # |      A 'soft dependency'; Not *required* but highly recommended.                  |\
-# |      Without this, the plugin will not show LM's nametags.                        |\
-# |      https://www.spigotmc.org/resources/protocollib.1997/                         ||\
-# |                                                                                   |||\
-# |  Recommended Configuration:                                                       ||||\
-# |    LevelledMobs is tested using the latest PaperMC and SpigotMC Server Software.  |||||\
-# |    While other solutions may work, compatability is not guarenteed.               ||||||\
+# |      Without this, the plugin will not show LevelledMobs's nametags.              |\
+# |      Entities may still level without the nametag present.                        |\
+# |      https://www.spigotmc.org/resources/protocollib.1997/                         |\
+# |                                                                                   |\
+# |  Recommended Configuration:                                                       |\
+# |    LevelledMobs is tested using the latest PaperMC and SpigotMC server software.  |\
+# |    While other solutions may work, compatibility is not guarenteed.               |\
+# |    LevelledMobs comes ready-to-go out of the box with the default configuration,  ||\
+# |    which has been playtested beforehand to provide an experience a bit harder     |||\
+# |    than the HARD vanilla difficulty, taking into account the vanilla armors       ||||\
+# |    and weapons when combined with the vanilla enchantments, making the toughtest  |||||\
+# |    entities still challenging while not impossible.                               ||||||\
 # |                                                                                   |||||||\
 # |.-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.||||||||\
 # lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\|||||||||\
