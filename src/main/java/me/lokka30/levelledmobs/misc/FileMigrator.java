@@ -103,71 +103,62 @@ public class FileMigrator {
         final File backedupFile = new File(main.getDataFolder(), "rules.stock");
         FileUtil.copy(fileRules, backedupFile);
 
+        final int worldListAllowedLine = 992;
+        final int worldListExcludedLine = 993;
+
         final YamlConfiguration settings = YamlConfiguration.loadConfiguration(fileSettings);
         final YamlConfiguration rules = YamlConfiguration.loadConfiguration(fileRules);
-
-        final Map<String, String> settingsPathToRulesPath = new TreeMap<>();
-        settingsPathToRulesPath.put("creature-nametag", "");
-        settingsPathToRulesPath.put("creature-death-nametag", "");
-        settingsPathToRulesPath.put("creature-nametag-always-visible", "");
-        settingsPathToRulesPath.put("allowed-entities-list.babyMobsInheritAdultSetting", "");
-        settingsPathToRulesPath.put("level-inheritance", "");
-        settingsPathToRulesPath.put("creeper-max-damage-radius", "");
-        settingsPathToRulesPath.put("fine-tuning.min-level", "");
-        settingsPathToRulesPath.put("fine-tuning.max-level", "");
-        settingsPathToRulesPath.put("fine-tuning.lower-mob-level-bias-factor", "");
-        settingsPathToRulesPath.put("fine-tuning.additions.item-drop", "");
-        settingsPathToRulesPath.put("fine-tuning.additions.xp-drop", "");
-        settingsPathToRulesPath.put("no-level-conditions.nametagged", "");
-        settingsPathToRulesPath.put("no-level-conditions.tamed", "");
-        settingsPathToRulesPath.put("use-custom-item-drops-for-mobs", "");
-        settingsPathToRulesPath.put("kill-skip-conditions.nametagged", "");
-        settingsPathToRulesPath.put("kill-skip-conditions.tamed", "");
-        settingsPathToRulesPath.put("kill-skip-conditions.leashed", "");
-        settingsPathToRulesPath.put("kill-skip-conditions.convertingZombieVillager", "");
-
-        final List<String> currentKey = new LinkedList<>();
-
         try {
-            final List<String> oldConfigLines = Files.readAllLines(fileSettings.toPath(), StandardCharsets.UTF_8);
-            final List<String> newConfigLines = Files.readAllLines(fileRules.toPath(), StandardCharsets.UTF_8);
+            final List<String> settingsLines = Files.readAllLines(fileSettings.toPath(), StandardCharsets.UTF_8);
+            final List<String> rulesLines = Files.readAllLines(fileRules.toPath(), StandardCharsets.UTF_8);
 
-            final SortedMap<String, FileMigrator.FieldInfo> oldConfigMap = getMapFromConfig(oldConfigLines);
-            final SortedMap<String, FileMigrator.FieldInfo> newConfigMap = getMapFromConfig(newConfigLines);
+            final String worldMode = settings.getString("allowed-worlds-list.mode");
+            final List<String> worldList = settings.getStringList("allowed-worlds-list.list");
 
-            ArrayListMigratorInfo info = new ArrayListMigratorInfo();
-            info.oldConfigMap = oldConfigMap;
-            info.newConfigMap = newConfigMap;
-            info.oldConfigLines = oldConfigLines;
-            info.newConfigLines = newConfigLines;
+            if ("ALL".equalsIgnoreCase(worldMode)) {
+                rulesLines.set(worldListAllowedLine, "      allowed-list: ['*']");
+                rulesLines.set(worldListExcludedLine, "      excluded-list: ['']");
+            }
+            else if ("WHITELIST".equalsIgnoreCase(worldMode)) {
+                final String newWorldList = compileListFromArray(worldList);
+                rulesLines.set(worldListAllowedLine, "      allowed-list: " + newWorldList);
+                rulesLines.set(worldListExcludedLine, "      excluded-list: ['']");
+            }
+            else {
+                final String newWorldList = compileListFromArray(worldList);
+                rulesLines.set(worldListAllowedLine, "      allowed-list: ['']");
+                rulesLines.set(worldListExcludedLine, "      excluded-list: " + newWorldList);
+            }
 
+            Files.write(fileRules.toPath(), rulesLines, StandardCharsets.UTF_8, StandardOpenOption.TRUNCATE_EXISTING);
+            Utils.logger.info("&fFile Loader: &8(Migration) &7Migrated &bworld allowed list&7 successfully.");
+            final List<String> msg = Arrays.asList("\n&c[WARNING] LevelledMobs3 Settings have Reset!",
+                    "\n&c[WARNING] Your original LM configuration files have been saved!",
+                    "\n&c[WARNING]&r Due to significant changes, most settings WILL NOT MIGRATE from LM2.X to LM3.X.",
+                    "\n&c[WARNING]&r You must edit rules.yml to further customize LM!",
+                    "\n&c[WARNING]&r FOR ASSISTANCE, VISIT OUR SUPPORT DISCORD",
+                    "\n&c[WARNING]&r https://discord.io/arcaneplugins");
+            Utils.logger.warning(Utils.colorizeAllInList(msg).toString());
+            main.migratedFromPre30 = true;
         }
         catch (IOException e){
-            Utils.logger.warning("Unable to migrate settings.yml to rules.yml: " + e.getMessage());
-        }
-    }
-
-    private static void copyArrayList(@NotNull final ArrayListMigratorInfo info){
-        int sourceSize = 0;
-        int destSize = 0;
-
-        for (int currentLine = 0; currentLine < info.oldConfigLines.size(); currentLine++) {
-            String line = info.oldConfigLines.get(currentLine);
-            final int depth = getFieldDepth(line);
-            if (line.trim().startsWith("#") || line.trim().isEmpty()) continue;
-
-
+            e.printStackTrace();
         }
 
     }
 
-    private static class ArrayListMigratorInfo{
-        public SortedMap<String, FileMigrator.FieldInfo> oldConfigMap;
-        public SortedMap<String, FileMigrator.FieldInfo> newConfigMap;
-        public List<String> oldConfigLines;
-        public List<String> newConfigLines;
-        public String sourceKeyName;
-        public String destKeyName;
+    private static String compileListFromArray(final List<String> list){
+        final StringBuilder sb = new StringBuilder();
+        sb.append("[");
+        for (final String item : list){
+            if (sb.length() > 1) sb.append(", ");
+            sb.append("'");
+            sb.append(item);
+            sb.append("'");
+        }
+        sb.append("]");
+
+        return sb.toString();
     }
 
     protected static void copyCustomDrops(@NotNull final File from, @NotNull final File to, final int fileVersion){

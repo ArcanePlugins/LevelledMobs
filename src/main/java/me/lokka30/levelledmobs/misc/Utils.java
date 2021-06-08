@@ -208,6 +208,8 @@ public final class Utils {
     }
 
     public static boolean isLivingEntityInModalList(@NotNull final CachedModalList<String> list, final LivingEntityWrapper lmEntity, final boolean checkBabyMobs) {
+        if (list.allowAll) return true;
+        if (list.excludeAll) return false;
         if (list.isEmpty()) return true;
 
         final String checkName = checkBabyMobs ?
@@ -231,6 +233,8 @@ public final class Utils {
     }
 
     public static boolean isBiomeInModalList(@NotNull final CachedModalList<Biome> list, final Biome biome, final RulesManager rulesManager) {
+        if (list.allowAll) return true;
+        if (list.excludeAll) return false;
         if (list.isEmpty()) return true;
 
         for (final String group : list.excludedGroups) {

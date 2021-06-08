@@ -192,6 +192,10 @@ public class RulesParsingManager {
 
         for (final String item : allowedItems){
             if ("".equals(item.trim())) continue;
+            if ("*".equals(item.trim())){
+                cachedModalList.allowAll = true;
+                continue;
+            }
             try{
                 final Biome biome = Biome.valueOf(item.toUpperCase());
                 cachedModalList.allowedList.add(biome);
@@ -202,6 +206,10 @@ public class RulesParsingManager {
         }
         for (final String item : excludedItems){
             if ("".equals(item.trim())) continue;
+            if ("*".equals(item.trim())){
+                cachedModalList.excludeAll = true;
+                continue;
+            }
             try{
                 final Biome biome = Biome.valueOf(item.toUpperCase());
                 cachedModalList.excludedList.add(biome);
@@ -224,11 +232,19 @@ public class RulesParsingManager {
 
         for (final String item : getListFromConfigItem(cs, ml_AllowedItems)) {
             if ("".equals(item.trim())) continue;
+            if ("*".equals(item.trim())){
+                cachedModalList.allowAll = true;
+                continue;
+            }
             cachedModalList.allowedList.add(item);
         }
         cachedModalList.allowedGroups = getSetOfGroups(cs, ml_AllowedGroups);
         for (final String item : getListFromConfigItem(cs, ml_ExcludedItems)) {
             if ("".equals(item.trim())) continue;
+            if ("*".equals(item.trim())){
+                cachedModalList.excludeAll = true;
+                continue;
+            }
             cachedModalList.excludedList.add(item);
         }
         cachedModalList.excludedGroups = getSetOfGroups(cs, ml_ExcludedGroups);

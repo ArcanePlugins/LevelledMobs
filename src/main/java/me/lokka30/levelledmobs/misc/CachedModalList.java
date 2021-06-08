@@ -31,8 +31,12 @@ public class CachedModalList<T extends Comparable<T>> implements Cloneable {
     @NotNull
     public Set<String> excludedGroups;
     public boolean doMerge;
+    public boolean allowAll;
+    public boolean excludeAll;
 
     public boolean isEnabledInList(final T item, @Nullable final LivingEntityWrapper lmEntity) {
+        if (this.allowAll) return true;
+        if (this.excludeAll) return false;
         if (this.isEmpty()) return true;
 
         if (lmEntity != null) {
@@ -66,11 +70,22 @@ public class CachedModalList<T extends Comparable<T>> implements Cloneable {
             sb.append("lst: ");
             sb.append(this.allowedList);
         }
+        if (this.allowAll) {
+            if (sb.length() > 0) sb.append(", ");
+            sb.append("all allowed");
+        }
+
         if (!this.allowedGroups.isEmpty()){
             if (sb.length() > 0) sb.append(", ");
             sb.append("grps: ");
             sb.append(this.allowedGroups);
         }
+
+        if (this.excludeAll) {
+            if (sb.length() > 0) sb.append(", ");
+            sb.append("all excluded");
+        }
+
         if (!this.excludedList.isEmpty()){
             if (sb.length() > 0) sb.append(", ");
             sb.append("ex-lst: ");

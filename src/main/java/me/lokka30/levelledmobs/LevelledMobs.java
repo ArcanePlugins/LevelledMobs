@@ -41,6 +41,7 @@ public class LevelledMobs extends JavaPlugin {
     public final Object attributeSyncObject = new Object();
     public Random random;
     public PAPIManager papiManager;
+    public boolean migratedFromPre30;
 
     // Configuration
     public YamlConfiguration settingsCfg;

@@ -117,9 +117,9 @@ public class RulesSubcommand implements Subcommand {
         final RuleInfo rule = allRuleNames.get(foundRule);
 
         if (showOnConsole)
-            Utils.logger.info("Showing all values for rule: " + rule.getRuleName());
+            Utils.logger.info("Showing all values for rule: &b" + rule.getRuleName() + "&r");
         else
-            sender.sendMessage("Showing all values for rule: " + rule.getRuleName());
+            sender.sendMessage("Showing all values for rule: &b" + rule.getRuleName() + "&r");
 
         showAllValues(rule, sender, showOnConsole);
     }
@@ -217,8 +217,11 @@ public class RulesSubcommand implements Subcommand {
                 if (value.toString().equalsIgnoreCase("0.0")) continue;
                 if (value.toString().equalsIgnoreCase("false")) continue;
                 if (value.toString().equalsIgnoreCase("NONE")) continue;
-                if (value instanceof CachedModalList<?> && ((CachedModalList<?>)value).isEmpty()) continue;
-                final String showValue = f.getName() + ", value: " + value;
+                if (value instanceof CachedModalList<?>){
+                    CachedModalList<?> cml = (CachedModalList<?>) value;
+                    if (cml.isEmpty() && !cml.allowAll && !cml.excludeAll) continue;
+                }
+                final String showValue = "&b" + f.getName() + "&r, value: &b" + value + "&r";
                 values.put(f.getName(), showValue);
             }
         }

@@ -23,6 +23,7 @@ public class ReloadSubcommand implements Subcommand {
             return;
         }
 
+        main.migratedFromPre30 = false;
         List<String> reloadStartedMsg = main.messagesCfg.getStringList("command.levelledmobs.reload.started");
         reloadStartedMsg = Utils.replaceAllInList(reloadStartedMsg, "%prefix%", main.configUtils.getPrefix());
         reloadStartedMsg = Utils.colorizeAllInList(reloadStartedMsg);

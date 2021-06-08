@@ -39,6 +39,11 @@ public class PlayerJoinListener implements Listener {
         parseUpdateChecker(event.getPlayer());
 
         updateNametagsInWorldAsync(event.getPlayer(), event.getPlayer().getWorld());
+
+        if (main.migratedFromPre30 && event.getPlayer().isOp()){
+            final List<String> msg = Collections.singletonList("You have migrated from an older version.  All settings have been reverted.  Please edit rules.yml");
+            event.getPlayer().sendMessage(Utils.colorizeAllInList(msg).toString());
+        }
     }
 
     @EventHandler(priority = EventPriority.MONITOR)

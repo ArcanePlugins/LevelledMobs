@@ -17,11 +17,10 @@ import java.io.FileInputStream;
  */
 public final class FileLoader {
 
-    public static final int SETTINGS_FILE_VERSION = 29; // Last changed: v2.6.0 b274
-    public static final int MESSAGES_FILE_VERSION = 3; // Last changed: v2.6.0 b274
-    public static final int CUSTOMDROPS_FILE_VERSION = 8; // Last changed: v2.6.0 b274
-    public static final int CUSTOMCOMMANDS_FILE_VERSION = 1;
-    public static final int RULES_FILE_VERSION = 1;
+    public static final int SETTINGS_FILE_VERSION = 30;   // Last changed: v3.0.0 b424
+    public static final int MESSAGES_FILE_VERSION = 4;    // Last changed: v3.0.0 b424
+    public static final int CUSTOMDROPS_FILE_VERSION = 9; // Last changed: v3.0.0 b424
+    public static final int RULES_FILE_VERSION = 1;       // Last changed: v3.0.0 b424
 
     private FileLoader() {
         throw new UnsupportedOperationException();
