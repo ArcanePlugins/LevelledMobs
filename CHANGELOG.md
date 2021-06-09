@@ -1,15 +1,95 @@
 # Changelog
 
-## v2.6.0 b379
+## v3.0.0 b425
+
+* New modular rules system. Make your own customized rule set as broad or as specific as you want. How it works:
+  * Modify the default rules to apply general rules
+  * Create custom rules by creating conditions that must be met to apply the rule. Once met then apply any number of constraints, attributes, modifiers and more
+  * Create and pick rule presets to avoid repetitiveness and to ease readability.
+* New Levelled Spawners. Use a command to create a spawner that creates LevelledMobs only in a specific level or range of levels.
+* New mob commands. Run commands when a mob is killed. Can have specific conditions and placeholders are provided
+* New customdrops features: drop mob heads, custom mob head textures, overall chance, player caused only option
+* New option sunlight-intensity: have mobs burn in the daylight faster
+* Customized tiered coloring scheme for nametags
+* New levelling scheme: blended levelling. Combines y levelling and spawn distance levelling
+* Custom names. Apply a list of names to be randomly used on a particular mob. Apply a name template to all entities or specific entities that utilizes placeholders.
+* Biome conditions. Make rules that apply to specific biomes
+* Allowed worldguard regions. Make rules apply to only certain worldguard regions
+* Spawn distance levelling can now be manually set to a specific coordinate rather than the world spawn location
+* Y-levels. Make a rule apply only above or below a specific y level coordinate.
+* Plugin conditions. Have rules only apply to mobs from specific 3rd party plugins.
+* Attribute multipliers use a different formula which should have more predictable results
+* Custom mob groups. Create a defined list of mobs then make rules apply or excluded from them
+* Baby mob rule separation. You can define separate rules / behaviors for baby mob variants
+* Attributes are applied differently so that the base values are not overwritten. This means that mobs with different variants of health, etc are preserved such as with horses and other tamable mobs.
+* Added PAPI support for %level% and %displayname%
+
+## v2.5.5 b407
+
+### Notes:
+
+* Summary: **Fix for errors relating to fine-tuning section**
+* Testing depth: **Low**
+* Configuration changes: **None**
 
 ### Changelog:
 
-* Added mob spawners.  Use with command /lm spawner
-* Added a new section in messages.yml to support the new command
-* Added debug type: MOB_SPAWNER
-* Added customdrop attribute: droponlywhenkilledbyplayer
+* Fixed and improved the Async Nametag Auto Update Task
+  * [stumper66](https://www.spigotmc.org/members/stumper66.1118435/) Fix for errors when setting min and max level to the same value under the fine-tuning section
+  * [stumper66](https://www.spigotmc.org/members/stumper66.1118435/) Removed hard-coded max health limit of 2024 and now uses the spigot config value instead
 
 ***
+
+## v2.5.1 b389
+
+## v2.5.4 b401
+
+### Notice:
+
+The LevelledMobs team has been working on **LevelledMobs 3**! This update will significantly extend the capability and
+customisability of the plugin, through adding a new major configuration system called the **Rules System**. With such a
+large new feature, we need help to test it - if you're willing to help,
+please [join our Discord](https://discord.io/arcaneplugins) and let us know. Thanks :)
+
+### Notes:
+
+* Summary: **Improvement and fix for the Async Nametag Auto Update Task**
+* Testing depth: **Low**
+* Configuration changes: **None**
+
+### Changelog:
+
+* Fixed and improved the Async Nametag Auto Update Task
+  * [lokka30](https://www.spigotmc.org/members/lokka30.828699/) fixed a bug that caused errors when players teleported
+    to different worlds whilst the task analysed locations. Thank you to [MrMineToons](https://github.com/MrMineToons)
+    for reporting this!
+  * [lokka30](https://www.spigotmc.org/members/lokka30.828699/) rearranged some code in the task to make it cleaner to
+    see and work on.
+* [lokka30](https://www.spigotmc.org/members/lokka30.828699/) (IntelliJ, really) made general code cleanup concerning
+  unnecessary `toString()` calls for enum values
+
+***
+
+## v2.5.1 b389
+
+### Announcement:
+
+* The LevelledMobs team has been working on **LevelledMobs 3**! This update will significantly extend the capability and
+  customisability of the plugin, through adding a new major configuration system called the **Rules System**. With such
+  a large new feature, we need help to test it - if you're willing to help,
+  please [join our Discord](https://discord.io/arcaneplugins) and let us know. Thanks :)
+
+### Notes:
+
+* This update has been tested to a moderate extent - thank you, @Oathkeeper for your generous testing!
+* No configuration changes this update.
+
+### Changelog:
+
+* Fixes missing `=` symbol in the code, that previously made max level mobs impossible (@Asttear)
+* Removed Validate usage (@stumper66, @lokka30)
+* Fixes EntityTameListener not levelling mobs properly due to a value of `-1` (@stumper66)
+* Fixes console error concerning death nametag (@Asttear (reporter), @lokka30)
 
 ***
 
