@@ -234,6 +234,8 @@ public class SummonSubcommand implements Subcommand {
 
     @Override
     public List<String> parseTabCompletions(final LevelledMobs main, final CommandSender sender, @NotNull final String[] args) {
+        if (!sender.hasPermission("levelledmobs.command.summon"))
+            return null;
 
         // len:    1      2        3        4       5          6            7   8     9     10
         // arg:    0      1        2        3       4          5            6   7     8     9

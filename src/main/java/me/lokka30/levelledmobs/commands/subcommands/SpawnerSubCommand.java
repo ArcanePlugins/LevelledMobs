@@ -194,6 +194,9 @@ public class SpawnerSubCommand implements Subcommand{
 
     @Override
     public List<String> parseTabCompletions(final LevelledMobs main, final CommandSender sender, @NotNull final String[] args) {
+        if (!sender.hasPermission("levelledmobs.command.spawner"))
+            return null;
+
         List<String> CommandsList = new ArrayList<>(Arrays.asList("/minlevel", "/maxlevel", "/name", "/customdropid"));
         boolean inQuotes = false;
 

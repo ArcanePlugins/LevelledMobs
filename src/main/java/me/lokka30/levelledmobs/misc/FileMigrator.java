@@ -100,7 +100,7 @@ public class FileMigrator {
         final File fileRules = new File(main.getDataFolder(), "rules.yml");
         if (!fileSettings.exists() || !fileRules.exists()) return;
 
-        final File backedupFile = new File(main.getDataFolder(), "rules.stock");
+        final File backedupFile = new File(main.getDataFolder(), "rules.yml.old");
         FileUtil.copy(fileRules, backedupFile);
 
         final int worldListAllowedLine = 992;
@@ -138,7 +138,8 @@ public class FileMigrator {
                     "\n&c[WARNING]&r You must edit rules.yml to further customize LM!",
                     "\n&c[WARNING]&r FOR ASSISTANCE, VISIT OUR SUPPORT DISCORD",
                     "\n&c[WARNING]&r https://discord.io/arcaneplugins");
-            Utils.logger.warning(Utils.colorizeAllInList(msg).toString());
+            final String msg2 = Utils.colorizeAllInList(msg).toString();
+            Utils.logger.warning(msg2.substring(1, msg2.length() - 2));
             main.migratedFromPre30 = true;
         }
         catch (IOException e){

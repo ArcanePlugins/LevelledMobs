@@ -182,6 +182,8 @@ public class KillSubcommand implements Subcommand {
 
     @Override
     public List<String> parseTabCompletions(LevelledMobs main, CommandSender sender, String[] args) {
+        if (!sender.hasPermission("levelledmobs.command.kill"))
+            return null;
 
         boolean containsNoDrops = false;
 
@@ -269,9 +271,7 @@ public class KillSubcommand implements Subcommand {
         messages.forEach(sender::sendMessage);
     }
 
-    private boolean skipKillingEntity(LevelledMobs main, LivingEntity livingEntity) {
-        // TODO: update this section to LM3 standards
-        // Nametagged
+    private boolean skipKillingEntity(final LevelledMobs main, final LivingEntity livingEntity) {
         if (livingEntity.getCustomName() != null && main.settingsCfg.getBoolean("kill-skip-conditions.nametagged"))
             return true;
 
@@ -283,6 +283,8 @@ public class KillSubcommand implements Subcommand {
         if (livingEntity.isLeashed() && main.settingsCfg.getBoolean("kill-skip-conditions.leashed")) return true;
 
         // Converting zombie villager
-        return livingEntity.getType() == EntityType.ZOMBIE_VILLAGER && ((ZombieVillager) livingEntity).isConverting() && main.settingsCfg.getBoolean("kill-skip-conditions.convertingZombieVillager");
+        return livingEntity.getType() == EntityType.ZOMBIE_VILLAGER &&
+                ((ZombieVillager) livingEntity).isConverting() &&
+                main.settingsCfg.getBoolean("kill-skip-conditions.convertingZombieVillager");
     }
 }

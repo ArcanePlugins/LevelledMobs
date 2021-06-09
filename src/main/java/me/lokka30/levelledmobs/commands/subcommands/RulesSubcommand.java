@@ -34,8 +34,10 @@ public class RulesSubcommand implements Subcommand {
             return;
         }
 
-        if (args.length == 1)
+        if (args.length == 1) {
+            sender.sendMessage(Utils.colorizeAllInList(Collections.singletonList("&b&lLevelledMobs: &7Incomplete command")).get(0));
             return;
+        }
 
         boolean showOnConsole = false;
         boolean findNearbyEntities = false;
@@ -74,6 +76,8 @@ public class RulesSubcommand implements Subcommand {
         }
         else if ("show_rule".equalsIgnoreCase(args[1]))
             showRule(sender, args);
+        else
+            sender.sendMessage(Utils.colorizeAllInList(Collections.singletonList("&b&lLevelledMobs: &7Invalid command")).get(0));
     }
 
     private void showRule(final CommandSender sender, @NotNull final String[] args){
@@ -296,6 +300,9 @@ public class RulesSubcommand implements Subcommand {
 
     @Override
     public List<String> parseTabCompletions(final LevelledMobs main, final CommandSender sender, @NotNull final String[] args) {
+        if (!sender.hasPermission("levelledmobs.command.rules"))
+            return null;
+
         final List<String> suggestions = new LinkedList<>();
 
         if (args.length == 2)
