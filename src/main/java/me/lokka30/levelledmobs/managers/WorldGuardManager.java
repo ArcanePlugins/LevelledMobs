@@ -23,7 +23,7 @@ import java.util.*;
 /**
  * TODO Describe...
  *
- * @author Eyrian2010
+ * @author Eyrian2010, lokka30, stumper66
  */
 public class WorldGuardManager {
 
@@ -188,7 +188,6 @@ public class WorldGuardManager {
 
 
     //Generate level based on WorldGuard region flags.
-    @NotNull
     public int[] getRegionLevel(final LivingEntityInterface lmInterface) {
         final int[] levels = new int[]{ -1, -1};
 
@@ -237,7 +236,7 @@ public class WorldGuardManager {
     }
 
     @NotNull
-    public static List<String> GetWorldGuardRegionsForLocation(@NotNull final LivingEntityInterface lmInterface) {
+    public static List<String> getWorldGuardRegionsForLocation(@NotNull final LivingEntityInterface lmInterface) {
         final List<String> wg_Regions = new LinkedList<>();
 
         if (lmInterface.getWorld() == null) return wg_Regions;

@@ -6,7 +6,13 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Set;
 import java.util.TreeSet;
 
+/**
+ * TODO Describe...
+ *
+ * @author stumper66
+ */
 public class CustomDropBase implements Cloneable {
+
     public CustomDropBase(@NotNull final CustomDropsDefaults defaults){
         this.amount = defaults.amount;
     }

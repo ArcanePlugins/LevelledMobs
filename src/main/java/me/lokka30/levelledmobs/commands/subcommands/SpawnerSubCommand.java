@@ -12,7 +12,13 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
+/**
+ * TODO Describe...
+ *
+ * @author stumper66
+ */
 public class SpawnerSubCommand implements Subcommand{
+
     public SpawnerSubCommand(final LevelledMobs main){
         this.main = main;
     }
@@ -87,9 +93,8 @@ public class SpawnerSubCommand implements Subcommand{
                     sb.append(args[i].trim());
                 }
                 customName = sb.toString().trim();
-                customName = customName.substring(1, customName.length() -1);
-            }
-            else
+                customName = customName.substring(1, customName.length() - 1);
+            } else
                 customName = parseFlagValue(sender, "name", customNameFlag, args, false, label);
             if (customName == null) return;
         }

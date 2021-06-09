@@ -8,14 +8,17 @@ import me.lokka30.levelledmobs.managers.ExternalCompatibilityManager;
 import me.lokka30.levelledmobs.managers.LevelManager;
 import me.lokka30.levelledmobs.managers.PAPIManager;
 import me.lokka30.levelledmobs.managers.WorldGuardManager;
-import me.lokka30.levelledmobs.misc.*;
+import me.lokka30.levelledmobs.misc.FileLoader;
+import me.lokka30.levelledmobs.misc.FileMigrator;
+import me.lokka30.levelledmobs.misc.Utils;
+import me.lokka30.levelledmobs.misc.VersionInfo;
 import me.lokka30.microlib.UpdateChecker;
 import me.lokka30.microlib.VersionUtils;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.*;
+import org.bukkit.entity.EntityType;
 import org.bukkit.plugin.PluginManager;
 
 import javax.annotation.Nullable;
@@ -27,7 +30,7 @@ import java.util.stream.Stream;
 /**
  * This class contains methods used by the main class.
  *
- * @author lokka30
+ * @author lokka30, stumper66
  */
 public class Companion {
 

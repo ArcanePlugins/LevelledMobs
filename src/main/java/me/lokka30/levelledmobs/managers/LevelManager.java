@@ -12,7 +12,10 @@ import me.lokka30.levelledmobs.rules.strategies.LevellingStrategy;
 import me.lokka30.levelledmobs.rules.strategies.SpawnDistanceStrategy;
 import me.lokka30.levelledmobs.rules.strategies.YDistanceStrategy;
 import me.lokka30.microlib.MessageUtils;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.enchantments.EnchantmentTarget;
@@ -35,9 +38,8 @@ import java.util.concurrent.ThreadLocalRandom;
 /**
  * TODO Describe...
  *
- * @author lokka30
- * CoolBoy, Esophose, 7smile7, Shevchik, Hugo5551,
- * limzikiki
+ * @author lokka30, CoolBoy, Esophose, 7smile7,
+ * wShevchik, Hugo5551, limzikiki
  */
 public class LevelManager {
 
@@ -109,7 +111,6 @@ public class LevelManager {
         return ThreadLocalRandom.current().nextInt(minLevel, maxLevel + 1);
     }
 
-    @NotNull
     public int[] getMinAndMaxLevels(final @NotNull LivingEntityInterface lmInterface) {
         // final EntityType entityType, final boolean isAdultEntity, final String worldName
         // if called from summon command then lmEntity is null

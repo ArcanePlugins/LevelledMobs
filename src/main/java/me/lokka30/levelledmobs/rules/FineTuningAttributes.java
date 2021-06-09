@@ -1,12 +1,16 @@
 package me.lokka30.levelledmobs.rules;
 
-import me.lokka30.levelledmobs.customdrops.CustomCommand;
 import org.bukkit.entity.EntityType;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * TODO Describe...
+ *
+ * @author stumper66
+ */
 public class FineTuningAttributes implements Cloneable {
     public EntityType applicableEntity;
 

@@ -238,7 +238,7 @@ command:
 
     spawner:
       usage:
-        - '%prefix% Usage: &b%label%&7 spawner &b/minlevel&7 1 &b/maxlevel&7 10 &b/name&7 "My customized LM spawner" &b/customDropsId&7 Id1'
+        - '%prefix% Usage: &b/%label%&7 spawner &b/minlevel&7 1 &b/maxlevel&7 10 &b/name&7 "My customized LM spawner" &b/customDropsId&7 Id1'
       no-value:
         - '%prefix% No value was specified for: &b%keyname%&7'
       invalid-value:
@@ -250,7 +250,7 @@ command:
       spawner-give-message:
         - '%prefix% Gave you a LM spawner, minLevel: &b%minlevel%&7, maxLevel: &b%maxlevel%&7'
       spawner-give-message-console:
-        - '%prefix% Gave &b%playername%&7 a LM spawner, minLevel &b%minlevel%&7, maxLevel: &b%maxlevel%&7'
+        - '%prefix% Gave &r%playername%&7 a LM spawner, minLevel &b%minlevel%&7, maxLevel: &b%maxlevel%&7'
 
 
 # |||-------------------------------------------------------------------------------------------|
@@ -268,7 +268,7 @@ command:
     info:
       about:
         - ' '
-        - '&b&lLevelledMobs &fv%version%&7 by lokka30'
+        - '&b&lLevelledMobs &fv%version%&7 by lokka30 & stumper66'
         - '&7&o%description%'
         - ' '
         - '&7This version of the plugin supports: &fMinecraft %supportedVersions%'

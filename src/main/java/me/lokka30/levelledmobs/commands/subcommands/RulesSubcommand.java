@@ -5,6 +5,7 @@ import me.lokka30.levelledmobs.misc.CachedModalList;
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
 import me.lokka30.levelledmobs.misc.Utils;
 import me.lokka30.levelledmobs.rules.RuleInfo;
+import me.lokka30.microlib.MessageUtils;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.World;
@@ -20,7 +21,13 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.*;
 
+/**
+ * TODO Describe...
+ *
+ * @author stumper66
+ */
 public class RulesSubcommand implements Subcommand {
+
     public RulesSubcommand(final LevelledMobs main){
         this.main = main;
     }
@@ -35,7 +42,7 @@ public class RulesSubcommand implements Subcommand {
         }
 
         if (args.length == 1) {
-            sender.sendMessage(Utils.colorizeAllInList(Collections.singletonList("&b&lLevelledMobs: &7Incomplete command")).get(0));
+            sender.sendMessage(MessageUtils.colorizeAll("&b&lLevelledMobs: &7Incomplete command"));
             return;
         }
 
@@ -51,38 +58,36 @@ public class RulesSubcommand implements Subcommand {
 
         if ("show_all".equalsIgnoreCase(args[1])) {
             if (sender instanceof Player)
-                sender.sendMessage("rules have been printed on the console");
+                sender.sendMessage("Rules have been printed on the console");
 
-            Utils.logger.info("--------------------------------- default values below -------------------------------");
+            Utils.logger.info("--------------------------------- Default values -------------------------------");
             showAllValues(main.rulesParsingManager.defaultRule, sender, showOnConsole);
             for (final String key : main.rulesParsingManager.rulePresets.keySet()) {
                 final RuleInfo rpi = main.rulesParsingManager.rulePresets.get(key);
-                Utils.logger.info("--------------------------------- preset rule below ----------------------------------");
+                Utils.logger.info("--------------------------------- Preset rule ----------------------------------");
                 showAllValues(rpi, sender, showOnConsole);
             }
             for (final RuleInfo rpi : main.rulesParsingManager.customRules) {
-                Utils.logger.info("--------------------------------- custom-rule below ----------------------------------");
+                Utils.logger.info("--------------------------------- Custom rule ----------------------------------");
                 showAllValues(rpi, sender, showOnConsole);
             }
             Utils.logger.info("--------------------------------------------------------------------------------------");
-        }
-        else if ("show_effective".equalsIgnoreCase(args[1])) {
-            if (!(sender instanceof Player)){
+        } else if ("show_effective".equalsIgnoreCase(args[1])) {
+            if (!(sender instanceof Player)) {
                 sender.sendMessage("The command must be run by a player");
                 return;
             }
 
             getMobBeingLookedAt((Player) sender, showOnConsole, findNearbyEntities);
-        }
-        else if ("show_rule".equalsIgnoreCase(args[1]))
+        } else if ("show_rule".equalsIgnoreCase(args[1]))
             showRule(sender, args);
         else
-            sender.sendMessage(Utils.colorizeAllInList(Collections.singletonList("&b&lLevelledMobs: &7Invalid command")).get(0));
+            sender.sendMessage(MessageUtils.colorizeAll("&b&lLevelledMobs: &7Invalid command"));
     }
 
     private void showRule(final CommandSender sender, @NotNull final String[] args){
         if (args.length < 3){
-            sender.sendMessage("Must specify a rule name");
+            sender.sendMessage("Must specify a rule name.");
             return;
         }
 
@@ -137,11 +142,10 @@ public class RulesSubcommand implements Subcommand {
             if (!(entity instanceof LivingEntity)) continue;
 
             LivingEntity le = (LivingEntity) entity;
-            if (findNearbyEntities){
+            if (findNearbyEntities) {
                 final double distance = le.getLocation().distanceSquared(player.getLocation());
                 entities.put(distance, le);
-            }
-            else {
+            } else {
                 final Vector toEntity = le.getEyeLocation().toVector().subtract(eye.toVector());
                 double dot = toEntity.normalize().dot(eye.getDirection());
                 if (dot >= 0.975D) {
@@ -221,23 +225,22 @@ public class RulesSubcommand implements Subcommand {
                 if (value.toString().equalsIgnoreCase("0.0")) continue;
                 if (value.toString().equalsIgnoreCase("false")) continue;
                 if (value.toString().equalsIgnoreCase("NONE")) continue;
-                if (value instanceof CachedModalList<?>){
+                if (value instanceof CachedModalList<?>) {
                     CachedModalList<?> cml = (CachedModalList<?>) value;
                     if (cml.isEmpty() && !cml.allowAll && !cml.excludeAll) continue;
                 }
                 final String showValue = "&b" + f.getName() + "&r, value: &b" + value + "&r";
                 values.put(f.getName(), showValue);
             }
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
         for (final String key : values.keySet()){
             if (showOnConsole)
-                Utils.logger.info(Utils.colorizeAllInList(Collections.singletonList(values.get(key))).get(0));
+                Utils.logger.info(MessageUtils.colorizeAll(values.get(key)));
             else
-                sender.sendMessage(Utils.colorizeAllInList(Collections.singletonList(values.get(key))).get(0));
+                sender.sendMessage(MessageUtils.colorizeAll(values.get(key)));
         }
     }
 
@@ -279,8 +282,7 @@ public class RulesSubcommand implements Subcommand {
                     printedKeys.add(f.getName());
                 }
             }
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
 

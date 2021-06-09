@@ -2,7 +2,9 @@ package me.lokka30.levelledmobs.rules;
 
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.managers.ExternalCompatibilityManager;
-import me.lokka30.levelledmobs.misc.*;
+import me.lokka30.levelledmobs.misc.CachedModalList;
+import me.lokka30.levelledmobs.misc.CustomUniversalGroups;
+import me.lokka30.levelledmobs.misc.Utils;
 import me.lokka30.levelledmobs.rules.strategies.SpawnDistanceStrategy;
 import me.lokka30.levelledmobs.rules.strategies.YDistanceStrategy;
 import org.bukkit.block.Biome;
@@ -16,6 +18,11 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
+/**
+ * TODO Describe...
+ *
+ * @author stumper66
+ */
 public class RulesParsingManager {
     public RulesParsingManager(final LevelledMobs main){
         this.main = main;
@@ -140,20 +147,18 @@ public class RulesParsingManager {
         cachedModalList.excludedGroups = getSetOfGroups(cs, ml_ExcludedGroups);
 
         for (final String item : allowedItems){
-            try{
+            try {
                 final CreatureSpawnEvent.SpawnReason reason = CreatureSpawnEvent.SpawnReason.valueOf(item.toUpperCase());
                 cachedModalList.allowedList.add(reason);
-            }
-            catch (IllegalArgumentException e){
+            } catch (IllegalArgumentException e) {
                 Utils.logger.warning("Invalid spawn reason: " + item);
             }
         }
         for (final String item : excludedItems){
-            try{
+            try {
                 final CreatureSpawnEvent.SpawnReason reason = CreatureSpawnEvent.SpawnReason.valueOf(item.toUpperCase());
                 cachedModalList.excludedList.add(reason);
-            }
-            catch (IllegalArgumentException e){
+            } catch (IllegalArgumentException e) {
                 Utils.logger.warning("Invalid spawn reason: " + item);
             }
         }
@@ -196,11 +201,10 @@ public class RulesParsingManager {
                 cachedModalList.allowAll = true;
                 continue;
             }
-            try{
+            try {
                 final Biome biome = Biome.valueOf(item.toUpperCase());
                 cachedModalList.allowedList.add(biome);
-            }
-            catch (IllegalArgumentException e){
+            } catch (IllegalArgumentException e) {
                 Utils.logger.warning("Invalid allowed biome: " + item);
             }
         }
@@ -210,11 +214,10 @@ public class RulesParsingManager {
                 cachedModalList.excludeAll = true;
                 continue;
             }
-            try{
+            try {
                 final Biome biome = Biome.valueOf(item.toUpperCase());
                 cachedModalList.excludedList.add(biome);
-            }
-            catch (IllegalArgumentException e){
+            } catch (IllegalArgumentException e) {
                 Utils.logger.warning("Invalid excluded biome: " + item);
             }
         }
@@ -287,9 +290,9 @@ public class RulesParsingManager {
     private boolean isCacheModalDeclarationEmpty(final ConfigurationSection cs){
         return  (
                 cs.getStringList(ml_AllowedItems).isEmpty() && cs.getString(ml_AllowedItems) == null &&
-                cs.getStringList(ml_ExcludedGroups).isEmpty() && cs.getString(ml_AllowedGroups) == null &&
-                cs.getStringList(ml_ExcludedItems).isEmpty() && cs.getString(ml_ExcludedItems) == null &&
-                cs.getStringList(ml_ExcludedGroups).isEmpty() && cs.getString(ml_ExcludedGroups) == null
+                        cs.getStringList(ml_ExcludedGroups).isEmpty() && cs.getString(ml_AllowedGroups) == null &&
+                        cs.getStringList(ml_ExcludedItems).isEmpty() && cs.getString(ml_ExcludedItems) == null &&
+                        cs.getStringList(ml_ExcludedGroups).isEmpty() && cs.getString(ml_ExcludedGroups) == null
         );
     }
 
@@ -369,11 +372,10 @@ public class RulesParsingManager {
             if (!value) continue;
 
             ExternalCompatibilityManager.ExternalCompatibility compat;
-            try{
+            try {
                 compat = ExternalCompatibilityManager.ExternalCompatibility.valueOf(key.toUpperCase());
                 results.add(compat);
-            }
-            catch (IllegalArgumentException e){
+            } catch (IllegalArgumentException e) {
                 Utils.logger.warning("Invalid level-plugins key: " + key);
             }
         }
@@ -477,20 +479,18 @@ public class RulesParsingManager {
             parsingInfo.conditions_Chance = conditions.getDouble("chance");
         final String mobCustomNameStatus = conditions.getString("mob-customname-status");
         if (mobCustomNameStatus != null) {
-            try{
+            try {
                 parsingInfo.conditions_MobCustomnameStatus = MobCustomNameStatusEnum.valueOf(mobCustomNameStatus.toUpperCase());
-            }
-            catch (Exception e){
+            } catch (Exception e) {
                 Utils.logger.warning("Invalid value for " + mobCustomNameStatus);
             }
         }
 
         final String mobTamedStatus = conditions.getString("mob-tamed-status");
         if (mobTamedStatus != null) {
-            try{
+            try {
                 parsingInfo.conditions_MobTamedStatus = MobTamedStatusEnum.valueOf(mobTamedStatus.toUpperCase());
-            }
-            catch (Exception e){
+            } catch (Exception e) {
                 Utils.logger.warning("Invalid value for " + mobTamedStatus);
             }
         }
@@ -593,10 +593,9 @@ public class RulesParsingManager {
                 checkName = checkName.substring(5);
 
             EntityType entityType;
-            try{
+            try {
                 entityType = EntityType.valueOf(checkName.toUpperCase());
-            }
-            catch (IllegalArgumentException e){
+            } catch (IllegalArgumentException e) {
                 Utils.logger.warning("Invalid entity type: " + mobName + " for fine-tuning in rule: " + parsingInfo.getRuleName());
                 continue;
             }
@@ -661,8 +660,7 @@ public class RulesParsingManager {
             final MemoryConfiguration result = new MemoryConfiguration();
             result.addDefaults((Map<String, Object>) object);
             return result.getDefaultSection();
-        }
-        else {
+        } else {
             Utils.logger.warning("couldn't parse Config of type: " + object.getClass().getSimpleName() + ", value: " + object);
             return null;
         }

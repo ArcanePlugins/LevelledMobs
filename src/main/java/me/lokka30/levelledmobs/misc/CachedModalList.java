@@ -3,10 +3,15 @@ package me.lokka30.levelledmobs.misc;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.TreeSet;
-import java.util.Set;
 import java.util.Collection;
+import java.util.Set;
+import java.util.TreeSet;
 
+/**
+ * TODO Describe...
+ *
+ * @author stumper66
+ */
 public class CachedModalList<T extends Comparable<T>> implements Cloneable {
     public CachedModalList(){
         this.allowedList = new TreeSet<>();
@@ -118,8 +123,8 @@ public class CachedModalList<T extends Comparable<T>> implements Cloneable {
             copy.allowedGroups = (TreeSet<String>) ((TreeSet<String>) (this.allowedGroups)).clone();
             copy.excludedList = (TreeSet<T>) ((TreeSet<T>) (this.excludedList)).clone();
             copy.excludedGroups = (TreeSet<String>) ((TreeSet<String>) (this.excludedGroups)).clone();
+        } catch (CloneNotSupportedException ignored) {
         }
-        catch (CloneNotSupportedException ignored) {}
 
         return copy;
     }

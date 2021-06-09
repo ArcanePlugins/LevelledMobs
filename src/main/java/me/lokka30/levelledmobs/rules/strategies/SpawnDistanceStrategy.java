@@ -11,8 +11,7 @@ import java.util.concurrent.ThreadLocalRandom;
 /**
  * TODO Describe...
  *
- * @author stumper66
- * @author lokka30
+ * @author stumper66, lokka30
  */
 public class SpawnDistanceStrategy implements LevellingStrategy, Cloneable {
     public Integer startDistance;

@@ -15,8 +15,16 @@ import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
+/**
+ * TODO Describe...
+ *
+ * @author stumper66
+ */
 public class LivingEntityWrapper implements LivingEntityInterface {
     public LivingEntityWrapper(final @NotNull LivingEntity livingEntity, final @NotNull LevelledMobs main){
         this.main = main;

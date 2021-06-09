@@ -14,6 +14,11 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * TODO Describe...
+ *
+ * @author stumper66
+ */
 public class PlayerDeathListener implements Listener {
 
     public PlayerDeathListener(final LevelledMobs main){

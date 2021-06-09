@@ -4,6 +4,11 @@ import me.lokka30.levelledmobs.misc.Utils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * TODO Describe...
+ *
+ * @author stumper66
+ */
 public class TieredColoringInfo implements Cloneable {
     public int minLevel;
     public int maxLevel;

@@ -219,6 +219,6 @@ attributes-use-preset-base-values: false
 # ||                                                                                            |
 # |||-------------------------------------------------------------------------------------------|
 use-update-checker: true
-debug-entity-damage: true
+debug-entity-damage: false
 debug-misc: [ '' ]
 file-version: 30

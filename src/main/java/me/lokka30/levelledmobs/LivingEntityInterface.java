@@ -8,16 +8,26 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
+/**
+ * TODO Describe...
+ *
+ * @author stumper66
+ */
 public interface LivingEntityInterface {
 
     @NotNull
     EntityType getEntityType();
+
     Location getLocation();
+
     World getWorld();
+
     @NotNull
     String getTypeName();
+
     @NotNull
     List<RuleInfo> getApplicableRules();
+
     @NotNull
     LevelledMobs getMainInstance();
 }

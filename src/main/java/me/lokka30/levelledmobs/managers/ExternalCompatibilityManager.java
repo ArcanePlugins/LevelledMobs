@@ -15,7 +15,7 @@ import java.util.List;
 /**
  * This class handles compatibility with other plugins such as EliteMobs and Citizens
  *
- * @author lokka30
+ * @author lokka30, stumper66
  */
 public class ExternalCompatibilityManager {
 
@@ -156,6 +156,6 @@ public class ExternalCompatibilityManager {
     public static List<String> getWGRegionsAtLocation(@NotNull final LivingEntityInterface lmInterface){
         if (!ExternalCompatibilityManager.hasWorldGuardInstalled()) return null;
 
-        return WorldGuardManager.GetWorldGuardRegionsForLocation(lmInterface);
+        return WorldGuardManager.getWorldGuardRegionsForLocation(lmInterface);
     }
 }

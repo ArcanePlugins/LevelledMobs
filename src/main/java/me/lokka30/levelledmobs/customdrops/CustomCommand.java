@@ -5,7 +5,13 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Map;
 import java.util.TreeMap;
 
+/**
+ * TODO Describe...
+ *
+ * @author stumper66
+ */
 public class CustomCommand extends CustomDropBase {
+
     public CustomCommand(@NotNull final CustomDropsDefaults defaults){
         super(defaults);
         this.rangedEntries = new TreeMap<>();

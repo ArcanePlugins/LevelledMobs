@@ -21,7 +21,13 @@ import java.util.Optional;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * TODO Describe...
+ *
+ * @author stumper66
+ */
 public class QueueManager_Nametags {
+
     public QueueManager_Nametags(final LevelledMobs main){
         this.main = main;
         this.queue = new LinkedBlockingQueue<>();
@@ -42,8 +48,7 @@ public class QueueManager_Nametags {
             public void run() {
                 try {
                     main();
-                }
-                catch (InterruptedException ignored){
+                } catch (InterruptedException ignored) {
                     isRunning = false;
                 }
             }

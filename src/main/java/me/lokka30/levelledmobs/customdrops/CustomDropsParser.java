@@ -19,7 +19,13 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
+/**
+ * TODO Describe...
+ *
+ * @author stumper66
+ */
 public class CustomDropsParser {
+
     public CustomDropsParser(final LevelledMobs main, final CustomDropsHandler handler){
         this.main = main;
         this.defaults = new CustomDropsDefaults();
@@ -171,8 +177,7 @@ public class CustomDropsParser {
                             handler.customDropsitems_groups.get(universalGroup.toString()).combineDrop(dropInstance);
                         else
                             handler.customDropsitems_groups.put(universalGroup.toString(), dropInstance);
-                    }
-                    else {
+                    } else {
                         if (handler.customDropsitems.containsKey(entityType))
                             handler.customDropsitems.get(entityType).combineDrop(dropInstance);
                         else
@@ -316,9 +321,8 @@ public class CustomDropsParser {
         final String mobHeadIdStr = cs.getString("mobhead-id");
         if (mobHeadIdStr != null){
             try {
-                 item.customPlayerHeadId = UUID.fromString(mobHeadIdStr);
-            }
-            catch (Exception e){
+                item.customPlayerHeadId = UUID.fromString(mobHeadIdStr);
+            } catch (Exception e) {
                 Utils.logger.warning("Invalid UUID: " + mobHeadIdStr);
             }
         }
@@ -417,11 +421,10 @@ public class CustomDropsParser {
         List<ItemFlag> flagList = new LinkedList<>();
 
         for (final String flag : itemFlags.replace(',',';').split(";")){
-            try{
+            try {
                 ItemFlag newFlag = ItemFlag.valueOf(flag.trim().toUpperCase());
                 flagList.add(newFlag);
-            }
-            catch (Exception e){
+            } catch (Exception e) {
                 Utils.logger.warning(String.format("Invalid itemflag: %s, item: %s, mobOrGroup: %s",
                         flag, item.getMaterial().name(), dropInstance.getMobOrGroupName()));
             }
@@ -434,11 +437,10 @@ public class CustomDropsParser {
         final String temp = itemInfoConfiguration.getString("equipped");
         if (Utils.isNullOrEmpty(temp)) return;
 
-        if ("false".equalsIgnoreCase(temp)){
+        if ("false".equalsIgnoreCase(temp)) {
             item.equippedSpawnChance = 0.0;
             return;
-        }
-        else if ("true".equalsIgnoreCase(temp)){
+        } else if ("true".equalsIgnoreCase(temp)) {
             item.equippedSpawnChance = 1.0;
             return;
         }

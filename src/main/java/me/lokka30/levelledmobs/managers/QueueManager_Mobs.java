@@ -8,6 +8,11 @@ import org.bukkit.scheduler.BukkitRunnable;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * TODO Describe...
+ *
+ * @author stumper66
+ */
 public class QueueManager_Mobs {
 
     public QueueManager_Mobs(final LevelledMobs main){
@@ -29,9 +34,8 @@ public class QueueManager_Mobs {
             @Override
             public void run() {
                 try {
-                      main();
-                }
-                catch (InterruptedException ignored){
+                    main();
+                } catch (InterruptedException ignored) {
                     isRunning = false;
                 }
                 Utils.logger.info("Queue Manager has exited");

@@ -12,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
 /**
  * TODO Describe...
  *
- * @author konsolas
+ * @author konsolas, lokka30
  */
 public class EntityRegainHealthListener implements Listener {
 

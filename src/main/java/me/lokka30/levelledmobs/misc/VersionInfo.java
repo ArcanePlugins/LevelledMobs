@@ -4,6 +4,11 @@ import java.io.InvalidObjectException;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * TODO Describe...
+ *
+ * @author unknown
+ */
 public class VersionInfo implements Comparable<VersionInfo> {
     public VersionInfo(final String version) throws InvalidObjectException {
         if (version == null) throw new NullPointerException("version can't be null");
@@ -44,9 +49,8 @@ public class VersionInfo implements Comparable<VersionInfo> {
     }
 
     @Override
-    public int compareTo(final VersionInfo v)
-    {
-        for (int i = 0; i < 4; i++){
+    public int compareTo(final VersionInfo v) {
+        for (int i = 0; i < 4; i++) {
             final int compareInt = v.thisVerSplit.get(i);
             final int thisInt = this.thisVerSplit.get(i);
 

@@ -12,6 +12,11 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.UUID;
 
+/**
+ * TODO Describe...
+ *
+ * @author stumper66
+ */
 public class PAPIManager extends PlaceholderExpansion {
 
     public PAPIManager(final LevelledMobs main){

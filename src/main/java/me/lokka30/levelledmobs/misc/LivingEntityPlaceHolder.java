@@ -10,6 +10,11 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
+/**
+ * TODO Describe...
+ *
+ * @author stumper66
+ */
 public class LivingEntityPlaceHolder implements LivingEntityInterface {
 
     public LivingEntityPlaceHolder(final EntityType entityType, final @NotNull Location location, final @NotNull World world, final @NotNull LevelledMobs main){

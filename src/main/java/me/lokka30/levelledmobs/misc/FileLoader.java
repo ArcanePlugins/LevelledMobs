@@ -13,7 +13,7 @@ import java.io.FileInputStream;
 /**
  * TODO Describe...
  *
- * @author lokka30
+ * @author lokka30, stumper66
  */
 public final class FileLoader {
 

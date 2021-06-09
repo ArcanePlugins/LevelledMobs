@@ -12,6 +12,11 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
+/**
+ * TODO Describe...
+ *
+ * @author stumper66
+ */
 public class RulesManager {
     public RulesManager(final LevelledMobs main) {
         this.main = main;
@@ -124,8 +129,7 @@ public class RulesManager {
                     allowedEntitiesList == null ||
                             !babyMobsInheritAdultSetting && lmEntity.isBabyMob() && Utils.isLivingEntityInModalList(allowedEntitiesList, lmEntity, true)) ||
                     Utils.isLivingEntityInModalList(allowedEntitiesList, lmEntity, babyMobsInheritAdultSetting);
-        }
-        else {
+        } else {
             return (
                     allowedEntitiesList == null || allowedEntitiesList.isEnabledInList(lmInterface.getTypeName(), null)
             );
@@ -157,8 +161,7 @@ public class RulesManager {
         if (allMobAttribs != null) {
             allMobAttribs.mergeAttributes(thisMobAttribs);
             return allMobAttribs;
-        }
-        else
+        } else
             return thisMobAttribs;
     }
 
@@ -179,12 +182,11 @@ public class RulesManager {
             if (ruleInfo.useRandomLevelling != null && ruleInfo.useRandomLevelling) {
                 // specifying random in strategies will nullify any levelling systems to that point
                 levellingStrategy = null;
-            }
-            else if (ruleInfo.levellingStrategy != null) {
-                 if (levellingStrategy != null && levellingStrategy.getClass().equals(ruleInfo.levellingStrategy.getClass()))
-                     levellingStrategy.mergeRule(ruleInfo.levellingStrategy);
+            } else if (ruleInfo.levellingStrategy != null) {
+                if (levellingStrategy != null && levellingStrategy.getClass().equals(ruleInfo.levellingStrategy.getClass()))
+                    levellingStrategy.mergeRule(ruleInfo.levellingStrategy);
                 else
-                     levellingStrategy = ruleInfo.levellingStrategy.cloneItem();
+                    levellingStrategy = ruleInfo.levellingStrategy.cloneItem();
             }
         }
 
@@ -244,7 +246,7 @@ public class RulesManager {
         for (final RuleInfo ruleInfo : lmEntity.getApplicableRules()) {
             if (!Utils.isNullOrEmpty(ruleInfo.nametag)) {
                 nametag = "disabled".equalsIgnoreCase(ruleInfo.nametag) ?
-                    "" : ruleInfo.nametag;
+                        "" : ruleInfo.nametag;
             }
         }
 
@@ -401,8 +403,7 @@ public class RulesManager {
                 Utils.debugLog(main, DebugType.DENIED_RULE_ENTITIES_LIST, String.format("%s, mob: %s", ri.getRuleName(), lmInterface.getEntityType().name()));
                 return false;
             }
-        }
-        else {
+        } else {
             // can't check groups if not a living entity wrapper
             if (ri.conditions_Entities != null && !ri.conditions_Entities.isEnabledInList(lmInterface.getTypeName(), null)) {
                 Utils.debugLog(main, DebugType.DENIED_RULE_ENTITIES_LIST, String.format("%s, mob: %s", ri.getRuleName(), lmInterface.getEntityType().name()));

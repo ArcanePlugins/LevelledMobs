@@ -5,6 +5,11 @@ import org.bukkit.event.Event;
 
 import java.util.List;
 
+/**
+ * TODO Describe...
+ *
+ * @author stumper66
+ */
 public class QueueItem {
     public QueueItem(final LivingEntityWrapper lmEntity, final Event event){
         this.lmEntity = lmEntity;

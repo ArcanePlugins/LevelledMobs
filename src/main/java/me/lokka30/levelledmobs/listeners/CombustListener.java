@@ -17,7 +17,13 @@ import org.bukkit.inventory.EntityEquipment;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * TODO Describe...
+ *
+ * @author stumper66
+ */
 public class CombustListener implements Listener {
+
     public CombustListener(final LevelledMobs main){
         this.main = main;
     }

@@ -1002,7 +1002,7 @@ default-rule:
   apply-settings:
     minLevel: 1
     maxLevel: 100
-    
+
     multipliers:
       max-health: 7.0
       movement-speed: 0.3
@@ -1010,19 +1010,19 @@ default-rule:
       ranged-attack-damage: 3.0
       item-drop: 3
       xp-drop: 5
-      
+
     entity-name-override:
-      ZOMBIE: ['Undead', 'Deady', 'Walker']
-      CREEPER: ['Dr. Boom']
-      BABY_ZOMBIE: ['Baby Undead']
-      
+    #       ZOMBIE: ['Undead', 'Deady', 'Walker']
+    #       CREEPER: ['Dr. Boom']
+    #       BABY_ZOMBIE: ['Baby Undead']
+
     tiered-coloring:
       1-24: '&a' # Light Green
-      25-49: '&b' # Light Blue
+      25-49: '&b' # Aqua
       50-74: '&e' # Yellow
       75-100: '&c' # Light Red
       default: '&9' # Off-Blue
-      
+
     nametag: '&8[%tiered%Lvl %mob-lvl%&8 | &f%displayname%&8 | &c%entity-health-rounded%&8/&c%entity-max-health-rounded%&8]'
     creature-death-nametag: '&8[%tiered%Lvl %mob-lvl%&8 | &f%entity-name%&8]'
     creature-nametag-always-visible: false
