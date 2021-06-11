@@ -465,7 +465,8 @@ public class RulesParsingManager {
     private void parseConditions(final ConfigurationSection conditions){
         if (conditions  == null) return;
 
-        parsingInfo.conditions_Worlds = buildCachedModalListOfString(objectToConfigurationSection(conditions.get("worlds")));
+        if (conditions.get("worlds") != null)
+            parsingInfo.conditions_Worlds = buildCachedModalListOfString(objectToConfigurationSection(conditions.get("worlds")));
         parseExternalCompat(objectToConfigurationSection(conditions.get("level-plugins")));
 
         if (conditions.getString("minLevel") != null)
@@ -511,6 +512,8 @@ public class RulesParsingManager {
             parsingInfo.conditions_Biomes = buildCachedModalListOfBiome(objectToConfigurationSection(conditions.get("biomes")));
         if (conditions.get("apply-plugins") != null)
             parsingInfo.conditions_ApplyPlugins = buildCachedModalListOfString(objectToConfigurationSection(conditions.get("apply-plugins")));
+        if (conditions.get("mythicmobs-internal-names") != null)
+            parsingInfo.conditions_MM_Names = buildCachedModalListOfString(objectToConfigurationSection(conditions.get("mythicmobs-internal-names")));
     }
 
     private void parseStrategies(final ConfigurationSection strategies){

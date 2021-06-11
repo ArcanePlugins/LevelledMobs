@@ -51,6 +51,7 @@ public class QueueManager_Nametags {
                 } catch (InterruptedException ignored) {
                     isRunning = false;
                 }
+                Utils.logger.info("Nametag update queue Manager has exited");
             }
         };
 
@@ -68,7 +69,7 @@ public class QueueManager_Nametags {
     private void main() throws InterruptedException{
         while (doThread) {
 
-            final QueueItem item = queue.poll(1000, TimeUnit.MILLISECONDS);
+            final QueueItem item = queue.poll(200, TimeUnit.MILLISECONDS);
             if (item == null) continue;
 
             updateNametag(item.lmEntity, item.nametag, item.players);

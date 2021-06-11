@@ -48,8 +48,24 @@ public class EntitySpawnListener implements Listener {
 
         final LivingEntityWrapper lmEntity = new LivingEntityWrapper((LivingEntity) event.getEntity(), main);
 
+        if (event instanceof CreatureSpawnEvent && ((CreatureSpawnEvent) event).getSpawnReason().equals(CreatureSpawnEvent.SpawnReason.CUSTOM)){
+            delayedAddToQueue(lmEntity, event);
+            return;
+        }
+
         // here we will process the mob from an async thread which directs it back to preprocessMob(..)
         main.queueManager_mobs.addToQueue(new QueueItem(lmEntity, event));
+    }
+
+    private void delayedAddToQueue(final LivingEntityWrapper lmEntity, final Event event){
+        final BukkitRunnable runnable = new BukkitRunnable() {
+            @Override
+            public void run() {
+                main.queueManager_mobs.addToQueue(new QueueItem(lmEntity, event));
+            }
+        };
+
+        runnable.runTaskLater(main, 500L);
     }
 
     private void lmSpawnerSpawn(final LivingEntityWrapper lmEntity, @NotNull final SpawnerSpawnEvent event) {

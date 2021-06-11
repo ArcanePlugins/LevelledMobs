@@ -10,6 +10,7 @@ import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -60,18 +61,27 @@ public class RulesSubcommand implements Subcommand {
             if (sender instanceof Player)
                 sender.sendMessage("Rules have been printed on the console");
 
-            Utils.logger.info("--------------------------------- Default values -------------------------------");
-            showAllValues(main.rulesParsingManager.defaultRule, sender, showOnConsole);
+            final StringBuilder sb = new StringBuilder();
+
             for (final String key : main.rulesParsingManager.rulePresets.keySet()) {
                 final RuleInfo rpi = main.rulesParsingManager.rulePresets.get(key);
-                Utils.logger.info("--------------------------------- Preset rule ----------------------------------");
-                showAllValues(rpi, sender, showOnConsole);
+                sb.append("\n--------------------------------- Preset rule ----------------------------------\n");
+                formatRulesVisually(rpi, sender, showOnConsole, Collections.singletonList("ruleIsEnabled"), sb);
             }
+
+            sb.append("\n--------------------------------- Default values -------------------------------\n");
+            formatRulesVisually(main.rulesParsingManager.defaultRule, sender, showOnConsole, null, sb);
+
             for (final RuleInfo rpi : main.rulesParsingManager.customRules) {
-                Utils.logger.info("--------------------------------- Custom rule ----------------------------------");
-                showAllValues(rpi, sender, showOnConsole);
+                sb.append("\n--------------------------------- Custom rule ----------------------------------\n");
+                formatRulesVisually(rpi, sender, showOnConsole, null, sb);
             }
-            Utils.logger.info("--------------------------------------------------------------------------------------");
+            sb.append("\n--------------------------------------------------------------------------------------");
+
+            if (showOnConsole)
+                Utils.logger.info(sb.toString());
+            else
+                sender.sendMessage(sb.toString());
         } else if ("show_effective".equalsIgnoreCase(args[1])) {
             if (!(sender instanceof Player)) {
                 sender.sendMessage("The command must be run by a player");
@@ -91,7 +101,8 @@ public class RulesSubcommand implements Subcommand {
             return;
         }
 
-        boolean showOnConsole = false;
+        boolean showOnConsole = sender instanceof ConsoleCommandSender;
+
         String foundRule = null;
         final Map<String, RuleInfo> allRuleNames = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
         for (final RuleInfo ruleInfo : main.rulesParsingManager.getAllRules())
@@ -125,12 +136,14 @@ public class RulesSubcommand implements Subcommand {
 
         final RuleInfo rule = allRuleNames.get(foundRule);
 
-        if (showOnConsole)
-            Utils.logger.info("Showing all values for rule: &b" + rule.getRuleName() + "&r");
-        else
-            sender.sendMessage("Showing all values for rule: &b" + rule.getRuleName() + "&r");
+        final StringBuilder sb = new StringBuilder();
+        sb.append(Utils.colorizeAllInList(Collections.singletonList("Showing all values for rule: &b" + rule.getRuleName() + "&r\n")).get(0));
 
-        showAllValues(rule, sender, showOnConsole);
+        formatRulesVisually(rule, sender, showOnConsole, Collections.singletonList("id"), sb);
+        if (showOnConsole)
+            Utils.logger.info(sb.toString());
+        else
+            sender.sendMessage(sb.toString());
     }
 
     private void getMobBeingLookedAt(@NotNull final Player player, final boolean showOnConsole, final boolean findNearbyEntities){
@@ -174,13 +187,16 @@ public class RulesSubcommand implements Subcommand {
                     lmEntity.getLivingEntity().getLocation().getBlockZ()
             );
 
-            player.sendMessage(message);
-            if (showOnConsole) Utils.logger.info(message);
+            final StringBuilder sb = new StringBuilder();
+            sb.append(message);
+
+            player.sendMessage(sb.toString());
+            if (!showOnConsole) sb.setLength(0);
 
             final BukkitRunnable runnable = new BukkitRunnable() {
                 @Override
                 public void run() {
-                    showEffectiveValues(player, lmEntity, showOnConsole);
+                    showEffectiveValues(player, lmEntity, showOnConsole, sb);
                 }
             };
 
@@ -208,15 +224,21 @@ public class RulesSubcommand implements Subcommand {
     }
 
 
-    private void showAllValues(@NotNull final RuleInfo pi, final CommandSender sender, final boolean showOnConsole){
+    private void formatRulesVisually(@NotNull final RuleInfo pi, final CommandSender sender, final boolean showOnConsole, final List<String> excludedKeys, final StringBuilder sb){
         final SortedMap<String, String> values = new TreeMap<>();
 
-        Utils.logger.info("id: " + pi.getRuleName());
+        if (excludedKeys == null || !excludedKeys.contains("id")) {
+            sb.append("id: ");
+            sb.append(pi.getRuleName());
+            sb.append("\n");
+        }
+
         try {
             for(final Field f : pi.getClass().getDeclaredFields()) {
                 if (!Modifier.isPublic(f.getModifiers())) continue;
                 if (f.get(pi) == null) continue;
                 if (f.getName().equals("ruleSourceNames")) continue;
+                if (excludedKeys != null && excludedKeys.contains(f.getName())) continue;
                 final Object value = f.get(pi);
                 if (value.toString().equalsIgnoreCase("NOT_SPECIFIED")) continue;
                 if (value.toString().equalsIgnoreCase("{}")) continue;
@@ -237,25 +259,27 @@ public class RulesSubcommand implements Subcommand {
         }
 
         for (final String key : values.keySet()){
-            if (showOnConsole)
-                Utils.logger.info(MessageUtils.colorizeAll(values.get(key)));
-            else
-                sender.sendMessage(MessageUtils.colorizeAll(values.get(key)));
+            sb.append(MessageUtils.colorizeAll(values.get(key)));
+            sb.append("\n");
         }
+
+        sb.setLength(sb.length() - 1); // remove trailing newline
     }
 
-    private void showEffectiveValues(final CommandSender sender, final @NotNull LivingEntityWrapper lmEntity, final boolean showOnConsole){
+    private void showEffectiveValues(final CommandSender sender, final @NotNull LivingEntityWrapper lmEntity, final boolean showOnConsole, final StringBuilder sb){
         final SortedMap<String, String> values = new TreeMap<>();
         final List<String> printedKeys = new LinkedList<>();
         final List<RuleInfo> effectiveRules = lmEntity.getApplicableRules();
 
         if (effectiveRules.isEmpty()){
             if (showOnConsole)
-                Utils.logger.info("No effective rules were found");
+                Utils.logger.info(sb + "\nNo effective rules were found");
             else
                 sender.sendMessage("No effective rules were found");
             return;
         }
+
+        if (sb.length() > 0) sb.append("\n");
 
         try {
             for (int i = effectiveRules.size() - 1; i >= 0; i--) {
@@ -287,17 +311,20 @@ public class RulesSubcommand implements Subcommand {
         }
 
         final String fineTuning = "fine-tuning: " + (lmEntity.getFineTuningAttributes() == null ? "(null)" : lmEntity.getFineTuningAttributes().toString());
-        if (showOnConsole)
-            Utils.logger.info(fineTuning);
-        else
-            sender.sendMessage(fineTuning);
+        sb.append(fineTuning);
+        sb.append("&r\n");
 
         for (final String key : values.keySet()){
-            if (showOnConsole)
-                Utils.logger.info(values.get(key));
-            else
-                sender.sendMessage(values.get(key));
+            sb.append(values.get(key));
+            sb.append("&r\n");
         }
+
+        sb.setLength(sb.length() - 1);
+
+        if (showOnConsole)
+            Utils.logger.info(sb.toString());
+        else
+            sender.sendMessage(Utils.colorizeAllInList(Collections.singletonList(sb.toString())).get(0));
     }
 
     @Override

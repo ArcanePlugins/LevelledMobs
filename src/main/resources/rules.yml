@@ -171,6 +171,10 @@
 # ||   |        allowed-list: ['']                                                          |   |
 # ||   |        excluded-list: ['']                                                         |   |
 # ||   |        merge: true                                                                 |   |
+# ||   |      mythicmobs-internal-names:                                                    |   |
+# ||   |        allowed-list: ['']                                                          |   |
+# ||   |        excluded-list: ['']                                                         |   |
+# ||   |        merge: true                                                                 |   |
 # ||   |      level-plugins:                                                                |   |
 # ||   |        DANGEROUS_CAVES: false                                                      |   |
 # ||   |        MYTHIC_MOBS: false                                                          |   |
@@ -953,7 +957,13 @@ presets:
         start: 100
         end: 20
         period: 0
-        
+
+  allowed_worlds:
+    conditions:
+      name: 'Exclude The End'
+      worlds:
+        #      allowed-list: ['world', 'world_nether']
+        excluded-list: [ 'world_the_end' ]
       
 # |||-------------------------------------------------------------------------------------------|
 # |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
@@ -975,6 +985,7 @@ default-rule:
   use-preset:
     - spawn_Levelling
     - blended_Levelling
+    - allowed_worlds
 #    - random_Levelling
 #    - ycoord_Levelling
 #    - apply_LevellingVariance
@@ -989,10 +1000,6 @@ default-rule:
       INFERNAL_MOBS: false
       SHOPKEEPERS: false
 
-    worlds:
-#      allowed-list: ['world', 'world_nether']
-      excluded-list: ['world_the_end']
-
 #    apply-above-y: 64
 #    apply-below-y: 59
 
@@ -1001,7 +1008,7 @@ default-rule:
 
   apply-settings:
     minLevel: 1
-    maxLevel: 100
+    maxLevel: 50
 
     multipliers:
       max-health: 7.0
@@ -1012,9 +1019,9 @@ default-rule:
       xp-drop: 5
 
     entity-name-override:
-    #       ZOMBIE: ['Undead', 'Deady', 'Walker']
-    #       CREEPER: ['Dr. Boom']
-    #       BABY_ZOMBIE: ['Baby Undead']
+    #  ZOMBIE: ['Undead', 'Deady', 'Walker']
+    #  CREEPER: ['Dr. Boom']
+    #  BABY_ZOMBIE: ['Baby Undead']
 
     tiered-coloring:
       1-24: '&a' # Light Green
@@ -1088,9 +1095,8 @@ custom-rules:
   - enabled: true
     priority: 1
     name: 'CR - NoLevel All Passive + EntityTypes'
+    use-preset: allowed_worlds
     conditions:
-      worlds:
-        allowed-list: ['world', 'world_nether']
       entities:
         allowed-groups: ['all_passive_mobs']
         allowed-list: ['BABY_', 'ENDER_DRAGON', 'WITHER', 'VILLAGER', 'ZOMBIE_VILLAGER', 'WANDERING_TRADER', 'PHANTOM', 'BAT', 'RAVAGER']
@@ -1099,9 +1105,7 @@ custom-rules:
 
   - enabled: true
     name: 'CR - Custom Entity Attributes'
-    conditions:
-      worlds:
-        allowed-list: ['world', 'world_nether']
+    use-preset: allowed_worlds
     apply-settings:
       multipliers:
         custom-mob-level:

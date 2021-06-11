@@ -72,6 +72,7 @@ public class PAPIManager extends PlaceholderExpansion {
         return null;
     }
 
+    @NotNull
     private String getLevelFromPlayer(final Player player){
         if (!this.lastKilledEntitiesByPlayer.containsKey(player.getUniqueId())) return "";
 
@@ -80,6 +81,7 @@ public class PAPIManager extends PlaceholderExpansion {
         return lmEntity.getMobLevel() + "";
     }
 
+    @NotNull
     private String getDisplaynameFromPlayer(final Player player){
         if (!this.lastKilledEntitiesByPlayer.containsKey(player.getUniqueId())) return "";
 

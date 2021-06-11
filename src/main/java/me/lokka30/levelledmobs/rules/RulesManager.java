@@ -393,6 +393,13 @@ public class RulesManager {
             return false;
         }
 
+        if (ri.conditions_MM_Names != null){
+            String mm_Name = lmEntity.mythicMobInternalName;
+            if (mm_Name == null) mm_Name = "";
+
+            if (!ri.conditions_MM_Names.isEnabledInList(mm_Name, lmEntity)) return false;
+        }
+
         return true;
     }
 
@@ -451,8 +458,6 @@ public class RulesManager {
         }
 
         if (ri.conditions_Chance != null && ri.conditions_Chance < 1.0){
-            //new Throwable().printStackTrace();
-
             final double chanceRole = (double) ThreadLocalRandom.current().nextInt(0, 100001) * 0.00001;
             if (chanceRole < ri.conditions_Chance){
                 Utils.debugLog(main, DebugType.DENIED_RULE_CHANCE, String.format("%s, mob: %s, chance: %s, chance role: %s",

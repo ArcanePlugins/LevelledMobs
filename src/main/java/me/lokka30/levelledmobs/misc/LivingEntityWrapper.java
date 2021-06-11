@@ -50,7 +50,7 @@ public class LivingEntityWrapper implements LivingEntityInterface {
     private FineTuningAttributes fineTuningAttributes;
     private CreatureSpawnEvent.SpawnReason spawnReason;
     public EntityDamageEvent.DamageCause deathCause;
-    //public final Object pdcSyncObject = new Object();
+    public String mythicMobInternalName;
 
     @NotNull
     public LevelledMobs getMainInstance(){

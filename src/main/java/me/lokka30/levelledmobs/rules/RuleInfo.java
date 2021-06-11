@@ -2,6 +2,7 @@ package me.lokka30.levelledmobs.rules;
 
 import me.lokka30.levelledmobs.managers.ExternalCompatibilityManager;
 import me.lokka30.levelledmobs.misc.CachedModalList;
+import me.lokka30.levelledmobs.misc.Utils;
 import me.lokka30.levelledmobs.rules.strategies.LevellingStrategy;
 import org.bukkit.block.Biome;
 import org.bukkit.event.entity.CreatureSpawnEvent;
@@ -72,6 +73,7 @@ public class RuleInfo {
     public CachedModalList<String> conditions_CustomNames;
     public CachedModalList<String> conditions_NoDropEntities;
     public CachedModalList<String> conditions_WGRegions;
+    public CachedModalList<String> conditions_MM_Names;
     public CachedModalList<CreatureSpawnEvent.SpawnReason> conditions_SpawnReasons;
     @Nullable
     public FineTuningAttributes allMobMultipliers;
@@ -121,7 +123,7 @@ public class RuleInfo {
 
                     if (thisCachedModalList != null && cachedModalList_preset.doMerge)
                         thisCachedModalList.mergeCachedModal(cachedModalList_preset);
-                    else if (!cachedModalList_preset.isEmpty())
+                    else
                         this.getClass().getDeclaredField(f.getName()).set(this, cachedModalList_preset.clone());
 
                     skipSettingValue = true;
@@ -151,7 +153,8 @@ public class RuleInfo {
                     this.getClass().getDeclaredField(f.getName()).set(this, presetValue);
                 this.ruleSourceNames.put(f.getName(), preset.ruleName);
             }
-        } catch (IllegalAccessException | NoSuchFieldException ignored) {
+        } catch (IllegalAccessException | NoSuchFieldException e) {
+            e.printStackTrace();
         }
     }
 }

@@ -38,7 +38,7 @@ public class QueueManager_Mobs {
                 } catch (InterruptedException ignored) {
                     isRunning = false;
                 }
-                Utils.logger.info("Queue Manager has exited");
+                Utils.logger.info("Mob processing queue Manager has exited");
             }
         };
 
@@ -56,7 +56,7 @@ public class QueueManager_Mobs {
     private void main() throws InterruptedException{
         while (doThread) {
 
-            final QueueItem item = queue.poll(1000, TimeUnit.MILLISECONDS);
+            final QueueItem item = queue.poll(200, TimeUnit.MILLISECONDS);
             if (item == null) continue;
 
             main.levelManager.entitySpawnListener.preprocessMob(item.lmEntity, item.event);
