@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * TODO Describe...
+ * Shows LevelledMobs information such as the version number
  *
  * @author lokka30
  * @since v2.0.0

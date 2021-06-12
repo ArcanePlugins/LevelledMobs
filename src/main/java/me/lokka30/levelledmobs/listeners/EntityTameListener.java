@@ -16,7 +16,7 @@ import java.util.Collections;
 import java.util.HashSet;
 
 /**
- * TODO Describe...
+ * Listens when an entity is tamed so various rules can be applied
  *
  * @author stumper66
  */

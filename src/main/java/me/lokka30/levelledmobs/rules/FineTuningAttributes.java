@@ -7,7 +7,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * TODO Describe...
+ * Holds any custom multipliers values parsed from rules.yml
  *
  * @author stumper66
  */

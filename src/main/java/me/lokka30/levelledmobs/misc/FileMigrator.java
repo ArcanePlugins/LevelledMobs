@@ -17,7 +17,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * TODO Describe...
+ * Migrates older yml versions to the latest available
  *
  * @author stumper66
  */

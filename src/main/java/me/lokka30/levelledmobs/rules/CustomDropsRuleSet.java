@@ -1,7 +1,7 @@
 package me.lokka30.levelledmobs.rules;
 
 /**
- * TODO Describe...
+ * When in conjunction when a customdrops is being processed
  *
  * @author stumper66
  */

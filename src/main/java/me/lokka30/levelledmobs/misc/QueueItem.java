@@ -6,7 +6,7 @@ import org.bukkit.event.Event;
 import java.util.List;
 
 /**
- * TODO Describe...
+ * Holds data that goes into various queues for processing
  *
  * @author stumper66
  */

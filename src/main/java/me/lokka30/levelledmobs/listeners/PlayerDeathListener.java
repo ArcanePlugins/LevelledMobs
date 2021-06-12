@@ -15,7 +15,7 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * TODO Describe...
+ * Listens for when a player dies
  *
  * @author stumper66
  */
@@ -28,7 +28,8 @@ public class PlayerDeathListener implements Listener {
     final private LevelledMobs main;
 
     /**
-     * This listener handles death nametags
+     * This listener handles death nametags so we can determine which mob killed
+     * it and update the death message accordingly
      *
      * @param event PlayerDeathEvent
      */

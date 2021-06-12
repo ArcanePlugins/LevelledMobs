@@ -15,7 +15,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 /**
- * TODO Describe...
+ * Holds rules parsed from rules.yml to make up a list of rules
  *
  * @author stumper66
  */

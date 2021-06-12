@@ -21,7 +21,8 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * TODO Describe...
+ * Listens for when a player joins, leaves or changes worlds so that
+ * send messages as needed, update nametags or track the player
  *
  * @author lokka30
  */

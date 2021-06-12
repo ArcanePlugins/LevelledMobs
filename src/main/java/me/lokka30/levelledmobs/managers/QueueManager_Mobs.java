@@ -9,7 +9,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 /**
- * TODO Describe...
+ * Queues up mob info so they can be processed in a background thread
  *
  * @author stumper66
  */

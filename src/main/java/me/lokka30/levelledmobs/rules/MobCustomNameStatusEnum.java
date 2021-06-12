@@ -1,7 +1,7 @@
 package me.lokka30.levelledmobs.rules;
 
 /**
- * TODO Describe...
+ * Holds values parsed from rules.yml
  *
  * @author stumper66
  */

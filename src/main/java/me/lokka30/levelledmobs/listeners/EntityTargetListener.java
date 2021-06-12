@@ -12,7 +12,7 @@ import org.bukkit.event.entity.EntityTargetEvent;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * TODO Describe...
+ * Used as a workaround to ensure mob nametags are properly updated
  *
  * @author stumper66
  */

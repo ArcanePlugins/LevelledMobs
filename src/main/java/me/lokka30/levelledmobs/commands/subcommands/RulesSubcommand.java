@@ -24,7 +24,7 @@ import java.lang.reflect.Modifier;
 import java.util.*;
 
 /**
- * TODO Describe...
+ * Shows the current rules as parsed from the various config files
  *
  * @author stumper66
  */

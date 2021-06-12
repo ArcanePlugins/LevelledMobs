@@ -20,7 +20,8 @@ import org.jetbrains.annotations.NotNull;
 import java.util.*;
 
 /**
- * TODO Describe...
+ * Parses all data from customdrops.yml and places into the corresponding
+ * java classes
  *
  * @author stumper66
  */

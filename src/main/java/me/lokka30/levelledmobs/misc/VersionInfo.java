@@ -5,9 +5,9 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * TODO Describe...
+ * A custom implementation for comparing program versions
  *
- * @author unknown
+ * @author stumper66
  */
 public class VersionInfo implements Comparable<VersionInfo> {
     public VersionInfo(final String version) throws InvalidObjectException {

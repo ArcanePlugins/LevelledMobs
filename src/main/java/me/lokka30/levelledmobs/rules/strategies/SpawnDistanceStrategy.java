@@ -9,7 +9,8 @@ import java.lang.reflect.Modifier;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
- * TODO Describe...
+ * Holds the configuration and logic for applying a levelling system that is
+ * based upon the distance from the world spawn
  *
  * @author stumper66, lokka30
  */

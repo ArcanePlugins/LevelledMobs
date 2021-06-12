@@ -36,7 +36,7 @@ import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
- * TODO Describe...
+ * Generates levels and manages other functions related to levelling mobs
  *
  * @author lokka30, CoolBoy, Esophose, 7smile7,
  * wShevchik, Hugo5551, limzikiki

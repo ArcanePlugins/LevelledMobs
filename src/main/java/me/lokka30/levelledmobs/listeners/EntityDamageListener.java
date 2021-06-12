@@ -14,7 +14,8 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * TODO Describe...
+ * Listens for when an entity is damaged so LevelledMobs can apply
+ * a multiplier to the damage amount
  *
  * @author lokka30
  */

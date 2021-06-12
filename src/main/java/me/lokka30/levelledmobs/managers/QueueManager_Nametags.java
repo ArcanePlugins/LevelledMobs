@@ -22,7 +22,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 /**
- * TODO Describe...
+ * Queues up mob nametag updates so they can be applied in a background thread
  *
  * @author stumper66
  */

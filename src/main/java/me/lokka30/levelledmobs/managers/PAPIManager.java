@@ -13,7 +13,7 @@ import java.util.TreeMap;
 import java.util.UUID;
 
 /**
- * TODO Describe...
+ * Manages communication to PlaceholderAPI (PAPI)
  *
  * @author stumper66
  */

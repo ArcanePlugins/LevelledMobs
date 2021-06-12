@@ -1,7 +1,7 @@
 package me.lokka30.levelledmobs.misc;
 
 /**
- * TODO Describe...
+ * Holds the enums used for showing debug data
  *
  * @author lokka30
  */
@@ -97,5 +97,11 @@ public enum DebugType {
 
     DENIED_RULE_CUSTOM_NAME,
 
-    DENIED_RULE_CHANCE
+    DENIED_RULE_CHANCE,
+
+    DENIED_RULE_WG_REGION,
+
+    DENIED_RULE_Y_LEVEL,
+
+    DENIED_RULE_STOP_PROCESSING
 }

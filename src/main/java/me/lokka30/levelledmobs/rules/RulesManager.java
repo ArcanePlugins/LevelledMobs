@@ -13,7 +13,8 @@ import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
- * TODO Describe...
+ * Manages all rules that are parsed from rules.yml and applied to various
+ * defined mobs
  *
  * @author stumper66
  */
@@ -357,7 +358,8 @@ public class RulesManager {
                     continue;
 
                 if (ruleInfo.stopProcessingRules != null && ruleInfo.stopProcessingRules) {
-                    // TODO: // should we add a debug entry here?
+                    Utils.debugLog(main, DebugType.DENIED_RULE_STOP_PROCESSING, String.format("%s, mob: %s, rule count: %s",
+                            ruleInfo.getRuleName(), lmInterface.getEntityType().name(), applicableRules.size()));
                     break;
                 }
 
@@ -412,6 +414,7 @@ public class RulesManager {
             String mm_Name = lmEntity.mythicMobInternalName;
             if (mm_Name == null) mm_Name = "";
 
+            //noinspection RedundantIfStatement
             if (!ri.conditions_MM_Names.isEnabledInList(mm_Name, lmEntity)) return false;
         }
 
@@ -457,18 +460,21 @@ public class RulesManager {
                 }
             }
             if (!isInList){
-                // TODO: add debug info
+                Utils.debugLog(main, DebugType.DENIED_RULE_WG_REGION, String.format("%s, mob: %s, wg_regions: %s",
+                        ri.getRuleName(), lmInterface.getEntityType().name(), wgRegions));
                 return false;
             }
         }
 
         if (ri.conditions_ApplyAboveY != null && lmInterface.getLocation().getBlockY() < ri.conditions_ApplyAboveY){
-            // TODO: add debug info
+            Utils.debugLog(main, DebugType.DENIED_RULE_Y_LEVEL, String.format("%s, mob: %s, y-level: %s, max-y: %s",
+                    ri.getRuleName(), lmInterface.getEntityType().name(), lmInterface.getLocation().getBlockY(), ri.conditions_ApplyAboveY));
             return false;
         }
 
         if (ri.conditions_ApplyBelowY != null && lmInterface.getLocation().getBlockY() > ri.conditions_ApplyBelowY){
-            // TODO: add debug info
+            Utils.debugLog(main, DebugType.DENIED_RULE_Y_LEVEL, String.format("%s, mob: %s, y-level: %s, min-y: %s",
+                    ri.getRuleName(), lmInterface.getEntityType().name(), lmInterface.getLocation().getBlockY(), ri.conditions_ApplyBelowY));
             return false;
         }
 

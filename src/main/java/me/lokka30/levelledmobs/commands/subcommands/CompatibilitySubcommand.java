@@ -8,7 +8,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 
 /**
- * TODO Describe...
+ * Shows if your server has known compatibility issues with LevelledMobs
  *
  * @author lokka30
  */

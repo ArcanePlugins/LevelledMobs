@@ -6,7 +6,8 @@ import org.jetbrains.annotations.NotNull;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
- * TODO Describe...
+ * Holds the configuration and logic for applying a levelling system that is
+ * based upon the distance y level height
  *
  * @author stumper66
  */

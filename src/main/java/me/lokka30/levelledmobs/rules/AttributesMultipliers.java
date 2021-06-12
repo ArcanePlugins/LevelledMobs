@@ -1,7 +1,7 @@
 package me.lokka30.levelledmobs.rules;
 
 /**
- * TODO Describe...
+ * Used to store the parsed rules for applying attribute multipliers
  *
  * @author stumper66
  */

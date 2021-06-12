@@ -11,7 +11,9 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 
 /**
- * TODO Describe...
+ * A wrapper for the LivingEntity class that provides various common function
+ * and settings used for processing rules
+ * Used only with the summon command
  *
  * @author stumper66
  */

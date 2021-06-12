@@ -6,7 +6,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 /**
- * TODO Describe...
+ * Holds any custom commands as parsed from customdrops.yml
  *
  * @author stumper66
  */

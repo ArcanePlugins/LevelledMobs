@@ -13,7 +13,8 @@ import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * TODO Describe...
+ * Listens for when MythicMobs are spawned so they can be marked accordingly
+ * since the regular spawn event doesn't distinguish MythicMobs
  *
  * @author stumper66
  */

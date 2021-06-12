@@ -7,7 +7,8 @@ import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
- * TODO Describe...
+ * Holds the configuration and logic for applying a variable low number bias
+ * to the levelling systems
  *
  * @author stumper66
  */

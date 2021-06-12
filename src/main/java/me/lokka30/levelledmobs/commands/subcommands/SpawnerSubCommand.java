@@ -13,7 +13,8 @@ import org.jetbrains.annotations.NotNull;
 import java.util.*;
 
 /**
- * TODO Describe...
+ * Gives the user a specialized spawner that only spawns mobs within certain level
+ * criteria
  *
  * @author stumper66
  */

@@ -8,7 +8,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 /**
- * TODO Describe...
+ * A standardized list used for holding various rule lists
  *
  * @author stumper66
  */

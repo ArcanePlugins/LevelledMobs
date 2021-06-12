@@ -12,7 +12,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 
 /**
- * TODO Describe...
+ * Holds common utilities
  *
  * @author lokka30, stumper66
  */

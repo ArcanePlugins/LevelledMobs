@@ -10,7 +10,8 @@ import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * TODO Describe...
+ * Listens for when an entity regains health so the nametag can
+ * be updated accordingly
  *
  * @author konsolas, lokka30
  */

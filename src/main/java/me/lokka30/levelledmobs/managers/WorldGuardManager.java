@@ -21,7 +21,8 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 
 /**
- * TODO Describe...
+ * Manages communication to WorldGuar for the purposes of obtaining region
+ * and flag information
  *
  * @author Eyrian2010, lokka30, stumper66
  */

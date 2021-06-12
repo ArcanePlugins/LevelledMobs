@@ -11,7 +11,7 @@ import java.io.File;
 import java.io.FileInputStream;
 
 /**
- * TODO Describe...
+ * Used to load various configuration files and migrate if necessary
  *
  * @author lokka30, stumper66
  */

@@ -9,7 +9,8 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 
 /**
- * TODO Describe...
+ * Interace used for wrapping LivingEntity to provide additions common commands
+ * and information
  *
  * @author stumper66
  */

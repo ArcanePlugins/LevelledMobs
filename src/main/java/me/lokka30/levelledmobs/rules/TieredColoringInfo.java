@@ -5,7 +5,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * TODO Describe...
+ * Holds the values parsed from rules.yml used with the tiered
+ * placeholder for nametags
  *
  * @author stumper66
  */

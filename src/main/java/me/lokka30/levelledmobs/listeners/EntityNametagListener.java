@@ -13,7 +13,8 @@ import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * TODO Describe...
+ * Listens when a nametag is placed on an entity so LevelledMobs
+ * can apply various rules around nametagged entities
  *
  * @author lokka30
  */

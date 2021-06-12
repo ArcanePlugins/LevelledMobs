@@ -19,7 +19,8 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 
 /**
- * TODO Describe...
+ * Contains the logic that parses rules.yml and reads them into the
+ * corresponding java classes
  *
  * @author stumper66
  */

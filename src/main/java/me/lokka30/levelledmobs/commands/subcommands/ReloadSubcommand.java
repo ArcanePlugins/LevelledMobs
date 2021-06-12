@@ -10,7 +10,7 @@ import org.bukkit.event.HandlerList;
 import java.util.List;
 
 /**
- * TODO Describe...
+ * Reloads all LevelledMobs configuration from disk
  *
  * @author lokka30
  */

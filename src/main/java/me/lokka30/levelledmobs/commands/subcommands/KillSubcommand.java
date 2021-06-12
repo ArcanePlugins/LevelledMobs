@@ -14,7 +14,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * TODO Describe...
+ * Allows you to kill LevelledMobs with various options including all levelled mobs, specific worlds
+ * or levelled mobs in your proximity
  *
  * @author stumper66
  */

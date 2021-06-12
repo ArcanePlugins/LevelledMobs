@@ -18,7 +18,8 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * TODO Describe...
+ * Listens for when an entity combusts for the purpose of increasing
+ * sunlight damage if desired
  *
  * @author stumper66
  */

@@ -11,7 +11,9 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.world.ChunkLoadEvent;
 
 /**
- * TODO Describe...
+ * Listens for when chunks are loaded and processes any mobs accordingly
+ * Needed for server startup and for mostly passive mobs when players are
+ * moving around
  *
  * @author stumper66
  */

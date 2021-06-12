@@ -14,7 +14,7 @@ import javax.annotation.Nullable;
 import java.util.Objects;
 
 /**
- * TODO Describe...
+ * Manages data related to various mob levelling
  *
  * @author lokka30, stumper66
  */

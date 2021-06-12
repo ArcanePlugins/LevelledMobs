@@ -1,9 +1,10 @@
 package me.lokka30.levelledmobs.misc;
 
 /**
- * TODO Describe...
+ * Used as part of the modallist which is a standardized list for holding
+ * configuration lists
  *
- * @author stumper66, lokka30
+ * @author lokka30
  */
 public enum ModalListMode {
     ALL,

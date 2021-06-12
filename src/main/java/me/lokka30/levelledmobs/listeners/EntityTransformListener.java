@@ -18,7 +18,7 @@ import java.util.Collections;
 import java.util.HashSet;
 
 /**
- * TODO Describe...
+ * Listens for when a mob transforms so the applicable rules can be applied
  *
  * @author stumper66
  */

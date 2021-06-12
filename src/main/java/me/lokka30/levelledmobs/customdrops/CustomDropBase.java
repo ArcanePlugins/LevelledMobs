@@ -7,7 +7,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 /**
- * TODO Describe...
+ * Base class for all custom drops including custom commands
  *
  * @author stumper66
  */

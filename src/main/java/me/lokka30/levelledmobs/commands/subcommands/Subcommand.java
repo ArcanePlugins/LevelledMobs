@@ -6,7 +6,7 @@ import org.bukkit.command.CommandSender;
 import java.util.List;
 
 /**
- * TODO Describe...
+ * Provides the interface for parsing commands sent to LevelledMobs
  *
  * @author lokka30
  */

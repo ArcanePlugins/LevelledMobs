@@ -222,6 +222,9 @@ attributes-use-preset-base-values: false
 # ||     'DENIED_RULE_SPAWN_REASON' | Reports denied levelling due to 'other' spawn reason      |
 # ||      'DENIED_RULE_CUSTOM_NAME' | Reports denied levelling due to being nametagged          |
 # ||           'DENIED_RULE_CHANCE' | Reports denied levelling due to chance variable           |
+# ||        'DENIED_RULE_WG_REGION' | Reports denied levelling due to a worldguard region       |
+# ||          'DENIED_RULE_Y_LEVEL' | Reports denied levelling due to a y-level above/below rule|
+# ||  'DENIED_RULE_STOP_PROCESSING' | Reports denied levelling due to a stop-processing rule    |
 # ||                                                                                            |
 # |||-------------------------------------------------------------------------------------------|
 use-update-checker: true

@@ -22,7 +22,7 @@ import java.lang.reflect.Field;
 import java.util.*;
 
 /**
- * TODO Describe...
+ * Holds the code used for dropping mob heads and applying textures
  *
  * @author stumper66
  */

@@ -18,7 +18,8 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 
 /**
- * TODO Describe...
+ A wrapper for the LivingEntity class that provides various common function
+ * and settings used for processing rules
  *
  * @author stumper66
  */

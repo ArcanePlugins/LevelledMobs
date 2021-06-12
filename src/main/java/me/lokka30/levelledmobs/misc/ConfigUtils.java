@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.*;
 
 /**
- * TODO Describe...
+ * Used for managing configuration data
  *
  * @author lokka30, stumper66
  */

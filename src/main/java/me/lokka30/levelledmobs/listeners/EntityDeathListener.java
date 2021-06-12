@@ -15,7 +15,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.*;
 
 /**
- * TODO Describe...
+ * Listens for when an entity dies so it's drops can be multiplied, manipulated, etc
  *
  * @author lokka30
  */

@@ -1,7 +1,7 @@
 package me.lokka30.levelledmobs.misc;
 
 /**
- * TODO Describe...
+ * Holds the attributes that can have multipliers applied
  *
  * @author lokka30
  */
