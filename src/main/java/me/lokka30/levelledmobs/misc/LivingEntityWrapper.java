@@ -15,10 +15,7 @@ import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 
 /**
  * TODO Describe...
@@ -41,8 +38,10 @@ public class LivingEntityWrapper implements LivingEntityInterface {
     @NotNull
     private Set<String> applicableGroups;
     private boolean hasCache;
+    private boolean isBuildingCache;
     private boolean groupsAreBuilt;
     private Integer mobLevel;
+    private final static Object lockObj = new Object();
     @NotNull
     private List<RuleInfo> applicableRules;
     private List<String> spawnedWGRegions;
@@ -59,15 +58,21 @@ public class LivingEntityWrapper implements LivingEntityInterface {
     }
 
     private void buildCache(){
-        this.mobLevel = main.levelInterface.isLevelled(livingEntity) ?
-                main.levelInterface.getLevelOfMob(livingEntity) : null;
+        if (isBuildingCache) return;
+        synchronized (lockObj) {
+            if (this.hasCache) return;
+            isBuildingCache = true;
+            this.mobLevel = main.levelInterface.isLevelled(livingEntity) ?
+                    main.levelInterface.getLevelOfMob(livingEntity) : null;
 
-        this.spawnedWGRegions = ExternalCompatibilityManager.getWGRegionsAtLocation(this);
+            this.spawnedWGRegions = ExternalCompatibilityManager.getWGRegionsAtLocation(this);
 
-        this.hasCache = true;
-        // the lines below must remain after hasCache = true to prevent stack overflow
-        this.applicableRules = main.rulesManager.getApplicableRules(this);
-        this.fineTuningAttributes = main.rulesManager.getFineTuningAttributes(this);
+            this.hasCache = true;
+            // the lines below must remain after hasCache = true to prevent stack overflow
+            this.applicableRules = main.rulesManager.getApplicableRules(this);
+            this.fineTuningAttributes = main.rulesManager.getFineTuningAttributes(this);
+            this.isBuildingCache = false;
+        }
     }
 
     public void invalidateCache(){

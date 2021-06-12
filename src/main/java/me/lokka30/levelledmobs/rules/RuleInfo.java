@@ -63,7 +63,7 @@ public class RuleInfo {
     @NotNull
     public final Map<String, String> ruleSourceNames;
     public List<TieredColoringInfo> tieredColoringInfos;
-    public List<ExternalCompatibilityManager.ExternalCompatibility> enabledExtCompats;
+    public Map<ExternalCompatibilityManager.ExternalCompatibility, Boolean> enabledExtCompats;
     public CachedModalList<String> allowedEntities;
     public CachedModalList<String> conditions_Worlds;
     public CachedModalList<String> conditions_Entities;

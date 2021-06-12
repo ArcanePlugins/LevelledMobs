@@ -165,6 +165,20 @@ public class RulesManager {
             return thisMobAttribs;
     }
 
+    @NotNull
+    public Map<ExternalCompatibilityManager.ExternalCompatibility, Boolean> getRule_ExternalCompatibility(@NotNull final LivingEntityWrapper lmEntity){
+        final Map<ExternalCompatibilityManager.ExternalCompatibility, Boolean> result = new TreeMap<>();
+
+        for (final RuleInfo ruleInfo : lmEntity.getApplicableRules()){
+            if (ruleInfo.enabledExtCompats != null) {
+                for (final ExternalCompatibilityManager.ExternalCompatibility compatibility : ruleInfo.enabledExtCompats.keySet())
+                    result.put(compatibility, ruleInfo.enabledExtCompats.get(compatibility));
+            }
+        }
+
+        return result;
+    }
+
     public int getRule_CreeperMaxBlastRadius(@NotNull final LivingEntityWrapper lmEntity){
         int maxBlast = 5;
         for (final RuleInfo ruleInfo : lmEntity.getApplicableRules()){
@@ -335,6 +349,7 @@ public class RulesManager {
             for (final RuleInfo ruleInfo : rules) {
 
                 if (!ruleInfo.ruleIsEnabled) continue;
+
                 if (lmInterface instanceof LivingEntityWrapper && !isRuleApplicable_Entity((LivingEntityWrapper) lmInterface, ruleInfo))
                     continue;
 
@@ -352,7 +367,7 @@ public class RulesManager {
 
         boolean hasWorldListSpecified = false;
         for (final RuleInfo ri : applicableRules) {
-            if (ri.conditions_Worlds != null && !ri.conditions_Worlds.isEmpty()){
+            if (ri.conditions_Worlds != null && (!ri.conditions_Worlds.isEmpty() || ri.conditions_Worlds.allowAll)){
                 hasWorldListSpecified = true;
                 break;
             }
@@ -393,7 +408,7 @@ public class RulesManager {
             return false;
         }
 
-        if (ri.conditions_MM_Names != null){
+        if (ri.conditions_MM_Names != null && lmEntity.getMobExternalType().equals(ExternalCompatibilityManager.ExternalCompatibility.MYTHIC_MOBS)){
             String mm_Name = lmEntity.mythicMobInternalName;
             if (mm_Name == null) mm_Name = "";
 

@@ -5,13 +5,13 @@ import io.lumine.xikage.mythicmobs.mobs.ActiveMob;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.LivingEntityInterface;
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
-import me.lokka30.levelledmobs.rules.RuleInfo;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * This class handles compatibility with other plugins such as EliteMobs and Citizens
@@ -31,15 +31,16 @@ public class ExternalCompatibilityManager {
     }
 
     public static boolean isExternalCompatibilityEnabled(final ExternalCompatibility externalCompatibility, @NotNull final LivingEntityWrapper lmEntity) {
-        if (lmEntity.getApplicableRules().isEmpty()) return false;
+        if (lmEntity.getApplicableRules().isEmpty())
+            return false;
 
-        List<ExternalCompatibility> list = null;
-        for (final RuleInfo ruleInfo : lmEntity.getApplicableRules()){
-            if (ruleInfo.enabledExtCompats != null)
-                list = ruleInfo.enabledExtCompats;
-        }
+        final Map<ExternalCompatibility, Boolean> list = lmEntity.getMainInstance().rulesManager.getRule_ExternalCompatibility(lmEntity);
+        return isExternalCompatibilityEnabled(externalCompatibility, list);
+    }
 
-        return (list != null && list.contains(externalCompatibility));
+    public static boolean isExternalCompatibilityEnabled(final ExternalCompatibility externalCompatibility, final Map<ExternalCompatibility, Boolean> list) {
+        // if not defined default to true
+        return  (!list.containsKey(externalCompatibility) || list.get(externalCompatibility));
     }
 
     public static boolean hasProtocolLibInstalled() {
@@ -85,9 +86,10 @@ public class ExternalCompatibilityManager {
      * @return if MythicMobs compatibility enabled and entity is from MythicMobs
      */
     public static boolean checkMythicMobs(final LivingEntityWrapper lmEntity) {
-        final boolean isExternalType = ExternalCompatibilityManager.isExternalCompatibilityEnabled(ExternalCompatibility.MYTHIC_MOBS, lmEntity)
-                && isMythicMob(lmEntity);
+        if (!ExternalCompatibilityManager.hasMythicMobsInstalled()) return false;
+        if (lmEntity.getMobExternalType().equals(ExternalCompatibility.MYTHIC_MOBS)) return true;
 
+        final boolean isExternalType = isMythicMob(lmEntity);
         if (isExternalType) lmEntity.setMobExternalType(ExternalCompatibility.MYTHIC_MOBS);
 
         return isExternalType;

@@ -18,6 +18,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -89,17 +90,26 @@ public class LevelInterface {
         /*
         Compatibility with other plugins: users may want to stop LM from acting on mobs modified by other plugins.
          */
-        if (ExternalCompatibilityManager.hasMythicMobsInstalled() && ExternalCompatibilityManager.checkMythicMobs(lmEntity))
+        final Map<ExternalCompatibilityManager.ExternalCompatibility, Boolean> compatRules = rulesManager.getRule_ExternalCompatibility(lmEntity);
+
+        if (!ExternalCompatibilityManager.isExternalCompatibilityEnabled(ExternalCompatibilityManager.ExternalCompatibility.MYTHIC_MOBS, compatRules) &&
+                ExternalCompatibilityManager.checkMythicMobs(lmEntity))
             return LevellableState.DENIED_CONFIGURATION_COMPATIBILITY_MYTHIC_MOBS;
-        if (ExternalCompatibilityManager.checkDangerousCaves(lmEntity))
+
+        if (!ExternalCompatibilityManager.isExternalCompatibilityEnabled(ExternalCompatibilityManager.ExternalCompatibility.DANGEROUS_CAVES, compatRules) &&
+                ExternalCompatibilityManager.checkDangerousCaves(lmEntity))
             return LevellableState.DENIED_CONFIGURATION_COMPATIBILITY_DANGEROUS_CAVES;
-        if (ExternalCompatibilityManager.checkEliteMobs(lmEntity))
+        if (!ExternalCompatibilityManager.isExternalCompatibilityEnabled(ExternalCompatibilityManager.ExternalCompatibility.ELITE_MOBS, compatRules) &&
+                ExternalCompatibilityManager.checkEliteMobs(lmEntity))
             return LevellableState.DENIED_CONFIGURATION_COMPATIBILITY_ELITE_MOBS;
-        if (ExternalCompatibilityManager.checkInfernalMobs(lmEntity))
+        if (!ExternalCompatibilityManager.isExternalCompatibilityEnabled(ExternalCompatibilityManager.ExternalCompatibility.INFERNAL_MOBS, compatRules) &&
+                ExternalCompatibilityManager.checkInfernalMobs(lmEntity))
             return LevellableState.DENIED_CONFIGURATION_COMPATIBILITY_INFERNAL_MOBS;
-        if (ExternalCompatibilityManager.checkCitizens(lmEntity))
+        if (!ExternalCompatibilityManager.isExternalCompatibilityEnabled(ExternalCompatibilityManager.ExternalCompatibility.CITIZENS, compatRules) &&
+                ExternalCompatibilityManager.checkCitizens(lmEntity))
             return LevellableState.DENIED_CONFIGURATION_COMPATIBILITY_CITIZENS;
-        if (ExternalCompatibilityManager.checkShopkeepers(lmEntity))
+        if (!ExternalCompatibilityManager.isExternalCompatibilityEnabled(ExternalCompatibilityManager.ExternalCompatibility.SHOPKEEPERS, compatRules) &&
+                ExternalCompatibilityManager.checkShopkeepers(lmEntity))
             return LevellableState.DENIED_CONFIGURATION_COMPATIBILITY_SHOPKEEPERS;
         if (ExternalCompatibilityManager.checkWorldGuard(lmEntity.getLivingEntity().getLocation(), main))
             return LevellableState.DENIED_CONFIGURATION_COMPATIBILITY_WORLD_GUARD;
@@ -298,8 +308,8 @@ public class LevelInterface {
      * @return the mob's level
      */
     public int getLevelOfMob(@NotNull final LivingEntity livingEntity) {
-        assert isLevelled(livingEntity);
         synchronized (livingEntity.getPersistentDataContainer()) {
+            if (!livingEntity.getPersistentDataContainer().has(main.levelManager.levelKey, PersistentDataType.INTEGER)) return -1;
             return Objects.requireNonNull(livingEntity.getPersistentDataContainer().get(main.levelManager.levelKey, PersistentDataType.INTEGER), "levelKey was null");
         }
     }

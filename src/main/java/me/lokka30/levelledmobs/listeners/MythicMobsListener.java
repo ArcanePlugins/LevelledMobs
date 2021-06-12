@@ -30,19 +30,16 @@ public class MythicMobsListener implements Listener {
         if (!(event.getEntity() instanceof LivingEntity )) return;
         final LivingEntityWrapper lmEntity = new LivingEntityWrapper((LivingEntity) event.getEntity(), main);
 
-        if (!ExternalCompatibilityManager.isExternalCompatibilityEnabled(ExternalCompatibilityManager.ExternalCompatibility.MYTHIC_MOBS, lmEntity)) {
-            lmEntity.mythicMobInternalName = event.getMob().getType().getInternalName();
+        lmEntity.mythicMobInternalName = event.getMob().getType().getInternalName();
+        lmEntity.setMobExternalType(ExternalCompatibilityManager.ExternalCompatibility.MYTHIC_MOBS);
+
+        if (ExternalCompatibilityManager.isExternalCompatibilityEnabled(ExternalCompatibilityManager.ExternalCompatibility.MYTHIC_MOBS, lmEntity)) {
             lmEntity.reEvaluateLevel = true;
-            lmEntity.setMobExternalType(ExternalCompatibilityManager.ExternalCompatibility.MYTHIC_MOBS);
             main.queueManager_mobs.addToQueue(new QueueItem(lmEntity, event));
             return;
         }
 
-        if (!(event.getEntity() instanceof LivingEntity)) return;
-
-        final LivingEntity livingEntity = (LivingEntity) event.getEntity();
-
         if (lmEntity.isLevelled()) main.levelInterface.removeLevel(lmEntity);
-        livingEntity.getPersistentDataContainer().set(main.levelManager.noLevelKey, PersistentDataType.STRING, "true");
+        lmEntity.getPDC().set(main.levelManager.noLevelKey, PersistentDataType.STRING, "true");
     }
 }

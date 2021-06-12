@@ -365,16 +365,15 @@ public class RulesParsingManager {
     private void parseExternalCompat(final ConfigurationSection cs){
         if (cs == null) return;
 
-        final List<ExternalCompatibilityManager.ExternalCompatibility> results = new LinkedList<>();
+        final Map<ExternalCompatibilityManager.ExternalCompatibility, Boolean> results = new TreeMap<>();
 
         for (final String key : cs.getKeys(false)){
             boolean value = cs.getBoolean(key);
-            if (!value) continue;
 
             ExternalCompatibilityManager.ExternalCompatibility compat;
             try {
                 compat = ExternalCompatibilityManager.ExternalCompatibility.valueOf(key.toUpperCase());
-                results.add(compat);
+                results.put(compat, value);
             } catch (IllegalArgumentException e) {
                 Utils.logger.warning("Invalid level-plugins key: " + key);
             }

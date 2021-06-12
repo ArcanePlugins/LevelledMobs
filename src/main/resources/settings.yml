@@ -127,6 +127,11 @@ customcommand-amount-limit: 10
 # ||  ADVANCED USERS ONLY                                                                       |
 # ||  Miscellaneous LevelledMobs Settings                                                       |
 # ||                                                                                            |
+# ||   mob-process-delay:                                                                       |
+# ||     | This will put an optional delay for when LevelledMobs processed a                    |
+# ||     | mob.  Useful if you have 3rd party plugins that modify mobs and this                 |
+# ||     | gives them a chance to process the mob fist.                                         |
+# ||                                                                                            |
 # ||   summon-command-spawn-distance-from-player:                                               |
 # ||     | This setting establishes how far away from a player an entity will spawn             |
 # ||     | when you use LevelledMobs' "/lm summon" command.                                     |
@@ -166,6 +171,7 @@ customcommand-amount-limit: 10
 # ||       | By default, this is set to false.                                                  |
 # ||                                                                                            |
 # |||-------------------------------------------------------------------------------------------|
+mob-process-delay: 0
 summon-command-spawn-distance-from-player: 5
 kill-skip-conditions:
   nametagged: true

@@ -49,15 +49,20 @@ public class EntitySpawnListener implements Listener {
         final LivingEntityWrapper lmEntity = new LivingEntityWrapper((LivingEntity) event.getEntity(), main);
 
         if (event instanceof CreatureSpawnEvent && ((CreatureSpawnEvent) event).getSpawnReason().equals(CreatureSpawnEvent.SpawnReason.CUSTOM)){
-            delayedAddToQueue(lmEntity, event);
+            delayedAddToQueue(lmEntity, event, 20);
             return;
         }
 
+        int mobProcessDelay = main.settingsCfg.getInt("mob-process-delay", 0);
+
         // here we will process the mob from an async thread which directs it back to preprocessMob(..)
-        main.queueManager_mobs.addToQueue(new QueueItem(lmEntity, event));
+        if (mobProcessDelay > 0)
+            delayedAddToQueue(lmEntity, event, mobProcessDelay);
+        else
+            main.queueManager_mobs.addToQueue(new QueueItem(lmEntity, event));
     }
 
-    private void delayedAddToQueue(final LivingEntityWrapper lmEntity, final Event event){
+    private void delayedAddToQueue(final LivingEntityWrapper lmEntity, final Event event, final int delay){
         final BukkitRunnable runnable = new BukkitRunnable() {
             @Override
             public void run() {
@@ -65,7 +70,7 @@ public class EntitySpawnListener implements Listener {
             }
         };
 
-        runnable.runTaskLater(main, 500L);
+        runnable.runTaskLater(main, delay);
     }
 
     private void lmSpawnerSpawn(final LivingEntityWrapper lmEntity, @NotNull final SpawnerSpawnEvent event) {
@@ -118,6 +123,9 @@ public class EntitySpawnListener implements Listener {
     }
 
     public void preprocessMob(final LivingEntityWrapper lmEntity, @NotNull final Event event){
+
+        if (!lmEntity.reEvaluateLevel && lmEntity.isLevelled())
+            return;
 
         CreatureSpawnEvent.SpawnReason spawnReason = CreatureSpawnEvent.SpawnReason.DEFAULT;
         LevelInterface.AdditionalLevelInformation additionalInfo = LevelInterface.AdditionalLevelInformation.NOT_APPLICABLE;
