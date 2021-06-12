@@ -1,6 +1,7 @@
 package me.lokka30.levelledmobs.managers;
 
 import io.lumine.xikage.mythicmobs.MythicMobs;
+import io.lumine.xikage.mythicmobs.mobs.ActiveMob;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.LivingEntityInterface;
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
@@ -56,6 +57,14 @@ public class ExternalCompatibilityManager {
     public static boolean isMythicMob(@NotNull final LivingEntityWrapper lmEntity) {
 
         return MythicMobs.inst().getMobManager().isActiveMob(io.lumine.xikage.mythicmobs.adapters.bukkit.BukkitAdapter.adapt(lmEntity.getLivingEntity()));
+    }
+
+    @NotNull
+    public static String getMythicMobInternalName(@NotNull final LivingEntityWrapper lmEntity){
+        if (!isMythicMob(lmEntity)) return "";
+
+        final ActiveMob mm = MythicMobs.inst().getMobManager().getMythicMobInstance(lmEntity.getLivingEntity());
+        return mm.getType().getInternalName();
     }
 
     /**

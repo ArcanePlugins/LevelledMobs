@@ -51,6 +51,7 @@ public class LivingEntityWrapper implements LivingEntityInterface {
     private CreatureSpawnEvent.SpawnReason spawnReason;
     public EntityDamageEvent.DamageCause deathCause;
     public String mythicMobInternalName;
+    public boolean reEvaluateLevel;
 
     @NotNull
     public LevelledMobs getMainInstance(){

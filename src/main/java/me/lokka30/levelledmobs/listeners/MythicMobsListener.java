@@ -32,6 +32,8 @@ public class MythicMobsListener implements Listener {
 
         if (!ExternalCompatibilityManager.isExternalCompatibilityEnabled(ExternalCompatibilityManager.ExternalCompatibility.MYTHIC_MOBS, lmEntity)) {
             lmEntity.mythicMobInternalName = event.getMob().getType().getInternalName();
+            lmEntity.reEvaluateLevel = true;
+            lmEntity.setMobExternalType(ExternalCompatibilityManager.ExternalCompatibility.MYTHIC_MOBS);
             main.queueManager_mobs.addToQueue(new QueueItem(lmEntity, event));
             return;
         }
@@ -40,6 +42,7 @@ public class MythicMobsListener implements Listener {
 
         final LivingEntity livingEntity = (LivingEntity) event.getEntity();
 
+        if (lmEntity.isLevelled()) main.levelInterface.removeLevel(lmEntity);
         livingEntity.getPersistentDataContainer().set(main.levelManager.noLevelKey, PersistentDataType.STRING, "true");
     }
 }

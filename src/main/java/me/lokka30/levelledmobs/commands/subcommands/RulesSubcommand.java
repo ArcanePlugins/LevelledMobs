@@ -1,6 +1,7 @@
 package me.lokka30.levelledmobs.commands.subcommands;
 
 import me.lokka30.levelledmobs.LevelledMobs;
+import me.lokka30.levelledmobs.managers.ExternalCompatibilityManager;
 import me.lokka30.levelledmobs.misc.CachedModalList;
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
 import me.lokka30.levelledmobs.misc.Utils;
@@ -179,12 +180,17 @@ public class RulesSubcommand implements Subcommand {
             createParticleEffect(livingEntity.getLocation());
             final LivingEntityWrapper lmEntity = new LivingEntityWrapper(livingEntity, main);
 
-            final String message = String.format("showing effective rules for: %s%s at location: %s, %s, %s",
-                    lmEntity.isLevelled() ? "level " + lmEntity.getMobLevel() + " " : "",
-                    lmEntity.getLivingEntity().getName(),
-                    lmEntity.getLivingEntity().getLocation().getBlockX(),
-                    lmEntity.getLivingEntity().getLocation().getBlockY(),
-                    lmEntity.getLivingEntity().getLocation().getBlockZ()
+            String entityName = lmEntity.getTypeName();
+            if (ExternalCompatibilityManager.hasMythicMobsInstalled() && ExternalCompatibilityManager.isMythicMob(lmEntity))
+                entityName = ExternalCompatibilityManager.getMythicMobInternalName(lmEntity);
+            //                                                                 0 1   2                3   4   5
+            final String message = String.format("showing effective rules for: %s%s (%s) at location: %s, %s, %s",
+                    lmEntity.isLevelled() ? "level " + lmEntity.getMobLevel() + " " : "",   // 0
+                    entityName,                                                             // 1
+                    lmEntity.getLivingEntity().getName(),                                   // 2
+                    lmEntity.getLivingEntity().getLocation().getBlockX(),                   // 3
+                    lmEntity.getLivingEntity().getLocation().getBlockY(),                   // 4
+                    lmEntity.getLivingEntity().getLocation().getBlockZ()                    // 5
             );
 
             final StringBuilder sb = new StringBuilder();
