@@ -32,7 +32,7 @@ public class EntityTameListener implements Listener {
         final LivingEntityWrapper lmEntity = new LivingEntityWrapper(event.getEntity(), main);
 
         if (main.rulesManager.getRule_MobTamedStatus(lmEntity) == MobTamedStatusEnum.NOT_TAMED) {
-            Utils.debugLog(main, DebugType.ENTITY_TAME, "no-level-conditions.tamed = true");
+            Utils.debugLog(main, DebugType.ENTITY_TAME, "no-level-conditions.tamed = &btrue");
 
             // if mob was levelled then remove it
             main.levelInterface.removeLevel(lmEntity);

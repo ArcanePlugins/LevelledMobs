@@ -90,17 +90,17 @@ public class QueueManager_Nametags {
         try {
             dataWatcher = WrappedDataWatcher.getEntityWatcher(lmEntity.getLivingEntity()).deepClone();
         } catch (ConcurrentModificationException ex) {
-            Utils.debugLog(main, DebugType.UPDATE_NAMETAG_FAIL, "Concurrent modification occured, skipping nametag update of " + lmEntity.getLivingEntity().getName() + ".");
+            Utils.debugLog(main, DebugType.UPDATE_NAMETAG_FAIL, "&bConcurrentModificationException &7caught, skipping nametag update of &b" + lmEntity.getLivingEntity().getName() + "&7.");
             return;
         }
 
         try {
             chatSerializer = WrappedDataWatcher.Registry.getChatComponentSerializer(true);
         } catch (ConcurrentModificationException ex) {
-            Utils.debugLog(main, DebugType.UPDATE_NAMETAG_FAIL, "ConcurrentModificationException caught, skipping nametag update of " + lmEntity.getLivingEntity().getName() + ".");
+            Utils.debugLog(main, DebugType.UPDATE_NAMETAG_FAIL, "&bConcurrentModificationException &7caught, skipping nametag update of &b" + lmEntity.getLivingEntity().getName() + "&7.");
             return;
         } catch (IllegalArgumentException ex) {
-            Utils.debugLog(main, DebugType.UPDATE_NAMETAG_FAIL, "Registry is empty, skipping nametag update of " + lmEntity.getLivingEntity().getName() + ".");
+            Utils.debugLog(main, DebugType.UPDATE_NAMETAG_FAIL, "Registry is empty (&bIllegalArgumentException&7 caught), skipping nametag update of &b" + lmEntity.getLivingEntity().getName() + "&7.");
             return;
         }
 
@@ -128,12 +128,12 @@ public class QueueManager_Nametags {
             if (!lmEntity.getLivingEntity().isValid()) return;
 
             try {
-                Utils.debugLog(main, DebugType.UPDATE_NAMETAG_SUCCESS, "Nametag packet sent for " + lmEntity.getLivingEntity().getName() + " to " + player.getName() + ".");
+                Utils.debugLog(main, DebugType.UPDATE_NAMETAG_SUCCESS, "Nametag packet sent for &b" + lmEntity.getLivingEntity().getName() + "&7 to &b" + player.getName() + "&7.");
                 ProtocolLibrary.getProtocolManager().sendServerPacket(player, packet);
             } catch (IllegalArgumentException ex) {
-                Utils.debugLog(main, DebugType.UPDATE_NAMETAG_FAIL, "IllegalArgumentException caught whilst trying to sendServerPacket");
+                Utils.debugLog(main, DebugType.UPDATE_NAMETAG_FAIL, "&bIllegalArgumentException&7 caught whilst trying to sendServerPacket");
             } catch (InvocationTargetException ex) {
-                Utils.logger.error("Unable to update nametag packet for player &b" + player.getName() + "&7! Stack trace:");
+                Utils.logger.error("Unable to update nametag packet for player &b" + player.getName() + "&7; Stack trace:");
                 ex.printStackTrace();
             }
         }

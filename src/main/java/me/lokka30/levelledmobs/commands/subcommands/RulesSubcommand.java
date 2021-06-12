@@ -138,7 +138,7 @@ public class RulesSubcommand implements Subcommand {
         final RuleInfo rule = allRuleNames.get(foundRule);
 
         final StringBuilder sb = new StringBuilder();
-        sb.append(Utils.colorizeAllInList(Collections.singletonList("Showing all values for rule: &b" + rule.getRuleName() + "&r\n")).get(0));
+        sb.append(MessageUtils.colorizeAll("Showing all values for rule: &b" + rule.getRuleName() + "&r\n"));
 
         formatRulesVisually(rule, sender, showOnConsole, Collections.singletonList("id"), sb);
         if (showOnConsole)
@@ -330,7 +330,7 @@ public class RulesSubcommand implements Subcommand {
         if (showOnConsole)
             Utils.logger.info(sb.toString());
         else
-            sender.sendMessage(Utils.colorizeAllInList(Collections.singletonList(sb.toString())).get(0));
+            sender.sendMessage(MessageUtils.colorizeAll(sb.toString()));
     }
 
     @Override

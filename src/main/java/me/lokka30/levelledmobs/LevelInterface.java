@@ -4,14 +4,18 @@ import me.lokka30.levelledmobs.events.MobPostLevelEvent;
 import me.lokka30.levelledmobs.events.MobPreLevelEvent;
 import me.lokka30.levelledmobs.events.SummonedMobPreLevelEvent;
 import me.lokka30.levelledmobs.managers.ExternalCompatibilityManager;
-import me.lokka30.levelledmobs.misc.*;
+import me.lokka30.levelledmobs.misc.Addition;
+import me.lokka30.levelledmobs.misc.DebugType;
+import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
+import me.lokka30.levelledmobs.misc.Utils;
 import me.lokka30.levelledmobs.rules.MobCustomNameStatusEnum;
 import me.lokka30.levelledmobs.rules.MobTamedStatusEnum;
 import me.lokka30.levelledmobs.rules.RulesManager;
 import org.bukkit.Bukkit;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
-import org.bukkit.entity.*;
+import org.bukkit.entity.Creeper;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
@@ -225,7 +229,7 @@ public class LevelInterface {
         }
 
         if (hasNoLevelKey) {
-            Utils.debugLog(main, DebugType.APPLY_LEVEL_FAIL, "Entity " + lmEntity.getTypeName() + " had noLevelKey attached");
+            Utils.debugLog(main, DebugType.APPLY_LEVEL_FAIL, "Entity &b" + lmEntity.getTypeName() + "&7 had &bnoLevelKey&7 attached");
             return;
         }
 

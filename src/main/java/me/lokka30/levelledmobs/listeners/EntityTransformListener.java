@@ -35,7 +35,7 @@ public class EntityTransformListener implements Listener {
 
         // is the original entity a living entity
         if (!(event.getEntity() instanceof LivingEntity)) {
-            Utils.debugLog(main, DebugType.ENTITY_TRANSFORM_FAIL, event.getEntity().getType().name() + ": entity was not an instance of LivingEntity");
+            Utils.debugLog(main, DebugType.ENTITY_TRANSFORM_FAIL, event.getEntity().getType().name() + ": entity was &bnot&7 an instance of LivingEntity");
             return;
         }
 
@@ -43,7 +43,7 @@ public class EntityTransformListener implements Listener {
 
         // is the original entity levelled
         if (!lmEntity.isLevelled()) {
-            Utils.debugLog(main, DebugType.ENTITY_TRANSFORM_FAIL, lmEntity.getTypeName() + ": original entity was not levelled");
+            Utils.debugLog(main, DebugType.ENTITY_TRANSFORM_FAIL, lmEntity.getTypeName() + ": original entity was &bnot&7 levelled");
             return;
         }
 
@@ -57,7 +57,7 @@ public class EntityTransformListener implements Listener {
 
         for (final Entity transformedEntity : event.getTransformedEntities()) {
             if (!(transformedEntity instanceof LivingEntity)) {
-                Utils.debugLog(main, DebugType.ENTITY_TRANSFORM_FAIL, event.getEntity().getType().name() + ": entity was not an instance of LivingEntity (loop)");
+                Utils.debugLog(main, DebugType.ENTITY_TRANSFORM_FAIL, event.getEntity().getType().name() + ": entity was&b not&7 an instance of LivingEntity (loop)");
                 continue;
             }
 
@@ -65,7 +65,7 @@ public class EntityTransformListener implements Listener {
 
             final LevelInterface.LevellableState levelledState = main.levelInterface.getLevellableState(transformedLmEntity);
             if (levelledState != LevelInterface.LevellableState.ALLOWED) {
-                Utils.debugLog(main, DebugType.ENTITY_TRANSFORM_FAIL, transformedEntity.getType().name() + ": transformed entity was not levellable, reason: " + levelledState);
+                Utils.debugLog(main, DebugType.ENTITY_TRANSFORM_FAIL, transformedEntity.getType().name() + ": transformed entity was &bnot&7 levellable, reason: &b" + levelledState);
                 main.levelManager.updateNametag_WithDelay(transformedLmEntity);
                 continue;
             }

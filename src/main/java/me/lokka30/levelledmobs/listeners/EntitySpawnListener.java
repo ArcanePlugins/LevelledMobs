@@ -96,7 +96,7 @@ public class EntitySpawnListener implements Listener {
 
 
         Utils.debugLog(main, DebugType.MOB_SPAWNER, String.format(
-                "Spawned mob from LM spawner: %s, minLevel: %s, maxLevel: %s, generatedLevel: %s%s",
+                "Spawned mob from LM spawner: &b%s&7, minLevel:&b %s&7, maxLevel: &b%s&7, generatedLevel: &b%s&b%s",
                 event.getEntityType(), useMinLevel, useMaxLevel, generatedLevel, (customDropId == null ? "" : ", dropid: " + customDropId)));
 
         main.levelInterface.applyLevelToMob(lmEntity, generatedLevel,
@@ -139,7 +139,7 @@ public class EntitySpawnListener implements Listener {
                 return;
             }
 
-            Utils.debugLog(main, DebugType.MOB_SPAWNER, "Spawned mob from vanilla spawner: " + spawnEvent.getEntityType());
+            Utils.debugLog(main, DebugType.MOB_SPAWNER, "Spawned mob from vanilla spawner: &b" + spawnEvent.getEntityType());
             spawnReason = CreatureSpawnEvent.SpawnReason.SPAWNER;
         }
         else if (event instanceof CreatureSpawnEvent){
@@ -169,8 +169,8 @@ public class EntitySpawnListener implements Listener {
             main.levelInterface.applyLevelToMob(lmEntity, main.levelInterface.generateLevel(lmEntity),
                     false, false, additionalLevelInfo);
         } else {
-            Utils.debugLog(main, DebugType.APPLY_LEVEL_FAIL, "Entity " + lmEntity.getNameIfBaby() + " in wo" +
-                    "rld " + lmEntity.getWorldName() + " was not levelled -> Levellable state: " + levellableState);
+            Utils.debugLog(main, DebugType.APPLY_LEVEL_FAIL, "Entity &b" + lmEntity.getNameIfBaby() + "&7 in wo" +
+                    "rld&b " + lmEntity.getWorldName() + "&7 was not levelled -> levellable state: &b" + levellableState);
 
             // Check if the mob is already levelled - if so, remove their level
             if (lmEntity.isLevelled())
@@ -208,9 +208,9 @@ public class EntitySpawnListener implements Listener {
             if (((CreatureSpawnEvent) event).getSpawnReason().equals(CreatureSpawnEvent.SpawnReason.SPAWNER))
                 return LevelInterface.LevellableState.DENIED_OTHER;
 
-            Utils.debugLog(main, DebugType.ENTITY_SPAWN, "instanceof CreatureSpawnListener: " + creatureSpawnEvent.getEntityType() + ", with spawnReason " + creatureSpawnEvent.getSpawnReason() + ".");
+            Utils.debugLog(main, DebugType.ENTITY_SPAWN, "instanceof CreatureSpawnListener: &b" + creatureSpawnEvent.getEntityType() + "&7, with spawnReason &b" + creatureSpawnEvent.getSpawnReason() + "&7.");
         } else if (event instanceof EntitySpawnEvent)
-            Utils.debugLog(main, DebugType.ENTITY_SPAWN, "not instanceof CreatureSpawnListener: " + ((EntitySpawnEvent)event).getEntityType());
+            Utils.debugLog(main, DebugType.ENTITY_SPAWN, "not instanceof CreatureSpawnListener: &b" + ((EntitySpawnEvent) event).getEntityType());
 
         return LevelInterface.LevellableState.ALLOWED;
     }

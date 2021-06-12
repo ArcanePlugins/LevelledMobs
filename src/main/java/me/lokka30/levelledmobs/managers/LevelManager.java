@@ -144,9 +144,9 @@ public class LevelManager {
         final List<ItemStack> customDrops = new LinkedList<>();
         currentDrops.clear();
 
-        Utils.debugLog(main, DebugType.SET_LEVELLED_ITEM_DROPS, "1: Method called. " + dropsToMultiply.size() + " drops will be analysed.");
+        Utils.debugLog(main, DebugType.SET_LEVELLED_ITEM_DROPS, "&81:&7 Method called. &b" + dropsToMultiply.size() + "&7 drops will be analysed.");
 
-        Utils.debugLog(main, DebugType.SET_LEVELLED_ITEM_DROPS, "2: Entity " + lmEntity.getTypeName() + " level is " + lmEntity.getMobLevel() + ".");
+        Utils.debugLog(main, DebugType.SET_LEVELLED_ITEM_DROPS, "&82:&7 Level of the &b" + lmEntity.getTypeName() + "&7 entity is &b" + lmEntity.getMobLevel() + "&7.");
 
         final boolean doNotMultiplyDrops = main.rulesManager.getRule_CheckIfNoDropMultiplierEntitiy(lmEntity);
 
@@ -155,7 +155,7 @@ public class LevelManager {
             final CustomDropResult dropResult = main.customDropsHandler.getCustomItemDrops(lmEntity, customDrops, false);
 
             if (dropResult == CustomDropResult.HAS_OVERRIDE) {
-                Utils.debugLog(main, DebugType.SET_LEVELLED_ITEM_DROPS, "3: custom drop has override");
+                Utils.debugLog(main, DebugType.SET_LEVELLED_ITEM_DROPS, "&83:&7 Custom drop has override.");
                 removeVanillaDrops(lmEntity, dropsToMultiply);
             }
         }
@@ -164,10 +164,10 @@ public class LevelManager {
             // Get currentDrops added per level value
             final int addition = BigDecimal.valueOf(main.mobDataManager.getAdditionsForLevel(lmEntity, Addition.CUSTOM_ITEM_DROP, 2.0))
                     .setScale(0, RoundingMode.HALF_DOWN).intValueExact(); // truncate double to int
-            Utils.debugLog(main, DebugType.SET_LEVELLED_ITEM_DROPS, "4: Item drop addition is +" + addition + ".");
+            Utils.debugLog(main, DebugType.SET_LEVELLED_ITEM_DROPS, "&84:&7 Item drop addition is &b+" + addition + "&7.");
 
             // Modify current drops
-            Utils.debugLog(main, DebugType.SET_LEVELLED_ITEM_DROPS, "5: Scanning " + dropsToMultiply.size() + " items...");
+            Utils.debugLog(main, DebugType.SET_LEVELLED_ITEM_DROPS, "&85:&7 Scanning &b" + dropsToMultiply.size() + "&7 items...");
             for (final ItemStack currentDrop : dropsToMultiply)
                 multiplyDrop(lmEntity, currentDrop, addition, false);
         }
@@ -177,15 +177,15 @@ public class LevelManager {
     }
 
     public void multiplyDrop(LivingEntityWrapper lmEntity, @NotNull final ItemStack currentDrop, final int addition, final boolean isCustomDrop){
-        Utils.debugLog(main, DebugType.SET_LEVELLED_ITEM_DROPS, "6: Scanning drop " + currentDrop.getType() + " with current amount " + currentDrop.getAmount() + "...");
+        Utils.debugLog(main, DebugType.SET_LEVELLED_ITEM_DROPS, "&86:&7 Scanning drop &b" + currentDrop.getType() + "&7 with current amount &b" + currentDrop.getAmount() + "&7...");
 
         if (isCustomDrop || main.mobDataManager.isLevelledDropManaged(lmEntity.getLivingEntity().getType(), currentDrop.getType())) {
             int useAmount = currentDrop.getAmount() + (currentDrop.getAmount() * addition);
             if (useAmount > currentDrop.getMaxStackSize()) useAmount = currentDrop.getMaxStackSize();
             currentDrop.setAmount(useAmount);
-            Utils.debugLog(main, DebugType.SET_LEVELLED_ITEM_DROPS, "7: Item was managed. New amount: " + currentDrop.getAmount() + ".");
+            Utils.debugLog(main, DebugType.SET_LEVELLED_ITEM_DROPS, "&87:&7 Item was managed. New amount: &b" + currentDrop.getAmount() + "&7.");
         } else {
-            Utils.debugLog(main, DebugType.SET_LEVELLED_ITEM_DROPS, "7: Item was unmanaged.");
+            Utils.debugLog(main, DebugType.SET_LEVELLED_ITEM_DROPS, "&87:&7 Item was unmanaged.");
         }
     }
 
@@ -392,7 +392,7 @@ public class LevelManager {
                                             wasBabyMob &&
                                             main.levelInterface.getLevellableState(lmEntity) == LevelInterface.LevellableState.ALLOWED) {
                                 // if the mob was a baby at some point, aged and now is eligable for levelling, we'll apply a level to it now
-                                Utils.debugLog(main, DebugType.ENTITY_MISC, lmEntity.getTypeName() + " was a baby and is now an adult, applying levelling rules");
+                                Utils.debugLog(main, DebugType.ENTITY_MISC, "&b" + lmEntity.getTypeName() + " &7was a baby and is now an adult, applying levelling rules");
 
                                 main.queueManager_mobs.addToQueue(new QueueItem(lmEntity, null));
                             }
