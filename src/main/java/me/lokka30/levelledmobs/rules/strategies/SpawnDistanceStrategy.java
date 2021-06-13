@@ -41,7 +41,9 @@ public class SpawnDistanceStrategy implements LevellingStrategy, Cloneable {
                 this.getClass().getDeclaredField(f.getName()).set(this, f.get(sds));
             }
         }
-        catch (IllegalAccessException | NoSuchFieldException ignored){}
+        catch (IllegalAccessException | NoSuchFieldException e){
+            e.printStackTrace();
+        }
     }
 
     public String toString(){
@@ -97,7 +99,6 @@ public class SpawnDistanceStrategy implements LevellingStrategy, Cloneable {
 
     private int generateBlendedLevel(@NotNull final LivingEntityWrapper lmEntity, final int spawnDistanceLevelAssignment, final int minLevel, final int maxLevel){
         final int currentYPos = lmEntity.getLocation().getBlockY();
-        final Location spawnLocation = lmEntity.getWorld().getSpawnLocation();
 
         double result;
 
@@ -135,7 +136,9 @@ public class SpawnDistanceStrategy implements LevellingStrategy, Cloneable {
         SpawnDistanceStrategy copy = null;
         try {
             copy = (SpawnDistanceStrategy) super.clone();
-        } catch (Exception ignored) {}
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         return copy;
     }

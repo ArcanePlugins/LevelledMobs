@@ -103,7 +103,9 @@ public class YDistanceStrategy implements LevellingStrategy, Cloneable {
         YDistanceStrategy copy = null;
         try {
             copy = (YDistanceStrategy) super.clone();
-        } catch (Exception ignored) {}
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         return copy;
     }

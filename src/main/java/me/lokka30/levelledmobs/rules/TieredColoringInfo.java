@@ -64,7 +64,9 @@ public class TieredColoringInfo implements Cloneable {
         TieredColoringInfo copy = null;
         try {
             copy = (TieredColoringInfo) super.clone();
-        } catch (Exception ignored) {}
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         return copy;
     }

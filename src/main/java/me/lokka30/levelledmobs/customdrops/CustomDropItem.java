@@ -50,7 +50,9 @@ public class CustomDropItem extends CustomDropBase {
         try {
             copy = (CustomDropItem) super.clone();
             copy.itemStack = this.itemStack.clone();
-        } catch (Exception ignored) {}
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         return copy;
     }

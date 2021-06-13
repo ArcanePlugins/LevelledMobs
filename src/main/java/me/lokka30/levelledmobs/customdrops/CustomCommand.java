@@ -26,7 +26,9 @@ public class CustomCommand extends CustomDropBase {
         CustomCommand copy = null;
         try {
             copy = (CustomCommand) super.clone();
-        } catch (Exception ignored) {}
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         return copy;
     }

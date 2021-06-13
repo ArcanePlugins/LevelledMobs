@@ -992,7 +992,7 @@ default-rule:
 
   conditions:
     level-plugins:
-      DANGEROUS_CANVES: false
+      DANGEROUS_CAVES: false
       MYTHIC_MOBS: false
       ELITE_MOBS: false
       ELITE_MOBS_NPCS: false

@@ -57,7 +57,9 @@ public class FineTuningAttributes implements Cloneable {
         FineTuningAttributes copy = null;
         try {
             copy = (FineTuningAttributes) super.clone();
-        } catch (Exception ignored) {}
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         return copy;
     }
