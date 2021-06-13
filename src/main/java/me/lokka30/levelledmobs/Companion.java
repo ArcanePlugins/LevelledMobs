@@ -2,6 +2,7 @@ package me.lokka30.levelledmobs;
 
 import me.lokka30.levelledmobs.commands.LevelledMobsCommand;
 import me.lokka30.levelledmobs.compatibility.MC1_16_Compat;
+import me.lokka30.levelledmobs.compatibility.MC1_17_Compat;
 import me.lokka30.levelledmobs.customdrops.CustomDropsHandler;
 import me.lokka30.levelledmobs.listeners.*;
 import me.lokka30.levelledmobs.managers.ExternalCompatibilityManager;
@@ -318,6 +319,9 @@ public class Companion {
 
         if (VersionUtils.isOneSixteen())
             groups_HostileMobs.addAll(MC1_16_Compat.getHostileMobs());
+
+        if (MC1_17_Compat.isServer1_17OrNewer())
+            groups_PassiveMobs.addAll(MC1_17_Compat.getPassiveMobs());
 
         // include interfaces: Animals, WaterMob
         groups_PassiveMobs = Stream.of(

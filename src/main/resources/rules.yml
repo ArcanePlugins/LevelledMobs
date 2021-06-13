@@ -346,7 +346,7 @@
 # ||   |    strategies:                                                                     |   |
 # ||   |      random: true                                                                  |   |
 # ||   |      distance-from-spawn:                                                          |   |
-# ||   |        increase-level-distance: 50                                                 |   |
+# ||   |        increase-level-distance: 100                                                |   |
 # ||   |        start-distance: 250                                                         |   |
 # ||   |        spawn-location:                                                             |   |
 # ||   |          x: default                                                                |   |
@@ -480,10 +480,10 @@
 # ||   |            xp-drop: 5                                                              |   |
 # ||   |      entity-name-override: ['']                                                    |   |
 # ||   |      tiered-coloring:                                                              |   |
-# ||   |        1-24: '&a' # Light Green                                                    |   |
-# ||   |        25-49: '&b' # Light Blue                                                    |   |
-# ||   |        50-74: '&e' # Yellow                                                        |   |
-# ||   |        75-100: '&c' # Light Red                                                    |   |
+# ||   |        1-14: '&a' # Light Green                                                    |   |
+# ||   |        15-29: '&b' # Light Blue                                                    |   |
+# ||   |        30-44: '&e' # Yellow                                                        |   |
+# ||   |        44-50: '&c' # Light Red                                                     |   |
 # ||   |        default: '&9' # Off-Blue                                                    |   |
 # ||   --------------------------------------------------------------------------------------   |
 # |||-------------------------------------------------------------------------------------------|
@@ -923,7 +923,7 @@ presets:
     name: 'LVLling Strategy - Distance-From-Spawn'
     strategies:
       distance-from-spawn:
-        increase-level-distance: 50
+        increase-level-distance: 100
         start-distance: 250
         spawn-location:
           x: default
@@ -1024,10 +1024,10 @@ default-rule:
     #  BABY_ZOMBIE: ['Baby Undead']
 
     tiered-coloring:
-      1-24: '&a' # Light Green
-      25-49: '&b' # Aqua
-      50-74: '&e' # Yellow
-      75-100: '&c' # Light Red
+      1-14: '&a' # Light Green
+      15-29: '&b' # Aqua
+      30-44: '&e' # Yellow
+      44-50: '&c' # Light Red
       default: '&9' # Off-Blue
 
     nametag: '&8[%tiered%Lvl %mob-lvl%&8 | &f%displayname%&8 | &c%entity-health-rounded%&8/&c%entity-max-health-rounded%&8]'
