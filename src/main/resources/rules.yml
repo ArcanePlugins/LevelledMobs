@@ -989,7 +989,7 @@ presets:
     conditions:
       name: 'Excluded Worldlist'
       worlds:
-#        allowed-list: ['world', 'world_nether']
+        # allowed-list: ['world', 'world_nether']
         excluded-list: [ 'world_the_end' ]
 
 # |||-------------------------------------------------------------------------------------------|
