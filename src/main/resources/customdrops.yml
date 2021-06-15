@@ -8,7 +8,7 @@
 #                 |     |_ _ ___| |_ ___ _____|    \ ___ ___ ___ ___ 
 #                 |   --| | |_ -|  _| . |     |  |  |  _| . | . |_ -|
 #                 |_____|___|___|_| |___|_|_|_|____/|_| |___|  _|___|
-#  _________________________________________________________|_|_______________________        
+#  _________________________________________________________|_|_______________________
 # /.-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.\
 # lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\|\
 #'|    `-'     `-'     `-'     `-'     `-'     `-'     `-'     `-'     `-'     `-'    |\
@@ -49,11 +49,11 @@
 # |                                                                                   |\
 # |  Recommended Configuration:                                                       |\
 # |    LevelledMobs is tested using the latest PaperMC and SpigotMC server software.  |\
-# |    While other solutions may work, compatibility is not guarenteed.               |\
+# |    While other solutions may work, compatibility is not guaranteed.               |\
 # |    LevelledMobs comes ready-to-go out of the box with the default configuration,  |\
-# |    which has been playtested beforehand to provide an experience a bit harder     |\
+# |    which has been play-tested beforehand to provide an experience a bit harder    |\
 # |    than the HARD vanilla difficulty, taking into account the vanilla armors       |\
-# |    and weapons when combined with the vanilla enchantments, making the toughtest  |\
+# |    and weapons when combined with the vanilla enchantments, making the toughest   |\
 # |    entities still challenging while not impossible.                               |\
 # |                                                                                   |\
 # |.-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.|\
@@ -173,8 +173,8 @@
 # ||     | to the particular MATERIAL. For example: 'SHARPNESS:'                                |
 # ||     | Replace 'X' with the strength of the enchantment you wish to apply.                  |
 # ||     | to the listed ENCHANTMENT. For example: 'SHARPNESS: 3' would apply a level           |
-# ||     | three sharpness to the item. You can apply to any material, just just                |
-# ||     | the tools, armors, or weapons.                                                       |
+# ||     | three sharpness to the item. You can apply to any material, or just to the           |
+# ||     | tools, armors, or weapons as in the vanilla experience.                              |
 # ||                                                                                            |
 # ||   name: / lore:                                                                            |
 # ||     | You can provide any custom name or lore component to any particular MATERIAL.        |
@@ -278,7 +278,7 @@
 # ||                                                                                            |
 # ||   command:                                                                                 |
 # ||     | This would be the command you wish to run when the entity dies.                      |
-# ||     | All commands are run irregardless of permission, and currently you can               |
+# ||     | All commands are run as console, ignoring permissions; you can als currently         |
 # ||     | include '%player%' to reference the player who killed entity.                        |
 # ||     | This is a VERY powerful feature and you should ensure you are not causing            |
 # ||     | any potential lag due to these commands running in the background.                   |
@@ -504,6 +504,9 @@ all_aquatic_mobs:
 # ||  Section 03 - EntityType CustomDrops                                                       |
 # ||                                                                                            |
 # |||-------------------------------------------------------------------------------------------|
+#AXOLOTL:
+#  -
+
 BAT:
   - 
 
@@ -560,6 +563,12 @@ FOX:
 
 GHAST:
   - 
+
+#GLOW_SQUID:
+#  -
+
+#GOAT:
+#  -
 
 GUARDIAN:
   - 

@@ -49,11 +49,11 @@
 # |                                                                                   |\
 # |  Recommended Configuration:                                                       |\
 # |    LevelledMobs is tested using the latest PaperMC and SpigotMC server software.  |\
-# |    While other solutions may work, compatibility is not guarenteed.               |\
+# |    While other solutions may work, compatibility is not guaranteed.               |\
 # |    LevelledMobs comes ready-to-go out of the box with the default configuration,  |\
-# |    which has been playtested beforehand to provide an experience a bit harder     |\
+# |    which has been play-tested beforehand to provide an experience a bit harder    |\
 # |    than the HARD vanilla difficulty, taking into account the vanilla armors       |\
-# |    and weapons when combined with the vanilla enchantments, making the toughtest  |\
+# |    and weapons when combined with the vanilla enchantments, making the toughest   |\
 # |    entities still challenging while not impossible.                               |\
 # |                                                                                   |\
 # |.-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.|\
@@ -74,8 +74,8 @@
 # |       +- How To Use/                                                              |\
 # |       ¦  +- Levelling Rules Functions                                             |\
 # |       ¦  ¦  +- Conditions [A] LINE #120                                           |\
-# |       ¦  ¦  +- Strategies [B] LINE #326                                           |\
-# |       ¦  ¦  +- Apply-Settings [C] LINE #443                                       |\
+# |       ¦  ¦  +- Strategies [B] LINE #341                                           |\
+# |       ¦  ¦  +- Apply-Settings [C] LINE #473                                       |\
 # |       ¦  ¦                                                                        |\
 # |       ¦  +- Global Functions                                                      |\
 # |       ¦  +- Establishing Mob Groups                                               |\
@@ -84,7 +84,7 @@
 # |       ¦  +- Establishing Defaults                                                 |\
 # |       ¦  +- Crafting Custom Rules                                                 |\
 # |       ¦                                                                           |\
-# |       +- Section 01 / Custom Groups [D] LINE #869                                 |\
+# |       +- Section 01 / Custom Groups [D] LINE #900                                 |\
 # |       ¦  +- Mobs                                                                  |\
 # |       ¦  +- Biomes                                                                |\
 # |       ¦                                                                           |\
@@ -132,7 +132,7 @@
 # ||   |custom-rules:                                                                       |   |
 # ||   |    conditions:                                                                     |   |
 # ||   |      minLevel: 1                                                                   |   |
-# ||   |      maxLevel: 10                                                                  |   |
+# ||   |      maxLevel: 50                                                                  |   |
 # ||   |      chance: 1.0                                                                   |   |
 # ||   |      stop-processing: true                                                         |   |
 # ||   |      mob-customname-status: EITHER                                                 |   |
@@ -208,7 +208,7 @@
 # ||        | is tamed. By Default, these are set in default-rule as EITHER.                    |
 # ||                                                                                            |
 # ||     worlds: / allowed-worldguard-regions: / allowed-spawn-reasons: / custom-names: /       |
-# ||     entities: / biomes: / apply-plugins:                                                   |
+# ||     entities: / biomes: / apply-plugins: / mythicmobs-internal-names:                      |
 # ||       merge: true                                                                          |
 # ||        | This particular config option is demonstrated below within each of the list       |
 # ||        | where the config would be applicable. By default, a Custom Rule will override     |
@@ -247,7 +247,7 @@
 # ||       merge: true                                                                          |
 # ||        | This represents the spawn reason being checked against the entity.                |
 # ||        | Reference: https://tinyurl.com/SpigotMCCreatureSpawnEvents for complete list.     |
-# ||        | By default, 'merge:' is not utilized.                                             
+# ||        | By default, 'merge:' is not utilized.                                             |
 # ||        | 'allowed-list:' manages the WHITELIST                                             |
 # ||        | 'excluded-list:' manages the BLACKLIST                                            |
 # ||                                                                                            |
@@ -303,6 +303,17 @@
 # ||        | several compatible plugins. While using 'apply-plugins:', you will use            |
 # ||        | the mode/list system as demonstrated above. Just below, 'level-plugins:'          |
 # ||        | has the same features as this, but in a different format.                         |
+# ||        | 'allowed-list:' manages the WHITELIST                                             |
+# ||        | 'excluded-list:' manages the BLACKLIST                                            |
+# ||                                                                                            |
+# ||     mythicmobs-internal-names:                                                             |
+# ||       allowed-list: ['']                                                                   |
+# ||       excluded-list: ['']                                                                  |
+# ||       merge: true                                                                          |
+# ||        | This represents a check against the internal list of MythicMob entities.          |
+# ||        | Functions as the 'entities:' list specifically for MythicMobs.                    |
+# ||        | Do not forget to enable the MYTHIC_MOB plugin under 'apply-plugins:' as well!     |
+# ||        | By default, 'merge:' is not utilized.                                             |
 # ||        | 'allowed-list:' manages the WHITELIST                                             |
 # ||        | 'excluded-list:' manages the BLACKLIST                                            |
 # ||                                                                                            |
@@ -372,7 +383,7 @@
 # ||                                                                                            |
 # ||     distance-from-spawn:                                                                   |
 # ||       increase-level-distance:                                                             |
-# ||          | By default, this value is 50.                                                   |
+# ||          | By default, this value is 100.                                                  |
 # ||          | This represents the number of blocks per increase in level.                     |
 # ||                                                                                            |
 # ||       start-distance:                                                                      |
@@ -388,6 +399,9 @@
 # ||          | You can instead use numerical X/Z coordinates to change 'spawn' for LM.         |
 # ||                                                                                            |
 # ||       blended-levelling:                                                                   |
+# ||          | This system uses the following formula to determine levelling:                  |
+# ||          | preResult = (((transition-y-height: - currentMobY) / multiplier-period:) x lvl-multiplier:) x spawnDistanceLevel
+# ||          | appliedLevel = spawnDistanceLevel + preResult                                   |
 # ||         enabled: true                                                                      |
 # ||            | By default, this is set to true.                                              |
 # ||            | New to 3.0, this system must include 'distance-from-spawn:' strategy.         |
@@ -401,7 +415,7 @@
 # ||                                                                                            |
 # ||         lvl-multiplier:                                                                    |
 # ||            | By default, this is set to 0.05.                                              |
-# ||            | This setting is fairly sensative to alterations. This determines by how much  |
+# ||            | This setting is fairly sensitive to alterations. This determines by how much  |
 # ||            | the entity's level will increase or decrease in relation to the               |
 # ||            | 'transition-y-height:' and 'multiplier-period:'.                              |
 # ||                                                                                            |
@@ -419,22 +433,34 @@
 # ||                                                                                            |
 # ||                                                                                            |
 # ||     y-coordinate:                                                                          |
+# ||        | This system uses the following formula to determine levelling:                    |
+# ||        | percent = (currentMobY - start:) / (end: - start:)                                |
+# ||        | appliedLevel = (maxLevel: - 1) x percent                                          |
 # ||       start:                                                                               |
 # ||          | By default, this is set to 100.                                                 |
 # ||          | The maximum height considered when using Y-LVLling.                             |
+# ||          | At this height, all entities will be at the minLevel.                           |
 # ||                                                                                            |
 # ||       end:                                                                                 |
 # ||          | By default, this is set to 20.                                                  |
 # ||          | The minimum height considered when using Y-LVLling.                             |
+# ||          | At this height, all entities will be at the maxLevel.                           |
 # ||                                                                                            |
 # ||       period:                                                                              |
 # ||          | By default, this is set to 0; Disabled.                                         |
-# ||          | This counts X blocks from the 'start:' value when levelling.                    |
-# ||                                                                                            |
+# ||          | This value represents the number of blocks before a level change occurs,        |
+# ||          | from start: to end:. The levels are applied by determining how many levels it   |
+# ||          | would take to fit within the period: to keep minLevel and maxLevel spread out   |
+# ||          | evenly between the start: and end: values. The higher the period:, and the      |
+# ||          | smaller range between start: and end: will result in level spikes every time    |
+# ||          | the next number of period: is reached in blocks.
+# ||          | This sub-system uses the following formula to determine levelling:              |
+# ||          | lvls-per-period = (maxLevel: - minLevel:) / ((end: - start:) / period)          |
+# ||          | appliedLevel = (minLevel: + (lvls-per-period x (currentMobY - start:)/period:)  |
 # ||                                                                                            |
 # ||     max-random-variance:                                                                   |
 # ||        | By default, this is set to 1.                                                     |
-# ||        | This applies a random varliance to the level applied to an entity.                |
+# ||        | This applies a random variance to the level applied to an entity.                 |
 # ||                                                                                            |
 # |||-------------------------------------------------------------------------------------------|
 
@@ -458,7 +484,7 @@
 # ||   |custom-rules:                                                                       |   |
 # ||   |    apply-settings:                                                                 |   |
 # ||   |      minLevel: 1                                                                   |   |
-# ||   |      maxLevel: 100                                                                 |   |
+# ||   |      maxLevel: 50                                                                  |   |
 # ||   |      nametag: '&8[%tiered%Level %mob-lvl%&8 | &f%entity-name%&8 | &c%entity-health-rounded%&8/&c%entity-max-health-rounded%&8]'
 # ||   |      creature-death-nametag: '&8[%tiered%Level %mob-lvl%&8 | &f%entity-name%&8]'   |   |
 # ||   |      creature-nametag-always-visible: false                                        |   |
@@ -481,9 +507,9 @@
 # ||   |      entity-name-override: ['']                                                    |   |
 # ||   |      tiered-coloring:                                                              |   |
 # ||   |        1-14: '&a' # Light Green                                                    |   |
-# ||   |        15-29: '&b' # Light Blue                                                    |   |
-# ||   |        30-44: '&e' # Yellow                                                        |   |
-# ||   |        44-50: '&c' # Light Red                                                     |   |
+# ||   |        15-29: '&e' # Yellow                                                        |   |
+# ||   |        30-44: '&c' # Light Red                                                     |   |
+# ||   |        45-50: '&4' # Dark Red                                                      |   |
 # ||   |        default: '&9' # Off-Blue                                                    |   |
 # ||   --------------------------------------------------------------------------------------   |
 # |||-------------------------------------------------------------------------------------------|
@@ -541,6 +567,8 @@
 # ||        | has reached maximum level. For example, if 'max-health: 2.0', then                |
 # ||        | an entity at maximum level will have a 200% increase in health.                   |
 # ||        | 'item-drop' and 'xp-drop' are handled differently than the rest.                  |
+# ||        | You can also reduce an entities attribute by using a negative value, remembering  |
+# ||        | that you cannot reduce an attribute below zero, or 100%.                          |
 # ||        | Formula used for the below multipliers:                                           |
 # ||        | newAttributeValue =                                                               |
 # ||        | ( vanillaAttribute x configValue ) x (( entityLevel - 1) / maxLevel )             |
@@ -575,11 +603,10 @@
 # ||          | selected from using  ['', ''] .                                                 |
 # ||                                                                                            |
 # ||     tiered-coloring:                                                                       |
-# ||       1-24: '&a' # Light Green                                                             |
-# ||       25-49: '&b' # Light Blue                                                             |
-# ||       50-74: '&e' # Yellow                                                                 |
-# ||       75-89: '&6' # Gold                                                                   |
-# ||       90-100: '&c' # Light Red                                                             |
+# ||       1-14: '&a' # Light Green                                                             |
+# ||       15-29: '&e' # Yellow                                                                 |
+# ||       30-44: '&c' # Light Red                                                              |
+# ||       45-50: '&4' # Dark Red                                                               |
 # ||       default: '&9' # Off-Blue                                                             |
 # ||          | This represents the '%tiered%' tag which can be used in 'nametag:' or           |
 # ||          | 'creature-death-nametag:'. This allows you to change the color of text          |
@@ -613,9 +640,9 @@
 # ||   |                                                                                    |   |
 # ||   |default-rule:                                                                       |   |
 # ||   |  use-preset:                                                                       |   |
-# ||   |    - 1                                                                             |   | 
+# ||   |    - 1                                                                             |   |
 # ||   |    - 2                                                                             |   |
-# ||   |    - three                                                                         |   | 
+# ||   |    - three                                                                         |   |
 # ||   |    - four                                                                          |   |
 # ||   --------------------------------------------------------------------------------------   |
 # |||-------------------------------------------------------------------------------------------|
@@ -661,7 +688,7 @@
 # ||   |  - enabled: true                                                                   |   |
 # ||   --------------------------------------------------------------------------------------   |
 # ||                                                                                            |
-# ||      | This is useful for organizing rule priority beyond the default linear.              |
+# ||      | This is useful for organizing rule priority beyond the default linear format.       |
 # ||                                                                                            |
 # ||   use-preset:                                                                              |
 # ||      | When using the 'presets:' system, in order to utilize the preset, you will          |
@@ -680,7 +707,7 @@
 # ||       |__|__|___|_____|    |_|_|___|  |_____|___|___|                                      |
 # ||           |     |___| |_   |   __|___ ___ _ _ ___ ___                                      |
 # ||           | | | | . | . |  |  |  |  _| . | | | . |_ -|                                     |
-# ||           |_|_|_|___|___|  |_____|_| |___|___|  _|___|                                     |   
+# ||           |_|_|_|___|___|  |_____|_| |___|___|  _|___|                                     |
 # ||                                              |_|                                           |
 # ||                                                                                            |
 # ||  This system allows you to craft custom entity groups which function in a similar way to   |
@@ -726,7 +753,7 @@
 # ||  list or craft your own below using the template just above.                               |
 # ||                                                                                            |
 # |||-------------------------------------------------------------------------------------------|
-# ||                                                                                            |                                                                                  |
+# ||                                                                                            |
 # ||   snowy_biomes                                                                             |
 # ||     ¦ SNOWY_TUNDRY ¦ ICE_SPIKES ¦ SNOWY_TAIGA ¦ SNOWY_TAIGA_MOUNTAINS ¦ SNOWY_TAIGA_HILLS  |
 # ||     ¦ FROZEN_RIVER ¦ SNOWY_BEACH ¦ SNOWY_MOUNTAINS                                         |
@@ -835,7 +862,7 @@
 # ||  needed. You may choose to remove the presets and include your own details. However,       |
 # ||  you must ensure to match the formatting of each required detail.                          |
 # ||                                                                                            |
-# ||  The default settings have been playtested to provide a strong but stable environment!     |
+# ||  The default settings have been play-tested to provide a strong but stable environment!    |
 # ||                                                                                            |
 # |||-------------------------------------------------------------------------------------------|
 
@@ -928,7 +955,7 @@ presets:
         spawn-location:
           x: default
           z: default
-          
+
   blended_Levelling: #This strategy controls the Blended-Levelling system. Must include Spawn-Distance-Levelling to function.
     name: 'LVLling Strategy - Blended-Levelling'
     strategies:
@@ -949,7 +976,7 @@ presets:
     name: 'LVLling Strategy - Random'
     strategies:
       random: true
-      
+
   ycoord_Levelling: #This strategy controls y-distance-levelling. By default, this is not used.
     name: 'LVLling Strategy - Y-LVLling'
     strategies:
@@ -958,13 +985,13 @@ presets:
         end: 20
         period: 0
 
-  allowed_worlds:
+  allowed_worlds: #This controls the allowed worlds to apply levels too.
     conditions:
-      name: 'Exclude The End'
+      name: 'Excluded Worldlist'
       worlds:
-        #      allowed-list: ['world', 'world_nether']
+#        allowed-list: ['world', 'world_nether']
         excluded-list: [ 'world_the_end' ]
-      
+
 # |||-------------------------------------------------------------------------------------------|
 # |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 # |||-------------------------------------------------------------------------------------------|
@@ -1019,15 +1046,15 @@ default-rule:
       xp-drop: 5
 
     entity-name-override:
-    #  ZOMBIE: ['Undead', 'Deady', 'Walker']
-    #  CREEPER: ['Dr. Boom']
-    #  BABY_ZOMBIE: ['Baby Undead']
+#      ZOMBIE: ['Undead', 'Deady', 'Walker']
+#      CREEPER: ['Dr. Boom']
+#      BABY_ZOMBIE: ['Baby Undead']
 
     tiered-coloring:
       1-14: '&a' # Light Green
-      15-29: '&b' # Aqua
-      30-44: '&e' # Yellow
-      44-50: '&c' # Light Red
+      15-29: '&e' # Yellow
+      30-45: '&c' # Light Red
+      46-50: '&4' # Dark Red
       default: '&9' # Off-Blue
 
     nametag: '&8[%tiered%Lvl %mob-lvl%&8 | &f%displayname%&8 | &c%entity-health-rounded%&8/&c%entity-max-health-rounded%&8]'
@@ -1037,8 +1064,8 @@ default-rule:
     baby-mobs-inherit-adult-setting: true
     level-inheritance: true
     creeper-max-damage-radius: 5
-    use-custom-item-drops-for-mobs: true
-    
+    use-custom-item-drops-for-mobs: false
+
 
 # |||-------------------------------------------------------------------------------------------|
 # |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
@@ -1058,18 +1085,29 @@ default-rule:
 # |||-------------------------------------------------------------------------------------------|
 custom-rules:
   - enabled: true
+    priority: 1
+    name: 'CR - NoLevel All Passive + EntityTypes'
+    use-preset: allowed_worlds
+    conditions:
+      entities:
+        allowed-groups: ['all_passive_mobs']
+        allowed-list: ['BABY_', 'ENDER_DRAGON', 'WITHER', 'VILLAGER', 'ZOMBIE_VILLAGER', 'WANDERING_TRADER', 'PHANTOM', 'BAT', 'RAVAGER']
+    apply-settings:
+      maxLevel: 0
+
+  - enabled: true
     name: 'CR - Custom Nether Levelling'
     conditions:
       worlds:
         allowed-list: ['world_nether']
     strategies:
       y-coordinate:
-        start: 32
-        end: 100
+        start: 100
+        end: 40
         period: 0
     apply-settings:
-      minLevel: 25
-      maxLevel: 100
+      minLevel: 20
+      maxLevel: 50
 
   - enabled: true
     name: 'CR - Custom Zombie Piglins'
@@ -1079,9 +1117,9 @@ custom-rules:
       entities:
         allowed-list: ['ZOMBIFIED_PIGLIN']
     apply-settings:
-      minLevel: 50
-      maxLevel: 50
-       
+      minLevel: 10
+      maxLevel: 10
+
   - enabled: false
     name: 'CR - NoLevel Biomes'
     conditions:
@@ -1089,17 +1127,6 @@ custom-rules:
         allowed-list: ['world_nether']
       biomes:
         allowed-list: ['NETHER_WASTES']
-    apply-settings:
-      maxLevel: 0
-
-  - enabled: true
-    priority: 1
-    name: 'CR - NoLevel All Passive + EntityTypes'
-    use-preset: allowed_worlds
-    conditions:
-      entities:
-        allowed-groups: ['all_passive_mobs']
-        allowed-list: ['BABY_', 'ENDER_DRAGON', 'WITHER', 'VILLAGER', 'ZOMBIE_VILLAGER', 'WANDERING_TRADER', 'PHANTOM', 'BAT', 'RAVAGER']
     apply-settings:
       maxLevel: 0
 
@@ -1120,6 +1147,18 @@ custom-rules:
           WITHER_SKELETON:
             max-health: 1.0
 
+  - enabled: true
+    name: 'CR - Ender Dragon Fight'
+    conditions:
+      worlds:
+        allowed-list: ['world_the_end']
+      entities:
+        allowed-list: ['ENDER_DRAGON']
+    apply-settings:
+      multipliers:
+        custom-mob-level:
+          ENDER_DRAGON:
+            max-health: 5.0
 
 # |||-------------------------------------------------------------------------------------------|
 # |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||

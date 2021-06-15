@@ -49,11 +49,11 @@
 # |                                                                                   |\
 # |  Recommended Configuration:                                                       |\
 # |    LevelledMobs is tested using the latest PaperMC and SpigotMC server software.  |\
-# |    While other solutions may work, compatibility is not guarenteed.               |\
+# |    While other solutions may work, compatibility is not guaranteed.               |\
 # |    LevelledMobs comes ready-to-go out of the box with the default configuration,  ||\
-# |    which has been playtested beforehand to provide an experience a bit harder     |||\
+# |    which has been play-tested beforehand to provide an experience a bit harder    |||\
 # |    than the HARD vanilla difficulty, taking into account the vanilla armors       ||||\
-# |    and weapons when combined with the vanilla enchantments, making the toughtest  |||||\
+# |    and weapons when combined with the vanilla enchantments, making the toughest   |||||\
 # |    entities still challenging while not impossible.                               ||||||\
 # |                                                                                   |||||||\
 # |.-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.||||||||\
@@ -105,7 +105,7 @@
 # ||      %supportedVersions% | A list of supported Minecraft versions                          |
 # ||                          | for current version of LevelledMobs plugin                      |
 # ||           %contributors% | A preconfigured list of plugin contributors                     |
-# ||      %incompatibilities% | Number of potential incomppatibilities                          |
+# ||      %incompatibilities% | Number of potential incompatibilities                           |
 # ||                                                                                            |
 # |||-------------------------------------------------------------------------------------------|
 # |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
@@ -136,6 +136,7 @@ command:
     main-usage:
       - '%prefix% Available commands:'
       - '&8 &m->&b /%label% summon &8- &7summon specific levelled mobs'
+      - '&8 &m->&b /%label% rules &8- &7printout of the rules system'
       - '&8 &m->&b /%label% kill &8- &7mass kill levelled mobs'
       - '&8 &m->&b /%label% reload &8- &7reload the configuration files'
       - '&8 &m->&b /%label% info &8- &7view info about the plugin'

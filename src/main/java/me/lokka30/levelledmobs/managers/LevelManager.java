@@ -12,10 +12,7 @@ import me.lokka30.levelledmobs.rules.strategies.LevellingStrategy;
 import me.lokka30.levelledmobs.rules.strategies.SpawnDistanceStrategy;
 import me.lokka30.levelledmobs.rules.strategies.YDistanceStrategy;
 import me.lokka30.microlib.MessageUtils;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
+import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.enchantments.EnchantmentTarget;
@@ -370,15 +367,29 @@ public class LevelManager {
         nametagAutoUpdateTask = new BukkitRunnable() {
             @Override
             public void run() {
-                runNametagCheck();
+                final Map<Player, List<Entity>> entitiesPerPlayer = new LinkedHashMap<>();
+
+                for (final Player player : Bukkit.getOnlinePlayers()) {
+                    final List<Entity> entities = player.getNearbyEntities(50, 50, 50);
+                    entitiesPerPlayer.put(player, entities);
+                }
+
+                final BukkitRunnable runnable = new BukkitRunnable() {
+                    @Override
+                    public void run() {
+                        runNametagCheck_aSync(entitiesPerPlayer);
+                    }
+                };
+
+                runnable.runTaskAsynchronously(main);
             }
-        }.runTaskTimerAsynchronously(main, 0, 20 * period);
+        }.runTaskTimer(main, 0, 20 * period);
+        // .runTaskTimerAsynchronously(main, 0, 20 * period);
     }
 
-    private void runNametagCheck(){
-        for (final Player player : Bukkit.getOnlinePlayers()) {
-
-            for (final Entity entity : player.getWorld().getEntities()) {
+    private void runNametagCheck_aSync(final Map<Player,List<Entity>> entitiesPerPlayer){
+        for (final Player player : entitiesPerPlayer.keySet()) {
+            for (final Entity entity : entitiesPerPlayer.get(player)) {
 
                 if (!entity.isValid()) continue; // async task, entity can despawn whilst it is running
 

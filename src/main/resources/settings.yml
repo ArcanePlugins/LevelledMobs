@@ -49,11 +49,11 @@
 # |                                                                                   |\
 # |  Recommended Configuration:                                                       |\
 # |    LevelledMobs is tested using the latest PaperMC and SpigotMC server software.  |\
-# |    While other solutions may work, compatibility is not guarenteed.               |\
+# |    While other solutions may work, compatibility is not guaranteed.               |\
 # |    LevelledMobs comes ready-to-go out of the box with the default configuration,  ||\
-# |    which has been playtested beforehand to provide an experience a bit harder     |||\
+# |    which has been play-tested beforehand to provide an experience a bit harder    |||\
 # |    than the HARD vanilla difficulty, taking into account the vanilla armors       ||||\
-# |    and weapons when combined with the vanilla enchantments, making the toughtest  |||||\
+# |    and weapons when combined with the vanilla enchantments, making the toughest   |||||\
 # |    entities still challenging while not impossible.                               ||||||\
 # |                                                                                   |||||||\
 # |.-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.||||||||\
@@ -101,7 +101,7 @@ nametag-auto-update-task-period: 6
 # ||  whether you want head/skull drops to be multiplied alongside the item multiplier.         |
 # ||                                                                                            |
 # ||   true | PLAYER_HEADS will be multiplied using item-drop value                             |
-# ||  false | PLAYER_HEADS will NOT be multipled (Default)                                      |
+# ||  false | PLAYER_HEADS will NOT be multiplied (Default)                                     |
 # ||                                                                                            |
 # |||-------------------------------------------------------------------------------------------|
 mobs-multiply-head-drops: false
@@ -218,11 +218,11 @@ attributes-use-preset-base-values: false
 # ||         'DENIED_RULE_MAXLEVEL' | Reports denied levelling due to max level                 |
 # ||       'DENIED_RULE_WORLD_LIST' | Reports denied levelling due to excluded world            |
 # ||       'DENIED_RULE_BIOME_LIST' | Reports denied levelling due to excluded biome            |
-# ||    'DENIED_RULE_PLUGIN_COMPAT' | Reports denied levelling due to plugin compatability      |
+# ||    'DENIED_RULE_PLUGIN_COMPAT' | Reports denied levelling due to plugin compatibility      |
 # ||     'DENIED_RULE_SPAWN_REASON' | Reports denied levelling due to 'other' spawn reason      |
 # ||      'DENIED_RULE_CUSTOM_NAME' | Reports denied levelling due to being nametagged          |
 # ||           'DENIED_RULE_CHANCE' | Reports denied levelling due to chance variable           |
-# ||        'DENIED_RULE_WG_REGION' | Reports denied levelling due to a worldguard region       |
+# ||        'DENIED_RULE_WG_REGION' | Reports denied levelling due to a WorldGuard region       |
 # ||          'DENIED_RULE_Y_LEVEL' | Reports denied levelling due to a y-level above/below rule|
 # ||  'DENIED_RULE_STOP_PROCESSING' | Reports denied levelling due to a stop-processing rule    |
 # ||                                                                                            |

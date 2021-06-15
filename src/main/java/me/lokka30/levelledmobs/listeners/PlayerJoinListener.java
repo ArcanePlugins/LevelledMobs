@@ -3,7 +3,6 @@ package me.lokka30.levelledmobs.listeners;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
 import me.lokka30.levelledmobs.misc.Utils;
-import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -39,7 +38,7 @@ public class PlayerJoinListener implements Listener {
         parseCompatibilityChecker(event.getPlayer());
         parseUpdateChecker(event.getPlayer());
 
-        updateNametagsInWorldAsync(event.getPlayer(), event.getPlayer().getWorld());
+        updateNametagsInWorldAsync(event.getPlayer(), event.getPlayer().getWorld().getEntities());
 
         if (main.migratedFromPre30 && event.getPlayer().isOp()){
             final List<String> msg = Collections.singletonList("You have migrated from an older version.  All settings have been reverted.  Please edit rules.yml");
@@ -55,28 +54,28 @@ public class PlayerJoinListener implements Listener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void onChangeWorld(@NotNull final PlayerChangedWorldEvent event) {
-        updateNametagsInWorldAsync(event.getPlayer(), event.getPlayer().getWorld());
+        updateNametagsInWorldAsync(event.getPlayer(), event.getPlayer().getWorld().getEntities());
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void onTeleport(@NotNull final PlayerTeleportEvent event) {
         if (event.getTo() != null && event.getTo().getWorld() != null)
-            updateNametagsInWorldAsync(event.getPlayer(), event.getTo().getWorld());
+            updateNametagsInWorldAsync(event.getPlayer(), event.getTo().getWorld().getEntities());
     }
 
-    private void updateNametagsInWorldAsync(final Player player, final World world) {
+    private void updateNametagsInWorldAsync(final Player player, final List<Entity> entities) {
         final BukkitRunnable runnable = new BukkitRunnable() {
             @Override
             public void run() {
-                updateNametagsInWorld(player, world);
+                updateNametagsInWorld(player, entities);
             }
         };
 
         runnable.runTaskAsynchronously(main);
     }
 
-    private void updateNametagsInWorld(final Player player, @NotNull final World world) {
-        for (final Entity entity : world.getEntities()) {
+    private void updateNametagsInWorld(final Player player, @NotNull final List<Entity> entities) {
+        for (final Entity entity : entities) {
             if (!(entity instanceof LivingEntity)) continue;
 
             final LivingEntity livingEntity = (LivingEntity) entity;
