@@ -320,14 +320,14 @@ public class Companion {
         if (VersionUtils.isOneSixteen())
             groups_HostileMobs.addAll(MC1_16_Compat.getHostileMobs());
 
-        if (MC1_17_Compat.isServer1_17OrNewer())
-            groups_PassiveMobs.addAll(MC1_17_Compat.getPassiveMobs());
-
         // include interfaces: Animals, WaterMob
         groups_PassiveMobs = Stream.of(
                 EntityType.IRON_GOLEM,
                 EntityType.SNOWMAN
         ).collect(Collectors.toCollection(HashSet::new));
+
+        if (MC1_17_Compat.isServer1_17OrNewer())
+            groups_PassiveMobs.addAll(MC1_17_Compat.getPassiveMobs());
 
         if (VersionUtils.isOneSixteen())
             groups_HostileMobs.addAll(MC1_16_Compat.getPassiveMobs());

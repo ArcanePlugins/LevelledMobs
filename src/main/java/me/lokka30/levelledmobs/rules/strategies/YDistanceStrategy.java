@@ -43,35 +43,19 @@ public class YDistanceStrategy implements LevellingStrategy, Cloneable {
         int yStart = this.startingYLevel == null ? 0 : this.startingYLevel;
         int yEnd = this.endingYLevel == null ? 0 : this.endingYLevel;
         final double yPeriod = this.yPeriod == null ? 0.0 : this.yPeriod;
-        final boolean isAscending = (yEnd > yStart);
-        if (!isAscending) {
-            yStart = yEnd;
-            yEnd = this.startingYLevel == null ? 0 : this.startingYLevel;
+        int useLevel;
+        final double diff = yEnd - yStart;
+
+        if (yPeriod > 0) {
+            final double percent = (mobYLocation - yStart) / diff;
+            double lvlPerPeriod = (maxLevel - minLevel) / (diff / yPeriod);
+            useLevel = (int) Math.floor(minLevel + (lvlPerPeriod * (mobYLocation - yStart) / yPeriod));
         }
-
-        int useLevel = minLevel;
-        boolean skipYPeriod = false;
-
-        if (mobYLocation >= yEnd){
-            useLevel = maxLevel;
-            skipYPeriod = true;
-        } else if (mobYLocation <= yStart)
-            skipYPeriod = true;
-
-        if (!skipYPeriod) {
-            final double diff = yEnd - yStart;
-            double useMobYLocation =  mobYLocation - yStart;
-
-            if (yPeriod > 0)
-                useLevel = (int) (useMobYLocation / yPeriod);
-            else {
-                double percent = useMobYLocation / diff;
-                useLevel = (int) Math.ceil((maxLevel - 1) * percent);
-            }
+        else {
+            final double useMobYLocation = mobYLocation - yStart;
+            final double percent = useMobYLocation / diff;
+            useLevel = minLevel + (int) Math.ceil((maxLevel - minLevel) * percent);
         }
-
-        if (!isAscending)
-            useLevel = maxLevel - useLevel + 1;
 
         useLevel += getVariance(lmEntity, useLevel >= maxLevel);
 

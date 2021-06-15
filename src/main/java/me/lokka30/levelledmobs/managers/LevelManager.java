@@ -370,37 +370,41 @@ public class LevelManager {
         nametagAutoUpdateTask = new BukkitRunnable() {
             @Override
             public void run() {
-                for (final Player player : Bukkit.getOnlinePlayers()) {
+                runNametagCheck();
+            }
+        }.runTaskTimerAsynchronously(main, 0, 20 * period);
+    }
 
-                    for (final Entity entity : player.getWorld().getEntities()) {
+    private void runNametagCheck(){
+        for (final Player player : Bukkit.getOnlinePlayers()) {
 
-                        if (!entity.isValid()) continue; // async task, entity can despawn whilst it is running
+            for (final Entity entity : player.getWorld().getEntities()) {
 
-                        // Mob must be a livingentity that is ...living.
-                        if (!(entity instanceof LivingEntity)) continue;
-                        LivingEntityWrapper lmEntity = new LivingEntityWrapper((LivingEntity) entity, main);
+                if (!entity.isValid()) continue; // async task, entity can despawn whilst it is running
 
-                        if (lmEntity.isLevelled())
-                            checkLevelledEntity(lmEntity, player);
-                        else {
-                            boolean wasBabyMob;
-                            synchronized (lmEntity.getLivingEntity().getPersistentDataContainer()){
-                                wasBabyMob = lmEntity.getPDC().has(main.levelManager.wasBabyMobKey, PersistentDataType.INTEGER);
-                            }
-                            if (
-                                    !lmEntity.isBabyMob() &&
-                                            wasBabyMob &&
-                                            main.levelInterface.getLevellableState(lmEntity) == LevelInterface.LevellableState.ALLOWED) {
-                                // if the mob was a baby at some point, aged and now is eligable for levelling, we'll apply a level to it now
-                                Utils.debugLog(main, DebugType.ENTITY_MISC, "&b" + lmEntity.getTypeName() + " &7was a baby and is now an adult, applying levelling rules");
+                // Mob must be a livingentity that is ...living.
+                if (!(entity instanceof LivingEntity)) continue;
+                LivingEntityWrapper lmEntity = new LivingEntityWrapper((LivingEntity) entity, main);
 
-                                main.queueManager_mobs.addToQueue(new QueueItem(lmEntity, null));
-                            }
-                        }
+                if (lmEntity.isLevelled())
+                    checkLevelledEntity(lmEntity, player);
+                else {
+                    boolean wasBabyMob;
+                    synchronized (lmEntity.getLivingEntity().getPersistentDataContainer()){
+                        wasBabyMob = lmEntity.getPDC().has(main.levelManager.wasBabyMobKey, PersistentDataType.INTEGER);
+                    }
+                    if (
+                            !lmEntity.isBabyMob() &&
+                                    wasBabyMob &&
+                                    main.levelInterface.getLevellableState(lmEntity) == LevelInterface.LevellableState.ALLOWED) {
+                        // if the mob was a baby at some point, aged and now is eligable for levelling, we'll apply a level to it now
+                        Utils.debugLog(main, DebugType.ENTITY_MISC, "&b" + lmEntity.getTypeName() + " &7was a baby and is now an adult, applying levelling rules");
+
+                        main.queueManager_mobs.addToQueue(new QueueItem(lmEntity, null));
                     }
                 }
             }
-        }.runTaskTimerAsynchronously(main, 0, 20 * period);
+        }
     }
 
     private void checkLevelledEntity(@NotNull final LivingEntityWrapper lmEntity, @NotNull final Player player){
