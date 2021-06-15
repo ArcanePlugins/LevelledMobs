@@ -1,6 +1,8 @@
 package me.lokka30.levelledmobs.listeners;
 
 import me.lokka30.levelledmobs.LevelledMobs;
+import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
+import me.lokka30.levelledmobs.rules.MobCustomNameStatusEnum;
 import org.bukkit.Material;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -8,8 +10,12 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
+import org.jetbrains.annotations.NotNull;
 
 /**
+ * Listens when a nametag is placed on an entity so LevelledMobs
+ * can apply various rules around nametagged entities
+ *
  * @author lokka30
  */
 public class EntityNametagListener implements Listener {
@@ -21,19 +27,25 @@ public class EntityNametagListener implements Listener {
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
-    public void onNametag(final PlayerInteractEntityEvent event) {
+    public void onNametag(@NotNull final PlayerInteractEntityEvent event) {
         if (event.getRightClicked() instanceof LivingEntity) {
-            final LivingEntity livingEntity = (LivingEntity) event.getRightClicked();
             final Player player = event.getPlayer();
 
             // Must have name tag in main hand / off-hand
             if (!(player.getInventory().getItemInMainHand().getType() == Material.NAME_TAG || player.getInventory().getItemInOffHand().getType() == Material.NAME_TAG))
                 return;
 
-            // Must be a levelled mob
-            if (!main.levelInterface.isLevelled(livingEntity)) return;
+            final LivingEntityWrapper lmEntity = new LivingEntityWrapper((LivingEntity) event.getRightClicked(), main);
 
-            main.levelManager.updateNametagWithDelay(livingEntity, livingEntity.getWorld().getPlayers(), 2L);
+            // Must be a levelled mob
+            if (!lmEntity.isLevelled()) return;
+
+            if (main.rulesManager.getRule_MobCustomNameStatus(lmEntity) == MobCustomNameStatusEnum.NOT_NAMETAGGED){
+                main.levelInterface.removeLevel(lmEntity);
+                return;
+            }
+
+            main.levelManager.updateNametag(lmEntity);
         }
     }
 }

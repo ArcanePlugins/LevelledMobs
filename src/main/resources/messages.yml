@@ -1,74 +1,121 @@
-#
-#        /\/\    ___  ___  ___   __ _   __ _   ___  ___ 
-#       /    \  / _ \/ __|/ __| / _` | / _` | / _ \/ __|
-#      / /\/\ \|  __/\__ \\__ \| (_| || (_| ||  __/\__ \
-#      \/    \/ \___||___/|___/ \__,_| \__, | \___||___/
-#                                      |___/            
-#   __                    _  _         _  _____       _        
-#  |  |    ___  _ _  ___ | || | ___  _| ||     | ___ | |_  ___ 
-#  |  |__ | -_|| | || -_|| || || -_|| . || | | || . || . ||_ -|
-#  |_____||___| \_/ |___||_||_||___||___||_|_|_||___||___||___| 
-#            The Ultimate RPG Levelled Mobs Solution
-#
-# |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
-# || 
-# || This is LevelledMobs' messages configuration file.
-# || Here you can edit any messages sent through the plugin.
-# || There are several placeholders you may use available.
-# || 
-# || NOTE: Some placeholders will not function if the event
-# || calling these placeholders does not utilize the value.
-# || Keep this in mind when using the placeholders below.
-# || It is recommended that, if a certain placeholder is not
-# || present within the line you wish to configure, that you
-# || do not add new placeholders to that line without ensuring
-# || that the placeholder being used is actually called when
-# || the message is sent to you or your players.
-# || 
-# ||            %prefix% | The prefix to most messages displayed
-# ||                     | through LevelledMobs. Configure 'prefix'
-# ||                     | below to change this value.
-# ||            %player% | The playername who event is directed at
-# ||             %label% | The command used to access LevelledMobs /LM
-# ||            %amount% | The input value for event
-# ||        %entityType% | The EntityType for event
-# ||             %level% | The current level of Entity for event
-# ||        %summonType% | The input summoning type value for event
-# ||            %entity% | Use the custom name, nametag, or default
-# ||                     | name for applied EntityType
-# ||                 %x% | The X coordinate where event occurred
-# ||                 %y% | The Y coordinate where event occurred
-# ||                 %z% | The Z coordinate where event occurred
-# ||             %world% | The world where event occurred
-# ||    %targetUsername% | The username of target of event
-# || %targetDisplayname% | The displayname of target of event
-# ||         %maxAmount% | The maximum summon amount of event
-# ||          %minLevel% | The minimum level of EntityTypes
-# ||                     | Configure 'fine-tuning' in settings.yml
-# ||          %maxLevel% | The maximum level of EntityTypes
-# ||                     | Configure 'fine-tuning' in settings.yml
-# ||            %killed% | The number of killed Entities when
-# ||                     | the kill command is used
-# ||           %skipped% | The number of Entities skipped when
-# ||                     | the kill command is used
-# ||            %radius% | The input radius value when executing commands
-# ||         %minRadius% | The minimum radius as configured
-# ||         %maxRadius% | The maximum radius as configured
-# ||           %version% | The current version of the LevelledMobs plugin
-# ||       %description% | A preconfigured plugin description%
-# || %supportedVersions% | A list of supported Minecraft versions
-# ||                     | for current version of LevelledMobs plugin
-# ||      %contributors% | A preconfigured list of plugin contributors
-# || %incompatibilities% | Number of potential incomppatibilities
-# || 
-# |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
-#
-#
-#
-# |||||||||||||||||||||||||||||||||||||||||||||||||||||
-# ||  Section 01 - Common Messages
-# |||||||||||||||||||||||||||||||||||||||||||||||||||||
-#
+#              _                   _ _          _ __  __       _
+#             | |    _____   _____| | | ___  __| |  \/  | ___ | |__  ___
+#             | |   / _ \ \ / / _ \ | |/ _ \/ _` | |\/| |/ _ \| '_ \/ __|
+#             | |__|  __/\ V /  __/ | |  __/ (_| | |  | | (_) | |_) \__ \
+#             |_____\___| \_/ \___|_|_|\___|\__,_|_|  |_|\___/|_.__/|___/
+#                       The Ultimate RPG Levelled Mobs Solution
+#                        _____                             
+#                       |     |___ ___ ___ ___ ___ ___ ___ 
+#                       | | | | -_|_ -|_ -| .'| . | -_|_ -|
+#                       |_|_|_|___|___|___|__,|_  |___|___|
+#  ___________________________________________|___|___________________________________
+# /.-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.\
+# lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\|\
+#'|    `-'     `-'     `-'     `-'     `-'     `-'     `-'     `-'     `-'     `-'    |\
+# |  Main Developers:                    |  Other Contributors:                       |\
+# |    lokka30 [Author / Developer]      |    Eyrian, iCodinqs, deiphiz, CoolBoy,     |\
+# |    stumper66 [Developer since v2.0]  |    Esophose, 7smile7, UltimaOath, Huge5551,|\
+# |                                      |    konsolas, Shevchik, limzikiki           |\
+# |                                      |                                            |\
+# |----------------------------------+---+--------------------------------------------|\
+# |  ArcanePlugins Support Discord   |  Special Thanks:                               |\
+# |    https://discord.gg/RQ8M4A5    |    ArcanePlugins Developers and Testers!       |\
+# |                                  |    Donators, Patrons, and other supporters!    |\
+# |                                  |    SpigotMC, PaperMC, ProtocolLib, and bStats! |\
+# |                                  |                                                |\
+# |.-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.|\
+# lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\|\
+#'|    `-'     `-'     `-'     `-'     `-'     `-'     `-'     `-'     `-'     `-'    |\
+# |  Useful Resources:                                                                |\
+# |    LevelledMobs Spigot                                                            |\
+# |      Download the latest updates or leave an honest review!                       |\
+# |        https://www.spigotmc.org/resources/levelledmobs-for-1-14-x-1-16-x.74304/   |\
+# |                                                                                   |\
+# |    LevelledMobs GitHub                                                            |\
+# |      Browse the code and wiki resources for LevelledMobs                          |\
+# |        https://github.com/lokka30/LevelledMobs/                                   |\
+# |                                                                                   |\
+# |    YAML-Parser                                                                    |\
+# |      Check your config files for any YAML errors.                                 |\
+# |      Good first step before seeking support!                                      |\
+# |        https://yaml-online-parser.appspot.com/                                    |\
+# |                                                                                   |\
+# |  Dependencies:                                                                    |\
+# |    ProtocolLib:                                                                   |\
+# |      A 'soft dependency'; Not *required* but highly recommended.                  |\
+# |      Without this, the plugin will not show LevelledMobs's nametags.              |\
+# |      Entities may still level without the nametag present.                        |\
+# |      https://www.spigotmc.org/resources/protocollib.1997/                         |\
+# |                                                                                   |\
+# |  Recommended Configuration:                                                       |\
+# |    LevelledMobs is tested using the latest PaperMC and SpigotMC server software.  |\
+# |    While other solutions may work, compatibility is not guaranteed.               |\
+# |    LevelledMobs comes ready-to-go out of the box with the default configuration,  ||\
+# |    which has been play-tested beforehand to provide an experience a bit harder    |||\
+# |    than the HARD vanilla difficulty, taking into account the vanilla armors       ||||\
+# |    and weapons when combined with the vanilla enchantments, making the toughest   |||||\
+# |    entities still challenging while not impossible.                               ||||||\
+# |                                                                                   |||||||\
+# |.-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.||||||||\
+# lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\|||||||||\
+#'|    `-'     `-'     `-'     `-'     `-'     `-'     `-'     `-'     `-'     `-'    ||||||||||\
+# |||---------------------------------------------------------------------------------|||||||||||
+# |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+# |||-------------------------------------------------------------------------------------------|
+# ||                                                                                            |
+# || This is LevelledMobs' Messages configuration file, where you can edit any message sent     |
+# || through this plugin. There are several placeholders available you may use.                 |
+# ||                                                                                            |
+# || NOTE: Some placeholders will not function if the event calling these placeholders do not   |
+# || utilize the value. Keep this in mind when using them. It is recommended that, if a certain |
+# || placeholder is not present within the line you wish you configure, that you do not add new |
+# || placeholders to that configuration.                                                        |
+# ||                                                                                            |
+# ||                 %prefix% | The prefix to most messages displayed                           |
+# ||                          | through LevelledMobs. Configure 'prefix'                        |
+# ||                          | below to change this value.                                     |
+# ||                 %player% | The playername who event is directed at                         |
+# ||                  %label% | The command used to access LevelledMobs /LM                     |
+# ||                 %amount% | The input value for event                                       |
+# ||             %entityType% | The EntityType for event                                        |
+# ||                  %level% | The current level of Entity for event                           |
+# ||             %summonType% | The input summoning type value for event                        |
+# ||                 %entity% | Use the custom name, nametag, or default                        |
+# ||                          | name for applied EntityType                                     |
+# ||                      %x% | The X coordinate where event occurred                           |
+# ||                      %y% | The Y coordinate where event occurred                           |
+# ||                      %z% | The Z coordinate where event occurred                           |
+# ||                  %world% | The world where event occurred                                  |
+# ||         %targetUsername% | The username of target of event                                 |
+# ||      %targetDisplayname% | The displayname of target of event                              |
+# ||              %maxAmount% | The maximum summon amount of event                              |
+# ||               %minLevel% | The minimum level of EntityTypes                                |
+# ||                          | Configure 'fine-tuning' in settings.yml                         |
+# ||               %maxLevel% | The maximum level of EntityTypes                                |
+# ||                          | Configure 'fine-tuning' in settings.yml                         |
+# ||                 %killed% | The number of killed Entities when                              |
+# ||                          | the kill command is used                                        |
+# ||                %skipped% | The number of Entities skipped when                             |
+# ||                          | the kill command is used                                        |
+# ||                 %radius% | The input radius value when executing commands                  |
+# ||              %minRadius% | The minimum radius as configured                                |
+# ||              %maxRadius% | The maximum radius as configured                                |
+# ||                %version% | The current version of the LevelledMobs plugin                  |
+# ||            %description% | A preconfigured plugin description%                             |
+# ||      %supportedVersions% | A list of supported Minecraft versions                          |
+# ||                          | for current version of LevelledMobs plugin                      |
+# ||           %contributors% | A preconfigured list of plugin contributors                     |
+# ||      %incompatibilities% | Number of potential incompatibilities                           |
+# ||                                                                                            |
+# |||-------------------------------------------------------------------------------------------|
+# |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+# |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+# |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+# |||-------------------------------------------------------------------------------------------|
+# ||                                                                                            |
+# ||  Section 01 - Common Messages                                                              |
+# ||                                                                                            |
+# |||-------------------------------------------------------------------------------------------|
 common:
   prefix: '&b&lLevelledMobs:&7'
   no-permission:
@@ -79,27 +126,28 @@ common:
     - '%prefix% &r%player%&7 is offline or invalid.'
 
 
-#
-# |||||||||||||||||||||||||||||||||||||||||||||||||||||
-# ||  Section 02 - Default Command Messages
-# |||||||||||||||||||||||||||||||||||||||||||||||||||||
-#
+# |||-------------------------------------------------------------------------------------------|
+# ||                                                                                            |
+# ||  Section 02 - Default Command Messages                                                     |
+# ||                                                                                            |
+# |||-------------------------------------------------------------------------------------------|
 command:
   levelledmobs:
     main-usage:
       - '%prefix% Available commands:'
       - '&8 &m->&b /%label% summon &8- &7summon specific levelled mobs'
+      - '&8 &m->&b /%label% rules &8- &7printout of the rules system'
       - '&8 &m->&b /%label% kill &8- &7mass kill levelled mobs'
       - '&8 &m->&b /%label% reload &8- &7reload the configuration files'
       - '&8 &m->&b /%label% info &8- &7view info about the plugin'
       - '&8 &m->&b /%label% compatibility &8- &7check plugin''s compatibility with the server'
 
 
-#
-# |||||||||||||||||||||||||||||||||||||||||||||||||||||
-# ||  Section 03 - Summon Command Messages
-# |||||||||||||||||||||||||||||||||||||||||||||||||||||
-#
+# |||-------------------------------------------------------------------------------------------|
+# ||                                                                                            |
+# ||  Section 03 - Summon Command Messages                                                      |
+# ||                                                                                            |
+# |||-------------------------------------------------------------------------------------------|
     summon:
       invalid-amount:
         - '%prefix% Invalid amount ''&b%amount%&7''.'
@@ -153,11 +201,11 @@ command:
         - '%prefix% &b%entity%&7 is not levellable.'
 
 
-#
-# |||||||||||||||||||||||||||||||||||||||||||||||||||||
-# ||  Section 04 - Kill Command Messages
-# |||||||||||||||||||||||||||||||||||||||||||||||||||||
-#
+# |||-------------------------------------------------------------------------------------------|
+# ||                                                                                            |
+# ||  Section 04 - Kill Command Messages                                                        |
+# ||                                                                                            |
+# |||-------------------------------------------------------------------------------------------|
     kill:
       usage:
         - '%prefix% Usage: &b/%label% kill <all/near>'
@@ -183,11 +231,34 @@ command:
           - '%prefix% Usage: &b/%label% kill near <radius>'
 
 
-#
-# |||||||||||||||||||||||||||||||||||||||||||||||||||||
-# ||  Section 05 - System Command Messages
-# |||||||||||||||||||||||||||||||||||||||||||||||||||||
-#
+# |||-------------------------------------------------------------------------------------------|
+# ||                                                                                            |
+# ||  Section 05 - Spawner Command Messages                                                     |
+# ||                                                                                            |
+# |||-------------------------------------------------------------------------------------------|
+
+    spawner:
+      usage:
+        - '%prefix% Usage: &b/%label%&7 spawner &b/minlevel&7 1 &b/maxlevel&7 10 &b/name&7 "My customized LM spawner" &b/customDropsId&7 Id1'
+      no-value:
+        - '%prefix% No value was specified for: &b%keyname%&7'
+      invalid-value:
+        - '%prefix% Invalid value for &b%keyname%&7, must be a number'
+      no-level-specified:
+        - '%prefix% You must specify minLevel and/or maxLevel'
+      inventory-full:
+        - '%prefix% &4Your inventory is full!'
+      spawner-give-message:
+        - '%prefix% Gave you a LM spawner, minLevel: &b%minlevel%&7, maxLevel: &b%maxlevel%&7'
+      spawner-give-message-console:
+        - '%prefix% Gave &r%playername%&7 a LM spawner, minLevel &b%minlevel%&7, maxLevel: &b%maxlevel%&7'
+
+
+# |||-------------------------------------------------------------------------------------------|
+# ||                                                                                            |
+# ||  Section 06 - System Command Messages                                                      |
+# ||                                                                                            |
+# |||-------------------------------------------------------------------------------------------|
     reload:
       started:
         - '%prefix% Reloading configuration files...'
@@ -198,7 +269,7 @@ command:
     info:
       about:
         - ' '
-        - '&b&lLevelledMobs &fv%version%&7 by lokka30'
+        - '&b&lLevelledMobs &fv%version%&7 by lokka30 & stumper66'
         - '&7&o%description%'
         - ' '
         - '&7This version of the plugin supports: &fMinecraft %supportedVersions%'
@@ -215,11 +286,11 @@ command:
         - '%prefix% Usage: &b/%label% compatibility'
 
 
-#
-# |||||||||||||||||||||||||||||||||||||||||||||||||||||
-# ||  Section 06 - Other Messages
-# |||||||||||||||||||||||||||||||||||||||||||||||||||||
-#
+# |||-------------------------------------------------------------------------------------------|
+# ||                                                                                            |
+# ||  Section 07 - Other Messages                                                               |
+# ||                                                                                            |
+# |||-------------------------------------------------------------------------------------------|
 other:
   compatibility-notice:
     enabled: true
@@ -235,7 +306,14 @@ other:
     send-in-console: true
     send-on-join: true
 
-# This value is used when this file is loaded to check if this file is most likely incompatible.
-# The value must match exactly what version the plugin ships the default file with.
-# Don't change this unless you know what you're doing!
-file-version: 3
+  # when a mob is named, is killed and drops a head, this will be the name used for it
+  mob-head-drop-name: '%mob_name%''s head'
+
+
+# |||-------------------------------------------------------------------------------------------|
+# ||                                                                                            |
+# ||  Section 08 - Advanced Message Settings                                                    |
+# ||  DO NOT EDIT BEYOND HERE WITHOUT DEVELOPER APPROVAL                                        |
+# ||                                                                                            |
+# |||-------------------------------------------------------------------------------------------|
+file-version: 4

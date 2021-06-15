@@ -1,7 +1,7 @@
 name: LevelledMobs
 version: ${project.version}
 main: me.lokka30.levelledmobs.LevelledMobs
-softdepend: [ WorldEdit, WorldGuard, ProtocolLib, MythicMobs ]
+softdepend: [ WorldEdit, WorldGuard, ProtocolLib, MythicMobs, PlaceholderAPI ]
 api-version: '1.13'
 load: POSTWORLD
 author: lokka30

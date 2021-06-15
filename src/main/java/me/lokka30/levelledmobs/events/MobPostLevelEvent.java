@@ -1,6 +1,7 @@
 package me.lokka30.levelledmobs.events;
 
 import me.lokka30.levelledmobs.LevelInterface;
+import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
@@ -9,6 +10,12 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.HashSet;
 
+/**
+ * This event is fired *after* a mob is levelled.
+ * Other plugins can cancel this event.
+ *
+ * @author lokka30
+ */
 public class MobPostLevelEvent extends Event {
 
     private static final HandlerList HANDLERS = new HandlerList();
@@ -36,24 +43,24 @@ public class MobPostLevelEvent extends Event {
         SUMMONED
     }
 
-    private final LivingEntity entity;
-    private int level;
+    private final LivingEntityWrapper lmEntity;
     private final LevelCause levelCause;
     private final HashSet<LevelInterface.AdditionalLevelInformation> additionalInformation;
 
-    public MobPostLevelEvent(@NotNull LivingEntity entity, int level, @NotNull LevelCause levelCause, @Nullable HashSet<LevelInterface.AdditionalLevelInformation> additionalInformation) {
-        this.entity = entity;
-        this.level = level;
+    public MobPostLevelEvent(@NotNull final LivingEntityWrapper lmEntity, @NotNull final LevelCause levelCause, @Nullable final HashSet<LevelInterface.AdditionalLevelInformation> additionalInformation) {
+        this.lmEntity = lmEntity;
         this.levelCause = levelCause;
         this.additionalInformation = additionalInformation;
     }
 
     public LivingEntity getEntity() {
-        return entity;
+        return lmEntity.getLivingEntity();
     }
 
+    public LivingEntityWrapper getLmEntity() { return lmEntity; }
+
     public int getLevel() {
-        return level;
+        return lmEntity.getMobLevel();
     }
 
     public LevelCause getCause() {
@@ -64,7 +71,7 @@ public class MobPostLevelEvent extends Event {
         return additionalInformation;
     }
 
-    public void setLevel(int level) {
-        this.level = level;
-    }
+//    public void setLevel(int level) {
+//        this.level = level;
+//    }
 }

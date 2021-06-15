@@ -5,6 +5,13 @@ import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
+/**
+ * This event is fired *before* a mob has
+ * been levelled, but only if it was
+ * spawned using the `/lm summon` command.
+ *
+ * @author lokka30
+ */
 public class SummonedMobPreLevelEvent extends Event implements Cancellable {
 
     private static final HandlerList HANDLERS = new HandlerList();

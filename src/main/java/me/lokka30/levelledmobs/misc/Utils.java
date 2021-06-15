@@ -1,23 +1,20 @@
 package me.lokka30.levelledmobs.misc;
 
 import me.lokka30.levelledmobs.LevelledMobs;
+import me.lokka30.levelledmobs.rules.RulesManager;
 import me.lokka30.microlib.MessageUtils;
 import me.lokka30.microlib.MicroLogger;
+import org.bukkit.block.Biome;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Ageable;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Zombie;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.TreeMap;
+import java.util.*;
 
 /**
- * @author lokka30
- * @contributors stumper66, Hugo5551
+ * Holds common utilities
+ *
+ * @author lokka30, stumper66
  */
 public final class Utils {
 
@@ -51,6 +48,11 @@ public final class Utils {
         return Math.round(value * 100) / 100.00;
     }
 
+    public static double round(final double value, final int digits) {
+        final double scale = Math.pow(10, digits);
+        return Math.round(value * scale) / scale;
+    }
+
     /**
      * Replaces content of a message with case insensitivity.
      *
@@ -60,6 +62,7 @@ public final class Utils {
      * @return modified message
      * @author stumper66
      */
+    @NotNull
     public static String replaceEx(@NotNull final String message, @NotNull final String replaceWhat, @NotNull final String replaceTo) {
         int count, position0, position1;
         count = position0 = 0;
@@ -145,25 +148,6 @@ public final class Utils {
         return newList;
     }
 
-    public static boolean isBabyMob(@NotNull final LivingEntity livingEntity) {
-
-        if (livingEntity instanceof Zombie) {
-            // for backwards compatibility
-            Zombie zombie = (Zombie) livingEntity;
-            try {
-                zombie.isAdult();
-                return !zombie.isAdult();
-            } catch (NoSuchMethodError err) {
-                //noinspection deprecation
-                return zombie.isBaby();
-            }
-        } else if (livingEntity instanceof Ageable){
-            return !(((Ageable) livingEntity).isAdult());
-        }
-
-        return false;
-    }
-
     /**
      * Sends a debug message to console if enabled in settings
      *
@@ -186,5 +170,86 @@ public final class Utils {
      */
     public static Object getNonNull(@Nullable Object object1, @NotNull Object object2) {
         return object1 == null ? object2 : object1;
+    }
+
+    /**
+     * Puts the string into lowercase and makes
+     * every character that starts a word a
+     * capital letter.
+     * <p>
+     * e.g. from: wiTheR sKeLeTOn
+     * to: Wither Skeleton
+     *
+     * @param str string to capitalize
+     * @return a string with each word capitalized
+     */
+    @NotNull
+    public static String capitalize(@NotNull final String str) {
+        final StringBuilder builder = new StringBuilder();
+        final String[] words = str.toLowerCase(Locale.ROOT).split(" "); // each word separated from str
+        for (int i = 0; i < words.length; i++) {
+            final String word = words[i];
+            if (word.isEmpty()) continue;
+
+            builder.append(String.valueOf(word.charAt(0)).toUpperCase()); // capitalize first letter
+            if (word.length() > 1)
+                builder.append(word.substring(1)); // append the rest of the word
+
+            // if there is another word to capitalize, then add a space
+            if (i < words.length - 1)
+                builder.append(" ");
+        }
+
+        return builder.toString();
+    }
+
+    public static boolean isLivingEntityInModalList(final CachedModalList<String> list, final LivingEntityWrapper lmEntity) {
+        return isLivingEntityInModalList(list, lmEntity, false);
+    }
+
+    public static boolean isLivingEntityInModalList(@NotNull final CachedModalList<String> list, final LivingEntityWrapper lmEntity, final boolean checkBabyMobs) {
+        if (list.allowAll) return true;
+        if (list.excludeAll) return false;
+        if (list.isEmpty()) return true;
+
+        final String checkName = checkBabyMobs ?
+                lmEntity.getNameIfBaby() :
+                lmEntity.getTypeName();
+
+        for (final String group : lmEntity.getApplicableGroups()) {
+            if (list.excludedGroups.contains(group)) return false;
+        }
+
+        // for denies we'll check for both baby and adult variants regardless of baby-mobs-inherit-adult-setting
+        if (list.excludedList.contains(lmEntity.getTypeName()) || list.excludedList.contains(lmEntity.getNameIfBaby()) ||
+                lmEntity.isBabyMob() && list.excludedList.contains("baby_")) return false;
+
+        for (final String group : lmEntity.getApplicableGroups()) {
+            if (list.allowedGroups.contains(group)) return true;
+        }
+
+        return list.isBlacklist() || list.allowedList.contains(checkName) ||
+                lmEntity.isBabyMob() && list.allowedList.contains("baby_");
+    }
+
+    public static boolean isBiomeInModalList(@NotNull final CachedModalList<Biome> list, final Biome biome, final RulesManager rulesManager) {
+        if (list.allowAll) return true;
+        if (list.excludeAll) return false;
+        if (list.isEmpty()) return true;
+
+        for (final String group : list.excludedGroups) {
+            if (rulesManager.biomeGroupMappings.containsKey(group) &&
+                    rulesManager.biomeGroupMappings.get(group).contains(biome.toString())) return false;
+        }
+
+        if (list.excludedList.contains(biome)) return false;
+
+        for (final String group : list.allowedGroups) {
+            if (rulesManager.biomeGroupMappings.containsKey(group) &&
+                    rulesManager.biomeGroupMappings.get(group).contains(biome.toString()))
+                return true;
+        }
+
+        return list.isBlacklist() || list.allowedList.contains(biome);
     }
 }

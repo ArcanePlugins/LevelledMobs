@@ -12,20 +12,19 @@ import com.sk89q.worldguard.protection.flags.registry.FlagRegistry;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import com.sk89q.worldguard.protection.regions.RegionContainer;
+import me.lokka30.levelledmobs.LivingEntityInterface;
 import me.lokka30.levelledmobs.misc.Utils;
 import org.bukkit.Location;
-import org.bukkit.entity.LivingEntity;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 /**
- * @author Eyrian2010
- * @contributors lokka30, stumper66
+ * Manages communication to WorldGuar for the purposes of obtaining region
+ * and flag information
+ *
+ * @author Eyrian2010, lokka30, stumper66
  */
 public class WorldGuardManager {
 
@@ -63,39 +62,35 @@ public class WorldGuardManager {
             WorldGuardManager.customMinLevelFlag = customMinLevelFlag;
             WorldGuardManager.customMaxLevelFlag = customMaxLevelFlag;
 
-        } catch (FlagConflictException e) {
+        } catch (final FlagConflictException e) {
 
             final Flag<?> allowLevelledMobs = flagRegistry.get("LM-AllowLevelledMobs");
             final Flag<?> useCustomLevels = flagRegistry.get("LM-UseCustomLevels");
             final Flag<?> customMinLevel = flagRegistry.get("LM-CustomMinLevel");
             final Flag<?> customMaxLevel = flagRegistry.get("LM-CustomMaxLevel");
 
-            if (allowLevelledMobs instanceof StateFlag) {
+            if (allowLevelledMobs instanceof StateFlag)
                 WorldGuardManager.allowLevelledMobsFlag = (StateFlag) allowLevelledMobs;
-            }
 
-            if (customMinLevel instanceof StringFlag) {
+            if (customMinLevel instanceof StringFlag)
                 WorldGuardManager.customMinLevelFlag = (StringFlag) customMinLevel;
-            }
 
-            if (customMaxLevel instanceof StringFlag) {
+            if (customMaxLevel instanceof StringFlag)
                 WorldGuardManager.customMaxLevelFlag = (StringFlag) customMaxLevel;
-            }
 
-            if (useCustomLevels instanceof StateFlag) {
+            if (useCustomLevels instanceof StateFlag)
                 WorldGuardManager.useCustomLevelsFlag = (StateFlag) useCustomLevels;
-            }
         }
     }
 
     //Get all regions at an Entities' location.
     @NotNull
-    public List<ProtectedRegion> getRegionSet(final LivingEntity livingEntity) {
-        final List<ProtectedRegion> results = new ArrayList<>();
-        final Location location = livingEntity.getLocation();
+    public List<ProtectedRegion> getRegionSet(@NotNull final LivingEntityInterface lmInterface) {
+        final List<ProtectedRegion> results = new LinkedList<>();
+        final Location location = lmInterface.getLocation();
 
         final RegionContainer regionContainer = WorldGuard.getInstance().getPlatform().getRegionContainer();
-        final RegionManager regionManager = regionContainer.get(BukkitAdapter.adapt(livingEntity.getWorld()));
+        final RegionManager regionManager = regionContainer.get(BukkitAdapter.adapt(lmInterface.getWorld()));
 
         if (regionManager == null) return results;
 
@@ -115,8 +110,8 @@ public class WorldGuardManager {
 
     // Get all regions at a location
     @NotNull
-    public List<ProtectedRegion> getRegionSet(final Location location) {
-        final List<ProtectedRegion> results = new ArrayList<>();
+    public List<ProtectedRegion> getRegionSet(@NotNull final Location location) {
+        final List<ProtectedRegion> results = new LinkedList<>();
         if (location.getWorld() == null) return results;
 
         final RegionContainer regionContainer = WorldGuard.getInstance().getPlatform().getRegionContainer();
@@ -139,6 +134,7 @@ public class WorldGuardManager {
         return results;
     }
 
+
     //Sorts a RegionSet by priority, lowest to highest.
     @Nullable
     public ProtectedRegion[] sortRegionsByPriority(final List<ProtectedRegion> regionSet) {
@@ -160,7 +156,7 @@ public class WorldGuardManager {
     }
 
     //Check if region is applicable for region levelling.
-    public boolean checkRegionFlags(final LivingEntity ent) {
+    public boolean checkRegionFlags(final LivingEntityInterface lmInterface) {
         boolean minBool = false;
         boolean maxBool = false;
 
@@ -169,7 +165,7 @@ public class WorldGuardManager {
         }
 
         //Sorted region array, highest priority comes last.
-        final ProtectedRegion[] regions = sortRegionsByPriority(getRegionSet(ent));
+        final ProtectedRegion[] regions = sortRegionsByPriority(getRegionSet(lmInterface));
 
         if (regions == null) return true;
 
@@ -193,10 +189,10 @@ public class WorldGuardManager {
 
 
     //Generate level based on WorldGuard region flags.
-    public int[] getRegionLevel(final LivingEntity livingEntity) {
+    public int[] getRegionLevel(final LivingEntityInterface lmInterface) {
         final int[] levels = new int[]{ -1, -1};
 
-        final ProtectedRegion[] regions = sortRegionsByPriority(getRegionSet(livingEntity));
+        final ProtectedRegion[] regions = sortRegionsByPriority(getRegionSet(lmInterface));
 
         if (regions == null) return levels;
 
@@ -213,8 +209,10 @@ public class WorldGuardManager {
         return levels;
     }
 
-    public boolean regionAllowsLevelling(final LivingEntity livingEntity) {
-        final ProtectedRegion[] regions = sortRegionsByPriority(getRegionSet(livingEntity));
+    public boolean regionAllowsLevelling(final LivingEntityInterface lmInterface) {
+        final ProtectedRegion[] regions = sortRegionsByPriority(getRegionSet(lmInterface));
+
+        if (regions == null) return true;
 
         if (regions == null) return true;
 
@@ -238,5 +236,29 @@ public class WorldGuardManager {
         }
 
         return state == null || state == StateFlag.State.ALLOW;
+    }
+
+    @NotNull
+    public static List<String> getWorldGuardRegionsForLocation(@NotNull final LivingEntityInterface lmInterface) {
+        final List<String> wg_Regions = new LinkedList<>();
+
+        if (lmInterface.getWorld() == null) return wg_Regions;
+        final com.sk89q.worldedit.world.World world = BukkitAdapter.adapt(lmInterface.getWorld());
+
+        final BlockVector3 position = BlockVector3.at(
+                lmInterface.getLocation().getBlockX(),
+                lmInterface.getLocation().getBlockY(),
+                lmInterface.getLocation().getBlockZ()
+        );
+
+        final RegionContainer container = WorldGuard.getInstance().getPlatform().getRegionContainer();
+        final RegionManager regions = container.get(world);
+        if (regions == null) return wg_Regions;
+
+        final ApplicableRegionSet set = regions.getApplicableRegions(position);
+        for (final ProtectedRegion region : set)
+            wg_Regions.add(region.getId());
+
+        return wg_Regions;
     }
 }

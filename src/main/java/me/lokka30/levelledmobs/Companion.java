@@ -1,49 +1,56 @@
 package me.lokka30.levelledmobs;
 
 import me.lokka30.levelledmobs.commands.LevelledMobsCommand;
+import me.lokka30.levelledmobs.compatibility.MC1_16_Compat;
+import me.lokka30.levelledmobs.compatibility.MC1_17_Compat;
 import me.lokka30.levelledmobs.customdrops.CustomDropsHandler;
 import me.lokka30.levelledmobs.listeners.*;
 import me.lokka30.levelledmobs.managers.ExternalCompatibilityManager;
 import me.lokka30.levelledmobs.managers.LevelManager;
+import me.lokka30.levelledmobs.managers.PAPIManager;
 import me.lokka30.levelledmobs.managers.WorldGuardManager;
 import me.lokka30.levelledmobs.misc.FileLoader;
+import me.lokka30.levelledmobs.misc.FileMigrator;
 import me.lokka30.levelledmobs.misc.Utils;
+import me.lokka30.levelledmobs.misc.VersionInfo;
 import me.lokka30.microlib.UpdateChecker;
 import me.lokka30.microlib.VersionUtils;
-import org.apache.maven.artifact.versioning.ComparableVersion;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.EntityType;
 import org.bukkit.plugin.PluginManager;
 
 import javax.annotation.Nullable;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.io.*;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * This class contains methods used by the main class.
  *
- * @author lokka30
- * @contributors stumper66
+ * @author lokka30, stumper66
  */
 public class Companion {
 
     private final LevelledMobs main;
 
-    public Companion(final LevelledMobs main) {
+    Companion(final LevelledMobs main) {
         this.main = main;
+        this.updateResult = new LinkedList<>();
+        buildUniversalGroups();
     }
 
-    private final PluginManager pluginManager = Bukkit.getPluginManager();
+    public HashSet<EntityType> groups_HostileMobs;
+    public HashSet<EntityType> groups_AquaticMobs;
+    public HashSet<EntityType> groups_PassiveMobs;
+    public HashSet<EntityType> groups_NetherMobs;
+    final private PluginManager pluginManager = Bukkit.getPluginManager();
+    public List<String> updateResult;
 
-    protected void checkWorldGuard() {
+    void checkWorldGuard() {
         // Hook into WorldGuard, register LM's flags.
         // This cannot be moved to onEnable (stated in WorldGuard's documentation). It MUST be ran in onLoad.
         if (ExternalCompatibilityManager.hasWorldGuardInstalled()) {
@@ -69,12 +76,20 @@ public class Companion {
         }
 
         main.incompatibilitiesAmount = incompatibilities.size();
-        if (incompatibilities.isEmpty()) {
+        if (incompatibilities.isEmpty())
             Utils.logger.info("&fCompatibility Checker: &7No incompatibilities found.");
-        } else {
+        else {
             Utils.logger.warning("&fCompatibility Checker: &7Found the following possible incompatibilities:");
             incompatibilities.forEach(incompatibility -> Utils.logger.info("&8 - &7" + incompatibility));
         }
+    }
+
+    private int getSettingsVersion(){
+        final File file = new File(main.getDataFolder(), "settings.yml");
+        if (!file.exists()) return 0;
+
+        final YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
+        return cfg.getInt("file-version");
     }
 
     // Note: also called by the reload subcommand.
@@ -84,31 +99,31 @@ public class Companion {
         // save license.txt
         FileLoader.saveResourceIfNotExists(main, new File(main.getDataFolder(), "license.txt"));
 
-        // load configurations
-        main.settingsCfg = FileLoader.loadFile(main, "settings", FileLoader.SETTINGS_FILE_VERSION, false);
+        main.rulesParsingManager.parseRulesMain(FileLoader.loadFile(main, "rules", FileLoader.RULES_FILE_VERSION));
+
+        final int settingsVersion = getSettingsVersion();
+        if (settingsVersion > 20 && settingsVersion < 30) { // anything older than 2.0 will not be migrated
+            FileMigrator.migrateSettingsToRules(main);
+        }
+
+        main.settingsCfg = FileLoader.loadFile(main, "settings", FileLoader.SETTINGS_FILE_VERSION);
 
         if (main.settingsCfg != null) // only load if settings were loaded successfully
-            main.messagesCfg = FileLoader.loadFile(main, "messages", FileLoader.MESSAGES_FILE_VERSION, false);
+            main.messagesCfg = FileLoader.loadFile(main, "messages", FileLoader.MESSAGES_FILE_VERSION);
         else {
             // had an issue reading the file.  Disable the plugin now
             return false;
         }
 
-        final boolean customDropsEnabled = main.settingsCfg.getBoolean("use-custom-item-drops-for-mobs");
-
-        main.customDropsCfg = FileLoader.loadFile(main, "customdrops", FileLoader.CUSTOMDROPS_FILE_VERSION, customDropsEnabled);
-
-        main.configUtils.entityTypesLevelOverride_Min = main.configUtils.getMapFromConfigSection("entitytype-level-override.min-level");
-        main.configUtils.entityTypesLevelOverride_Max = main.configUtils.getMapFromConfigSection("entitytype-level-override.max-level");
-        main.configUtils.worldLevelOverride_Min = main.configUtils.getMapFromConfigSection("world-level-override.min-level");
-        main.configUtils.worldLevelOverride_Max = main.configUtils.getMapFromConfigSection("world-level-override.max-level");
-        main.configUtils.noDropMultiplierEntities = main.configUtils.getSetFromConfigSection("no-drop-multipler-entities");
-        main.configUtils.overridenEntities = main.configUtils.getSetFromConfigSection("overriden-entities");
+        main.customDropsHandler = new CustomDropsHandler(main);
+        main.customDropsHandler.customDropsParser.loadDrops(
+                FileLoader.loadFile(main, "customdrops", FileLoader.CUSTOMDROPS_FILE_VERSION)
+        );
         main.attributesCfg = loadEmbeddedResource("defaultAttributes.yml");
         main.dropsCfg = loadEmbeddedResource("defaultDrops.yml");
+        main.mobHeadManager.loadTextures(Objects.requireNonNull(loadEmbeddedResource("textures.yml")));
 
         main.configUtils.load();
-        ExternalCompatibilityManager.load(main);
 
         // remove legacy files if they exist
         final String[] legacyFile = {"attributes.yml", "drops.yml"};
@@ -121,14 +136,11 @@ public class Companion {
             }
         }
 
-        // build custom drops
-        main.customDropsHandler = new CustomDropsHandler(main);
-
         return true;
     }
 
     @Nullable
-    protected YamlConfiguration loadEmbeddedResource(final String filename) {
+    YamlConfiguration loadEmbeddedResource(final String filename) {
         YamlConfiguration result = null;
         final InputStream inputStream = main.getResource(filename);
         if (inputStream == null) return null;
@@ -145,12 +157,15 @@ public class Companion {
         return result;
     }
 
-    protected void registerListeners() {
+    void registerListeners() {
         Utils.logger.info("&fListeners: &7Registering event listeners...");
 
         main.levelManager = new LevelManager(main);
+        main.queueManager_mobs.start();
+        main.queueManager_nametags.start();
         main.levelManager.entitySpawnListener = new EntitySpawnListener(main); // we're saving this reference so the summon command has access to it
         main.entityDamageDebugListener = new EntityDamageDebugListener(main);
+        main.blockPlaceListener = new BlockPlaceListener(main);
 
         if (main.settingsCfg.getBoolean("debug-entity-damage")) {
             // we'll load and unload this listener based on the above setting when reloading
@@ -162,13 +177,20 @@ public class Companion {
         pluginManager.registerEvents(new EntityDamageListener(main), main);
         pluginManager.registerEvents(new EntityDeathListener(main), main);
         pluginManager.registerEvents(new EntityRegainHealthListener(main), main);
-        pluginManager.registerEvents(new PlayerJoinWorldNametagListener(main), main);
         pluginManager.registerEvents(new EntityTransformListener(main), main);
         pluginManager.registerEvents(new EntityNametagListener(main), main);
         pluginManager.registerEvents(new EntityTargetListener(main), main);
         pluginManager.registerEvents(new PlayerJoinListener(main), main);
         pluginManager.registerEvents(new EntityTameListener(main), main);
+        pluginManager.registerEvents(new PlayerDeathListener(main), main);
+        pluginManager.registerEvents(new CombustListener(main), main);
+        pluginManager.registerEvents(main.blockPlaceListener, main);
         main.chunkLoadListener = new ChunkLoadListener(main);
+
+        if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
+            main.papiManager = new PAPIManager(main);
+            main.papiManager.register();
+        }
 
         if (ExternalCompatibilityManager.hasMythicMobsInstalled())
             pluginManager.registerEvents(new MythicMobsListener(main), main);
@@ -177,7 +199,7 @@ public class Companion {
             pluginManager.registerEvents(main.chunkLoadListener, main);
     }
 
-    protected void registerCommands() {
+    void registerCommands() {
         Utils.logger.info("&fCommands: &7Registering commands...");
 
         final PluginCommand levelledMobsCommand = main.getCommand("levelledmobs");
@@ -189,28 +211,47 @@ public class Companion {
     }
 
     void loadSpigotConfig(){
-        main.levelManager.attributeMaxHealthMax = Bukkit.getServer().spigot().getConfig().getDouble("settings.attribute.maxHealth.max", 2048.0);
-        main.levelManager.attributeMovementSpeedMax = Bukkit.getServer().spigot().getConfig().getDouble("settings.attribute.movementSpeed.max", 2048.0);
-        main.levelManager.attributeAttackDamageMax = Bukkit.getServer().spigot().getConfig().getDouble("settings.attribute.attackDamage.max", 2048.0);
+        try {
+            main.levelManager.attributeMaxHealthMax = Bukkit.getServer().spigot().getConfig().getDouble("settings.attribute.maxHealth.max", 2048.0);
+            main.levelManager.attributeMovementSpeedMax = Bukkit.getServer().spigot().getConfig().getDouble("settings.attribute.movementSpeed.max", 2048.0);
+            main.levelManager.attributeAttackDamageMax = Bukkit.getServer().spigot().getConfig().getDouble("settings.attribute.attackDamage.max", 2048.0);
+        }
+        catch (NoSuchMethodError ignored) {
+            main.levelManager.attributeMaxHealthMax = Integer.MAX_VALUE;
+            main.levelManager.attributeMovementSpeedMax = Integer.MAX_VALUE;
+            main.levelManager.attributeAttackDamageMax = Integer.MAX_VALUE;
+        }
     }
 
-    protected void setupMetrics() {
+    void setupMetrics() {
         new Metrics(main, 6269);
     }
 
     //Check for updates on the Spigot page.
-    public List<String> updateResult = new ArrayList<>();
-    protected void checkUpdates() {
+    void checkUpdates() {
         if (main.settingsCfg.getBoolean("use-update-checker", true)) {
             final UpdateChecker updateChecker = new UpdateChecker(main, 74304);
             updateChecker.getLatestVersion(latestVersion -> {
                 final String currentVersion = updateChecker.getCurrentVersion().split(" ")[0];
 
-                ComparableVersion thisVersion = new ComparableVersion(currentVersion);
-                ComparableVersion spigotVersion = new ComparableVersion(latestVersion);
+                VersionInfo thisVersion;
+                VersionInfo spigotVersion;
+                boolean isOutOfDate;
+                boolean isNewerVersion;
 
-                final boolean isOutOfDate = (thisVersion.compareTo(spigotVersion) < 0);
-                final boolean isNewerVersion =(thisVersion.compareTo(spigotVersion) > 0);
+                try {
+                    thisVersion = new VersionInfo(currentVersion);
+                    spigotVersion = new VersionInfo(latestVersion);
+
+                    isOutOfDate = (thisVersion.compareTo(spigotVersion) < 0);
+                    isNewerVersion = (thisVersion.compareTo(spigotVersion) > 0);
+                }
+                catch (InvalidObjectException e){
+                    Utils.logger.warning("Got exception creating version objects: " + e.getMessage());
+
+                    isOutOfDate = !currentVersion.equals(latestVersion);
+                    isNewerVersion = currentVersion.contains("indev");
+                }
 
                 if (isNewerVersion){
                     updateResult = Collections.singletonList(
@@ -257,8 +298,46 @@ public class Companion {
         }
     }
 
-    protected void shutDownAsyncTasks() {
+    void shutDownAsyncTasks() {
         Utils.logger.info("&fTasks: &7Shutting down other async tasks...");
+        main.queueManager_mobs.stop();
+        main.queueManager_nametags.stop();
         Bukkit.getScheduler().cancelTasks(main);
+    }
+
+    private void buildUniversalGroups(){
+
+        // include interfaces: Monster, Boss
+        groups_HostileMobs = Stream.of(
+                EntityType.ENDER_DRAGON,
+                EntityType.GHAST,
+                EntityType.MAGMA_CUBE,
+                EntityType.PHANTOM,
+                EntityType.SHULKER,
+                EntityType.SLIME
+        ).collect(Collectors.toCollection(HashSet::new));
+
+        if (VersionUtils.isOneSixteen())
+            groups_HostileMobs.addAll(MC1_16_Compat.getHostileMobs());
+
+        // include interfaces: Animals, WaterMob
+        groups_PassiveMobs = Stream.of(
+                EntityType.IRON_GOLEM,
+                EntityType.SNOWMAN
+        ).collect(Collectors.toCollection(HashSet::new));
+
+        if (MC1_17_Compat.isServer1_17OrNewer())
+            groups_PassiveMobs.addAll(MC1_17_Compat.getPassiveMobs());
+
+        if (VersionUtils.isOneSixteen())
+            groups_HostileMobs.addAll(MC1_16_Compat.getPassiveMobs());
+
+        // include interfaces: WaterMob
+        groups_AquaticMobs = Stream.of(
+                EntityType.DROWNED,
+                EntityType.ELDER_GUARDIAN,
+                EntityType.GUARDIAN,
+                EntityType.TURTLE
+        ).collect(Collectors.toCollection(HashSet::new));
     }
 }

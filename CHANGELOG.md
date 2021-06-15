@@ -1,13 +1,30 @@
 # Changelog
 
+## v3.0.0 b425
+
+* New modular rules system. Make your own customized rule set as broad or as specific as you want. How it works:
+  * Modify the default rules to apply general rules
+  * Create custom rules by creating conditions that must be met to apply the rule. Once met then apply any number of constraints, attributes, modifiers and more
+  * Create and pick rule presets to avoid repetitiveness and to ease readability.
+* New Levelled Spawners. Use a command to create a spawner that creates LevelledMobs only in a specific level or range of levels.
+* New mob commands. Run commands when a mob is killed. Can have specific conditions and placeholders are provided
+* New customdrops features: drop mob heads, custom mob head textures, overall chance, player caused only option
+* New option sunlight-intensity: have mobs burn in the daylight faster
+* Customized tiered coloring scheme for nametags
+* New levelling scheme: blended levelling. Combines y levelling and spawn distance levelling
+* Custom names. Apply a list of names to be randomly used on a particular mob. Apply a name template to all entities or specific entities that utilizes placeholders.
+* Biome conditions. Make rules that apply to specific biomes
+* Allowed worldguard regions. Make rules apply to only certain worldguard regions
+* Spawn distance levelling can now be manually set to a specific coordinate rather than the world spawn location
+* Y-levels. Make a rule apply only above or below a specific y level coordinate.
+* Plugin conditions. Have rules only apply to mobs from specific 3rd party plugins.
+* Attribute multipliers use a different formula which should have more predictable results
+* Custom mob groups. Create a defined list of mobs then make rules apply or excluded from them
+* Baby mob rule separation. You can define separate rules / behaviors for baby mob variants
+* Attributes are applied differently so that the base values are not overwritten. This means that mobs with different variants of health, etc are preserved such as with horses and other tamable mobs.
+* Added PAPI support for %level% and %displayname%
+
 ## v2.5.5 b407
-
-### Notice:
-
-The LevelledMobs team has been working on **LevelledMobs 3**! This update will significantly extend the capability and
-customisability of the plugin, through adding a new major configuration system called the **Rules System**. With such a
-large new feature, we need help to test it - if you're willing to help,
-please [join our Discord](https://discord.io/arcaneplugins) and let us know. Thanks :)
 
 ### Notes:
 
@@ -423,7 +440,7 @@ Before installing this update on your server, please understand the following:
 * Hugo5551 for making a handful of great code suggestions
 * squeebis for helping us out with testing
 * JacksaYT for reporting multiple bugs, some of high importance
-  
+
 ### Changelog:
 **Summon Subcommand** (stumper66)
 * The summon command is finally complete thanks to efforts by stumper66!

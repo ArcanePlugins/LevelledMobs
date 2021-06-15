@@ -3,27 +3,31 @@ package me.lokka30.levelledmobs.commands.subcommands;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.misc.Utils;
 import org.bukkit.command.CommandSender;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
 /**
+ * Shows LevelledMobs information such as the version number
+ *
  * @author lokka30
  * @since v2.0.0
  */
 public class InfoSubcommand implements Subcommand {
 
     @Override
-    public void parseSubcommand(LevelledMobs main, CommandSender sender, String label, String[] args) {
+    public void parseSubcommand(final LevelledMobs main, @NotNull final CommandSender sender, final String label, final String[] args) {
         if (sender.hasPermission("levelledmobs.command.info")) {
             if (args.length == 1) {
-                String version = main.getDescription().getVersion();
-                String description = main.getDescription().getDescription();
-                List<String> supportedVersions = Utils.getSupportedServerVersions();
-                List<String> codeContributors = Arrays.asList("stumper66", "Eyrian", "iCodinqs", "deiphiz", "CoolBoy", "Esophose",
-                        "7smile7", "UltimaOath", "konsolas", "Shevchik", "Hugo5551", "bStats Project", "SpigotMC Project");
-                String listSeparator = Objects.requireNonNull(main.messagesCfg.getString("command.levelledmobs.info.listSeparator"), "messages.yml: command.levelledmobs.info.listSeparator is undefined");
+                final String version = main.getDescription().getVersion();
+                final String description = main.getDescription().getDescription();
+                assert description != null;
+                final List<String> supportedVersions = Utils.getSupportedServerVersions();
+                final List<String> codeContributors = Arrays.asList("stumper66", "Eyrian", "iCodinqs", "deiphiz", "CoolBoy", "Esophose",
+                        "7smile7", "UltimaOath", "konsolas", "Shevchik", "Hugo5551", "limzikiki", "bStats Project", "SpigotMC Project");
+                final String listSeparator = Objects.requireNonNull(main.messagesCfg.getString("command.levelledmobs.info.listSeparator"), "messages.yml: command.levelledmobs.info.listSeparator is undefined");
 
                 List<String> aboutMsg = main.messagesCfg.getStringList("command.levelledmobs.info.about");
                 aboutMsg = Utils.replaceAllInList(aboutMsg, "%version%", version);
@@ -40,13 +44,12 @@ public class InfoSubcommand implements Subcommand {
                 usageMsg = Utils.colorizeAllInList(usageMsg);
                 usageMsg.forEach(sender::sendMessage);
             }
-        } else {
+        } else
             main.configUtils.sendNoPermissionMsg(sender);
-        }
     }
 
     @Override
-    public List<String> parseTabCompletions(LevelledMobs main, CommandSender sender, String[] args) {
+    public List<String> parseTabCompletions(final LevelledMobs main, final CommandSender sender, final String[] args) {
         // This subcommand has no tab completions.
         return null;
     }

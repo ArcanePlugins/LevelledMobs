@@ -1,5 +1,10 @@
 package me.lokka30.levelledmobs.misc;
 
+/**
+ * Holds the enums used for showing debug data
+ *
+ * @author lokka30
+ */
 public enum DebugType {
     /**
      * Logged when LM is checking if a mob
@@ -35,6 +40,8 @@ public enum DebugType {
      */
     SET_LEVELLED_ITEM_DROPS,
 
+    SET_LEVELLED_XP_DROPS,
+
     /**
      * Logged when LM is adjusting the
      * nametag of a levelled mob,
@@ -60,5 +67,41 @@ public enum DebugType {
      * Misc events related
      * to an entity
      */
-    ENTITY_MISC
+    ENTITY_MISC,
+
+    /**
+     * When custom commands
+     * are being executed
+     */
+    CUSTOM_COMMANDS,
+
+    /**
+     * Logged when LM is processing a mob
+     * from a creature spawner
+     **/
+    MOB_SPAWNER,
+
+    DENIED_RULE_ENTITIES_LIST,
+
+    DENIED_RULE_MINLEVEL,
+
+    DENIED_RULE_MAXLEVEL,
+
+    DENIED_RULE_WORLD_LIST,
+
+    DENIED_RULE_BIOME_LIST,
+
+    DENIED_RULE_PLUGIN_COMPAT,
+
+    DENIED_RULE_SPAWN_REASON,
+
+    DENIED_RULE_CUSTOM_NAME,
+
+    DENIED_RULE_CHANCE,
+
+    DENIED_RULE_WG_REGION,
+
+    DENIED_RULE_Y_LEVEL,
+
+    DENIED_RULE_STOP_PROCESSING
 }

@@ -1,16 +1,20 @@
 package me.lokka30.levelledmobs.listeners;
 
 import me.lokka30.levelledmobs.LevelledMobs;
+import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
+import me.lokka30.levelledmobs.misc.QueueItem;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityTargetEvent;
+import org.jetbrains.annotations.NotNull;
 
 /**
+ * Used as a workaround to ensure mob nametags are properly updated
+ *
  * @author stumper66
- * @contributors lokka30
  */
 public class EntityTargetListener implements Listener {
 
@@ -27,17 +31,17 @@ public class EntityTargetListener implements Listener {
      * @param event EntityTargetEvent
      */
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
-    public void onTarget(final EntityTargetEvent event) {
+    public void onTarget(@NotNull final EntityTargetEvent event) {
 
         // Must target a player and must be a living entity
         if (!(event.getTarget() instanceof Player) || !(event.getEntity() instanceof LivingEntity)) return;
 
-        final LivingEntity livingEntity = (LivingEntity) event.getEntity();
+        final LivingEntityWrapper lmEntity = new LivingEntityWrapper((LivingEntity) event.getEntity(), main);
 
         // Must be a levelled entity
-        if (!main.levelInterface.isLevelled(livingEntity)) return;
+        if (!lmEntity.isLevelled()) return;
 
         // Update the nametag.
-        main.levelManager.updateNametag(livingEntity, main.levelManager.getNametag(livingEntity, false), livingEntity.getWorld().getPlayers());
+        main.queueManager_nametags.addToQueue(new QueueItem(lmEntity, main.levelManager.getNametag(lmEntity, false), lmEntity.getLivingEntity().getWorld().getPlayers()));
     }
 }

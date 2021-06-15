@@ -4,12 +4,14 @@ import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.microlib.MessageUtils;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
 /**
- * @author lokka30
- * @contributors stumper66
+ * Used for managing configuration data
+ *
+ * @author lokka30, stumper66
  */
 public class ConfigUtils {
 
@@ -24,12 +26,6 @@ public class ConfigUtils {
 
     public boolean debugEntityDamageWasEnabled = false;
     public boolean chunkLoadListenerWasEnabled = false;
-    public TreeMap<String, Integer> entityTypesLevelOverride_Min;
-    public TreeMap<String, Integer> entityTypesLevelOverride_Max;
-    public TreeMap<String, Integer> worldLevelOverride_Min;
-    public TreeMap<String, Integer> worldLevelOverride_Max;
-    public Set<String> noDropMultiplierEntities;
-    public Set<String> overridenEntities;
 
     public void load() {
         // anything less than 3 breaks the formula
@@ -41,7 +37,7 @@ public class ConfigUtils {
         return MessageUtils.colorizeAll(Objects.requireNonNull(main.messagesCfg.getString("common.prefix")));
     }
 
-    public void sendNoPermissionMsg(CommandSender sender) {
+    public void sendNoPermissionMsg(@NotNull final CommandSender sender) {
         List<String> noPermissionMsg = main.messagesCfg.getStringList("common.no-permission");
 
         noPermissionMsg = Utils.replaceAllInList(noPermissionMsg, "%prefix%", getPrefix());

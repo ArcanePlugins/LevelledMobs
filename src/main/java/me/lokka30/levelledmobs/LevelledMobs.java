@@ -1,45 +1,57 @@
 package me.lokka30.levelledmobs;
 
 import me.lokka30.levelledmobs.customdrops.CustomDropsHandler;
+import me.lokka30.levelledmobs.listeners.BlockPlaceListener;
 import me.lokka30.levelledmobs.listeners.ChunkLoadListener;
 import me.lokka30.levelledmobs.listeners.EntityDamageDebugListener;
-import me.lokka30.levelledmobs.managers.ExternalCompatibilityManager;
-import me.lokka30.levelledmobs.managers.LevelManager;
-import me.lokka30.levelledmobs.managers.MobDataManager;
-import me.lokka30.levelledmobs.managers.WorldGuardManager;
+import me.lokka30.levelledmobs.managers.*;
 import me.lokka30.levelledmobs.misc.ConfigUtils;
 import me.lokka30.levelledmobs.misc.Utils;
+import me.lokka30.levelledmobs.rules.RulesManager;
+import me.lokka30.levelledmobs.rules.RulesParsingManager;
 import me.lokka30.microlib.QuickTimer;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.util.*;
+
 /**
  * This is the main class of the plugin. Bukkit will call onLoad and onEnable on startup, and onDisable on shutdown.
  *
  * @author lokka30
- * @contributors stumper66
+ * @since 1.0
  */
 public class LevelledMobs extends JavaPlugin {
 
     // Manager classes
-    public final LevelInterface levelInterface = new LevelInterface(this);
+    public LevelInterface levelInterface;
     public LevelManager levelManager;
     public final MobDataManager mobDataManager = new MobDataManager(this);
     public WorldGuardManager worldGuardManager;
     public CustomDropsHandler customDropsHandler;
     public ChunkLoadListener chunkLoadListener;
+    public BlockPlaceListener blockPlaceListener;
     public final Companion companion = new Companion(this);
+    public final MobHeadManager mobHeadManager = new MobHeadManager(this);
+    public final RulesParsingManager rulesParsingManager = new RulesParsingManager(this);
+    public final RulesManager rulesManager = new RulesManager(this);
+    public final QueueManager_Mobs queueManager_mobs = new QueueManager_Mobs(this);
+    public final QueueManager_Nametags queueManager_nametags = new QueueManager_Nametags(this);
+    public final Object attributeSyncObject = new Object();
+    public Random random;
+    public PAPIManager papiManager;
+    public boolean migratedFromPre30;
 
     // Configuration
     public YamlConfiguration settingsCfg;
     public YamlConfiguration messagesCfg;
     public YamlConfiguration attributesCfg;
     public YamlConfiguration dropsCfg;
-    public YamlConfiguration customDropsCfg;
     public final ConfigUtils configUtils = new ConfigUtils(this);
 
     // Misc
+    public Map<String, Set<String>> customMobGroups;
     public EntityDamageDebugListener entityDamageDebugListener;
     public int incompatibilitiesAmount;
     private long loadTime;
@@ -58,6 +70,9 @@ public class LevelledMobs extends JavaPlugin {
     public void onEnable() {
         final QuickTimer timer = new QuickTimer();
 
+        this.random = new Random();
+        this.customMobGroups = new TreeMap<>();
+        this.levelInterface = new LevelInterface(this);
         companion.checkCompatibility();
         if (!companion.loadFiles()) {
             // had fatal error reading required files

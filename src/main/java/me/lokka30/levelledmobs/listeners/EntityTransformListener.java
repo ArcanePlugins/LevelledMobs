@@ -3,21 +3,24 @@ package me.lokka30.levelledmobs.listeners;
 import me.lokka30.levelledmobs.LevelInterface;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.misc.DebugType;
+import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
 import me.lokka30.levelledmobs.misc.Utils;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntitySpawnEvent;
 import org.bukkit.event.entity.EntityTransformEvent;
-import org.bukkit.persistence.PersistentDataType;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
 import java.util.HashSet;
 
 /**
+ * Listens for when a mob transforms so the applicable rules can be applied
+ *
  * @author stumper66
- * @contributors lokka30
  */
 public class EntityTransformListener implements Listener {
 
@@ -28,54 +31,58 @@ public class EntityTransformListener implements Listener {
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
-    public void onTransform(final EntityTransformEvent event) {
-
-        // is level inheritance enabled?
-        if (!main.settingsCfg.getBoolean("level-inheritance")) {
-            Utils.debugLog(main, DebugType.ENTITY_TRANSFORM_FAIL,  event.getEntity().getType().name() + ": level-inheritance not enabled");
-            return;
-        }
+    public void onTransform(@NotNull final EntityTransformEvent event) {
 
         // is the original entity a living entity
         if (!(event.getEntity() instanceof LivingEntity)) {
-            Utils.debugLog(main, DebugType.ENTITY_TRANSFORM_FAIL, event.getEntity().getType().name() + ": entity was not an instance of LivingEntity");
+            Utils.debugLog(main, DebugType.ENTITY_TRANSFORM_FAIL, event.getEntity().getType().name() + ": entity was &bnot&7 an instance of LivingEntity");
             return;
         }
 
-        final LivingEntity livingEntity = (LivingEntity) event.getEntity();
+        final LivingEntityWrapper lmEntity = new LivingEntityWrapper((LivingEntity) event.getEntity(), main);
 
         // is the original entity levelled
-        if (!main.levelInterface.isLevelled(livingEntity)) {
-            Utils.debugLog(main, DebugType.ENTITY_TRANSFORM_FAIL, livingEntity.getType().name() + ": original entity was not levelled");
+        if (!lmEntity.isLevelled()) {
+            Utils.debugLog(main, DebugType.ENTITY_TRANSFORM_FAIL, lmEntity.getTypeName() + ": original entity was &bnot&7 levelled");
             return;
         }
 
-        final Integer level = livingEntity.getPersistentDataContainer().get(main.levelManager.levelKey, PersistentDataType.INTEGER);
-        assert level != null;
+        boolean useInheritance = false;
+        int level = 1;
 
-        for (Entity transformedEntity : event.getTransformedEntities()) {
+        if (main.rulesManager.getRule_MobLevelInheritance(lmEntity)){
+            useInheritance = true;
+            level = lmEntity.getMobLevel();
+        }
 
+        for (final Entity transformedEntity : event.getTransformedEntities()) {
             if (!(transformedEntity instanceof LivingEntity)) {
-                Utils.debugLog(main, DebugType.ENTITY_TRANSFORM_FAIL, event.getEntity().getType().name() + ": entity was not an instance of LivingEntity (loop)");
+                Utils.debugLog(main, DebugType.ENTITY_TRANSFORM_FAIL, event.getEntity().getType().name() + ": entity was&b not&7 an instance of LivingEntity (loop)");
                 continue;
             }
 
-            final LivingEntity transformedLivingEntity = (LivingEntity) transformedEntity;
+            final LivingEntityWrapper transformedLmEntity = new LivingEntityWrapper((LivingEntity) transformedEntity, main);
 
-            final LevelInterface.LevellableState levelledState = main.levelInterface.getLevellableState(transformedLivingEntity);
+            final LevelInterface.LevellableState levelledState = main.levelInterface.getLevellableState(transformedLmEntity);
             if (levelledState != LevelInterface.LevellableState.ALLOWED) {
-                Utils.debugLog(main, DebugType.ENTITY_TRANSFORM_FAIL, transformedEntity.getType().name() + ": transformed entity was not levellable, reason: " + levelledState);
-                main.levelManager.updateNametagWithDelay(transformedLivingEntity, null, livingEntity.getWorld().getPlayers(), 1);
+                Utils.debugLog(main, DebugType.ENTITY_TRANSFORM_FAIL, transformedEntity.getType().name() + ": transformed entity was &bnot&7 levellable, reason: &b" + levelledState);
+                main.levelManager.updateNametag_WithDelay(transformedLmEntity);
                 continue;
             }
 
-            main.levelInterface.applyLevelToMob(
-                    transformedLivingEntity,
-                    level,
-                    false,
-                    false,
-                    new HashSet<>(Collections.singletonList(LevelInterface.AdditionalLevelInformation.FROM_TRANSFORM_LISTENER))
-            );
+            if (useInheritance) {
+                main.levelInterface.applyLevelToMob(
+                        transformedLmEntity,
+                        level,
+                        false,
+                        false,
+                        new HashSet<>(Collections.singletonList(LevelInterface.AdditionalLevelInformation.FROM_TRANSFORM_LISTENER))
+                );
+            }
+            else
+                main.levelManager.entitySpawnListener.preprocessMob(transformedLmEntity, new EntitySpawnEvent(transformedEntity));
+
+            main.levelManager.updateNametag_WithDelay(lmEntity);
         }
     }
 }
