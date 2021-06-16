@@ -116,18 +116,18 @@ public class FileMigrator {
             final List<String> worldList = settings.getStringList("allowed-worlds-list.list");
 
             if ("ALL".equalsIgnoreCase(worldMode)) {
-                rulesLines.set(worldListAllowedLine, "      allowed-list: ['*']");
-                rulesLines.set(worldListExcludedLine, "      excluded-list: ['']");
+                rulesLines.set(worldListAllowedLine,  "        allowed-list: ['*']");
+                rulesLines.set(worldListExcludedLine, "        excluded-list: ['']");
             }
             else if ("WHITELIST".equalsIgnoreCase(worldMode)) {
                 final String newWorldList = compileListFromArray(worldList);
-                rulesLines.set(worldListAllowedLine, "      allowed-list: " + newWorldList);
-                rulesLines.set(worldListExcludedLine, "      excluded-list: ['']");
+                rulesLines.set(worldListAllowedLine,  "        allowed-list: " + newWorldList);
+                rulesLines.set(worldListExcludedLine, "        excluded-list: ['']");
             }
             else {
                 final String newWorldList = compileListFromArray(worldList);
-                rulesLines.set(worldListAllowedLine, "      allowed-list: ['']");
-                rulesLines.set(worldListExcludedLine, "      excluded-list: " + newWorldList);
+                rulesLines.set(worldListAllowedLine,  "        allowed-list: ['']");
+                rulesLines.set(worldListExcludedLine, "        excluded-list: " + newWorldList);
             }
 
             Files.write(fileRules.toPath(), rulesLines, StandardCharsets.UTF_8, StandardOpenOption.TRUNCATE_EXISTING);
