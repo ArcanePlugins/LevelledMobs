@@ -50,7 +50,7 @@ public class VersionInfo implements Comparable<VersionInfo> {
 
     @Override
     public int compareTo(final VersionInfo v) {
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < 4; i++) {
 
             if (v.thisVerSplit.size() <= i && this.thisVerSplit.size() - 1 <= i)
                 break;
