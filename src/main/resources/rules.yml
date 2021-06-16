@@ -986,8 +986,8 @@ presets:
         period: 0
 
   allowed_worlds: #This controls the allowed worlds to apply levels too.
+    name: 'Excluded Worldlist'
     conditions:
-      name: 'Excluded Worldlist'
       worlds:
         # allowed-list: ['world', 'world_nether']
         excluded-list: [ 'world_the_end' ]
