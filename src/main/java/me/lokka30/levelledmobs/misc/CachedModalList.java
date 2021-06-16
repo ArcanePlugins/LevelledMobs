@@ -136,5 +136,8 @@ public class CachedModalList<T extends Comparable<T>> implements Cloneable {
 
         this.allowedGroups.addAll(cachedModalList.allowedGroups);
         this.excludedGroups.addAll(cachedModalList.excludedGroups);
+
+        if (cachedModalList.allowAll) this.allowAll = true;
+        if (cachedModalList.excludeAll) this.excludeAll = true;
     }
 }

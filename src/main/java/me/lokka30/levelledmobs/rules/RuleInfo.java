@@ -118,7 +118,7 @@ public class RuleInfo {
                 if (presetValue instanceof CachedModalList){
                     CachedModalList<?> cachedModalList_preset = (CachedModalList<?>) presetValue;
                     CachedModalList<?> thisCachedModalList = (CachedModalList<?>) this.getClass().getDeclaredField(f.getName()).get(this);
-                    if (cachedModalList_preset.isEmpty()) continue;
+                    //if (cachedModalList_preset.isEmpty()) continue;
 
                     if (thisCachedModalList != null && cachedModalList_preset.doMerge)
                         thisCachedModalList.mergeCachedModal(cachedModalList_preset);
