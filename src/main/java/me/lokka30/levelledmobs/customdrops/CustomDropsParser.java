@@ -283,7 +283,11 @@ public class CustomDropsParser {
     private void parseCustomDropsAttributes(@NotNull final CustomDropBase dropBase, @NotNull final ConfigurationSection cs, final CustomDropInstance dropInstance){
         dropBase.chance = cs.getDouble("chance", this.defaults.chance);
         dropBase.minLevel = cs.getInt("minlevel", this.defaults.minLevel);
+        if (cs.getString("minLevel") != null)
+            dropBase.minLevel = cs.getInt("minLevel");
         dropBase.maxLevel = cs.getInt("maxlevel", this.defaults.maxLevel);
+        if (cs.getString("maxLevel") != null)
+            dropBase.maxLevel = cs.getInt("maxLevel");
         dropBase.playerCausedOnly = cs.getBoolean("player-caused", this.defaults.playerCausedOnly);
         dropBase.maxDropGroup = cs.getInt("maxdropgroup", this.defaults.maxDropGroup);
 
