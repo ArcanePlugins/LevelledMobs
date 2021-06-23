@@ -48,13 +48,13 @@ public class EntitySpawnListener implements Listener {
 
         final LivingEntityWrapper lmEntity = new LivingEntityWrapper((LivingEntity) event.getEntity(), main);
 
-        if (event instanceof CreatureSpawnEvent && ((CreatureSpawnEvent) event).getSpawnReason().equals(CreatureSpawnEvent.SpawnReason.CUSTOM)){
+        if (event instanceof CreatureSpawnEvent && ((CreatureSpawnEvent) event).getSpawnReason().equals(CreatureSpawnEvent.SpawnReason.CUSTOM)) {
             delayedAddToQueue(lmEntity, event, 20);
             return;
+        }
 
-        int mobProcessDelay = main.settingsCfg.getInt("mob-process-delay", 0);
+        final int mobProcessDelay = main.settingsCfg.getInt("mob-process-delay", 0);
 
-        // here we will process the mob from an async thread which directs it back to preprocessMob(..)
         if (mobProcessDelay > 0)
             delayedAddToQueue(lmEntity, event, mobProcessDelay);
         else

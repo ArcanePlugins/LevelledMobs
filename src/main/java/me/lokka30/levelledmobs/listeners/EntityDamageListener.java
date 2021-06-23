@@ -1,5 +1,6 @@
 package me.lokka30.levelledmobs.listeners;
 
+import com.comphenix.protocol.PacketType;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.misc.Addition;
 import me.lokka30.levelledmobs.misc.DebugType;
@@ -11,6 +12,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -44,6 +46,8 @@ public class EntityDamageListener implements Listener {
     // Check for levelled ranged damage.
     @EventHandler(ignoreCancelled = true, priority = EventPriority.NORMAL)
     public void onRangedDamage(final EntityDamageByEntityEvent event) {
+        if (event.getFinalDamage() == 0.0) return;
+
         processRangedDamage(event);
         processOtherRangedDamage(event);
     }

@@ -84,7 +84,7 @@
 # |       ¦  +- Establishing Defaults                                                 |\
 # |       ¦  +- Crafting Custom Rules                                                 |\
 # |       ¦                                                                           |\
-# |       +- Section 01 / Custom Groups [D] LINE #900                                 |\
+# |       +- Section 01 / Custom Groups [D] LINE #932                                 |\
 # |       ¦  +- Mobs                                                                  |\
 # |       ¦  +- Biomes                                                                |\
 # |       ¦                                                                           |\
@@ -453,10 +453,10 @@
 # ||          | would take to fit within the period: to keep minLevel and maxLevel spread out   |
 # ||          | evenly between the start: and end: values. The higher the period:, and the      |
 # ||          | smaller range between start: and end: will result in level spikes every time    |
-# ||          | the next number of period: is reached in blocks.
+# ||          | the next period: is reached.                                                    |
 # ||          | This sub-system uses the following formula to determine levelling:              |
 # ||          | lvls-per-period = (maxLevel: - minLevel:) / ((end: - start:) / period)          |
-# ||          | appliedLevel = (minLevel: + (lvls-per-period x (currentMobY - start:)/period:)  |
+# ||          | appliedLevel = minLevel: + (lvls-per-period x (currentMobY - start:)/period:)   |
 # ||                                                                                            |
 # ||     max-random-variance:                                                                   |
 # ||        | By default, this is set to 1.                                                     |
@@ -712,7 +712,6 @@
 # ||                                                                                            |
 # ||  This system allows you to craft custom entity groups which function in a similar way to   |
 # ||  the universal groups currently available. It's fairly simple to use, demonstrated below.  |
-# ||  You can find a list of the pre-built Custom Groups within the CustomDrops documentation!  |
 # ||                                                                                            |
 # |||-------------------------------------------------------------------------------------------|
 # ||   --------------------------------------------------------------------------------------   |
@@ -733,6 +732,39 @@
 # ||   - EntityType                                                                             |
 # ||     | This value can be any EntityType; populate the 'groupName:' with entities which      |
 # ||     | then become a part of that group.                                                    |
+# ||                                                                                            |
+# |||-------------------------------------------------------------------------------------------|
+# ||                                                                                            |
+# ||  You can also utilize several pre-built universal groups built into LevelledMobs itself.   |
+# ||                                                                                            |
+# |||-------------------------------------------------------------------------------------------|
+# ||                                                                                            |
+# ||   all_mobs                                                                                 |
+# ||     | All entities, levelled or otherwise.                                                 |
+# ||                                                                                            |
+# ||   all_levellable_mobs                                                                      |
+# ||     | All levelled entities.                                                               |
+# ||                                                                                            |
+# ||   all_hostile_mobs                                                                         |
+# ||     | All hostile entities.                                                                |
+# ||                                                                                            |
+# ||   all_passive_mobs                                                                         |
+# ||     | All passive entities.                                                                |
+# ||                                                                                            |
+# ||   all_overworld_mobs                                                                       |
+# ||     | All levelled entities naturally spawned in Overworld.                                |
+# ||                                                                                            |
+# ||   all_nether_mobs                                                                          |
+# ||     | All levelled entities naturally spawned in Nether.                                   |
+# ||                                                                                            |
+# ||   all_flying_mobs                                                                          |
+# ||     | All entities able to fly.                                                            |
+# ||                                                                                            |
+# ||   all_ground_mobs                                                                          |
+# ||     | All entities who cannot fly, swim (aka ground only).                                 |
+# ||                                                                                            |
+# ||   all_aquatic_mobs                                                                         |
+# ||     | All underwater entities.                                                             |
 # ||                                                                                            |
 # |||-------------------------------------------------------------------------------------------|
 
