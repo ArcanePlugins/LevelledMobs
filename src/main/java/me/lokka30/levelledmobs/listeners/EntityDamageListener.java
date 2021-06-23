@@ -31,6 +31,7 @@ public class EntityDamageListener implements Listener {
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void onDamage(@NotNull final EntityDamageEvent event) {
         if (!(event.getEntity() instanceof LivingEntity)) return;
+        if (event.getFinalDamage() == 0.0) return;
 
         final LivingEntityWrapper lmEntity = new LivingEntityWrapper((LivingEntity) event.getEntity(), main);
 
@@ -44,6 +45,8 @@ public class EntityDamageListener implements Listener {
     // Check for levelled ranged damage.
     @EventHandler(ignoreCancelled = true, priority = EventPriority.NORMAL)
     public void onRangedDamage(final EntityDamageByEntityEvent event) {
+        if (event.getFinalDamage() == 0.0) return;
+
         processRangedDamage(event);
         processOtherRangedDamage(event);
     }
