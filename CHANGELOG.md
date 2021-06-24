@@ -1,12 +1,25 @@
 # Changelog
 
+***
+
+## v3.0.3 b439
+
+* @stumper66 made minLevel and maxLevel casing possible in customdrops.yml
+* @stumper66 fixed shields not blocking damage in certain scenarios
+* @lokka30 updated MicroLib & bStats inbuilt deps.
+* @lokka30 fixed old groupid being used in inbuilt pom.xml
+
+***
+
 ## v3.0.0 b425
 
 * New modular rules system. Make your own customized rule set as broad or as specific as you want. How it works:
   * Modify the default rules to apply general rules
-  * Create custom rules by creating conditions that must be met to apply the rule. Once met then apply any number of constraints, attributes, modifiers and more
+  * Create custom rules by creating conditions that must be met to apply the rule. Once met then apply any number of
+    constraints, attributes, modifiers and more
   * Create and pick rule presets to avoid repetitiveness and to ease readability.
-* New Levelled Spawners. Use a command to create a spawner that creates LevelledMobs only in a specific level or range of levels.
+* New Levelled Spawners. Use a command to create a spawner that creates LevelledMobs only in a specific level or range
+  of levels.
 * New mob commands. Run commands when a mob is killed. Can have specific conditions and placeholders are provided
 * New customdrops features: drop mob heads, custom mob head textures, overall chance, player caused only option
 * New option sunlight-intensity: have mobs burn in the daylight faster

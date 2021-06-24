@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>io.github.lokka30</groupId>
+    <groupId>me.lokka30</groupId>
     <artifactId>LevelledMobs</artifactId>
     <version>3.0.3 b439</version>
     <packaging>jar</packaging>
@@ -124,7 +124,7 @@
         <dependency>
             <groupId>org.bstats</groupId>
             <artifactId>bstats-bukkit</artifactId>
-            <version>2.2.2-SNAPSHOT</version>
+            <version>2.2.1</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
@@ -136,7 +136,7 @@
         <dependency>
             <groupId>com.github.lokka30</groupId>
             <artifactId>MicroLib</artifactId>
-            <version>bf026b06</version> <!-- v2.2.0 -->
+            <version>2.2.3</version>
         </dependency>
         <dependency>
             <groupId>com.github.dmulloy2</groupId>
