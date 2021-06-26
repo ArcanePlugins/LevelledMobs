@@ -489,6 +489,7 @@
 # ||   |      creature-death-nametag: '&8[%tiered%Level %mob-lvl%&8 | &f%entity-name%&8]'   |   |
 # ||   |      creature-nametag-always-visible: false                                        |   |
 # ||   |      sunlight-intensity: 25                                                        |   |
+# ||   |      lower-mob-level-bias-factor: 0                                                |   |
 # ||   |      multipliers:                                                                  |   |
 # ||   |        max-health: 7.0                                                             |   |
 # ||   |        movement-speed: 0.3                                                         |   |
