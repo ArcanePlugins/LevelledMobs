@@ -66,8 +66,9 @@ public class EntityDamageListener implements Listener {
         Utils.debugLog(main, DebugType.RANGED_DAMAGE_MODIFICATION, "Range attack damage modified for &b" + shooter.getLivingEntity().getName() + "&7:");
         Utils.debugLog(main, DebugType.RANGED_DAMAGE_MODIFICATION, "Previous rangedDamage: &b" + event.getDamage());
         //final int level = shooter.getMobLevel();
-        event.setDamage(main.mobDataManager.getAdditionsForLevel(shooter, Addition.CUSTOM_RANGED_ATTACK_DAMAGE, event.getDamage()));
-        Utils.debugLog(main, DebugType.RANGED_DAMAGE_MODIFICATION, "New rangedDamage: &b" + event.getDamage());
+        final double newDamage = event.getDamage() + main.mobDataManager.getAdditionsForLevel(shooter, Addition.CUSTOM_RANGED_ATTACK_DAMAGE, event.getDamage());
+        event.setDamage(newDamage);
+        Utils.debugLog(main, DebugType.RANGED_DAMAGE_MODIFICATION, "New rangedDamage: &b" + newDamage);
     }
 
     private void processOtherRangedDamage(@NotNull final EntityDamageByEntityEvent event) {
