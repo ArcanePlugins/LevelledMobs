@@ -102,8 +102,10 @@ public class LevelManager {
             return minLevel;
 
         final LevelNumbersWithBias levelNumbersWithBias = main.rulesManager.getRule_LowerMobLevelBiasFactor(lmEntity, minLevel, maxLevel);
-        if (levelNumbersWithBias != null)
+        if (levelNumbersWithBias != null) {
+            if (levelNumbersWithBias.isEmpty()) levelNumbersWithBias.populateData();
             return levelNumbersWithBias.getNumberWithinLimits();
+        }
 
         return ThreadLocalRandom.current().nextInt(minLevel, maxLevel + 1);
     }

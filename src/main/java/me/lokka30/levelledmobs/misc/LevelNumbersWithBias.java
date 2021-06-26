@@ -44,6 +44,10 @@ public class LevelNumbersWithBias {
         return factor;
     }
 
+    public boolean isEmpty(){
+        return this.numberList.isEmpty();
+    }
+
     public void populateData(){
         if (!this.numberList.isEmpty()) this.numberList.clear();
 
