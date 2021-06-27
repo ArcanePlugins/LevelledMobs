@@ -2,6 +2,19 @@
 
 ***
 
+## v3.0.4 b444
+
+* @stumper66 fixed exception when using lower-mob-level-bias-factor
+* @stumper66 added back in lower-mob-level-bias-factor
+* @stumper66 fixed custom commands not respecting min and max level restrictions
+* @stumper66 adjusted the attribute multiplier slightly
+* @stumper66 fixed low level skeletons doing no or little damage with arrows
+* @stumper66 fixed enchanted books now work properly with custom drops
+* @lokka30 updated MicroLib shaded dep
+* @lokka30 cleaned up MC1.17Compat class
+
+***
+
 ## v3.0.3 b439
 
 * @stumper66 made minLevel and maxLevel casing possible in customdrops.yml
