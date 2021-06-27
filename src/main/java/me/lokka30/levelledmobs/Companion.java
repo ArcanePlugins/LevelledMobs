@@ -326,7 +326,7 @@ public class Companion {
                 EntityType.SNOWMAN
         ).collect(Collectors.toCollection(HashSet::new));
 
-        if (MC1_17_Compat.isServer1_17OrNewer())
+        if (VersionUtils.isOneSeventeen())
             groups_PassiveMobs.addAll(MC1_17_Compat.getPassiveMobs());
 
         if (VersionUtils.isOneSixteen())
