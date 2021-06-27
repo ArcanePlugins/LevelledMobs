@@ -272,12 +272,14 @@ public class CustomDropsHandler {
 
         boolean doDrop = dropBase.maxLevel <= -1 || info.lmEntity.getMobLevel() <= dropBase.maxLevel;
         if (dropBase.minLevel > -1 && info.lmEntity.getMobLevel() < dropBase.minLevel) doDrop = false;
-        if (!doDrop && dropBase instanceof CustomDropItem){
-            final CustomDropItem dropItem = (CustomDropItem) dropBase;
-            if (!info.equippedOnly && main.settingsCfg.getStringList("debug-misc").contains("CUSTOM_DROPS")) {
-                final ItemStack itemStack = info.deathByFire ? getCookedVariantOfMeat(dropItem.getItemStack()) : dropItem.getItemStack();
-                Utils.logger.info(String.format("&8- &7level: &b%s&7, fromSpawner: &b%s&7, item: &b%s&7, minL: &b%s&7, maxL: &b%s&7, nospawner: &b%s&7, dropped: &bfalse",
-                        info.lmEntity.getMobLevel(), info.isSpawner, itemStack.getType().name(), dropBase.minLevel, dropBase.maxLevel, dropBase.noSpawner));
+        if (!doDrop){
+            if (dropBase instanceof CustomDropItem) {
+                final CustomDropItem dropItem = (CustomDropItem) dropBase;
+                if (!info.equippedOnly && main.settingsCfg.getStringList("debug-misc").contains("CUSTOM_DROPS")) {
+                    final ItemStack itemStack = info.deathByFire ? getCookedVariantOfMeat(dropItem.getItemStack()) : dropItem.getItemStack();
+                    Utils.logger.info(String.format("&8- &7level: &b%s&7, fromSpawner: &b%s&7, item: &b%s&7, minL: &b%s&7, maxL: &b%s&7, nospawner: &b%s&7, dropped: &bfalse",
+                            info.lmEntity.getMobLevel(), info.isSpawner, itemStack.getType().name(), dropBase.minLevel, dropBase.maxLevel, dropBase.noSpawner));
+                }
             }
             return;
         }
