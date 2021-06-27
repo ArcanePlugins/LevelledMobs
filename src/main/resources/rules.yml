@@ -1042,7 +1042,7 @@ default-rule:
       max-health: 7.0
       movement-speed: 0.3
       attack-damage: 2.75
-      ranged-attack-damage: 3.0
+      ranged-attack-damage: 2.0
       item-drop: 3
       xp-drop: 5
 
