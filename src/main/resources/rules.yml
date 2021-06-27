@@ -74,8 +74,8 @@
 # |       +- How To Use/                                                              |\
 # |       ¦  +- Levelling Rules Functions                                             |\
 # |       ¦  ¦  +- Conditions [A] LINE #120                                           |\
-# |       ¦  ¦  +- Strategies [B] LINE #341                                           |\
-# |       ¦  ¦  +- Apply-Settings [C] LINE #473                                       |\
+# |       ¦  ¦  +- Strategies [B] LINE #340                                           |\
+# |       ¦  ¦  +- Apply-Settings [C] LINE #472                                       |\
 # |       ¦  ¦                                                                        |\
 # |       ¦  +- Global Functions                                                      |\
 # |       ¦  +- Establishing Mob Groups                                               |\
@@ -84,7 +84,7 @@
 # |       ¦  +- Establishing Defaults                                                 |\
 # |       ¦  +- Crafting Custom Rules                                                 |\
 # |       ¦                                                                           |\
-# |       +- Section 01 / Custom Groups [D] LINE #932                                 |\
+# |       +- Section 01 / Custom Groups [D] LINE #902                                 |\
 # |       ¦  +- Mobs                                                                  |\
 # |       ¦  +- Biomes                                                                |\
 # |       ¦                                                                           |\
@@ -129,61 +129,60 @@
 # ||                                                                                            |
 # |||-------------------------------------------------------------------------------------------|
 # ||   --------------------------------------------------------------------------------------   |
-# ||   |custom-rules:                                                                       |   |
-# ||   |    conditions:                                                                     |   |
-# ||   |      minLevel: 1                                                                   |   |
-# ||   |      maxLevel: 50                                                                  |   |
-# ||   |      chance: 1.0                                                                   |   |
-# ||   |      stop-processing: true                                                         |   |
-# ||   |      mob-customname-status: EITHER                                                 |   |
-# ||   |      mob-tamed-status: EITHER                                                      |   |
-# ||   |      worlds:                                                                       |   |
-# ||   |        allowed-list: ['']                                                          |   |
-# ||   |        excluded-list: ['']                                                         |   |
-# ||   |        merge: true                                                                 |   |
-# ||   |      apply-above-y: 64                                                             |   |
-# ||   |      apply-below-y: 64                                                             |   |
-# ||   |      allowed-worldguard-regions:                                                   |   |
-# ||   |        allowed-list: ['']                                                          |   |
-# ||   |        excluded-list: ['']                                                         |   |
-# ||   |        merge: true                                                                 |   |
-# ||   |      allowed-spawn-reasons:                                                        |   |
-# ||   |        allowed-list: ['']                                                          |   |
-# ||   |        excluded-list: ['']                                                         |   |
-# ||   |        merge: true                                                                 |   |
-# ||   |      custom-names:                                                                 |   |
-# ||   |        allowed-list: ['']                                                          |   |
-# ||   |        excluded-list: ['']                                                         |   |
-# ||   |        merge: true                                                                 |   |
-# ||   |      entities:                                                                     |   |
-# ||   |        allowed-list: ['']                                                          |   |
-# ||   |        allowed-groups: ['']                                                        |   |
-# ||   |        excluded-list: ['']                                                         |   |
-# ||   |        excluded-groups: ['']                                                       |   |
-# ||   |        merge: true                                                                 |   |
-# ||   |      biomes:                                                                       |   |
-# ||   |        allowed-list: ['']                                                          |   |
-# ||   |        allowed-groups: ['']                                                        |   |
-# ||   |        excluded-list: ['']                                                         |   |
-# ||   |        excluded-groups: ['']                                                       |   |
-# ||   |        merge: true                                                                 |   |
-# ||   |      apply-plugins:                                                                |   |
-# ||   |        allowed-list: ['']                                                          |   |
-# ||   |        excluded-list: ['']                                                         |   |
-# ||   |        merge: true                                                                 |   |
-# ||   |      mythicmobs-internal-names:                                                    |   |
-# ||   |        allowed-list: ['']                                                          |   |
-# ||   |        excluded-list: ['']                                                         |   |
-# ||   |        merge: true                                                                 |   |
-# ||   |      level-plugins:                                                                |   |
-# ||   |        DANGEROUS_CAVES: false                                                      |   |
-# ||   |        MYTHIC_MOBS: false                                                          |   |
-# ||   |        ELITE_MOBS: false                                                           |   |
-# ||   |        ELITE_MOBS_NPCS: false                                                      |   |
-# ||   |        ELITE_MOBS_SUPER_MOBS: false                                                |   |
-# ||   |        INFERNAL_MOBS: false                                                        |   |
-# ||   |        CITIZENS: false                                                             |   |
-# ||   |        SHOPKEEPERS: false                                                          |   |
+# ||   |  conditions:                                                                       |   |
+# ||   |    minLevel: 1                                                                     |   |
+# ||   |    maxLevel: 50                                                                    |   |
+# ||   |    chance: 1.0                                                                     |   |
+# ||   |    stop-processing: true                                                           |   |
+# ||   |    mob-customname-status: EITHER                                                   |   |
+# ||   |    mob-tamed-status: EITHER                                                        |   |
+# ||   |    worlds:                                                                         |   |
+# ||   |      allowed-list: ['']                                                            |   |
+# ||   |      excluded-list: ['']                                                           |   |
+# ||   |      merge: true                                                                   |   |
+# ||   |    apply-above-y: 64                                                               |   |
+# ||   |    apply-below-y: 64                                                               |   |
+# ||   |    allowed-worldguard-regions:                                                     |   |
+# ||   |      allowed-list: ['']                                                            |   |
+# ||   |      excluded-list: ['']                                                           |   |
+# ||   |      merge: true                                                                   |   |
+# ||   |    allowed-spawn-reasons:                                                          |   |
+# ||   |      allowed-list: ['']                                                            |   |
+# ||   |      excluded-list: ['']                                                           |   |
+# ||   |      merge: true                                                                   |   |
+# ||   |    custom-names:                                                                   |   |
+# ||   |      allowed-list: ['']                                                            |   |
+# ||   |      excluded-list: ['']                                                           |   |
+# ||   |      merge: true                                                                   |   |
+# ||   |    entities:                                                                       |   |
+# ||   |      allowed-list: ['']                                                            |   |
+# ||   |      allowed-groups: ['']                                                          |   |
+# ||   |      excluded-list: ['']                                                           |   |
+# ||   |      excluded-groups: ['']                                                         |   |
+# ||   |      merge: true                                                                   |   |
+# ||   |    biomes:                                                                         |   |
+# ||   |      allowed-list: ['']                                                            |   |
+# ||   |      allowed-groups: ['']                                                          |   |
+# ||   |      excluded-list: ['']                                                           |   |
+# ||   |      excluded-groups: ['']                                                         |   |
+# ||   |      merge: true                                                                   |   |
+# ||   |    apply-plugins:                                                                  |   |
+# ||   |      allowed-list: ['']                                                            |   |
+# ||   |      excluded-list: ['']                                                           |   |
+# ||   |      merge: true                                                                   |   |
+# ||   |    mythicmobs-internal-names:                                                      |   |
+# ||   |      allowed-list: ['']                                                            |   |
+# ||   |      excluded-list: ['']                                                           |   |
+# ||   |      merge: true                                                                   |   |
+# ||   |    level-plugins:                                                                  |   |
+# ||   |      DANGEROUS_CAVES: false                                                        |   |
+# ||   |      MYTHIC_MOBS: false                                                            |   |
+# ||   |      ELITE_MOBS: false                                                             |   |
+# ||   |      ELITE_MOBS_NPCS: false                                                        |   |
+# ||   |      ELITE_MOBS_SUPER_MOBS: false                                                  |   |
+# ||   |      INFERNAL_MOBS: false                                                          |   |
+# ||   |      CITIZENS: false                                                               |   |
+# ||   |      SHOPKEEPERS: false                                                            |   |
 # ||   --------------------------------------------------------------------------------------   |
 # |||-------------------------------------------------------------------------------------------|
 # ||                                                                                            |
@@ -562,19 +561,22 @@
 # ||        | survive the damage output of the sunrise. Can be used to reduce damage to certain |
 # ||        | kinds of entities or situations as well!                                          |
 # ||                                                                                            |
+# ||     lower-mob-level-bias-factor:                                                           |
+# ||        | By default, this is set to 0.                                                     |
+# ||        | This configuration when combined with the Random levelling system will apply      |
+# ||        | a bias towards lower level entities versus higher level ones when randomly        |
+# ||        | selecting a level to apply. The higher this value is, the stronger the bias.      |
+# ||                                                                                            |
 # ||     multipliers:                                                                           |
 # ||        | 2.5 = 250% increase; 1.0 = 100% increase; 0.0 = 0% increase.                      |
 # ||        | This system controls the percent increase of each stat once an entity             |
 # ||        | has reached maximum level. For example, if 'max-health: 2.0', then                |
 # ||        | an entity at maximum level will have a 200% increase in health.                   |
-# ||        | 'item-drop' and 'xp-drop' are handled differently than the rest.                  |
 # ||        | You can also reduce an entities attribute by using a negative value, remembering  |
 # ||        | that you cannot reduce an attribute below zero, or 100%.                          |
 # ||        | Formula used for the below multipliers:                                           |
 # ||        | newAttributeValue =                                                               |
-# ||        | ( vanillaAttribute x configValue ) x (( entityLevel - 1) / maxLevel )             |
-# ||        | newDropAmount =                                                                   |
-# ||        | vanillaDrop + ( vanillaDrop x configValue x (( entityLevel - 1) / maxLevel ))     |
+# ||        | vanillaValue + (vanillaValue x configValue) x ((mobLevel - 1) / (maxLevel - 1))   |
 # ||       max-health:                                                                          |
 # ||          | This represents the percent increase in 'max-health' at maximum level.          |
 # ||       movement-speed:                                                                      |
@@ -664,6 +666,7 @@
 # ||      | For example, if you set 'priority: 1', then that custom-rule will apply first,      |
 # ||      | before any other rules apply. If 'priority: -1', then that custom-rule will         |
 # ||      | wait to be applied last. A 'priority:' of 0 will process it normally.               |
+# ||      | This is useful for organizing rule priority beyond the default linear format.       |
 # ||      | An example of this priority in action being:                                        |
 # ||                                                                                            |
 # ||   --------------------------------------------------------------------------------------   |
@@ -688,8 +691,6 @@
 # ||   |  priority: -2                                                                      |   |
 # ||   |  - enabled: true                                                                   |   |
 # ||   --------------------------------------------------------------------------------------   |
-# ||                                                                                            |
-# ||      | This is useful for organizing rule priority beyond the default linear format.       |
 # ||                                                                                            |
 # ||   use-preset:                                                                              |
 # ||      | When using the 'presets:' system, in order to utilize the preset, you will          |
