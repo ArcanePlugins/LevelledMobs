@@ -107,17 +107,19 @@ public class QueueManager_Nametags {
         final WrappedDataWatcher.WrappedDataWatcherObject watcherObject = new WrappedDataWatcher.WrappedDataWatcherObject(2, chatSerializer);
 
         Optional<Object> optional;
-        if (Utils.isNullOrEmpty(nametag))
+        if (Utils.isNullOrEmpty(nametag)) {
             optional = Optional.empty();
-        else
+        } else {
             optional = Optional.of(WrappedChatComponent.fromChatMessage(nametag)[0].getHandle());
+        }
 
         dataWatcher.setObject(watcherObject, optional);
-        if (nametag == null)
+        if (nametag == null) {
             dataWatcher.setObject(3, false);
-        else
+        } else {
             dataWatcher.setObject(3, !"".equals(nametag) && lmEntity.getLivingEntity().isCustomNameVisible() ||
                     main.rulesManager.getRule_CreatureNametagAlwaysVisible(lmEntity));
+        }
 
         final PacketContainer packet = ProtocolLibrary.getProtocolManager().createPacket(PacketType.Play.Server.ENTITY_METADATA);
         packet.getWatchableCollectionModifier().write(0, dataWatcher.getWatchableObjects());

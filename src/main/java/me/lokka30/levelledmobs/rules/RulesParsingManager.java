@@ -460,6 +460,8 @@ public class RulesParsingManager {
             parsingInfo.CreatureNametagAlwaysVisible = cs.getBoolean("creature-nametag-always-visible");
         if (cs.getString("sunlight-intensity") != null)
             parsingInfo.sunlightBurnAmount = cs.getDouble("sunlight-intensity");
+        if (cs.getString("lower-mob-level-bias-factor") != null)
+            parsingInfo.lowerMobLevelBiasFactor = cs.getInt("lower-mob-level-bias-factor");
     }
 
     private void parseConditions(final ConfigurationSection conditions){
