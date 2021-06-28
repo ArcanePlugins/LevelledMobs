@@ -43,6 +43,10 @@ public class ExternalCompatibilityManager {
         return  (!list.containsKey(externalCompatibility) || list.get(externalCompatibility));
     }
 
+    public static boolean hasNBTAPI_Installed(){
+        return Bukkit.getPluginManager().getPlugin("NBTAPI") != null;
+    }
+
     public static boolean hasProtocolLibInstalled() {
         return Bukkit.getPluginManager().getPlugin("ProtocolLib") != null;
     }

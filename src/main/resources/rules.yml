@@ -431,6 +431,7 @@
 # ||            | This points the level increase in one direction or another. When set          |
 # ||            | to true, the level increases in -Y direction.                                 |
 # ||                                                                                            |
+# ||         lower-mob-level-bias-factor:                                                       |
 # ||                                                                                            |
 # ||     y-coordinate:                                                                          |
 # ||        | This system uses the following formula to determine levelling:                    |
@@ -1186,6 +1187,20 @@ custom-rules:
         allowed-list: ['world_the_end']
       entities:
         allowed-list: ['ENDER_DRAGON']
+    apply-settings:
+      multipliers:
+        custom-mob-level:
+          ENDER_DRAGON:
+            max-health: 5.0
+
+  - enabled: true
+    usepreset:
+    name: 'Level Endermans in the end'
+    conditions:
+      worlds:
+        allowed-list: ['world_the_end']
+      entities:
+        allowed-list: ['ENDERMAN']
     apply-settings:
       multipliers:
         custom-mob-level:

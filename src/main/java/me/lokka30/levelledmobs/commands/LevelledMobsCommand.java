@@ -65,6 +65,8 @@ public class LevelledMobsCommand implements CommandExecutor, TabCompleter {
                     case "rules":
                         rulesSubcommand.parseSubcommand(main, sender, label, args);
                         break;
+                    case "test":
+                        doTest(sender, command, label, args);
                     default:
                         sendMainUsage(sender, label);
                 }
@@ -74,6 +76,10 @@ public class LevelledMobsCommand implements CommandExecutor, TabCompleter {
         }
 		return true;
 	}
+
+	private void doTest(@NotNull final CommandSender sender, final Command command, final String label, final String[] args){
+
+    }
 
 	private void sendMainUsage(@NotNull final CommandSender sender, final String label) {
         List<String> mainUsage = main.messagesCfg.getStringList("command.levelledmobs.main-usage");

@@ -1,7 +1,12 @@
 package me.lokka30.levelledmobs.customdrops;
 
+import de.tr7zw.nbtapi.NBTContainer;
+import de.tr7zw.nbtapi.NBTItem;
 import me.lokka30.levelledmobs.LevelledMobs;
+import me.lokka30.levelledmobs.managers.ExternalCompatibilityManager;
+import me.lokka30.levelledmobs.managers.NBTManager;
 import me.lokka30.levelledmobs.misc.CustomUniversalGroups;
+import me.lokka30.levelledmobs.misc.NBTParseResult;
 import me.lokka30.levelledmobs.misc.Utils;
 import me.lokka30.levelledmobs.rules.RuleInfo;
 import me.lokka30.microlib.MessageUtils;
@@ -36,6 +41,7 @@ public class CustomDropsParser {
     private final LevelledMobs main;
     public final CustomDropsDefaults defaults;
     private final CustomDropsHandler handler;
+    private boolean hasMentionedNBTAPI_Missing;
 
     public void loadDrops(final YamlConfiguration customDropsCfg){
         if (customDropsCfg == null) return;
@@ -371,6 +377,21 @@ public class CustomDropsParser {
                 }
             }
         } // end enchantments
+
+        final String nbtStuff = cs.getString("nbt");
+        if (!Utils.isNullOrEmpty(nbtStuff)){
+            if (ExternalCompatibilityManager.hasNBTAPI_Installed()) {
+                final NBTParseResult result = NBTManager.parseNBT_Data(item, nbtStuff);
+                if (result.hadException())
+                    Utils.logger.warning("custom drop " + item.getMaterial().toString() + " for " + dropInstance.getMobOrGroupName() + " has invalid NBT data: " + result.exceptionMessage);
+                else
+                    item.setItemStack(result.itemStack);
+            }
+            else if (!hasMentionedNBTAPI_Missing){
+                Utils.logger.warning("NBT Data has been specified in customdrops.yml but required plugin NBTAPI is not installed!");
+                hasMentionedNBTAPI_Missing = true;
+            }
+        }
 
         applyMetaAttributes(item);
     }
