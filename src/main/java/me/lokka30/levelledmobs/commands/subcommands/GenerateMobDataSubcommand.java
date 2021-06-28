@@ -14,20 +14,12 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.HandlerList;
-import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDeathEvent;
-import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * This subcommand is considered dangerous as it spawns in all types of 'living entities' on the first loaded world at coordinates (0, 512, 0). It also freezes the server for a moment.
@@ -41,6 +33,8 @@ public class GenerateMobDataSubcommand implements Subcommand {
     private int attempts = 3;
     private boolean acknowledged = false;
 
+    public final HashSet<String> excludedEntityTypes = new HashSet<>(Arrays.asList("UNKNOWN", "PLAYER", "NPC", "ARMOR_STAND"));
+
     @Override
     public void parseSubcommand(final LevelledMobs main, final CommandSender sender, final String label, final String[] args) {
         if (sender instanceof ConsoleCommandSender) {
@@ -51,18 +45,12 @@ public class GenerateMobDataSubcommand implements Subcommand {
                     if (args[1].equals(PASSWORD)) {
                         if (acknowledged) {
                             sender.sendMessage(MessageUtils.colorizeAll(main.configUtils.getPrefix() + " Starting generateMobData..."));
-
-                            final QuickTimer timer = new QuickTimer();
-                            timer.start();
-
                             try {
                                 generateMobData(main);
                             } catch (IOException ex) {
                                 sender.sendMessage(MessageUtils.colorizeAll(main.configUtils.getPrefix() + " Unable to generate mob data! Stack trace:"));
                                 ex.printStackTrace();
                             }
-
-                            sender.sendMessage(MessageUtils.colorizeAll(main.configUtils.getPrefix() + " Finished generateMobData, took &b" + timer.getTimer() + "ms&7."));
                         } else {
                             acknowledged = true;
                             sender.sendMessage(MessageUtils.colorizeAll(main.configUtils.getPrefix() + " &8&m**********&r &c&lWARNING!&r &8&m**********&r"));
@@ -94,41 +82,38 @@ public class GenerateMobDataSubcommand implements Subcommand {
     YamlConfiguration dropsConfig;
 
     private void generateMobData(@NotNull final LevelledMobs main) throws IOException {
-        final File attribFile = new File(main.getDataFolder(), "defaultAttributes.yml");
-        if (attribFile.exists())
-            attribFile.delete();
+        final QuickTimer quickTimer = new QuickTimer();
 
+        final File attribFile = new File(main.getDataFolder(), "defaultAttributes.yml");
+        if (attribFile.exists()) attribFile.delete();
         attribFile.createNewFile();
         YamlConfiguration attribConfig = YamlConfiguration.loadConfiguration(attribFile);
         attribConfig.options().header("This is NOT a configuration file! All changes to this file will not take effect and be reset!");
-        attribConfig.set("GENERATION_INFO", "[Date: " + new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(new Date()) + "], [ServerVersion: " + Bukkit.getVersion() + "]");
 
-        final File dropsFile = new File(main.getDataFolder(), "defaultDrops.yml");
-        if (dropsFile.exists())
-            dropsFile.delete();
-
-        dropsFile.createNewFile();
-        dropsConfig = YamlConfiguration.loadConfiguration(dropsFile);
-        dropsConfig.options().header("This is NOT a configuration file! All changes to this file will not take effect and be reset!");
-        dropsConfig.set("GENERATION_INFO", "[Date: " + new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(new Date()) + "], [ServerVersion: " + Bukkit.getVersion() + "]");
-
-        DeathDropListener deathDropListener = new DeathDropListener();
-        Bukkit.getPluginManager().registerEvents(deathDropListener, main);
+        attribConfig.set("GENERATION_INFO.date", new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(new Date()) + ", Time" +
+                "zone: " + Calendar.getInstance().getTimeZone().getDisplayName());
+        attribConfig.set("GENERATION_INFO.server-version", Bukkit.getVersion());
 
         final World world = Bukkit.getWorlds().get(0);
 
+        int entitiesSkipped = 0;
+        int entitiesCompleted = 0;
+
         for (final EntityType entityType : EntityType.values()) {
 
-            // Don't spawn these in.
-            if (entityType == EntityType.UNKNOWN || entityType == EntityType.PLAYER) {
-                Utils.logger.info("&f&lGenerateMobData: &7Skipping &b" + entityType + ".");
+            Utils.logger.info("&f&lGenerateMobData: &7Processing &b" + entityType + "&7:");
+
+            /* Don't spawn certain entities. */
+            if (excludedEntityTypes.contains(entityType.toString())) {
+                Utils.logger.info("&f&lGenerateMobData: &7Skipping &b" + entityType + "&7.");
+                entitiesSkipped++;
                 continue;
             }
 
-            Utils.logger.info("&f&lGenerateMobData: &7Processing &b" + entityType.toString() + ":");
-
+            /* Check if the mob is a LivingEntity, otherwise it isn't levellable at all, so no point in saving its attributes ;) */
             if (entityType.getEntityClass() == null) {
-                Utils.logger.info("&f&lGenerateMobData: &8[" + entityType + "&8] &7Entity Class is null! Skipping...");
+                Utils.logger.info("&f&lGenerateMobData: &8[&3" + entityType + "&8] &7Entity class is null, skipping.");
+                entitiesSkipped++;
                 continue;
             }
 
@@ -136,92 +121,37 @@ public class GenerateMobDataSubcommand implements Subcommand {
             try {
                 entity = world.spawnEntity(new Location(world, 0, 512, 0), entityType);
             } catch (IllegalArgumentException ex) {
-                Utils.logger.info("&f&lGenerateMobData: &8[" + entityType + "&8] &7Unable to spawn entity! Skipping...");
+                Utils.logger.info("&f&lGenerateMobData: &8[&3" + entityType + "&8] &7This entity is not spawnable, skipping.");
+                entitiesSkipped++;
                 continue;
             }
 
-            if (entity instanceof LivingEntity) {
-                Utils.logger.info("&f&lGenerateMobData: &8[" + entityType + "&8] &7Entity is a LivingEntity. Proceeding...");
+            if (!(entity instanceof LivingEntity)) {
+                Utils.logger.info("&f&lGenerateMobData: &8[&3" + entityType + "&8] &7Entity is not a LivingEntity, skipping...");
+                entitiesSkipped++;
+                continue;
+            }
 
-                final LivingEntity livingEntity = (LivingEntity) entity;
+            Utils.logger.info("&f&lGenerateMobData: &8[&3" + entityType + "&8] &7Entity is a LivingEntity. Saving...");
 
-                for (final Attribute attribute : Attribute.values()) {
-                    if (livingEntity.getAttribute(attribute) != null) {
-                        Utils.logger.info("&f&lGenerateMobData: &8[" + entityType + "&8] &7Saving attribute &b" + attribute + "&7...");
-                        attribConfig.set(entityType + "." + attribute, Objects.requireNonNull(livingEntity.getAttribute(attribute)).getBaseValue());
-                    }
+            final LivingEntity livingEntity = (LivingEntity) entity;
+
+            for (final Attribute attribute : Attribute.values()) {
+                if (livingEntity.getAttribute(attribute) != null) {
+                    Utils.logger.info("&f&lGenerateMobData: &8[&3" + entityType + "&8] &7Saving attribute &b" + attribute + "&7...");
+                    attribConfig.set(entityType + "." + attribute, Objects.requireNonNull(livingEntity.getAttribute(attribute)).getBaseValue());
                 }
-
-                Utils.logger.info("&f&lGenerateMobData: &8[" + entityType + "&8] &7Finished with entity.");
-            } else
-                Utils.logger.info("&f&lGenerateMobData: &8[" + entityType + "&8] &7Entity is not a LivingEntity, skipping...");
+            }
+            Utils.logger.info("&f&lGenerateMobData: &8[&3" + entityType + "&8] &7Entity's attributes have been gathered.");
 
             entity.remove();
-            Utils.logger.info("&f&lGenerateMobData: &8[" + entityType + "&8] &7Done. Proceeding with next entity if it exists.");
+            entitiesCompleted++;
+            Utils.logger.info("&f&lGenerateMobData: &8[&3" + entityType + "&8] &7Entity removed. Proceeding with next entity if it exists.");
         }
+
         attribConfig.save(attribFile);
-
-        Utils.logger.info("&f&lGenerateMobData: &7Finished attributes. doing drops now");
-        for (final EntityType entityType : EntityType.values()) {
-
-            // Don't spawn these in.
-            if (entityType == EntityType.UNKNOWN || entityType == EntityType.PLAYER || entityType == EntityType.FISHING_HOOK || entityType == EntityType.LIGHTNING) {
-                Utils.logger.info("&f&lGenerateMobData: &7Skipping &b" + entityType + ".");
-                continue;
-            }
-
-            Utils.logger.info("&f&lGenerateMobData: &7Processing &b" + entityType.toString() + ":");
-
-            if (entityType.getEntityClass() == null) {
-                Utils.logger.info("&f&lGenerateMobData: &8[" + entityType + "&8] &7Entity Class is null! Skipping...");
-                continue;
-            }
-
-            Entity entity;
-            try {
-                entity = world.spawnEntity(new Location(world, 0, 512, 0), entityType);
-            } catch (IllegalArgumentException ex) {
-                Utils.logger.info("&f&lGenerateMobData: &8[" + entityType + "&8] &7Unable to spawn entity! Skipping...");
-                continue;
-            }
-
-            for (int i = 0; i < 25; i++) {
-                if (entity instanceof LivingEntity) {
-                    Utils.logger.info("&f&lGenerateMobData: &8[" + entityType + "&8] &7Processing mob " + entity.getType() + "...");
-
-                    final LivingEntity livingEntity = (LivingEntity) entity;
-
-                    if (livingEntity.getEquipment() != null) livingEntity.getEquipment().clear();
-
-                    livingEntity.setHealth(0.0);
-
-                    Utils.logger.info("&f&lGenerateMobData: &8[" + entityType + "&8] &7Drops saved. Proceeding with next entity if it exists.");
-                } else
-                    entity.remove();
-            }
-
-            Utils.logger.info("&f&lGenerateMobData: &8[" + entityType + "&8] &7Done. Proceeding with next entity if it exists.");
-        }
-        dropsConfig.save(dropsFile);
-        Utils.logger.info("&f&lGenerateMobData: &7Complete!");
-
-        HandlerList.unregisterAll(deathDropListener);
-    }
-
-    private class DeathDropListener implements Listener {
-        @EventHandler
-        public void onDeath(@NotNull final EntityDeathEvent event) {
-            Utils.logger.info("&f&lGenerateMobData: &8[Death] &7" + event.getEntityType() + " died");
-            for (ItemStack drop : event.getDrops()) {
-                final String path = event.getEntityType().toString();
-                final String dropType = drop.getType().toString();
-
-                final List<String> dropsList = dropsConfig.getStringList(path);
-                if (!dropsList.contains(dropType)) {
-                    dropsList.add(dropType);
-                    dropsConfig.set(path, dropsList);
-                }
-            }
-        }
+        Utils.logger.info("&f&lGenerateMobData: &7Process completed. &8//&7 Processed &b" + (entitiesCompleted + entitiesSkipped) + "&7 entit" +
+                "ies in &b" + quickTimer.getTimer() + "ms&7, where &b" + entitiesCompleted + "&7 entities had their attributes saved, a" +
+                "nd &b" + entitiesSkipped + "&7 entities were skipped.");
     }
 }
