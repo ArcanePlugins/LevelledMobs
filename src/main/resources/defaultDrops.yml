@@ -1,24 +1,16 @@
 # This is NOT a configuration file! All changes to this file will not take effect and be reset!
-# *** Add your own custom drops only in the customdrops.yml file! ***
-# This file stores the default mob drop materials for each LivingEntity. This is to fix issue #131.
-#
-# This file has been manually modified as not all drops were covered by the generateMobData method
-# Ensure to check https://minecraft.gamepedia.com/Drops#Mob_drops when modifying this file
-#
-# To repeat one last time:
-# (!) THIS
-# (!) IS
-# (!) NOT
-# (!) A
-# (!) CONFIGURATION
-# (!) FILE :)
-GENERATION_INFO: '[Date: 22/01/2021 10:17:47], [ServerVersion: git-Paper-438 (MC:
-  1.16.5)]'
+# Add your own custom drops only in the customdrops.yml file.
+# Use https://minecraft.gamepedia.com/Drops#Mob_drops when modifying this file.
+# This file does not *add* drops to mobs. It just tells LM what drops are *multipliable*.
 ELDER_GUARDIAN:
   - PRISMARINE_SHARD
   - PRISMARINE_CRYSTALS
   - COD
+  - COOKED_COD
   - WET_SPONGE
+  - SALMON
+  - PUFFERFISH
+  - TROPICAL_FISH
 WITHER_SKELETON:
   - COAL
   - BONE
@@ -26,6 +18,7 @@ WITHER_SKELETON:
   - WITHER_SKELETON_HEAD
 STRAY:
   - BONE
+  - ARROW
   - TIPPED_ARROW
 VINDICATOR:
   - EMERALD
@@ -70,7 +63,11 @@ GHAST:
 ZOMBIFIED_PIGLIN:
   - GOLD_NUGGET
   - ROTTEN_FLESH
+  - GOLD_INGOT
 CAVE_SPIDER:
+  - STRING
+  - SPIDER_EYE
+SPIDER:
   - STRING
   - SPIDER_EYE
 WITHER:
@@ -86,23 +83,47 @@ WITCH:
 GUARDIAN:
   - PRISMARINE_SHARD
   - COD
+  - COOKED_COD
   - PRISMARINE_CRYSTALS
+  - SALMON
+  - PUFFERFISH
+  - TROPICAL_FISH
 SHULKER:
   - SHULKER_SHELL
 PIG:
   - PORKCHOP
+  - COOKED_PORKCHOP
 SHEEP:
   - WHITE_WOOL
+  - ORANGE_WOOL
+  - MAGENTA_WOOL
+  - LIGHT_BLUE_WOOL
+  - YELLOW_WOOL
+  - LIME_WOOL
+  - PINK_WOOL
+  - GRAY_WOOL
+  - LIGHT_GRAY_WOOL
+  - CYAN_WOOL
+  - PURPLE_WOOL
+  - BLUE_WOOL
+  - BROWN_WOOL
+  - GREEN_WOOL
+  - RED_WOOL
+  - BLACK_WOOL
   - MUTTON
+  - COOKED_MUTTON
 COW:
   - BEEF
+  - COOKED_BEEF
   - LEATHER
 HOGLIN:
   - PORKCHOP
+  - COOKED_PORKCHOP
   - LEATHER
 CHICKEN:
   - FEATHER
   - CHICKEN
+  - COOKED_CHICKEN
 SQUID:
   - INK_SAC
 MUSHROOM_COW:
@@ -128,16 +149,20 @@ PARROT:
   - FEATHER
 TURTLE:
   - SEAGRASS
+  - BOWL
 COD:
   - COD
+  - COOKED_COD
 SALMON:
   - SALMON
+  - COOKED_SALMON
 PUFFERFISH:
   - PUFFERFISH
 TROPICAL_FISH:
   - TROPICAL_FISH
 DROWNED:
   - ROTTEN_FLESH
+  - COPPER_INGOT
 DOLPHIN:
   - COD
 CAT:
@@ -152,3 +177,15 @@ ZOGLIN:
   - ROTTEN_FLESH
 PHANTOM:
   - PHANTOM_MEMBRANE
+RABBIT:
+  - RABBIT
+  - COOKED_RABBIT
+  - RABBIT_HIDE
+WANDERING_TRADER:
+  - POTION
+  - MILK
+GLOW_SQUID: # Needs verification.
+  - GLOW_INK_SAC
+GOAT: # Needs verification.
+  - MUTTON
+  - COOKED_MUTTON
