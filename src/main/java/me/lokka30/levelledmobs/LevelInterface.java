@@ -4,10 +4,8 @@ import me.lokka30.levelledmobs.events.MobPostLevelEvent;
 import me.lokka30.levelledmobs.events.MobPreLevelEvent;
 import me.lokka30.levelledmobs.events.SummonedMobPreLevelEvent;
 import me.lokka30.levelledmobs.managers.ExternalCompatibilityManager;
-import me.lokka30.levelledmobs.misc.Addition;
-import me.lokka30.levelledmobs.misc.DebugType;
-import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
-import me.lokka30.levelledmobs.misc.Utils;
+import me.lokka30.levelledmobs.managers.NBTManager;
+import me.lokka30.levelledmobs.misc.*;
 import me.lokka30.levelledmobs.rules.MobCustomNameStatusEnum;
 import me.lokka30.levelledmobs.rules.MobTamedStatusEnum;
 import me.lokka30.levelledmobs.rules.RulesManager;
@@ -39,6 +37,7 @@ public class LevelInterface {
 
     private final LevelledMobs main;
     private final RulesManager rulesManager;
+    private boolean hasMentionedNBTAPI_Missing;
     public LevelInterface(@NotNull final LevelledMobs main) {
         this.main = main;
         this.rulesManager = main.rulesManager;
@@ -238,6 +237,17 @@ public class LevelInterface {
         }
         lmEntity.invalidateCache();
 
+        String nbtData = rulesManager.getRule_NBT_Data(lmEntity);
+
+        if (nbtData != null && !ExternalCompatibilityManager.hasNBTAPI_Installed()){
+            if (!hasMentionedNBTAPI_Missing) {
+                Utils.logger.warning("NBT Data has been specified in customdrops.yml but required plugin NBTAPI is not installed!");
+                hasMentionedNBTAPI_Missing = true;
+            }
+            nbtData = null;
+        }
+        final String finalNbtData = nbtData;
+
         // setting attributes should be only done in the main thread.
         final BukkitRunnable applyAttribs = new BukkitRunnable() {
             @Override
@@ -246,6 +256,14 @@ public class LevelInterface {
                 main.levelManager.applyLevelledAttributes(lmEntity, Addition.ATTRIBUTE_ATTACK_DAMAGE);
                 main.levelManager.applyLevelledAttributes(lmEntity, Addition.ATTRIBUTE_MAX_HEALTH);
                 main.levelManager.applyLevelledAttributes(lmEntity, Addition.ATTRIBUTE_MOVEMENT_SPEED);
+            }
+
+            if (finalNbtData != null) {
+                NBT_ApplyResult result = NBTManager.applyNBT_Data_Mob(lmEntity, finalNbtData);
+                if (result.hadException())
+                    Utils.logger.warning("Error applying NBT data to " + lmEntity.getTypeName() + ", " + result.exceptionMessage);
+                else
+                    Utils.logger.info("Successfully applied NBT data to " + lmEntity.getTypeName());
             }
 
             if (lmEntity.getLivingEntity() instanceof Creeper)

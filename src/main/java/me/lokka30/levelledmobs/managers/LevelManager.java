@@ -479,12 +479,15 @@ public class LevelManager {
 
     public void applyCreeperBlastRadius(final LivingEntityWrapper lmEntity, int level) {
         final int creeperMaxDamageRadius = main.rulesManager.getRule_CreeperMaxBlastRadius(lmEntity);
-        Creeper creeper = (Creeper) lmEntity.getLivingEntity();
+        final Creeper creeper = (Creeper) lmEntity.getLivingEntity();
 
         if (creeperMaxDamageRadius == 3) return;
 
+        final int maxLevel = main.rulesManager.getRule_MobMaxLevel(lmEntity);
+        if (maxLevel == 0) return;
+
         final int minMobLevel = main.rulesManager.getRule_MobMinLevel(lmEntity);
-        final double levelDiff = main.rulesManager.getRule_MobMaxLevel(lmEntity) - minMobLevel;
+        final double levelDiff = maxLevel - minMobLevel;
         final double maxBlastDiff = creeperMaxDamageRadius - 3;
         final double useLevel = level - minMobLevel;
         final double percent = useLevel / levelDiff;
@@ -500,6 +503,8 @@ public class LevelManager {
             // level 0 will always be less than default
             blastRadius = 2;
         }
+
+        if (blastRadius < 0) blastRadius = 0;
 
         creeper.setExplosionRadius(blastRadius);
     }

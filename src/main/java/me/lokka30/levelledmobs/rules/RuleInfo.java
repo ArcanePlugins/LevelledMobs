@@ -55,6 +55,7 @@ public class RuleInfo {
     public String nametag_CreatureDeath;
     public String presetName;
     public String customDrop_DropTableId;
+    public String mobNBT_Data;
     public MobCustomNameStatusEnum conditions_MobCustomnameStatus;
     public MobTamedStatusEnum conditions_MobTamedStatus;
     public LevellingStrategy levellingStrategy;

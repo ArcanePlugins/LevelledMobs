@@ -494,6 +494,7 @@ public class RulesParsingManager {
         parsingInfo.CreatureNametagAlwaysVisible = YmlParsingHelper.getBoolean2(cs,"creature-nametag-always-visible", parsingInfo.CreatureNametagAlwaysVisible);
         parsingInfo.sunlightBurnAmount = YmlParsingHelper.getDouble2(cs, "sunlight-intensity", parsingInfo.sunlightBurnAmount);
         parsingInfo.lowerMobLevelBiasFactor = YmlParsingHelper.getInt2(cs, "lower-mob-level-bias-factor", parsingInfo.lowerMobLevelBiasFactor);
+        parsingInfo.mobNBT_Data = YmlParsingHelper.getString(cs, "nbt-data");
     }
 
     private void parseConditions(final ConfigurationSection cs){

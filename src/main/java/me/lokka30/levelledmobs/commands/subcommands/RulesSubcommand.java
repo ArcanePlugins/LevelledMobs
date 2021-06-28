@@ -249,7 +249,8 @@ public class RulesSubcommand implements Subcommand {
                 if (value.toString().equalsIgnoreCase("NOT_SPECIFIED")) continue;
                 if (value.toString().equalsIgnoreCase("{}")) continue;
                 if (value.toString().equalsIgnoreCase("[]")) continue;
-                if (value.toString().equalsIgnoreCase("0")) continue;
+                if (value.toString().equalsIgnoreCase("0") &&
+                    !f.getName().equals("restrictions_MinLevel")) continue;
                 if (value.toString().equalsIgnoreCase("0.0")) continue;
                 if (value.toString().equalsIgnoreCase("false")) continue;
                 if (value.toString().equalsIgnoreCase("NONE")) continue;

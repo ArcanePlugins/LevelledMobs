@@ -49,6 +49,18 @@ public class RulesManager {
         return result;
     }
 
+    @Nullable
+    public String getRule_NBT_Data(final LivingEntityWrapper lmEntity){
+        String nbtData = null;
+
+        for (final RuleInfo ruleInfo : lmEntity.getApplicableRules()){
+            if (ruleInfo.mobNBT_Data != null)
+                nbtData = ruleInfo.mobNBT_Data;
+        }
+
+        return nbtData;
+    }
+
     public double getRule_SunlightBurnIntensity(final LivingEntityWrapper lmEntity){
         double result = 0.0;
 
