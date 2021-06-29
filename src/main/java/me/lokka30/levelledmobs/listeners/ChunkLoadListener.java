@@ -3,6 +3,7 @@ package me.lokka30.levelledmobs.listeners;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
 import me.lokka30.levelledmobs.misc.QueueItem;
+import me.lokka30.levelledmobs.misc.YmlParsingHelper;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
@@ -27,7 +28,7 @@ public class ChunkLoadListener implements Listener {
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void onChunkLoad(final ChunkLoadEvent event) {
 
-        if (!main.settingsCfg.getBoolean("ensure-mobs-are-levelled-on-chunk-load", true)) return;
+        if (!main.settingsCfg.getBoolean(YmlParsingHelper.getKeyNameFromConfig(main.settingsCfg, "ensure-mobs-are-levelled-on-chunk-load"), true)) return;
 
         // Check each entity in the chunk
         for (final Entity entity : event.getChunk().getEntities()) {

@@ -45,31 +45,4 @@ public class ConfigUtils {
 
         noPermissionMsg.forEach(sender::sendMessage);
     }
-
-    public TreeMap<String, Integer> getMapFromConfigSection(final String configPath) {
-        final TreeMap<String, Integer> result = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
-        final ConfigurationSection cs = main.settingsCfg.getConfigurationSection(configPath);
-        if (cs == null) return result;
-
-        final Set<String> set = cs.getKeys(false);
-
-        for (final String item : set) {
-            final Object value = cs.get(item);
-            if (value != null && Utils.isInteger(value.toString())) {
-                result.put(item, Integer.parseInt(value.toString()));
-            }
-        }
-
-        return result;
-    }
-
-    public Set<String> getSetFromConfigSection(final String configPath) {
-        final Set<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
-        final List<String> set = main.settingsCfg.getStringList(configPath);
-
-        result.addAll(set);
-
-        return result;
-    }
-
 }

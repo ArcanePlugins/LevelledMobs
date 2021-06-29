@@ -45,7 +45,7 @@ public final class FileLoader {
         YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
         cfg.options().copyDefaults(true);
 
-        final int fileVersion = cfg.getInt("file-version");
+        final int fileVersion = cfg.getInt(YmlParsingHelper.getKeyNameFromConfig(cfg,"file-version"));
         final boolean isCustomDrops = cfgName.equals("customdrops.yml");
 
         if (fileVersion < compatibleVersion) {
@@ -69,7 +69,7 @@ public final class FileLoader {
             cfg = YamlConfiguration.loadConfiguration(file);
 
         } else {
-            checkFileVersion(file, compatibleVersion, cfg.getInt("file-version"));
+            checkFileVersion(file, compatibleVersion, cfg.getInt(YmlParsingHelper.getKeyNameFromConfig(cfg,"file-version")));
         }
 
         return cfg;

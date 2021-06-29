@@ -6,10 +6,7 @@ import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 import me.lokka30.levelledmobs.LevelledMobs;
-import me.lokka30.levelledmobs.misc.DebugType;
-import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
-import me.lokka30.levelledmobs.misc.QueueItem;
-import me.lokka30.levelledmobs.misc.Utils;
+import me.lokka30.levelledmobs.misc.*;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
@@ -81,7 +78,7 @@ public class QueueManager_Nametags {
     private void updateNametag(final @NotNull LivingEntityWrapper lmEntity, final String nametag, final List<Player> players) {
 
         if (!ExternalCompatibilityManager.hasProtocolLibInstalled()) return;
-        if (main.settingsCfg.getBoolean("assert-entity-validity-with-nametag-packets") && !lmEntity.getLivingEntity().isValid())
+        if (main.settingsCfg.getBoolean(YmlParsingHelper.getKeyNameFromConfig(main.settingsCfg, "assert-entity-validity-with-nametag-packets")) && !lmEntity.getLivingEntity().isValid())
             return;
 
         final WrappedDataWatcher dataWatcher;

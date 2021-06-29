@@ -3,10 +3,12 @@ package me.lokka30.levelledmobs.listeners;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
 import me.lokka30.levelledmobs.misc.Utils;
+import me.lokka30.levelledmobs.misc.YmlParsingHelper;
 import me.lokka30.microlib.MessageUtils;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.attribute.AttributeModifier;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Creeper;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -42,7 +44,7 @@ public class EntityDamageDebugListener implements Listener {
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void onEntityDamageByEntity(final EntityDamageByEntityEvent event) {
         // Make sure debug entity damage is enabled
-        if (!main.settingsCfg.getBoolean("debug-entity-damage")) return;
+        if (!main.settingsCfg.getBoolean(YmlParsingHelper.getKeyNameFromConfig(main.settingsCfg, "debug-entity-damage")))return;
 
         // Make sure the mob is a LivingEntity and the attacker is a Player
         if (!(event.getEntity() instanceof LivingEntity) || !(event.getDamager() instanceof Player)) return;

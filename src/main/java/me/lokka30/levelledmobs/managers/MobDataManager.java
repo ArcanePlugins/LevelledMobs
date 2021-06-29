@@ -3,6 +3,7 @@ package me.lokka30.levelledmobs.managers;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.misc.Addition;
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
+import me.lokka30.levelledmobs.misc.YmlParsingHelper;
 import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
@@ -44,7 +45,7 @@ public class MobDataManager {
     public final boolean isLevelledDropManaged(final EntityType entityType, @NotNull final Material material) {
         // Head drops
         if (material.toString().endsWith("_HEAD") || material.toString().endsWith("_SKULL")) {
-            if (!main.settingsCfg.getBoolean("mobs-multiply-head-drops"))
+            if (!main.settingsCfg.getBoolean(YmlParsingHelper.getKeyNameFromConfig(main.settingsCfg, "mobs-multiply-head-drops")))
                 return false;
         }
 
@@ -53,7 +54,7 @@ public class MobDataManager {
     }
 
     public void setAdditionsForLevel(@NotNull final LivingEntityWrapper lmEntity, final Attribute attribute, final Addition addition) {
-        final boolean useStaticValues = main.settingsCfg.getBoolean("attributes-use-preset-base-values");
+        final boolean useStaticValues = main.settingsCfg.getBoolean(YmlParsingHelper.getKeyNameFromConfig(main.settingsCfg, "attributes-use-preset-base-values"));
         final double defaultValue = useStaticValues ?
                 (double) Objects.requireNonNull(getAttributeDefaultValue(lmEntity, attribute)) :
                 Objects.requireNonNull(lmEntity.getLivingEntity().getAttribute(attribute)).getBaseValue();

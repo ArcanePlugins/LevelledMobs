@@ -9,10 +9,7 @@ import me.lokka30.levelledmobs.managers.ExternalCompatibilityManager;
 import me.lokka30.levelledmobs.managers.LevelManager;
 import me.lokka30.levelledmobs.managers.PAPIManager;
 import me.lokka30.levelledmobs.managers.WorldGuardManager;
-import me.lokka30.levelledmobs.misc.FileLoader;
-import me.lokka30.levelledmobs.misc.FileMigrator;
-import me.lokka30.levelledmobs.misc.Utils;
-import me.lokka30.levelledmobs.misc.VersionInfo;
+import me.lokka30.levelledmobs.misc.*;
 import me.lokka30.microlib.UpdateChecker;
 import me.lokka30.microlib.VersionUtils;
 import org.bstats.bukkit.Metrics;
@@ -89,7 +86,7 @@ public class Companion {
         if (!file.exists()) return 0;
 
         final YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
-        return cfg.getInt("file-version");
+        return cfg.getInt(YmlParsingHelper.getKeyNameFromConfig(cfg,"file-version"));
     }
 
     // Note: also called by the reload subcommand.
@@ -167,7 +164,7 @@ public class Companion {
         main.entityDamageDebugListener = new EntityDamageDebugListener(main);
         main.blockPlaceListener = new BlockPlaceListener(main);
 
-        if (main.settingsCfg.getBoolean("debug-entity-damage")) {
+        if (main.settingsCfg.getBoolean(YmlParsingHelper.getKeyNameFromConfig(main.settingsCfg,"debug-entity-damage"))) {
             // we'll load and unload this listener based on the above setting when reloading
             main.configUtils.debugEntityDamageWasEnabled = true;
             pluginManager.registerEvents(main.entityDamageDebugListener, main);
@@ -195,7 +192,7 @@ public class Companion {
         if (ExternalCompatibilityManager.hasMythicMobsInstalled())
             pluginManager.registerEvents(new MythicMobsListener(main), main);
 
-        if (main.settingsCfg.getBoolean("ensure-mobs-are-levelled-on-chunk-load"))
+        if (main.settingsCfg.getBoolean(YmlParsingHelper.getKeyNameFromConfig(main.settingsCfg,"ensure-mobs-are-levelled-on-chunk-load")))
             pluginManager.registerEvents(main.chunkLoadListener, main);
     }
 
@@ -229,7 +226,7 @@ public class Companion {
 
     //Check for updates on the Spigot page.
     void checkUpdates() {
-        if (main.settingsCfg.getBoolean("use-update-checker", true)) {
+        if (main.settingsCfg.getBoolean(YmlParsingHelper.getKeyNameFromConfig(main.settingsCfg,"use-update-checker"), true)) {
             final UpdateChecker updateChecker = new UpdateChecker(main, 74304);
             updateChecker.getLatestVersion(latestVersion -> {
                 final String currentVersion = updateChecker.getCurrentVersion().split(" ")[0];

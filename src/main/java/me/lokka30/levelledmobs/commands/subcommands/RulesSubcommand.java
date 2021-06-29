@@ -252,7 +252,8 @@ public class RulesSubcommand implements Subcommand {
                 if (value.toString().equalsIgnoreCase("0") &&
                     !f.getName().equals("restrictions_MinLevel")) continue;
                 if (value.toString().equalsIgnoreCase("0.0")) continue;
-                if (value.toString().equalsIgnoreCase("false")) continue;
+                if (value.toString().equalsIgnoreCase("false") &&
+                    !f.getName().equals("ruleIsEnabled")) continue;
                 if (value.toString().equalsIgnoreCase("NONE")) continue;
                 if (value instanceof CachedModalList<?>) {
                     CachedModalList<?> cml = (CachedModalList<?>) value;

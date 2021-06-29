@@ -3,6 +3,7 @@ package me.lokka30.levelledmobs.commands.subcommands;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.managers.ExternalCompatibilityManager;
 import me.lokka30.levelledmobs.misc.Utils;
+import me.lokka30.levelledmobs.misc.YmlParsingHelper;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.event.HandlerList;
@@ -42,18 +43,18 @@ public class ReloadSubcommand implements Subcommand {
                 main.levelManager.stopNametagAutoUpdateTask();
         }
 
-        if (main.settingsCfg.getBoolean("debug-entity-damage") && !main.configUtils.debugEntityDamageWasEnabled) {
+        if (main.settingsCfg.getBoolean(YmlParsingHelper.getKeyNameFromConfig(main.settingsCfg,"debug-entity-damage")) && !main.configUtils.debugEntityDamageWasEnabled) {
             main.configUtils.debugEntityDamageWasEnabled = true;
             Bukkit.getPluginManager().registerEvents(main.entityDamageDebugListener, main);
-        } else if (!main.settingsCfg.getBoolean("debug-entity-damage") && main.configUtils.debugEntityDamageWasEnabled) {
+        } else if (!main.settingsCfg.getBoolean(YmlParsingHelper.getKeyNameFromConfig(main.settingsCfg,"debug-entity-damage")) && main.configUtils.debugEntityDamageWasEnabled) {
             main.configUtils.debugEntityDamageWasEnabled = false;
             HandlerList.unregisterAll(main.entityDamageDebugListener);
         }
 
-        if (main.settingsCfg.getBoolean("ensure-mobs-are-levelled-on-chunk-load") && !main.configUtils.chunkLoadListenerWasEnabled) {
+        if (main.settingsCfg.getBoolean(YmlParsingHelper.getKeyNameFromConfig(main.settingsCfg,"ensure-mobs-are-levelled-on-chunk-load")) && !main.configUtils.chunkLoadListenerWasEnabled) {
             main.configUtils.chunkLoadListenerWasEnabled = true;
             Bukkit.getPluginManager().registerEvents(main.chunkLoadListener, main);
-        } else if (!main.settingsCfg.getBoolean("ensure-mobs-are-levelled-on-chunk-load") && main.configUtils.chunkLoadListenerWasEnabled) {
+        } else if (!main.settingsCfg.getBoolean(YmlParsingHelper.getKeyNameFromConfig(main.settingsCfg,"ensure-mobs-are-levelled-on-chunk-load")) && main.configUtils.chunkLoadListenerWasEnabled) {
             main.configUtils.chunkLoadListenerWasEnabled = false;
             HandlerList.unregisterAll(main.chunkLoadListener);
         }

@@ -362,7 +362,7 @@ public class LevelManager {
     public void startNametagAutoUpdateTask() {
         Utils.logger.info("&fTasks: &7Starting async nametag auto update task...");
 
-        final long period = main.settingsCfg.getInt("nametag-auto-update-task-period"); // run every ? seconds.
+        final long period = main.settingsCfg.getInt(YmlParsingHelper.getKeyNameFromConfig(main.settingsCfg, "nametag-auto-update-task-period")); // run every ? seconds.
 
         nametagAutoUpdateTask = new BukkitRunnable() {
             @Override

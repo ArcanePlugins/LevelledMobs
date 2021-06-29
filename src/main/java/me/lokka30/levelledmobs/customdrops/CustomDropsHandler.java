@@ -77,11 +77,10 @@ public class CustomDropsHandler {
                     damageCause == EntityDamageEvent.DamageCause.LAVA);
         }
 
-        if (!equippedOnly && main.settingsCfg.getStringList("debug-misc").contains("CUSTOM_DROPS")) {
-            //List<String> applicableGroupsNames = new LinkedList<>(lmEntity.getApplicableGroups());
+        if (!equippedOnly && YmlParsingHelper.getStringSet(main.settingsCfg,"debug-misc").contains("CUSTOM_DROPS")) {
 
             String mobLevel = lmEntity.getMobLevel() > 0 ? " (level " + lmEntity.getMobLevel() + ")" : "";
-            Utils.logger.info("&7Custom drops for " + lmEntity.getLivingEntity().getName() + mobLevel);
+            Utils.logger.info("&7Custom drops for " + lmEntity.getTypeName() + mobLevel);
             Utils.logger.info("&8- &7Groups: &b" + String.join("&7, &b", lmEntity.getApplicableGroups()) + "&7.");
         }
 
@@ -92,10 +91,10 @@ public class CustomDropsHandler {
             groupsList.add(group);
         }
 
-        if (!buildDropsListFromGroupsAndEntity(groupsList, lmEntity.getLivingEntity().getType(), processingInfo)){
+        if (!buildDropsListFromGroupsAndEntity(groupsList, lmEntity.getEntityType(), processingInfo)){
             // didn't make overall chance
-            if (main.settingsCfg.getStringList("debug-misc").contains("CUSTOM_DROPS")) {
-                Utils.logger.info(String.format("&7%s (%s) - didn't make overall chance", lmEntity.getLivingEntity().getName(), lmEntity.getMobLevel()));
+            if (YmlParsingHelper.getStringSet(main.settingsCfg, "debug-misc").contains("CUSTOM_DROPS")) {
+                Utils.logger.info(String.format("&7%s (%s) - didn't make overall chance", lmEntity.getTypeName(), lmEntity.getMobLevel()));
             }
             return processingInfo.hasOverride ?
                     CustomDropResult.HAS_OVERRIDE : CustomDropResult.NO_OVERRIDE;
@@ -105,12 +104,12 @@ public class CustomDropsHandler {
 
         final int postCount = drops.size();
 
-        if (main.settingsCfg.getStringList("debug-misc").contains("CUSTOM_DROPS")) {
+        if (YmlParsingHelper.getStringSet(main.settingsCfg,"debug-misc").contains("CUSTOM_DROPS")) {
             if (equippedOnly && !drops.isEmpty()){
                 if (lmEntity.getMobLevel() > -1)
-                    Utils.logger.info(String.format("&7Custom equipment for %s (%s)", lmEntity.getLivingEntity().getName(), lmEntity.getMobLevel()));
+                    Utils.logger.info(String.format("&7Custom equipment for %s (%s)", lmEntity.getTypeName(), lmEntity.getMobLevel()));
                 else
-                    Utils.logger.info("&7Custom equipment for " + lmEntity.getLivingEntity().getName());
+                    Utils.logger.info("&7Custom equipment for " + lmEntity.getTypeName());
                 StringBuilder sb = new StringBuilder();
                 for (final ItemStack drop : drops) {
                     if (sb.length() > 0) sb.append(", ");
@@ -261,11 +260,11 @@ public class CustomDropsHandler {
         if (!info.equippedOnly && dropBase.playerCausedOnly && !info.wasKilledByPlayer) return;
         if (dropBase.noSpawner && info.isSpawner) return;
 
-        if (dropBase.excludedMobs.contains(info.lmEntity.getLivingEntity().getName())){
-            if (dropBase instanceof CustomDropItem && !info.equippedOnly && main.settingsCfg.getStringList("debug-misc").contains("CUSTOM_DROPS")) {
+        if (dropBase.excludedMobs.contains(info.lmEntity.getTypeName())){
+            if (dropBase instanceof CustomDropItem && !info.equippedOnly && YmlParsingHelper.getStringSet(main.settingsCfg, "debug-misc").contains("CUSTOM_DROPS")) {
                 final CustomDropItem dropItem = (CustomDropItem)dropBase;
                 Utils.logger.info(String.format(
-                        "&8 - &7Mob: &b%s&7, item: %s, mob was excluded", info.lmEntity.getLivingEntity().getName(), dropItem.getMaterial().name()));
+                        "&8 - &7Mob: &b%s&7, item: %s, mob was excluded", info.lmEntity.getTypeName(), dropItem.getMaterial().name()));
             }
             return;
         }
@@ -274,7 +273,7 @@ public class CustomDropsHandler {
         if (dropBase.minLevel > -1 && info.lmEntity.getMobLevel() < dropBase.minLevel) doDrop = false;
         if (!doDrop && dropBase instanceof CustomDropItem){
             final CustomDropItem dropItem = (CustomDropItem) dropBase;
-            if (!info.equippedOnly && main.settingsCfg.getStringList("debug-misc").contains("CUSTOM_DROPS")) {
+            if (!info.equippedOnly && YmlParsingHelper.getStringSet(main.settingsCfg, "debug-misc").contains("CUSTOM_DROPS")) {
                 final ItemStack itemStack = info.deathByFire ? getCookedVariantOfMeat(dropItem.getItemStack()) : dropItem.getItemStack();
                 Utils.logger.info(String.format("&8- &7level: &b%s&7, fromSpawner: &b%s&7, item: &b%s&7, minL: &b%s&7, maxL: &b%s&7, nospawner: &b%s&7, dropped: &bfalse",
                         info.lmEntity.getMobLevel(), info.isSpawner, itemStack.getType().name(), dropBase.minLevel, dropBase.maxLevel, dropBase.noSpawner));
@@ -290,7 +289,7 @@ public class CustomDropsHandler {
             if (1.0 - chanceRole >= dropBase.chance) didNotMakeChance = true;
         }
 
-        if (didNotMakeChance && !info.equippedOnly && main.settingsCfg.getStringList("debug-misc").contains("CUSTOM_DROPS")) {
+        if (didNotMakeChance && !info.equippedOnly && YmlParsingHelper.getStringSet(main.settingsCfg, "debug-misc").contains("CUSTOM_DROPS")) {
             if (dropBase instanceof CustomDropItem){
                 CustomDropItem dropItem = (CustomDropItem) dropBase;
                 final ItemStack itemStack = info.deathByFire ? getCookedVariantOfMeat(dropItem.getItemStack()) : dropItem.getItemStack();
@@ -310,7 +309,7 @@ public class CustomDropsHandler {
                 count = info.groupIDsDroppedAlready.get(dropBase.groupId);
 
             if (dropBase.maxDropGroup > 0 && count >= dropBase.maxDropGroup || dropBase.maxDropGroup == 0 && count > 0){
-                if (main.settingsCfg.getStringList("debug-misc").contains("CUSTOM_DROPS")) {
+                if (YmlParsingHelper.getStringSet(main.settingsCfg, "debug-misc").contains("CUSTOM_DROPS")) {
                     if (dropBase instanceof CustomDropItem) {
                         Utils.logger.info(String.format("&8- &7level: &b%s&7, item: &b%s&7, gId: &b%s&7, maxDropGroup: &b%s&7, groupDropCount: &b%s&7, dropped: &bfalse",
                                 info.lmEntity.getMobLevel(), ((CustomDropItem)dropBase).getMaterial().name(), dropBase.groupId, dropBase.maxDropGroup, count));
@@ -333,9 +332,9 @@ public class CustomDropsHandler {
         if (info.equippedOnly && dropItem.equippedSpawnChance < 1.0) {
             chanceRole = (double) ThreadLocalRandom.current().nextInt(0, 100001) * 0.00001;
             if (1.0 - chanceRole >= dropItem.equippedSpawnChance){
-                if (main.settingsCfg.getStringList("debug-misc").contains("CUSTOM_DROPS")) {
+                if (YmlParsingHelper.getStringSet(main.settingsCfg, "debug-misc").contains("CUSTOM_DROPS")) {
                     Utils.logger.info(String.format("&8- Mob: &b%s&7, &7level: &b%s&7, item: &b%s&7, spawnchance: &b%s&7, chancerole: &b%s&7, did not make spawn chance",
-                            info.lmEntity.getLivingEntity().getName(), info.lmEntity.getMobLevel(), dropItem.getMaterial().name(), dropItem.equippedSpawnChance, chanceRole));
+                            info.lmEntity.getTypeName(), info.lmEntity.getMobLevel(), dropItem.getMaterial().name(), dropItem.equippedSpawnChance, chanceRole));
                 }
                 return;
             }
@@ -363,7 +362,7 @@ public class CustomDropsHandler {
 
         if (newItem.getAmount() != newDropAmount) newItem.setAmount(newDropAmount);
 
-        if (main.settingsCfg.getStringList("debug-misc").contains("CUSTOM_DROPS")){
+        if (YmlParsingHelper.getStringSet(main.settingsCfg, "debug-misc").contains("CUSTOM_DROPS")){
             Utils.logger.info(String.format(
                     "&8 - &7item: &b%s&7, amount: &b%s&7, newAmount: &b%s&7, chance: &b%s&7, chanceRole: &b%s&7, dropped: &btrue&7.",
                     newItem.getType().name(), dropItem.getAmountAsString(), newDropAmount, dropItem.chance, chanceRole));
@@ -415,7 +414,7 @@ public class CustomDropsHandler {
         command = command.replace("%displayname%", displayName);
         command = processRangedCommand(command, customCommand);
 
-        final int maxAllowedTimesToRun = main.settingsCfg.getInt("", 10);
+        final int maxAllowedTimesToRun = main.settingsCfg.getInt(YmlParsingHelper.getKeyNameFromConfig(main.settingsCfg, "customcommand-amount-limit"), 10);
         int timesToRun = customCommand.getAmount();
 
         if (customCommand.getHasAmountRange())

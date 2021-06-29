@@ -1,8 +1,13 @@
 package me.lokka30.levelledmobs.misc;
 
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.MemoryConfiguration;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 public class YmlParsingHelper {
     public static boolean getBoolean(final ConfigurationSection cs, @NotNull final String name){
@@ -41,6 +46,13 @@ public class YmlParsingHelper {
         }
 
         return defaultValue;
+    }
+
+    @NotNull
+    public static Set<String> getStringSet(final ConfigurationSection cs, @NotNull final String name){
+        final Set<String> results = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+        results.addAll(cs.getStringList(name));
+        return results;
     }
 
     public static int getInt(final ConfigurationSection cs, @NotNull final String name){
@@ -87,5 +99,66 @@ public class YmlParsingHelper {
         }
 
         return defaultValue;
+    }
+
+    @NotNull
+    public static String getKeyNameFromConfig(final ConfigurationSection cs, final String key){
+        if (!key.contains(".")){
+            for (final String enumeratedKey : cs.getKeys(false)) {
+                if (key.equalsIgnoreCase(enumeratedKey))
+                    return enumeratedKey;
+            }
+
+            return key;
+        }
+
+        // key contains one or more periods
+
+        final String[] periodSplit = (key.split("\\."));
+        final StringBuilder sb = new StringBuilder(periodSplit.length);
+        int keysFound = 0;
+
+        for (final String thisKey : periodSplit) {
+            boolean foundKey = false;
+            final String checkKeyName = sb.length() == 0 ? thisKey : sb.toString();
+            final ConfigurationSection useCS = keysFound == 0 ? cs : objectToConfigurationSection(cs.get(checkKeyName));
+
+            if (useCS == null) break;
+
+            for (final String enumeratedKey : useCS.getKeys(false)) {
+                if (thisKey.equalsIgnoreCase(enumeratedKey)) {
+                    if (sb.length() > 0) sb.append(".");
+                    sb.append(enumeratedKey);
+                    foundKey = true;
+                    keysFound++;
+                    break;
+                }
+            }
+            if (!foundKey) break;
+        }
+
+        // if only some of the keys were found then add the remaining ones
+        for (int i = keysFound; i < periodSplit.length; i++){
+            if (sb.length() > 0) sb.append(".");
+            sb.append(periodSplit[i]);
+        }
+
+        return sb.toString();
+    }
+
+    @Nullable
+    private static ConfigurationSection objectToConfigurationSection(final Object object){
+        if (object == null) return null;
+
+        if (object instanceof ConfigurationSection) {
+            return (ConfigurationSection) object;
+        } else if (object instanceof Map){
+            final MemoryConfiguration result = new MemoryConfiguration();
+            result.addDefaults((Map<String, Object>) object);
+            return result.getDefaultSection();
+        } else {
+            Utils.logger.warning("couldn't parse Config of type: " + object.getClass().getSimpleName() + ", value: " + object);
+            return null;
+        }
     }
 }

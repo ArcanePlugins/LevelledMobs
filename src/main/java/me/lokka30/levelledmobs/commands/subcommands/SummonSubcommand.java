@@ -5,6 +5,7 @@ import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.misc.LivingEntityPlaceHolder;
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
 import me.lokka30.levelledmobs.misc.Utils;
+import me.lokka30.levelledmobs.misc.YmlParsingHelper;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -389,7 +390,7 @@ public class SummonSubcommand implements Subcommand {
             location = addVarianceToLocation(location);
 
         if (summonType == SummonType.HERE || summonType == SummonType.AT_PLAYER) {
-            final int distFromPlayer = main.settingsCfg.getInt("summon-command-spawn-distance-from-player", 5);
+            final int distFromPlayer = main.settingsCfg.getInt(YmlParsingHelper.getKeyNameFromConfig(main.settingsCfg,"summon-command-spawn-distance-from-player"), 5);
             if (distFromPlayer > 0) {
                 int useDistFromPlayer = distFromPlayer;
                 final double direction = target.getEyeLocation().getYaw();

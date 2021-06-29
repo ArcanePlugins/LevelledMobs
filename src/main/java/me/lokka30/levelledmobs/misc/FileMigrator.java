@@ -174,7 +174,7 @@ public class FileMigrator {
             keySections_New = buildKeySections(newConfigLines);
 
             for (final String key : keySections_Old.keySet()){
-                if (key.startsWith("file-version")) continue;
+                if (key.toLowerCase().startsWith("file-version")) continue;
 
                 final KeySectionInfo oldSection = keySections_Old.get(key);
                 if (keySections_New.containsKey(key)){
@@ -438,7 +438,7 @@ public class FileMigrator {
                                 if (isSettings && oldVersion <= 20 && !version20KeysToKeep.contains(key)) continue;
                                 if (isSettings && oldVersion > 20 && oldVersion <= 24 && version24Resets.contains(key)) continue;
                                 if (isSettings && oldVersion > 24 && oldVersion <= 26 && version26Resets.contains(key)) continue;
-                                if (key.startsWith("file-version")) continue;
+                                if (key.toLowerCase().startsWith("file-version")) continue;
                                 if (isSettings && key.equalsIgnoreCase("creature-nametag") && oldVersion > 20 && oldVersion < 26
                                         && migratedValue.equals("'&8[&7Level %level%&8 | &f%displayname%&8 | &c%health%&8/&c%max_health% %heart_symbol%&8]'")) {
                                 // updating to the new default introduced in file ver 26 if they were using the previous default
@@ -505,7 +505,7 @@ public class FileMigrator {
                 for (int i = 0; i < newConfigLines.size(); i++){
                     String line = newConfigLines.get(i).trim();
 
-                    if (line.startsWith("file-version")){
+                    if (line.toLowerCase().startsWith("file-version")){
                         startAt = i + 1;
                         break;
                     }

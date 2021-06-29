@@ -2,10 +2,7 @@ package me.lokka30.levelledmobs.listeners;
 
 import me.lokka30.levelledmobs.LevelInterface;
 import me.lokka30.levelledmobs.LevelledMobs;
-import me.lokka30.levelledmobs.misc.DebugType;
-import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
-import me.lokka30.levelledmobs.misc.QueueItem;
-import me.lokka30.levelledmobs.misc.Utils;
+import me.lokka30.levelledmobs.misc.*;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.World;
@@ -53,7 +50,7 @@ public class EntitySpawnListener implements Listener {
             return;
         }
 
-        final int mobProcessDelay = main.settingsCfg.getInt("mob-process-delay", 0);
+        final int mobProcessDelay = main.settingsCfg.getInt(YmlParsingHelper.getKeyNameFromConfig(main.settingsCfg, "mob-process-delay"), 0);
 
         if (mobProcessDelay > 0)
             delayedAddToQueue(lmEntity, event, mobProcessDelay);
