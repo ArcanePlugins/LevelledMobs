@@ -82,6 +82,13 @@ public final class FileLoader {
         }
     }
 
+    public static void saveResourceIfNotExists(final Plugin instance, @NotNull final File file, final String filename) {
+        if (!file.exists()) {
+            Utils.logger.info("&fFile Loader: &7File '&b" + file.getName() + "&7' doesn't exist, creating it now...");
+            instance.saveResource(filename, false);
+        }
+    }
+
     private static void checkFileVersion(final File file, final int compatibleVersion, final int installedVersion) {
         if (compatibleVersion == installedVersion) {
             return;

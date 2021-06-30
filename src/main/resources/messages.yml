@@ -8,57 +8,28 @@
 #                       |     |___ ___ ___ ___ ___ ___ ___ 
 #                       | | | | -_|_ -|_ -| .'| . | -_|_ -|
 #                       |_|_|_|___|___|___|__,|_  |___|___|
-#  ___________________________________________|___|___________________________________
-# /.-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.\
-# lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\|\
-#'|    `-'     `-'     `-'     `-'     `-'     `-'     `-'     `-'     `-'     `-'    |\
-# |  Main Developers:                    |  Other Contributors:                       |\
-# |    lokka30 [Author / Developer]      |    Eyrian, iCodinqs, deiphiz, CoolBoy,     |\
-# |    stumper66 [Developer since v2.0]  |    Esophose, 7smile7, UltimaOath, Huge5551,|\
-# |                                      |    konsolas, Shevchik, limzikiki           |\
-# |                                      |                                            |\
+#                                             |___|
+#  .--.      .--.      .--.      .--.      .--.      .--.      .--.      .--.     .--._
+#:::::LM::::::::LM::::::::LM::::::::LM::::::::LM::::::::LM::::::::LM:::::::LM::::::::LM\
+#'|     `--'      `--'      `--'      `--'      `--'      `--'      `--'      `--'    |\
+# |  Main Developers:                           |  Other Contributors:                |\
+# |    lokka30                                  |    Eyrian, iCodinqs, deiphiz,       |\
+# |      Original Author and Developer          |    CoolBoy, Esophose, 7smile7,      |\
+# |    stumper66                                |    Huge5551, konsolas, Shevchik,    |\
+# |      Developer since v2.0                   |    limzikiki                        |\
+# |    UltimaOath                               |                                     |\
+# |      Documentation and Tester since v2.0    |                                     |\
+# |                                             |                                     |\
 # |----------------------------------+---+--------------------------------------------|\
-# |  ArcanePlugins Support Discord   |  Special Thanks:                               |\
-# |    https://discord.gg/RQ8M4A5    |    ArcanePlugins Developers and Testers!       |\
-# |                                  |    Donators, Patrons, and other supporters!    |\
-# |                                  |    SpigotMC, PaperMC, ProtocolLib, and bStats! |\
-# |                                  |                                                |\
-# |.-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.|\
-# lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\|\
-#'|    `-'     `-'     `-'     `-'     `-'     `-'     `-'     `-'     `-'     `-'    |\
-# |  Useful Resources:                                                                |\
-# |    LevelledMobs Spigot                                                            |\
-# |      Download the latest updates or leave an honest review!                       |\
-# |        https://www.spigotmc.org/resources/levelledmobs-for-1-14-x-1-16-x.74304/   |\
-# |                                                                                   |\
-# |    LevelledMobs GitHub                                                            |\
-# |      Browse the code and wiki resources for LevelledMobs                          |\
-# |        https://github.com/lokka30/LevelledMobs/                                   |\
-# |                                                                                   |\
-# |    YAML-Parser                                                                    |\
-# |      Check your config files for any YAML errors.                                 |\
-# |      Good first step before seeking support!                                      |\
-# |        https://yaml-online-parser.appspot.com/                                    |\
-# |                                                                                   |\
-# |  Dependencies:                                                                    |\
-# |    ProtocolLib:                                                                   |\
-# |      A 'soft dependency'; Not *required* but highly recommended.                  |\
-# |      Without this, the plugin will not show LevelledMobs's nametags.              |\
-# |      Entities may still level without the nametag present.                        |\
-# |      https://www.spigotmc.org/resources/protocollib.1997/                         |\
-# |                                                                                   |\
-# |  Recommended Configuration:                                                       |\
-# |    LevelledMobs is tested using the latest PaperMC and SpigotMC server software.  |\
-# |    While other solutions may work, compatibility is not guaranteed.               |\
-# |    LevelledMobs comes ready-to-go out of the box with the default configuration,  ||\
-# |    which has been play-tested beforehand to provide an experience a bit harder    |||\
-# |    than the HARD vanilla difficulty, taking into account the vanilla armors       ||||\
-# |    and weapons when combined with the vanilla enchantments, making the toughest   |||||\
-# |    entities still challenging while not impossible.                               ||||||\
-# |                                                                                   |||||||\
-# |.-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.||||||||\
-# lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\|||||||||\
-#'|    `-'     `-'     `-'     `-'     `-'     `-'     `-'     `-'     `-'     `-'    ||||||||||\
+# |  ArcanePlugins Support Discord   |  Special Thanks:                               ||\
+# |    https://discord.gg/RQ8M4A5    |    ArcanePlugins Developers and Testers!       |||\
+# |                                  |    Donators, Patrons, and other supporters!    ||||\
+# |  Check '/docs' in this folder    |    SpigotMC, PaperMC, ProtocolLib, NBT-API,    |||||\
+# |  for a detailed How-To Guide!    |    PAPI, and bStats!                           ||||||\
+# |                                  |                                                |||||||\
+#  .--.      .--.      .--.      .--.      .--.      .--.      .--.      .--.     .--.||||||||\
+#:::::LM::::::::LM::::::::LM::::::::LM::::::::LM::::::::LM::::::::LM:::::::LM::::::::L|||||||||\
+#'|     `--'      `--'      `--'      `--'      `--'      `--'      `--'      `--'    ||||||||||\
 # |||---------------------------------------------------------------------------------|||||||||||
 # |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 # |||-------------------------------------------------------------------------------------------|
@@ -306,7 +277,7 @@ other:
     send-in-console: true
     send-on-join: true
 
-  # when a mob is named, is killed and drops a head, this will be the name used for it
+# When a named entity dies, this is the text used when it drops it's skull.
   mob-head-drop-name: '%mob_name%''s head'
 
 

@@ -21,6 +21,8 @@ import org.bukkit.plugin.PluginManager;
 
 import javax.annotation.Nullable;
 import java.io.*;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -119,6 +121,12 @@ public class Companion {
         main.attributesCfg = loadEmbeddedResource("defaultAttributes.yml");
         main.dropsCfg = loadEmbeddedResource("defaultDrops.yml");
         main.mobHeadManager.loadTextures(Objects.requireNonNull(loadEmbeddedResource("textures.yml")));
+
+        final File docs = new File(main.getDataFolder(), "docs");
+        if (!docs.exists()) docs.mkdir();
+
+        FileLoader.saveResourceIfNotExists(main, new File(docs, "learning_customdrops.yml"), "docs/learning_customdrops.yml");
+        FileLoader.saveResourceIfNotExists(main, new File(docs, "learning_rules.yml"), "docs/learning_rules.yml");
 
         main.configUtils.load();
 

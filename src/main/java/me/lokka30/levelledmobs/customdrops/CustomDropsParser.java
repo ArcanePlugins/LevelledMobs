@@ -385,8 +385,10 @@ public class CustomDropsParser {
                 final NBT_ApplyResult result = NBTManager.applyNBT_Data_Item(item, nbtStuff);
                 if (result.hadException())
                     Utils.logger.warning("custom drop " + item.getMaterial().toString() + " for " + dropInstance.getMobOrGroupName() + " has invalid NBT data: " + result.exceptionMessage);
-                else
+                else {
                     item.setItemStack(result.itemStack);
+                    item.nbtData = nbtStuff;
+                }
             }
             else if (!hasMentionedNBTAPI_Missing){
                 Utils.logger.warning("NBT Data has been specified in customdrops.yml but required plugin NBTAPI is not installed!");
