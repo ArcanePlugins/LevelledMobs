@@ -81,56 +81,56 @@
 # ||                                                |_| |_|   |___|                           |___|
 # ||
 # ||  ______________________________________________________________________________________________________________________________
-# ||    _________________________________         _________________________________         _________________________________
-# ||   |                                 |       |                                 |       |                                 |
-# ||   |       C O N D I T I O N S       |       |       S T R A T E G I E S       |       |   A P P L Y - S E T T I N G S   |
-# ||   |_________________________________|       |_________________________________|       |_________________________________|
-# ||  /-----------------------------------\     /-----------------------------------\     /-----------------------------------\
-# ||  |conditions:                        |     |strategies:                        |     |apply-settings:                    |
-# ||  |  minLevel: 1                      |     |  random:                          |     |  minLevel:                        |
-# ||  |  maxLevel: 50                     |     |                                   |     |  maxLevel:                        |
-# ||  |  chance: 1.0                      |     |  distance-from-spawn:             |     |  nametag: ''                      |
-# ||  |  stop-processing: true            |     |    increase-level-distance:       |     |  creature-death-nametag: ''       |
-# ||  |  mob-customname-status: EITHER    |     |    start-distance:                |     |  creature-nametag-always-visible: |
-# ||  |  mob-tamed-status: EITHER         |     |    spawn-location:                |     |  sunlight-intensity:              |
-# ||  |  worlds:                          |     |      x: default                   |     |  nbt-data: ''                     |
-# ||  |    allowed-list: ['', '']         |     |      y: default                   |     |  multipliers:                     |
-# ||  |    excluded-list: ['', '']        |     |    blended-levelling:             |     |    max-health:                    |
-# ||  |    merge:                         |     |      enabled:                     |     |    movement-speed:                |
-# ||  |  apply-above-y: 64                |     |      transition-y-height:         |     |    attack-damage:                 |
-# ||  |  apply-below-y: 64                |     |      lvl-multiplier:              |     |    ranged-attack-damage:          |
-# ||  |  allowed-worldguard-regions:      |     |      multiplier-period:           |     |    item-drop:                     |
-# ||  |    allowed-list: ['', '']         |     |      scale-downward:              |     |    xp-drop:                       |
-# ||  |    excluded-list: ['', '']        |     |                                   |     |    custom-mob-level:              |
-# ||  |    merge:                         |     |  y-coordinate:                    |     |      EntityType:                  |
-# ||  |  allowed-spawn-reasons:           |     |    start:                         |     |        max-health:                |
-# ||  |    allowed-list: ['', '']         |     |    end:                           |     |        movement-speed:            |
-# ||  |    excluded-list: ['', '']        |     |    period:                        |     |        attack-damage:             |
-# ||  |    merge:                         |     |                                   |     |        ranged-attack-damage:      |
-# ||  |  custom-names:                    |     |  max-random-variance:             |     |        item-drop:                 |
-# ||  |    allowed-list: ['', '']         |     |                                   |     |        xp-drop:                   |
-# ||  |    excluded-list: ['', '']        |     \-----------------------------------/     |  entity-name-override:            |
-# ||  |    merge:                         |                                               |    EntityType: ['', '']           |
-# ||  |  entities:                        |                                               |  tiered-coloring:                 |
-# ||  |    allowed-list: ['', '']         |                                               |    LVL-LVL: ''                    |
-# ||  |    allowed-groups: ['', '']       |                                               |    default: ''                    |
-# ||  |    excluded-list: ['', '']        |                                               |                                   |
-# ||  |    excluded-groups: ['', '']      |                                               \-----------------------------------/
-# ||  |    merge:                         |
+# ||    _________________________________         _________________________________         ___________________________________________
+# ||   |                                 |       |                                 |       |                                           |
+# ||   |       C O N D I T I O N S       |       |       S T R A T E G I E S       |       |        A P P L Y - S E T T I N G S        |
+# ||   |_________________________________|       |_________________________________|       |___________________________________________|
+# ||  /-----------------------------------\     /-----------------------------------\     /---------------------------------------------\
+# ||  |conditions:                        |     |strategies:                        |     |apply-settings:                              |
+# ||  |  minLevel: 1                      |     |  random: true                     |     |  minLevel: 1                                |
+# ||  |  maxLevel: 50                     |     |                                   |     |  maxLevel: 50                               |
+# ||  |  chance: 1.0                      |     |  distance-from-spawn:             |     |  nametag: ''                                |
+# ||  |  stop-processing: true            |     |    increase-level-distance: 150   |     |  creature-death-nametag: ''                 |
+# ||  |  mob-customname-status: EITHER    |     |    start-distance: 250            |     |  creature-nametag-always-visible: false     |
+# ||  |  mob-tamed-status: EITHER         |     |    spawn-location:                |     |  sunlight-intensity:                        |
+# ||  |  worlds:                          |     |      x: default                   |     |  nbt-data: ''                               |
+# ||  |    allowed-list: ['', '']         |     |      y: default                   |     |  multipliers:                               |
+# ||  |    excluded-list: ['', '']        |     |    blended-levelling:             |     |    max-health: 5.0                          |
+# ||  |    merge: true                    |     |      enabled: true                |     |    movement-speed: 0.25                     |
+# ||  |  apply-above-y: 64                |     |      transition-y-height: 64      |     |    attack-damage: 2.0                       |
+# ||  |  apply-below-y: 64                |     |      lvl-multiplier: 0.10         |     |    ranged-attack-damage: 1.5                |
+# ||  |  allowed-worldguard-regions:      |     |      multiplier-period: 10        |     |    item-drop: 3                             |
+# ||  |    allowed-list: ['', '']         |     |      scale-downward: true         |     |    xp-drop: 5                               |
+# ||  |    excluded-list: ['', '']        |     |                                   |     |    custom-mob-level:                        |
+# ||  |    merge: true                    |     |  y-coordinate:                    |     |      EntityType:                            |
+# ||  |  allowed-spawn-reasons:           |     |    start: 100                     |     |        max-health: 2.5                      |
+# ||  |    allowed-list: ['', '']         |     |    end: 20                        |     |        movement-speed: 0.15                 |
+# ||  |    excluded-list: ['', '']        |     |    period: 0                      |     |        attack-damage: 1.5                   |
+# ||  |    merge: true                    |     |                                   |     |        ranged-attack-damage: 1.5            |
+# ||  |  custom-names:                    |     |  max-random-variance: 2           |     |        item-drop: 2                         |
+# ||  |    allowed-list: ['', '']         |     |                                   |     |        xp-drop: 5                           |
+# ||  |    excluded-list: ['', '']        |     \-----------------------------------/     |  entity-name-override:                      |
+# ||  |    merge: true                    |                                               |    EntityType: ['', '']                     |
+# ||  |  entities:                        |                                               |  tiered-coloring:                           |
+# ||  |    allowed-list: ['', '']         |                                               |    LVL-LVL: ''                              |
+# ||  |    allowed-groups: ['', '']       |                                               |    default: ''                              |
+# ||  |    excluded-list: ['', '']        |                                               |                                             |
+# ||  |    excluded-groups: ['', '']      |                                               \---------------------------------------------/
+# ||  |    merge: true                    |
 # ||  |  biomes:                          |
 # ||  |    allowed-list: ['', '']         |
 # ||  |    allowed-groups: ['', '']       |
 # ||  |    excluded-list: ['', '']        |
 # ||  |    excluded-groups: ['', '']      |
-# ||  |    merge:                         |
+# ||  |    merge: true                    |
 # ||  |  mythicmobs-internal-names:       |
 # ||  |    allowed-list: ['', '']         |
 # ||  |    excluded-list: ['', '']        |
-# ||  |    merge:                         |
+# ||  |    merge: true                    |
 # ||  |  apply-plugins:                   |
 # ||  |    allowed-list: ['', '']         |
 # ||  |    excluded-list: ['', '']        |
-# ||  |    merge:                         |
+# ||  |    merge: true                    |
 # ||  |  level-plugins:                   |
 # ||  |      DANGEROUS_CAVES: false       |
 # ||  |      MYTHIC_MOBS: false           |
@@ -146,7 +146,7 @@
 # ||
 # ||  ______________________________________________________________________________________________________________________________
 # ||
-# ||  C O N D I T I O N S
+# ||    C O N D I T I O N S
 # ||  ______________________________________________________________________________________________________________________________
 # ||
 # ||    minLevel: / maxLevel:
@@ -185,10 +185,10 @@
 # ||
 # ||  ______________________________________________________________________________________________________________________________
 # ||
-# ||  S T R A T E G I E S
+# ||    S T R A T E G I E S
 # ||  ______________________________________________________________________________________________________________________________
 # ||
-# ||    random:
+# ||    random: true
 # ||        [|  This strategy enables Random Levelling.
 # ||
 # ||    distance-from-spawn:
@@ -222,7 +222,7 @@
 # ||
 # ||  ______________________________________________________________________________________________________________________________
 # ||
-# ||  A P P L Y - S E T T I N G S
+# ||    A P P L Y - S E T T I N G S
 # ||  ______________________________________________________________________________________________________________________________
 # ||
 # ||    minLevel: / maxLevel:
@@ -283,16 +283,16 @@
 # ||                                                             |___|
 # ||  ______________________________________________________________________________________________________________________________
 # ||
-# ||  /-----------------------------------------------\
-# ||  |presets:                                       |
-# ||  |  1:                                           |
-# ||  |    selectSystem:                              |
-# ||  |      configureSystem:                         |
-# ||  |  two:                                         |
-# ||  |    selectSystem:                              |
-# ||  |      configureSystem:                         |
-# ||  |                                               |
-# ||  \-----------------------------------------------/
+# ||  /---------------------------------\
+# ||  |presets:                         |
+# ||  |  1:                             |
+# ||  |    selectSystem:                |
+# ||  |      configureSystem:           |
+# ||  |  two:                           |
+# ||  |    selectSystem:                |
+# ||  |      configureSystem:           |
+# ||  |                                 |
+# ||  \---------------------------------/
 # ||
 # ||  ______________________________________________________________________________________________________________________________
 # ||
@@ -326,20 +326,20 @@
 # ||                                                     |_|
 # ||  ______________________________________________________________________________________________________________________________
 # ||
-# ||  /-----------------------------------------------\
-# ||  |mob-groups:                                    |
-# ||  |  groupName1:                                  |
-# ||  |    - EntityType                               |
-# ||  |  groupName2:                                  |
-# ||  |    - EntityType                               |
-# ||  |                                               |
-# ||  \-----------------------------------------------/
+# ||  /-----------------------\
+# ||  |mob-groups:            |
+# ||  |  groupName1:          |
+# ||  |    - EntityType       |
+# ||  |  groupName2:          |
+# ||  |    - EntityType       |
+# ||  |                       |
+# ||  \-----------------------/
 # ||
 # ||  ______________________________________________________________________________________________________________________________
 # ||
 # ||    [|  This section covers two different systems, the Universal Groups and the Custom Groups.
 # ||    [|  Both Mobs and Biomes can utilize a set of predefined Universal Groups when selecting entities under conditions.
-# ||                             all_mobs  - All entities, levelled or otherwise.
+# ||                              all_mobs - All entities, levelled or otherwise.
 # ||                   all_levellable_mobs - All levelled or levellable entities.
 # ||                      all_hostile_mobs - All hostile entities.
 # ||                     all_passsive_mobs - All passive entities.
@@ -386,24 +386,24 @@
 # ||                     |  |  | | . | . | .'| |  |   __| | |   |  _|  _| | . |   |_ -|
 # ||                     |_____|_|___|___|__,|_|  |__|  |___|_|_|___|_| |_|___|_|_|___|
 # ||
-# ||  /-----------------------------------------------\   /-----------------------------------------------\
-# ||  |custom-rules:                                  |   |custom-rules:                                  |
-# ||  |  - enabled: true                              |   |  name: 'Run First'                            |
-# ||  |    name: 'Identify the Rule'                  |   |  priority: 2                                  |
-# ||  |    use-preset: 1, 2, three, four              |   |custom-rules:                                  |
-# ||  |    use-preset:                                |   |  name: 'Run Second'                           |
-# ||  |      - 1                                      |   |  priority: 1                                  |
-# ||  |      - 2                                      |   |custom-rules:                                  |
-# ||  |      - three                                  |   |  name: 'Run Normally'                         |
-# ||  |      - four                                   |   |  priority: 0                                  |
-# ||  |    priority: 1                                |   |custom-rules:                                  |
-# ||  |                                               |   |  name: 'Run Second to Last'                   |
-# ||  |                                               |   |  priority: -1                                 |
-# ||  |                                               |   |custom-rules:                                  |
-# ||  |                                               |   |  name: 'Run Last'                             |
-# ||  |                                               |   |  priority: -2                                 |
-# ||  |                                               |   |                                               |
-# ||  \-----------------------------------------------/   \-----------------------------------------------/
+# ||  /-------------------------------------\   /----------------------------------\
+# ||  |custom-rules:                        |   |custom-rules:                     |
+# ||  |  - enabled: true                    |   |  name: 'Run First'               |
+# ||  |    name: 'Identify the Rule'        |   |  priority: 2                     |
+# ||  |    use-preset: 1, 2, three, four    |   |custom-rules:                     |
+# ||  |    use-preset:                      |   |  name: 'Run Second'              |
+# ||  |      - 1                            |   |  priority: 1                     |
+# ||  |      - 2                            |   |custom-rules:                     |
+# ||  |      - three                        |   |  name: 'Run Normally'            |
+# ||  |      - four                         |   |  priority: 0                     |
+# ||  |    priority: 1                      |   |custom-rules:                     |
+# ||  |                                     |   |  name: 'Run Second to Last'      |
+# ||  \-------------------------------------/   |  priority: -1                    |
+# ||                                            |custom-rules:                     |
+# ||                                            |  name: 'Run Last'                |
+# ||                                            |  priority: -2                    |
+# ||                                            |                                  |
+# ||                                            \----------------------------------/
 # ||
 # ||  ______________________________________________________________________________________________________________________________
 # ||
