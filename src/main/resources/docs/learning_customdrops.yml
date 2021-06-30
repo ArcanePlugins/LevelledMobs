@@ -127,7 +127,7 @@
 # ||
 # ||  ______________________________________________________________________________________________________________________________
 # ||
-# ||  D R O P   A T T R I B U T E   S Y S T E M
+# ||    D R O P   A T T R I B U T E   S Y S T E M
 # ||  ______________________________________________________________________________________________________________________________
 # ||
 # ||    EntityType:
@@ -192,7 +192,7 @@
 # ||        [|  This configuration will apply NBT data to the material which is dropped. This requires the plugin NBT-API to function!
 # ||        [|  This is an advanced user feature, as NBT data can be incredibly powerful tool!
 # ||
-# ||    item-flags
+# ||    item-flags:
 # ||        [|  This configuration will apply ItemFlag data to the material which is dropped. Below lists all potential ItemFlags.
 # ||                       HIDE_ATTRIBUTES - Will hide attributes, like damage.
 # ||                         HIDE_DESTROYS - Will hide what the Item can destroy.
@@ -217,7 +217,7 @@
 # ||
 # ||  ______________________________________________________________________________________________________________________________
 # ||
-# ||  C O M M A N D   A T T R I B U T E   S Y S T E M
+# ||    C O M M A N D   A T T R I B U T E   S Y S T E M
 # ||  ______________________________________________________________________________________________________________________________
 # ||
 # ||    [|  Each attribute listed below helps you to refine a command to run when an entity dies, either by a player or environmental.
@@ -359,6 +359,8 @@
 # ||  |  maxdropgroup: 1             |
 # ||  |  priority: 0                 |
 # ||  |  player-caused: true         |
+# ||  |  item-flag: ''               |
+# ||  |  nbt-data: ''                |
 # ||  \------------------------------/
 # ||
 # ||  ______________________________________________________________________________________________________________________________
