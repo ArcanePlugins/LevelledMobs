@@ -108,9 +108,9 @@
 # ||  |      usedroptable: 1                                      |
 # ||  |      custommodeldata: -1                                  |
 # ||  |      nbt-data: ''                                         |
+# ||  |      item-flags: ''                                       |
 # ||  |      override: false                                      |
 # ||  |      player-caused: true                                  |
-# ||  |      item-flags: ''
 # ||  |  - PLAYER_HEAD:                                           |
 # ||  |       equipped: 1.0                                       |
 # ||  |       modhead-id: '61dab4ad-b60e-43c6-8873-38feabf458a3'  |
@@ -192,19 +192,19 @@
 # ||        [|  This configuration will apply NBT data to the material which is dropped. This requires the plugin NBT-API to function!
 # ||        [|  This is an advanced user feature, as NBT data can be incredibly powerful tool!
 # ||
+# ||    item-flags
+# ||        [|  This configuration will apply ItemFlag data to the material which is dropped. Below lists all potential ItemFlags.
+# ||                       HIDE_ATTRIBUTES - Will hide attributes, like damage.
+# ||                         HIDE_DESTROYS - Will hide what the Item can destroy.
+# ||                              HIDE_DYE - Will hide the dye color applied to Item.
+# ||                         HIDE_ENCHANTS - Will hide enchantsments on Item.
+# ||                        HIDE_PLACED_ON - Will hide where the Item can be placed.
+# ||                   HIDE_POTION_EFFECTS - Will hide potion effects placed on the Item.
+# ||                      HIDE_UNBREAKABLE - Will hide unbreakable status of Item.
+# ||
 # ||    override:
 # ||        [|  This setting, when set to true, will use the custom-drops applied here and will not drop the vanilla Minecraft drops for the entity. When set to false,
 # ||        [|  or not specified, it will process the vanilla drops alongside the custom drops.
-# ||
-# ||    item-flags:
-# ||        [|  Sets one or more item flags. To use more than one flag, enter a comma separated list. Possible values are:
-# ||        [|     HIDE_ATTRIBUTES     | Setting to show/hide Attributes like Damage
-# ||        [|     HIDE_DESTROYS       | Setting to show/hide what the ItemStack can break/destroy
-# ||        [|     HIDE_DYE            | Setting to show/hide dyes from coloured leather armour
-# ||        [|     HIDE_ENCHANTS       | Setting to show/hide enchants
-# ||        [|     HIDE_PLACED_ON      | Setting to show/hide where this ItemStack can be build/placed on
-# ||        [|     HIDE_POTION_EFFECTS | Setting to show/hide potion effects on this ItemStack
-# ||        [|     HIDE_UNBREAKABLE    | Setting to show/hide the unbreakable State
 # ||
 # ||    - PLAYER_HEAD:
 # ||        [|  Typing 'PLAYER_HEAD' instead of a MATERIAL will enable the PLAYER_HEAD drop system.
@@ -274,8 +274,8 @@
 # ||        [| When set to true, entities spawned from a spawner cube will not run the command upon death as a naturally generated entity would.
 # ||
 # ||    player-caused:
-# ||        [| When set to true, if an entity dies to environment (fall damage) or another entity (mob v mob), the command will not run; requiring the death to be
-# ||        [| specifically caused by the player. This, when combined with 'nospawner:', this is useful to prevent mob farms from spamming commands unintentionally.
+# ||        [|  When set to true, if an entity dies to environment (fall damage) or another entity (mob v mob), the command will not run; requiring the death to be
+# ||        [|  specifically caused by the player. This, when combined with 'nospawner:', this is useful to prevent mob farms from spamming commands unintentionally.
 # ||
 # |||-------------------------------------------------------------------------------------------------------------------------------\
 # |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\
@@ -304,13 +304,13 @@
 # ||  ______________________________________________________________________________________________________________________________
 # ||
 # ||    drop-table:
-# ||        [| This is required to open the drop-table configuration. Do not change this line.
+# ||        [|  This is required to open the drop-table configuration. Do not change this line.
 # ||
 # ||    table-name:
-# ||        [| This refers to the 'name' of the drop table to reference later. This can be  either text or numerical, but without spaces. Example: '1:', or 'NetherStuff:'.
+# ||        [|  This refers to the 'name' of the drop table to reference later. This can be  either text or numerical, but without spaces. Example: '1:', or 'NetherStuff:'.
 # ||
 # ||    attributes:
-# ||        [| This is a generic term for any of the attributes listed within the CAS or DAS. Replace it with any of the attributes. Reference the CAS/DAS above.
+# ||        [|  This is a generic term for any of the attributes listed within the CAS or DAS. Replace it with any of the attributes. Reference the CAS/DAS above.
 # ||
 # ||
 # |||-------------------------------------------------------------------------------------------------------------------------------\
@@ -324,7 +324,7 @@
 # ||  ______________________________________________________________________________________________________________________________
 # ||
 # ||    [|  This section covers Universal Mob Groups, which are defined below:
-# ||                             all_mobs  - All entities, levelled or otherwise.
+# ||                              all_mobs - All entities, levelled or otherwise.
 # ||                   all_levellable_mobs - All levelled or levellable entities.
 # ||                      all_hostile_mobs - All hostile entities.
 # ||                     all_passsive_mobs - All passive entities.
