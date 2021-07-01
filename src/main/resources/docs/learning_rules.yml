@@ -79,71 +79,68 @@
 # ||                           | .'|   | . |  |     | . | . | | | |___|__   | -_|  _|  _| |   | . |_ -|
 # ||                           |__,|_|_|___|  |__|__|  _|  _|_|_  |   |_____|___|_| |_| |_|_|_|_  |___|
 # ||                                                |_| |_|   |___|                           |___|
-# ||
 # ||  ______________________________________________________________________________________________________________________________
-# ||    _________________________________         _________________________________         ___________________________________________
-# ||   |                                 |       |                                 |       |                                           |
-# ||   |       C O N D I T I O N S       |       |       S T R A T E G I E S       |       |        A P P L Y - S E T T I N G S        |
-# ||   |_________________________________|       |_________________________________|       |___________________________________________|
-# ||  /-----------------------------------\     /-----------------------------------\     /---------------------------------------------\
-# ||  |conditions:                        |     |strategies:                        |     |apply-settings:                              |
-# ||  |  minLevel: 1                      |     |  random: true                     |     |  minLevel: 1                                |
-# ||  |  maxLevel: 50                     |     |                                   |     |  maxLevel: 50                               |
-# ||  |  chance: 1.0                      |     |  distance-from-spawn:             |     |  nametag: ''                                |
-# ||  |  stop-processing: true            |     |    increase-level-distance: 150   |     |  creature-death-nametag: ''                 |
-# ||  |  mob-customname-status: EITHER    |     |    start-distance: 250            |     |  creature-nametag-always-visible: false     |
-# ||  |  mob-tamed-status: EITHER         |     |    spawn-location:                |     |  sunlight-intensity:                        |
-# ||  |  worlds:                          |     |      x: default                   |     |  nbt-data: ''                               |
-# ||  |    allowed-list: ['', '']         |     |      y: default                   |     |  multipliers:                               |
-# ||  |    excluded-list: ['', '']        |     |    blended-levelling:             |     |    max-health: 5.0                          |
-# ||  |    merge: true                    |     |      enabled: true                |     |    movement-speed: 0.25                     |
-# ||  |  apply-above-y: 64                |     |      transition-y-height: 64      |     |    attack-damage: 2.0                       |
-# ||  |  apply-below-y: 64                |     |      lvl-multiplier: 0.10         |     |    ranged-attack-damage: 1.5                |
-# ||  |  allowed-worldguard-regions:      |     |      multiplier-period: 10        |     |    item-drop: 3                             |
-# ||  |    allowed-list: ['', '']         |     |      scale-downward: true         |     |    xp-drop: 5                               |
-# ||  |    excluded-list: ['', '']        |     |                                   |     |    custom-mob-level:                        |
-# ||  |    merge: true                    |     |  y-coordinate:                    |     |      EntityType:                            |
-# ||  |  allowed-spawn-reasons:           |     |    start: 100                     |     |        max-health: 2.5                      |
-# ||  |    allowed-list: ['', '']         |     |    end: 20                        |     |        movement-speed: 0.15                 |
-# ||  |    excluded-list: ['', '']        |     |    period: 0                      |     |        attack-damage: 1.5                   |
-# ||  |    merge: true                    |     |                                   |     |        ranged-attack-damage: 1.5            |
-# ||  |  custom-names:                    |     |  max-random-variance: 2           |     |        item-drop: 2                         |
-# ||  |    allowed-list: ['', '']         |     |                                   |     |        xp-drop: 5                           |
-# ||  |    excluded-list: ['', '']        |     \-----------------------------------/     |  entity-name-override:                      |
-# ||  |    merge: true                    |                                               |    EntityType: ['', '']                     |
-# ||  |  entities:                        |                                               |  tiered-coloring:                           |
-# ||  |    allowed-list: ['', '']         |                                               |    LVL-LVL: ''                              |
-# ||  |    allowed-groups: ['', '']       |                                               |    default: ''                              |
-# ||  |    excluded-list: ['', '']        |                                               |                                             |
-# ||  |    excluded-groups: ['', '']      |                                               \---------------------------------------------/
-# ||  |    merge: true                    |
-# ||  |  biomes:                          |
-# ||  |    allowed-list: ['', '']         |
-# ||  |    allowed-groups: ['', '']       |
-# ||  |    excluded-list: ['', '']        |
-# ||  |    excluded-groups: ['', '']      |
-# ||  |    merge: true                    |
-# ||  |  mythicmobs-internal-names:       |
-# ||  |    allowed-list: ['', '']         |
-# ||  |    excluded-list: ['', '']        |
-# ||  |    merge: true                    |
-# ||  |  apply-plugins:                   |
-# ||  |    allowed-list: ['', '']         |
-# ||  |    excluded-list: ['', '']        |
-# ||  |    merge: true                    |
-# ||  |  level-plugins:                   |
-# ||  |      DANGEROUS_CAVES: false       |
-# ||  |      MYTHIC_MOBS: false           |
-# ||  |      ELITE_MOBS: false            |
-# ||  |      ELITE_MOBS_NPCS: false       |
-# ||  |      ELITE_MOBS_SUPER_MOBS: false |
-# ||  |      INFERNAL_MOBS: false         |
-# ||  |      CITIZENS: false              |
-# ||  |      SHOPKEEPERS: false           |
-# ||  |                                   |
-# ||  \-----------------------------------/
-# ||
-# ||
+# ||    _____________________________________         ___________________________________         ___________________________________________
+# ||   |                                     |       |                                   |       |                                           |
+# ||   |         C O N D I T I O N S         |       |        S T R A T E G I E S        |       |        A P P L Y - S E T T I N G S        |
+# ||   |_____________________________________|       |___________________________________|       |___________________________________________|
+# ||  /---------------------------------------\     /-------------------------------------\     /---------------------------------------------\
+# ||  |conditions:                            |     |strategies:                          |     |apply-settings:                              |
+# ||  |  minLevel: 1                          |     |  random: true                       |     |  minLevel: 1                                |
+# ||  |  maxLevel: 50                         |     |                                     |     |  maxLevel: 50                               |
+# ||  |  chance: 1.0                          |     |  distance-from-spawn:               |     |  nametag: ''                                |
+# ||  |  stop-processing: true                |     |    increase-level-distance: 150     |     |  creature-death-nametag: ''                 |
+# ||  |  mob-customname-status: EITHER        |     |    start-distance: 250              |     |  creature-nametag-always-visible: false     |
+# ||  |  mob-tamed-status: EITHER             |     |    spawn-location:                  |     |  sunlight-intensity:                        |
+# ||  |  worlds:                              |     |      x: default                     |     |  nbt-data: ''                               |
+# ||  |    allowed-list: ['', '']             |     |      y: default                     |     |  multipliers:                               |
+# ||  |    excluded-list: ['', '']            |     |    blended-levelling:               |     |    max-health: 5.0                          |
+# ||  |    merge: true                        |     |      enabled: true                  |     |    movement-speed: 0.25                     |
+# ||  |  apply-above-y: 64                    |     |      transition-y-height: 64        |     |    attack-damage: 2.0                       |
+# ||  |  apply-below-y: 64                    |     |      lvl-multiplier: 0.10           |     |    ranged-attack-damage: 1.5                |
+# ||  |  allowed-worldguard-regions:          |     |      multiplier-period: 10          |     |    item-drop: 3                             |
+# ||  |    allowed-list: ['', '']             |     |      scale-downward: true           |     |    xp-drop: 5                               |
+# ||  |    excluded-list: ['', '']            |     |                                     |     |    custom-mob-level:                        |
+# ||  |    merge: true                        |     |  y-coordinate:                      |     |      EntityType:                            |
+# ||  |  allowed-spawn-reasons:               |     |    start: 100                       |     |        max-health: 2.5                      |
+# ||  |    allowed-list: ['', '']             |     |    end: 20                          |     |        movement-speed: 0.15                 |
+# ||  |    excluded-list: ['', '']            |     |    period: 0                        |     |        attack-damage: 1.5                   |
+# ||  |    merge: true                        |     |                                     |     |        ranged-attack-damage: 1.5            |
+# ||  |  custom-names:                        |     |  max-random-variance: 2             |     |        item-drop: 2                         |
+# ||  |    allowed-list: ['', '']             |     |                                     |     |        xp-drop: 5                           |
+# ||  |    excluded-list: ['', '']            |     \-------------------------------------/     |  entity-name-override:                      |
+# ||  |    merge: true                        |                                                 |    EntityType: ['', '']                     |
+# ||  |  entities:                            |                                                 |  tiered-coloring:                           |
+# ||  |    allowed-list: ['', '']             |                                                 |    LVL-LVL: ''                              |
+# ||  |    allowed-groups: ['', '']           |                                                 |    default: ''                              |
+# ||  |    excluded-list: ['', '']            |                                                 |                                             |
+# ||  |    excluded-groups: ['', '']          |                                                 \---------------------------------------------/
+# ||  |    merge: true                        |
+# ||  |  biomes:                              |
+# ||  |    allowed-list: ['', '']             |
+# ||  |    allowed-groups: ['', '']           |
+# ||  |    excluded-list: ['', '']            |
+# ||  |    excluded-groups: ['', '']          |
+# ||  |    merge: true                        |
+# ||  |  mythicmobs-internal-names:           |
+# ||  |    allowed-list: ['', '']             |
+# ||  |    excluded-list: ['', '']            |
+# ||  |    merge: true                        |
+# ||  |  apply-plugins:                       |
+# ||  |    allowed-list: ['', '']             |
+# ||  |    excluded-list: ['', '']            |
+# ||  |    merge: true                        |
+# ||  |  level-plugins:                       |
+# ||  |      DANGEROUS_CAVES: false           |
+# ||  |      MYTHIC_MOBS: false               |
+# ||  |      ELITE_MOBS: false                |
+# ||  |      ELITE_MOBS_NPCS: false           |
+# ||  |      ELITE_MOBS_SUPER_MOBS: false     |
+# ||  |      INFERNAL_MOBS: false             |
+# ||  |      CITIZENS: false                  |
+# ||  |      SHOPKEEPERS: false               |
+# ||  |                                       |
+# ||  \---------------------------------------/
 # ||  ______________________________________________________________________________________________________________________________
 # ||
 # ||    C O N D I T I O N S
@@ -152,25 +149,31 @@
 # ||    minLevel: / maxLevel:
 # ||        [|  There are very few and very rare instances when this condition would appply, as it is checking for a level prior to
 # ||        [|  LevelledMobs applying a new level. This might include transforming or taming entities.
+# ||
 # ||    chance:
 # ||        [|  This represents the percent chance of the rule being utilized.
+# ||
 # ||    stop-processing:
 # ||        [|  When utilized, if the rule does occur, then any further rules will not be processed.
+# ||
 # ||    mob-customname-status: / mob-tamed-status:
 # ||        [|  This represents a check against the status of an entity's customname or tamed value.
 # ||        [|  Below lists all possible values for these configuration options.
+# ||
 # ||                         NOT_SPECIFIED - Default status; essentially not checked or utilized.
 # ||                                EITHER - The entity's customname and tamed status does not matter, all are selected.
 # ||                    NAMETAGGED / TAMED - Only entity's who have an applied customname, or are tamed, are selected.
 # ||            NOT_NAMETAGGED / NOT_TAMED - Only entity's who DO NOT have an applied customname, or ARE NOT tamed, are selected.
+# ||
 # ||    apply-above-y: / apply-below-y:
 # ||        [|  This condition checks whether the entity has spawned above or below a specific Y-Coordinate.
-# ||        [|  This is useful for crafting rules specific to entities above or below ground!
-# ||        [|  As a note, Minecraft's vanilla 'sea level' is Y=64.
+# ||        [|  This is useful for crafting rules specific to entities above or below ground! As a note, Minecraft's vanilla 'sea level' is Y=64.
+# ||
 # ||    worlds: / allowed-worldguard-regions: / allowed-spawn-reasons: / custom-names: / entities: / biomes: / apply-plugins: / mythicmobs-internal-names:
 # ||        [|  These particular configuration options utilize the allowed-list:/excluded-list:/merge: system.
 # ||        [|  By including merge: within a CustomRule, it will merge the list supplied from the CustomRule and the list supplied from the DefaultRule.
 # ||        [|  The configuration options for entities: and biomes: include the additional allowed-groups:/excluded-groups: system.
+# ||
 # ||                               worlds: - This condition checks the world where the entity spawned.
 # ||           allowed-worldguard-regions: - This condition checks the WorldGuard region against where the entity spawned.
 # ||                allowed-spawn-reasons: - This condition checks how the entity was spawned.
@@ -179,9 +182,9 @@
 # ||                               biomes: - This condition checks the biome against where the entity spawned.
 # ||                        apply-plugins: - This condition checks if the entity was spawned by a particular supported plugin.
 # ||            mythicmobs-internal-names: - This condition checks the internal-name of specific MythicMobs.
+# ||
 # ||    level-plugins:
 # ||        [|  This condition acts in the same fashion as apply-plugins: , however in a different format meant for easier viewing.
-# ||
 # ||
 # ||  ______________________________________________________________________________________________________________________________
 # ||
@@ -191,34 +194,46 @@
 # ||    random: true
 # ||        [|  This strategy enables Random Levelling.
 # ||
+# ||
+# ||
 # ||    distance-from-spawn:
 # ||        [|  This strategy enables Distance-From-Spawn Levelling, and has further subsystem configurations required below.
+# ||
 # ||    increase-level-distance:
 # ||        [|  This represents the number of blocks from your start-distance: before the next level is applied.
+# ||
 # ||    start-distance:
 # ||        [|  This represents the number of blocks from your spawn-location: before the increase-level-distance: begins to count.
+# ||
 # ||    spawn-location: / x: / z:
 # ||        [|  This represents the subsystem configuration for the spawn-location. LevelledMobs will use your World's Spawn location by default.
-# ||        [|  You can set your own values for the X and Z coordinates. 
+# ||        [|  You can set your own values for the X and Z coordinates.
+# ||
 # ||    blended-levelling:
 # ||        [|  Once enabled, this system will combine with the distance-from-spawn: system to adjust the applied level depending on the
 # ||        [|  Y-Coordinate where the entity spawned in relation to the distance-from-spawn: expected level.
+# ||
 # ||    transition-y-height: / lvl-multiplier: / multiplier-period: / scale-downward:
-# ||        [|  These particular configuration options control the blended-levelling: system. 
+# ||        [|  These particular configuration options control the blended-levelling: system.
+# ||
 # ||                  transition-y-height: - This represents the Y-Coordinate which will match distance-from-spawn: levelling.
 # ||                       lvl-multiplier: - This represents the exponential increase in level per multiplier-period:.
 # ||                    multiplier-period: - This represents the number of blocks from transition-y-height: before each lvl-multiplier: is applied.
 # ||                       scale-downward: - This represents the direction the level increase. Setting to true makes caves harder and mountains easier.
 # ||
+# ||
+# ||
 # ||    y-coordinate: / start: / end: / period:
 # ||        [|  This strategy enables Y-Coordinate Levelling.
+# ||
 # ||                                start: - This represents the Y-Coordinate where minLevel: is applied.
 # ||                                  end: - This represents the Y-Coordinate where maxLevel: is applied.
 # ||                               period: - This represents the number of blocks from start: before a level is applied. This overrides end: configuration.
 # ||
+# ||
+# ||
 # ||    max-random-variance:
 # ||        [|  This system applies a random variance to the level of an entity.
-# ||
 # ||
 # ||  ______________________________________________________________________________________________________________________________
 # ||
@@ -227,51 +242,59 @@
 # ||
 # ||    minLevel: / maxLevel:
 # ||        [|  This represents the range of possible levels to apply to an entity based on the prior conditions and strategies.
+# ||
 # ||    nametag: / creature-death-nametag:
 # ||        [|  These configuration options represents the formatting for displaying the nametag and the death message name displayed to players.
-# ||                             %mob-lvl% : The mobs current level.
-# ||                         %displayname% : The mobs name; will show nametag name if tagged.
-# ||                         %entity-name% : The mobs name; will NOT show nametag name if tagged.
-# ||                       %entity-health% : The mobs current health, in decimal form.
-# ||               %entity-health-rounded% : The mobs current health, rounded.
-# ||                   %entity-max-health% : The mobs max health.
-# ||           %entity-max-health-rounded% : The mobs max health, rounded.
-# ||                        %heart_symbol% : A predefined heart character symbol.
-# ||                              %tiered% : Color text based on the level of the mob.
-# ||                                       : Reference 'tiered-coloring:' below for more details.
-# ||                           %wg_region% : Will populate with the WorldGuard region the entity is in.
-# ||                               %world% : The name of the world where the entity spawned.
-# ||                            %location% : The current location of the entity.
-# ||                                       : Presented as '(X, Y, Z)'.
+# ||
+# ||                             %mob-lvl% - The mobs current level.
+# ||                         %displayname% - The mobs name; will show nametag name if tagged.
+# ||                         %entity-name% - The mobs name; will NOT show nametag name if tagged.
+# ||                       %entity-health% - The mobs current health, in decimal form.
+# ||               %entity-health-rounded% - The mobs current health, rounded.
+# ||                   %entity-max-health% - The mobs max health.
+# ||           %entity-max-health-rounded% - The mobs max health, rounded.
+# ||                        %heart_symbol% - A predefined heart character symbol.
+# ||                              %tiered% - Color text based on the level of the mob. Reference 'tiered-coloring:' below for more details.
+# ||                           %wg_region% - Will populate with the WorldGuard region the entity is in.
+# ||                               %world% - The name of the world where the entity spawned.
+# ||                            %location% - The current location of the entity, presented as '(X, Y, Z)'.
+# ||
 # ||    creature-nametag-always-visible:
 # ||        [|  Due to limitations within the Minecraft client, there are limits to how we can display the nametag of entities to you.
 # ||        [|  Setting this to TRUE will make the nametags always visible, even far away or through stone.
 # ||        [|  Setting this to FALSE will force the nametag to remain hidden until you're within a few blocks and staring right at them.
 # ||        [|  We know this is not perfect, but it's what we're forced with. If you have a solution, let us know!
+# ||
 # ||    sunlight-intensity:
 # ||        [|  This configuration option will add additional sunlight damage to an entity while it's burning. This could be useful
 # ||        [|  to help kill off any high-health entities which can outpace the damage.
+# ||
 # ||    nbt-data:
 # ||        [|  This feature requires NBT-API to function. Locate the download link in the description at the top!
 # ||        [|  This configuration option allows you the ability to apply customized NBT data to entities spawned under Custom Rules.
+# ||
 # ||    multiplier: / max-health: / movement-speed: / attack-damage: / ranged-attack-damage: / item-drop: / xp-drop:
 # ||        [|  The formula used for attributes:
+# ||
 # ||                         newValue = defaultValue + ((defaultValue x configValue) x ((entityLevel - 1) / (maxLevel - 1)))
+# ||
 # ||        [|  This system controls the percent increase of each attribute once an entity hass reached the maximum level.
 # ||        [|  You can also reduce an entity's attributes as it levels by including a negative value.
+# ||
 # ||                           max-health: - This represents the percent increase to the maximum health of an entity.
 # ||                       movement-speed: - This represents the percent increase to the movement speed of an entity.
 # ||                        attack-damage: - This represents the percent increase to the attack damage of an entity.
 # ||                 ranged-attack-damage: - This represents the percent increase to the ranged attack damage of an entity.
 # ||                            item-drop: - This represents the percent increase to the multiplier applied to the amount of items dropped.
 # ||                              xp-drop: - This represents the percent increase to the multiplier applied to the amount of XP dropped.
+# ||
 # ||    custom-mob-level:
 # ||        [|  This represents the beginning of the Custom Entity Multipliers, where you can specify a custom set of multipliers
 # ||        [|  to apply to specific entities or entity groups. You would utilize the same features as the multiplier: above.
+# ||
 # ||    tiered-coloring:
 # ||        [|  This system controls the %tiered% tag coloring, depending on where the level falls between a range of values.
 # ||        [|  Make sure to establish the default: value for any level that isn't expressed!
-# ||
 # ||
 # |||-------------------------------------------------------------------------------------------------------------------------------\
 # |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\
@@ -283,17 +306,16 @@
 # ||                                                             |___|
 # ||  ______________________________________________________________________________________________________________________________
 # ||
-# ||  /---------------------------------\
-# ||  |presets:                         |
-# ||  |  1:                             |
-# ||  |    selectSystem:                |
-# ||  |      configureSystem:           |
-# ||  |  two:                           |
-# ||  |    selectSystem:                |
-# ||  |      configureSystem:           |
-# ||  |                                 |
-# ||  \---------------------------------/
-# ||
+# ||  /---------------------------\
+# ||  |presets:                   |
+# ||  |  1:                       |
+# ||  |    selectSystem:          |
+# ||  |      configureSystem:     |
+# ||  |  two:                     |
+# ||  |    selectSystem:          |
+# ||  |      configureSystem:     |
+# ||  |                           |
+# ||  \---------------------------/
 # ||  ______________________________________________________________________________________________________________________________
 # ||
 # ||    [|  This system allows you to store details that you intend to access often when crafting a rule. While you do not have to use
@@ -305,13 +327,15 @@
 # ||
 # ||    presets:
 # ||        [|  The main configuration tree for presets. Do not edit or remove this from your configuration file.
+# ||
 # ||    1: / two:
 # ||        [|  This represents the name of the preset, which can be alphanumeric.
+# ||
 # ||    selectSystem:
 # ||        [|  This represents the system you wish to configure further. The options are 'conditions:', 'strategies:', and 'apply-settings:'.
+# ||
 # ||    configureSystem:
 # ||        [|  This represents any further configuration under the 'selectSystem' tree. Refer to the first section of documentation!
-# ||
 # ||
 # |||-------------------------------------------------------------------------------------------------------------------------------\
 # |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\
@@ -326,19 +350,19 @@
 # ||                                                     |_|
 # ||  ______________________________________________________________________________________________________________________________
 # ||
-# ||  /-----------------------\
-# ||  |mob-groups:            |
-# ||  |  groupName1:          |
-# ||  |    - EntityType       |
-# ||  |  groupName2:          |
-# ||  |    - EntityType       |
-# ||  |                       |
-# ||  \-----------------------/
-# ||
+# ||  /---------------------\
+# ||  |mob-groups:          |
+# ||  |  groupName1:        |
+# ||  |    - EntityType     |
+# ||  |  groupName2:        |
+# ||  |    - EntityType     |
+# ||  |                     |
+# ||  \---------------------/
 # ||  ______________________________________________________________________________________________________________________________
 # ||
 # ||    [|  This section covers two different systems, the Universal Groups and the Custom Groups.
 # ||    [|  Both Mobs and Biomes can utilize a set of predefined Universal Groups when selecting entities under conditions.
+# ||
 # ||                              all_mobs - All entities, levelled or otherwise.
 # ||                   all_levellable_mobs - All levelled or levellable entities.
 # ||                      all_hostile_mobs - All hostile entities.
@@ -367,16 +391,16 @@
 # ||        ¦ NETHER_WASTES ¦ CRIMSON_FOREST ¦ WARPED_FOREST ¦ SOUL_SAND_VALLEY ¦ BASALT_DELTAS
 # ||    end_biomes
 # ||        ¦ THE_END ¦ SMALL_END_ISLANDS ¦ END_MIDLANDS ¦ END_HIGHLANDS ¦ END_BARRENS
-# ||
 # ||  ______________________________________________________________________________________________________________________________
 # ||
 # ||    mob-groups:
 # ||        [|  The main configuration tree for mob-groups. Do not edit or remove this from your configuration file.
+# ||
 # ||    groupName1: / groupName2:
 # ||        [|  This represents the name of the custom mob group being created, which can be alphanumeric.
+# ||
 # ||    - EntityType:
 # ||        [|  This represents an entity being added to the custom group.
-# ||
 # ||
 # |||-------------------------------------------------------------------------------------------------------------------------------\
 # |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\
@@ -386,40 +410,41 @@
 # ||                     |  |  | | . | . | .'| |  |   __| | |   |  _|  _| | . |   |_ -|
 # ||                     |_____|_|___|___|__,|_|  |__|  |___|_|_|___|_| |_|___|_|_|___|
 # ||
-# ||  /-------------------------------------\   /----------------------------------\
-# ||  |custom-rules:                        |   |custom-rules:                     |
-# ||  |  - enabled: true                    |   |  name: 'Run First'               |
-# ||  |    name: 'Identify the Rule'        |   |  priority: 2                     |
-# ||  |    use-preset: 1, 2, three, four    |   |custom-rules:                     |
-# ||  |    use-preset:                      |   |  name: 'Run Second'              |
-# ||  |      - 1                            |   |  priority: 1                     |
-# ||  |      - 2                            |   |custom-rules:                     |
-# ||  |      - three                        |   |  name: 'Run Normally'            |
-# ||  |      - four                         |   |  priority: 0                     |
-# ||  |    priority: 1                      |   |custom-rules:                     |
-# ||  |                                     |   |  name: 'Run Second to Last'      |
-# ||  \-------------------------------------/   |  priority: -1                    |
-# ||                                            |custom-rules:                     |
-# ||                                            |  name: 'Run Last'                |
-# ||                                            |  priority: -2                    |
-# ||                                            |                                  |
-# ||                                            \----------------------------------/
-# ||
+# ||  /--------------------------------------\   /---------------------------------\
+# ||  |custom-rules:                         |   |custom-rules:                    |
+# ||  |  - enabled: true                     |   |  name: 'Run First'              |
+# ||  |    name: 'Identify the Rule'         |   |  priority: 2                    |
+# ||  |    use-preset: 1, 2, three, four     |   |custom-rules:                    |
+# ||  |    use-preset:                       |   |  name: 'Run Second'             |
+# ||  |      - 1                             |   |  priority: 1                    |
+# ||  |      - 2                             |   |custom-rules:                    |
+# ||  |      - three                         |   |  name: 'Run Normally'           |
+# ||  |      - four                          |   |  priority: 0                    |
+# ||  |    priority: 1                       |   |custom-rules:                    |
+# ||  |                                      |   |  name: 'Run Second to Last'     |
+# ||  \--------------------------------------/   |  priority: -1                   |
+# ||                                             |custom-rules:                    |
+# ||                                             |  name: 'Run Last'               |
+# ||                                             |  priority: -2                   |
+# ||                                             |                                 |
+# ||                                             \---------------------------------/
 # ||  ______________________________________________________________________________________________________________________________
 # ||
 # ||    - enabled: true
 # ||        [|  This allows you to enable to disable a Custom Rule once it's written.
+# ||
 # ||    name:
 # ||        [|  This configuration is to both make Rules easier to read and provide the debugger something to output.
+# ||
 # ||    use-preset:
 # ||        [|  This configuration can be written in two different ways, but both function the same. Under the presets: section, once
 # ||        [|  you have crafted the preset, you can then apply it across either the Default Rule or Custom Rules as necessary.
 # ||        [|  This helps to reduce the amount of text you need especially if you're using similar rules to make adjustments.
+# ||
 # ||    priority:
 # ||        [|  The order which Custom Rules checks and applies the rules are linear, starting with the Default Rule and then proceeding
 # ||        [|  to the Custom Rules in order from the first rule to the last. If you have established a priority, you can allow a rule
 # ||        [|  to skip the line or get to the back of the line, depending on your needs.
-# ||
 # ||
 # |||-------------------------------------------------------------------------------------------------------------------------------\
 # |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\
