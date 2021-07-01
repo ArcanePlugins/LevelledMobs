@@ -112,18 +112,19 @@
 # ||  |      override: false                                      |
 # ||  |      player-caused: true                                  |
 # ||  |  - PLAYER_HEAD:                                           |
-# ||  |       equipped: 1.0                                       |
-# ||  |       modhead-id: '61dab4ad-b60e-43c6-8873-38feabf458a3'  |
-# ||  |       modhead-texture: 'eyJ0ZXh0dX.....ZmYiJ9fX0='        |
-# ||  |       name: "1-Up Mushroom"                               |
-# ||  |       lore:                                               |
+# ||  |      equipped: 1.0                                        |
+# ||  |      modhead-id: '61dab4ad-b60e-43c6-8873-38feabf458a3'   |
+# ||  |      modhead-texture: 'eyJ0ZXh0dX.....ZmYiJ9fX0='         |
+# ||  |      name: "1-Up Mushroom"                                |
+# ||  |      lore:                                                |
 # ||  |        - "Lore"                                           |
 # ||  |                                                           |
 # ||  \-----------------------------------------------------------/
 # ||
 # ||    [|  Each attribute listed above and below helps you to refine a Custom Drop or Custom Command to apply to either an individual
 # ||    [|  entity, universal group, or drop table.
-# ||    [|    NOTE: Unless override: true is set for the drops, the EntityType will still process it's vanilla drops alongside any Custom Drops.
+# ||
+# ||        NOTE: Unless override: true is set for the drops, the EntityType will still process it's vanilla drops alongside any Custom Drops.
 # ||
 # ||  ______________________________________________________________________________________________________________________________
 # ||
@@ -224,15 +225,14 @@
 # ||    [|  You can use these attributes within any of the sections below, including the universal groups, loot tables, and each individual entity.
 # ||    [|  Below lists each of the attributes related to commands and how to use them.
 # ||
-# ||                             %mob-lvl% | The mobs' level.
-# ||                         %displayname% | The mobs' name; will show nametag name if tagged.
-# ||                         %entity-name% | The mobs' name; will NOT show nametag name if tagged.
-# ||                   %entity-max-health% | The mobs' max health.
-# ||           %entity-max-health-rounded% | The mobs' max health, rounded.
-# ||                           %wg_region% | The name of the WorldGuard region where event occured.
-# ||                               %world% | The name of the world where the event occurred.
-# ||                            %location% | The current location of the entity.
-# ||                                       | Presented as '(X, Y, Z)'
+# ||                             %mob-lvl% - The mobs' level.
+# ||                         %displayname% - The mobs' name; will show nametag name if tagged.
+# ||                         %entity-name% - The mobs' name; will NOT show nametag name if tagged.
+# ||                   %entity-max-health% - The mobs' max health.
+# ||           %entity-max-health-rounded% - The mobs' max health, rounded.
+# ||                           %wg_region% - The name of the WorldGuard region where event occured.
+# ||                               %world% - The name of the world where the event occurred.
+# ||                            %location% - The current location of the entity, presented as '(X, Y, Z)'
 # ||  ______________________________________________________________________________________________________________________________
 # ||
 # ||    - customCommand:
@@ -271,7 +271,7 @@
 # ||        [|  to describe what the command does to make things easier to read.
 # ||
 # ||    nospawner:
-# ||        [| When set to true, entities spawned from a spawner cube will not run the command upon death as a naturally generated entity would.
+# ||        [|  When set to true, entities spawned from a spawner cube will not run the command upon death as a naturally generated entity would.
 # ||
 # ||    player-caused:
 # ||        [|  When set to true, if an entity dies to environment (fall damage) or another entity (mob v mob), the command will not run; requiring the death to be
