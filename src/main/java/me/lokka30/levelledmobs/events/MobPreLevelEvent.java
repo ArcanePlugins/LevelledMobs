@@ -1,6 +1,7 @@
 package me.lokka30.levelledmobs.events;
 
 import me.lokka30.levelledmobs.LevelInterface;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
@@ -64,6 +65,7 @@ public class MobPreLevelEvent extends Event implements Cancellable {
     private final HashSet<LevelInterface.AdditionalLevelInformation> additionalInformation;
 
     public MobPreLevelEvent(@NotNull final LivingEntity entity, final int level, @NotNull final LevelCause levelCause, @Nullable final HashSet<LevelInterface.AdditionalLevelInformation> additionalInformation) {
+        super(!Bukkit.isPrimaryThread());
         this.entity = entity;
         this.level = level;
         this.levelCause = levelCause;
