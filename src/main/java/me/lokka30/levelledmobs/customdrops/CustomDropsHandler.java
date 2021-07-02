@@ -225,9 +225,7 @@ public class CustomDropsHandler {
 
     private boolean checkOverallChance(@NotNull final CustomDropProcessingInfo info){
         for (final CustomDropInstance dropInstance : info.allDropInstances) {
-            if (dropInstance.overallChance == null || dropInstance.overallChance >= 1.0) continue;
-            // not sure why someone would put a 0 percent chance, but maybe
-            if (dropInstance.overallChance <= 0.0) return false;
+            if (dropInstance.overallChance == null || dropInstance.overallChance >= 1.0 || dropInstance.overallChance <= 0.0) continue;
 
             synchronized (info.lmEntity.getLivingEntity().getPersistentDataContainer()) {
                 if (info.lmEntity.getPDC().has(this.overallChanceKey, PersistentDataType.INTEGER)) {

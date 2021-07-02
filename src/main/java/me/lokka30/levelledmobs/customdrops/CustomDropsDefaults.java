@@ -24,6 +24,7 @@ public class CustomDropsDefaults {
     public int maxDropGroup;
     public double chance;
     public double equippedSpawnChance;
+    public Double overallChance;
     public String groupId;
     public String damage;
     public List<ItemFlag> itemFlags;

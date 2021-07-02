@@ -78,6 +78,7 @@ public class CustomDropsParser {
         // now we'll use the attributes here for defaults
         this.defaults.setDefaultsFromDropItem(drop);
         this.defaults.override = dropInstance.overrideStockDrops;
+        this.defaults.overallChance = dropInstance.overallChance;
     }
 
     private void parseCustomDrops(final ConfigurationSection config){
@@ -146,6 +147,7 @@ public class CustomDropsParser {
                 }
 
                 dropInstance.overrideStockDrops = this.defaults.override;
+                dropInstance.overallChance = this.defaults.overallChance;
 
                 if (!isEntityTable) {
                     if (config.getList(item) != null) {
@@ -301,6 +303,11 @@ public class CustomDropsParser {
         if (!Utils.isNullOrEmpty(cs.getString("amount"))) {
             if (!dropBase.setAmountRangeFromString(cs.getString("amount")))
                 Utils.logger.warning(String.format("Invalid number or number range for amount on %s, %s", dropInstance.getMobOrGroupName(), cs.getString("amount")));
+        }
+
+        if (!Utils.isNullOrEmpty(cs.getString("overall_chance"))) {
+            dropInstance.overallChance = cs.getDouble("overall_chance");
+            if (dropInstance.overallChance == 0.0) dropInstance.overallChance = null;
         }
 
         if (dropBase instanceof CustomCommand) {
