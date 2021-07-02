@@ -326,30 +326,44 @@ public class RulesManager {
 
     @Nullable
     public String getRule_EntityOverriddenName(@NotNull final LivingEntityWrapper lmEntity){
-        List<String> overridenNames = null;
+        NameOverrideInfo namesInfo = null;
 
         if (lmEntity.hasOverridenEntityName())
             return lmEntity.getOverridenEntityName();
 
         for (final RuleInfo ruleInfo : lmEntity.getApplicableRules()){
+            List<NameOverrideInfo> infos = null;
+
             if (ruleInfo.entityNameOverrides.containsKey(lmEntity.getNameIfBaby()))
-                overridenNames = ruleInfo.entityNameOverrides.get(lmEntity.getNameIfBaby());
+                infos = ruleInfo.entityNameOverrides.get(lmEntity.getNameIfBaby());
             else if (ruleInfo.entityNameOverrides.containsKey("all_entities"))
-                overridenNames = ruleInfo.entityNameOverrides.get("all_entities");
+                infos = ruleInfo.entityNameOverrides.get("all_entities");
+
+            if (infos != null) {
+                for (final NameOverrideInfo info : infos){
+                     if (info.isApplicableToMobLevel(lmEntity.getMobLevel())){
+                         namesInfo = info;
+                         break;
+                     }
+                }
+            }
         }
 
-        if (overridenNames == null || overridenNames.isEmpty())
+        if (namesInfo == null || namesInfo.names.isEmpty())
             return null;
-        else if (overridenNames.size() > 1) {
-            Collections.shuffle(overridenNames);
-            // set a PDC key with the name otherwise the name will constantly change
-            lmEntity.setOverridenEntityName(overridenNames.get(0));
-        }
+        else if (namesInfo.names.size() > 1)
+            Collections.shuffle(namesInfo.names);
 
         final String entityName = Utils.capitalize(lmEntity.getNameIfBaby().replaceAll("_", " "));
-        String result = overridenNames.get(0);
+        String result = namesInfo.names.get(0);
         result = result.replace("%entity-name%", entityName);
         result = result.replace("%displayname%", (lmEntity.getLivingEntity().getCustomName() == null ? entityName : lmEntity.getLivingEntity().getCustomName()));
+
+        if (namesInfo.names.size() > 1){
+            // set a PDC key with the name otherwise the name will constantly change
+            lmEntity.setOverridenEntityName(result);
+        }
+
         return result;
     }
 

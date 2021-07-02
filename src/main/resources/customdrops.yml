@@ -57,6 +57,8 @@ defaults:
   priority: 0
   player-caused: true
   item-flags: ''
+  groupid: ''
+  overall_chance: 0.0
   nbt-data: ''
 
 

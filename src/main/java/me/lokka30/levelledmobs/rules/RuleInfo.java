@@ -60,7 +60,7 @@ public class RuleInfo {
     public MobTamedStatusEnum conditions_MobTamedStatus;
     public LevellingStrategy levellingStrategy;
     @NotNull
-    public Map<String, List<String>> entityNameOverrides;
+    public Map<String, List<NameOverrideInfo>> entityNameOverrides;
     @NotNull
     public final Map<String, String> ruleSourceNames;
     public List<TieredColoringInfo> tieredColoringInfos;
@@ -103,7 +103,7 @@ public class RuleInfo {
                 final Object presetValue = f.get(preset);
 
                 if (f.getName().equals("entityNameOverrides")){
-                    this.entityNameOverrides.putAll((Map<String, List<String>>) presetValue);
+                    this.entityNameOverrides.putAll((Map<String, List<NameOverrideInfo>>) presetValue);
                     skipSettingValue = true;
                 }
 

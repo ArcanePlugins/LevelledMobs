@@ -450,14 +450,49 @@ public class RulesParsingManager {
         if (cs == null) return;
 
         for (final String name : cs.getKeys(false)){
+            final NameOverrideInfo info = new NameOverrideInfo();
             final List<String> names = cs.getStringList(name);
-            if (!names.isEmpty())
-                parsingInfo.entityNameOverrides.put(name, names);
+            if (!names.isEmpty()) {
+                info.names.addAll(names);
+                final List<NameOverrideInfo> infos = new LinkedList<>();
+                infos.add(info);
+                parsingInfo.entityNameOverrides.put(name, infos);
+            }
             else if (cs.getString(name) != null) {
-                names.add(cs.getString(name));
-                parsingInfo.entityNameOverrides.put(name, names);
+                if (parseNumberRange(objTo_CS(cs.get(name)), name, info)) continue;
+
+                info.names.add(cs.getString(name));
+                final List<NameOverrideInfo> infos = new LinkedList<>();
+                infos.add(info);
+                parsingInfo.entityNameOverrides.put(name, infos);
             }
         }
+    }
+
+    private boolean parseNumberRange(final ConfigurationSection cs, final String keyName, final NameOverrideInfo info){
+        if (cs == null) return false;
+
+        for (final String name : cs.getKeys(false)){
+            final List<String> names = cs.getStringList(name);
+            if (!names.isEmpty()) {
+                final List<NameOverrideInfo> infos = parsingInfo.entityNameOverrides.containsKey(name) ?
+                        parsingInfo.entityNameOverrides.get(name) : new LinkedList<>();
+                info.names.addAll(names);
+                infos.add(info);
+                parsingInfo.entityNameOverrides.put(name, infos);
+            }
+            else if (cs.getString(name) != null) {
+                final List<NameOverrideInfo> infos = parsingInfo.entityNameOverrides.containsKey(name) ?
+                        parsingInfo.entityNameOverrides.get(name) : new LinkedList<>();
+                info.names.add(cs.getString(name));
+                infos.add(info);
+                parsingInfo.entityNameOverrides.put(name, infos);
+            }
+            if (!info.setRangeFromString(keyName))
+                Utils.logger.warning("Invalid number range: " + keyName);
+        }
+
+        return true;
     }
 
     private void parseApplySettings(final ConfigurationSection cs){
@@ -572,8 +607,6 @@ public class RulesParsingManager {
         spawnDistanceStrategy.lvlMultiplier = YmlParsingHelper.getDouble2(cs, "lvl-multiplier", spawnDistanceStrategy.lvlMultiplier);
         spawnDistanceStrategy.multiplierPeriod = YmlParsingHelper.getInt2(cs, "multiplier-period", spawnDistanceStrategy.multiplierPeriod);
         spawnDistanceStrategy.scaleDownward = YmlParsingHelper.getBoolean2(cs, "scale-downward", spawnDistanceStrategy.scaleDownward);
-
-        Utils.logger.info("2: " + parsingInfo.getRuleName() + ", " + spawnDistanceStrategy);
     }
 
     @Nullable

@@ -24,6 +24,7 @@ public class CustomDropsDefaults {
     public int maxDropGroup;
     public double chance;
     public double equippedSpawnChance;
+    public Double overallChance;
     public String groupId;
     public String damage;
     public String nbtData;
@@ -57,6 +58,7 @@ public class CustomDropsDefaults {
         this.noMultiplier = drop.noMultiplier;
         this.noSpawner = drop.noSpawner;
         this.playerCausedOnly = drop.playerCausedOnly;
+        this.groupId = drop.groupId;
         this.nbtData = drop.nbtData;
         this.itemFlags = drop.itemFlags;
     }

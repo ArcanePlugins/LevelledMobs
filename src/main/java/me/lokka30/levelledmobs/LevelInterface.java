@@ -190,7 +190,7 @@ public class LevelInterface {
      * @param bypassLimits whether LM should disregard max level, etc.
      * @param additionalLevelInformation used to determine the source event
      */
-    public void applyLevelToMob(@NotNull final LivingEntityWrapper lmEntity, final int level, final boolean isSummoned, final boolean bypassLimits, @NotNull final HashSet<AdditionalLevelInformation> additionalLevelInformation) {
+    public void applyLevelToMob(@NotNull final LivingEntityWrapper lmEntity, int level, final boolean isSummoned, final boolean bypassLimits, @NotNull final HashSet<AdditionalLevelInformation> additionalLevelInformation) {
         if (level <= 0){
             // this is likely used by a rule to specify a mob not be levelled
             return;
@@ -200,26 +200,16 @@ public class LevelInterface {
 
         if (isSummoned) {
             SummonedMobPreLevelEvent summonedMobPreLevelEvent = new SummonedMobPreLevelEvent(lmEntity.getLivingEntity(), level);
-
-            final BukkitRunnable runnable = new BukkitRunnable() {
-                @Override
-                public void run() {
-                    Bukkit.getPluginManager().callEvent(summonedMobPreLevelEvent);
-                }
-            };
-            runnable.runTask(main);
+            Bukkit.getPluginManager().callEvent(summonedMobPreLevelEvent);
 
             if (summonedMobPreLevelEvent.isCancelled()) return;
         } else {
             MobPreLevelEvent mobPreLevelEvent = new MobPreLevelEvent(lmEntity.getLivingEntity(), level, MobPreLevelEvent.LevelCause.NORMAL, additionalLevelInformation);
-            final BukkitRunnable runnable = new BukkitRunnable() {
-                @Override
-                public void run() {
-                    Bukkit.getPluginManager().callEvent(mobPreLevelEvent);
-                }
-            };
-            runnable.runTask(main);
+
+            Bukkit.getPluginManager().callEvent(mobPreLevelEvent);
             if (mobPreLevelEvent.isCancelled()) return;
+
+            level = mobPreLevelEvent.getLevel();
         }
 
         boolean hasNoLevelKey;
@@ -247,27 +237,28 @@ public class LevelInterface {
             nbtData = null;
         }
         final String finalNbtData = nbtData;
+        final int creeperLevel = level;
 
         // setting attributes should be only done in the main thread.
         final BukkitRunnable applyAttribs = new BukkitRunnable() {
             @Override
             public void run() {
-            synchronized (main.attributeSyncObject) {
-                main.levelManager.applyLevelledAttributes(lmEntity, Addition.ATTRIBUTE_ATTACK_DAMAGE);
-                main.levelManager.applyLevelledAttributes(lmEntity, Addition.ATTRIBUTE_MAX_HEALTH);
-                main.levelManager.applyLevelledAttributes(lmEntity, Addition.ATTRIBUTE_MOVEMENT_SPEED);
-            }
+                synchronized (main.attributeSyncObject) {
+                    main.levelManager.applyLevelledAttributes(lmEntity, Addition.ATTRIBUTE_ATTACK_DAMAGE);
+                    main.levelManager.applyLevelledAttributes(lmEntity, Addition.ATTRIBUTE_MAX_HEALTH);
+                    main.levelManager.applyLevelledAttributes(lmEntity, Addition.ATTRIBUTE_MOVEMENT_SPEED);
+                }
 
-            if (finalNbtData != null) {
-                NBT_ApplyResult result = NBTManager.applyNBT_Data_Mob(lmEntity, finalNbtData);
-                if (result.hadException())
-                    Utils.logger.warning("Error applying NBT data to " + lmEntity.getTypeName() + ", " + result.exceptionMessage);
-                else
-                    Utils.logger.info("Successfully applied NBT data to " + lmEntity.getTypeName());
-            }
+                if (finalNbtData != null) {
+                    NBT_ApplyResult result = NBTManager.applyNBT_Data_Mob(lmEntity, finalNbtData);
+                    if (result.hadException())
+                        Utils.logger.warning("Error applying NBT data to " + lmEntity.getTypeName() + ", " + result.exceptionMessage);
+                    else
+                        Utils.logger.info("Successfully applied NBT data to " + lmEntity.getTypeName());
+                }
 
-            if (lmEntity.getLivingEntity() instanceof Creeper)
-                main.levelManager.applyCreeperBlastRadius(lmEntity, level);
+                if (lmEntity.getLivingEntity() instanceof Creeper)
+                    main.levelManager.applyCreeperBlastRadius(lmEntity, creeperLevel);
             }
         };
         applyAttribs.runTask(main);
@@ -276,13 +267,7 @@ public class LevelInterface {
         main.levelManager.applyLevelledEquipment(lmEntity, lmEntity.getMobLevel());
 
         MobPostLevelEvent.LevelCause levelCause = isSummoned ? MobPostLevelEvent.LevelCause.SUMMONED : MobPostLevelEvent.LevelCause.NORMAL;
-        final BukkitRunnable runnable = new BukkitRunnable() {
-            @Override
-            public void run() {
-                Bukkit.getPluginManager().callEvent(new MobPostLevelEvent(lmEntity, levelCause, additionalLevelInformation));
-            }
-        };
-        runnable.runTask(main);
+        Bukkit.getPluginManager().callEvent(new MobPostLevelEvent(lmEntity, levelCause, additionalLevelInformation));
 
         final StringBuilder sb = new StringBuilder();
         sb.append("entity: ");
