@@ -327,8 +327,28 @@ public class CustomDropsHandler {
         }
 
         if (dropBase instanceof CustomCommand) {
+            // ------------------------------------------ commands get executed here then function returns ---------------------------------------------------
             executeCommand((CustomCommand) dropBase, info);
+
+            if (hasGroupId){
+                final int count = info.groupIDsDroppedAlready.containsKey(dropBase.groupId) ?
+                        info.groupIDsDroppedAlready.get(dropBase.groupId) + 1:
+                        1;
+
+                info.groupIDsDroppedAlready.put(dropBase.groupId, count);
+
+                if (main.settingsCfg.getStringList("debug-misc").contains("CUSTOM_DROPS")) {
+                    Utils.logger.info(String.format("&8- &7level: &b%s&7, item: custom command, gId: &b%s&7, maxDropGroup: &b%s&7, groupDropCount: &b%s&7, executed: &btrue",
+                            info.lmEntity.getMobLevel(), dropBase.groupId, dropBase.maxDropGroup, count));
+                }
+            }
+            else if (main.settingsCfg.getStringList("debug-misc").contains("CUSTOM_DROPS")) {
+                Utils.logger.info(String.format("&8- &7level: &b%s&7, item: custom command, gId: &b%s&7, maxDropGroup: &b%s&7, executed: &btrue",
+                        info.lmEntity.getMobLevel(), dropBase.groupId, dropBase.maxDropGroup));
+            }
+
             return;
+            // -----------------------------------------------------------------------------------------------------------------------------------------------
         }
         CustomDropItem dropItem = (CustomDropItem) dropBase;
 

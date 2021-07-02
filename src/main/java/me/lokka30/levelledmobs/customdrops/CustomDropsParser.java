@@ -292,10 +292,11 @@ public class CustomDropsParser {
         dropBase.playerCausedOnly = cs.getBoolean("player-caused", this.defaults.playerCausedOnly);
         dropBase.maxDropGroup = cs.getInt("maxdropgroup", this.defaults.maxDropGroup);
 
-        if (!Utils.isNullOrEmpty(cs.getString("groupid"))) {
+        dropBase.groupId = defaults.groupId;
+        if (!Utils.isNullOrEmpty(cs.getString("groupid")))
             dropBase.groupId = cs.getString("groupid");
-            dropInstance.utilizesGroupIds = true;
-        }
+
+        dropInstance.utilizesGroupIds = !Utils.isNullOrEmpty(dropBase.groupId);
 
         if (!Utils.isNullOrEmpty(cs.getString("amount"))) {
             if (!dropBase.setAmountRangeFromString(cs.getString("amount")))
@@ -554,6 +555,19 @@ public class CustomDropsParser {
 
         if (baseItem.noSpawner) sb.append(", nospn");
 
+        if (!Utils.isNullOrEmpty(baseItem.groupId)) {
+            sb.append(", gId: ");
+            sb.append(baseItem.groupId);
+            if (baseItem.maxDropGroup > 0){
+                sb.append(", maxDropGroup: ");
+                sb.append(baseItem.maxDropGroup);
+            }
+        }
+        if (baseItem.priority > 0) {
+            sb.append(", pri: ");
+            sb.append(baseItem.priority);
+        }
+
         if (command != null){
             if (!Utils.isNullOrEmpty(command.commandName)) {
                 sb.append(", name: ");
@@ -577,18 +591,6 @@ public class CustomDropsParser {
         if (item.equippedSpawnChance > 0.0) {
             sb.append(", equipChance: ");
             sb.append(item.equippedSpawnChance);
-        }
-        if (!Utils.isNullOrEmpty(item.groupId)) {
-            sb.append(", gId: ");
-            sb.append(item.groupId);
-            if (item.maxDropGroup > 0){
-                sb.append(", maxDropGroup: ");
-                sb.append(item.maxDropGroup);
-            }
-        }
-        if (item.priority > 0) {
-            sb.append(", pri: ");
-            sb.append(item.priority);
         }
         if (item.itemFlags != null && !item.itemFlags.isEmpty()){
             sb.append(", itemflags: ");

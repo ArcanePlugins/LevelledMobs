@@ -56,5 +56,6 @@ public class CustomDropsDefaults {
         this.noMultiplier = drop.noMultiplier;
         this.noSpawner = drop.noSpawner;
         this.playerCausedOnly = drop.playerCausedOnly;
+        this.groupId = drop.groupId;
     }
 }
