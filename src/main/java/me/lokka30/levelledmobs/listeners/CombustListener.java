@@ -2,6 +2,7 @@ package me.lokka30.levelledmobs.listeners;
 
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
+import me.lokka30.levelledmobs.misc.Utils;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.entity.EntityType;
@@ -60,6 +61,8 @@ public class CombustListener implements Listener {
         if (newHealth < 0.0) newHealth = 0.0;
 
         lmEntity.getLivingEntity().setHealth(newHealth);
-        main.levelManager.updateNametag(lmEntity);
+
+        if (lmEntity.isLevelled())
+            main.levelManager.updateNametag(lmEntity);
     }
 }

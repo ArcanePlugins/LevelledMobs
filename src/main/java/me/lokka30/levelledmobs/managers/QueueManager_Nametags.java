@@ -77,6 +77,11 @@ public class QueueManager_Nametags {
 
     private void updateNametag(final @NotNull LivingEntityWrapper lmEntity, final String nametag, final List<Player> players) {
 
+        if (main.settingsCfg.getBoolean(YmlParsingHelper.getKeyNameFromConfig(main.settingsCfg, "use-customname-for-mob-nametags"))){
+            updateNametag_CustomName(lmEntity, nametag);
+            return;
+        }
+
         if (!ExternalCompatibilityManager.hasProtocolLibInstalled()) return;
         if (main.settingsCfg.getBoolean(YmlParsingHelper.getKeyNameFromConfig(main.settingsCfg, "assert-entity-validity-with-nametag-packets")) && !lmEntity.getLivingEntity().isValid())
             return;
@@ -134,5 +139,15 @@ public class QueueManager_Nametags {
                 ex.printStackTrace();
             }
         }
+    }
+
+    private void updateNametag_CustomName(final @NotNull LivingEntityWrapper lmEntity, final String nametag){
+        final boolean hadCustomName = lmEntity.getLivingEntity().getCustomName() != null;
+
+        lmEntity.getLivingEntity().setCustomName(nametag);
+        lmEntity.getLivingEntity().setCustomNameVisible(true);
+
+        if (!hadCustomName)
+            lmEntity.getLivingEntity().setRemoveWhenFarAway(true);
     }
 }

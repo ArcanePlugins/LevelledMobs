@@ -325,7 +325,7 @@ public class RulesManager {
     }
 
     @Nullable
-    public String getRule_EntityOverriddenName(@NotNull final LivingEntityWrapper lmEntity){
+    public String getRule_EntityOverriddenName(@NotNull final LivingEntityWrapper lmEntity, final boolean useCustomNameForNametags){
         NameOverrideInfo namesInfo = null;
 
         if (lmEntity.hasOverridenEntityName())
@@ -357,7 +357,8 @@ public class RulesManager {
         final String entityName = Utils.capitalize(lmEntity.getNameIfBaby().replaceAll("_", " "));
         String result = namesInfo.names.get(0);
         result = result.replace("%entity-name%", entityName);
-        result = result.replace("%displayname%", (lmEntity.getLivingEntity().getCustomName() == null ? entityName : lmEntity.getLivingEntity().getCustomName()));
+        result = result.replace("%displayname%", (lmEntity.getLivingEntity().getCustomName() == null || useCustomNameForNametags ?
+                entityName : lmEntity.getLivingEntity().getCustomName()));
 
         if (namesInfo.names.size() > 1){
             // set a PDC key with the name otherwise the name will constantly change

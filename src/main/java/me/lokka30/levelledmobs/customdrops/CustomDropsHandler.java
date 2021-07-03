@@ -413,7 +413,8 @@ public class CustomDropsHandler {
     }
 
     private void executeCommand(@NotNull final CustomCommand customCommand, @NotNull final CustomDropProcessingInfo info){
-        final String overridenName = main.rulesManager.getRule_EntityOverriddenName(info.lmEntity);
+        final boolean useCustomNameForNametags = main.settingsCfg.getBoolean(YmlParsingHelper.getKeyNameFromConfig(main.settingsCfg, "use-customname-for-mob-nametags"));
+        final String overridenName = main.rulesManager.getRule_EntityOverriddenName(info.lmEntity, useCustomNameForNametags);
 
         String displayName = overridenName == null ?
                 Utils.capitalize(info.lmEntity.getTypeName().replaceAll("_", " ")) :

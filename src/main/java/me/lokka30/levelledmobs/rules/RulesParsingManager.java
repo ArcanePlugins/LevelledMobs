@@ -6,6 +6,7 @@ import me.lokka30.levelledmobs.misc.CachedModalList;
 import me.lokka30.levelledmobs.misc.CustomUniversalGroups;
 import me.lokka30.levelledmobs.misc.Utils;
 import me.lokka30.levelledmobs.misc.YmlParsingHelper;
+import me.lokka30.levelledmobs.rules.strategies.RandomLevellingStrategy;
 import me.lokka30.levelledmobs.rules.strategies.SpawnDistanceStrategy;
 import me.lokka30.levelledmobs.rules.strategies.YDistanceStrategy;
 import org.bukkit.block.Biome;
@@ -567,7 +568,7 @@ public class RulesParsingManager {
         parsingInfo.maxRandomVariance = YmlParsingHelper.getInt2(cs, "max-random-variance", parsingInfo.maxRandomVariance);
         parsingInfo.useRandomLevelling = YmlParsingHelper.getBoolean2(cs, "random", parsingInfo.useRandomLevelling);
 
-        ConfigurationSection cs_YDistance = objTo_CS(cs.get(YmlParsingHelper.getKeyNameFromConfig(cs,"y-coordinate")));
+        final ConfigurationSection cs_YDistance = objTo_CS(cs.get(YmlParsingHelper.getKeyNameFromConfig(cs,"y-coordinate")));
         if (cs_YDistance != null){
             final YDistanceStrategy yDistanceStrategy = parsingInfo.levellingStrategy instanceof YDistanceStrategy ?
                     (YDistanceStrategy) parsingInfo.levellingStrategy : new YDistanceStrategy();
@@ -579,7 +580,7 @@ public class RulesParsingManager {
             this.parsingInfo.levellingStrategy = yDistanceStrategy;
         }
 
-        ConfigurationSection cs_SpawnDistance = objTo_CS(cs.get(YmlParsingHelper.getKeyNameFromConfig(cs,"distance-from-spawn")));
+        final ConfigurationSection cs_SpawnDistance = objTo_CS(cs.get(YmlParsingHelper.getKeyNameFromConfig(cs,"distance-from-spawn")));
         if (cs_SpawnDistance != null){
             final SpawnDistanceStrategy spawnDistanceStrategy = parsingInfo.levellingStrategy instanceof SpawnDistanceStrategy ?
                     (SpawnDistanceStrategy) parsingInfo.levellingStrategy : new SpawnDistanceStrategy();
@@ -596,6 +597,23 @@ public class RulesParsingManager {
                 parseBlendedLevelling(objTo_CS(cs_SpawnDistance.get(YmlParsingHelper.getKeyNameFromConfig(cs_SpawnDistance,"blended-levelling"))), spawnDistanceStrategy);
 
             this.parsingInfo.levellingStrategy = spawnDistanceStrategy;
+        }
+
+        final ConfigurationSection cs_Random = objTo_CS(cs.get(YmlParsingHelper.getKeyNameFromConfig(cs,"max-random-variance")));
+        if (cs_Random != null){
+            final Map<String, Integer> randomMap = new TreeMap<>();
+            final RandomLevellingStrategy randomLevelling = new RandomLevellingStrategy();
+            randomLevelling.doMerge = cs_Random.getBoolean(YmlParsingHelper.getKeyNameFromConfig(cs_Random, "merge"));
+
+            for (final String range : cs_Random.getKeys(false)){
+                final int value = cs_Random.getInt(range);
+                randomMap.put(range, value);
+            }
+
+            if (!randomMap.isEmpty())
+                randomLevelling.weightedRandom = randomMap;
+
+            this.parsingInfo.levellingStrategy = randomLevelling;
         }
     }
 

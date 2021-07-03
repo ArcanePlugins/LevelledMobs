@@ -6,6 +6,7 @@ import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.customdrops.CustomDropItem;
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
 import me.lokka30.levelledmobs.misc.Utils;
+import me.lokka30.levelledmobs.misc.YmlParsingHelper;
 import me.lokka30.microlib.MessageUtils;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
@@ -142,7 +143,8 @@ public class MobHeadManager {
             final Player killerPlayer = lmEntity.getLivingEntity().getKiller();
             if (killerPlayer != null)
                 killerName = killerPlayer.getDisplayName();
-            final String overridenName = main.rulesManager.getRule_EntityOverriddenName(lmEntity);
+            final boolean useCustomNameForNametags = main.settingsCfg.getBoolean(YmlParsingHelper.getKeyNameFromConfig(main.settingsCfg, "use-customname-for-mob-nametags"));
+            final String overridenName = main.rulesManager.getRule_EntityOverriddenName(lmEntity, useCustomNameForNametags);
             final String mobName = overridenName == null ?
                     Utils.capitalize(lmEntity.getTypeName().replace("_", " ")) :
                     overridenName;

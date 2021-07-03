@@ -4,6 +4,7 @@ import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
 import me.lokka30.levelledmobs.misc.Utils;
+import me.lokka30.levelledmobs.misc.YmlParsingHelper;
 import me.lokka30.microlib.MessageUtils;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -90,7 +91,8 @@ public class PAPIManager extends PlaceholderExpansion {
         if (lmEntity.getLivingEntity().getCustomName() != null)
             return lmEntity.getLivingEntity().getCustomName();
 
-        final String overridenName = main.rulesManager.getRule_EntityOverriddenName(lmEntity);
+        final boolean useCustomNameForNametags = main.settingsCfg.getBoolean(YmlParsingHelper.getKeyNameFromConfig(main.settingsCfg, "use-customname-for-mob-nametags"));
+        final String overridenName = main.rulesManager.getRule_EntityOverriddenName(lmEntity, useCustomNameForNametags);
         return overridenName == null ?
                 Utils.capitalize(lmEntity.getTypeName().replaceAll("_", " ")) :
                 MessageUtils.colorizeAll(overridenName);

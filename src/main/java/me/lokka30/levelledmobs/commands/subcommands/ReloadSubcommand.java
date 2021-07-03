@@ -59,6 +59,8 @@ public class ReloadSubcommand implements Subcommand {
             HandlerList.unregisterAll(main.chunkLoadListener);
         }
 
+        main.levelManager.clearRandomLevellingCache();
+
         reloadFinishedMsg.forEach(sender::sendMessage);
     }
 

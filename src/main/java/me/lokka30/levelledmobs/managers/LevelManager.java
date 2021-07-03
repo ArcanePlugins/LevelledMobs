@@ -9,6 +9,7 @@ import me.lokka30.levelledmobs.misc.*;
 import me.lokka30.levelledmobs.rules.MobCustomNameStatusEnum;
 import me.lokka30.levelledmobs.rules.MobTamedStatusEnum;
 import me.lokka30.levelledmobs.rules.strategies.LevellingStrategy;
+import me.lokka30.levelledmobs.rules.strategies.RandomLevellingStrategy;
 import me.lokka30.levelledmobs.rules.strategies.SpawnDistanceStrategy;
 import me.lokka30.levelledmobs.rules.strategies.YDistanceStrategy;
 import me.lokka30.microlib.MessageUtils;
@@ -30,7 +31,6 @@ import javax.annotation.Nonnull;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.*;
-import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Generates levels and manages other functions related to levelling mobs
@@ -53,6 +53,7 @@ public class LevelManager {
     public double attributeAttackDamageMax = 2048.0;
     public Location summonedLocation;
     public EntityType summonedEntityType;
+    private final Map<String, RandomLevellingStrategy> randomLevellingCache;
 
     public final static int maxCreeperBlastRadius = 100;
     public EntitySpawnListener entitySpawnListener;
@@ -66,6 +67,7 @@ public class LevelManager {
         wasBabyMobKey = new NamespacedKey(main, "wasBabyMob");
         overridenEntityNameKey = new NamespacedKey(main, "overridenEntityName");
         this.summonedEntityType = EntityType.UNKNOWN;
+        this.randomLevellingCache = new TreeMap<>();
 
         this.vehicleNoMultiplierItems = Arrays.asList(
                 Material.SADDLE,
@@ -74,6 +76,10 @@ public class LevelManager {
                 Material.GOLDEN_HORSE_ARMOR,
                 Material.DIAMOND_HORSE_ARMOR
         );
+    }
+
+    public void clearRandomLevellingCache(){
+        this.randomLevellingCache.clear();
     }
 
     // this is now the main entry point that determines the level for all criteria
@@ -101,11 +107,39 @@ public class LevelManager {
         if (minLevel == maxLevel)
             return minLevel;
 
-        final LevelNumbersWithBias levelNumbersWithBias = main.rulesManager.getRule_LowerMobLevelBiasFactor(lmEntity, minLevel, maxLevel);
-        if (levelNumbersWithBias != null)
-            return levelNumbersWithBias.getNumberWithinLimits();
+//        final LevelNumbersWithBias levelNumbersWithBias = main.rulesManager.getRule_LowerMobLevelBiasFactor(lmEntity, minLevel, maxLevel);
+//        if (levelNumbersWithBias != null)
+//            return levelNumbersWithBias.getNumberWithinLimits();
 
-        return ThreadLocalRandom.current().nextInt(minLevel, maxLevel + 1);
+        final RandomLevellingStrategy randomLevelling = (levellingStrategy instanceof RandomLevellingStrategy) ?
+                (RandomLevellingStrategy) levellingStrategy : null;
+
+        return generateRandomLevel(randomLevelling, minLevel, maxLevel);
+    }
+
+    private int generateRandomLevel(RandomLevellingStrategy randomLevelling, final int minLevel, final int maxLevel){
+        if (randomLevelling == null){
+            // used the caches defaults if it exists, otherwise add it to the cache
+            if (this.randomLevellingCache.containsKey("default"))
+                randomLevelling = this.randomLevellingCache.get("default");
+            else {
+                randomLevelling = new RandomLevellingStrategy();
+                this.randomLevellingCache.put("default", randomLevelling);
+            }
+        }
+        else {
+            // used the caches one if it exists, otherwise add it to the cache
+            final String checkName = String.format("%s-%s: %s", minLevel, maxLevel, randomLevelling);
+
+            if (this.randomLevellingCache.containsKey(checkName))
+                randomLevelling = this.randomLevellingCache.get(checkName);
+            else {
+                randomLevelling.populateWeightedRandom(minLevel, maxLevel);
+                this.randomLevellingCache.put(checkName, randomLevelling);
+            }
+        }
+
+        return randomLevelling.generateLevel(minLevel, maxLevel);
     }
 
     public int[] getMinAndMaxLevels(final @NotNull LivingEntityInterface lmInterface) {
@@ -259,20 +293,25 @@ public class LevelManager {
     @Nullable
     public String getNametag(final LivingEntityWrapper lmEntity, final boolean isDeathNametag) {
 
+        final boolean useCustomNameForNametags = main.settingsCfg.getBoolean(YmlParsingHelper.getKeyNameFromConfig(main.settingsCfg, "use-customname-for-mob-nametags"));
         String nametag = isDeathNametag ? main.rulesManager.getRule_Nametag_CreatureDeath(lmEntity) : main.rulesManager.getRule_Nametag(lmEntity);
         if ("disabled".equalsIgnoreCase(nametag) || "none".equalsIgnoreCase(nametag)) return null;
 
         // ignore if 'disabled'
-        if (nametag.isEmpty())
-            return lmEntity.getLivingEntity().getCustomName(); // CustomName can be null, that is meant to be the case.
+        if (nametag.isEmpty()) {
+            if (useCustomNameForNametags)
+                return lmEntity.getTypeName();
+            else
+                return lmEntity.getLivingEntity().getCustomName(); // CustomName can be null, that is meant to be the case.
+        }
 
-        final String overridenName = main.rulesManager.getRule_EntityOverriddenName(lmEntity);
+        final String overridenName = main.rulesManager.getRule_EntityOverriddenName(lmEntity, useCustomNameForNametags);
 
         String displayName = overridenName == null ?
                 Utils.capitalize(lmEntity.getTypeName().replaceAll("_", " ")) :
                 MessageUtils.colorizeAll(overridenName);
 
-        if (lmEntity.getLivingEntity().getCustomName() != null)
+        if (lmEntity.getLivingEntity().getCustomName() != null && !useCustomNameForNametags)
             displayName = lmEntity.getLivingEntity().getCustomName();
 
         nametag = replaceStringPlaceholders(nametag, lmEntity, displayName);
