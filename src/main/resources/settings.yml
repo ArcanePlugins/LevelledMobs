@@ -64,6 +64,19 @@ nametag-auto-update-task-period: 6
 
 
 # |||-------------------------------------------------------------------------------------------|
+# ||  Customize Summon Command Limit                                                            |
+# ||                                                                                            |
+# ||  This setting will forcibly limit the number of entities which can be summoned with        |
+# ||  LevelledMob's '/lm summon' command per use. This would be useful to help limit any        |
+# ||  'accidents' or overloading your server with hundreds of spawns.                           |
+# ||                                                                                            |
+# ||  By default, this is set to 10 entities.                                                   |
+# ||                                                                                            |
+# |||-------------------------------------------------------------------------------------------|
+customize-summon-command-limit: 10
+
+
+# |||-------------------------------------------------------------------------------------------|
 # ||  ADVANCED USERS ONLY                                                                       |
 # ||  Mob Head Drop Multiplier                                                                  |
 # ||                                                                                            |
