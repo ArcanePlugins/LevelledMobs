@@ -32,8 +32,8 @@
 # |                                                                                             |    LN 448 +- Crafting Custom Rules                        |
 # |  Dependencies:                                                                              |___________________________________________________________/
 # |    ProtocolLib:                                                                             |                                                           |
-# |      A 'soft dependency'; Not *required* but highly recommended.                            |  D O C U M E N T A T I O N  |  July 1, 2021               |
-# |      Without this, the plugin will not show LevelledMobs's nametags.                        |    L A S T   U P D A T E D  |  LM 3.0.5 b445              |
+# |      A 'soft dependency'; Not *required* but highly recommended.                            |  D O C U M E N T A T I O N  |  July 4, 2021               |
+# |      Without this, the plugin will not show LevelledMobs's nametags.                        |    L A S T   U P D A T E D  |  LM 3.1.0 b451              |
 # |      Entities may still level without the nametag present.                                  |___________________________________________________________/
 # |    IMPORTANT NOTICE                                                                         |                                                           |
 # |      Since Minecraft 1.17, ProtocolLib has had to split into multiple versions              |  Main Contributors:                                       |
