@@ -111,9 +111,9 @@
 # ||  |    excluded-list: ['', '']            |     |  weighted-random:                   |     |  entity-name-override:                      |
 # ||  |    merge: true                        |     |    LVL: X                           |     |    EntityType: ['', '']                     |
 # ||  |  entities:                            |     |    LVL-LVL: X                       |     |  tiered-coloring:                           |
-# ||  |    allowed-list: ['', '']             |     |                                     |     |    LVL-LVL: ''                              |
-# ||  |    allowed-groups: ['', '']           |     \-------------------------------------/     |    default: ''                              |
-# ||  |    excluded-list: ['', '']            |                                                 |                                             |
+# ||  |    allowed-list: ['', '']             |     |    merge: true                      |     |    LVL-LVL: ''                              |
+# ||  |    allowed-groups: ['', '']           |     |                                     |     |    default: ''                              |
+# ||  |    excluded-list: ['', '']            |     \-------------------------------------/     |                                             |
 # ||  |    excluded-groups: ['', '']          |                                                 \---------------------------------------------/
 # ||  |    merge: true                        |
 # ||  |  biomes:                              |
@@ -239,9 +239,11 @@
 # ||    weighted-random:
 # ||      LVL: X
 # ||      LVL-LVL: X
+# ||      merge: true
 # ||        [|  This strategy enables the Weighted Random Bias levelling strategy. This system allows you to randomly level entities, but
 # ||        [|  with preference to different levels or level ranges when applying a random level. You must first list the level or level
 # ||        [|  range to apply, and then replace X with the 'weight' of those levels.
+# ||        [|  If you enable 'merge: true', this will combine the weighted-random list of levels with any other active weighted-random list.
 # ||
 # ||  ______________________________________________________________________________________________________________________________
 # ||
