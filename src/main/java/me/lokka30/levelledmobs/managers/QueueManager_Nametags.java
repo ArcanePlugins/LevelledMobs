@@ -8,6 +8,7 @@ import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.misc.*;
 import org.bukkit.entity.Player;
+import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 
@@ -142,6 +143,9 @@ public class QueueManager_Nametags {
     }
 
     private void updateNametag_CustomName(final @NotNull LivingEntityWrapper lmEntity, final String nametag){
+        if (lmEntity.getPDC().has(main.levelManager.hasCustomNameTag, PersistentDataType.INTEGER))
+            return;
+
         final boolean hadCustomName = lmEntity.getLivingEntity().getCustomName() != null;
 
         lmEntity.getLivingEntity().setCustomName(nametag);

@@ -599,13 +599,14 @@ public class RulesParsingManager {
             this.parsingInfo.levellingStrategy = spawnDistanceStrategy;
         }
 
-        final ConfigurationSection cs_Random = objTo_CS(cs.get(YmlParsingHelper.getKeyNameFromConfig(cs,"max-random-variance")));
+        final ConfigurationSection cs_Random = objTo_CS(cs.get(YmlParsingHelper.getKeyNameFromConfig(cs,"weighted-random")));
         if (cs_Random != null){
             final Map<String, Integer> randomMap = new TreeMap<>();
             final RandomLevellingStrategy randomLevelling = new RandomLevellingStrategy();
             randomLevelling.doMerge = cs_Random.getBoolean(YmlParsingHelper.getKeyNameFromConfig(cs_Random, "merge"));
 
             for (final String range : cs_Random.getKeys(false)){
+                if ("merge".equalsIgnoreCase(range)) continue;
                 final int value = cs_Random.getInt(range);
                 randomMap.put(range, value);
             }

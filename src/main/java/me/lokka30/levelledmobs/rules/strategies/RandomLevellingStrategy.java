@@ -49,6 +49,7 @@ public class RandomLevellingStrategy implements LevellingStrategy, Cloneable {
         int count = 0;
         final List<int[]> numbers = new LinkedList<>();
         final List<Integer> values = new LinkedList<>();
+        final List<Integer> numbersUsed = new LinkedList<>();
         final List<Integer> orig_OverallNumberRange = new LinkedList<>();
 
         for (int i = minLevel; i <= maxLevel; i++)
@@ -75,11 +76,13 @@ public class RandomLevellingStrategy implements LevellingStrategy, Cloneable {
 
             for (int i = start; i <= end; i++){
                 if (!orig_OverallNumberRange.contains(i)) continue;
+                if (!numbersUsed.contains(i)) numbersUsed.add(i);
 
-                overallNumberRange.remove(Integer.valueOf(i));
                 count += value;
             }
         }
+
+        count -= numbersUsed.size();
 
         for (final int number : overallNumberRange)
             count++;
@@ -92,6 +95,7 @@ public class RandomLevellingStrategy implements LevellingStrategy, Cloneable {
         for (final int[] nums : numbers){
             for (int i = nums[0]; i <= nums[1]; i++){
                 if (!orig_OverallNumberRange.contains(i)) continue;
+                overallNumberRange.remove(Integer.valueOf(i));
                 for (int t = 0; t < values.get(valuesCount); t++) {
                     this.randomArray[newCount] = i;
                     newCount++;

@@ -104,7 +104,7 @@ mobs-multiply-head-drops: false
 # ||  TOO MANY COMMANDS AT ONCE, AND THIS HELPS PREVENT THAT FROM OCCURRING.                    |
 # ||                                                                                            |
 # |||-------------------------------------------------------------------------------------------|
-customcommand-amount-limit: 10
+customcommand-amount-limit: 100
 
 
 # |||-------------------------------------------------------------------------------------------|
@@ -213,6 +213,6 @@ use-customname-for-mob-nametags: false
 # ||                                                                                            |
 # |||-------------------------------------------------------------------------------------------|
 use-update-checker: true
-debug-entity-damage: true
-debug-misc: [ 'CUSTOM_DROPS', 'CUSTOM_COMMANDS' ]
+debug-entity-damage: false
+debug-misc: [ ]
 file-version: 30

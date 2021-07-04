@@ -350,7 +350,7 @@ public class SummonSubcommand implements Subcommand {
             messages.forEach(sender::sendMessage);
         }
 
-        int maxAmount = 100;
+        final int maxAmount = main.settingsCfg.getInt(YmlParsingHelper.getKeyNameFromConfig(main.settingsCfg, "customize-summon-command-limit"), 100);
         if (amount > maxAmount) {
             amount = maxAmount;
 

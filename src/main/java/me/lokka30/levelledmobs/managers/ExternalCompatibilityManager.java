@@ -7,6 +7,7 @@ import me.lokka30.levelledmobs.LivingEntityInterface;
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -52,7 +53,11 @@ public class ExternalCompatibilityManager {
     }
 
     public static boolean hasMythicMobsInstalled() {
-        return Bukkit.getPluginManager().getPlugin("MythicMobs") != null;
+        final Plugin p = Bukkit.getPluginManager().getPlugin("MythicMobs");
+        if (p != null && p.getDescription().getVersion().startsWith("5"))
+            return false;
+        else
+            return p != null;
     }
 
     public static boolean hasWorldGuardInstalled() {

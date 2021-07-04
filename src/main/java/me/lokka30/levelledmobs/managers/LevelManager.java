@@ -48,6 +48,7 @@ public class LevelManager {
     public final NamespacedKey noLevelKey; // This key tells LM not to level the mob in future
     public final NamespacedKey wasBabyMobKey; // This key tells LM not to level the mob in future
     public final NamespacedKey overridenEntityNameKey;
+    public final NamespacedKey hasCustomNameTag;
     public double attributeMaxHealthMax = 2048.0;
     public double attributeMovementSpeedMax = 2048.0;
     public double attributeAttackDamageMax = 2048.0;
@@ -66,6 +67,7 @@ public class LevelManager {
         noLevelKey = new NamespacedKey(main, "noLevel");
         wasBabyMobKey = new NamespacedKey(main, "wasBabyMob");
         overridenEntityNameKey = new NamespacedKey(main, "overridenEntityName");
+        hasCustomNameTag = new NamespacedKey(main, "hasCustomNameTag");
         this.summonedEntityType = EntityType.UNKNOWN;
         this.randomLevellingCache = new TreeMap<>();
 
@@ -470,6 +472,7 @@ public class LevelManager {
             main.levelInterface.removeLevel(lmEntity);
         }
         else if (
+                !main.settingsCfg.getBoolean(YmlParsingHelper.getKeyNameFromConfig(main.settingsCfg, "use-customname-for-mob-nametags")) &&
                 location.getWorld() != null &&
                         location.getWorld().getName().equals(lmEntity.getWorld().getName()) &&
                         lmEntity.getLocation().distanceSquared(location) <= maxDistance) {

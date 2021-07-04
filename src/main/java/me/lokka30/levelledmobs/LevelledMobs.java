@@ -9,7 +9,6 @@ import me.lokka30.levelledmobs.misc.ConfigUtils;
 import me.lokka30.levelledmobs.misc.Utils;
 import me.lokka30.levelledmobs.rules.RulesManager;
 import me.lokka30.levelledmobs.rules.RulesParsingManager;
-import me.lokka30.levelledmobs.rules.strategies.RandomLevellingStrategy;
 import me.lokka30.microlib.QuickTimer;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
