@@ -100,6 +100,39 @@ presets:
     strategies:
       random: true
 
+  weighted_random_hard:
+#   This Strategy Preset controls Weighted Random Bias.
+    name: 'LVLling Strategy - Weighted Random Bias HARD DIFFICULTY'
+    strategies:
+      weighted-random:
+        1-10: 5
+        11-20: 4
+        21-30: 3
+        31-40: 2
+        41-50: 1
+
+  weighted_random_normal:
+#   This Strategy Preset controls Weighted Random Bias.
+    name: 'LVLling Strategy - Weighted Random Bias NORMAL DIFFICULTY'
+    strategies:
+      weighted-random:
+        1-5: 5
+        6-10: 4
+        11-15: 3
+        16-20: 2
+        21-25: 1
+
+  weighted_random_easy:
+#   This Strategy Preset controls Weighted Random Bias.
+    name: 'LVLling Strategy - Weighted Random Bias EASY DIFFICULTY'
+    strategies:
+      weighted-random:
+        1-2: 5
+        3-4: 4
+        5-6: 3
+        7-8: 2
+        9-10: 1
+
   apply_LevellingVariance:
 #   This Strategy Preset controls the random level variance applied.
     name: 'LVLling Strategy - Apply Variance'
@@ -200,15 +233,18 @@ presets:
 # |||-------------------------------------------------------------------------------------------|
 default-rule:
   use-preset:
-    - spawn_Levelling
-    - blended_Levelling
     - allowed_worlds
-#    - random_Levelling
-#    - ycoord_Levelling
-    - apply_LevellingVariance
 #    - hard_difficulty
     - normal_difficulty
 #    - easy_difficulty
+    - spawn_Levelling
+    - blended_Levelling
+#    - random_Levelling
+#    - ycoord_Levelling
+    - apply_LevellingVariance
+#    - weighted_random_hard
+#    - weighted_random_normal
+#    - weighted_random_easy
 
   conditions:
     level-plugins:
@@ -269,6 +305,13 @@ custom-rules:
         allowed-list: ['BABY_', 'ENDER_DRAGON', 'WITHER', 'VILLAGER', 'ZOMBIE_VILLAGER', 'WANDERING_TRADER', 'PHANTOM', 'BAT', 'RAVAGER']
     apply-settings:
       maxLevel: 0
+      
+  - enabled: false
+    name: 'CR - Weighted Random - NORMAL - Overworld'
+    use-preset: normal_difficculty, weighted_random_normal
+    conditions:
+      worlds:
+        allowed-list: ['world']
 
   - enabled: true
     name: 'CR - Custom Nether Levelling'
