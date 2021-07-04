@@ -308,7 +308,7 @@ custom-rules:
       
   - enabled: false
     name: 'CR - Weighted Random - NORMAL - Overworld'
-    use-preset: normal_difficculty, weighted_random_normal
+    use-preset: normal_difficulty, weighted_random_normal
     conditions:
       worlds:
         allowed-list: ['world']
