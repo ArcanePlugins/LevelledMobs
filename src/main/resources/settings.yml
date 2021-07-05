@@ -154,6 +154,13 @@ customcommand-amount-limit: 100
 # ||       | each time, including things like horse statistics.                                 |
 # ||       | By default, this is set to false.                                                  |
 # ||                                                                                            |
+# ||   use-customname-for-mob-nametags:                                                         |
+# ||       | Enabling this system will apply LevelledMobs' nametag value as a CustomName,       |
+# ||       | instead of faking it with packets as has been done since LM2.X. LevelledMobs       |
+# ||       | changed to the packet method to improve compatibility, however there are some      |
+# ||       | instances where applying directly to the CustomName will improve compatibility     |
+# ||       | with certain plugins. By default, this is set to false.                            |
+# ||                                                                                            |
 # |||-------------------------------------------------------------------------------------------|
 mob-process-delay: 0
 summon-command-spawn-distance-from-player: 5
