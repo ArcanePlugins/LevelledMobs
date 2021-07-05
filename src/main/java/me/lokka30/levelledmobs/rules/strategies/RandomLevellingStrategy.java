@@ -35,8 +35,6 @@ public class RandomLevellingStrategy implements LevellingStrategy, Cloneable {
         if (this.randomArray == null || minLevel != this.minLevel || maxLevel != this.maxLevel)
             populateWeightedRandom(minLevel, maxLevel);
 
-        Utils.logger.info(Arrays.toString(this.randomArray));
-
         final int useArrayNum = ThreadLocalRandom.current().nextInt(0, this.randomArray.length);
         return this.randomArray[useArrayNum];
     }

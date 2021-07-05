@@ -51,11 +51,13 @@ public class RuleInfo {
     public Integer conditions_ApplyBelowY;
     public Double conditions_Chance;
     public Double sunlightBurnAmount;
+    public Double healthIndicatorScale;
     public String nametag;
     public String nametag_CreatureDeath;
     public String presetName;
     public String customDrop_DropTableId;
     public String mobNBT_Data;
+    public String healthIndicator;
     public MobCustomNameStatusEnum conditions_MobCustomnameStatus;
     public MobTamedStatusEnum conditions_MobTamedStatus;
     public LevellingStrategy levellingStrategy;

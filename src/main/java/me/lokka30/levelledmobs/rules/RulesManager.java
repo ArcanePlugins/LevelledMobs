@@ -290,6 +290,28 @@ public class RulesManager {
         return nametag;
     }
 
+    public double getRule_HealthIndicatorScale(@NotNull final LivingEntityWrapper lmEntity){
+        double scale = 0.0;
+
+        for (final RuleInfo ruleInfo : lmEntity.getApplicableRules()) {
+            if (ruleInfo.healthIndicatorScale != null)
+                scale = ruleInfo.healthIndicatorScale;
+        }
+
+        return scale;
+    }
+
+    @Nullable
+    public String getRule_NametagIndicator(@NotNull final LivingEntityWrapper lmEntity){
+        String healthIndicator = null;
+        for (final RuleInfo ruleInfo : lmEntity.getApplicableRules()) {
+            if (ruleInfo.healthIndicator != null)
+                healthIndicator = ruleInfo.healthIndicator;
+        }
+
+        return healthIndicator;
+    }
+
     public boolean getRule_CreatureNametagAlwaysVisible(@NotNull final LivingEntityWrapper lmEntity){
         boolean creatureNametagAlwaysVisible = false;
 

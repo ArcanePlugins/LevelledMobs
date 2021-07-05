@@ -515,6 +515,8 @@ public class RulesParsingManager {
         parsingInfo.customDrop_DropTableId = YmlParsingHelper.getString(cs,"use-droptable-id", parsingInfo.customDrop_DropTableId);
         parsingInfo.nametag = YmlParsingHelper.getString(cs,"nametag", parsingInfo.nametag);
         parsingInfo.nametag_CreatureDeath = YmlParsingHelper.getString(cs,"creature-death-nametag", parsingInfo.nametag_CreatureDeath);
+        parsingInfo.healthIndicator = YmlParsingHelper.getString(cs,"health-indicator", parsingInfo.nametag);
+        parsingInfo.healthIndicatorScale = YmlParsingHelper.getDouble2(cs, "health-indicator-scale", parsingInfo.healthIndicatorScale);
         parsingInfo.CreatureNametagAlwaysVisible = YmlParsingHelper.getBoolean2(cs,"creature-nametag-always-visible", parsingInfo.CreatureNametagAlwaysVisible);
         parsingInfo.sunlightBurnAmount = YmlParsingHelper.getDouble2(cs, "sunlight-intensity", parsingInfo.sunlightBurnAmount);
         parsingInfo.lowerMobLevelBiasFactor = YmlParsingHelper.getInt2(cs, "lower-mob-level-bias-factor", parsingInfo.lowerMobLevelBiasFactor);

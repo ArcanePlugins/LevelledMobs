@@ -321,6 +321,23 @@ public class LevelManager {
         // This is after colorize so that color codes in nametags dont get translated
         nametag = nametag.replace("%displayname%", displayName);
 
+        if (nametag.toLowerCase().contains("%health-indicator%")){
+            String indicator = main.rulesManager.getRule_NametagIndicator(lmEntity);
+            if (Utils.isNullOrEmpty(indicator)) indicator = "|";
+            final double healthScale = main.rulesManager.getRule_HealthIndicatorScale(lmEntity);
+            final double entityHealth = lmEntity.getLivingEntity().getHealth();
+            int indicatorsToUse = healthScale == 0 ?
+                    (int) Math.ceil(entityHealth) : (int) Math.ceil(entityHealth / healthScale);
+            final StringBuilder sb = new StringBuilder();
+            if (indicatorsToUse > 15) indicatorsToUse = 15;
+            if (entityHealth == 0.0) indicatorsToUse = 0;
+
+            for (int i = 0; i < indicatorsToUse; i++)
+                sb.append(indicator);
+
+            nametag = nametag.replace("%health-indicator%", sb.toString());
+        }
+
         return nametag;
     }
 

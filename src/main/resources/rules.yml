@@ -269,9 +269,11 @@ default-rule:
 #      BABY_ZOMBIE: ['Baby Undead']
 
     nametag: '&8[%tiered%Lvl %mob-lvl%&8 | &f%displayname%&8 | &c%entity-health-rounded%&8/&c%entity-max-health-rounded%&8]'
+
     creature-death-nametag: '&8[%tiered%Lvl %mob-lvl%&8 | &f%entity-name%&8]'
-    creature-nametag-always-visible: true
-    
+    creature-nametag-always-visible: false
+    health-indicator: '|'
+    health-indicator-scale: 3.0
     baby-mobs-inherit-adult-setting: true
     level-inheritance: true
     creeper-max-damage-radius: 5

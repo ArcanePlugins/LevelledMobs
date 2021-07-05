@@ -8,6 +8,7 @@ import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.misc.*;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Tameable;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
@@ -151,7 +152,9 @@ public class QueueManager_Nametags {
         lmEntity.getLivingEntity().setCustomName(nametag);
         lmEntity.getLivingEntity().setCustomNameVisible(true);
 
-        if (!hadCustomName)
+        final boolean isTamable = (lmEntity.getLivingEntity() instanceof Tameable);
+
+        if (!hadCustomName && !isTamable && !lmEntity.getTypeName().equalsIgnoreCase("Axolotl"))
             lmEntity.getLivingEntity().setRemoveWhenFarAway(true);
     }
 }
