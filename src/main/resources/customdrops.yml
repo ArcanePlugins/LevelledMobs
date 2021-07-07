@@ -81,7 +81,7 @@ all_mobs:
   - 
 
 all_levellable_mobs:
-  - 
+  -
 
 all_hostile_mobs:
   - 
@@ -326,7 +326,7 @@ ZOGLIN:
 
 ZOMBIE:
   - 
-
+      
 ZOMBIE_HORSE:
   - 
 
