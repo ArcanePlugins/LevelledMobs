@@ -29,7 +29,7 @@ public class ReloadSubcommand implements Subcommand {
         reloadStartedMsg = Utils.colorizeAllInList(reloadStartedMsg);
         reloadStartedMsg.forEach(sender::sendMessage);
 
-        main.companion.loadFiles();
+        main.companion.loadFiles(true);
 
         List<String> reloadFinishedMsg = main.messagesCfg.getStringList("command.levelledmobs.reload.finished");
         reloadFinishedMsg = Utils.replaceAllInList(reloadFinishedMsg, "%prefix%", main.configUtils.getPrefix());

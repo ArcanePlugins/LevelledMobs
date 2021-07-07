@@ -93,7 +93,7 @@ public class Companion {
     }
 
     // Note: also called by the reload subcommand.
-    public boolean loadFiles() {
+    public boolean loadFiles(final boolean isReload) {
         Utils.logger.info("&fFile Loader: &7Loading files...");
 
         // save license.txt
@@ -119,22 +119,25 @@ public class Companion {
         main.customDropsHandler.customDropsParser.loadDrops(
                 FileLoader.loadFile(main, "customdrops", FileLoader.CUSTOMDROPS_FILE_VERSION)
         );
-        main.attributesCfg = loadEmbeddedResource("defaultAttributes.yml");
-        main.dropsCfg = loadEmbeddedResource("defaultDrops.yml");
-        main.mobHeadManager.loadTextures(Objects.requireNonNull(loadEmbeddedResource("textures.yml")));
+        if (!isReload) {
+            main.attributesCfg = loadEmbeddedResource("defaultAttributes.yml");
+            main.dropsCfg = loadEmbeddedResource("defaultDrops.yml");
+            main.mobHeadManager.loadTextures(Objects.requireNonNull(loadEmbeddedResource("textures.yml")));
+
+            // remove legacy files if they exist
+            final String[] legacyFile = {"attributes.yml", "drops.yml"};
+            for (String lFile : legacyFile) {
+                final File delFile = new File(main.getDataFolder(), lFile);
+                try {
+                    if (delFile.exists()) delFile.delete();
+                } catch (Exception e) {
+                    Utils.logger.warning("Unable to delete file " + lFile + ", " + e.getMessage());
+                }
+            }
+
+        }
 
         main.configUtils.load();
-
-        // remove legacy files if they exist
-        final String[] legacyFile = {"attributes.yml", "drops.yml"};
-        for (String lFile : legacyFile) {
-            final File delFile = new File(main.getDataFolder(), lFile);
-            try {
-                if (delFile.exists()) delFile.delete();
-            } catch (Exception e) {
-                Utils.logger.warning("Unable to delete file " + lFile + ", " + e.getMessage());
-            }
-        }
 
         return true;
     }
