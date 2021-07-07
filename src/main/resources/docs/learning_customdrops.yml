@@ -31,8 +31,8 @@
 # |        https://yaml-online-parser.appspot.com/                                              |    LN 332 +- Default CustomDrop Settings                  |
 # |                                                                                             |___________________________________________________________/
 # |  Dependencies:                                                                              |                                                           |
-# |    ProtocolLib:                                                                             |  D O C U M E N T A T I O N  |  July 1, 2021               |
-# |      A 'soft dependency'; Not *required* but highly recommended.                            |    L A S T   U P D A T E D  |  LM 3.0.5 b445              |
+# |    ProtocolLib:                                                                             |  D O C U M E N T A T I O N  |  July 7, 2021               |
+# |      A 'soft dependency'; Not *required* but highly recommended.                            |    L A S T   U P D A T E D  |  LM 3.1.0 b456              |
 # |      Without this, the plugin will not show LevelledMobs's nametags.                        |___________________________________________________________/
 # |      Entities may still level without the nametag present.                                  |                                                           |
 # |    IMPORTANT NOTICE                                                                         |  Main Contributors:                                       |
