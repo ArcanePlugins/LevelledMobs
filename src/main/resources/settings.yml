@@ -221,5 +221,5 @@ use-customname-for-mob-nametags: false
 # |||-------------------------------------------------------------------------------------------|
 use-update-checker: true
 debug-entity-damage: false
-debug-misc: [ ]
+debug-misc: [ '' ]
 file-version: 30
