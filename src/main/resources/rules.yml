@@ -215,6 +215,28 @@ presets:
         7-10: '&4' # Dark Red
         default: '&9' # Off-Blue
 
+  nametag_using_indicator:
+#   This controls the nametag, where the health is displayed using %health-indicator%
+    name: 'Nametag - Health Indicator'
+    apply-settings:
+      nametag: '%tiered%Lvl %mob-lvl%&8 | &f%displayname%&8 | &f%entity-health-rounded% %tiered%%health-indicator%'
+      health-indicator: '❚'
+      health-indicator-scale: 5.0
+      health-indicator-max: 10
+      health-indicator-colored-tiers:
+        1: '&a' #LightGreen
+        2: '&e' #LightYellow
+        3: '&c' #LightRed
+        4: '&d' #LightPurple
+        5: '&3' #LightBlue
+
+  nametag_using_numbers:
+#   This controls the nametag, where the health is displayed using %entity-health-rounded%
+    name: 'Nametag - Health Numerical'
+    apply-settings:
+      nametag: '%tiered%Lvl %mob-lvl%&8 | &f%displayname%&8 | &c%entity-health-rounded%&8/&c%entity-max-health-rounded%'
+
+
 # |||-------------------------------------------------------------------------------------------|
 # |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 # |||-------------------------------------------------------------------------------------------|
@@ -234,6 +256,8 @@ presets:
 default-rule:
   use-preset:
     - allowed_worlds
+    - nametag_using_numbers
+#    - nametag_using_indicator
 #    - hard_difficulty
     - normal_difficulty
 #    - easy_difficulty
@@ -241,7 +265,7 @@ default-rule:
     - blended_Levelling
 #    - random_Levelling
 #    - ycoord_Levelling
-    - apply_LevellingVariance
+#    - apply_LevellingVariance
 #    - weighted_random_hard
 #    - weighted_random_normal
 #    - weighted_random_easy
@@ -263,20 +287,19 @@ default-rule:
     mob-tamed-status: EITHER
 
   apply-settings:
+    sunlight-intensity: 25
     entity-name-override:
 #      ZOMBIE: ['Undead', 'Deady', 'Walker']
 #      CREEPER: ['Dr. Boom']
 #      BABY_ZOMBIE: ['Baby Undead']
 
-    nametag: '&8[%tiered%Lvl %mob-lvl%&8 | &f%displayname%&8 | &c%entity-health-rounded%&8/&c%entity-max-health-rounded%&8]'
-
-    creature-death-nametag: '&8[%tiered%Lvl %mob-lvl%&8 | &f%entity-name%&8]'
+    creature-death-nametag: '%tiered%Lvl %mob-lvl%&8 | &f%entity-name%'
     creature-nametag-always-visible: false
-    health-indicator: '|'
-    health-indicator-scale: 3.0
+
     baby-mobs-inherit-adult-setting: true
     level-inheritance: true
     creeper-max-damage-radius: 5
+
     use-custom-item-drops-for-mobs: false
 
 
@@ -401,7 +424,22 @@ custom-rules:
         allowed-list: ['NETHER_WASTES']
     apply-settings:
       maxLevel: 0
-            
+
+  - enabled: false
+    name: 'CR - Level Dependent Zombie Custom Names'
+    use-presets: allowed_worlds
+    apply-settings:
+      entity-name-override:
+        1-5:
+          ZOMBIE: ['Teething %displayname%']
+        6-10:
+          ZOMBIE: ['Scratching %displayname%']
+        11-20:
+          ZOMBIE: ['Biting %displayname%']
+        21-25:
+          ZOMBIE: ['Hunting %displayname%']
+        BABY_ZOMBIE: ['Baby Undead']
+
   - enabled: false
 #   This rule requires the soft-dependency NBT-API to function!
 #   Make sure you have it installed prior to enabling this rule!
