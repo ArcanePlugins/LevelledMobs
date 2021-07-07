@@ -32,8 +32,8 @@
 # |                                                                                             |    LN 448 +- Crafting Custom Rules                        |
 # |  Dependencies:                                                                              |___________________________________________________________/
 # |    ProtocolLib:                                                                             |                                                           |
-# |      A 'soft dependency'; Not *required* but highly recommended.                            |  D O C U M E N T A T I O N  |  July 4, 2021               |
-# |      Without this, the plugin will not show LevelledMobs's nametags.                        |    L A S T   U P D A T E D  |  LM 3.1.0 b451              |
+# |      A 'soft dependency'; Not *required* but highly recommended.                            |  D O C U M E N T A T I O N  |  July 7, 2021               |
+# |      Without this, the plugin will not show LevelledMobs's nametags.                        |    L A S T   U P D A T E D  |  LM 3.1.0 b456              |
 # |      Entities may still level without the nametag present.                                  |___________________________________________________________/
 # |    IMPORTANT NOTICE                                                                         |                                                           |
 # |      Since Minecraft 1.17, ProtocolLib has had to split into multiple versions              |  Main Contributors:                                       |
@@ -89,44 +89,44 @@
 # ||  |  minLevel: 1                          |     |  random: true                       |     |  minLevel: 1                                |
 # ||  |  maxLevel: 50                         |     |                                     |     |  maxLevel: 50                               |
 # ||  |  chance: 1.0                          |     |  distance-from-spawn:               |     |  nametag: ''                                |
-# ||  |  stop-processing: true                |     |    increase-level-distance: 150     |     |  creature-death-nametag: ''                 |
-# ||  |  mob-customname-status: EITHER        |     |    start-distance: 250              |     |  creature-nametag-always-visible: false     |
-# ||  |  mob-tamed-status: EITHER             |     |    spawn-location:                  |     |  sunlight-intensity:                        |
-# ||  |  worlds:                              |     |      x: default                     |     |  nbt-data: ''                               |
-# ||  |    allowed-list: ['', '']             |     |      y: default                     |     |  multipliers:                               |
-# ||  |    excluded-list: ['', '']            |     |    blended-levelling:               |     |    max-health: 5.0                          |
-# ||  |    merge: true                        |     |      enabled: true                  |     |    movement-speed: 0.25                     |
-# ||  |  apply-above-y: 64                    |     |      transition-y-height: 64        |     |    attack-damage: 2.0                       |
-# ||  |  apply-below-y: 64                    |     |      lvl-multiplier: 0.10           |     |    ranged-attack-damage: 1.5                |
-# ||  |  allowed-worldguard-regions:          |     |      multiplier-period: 10          |     |    item-drop: 3                             |
-# ||  |    allowed-list: ['', '']             |     |      scale-downward: true           |     |    xp-drop: 5                               |
-# ||  |    excluded-list: ['', '']            |     |                                     |     |    custom-mob-level:                        |
-# ||  |    merge: true                        |     |  y-coordinate:                      |     |      EntityType:                            |
-# ||  |  allowed-spawn-reasons:               |     |    start: 100                       |     |        max-health: 2.5                      |
-# ||  |    allowed-list: ['', '']             |     |    end: 20                          |     |        movement-speed: 0.15                 |
-# ||  |    excluded-list: ['', '']            |     |    period: 0                        |     |        attack-damage: 1.5                   |
-# ||  |    merge: true                        |     |                                     |     |        ranged-attack-damage: 1.5            |
-# ||  |  custom-names:                        |     |  max-random-variance: 2             |     |        item-drop: 2                         |
-# ||  |    allowed-list: ['', '']             |     |                                     |     |        xp-drop: 5                           |
-# ||  |    excluded-list: ['', '']            |     |  weighted-random:                   |     |  entity-name-override:                      |
-# ||  |    merge: true                        |     |    LVL: X                           |     |    EntityType: ['', '']                     |
-# ||  |  entities:                            |     |    LVL-LVL: X                       |     |  tiered-coloring:                           |
-# ||  |    allowed-list: ['', '']             |     |    merge: true                      |     |    LVL-LVL: ''                              |
-# ||  |    allowed-groups: ['', '']           |     |                                     |     |    default: ''                              |
-# ||  |    excluded-list: ['', '']            |     \-------------------------------------/     |                                             |
-# ||  |    excluded-groups: ['', '']          |                                                 \---------------------------------------------/
-# ||  |    merge: true                        |
-# ||  |  biomes:                              |
-# ||  |    allowed-list: ['', '']             |
-# ||  |    allowed-groups: ['', '']           |
-# ||  |    excluded-list: ['', '']            |
-# ||  |    excluded-groups: ['', '']          |
-# ||  |    merge: true                        |
-# ||  |  mythicmobs-internal-names:           |
-# ||  |    allowed-list: ['', '']             |
-# ||  |    excluded-list: ['', '']            |
-# ||  |    merge: true                        |
-# ||  |  apply-plugins:                       |
+# ||  |  stop-processing: true                |     |    increase-level-distance: 150     |     |  health-indicator: '❚'                       |
+# ||  |  mob-customname-status: EITHER        |     |    start-distance: 250              |     |  health-indicator-scale: 5.0                |
+# ||  |  mob-tamed-status: EITHER             |     |    spawn-location:                  |     |  health-indicator-max: 10                   |
+# ||  |  worlds:                              |     |      x: default                     |     |  health-indicator-colored-tiers:            |
+# ||  |    allowed-list: ['', '']             |     |      y: default                     |     |    1: '&a' #LightGreen                      |
+# ||  |    excluded-list: ['', '']            |     |    blended-levelling:               |     |    2: '&e' #LightYellow                     |
+# ||  |    merge: true                        |     |      enabled: true                  |     |    3: '&c' #LightRed                        |
+# ||  |  apply-above-y: 64                    |     |      transition-y-height: 64        |     |    4: '&d' #LightPurple                     |
+# ||  |  apply-below-y: 64                    |     |      lvl-multiplier: 0.10           |     |    5: '&3' #LightBlue                       |
+# ||  |  allowed-worldguard-regions:          |     |      multiplier-period: 10          |     |  creature-death-nametag: ''                 |
+# ||  |    allowed-list: ['', '']             |     |      scale-downward: true           |     |  creature-nametag-always-visible: false     |
+# ||  |    excluded-list: ['', '']            |     |                                     |     |  sunlight-intensity:                        |
+# ||  |    merge: true                        |     |  y-coordinate:                      |     |  nbt-data: ''                               |
+# ||  |  allowed-spawn-reasons:               |     |    start: 100                       |     |  multipliers:                               |
+# ||  |    allowed-list: ['', '']             |     |    end: 20                          |     |    max-health: 5.0                          |
+# ||  |    excluded-list: ['', '']            |     |    period: 0                        |     |    movement-speed: 0.25                     |
+# ||  |    merge: true                        |     |                                     |     |    attack-damage: 2.0                       |
+# ||  |  custom-names:                        |     |  max-random-variance: 2             |     |    ranged-attack-damage: 1.5                |
+# ||  |    allowed-list: ['', '']             |     |                                     |     |    item-drop: 3                             |
+# ||  |    excluded-list: ['', '']            |     |  weighted-random:                   |     |    xp-drop: 5                               |
+# ||  |    merge: true                        |     |    LVL: X                           |     |    custom-mob-level:                        |
+# ||  |  entities:                            |     |    LVL-LVL: X                       |     |      EntityType:                            |
+# ||  |    allowed-list: ['', '']             |     |    merge: true                      |     |        max-health: 2.5                      |
+# ||  |    allowed-groups: ['', '']           |     |                                     |     |        movement-speed: 0.15                 |
+# ||  |    excluded-list: ['', '']            |     \-------------------------------------/     |        attack-damage: 1.5                   |
+# ||  |    excluded-groups: ['', '']          |                                                 |        ranged-attack-damage: 1.5            |
+# ||  |    merge: true                        |                                                 |        item-drop: 2                         |
+# ||  |  biomes:                              |                                                 |        xp-drop: 5                           |
+# ||  |    allowed-list: ['', '']             |                                                 |  entity-name-override:                      |
+# ||  |    allowed-groups: ['', '']           |                                                 |    EntityType: ['', '']                     |
+# ||  |    excluded-list: ['', '']            |                                                 |  entity-name-override:                      |
+# ||  |    excluded-groups: ['', '']          |                                                 |    LVL-LVL:                                 |
+# ||  |    merge: true                        |                                                 |      EntityType: ['', '']                   |
+# ||  |  mythicmobs-internal-names:           |                                                 |  tiered-coloring:                           |
+# ||  |    allowed-list: ['', '']             |                                                 |    LVL-LVL: ''                              |
+# ||  |    excluded-list: ['', '']            |                                                 |    default: ''                              |
+# ||  |    merge: true                        |                                                 |                                             |
+# ||  |  apply-plugins:                       |                                                 \---------------------------------------------/
 # ||  |    allowed-list: ['', '']             |
 # ||  |    excluded-list: ['', '']            |
 # ||  |    merge: true                        |
@@ -268,6 +268,12 @@
 # ||                           %wg_region% - Will populate with the WorldGuard region the entity is in.
 # ||                               %world% - The name of the world where the entity spawned.
 # ||                            %location% - The current location of the entity, presented as '(X, Y, Z)'.
+# ||                    %health-indicator% - This displays the health-indicator: system, explained below.
+# ||
+# ||    health-indicator: / health-indicator-scale: / health-indicator-max: / health-indicator-colored-tiers:
+# ||        [|  This system uses a visual display to show the entity's health rather than numerical.
+# ||        [|  You can also establish overlaying health bars of different colors to help maintain a
+# ||        [|  beautiful health bar showing players exactly what is and is not dangerous to them!
 # ||
 # ||    creature-nametag-always-visible:
 # ||        [|  Due to limitations within the Minecraft client, there are limits to how we can display the nametag of entities to you.
@@ -277,7 +283,7 @@
 # ||
 # ||    sunlight-intensity:
 # ||        [|  This configuration option will add additional sunlight damage to an entity while it's burning. This could be useful
-# ||        [|  to help kill off any high-health entities which can outpace the damage.
+# ||        [|  to help kill off any high-health entities which can outpace the vanilla sunlight damage.
 # ||
 # ||    nbt-data:
 # ||        [|  This feature requires NBT-API to function. Locate the download link in the description at the top!
@@ -301,6 +307,11 @@
 # ||    custom-mob-level:
 # ||        [|  This represents the beginning of the Custom Entity Multipliers, where you can specify a custom set of multipliers
 # ||        [|  to apply to specific entities or entity groups. You would utilize the same features as the multiplier: above.
+# ||
+# ||    entity-name-override:
+# ||        [|  This represents the beginning of the Custom Entity Name system, where you can specify a custom name to apply to an
+# ||        [|  entity. You can further limit the name based on the entity's level, and when combined with the conditions tree, allows
+# ||        [|  you to create near endless customized entities complete with their own name!.
 # ||
 # ||    tiered-coloring:
 # ||        [|  This system controls the %tiered% tag coloring, depending on where the level falls between a range of values.
