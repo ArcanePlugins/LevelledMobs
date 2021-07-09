@@ -7,6 +7,7 @@ import me.lokka30.levelledmobs.LivingEntityInterface;
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -46,6 +47,24 @@ public class ExternalCompatibilityManager {
 
     public static boolean hasNBTAPI_Installed(){
         return Bukkit.getPluginManager().getPlugin("NBTAPI") != null;
+    }
+
+    public static boolean hasMCMMO_CoreInsatlled(){
+        return Bukkit.getPluginManager().getPlugin("MMOCore") != null;
+    }
+
+    @Nullable
+    public static Integer getMCMMO_Core_PlayerLevel(final Player player){
+        if (Bukkit.getPluginManager().getPlugin("MMOCore") == null)
+            return null;
+
+        try{
+            final net.Indyuce.mmocore.api.player.PlayerData pd = net.Indyuce.mmocore.api.player.PlayerData.get(player.getUniqueId());
+            if (pd != null) return pd.getLevel();
+        }
+        catch (Exception ignored){ }
+
+        return null;
     }
 
     public static boolean hasProtocolLibInstalled() {

@@ -6,6 +6,7 @@ import me.lokka30.levelledmobs.LivingEntityInterface;
 import me.lokka30.levelledmobs.customdrops.CustomDropResult;
 import me.lokka30.levelledmobs.listeners.EntitySpawnListener;
 import me.lokka30.levelledmobs.misc.*;
+import me.lokka30.levelledmobs.rules.HealthIndicator;
 import me.lokka30.levelledmobs.rules.MobCustomNameStatusEnum;
 import me.lokka30.levelledmobs.rules.MobTamedStatusEnum;
 import me.lokka30.levelledmobs.rules.strategies.LevellingStrategy;
@@ -321,24 +322,59 @@ public class LevelManager {
         // This is after colorize so that color codes in nametags dont get translated
         nametag = nametag.replace("%displayname%", displayName);
 
-        if (nametag.toLowerCase().contains("%health-indicator%")){
-            String indicator = main.rulesManager.getRule_NametagIndicator(lmEntity);
-            if (Utils.isNullOrEmpty(indicator)) indicator = "|";
-            final double healthScale = main.rulesManager.getRule_HealthIndicatorScale(lmEntity);
-            final double entityHealth = lmEntity.getLivingEntity().getHealth();
-            int indicatorsToUse = healthScale == 0 ?
-                    (int) Math.ceil(entityHealth) : (int) Math.ceil(entityHealth / healthScale);
-            final StringBuilder sb = new StringBuilder();
-            if (indicatorsToUse > 15) indicatorsToUse = 15;
-            if (entityHealth == 0.0) indicatorsToUse = 0;
-
-            for (int i = 0; i < indicatorsToUse; i++)
-                sb.append(indicator);
-
-            nametag = nametag.replace("%health-indicator%", sb.toString());
-        }
+        if (nametag.toLowerCase().contains("%health-indicator%"))
+            nametag = nametag.replace("%health-indicator%", formatHealthIndicator(lmEntity));
 
         return nametag;
+    }
+
+    @NotNull
+    private String formatHealthIndicator(final LivingEntityWrapper lmEntity){
+        final HealthIndicator indicator = main.rulesManager.getRule_NametagIndicator(lmEntity);
+        final double mobHealth = lmEntity.getLivingEntity().getHealth();
+
+        if (indicator == null || mobHealth == 0.0) return "";
+
+        final StringBuilder sb = new StringBuilder();
+        final int maxIndicators = indicator.maxIndicators != null ? indicator.maxIndicators : 10;
+        final String indicatorStr = indicator.indicator != null ? indicator.indicator : "▐";
+        final double scale = indicator.scale != null ? indicator.scale : 5.0;
+        final double healthPerTier = scale * maxIndicators;
+
+        int indicatorsToUse = scale == 0 ?
+                (int) Math.ceil(mobHealth) : (int) Math.ceil(mobHealth / scale);
+        final int tiersToUse = (int) Math.ceil(indicatorsToUse / maxIndicators);
+        int toRecolor = 0;
+        if (tiersToUse > 0)
+            toRecolor = (int) (indicatorsToUse % maxIndicators);
+
+        String primaryColor = "";
+        String secondaryColor = "";
+        if (indicator.tiers != null){
+            if (indicator.tiers.containsKey(tiersToUse + 1))
+                primaryColor = indicator.tiers.get(tiersToUse + 1);
+            if (tiersToUse > 0 && indicator.tiers.containsKey(tiersToUse))
+                secondaryColor = indicator.tiers.get(tiersToUse);
+        }
+
+        String result = primaryColor;
+
+        if (tiersToUse == 0) {
+            boolean useHalf = false;
+            if (indicator.indicatorHalf != null && indicatorsToUse < maxIndicators){
+                useHalf = scale / 2.0 <= (indicatorsToUse * scale) - mobHealth;
+                if (useHalf && indicatorsToUse > 0) indicatorsToUse--;
+            }
+
+            result += indicatorStr.repeat(indicatorsToUse);
+            if (useHalf) result += indicator.indicatorHalf;
+        }
+        else {
+            result += primaryColor + indicatorStr.repeat(toRecolor);
+            result += secondaryColor + indicatorStr.repeat(maxIndicators - toRecolor);
+        }
+
+        return MessageUtils.colorizeAll(result);
     }
 
     public String replaceStringPlaceholders(final String nametag, @NotNull final LivingEntityWrapper lmEntity, final String displayName){

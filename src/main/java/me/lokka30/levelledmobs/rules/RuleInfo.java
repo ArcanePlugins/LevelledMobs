@@ -24,7 +24,6 @@ public class RuleInfo {
         this.ruleName = id;
 
         this.ruleIsEnabled = true;
-        this.entityNameOverrides = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
         this.ruleSourceNames = new TreeMap<>();
         this.conditions_MobCustomnameStatus = MobCustomNameStatusEnum.NOT_SPECIFIED;
         this.conditions_MobTamedStatus = MobTamedStatusEnum.NOT_SPECIFIED;
@@ -39,6 +38,7 @@ public class RuleInfo {
     public Boolean customDrops_UseOverride;
     public Boolean stopProcessingRules;
     public Boolean useRandomLevelling;
+    public Boolean mergeEntityNameOverrides;
     public int rulePriority;
     public Integer maxRandomVariance;
     public Integer creeperMaxDamageRadius;
@@ -51,18 +51,18 @@ public class RuleInfo {
     public Integer conditions_ApplyBelowY;
     public Double conditions_Chance;
     public Double sunlightBurnAmount;
-    public Double healthIndicatorScale;
     public String nametag;
     public String nametag_CreatureDeath;
     public String presetName;
     public String customDrop_DropTableId;
     public String mobNBT_Data;
-    public String healthIndicator;
+    public HealthIndicator healthIndicator;
     public MobCustomNameStatusEnum conditions_MobCustomnameStatus;
     public MobTamedStatusEnum conditions_MobTamedStatus;
     public LevellingStrategy levellingStrategy;
-    @NotNull
-    public Map<String, List<NameOverrideInfo>> entityNameOverrides;
+    public MMO_Core_Options mmo_CoreOptions;
+    public Map<String, List<LevelTierMatching<String>>> entityNameOverrides_Level;
+    public Map<String, LevelTierMatching<String>> entityNameOverrides;
     @NotNull
     public final Map<String, String> ruleSourceNames;
     public List<TieredColoringInfo> tieredColoringInfos;
@@ -104,8 +104,13 @@ public class RuleInfo {
                 boolean skipSettingValue = false;
                 final Object presetValue = f.get(preset);
 
-                if (f.getName().equals("entityNameOverrides")){
-                    this.entityNameOverrides.putAll((Map<String, List<NameOverrideInfo>>) presetValue);
+                if (f.getName().equals("entityNameOverrides") && this.entityNameOverrides != null){
+                    this.entityNameOverrides.putAll((Map<String, LevelTierMatching<String>>) presetValue);
+                    skipSettingValue = true;
+                }
+
+                if (f.getName().equals("entityNameOverrides") && this.entityNameOverrides != null){
+                    this.entityNameOverrides.putAll((Map<String, LevelTierMatching<String>>) presetValue);
                     skipSettingValue = true;
                 }
 

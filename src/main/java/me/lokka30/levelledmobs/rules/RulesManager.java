@@ -290,26 +290,16 @@ public class RulesManager {
         return nametag;
     }
 
-    public double getRule_HealthIndicatorScale(@NotNull final LivingEntityWrapper lmEntity){
-        double scale = 0.0;
-
-        for (final RuleInfo ruleInfo : lmEntity.getApplicableRules()) {
-            if (ruleInfo.healthIndicatorScale != null)
-                scale = ruleInfo.healthIndicatorScale;
-        }
-
-        return scale;
-    }
-
     @Nullable
-    public String getRule_NametagIndicator(@NotNull final LivingEntityWrapper lmEntity){
-        String healthIndicator = null;
+    public HealthIndicator getRule_NametagIndicator(@NotNull final LivingEntityWrapper lmEntity){
+        HealthIndicator indicator = null;
+
         for (final RuleInfo ruleInfo : lmEntity.getApplicableRules()) {
             if (ruleInfo.healthIndicator != null)
-                healthIndicator = ruleInfo.healthIndicator;
+                indicator = ruleInfo.healthIndicator;
         }
 
-        return healthIndicator;
+        return indicator;
     }
 
     public boolean getRule_CreatureNametagAlwaysVisible(@NotNull final LivingEntityWrapper lmEntity){
@@ -348,46 +338,82 @@ public class RulesManager {
 
     @Nullable
     public String getRule_EntityOverriddenName(@NotNull final LivingEntityWrapper lmEntity, final boolean useCustomNameForNametags){
-        NameOverrideInfo namesInfo = null;
+        Map<String, List<LevelTierMatching<String>>> entityNameOverrides_Level = null;
+        Map<String, LevelTierMatching<String>> entityNameOverrides = null;
 
         if (lmEntity.hasOverridenEntityName())
             return lmEntity.getOverridenEntityName();
 
         for (final RuleInfo ruleInfo : lmEntity.getApplicableRules()){
-            List<NameOverrideInfo> infos = null;
+            boolean doMerge = ruleInfo.mergeEntityNameOverrides != null && ruleInfo.mergeEntityNameOverrides;
+            if (ruleInfo.entityNameOverrides != null){
+                if (entityNameOverrides != null && doMerge)
+                    entityNameOverrides.putAll(ruleInfo.entityNameOverrides);
+                else
+                    entityNameOverrides = ruleInfo.entityNameOverrides;
+            }
 
-            if (ruleInfo.entityNameOverrides.containsKey(lmEntity.getNameIfBaby()))
-                infos = ruleInfo.entityNameOverrides.get(lmEntity.getNameIfBaby());
-            else if (ruleInfo.entityNameOverrides.containsKey("all_entities"))
-                infos = ruleInfo.entityNameOverrides.get("all_entities");
-
-            if (infos != null) {
-                for (final NameOverrideInfo info : infos){
-                     if (info.isApplicableToMobLevel(lmEntity.getMobLevel())){
-                         namesInfo = info;
-                         break;
-                     }
-                }
+            if (ruleInfo.entityNameOverrides_Level != null) {
+                if (entityNameOverrides_Level != null && doMerge)
+                    entityNameOverrides_Level.putAll(ruleInfo.entityNameOverrides_Level);
+                else
+                    entityNameOverrides_Level = ruleInfo.entityNameOverrides_Level;
             }
         }
 
-        if (namesInfo == null || namesInfo.names.isEmpty())
+        if (entityNameOverrides == null && entityNameOverrides_Level == null) return null;
+
+        List<String> namesInfo = null;
+        final LevelTierMatching<String> matchedTiers = getEntityNameOverrideLevel(entityNameOverrides_Level, lmEntity);
+        if (matchedTiers != null)
+            namesInfo = matchedTiers.names;
+        else if (entityNameOverrides != null){
+            if (entityNameOverrides.containsKey("all_entities"))
+                namesInfo = entityNameOverrides.get("all_entities").names;
+            else if (entityNameOverrides.containsKey(lmEntity.getNameIfBaby()))
+                namesInfo = entityNameOverrides.get(lmEntity.getNameIfBaby()).names;
+        }
+
+        if (namesInfo == null || namesInfo.isEmpty())
             return null;
-        else if (namesInfo.names.size() > 1)
-            Collections.shuffle(namesInfo.names);
+        else if (namesInfo.size() > 1)
+            Collections.shuffle(namesInfo);
 
         final String entityName = Utils.capitalize(lmEntity.getNameIfBaby().replaceAll("_", " "));
-        String result = namesInfo.names.get(0);
+        String result = namesInfo.get(0);
         result = result.replace("%entity-name%", entityName);
         result = result.replace("%displayname%", (lmEntity.getLivingEntity().getCustomName() == null || useCustomNameForNametags ?
                 entityName : lmEntity.getLivingEntity().getCustomName()));
 
-        if (namesInfo.names.size() > 1){
+        if (namesInfo.size() > 1){
             // set a PDC key with the name otherwise the name will constantly change
             lmEntity.setOverridenEntityName(result);
         }
 
         return result;
+    }
+
+    private LevelTierMatching<String> getEntityNameOverrideLevel(final Map<String, List<LevelTierMatching<String>>> entityNameOverrides_Level, final LivingEntityWrapper lmEntity){
+        if (entityNameOverrides_Level == null) return null;
+
+        LevelTierMatching<String> allEntities = null;
+        LevelTierMatching<String> thisMob = null;
+
+        for (final List<LevelTierMatching<String>> tiers : entityNameOverrides_Level.values()) {
+            for (final LevelTierMatching<String> tier : tiers) {
+                if (tier.isApplicableToMobLevel(lmEntity.getMobLevel())) {
+                    if ("all_entities".equalsIgnoreCase(tier.mobName) && tier.isApplicableToMobLevel(lmEntity.getMobLevel()))
+                        allEntities = tier;
+                    else if (lmEntity.getNameIfBaby().equalsIgnoreCase(tier.mobName) && tier.isApplicableToMobLevel(lmEntity.getMobLevel()))
+                        thisMob = tier;
+                }
+            }
+        }
+
+        if (thisMob != null)
+            return thisMob;
+        else
+            return allEntities;
     }
 
     @NotNull

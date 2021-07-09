@@ -1,20 +1,14 @@
 package me.lokka30.levelledmobs.rules;
 
 import me.lokka30.levelledmobs.misc.Utils;
-import org.jetbrains.annotations.NotNull;
 
-import java.util.LinkedList;
 import java.util.List;
 
-public class NameOverrideInfo {
-    public NameOverrideInfo() {
-        this.names = new LinkedList<>();
-    }
-
-    @NotNull
-    public List<String> names;
+public class LevelTierMatching<T> {
+    public List<T> names;
     public Integer minLevel;
     public Integer maxLevel;
+    public String mobName;
 
     public boolean hasLevelRestriction(){
         return (minLevel != null || maxLevel != null);

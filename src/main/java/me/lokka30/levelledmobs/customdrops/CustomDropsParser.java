@@ -18,6 +18,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemFlag;
+import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -376,8 +377,17 @@ public class CustomDropsParser {
                         enchantLevel = Integer.parseInt(value.toString());
 
                     final Enchantment en = Enchantment.getByKey(NamespacedKey.minecraft(enchantName.toLowerCase()));
-                    if (en != null)
-                        item.getItemStack().addUnsafeEnchantment(en, enchantLevel);
+                    if (en != null) {
+                        if (item.getMaterial().equals(Material.ENCHANTED_BOOK)){
+                            EnchantmentStorageMeta meta = (EnchantmentStorageMeta) item.getItemStack().getItemMeta();
+                            if (meta != null) {
+                                meta.addStoredEnchant(en, enchantLevel, true);
+                                item.getItemStack().setItemMeta(meta);
+                            }
+                        }
+                        else
+                            item.getItemStack().addUnsafeEnchantment(en, enchantLevel);
+                    }
                     else
                         Utils.logger.warning("Invalid enchantment: " + enchantName);
                 }

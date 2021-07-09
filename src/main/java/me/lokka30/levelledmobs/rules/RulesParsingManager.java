@@ -450,50 +450,71 @@ public class RulesParsingManager {
     private void parseEntityNameOverride(final ConfigurationSection cs){
         if (cs == null) return;
 
+        final Map<String, List<LevelTierMatching<String>>> levelTiers = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+        final Map<String, LevelTierMatching<String>> entityNames = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+
         for (final String name : cs.getKeys(false)){
-            final NameOverrideInfo info = new NameOverrideInfo();
+            if ("merge".equalsIgnoreCase(name) && cs.getBoolean(name)){
+                parsingInfo.mergeEntityNameOverrides = cs.getBoolean(name);
+                continue;
+            }
+
             final List<String> names = cs.getStringList(name);
             if (!names.isEmpty()) {
-                info.names.addAll(names);
-                final List<NameOverrideInfo> infos = new LinkedList<>();
-                infos.add(info);
-                parsingInfo.entityNameOverrides.put(name, infos);
+                final LevelTierMatching<String> mobNames = new LevelTierMatching<>();
+                mobNames.mobName = name;
+                mobNames.names = names;
+                entityNames.put(name, mobNames);
             }
-            else if (cs.getString(name) != null) {
-                if (parseNumberRange(objTo_CS(cs.get(name)), name, info)) continue;
 
-                info.names.add(cs.getString(name));
-                final List<NameOverrideInfo> infos = new LinkedList<>();
-                infos.add(info);
-                parsingInfo.entityNameOverrides.put(name, infos);
+            else if (cs.getString(name) != null) {
+                if ("merge".equalsIgnoreCase(name)){
+                    parsingInfo.mergeEntityNameOverrides = cs.getBoolean(name);
+                    continue;
+                }
+                final List<LevelTierMatching<String>> tiers = parseNumberRange(objTo_CS(cs.get(name)), name);
+                if (tiers != null && !tiers.isEmpty())
+                    levelTiers.put(name, tiers);
             }
         }
+
+        if (!entityNames.isEmpty())
+            parsingInfo.entityNameOverrides = entityNames;
+        if (!levelTiers.isEmpty())
+            parsingInfo.entityNameOverrides_Level = levelTiers;
     }
 
-    private boolean parseNumberRange(final ConfigurationSection cs, final String keyName, final NameOverrideInfo info){
-        if (cs == null) return false;
+    private List<LevelTierMatching<String>> parseNumberRange(final ConfigurationSection cs, final String keyName){
+        if (cs == null) return null;
+
+        final List<LevelTierMatching<String>> levelTiers = new LinkedList<>();
 
         for (final String name : cs.getKeys(false)){
             final List<String> names = cs.getStringList(name);
+            final LevelTierMatching<String> tier = new LevelTierMatching<>();
+
+            if ("merge".equalsIgnoreCase(name))
+                continue;
+
+            tier.mobName = name;
+
             if (!names.isEmpty()) {
-                final List<NameOverrideInfo> infos = parsingInfo.entityNameOverrides.containsKey(name) ?
-                        parsingInfo.entityNameOverrides.get(name) : new LinkedList<>();
-                info.names.addAll(names);
-                infos.add(info);
-                parsingInfo.entityNameOverrides.put(name, infos);
+                // an array of names was provided
+                tier.names = names;
             }
             else if (cs.getString(name) != null) {
-                final List<NameOverrideInfo> infos = parsingInfo.entityNameOverrides.containsKey(name) ?
-                        parsingInfo.entityNameOverrides.get(name) : new LinkedList<>();
-                info.names.add(cs.getString(name));
-                infos.add(info);
-                parsingInfo.entityNameOverrides.put(name, infos);
+                // a string was provided
+                tier.names = new LinkedList<>();
+                tier.names.add(cs.getString(name));
             }
-            if (!info.setRangeFromString(keyName))
+
+            if (!tier.setRangeFromString(keyName))
                 Utils.logger.warning("Invalid number range: " + keyName);
+            else if (!tier.names.isEmpty())
+                levelTiers.add(tier);
         }
 
-        return true;
+        return levelTiers;
     }
 
     private void parseApplySettings(final ConfigurationSection cs){
@@ -502,6 +523,7 @@ public class RulesParsingManager {
         parseFineTuning(objTo_CS(cs.get(YmlParsingHelper.getKeyNameFromConfig(cs,"multipliers"))));
         parseEntityNameOverride(objTo_CS(cs.get(YmlParsingHelper.getKeyNameFromConfig(cs,"entity-name-override"))));
         parseTieredColoring(objTo_CS(cs.get(YmlParsingHelper.getKeyNameFromConfig(cs,"tiered-coloring"))));
+        parseHealthIndicator(objTo_CS(cs.get(YmlParsingHelper.getKeyNameFromConfig(cs,"health-indicator"))));
 
         parsingInfo.restrictions_MinLevel = YmlParsingHelper.getInt2(cs, "minlevel", parsingInfo.restrictions_MinLevel);
         parsingInfo.restrictions_MaxLevel = YmlParsingHelper.getInt2(cs, "maxlevel", parsingInfo.restrictions_MaxLevel);
@@ -515,12 +537,10 @@ public class RulesParsingManager {
         parsingInfo.customDrop_DropTableId = YmlParsingHelper.getString(cs,"use-droptable-id", parsingInfo.customDrop_DropTableId);
         parsingInfo.nametag = YmlParsingHelper.getString(cs,"nametag", parsingInfo.nametag);
         parsingInfo.nametag_CreatureDeath = YmlParsingHelper.getString(cs,"creature-death-nametag", parsingInfo.nametag_CreatureDeath);
-        parsingInfo.healthIndicator = YmlParsingHelper.getString(cs,"health-indicator", parsingInfo.nametag);
-        parsingInfo.healthIndicatorScale = YmlParsingHelper.getDouble2(cs, "health-indicator-scale", parsingInfo.healthIndicatorScale);
         parsingInfo.CreatureNametagAlwaysVisible = YmlParsingHelper.getBoolean2(cs,"creature-nametag-always-visible", parsingInfo.CreatureNametagAlwaysVisible);
         parsingInfo.sunlightBurnAmount = YmlParsingHelper.getDouble2(cs, "sunlight-intensity", parsingInfo.sunlightBurnAmount);
         parsingInfo.lowerMobLevelBiasFactor = YmlParsingHelper.getInt2(cs, "lower-mob-level-bias-factor", parsingInfo.lowerMobLevelBiasFactor);
-        parsingInfo.mobNBT_Data = YmlParsingHelper.getString(cs, "nbt-data");
+        parsingInfo.mobNBT_Data = YmlParsingHelper.getString(cs, "nbt-data", parsingInfo.mobNBT_Data);
     }
 
     private void parseConditions(final ConfigurationSection cs){
@@ -617,6 +637,89 @@ public class RulesParsingManager {
                 randomLevelling.weightedRandom = randomMap;
 
             this.parsingInfo.levellingStrategy = randomLevelling;
+        }
+
+        parseMCMMO_Options(objTo_CS(cs.get(YmlParsingHelper.getKeyNameFromConfig(cs,"mmocore-levelling"))));
+    }
+
+    private void parseHealthIndicator(final ConfigurationSection cs){
+        if (cs == null) return;
+
+        final HealthIndicator indicator = new HealthIndicator();
+        indicator.indicator = YmlParsingHelper.getString(cs, "indicator", indicator.indicator);
+        indicator.indicatorHalf = YmlParsingHelper.getString(cs, "indicator-half", indicator.indicatorHalf);
+        indicator.maxIndicators = YmlParsingHelper.getInt2(cs, "max", indicator.maxIndicators);
+        indicator.scale = YmlParsingHelper.getDouble2(cs, "scale", indicator.scale);
+        indicator.doMerge = YmlParsingHelper.getBoolean2(cs, "merge", indicator.doMerge);
+
+        final ConfigurationSection cs_Tiers = objTo_CS(cs.get(YmlParsingHelper.getKeyNameFromConfig(cs,"colored-tiers")));
+        if (cs_Tiers != null){
+            final Map<Integer, String> tiers = new TreeMap<>();
+
+            for (final String name : cs_Tiers.getKeys(false)){
+                final String name2 = name.toLowerCase().replace("tier-", "");
+
+                if ("default".equalsIgnoreCase(name)){
+                    if (Utils.isNullOrEmpty(cs_Tiers.getString(name)))
+                        Utils.logger.warning("No value entered for colored tier: " + name);
+                    else
+                        tiers.put(0, cs_Tiers.getString(name));
+
+                    continue;
+                }
+
+                if (!Utils.isInteger(name2)){
+                    Utils.logger.warning("Not a valid colored tier, missing number: " + name);
+                    continue;
+                }
+
+                final String tierValue = cs_Tiers.getString(name);
+                if (Utils.isNullOrEmpty(tierValue)){
+                    Utils.logger.warning("No value entered for colored tier: " + name);
+                    continue;
+                }
+
+                final int tierNumber = Integer.parseInt(name2);
+                if (tiers.containsKey(tierNumber))
+                    Utils.logger.warning("Duplicate tier: " + name);
+                else
+                    tiers.put(tierNumber, tierValue);
+            }
+            if (!tiers.isEmpty()) indicator.tiers = tiers;
+        }
+
+        parsingInfo.healthIndicator = indicator;
+    }
+
+    private void parseMCMMO_Options(final ConfigurationSection cs){
+        if (cs == null) return;
+
+        final MMO_Core_Options options = new MMO_Core_Options();
+
+        options.matchPlayerLevel = YmlParsingHelper.getBoolean2(cs, "match-level", options.matchPlayerLevel);
+        options.playerLevelScale = YmlParsingHelper.getDouble2(cs, "player-level-scale", options.playerLevelScale);
+        options.enabled = YmlParsingHelper.getBoolean2(cs, "enabled", options.enabled);
+
+        final ConfigurationSection csTiers = objTo_CS(cs.get(YmlParsingHelper.getKeyNameFromConfig(cs,"tiers")));
+        if (csTiers != null){
+//            for (final String name : cs.getKeys(false)){
+//                final LevelTierMatching<String> info = new LevelTierMatching<>();
+//                final List<String> names = cs.getStringList(name);
+//                if (!names.isEmpty()) {
+//                    info.names.addAll(names);
+//                    final List<LevelTierMatching<String>> infos = new LinkedList<>();
+//                    infos.add(info);
+//                    parsingInfo.entityNameOverrides.put(name, infos);
+//                }
+//                else if (cs.getString(name) != null) {
+//                    if (parseNumberRange(objTo_CS(cs.get(name)), name, info)) continue;
+//
+//                    info.names.add(cs.getString(name));
+//                    final List<LevelTierMatching<String>> infos = new LinkedList<>();
+//                    infos.add(info);
+//                    parsingInfo.entityNameOverrides.put(name, infos);
+//                }
+//            }
         }
     }
 

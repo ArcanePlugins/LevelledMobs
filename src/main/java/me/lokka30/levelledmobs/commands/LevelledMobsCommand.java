@@ -3,10 +3,13 @@ package me.lokka30.levelledmobs.commands;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.commands.subcommands.*;
 import me.lokka30.levelledmobs.misc.Utils;
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
+import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
@@ -67,6 +70,7 @@ public class LevelledMobsCommand implements CommandExecutor, TabCompleter {
                         break;
                     case "test":
                         doTest(sender, command, label, args);
+                        break;
                     default:
                         sendMainUsage(sender, label);
                 }
@@ -78,7 +82,17 @@ public class LevelledMobsCommand implements CommandExecutor, TabCompleter {
 	}
 
 	private void doTest(@NotNull final CommandSender sender, final Command command, final String label, final String[] args){
+        Plugin p = Bukkit.getPluginManager().getPlugin("MMOCore");
+        if (p == null){
+            sender.sendMessage("MMOCore not found");
+            return;
+        }
 
+        Player player = (Player) sender;
+        net.Indyuce.mmocore.MMOCore core = (net.Indyuce.mmocore.MMOCore) p;
+        net.Indyuce.mmocore.api.player.PlayerData pd = net.Indyuce.mmocore.api.player.PlayerData.get(player.getUniqueId());
+
+        sender.sendMessage(player.getDisplayName() + "'s level: " + pd.getLevel());
     }
 
 	private void sendMainUsage(@NotNull final CommandSender sender, final String label) {

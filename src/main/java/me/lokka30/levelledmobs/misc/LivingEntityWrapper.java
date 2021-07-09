@@ -16,6 +16,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  A wrapper for the LivingEntity class that provides various common function
@@ -32,6 +34,7 @@ public class LivingEntityWrapper implements LivingEntityInterface {
         this.mobExternalType = ExternalCompatibilityManager.ExternalCompatibility.NOT_APPLICABLE;
         this.spawnReason = CreatureSpawnEvent.SpawnReason.DEFAULT;
         this.deathCause = EntityDamageEvent.DamageCause.CUSTOM;
+        this.cacheLock = new ReentrantLock(true);
     }
 
     private final LevelledMobs main;
@@ -52,6 +55,7 @@ public class LivingEntityWrapper implements LivingEntityInterface {
     public EntityDamageEvent.DamageCause deathCause;
     public String mythicMobInternalName;
     public boolean reEvaluateLevel;
+    private final ReentrantLock cacheLock;
 
     @NotNull
     public LevelledMobs getMainInstance(){
@@ -59,8 +63,11 @@ public class LivingEntityWrapper implements LivingEntityInterface {
     }
 
     private void buildCache(){
-        if (isBuildingCache) return;
-        synchronized (lockObj) {
+        if (isBuildingCache || this.hasCache) return;
+
+        try{
+            if (!this.cacheLock.tryLock(1000, TimeUnit.MILLISECONDS)) return;
+
             if (this.hasCache) return;
             isBuildingCache = true;
             this.mobLevel = main.levelInterface.isLevelled(livingEntity) ?
@@ -73,6 +80,12 @@ public class LivingEntityWrapper implements LivingEntityInterface {
             this.applicableRules = main.rulesManager.getApplicableRules(this);
             this.fineTuningAttributes = main.rulesManager.getFineTuningAttributes(this);
             this.isBuildingCache = false;
+        } catch (InterruptedException e) {
+            Utils.logger.warning("exception in buildCache: " + e.getMessage());
+        }
+        finally {
+            if (cacheLock.isHeldByCurrentThread())
+                cacheLock.unlock();
         }
     }
 
