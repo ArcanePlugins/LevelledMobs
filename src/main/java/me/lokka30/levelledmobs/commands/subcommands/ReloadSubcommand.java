@@ -59,6 +59,16 @@ public class ReloadSubcommand implements Subcommand {
             HandlerList.unregisterAll(main.chunkLoadListener);
         }
 
+        if (ExternalCompatibilityManager.hasMythicMobsInstalled() && main.rulesManager.isMythicMobsCompatibilityEnabled() && !main.configUtils.mythicMobsWasEnabled) {
+            main.configUtils.mythicMobsWasEnabled = true;
+            Bukkit.getPluginManager().registerEvents(main.mythicMobsListener, main);
+        }
+        else if (ExternalCompatibilityManager.hasMythicMobsInstalled() && !main.rulesManager.isMythicMobsCompatibilityEnabled() && main.configUtils.mythicMobsWasEnabled) {
+            main.configUtils.mythicMobsWasEnabled = false;
+            HandlerList.unregisterAll(main.mythicMobsListener);
+        }
+
+        main.levelManager.entitySpawnListener.processMobSpawns = main.settingsCfg.getBoolean(YmlParsingHelper.getKeyNameFromConfig(main.settingsCfg, "level-mobs-upon-spawn"), true);
         main.levelManager.clearRandomLevellingCache();
 
         reloadFinishedMsg.forEach(sender::sendMessage);

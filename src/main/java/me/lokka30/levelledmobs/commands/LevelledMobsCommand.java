@@ -9,7 +9,6 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
@@ -82,17 +81,20 @@ public class LevelledMobsCommand implements CommandExecutor, TabCompleter {
 	}
 
 	private void doTest(@NotNull final CommandSender sender, final Command command, final String label, final String[] args){
-        Plugin p = Bukkit.getPluginManager().getPlugin("MMOCore");
-        if (p == null){
-            sender.sendMessage("MMOCore not found");
+        if (Bukkit.getPluginManager().getPlugin("MMOCore") == null){
+            sender.sendMessage("MMOCore not installed");
+            return;
+        }
+        if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") == null){
+            sender.sendMessage("PAPI not installed");
             return;
         }
 
-        Player player = (Player) sender;
-        net.Indyuce.mmocore.MMOCore core = (net.Indyuce.mmocore.MMOCore) p;
-        net.Indyuce.mmocore.api.player.PlayerData pd = net.Indyuce.mmocore.api.player.PlayerData.get(player.getUniqueId());
+        final Player player = (Player) sender;
+        final String test = me.clip.placeholderapi.PlaceholderAPI.setPlaceholders(player, "%mmocore_level%");
+        sender.sendMessage("player " + player.getName() + " level: " + test);
 
-        sender.sendMessage(player.getDisplayName() + "'s level: " + pd.getLevel());
+        //sender.sendMessage(player.getDisplayName() + "'s level: " + pd.getLevel());
     }
 
 	private void sendMainUsage(@NotNull final CommandSender sender, final String label) {

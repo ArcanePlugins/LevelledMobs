@@ -3,6 +3,7 @@ package me.lokka30.levelledmobs.managers;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.misc.Addition;
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
+import me.lokka30.levelledmobs.misc.Utils;
 import me.lokka30.levelledmobs.misc.YmlParsingHelper;
 import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
@@ -66,12 +67,17 @@ public class MobDataManager {
         final AttributeInstance attrib = lmEntity.getLivingEntity().getAttribute(attribute);
 
         if (attrib != null) {
+            double existingDamage = 0;
+            if (attribute == Attribute.GENERIC_MAX_HEALTH && lmEntity.getLivingEntity().getAttribute(attribute) != null)
+                existingDamage = Objects.requireNonNull(lmEntity.getLivingEntity().getAttribute(attribute)).getValue() - lmEntity.getLivingEntity().getHealth();
+
             if (useStaticValues) attrib.setBaseValue(defaultValue);
             attrib.addModifier(mod);
 
             // MAX_HEALTH specific: set health to max health
             if (attribute == Attribute.GENERIC_MAX_HEALTH) {
-                lmEntity.getLivingEntity().setHealth(attrib.getValue());
+                Utils.logger.info(lmEntity.getTypeName() + " existing damage: " + existingDamage);
+                lmEntity.getLivingEntity().setHealth(attrib.getValue() - existingDamage);
             }
         }
     }

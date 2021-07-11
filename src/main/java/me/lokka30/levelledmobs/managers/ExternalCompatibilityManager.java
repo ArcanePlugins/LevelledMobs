@@ -58,11 +58,7 @@ public class ExternalCompatibilityManager {
         if (Bukkit.getPluginManager().getPlugin("MMOCore") == null)
             return null;
 
-        try{
-            final net.Indyuce.mmocore.api.player.PlayerData pd = net.Indyuce.mmocore.api.player.PlayerData.get(player.getUniqueId());
-            if (pd != null) return pd.getLevel();
-        }
-        catch (Exception ignored){ }
+        // TODO: add PAPI support here
 
         return null;
     }

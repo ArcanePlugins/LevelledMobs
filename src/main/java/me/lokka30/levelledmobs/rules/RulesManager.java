@@ -192,6 +192,24 @@ public class RulesManager {
         return result;
     }
 
+    public boolean isMythicMobsCompatibilityEnabled(){
+        for (final List<RuleInfo> rules : this.rulesInEffect.values()){
+            if (rules == null) continue;
+
+            for (final RuleInfo ruleInfo : rules){
+                if (ruleInfo.ruleIsEnabled &&
+                        ruleInfo.enabledExtCompats != null &&
+                        ruleInfo.enabledExtCompats.containsKey(ExternalCompatibilityManager.ExternalCompatibility.MYTHIC_MOBS) &&
+                        ruleInfo.enabledExtCompats.get(ExternalCompatibilityManager.ExternalCompatibility.MYTHIC_MOBS)
+                ){
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
     public int getRule_CreeperMaxBlastRadius(@NotNull final LivingEntityWrapper lmEntity){
         int maxBlast = 5;
         for (final RuleInfo ruleInfo : lmEntity.getApplicableRules()){

@@ -172,6 +172,7 @@ kill-skip-conditions:
 ensure-mobs-are-levelled-on-chunk-load: true
 attributes-use-preset-base-values: false
 use-customname-for-mob-nametags: false
+level-mobs-upon-spawn: true
 
 
 # |||-------------------------------------------------------------------------------------------|

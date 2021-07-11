@@ -33,6 +33,7 @@ import java.util.HashSet;
 public class EntitySpawnListener implements Listener {
 
     private final LevelledMobs main;
+    public boolean processMobSpawns;
 
     public EntitySpawnListener(final LevelledMobs main) {
         this.main = main;
@@ -49,6 +50,8 @@ public class EntitySpawnListener implements Listener {
             delayedAddToQueue(lmEntity, event, 20);
             return;
         }
+
+        if (!processMobSpawns) return;
 
         final int mobProcessDelay = main.settingsCfg.getInt(YmlParsingHelper.getKeyNameFromConfig(main.settingsCfg, "mob-process-delay"), 0);
 

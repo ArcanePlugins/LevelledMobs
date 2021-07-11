@@ -191,10 +191,8 @@ public class LevelInterface {
      * @param additionalLevelInformation used to determine the source event
      */
     public void applyLevelToMob(@NotNull final LivingEntityWrapper lmEntity, int level, final boolean isSummoned, final boolean bypassLimits, @NotNull final HashSet<AdditionalLevelInformation> additionalLevelInformation) {
-        if (level <= 0){
-            // this is likely used by a rule to specify a mob not be levelled
-            return;
-        }
+        if (level <= 0)
+            level = generateLevel(lmEntity);
 
         assert bypassLimits || isSummoned || getLevellableState(lmEntity) == LevellableState.ALLOWED;
 

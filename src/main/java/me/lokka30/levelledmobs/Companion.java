@@ -1,5 +1,6 @@
 package me.lokka30.levelledmobs;
 
+import com.sun.tools.javac.Main;
 import me.lokka30.levelledmobs.commands.LevelledMobsCommand;
 import me.lokka30.levelledmobs.compatibility.MC1_16_Compat;
 import me.lokka30.levelledmobs.compatibility.MC1_17_Compat;
@@ -21,8 +22,6 @@ import org.bukkit.plugin.PluginManager;
 
 import javax.annotation.Nullable;
 import java.io.*;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -172,6 +171,7 @@ public class Companion {
         main.queueManager_mobs.start();
         main.queueManager_nametags.start();
         main.levelManager.entitySpawnListener = new EntitySpawnListener(main); // we're saving this reference so the summon command has access to it
+        main.levelManager.entitySpawnListener.processMobSpawns = main.settingsCfg.getBoolean(YmlParsingHelper.getKeyNameFromConfig(main.settingsCfg, "level-mobs-upon-spawn"), true);
         main.entityDamageDebugListener = new EntityDamageDebugListener(main);
         main.blockPlaceListener = new BlockPlaceListener(main);
 
@@ -194,14 +194,18 @@ public class Companion {
         pluginManager.registerEvents(new CombustListener(main), main);
         pluginManager.registerEvents(main.blockPlaceListener, main);
         main.chunkLoadListener = new ChunkLoadListener(main);
+        if (ExternalCompatibilityManager.hasMythicMobsInstalled())
+            main.mythicMobsListener = new MythicMobsListener(main);
 
         if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
             main.papiManager = new PAPIManager(main);
             main.papiManager.register();
         }
 
-        if (ExternalCompatibilityManager.hasMythicMobsInstalled())
-            pluginManager.registerEvents(new MythicMobsListener(main), main);
+        if (ExternalCompatibilityManager.hasMythicMobsInstalled() && main.rulesManager.isMythicMobsCompatibilityEnabled()) {
+            pluginManager.registerEvents(main.mythicMobsListener, main);
+            main.configUtils.mythicMobsWasEnabled = true;
+        }
 
         if (main.settingsCfg.getBoolean(YmlParsingHelper.getKeyNameFromConfig(main.settingsCfg,"ensure-mobs-are-levelled-on-chunk-load")))
             pluginManager.registerEvents(main.chunkLoadListener, main);

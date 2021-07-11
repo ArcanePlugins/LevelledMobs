@@ -1,10 +1,7 @@
 package me.lokka30.levelledmobs.listeners;
 
 import me.lokka30.levelledmobs.LevelledMobs;
-import me.lokka30.levelledmobs.misc.Addition;
-import me.lokka30.levelledmobs.misc.DebugType;
-import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
-import me.lokka30.levelledmobs.misc.Utils;
+import me.lokka30.levelledmobs.misc.*;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -36,7 +33,13 @@ public class EntityDamageListener implements Listener {
         final LivingEntityWrapper lmEntity = new LivingEntityWrapper((LivingEntity) event.getEntity(), main);
 
         //Make sure the mob is levelled
-        if (!lmEntity.isLevelled()) return;
+        if (!lmEntity.isLevelled()){
+            if (main.levelManager.entitySpawnListener.processMobSpawns)
+                return;
+
+            if (lmEntity.getMobLevel() < 0) lmEntity.reEvaluateLevel = true;
+            main.queueManager_mobs.addToQueue(new QueueItem(lmEntity, event));
+        }
 
         // Update their nametag with a 1 tick delay so that their health after the damage is shown
         main.levelManager.updateNametag_WithDelay(lmEntity);
@@ -61,7 +64,12 @@ public class EntityDamageListener implements Listener {
         final LivingEntityWrapper shooter = new LivingEntityWrapper((LivingEntity) projectile.getShooter(), main);
 
         if (!shooter.getLivingEntity().isValid()) return;
-        if (!shooter.isLevelled()) return;
+        if (!shooter.isLevelled()){
+             if (main.levelManager.entitySpawnListener.processMobSpawns)
+                 return;
+
+            main.queueManager_mobs.addToQueue(new QueueItem(shooter, event));
+        }
 
         Utils.debugLog(main, DebugType.RANGED_DAMAGE_MODIFICATION, "Range attack damage modified for &b" + shooter.getLivingEntity().getName() + "&7:");
         Utils.debugLog(main, DebugType.RANGED_DAMAGE_MODIFICATION, "Previous rangedDamage: &b" + event.getDamage());
