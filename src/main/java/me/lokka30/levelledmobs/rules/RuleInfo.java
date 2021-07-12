@@ -49,6 +49,7 @@ public class RuleInfo {
     public Integer lowerMobLevelBiasFactor;
     public Integer conditions_ApplyAboveY;
     public Integer conditions_ApplyBelowY;
+    public Integer conditions_MinDistanceFromSpawn;
     public Double conditions_Chance;
     public Double sunlightBurnAmount;
     public String nametag;
@@ -60,7 +61,7 @@ public class RuleInfo {
     public MobCustomNameStatusEnum conditions_MobCustomnameStatus;
     public MobTamedStatusEnum conditions_MobTamedStatus;
     public LevellingStrategy levellingStrategy;
-    public MMO_Core_Options mmo_CoreOptions;
+    public PlayerLevellingOptions playerLevellingOptions;
     public Map<String, List<LevelTierMatching<String>>> entityNameOverrides_Level;
     public Map<String, LevelTierMatching<String>> entityNameOverrides;
     @NotNull

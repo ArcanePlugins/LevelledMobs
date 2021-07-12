@@ -32,7 +32,7 @@ public final class Utils {
      */
     @NotNull
     public static List<String> getSupportedServerVersions() {
-        return Arrays.asList("1.14", "1.15", "1.16");
+        return Arrays.asList("1.14", "1.15", "1.16", "1.17");
     }
 
     @NotNull

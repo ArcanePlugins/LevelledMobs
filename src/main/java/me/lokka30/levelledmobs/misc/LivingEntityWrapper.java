@@ -55,7 +55,17 @@ public class LivingEntityWrapper implements LivingEntityInterface {
     public EntityDamageEvent.DamageCause deathCause;
     public String mythicMobInternalName;
     public boolean reEvaluateLevel;
+    private Double calculatedDistanceFromSpawn;
     private final ReentrantLock cacheLock;
+
+    @Nullable
+    public Double getCalculatedDistanceFromSpawn(){
+        return calculatedDistanceFromSpawn;
+    }
+
+    public void setCalculatedDistanceFromSpawn(final double value){
+        calculatedDistanceFromSpawn = value;
+    }
 
     @NotNull
     public LevelledMobs getMainInstance(){

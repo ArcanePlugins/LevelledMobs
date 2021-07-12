@@ -5,8 +5,8 @@ import org.jetbrains.annotations.NotNull;
 import java.util.LinkedList;
 import java.util.List;
 
-public class MMO_Core_Options {
-    public MMO_Core_Options(){
+public class PlayerLevellingOptions {
+    public PlayerLevellingOptions(){
         this.levelTiers = new LinkedList<>();
     }
 

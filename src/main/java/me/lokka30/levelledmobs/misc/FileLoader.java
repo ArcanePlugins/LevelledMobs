@@ -90,16 +90,11 @@ public final class FileLoader {
     }
 
     private static void checkFileVersion(final File file, final int compatibleVersion, final int installedVersion) {
-        if (compatibleVersion == installedVersion) {
+        if (compatibleVersion == installedVersion)
             return;
-        }
 
-        String what;
-        if (installedVersion < compatibleVersion) {
-            what = "outdated";
-        } else {
-            what = "ahead of the compatible version of this file for this version of the plugin";
-        }
+        final String what = installedVersion < compatibleVersion ?
+                "outdated" : "ahead of the compatible version of this file for this version of the plugin";
 
         Utils.logger.error("&fFile Loader: &7The version of &b" + file.getName() + "&7 you have installed is " + what + "! Fix this as soon as possible, else the plugin will most likely malfunction.");
         Utils.logger.error("&fFile Loader: &8(&7You have &bv" + installedVersion + "&7 installed but you are meant to be running &bv" + compatibleVersion + "&8)");

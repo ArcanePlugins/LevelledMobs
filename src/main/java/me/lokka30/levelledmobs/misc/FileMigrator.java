@@ -39,12 +39,12 @@ public class FileMigrator {
         public final int depth;
         public boolean hasValue;
 
-        public FieldInfo(String value, int depth) {
+        public FieldInfo(final String value, int depth) {
             this.simpleValue = value;
             this.depth = depth;
         }
 
-        public FieldInfo(String value, int depth, boolean isListValue) {
+        public FieldInfo(final String value, final int depth, final boolean isListValue) {
             if (isListValue) addListValue(value);
             else this.simpleValue = value;
             this.depth = depth;
@@ -54,8 +54,8 @@ public class FileMigrator {
             return valueList != null;
         }
 
-        public void addListValue(String value){
-            if (valueList == null) valueList = new ArrayList<>();
+        public void addListValue(final String value){
+            if (valueList == null) valueList = new LinkedList<>();
             valueList.add(value);
         }
 
@@ -86,7 +86,7 @@ public class FileMigrator {
         public int sectionStartingLine;
     }
 
-    private static String getKeyFromList(@NotNull List<String> list, String currentKey){
+    private static String getKeyFromList(final @NotNull List<String> list, final String currentKey){
         if (list.size() == 0) return currentKey;
 
         String result = String.join(".", list);
@@ -224,8 +224,6 @@ public class FileMigrator {
             }
 
             // build an index so we can modify the collection as we enumerate thru it
-            //List<String> newSectionIndex = new ArrayList<>(keySections_New.keySet());
-
             Files.write(to.toPath(), newConfigLines, StandardCharsets.UTF_8, StandardOpenOption.TRUNCATE_EXISTING);
             Utils.logger.info("&fFile Loader: &8(Migration) &7Migrated &b" + to.getName() + "&7 successfully.");
         }
@@ -321,7 +319,7 @@ public class FileMigrator {
         boolean isSettings = to.getName().equalsIgnoreCase("settings.yml");
         boolean isCustomDrops = to.getName().equalsIgnoreCase("customdrops.yml");
         boolean showMessages = !to.getName().equalsIgnoreCase("messages.yml");
-        final List<String> processedKeys = new ArrayList<>();
+        final List<String> processedKeys = new LinkedList<>();
 
         // version 20 = 1.34 - last version before 2.0
         final List<String> version20KeysToKeep = Arrays.asList(
@@ -590,7 +588,7 @@ public class FileMigrator {
     @Nonnull
     private static SortedMap<String, FileMigrator.FieldInfo> getMapFromConfig(@NotNull List<String> input) {
         final SortedMap<String, FileMigrator.FieldInfo> configMap = new TreeMap<>();
-        final List<String> currentKey = new ArrayList<>();
+        final List<String> currentKey = new LinkedList<>();
         final String regexPattern = "^[^':]*:.*";
 
         int lineNum = -1;

@@ -571,6 +571,20 @@ public class RulesManager {
             return false;
         }
 
+        if (ri.conditions_MinDistanceFromSpawn != null){
+            Double spawnDistance = lmInterface.getCalculatedDistanceFromSpawn();
+            if (spawnDistance == null) {
+                spawnDistance = lmInterface.getWorld().getSpawnLocation().distance(lmInterface.getLocation());
+                lmInterface.setCalculatedDistanceFromSpawn(spawnDistance);
+            }
+
+            if (spawnDistance < ri.conditions_MinDistanceFromSpawn){
+                Utils.debugLog(main, DebugType.DENIED_RULE_MIN_SPAWN_DISTANCE, String.format("&b%s&7, mob: &b%s&7, spawn-distance: &b%s&7, min-sd: &b%s&7",
+                        ri.getRuleName(), lmInterface.getEntityType().name(), Utils.round(spawnDistance), ri.conditions_MinDistanceFromSpawn));
+                return false;
+            }
+        }
+
         if (ri.conditions_Chance != null && ri.conditions_Chance < 1.0){
             final double chanceRole = (double) ThreadLocalRandom.current().nextInt(0, 100001) * 0.00001;
             if (chanceRole < ri.conditions_Chance){

@@ -7,6 +7,7 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.EntityType;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
@@ -32,6 +33,16 @@ public class LivingEntityPlaceHolder implements LivingEntityInterface {
     private final World world;
     private boolean groupsAreBuilt;
     private List<CustomUniversalGroups> applicableGroups;
+    private Double calculatedDistanceFromSpawn;
+
+    @Nullable
+    public Double getCalculatedDistanceFromSpawn(){
+        return calculatedDistanceFromSpawn;
+    }
+
+    public void setCalculatedDistanceFromSpawn(final double value){
+        calculatedDistanceFromSpawn = value;
+    }
 
     @NotNull
     public EntityType getEntityType() {

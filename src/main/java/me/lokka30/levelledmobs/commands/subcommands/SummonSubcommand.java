@@ -31,7 +31,7 @@ public class SummonSubcommand implements Subcommand {
     @Override
     public void parseSubcommand(final LevelledMobs main, final CommandSender sender, final String label, @NotNull final String[] args) {
         boolean useOverride = false;
-        final List<String> useArgs = new ArrayList<>();
+        final List<String> useArgs = new LinkedList<>();
         for (final String arg : args) {
             if ("/override".equalsIgnoreCase(arg))
                 useOverride = true;
@@ -251,7 +251,7 @@ public class SummonSubcommand implements Subcommand {
 
         // <entity>
         if (args.length == 3) {
-            List<String> entityNames = new ArrayList<>();
+            List<String> entityNames = new LinkedList<>();
             for (EntityType entityType : EntityType.values()) {
                 entityNames.add(entityType.toString().toLowerCase());
             }
@@ -274,7 +274,7 @@ public class SummonSubcommand implements Subcommand {
             switch (args[4].toLowerCase()) {
                 case "atplayer":
                     if (args.length == 6) {
-                        List<String> suggestions = new ArrayList<>();
+                        List<String> suggestions = new LinkedList<>();
                         for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
                             if (sender instanceof Player) {
                                 Player player = (Player) sender;
@@ -295,7 +295,7 @@ public class SummonSubcommand implements Subcommand {
                     if (args.length < 9) { // args 6, 7 and 8 = x, y and z
                         return Collections.singletonList("~");
                     } else if (args.length == 9) {
-                        List<String> worlds = new ArrayList<>();
+                        List<String> worlds = new LinkedList<>();
                         Bukkit.getWorlds().forEach(world -> worlds.add(world.getName()));
                         return worlds;
                     } else if (args.length == 10){

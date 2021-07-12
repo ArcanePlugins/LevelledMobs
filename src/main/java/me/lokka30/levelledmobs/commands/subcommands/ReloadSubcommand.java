@@ -18,7 +18,7 @@ import java.util.List;
 public class ReloadSubcommand implements Subcommand {
 
     @Override
-    public void parseSubcommand(LevelledMobs main, CommandSender sender, String label, String[] args) {
+    public void parseSubcommand(final LevelledMobs main, final CommandSender sender, final String label, final String[] args) {
         if (!sender.hasPermission("levelledmobs.command.reload")){
             main.configUtils.sendNoPermissionMsg(sender);
             return;
@@ -75,7 +75,7 @@ public class ReloadSubcommand implements Subcommand {
     }
 
     @Override
-    public List<String> parseTabCompletions(LevelledMobs main, CommandSender sender, String[] args) {
+    public List<String> parseTabCompletions(final LevelledMobs main, final CommandSender sender, final String[] args) {
         return null; //No tab completions.
     }
 }

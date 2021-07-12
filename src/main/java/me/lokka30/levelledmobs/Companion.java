@@ -61,7 +61,7 @@ public class Companion {
         Utils.logger.info("&fCompatibility Checker: &7Checking compatibility with your server...");
 
         // Using a List system in case more compatibility checks are added.
-        final List<String> incompatibilities = new ArrayList<>();
+        final List<String> incompatibilities = new LinkedList<>();
 
         // Check the MC version of the server.
         if (!VersionUtils.isOneFourteen()) {
@@ -338,7 +338,7 @@ public class Companion {
                 EntityType.SNOWMAN
         ).collect(Collectors.toCollection(HashSet::new));
 
-        if (MC1_17_Compat.isServer1_17OrNewer())
+        if (VersionUtils.isOneSeventeen())
             groups_PassiveMobs.addAll(MC1_17_Compat.getPassiveMobs());
 
         if (VersionUtils.isOneSixteen())

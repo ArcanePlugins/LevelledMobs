@@ -14,18 +14,6 @@ import java.util.stream.Stream;
  * @author stumper66
  */
 public class MC1_17_Compat {
-    public static boolean isServer1_17OrNewer() {
-        boolean result = true;
-        try{
-            EntityType.valueOf("AXOLOTL");
-        }
-        catch (IllegalArgumentException ignored) {
-            result = false;
-        }
-
-        return result;
-    }
-
     public static HashSet<EntityType> getPassiveMobs() {
         return Stream.of(
                 EntityType.AXOLOTL,

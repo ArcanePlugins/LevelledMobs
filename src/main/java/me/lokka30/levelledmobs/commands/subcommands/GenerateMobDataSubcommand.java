@@ -37,38 +37,44 @@ public class GenerateMobDataSubcommand implements Subcommand {
 
     @Override
     public void parseSubcommand(final LevelledMobs main, final CommandSender sender, final String label, final String[] args) {
-        if (sender instanceof ConsoleCommandSender) {
-            if (args.length == 2) {
-                if (attempts == 0)
-                    sender.sendMessage(MessageUtils.colorizeAll(main.configUtils.getPrefix() + " You have ran out of attempts to use the correct password. You will gain another 3 attempts next time you restart the server."));
-                else {
-                    if (args[1].equals(PASSWORD)) {
-                        if (acknowledged) {
-                            sender.sendMessage(MessageUtils.colorizeAll(main.configUtils.getPrefix() + " Starting generateMobData..."));
-                            try {
-                                generateMobData(main);
-                            } catch (IOException ex) {
-                                sender.sendMessage(MessageUtils.colorizeAll(main.configUtils.getPrefix() + " Unable to generate mob data! Stack trace:"));
-                                ex.printStackTrace();
-                            }
-                        } else {
-                            acknowledged = true;
-                            sender.sendMessage(MessageUtils.colorizeAll(main.configUtils.getPrefix() + " &8&m**********&r &c&lWARNING!&r &8&m**********&r"));
-                            sender.sendMessage(MessageUtils.colorizeAll(main.configUtils.getPrefix() + " &fThis command can possibly cause significant issues on your server&7, especially by unexpected behaviour from other plugins."));
-                            sender.sendMessage(MessageUtils.colorizeAll(main.configUtils.getPrefix() + " &fIf you are sure &7you are meant to be running this command, please &frun this command again (with the password too)&7."));
-                            sender.sendMessage(MessageUtils.colorizeAll(main.configUtils.getPrefix() + " &fDevelopers are NOT responsible for any damages&7 that this plugin could unintentionally cause."));
-                            sender.sendMessage(MessageUtils.colorizeAll(main.configUtils.getPrefix() + " The files generated will still be&f reset next startup&7, and the files you will generate will &fnot take effect&7. This simply generates new ones which you should copy before you restart the server next."));
-                            sender.sendMessage(MessageUtils.colorizeAll(main.configUtils.getPrefix() + " &8(This acknowledgement notice will only appear once per restart.)"));
-                        }
-                    } else {
-                        sender.sendMessage(MessageUtils.colorizeAll(main.configUtils.getPrefix() + " Invalid password '&b%password%&7'! You have &b" + attempts + "&7 more attempt(s) before this command is locked until next restart.").replace("%password%", args[1]));
-                        attempts--;
-                    }
-                }
-            } else
-                sender.sendMessage(MessageUtils.colorizeAll(main.configUtils.getPrefix() + " Usage: &b/" + label + " generateMobData <password>"));
-        } else
+        if (!(sender instanceof ConsoleCommandSender)) {
             sender.sendMessage(MessageUtils.colorizeAll(main.configUtils.getPrefix() + " Only console may use this command."));
+            return;
+        }
+
+        if (args.length != 2) {
+            sender.sendMessage(MessageUtils.colorizeAll(main.configUtils.getPrefix() + " Usage: &b/" + label + " generateMobData <password>"));
+            return;
+        }
+
+        if (attempts == 0) {
+            sender.sendMessage(MessageUtils.colorizeAll(main.configUtils.getPrefix() + " You have ran out of attempts to use the correct password. You will gain another 3 attempts next time you restart the server."));
+            return;
+        }
+
+        if (!args[1].equals(PASSWORD)) {
+            sender.sendMessage(MessageUtils.colorizeAll(main.configUtils.getPrefix() + " Invalid password '&b%password%&7'! You have &b" + attempts + "&7 more attempt(s) before this command is locked until next restart.").replace("%password%", args[1]));
+            attempts--;
+            return;
+        }
+
+        if (acknowledged) {
+            sender.sendMessage(MessageUtils.colorizeAll(main.configUtils.getPrefix() + " Starting generateMobData..."));
+            try {
+                generateMobData(main);
+            } catch (IOException ex) {
+                sender.sendMessage(MessageUtils.colorizeAll(main.configUtils.getPrefix() + " Unable to generate mob data! Stack trace:"));
+                ex.printStackTrace();
+            }
+        } else {
+            acknowledged = true;
+            sender.sendMessage(MessageUtils.colorizeAll(main.configUtils.getPrefix() + " &8&m**********&r &c&lWARNING!&r &8&m**********&r"));
+            sender.sendMessage(MessageUtils.colorizeAll(main.configUtils.getPrefix() + " &fThis command can possibly cause significant issues on your server&7, especially by unexpected behaviour from other plugins."));
+            sender.sendMessage(MessageUtils.colorizeAll(main.configUtils.getPrefix() + " &fIf you are sure &7you are meant to be running this command, please &frun this command again (with the password too)&7."));
+            sender.sendMessage(MessageUtils.colorizeAll(main.configUtils.getPrefix() + " &fDevelopers are NOT responsible for any damages&7 that this plugin could unintentionally cause."));
+            sender.sendMessage(MessageUtils.colorizeAll(main.configUtils.getPrefix() + " The files generated will still be&f reset next startup&7, and the files you will generate will &fnot take effect&7. This simply generates new ones which you should copy before you restart the server next."));
+            sender.sendMessage(MessageUtils.colorizeAll(main.configUtils.getPrefix() + " &8(This acknowledgement notice will only appear once per restart.)"));
+        }
     }
 
     @Override
