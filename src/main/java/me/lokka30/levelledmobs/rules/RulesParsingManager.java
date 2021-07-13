@@ -450,8 +450,8 @@ public class RulesParsingManager {
     private void parseEntityNameOverride(final ConfigurationSection cs){
         if (cs == null) return;
 
-        final Map<String, List<LevelTierMatching<String>>> levelTiers = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
-        final Map<String, LevelTierMatching<String>> entityNames = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+        final Map<String, List<LevelTierMatching>> levelTiers = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+        final Map<String, LevelTierMatching> entityNames = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
 
         for (final String name : cs.getKeys(false)){
             if ("merge".equalsIgnoreCase(name) && cs.getBoolean(name)){
@@ -461,7 +461,7 @@ public class RulesParsingManager {
 
             final List<String> names = cs.getStringList(name);
             if (!names.isEmpty()) {
-                final LevelTierMatching<String> mobNames = new LevelTierMatching<>();
+                final LevelTierMatching mobNames = new LevelTierMatching();
                 mobNames.mobName = name;
                 mobNames.names = names;
                 entityNames.put(name, mobNames);
@@ -472,7 +472,7 @@ public class RulesParsingManager {
                     parsingInfo.mergeEntityNameOverrides = cs.getBoolean(name);
                     continue;
                 }
-                final List<LevelTierMatching<String>> tiers = parseNumberRange(objTo_CS(cs.get(name)), name);
+                final List<LevelTierMatching> tiers = parseNumberRange(objTo_CS(cs.get(name)), name);
                 if (tiers != null && !tiers.isEmpty())
                     levelTiers.put(name, tiers);
             }
@@ -484,14 +484,14 @@ public class RulesParsingManager {
             parsingInfo.entityNameOverrides_Level = levelTiers;
     }
 
-    private List<LevelTierMatching<String>> parseNumberRange(final ConfigurationSection cs, final String keyName){
+    private List<LevelTierMatching> parseNumberRange(final ConfigurationSection cs, final String keyName){
         if (cs == null) return null;
 
-        final List<LevelTierMatching<String>> levelTiers = new LinkedList<>();
+        final List<LevelTierMatching> levelTiers = new LinkedList<>();
 
         for (final String name : cs.getKeys(false)){
             final List<String> names = cs.getStringList(name);
-            final LevelTierMatching<String> tier = new LevelTierMatching<>();
+            final LevelTierMatching tier = new LevelTierMatching();
 
             if ("merge".equalsIgnoreCase(name))
                 continue;
@@ -575,6 +575,7 @@ public class RulesParsingManager {
         parsingInfo.conditions_ApplyAboveY = YmlParsingHelper.getInt2(cs,"apply-above-y", parsingInfo.conditions_ApplyAboveY);
         parsingInfo.conditions_ApplyBelowY = YmlParsingHelper.getInt2(cs,"apply-below-y", parsingInfo.conditions_ApplyBelowY);
         parsingInfo.conditions_MinDistanceFromSpawn = YmlParsingHelper.getInt2(cs, "min-distance-from-spawn", parsingInfo.conditions_MinDistanceFromSpawn);
+        parsingInfo.conditions_MaxDistanceFromSpawn = YmlParsingHelper.getInt2(cs, "max-distance-from-spawn", parsingInfo.conditions_MaxDistanceFromSpawn);
 
         parsingInfo.conditions_WGRegions = buildCachedModalListOfString(cs, "allowed-worldguard-regions", parsingInfo.conditions_WGRegions);
         parsingInfo.conditions_SpawnReasons = buildCachedModalListOfSpawnReason(cs, parsingInfo.conditions_SpawnReasons);
@@ -696,65 +697,46 @@ public class RulesParsingManager {
         if (cs == null) return;
 
         final PlayerLevellingOptions options = new PlayerLevellingOptions();
-
         options.matchPlayerLevel = YmlParsingHelper.getBoolean2(cs, "match-level", options.matchPlayerLevel);
+        options.usePlayerMaxLevel = YmlParsingHelper.getBoolean2(cs, "use-player-max-level", options.usePlayerMaxLevel);
         options.playerLevelScale = YmlParsingHelper.getDouble2(cs, "player-level-scale", options.playerLevelScale);
         options.enabled = YmlParsingHelper.getBoolean2(cs, "enabled", options.enabled);
+        parsingInfo.playerLevellingOptions = options;
 
-//        final ConfigurationSection csTiers = objTo_CS(cs.get(YmlParsingHelper.getKeyNameFromConfig(cs,"tiers")));
-//        if (csTiers != null){
-//            for (final String name : cs.getKeys(false)){
-//                final LevelTierMatching<int[]> info = new LevelTierMatching<>();
-//                final List<String> names = cs.getStringList(name);
-//                if (!names.isEmpty()) {
-//                    info.names.addAll(names);
-//                    final List<LevelTierMatching<String>> infos = new LinkedList<>();
-//                    infos.add(info);
-//                    parsingInfo.entityNameOverrides.put(name, infos);
-//                }
-//                else if (cs.getString(name) != null) {
-//                    if (parseNumberRange2(objTo_CS(cs.get(name)), name, info)) continue;
-//
-//                    info.names.add(cs.getString(name));
-//                    final List<LevelTierMatching<String>> infos = new LinkedList<>();
-//                    infos.add(info);
-//                    parsingInfo.entityNameOverrides.put(name, infos);
-//                }
-//            }
-//        }
-    }
+        final ConfigurationSection csTiers = objTo_CS(cs.get(YmlParsingHelper.getKeyNameFromConfig(cs,"tiers")));
+        if (csTiers != null){
+            final List<LevelTierMatching> levelTiers = new LinkedList<>();
 
-    private List<LevelTierMatching<String>> parseNumberRange2(final ConfigurationSection cs, final String keyName){
-        if (cs == null) return null;
+            for (final String name : csTiers.getKeys(false)){
+                final LevelTierMatching info = new LevelTierMatching();
 
-        final List<LevelTierMatching<String>> levelTiers = new LinkedList<>();
+                final String value = csTiers.getString(name);
+                if (value == null) {
+                    Utils.logger.warning("No value was specified for: " + name);
+                    continue;
+                }
 
-        for (final String name : cs.getKeys(false)){
-            final List<String> names = cs.getStringList(name);
-            final LevelTierMatching<String> tier = new LevelTierMatching<>();
+                if (!info.setRangeFromString(name)){
+                    Utils.logger.warning("Invalid number range: " + name);
+                    continue;
+                }
 
-            if ("merge".equalsIgnoreCase(name))
-                continue;
+                final int[] levelRange = LevelTierMatching.getRangeFromString(value);
+                if (levelRange.length < 2) {
+                    Utils.logger.warning("Invalid number range (len): " + value);
+                    continue;
+                }
+                if (levelRange[0] == -1 && levelRange[1] == -1){
+                    Utils.logger.warning("Invalid number range: " + value);
+                    continue;
+                }
 
-            tier.mobName = name;
-
-            if (!names.isEmpty()) {
-                // an array of names was provided
-                tier.names = names;
-            }
-            else if (cs.getString(name) != null) {
-                // a string was provided
-                tier.names = new LinkedList<>();
-                tier.names.add(cs.getString(name));
+                info.valueRanges = levelRange;
+                levelTiers.add(info);
             }
 
-            if (!tier.setRangeFromString(keyName))
-                Utils.logger.warning("Invalid number range: " + keyName);
-            else if (!tier.names.isEmpty())
-                levelTiers.add(tier);
+            if (!levelTiers.isEmpty()) options.levelTiers.addAll(levelTiers);
         }
-
-        return levelTiers;
     }
 
     private void parseBlendedLevelling(final ConfigurationSection cs, final @NotNull SpawnDistanceStrategy spawnDistanceStrategy){

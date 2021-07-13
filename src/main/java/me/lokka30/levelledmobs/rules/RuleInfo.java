@@ -50,6 +50,7 @@ public class RuleInfo {
     public Integer conditions_ApplyAboveY;
     public Integer conditions_ApplyBelowY;
     public Integer conditions_MinDistanceFromSpawn;
+    public Integer conditions_MaxDistanceFromSpawn;
     public Double conditions_Chance;
     public Double sunlightBurnAmount;
     public String nametag;
@@ -62,8 +63,8 @@ public class RuleInfo {
     public MobTamedStatusEnum conditions_MobTamedStatus;
     public LevellingStrategy levellingStrategy;
     public PlayerLevellingOptions playerLevellingOptions;
-    public Map<String, List<LevelTierMatching<String>>> entityNameOverrides_Level;
-    public Map<String, LevelTierMatching<String>> entityNameOverrides;
+    public Map<String, List<LevelTierMatching>> entityNameOverrides_Level;
+    public Map<String, LevelTierMatching> entityNameOverrides;
     @NotNull
     public final Map<String, String> ruleSourceNames;
     public List<TieredColoringInfo> tieredColoringInfos;
@@ -106,16 +107,23 @@ public class RuleInfo {
                 final Object presetValue = f.get(preset);
 
                 if (f.getName().equals("entityNameOverrides") && this.entityNameOverrides != null){
-                    this.entityNameOverrides.putAll((Map<String, LevelTierMatching<String>>) presetValue);
+                    this.entityNameOverrides.putAll((Map<String, LevelTierMatching>) presetValue);
                     skipSettingValue = true;
                 }
-
-                if (f.getName().equals("entityNameOverrides") && this.entityNameOverrides != null){
-                    this.entityNameOverrides.putAll((Map<String, LevelTierMatching<String>>) presetValue);
+                else if (f.getName().equals("entityNameOverrides_Level") && this.entityNameOverrides_Level != null){
+                    this.entityNameOverrides_Level.putAll((Map<String, List<LevelTierMatching>>) presetValue);
                     skipSettingValue = true;
                 }
+                else if (f.getName().equals("healthIndicator")){
+                    final HealthIndicator mergingPreset = (HealthIndicator) presetValue;
+                    if (this.healthIndicator == null || mergingPreset.doMerge == null || !mergingPreset.doMerge)
+                        this.healthIndicator = mergingPreset;
+                    else
+                        this.healthIndicator.mergeIndicator(mergingPreset);
 
-                if (f.getName().equals("allMobMultipliers")){
+                    skipSettingValue = true;
+                }
+                else if (f.getName().equals("allMobMultipliers")){
                     FineTuningAttributes mergingPreset = (FineTuningAttributes) presetValue;
                     if (this.allMobMultipliers == null)
                         this.allMobMultipliers = mergingPreset.cloneItem();

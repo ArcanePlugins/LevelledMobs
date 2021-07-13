@@ -11,7 +11,7 @@ public class EntityNameOverides {
 
     @NotNull
     final public String mobNameOrLevelRange;
-    public List<LevelTierMatching<String>> entityNames;
+    public List<LevelTierMatching> entityNames;
     public boolean isLevelRange;
 
 }

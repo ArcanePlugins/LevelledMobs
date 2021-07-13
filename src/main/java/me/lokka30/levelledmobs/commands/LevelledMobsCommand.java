@@ -4,6 +4,7 @@ import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.commands.subcommands.*;
 import me.lokka30.levelledmobs.misc.Utils;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -12,6 +13,7 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
+import java.util.logging.Logger;
 
 /**
  * This class handles the command execution of '/levelledmobs'.
@@ -67,9 +69,6 @@ public class LevelledMobsCommand implements CommandExecutor, TabCompleter {
                     case "rules":
                         rulesSubcommand.parseSubcommand(main, sender, label, args);
                         break;
-                    case "test":
-                        doTest(sender, command, label, args);
-                        break;
                     default:
                         sendMainUsage(sender, label);
                 }
@@ -79,23 +78,6 @@ public class LevelledMobsCommand implements CommandExecutor, TabCompleter {
         }
 		return true;
 	}
-
-	private void doTest(@NotNull final CommandSender sender, final Command command, final String label, final String[] args){
-        if (Bukkit.getPluginManager().getPlugin("MMOCore") == null){
-            sender.sendMessage("MMOCore not installed");
-            return;
-        }
-        if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") == null){
-            sender.sendMessage("PAPI not installed");
-            return;
-        }
-
-        final Player player = (Player) sender;
-        final String test = me.clip.placeholderapi.PlaceholderAPI.setPlaceholders(player, "%mmocore_level%");
-        sender.sendMessage("player " + player.getName() + " level: " + test);
-
-        //sender.sendMessage(player.getDisplayName() + "'s level: " + pd.getLevel());
-    }
 
 	private void sendMainUsage(@NotNull final CommandSender sender, final String label) {
         List<String> mainUsage = main.messagesCfg.getStringList("command.levelledmobs.main-usage");

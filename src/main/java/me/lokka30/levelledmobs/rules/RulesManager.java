@@ -6,6 +6,7 @@ import me.lokka30.levelledmobs.managers.ExternalCompatibilityManager;
 import me.lokka30.levelledmobs.misc.*;
 import me.lokka30.levelledmobs.rules.strategies.LevellingStrategy;
 import org.bukkit.World;
+import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -210,6 +211,19 @@ public class RulesManager {
         return false;
     }
 
+    public boolean isPlayerLevellingEnabled(){
+        for (final List<RuleInfo> rules : this.rulesInEffect.values()){
+            if (rules == null) continue;
+
+            for (final RuleInfo ruleInfo : rules){
+                if (ruleInfo.ruleIsEnabled && ruleInfo.playerLevellingOptions != null)
+                    return true;
+            }
+        }
+
+        return false;
+    }
+
     public int getRule_CreeperMaxBlastRadius(@NotNull final LivingEntityWrapper lmEntity){
         int maxBlast = 5;
         for (final RuleInfo ruleInfo : lmEntity.getApplicableRules()){
@@ -285,6 +299,16 @@ public class RulesManager {
         return maxLevel;
     }
 
+    public PlayerLevellingOptions getRule_PlayerLevellingOptions(@NotNull final LivingEntityWrapper lmEntity){
+        PlayerLevellingOptions levellingOptions = null;
+
+        for (final RuleInfo ruleInfo : lmEntity.getApplicableRules()) {
+            if (ruleInfo.playerLevellingOptions != null) levellingOptions = ruleInfo.playerLevellingOptions;
+        }
+
+        return levellingOptions;
+    }
+
     @NotNull
     public String getRule_Nametag(@NotNull final LivingEntityWrapper lmEntity){
         String nametag = "";
@@ -313,8 +337,12 @@ public class RulesManager {
         HealthIndicator indicator = null;
 
         for (final RuleInfo ruleInfo : lmEntity.getApplicableRules()) {
-            if (ruleInfo.healthIndicator != null)
-                indicator = ruleInfo.healthIndicator;
+            if (ruleInfo.healthIndicator != null) {
+                if (indicator == null || ruleInfo.healthIndicator.doMerge == null || !ruleInfo.healthIndicator.doMerge)
+                    indicator = ruleInfo.healthIndicator;
+                else
+                    indicator.mergeIndicator(ruleInfo.healthIndicator);
+            }
         }
 
         return indicator;
@@ -356,8 +384,8 @@ public class RulesManager {
 
     @Nullable
     public String getRule_EntityOverriddenName(@NotNull final LivingEntityWrapper lmEntity, final boolean useCustomNameForNametags){
-        Map<String, List<LevelTierMatching<String>>> entityNameOverrides_Level = null;
-        Map<String, LevelTierMatching<String>> entityNameOverrides = null;
+        Map<String, List<LevelTierMatching>> entityNameOverrides_Level = null;
+        Map<String, LevelTierMatching> entityNameOverrides = null;
 
         if (lmEntity.hasOverridenEntityName())
             return lmEntity.getOverridenEntityName();
@@ -382,7 +410,7 @@ public class RulesManager {
         if (entityNameOverrides == null && entityNameOverrides_Level == null) return null;
 
         List<String> namesInfo = null;
-        final LevelTierMatching<String> matchedTiers = getEntityNameOverrideLevel(entityNameOverrides_Level, lmEntity);
+        final LevelTierMatching matchedTiers = getEntityNameOverrideLevel(entityNameOverrides_Level, lmEntity);
         if (matchedTiers != null)
             namesInfo = matchedTiers.names;
         else if (entityNameOverrides != null){
@@ -411,14 +439,14 @@ public class RulesManager {
         return result;
     }
 
-    private LevelTierMatching<String> getEntityNameOverrideLevel(final Map<String, List<LevelTierMatching<String>>> entityNameOverrides_Level, final LivingEntityWrapper lmEntity){
+    private LevelTierMatching getEntityNameOverrideLevel(final Map<String, List<LevelTierMatching>> entityNameOverrides_Level, final LivingEntityWrapper lmEntity){
         if (entityNameOverrides_Level == null) return null;
 
-        LevelTierMatching<String> allEntities = null;
-        LevelTierMatching<String> thisMob = null;
+        LevelTierMatching allEntities = null;
+        LevelTierMatching thisMob = null;
 
-        for (final List<LevelTierMatching<String>> tiers : entityNameOverrides_Level.values()) {
-            for (final LevelTierMatching<String> tier : tiers) {
+        for (final List<LevelTierMatching> tiers : entityNameOverrides_Level.values()) {
+            for (final LevelTierMatching tier : tiers) {
                 if (tier.isApplicableToMobLevel(lmEntity.getMobLevel())) {
                     if ("all_entities".equalsIgnoreCase(tier.mobName) && tier.isApplicableToMobLevel(lmEntity.getMobLevel()))
                         allEntities = tier;
@@ -452,7 +480,7 @@ public class RulesManager {
 
                 if (ruleInfo.stopProcessingRules != null && ruleInfo.stopProcessingRules) {
                     Utils.debugLog(main, DebugType.DENIED_RULE_STOP_PROCESSING, String.format("&b%s&7, mob: &b%s&7, rule count: &b%s",
-                            ruleInfo.getRuleName(), lmInterface.getEntityType().name(), applicableRules.size()));
+                            ruleInfo.getRuleName(), lmInterface.getTypeName(), applicableRules.size()));
                     break;
                 }
 
@@ -518,26 +546,26 @@ public class RulesManager {
 
         if (lmInterface instanceof LivingEntityWrapper) {
             if (ri.conditions_Entities != null && !Utils.isLivingEntityInModalList(ri.conditions_Entities, (LivingEntityWrapper) lmInterface)) {
-                Utils.debugLog(main, DebugType.DENIED_RULE_ENTITIES_LIST, String.format("&b%s&7, mob: &b%s&7", ri.getRuleName(), lmInterface.getEntityType().name()));
+                Utils.debugLog(main, DebugType.DENIED_RULE_ENTITIES_LIST, String.format("&b%s&7, mob: &b%s&7", ri.getRuleName(), lmInterface.getTypeName()));
                 return false;
             }
         } else {
             // can't check groups if not a living entity wrapper
             if (ri.conditions_Entities != null && !ri.conditions_Entities.isEnabledInList(lmInterface.getTypeName(), null)) {
-                Utils.debugLog(main, DebugType.DENIED_RULE_ENTITIES_LIST, String.format("&b%s&7, mob: &b%s&7", ri.getRuleName(), lmInterface.getEntityType().name()));
+                Utils.debugLog(main, DebugType.DENIED_RULE_ENTITIES_LIST, String.format("&b%s&7, mob: &b%s&7", ri.getRuleName(), lmInterface.getTypeName()));
                 return false;
             }
         }
 
         if (ri.conditions_Worlds != null && !ri.conditions_Worlds.isEnabledInList(lmInterface.getWorld().getName(), null)) {
             Utils.debugLog(main, DebugType.DENIED_RULE_WORLD_LIST, String.format("&b%s&7, mob: &b%s&7, mob world: &b%s&7",
-                    ri.getRuleName(), lmInterface.getEntityType().name(), lmInterface.getWorld().getName()));
+                    ri.getRuleName(), lmInterface.getTypeName(), lmInterface.getWorld().getName()));
             return false;
         }
 
         if (ri.conditions_Biomes != null && !Utils.isBiomeInModalList(ri.conditions_Biomes, lmInterface.getLocation().getBlock().getBiome(), main.rulesManager)) {
             Utils.debugLog(main, DebugType.DENIED_RULE_BIOME_LIST, String.format("&b%s&7, mob: &b%s&7, mob biome: &b%s&7",
-                    ri.getRuleName(), lmInterface.getEntityType().name(), lmInterface.getLocation().getBlock().getBiome().name()));
+                    ri.getRuleName(), lmInterface.getTypeName(), lmInterface.getLocation().getBlock().getBiome().name()));
             return false;
         }
 
@@ -554,33 +582,35 @@ public class RulesManager {
             }
             if (!isInList){
                 Utils.debugLog(main, DebugType.DENIED_RULE_WG_REGION, String.format("&b%s&7, mob: &b%s&7, wg_regions: &b%s&7",
-                        ri.getRuleName(), lmInterface.getEntityType().name(), wgRegions));
+                        ri.getRuleName(), lmInterface.getTypeName(), wgRegions));
                 return false;
             }
         }
 
         if (ri.conditions_ApplyAboveY != null && lmInterface.getLocation().getBlockY() < ri.conditions_ApplyAboveY){
             Utils.debugLog(main, DebugType.DENIED_RULE_Y_LEVEL, String.format("&b%s&7, mob: &b%s&7, y-level: &b%s&7, max-y: &b%s&7",
-                    ri.getRuleName(), lmInterface.getEntityType().name(), lmInterface.getLocation().getBlockY(), ri.conditions_ApplyAboveY));
+                    ri.getRuleName(), lmInterface.getTypeName(), lmInterface.getLocation().getBlockY(), ri.conditions_ApplyAboveY));
             return false;
         }
 
         if (ri.conditions_ApplyBelowY != null && lmInterface.getLocation().getBlockY() > ri.conditions_ApplyBelowY){
             Utils.debugLog(main, DebugType.DENIED_RULE_Y_LEVEL, String.format("&b%s&7, mob: &b%s&7, y-level: &b%s&7, min-y: &b%s&7",
-                    ri.getRuleName(), lmInterface.getEntityType().name(), lmInterface.getLocation().getBlockY(), ri.conditions_ApplyBelowY));
+                    ri.getRuleName(), lmInterface.getTypeName(), lmInterface.getLocation().getBlockY(), ri.conditions_ApplyBelowY));
             return false;
         }
 
         if (ri.conditions_MinDistanceFromSpawn != null){
-            Double spawnDistance = lmInterface.getCalculatedDistanceFromSpawn();
-            if (spawnDistance == null) {
-                spawnDistance = lmInterface.getWorld().getSpawnLocation().distance(lmInterface.getLocation());
-                lmInterface.setCalculatedDistanceFromSpawn(spawnDistance);
-            }
-
-            if (spawnDistance < ri.conditions_MinDistanceFromSpawn){
+            if (lmInterface.getDistanceFromSpawn() < ri.conditions_MinDistanceFromSpawn){
                 Utils.debugLog(main, DebugType.DENIED_RULE_MIN_SPAWN_DISTANCE, String.format("&b%s&7, mob: &b%s&7, spawn-distance: &b%s&7, min-sd: &b%s&7",
-                        ri.getRuleName(), lmInterface.getEntityType().name(), Utils.round(spawnDistance), ri.conditions_MinDistanceFromSpawn));
+                        ri.getRuleName(), lmInterface.getTypeName(), Utils.round(lmInterface.getDistanceFromSpawn()), ri.conditions_MinDistanceFromSpawn));
+                return false;
+            }
+        }
+
+        if (ri.conditions_MaxDistanceFromSpawn != null){
+            if (lmInterface.getDistanceFromSpawn() > ri.conditions_MaxDistanceFromSpawn){
+                Utils.debugLog(main, DebugType.DENIED_RULE_MAX_SPAWN_DISTANCE, String.format("&b%s&7, mob: &b%s&7, spawn-distance: &b%s&7, min-sd: &b%s&7",
+                        ri.getRuleName(), lmInterface.getTypeName(), Utils.round(lmInterface.getDistanceFromSpawn()), ri.conditions_MaxDistanceFromSpawn));
                 return false;
             }
         }
