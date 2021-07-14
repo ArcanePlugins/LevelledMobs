@@ -109,11 +109,6 @@
             <id>sk89q-repo</id>
             <url>https://maven.enginehub.org/repo/</url>
         </repository>
-<!--        <repository>-->
-<!--            <id>nexus</id>-->
-<!--            <name>Lumine Releases</name>-->
-<!--            <url>https://mvn.lumine.io/repository/maven-public/</url>-->
-<!--        </repository>-->
     </repositories>
 
     <dependencies>
