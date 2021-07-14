@@ -7,17 +7,15 @@ import me.lokka30.levelledmobs.customdrops.CustomDropResult;
 import me.lokka30.levelledmobs.listeners.EntitySpawnListener;
 import me.lokka30.levelledmobs.misc.*;
 import me.lokka30.levelledmobs.rules.HealthIndicator;
-import me.lokka30.levelledmobs.rules.MobCustomNameStatus;
-import me.lokka30.levelledmobs.rules.MobTamedStatus;
+import me.lokka30.levelledmobs.rules.MobCustomNameStatusEnum;
+import me.lokka30.levelledmobs.rules.MobTamedStatusEnum;
+import me.lokka30.levelledmobs.rules.PlayerLevellingOptions;
 import me.lokka30.levelledmobs.rules.strategies.LevellingStrategy;
 import me.lokka30.levelledmobs.rules.strategies.RandomLevellingStrategy;
 import me.lokka30.levelledmobs.rules.strategies.SpawnDistanceStrategy;
 import me.lokka30.levelledmobs.rules.strategies.YDistanceStrategy;
 import me.lokka30.microlib.MessageUtils;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
+import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.enchantments.EnchantmentTarget;
@@ -40,7 +38,7 @@ import java.util.*;
  * Generates levels and manages other functions related to levelling mobs
  *
  * @author lokka30, CoolBoy, Esophose, 7smile7,
- *         Shevchik, Hugo5551, limzikiki
+ * wShevchik, Hugo5551, limzikiki
  */
 public class LevelManager {
 
@@ -53,6 +51,7 @@ public class LevelManager {
     public final NamespacedKey wasBabyMobKey; // This key tells LM not to level the mob in future
     public final NamespacedKey overridenEntityNameKey;
     public final NamespacedKey hasCustomNameTag;
+    public final NamespacedKey playerLevelling;
     public double attributeMaxHealthMax = 2048.0;
     public double attributeMovementSpeedMax = 2048.0;
     public double attributeAttackDamageMax = 2048.0;
@@ -72,6 +71,7 @@ public class LevelManager {
         wasBabyMobKey = new NamespacedKey(main, "wasBabyMob");
         overridenEntityNameKey = new NamespacedKey(main, "overridenEntityName");
         hasCustomNameTag = new NamespacedKey(main, "hasCustomNameTag");
+        playerLevelling = new NamespacedKey(main, "playerLevelling");
         this.summonedEntityType = EntityType.UNKNOWN;
         this.randomLevellingCache = new TreeMap<>();
 
@@ -148,12 +148,37 @@ public class LevelManager {
         return randomLevelling.generateLevel(minLevel, maxLevel);
     }
 
+    private int[] getPlayerLevels(final @NotNull LivingEntityWrapper lmEntity){
+        final PlayerLevellingOptions options = main.rulesManager.getRule_PlayerLevellingOptions(lmEntity);
+        if (options == null) return null;
+
+        final Player player = lmEntity.getPlayerForLevelling();
+        if (player == null) return null;
+
+        int levelSource = 1;
+        final String variableToUse = YmlParsingHelper.getString(main.settingsCfg, "player-levelling-variable", "%level%");
+        if (Utils.isNullOrEmpty(variableToUse)) return null;
+
+        if (variableToUse.equalsIgnoreCase("%level%"))
+            levelSource = player.getLevel();
+        else if (variableToUse.equalsIgnoreCase("%exp%"))
+            levelSource = (int) player.getExp();
+        else{
+            // use PAPI
+        }
+
+        // TODO: work in progress
+        return null;
+    }
+
     public int[] getMinAndMaxLevels(final @NotNull LivingEntityInterface lmInterface) {
         // final EntityType entityType, final boolean isAdultEntity, final String worldName
         // if called from summon command then lmEntity is null
 
         int minLevel = main.rulesManager.getRule_MobMinLevel(lmInterface);
         int maxLevel = main.rulesManager.getRule_MobMaxLevel(lmInterface);
+
+
 
         // world guard regions take precedence over any other min / max settings
         // livingEntity is null if passed from summon mobs command
@@ -346,18 +371,24 @@ public class LevelManager {
 
         int indicatorsToUse = scale == 0 ?
                 (int) Math.ceil(mobHealth) : (int) Math.ceil(mobHealth / scale);
-        final int tiersToUse = (int) Math.ceil(indicatorsToUse / maxIndicators);
+        final int tiersToUse = (int) Math.ceil((double) indicatorsToUse / (double) maxIndicators);
         int toRecolor = 0;
         if (tiersToUse > 0)
-            toRecolor = indicatorsToUse % maxIndicators;
+            toRecolor = (int) (indicatorsToUse % maxIndicators);
 
         String primaryColor = "";
         String secondaryColor = "";
+
         if (indicator.tiers != null){
             if (indicator.tiers.containsKey(tiersToUse + 1))
                 primaryColor = indicator.tiers.get(tiersToUse + 1);
             if (tiersToUse > 0 && indicator.tiers.containsKey(tiersToUse))
                 secondaryColor = indicator.tiers.get(tiersToUse);
+
+            if (primaryColor.isEmpty() && indicator.tiers.containsKey(0))
+                primaryColor = indicator.tiers.get(0);
+            if (secondaryColor.isEmpty() && indicator.tiers.containsKey(0))
+                secondaryColor = indicator.tiers.get(0);
         }
 
         String result = primaryColor;
@@ -519,19 +550,32 @@ public class LevelManager {
         final double maxDistance = Math.pow(128, 2); // square the distance we are using Location#distanceSquared. This is because it is faster than Location#distance since it does not need to sqrt which is taxing on the CPU.
         final Location location = player.getLocation();
 
-        if (lmEntity.getLivingEntity().getCustomName() != null && main.rulesManager.getRule_MobCustomNameStatus(lmEntity) == MobCustomNameStatus.NOT_NAMETAGGED) {
+        if (lmEntity.getLivingEntity().getCustomName() != null && main.rulesManager.getRule_MobCustomNameStatus(lmEntity) == MobCustomNameStatusEnum.NOT_NAMETAGGED){
             // mob has a nametag but is levelled so we'll remove it
             main.levelInterface.removeLevel(lmEntity);
-        } else if (lmEntity.isMobTamed() && main.rulesManager.getRule_MobTamedStatus(lmEntity) == MobTamedStatus.NOT_TAMED) {
+        }
+        else if (lmEntity.isMobTamed() && main.rulesManager.getRule_MobTamedStatus(lmEntity) == MobTamedStatusEnum.NOT_TAMED){
             // mob is tamed with a level but the rules don't allow it, remove the level
             main.levelInterface.removeLevel(lmEntity);
-        } else if (
-                !main.settingsCfg.getBoolean(YmlParsingHelper.getKeyNameFromConfig(main.settingsCfg, "use-customname-for-mob-nametags")) &&
-                        location.getWorld() != null &&
-                        location.getWorld().getName().equals(lmEntity.getWorld().getName()) &&
-                        lmEntity.getLocation().distanceSquared(location) <= maxDistance) {
-            //if within distance, update nametag.
-            main.queueManager_nametags.addToQueue(new QueueItem(lmEntity, main.levelManager.getNametag(lmEntity, false), Collections.singletonList(player)));
+        }
+        else{
+            if (!main.settingsCfg.getBoolean(YmlParsingHelper.getKeyNameFromConfig(main.settingsCfg, "use-customname-for-mob-nametags")) &&
+                            location.getWorld() != null &&
+                            location.getWorld().getName().equals(lmEntity.getWorld().getName()) &&
+                            lmEntity.getLocation().distanceSquared(location) <= maxDistance) {
+                //if within distance, update nametag.
+                main.queueManager_nametags.addToQueue(new QueueItem(lmEntity, main.levelManager.getNametag(lmEntity, false), Collections.singletonList(player)));
+            }
+
+            // TODO: uncomment this section
+//            if (main.configUtils.playerLevellingEnabled && !lmEntity.getPDC().has(main.levelManager.playerLevelling, PersistentDataType.INTEGER)){
+//                //lmEntity.getPDC().set(main.levelManager.playerLevelling, PersistentDataType.INTEGER, 1);
+//                if (lmEntity.getPlayerForLevelling() != null) return;
+//
+//                lmEntity.setPlayerForLevelling(player);
+//                lmEntity.reEvaluateLevel = true;
+//                main.queueManager_mobs.addToQueue(new QueueItem(lmEntity, null));
+//            }
         }
     }
 

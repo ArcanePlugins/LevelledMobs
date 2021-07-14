@@ -99,6 +99,8 @@ public class Companion {
 
         main.rulesParsingManager.parseRulesMain(FileLoader.loadFile(main, "rules", FileLoader.RULES_FILE_VERSION));
 
+        main.configUtils.playerLevellingEnabled = main.rulesManager.isPlayerLevellingEnabled();
+
         final int settingsVersion = getSettingsVersion();
         if (settingsVersion > 20 && settingsVersion < 30) { // anything older than 2.0 will not be migrated
             FileMigrator.migrateSettingsToRules(main);

@@ -33,8 +33,5 @@ public interface LivingEntityInterface {
     @NotNull
     LevelledMobs getMainInstance();
 
-    @Nullable
-    Double getCalculatedDistanceFromSpawn();
-
-    void setCalculatedDistanceFromSpawn(final double value);
+    double getDistanceFromSpawn();
 }

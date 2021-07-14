@@ -25,9 +25,9 @@ import java.util.concurrent.locks.ReentrantLock;
  *
  * @author stumper66
  */
-public class LivingEntityWrapper implements LivingEntityInterface {
+public class LivingEntityWrapper extends LivingEntityWrapperBase implements LivingEntityInterface {
     public LivingEntityWrapper(final @NotNull LivingEntity livingEntity, final @NotNull LevelledMobs main){
-        this.main = main;
+        super(main, livingEntity.getWorld(), livingEntity.getLocation());
         this.livingEntity = livingEntity;
         this.applicableGroups = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
         this.applicableRules = new LinkedList<>();
@@ -37,13 +37,11 @@ public class LivingEntityWrapper implements LivingEntityInterface {
         this.cacheLock = new ReentrantLock(true);
     }
 
-    private final LevelledMobs main;
     private final LivingEntity livingEntity;
     @NotNull
     private Set<String> applicableGroups;
     private boolean hasCache;
     private boolean isBuildingCache;
-    private boolean groupsAreBuilt;
     private Integer mobLevel;
     private final static Object lockObj = new Object();
     @NotNull
@@ -55,22 +53,11 @@ public class LivingEntityWrapper implements LivingEntityInterface {
     public EntityDamageEvent.DamageCause deathCause;
     public String mythicMobInternalName;
     public boolean reEvaluateLevel;
+    private boolean groupsAreBuilt;
     private Double calculatedDistanceFromSpawn;
+    private Player playerForLevelling;
     private final ReentrantLock cacheLock;
-
-    @Nullable
-    public Double getCalculatedDistanceFromSpawn(){
-        return calculatedDistanceFromSpawn;
-    }
-
-    public void setCalculatedDistanceFromSpawn(final double value){
-        calculatedDistanceFromSpawn = value;
-    }
-
-    @NotNull
-    public LevelledMobs getMainInstance(){
-        return this.main;
-    }
+    private final static Object playerLock = new Object();
 
     private void buildCache(){
         if (isBuildingCache || this.hasCache) return;
@@ -127,6 +114,19 @@ public class LivingEntityWrapper implements LivingEntityInterface {
     }
 
     @Nullable
+    public Player getPlayerForLevelling(){
+        synchronized (playerLock){
+            return this.playerForLevelling;
+        }
+    }
+
+    public void setPlayerForLevelling(final Player player){
+        synchronized (playerLock){
+            this.playerForLevelling = player;
+        }
+    }
+
+    @Nullable
     public FineTuningAttributes getFineTuningAttributes(){
         if (!hasCache) buildCache();
 
@@ -152,23 +152,8 @@ public class LivingEntityWrapper implements LivingEntityInterface {
         return main.levelInterface.isLevelled(this.livingEntity);
     }
 
-    @NotNull
-    public World getWorld(){
-        return this.livingEntity.getWorld();
-    }
-
-    @NotNull
-    public Location getLocation(){
-        return this.livingEntity.getLocation();
-    }
-
     public EntityType getEntityType(){
         return this.livingEntity.getType();
-    }
-
-    @NotNull
-    public String getWorldName(){
-        return livingEntity.getWorld().getName();
     }
 
     @NotNull
@@ -285,8 +270,6 @@ public class LivingEntityWrapper implements LivingEntityInterface {
         }
 
         groups.add(CustomUniversalGroups.ALL_MOBS.toString());
-
-        final boolean isLevellable = true;
 
         if (this.mobLevel != null)
             groups.add(CustomUniversalGroups.ALL_LEVELLABLE_MOBS.toString());

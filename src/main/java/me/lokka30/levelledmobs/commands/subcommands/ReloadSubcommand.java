@@ -70,6 +70,7 @@ public class ReloadSubcommand implements Subcommand {
 
         main.levelManager.entitySpawnListener.processMobSpawns = main.settingsCfg.getBoolean(YmlParsingHelper.getKeyNameFromConfig(main.settingsCfg, "level-mobs-upon-spawn"), true);
         main.levelManager.clearRandomLevellingCache();
+        main.configUtils.playerLevellingEnabled = main.rulesManager.isPlayerLevellingEnabled();
 
         reloadFinishedMsg.forEach(sender::sendMessage);
     }

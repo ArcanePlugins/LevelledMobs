@@ -173,7 +173,8 @@ ensure-mobs-are-levelled-on-chunk-load: true
 attributes-use-preset-base-values: false
 use-customname-for-mob-nametags: false
 level-mobs-upon-spawn: true
-
+player-leveling-mob-distance: 30
+player-levelling-variable: '%level%'
 
 # |||-------------------------------------------------------------------------------------------|
 # ||  ADVANCED USERS ONLY                                                                       |
