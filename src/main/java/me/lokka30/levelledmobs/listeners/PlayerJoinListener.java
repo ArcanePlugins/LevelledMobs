@@ -3,6 +3,7 @@ package me.lokka30.levelledmobs.listeners;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
 import me.lokka30.levelledmobs.misc.Utils;
+import me.lokka30.microlib.MessageUtils;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -23,7 +24,7 @@ import java.util.List;
  * Listens for when a player joins, leaves or changes worlds so that
  * send messages as needed, update nametags or track the player
  *
- * @author lokka30
+ * @author lokka30, stumper66
  */
 public class PlayerJoinListener implements Listener {
 
@@ -41,8 +42,7 @@ public class PlayerJoinListener implements Listener {
         updateNametagsInWorldAsync(event.getPlayer(), event.getPlayer().getWorld().getEntities());
 
         if (main.migratedFromPre30 && event.getPlayer().isOp()){
-            final List<String> msg = Collections.singletonList("You have migrated from an older version.  All settings have been reverted.  Please edit rules.yml");
-            event.getPlayer().sendMessage(Utils.colorizeAllInList(msg).toString());
+            event.getPlayer().sendMessage(MessageUtils.colorizeStandardCodes("&b&lLevelledMobs: &cWARNING &7You have migrated from an older version.  All settings have been reverted.  Please edit rules.yml"));
         }
     }
 

@@ -6,8 +6,8 @@ import me.lokka30.levelledmobs.events.SummonedMobPreLevelEvent;
 import me.lokka30.levelledmobs.managers.ExternalCompatibilityManager;
 import me.lokka30.levelledmobs.managers.NBTManager;
 import me.lokka30.levelledmobs.misc.*;
-import me.lokka30.levelledmobs.rules.MobCustomNameStatusEnum;
-import me.lokka30.levelledmobs.rules.MobTamedStatusEnum;
+import me.lokka30.levelledmobs.rules.MobCustomNameStatus;
+import me.lokka30.levelledmobs.rules.MobTamedStatus;
 import me.lokka30.levelledmobs.rules.RulesManager;
 import org.bukkit.Bukkit;
 import org.bukkit.attribute.Attribute;
@@ -30,7 +30,7 @@ import java.util.Objects;
  * apply and modify the main functions
  * of LevelledMobs.
  *
- * @author lokka30
+ * @author lokka30, stumper66
  * @since 2.5
  */
 public class LevelInterface {
@@ -102,18 +102,23 @@ public class LevelInterface {
         if (!ExternalCompatibilityManager.isExternalCompatibilityEnabled(ExternalCompatibilityManager.ExternalCompatibility.DANGEROUS_CAVES, compatRules) &&
                 ExternalCompatibilityManager.checkDangerousCaves(lmEntity))
             return LevellableState.DENIED_CONFIGURATION_COMPATIBILITY_DANGEROUS_CAVES;
+
         if (!ExternalCompatibilityManager.isExternalCompatibilityEnabled(ExternalCompatibilityManager.ExternalCompatibility.ELITE_MOBS, compatRules) &&
                 ExternalCompatibilityManager.checkEliteMobs(lmEntity))
             return LevellableState.DENIED_CONFIGURATION_COMPATIBILITY_ELITE_MOBS;
+
         if (!ExternalCompatibilityManager.isExternalCompatibilityEnabled(ExternalCompatibilityManager.ExternalCompatibility.INFERNAL_MOBS, compatRules) &&
                 ExternalCompatibilityManager.checkInfernalMobs(lmEntity))
             return LevellableState.DENIED_CONFIGURATION_COMPATIBILITY_INFERNAL_MOBS;
+
         if (!ExternalCompatibilityManager.isExternalCompatibilityEnabled(ExternalCompatibilityManager.ExternalCompatibility.CITIZENS, compatRules) &&
                 ExternalCompatibilityManager.checkCitizens(lmEntity))
             return LevellableState.DENIED_CONFIGURATION_COMPATIBILITY_CITIZENS;
+
         if (!ExternalCompatibilityManager.isExternalCompatibilityEnabled(ExternalCompatibilityManager.ExternalCompatibility.SHOPKEEPERS, compatRules) &&
                 ExternalCompatibilityManager.checkShopkeepers(lmEntity))
             return LevellableState.DENIED_CONFIGURATION_COMPATIBILITY_SHOPKEEPERS;
+
         if (ExternalCompatibilityManager.checkWorldGuard(lmEntity.getLivingEntity().getLocation(), main))
             return LevellableState.DENIED_CONFIGURATION_COMPATIBILITY_WORLD_GUARD;
 
@@ -129,12 +134,12 @@ public class LevelInterface {
          */
         // Nametagged mobs.
         if (lmEntity.getLivingEntity().getCustomName() != null &&
-                rulesManager.getRule_MobCustomNameStatus(lmEntity) == MobCustomNameStatusEnum.NOT_NAMETAGGED)
+                rulesManager.getRule_MobCustomNameStatus(lmEntity) == MobCustomNameStatus.NOT_NAMETAGGED)
             return LevellableState.DENIED_CONFIGURATION_CONDITION_NAMETAGGED;
 
         // Tamed mobs.
         if (lmEntity.isMobTamed() &&
-                rulesManager.getRule_MobTamedStatus(lmEntity) == MobTamedStatusEnum.NOT_TAMED)
+                rulesManager.getRule_MobTamedStatus(lmEntity) == MobTamedStatus.NOT_TAMED)
             return LevellableState.DENIED_CONFIGURATION_CONDITION_TAMED;
 
         return LevellableState.ALLOWED;

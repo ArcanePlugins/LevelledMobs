@@ -3,16 +3,14 @@ package me.lokka30.levelledmobs.managers;
 import de.tr7zw.nbtapi.NBTContainer;
 import de.tr7zw.nbtapi.NBTEntity;
 import de.tr7zw.nbtapi.NBTItem;
-import io.lumine.xikage.mythicmobs.utils.shadows.nbt.NBTTagCompound;
 import me.lokka30.levelledmobs.customdrops.CustomDropItem;
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
 import me.lokka30.levelledmobs.misc.NBT_ApplyResult;
-import me.lokka30.levelledmobs.misc.Utils;
 import org.jetbrains.annotations.NotNull;
 
-import java.lang.reflect.UndeclaredThrowableException;
-import java.util.Objects;
-
+/**
+ * @author stumper66
+ */
 public class NBTManager {
 
     @NotNull

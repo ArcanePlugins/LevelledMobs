@@ -17,6 +17,7 @@ import java.util.concurrent.ThreadLocalRandom;
  * defined mobs
  *
  * @author stumper66
+ * @since 3.0
  */
 public class RulesManager {
     public RulesManager(final LevelledMobs main) {
@@ -238,34 +239,36 @@ public class RulesManager {
         return levellingStrategy;
     }
 
-    public boolean getRule_MobLevelInheritance(@NotNull final LivingEntityWrapper lmEntity){
+    public boolean getRule_MobLevelInheritance(@NotNull final LivingEntityWrapper lmEntity) {
         boolean result = true;
-        for (final RuleInfo ruleInfo : lmEntity.getApplicableRules()){
+        for (final RuleInfo ruleInfo : lmEntity.getApplicableRules()) {
             if (ruleInfo.mobLevelInheritance != null) result = ruleInfo.mobLevelInheritance;
         }
 
         return result;
     }
 
-    public MobCustomNameStatusEnum getRule_MobCustomNameStatus(@NotNull final LivingEntityWrapper lmEntity){
-        MobCustomNameStatusEnum result = MobCustomNameStatusEnum.NOT_SPECIFIED;
+    public MobCustomNameStatus getRule_MobCustomNameStatus(@NotNull final LivingEntityWrapper lmEntity) {
+        MobCustomNameStatus result = MobCustomNameStatus.NOT_SPECIFIED;
 
         for (final RuleInfo ruleInfo : lmEntity.getApplicableRules())
-            if (ruleInfo.conditions_MobCustomnameStatus != MobCustomNameStatusEnum.NOT_SPECIFIED) result = ruleInfo.conditions_MobCustomnameStatus;
+            if (ruleInfo.conditions_MobCustomnameStatus != MobCustomNameStatus.NOT_SPECIFIED)
+                result = ruleInfo.conditions_MobCustomnameStatus;
 
         return result;
     }
 
-    public MobTamedStatusEnum getRule_MobTamedStatus(@NotNull final LivingEntityWrapper lmEntity){
-        MobTamedStatusEnum result = MobTamedStatusEnum.NOT_SPECIFIED;
+    public MobTamedStatus getRule_MobTamedStatus(@NotNull final LivingEntityWrapper lmEntity) {
+        MobTamedStatus result = MobTamedStatus.NOT_SPECIFIED;
 
         for (final RuleInfo ruleInfo : lmEntity.getApplicableRules())
-            if (ruleInfo.conditions_MobTamedStatus != MobTamedStatusEnum.NOT_SPECIFIED) result = ruleInfo.conditions_MobTamedStatus;
+            if (ruleInfo.conditions_MobTamedStatus != MobTamedStatus.NOT_SPECIFIED)
+                result = ruleInfo.conditions_MobTamedStatus;
 
         return result;
     }
 
-    public int getRule_MobMinLevel(@NotNull final LivingEntityInterface lmInterface){
+    public int getRule_MobMinLevel(@NotNull final LivingEntityInterface lmInterface) {
         int minLevel = 1;
 
         for (final RuleInfo ruleInfo : lmInterface.getApplicableRules()) {
@@ -478,6 +481,7 @@ public class RulesManager {
                     ri.getRuleName(), lmEntity.getTypeName(), lmEntity.getMobLevel(), ri.conditions_MinLevel));
             return false;
         }
+
         if (ri.conditions_MaxLevel != null && (!lmEntity.isLevelled() || ri.conditions_MaxLevel > lmEntity.getMobLevel())) {
             Utils.debugLog(main, DebugType.DENIED_RULE_MAXLEVEL, String.format("&b%s&7, mob: &b%s&7, mob lvl: &b%s&7, rule maxlvl: &b%s&7",
                     ri.getRuleName(), lmEntity.getTypeName(), lmEntity.getMobLevel(), ri.conditions_MaxLevel));
@@ -552,6 +556,7 @@ public class RulesManager {
                     }
                 }
             }
+
             if (!isInList){
                 Utils.debugLog(main, DebugType.DENIED_RULE_WG_REGION, String.format("&b%s&7, mob: &b%s&7, wg_regions: &b%s&7",
                         ri.getRuleName(), lmInterface.getEntityType().name(), wgRegions));

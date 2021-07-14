@@ -25,8 +25,8 @@ public class RuleInfo {
 
         this.ruleIsEnabled = true;
         this.ruleSourceNames = new TreeMap<>();
-        this.conditions_MobCustomnameStatus = MobCustomNameStatusEnum.NOT_SPECIFIED;
-        this.conditions_MobTamedStatus = MobTamedStatusEnum.NOT_SPECIFIED;
+        this.conditions_MobCustomnameStatus = MobCustomNameStatus.NOT_SPECIFIED;
+        this.conditions_MobTamedStatus = MobTamedStatus.NOT_SPECIFIED;
     }
 
     private String ruleName;
@@ -58,8 +58,8 @@ public class RuleInfo {
     public String customDrop_DropTableId;
     public String mobNBT_Data;
     public HealthIndicator healthIndicator;
-    public MobCustomNameStatusEnum conditions_MobCustomnameStatus;
-    public MobTamedStatusEnum conditions_MobTamedStatus;
+    public MobCustomNameStatus conditions_MobCustomnameStatus;
+    public MobTamedStatus conditions_MobTamedStatus;
     public LevellingStrategy levellingStrategy;
     public PlayerLevellingOptions playerLevellingOptions;
     public Map<String, List<LevelTierMatching<String>>> entityNameOverrides_Level;
@@ -143,13 +143,13 @@ public class RuleInfo {
                     skipSettingValue = true;
                 }
 
-                if (presetValue instanceof TieredColoringInfo){
-                    this.getClass().getDeclaredField(f.getName()).set(this, ((TieredColoringInfo)presetValue).cloneItem());
+                if (presetValue instanceof TieredColoringInfo) {
+                    this.getClass().getDeclaredField(f.getName()).set(this, ((TieredColoringInfo) presetValue).cloneItem());
                     skipSettingValue = true;
                 }
 
-                if (presetValue == MobCustomNameStatusEnum.NOT_SPECIFIED) continue;
-                if (presetValue == MobTamedStatusEnum.NOT_SPECIFIED) continue;
+                if (presetValue == MobCustomNameStatus.NOT_SPECIFIED) continue;
+                if (presetValue == MobTamedStatus.NOT_SPECIFIED) continue;
 
                 // skip default values such as false, 0, 0.0
                 if (presetValue instanceof Boolean && !((Boolean) presetValue)) continue;

@@ -5,7 +5,7 @@ package me.lokka30.levelledmobs.rules;
  *
  * @author stumper66
  */
-public enum MobTamedStatusEnum {
+public enum MobTamedStatus {
     NOT_SPECIFIED,  // default
     TAMED,          // Mob must be tamed for the rule to work
     NOT_TAMED,      // Mob must be not tamed for the rule to work

@@ -24,7 +24,7 @@ import java.util.*;
  * Manages communication to WorldGuar for the purposes of obtaining region
  * and flag information
  *
- * @author Eyrian2010, lokka30, stumper66
+ * @author Eyrian, lokka30, stumper66
  */
 public class WorldGuardManager {
 

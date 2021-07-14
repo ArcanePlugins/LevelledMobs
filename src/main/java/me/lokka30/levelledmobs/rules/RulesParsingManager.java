@@ -25,6 +25,7 @@ import java.util.*;
  * corresponding java classes
  *
  * @author stumper66
+ * @since 3.0
  */
 public class RulesParsingManager {
     public RulesParsingManager(final LevelledMobs main){
@@ -96,14 +97,14 @@ public class RulesParsingManager {
         this.parsingInfo = new RuleInfo("defaults");
         parsingInfo.restrictions_MinLevel = 1;
         parsingInfo.restrictions_MaxLevel = 10;
-        parsingInfo.conditions_MobCustomnameStatus = MobCustomNameStatusEnum.EITHER;
-        parsingInfo.conditions_MobTamedStatus = MobTamedStatusEnum.EITHER;
+        parsingInfo.conditions_MobCustomnameStatus = MobCustomNameStatus.EITHER;
+        parsingInfo.conditions_MobTamedStatus = MobTamedStatus.EITHER;
         parsingInfo.babyMobsInheritAdultSetting = true;
         parsingInfo.mobLevelInheritance = true;
         parsingInfo.creeperMaxDamageRadius = 5;
 
         final ConfigurationSection cs = objTo_CS(objDefaults);
-        if (cs == null){
+        if (cs == null) {
             Utils.logger.info("default-rule section was null");
             return this.parsingInfo;
         }
@@ -137,8 +138,10 @@ public class RulesParsingManager {
     }
 
     @NotNull
-    private CachedModalList<CreatureSpawnEvent.SpawnReason> buildCachedModalListOfSpawnReason(final ConfigurationSection cs,
-                                                                                              final CachedModalList<CreatureSpawnEvent.SpawnReason> defaultValue){
+    private CachedModalList<CreatureSpawnEvent.SpawnReason> buildCachedModalListOfSpawnReason(
+            final ConfigurationSection cs,
+            final CachedModalList<CreatureSpawnEvent.SpawnReason> defaultValue) {
+
         if (cs == null) return defaultValue;
 
         final String useKeyName = YmlParsingHelper.getKeyNameFromConfig(cs, "allowed-spawn-reasons");
@@ -166,6 +169,7 @@ public class RulesParsingManager {
                 Utils.logger.warning("Invalid spawn reason: " + item);
             }
         }
+
         for (final String item : getListFromConfigItem(cs2, excludedList)){
             if ("".equals(item.trim())) continue;
             if ("*".equals(item.trim())){
@@ -231,6 +235,7 @@ public class RulesParsingManager {
                 Utils.logger.warning("Invalid allowed biome: " + item);
             }
         }
+
         for (final String item : getListFromConfigItem(cs2, excludedList)){
             if ("".equals(item.trim())) continue;
             if ("*".equals(item.trim())){
@@ -272,7 +277,9 @@ public class RulesParsingManager {
             }
             cachedModalList.allowedList.add(item);
         }
+
         cachedModalList.allowedGroups = getSetOfGroups(cs2, allowedGroups);
+
         for (final String item : getListFromConfigItem(cs2, excludedList)) {
             if ("".equals(item.trim())) continue;
             if ("*".equals(item.trim())){
@@ -308,7 +315,9 @@ public class RulesParsingManager {
 
         for (final String group : groups) {
             if ("".equals(group.trim())) continue;
+
             boolean invalidGroup = false;
+
             if (group.toLowerCase().startsWith("all_")) {
                 try {
                     final CustomUniversalGroups customGroup = CustomUniversalGroups.valueOf(group.toUpperCase());
@@ -318,6 +327,7 @@ public class RulesParsingManager {
                     invalidGroup = true;
                 }
             }
+
             if (main.customMobGroups.containsKey(group))
                 results.add(group);
             else
@@ -557,7 +567,7 @@ public class RulesParsingManager {
         final String mobCustomNameStatus = cs.getString(YmlParsingHelper.getKeyNameFromConfig(cs,"mob-customname-status"));
         if (mobCustomNameStatus != null) {
             try {
-                parsingInfo.conditions_MobCustomnameStatus = MobCustomNameStatusEnum.valueOf(mobCustomNameStatus.toUpperCase());
+                parsingInfo.conditions_MobCustomnameStatus = MobCustomNameStatus.valueOf(mobCustomNameStatus.toUpperCase());
             } catch (Exception e) {
                 Utils.logger.warning("Invalid value for " + mobCustomNameStatus);
             }
@@ -566,7 +576,7 @@ public class RulesParsingManager {
         final String mobTamedStatus = cs.getString(YmlParsingHelper.getKeyNameFromConfig(cs, "mob-tamed-status"));
         if (mobTamedStatus != null) {
             try {
-                parsingInfo.conditions_MobTamedStatus = MobTamedStatusEnum.valueOf(mobTamedStatus.toUpperCase());
+                parsingInfo.conditions_MobTamedStatus = MobTamedStatus.valueOf(mobTamedStatus.toUpperCase());
             } catch (Exception e) {
                 Utils.logger.warning("Invalid value for " + mobTamedStatus);
             }
@@ -692,7 +702,7 @@ public class RulesParsingManager {
         parsingInfo.healthIndicator = indicator;
     }
 
-    private void parsePlayerLevellingOptions(final ConfigurationSection cs){
+    private void parsePlayerLevellingOptions(final ConfigurationSection cs) {
         if (cs == null) return;
 
         final PlayerLevellingOptions options = new PlayerLevellingOptions();
@@ -700,28 +710,28 @@ public class RulesParsingManager {
         options.matchPlayerLevel = YmlParsingHelper.getBoolean2(cs, "match-level", options.matchPlayerLevel);
         options.playerLevelScale = YmlParsingHelper.getDouble2(cs, "player-level-scale", options.playerLevelScale);
         options.enabled = YmlParsingHelper.getBoolean2(cs, "enabled", options.enabled);
-
-//        final ConfigurationSection csTiers = objTo_CS(cs.get(YmlParsingHelper.getKeyNameFromConfig(cs,"tiers")));
-//        if (csTiers != null){
-//            for (final String name : cs.getKeys(false)){
-//                final LevelTierMatching<int[]> info = new LevelTierMatching<>();
-//                final List<String> names = cs.getStringList(name);
-//                if (!names.isEmpty()) {
-//                    info.names.addAll(names);
-//                    final List<LevelTierMatching<String>> infos = new LinkedList<>();
-//                    infos.add(info);
-//                    parsingInfo.entityNameOverrides.put(name, infos);
-//                }
-//                else if (cs.getString(name) != null) {
-//                    if (parseNumberRange2(objTo_CS(cs.get(name)), name, info)) continue;
-//
-//                    info.names.add(cs.getString(name));
-//                    final List<LevelTierMatching<String>> infos = new LinkedList<>();
-//                    infos.add(info);
-//                    parsingInfo.entityNameOverrides.put(name, infos);
-//                }
-//            }
-//        }
+        /* TODO
+         *        final ConfigurationSection csTiers = objTo_CS(cs.get(YmlParsingHelper.getKeyNameFromConfig(cs,"tiers")));
+         *        if (csTiers != null){
+         *            for (final String name : cs.getKeys(false)){
+         *                final LevelTierMatching<int[]> info = new LevelTierMatching<>();
+         *                final List<String> names = cs.getStringList(name);
+         *                if (!names.isEmpty()) {
+         *                    info.names.addAll(names);
+         *                    final List<LevelTierMatching<String>> infos = new LinkedList<>();
+         *                    infos.add(info);
+         *                    parsingInfo.entityNameOverrides.put(name, infos);
+         *                }
+         *                else if (cs.getString(name) != null) {
+         *                    if (parseNumberRange2(objTo_CS(cs.get(name)), name, info)) continue;
+         *                    info.names.add(cs.getString(name));
+         *                    final List<LevelTierMatching<String>> infos = new LinkedList<>();
+         *                    infos.add(info);
+         *                    parsingInfo.entityNameOverrides.put(name, infos);
+         *                }
+         *            }
+         *        }
+         */
     }
 
     private List<LevelTierMatching<String>> parseNumberRange2(final ConfigurationSection cs, final String keyName){

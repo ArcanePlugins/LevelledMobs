@@ -7,14 +7,17 @@ import me.lokka30.levelledmobs.customdrops.CustomDropResult;
 import me.lokka30.levelledmobs.listeners.EntitySpawnListener;
 import me.lokka30.levelledmobs.misc.*;
 import me.lokka30.levelledmobs.rules.HealthIndicator;
-import me.lokka30.levelledmobs.rules.MobCustomNameStatusEnum;
-import me.lokka30.levelledmobs.rules.MobTamedStatusEnum;
+import me.lokka30.levelledmobs.rules.MobCustomNameStatus;
+import me.lokka30.levelledmobs.rules.MobTamedStatus;
 import me.lokka30.levelledmobs.rules.strategies.LevellingStrategy;
 import me.lokka30.levelledmobs.rules.strategies.RandomLevellingStrategy;
 import me.lokka30.levelledmobs.rules.strategies.SpawnDistanceStrategy;
 import me.lokka30.levelledmobs.rules.strategies.YDistanceStrategy;
 import me.lokka30.microlib.MessageUtils;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.enchantments.EnchantmentTarget;
@@ -37,7 +40,7 @@ import java.util.*;
  * Generates levels and manages other functions related to levelling mobs
  *
  * @author lokka30, CoolBoy, Esophose, 7smile7,
- * wShevchik, Hugo5551, limzikiki
+ *         Shevchik, Hugo5551, limzikiki
  */
 public class LevelManager {
 
@@ -346,7 +349,7 @@ public class LevelManager {
         final int tiersToUse = (int) Math.ceil(indicatorsToUse / maxIndicators);
         int toRecolor = 0;
         if (tiersToUse > 0)
-            toRecolor = (int) (indicatorsToUse % maxIndicators);
+            toRecolor = indicatorsToUse % maxIndicators;
 
         String primaryColor = "";
         String secondaryColor = "";
@@ -516,17 +519,15 @@ public class LevelManager {
         final double maxDistance = Math.pow(128, 2); // square the distance we are using Location#distanceSquared. This is because it is faster than Location#distance since it does not need to sqrt which is taxing on the CPU.
         final Location location = player.getLocation();
 
-        if (lmEntity.getLivingEntity().getCustomName() != null && main.rulesManager.getRule_MobCustomNameStatus(lmEntity) == MobCustomNameStatusEnum.NOT_NAMETAGGED){
+        if (lmEntity.getLivingEntity().getCustomName() != null && main.rulesManager.getRule_MobCustomNameStatus(lmEntity) == MobCustomNameStatus.NOT_NAMETAGGED) {
             // mob has a nametag but is levelled so we'll remove it
             main.levelInterface.removeLevel(lmEntity);
-        }
-        else if (lmEntity.isMobTamed() && main.rulesManager.getRule_MobTamedStatus(lmEntity) == MobTamedStatusEnum.NOT_TAMED){
+        } else if (lmEntity.isMobTamed() && main.rulesManager.getRule_MobTamedStatus(lmEntity) == MobTamedStatus.NOT_TAMED) {
             // mob is tamed with a level but the rules don't allow it, remove the level
             main.levelInterface.removeLevel(lmEntity);
-        }
-        else if (
+        } else if (
                 !main.settingsCfg.getBoolean(YmlParsingHelper.getKeyNameFromConfig(main.settingsCfg, "use-customname-for-mob-nametags")) &&
-                location.getWorld() != null &&
+                        location.getWorld() != null &&
                         location.getWorld().getName().equals(lmEntity.getWorld().getName()) &&
                         lmEntity.getLocation().distanceSquared(location) <= maxDistance) {
             //if within distance, update nametag.

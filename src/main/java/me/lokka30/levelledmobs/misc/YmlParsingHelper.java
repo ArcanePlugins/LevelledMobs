@@ -9,6 +9,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
+/**
+ * @author stumper66
+ */
 public class YmlParsingHelper {
     public static boolean getBoolean(final ConfigurationSection cs, @NotNull final String name){
         return getBoolean(cs, name, false);
