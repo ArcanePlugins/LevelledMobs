@@ -2,7 +2,6 @@ package me.lokka30.levelledmobs.commands.subcommands;
 
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.misc.Utils;
-import me.lokka30.levelledmobs.misc.YmlParsingHelper;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
@@ -274,19 +273,19 @@ public class KillSubcommand implements Subcommand {
     }
 
     private boolean skipKillingEntity(final LevelledMobs main, final LivingEntity livingEntity) {
-        if (livingEntity.getCustomName() != null && main.settingsCfg.getBoolean(YmlParsingHelper.getKeyNameFromConfig(main.settingsCfg,"kill-skip-conditions.nametagged")))
+        if (livingEntity.getCustomName() != null && main.helperSettings.getBoolean(main.settingsCfg,"kill-skip-conditions.nametagged"))
             return true;
 
         // Tamed
-        if (livingEntity instanceof Tameable && ((Tameable) livingEntity).isTamed() && main.settingsCfg.getBoolean(YmlParsingHelper.getKeyNameFromConfig(main.settingsCfg,"kill-skip-conditions.tamed")))
+        if (livingEntity instanceof Tameable && ((Tameable) livingEntity).isTamed() && main.helperSettings.getBoolean(main.settingsCfg,"kill-skip-conditions.tamed"))
             return true;
 
         // Leashed
-        if (livingEntity.isLeashed() && main.settingsCfg.getBoolean(YmlParsingHelper.getKeyNameFromConfig(main.settingsCfg,"kill-skip-conditions.leashed"))) return true;
+        if (livingEntity.isLeashed() && main.helperSettings.getBoolean(main.settingsCfg,"kill-skip-conditions.leashed")) return true;
 
         // Converting zombie villager
         return livingEntity.getType() == EntityType.ZOMBIE_VILLAGER &&
                 ((ZombieVillager) livingEntity).isConverting() &&
-                main.settingsCfg.getBoolean(YmlParsingHelper.getKeyNameFromConfig(main.settingsCfg,"kill-skip-conditions.convertingZombieVillager"));
+                main.helperSettings.getBoolean(main.settingsCfg,"kill-skip-conditions.convertingZombieVillager");
     }
 }

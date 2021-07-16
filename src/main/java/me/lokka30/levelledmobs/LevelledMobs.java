@@ -8,6 +8,7 @@ import me.lokka30.levelledmobs.listeners.MythicMobsListener;
 import me.lokka30.levelledmobs.managers.*;
 import me.lokka30.levelledmobs.misc.ConfigUtils;
 import me.lokka30.levelledmobs.misc.Utils;
+import me.lokka30.levelledmobs.misc.YmlParsingHelper;
 import me.lokka30.levelledmobs.rules.RulesManager;
 import me.lokka30.levelledmobs.rules.RulesParsingManager;
 import me.lokka30.microlib.QuickTimer;
@@ -47,6 +48,7 @@ public class LevelledMobs extends JavaPlugin {
     public Random random;
     public PAPIManager papiManager;
     public boolean migratedFromPre30;
+    public YmlParsingHelper helperSettings;
 
     // Configuration
     public YamlConfiguration settingsCfg;
@@ -75,6 +77,7 @@ public class LevelledMobs extends JavaPlugin {
     public void onEnable() {
         final QuickTimer timer = new QuickTimer();
 
+        this.helperSettings = new YmlParsingHelper();
         this.random = new Random();
         this.customMobGroups = new TreeMap<>();
         this.levelInterface = new LevelInterface(this);

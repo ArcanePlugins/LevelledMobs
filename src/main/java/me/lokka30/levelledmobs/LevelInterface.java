@@ -85,6 +85,9 @@ public class LevelInterface {
         if (!rulesManager.getRule_IsMobAllowedInEntityOverride(lmInterface))
             return LevellableState.DENIED_CONFIGURATION_BLOCKED_ENTITY_TYPE;
 
+        if (rulesManager.getRule_MobMaxLevel(lmInterface) < 1)
+            return LevellableState.DENIED_OTHER;
+
         if (!(lmInterface instanceof LivingEntityWrapper))
             return LevellableState.ALLOWED;
 

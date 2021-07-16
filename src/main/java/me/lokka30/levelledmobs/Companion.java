@@ -1,6 +1,5 @@
 package me.lokka30.levelledmobs;
 
-import com.sun.tools.javac.Main;
 import me.lokka30.levelledmobs.commands.LevelledMobsCommand;
 import me.lokka30.levelledmobs.compatibility.MC1_16_Compat;
 import me.lokka30.levelledmobs.compatibility.MC1_17_Compat;
@@ -87,7 +86,7 @@ public class Companion {
         if (!file.exists()) return 0;
 
         final YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
-        return cfg.getInt(YmlParsingHelper.getKeyNameFromConfig(cfg,"file-version"));
+        return main.helperSettings.getInt(cfg,"file-version");
     }
 
     // Note: also called by the reload subcommand.
@@ -173,11 +172,11 @@ public class Companion {
         main.queueManager_mobs.start();
         main.queueManager_nametags.start();
         main.levelManager.entitySpawnListener = new EntitySpawnListener(main); // we're saving this reference so the summon command has access to it
-        main.levelManager.entitySpawnListener.processMobSpawns = main.settingsCfg.getBoolean(YmlParsingHelper.getKeyNameFromConfig(main.settingsCfg, "level-mobs-upon-spawn"), true);
+        main.levelManager.entitySpawnListener.processMobSpawns = main.helperSettings.getBoolean(main.settingsCfg, "level-mobs-upon-spawn", true);
         main.entityDamageDebugListener = new EntityDamageDebugListener(main);
         main.blockPlaceListener = new BlockPlaceListener(main);
 
-        if (main.settingsCfg.getBoolean(YmlParsingHelper.getKeyNameFromConfig(main.settingsCfg,"debug-entity-damage"))) {
+        if (main.helperSettings.getBoolean(main.settingsCfg,"debug-entity-damage")) {
             // we'll load and unload this listener based on the above setting when reloading
             main.configUtils.debugEntityDamageWasEnabled = true;
             pluginManager.registerEvents(main.entityDamageDebugListener, main);
@@ -209,7 +208,7 @@ public class Companion {
             main.configUtils.mythicMobsWasEnabled = true;
         }
 
-        if (main.settingsCfg.getBoolean(YmlParsingHelper.getKeyNameFromConfig(main.settingsCfg,"ensure-mobs-are-levelled-on-chunk-load")))
+        if (main.helperSettings.getBoolean(main.settingsCfg,"ensure-mobs-are-levelled-on-chunk-load"))
             pluginManager.registerEvents(main.chunkLoadListener, main);
     }
 
@@ -243,7 +242,7 @@ public class Companion {
 
     //Check for updates on the Spigot page.
     void checkUpdates() {
-        if (main.settingsCfg.getBoolean(YmlParsingHelper.getKeyNameFromConfig(main.settingsCfg,"use-update-checker"), true)) {
+        if (main.helperSettings.getBoolean(main.settingsCfg,"use-update-checker", true)) {
             final UpdateChecker updateChecker = new UpdateChecker(main, 74304);
             updateChecker.getLatestVersion(latestVersion -> {
                 final String currentVersion = updateChecker.getCurrentVersion().split(" ")[0];

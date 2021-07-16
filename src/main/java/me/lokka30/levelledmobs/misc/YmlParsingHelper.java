@@ -13,11 +13,11 @@ import java.util.TreeSet;
  * @author stumper66
  */
 public class YmlParsingHelper {
-    public static boolean getBoolean(final ConfigurationSection cs, @NotNull final String name){
+    public boolean getBoolean(final ConfigurationSection cs, @NotNull final String name){
         return getBoolean(cs, name, false);
     }
 
-    public static boolean getBoolean(final ConfigurationSection cs, @NotNull final String name, final boolean defaultValue){
+    public boolean getBoolean(final ConfigurationSection cs, @NotNull final String name, final boolean defaultValue){
         if (cs == null) return defaultValue;
         for (final String key : cs.getKeys(false)){
             if (name.equalsIgnoreCase(key)) return cs.getBoolean(key, defaultValue);
@@ -27,7 +27,7 @@ public class YmlParsingHelper {
     }
 
     @Nullable
-    public static Boolean getBoolean2(final ConfigurationSection cs, @NotNull final String name, final Boolean defaultValue){
+    public Boolean getBoolean2(final ConfigurationSection cs, @NotNull final String name, final Boolean defaultValue){
         if (cs == null) return defaultValue;
         for (final String key : cs.getKeys(false)){
             if (name.equalsIgnoreCase(key)) return cs.getBoolean(key);
@@ -37,12 +37,12 @@ public class YmlParsingHelper {
     }
 
     @Nullable
-    public static String getString(final ConfigurationSection cs, @NotNull final String name){
+    public String getString(final ConfigurationSection cs, @NotNull final String name){
         return getString(cs, name, null);
     }
 
     @Nullable
-    public static String getString(final ConfigurationSection cs, @NotNull final String name, final String defaultValue){
+    public String getString(final ConfigurationSection cs, @NotNull final String name, final String defaultValue){
         if (cs == null) return defaultValue;
         for (final String key : cs.getKeys(false)){
             if (name.equalsIgnoreCase(key)) return cs.getString(key, defaultValue);
@@ -52,17 +52,19 @@ public class YmlParsingHelper {
     }
 
     @NotNull
-    public static Set<String> getStringSet(final ConfigurationSection cs, @NotNull final String name){
+    public Set<String> getStringSet(final ConfigurationSection cs, @NotNull final String name){
+        final String useName = getKeyNameFromConfig(cs, name);
+
         final Set<String> results = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
-        results.addAll(cs.getStringList(name));
+        results.addAll(cs.getStringList(useName));
         return results;
     }
 
-    public static int getInt(final ConfigurationSection cs, @NotNull final String name){
+    public int getInt(final ConfigurationSection cs, @NotNull final String name){
         return getInt(cs, name, 0);
     }
 
-    public static int getInt(final ConfigurationSection cs, @NotNull final String name, final int defaultValue){
+    public int getInt(final ConfigurationSection cs, @NotNull final String name, final int defaultValue){
         if (cs == null) return defaultValue;
         for (final String key : cs.getKeys(false)){
             if (name.equalsIgnoreCase(key)) return cs.getInt(key, defaultValue);
@@ -72,7 +74,7 @@ public class YmlParsingHelper {
     }
 
     @Nullable
-    public static Integer getInt2(final ConfigurationSection cs, @NotNull final String name, final Integer defaultValue){
+    public Integer getInt2(final ConfigurationSection cs, @NotNull final String name, final Integer defaultValue){
         if (cs == null) return defaultValue;
         for (final String key : cs.getKeys(false)){
             if (name.equalsIgnoreCase(key)) return cs.getInt(key);
@@ -81,11 +83,11 @@ public class YmlParsingHelper {
         return defaultValue;
     }
 
-    public static double getDouble(final ConfigurationSection cs, @NotNull final String name){
+    public double getDouble(final ConfigurationSection cs, @NotNull final String name){
         return getDouble(cs, name, 0);
     }
 
-    public static double getDouble(final ConfigurationSection cs, @NotNull final String name, final double defaultValue){
+    public double getDouble(final ConfigurationSection cs, @NotNull final String name, final double defaultValue){
         if (cs == null) return defaultValue;
         for (final String key : cs.getKeys(false)){
             if (name.equalsIgnoreCase(key)) return cs.getDouble(key, defaultValue);
@@ -95,7 +97,7 @@ public class YmlParsingHelper {
     }
 
     @Nullable
-    public static Double getDouble2(final ConfigurationSection cs, @NotNull final String name, final Double defaultValue){
+    public Double getDouble2(final ConfigurationSection cs, @NotNull final String name, final Double defaultValue){
         if (cs == null) return defaultValue;
         for (final String key : cs.getKeys(false)){
             if (name.equalsIgnoreCase(key)) return cs.getDouble(key);
@@ -105,7 +107,7 @@ public class YmlParsingHelper {
     }
 
     @NotNull
-    public static String getKeyNameFromConfig(final ConfigurationSection cs, final String key){
+    public String getKeyNameFromConfig(final ConfigurationSection cs, final String key){
         if (!key.contains(".")){
             for (final String enumeratedKey : cs.getKeys(false)) {
                 if (key.equalsIgnoreCase(enumeratedKey))
@@ -124,7 +126,7 @@ public class YmlParsingHelper {
         for (final String thisKey : periodSplit) {
             boolean foundKey = false;
             final String checkKeyName = sb.length() == 0 ? thisKey : sb.toString();
-            final ConfigurationSection useCS = keysFound == 0 ? cs : objectToConfigurationSection(cs.get(checkKeyName));
+            final ConfigurationSection useCS = keysFound == 0 ? cs : objTo_CS(cs, checkKeyName);
 
             if (useCS == null) break;
 
@@ -150,17 +152,23 @@ public class YmlParsingHelper {
     }
 
     @Nullable
-    private static ConfigurationSection objectToConfigurationSection(final Object object){
+    public ConfigurationSection objTo_CS(final ConfigurationSection cs, final String path){
+        if (cs == null) return null;
+        final String useKey = getKeyNameFromConfig(cs, path);
+        final Object object = cs.get(useKey);
+
         if (object == null) return null;
 
         if (object instanceof ConfigurationSection) {
             return (ConfigurationSection) object;
-        } else if (object instanceof Map){
+        } else if (object instanceof Map) {
             final MemoryConfiguration result = new MemoryConfiguration();
             result.addDefaults((Map<String, Object>) object);
             return result.getDefaultSection();
         } else {
-            Utils.logger.warning("couldn't parse Config of type: " + object.getClass().getSimpleName() + ", value: " + object);
+            final String currentPath = Utils.isNullOrEmpty(cs.getCurrentPath()) ?
+                    path : cs.getCurrentPath() + "." + path;
+            Utils.logger.warning(currentPath + ": couldn't parse Config of type: " + object.getClass().getSimpleName() + ", value: " + object);
             return null;
         }
     }

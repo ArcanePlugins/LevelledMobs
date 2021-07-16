@@ -158,15 +158,20 @@ public class LevelManager {
         if (player == null) return null;
 
         int levelSource;
+        double origLevelSource;
         final String variableToUse = Utils.isNullOrEmpty(options.variable) ? "%level%" : options.variable;
+        final double scale = options.playerLevelScale != null ? options.playerLevelScale : 1.0;
 
         if (variableToUse.equalsIgnoreCase("%level%"))
-            levelSource = player.getLevel();
-        else if (variableToUse.equalsIgnoreCase("%exp%")) {
-            Utils.logger.info(String.format("getExp: %s, getExpToLevel: %s, getTotalExperience: %s",
-                    player.getExp(), player.getExpToLevel(), player.getTotalExperience()));
-            levelSource = (int) player.getExp();
-        }
+            origLevelSource = player.getLevel();
+        else if (variableToUse.equalsIgnoreCase("%exp%"))
+            origLevelSource = player.getExp();
+        else if (variableToUse.equalsIgnoreCase("%exp-to-level%"))
+            origLevelSource = player.getExpToLevel();
+        else if (variableToUse.equalsIgnoreCase("%total-exp%"))
+            origLevelSource = player.getTotalExperience();
+        else if (variableToUse.equalsIgnoreCase("%world_time_ticks%"))
+            origLevelSource = lmEntity.getWorld().getTime();
         else{
             boolean usePlayerLevel = false;
             String PAPIResult = null;
@@ -188,22 +193,22 @@ public class LevelManager {
             }
 
             if (usePlayerLevel)
-                levelSource = player.getLevel();
+                origLevelSource = player.getLevel();
             else
-                levelSource = (int) Double.parseDouble(PAPIResult);
+                origLevelSource = (int) Double.parseDouble(PAPIResult);
         }
 
-        Utils.logger.info("Applying player level " + levelSource + " for " + lmEntity.getTypeName() + ", var: " + variableToUse);
-
-        final double scale = options.playerLevelScale != null ? options.playerLevelScale : 1.0;
+        levelSource = (int) Math.round(origLevelSource * scale);
         final int[] results = new int[]{ 1, 1};
+        String tierMatched = null;
 
         if (options.usePlayerMaxLevel){
-            results[1] = (int) Utils.round((double)levelSource * scale);
+            results[1] = levelSource;
             results[1] = results[0];
         }
-        else if (options.matchPlayerLevel)
-            results[1] = (int) Utils.round((double)levelSource * scale);
+        else if (options.matchPlayerLevel) {
+            results[1] = levelSource;
+        }
         else {
             boolean foundMatch = false;
             for (final LevelTierMatching tier : options.levelTiers){
@@ -213,12 +218,29 @@ public class LevelManager {
                 if (meetsMin && meetsMax){
                     if (tier.valueRanges[0] > 0) results[0] = tier.valueRanges[0];
                     if (tier.valueRanges[1] > 0) results[1] = tier.valueRanges[1];
+                    tierMatched = tier.toString();
                     foundMatch = true;
                     break;
                 }
             }
 
-            if (!foundMatch) return null;
+            if (!foundMatch) {
+                Utils.debugLog(main, DebugType.PLAYER_LEVELLING, String.format(
+                        "mob: %s, player: %s, lvl-source: %s, source-after-scale: %s, no tiers matched",
+                        lmEntity.getNameIfBaby(), player.getName(), origLevelSource, levelSource));
+                return null;
+            }
+        }
+
+        if (tierMatched == null) {
+            Utils.debugLog(main, DebugType.PLAYER_LEVELLING, String.format(
+                    "mob: %s, player: %s, lvl-source: %s, source-after-scale: %s, result: %s",
+                    lmEntity.getNameIfBaby(), player.getName(), origLevelSource, levelSource, Arrays.toString(results)));
+        }
+        else {
+            Utils.debugLog(main, DebugType.PLAYER_LEVELLING, String.format(
+                    "mob: %s, player: %s, lvl-source: %s, source-after-scale: %s, tier: %s, result: %s",
+                    lmEntity.getNameIfBaby(), player.getName(), origLevelSource, levelSource, tierMatched, Arrays.toString(results)));
         }
 
         return results;
@@ -237,7 +259,6 @@ public class LevelManager {
             if (playerLevellingResults != null){
                 minLevel = playerLevellingResults[0];
                 maxLevel = playerLevellingResults[1];
-                Utils.logger.info("player levelling, got: " + Arrays.toString(playerLevellingResults));
             }
         }
 
@@ -384,8 +405,7 @@ public class LevelManager {
     // When the persistent data container levelled key has not been set on the entity yet (i.e. for use in EntitySpawnListener)
     @Nullable
     public String getNametag(final LivingEntityWrapper lmEntity, final boolean isDeathNametag) {
-
-        final boolean useCustomNameForNametags = main.settingsCfg.getBoolean(YmlParsingHelper.getKeyNameFromConfig(main.settingsCfg, "use-customname-for-mob-nametags"));
+        final boolean useCustomNameForNametags = main.helperSettings.getBoolean(main.settingsCfg, "use-customname-for-mob-nametags");
         String nametag = isDeathNametag ? main.rulesManager.getRule_Nametag_CreatureDeath(lmEntity) : main.rulesManager.getRule_Nametag(lmEntity);
         if ("disabled".equalsIgnoreCase(nametag) || "none".equalsIgnoreCase(nametag)) return null;
 
@@ -446,10 +466,10 @@ public class LevelManager {
             if (tiersToUse > 0 && indicator.tiers.containsKey(tiersToUse))
                 secondaryColor = indicator.tiers.get(tiersToUse);
 
-            if (primaryColor.isEmpty() && indicator.tiers.containsKey(0))
-                primaryColor = indicator.tiers.get(0);
-            if (secondaryColor.isEmpty() && indicator.tiers.containsKey(0))
-                secondaryColor = indicator.tiers.get(0);
+//            if (primaryColor.isEmpty() && indicator.tiers.containsKey(0))
+//                primaryColor = indicator.tiers.get(0);
+//            if (secondaryColor.isEmpty() && indicator.tiers.containsKey(0))
+//                secondaryColor = indicator.tiers.get(0);
         }
 
         String result = primaryColor;
@@ -551,7 +571,7 @@ public class LevelManager {
     public void startNametagAutoUpdateTask() {
         Utils.logger.info("&fTasks: &7Starting async nametag auto update task...");
 
-        final long period = main.settingsCfg.getInt(YmlParsingHelper.getKeyNameFromConfig(main.settingsCfg, "nametag-auto-update-task-period")); // run every ? seconds.
+        final long period = main.helperSettings.getInt(main.settingsCfg, "nametag-auto-update-task-period", 6); // run every ? seconds.
 
         nametagAutoUpdateTask = new BukkitRunnable() {
             @Override
@@ -573,7 +593,6 @@ public class LevelManager {
                 runnable.runTaskAsynchronously(main);
             }
         }.runTaskTimer(main, 0, 20 * period);
-        // .runTaskTimerAsynchronously(main, 0, 20 * period);
     }
 
     private void runNametagCheck_aSync(final Map<Player,List<Entity>> entitiesPerPlayer){
@@ -620,7 +639,7 @@ public class LevelManager {
             main.levelInterface.removeLevel(lmEntity);
         }
         else{
-            if (!YmlParsingHelper.getBoolean(main.settingsCfg, "use-customname-for-mob-nametags", false) &&
+            if (!main.helperSettings.getBoolean(main.settingsCfg, "use-customname-for-mob-nametags", false) &&
                             location.getWorld() != null &&
                             location.getWorld().getName().equals(lmEntity.getWorld().getName()) &&
                             lmEntity.getLocation().distanceSquared(location) <= maxDistance) {

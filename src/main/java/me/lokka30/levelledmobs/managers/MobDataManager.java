@@ -3,7 +3,7 @@ package me.lokka30.levelledmobs.managers;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.misc.Addition;
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
-import me.lokka30.levelledmobs.misc.YmlParsingHelper;
+import me.lokka30.levelledmobs.misc.Utils;
 import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
@@ -47,7 +47,7 @@ public class MobDataManager {
     public final boolean isLevelledDropManaged(final EntityType entityType, @NotNull final Material material) {
         // Head drops
         if (material.toString().endsWith("_HEAD") || material.toString().endsWith("_SKULL")) {
-            if (!main.settingsCfg.getBoolean(YmlParsingHelper.getKeyNameFromConfig(main.settingsCfg, "mobs-multiply-head-drops")))
+            if (!main.helperSettings.getBoolean(main.settingsCfg, "mobs-multiply-head-drops"))
                 return false;
         }
 
@@ -56,7 +56,7 @@ public class MobDataManager {
     }
 
     public void setAdditionsForLevel(@NotNull final LivingEntityWrapper lmEntity, final Attribute attribute, final Addition addition) {
-        final boolean useStaticValues = main.settingsCfg.getBoolean(YmlParsingHelper.getKeyNameFromConfig(main.settingsCfg, "attributes-use-preset-base-values"));
+        final boolean useStaticValues = main.helperSettings.getBoolean(main.settingsCfg, "attributes-use-preset-base-values");
         final double defaultValue = useStaticValues ?
                 (double) Objects.requireNonNull(getAttributeDefaultValue(lmEntity, attribute)) :
                 Objects.requireNonNull(lmEntity.getLivingEntity().getAttribute(attribute)).getBaseValue();
@@ -86,8 +86,11 @@ public class MobDataManager {
                 attrib.addModifier(mod);
 
             // MAX_HEALTH specific: set health to max health
-            if (attribute == Attribute.GENERIC_MAX_HEALTH)
-                lmEntity.getLivingEntity().setHealth(attrib.getValue() - existingDamage);
+            if (attribute == Attribute.GENERIC_MAX_HEALTH) {
+                double newHealth = attrib.getValue() - existingDamage;
+                if (newHealth < 0.0) newHealth = 0.0;
+                lmEntity.getLivingEntity().setHealth(newHealth);
+            }
         }
     }
 

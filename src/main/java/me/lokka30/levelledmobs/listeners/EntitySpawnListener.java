@@ -59,7 +59,7 @@ public class EntitySpawnListener implements Listener {
         if (main.configUtils.playerLevellingEnabled)
             getClosestPlayer(lmEntity);
 
-        final int mobProcessDelay = main.settingsCfg.getInt(YmlParsingHelper.getKeyNameFromConfig(main.settingsCfg, "mob-process-delay"), 0);
+        final int mobProcessDelay = main.helperSettings.getInt(main.settingsCfg, "mob-process-delay", 0);
 
         if (mobProcessDelay > 0)
             delayedAddToQueue(lmEntity, event, mobProcessDelay);
