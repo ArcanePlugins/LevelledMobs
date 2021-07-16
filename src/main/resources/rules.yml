@@ -220,15 +220,16 @@ presets:
     name: 'Nametag - Health Indicator'
     apply-settings:
       nametag: '%tiered%Lvl %mob-lvl%&8 | &f%displayname%&8 | &f%entity-health-rounded% %tiered%%health-indicator%'
-      health-indicator: '❚'
-      health-indicator-scale: 5.0
-      health-indicator-max: 10
-      health-indicator-colored-tiers:
-        1: '&a' #LightGreen
-        2: '&e' #LightYellow
-        3: '&c' #LightRed
-        4: '&d' #LightPurple
-        5: '&3' #LightBlue
+      health-indicator:
+        indicator: '❚'
+        scale: 5.0
+        max: 10
+        colored-tiers:
+          1: '&a' #LightGreen
+          2: '&e' #LightYellow
+          3: '&c' #LightRed
+          4: '&d' #LightPurple
+          5: '&3' #LightBlue
 
   nametag_using_numbers:
 #   This controls the nametag, where the health is displayed using %entity-health-rounded%

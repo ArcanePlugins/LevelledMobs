@@ -52,13 +52,15 @@ public class RulesParsingManager {
         this.main.rulesManager.rulesInEffect.clear();
         this.main.customMobGroups.clear();
 
-        parseCustomMobGroups(objTo_CS(config.get(YmlParsingHelper.getKeyNameFromConfig(config, "mob-groups"))));
+        parseCustomMobGroups(objTo_CS(config, "mob-groups"));
 
-        final List<RuleInfo> presets = parsePresets(config.get(YmlParsingHelper.getKeyNameFromConfig(config, "presets")));
+        // final List<RuleInfo> presets = parsePresets(config.get(YmlParsingHelper.getKeyNameFromConfig(config, "presets")));
+        final List<RuleInfo> presets = parsePresets(objTo_CS(config, "presets"));
         for (RuleInfo ri : presets)
             this.rulePresets.put(ri.presetName, ri);
 
-        this.defaultRule = parseDefaults(config.get(YmlParsingHelper.getKeyNameFromConfig(config, "default-rule")));
+        // this.defaultRule = parseDefaults(config.get(YmlParsingHelper.getKeyNameFromConfig(config, "default-rule")));
+        this.defaultRule = parseDefaults(objTo_CS(config, "default-rule"));
         this.main.rulesManager.rulesInEffect.put(Integer.MIN_VALUE, new LinkedList<>());
         this.main.rulesManager.rulesInEffect.get(Integer.MIN_VALUE).add(defaultRule);
         this.customRules = parseCustomRules(config.get(YmlParsingHelper.getKeyNameFromConfig(config, "custom-rules")));
@@ -92,17 +94,16 @@ public class RulesParsingManager {
     }
 
     @NotNull
-    private RuleInfo parseDefaults(final Object objDefaults) {
+    private RuleInfo parseDefaults(final ConfigurationSection cs) {
         this.parsingInfo = new RuleInfo("defaults");
         parsingInfo.restrictions_MinLevel = 1;
         parsingInfo.restrictions_MaxLevel = 10;
-        parsingInfo.conditions_MobCustomnameStatus = MobCustomNameStatusEnum.EITHER;
-        parsingInfo.conditions_MobTamedStatus = MobTamedStatusEnum.EITHER;
+        parsingInfo.conditions_MobCustomnameStatus = MobCustomNameStatus.EITHER;
+        parsingInfo.conditions_MobTamedStatus = MobTamedStatus.EITHER;
         parsingInfo.babyMobsInheritAdultSetting = true;
         parsingInfo.mobLevelInheritance = true;
         parsingInfo.creeperMaxDamageRadius = 5;
 
-        final ConfigurationSection cs = objTo_CS(objDefaults);
         if (cs == null){
             Utils.logger.info("default-rule section was null");
             return this.parsingInfo;
@@ -113,15 +114,14 @@ public class RulesParsingManager {
     }
 
     @NotNull
-    private List<RuleInfo> parsePresets(final Object objPresets){
-        final ConfigurationSection cs = objTo_CS(objPresets);
+    private List<RuleInfo> parsePresets(final ConfigurationSection cs){
         final List<RuleInfo> results = new LinkedList<>();
         if (cs == null) return results;
 
         int count = -1;
         for (final String key : cs.getKeys(false)){
             count++;
-            final ConfigurationSection cs_Key = objTo_CS(cs.get(key));
+            final ConfigurationSection cs_Key = objTo_CS(cs, key);
             if (cs_Key == null){
                 Utils.logger.warning("nothing was specified for preset: " + key);
                 continue;
@@ -142,7 +142,7 @@ public class RulesParsingManager {
         if (cs == null) return defaultValue;
 
         final String useKeyName = YmlParsingHelper.getKeyNameFromConfig(cs, "allowed-spawn-reasons");
-        final ConfigurationSection cs2 = objTo_CS(cs.get(useKeyName));
+        final ConfigurationSection cs2 = objTo_CS(cs, useKeyName);
         if (cs2 == null) return defaultValue;
 
         final CachedModalList<CreatureSpawnEvent.SpawnReason> cachedModalList = new CachedModalList<>();
@@ -191,7 +191,7 @@ public class RulesParsingManager {
         if (cs == null) return defaultValue;
 
         final String useKeyName = YmlParsingHelper.getKeyNameFromConfig(cs, "biomes");
-        final ConfigurationSection cs2 = objTo_CS(cs.get(useKeyName));
+        final ConfigurationSection cs2 = objTo_CS(cs, useKeyName);
         if (cs2 == null) return defaultValue;
 
         final CachedModalList<Biome> cachedModalList = new CachedModalList<>();
@@ -253,7 +253,7 @@ public class RulesParsingManager {
         if (cs == null) return defaultValue;
 
         final String useKeyName = YmlParsingHelper.getKeyNameFromConfig(cs, name);
-        final ConfigurationSection cs2 = objTo_CS(cs.get(useKeyName));
+        final ConfigurationSection cs2 = objTo_CS(cs, useKeyName);
         if (cs2 == null) return defaultValue;
 
         final CachedModalList<String> cachedModalList = new CachedModalList<>(new TreeSet<>(String.CASE_INSENSITIVE_ORDER), new TreeSet<>(String.CASE_INSENSITIVE_ORDER));
@@ -354,15 +354,15 @@ public class RulesParsingManager {
         final List<RuleInfo> results = new LinkedList<>();
         if (rulesSection == null) return results;
 
-        for (final LinkedHashMap<String, Object> hashMap : (List<LinkedHashMap<String, Object>>)(rulesSection)){
-            final ConfigurationSection cs = objTo_CS(hashMap);
-            if (cs == null) {
-                Utils.logger.info("cs was null (parsing custom-rules)");
-                continue;
-            }
+         for (final LinkedHashMap<String, Object> hashMap : (List<LinkedHashMap<String, Object>>)(rulesSection)){
+             final ConfigurationSection cs = objTo_CS_2(hashMap);
+             if (cs == null) {
+                 Utils.logger.info("cs was null (parsing custom-rules)");
+                 continue;
+             }
 
-            this.parsingInfo = new RuleInfo("rule " + results.size());
-            parseValues(cs);
+             this.parsingInfo = new RuleInfo("rule " + results.size());
+             parseValues(cs);
             results.add(this.parsingInfo);
         }
 
@@ -376,9 +376,9 @@ public class RulesParsingManager {
         final String ruleName = cs.getString(YmlParsingHelper.getKeyNameFromConfig(cs, "name"));
         if (ruleName != null) parsingInfo.setRuleName(cs.getString(YmlParsingHelper.getKeyNameFromConfig(cs,"name")));
 
-        parseStrategies(objTo_CS(cs.get(YmlParsingHelper.getKeyNameFromConfig(cs,"strategies"))));
-        parseConditions(objTo_CS(cs.get(YmlParsingHelper.getKeyNameFromConfig(cs,"conditions"))));
-        parseApplySettings(objTo_CS(cs.get(YmlParsingHelper.getKeyNameFromConfig(cs,"apply-settings"))));
+        parseStrategies(objTo_CS(cs,"strategies"));
+        parseConditions(objTo_CS(cs,"conditions"));
+        parseApplySettings(objTo_CS(cs, "apply-settings"));
 
         parsingInfo.allowedEntities = buildCachedModalListOfString(cs, "allowed-entities", parsingInfo.allowedEntities);
         parsingInfo.rulePriority = YmlParsingHelper.getInt(cs, "priority");
@@ -472,7 +472,7 @@ public class RulesParsingManager {
                     parsingInfo.mergeEntityNameOverrides = cs.getBoolean(name);
                     continue;
                 }
-                final List<LevelTierMatching> tiers = parseNumberRange(objTo_CS(cs.get(name)), name);
+                final List<LevelTierMatching> tiers = parseNumberRange(objTo_CS(cs, name), name);
                 if (tiers != null && !tiers.isEmpty())
                     levelTiers.put(name, tiers);
             }
@@ -520,10 +520,10 @@ public class RulesParsingManager {
     private void parseApplySettings(final ConfigurationSection cs){
         if (cs == null) return;
 
-        parseFineTuning(objTo_CS(cs.get(YmlParsingHelper.getKeyNameFromConfig(cs,"multipliers"))));
-        parseEntityNameOverride(objTo_CS(cs.get(YmlParsingHelper.getKeyNameFromConfig(cs,"entity-name-override"))));
-        parseTieredColoring(objTo_CS(cs.get(YmlParsingHelper.getKeyNameFromConfig(cs,"tiered-coloring"))));
-        parseHealthIndicator(objTo_CS(cs.get(YmlParsingHelper.getKeyNameFromConfig(cs,"health-indicator"))));
+        parseFineTuning(objTo_CS(cs,"multipliers"));
+        parseEntityNameOverride(objTo_CS(cs,"entity-name-override"));
+        parseTieredColoring(objTo_CS(cs,"tiered-coloring"));
+        parseHealthIndicator(objTo_CS(cs,"health-indicator"));
 
         parsingInfo.restrictions_MinLevel = YmlParsingHelper.getInt2(cs, "minlevel", parsingInfo.restrictions_MinLevel);
         parsingInfo.restrictions_MaxLevel = YmlParsingHelper.getInt2(cs, "maxlevel", parsingInfo.restrictions_MaxLevel);
@@ -547,7 +547,7 @@ public class RulesParsingManager {
         if (cs == null) return;
 
         parsingInfo.conditions_Worlds = buildCachedModalListOfString(cs, "worlds", parsingInfo.conditions_Worlds);
-        parseExternalCompat(objTo_CS(cs.get(YmlParsingHelper.getKeyNameFromConfig(cs, "level-plugins"))));
+        parseExternalCompat(objTo_CS(cs, "level-plugins"));
 
         parsingInfo.conditions_MinLevel = YmlParsingHelper.getInt2(cs,"minlevel", parsingInfo.conditions_MinLevel);
         parsingInfo.conditions_MaxLevel = YmlParsingHelper.getInt2(cs,"maxlevel", parsingInfo.conditions_MaxLevel);
@@ -557,7 +557,7 @@ public class RulesParsingManager {
         final String mobCustomNameStatus = cs.getString(YmlParsingHelper.getKeyNameFromConfig(cs,"mob-customname-status"));
         if (mobCustomNameStatus != null) {
             try {
-                parsingInfo.conditions_MobCustomnameStatus = MobCustomNameStatusEnum.valueOf(mobCustomNameStatus.toUpperCase());
+                parsingInfo.conditions_MobCustomnameStatus = MobCustomNameStatus.valueOf(mobCustomNameStatus.toUpperCase());
             } catch (Exception e) {
                 Utils.logger.warning("Invalid value for " + mobCustomNameStatus);
             }
@@ -566,7 +566,7 @@ public class RulesParsingManager {
         final String mobTamedStatus = cs.getString(YmlParsingHelper.getKeyNameFromConfig(cs, "mob-tamed-status"));
         if (mobTamedStatus != null) {
             try {
-                parsingInfo.conditions_MobTamedStatus = MobTamedStatusEnum.valueOf(mobTamedStatus.toUpperCase());
+                parsingInfo.conditions_MobTamedStatus = MobTamedStatus.valueOf(mobTamedStatus.toUpperCase());
             } catch (Exception e) {
                 Utils.logger.warning("Invalid value for " + mobTamedStatus);
             }
@@ -592,7 +592,7 @@ public class RulesParsingManager {
         parsingInfo.maxRandomVariance = YmlParsingHelper.getInt2(cs, "max-random-variance", parsingInfo.maxRandomVariance);
         parsingInfo.useRandomLevelling = YmlParsingHelper.getBoolean2(cs, "random", parsingInfo.useRandomLevelling);
 
-        final ConfigurationSection cs_YDistance = objTo_CS(cs.get(YmlParsingHelper.getKeyNameFromConfig(cs,"y-coordinate")));
+        final ConfigurationSection cs_YDistance = objTo_CS(cs,"y-coordinate");
         if (cs_YDistance != null){
             final YDistanceStrategy yDistanceStrategy = parsingInfo.levellingStrategy instanceof YDistanceStrategy ?
                     (YDistanceStrategy) parsingInfo.levellingStrategy : new YDistanceStrategy();
@@ -604,7 +604,7 @@ public class RulesParsingManager {
             this.parsingInfo.levellingStrategy = yDistanceStrategy;
         }
 
-        final ConfigurationSection cs_SpawnDistance = objTo_CS(cs.get(YmlParsingHelper.getKeyNameFromConfig(cs,"distance-from-spawn")));
+        final ConfigurationSection cs_SpawnDistance = objTo_CS(cs,"distance-from-spawn");
         if (cs_SpawnDistance != null){
             final SpawnDistanceStrategy spawnDistanceStrategy = parsingInfo.levellingStrategy instanceof SpawnDistanceStrategy ?
                     (SpawnDistanceStrategy) parsingInfo.levellingStrategy : new SpawnDistanceStrategy();
@@ -618,12 +618,12 @@ public class RulesParsingManager {
                 spawnDistanceStrategy.spawnLocation_Z = parseOptionalSpawnCoordinate(YmlParsingHelper.getKeyNameFromConfig(cs,"spawn-location.z"), cs_SpawnDistance);
 
             if (cs_SpawnDistance.getString(YmlParsingHelper.getKeyNameFromConfig(cs_SpawnDistance,"blended-levelling")) != null)
-                parseBlendedLevelling(objTo_CS(cs_SpawnDistance.get(YmlParsingHelper.getKeyNameFromConfig(cs_SpawnDistance,"blended-levelling"))), spawnDistanceStrategy);
+                parseBlendedLevelling(objTo_CS(cs_SpawnDistance,"blended-levelling"), spawnDistanceStrategy);
 
             this.parsingInfo.levellingStrategy = spawnDistanceStrategy;
         }
 
-        final ConfigurationSection cs_Random = objTo_CS(cs.get(YmlParsingHelper.getKeyNameFromConfig(cs,"weighted-random")));
+        final ConfigurationSection cs_Random = objTo_CS(cs,"weighted-random");
         if (cs_Random != null){
             final Map<String, Integer> randomMap = new TreeMap<>();
             final RandomLevellingStrategy randomLevelling = new RandomLevellingStrategy();
@@ -641,7 +641,7 @@ public class RulesParsingManager {
             this.parsingInfo.levellingStrategy = randomLevelling;
         }
 
-        parsePlayerLevellingOptions(objTo_CS(cs.get(YmlParsingHelper.getKeyNameFromConfig(cs,"player-levelling"))));
+        parsePlayerLevellingOptions(objTo_CS(cs,"player-levelling"));
     }
 
     private void parseHealthIndicator(final ConfigurationSection cs){
@@ -654,7 +654,7 @@ public class RulesParsingManager {
         indicator.scale = YmlParsingHelper.getDouble2(cs, "scale", indicator.scale);
         indicator.doMerge = YmlParsingHelper.getBoolean2(cs, "merge", indicator.doMerge);
 
-        final ConfigurationSection cs_Tiers = objTo_CS(cs.get(YmlParsingHelper.getKeyNameFromConfig(cs,"colored-tiers")));
+        final ConfigurationSection cs_Tiers = objTo_CS(cs,"colored-tiers");
         if (cs_Tiers != null){
             final Map<Integer, String> tiers = new TreeMap<>();
 
@@ -701,9 +701,10 @@ public class RulesParsingManager {
         options.usePlayerMaxLevel = YmlParsingHelper.getBoolean2(cs, "use-player-max-level", options.usePlayerMaxLevel);
         options.playerLevelScale = YmlParsingHelper.getDouble2(cs, "player-level-scale", options.playerLevelScale);
         options.enabled = YmlParsingHelper.getBoolean2(cs, "enabled", options.enabled);
+        options.variable = YmlParsingHelper.getString(cs, "variable", options.variable);
         parsingInfo.playerLevellingOptions = options;
 
-        final ConfigurationSection csTiers = objTo_CS(cs.get(YmlParsingHelper.getKeyNameFromConfig(cs,"tiers")));
+        final ConfigurationSection csTiers = objTo_CS(cs,"tiers");
         if (csTiers != null){
             final List<LevelTierMatching> levelTiers = new LinkedList<>();
 
@@ -762,7 +763,7 @@ public class RulesParsingManager {
 
         parsingInfo.allMobMultipliers = parseFineTuningValues(cs);
 
-        final ConfigurationSection cs_Custom = objTo_CS(cs.get(YmlParsingHelper.getKeyNameFromConfig(cs,"custom-mob-level")));
+        final ConfigurationSection cs_Custom = objTo_CS(cs,"custom-mob-level");
         if (cs_Custom == null) return;
 
         final Map<String, FineTuningAttributes> fineTuning = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
@@ -780,7 +781,7 @@ public class RulesParsingManager {
                 continue;
             }
 
-            final FineTuningAttributes attribs = parseFineTuningValues(objTo_CS(cs_Custom.get(mobName)));
+            final FineTuningAttributes attribs = parseFineTuningValues(objTo_CS(cs_Custom, mobName));
             if (attribs == null) continue;
 
             attribs.applicableEntity = entityType;
@@ -826,7 +827,29 @@ public class RulesParsingManager {
     }
 
     @Nullable
-    private ConfigurationSection objTo_CS(final Object object){
+    private ConfigurationSection objTo_CS(final ConfigurationSection cs, final String path){
+        if (cs == null) return null;
+        final String useKey = YmlParsingHelper.getKeyNameFromConfig(cs, path);
+        final Object object = cs.get(useKey);
+
+        if (object == null) return null;
+
+        if (object instanceof ConfigurationSection) {
+            return (ConfigurationSection) object;
+        } else if (object instanceof Map) {
+            final MemoryConfiguration result = new MemoryConfiguration();
+            result.addDefaults((Map<String, Object>) object);
+            return result.getDefaultSection();
+        } else {
+            final String currentPath = Utils.isNullOrEmpty(cs.getCurrentPath()) ?
+                    path : cs.getCurrentPath() + "." + path;
+            Utils.logger.warning(currentPath + ": couldn't parse Config of type: " + object.getClass().getSimpleName() + ", value: " + object);
+            return null;
+        }
+    }
+
+    @Nullable
+    private ConfigurationSection objTo_CS_2(final Object object){
         if (object == null) return null;
 
         if (object instanceof ConfigurationSection) {

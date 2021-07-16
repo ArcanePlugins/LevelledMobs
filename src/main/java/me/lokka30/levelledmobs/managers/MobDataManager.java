@@ -3,7 +3,6 @@ package me.lokka30.levelledmobs.managers;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.misc.Addition;
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
-import me.lokka30.levelledmobs.misc.Utils;
 import me.lokka30.levelledmobs.misc.YmlParsingHelper;
 import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
@@ -13,6 +12,8 @@ import org.bukkit.entity.EntityType;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -63,7 +64,7 @@ public class MobDataManager {
 
         if (additionValue == 0.0) return;
 
-        final AttributeModifier mod = new AttributeModifier("health", additionValue, AttributeModifier.Operation.ADD_NUMBER);
+        final AttributeModifier mod = new AttributeModifier(attribute.name(), additionValue, AttributeModifier.Operation.ADD_NUMBER);
         final AttributeInstance attrib = lmEntity.getLivingEntity().getAttribute(attribute);
 
         if (attrib != null) {
@@ -71,14 +72,22 @@ public class MobDataManager {
             if (attribute == Attribute.GENERIC_MAX_HEALTH && lmEntity.getLivingEntity().getAttribute(attribute) != null)
                 existingDamage = Objects.requireNonNull(lmEntity.getLivingEntity().getAttribute(attribute)).getValue() - lmEntity.getLivingEntity().getHealth();
 
-            if (useStaticValues) attrib.setBaseValue(defaultValue);
-            attrib.addModifier(mod);
+            if (attrib.getModifiers().size() > 0){
+                final List<AttributeModifier> existingMods = new ArrayList<>(attrib.getModifiers().size());
+                existingMods.addAll(attrib.getModifiers());
+
+                for (final AttributeModifier existingMod : existingMods)
+                    attrib.removeModifier(existingMod);
+            }
+
+            if (useStaticValues)
+                attrib.setBaseValue(defaultValue);
+            else
+                attrib.addModifier(mod);
 
             // MAX_HEALTH specific: set health to max health
-            if (attribute == Attribute.GENERIC_MAX_HEALTH) {
-                Utils.logger.info(lmEntity.getTypeName() + " existing damage: " + existingDamage);
+            if (attribute == Attribute.GENERIC_MAX_HEALTH)
                 lmEntity.getLivingEntity().setHealth(attrib.getValue() - existingDamage);
-            }
         }
     }
 

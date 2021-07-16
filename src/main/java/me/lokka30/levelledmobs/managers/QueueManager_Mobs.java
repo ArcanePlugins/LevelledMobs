@@ -49,9 +49,7 @@ public class QueueManager_Mobs {
         doThread = false;
     }
 
-    public void addToQueue(final QueueItem item){
-        this.queue.offer(item);
-    }
+    public void addToQueue(final QueueItem item) { this.queue.offer(item); }
 
     private void main() throws InterruptedException{
         while (doThread) {

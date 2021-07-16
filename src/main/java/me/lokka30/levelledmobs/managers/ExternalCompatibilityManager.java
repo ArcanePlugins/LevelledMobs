@@ -29,7 +29,8 @@ public class ExternalCompatibilityManager {
         ELITE_MOBS, ELITE_MOBS_NPCS, ELITE_MOBS_SUPER_MOBS,
         INFERNAL_MOBS,
         CITIZENS,
-        SHOPKEEPERS
+        SHOPKEEPERS,
+        PLACEHOLDER_API
     }
 
     public static boolean isExternalCompatibilityEnabled(final ExternalCompatibility externalCompatibility, @NotNull final LivingEntityWrapper lmEntity) {
@@ -45,6 +46,8 @@ public class ExternalCompatibilityManager {
         return  (!list.containsKey(externalCompatibility) || list.get(externalCompatibility));
     }
 
+    public static boolean hasPAPI_Installed(){ return (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null); }
+
     public static boolean hasNBTAPI_Installed(){
         return Bukkit.getPluginManager().getPlugin("NBTAPI") != null;
     }
@@ -53,14 +56,9 @@ public class ExternalCompatibilityManager {
         return Bukkit.getPluginManager().getPlugin("MMOCore") != null;
     }
 
-    @Nullable
-    public static Integer getMCMMO_Core_PlayerLevel(final Player player){
-        if (Bukkit.getPluginManager().getPlugin("MMOCore") == null)
-            return null;
-
-        // TODO: add PAPI support here
-
-        return null;
+    @NotNull
+    public static String getPAPI_Placeholder(final Player player, final String placeholder){
+        return me.clip.placeholderapi.PlaceholderAPI.setPlaceholders(player, placeholder);
     }
 
     public static boolean hasProtocolLibInstalled() {

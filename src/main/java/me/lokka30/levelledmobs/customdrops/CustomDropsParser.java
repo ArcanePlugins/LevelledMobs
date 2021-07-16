@@ -63,12 +63,9 @@ public class CustomDropsParser {
             parseCustomDrops(customDropsCfg);
     }
 
-    private void processDefaults(@NotNull final MemorySection ms){
-        Map<String, Object> vals = ms.getValues(false);
-        ConfigurationSection cs = objectToConfigurationSection(vals);
-
+    private void processDefaults(final ConfigurationSection cs){
         if (cs == null){
-            Utils.logger.warning("Unable to process defaults, cs was null");
+            Utils.logger.warning("Defaults section was null");
             return;
         }
 
@@ -92,10 +89,11 @@ public class CustomDropsParser {
 
         handler.customItemGroups = new TreeMap<>();
         final String configKey = YmlParsingHelper.getKeyNameFromConfig(config, "defaults");
-        final Object defaultObj = config.get(configKey);
-
-        if (defaultObj != null && defaultObj.getClass().equals(MemorySection.class))
-            processDefaults((MemorySection) defaultObj);
+//        final Object defaultObj = config.get(configKey);
+//
+//        if (defaultObj != null && defaultObj.getClass().equals(MemorySection.class))
+//            processDefaults((MemorySection) defaultObj);
+        processDefaults(objectToConfigurationSection2(config, "defaults"));
 
         final String dropTableKey = YmlParsingHelper.getKeyNameFromConfig(config, "drop-table");
         if (config.get(dropTableKey) != null) {
@@ -162,13 +160,10 @@ public class CustomDropsParser {
                         parseCustomDrops2(config.getList(item), dropInstance);
                     } else if (config.get(item) instanceof MemorySection){
                         // drop is using a item group
-                        final MemorySection ms = (MemorySection) config.get(item);
-                        if (ms == null) continue;
-
-                        final ConfigurationSection csItem = objectToConfigurationSection(ms);
+                        final ConfigurationSection csItem = objectToConfigurationSection2(config, item);
                         if (csItem == null) continue;
 
-                        final String useEntityDropId = ms.getString(YmlParsingHelper.getKeyNameFromConfig(csItem,"usedroptable"));
+                        final String useEntityDropId = csItem.getString(YmlParsingHelper.getKeyNameFromConfig(csItem,"usedroptable"));
                         if (useEntityDropId != null && !handler.customItemGroups.containsKey(useEntityDropId))
                             Utils.logger.warning("Did not find droptable id match for name: " + useEntityDropId);
                         else if (useEntityDropId == null)
@@ -227,7 +222,7 @@ public class CustomDropsParser {
                 addMaterialToDrop(materialName, dropInstance, item);
                 continue;
             }
-            final ConfigurationSection itemConfiguration = objectToConfigurationSection(itemObject);
+            final ConfigurationSection itemConfiguration = objectToConfigurationSection_old(itemObject);
             if (itemConfiguration == null) continue;
 
             final Set<Map.Entry<String, Object>> ItemsToCheck = itemConfiguration.getValues(false).entrySet();
@@ -277,7 +272,7 @@ public class CustomDropsParser {
                     continue;
                 }
 
-                final ConfigurationSection itemInfoConfiguration = objectToConfigurationSection(itemEntry.getValue());
+                final ConfigurationSection itemInfoConfiguration = objectToConfigurationSection_old(itemEntry.getValue());
                 if (itemInfoConfiguration == null) continue;
 
                 CustomDropBase dropBase;
@@ -364,35 +359,34 @@ public class CustomDropsParser {
                 item.excludedMobs.add(exclude.trim());
         }
 
-        final Object enchantmentsSection = cs.get(YmlParsingHelper.getKeyNameFromConfig(cs,"enchantments"));
-        if (enchantmentsSection != null){
-            final ConfigurationSection enchantments = objectToConfigurationSection(enchantmentsSection);
-            if (enchantments != null) {
-                final Map<String, Object> enchantMap = enchantments.getValues(false);
-                for (final String enchantName : enchantMap.keySet()) {
-                    final Object value = enchantMap.get(enchantName);
+        //final Object enchantmentsSection = cs.get(YmlParsingHelper.getKeyNameFromConfig(cs,"enchantments"));
+        final ConfigurationSection enchantments = objectToConfigurationSection2(cs, "enchantments");
+        //final ConfigurationSection enchantments = objectToConfigurationSection(enchantmentsSection);
+        if (enchantments != null) {
+            final Map<String, Object> enchantMap = enchantments.getValues(false);
+            for (final String enchantName : enchantMap.keySet()) {
+                final Object value = enchantMap.get(enchantName);
 
-                    int enchantLevel = 1;
-                    if (value != null && Utils.isInteger(value.toString()))
-                        enchantLevel = Integer.parseInt(value.toString());
+                int enchantLevel = 1;
+                if (value != null && Utils.isInteger(value.toString()))
+                    enchantLevel = Integer.parseInt(value.toString());
 
-                    final Enchantment en = Enchantment.getByKey(NamespacedKey.minecraft(enchantName.toLowerCase()));
-                    if (en != null) {
-                        if (item.getMaterial().equals(Material.ENCHANTED_BOOK)){
-                            EnchantmentStorageMeta meta = (EnchantmentStorageMeta) item.getItemStack().getItemMeta();
-                            if (meta != null) {
-                                meta.addStoredEnchant(en, enchantLevel, true);
-                                item.getItemStack().setItemMeta(meta);
-                            }
+                final Enchantment en = Enchantment.getByKey(NamespacedKey.minecraft(enchantName.toLowerCase()));
+                if (en != null) {
+                    if (item.getMaterial().equals(Material.ENCHANTED_BOOK)){
+                        EnchantmentStorageMeta meta = (EnchantmentStorageMeta) item.getItemStack().getItemMeta();
+                        if (meta != null) {
+                            meta.addStoredEnchant(en, enchantLevel, true);
+                            item.getItemStack().setItemMeta(meta);
                         }
-                        else
-                            item.getItemStack().addUnsafeEnchantment(en, enchantLevel);
                     }
                     else
-                        Utils.logger.warning("Invalid enchantment: " + enchantName);
+                        item.getItemStack().addUnsafeEnchantment(en, enchantLevel);
                 }
+                else
+                    Utils.logger.warning("Invalid enchantment: " + enchantName);
             }
-        } // end enchantments
+        }
 
         final String nbtStuff = cs.getString(YmlParsingHelper.getKeyNameFromConfig(cs,"nbt-data"));
         if (!Utils.isNullOrEmpty(nbtStuff)){
@@ -493,7 +487,29 @@ public class CustomDropsParser {
     }
 
     @Nullable
-    private ConfigurationSection objectToConfigurationSection(final Object object){
+    private ConfigurationSection objectToConfigurationSection2(final ConfigurationSection cs, final String path){
+        if (cs == null) return null;
+        final String useKey = YmlParsingHelper.getKeyNameFromConfig(cs, path);
+        final Object object = cs.get(useKey);
+
+        if (object == null) return null;
+
+        if (object instanceof ConfigurationSection) {
+            return (ConfigurationSection) object;
+        } else if (object instanceof Map) {
+            final MemoryConfiguration result = new MemoryConfiguration();
+            result.addDefaults((Map<String, Object>) object);
+            return result.getDefaultSection();
+        } else {
+            final String currentPath = Utils.isNullOrEmpty(cs.getCurrentPath()) ?
+                    path : cs.getCurrentPath() + "." + path;
+            Utils.logger.warning(currentPath + ": couldn't parse Config of type: " + object.getClass().getSimpleName() + ", value: " + object);
+            return null;
+        }
+    }
+
+    @Nullable
+    private ConfigurationSection objectToConfigurationSection_old(final Object object){
         if (object == null) return null;
 
         if (object instanceof ConfigurationSection) {

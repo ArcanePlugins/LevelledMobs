@@ -7,7 +7,9 @@ import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.World;
 import org.bukkit.block.CreatureSpawner;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -46,12 +48,16 @@ public class EntitySpawnListener implements Listener {
 
         final LivingEntityWrapper lmEntity = new LivingEntityWrapper((LivingEntity) event.getEntity(), main);
 
-        if (event instanceof CreatureSpawnEvent && ((CreatureSpawnEvent) event).getSpawnReason().equals(CreatureSpawnEvent.SpawnReason.CUSTOM)) {
+        if (event instanceof CreatureSpawnEvent && ((CreatureSpawnEvent) event).getSpawnReason().equals(CreatureSpawnEvent.SpawnReason.CUSTOM) &&
+            !lmEntity.isLevelled()) {
             delayedAddToQueue(lmEntity, event, 20);
             return;
         }
 
         if (!processMobSpawns) return;
+
+        if (main.configUtils.playerLevellingEnabled)
+            getClosestPlayer(lmEntity);
 
         final int mobProcessDelay = main.settingsCfg.getInt(YmlParsingHelper.getKeyNameFromConfig(main.settingsCfg, "mob-process-delay"), 0);
 
@@ -59,6 +65,29 @@ public class EntitySpawnListener implements Listener {
             delayedAddToQueue(lmEntity, event, mobProcessDelay);
         else
             main.queueManager_mobs.addToQueue(new QueueItem(lmEntity, event));
+    }
+
+    private void getClosestPlayer(final @NotNull LivingEntityWrapper lmEntity){
+        Entity closestEntity = null;
+        double closestRange = Double.MAX_VALUE;
+
+        for (final Entity entity : lmEntity.getLivingEntity().getNearbyEntities(50, 50, 50)){
+            if (!(entity instanceof Player)) continue;
+
+            double range = entity.getLocation().distance(lmEntity.getLocation());
+            if (range < closestRange){
+                closestEntity = entity;
+                closestRange = range;
+            }
+        }
+
+        if (closestEntity != null) {
+            synchronized (closestEntity.getPersistentDataContainer()){
+                closestEntity.getPersistentDataContainer().set(main.levelManager.playerLevelling, PersistentDataType.INTEGER, 1);
+            }
+            Utils.logger.info("PDC key has been set");
+            lmEntity.setPlayerForLevelling((Player) closestEntity);
+        }
     }
 
     private void delayedAddToQueue(final LivingEntityWrapper lmEntity, final Event event, final int delay){
