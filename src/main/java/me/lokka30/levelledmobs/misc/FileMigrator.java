@@ -103,8 +103,8 @@ public class FileMigrator {
         final File backedupFile = new File(main.getDataFolder(), "rules.yml.old");
         FileUtil.copy(fileRules, backedupFile);
 
-        final int worldListAllowedLine = 992;
-        final int worldListExcludedLine = 993;
+        final int worldListAllowedLine = 994 - 1; // minus 1 is due to 0 indexing of arrays
+        final int worldListExcludedLine = worldListAllowedLine + 1;
 
         final YamlConfiguration settings = YamlConfiguration.loadConfiguration(fileSettings);
         final YamlConfiguration rules = YamlConfiguration.loadConfiguration(fileRules);
