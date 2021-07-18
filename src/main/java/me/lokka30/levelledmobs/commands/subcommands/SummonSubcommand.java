@@ -1,10 +1,7 @@
 package me.lokka30.levelledmobs.commands.subcommands;
 
-import me.lokka30.levelledmobs.LevelInterface;
 import me.lokka30.levelledmobs.LevelledMobs;
-import me.lokka30.levelledmobs.misc.LivingEntityPlaceHolder;
-import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
-import me.lokka30.levelledmobs.misc.Utils;
+import me.lokka30.levelledmobs.misc.*;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -333,7 +330,7 @@ public class SummonSubcommand implements Subcommand {
         final LevelledMobs main = lmPlaceHolder.getMainInstance();
         Location location = lmPlaceHolder.getLocation();
 
-        if (!sender.isOp() && !override && main.levelInterface.getLevellableState(lmPlaceHolder) != LevelInterface.LevellableState.ALLOWED) {
+        if (!sender.isOp() && !override && main.levelInterface.getLevellableState(lmPlaceHolder) != LevellableState.ALLOWED) {
             List<String> messages = main.messagesCfg.getStringList("command.levelledmobs.summon.not-levellable");
             messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.getPrefix());
             messages = Utils.replaceAllInList(messages, "%entity%", lmPlaceHolder.getTypeName());
@@ -398,14 +395,9 @@ public class SummonSubcommand implements Subcommand {
                 for (int i = 0; i < 50; i++) {
                     useDistFromPlayer -= i;
                     if (useDistFromPlayer <= 0) break;
-                    int newX = origLocation.getBlockX();
-                    int newZ = origLocation.getBlockZ();
-                    if (direction >= 225.0D && direction <= 314.9D) newX += useDistFromPlayer;
-                    if (direction >= 45.0D && direction <= 134.9D) newX -= useDistFromPlayer;
-                    if (direction >= 135.0D && direction <= 224.9D) newZ -= useDistFromPlayer;
-                    if (direction >= 315.0D || direction <= 44.9D) newZ += useDistFromPlayer;
-                    location = new Location(location.getWorld(), newX, location.getBlockY(), newZ);
-                    Location location_YMinus1 = new Location(location.getWorld(), newX, location.getBlockY() - 1, newZ);
+
+                    location = getLocationNearPlayer(target, origLocation, useDistFromPlayer);
+                    final Location location_YMinus1 = new Location(location.getWorld(), location.getBlockX(), location.getBlockY() - 1, location.getBlockZ());
                     if (location.getBlock().isPassable() && location_YMinus1.getBlock().isPassable())
                         break; // found an open spot
                 }
@@ -422,7 +414,7 @@ public class SummonSubcommand implements Subcommand {
 
             if (entity instanceof LivingEntity) {
                 final LivingEntityWrapper lmEntity = new LivingEntityWrapper((LivingEntity) entity, main);
-                main.levelInterface.applyLevelToMob(lmEntity, level, true, override, new HashSet<>(Collections.singletonList(LevelInterface.AdditionalLevelInformation.NOT_APPLICABLE)));
+                main.levelInterface.applyLevelToMob(lmEntity, level, true, override, new HashSet<>(Collections.singletonList(AdditionalLevelInformation.NOT_APPLICABLE)));
             }
         }
 
@@ -468,6 +460,44 @@ public class SummonSubcommand implements Subcommand {
             default:
                 throw new IllegalStateException("Unexpected SummonType value of " + summonType + "!");
         }
+    }
+
+    private Location getLocationNearPlayer(final Player player, final Location location, final int useDistFromPlayer){
+        int newX = location.getBlockX();
+        int newZ = location.getBlockZ();
+
+        double rotation = (player.getLocation().getYaw() - 180) % 360;
+        if (rotation < 0)
+            rotation += 360.0;
+
+        if (0 <= rotation && rotation < 22.5) // N
+            newZ -= useDistFromPlayer;
+        else if (22.5 <= rotation && rotation < 67.5) { // NE
+            newX += useDistFromPlayer;
+            newZ -= useDistFromPlayer;
+        }
+        else if (67.5 <= rotation && rotation < 112.5) // E
+            newX += useDistFromPlayer;
+        else if (112.5 <= rotation && rotation < 157.5) { // SE
+            newX += useDistFromPlayer;
+            newZ += useDistFromPlayer;
+        }
+        else if (157.5 <= rotation && rotation < 202.5) // S
+            newZ += useDistFromPlayer;
+        else if (202.5 <= rotation && rotation < 247.5) { // SW
+            newX -= useDistFromPlayer;
+            newZ += useDistFromPlayer;
+        }
+        else if (247.5 <= rotation && rotation < 292.5) // W
+            newX -= useDistFromPlayer;
+        else if (292.5 <= rotation && rotation < 337.5) { // NW
+            newX -= useDistFromPlayer;
+            newZ -= useDistFromPlayer;
+        }
+        else // N
+            newZ -= useDistFromPlayer;
+
+        return new Location(location.getWorld(), newX, location.getBlockY(), newZ);
     }
 
     @Nullable

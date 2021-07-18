@@ -1,0 +1,108 @@
+package me.lokka30.levelledmobs.misc;
+
+/**
+ * This provides information on if a mob
+ * is levellable or not, and if not,
+ * a reason is supplied.
+ * A mob is levellable if their LevellableState = ALLOW.
+ */
+public enum LevellableState {
+    /**
+     * The entity is ALLOWED to be levelled.
+     * Note to developers: there must only be
+     * one 'ALLOWED' constant.
+     */
+    ALLOWED,
+
+    /**
+     * the plugin force blocked an entity type, such as a PLAYER
+     * or ARMOR STAND which are not meant to be 'levelled mobs'.
+     */
+    DENIED_FORCE_BLOCKED_ENTITY_TYPE,
+
+    /**
+     * settings.yml has been configured to block mobs
+     * spawning in entity's world from being levelled
+     */
+    DENIED_CONFIGURATION_BLOCKED_WORLD,
+
+    /**
+     * settings.yml has been configured to block mobs
+     * of such entity type from being levelled
+     */
+    DENIED_CONFIGURATION_BLOCKED_ENTITY_TYPE,
+
+    /**
+     * settings.yml has been configured to block mobs
+     * that spawn with a specific SpawnReason through
+     * CreatureSpawnEvent.
+     */
+    DENIED_CONFIGURATION_BLOCKED_SPAWN_REASON,
+
+    /**
+     * settings.yml has been configured to block
+     * DangerousCaves mobs from being levelled.
+     */
+    DENIED_CONFIGURATION_COMPATIBILITY_DANGEROUS_CAVES,
+
+    /**
+     * settings.yml has been configured to block
+     * MythicMobs mobs from being levelled.
+     */
+    DENIED_CONFIGURATION_COMPATIBILITY_MYTHIC_MOBS,
+
+    /**
+     * settings.yml has been configured to block
+     * EliteMobs mobs from being levelled.
+     */
+    DENIED_CONFIGURATION_COMPATIBILITY_ELITE_MOBS,
+
+    /**
+     * settings.yml has been configured to block
+     * Infernal Mobs mobs from being levelled.
+     */
+    DENIED_CONFIGURATION_COMPATIBILITY_INFERNAL_MOBS,
+
+    /**
+     * settings.yml has been configured to block
+     * Citizens NPCs from being levelled.
+     */
+    DENIED_CONFIGURATION_COMPATIBILITY_CITIZENS,
+
+    /**
+     * settings.yml has been configured to block
+     * Shopkeepers NPCs from being levelled.
+     */
+    DENIED_CONFIGURATION_COMPATIBILITY_SHOPKEEPERS,
+
+    /**
+     * WorldGuard region flag states that
+     * mobs are not levellable in its region
+     */
+    DENIED_CONFIGURATION_COMPATIBILITY_WORLD_GUARD,
+
+    /**
+     * settings.yml has been configured to block
+     * nametagged mobs from being levelled.
+     */
+    DENIED_CONFIGURATION_CONDITION_NAMETAGGED,
+
+    /**
+     * settings.yml has been configured to block
+     * tamed mobs from being levelled.
+     */
+    DENIED_CONFIGURATION_CONDITION_TAMED,
+
+    /**
+     * If no rules in the rule list applied to the mob
+     * then it will be denied
+     */
+    DENIED_NO_APPLICABLE_RULES,
+
+    /**
+     * When a reason is not applicable, use this.
+     * Please contact a lead developer if you
+     * believe you must resort to using this.
+     */
+    DENIED_OTHER
+}
