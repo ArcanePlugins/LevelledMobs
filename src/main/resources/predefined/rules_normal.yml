@@ -1,0 +1,475 @@
+#              _                   _ _          _ __  __       _
+#             | |    _____   _____| | | ___  __| |  \/  | ___ | |__  ___
+#             | |   / _ \ \ / / _ \ | |/ _ \/ _` | |\/| |/ _ \| '_ \/ __|
+#             | |__|  __/\ V /  __/ | |  __/ (_| | |  | | (_) | |_) \__ \
+#             |_____\___| \_/ \___|_|_|\___|\__,_|_|  |_|\___/|_.__/|___/
+#                       The Ultimate RPG Levelled Mobs Solution
+#                               _____     _
+#                              | __  |_ _| |___ ___
+#                              |    -| | | | -_|_ -|
+#                              |__|__|___|_|___|___|
+#
+#  .--.      .--.      .--.      .--.      .--.      .--.      .--.      .--.     .--._
+#:::::LM::::::::LM::::::::LM::::::::LM::::::::LM::::::::LM::::::::LM:::::::LM::::::::LM\
+#'|     `--'      `--'      `--'      `--'      `--'      `--'      `--'      `--'    |\
+# |  Main Developers:                           |  Other Contributors:                |\
+# |    lokka30                                  |    Eyrian, iCodinqs, deiphiz,       |\
+# |      Original Author and Developer          |    CoolBoy, Esophose, 7smile7,      |\
+# |    stumper66                                |    Huge5551, konsolas, Shevchik,    |\
+# |      Developer since v2.0                   |    limzikiki                        |\
+# |    UltimaOath                               |                                     |\
+# |      Documentation and Tester since v2.0    |                                     |\
+# |                                             |                                     |\
+# |----------------------------------+---+--------------------------------------------|\
+# |  ArcanePlugins Support Discord   |  Special Thanks:                               ||\
+# |    https://discord.gg/RQ8M4A5    |    ArcanePlugins Developers and Testers!       |||\
+# |                                  |    Donators, Patrons, and other supporters!    ||||\
+# |  Check '/docs' in this folder    |    SpigotMC, PaperMC, ProtocolLib, NBT-API,    |||||\
+# |  for a detailed How-To Guide!    |    PAPI, and bStats!                           ||||||\
+# |                                  |                                                |||||||\
+#  .--.      .--.      .--.      .--.      .--.      .--.      .--.      .--.     .--.||||||||\
+#:::::LM::::::::LM::::::::LM::::::::LM::::::::LM::::::::LM::::::::LM:::::::LM::::::::L|||||||||\
+#'|     `--'      `--'      `--'      `--'      `--'      `--'      `--'      `--'    ||||||||||\
+# |||---------------------------------------------------------------------------------|||||||||||
+# |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+# |||-------------------------------------------------------------------------------------------|
+# ||        _____         _   _            ___ ___                                              |
+# ||       |   __|___ ___| |_|_|___ ___   |   |_  |                                             |
+# ||       |__   | -_|  _|  _| | . |   |  | | |_| |_                                            |
+# ||       |_____|___|___|_| |_|___|_|_|  |___|_____|                                           |
+# ||           |     |_ _ ___| |_ ___ _____   |   __|___ ___ _ _ ___ ___                        |
+# ||           |   --| | |_ -|  _| . |     |  |  |  |  _| . | | | . |_ -|                       |
+# ||           |_____|___|___|_| |___|_|_|_|  |_____|_| |___|___|  _|___|                       |
+# ||                                                            |_|                             |
+# |||-------------------------------------------------------------------------------------------|
+# |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+# |||-------------------------------------------------------------------------------------------|
+mob-groups:
+  commons:
+    - ZOMBIE
+    - SKELETON
+    - CREEPER
+  farm:
+    - CHICKEN
+    - COW
+    - SHEEP
+    - PIG
+
+
+# |||-------------------------------------------------------------------------------------------|
+# |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+# |||-------------------------------------------------------------------------------------------|
+# ||        _____         _   _            ___ ___                                              |
+# ||       |   __|___ ___| |_|_|___ ___   |   |_  |                                             |
+# ||       |__   | -_|  _|  _| | . |   |  | | |  _|                                             |
+# ||       |_____|___|___|_| |_|___|_|_|  |___|___|                                             |
+# ||           |  _  |___ ___ ___ ___| |_ ___                                                   |
+# ||           |   __|  _| -_|_ -| -_|  _|_ -|                                                  |
+# ||           |__|  |_| |___|___|___|_| |___|                                                  |
+# ||                                                                                            |
+# |||-------------------------------------------------------------------------------------------|
+# |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+# |||-------------------------------------------------------------------------------------------|
+presets:
+  spawn_Levelling:
+    #   This Strategy Preset controls the Spawn-Distance-Levelling system.
+    name: 'LVLling Strategy - Distance-From-Spawn'
+    strategies:
+      distance-from-spawn:
+        increase-level-distance: 100
+        start-distance: 250
+        spawn-location:
+          x: default
+          z: default
+
+  blended_Levelling:
+    #   This Strategy Preset controls the Blended-Levelling sub-system to Spawn-Distance-Levelling.
+    name: 'LVLling Strategy - Blended-Levelling'
+    strategies:
+      distance-from-spawn:
+        blended-levelling:
+          enabled: true
+          transition-y-height: 64
+          lvl-multiplier: 0.05
+          multiplier-period: 10
+          scale-downward: true
+
+  random_Levelling:
+    #   This Strategy Preset controls the Random-Levelling system.
+    name: 'LVLling Strategy - Random'
+    strategies:
+      random: true
+
+  weighted_random_hard:
+    #   This Strategy Preset controls Weighted Random Bias.
+    name: 'LVLling Strategy - Weighted Random Bias HARD DIFFICULTY'
+    strategies:
+      weighted-random:
+        1-10: 5
+        11-20: 4
+        21-30: 3
+        31-40: 2
+        41-50: 1
+
+  weighted_random_normal:
+    #   This Strategy Preset controls Weighted Random Bias.
+    name: 'LVLling Strategy - Weighted Random Bias NORMAL DIFFICULTY'
+    strategies:
+      weighted-random:
+        1-5: 5
+        6-10: 4
+        11-15: 3
+        16-20: 2
+        21-25: 1
+
+  weighted_random_easy:
+    #   This Strategy Preset controls Weighted Random Bias.
+    name: 'LVLling Strategy - Weighted Random Bias EASY DIFFICULTY'
+    strategies:
+      weighted-random:
+        1-2: 5
+        3-4: 4
+        5-6: 3
+        7-8: 2
+        9-10: 1
+
+  apply_LevellingVariance:
+    #   This Strategy Preset controls the random level variance applied.
+    name: 'LVLling Strategy - Apply Variance'
+    strategies:
+      max-random-variance: 2
+
+  ycoord_Levelling:
+    #   This Strategy Preset controls Y-Coordinate-Levelling.
+    name: 'LVLling Strategy - Y-LVLling'
+    strategies:
+      y-coordinate:
+        start: 100
+        end: 20
+        period: 0
+
+  allowed_worlds:
+    #   This controls the allowed worlds to apply levels too.
+    name: 'Excluded Worldlist'
+    conditions:
+      worlds:
+        #        allowed-list: ['world', 'world_nether']
+        excluded-list: [ 'world_the_end' ]
+
+  hard_difficulty:
+    #   This establishes the minimum and maximum levels, and the multipliers, for HARD.
+    name: 'HARD Difficulty Multipliers'
+    apply-settings:
+      minLevel: 1
+      maxLevel: 50
+      multipliers:
+        max-health: 7.5
+        movement-speed: 0.35
+        attack-damage: 3.0
+        ranged-attack-damage: 2.25
+        item-drop: 3
+        xp-drop: 5
+      tiered-coloring:
+        1-14: '&a' # Light Green
+        15-29: '&e' # Yellow
+        30-45: '&c' # Light Red
+        46-50: '&4' # Dark Red
+        default: '&9' # Off-Blue
+
+  normal_difficulty:
+    #   This establishes the minimum and maximum levels, and the multipliers, for NORMAL.
+    name: 'NORMAL Difficulty Multipliers'
+    apply-settings:
+      minLevel: 1
+      maxLevel: 25
+      multipliers:
+        max-health: 5.0
+        movement-speed: 0.225
+        attack-damage: 2.0
+        ranged-attack-damage: 1.5
+        item-drop: 3
+        xp-drop: 5
+      tiered-coloring:
+        1-9: '&a' # Light Green
+        10-14: '&e' # Yellow
+        15-20: '&c' # Light Red
+        21-25: '&4' # Dark Red
+        default: '&9' # Off-Blue
+
+  easy_difficulty:
+    #   This establishes the minimum and maximum levels, and the multipliers, for EASY.
+    name: 'EASY Difficulty Multipliers'
+    apply-settings:
+      minLevel: 1
+      maxLevel: 10
+      multipliers:
+        max-health: 2.5
+        movement-speed: 0.1
+        attack-damage: 1.0
+        ranged-attack-damage: 0.5
+        item-drop: 3
+        xp-drop: 5
+      tiered-coloring:
+        1-3: '&a' # Light Green
+        4-6: '&e' # Yellow
+        7-10: '&4' # Dark Red
+        default: '&9' # Off-Blue
+
+  nametag_using_indicator:
+    #   This controls the nametag, where the health is displayed using %health-indicator%
+    name: 'Nametag - Health Indicator'
+    apply-settings:
+      nametag: '%tiered%Lvl %mob-lvl%&8 | &f%displayname%&8 | &f%entity-health-rounded% %tiered%%health-indicator%'
+      health-indicator:
+        indicator: '❚'
+        scale: 5.0
+        max: 10
+        colored-tiers:
+          1: '&a' #LightGreen
+          2: '&e' #LightYellow
+          3: '&c' #LightRed
+          4: '&d' #LightPurple
+          5: '&3' #LightBlue
+
+  nametag_using_numbers:
+    #   This controls the nametag, where the health is displayed using %entity-health-rounded%
+    name: 'Nametag - Health Numerical'
+    apply-settings:
+      nametag: '%tiered%Lvl %mob-lvl%&8 | &f%displayname%&8 | &c%entity-health-rounded%&8/&c%entity-max-health-rounded%'
+
+
+# |||-------------------------------------------------------------------------------------------|
+# |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+# |||-------------------------------------------------------------------------------------------|
+# ||                       L  O  W  E  S  T      P  R  I  O  R  I  T  Y                         |
+# |||-------------------------------------------------------------------------------------------|
+# ||        _____         _   _            ___ ___                                              |
+# ||       |   __|___ ___| |_|_|___ ___   |   |_  |                                             |
+# ||       |__   | -_|  _|  _| | . |   |  | | |_  |                                             |
+# ||       |_____|___|___|_|_|_|___|_|_|_ |___|___|_     _                                      |
+# ||           |    \ ___|  _|___ _ _| | |_   | __  |_ _| |___ ___                              |
+# ||           |  |  | -_|  _| .'| | | |  _|  |    -| | | | -_|_ -|                             |
+# ||           |____/|___|_| |__,|___|_|_|    |__|__|___|_|___|___|                             |
+# ||                                                                                            |
+# |||-------------------------------------------------------------------------------------------|
+# |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+# |||-------------------------------------------------------------------------------------------|
+default-rule:
+  use-preset:
+    - allowed_worlds
+    - nametag_using_numbers
+    #    - nametag_using_indicator
+    #    - hard_difficulty
+    - normal_difficulty
+    #    - easy_difficulty
+    - spawn_Levelling
+    - blended_Levelling
+  #    - random_Levelling
+  #    - ycoord_Levelling
+  #    - apply_LevellingVariance
+  #    - weighted_random_hard
+    - weighted_random_normal
+  #    - weighted_random_easy
+
+  conditions:
+    level-plugins:
+      DANGEROUS_CAVES: false
+      MYTHIC_MOBS: false
+      ELITE_MOBS: false
+      ELITE_MOBS_NPCS: false
+      ELITE_MOBS_SUPER_MOBS: false
+      INFERNAL_MOBS: false
+      SHOPKEEPERS: false
+
+    #    apply-above-y: 64
+    #    apply-below-y: 59
+
+    mob-customname-status: EITHER
+    mob-tamed-status: EITHER
+
+  apply-settings:
+    sunlight-intensity: 25
+    entity-name-override:
+    #      ZOMBIE: ['Undead', 'Deady', 'Walker']
+    #      CREEPER: ['Dr. Boom']
+    #      BABY_ZOMBIE: ['Baby Undead']
+
+    creature-death-nametag: '%tiered%Lvl %mob-lvl%&8 | &f%entity-name%'
+    creature-nametag-always-visible: false
+
+    baby-mobs-inherit-adult-setting: true
+    level-inheritance: true
+    creeper-max-damage-radius: 5
+
+    use-custom-item-drops-for-mobs: false
+
+
+# |||-------------------------------------------------------------------------------------------|
+# |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+# |||-------------------------------------------------------------------------------------------|
+# ||                    H  I  G  H  E  S  T      P  R  I  O  R  I  T  Y                         |
+# |||-------------------------------------------------------------------------------------------|
+# ||        _____         _   _            ___ ___                                              |
+# ||       |   __|___ ___| |_|_|___ ___   |   | | |                                             |
+# ||       |__   | -_|  _|  _| | . |   |  | | |_  |                                             |
+# ||       |_____|___|___|_| |_|___|_|_|  |___|_|_|_     _                                      |
+# ||           |     |_ _ ___| |_ ___ _____   | __  |_ _| |___ ___                              |
+# ||           |   --| | |_ -|  _| . |     |  |    -| | | | -_|_ -|                             |
+# ||           |_____|___|___|_| |___|_|_|_|  |__|__|___|_|___|___|                             |
+# ||                                                                                            |
+# |||-------------------------------------------------------------------------------------------|
+# |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+# |||-------------------------------------------------------------------------------------------|
+custom-rules:
+  - enabled: true
+    priority: 1
+    name: 'CR - NoLevel All Passive + EntityTypes'
+    use-preset: allowed_worlds
+    conditions:
+      entities:
+        allowed-groups: ['all_passive_mobs']
+        allowed-list: ['BABY_', 'ENDER_DRAGON', 'WITHER', 'VILLAGER', 'ZOMBIE_VILLAGER', 'WANDERING_TRADER', 'PHANTOM', 'BAT', 'RAVAGER']
+    apply-settings:
+      maxLevel: 0
+
+  - enabled: false
+    name: 'CR - Weighted Random - NORMAL - Overworld'
+    use-preset: normal_difficulty, weighted_random_normal
+    conditions:
+      worlds:
+        allowed-list: ['world']
+
+  - enabled: true
+    name: 'CR - Custom Nether Levelling'
+    use-preset: normal_difficulty, apply_LevellingVariance
+    conditions:
+      worlds:
+        allowed-list: ['world_nether']
+    strategies:
+      y-coordinate:
+        start: 100
+        end: 40
+        period: 0
+
+  - enabled: true
+    name: 'CR - Custom Entity Attributes'
+    use-preset: allowed_worlds
+    apply-settings:
+      multipliers:
+        custom-mob-level:
+          ENDERMAN:
+            max-health: 0.0
+            movement-speed: 0.0
+          SILVERFISH:
+            max-health: 0.0
+            movement-speed: 0.0
+          CREEPER:
+            movement-speed: 0.15
+          WITHER_SKELETON:
+            max-health: 1.0
+
+  - enabled: true
+    name: 'CR - Custom Zombie Piglin Levelling'
+    conditions:
+      worlds:
+        allowed-list: ['world_nether']
+      entities:
+        allowed-list: ['ZOMBIFIED_PIGLIN']
+    strategies:
+      random: true
+    apply-settings:
+      minLevel: 1
+      maxLevel: 5
+      multipliers:
+        custom-mob-level:
+          ZOMBIFIED_PIGLIN:
+            max-health: 1.0
+            movement-speed: 0.25
+            attack-damage: 0.5
+            ranged-attack-damage: 0.0
+            item-drop: 0.5
+            xp-drop: 1.0
+      tiered-coloring:
+        1-5: '&a' # Light Green
+
+  - enabled: false
+    name: 'CR - Ender Dragon Fight'
+    use-preset: normal_difficulty
+    conditions:
+      worlds:
+        allowed-list: ['world_the_end']
+      entities:
+        allowed-list: ['ENDER_DRAGON']
+    apply-settings:
+      minLevel: 25
+      multipliers:
+        custom-mob-level:
+          ENDER_DRAGON:
+            max-health: 3.0
+            attack-damage: 1.0
+
+
+  # |||-------------------------------------------------------------------------------------------|
+  # ||                                                                                            |
+  # ||  Demonstration CustomRules                                                                 |
+  # ||  These rules demonstrate some of the different features, and are disabled by default.      |
+  # ||  Simply enable the CustomRule below to test it out, or use them as reference for your own! |
+  # ||                                                                                            |
+  # |||-------------------------------------------------------------------------------------------|
+  - enabled: false
+    name: 'CR - NoLevel Biomes'
+    conditions:
+      worlds:
+        allowed-list: ['world_nether']
+      biomes:
+        allowed-list: ['NETHER_WASTES']
+    apply-settings:
+      maxLevel: 0
+
+  - enabled: false
+    name: 'CR - Level Dependent Zombie Custom Names'
+    use-presets: allowed_worlds
+    apply-settings:
+      entity-name-override:
+        1-5:
+          ZOMBIE: ['Teething %displayname%']
+        6-10:
+          ZOMBIE: ['Scratching %displayname%']
+        11-20:
+          ZOMBIE: ['Biting %displayname%']
+        21-25:
+          ZOMBIE: ['Hunting %displayname%']
+        BABY_ZOMBIE: ['Baby Undead']
+
+  - enabled: false
+    #   This rule requires the soft-dependency NBT-API to function!
+    #   Make sure you have it installed prior to enabling this rule!
+    name: 'CR - NBT - 20% Startled Creepers, Short Fuse'
+    use-preset: allowed_worlds
+    conditions:
+      chance: 0.2
+      #      apply-below-y: 59
+      entities:
+        allowed-list: ['CREEPER']
+    apply-settings:
+      nbt-data: '{Fuse:2,Attributes:[{Name:"generic.follow_range",Base:1f}]}'
+      entity-name-override:
+        CREEPER: ['Startled %displayname%']
+
+# |||-------------------------------------------------------------------------------------------|
+# |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+# |||-------------------------------------------------------------------------------------------|
+# ||                A  D  V  A  N  C  E  D     U  S  E  R  S     O  N  L  Y                     |
+# |||-------------------------------------------------------------------------------------------|
+# ||        _____         _   _            ___ ___                                              |
+# ||       |   __|___ ___| |_|_|___ ___   |   |  _|                                             |
+# ||       |__   | -_|  _|  _| | . |   |  | | |_  |                                             |
+# ||       |_____|___|___|_| |_|___|_|_|  |___|___|  _____     _   _   _                        |
+# ||           |  _  |_| |_ _ ___ ___ ___ ___ _| |  |   __|___| |_| |_|_|___ ___ ___            |
+# ||           |     | . | | | .'|   |  _| -_| . |  |__   | -_|  _|  _| |   | . |_ -|           |
+# ||           |__|__|___|\_/|__,|_|_|___|___|___|  |_____|___|_| |_| |_|_|_|_  |___|           |
+# ||                                                                        |___|               |
+# |||-------------------------------------------------------------------------------------------|
+# |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+# |||-------------------------------------------------------------------------------------------|
+file-version: 1

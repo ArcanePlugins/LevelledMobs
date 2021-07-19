@@ -196,6 +196,8 @@ public class LevelManager implements LevelInterface {
         double origLevelSource;
         final String variableToUse = Utils.isNullOrEmpty(options.variable) ? "%level%" : options.variable;
         final double scale = options.playerLevelScale != null ? options.playerLevelScale : 1.0;
+        final boolean usePlayerMax = options.usePlayerMaxLevel != null && options.matchPlayerLevel;
+        final boolean matchPlayerLvl = options.matchPlayerLevel != null && options.matchPlayerLevel;
 
         if (variableToUse.equalsIgnoreCase("%level%"))
             origLevelSource = player.getLevel();
@@ -238,7 +240,7 @@ public class LevelManager implements LevelInterface {
         String tierMatched = null;
 
         if (options.usePlayerMaxLevel){
-            results[1] = levelSource;
+            results[0] = levelSource;
             results[1] = results[0];
         }
         else if (options.matchPlayerLevel) {
@@ -496,20 +498,20 @@ public class LevelManager implements LevelInterface {
         String secondaryColor = "";
 
         if (indicator.tiers != null){
-            if (indicator.tiers.containsKey(tiersToUse + 1))
-                primaryColor = indicator.tiers.get(tiersToUse + 1);
-            if (tiersToUse > 0 && indicator.tiers.containsKey(tiersToUse))
-                secondaryColor = indicator.tiers.get(tiersToUse);
+            if (indicator.tiers.containsKey(tiersToUse))
+                primaryColor = indicator.tiers.get(tiersToUse);
+            else if (indicator.tiers.containsKey(0))
+                primaryColor = indicator.tiers.get(0);
 
-//            if (primaryColor.isEmpty() && indicator.tiers.containsKey(0))
-//                primaryColor = indicator.tiers.get(0);
-//            if (secondaryColor.isEmpty() && indicator.tiers.containsKey(0))
-//                secondaryColor = indicator.tiers.get(0);
+            if (tiersToUse > 0 && indicator.tiers.containsKey(tiersToUse - 1))
+                secondaryColor = indicator.tiers.get(tiersToUse - 1);
+            else if (indicator.tiers.containsKey(0))
+                secondaryColor = indicator.tiers.get(0);
         }
 
         String result = primaryColor;
 
-        if (tiersToUse == 0) {
+        if (tiersToUse < 2) {
             boolean useHalf = false;
             if (indicator.indicatorHalf != null && indicatorsToUse < maxIndicators){
                 useHalf = scale / 2.0 <= (indicatorsToUse * scale) - mobHealth;
@@ -520,8 +522,12 @@ public class LevelManager implements LevelInterface {
             if (useHalf) result += indicator.indicatorHalf;
         }
         else {
-            result += primaryColor + indicatorStr.repeat(toRecolor);
-            result += secondaryColor + indicatorStr.repeat(maxIndicators - toRecolor);
+            if (toRecolor == 0)
+                result += primaryColor + indicatorStr.repeat(maxIndicators);
+            else {
+                result += primaryColor + indicatorStr.repeat(toRecolor);
+                result += secondaryColor + indicatorStr.repeat(maxIndicators - toRecolor);
+            }
         }
 
         return MessageUtils.colorizeAll(result);

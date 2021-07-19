@@ -84,7 +84,7 @@ public class EntitySpawnListener implements Listener {
             synchronized (closestEntity.getPersistentDataContainer()){
                 closestEntity.getPersistentDataContainer().set(main.levelManager.playerLevelling, PersistentDataType.INTEGER, 1);
             }
-            Utils.logger.info("PDC key has been set");
+
             lmEntity.setPlayerForLevelling((Player) closestEntity);
         }
     }

@@ -15,6 +15,10 @@ public class HealthIndicator implements Cloneable {
         HealthIndicator copy = null;
         try {
             copy = (HealthIndicator) super.clone();
+            if (this.tiers != null){
+                copy.tiers = new TreeMap<>();
+                copy.tiers.putAll(this.tiers);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -39,6 +43,12 @@ public class HealthIndicator implements Cloneable {
         if (indicator != null){
             sb.append("ind: ");
             sb.append(indicator);
+        }
+
+        if (indicatorHalf != null){
+            if (sb.length() > 0) sb.append(", ");
+            sb.append("ind.5: ");
+            sb.append(indicatorHalf);
         }
 
         if (scale != null){

@@ -218,6 +218,7 @@ player-leveling-mob-distance: 30
 # ||        'DENIED_RULE_WG_REGION' | Reports denied levelling due to a WorldGuard region       |
 # ||          'DENIED_RULE_Y_LEVEL' | Reports denied levelling due to a y-level above/below rule|
 # ||  'DENIED_RULE_STOP_PROCESSING' | Reports denied levelling due to a stop-processing rule    |
+# ||             'PLAYER_LEVELLING' | Reports information related to player-levelling           |
 # ||                                                                                            |
 # |||-------------------------------------------------------------------------------------------|
 use-update-checker: true
