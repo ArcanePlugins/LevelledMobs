@@ -17,7 +17,9 @@ public class MC1_16_Compat {
 
     public static HashSet<EntityType> getHostileMobs() {
         return Stream.of(
-                EntityType.HOGLIN
+                EntityType.HOGLIN,
+                EntityType.PIGLIN,
+                EntityType.PIGLIN_BRUTE
         ).collect(Collectors.toCollection(HashSet::new));
     }
 

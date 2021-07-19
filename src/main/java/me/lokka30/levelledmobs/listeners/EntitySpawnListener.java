@@ -1,6 +1,5 @@
 package me.lokka30.levelledmobs.listeners;
 
-import me.lokka30.levelledmobs.LevelInterface;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.misc.*;
 import org.bukkit.Location;
@@ -128,7 +127,7 @@ public class EntitySpawnListener implements Listener {
                 event.getEntityType(), useMinLevel, useMaxLevel, generatedLevel, (customDropId == null ? "" : ", dropid: " + customDropId)));
 
         main.levelInterface.applyLevelToMob(lmEntity, generatedLevel,
-                false, true, new HashSet<>(Collections.singletonList(LevelInterface.AdditionalLevelInformation.NOT_APPLICABLE)));
+                false, true, new HashSet<>(Collections.singletonList(AdditionalLevelInformation.NOT_APPLICABLE)));
     }
 
     private void createParticleEffect(@NotNull final Location location){
@@ -156,7 +155,7 @@ public class EntitySpawnListener implements Listener {
             return;
 
         CreatureSpawnEvent.SpawnReason spawnReason = CreatureSpawnEvent.SpawnReason.DEFAULT;
-        LevelInterface.AdditionalLevelInformation additionalInfo = LevelInterface.AdditionalLevelInformation.NOT_APPLICABLE;
+        AdditionalLevelInformation additionalInfo = AdditionalLevelInformation.NOT_APPLICABLE;
 
         if (event instanceof SpawnerSpawnEvent) {
             SpawnerSpawnEvent spawnEvent = (SpawnerSpawnEvent) event;
@@ -187,13 +186,13 @@ public class EntitySpawnListener implements Listener {
             spawnReason = spawnEvent.getSpawnReason();
         }
         else if (event instanceof ChunkLoadEvent)
-            additionalInfo = LevelInterface.AdditionalLevelInformation.FROM_CHUNK_LISTENER;
+            additionalInfo = AdditionalLevelInformation.FROM_CHUNK_LISTENER;
 
         lmEntity.setSpawnReason(spawnReason);
 
-        final HashSet<LevelInterface.AdditionalLevelInformation> additionalLevelInfo = new HashSet<>(Collections.singletonList(additionalInfo));
-        final LevelInterface.LevellableState levellableState = getLevellableState(lmEntity, event);
-        if (levellableState == LevelInterface.LevellableState.ALLOWED) {
+        final HashSet<AdditionalLevelInformation> additionalLevelInfo = new HashSet<>(Collections.singletonList(additionalInfo));
+        final LevellableState levellableState = getLevellableState(lmEntity, event);
+        if (levellableState == LevellableState.ALLOWED) {
             main.levelInterface.applyLevelToMob(lmEntity, main.levelInterface.generateLevel(lmEntity),
                     false, false, additionalLevelInfo);
         } else {
@@ -223,10 +222,10 @@ public class EntitySpawnListener implements Listener {
     }
 
     @NotNull
-    private LevelInterface.LevellableState getLevellableState(final LivingEntityWrapper lmEntity, @NotNull final Event event) {
-        LevelInterface.LevellableState levellableState = main.levelInterface.getLevellableState(lmEntity);
+    private LevellableState getLevellableState(final LivingEntityWrapper lmEntity, @NotNull final Event event) {
+        LevellableState levellableState = main.levelInterface.getLevellableState(lmEntity);
 
-        if (levellableState != LevelInterface.LevellableState.ALLOWED)
+        if (levellableState != LevellableState.ALLOWED)
             return levellableState;
 
         if (event instanceof CreatureSpawnEvent) {
@@ -234,12 +233,12 @@ public class EntitySpawnListener implements Listener {
 
             // the mob gets processed via SpawnerSpawnEvent
             if (((CreatureSpawnEvent) event).getSpawnReason().equals(CreatureSpawnEvent.SpawnReason.SPAWNER))
-                return LevelInterface.LevellableState.DENIED_OTHER;
+                return LevellableState.DENIED_OTHER;
 
             Utils.debugLog(main, DebugType.ENTITY_SPAWN, "instanceof CreatureSpawnListener: &b" + creatureSpawnEvent.getEntityType() + "&7, with spawnReason &b" + creatureSpawnEvent.getSpawnReason() + "&7.");
         } else if (event instanceof EntitySpawnEvent)
             Utils.debugLog(main, DebugType.ENTITY_SPAWN, "not instanceof CreatureSpawnListener: &b" + ((EntitySpawnEvent) event).getEntityType());
 
-        return LevelInterface.LevellableState.ALLOWED;
+        return LevellableState.ALLOWED;
     }
 }

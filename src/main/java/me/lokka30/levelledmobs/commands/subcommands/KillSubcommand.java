@@ -4,14 +4,13 @@ import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.misc.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
+import org.bukkit.block.Block;
+import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.*;
 import org.bukkit.metadata.FixedMetadataValue;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 /**
  * Allows you to kill LevelledMobs with various options including all levelled mobs, specific worlds
@@ -95,78 +94,84 @@ public class KillSubcommand implements Subcommand {
                 }
 
                 if (args.length == 3 || args.length == 4) {
-                    if (sender instanceof Player) {
-                        Player player = (Player) sender;
-
-                        int radius;
-                        try {
-                            radius = Integer.parseInt(args[2]);
-                        } catch (NumberFormatException exception) {
-                            List<String> messages = main.messagesCfg.getStringList("command.levelledmobs.kill.near.invalid-radius");
-                            messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.getPrefix());
-                            messages = Utils.colorizeAllInList(messages);
-                            messages = Utils.replaceAllInList(messages, "%radius%", args[2]); //After the list is colourised, so %radius% is not coloursied.
-                            messages.forEach(sender::sendMessage);
-                            return;
-                        }
-
-                        int maxRadius = 1000;
-                        if (radius > maxRadius) {
-                            radius = maxRadius;
-
-                            List<String> messages = main.messagesCfg.getStringList("command.levelledmobs.kill.near.invalid-radius-max");
-                            messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.getPrefix());
-                            messages = Utils.replaceAllInList(messages, "%maxRadius%", maxRadius + "");
-                            messages = Utils.colorizeAllInList(messages);
-                            messages.forEach(sender::sendMessage);
-                        }
-
-                        int minRadius = 1;
-                        if (radius < minRadius) {
-                            radius = minRadius;
-
-                            List<String> messages = main.messagesCfg.getStringList("command.levelledmobs.kill.near.invalid-radius-min");
-                            messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.getPrefix());
-                            messages = Utils.replaceAllInList(messages, "%minRadius%", minRadius + "");
-                            messages = Utils.colorizeAllInList(messages);
-                            messages.forEach(sender::sendMessage);
-                        }
-
-                        int killed = 0;
-                        int skipped = 0;
-                        for (Entity entity : player.getNearbyEntities(radius, radius, radius)) {
-                            if (entity instanceof LivingEntity) {
-                                final LivingEntity livingEntity = (LivingEntity) entity;
-                                if (main.levelInterface.isLevelled(livingEntity)) {
-                                    if (skipKillingEntity(main, livingEntity)) {
-                                        skipped++;
-                                    } else {
-                                        livingEntity.setMetadata("noCommands", new FixedMetadataValue(main, 1));
-
-                                        if (useNoDrops)
-                                            livingEntity.remove();
-                                        else
-                                            livingEntity.setHealth(0.0);
-                                        killed++;
-                                    }
-                                }
-                            }
-                        }
-
-                        List<String> messages = main.messagesCfg.getStringList("command.levelledmobs.kill.near.success");
-                        messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.getPrefix());
-                        messages = Utils.replaceAllInList(messages, "%killed%", killed + "");
-                        messages = Utils.replaceAllInList(messages, "%skipped%", skipped + "");
-                        messages = Utils.replaceAllInList(messages, "%radius%", radius + "");
-                        messages = Utils.colorizeAllInList(messages);
-                        messages.forEach(sender::sendMessage);
-
-                    } else {
+                    if (!(sender instanceof BlockCommandSender) && !(sender instanceof Player)) {
                         List<String> messages = main.messagesCfg.getStringList("common.players-only");
                         messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.getPrefix());
                         messages = Utils.colorizeAllInList(messages);
                         messages.forEach(sender::sendMessage);
+                        return;
                     }
+
+                    int radius;
+                    try {
+                        radius = Integer.parseInt(args[2]);
+                    } catch (NumberFormatException exception) {
+                        List<String> messages = main.messagesCfg.getStringList("command.levelledmobs.kill.near.invalid-radius");
+                        messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.getPrefix());
+                        messages = Utils.colorizeAllInList(messages);
+                        messages = Utils.replaceAllInList(messages, "%radius%", args[2]); //After the list is colourised, so %radius% is not coloursied.
+                        messages.forEach(sender::sendMessage);
+                        return;
+                    }
+
+                    int maxRadius = 1000;
+                    if (radius > maxRadius) {
+                        radius = maxRadius;
+
+                        List<String> messages = main.messagesCfg.getStringList("command.levelledmobs.kill.near.invalid-radius-max");
+                        messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.getPrefix());
+                        messages = Utils.replaceAllInList(messages, "%maxRadius%", maxRadius + "");
+                        messages = Utils.colorizeAllInList(messages);
+                        messages.forEach(sender::sendMessage);
+                    }
+
+                    int minRadius = 1;
+                    if (radius < minRadius) {
+                        radius = minRadius;
+
+                        List<String> messages = main.messagesCfg.getStringList("command.levelledmobs.kill.near.invalid-radius-min");
+                        messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.getPrefix());
+                        messages = Utils.replaceAllInList(messages, "%minRadius%", minRadius + "");
+                        messages = Utils.colorizeAllInList(messages);
+                        messages.forEach(sender::sendMessage);
+                    }
+
+                    int killed = 0;
+                    int skipped = 0;
+                    final Collection<Entity> mobsToKill;
+                    if (sender instanceof BlockCommandSender) {
+                        final Block block = ((BlockCommandSender) sender).getBlock();
+                        mobsToKill = block.getWorld().getNearbyEntities(block.getLocation(), radius, radius, radius);
+                    }
+                    else
+                        mobsToKill = ((Player) sender).getNearbyEntities(radius, radius, radius);
+
+                    for (final Entity entity : mobsToKill) {
+                        if (entity instanceof LivingEntity) {
+                            final LivingEntity livingEntity = (LivingEntity) entity;
+                            if (main.levelInterface.isLevelled(livingEntity)) {
+                                if (skipKillingEntity(main, livingEntity)) {
+                                    skipped++;
+                                } else {
+                                    livingEntity.setMetadata("noCommands", new FixedMetadataValue(main, 1));
+
+                                    if (useNoDrops)
+                                        livingEntity.remove();
+                                    else
+                                        livingEntity.setHealth(0.0);
+                                    killed++;
+                                }
+                            }
+                        }
+                    }
+
+                    List<String> messages = main.messagesCfg.getStringList("command.levelledmobs.kill.near.success");
+                    messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.getPrefix());
+                    messages = Utils.replaceAllInList(messages, "%killed%", killed + "");
+                    messages = Utils.replaceAllInList(messages, "%skipped%", skipped + "");
+                    messages = Utils.replaceAllInList(messages, "%radius%", radius + "");
+                    messages = Utils.colorizeAllInList(messages);
+                    messages.forEach(sender::sendMessage);
                 } else {
                     List<String> messages = main.messagesCfg.getStringList("command.levelledmobs.kill.near.usage");
                     messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.getPrefix());

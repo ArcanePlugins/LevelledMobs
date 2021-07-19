@@ -80,7 +80,7 @@ public class LevelledMobs extends JavaPlugin {
         this.helperSettings = new YmlParsingHelper();
         this.random = new Random();
         this.customMobGroups = new TreeMap<>();
-        this.levelInterface = new LevelInterface(this);
+        this.levelInterface = new LevelManager(this);
         companion.checkCompatibility();
         if (!companion.loadFiles(false)) {
             // had fatal error reading required files

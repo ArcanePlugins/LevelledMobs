@@ -208,7 +208,7 @@ public class Companion {
             main.configUtils.mythicMobsWasEnabled = true;
         }
 
-        if (main.helperSettings.getBoolean(main.settingsCfg,"ensure-mobs-are-levelled-on-chunk-load"))
+        if (main.helperSettings.getBoolean(main.settingsCfg,"ensure-mobs-are-levelled-on-chunk-load", true))
             pluginManager.registerEvents(main.chunkLoadListener, main);
     }
 
@@ -330,7 +330,7 @@ public class Companion {
                 EntityType.SLIME
         ).collect(Collectors.toCollection(HashSet::new));
 
-        if (VersionUtils.isOneSixteen())
+        if (VersionUtils.isOneSeventeen() || VersionUtils.isOneSixteen())
             groups_HostileMobs.addAll(MC1_16_Compat.getHostileMobs());
 
         // include interfaces: Animals, WaterMob
@@ -342,7 +342,7 @@ public class Companion {
         if (VersionUtils.isOneSeventeen())
             groups_PassiveMobs.addAll(MC1_17_Compat.getPassiveMobs());
 
-        if (VersionUtils.isOneSixteen())
+        if (VersionUtils.isOneSeventeen() || VersionUtils.isOneSixteen())
             groups_HostileMobs.addAll(MC1_16_Compat.getPassiveMobs());
 
         // include interfaces: WaterMob

@@ -1,6 +1,6 @@
 package me.lokka30.levelledmobs.events;
 
-import me.lokka30.levelledmobs.LevelInterface;
+import me.lokka30.levelledmobs.misc.AdditionalLevelInformation;
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.LivingEntity;
@@ -46,9 +46,9 @@ public class MobPostLevelEvent extends Event {
 
     private final LivingEntityWrapper lmEntity;
     private final LevelCause levelCause;
-    private final HashSet<LevelInterface.AdditionalLevelInformation> additionalInformation;
+    private final HashSet<AdditionalLevelInformation> additionalInformation;
 
-    public MobPostLevelEvent(@NotNull final LivingEntityWrapper lmEntity, @NotNull final LevelCause levelCause, @Nullable final HashSet<LevelInterface.AdditionalLevelInformation> additionalInformation) {
+    public MobPostLevelEvent(@NotNull final LivingEntityWrapper lmEntity, @NotNull final LevelCause levelCause, @Nullable final HashSet<AdditionalLevelInformation> additionalInformation) {
         super(!Bukkit.isPrimaryThread());
         this.lmEntity = lmEntity;
         this.levelCause = levelCause;
@@ -69,11 +69,7 @@ public class MobPostLevelEvent extends Event {
         return levelCause;
     }
 
-    public HashSet<LevelInterface.AdditionalLevelInformation> getAdditionalInformation() {
+    public HashSet<AdditionalLevelInformation> getAdditionalInformation() {
         return additionalInformation;
     }
-
-//    public void setLevel(int level) {
-//        this.level = level;
-//    }
 }
