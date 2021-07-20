@@ -7,6 +7,8 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
@@ -65,6 +67,15 @@ public class LevelledMobsCommand implements CommandExecutor, TabCompleter {
                     case "rules":
                         rulesSubcommand.parseSubcommand(main, sender, label, args);
                         break;
+                    case "test":
+                        final Player p = (Player) sender;
+                        List<Entity> mobs = p.getNearbyEntities(10, 10, 10);
+                        if (mobs.isEmpty()) sender.sendMessage("no mobs");
+                        else {
+                            Entity e = mobs.get(0);
+                            sender.sendMessage(e.getName() + " at " + e.getLocation() + ": " + e.getLocation().distanceSquared(p.getLocation()));
+                        }
+                            break;
                     default:
                         sendMainUsage(sender, label);
                 }

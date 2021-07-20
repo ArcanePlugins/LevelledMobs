@@ -42,6 +42,7 @@ public class RulesParsingManager {
     @NotNull
     public List<RuleInfo> customRules;
     public RuleInfo defaultRule;
+    private Map<String, Set<String>> customBiomeGroups;
     private final static String ml_AllowedItems = "allowed-list";
     private final static String ml_AllowedGroups = "allowed-groups";
     private final static String ml_ExcludedItems = "excluded-list";
@@ -55,8 +56,8 @@ public class RulesParsingManager {
         this.main.customMobGroups.clear();
 
         parseCustomMobGroups(objTo_CS(config, "mob-groups"));
+        parseCustomMobGroups(objTo_CS(config, "biome-groups"));
 
-        // final List<RuleInfo> presets = parsePresets(config.get(YmlParsingHelper.getKeyNameFromConfig(config, "presets")));
         final List<RuleInfo> presets = parsePresets(objTo_CS(config, "presets"));
         for (RuleInfo ri : presets)
             this.rulePresets.put(ri.presetName, ri);
@@ -71,6 +72,8 @@ public class RulesParsingManager {
 
             this.main.rulesManager.rulesInEffect.get(ruleInfo.rulePriority).add(ruleInfo);
         }
+
+        this.main.rulesManager.buildBiomeGroupMappings(customBiomeGroups);
     }
 
     @NotNull
@@ -91,6 +94,18 @@ public class RulesParsingManager {
             final Set<String> groupMembers = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
             groupMembers.addAll(names);
             main.customMobGroups.put(groupName, groupMembers);
+        }
+    }
+
+    private void parseCustomBiomeGroups(final ConfigurationSection cs){
+        this.customBiomeGroups = new TreeMap<>();
+        if (cs == null) return;
+
+        for (final String groupName : cs.getKeys(false)){
+            final List<String> names = cs.getStringList(groupName);
+            final Set<String> groupMembers = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+            groupMembers.addAll(names);
+            this.customBiomeGroups.put(groupName, groupMembers);
         }
     }
 
@@ -466,7 +481,15 @@ public class RulesParsingManager {
                 final LevelTierMatching mobNames = new LevelTierMatching();
                 mobNames.mobName = name;
                 mobNames.names = names;
-                entityNames.put(name, mobNames);
+                final List<String> names2 = new LinkedList<>();
+
+                for (final String nameFromList : names){
+                    if (!nameFromList.isEmpty())
+                        names2.add(nameFromList);
+                }
+
+                if (!names2.isEmpty())
+                    entityNames.put(name, mobNames);
             }
 
             else if (cs.getString(name) != null) {
@@ -806,6 +829,7 @@ public class RulesParsingManager {
         attribs.rangedAttackDamage = ymlHelper.getDouble2(cs, "ranged-attack-damage", attribs.rangedAttackDamage);
         attribs.itemDrop = ymlHelper.getInt2(cs, "item-drop", attribs.itemDrop);
         attribs.xpDrop = ymlHelper.getInt2(cs, "xp-drop", attribs.xpDrop);
+        attribs.creeperExplosionRadius = ymlHelper.getDouble2(cs, "creeper-blast-damage", attribs.creeperExplosionRadius);
 
         return attribs;
     }

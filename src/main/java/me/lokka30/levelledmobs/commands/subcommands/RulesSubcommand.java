@@ -20,7 +20,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
-import scala.concurrent.impl.FutureConvertersImpl;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;

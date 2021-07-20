@@ -118,6 +118,9 @@ public class MobDataManager {
                 case CUSTOM_RANGED_ATTACK_DAMAGE:
                     if (lmEntity.getFineTuningAttributes().rangedAttackDamage != null) attributeValue = lmEntity.getFineTuningAttributes().rangedAttackDamage;
                     break;
+                case CREEPER_BLAST_DAMAGE:
+                    if (lmEntity.getFineTuningAttributes().creeperExplosionRadius != null) attributeValue = lmEntity.getFineTuningAttributes().creeperExplosionRadius;
+                    break;
             }
         }
 

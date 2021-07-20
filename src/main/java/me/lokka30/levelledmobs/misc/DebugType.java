@@ -28,6 +28,8 @@ public enum DebugType {
      */
     RANGED_DAMAGE_MODIFICATION,
 
+    CREEPER_BLAST_RADIUS,
+
     /**
      * Logged when LM processes a tamed
      * entity, which may require re-levelling

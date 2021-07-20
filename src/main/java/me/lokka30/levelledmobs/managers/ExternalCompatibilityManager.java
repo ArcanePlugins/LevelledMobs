@@ -43,7 +43,7 @@ public class ExternalCompatibilityManager {
 
     public static boolean isExternalCompatibilityEnabled(final ExternalCompatibility externalCompatibility, final Map<ExternalCompatibility, Boolean> list) {
         // if not defined default to true
-        return  (!list.containsKey(externalCompatibility) || list.get(externalCompatibility));
+        return  (!list.containsKey(externalCompatibility) || list.get(externalCompatibility) != null && list.get(externalCompatibility));
     }
 
     public static boolean hasPAPI_Installed(){ return (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null); }
@@ -123,11 +123,11 @@ public class ExternalCompatibilityManager {
      */
     public static boolean checkEliteMobs(final LivingEntityWrapper lmEntity) {
         final boolean isExternalType1 =
-                ExternalCompatibilityManager.isExternalCompatibilityEnabled(ExternalCompatibility.ELITE_MOBS, lmEntity) && (lmEntity.getLivingEntity().hasMetadata("Elitemob"));
+                lmEntity.getLivingEntity().hasMetadata("Elitemob");
         final boolean isExternalType2 =
-                ExternalCompatibilityManager.isExternalCompatibilityEnabled(ExternalCompatibility.ELITE_MOBS_NPCS, lmEntity) && (lmEntity.getLivingEntity().hasMetadata("Elitemobs_NPC"));
+                lmEntity.getLivingEntity().hasMetadata("Elitemobs_NPC");
         final boolean isExternalType3 =
-                ExternalCompatibilityManager.isExternalCompatibilityEnabled(ExternalCompatibility.ELITE_MOBS_SUPER_MOBS, lmEntity) && (lmEntity.getLivingEntity().hasMetadata("Supermob"));
+                lmEntity.getLivingEntity().hasMetadata("Supermob");
 
         if (isExternalType1) lmEntity.setMobExternalType(ExternalCompatibility.ELITE_MOBS);
         else if (isExternalType2) lmEntity.setMobExternalType(ExternalCompatibility.ELITE_MOBS_NPCS);
@@ -141,8 +141,7 @@ public class ExternalCompatibilityManager {
      * @return if InfernalMobs compatibility enabled and entity is from InfernalMobs
      */
     public static boolean checkInfernalMobs(final LivingEntityWrapper lmEntity) {
-        final boolean isExternalType = ExternalCompatibilityManager.isExternalCompatibilityEnabled(ExternalCompatibility.INFERNAL_MOBS, lmEntity)
-                && lmEntity.getLivingEntity().hasMetadata("infernalMetadata");
+        final boolean isExternalType = lmEntity.getLivingEntity().hasMetadata("infernalMetadata");
 
         if (isExternalType) lmEntity.setMobExternalType(ExternalCompatibility.INFERNAL_MOBS);
 
@@ -154,8 +153,7 @@ public class ExternalCompatibilityManager {
      * @return if Citizens compatibility enabled and entity is from Citizens
      */
     public static boolean checkCitizens(final LivingEntityWrapper lmEntity) {
-        final boolean isExternalType = ExternalCompatibilityManager.isExternalCompatibilityEnabled(ExternalCompatibility.CITIZENS, lmEntity)
-                && lmEntity.getLivingEntity().hasMetadata("NPC");
+        final boolean isExternalType = lmEntity.getLivingEntity().hasMetadata("NPC");
 
         if (isExternalType) lmEntity.setMobExternalType(ExternalCompatibility.CITIZENS);
 
@@ -167,8 +165,7 @@ public class ExternalCompatibilityManager {
      * @return if Shopkeepers compatibility enabled and entity is from Shopkeepers
      */
     public static boolean checkShopkeepers(final LivingEntityWrapper lmEntity) {
-        final boolean isExternalType = ExternalCompatibilityManager.isExternalCompatibilityEnabled(ExternalCompatibility.SHOPKEEPERS, lmEntity)
-                && lmEntity.getLivingEntity().hasMetadata("shopkeeper");
+        final boolean isExternalType = lmEntity.getLivingEntity().hasMetadata("shopkeeper");
 
         if (isExternalType) lmEntity.setMobExternalType(ExternalCompatibility.SHOPKEEPERS);
 

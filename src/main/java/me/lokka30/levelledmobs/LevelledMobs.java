@@ -49,6 +49,7 @@ public class LevelledMobs extends JavaPlugin {
     public PAPIManager papiManager;
     public boolean migratedFromPre30;
     public YmlParsingHelper helperSettings;
+    public double playerLevellingDistance;
 
     // Configuration
     public YamlConfiguration settingsCfg;

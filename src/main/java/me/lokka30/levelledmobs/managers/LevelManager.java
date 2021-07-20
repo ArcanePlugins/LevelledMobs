@@ -688,7 +688,9 @@ public class LevelManager implements LevelInterface {
                 main.queueManager_nametags.addToQueue(new QueueItem(lmEntity, main.levelManager.getNametag(lmEntity, false), Collections.singletonList(player)));
             }
 
-            if (main.configUtils.playerLevellingEnabled && !lmEntity.getPDC().has(main.levelManager.playerLevelling, PersistentDataType.INTEGER)){
+            if (main.configUtils.playerLevellingEnabled &&
+                lmEntity.getLocation().distanceSquared(player.getLocation()) <= main.playerLevellingDistance &&
+                !lmEntity.getPDC().has(main.levelManager.playerLevelling, PersistentDataType.INTEGER)){
                 // if it's already been associated with a player then leave it
                 if (lmEntity.getPlayerForLevelling() != null) return;
 
@@ -742,33 +744,27 @@ public class LevelManager implements LevelInterface {
     }
 
     public void applyCreeperBlastRadius(final LivingEntityWrapper lmEntity, int level) {
-        final int creeperMaxDamageRadius = main.rulesManager.getRule_CreeperMaxBlastRadius(lmEntity);
         final Creeper creeper = (Creeper) lmEntity.getLivingEntity();
 
-        if (creeperMaxDamageRadius == 3) return;
-
-        final int maxLevel = main.rulesManager.getRule_MobMaxLevel(lmEntity);
-        if (maxLevel == 0) return;
-
-        final int minMobLevel = main.rulesManager.getRule_MobMinLevel(lmEntity);
-        final double levelDiff = maxLevel - minMobLevel;
-        final double maxBlastDiff = creeperMaxDamageRadius - 3;
-        final double useLevel = level - minMobLevel;
-        final double percent = useLevel / levelDiff;
-        int blastRadius = (int) Math.round(maxBlastDiff * percent) + 3;
-
-        // don't let it go too high, for the server owner's sanity
-        blastRadius = Math.min(LevelManager.maxCreeperBlastRadius, blastRadius);
-
-        if (level == 1) {
-            // level 1 creepers will always have default
-            blastRadius = 3;
-        } else if (level == 0 && blastRadius > 2) {
-            // level 0 will always be less than default
-            blastRadius = 2;
+        final FineTuningAttributes tuning = main.rulesManager.getFineTuningAttributes(lmEntity);
+        if (tuning == null) {
+            // make sure creeper explosion is at vanilla defaults incase of a relevel, etc
+            if (creeper.getExplosionRadius() != 3)
+                creeper.setExplosionRadius(3);
+            Utils.debugLog(main, DebugType.CREEPER_BLAST_RADIUS, String.format("lvl: %s, mulp: null, result: 3",
+                    lmEntity.getMobLevel()));
+            return;
         }
 
-        if (blastRadius < 0) blastRadius = 0;
+        final int maxRadius = main.rulesManager.getRule_CreeperMaxBlastRadius(lmEntity);
+        double damage = main.mobDataManager.getAdditionsForLevel(lmEntity, Addition.CREEPER_BLAST_DAMAGE, 3);
+        int blastRadius = 3 + (int) Math.floor(damage);
+
+        if (blastRadius > maxRadius) blastRadius = maxRadius;
+        else if (blastRadius < 0) blastRadius = 0;
+
+        Utils.debugLog(main, DebugType.CREEPER_BLAST_RADIUS, String.format("lvl: %s, mulp: %s, max: %s, result: %s",
+                lmEntity.getMobLevel(), Utils.round(damage, 3), maxRadius, blastRadius));
 
         creeper.setExplosionRadius(blastRadius);
     }

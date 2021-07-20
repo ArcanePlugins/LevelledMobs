@@ -173,7 +173,7 @@ ensure-mobs-are-levelled-on-chunk-load: true
 attributes-use-preset-base-values: false
 use-customname-for-mob-nametags: false
 level-mobs-upon-spawn: true
-player-leveling-mob-distance: 30
+player-leveling-mob-distance-squared: 150
 
 # |||-------------------------------------------------------------------------------------------|
 # ||  ADVANCED USERS ONLY                                                                       |
@@ -219,6 +219,7 @@ player-leveling-mob-distance: 30
 # ||          'DENIED_RULE_Y_LEVEL' | Reports denied levelling due to a y-level above/below rule|
 # ||  'DENIED_RULE_STOP_PROCESSING' | Reports denied levelling due to a stop-processing rule    |
 # ||             'PLAYER_LEVELLING' | Reports information related to player-levelling           |
+# ||         'CREEPER_BLAST_RADIUS' | Reports when LM adjusts the creeper explosion radius      |
 # ||                                                                                            |
 # |||-------------------------------------------------------------------------------------------|
 use-update-checker: true

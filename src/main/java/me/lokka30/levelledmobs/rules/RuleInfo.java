@@ -2,7 +2,6 @@ package me.lokka30.levelledmobs.rules;
 
 import me.lokka30.levelledmobs.managers.ExternalCompatibilityManager;
 import me.lokka30.levelledmobs.misc.CachedModalList;
-import me.lokka30.levelledmobs.misc.Utils;
 import me.lokka30.levelledmobs.rules.strategies.LevellingStrategy;
 import org.bukkit.block.Biome;
 import org.bukkit.event.entity.CreatureSpawnEvent;

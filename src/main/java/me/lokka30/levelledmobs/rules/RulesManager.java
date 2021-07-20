@@ -25,7 +25,6 @@ public class RulesManager {
         this.rulesInEffect = new TreeMap<>();
         this.levelNumbersWithBiasMapCache = new TreeMap<>();
         this.biomeGroupMappings = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
-        buildBiomeGroupMappings();
     }
 
     private final LevelledMobs main;
@@ -631,7 +630,9 @@ public class RulesManager {
         return true;
     }
 
-    private void buildBiomeGroupMappings(){
+    public void buildBiomeGroupMappings(final Map<String, Set<String>> customBiomeGroups){
+        this.biomeGroupMappings.clear();
+
         this.biomeGroupMappings.put("SNOWY_BIOMES", Arrays.asList("SNOWY_TUNDRA", "ICE_SPIKES", "SNOWY_TAIGA", "SNOWY_TAIGA_MOUNTAINS",
                 "SNOWY_TAIGA_HILLS", "FROZEN_RIVER", "SNOWY_BEACH", "SNOWY_MOUNTAINS"));
 
@@ -654,5 +655,14 @@ public class RulesManager {
         this.biomeGroupMappings.put("NETHER_BIOMES", Arrays.asList("NETHER_WASTES", "CRIMSON_FOREST", "WARPED_FOREST", "SOUL_SAND_VALLEY", "BASALT_DELTAS"));
 
         this.biomeGroupMappings.put("END_BIOMES", Arrays.asList("THE_END", "SMALL_END_ISLANDS", "END_MIDLANDS", "END_HIGHLANDS", "END_BARRENS"));
+
+        if (customBiomeGroups == null) return;
+
+        for (final String groupName : customBiomeGroups.keySet()){
+            final Set<String> groupMembers = customBiomeGroups.get(groupName);
+            final List<String> newList = new ArrayList<>(groupMembers.size());
+            newList.addAll(groupMembers);
+            this.biomeGroupMappings.put(groupName, newList);
+        }
     }
 }
