@@ -410,7 +410,7 @@ default-rule:
 #      PILLAGER: ['Raider', 'Barbarian']
 
     creature-death-nametag: '%tiered%Lvl %mob-lvl%&8 | &f%entity-name%'
-    creature-nametag-always-visible: true
+    creature-nametag-always-visible: false
 
     baby-mobs-inherit-adult-setting: true
     level-inheritance: true
