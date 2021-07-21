@@ -145,7 +145,7 @@ presets:
     name: 'LVLling Strategy - Distance-From-Spawn'
     strategies:
       distance-from-spawn:
-        increase-level-distance: 100
+        increase-level-distance: 150
         start-distance: 250
         spawn-location:
           x: default
@@ -158,7 +158,7 @@ presets:
       distance-from-spawn:
         blended-levelling:
           enabled: true
-          transition-y-height: 64
+          transition-y-height: 62
           lvl-multiplier: 0.05
           multiplier-period: 10
           scale-downward: true
@@ -168,6 +168,7 @@ presets:
     name: 'LVLling Strategy - Random'
     strategies:
       random: true
+      lower-mob-level-bias-factor: 5
 
   weighted_random_hard:
 #   This Strategy Preset controls Weighted Random Bias.
@@ -202,19 +203,18 @@ presets:
         7-8: 2
         9-10: 1
         
-  playerStat_Levelling:
+  player_Levelling:
 #   This Strategy Preset controls the player-stat based levelling system.
-    name: 'LVLling Strategy - Player Stat Based'
+    name: 'LVLling Strategy - Player Based NORMAL DIFFIULTY'
     strategies:
       player-levelling:
-        match-level: false
+        match-level: true
         use-player-max-level: false
         player-level-scale: 1.0
         tiers:
           1-15: 1-10
           16-30: 11-20
           31-45: 21-25
-          default: 1
         variable: '%level%'
 
   apply_LevellingVariance:
@@ -222,7 +222,6 @@ presets:
     name: 'LVLling Strategy - Apply Variance'
     strategies:
       max-random-variance: 2
-      lower-mob-level-bias-factor: 5
 
   ycoord_Levelling:
 #   This Strategy Preset controls Y-Coordinate-Levelling.
@@ -238,8 +237,8 @@ presets:
     name: 'Excluded Worldlist'
     conditions:
       worlds:
-#        allowed-list: ['world', 'world_nether']
-        excluded-list: [ 'world_the_end' ]
+#        allowed-list: ['*']
+        excluded-list: ['world_the_end']
 
   hard_difficulty:
 #   This establishes the minimum and maximum levels, and the multipliers, for HARD.
@@ -249,19 +248,19 @@ presets:
       maxLevel: 50
       multipliers:
         max-health: 10
-        movement-speed: 1.0
+        movement-speed: 0.5
         attack-damage: 3.5
         ranged-attack-damage: 2.75
-        creeper-max-damage-radius: 7
+        creeper-blast-damage: 1.25
         item-drop: 3
         xp-drop: 5
-        creeper-blast-damage: 1.02
+      creeper-max-damage-radius: 5
       tiered-coloring:
-        1-9: '&#66DE93' #Green
-        10-19: '&#185ADB' #Blue
-        20-29: '&#FFC947' #Yellow
-        30-39: '&#DA0037' #Red
-        40-50: '&#A239EA' #Purple
+        1-9: '&#22E76B' #Green
+        10-19: '&#528CFF' #Blue
+        20-29: '&#FFCD56' #Yellow
+        30-39: '&#F2003D' #Red
+        40-50: '&#B447FF' #Purple
         default: '&#FFFFFF' #White
       health-indicator:
         scale: 8
@@ -276,19 +275,19 @@ presets:
       maxLevel: 25
       multipliers:
         max-health: 5.0
-        movement-speed: 0.5
+        movement-speed: 0.25
         attack-damage: 2.25
         ranged-attack-damage: 2.0
-        creeper-max-damage-radius: 3.5
+        creeper-blast-damage: 1.0
         item-drop: 3
         xp-drop: 5
-        creeper-blast-damage: 1.01
+      creeper-max-damage-radius: 3
       tiered-coloring:
-        1-5: '&#66DE93' #Green
-        6-10: '&#185ADB' #Blue
-        11-15: '&#FFC947' #Yellow
-        16-20: '&#DA0037' #Red
-        21-25: '&#A239EA' #Purple
+        1-5: '&#22E76B' #Green
+        6-10: '&#528CFF' #Blue
+        11-15: '&#FFCD56' #Yellow
+        16-20: '&#F2003D' #Red
+        21-25: '&#B447FF' #Purple
         default: '&#FFFFFF' #White
       health-indicator:
         scale: 4
@@ -303,19 +302,19 @@ presets:
       maxLevel: 10
       multipliers:
         max-health: 2.5
-        movement-speed: 0.25
+        movement-speed: 0.15
         attack-damage: 1.0
         ranged-attack-damage: 1.0
-        creeper-max-damage-radius: 2
+        creeper-blast-damage: 0.5
         item-drop: 3
         xp-drop: 5
-        creeper-blast-damage: 1.0
+      creeper-max-damage-radius: 1
       tiered-coloring:
-        1-2: '&#66DE93' #Green
-        3-4: '&#185ADB' #Blue
-        5-6: '&#FFC947' #Yellow
-        7-8: '&#DA0037' #Red
-        9-10: '&#A239EA' #Purple
+        1-2: '&#22E76B' #Green
+        3-4: '&#528CFF' #Blue
+        5-6: '&#FFCD56' #Yellow
+        7-8: '&#F2003D' #Red
+        9-10: '&#B447FF' #Purple
         default: '&#FFFFFF' #White
       health-indicator:
         scale: 2
@@ -331,11 +330,12 @@ presets:
         indicator: '█'
         indicator-half: '▌'
         colored-tiers:
-          tier-1: '&#66DE93' #Green
-          tier-2: '&#185ADB' #Blue
-          tier-3: '&#FFC947' #Yellow
-          tier-4: '&#DA0037' #Red
-          tier-5: '&#A239EA' #Purple
+          tier-1: '&#22E76B' #Green
+          tier-2: '&#528CFF' #Blue
+          tier-3: '&#FFCD56' #Yellow
+          tier-4: '&#FE803C' #Orange
+          tier-5: '&#F2003D' #Red
+          tier-6: '&#B447FF' #Purple
           default: '&#FFFFFF' #White
         merge: true
 
@@ -365,22 +365,25 @@ presets:
 default-rule:
   use-preset:
     - allowed_worlds
-#    - nametag_using_numbers
-    - nametag_using_indicator
+    - nametag_using_numbers
+#    - nametag_using_indicator
 #    - hard_difficulty
-#    - normal_difficulty
-    - easy_difficulty
-#    - spawn_Levelling
-#    - blended_Levelling
+    - normal_difficulty
+#    - easy_difficulty
+    - spawn_Levelling
+    - blended_Levelling
 #    - ycoord_Levelling
-    - random_Levelling
+#    - random_Levelling
 #    - weighted_random_hard
 #    - weighted_random_normal
 #    - weighted_random_easy
-#    - playerStat_Levelling
+#    - player_Levelling
 #    - apply_LevellingVariance
 
   conditions:
+    allowed-spawn-reasons:
+      excluded-list: ['SPAWNER']
+
     level-plugins:
       DANGEROUS_CAVES: false
       MYTHIC_MOBS: false
@@ -389,7 +392,6 @@ default-rule:
       ELITE_MOBS_SUPER_MOBS: false
       INFERNAL_MOBS: false
       SHOPKEEPERS: false
-      CITIZENS: false
 
 #    apply-above-y: 64
 #    apply-below-y: 59
@@ -400,88 +402,18 @@ default-rule:
     mob-tamed-status: EITHER
 
   apply-settings:
-    sunlight-intensity: 20
+    sunlight-intensity: 25
 
     entity-name-override:
-#      AXOLOTL: ['Godzilla']
-#      BAT: ['Robin']
-#      BEE: ['Buzz', 'Queen %displayname%', 'Soldier %displayname%', 'Worker %displayname%']
-#      BLAZE: ['Fireman', 'Fire Elemental', '']
-#      CAT: ['Kitty', 'Garfield', 'Arwen']
-#      CAVE_SPIDER: ['Poison %displayname%', 'Pit %displayname%']
-#      CHICKEN: ['Clucker', 'Bawk!', 'Chick']
-#      COD: ['Fishy']
-#      COW: ['Mooo!', 'Chocolate %displayname%']
-#      CREEPER: ['Dr. Boom', 'Sir Splode', 'Quentin TNTino', 'Oh Crap']
-#      DOLPHIN: ['Flipper']
-#      DONKEY: ['Jack', 'Nice Boulder!']
-#      DROWNED: ['Bloated Zombie', 'Water Corpse', 'Retiarius']
-#      ELDER_GUARDIAN: ['Ancient Water Hyren']
-#      ENDER_DRAGON: ['Ancient Dragoon']
-#      ENDERMAN: ['Slendar', 'Slenderman', 'Legman']
-#      ENDERMITE: ['Ancient Larva', 'Enderlarva']
-#      EVOKER: ['Necromatic Mage', 'Dark Wizard']
-#      FOX: ['Foxy']
-#      GHAST: ['Ghost']
-#      GLOW_SQUID: ['Illuminated %displayname%', 'Enchanted %displayname%', 'Evolved %displayname%']
-#      GOAT: ['Ram', 'Mountain %displayname%']
-#      GUARDIAN: ['Water Hyren']
-#      HOGLIN: ['Nether Pig', 'Hearty Pig']
-#      HORSE: ['Horsey', 'Clomper']
-#      HUSK: ['Desert Zombie', 'Lost Soul', 'Dessicated Corpse']
-#Unused#      ILLUSIONER: ['']
-#      IRON_GOLEM: ['Iron Giant', 'Protector', 'Metalman']
-#      LLAMA: ['Spitz', 'Kuzco']
-#      MAGMA_CUBE: ['Magmar', 'Nether Slime', 'Basalt Block']
-#      MULE: ['Cart %displayname%', 'Malt-o-%displayname%']
-#      MUSHROOM_COW: ['Strawberry Cow', 'Fungi Cow', 'Strange Cow']
-#      OCELOT: ['Jungle Lion']
-#      PANDA: ['%displayname% Joe', 'Bamboo Muncher']
-#      PARROT: ['Polly %displayname%']
-#      PHANTOM: ['Glider', 'Ghost Glider', 'Winged Demon']
-#      PIG: ['Oinker', 'Piggy', 'Bacon']
-#      PIGLIN: ['']
-#      PIGLIN_BRUTE: ['']
-#      PILLAGER: ['']
-#      POLAR_BEAR: ['']
-#      PUFFERFISH: ['']
-#      RABBIT: ['']
-#      RAVAGER: ['']
-#      SALMON: ['']
-#      SHEEP: ['']
-#      SHULKER: ['']
-#      SILVERFISH: ['']
-#      SKELETON: ['']
-#      SKELETON_HORSE: ['']
-#      SLIME: ['']
-#      SNOWMAN: ['']
-#      SPIDER: ['']
-#      SQUID: ['']
-#      STRAY: ['']
-#      STRIDER: ['']
-#      TRADER_LLAMA: ['']
-#      TROPICAL_FISH: ['']
-#      TURTLE: ['']
-#      VEX: ['']
-#      VILLAGER: ['']
-#      VINDICATOR: ['']
-#      WANDERING_TRADER: ['']
-#      WITCH: ['']
-#      WITHER: ['']
-#      WITHER_SKELETON: ['']
-#      WOLF: ['']
-#      ZOGLIN: ['']
-#      ZOMBIE: ['']
-#      ZOMBIE_HORSE: ['']
-#      ZOMBIE_VILLAGER: ['']
-#      ZOMBIFIED_PIGLIN: ['']
+#      HUSK: ['Husk', 'Desert Zombie', 'Lost Soul', 'Dessicated Corpse']
+#      SKELETON: ['Bones', 'Billy Bones', 'Verta Brae']
+#      PILLAGER: ['Raider', 'Barbarian']
 
     creature-death-nametag: '%tiered%Lvl %mob-lvl%&8 | &f%entity-name%'
     creature-nametag-always-visible: true
 
     baby-mobs-inherit-adult-setting: true
     level-inheritance: true
-    creeper-max-damage-radius: 5
 
     use-custom-item-drops-for-mobs: false
 
@@ -513,13 +445,6 @@ custom-rules:
         allowed-list: ['BABY_', 'ENDER_DRAGON', 'WITHER', 'VILLAGER', 'ZOMBIE_VILLAGER', 'WANDERING_TRADER', 'PHANTOM', 'BAT', 'RAVAGER']
     apply-settings:
       maxLevel: 0
-      
-  - enabled: false
-    name: 'CR - Weighted Random - NORMAL - Overworld'
-    use-preset: normal_difficulty, weighted_random_normal
-    conditions:
-      worlds:
-        allowed-list: ['world']
 
   - enabled: true
     name: 'CR - Custom Nether Levelling'
@@ -572,7 +497,7 @@ custom-rules:
             item-drop: 0.5
             xp-drop: 1.0
       tiered-coloring:
-        1-5: '&a' # Light Green
+        1-5: '&#22E76B' #Green
 
   - enabled: false
     name: 'CR - Ender Dragon Fight'
