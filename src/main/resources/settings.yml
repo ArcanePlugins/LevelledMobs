@@ -161,6 +161,19 @@ customcommand-amount-limit: 100
 # ||       | instances where applying directly to the CustomName will improve compatibility     |
 # ||       | with certain plugins. By default, this is set to false.                            |
 # ||                                                                                            |
+# ||   level-mobs-upon-spawn:                                                                   |
+# ||       | Disabling this system will prevent LevelledMobs from applying levels to entities   |
+# ||       | until a player damaged the entity or the entity has targeted a player.             |
+# ||       | the player-leveling-mob-distance-squared: value. Once levelled, the entity will    |
+# ||       | remain levelled at the applied value unless it is updated using a specific         |
+# ||       | levelling strategy. By default, this is set to true.                               |
+# ||                                                                                            |
+# ||   player-levelling-mob-distance-squared:                                                   |
+# ||       | This value represents the how far from a player an entity must be before the       |
+# ||       | level is updated when utilizing the 'Player Levelling' strategy.                   |
+# ||       | The higher the value, the more resources will be required to perform calculations. |
+# ||       | By default this is set to 150, which has been playtested to be a good middle spot. |
+# ||                                                                                            |
 # |||-------------------------------------------------------------------------------------------|
 mob-process-delay: 0
 summon-command-spawn-distance-from-player: 5
@@ -218,8 +231,6 @@ player-leveling-mob-distance-squared: 150
 # ||        'DENIED_RULE_WG_REGION' | Reports denied levelling due to a WorldGuard region       |
 # ||          'DENIED_RULE_Y_LEVEL' | Reports denied levelling due to a y-level above/below rule|
 # ||  'DENIED_RULE_STOP_PROCESSING' | Reports denied levelling due to a stop-processing rule    |
-# ||             'PLAYER_LEVELLING' | Reports information related to player-levelling           |
-# ||         'CREEPER_BLAST_RADIUS' | Reports when LM adjusts the creeper explosion radius      |
 # ||                                                                                            |
 # |||-------------------------------------------------------------------------------------------|
 use-update-checker: true
