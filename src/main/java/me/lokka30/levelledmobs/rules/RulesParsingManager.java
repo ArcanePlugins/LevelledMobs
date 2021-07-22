@@ -726,6 +726,7 @@ public class RulesParsingManager {
         options.matchPlayerLevel = ymlHelper.getBoolean2(cs, "match-level", options.matchPlayerLevel);
         options.usePlayerMaxLevel = ymlHelper.getBoolean2(cs, "use-player-max-level", options.usePlayerMaxLevel);
         options.playerLevelScale = ymlHelper.getDouble2(cs, "player-level-scale", options.playerLevelScale);
+        options.levelCap = ymlHelper.getInt2(cs, "level-cap", options.levelCap);
         options.enabled = ymlHelper.getBoolean2(cs, "enabled", options.enabled);
         options.variable = ymlHelper.getString(cs, "variable", options.variable);
         parsingInfo.playerLevellingOptions = options;

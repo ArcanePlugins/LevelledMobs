@@ -31,6 +31,8 @@ import org.jetbrains.annotations.Nullable;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.*;
 
 /**
@@ -50,7 +52,7 @@ public class LevelManager implements LevelInterface {
     public final NamespacedKey wasBabyMobKey; // This key tells LM not to level the mob in future
     public final NamespacedKey overridenEntityNameKey;
     public final NamespacedKey hasCustomNameTag;
-    public final NamespacedKey playerLevelling;
+    public final NamespacedKey playerLevelling_Id;
     public double attributeMaxHealthMax = 2048.0;
     public double attributeMovementSpeedMax = 2048.0;
     public double attributeAttackDamageMax = 2048.0;
@@ -84,7 +86,7 @@ public class LevelManager implements LevelInterface {
         wasBabyMobKey = new NamespacedKey(main, "wasBabyMob");
         overridenEntityNameKey = new NamespacedKey(main, "overridenEntityName");
         hasCustomNameTag = new NamespacedKey(main, "hasCustomNameTag");
-        playerLevelling = new NamespacedKey(main, "playerLevelling");
+        playerLevelling_Id = new NamespacedKey(main, "playerLevelling_Id");
         this.summonedEntityType = EntityType.UNKNOWN;
         this.randomLevellingCache = new TreeMap<>();
 
@@ -145,10 +147,6 @@ public class LevelManager implements LevelInterface {
         if (minLevel == maxLevel)
             return minLevel;
 
-//        final LevelNumbersWithBias levelNumbersWithBias = main.rulesManager.getRule_LowerMobLevelBiasFactor(lmEntity, minLevel, maxLevel);
-//        if (levelNumbersWithBias != null)
-//            return levelNumbersWithBias.getNumberWithinLimits();
-
         final RandomLevellingStrategy randomLevelling = (levellingStrategy instanceof RandomLevellingStrategy) ?
                 (RandomLevellingStrategy) levellingStrategy : null;
 
@@ -181,11 +179,6 @@ public class LevelManager implements LevelInterface {
     }
 
     private int[] getPlayerLevels(final @NotNull LivingEntityWrapper lmEntity){
-        synchronized (lmEntity.getLivingEntity().getPersistentDataContainer()){
-            if (!lmEntity.getPDC().has(main.levelManager.playerLevelling, PersistentDataType.INTEGER))
-                lmEntity.getPDC().set(main.levelManager.playerLevelling, PersistentDataType.INTEGER, 1);
-        }
-
         final PlayerLevellingOptions options = main.rulesManager.getRule_PlayerLevellingOptions(lmEntity);
         if (options == null) return null;
 
@@ -269,6 +262,13 @@ public class LevelManager implements LevelInterface {
             }
         }
 
+        if (options.levelCap != null){
+            if (results[0] > options.levelCap)
+                results[0] = options.levelCap;
+            if (results[1] > options.levelCap)
+                results[1] = options.levelCap;
+        }
+
         if (tierMatched == null) {
             Utils.debugLog(main, DebugType.PLAYER_LEVELLING, String.format(
                     "mob: %s, player: %s, lvl-source: %s, source-after-scale: %s, result: %s",
@@ -308,6 +308,9 @@ public class LevelManager implements LevelInterface {
         }
 
         // this will prevent an unhandled exception:
+        if (minLevel < 1) minLevel = 1;
+        if (maxLevel < 1) maxLevel = 1;
+
         if (minLevel > maxLevel) minLevel = maxLevel;
 
         return new int[]{ minLevel, maxLevel };
@@ -432,7 +435,8 @@ public class LevelManager implements LevelInterface {
     public int getLevelledExpDrops(@NotNull final LivingEntityWrapper lmEntity, final int xp) {
         if (lmEntity.isLevelled()) {
             final int newXp = (int) Math.round(xp + (xp * main.mobDataManager.getAdditionsForLevel(lmEntity, Addition.CUSTOM_XP_DROP, 3.0)));
-            Utils.debugLog(main, DebugType.SET_LEVELLED_XP_DROPS, lmEntity.getTypeName() );
+            Utils.debugLog(main, DebugType.SET_LEVELLED_XP_DROPS, String.format("%s: lvl: %s, xp-vanilla: %s, new-xp: %s",
+                    lmEntity.getNameIfBaby(), lmEntity.getMobLevel(), xp, newXp));
             return newXp;
         }
         else
@@ -637,17 +641,28 @@ public class LevelManager implements LevelInterface {
     }
 
     private void runNametagCheck_aSync(final Map<Player,List<Entity>> entitiesPerPlayer){
+        final Map<LivingEntityWrapper, List<Player>> entityToPlayer = new LinkedHashMap<>();
+
         for (final Player player : entitiesPerPlayer.keySet()) {
             for (final Entity entity : entitiesPerPlayer.get(player)) {
 
                 if (!entity.isValid()) continue; // async task, entity can despawn whilst it is running
 
                 // Mob must be a livingentity that is ...living.
-                if (!(entity instanceof LivingEntity)) continue;
+                if (!(entity instanceof LivingEntity) || entity instanceof Player) continue;
                 LivingEntityWrapper lmEntity = new LivingEntityWrapper((LivingEntity) entity, main);
 
-                if (lmEntity.isLevelled())
+                if (lmEntity.isLevelled()) {
+                    if (main.configUtils.playerLevellingEnabled) {
+                        final boolean hasKey = entityToPlayer.containsKey(lmEntity);
+                        final List<Player> players = hasKey ?
+                                entityToPlayer.get(lmEntity) : new LinkedList<>();
+                        players.add(player);
+                        if (!hasKey) entityToPlayer.put(lmEntity, players);
+                    }
+
                     checkLevelledEntity(lmEntity, player);
+                }
                 else {
                     boolean wasBabyMob;
                     synchronized (lmEntity.getLivingEntity().getPersistentDataContainer()){
@@ -664,6 +679,39 @@ public class LevelManager implements LevelInterface {
                     }
                 }
             }
+        }
+
+        for (final LivingEntityWrapper lmEntity : entityToPlayer.keySet())
+            checkEntityForPlayerLevelling(lmEntity, entityToPlayer.get(lmEntity));
+    }
+
+    private void checkEntityForPlayerLevelling(final LivingEntityWrapper lmEntity, final List<Player> players){
+        Player closestPlayer = players.get(0);
+        double closestDistance = Double.MAX_VALUE;
+        final LivingEntity mob = lmEntity.getLivingEntity();
+
+        if (players.size() > 1){
+            for (final Player p : players){
+                double distance = mob.getLocation().distanceSquared(p.getLocation());
+                if (distance < closestDistance){
+                    closestPlayer = p;
+                    closestDistance = distance;
+                }
+            }
+        }
+        else
+            closestDistance = mob.getLocation().distanceSquared(closestPlayer.getLocation());
+
+        if (closestDistance <= main.playerLevellingDistance &&
+            doesMobNeedRelevelling(mob, closestPlayer)){
+
+            synchronized (mob.getPersistentDataContainer()){
+                mob.getPersistentDataContainer().set(main.levelManager.playerLevelling_Id, PersistentDataType.STRING, closestPlayer.getUniqueId().toString());
+            }
+
+            lmEntity.setPlayerForLevelling(closestPlayer);
+            lmEntity.reEvaluateLevel = true;
+            main.queueManager_mobs.addToQueue(new QueueItem(lmEntity, null));
         }
     }
 
@@ -687,22 +735,31 @@ public class LevelManager implements LevelInterface {
                 //if within distance, update nametag.
                 main.queueManager_nametags.addToQueue(new QueueItem(lmEntity, main.levelManager.getNametag(lmEntity, false), Collections.singletonList(player)));
             }
-
-            if (main.configUtils.playerLevellingEnabled &&
-                lmEntity.getLocation().distanceSquared(player.getLocation()) <= main.playerLevellingDistance &&
-                !lmEntity.getPDC().has(main.levelManager.playerLevelling, PersistentDataType.INTEGER)){
-                // if it's already been associated with a player then leave it
-                if (lmEntity.getPlayerForLevelling() != null) return;
-
-                synchronized (lmEntity.getLivingEntity().getPersistentDataContainer()){
-                    lmEntity.getPDC().set(main.levelManager.playerLevelling, PersistentDataType.INTEGER, 1);
-                }
-
-                lmEntity.setPlayerForLevelling(player);
-                lmEntity.reEvaluateLevel = true;
-                main.queueManager_mobs.addToQueue(new QueueItem(lmEntity, null));
-            }
         }
+    }
+
+    private boolean doesMobNeedRelevelling(final @NotNull LivingEntity mob, final @NotNull Player player){
+        if (main.playerLevellingEntities.containsKey(mob)){
+            final Instant lastCheck = main.playerLevellingEntities.get(mob);
+            final Duration duration = Duration.between(lastCheck, Instant.now());
+
+            if (duration.toMillis() < main.playerLevellingMinRelevelTime) return false;
+        }
+
+        String playerId;
+        main.playerLevellingEntities.put(mob, Instant.now());
+
+        synchronized (mob.getPersistentDataContainer()) {
+            if (!mob.getPersistentDataContainer().has(main.levelManager.playerLevelling_Id, PersistentDataType.STRING))
+                return true;
+
+            playerId = mob.getPersistentDataContainer().get(main.levelManager.playerLevelling_Id, PersistentDataType.STRING);
+        }
+
+        if (playerId == null || !player.getUniqueId().toString().equals(playerId))
+            return true;
+
+        return !player.getUniqueId().toString().equals(playerId);
     }
 
     public void stopNametagAutoUpdateTask() {

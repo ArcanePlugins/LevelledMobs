@@ -186,7 +186,8 @@ ensure-mobs-are-levelled-on-chunk-load: true
 attributes-use-preset-base-values: false
 use-customname-for-mob-nametags: false
 level-mobs-upon-spawn: true
-player-leveling-mob-distance-squared: 150
+player-levelling-mob-distance-squared: 250
+player-levelling-relevel-min-time: 5000
 
 # |||-------------------------------------------------------------------------------------------|
 # ||  ADVANCED USERS ONLY                                                                       |
@@ -231,6 +232,7 @@ player-leveling-mob-distance-squared: 150
 # ||        'DENIED_RULE_WG_REGION' | Reports denied levelling due to a WorldGuard region       |
 # ||          'DENIED_RULE_Y_LEVEL' | Reports denied levelling due to a y-level above/below rule|
 # ||  'DENIED_RULE_STOP_PROCESSING' | Reports denied levelling due to a stop-processing rule    |
+# ||             'PLAYER_LEVELLING' | Reports denied levelling due to player levelling options  |
 # ||                                                                                            |
 # |||-------------------------------------------------------------------------------------------|
 use-update-checker: true

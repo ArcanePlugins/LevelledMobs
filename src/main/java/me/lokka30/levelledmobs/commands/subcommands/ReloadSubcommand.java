@@ -23,55 +23,7 @@ public class ReloadSubcommand implements Subcommand {
             return;
         }
 
-        main.migratedFromPre30 = false;
-        List<String> reloadStartedMsg = main.messagesCfg.getStringList("command.levelledmobs.reload.started");
-        reloadStartedMsg = Utils.replaceAllInList(reloadStartedMsg, "%prefix%", main.configUtils.getPrefix());
-        reloadStartedMsg = Utils.colorizeAllInList(reloadStartedMsg);
-        reloadStartedMsg.forEach(sender::sendMessage);
-
-        main.companion.loadFiles(true);
-
-        List<String> reloadFinishedMsg = main.messagesCfg.getStringList("command.levelledmobs.reload.finished");
-        reloadFinishedMsg = Utils.replaceAllInList(reloadFinishedMsg, "%prefix%", main.configUtils.getPrefix());
-        reloadFinishedMsg = Utils.colorizeAllInList(reloadFinishedMsg);
-
-        if (ExternalCompatibilityManager.hasProtocolLibInstalled()) {
-            if (ExternalCompatibilityManager.hasProtocolLibInstalled() && (main.levelManager.nametagAutoUpdateTask == null || main.levelManager.nametagAutoUpdateTask.isCancelled()))
-                main.levelManager.startNametagAutoUpdateTask();
-            else if (!ExternalCompatibilityManager.hasProtocolLibInstalled() && main.levelManager.nametagAutoUpdateTask != null && !main.levelManager.nametagAutoUpdateTask.isCancelled())
-                main.levelManager.stopNametagAutoUpdateTask();
-        }
-
-        if (main.helperSettings.getBoolean(main.settingsCfg,"debug-entity-damage") && !main.configUtils.debugEntityDamageWasEnabled) {
-            main.configUtils.debugEntityDamageWasEnabled = true;
-            Bukkit.getPluginManager().registerEvents(main.entityDamageDebugListener, main);
-        } else if (!main.helperSettings.getBoolean(main.settingsCfg,"debug-entity-damage") && main.configUtils.debugEntityDamageWasEnabled) {
-            main.configUtils.debugEntityDamageWasEnabled = false;
-            HandlerList.unregisterAll(main.entityDamageDebugListener);
-        }
-
-        if (main.helperSettings.getBoolean(main.settingsCfg,"ensure-mobs-are-levelled-on-chunk-load") && !main.configUtils.chunkLoadListenerWasEnabled) {
-            main.configUtils.chunkLoadListenerWasEnabled = true;
-            Bukkit.getPluginManager().registerEvents(main.chunkLoadListener, main);
-        } else if (!main.helperSettings.getBoolean(main.settingsCfg,"ensure-mobs-are-levelled-on-chunk-load") && main.configUtils.chunkLoadListenerWasEnabled) {
-            main.configUtils.chunkLoadListenerWasEnabled = false;
-            HandlerList.unregisterAll(main.chunkLoadListener);
-        }
-
-        if (ExternalCompatibilityManager.hasMythicMobsInstalled() && main.rulesManager.isMythicMobsCompatibilityEnabled() && !main.configUtils.mythicMobsWasEnabled) {
-            main.configUtils.mythicMobsWasEnabled = true;
-            Bukkit.getPluginManager().registerEvents(main.mythicMobsListener, main);
-        }
-        else if (ExternalCompatibilityManager.hasMythicMobsInstalled() && !main.rulesManager.isMythicMobsCompatibilityEnabled() && main.configUtils.mythicMobsWasEnabled) {
-            main.configUtils.mythicMobsWasEnabled = false;
-            HandlerList.unregisterAll(main.mythicMobsListener);
-        }
-
-        main.levelManager.entitySpawnListener.processMobSpawns = main.helperSettings.getBoolean(main.settingsCfg, "level-mobs-upon-spawn", true);
-        main.levelManager.clearRandomLevellingCache();
-        main.configUtils.playerLevellingEnabled = main.rulesManager.isPlayerLevellingEnabled();
-
-        reloadFinishedMsg.forEach(sender::sendMessage);
+        main.reloadLM(sender);
     }
 
     @Override

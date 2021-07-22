@@ -15,6 +15,7 @@ public class PlayerLevellingOptions implements Cloneable {
     public Boolean matchPlayerLevel;
     public Boolean enabled;
     public Boolean usePlayerMaxLevel;
+    public Integer levelCap;
     public Double playerLevelScale;
     public String variable;
 
@@ -25,6 +26,7 @@ public class PlayerLevellingOptions implements Cloneable {
         if (options.matchPlayerLevel != null) this.matchPlayerLevel = options.matchPlayerLevel;
         if (options.usePlayerMaxLevel != null) this.usePlayerMaxLevel = options.usePlayerMaxLevel;
         if (options.playerLevelScale != null) this.playerLevelScale = options.playerLevelScale;
+        if (options.levelCap != null) this.levelCap = options.levelCap;
         if (variable != null) this.variable = options.variable;
     }
 
@@ -65,6 +67,12 @@ public class PlayerLevellingOptions implements Cloneable {
             if (sb.length() > 0) sb.append(", ");
             sb.append("scale: ");
             sb.append(playerLevelScale);
+        }
+
+        if (levelCap != null){
+            if (sb.length() > 0) sb.append(", ");
+            sb.append("cap: ");
+            sb.append(levelCap);
         }
 
         if (!levelTiers.isEmpty()) {

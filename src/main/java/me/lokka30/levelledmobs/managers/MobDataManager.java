@@ -3,7 +3,6 @@ package me.lokka30.levelledmobs.managers;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.misc.Addition;
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
-import me.lokka30.levelledmobs.misc.Utils;
 import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
@@ -89,7 +88,10 @@ public class MobDataManager {
             if (attribute == Attribute.GENERIC_MAX_HEALTH) {
                 double newHealth = attrib.getValue() - existingDamage;
                 if (newHealth < 0.0) newHealth = 0.0;
-                lmEntity.getLivingEntity().setHealth(newHealth);
+                try {
+                    lmEntity.getLivingEntity().setHealth(newHealth);
+                }
+                catch (IllegalArgumentException ignored) {}
             }
         }
     }

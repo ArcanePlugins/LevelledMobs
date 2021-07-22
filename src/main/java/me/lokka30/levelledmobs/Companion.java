@@ -143,7 +143,8 @@ public class Companion {
         FileLoader.saveResourceIfNotExists(main, new File(docs, "learning_rules.yml"), "docs/learning_rules.yml");
 
         main.configUtils.load();
-        main.playerLevellingDistance = main.helperSettings.getDouble(main.settingsCfg, "player-leveling-mob-distance-squared", 150);
+        main.playerLevellingDistance = main.helperSettings.getDouble(main.settingsCfg, "player-levelling-mob-distance-squared", 150);
+        main.playerLevellingMinRelevelTime = main.helperSettings.getInt(main.settingsCfg, "player-levelling-relevel-min-time", 5000);
 
         return true;
     }

@@ -502,13 +502,13 @@ public class RulesManager {
     }
 
     private boolean isRuleApplicable_Entity(final LivingEntityWrapper lmEntity, @NotNull final RuleInfo ri){
-        if (ri.conditions_MinLevel != null && (!lmEntity.isLevelled() || ri.conditions_MinLevel < lmEntity.getMobLevel())) {
+        if (ri.conditions_MinLevel != null && (!lmEntity.isLevelled() || lmEntity.getMobLevel() < ri.conditions_MinLevel)) {
             Utils.debugLog(main, DebugType.DENIED_RULE_MAXLEVEL, String.format("&b%s&7, mob: &b%s&7, mob lvl: &b%s&7, rule minlvl: &b%s&7",
                     ri.getRuleName(), lmEntity.getTypeName(), lmEntity.getMobLevel(), ri.conditions_MinLevel));
             return false;
         }
 
-        if (ri.conditions_MaxLevel != null && (!lmEntity.isLevelled() || ri.conditions_MaxLevel > lmEntity.getMobLevel())) {
+        if (ri.conditions_MaxLevel != null && (!lmEntity.isLevelled() ||  lmEntity.getMobLevel() > ri.conditions_MaxLevel)) {
             Utils.debugLog(main, DebugType.DENIED_RULE_MAXLEVEL, String.format("&b%s&7, mob: &b%s&7, mob lvl: &b%s&7, rule maxlvl: &b%s&7",
                     ri.getRuleName(), lmEntity.getTypeName(), lmEntity.getMobLevel(), ri.conditions_MaxLevel));
             return false;

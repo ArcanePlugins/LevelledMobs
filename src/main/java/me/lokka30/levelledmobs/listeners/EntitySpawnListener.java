@@ -67,6 +67,8 @@ public class EntitySpawnListener implements Listener {
     }
 
     private void getClosestPlayer(final @NotNull LivingEntityWrapper lmEntity){
+        if (lmEntity.getPlayerForLevelling() != null) return;
+
         Entity closestEntity = null;
         double closestRange = Double.MAX_VALUE;
 
@@ -82,7 +84,7 @@ public class EntitySpawnListener implements Listener {
 
         if (closestEntity != null) {
             synchronized (closestEntity.getPersistentDataContainer()){
-                closestEntity.getPersistentDataContainer().set(main.levelManager.playerLevelling, PersistentDataType.INTEGER, 1);
+                closestEntity.getPersistentDataContainer().set(main.levelManager.playerLevelling_Id, PersistentDataType.STRING, (closestEntity).getUniqueId().toString());
             }
 
             lmEntity.setPlayerForLevelling((Player) closestEntity);

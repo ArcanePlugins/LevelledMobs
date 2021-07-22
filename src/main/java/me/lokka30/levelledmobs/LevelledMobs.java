@@ -13,13 +13,14 @@ import me.lokka30.levelledmobs.rules.RulesManager;
 import me.lokka30.levelledmobs.rules.RulesParsingManager;
 import me.lokka30.microlib.QuickTimer;
 import org.bukkit.Bukkit;
+import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.Map;
-import java.util.Random;
-import java.util.Set;
-import java.util.TreeMap;
+import java.time.Instant;
+import java.util.*;
 
 /**
  * This is the main class of the plugin. Bukkit will call onLoad and onEnable on startup, and onDisable on shutdown.
@@ -50,6 +51,7 @@ public class LevelledMobs extends JavaPlugin {
     public boolean migratedFromPre30;
     public YmlParsingHelper helperSettings;
     public double playerLevellingDistance;
+    public int playerLevellingMinRelevelTime;
 
     // Configuration
     public YamlConfiguration settingsCfg;
@@ -63,6 +65,7 @@ public class LevelledMobs extends JavaPlugin {
     public EntityDamageDebugListener entityDamageDebugListener;
     public int incompatibilitiesAmount;
     private long loadTime;
+    public WeakHashMap<LivingEntity, Instant> playerLevellingEntities;
 
     @Override
     public void onLoad() {
@@ -78,6 +81,7 @@ public class LevelledMobs extends JavaPlugin {
     public void onEnable() {
         final QuickTimer timer = new QuickTimer();
 
+        this.playerLevellingEntities = new WeakHashMap<>();
         this.helperSettings = new YmlParsingHelper();
         this.random = new Random();
         this.customMobGroups = new TreeMap<>();
@@ -99,6 +103,58 @@ public class LevelledMobs extends JavaPlugin {
 
         loadTime += timer.getTimer();
         Utils.logger.info("&f~ Start-up complete, took &b" + loadTime + "ms&f ~");
+    }
+
+    public void reloadLM(final CommandSender sender){
+        migratedFromPre30 = false;
+        List<String> reloadStartedMsg = messagesCfg.getStringList("command.levelledmobs.reload.started");
+        reloadStartedMsg = Utils.replaceAllInList(reloadStartedMsg, "%prefix%", configUtils.getPrefix());
+        reloadStartedMsg = Utils.colorizeAllInList(reloadStartedMsg);
+        reloadStartedMsg.forEach(sender::sendMessage);
+
+        companion.loadFiles(true);
+
+        List<String> reloadFinishedMsg = messagesCfg.getStringList("command.levelledmobs.reload.finished");
+        reloadFinishedMsg = Utils.replaceAllInList(reloadFinishedMsg, "%prefix%", configUtils.getPrefix());
+        reloadFinishedMsg = Utils.colorizeAllInList(reloadFinishedMsg);
+
+        if (ExternalCompatibilityManager.hasProtocolLibInstalled()) {
+            if (ExternalCompatibilityManager.hasProtocolLibInstalled() && (levelManager.nametagAutoUpdateTask == null || levelManager.nametagAutoUpdateTask.isCancelled()))
+                levelManager.startNametagAutoUpdateTask();
+            else if (!ExternalCompatibilityManager.hasProtocolLibInstalled() && levelManager.nametagAutoUpdateTask != null && !levelManager.nametagAutoUpdateTask.isCancelled())
+                levelManager.stopNametagAutoUpdateTask();
+        }
+
+        if (helperSettings.getBoolean(settingsCfg,"debug-entity-damage") && !configUtils.debugEntityDamageWasEnabled) {
+            configUtils.debugEntityDamageWasEnabled = true;
+            Bukkit.getPluginManager().registerEvents(entityDamageDebugListener, this);
+        } else if (!helperSettings.getBoolean(settingsCfg,"debug-entity-damage") && configUtils.debugEntityDamageWasEnabled) {
+            configUtils.debugEntityDamageWasEnabled = false;
+            HandlerList.unregisterAll(entityDamageDebugListener);
+        }
+
+        if (helperSettings.getBoolean(settingsCfg,"ensure-mobs-are-levelled-on-chunk-load") && !configUtils.chunkLoadListenerWasEnabled) {
+            configUtils.chunkLoadListenerWasEnabled = true;
+            Bukkit.getPluginManager().registerEvents(chunkLoadListener, this);
+        } else if (!helperSettings.getBoolean(settingsCfg,"ensure-mobs-are-levelled-on-chunk-load") && configUtils.chunkLoadListenerWasEnabled) {
+            configUtils.chunkLoadListenerWasEnabled = false;
+            HandlerList.unregisterAll(chunkLoadListener);
+        }
+
+        if (ExternalCompatibilityManager.hasMythicMobsInstalled() && rulesManager.isMythicMobsCompatibilityEnabled() && !configUtils.mythicMobsWasEnabled) {
+            configUtils.mythicMobsWasEnabled = true;
+            Bukkit.getPluginManager().registerEvents(mythicMobsListener, this);
+        }
+        else if (ExternalCompatibilityManager.hasMythicMobsInstalled() && !rulesManager.isMythicMobsCompatibilityEnabled() && configUtils.mythicMobsWasEnabled) {
+            configUtils.mythicMobsWasEnabled = false;
+            HandlerList.unregisterAll(mythicMobsListener);
+        }
+
+        levelManager.entitySpawnListener.processMobSpawns = helperSettings.getBoolean(settingsCfg, "level-mobs-upon-spawn", true);
+        levelManager.clearRandomLevellingCache();
+        configUtils.playerLevellingEnabled = rulesManager.isPlayerLevellingEnabled();
+
+        reloadFinishedMsg.forEach(sender::sendMessage);
     }
 
     @Override

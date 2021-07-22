@@ -21,8 +21,10 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.*;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.nio.file.*;
 import java.util.*;
 
 /**
@@ -99,13 +101,96 @@ public class RulesSubcommand implements Subcommand {
         else if ("help_wiki".equalsIgnoreCase(args[1]))
             showHyperlink(sender, "Click to open the wiki","https://github.com/lokka30/LevelledMobs/wiki");
         else if ("reset".equalsIgnoreCase(args[1]))
-            resetRules(sender, args);
+            resetRules(sender, label, args);
         else
             sender.sendMessage(MessageUtils.colorizeAll("&b&lLevelledMobs: &7Invalid command"));
     }
 
-    private void resetRules(final CommandSender sender, @NotNull final String[] args){
-        sender.sendMessage("This command has not been implemented yet");
+    private void resetRules(final CommandSender sender, final String label, @NotNull final String[] args){
+        final String prefix = main.configUtils.getPrefix();
+
+        if (args.length < 3 || args.length > 4){
+            sender.sendMessage(prefix+  " Running this command will reset your rules to one of 3 defaults.\n" +
+                    "You must select if you want easy/normal/hard difficulty.\n" +
+                    "A backup will be made and your rules.yml reset to default");
+            return;
+        }
+
+        ResetDifficulty difficulty = ResetDifficulty.UNSPECIFIED;
+        switch (args[2].toLowerCase()){
+            case "easy": difficulty = ResetDifficulty.EASY;
+                break;
+            case "normal": difficulty = ResetDifficulty.NORMAL;
+                break;
+            case "hard": difficulty = ResetDifficulty.HARD;
+                break;
+        }
+
+        if (difficulty.equals(ResetDifficulty.UNSPECIFIED)){
+            sender.sendMessage(prefix+ " Invalid difficulty: " + args[2]);
+            return;
+        }
+
+        if (args.length == 3){
+            final StringBuilder sb = new StringBuilder();
+            if (sender instanceof Player) sb.append("/");
+            sb.append(label);
+            for (final String arg : args) {
+                sb.append(" ");
+                sb.append(arg);
+            }
+
+            sender.sendMessage(prefix +" To reset your rules to " + args[2] + " difficulty, type in the following command:\n" +
+                    sb + " confirm");
+            return;
+        }
+
+        resetRules(sender, difficulty);
+    }
+
+    private void resetRules(final CommandSender sender, final ResetDifficulty difficulty){
+        final String prefix = main.configUtils.getPrefix();
+        sender.sendMessage(prefix + " Resetting rules to " + difficulty);
+
+        String filename;
+
+        switch (difficulty){
+            case EASY: filename = "rules_easy.yml";
+                break;
+            case HARD: filename = "rules_hard.yml";
+                break;
+            default: filename = "rules_normal.yml";
+                break;
+        }
+
+
+        try (InputStream stream = main.getResource("predefined/" + filename)) {
+            if (stream == null){
+                Utils.logger.error(prefix + " Input stream was null");
+                return;
+            }
+
+            final File rulesFile = new File(main.getDataFolder(), "rules.yml");
+            File rulesBackupFile = new File(main.getDataFolder(), "rules.yml.backup");
+
+            for (int i = 0; i < 10; i++){
+                if (!rulesBackupFile.exists()) break;
+                rulesBackupFile = new File(main.getDataFolder(), "rules.yml.backup" + i);
+            }
+
+            Files.copy(rulesFile.toPath(), rulesBackupFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+            Files.copy(stream, rulesFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            return;
+        }
+
+        sender.sendMessage(prefix + " rules.yml updated successfully");
+        main.reloadLM(sender);
+    }
+
+    private enum ResetDifficulty{
+        EASY, NORMAL, HARD, UNSPECIFIED
     }
 
     private void showHyperlink(final CommandSender sender, final String message, final String url){
@@ -274,7 +359,7 @@ public class RulesSubcommand implements Subcommand {
                 if (value.toString().equalsIgnoreCase("{}")) continue;
                 if (value.toString().equalsIgnoreCase("[]")) continue;
                 if (value.toString().equalsIgnoreCase("0") &&
-                    !f.getName().equals("restrictions_MinLevel")) continue;
+                    f.getName().equals("rulePriority")) continue;
                 if (value.toString().equalsIgnoreCase("0.0")) continue;
                 if (value.toString().equalsIgnoreCase("false") &&
                     !f.getName().equals("ruleIsEnabled")) continue;
@@ -373,6 +458,18 @@ public class RulesSubcommand implements Subcommand {
                 suggestions.add("easy");
                 suggestions.add("normal");
                 suggestions.add("hard");
+            }
+            else if ("show_all".equalsIgnoreCase(args[1])){
+                boolean showOnConsole = false;
+                for (int i = 2; i < args.length; i++) {
+                    final String arg = args[i].toLowerCase();
+
+                    if ("/console".equalsIgnoreCase(arg)) {
+                        showOnConsole = true;
+                        break;
+                    }
+                }
+                if (!showOnConsole) suggestions.add("/console");
             }
             else if ("show_rule".equalsIgnoreCase(args[1]) || "show_effective".equalsIgnoreCase(args[1])) {
                 final boolean isShowRule = "show_rule".equalsIgnoreCase(args[1]);

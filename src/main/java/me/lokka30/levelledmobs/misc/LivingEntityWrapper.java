@@ -5,7 +5,6 @@ import me.lokka30.levelledmobs.LivingEntityInterface;
 import me.lokka30.levelledmobs.managers.ExternalCompatibilityManager;
 import me.lokka30.levelledmobs.rules.FineTuningAttributes;
 import me.lokka30.levelledmobs.rules.RuleInfo;
-import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.*;
 import org.bukkit.event.entity.CreatureSpawnEvent;
@@ -307,5 +306,19 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
         }
 
         return groups;
+    }
+
+    public boolean equals(final Object obj) {
+        //null instanceof Object will always return false
+        if (!(obj instanceof LivingEntityWrapper))
+            return false;
+        if (obj == this)
+            return true;
+
+        return this.livingEntity == ((LivingEntityWrapper) obj).livingEntity;
+    }
+
+    public int hashCode() {
+        return livingEntity.hashCode();
     }
 }
