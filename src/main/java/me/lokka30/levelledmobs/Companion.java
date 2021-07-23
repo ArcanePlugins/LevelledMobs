@@ -197,17 +197,10 @@ public class Companion {
         pluginManager.registerEvents(new CombustListener(main), main);
         pluginManager.registerEvents(main.blockPlaceListener, main);
         main.chunkLoadListener = new ChunkLoadListener(main);
-        if (ExternalCompatibilityManager.hasMythicMobsInstalled())
-            main.mythicMobsListener = new MythicMobsListener(main);
 
         if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
             main.papiManager = new PAPIManager(main);
             main.papiManager.register();
-        }
-
-        if (ExternalCompatibilityManager.hasMythicMobsInstalled() && main.rulesManager.isMythicMobsCompatibilityEnabled()) {
-            pluginManager.registerEvents(main.mythicMobsListener, main);
-            main.configUtils.mythicMobsWasEnabled = true;
         }
 
         if (main.helperSettings.getBoolean(main.settingsCfg,"ensure-mobs-are-levelled-on-chunk-load", true))

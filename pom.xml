@@ -6,7 +6,7 @@
 
     <groupId>me.lokka30</groupId>
     <artifactId>LevelledMobs</artifactId>
-    <version>3.1.0 b471</version>
+    <version>3.1.0 b472</version>
     <packaging>jar</packaging>
 
     <name>LevelledMobs</name>
@@ -152,13 +152,6 @@
             <artifactId>ProtocolLib</artifactId>
             <version>4.7.0</version>
             <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>io.lumine.xikage</groupId>
-            <artifactId>MythicMobs</artifactId>
-            <version>4.12.0</version>
-            <scope>system</scope>
-            <systemPath>${env.LIBS}/MythicMobs-4.12.0.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>de.tr7zw</groupId>

@@ -4,7 +4,6 @@ import me.lokka30.levelledmobs.customdrops.CustomDropsHandler;
 import me.lokka30.levelledmobs.listeners.BlockPlaceListener;
 import me.lokka30.levelledmobs.listeners.ChunkLoadListener;
 import me.lokka30.levelledmobs.listeners.EntityDamageDebugListener;
-import me.lokka30.levelledmobs.listeners.MythicMobsListener;
 import me.lokka30.levelledmobs.managers.*;
 import me.lokka30.levelledmobs.misc.ConfigUtils;
 import me.lokka30.levelledmobs.misc.Utils;
@@ -38,7 +37,6 @@ public class LevelledMobs extends JavaPlugin {
     public CustomDropsHandler customDropsHandler;
     public ChunkLoadListener chunkLoadListener;
     public BlockPlaceListener blockPlaceListener;
-    public MythicMobsListener mythicMobsListener;
     public final Companion companion = new Companion(this);
     public final MobHeadManager mobHeadManager = new MobHeadManager(this);
     public final RulesParsingManager rulesParsingManager = new RulesParsingManager(this);
@@ -139,15 +137,6 @@ public class LevelledMobs extends JavaPlugin {
         } else if (!helperSettings.getBoolean(settingsCfg,"ensure-mobs-are-levelled-on-chunk-load") && configUtils.chunkLoadListenerWasEnabled) {
             configUtils.chunkLoadListenerWasEnabled = false;
             HandlerList.unregisterAll(chunkLoadListener);
-        }
-
-        if (ExternalCompatibilityManager.hasMythicMobsInstalled() && rulesManager.isMythicMobsCompatibilityEnabled() && !configUtils.mythicMobsWasEnabled) {
-            configUtils.mythicMobsWasEnabled = true;
-            Bukkit.getPluginManager().registerEvents(mythicMobsListener, this);
-        }
-        else if (ExternalCompatibilityManager.hasMythicMobsInstalled() && !rulesManager.isMythicMobsCompatibilityEnabled() && configUtils.mythicMobsWasEnabled) {
-            configUtils.mythicMobsWasEnabled = false;
-            HandlerList.unregisterAll(mythicMobsListener);
         }
 
         levelManager.entitySpawnListener.processMobSpawns = helperSettings.getBoolean(settingsCfg, "level-mobs-upon-spawn", true);
