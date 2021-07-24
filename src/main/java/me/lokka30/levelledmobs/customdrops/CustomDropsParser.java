@@ -194,10 +194,21 @@ public class CustomDropsParser {
             } // next mob or group
         } // next root item from file
 
-        // if (main.settingsCfg.getStringList(YmlParsingHelper.getKeyNameFromConfig(main.settingsCfg,"debug-misc")).contains("CUSTOM_DROPS")) {
         if (ymlHelper.getStringSet(main.settingsCfg, "debug-misc").contains("CUSTOM_DROPS")) {
-            Utils.logger.info(String.format("custom drops: %s, custom groups: %s, item groups: %s",
-                    handler.customDropsitems.size(), handler.customDropsitems_groups.size(), handler.customItemGroups.size()));
+            int dropsCount = 0;
+            int commandsCount = 0;
+            for (final EntityType et : handler.customDropsitems.keySet()){
+                final CustomDropInstance cdi = handler.customDropsitems.get(et);
+                for (final CustomDropBase base : cdi.customItems){
+                    if (base instanceof CustomDropItem)
+                        dropsCount++;
+                    else if (base instanceof CustomCommand)
+                        commandsCount++;
+                }
+            }
+
+            Utils.logger.info(String.format("drop instances: %s, custom groups: %s, item groups: %s, items: %s, commands: %s",
+                    handler.customDropsitems.size(), handler.customDropsitems_groups.size(), handler.customItemGroups.size(), dropsCount, commandsCount));
 
             showCustomDropsDebugInfo();
         }
@@ -581,7 +592,7 @@ public class CustomDropsParser {
         if (item != null)
             sb.append(String.format("    %s, amount: %s, chance: %s", item.getMaterial(), item.getAmountAsString(), baseItem.chance));
         else
-            sb.append(String.format("    custom command, chance: %s", baseItem.chance));
+            sb.append(String.format("    COMMAND, chance: %s", baseItem.chance));
 
         if (baseItem.minLevel > -1) {
             sb.append(", minL: ");
