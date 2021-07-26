@@ -45,8 +45,10 @@ public class CustomDropsParser {
     public final CustomDropsDefaults defaults;
     private final CustomDropsHandler handler;
     private boolean hasMentionedNBTAPI_Missing;
+    public boolean dropsUtilizeNBTAPI;
 
     public void loadDrops(final YamlConfiguration customDropsCfg){
+        this.dropsUtilizeNBTAPI = false;
         if (customDropsCfg == null) return;
 
         boolean isDropsEnabledForAnyRule = false;
@@ -402,6 +404,7 @@ public class CustomDropsParser {
                 else {
                     item.setItemStack(result.itemStack);
                     item.nbtData = nbtStuff;
+                    this.dropsUtilizeNBTAPI = true;
                 }
             }
             else if (!hasMentionedNBTAPI_Missing){

@@ -17,10 +17,10 @@ import java.io.FileInputStream;
  */
 public final class FileLoader {
 
-    public static final int SETTINGS_FILE_VERSION = 30;   // Last changed: v3.0.0 b424
-    public static final int MESSAGES_FILE_VERSION = 4;    // Last changed: v3.0.0 b424
-    public static final int CUSTOMDROPS_FILE_VERSION = 9; // Last changed: v3.0.0 b424
-    public static final int RULES_FILE_VERSION = 1;       // Last changed: v3.0.0 b424
+    public static final int SETTINGS_FILE_VERSION = 31;    // Last changed: v3.1.0 b474
+    public static final int MESSAGES_FILE_VERSION = 5;     // Last changed: v3.1.0 b474
+    public static final int CUSTOMDROPS_FILE_VERSION = 10; // Last changed: v3.1.0 b474
+    public static final int RULES_FILE_VERSION = 2;        // Last changed: v3.1.0 b474
 
     private FileLoader() {
         throw new UnsupportedOperationException();
@@ -48,8 +48,9 @@ public final class FileLoader {
 
         final int fileVersion = ymlHelper.getInt(cfg,"file-version");
         final boolean isCustomDrops = cfgName.equals("customdrops.yml");
+        final boolean isRules = cfgName.equals("rules.yml"); // we are not migrating rules at this time
 
-        if (fileVersion < compatibleVersion) {
+        if (!isRules && fileVersion < compatibleVersion) {
             final File backedupFile = new File(plugin.getDataFolder(), cfgName + ".v" + fileVersion + ".old");
 
             // copy to old file
@@ -69,9 +70,9 @@ public final class FileLoader {
             // reload cfg from the updated values
             cfg = YamlConfiguration.loadConfiguration(file);
 
-        } else {
-            checkFileVersion(file, compatibleVersion, ymlHelper.getInt(cfg,"file-version"));
         }
+        else if (!isRules)
+            checkFileVersion(file, compatibleVersion, ymlHelper.getInt(cfg,"file-version"));
 
         return cfg;
     }

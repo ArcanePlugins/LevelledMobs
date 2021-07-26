@@ -10,9 +10,11 @@ import me.lokka30.levelledmobs.managers.LevelManager;
 import me.lokka30.levelledmobs.managers.PAPIManager;
 import me.lokka30.levelledmobs.managers.WorldGuardManager;
 import me.lokka30.levelledmobs.misc.*;
+import me.lokka30.levelledmobs.rules.MetricsInfo;
 import me.lokka30.microlib.UpdateChecker;
 import me.lokka30.microlib.VersionUtils;
 import org.bstats.bukkit.Metrics;
+import org.bstats.charts.SimplePie;
 import org.bukkit.Bukkit;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -38,6 +40,7 @@ public class Companion {
         this.main = main;
         this.updateResult = new LinkedList<>();
         buildUniversalGroups();
+        this.metricsInfo = new MetricsInfo(main);
     }
 
     public HashSet<EntityType> groups_HostileMobs;
@@ -46,6 +49,7 @@ public class Companion {
     public HashSet<EntityType> groups_NetherMobs;
     final private PluginManager pluginManager = Bukkit.getPluginManager();
     public List<String> updateResult;
+    final private MetricsInfo metricsInfo;
 
     void checkWorldGuard() {
         // Hook into WorldGuard, register LM's flags.
@@ -135,12 +139,6 @@ public class Companion {
                 }
             }
         }
-
-        final File docs = new File(main.getDataFolder(), "docs");
-        if (!docs.exists()) docs.mkdir();
-
-        FileLoader.saveResourceIfNotExists(main, new File(docs, "learning_customdrops.yml"), "docs/learning_customdrops.yml");
-        FileLoader.saveResourceIfNotExists(main, new File(docs, "learning_rules.yml"), "docs/learning_rules.yml");
 
         main.configUtils.load();
         main.playerLevellingDistance = main.helperSettings.getDouble(main.settingsCfg, "player-levelling-mob-distance-squared", 150);
@@ -232,7 +230,18 @@ public class Companion {
     }
 
     void setupMetrics() {
-        new Metrics(main, 6269);
+        final Metrics metrics = new Metrics(main, 6269);
+
+        metrics.addCustomChart(new SimplePie("maxlevel_used", metricsInfo::getMaxLevelRange));
+        metrics.addCustomChart(new SimplePie("custom_rules_used", metricsInfo::getCustomRulesUsed));
+        metrics.addCustomChart(new SimplePie("custom_drops_enabled", metricsInfo::getUsesCustomDrops));
+        metrics.addCustomChart(new SimplePie("health_indicator_enabled", metricsInfo::getUsesHealthIndicator));
+        metrics.addCustomChart(new SimplePie("levelling_strategy", metricsInfo::getLevellingStrategy));
+        metrics.addCustomChart(new SimplePie("autoupdate_checker_enabled", metricsInfo::usesAutoUpdateChecker));
+        metrics.addCustomChart(new SimplePie("level_mobs_upon_spawn", metricsInfo::levelMobsUponSpawn));
+        metrics.addCustomChart(new SimplePie("check_mobs_on_chunk_load", metricsInfo::checkMobsOnChunkLoad));
+        metrics.addCustomChart(new SimplePie("custom-entity-names", metricsInfo::customEntityNamesCount));
+        metrics.addCustomChart(new SimplePie("utilizes-nbtdata", metricsInfo::usesNbtData));
     }
 
     //Check for updates on the Spigot page.
