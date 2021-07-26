@@ -73,7 +73,7 @@ attributes-use-preset-base-values: false
 level-mobs-upon-spawn: true
 
 # ||  ADVANCED USERS ONLY
-# ||  Miscellaneous LevelledMobs Settings
+# ||  LM Summon Command Spawn Distance from Players
 summon-command-spawn-distance-from-player: 5
 
 # ||  Check for Updates?
