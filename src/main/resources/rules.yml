@@ -1,49 +1,40 @@
-#              _                   _ _          _ __  __       _
-#             | |    _____   _____| | | ___  __| |  \/  | ___ | |__  ___
-#             | |   / _ \ \ / / _ \ | |/ _ \/ _` | |\/| |/ _ \| '_ \/ __|
-#             | |__|  __/\ V /  __/ | |  __/ (_| | |  | | (_) | |_) \__ \
-#             |_____\___| \_/ \___|_|_|\___|\__,_|_|  |_|\___/|_.__/|___/
-#                       The Ultimate RPG Levelled Mobs Solution
-#                               _____     _         
-#                              | __  |_ _| |___ ___ 
-#                              |    -| | | | -_|_ -|
-#                              |__|__|___|_|___|___|
+#                    _                   _ _          _ __  __       _
+#                   | |    _____   _____| | | ___  __| |  \/  | ___ | |__  ___
+#                   | |   / _ \ \ / / _ \ | |/ _ \/ _` | |\/| |/ _ \| '_ \/ __|
+#                   | |__|  __/\ V /  __/ | |  __/ (_| | |  | | (_) | |_) \__ \
+#                   |_____\___| \_/ \___|_|_|\___|\__,_|_|  |_|\___/|_.__/|___/
+#                             The Ultimate RPG Levelled Mobs Solution
 #
-#  .--.      .--.      .--.      .--.      .--.      .--.      .--.      .--.     .--._
-#:::::LM::::::::LM::::::::LM::::::::LM::::::::LM::::::::LM::::::::LM:::::::LM::::::::LM\
-#'|     `--'      `--'      `--'      `--'      `--'      `--'      `--'      `--'    |\
-# |  Main Developers:                           |  Other Contributors:                |\
-# |    lokka30                                  |    Eyrian, iCodinqs, deiphiz,       |\
-# |      Original Author and Developer          |    CoolBoy, Esophose, 7smile7,      |\
-# |    stumper66                                |    Huge5551, konsolas, Shevchik,    |\
-# |      Developer since v2.0                   |    limzikiki                        |\
-# |    UltimaOath                               |                                     |\
-# |      Documentation and Tester since v2.0    |                                     |\
-# |                                             |                                     |\
-# |----------------------------------+---+--------------------------------------------|\
-# |  ArcanePlugins Support Discord   |  Special Thanks:                               ||\
-# |    https://discord.gg/RQ8M4A5    |    ArcanePlugins Developers and Testers!       |||\
-# |                                  |    Donators, Patrons, and other supporters!    ||||\
-# |  Check '/docs' in this folder    |    SpigotMC, PaperMC, ProtocolLib, NBT-API,    |||||\
-# |  for a detailed How-To Guide!    |    PAPI, and bStats!                           ||||||\
-# |                                  |                                                |||||||\
-#  .--.      .--.      .--.      .--.      .--.      .--.      .--.      .--.     .--.||||||||\
-#:::::LM::::::::LM::::::::LM::::::::LM::::::::LM::::::::LM::::::::LM:::::::LM::::::::L|||||||||\
-#'|     `--'      `--'      `--'      `--'      `--'      `--'      `--'      `--'    ||||||||||\
-# |||---------------------------------------------------------------------------------|||||||||||
-# |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
-# |||-------------------------------------------------------------------------------------------|
-# ||        _____         _   _            ___ ___                                              |
-# ||       |   __|___ ___| |_|_|___ ___   |   |_  |                                             |
-# ||       |__   | -_|  _|  _| | . |   |  | | |_| |_                                            |
-# ||       |_____|___|___|_| |_|___|_|_|  |___|_____|                                           |
-# ||           |     |_ _ ___| |_ ___ _____   |   __|___ ___ _ _ ___ ___                        |
-# ||           |   --| | |_ -|  _| . |     |  |  |  |  _| . | | | . |_ -|                       |
-# ||           |_____|___|___|_| |___|_|_|_|  |_____|_| |___|___|  _|___|                       |
-# ||                                                            |_|                             |
-# |||-------------------------------------------------------------------------------------------|
-# |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
-# |||-------------------------------------------------------------------------------------------|
+# --------------------------------------------------------------------------------------------LM3
+# +                                      ++                                                  +LM3
+# +  Main Developers                     ++  Need Support Documentation?                     +LM3
+# +    lokka30                           ++    https://github.com/lokka30/LevelledMobs/wiki  +LM3
+# +      Original Author and Developer   ++                                                  +LM3
+# +      https://ko-fi.com/lokka30       ++  ArcanePlugins Support Discord                   +LM3
+# +                                      ++    https://discord.gg/RQ8M4A5                    +LM3
+# +                                      ++                                                  +LM3
+# +    stumper66                         ++  Special Thanks:                                 +LM3
+# +      Developer since v2              ++    ArcanePlugins Developers and Testers!         +LM3
+# +      https://ko-fi.com/penalbuffalo  ++    Donators, Patrons, and other Supporters!      +LM3
+# +                                      ++    SpigotMC, PaperMC, ProtocolLib, NBT-API,      +LM3
+# +                                      ++    PlaceholderAPI, and bStats!                   +LM3
+# +    UltimaOath                        ++                                                  +LM3
+# +      Docs and Config since v2        ++  Other Contributors:                             +LM3
+# +      Support the actual Developers!  ++    Eyrian, iCodinqs, deiphiz, CoolBoy, Esophose, +LM3
+# +                                      ++    7smile7, Hugo5551, konsolas, Shevchik,        +LM3
+# +                                      ++    limzikiki                                     +LM3
+# +                                      ++                                                  +LM3
+# --------------------------------------------------------------------------------------------LM3
+#                                     _____     _         
+#                                    | __  |_ _| |___ ___ 
+#                                    |    -| | | | -_|_ -|
+#                                    |__|__|___|_|___|___|
+#
+# +-------------------------------------------------------------------------------------------LM3
+# +                                                                                          +LM3
+# +   Section 01 - Custom Entity and Biome Groups                                            +LM3
+# +                                                                                          +LM3
+# +-------------------------------------------------------------------------------------------LM3
 mob-groups:
   commons:
     - ZOMBIE
@@ -54,91 +45,29 @@ mob-groups:
     - COW
     - SHEEP
     - PIG
-    
+
 
 biome-groups:
-  Level1Biomes:
-    - PLAINS
-    - SUNFLOWER_PLAINS
-    - BIRCH_FOREST
-    - RIVER
-    - LUKEWARM_OCEAN
-  Level2Biomes:
+  taigas:
     - TAIGA
-    - FOREST
-    - FLOWER_FOREST
+    - TAIGA_MOUNTAINS
     - SNOWY_TUNDRA
     - SNOWY_TAIGA
-    - BIRCH_FOREST_HILLS
-    - TALL_BIRCH_FOREST
-    - TALL_BIRCH_HILLS
-    - BEACH
-    - WOODED_HILLS
-    - WOODED_MOUNTAINS
-    - SNOWY_BEACH
-    - FROZEN_RIVER
-    - STONE_SHORE
-  Level3Biomes:
     - SNOWY_TAIGA_HILLS
-    - MOUNTAINS
-    - GRAVELLY_MOUNTAINS
-    - MODIFIED_GRAVELLY_MOUNTAINS
     - GIANT_TREE_TAIGA
     - GIANT_SPRUCE_TAIGA
     - GIANT_SPRUCE_TAIGA_HILLS
     - GIANT_TREE_TAIGA_HILLS
-    - DARK_FOREST
-    - DARK_FOREST_HILLS
-    - SWAMP
-    - SWAMP_HILLS
-    - DESERT
-    - DESERT_HILLS
-    - DESERT_LAKES
     - SNOWY_TAIGA_MOUNTAINS
-    - SNOWY_MOUNTAINS
-    - WARM_OCEAN
-    - DEEP_WARM_OCEAN
-    - DEEP_COLD_OCEAN
-    - OCEAN
-    - DEEP_LUKEWARM_OCEAN
-    - COLD_OCEAN
-  Level4Biomes:
-    - JUNGLE
-    - JUNGLE_HILLS
-    - MODIFIED_JUNGLE
-    - MODIFIED_JUNGLE_EDGE
-    - MUSHROOM_FIELDS
-    - MUSHROOM_FIELD_SHORE
-    - SAVANNA
-    - SAVANNA_PLATEAU
-    - MODIFIED_SAVANNA_PLATEAU
-    - BADLANDS_PLATEAU
-    - MODIFIED_BADLANDS_PLATEAU
-    - MODIFIED_WOODED_BADLANDS_PLATEAU
-  Level5Biomes:
-    - ICE_SPIKES
-    - BAMBOO_JUNGLE
-    - BAMBOO_JUNGLE_HILLS
-    - FROZEN_OCEAN
-    - DEEP_FROZEN_OCEAN
-    - BADLANDS
-    - ERODED_BADLANDS
-    - WOODED_BADLANDS_PLATEAU
+  flowers:
+    - FLOWER_FOREST
+    - SUNFLOWER_PLAINS
 
-# |||-------------------------------------------------------------------------------------------|
-# |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
-# |||-------------------------------------------------------------------------------------------|
-# ||        _____         _   _            ___ ___                                              |
-# ||       |   __|___ ___| |_|_|___ ___   |   |_  |                                             |
-# ||       |__   | -_|  _|  _| | . |   |  | | |  _|                                             |
-# ||       |_____|___|___|_| |_|___|_|_|  |___|___|                                             |
-# ||           |  _  |___ ___ ___ ___| |_ ___                                                   |
-# ||           |   __|  _| -_|_ -| -_|  _|_ -|                                                  |
-# ||           |__|  |_| |___|___|___|_| |___|                                                  |
-# ||                                                                                            |
-# |||-------------------------------------------------------------------------------------------|
-# |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
-# |||-------------------------------------------------------------------------------------------|
+# +-------------------------------------------------------------------------------------------LM3
+# +                                                                                          +LM3
+# +   Section 02 - Presets                                                                   +LM3
+# +                                                                                          +LM3
+# +-------------------------------------------------------------------------------------------LM3
 presets:
   spawn_Levelling:
 #   This Strategy Preset controls the Spawn-Distance-Levelling system.
@@ -209,7 +138,7 @@ presets:
     strategies:
       player-levelling:
         match-level: true
-        use-player-max-level: false
+        use-player-max-level: true
         player-level-scale: 1.0
         level-cap: 30
         tiers:
@@ -248,8 +177,8 @@ presets:
       minLevel: 1
       maxLevel: 50
       multipliers:
-        max-health: 10
-        movement-speed: 0.5
+        max-health: 8.0
+        movement-speed: 0.25
         attack-damage: 3.5
         ranged-attack-damage: 2.75
         creeper-blast-damage: 1.25
@@ -276,7 +205,7 @@ presets:
       maxLevel: 25
       multipliers:
         max-health: 5.0
-        movement-speed: 0.25
+        movement-speed: 0.15
         attack-damage: 2.25
         ranged-attack-damage: 2.0
         creeper-blast-damage: 1.0
@@ -303,7 +232,7 @@ presets:
       maxLevel: 10
       multipliers:
         max-health: 2.5
-        movement-speed: 0.15
+        movement-speed: 0.05
         attack-damage: 1.0
         ranged-attack-damage: 1.0
         creeper-blast-damage: 0.5
@@ -347,22 +276,12 @@ presets:
       nametag: '&8&l༺ %tiered%Lvl %mob-lvl%&8 | &f%displayname%&8 | &f%entity-health-rounded%&8/&f%entity-max-health-rounded% %tiered%%heart_symbol% &8&l༻'
 
 
-# |||-------------------------------------------------------------------------------------------|
-# |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
-# |||-------------------------------------------------------------------------------------------|
-# ||                       L  O  W  E  S  T      P  R  I  O  R  I  T  Y                         |
-# |||-------------------------------------------------------------------------------------------|
-# ||        _____         _   _            ___ ___                                              |
-# ||       |   __|___ ___| |_|_|___ ___   |   |_  |                                             |
-# ||       |__   | -_|  _|  _| | . |   |  | | |_  |                                             |
-# ||       |_____|___|___|_|_|_|___|_|_|_ |___|___|_     _                                      |
-# ||           |    \ ___|  _|___ _ _| | |_   | __  |_ _| |___ ___                              |
-# ||           |  |  | -_|  _| .'| | | |  _|  |    -| | | | -_|_ -|                             |
-# ||           |____/|___|_| |__,|___|_|_|    |__|__|___|_|___|___|                             |
-# ||                                                                                            |
-# |||-------------------------------------------------------------------------------------------|
-# |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
-# |||-------------------------------------------------------------------------------------------|
+# +-------------------------------------------------------------------------------------------LM3
+# +                                                                                          +LM3
+# +   L O W E S T   P R I O R I T Y                                                          +LM3
+# +   Section 03 - Default Rules                                                             +LM3
+# +                                                                                          +LM3
+# +-------------------------------------------------------------------------------------------LM3
 default-rule:
   use-preset:
     - allowed_worlds
@@ -371,15 +290,15 @@ default-rule:
 #    - hard_difficulty
     - normal_difficulty
 #    - easy_difficulty
-    - spawn_Levelling
-    - blended_Levelling
+#    - apply_LevellingVariance
+#    - weighted_random_hard
+    - weighted_random_normal
+#    - weighted_random_easy
+#    - spawn_Levelling
+#    - blended_Levelling
 #    - ycoord_Levelling
 #    - random_Levelling
-#    - weighted_random_hard
-#    - weighted_random_normal
-#    - weighted_random_easy
 #    - player_Levelling
-#    - apply_LevellingVariance
 
   conditions:
     allowed-spawn-reasons:
@@ -403,7 +322,7 @@ default-rule:
     mob-tamed-status: EITHER
 
   apply-settings:
-    sunlight-intensity: 25
+    sunlight-intensity: 5
 
     entity-name-override:
 #      HUSK: ['Husk', 'Desert Zombie', 'Lost Soul', 'Dessicated Corpse']
@@ -419,22 +338,12 @@ default-rule:
     use-custom-item-drops-for-mobs: false
 
 
-# |||-------------------------------------------------------------------------------------------|
-# |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
-# |||-------------------------------------------------------------------------------------------|
-# ||                    H  I  G  H  E  S  T      P  R  I  O  R  I  T  Y                         |
-# |||-------------------------------------------------------------------------------------------|
-# ||        _____         _   _            ___ ___                                              |
-# ||       |   __|___ ___| |_|_|___ ___   |   | | |                                             |
-# ||       |__   | -_|  _|  _| | . |   |  | | |_  |                                             |
-# ||       |_____|___|___|_| |_|___|_|_|  |___|_|_|_     _                                      |
-# ||           |     |_ _ ___| |_ ___ _____   | __  |_ _| |___ ___                              |
-# ||           |   --| | |_ -|  _| . |     |  |    -| | | | -_|_ -|                             |
-# ||           |_____|___|___|_| |___|_|_|_|  |__|__|___|_|___|___|                             |
-# ||                                                                                            |
-# |||-------------------------------------------------------------------------------------------|
-# |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
-# |||-------------------------------------------------------------------------------------------|
+# +-------------------------------------------------------------------------------------------LM3
+# +                                                                                          +LM3
+# +   H I G H E S T   P R I O R I T Y                                                        +LM3
+# +   Section 04 - Custom Rules                                                              +LM3
+# +                                                                                          +LM3
+# +-------------------------------------------------------------------------------------------LM3
 custom-rules:
   - enabled: true
     priority: 1
@@ -472,7 +381,7 @@ custom-rules:
             max-health: 0.0
             movement-speed: 0.0
           CREEPER:
-            movement-speed: 0.15
+            movement-speed: 0.025
           WITHER_SKELETON:
             max-health: 1.0
 
@@ -499,7 +408,16 @@ custom-rules:
             xp-drop: 1.0
       tiered-coloring:
         1-5: '&#22E76B' #Green
+            
 
+# +-------------------------------------------------------------------------------------------LM3
+# +                                                                                          +LM3
+# +   Demonstration Custom Rules                                                             +LM3
+# +   These rules demonstrate some different features, and are disabled by default.          +LM3
+# +   Enable the Custom Rule below, make sure there are no conflicts with any other rules,   +LM3
+# +   test it out, or use them as reference when crafting your own Custom Rules!             +LM3
+# +                                                                                          +LM3
+# +-------------------------------------------------------------------------------------------LM3
   - enabled: false
     name: 'CR - Ender Dragon Fight'
     use-preset: normal_difficulty
@@ -515,15 +433,7 @@ custom-rules:
           ENDER_DRAGON:
             max-health: 3.0
             attack-damage: 1.0
-            
 
-# |||-------------------------------------------------------------------------------------------|
-# ||                                                                                            |
-# ||  Demonstration CustomRules                                                                 |
-# ||  These rules demonstrate some of the different features, and are disabled by default.      |
-# ||  Simply enable the CustomRule below to test it out, or use them as reference for your own! |
-# ||                                                                                            |
-# |||-------------------------------------------------------------------------------------------|
   - enabled: false
     name: 'CR - NoLevel Biomes'
     conditions:
@@ -564,20 +474,10 @@ custom-rules:
       entity-name-override:
         CREEPER: ['Startled %displayname%']
 
-# |||-------------------------------------------------------------------------------------------|
-# |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
-# |||-------------------------------------------------------------------------------------------|
-# ||                A  D  V  A  N  C  E  D     U  S  E  R  S     O  N  L  Y                     |
-# |||-------------------------------------------------------------------------------------------|
-# ||        _____         _   _            ___ ___                                              |
-# ||       |   __|___ ___| |_|_|___ ___   |   |  _|                                             |
-# ||       |__   | -_|  _|  _| | . |   |  | | |_  |                                             |
-# ||       |_____|___|___|_| |_|___|_|_|  |___|___|  _____     _   _   _                        |
-# ||           |  _  |_| |_ _ ___ ___ ___ ___ _| |  |   __|___| |_| |_|_|___ ___ ___            |
-# ||           |     | . | | | .'|   |  _| -_| . |  |__   | -_|  _|  _| |   | . |_ -|           |
-# ||           |__|__|___|\_/|__,|_|_|___|___|___|  |_____|___|_| |_| |_|_|_|_  |___|           |
-# ||                                                                        |___|               |
-# |||-------------------------------------------------------------------------------------------|
-# |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
-# |||-------------------------------------------------------------------------------------------|
+# +-------------------------------------------------------------------------------------------LM3
+# +                                                                                          +LM3
+# +   Section 05 - Advanced Message Settings                                                 +LM3
+# +   DO NOT EDIT BEYOND HERE WITHOUT DEVELOPER APPROVAL                                     +LM3
+# +                                                                                          +LM3
+# +-------------------------------------------------------------------------------------------LM3
 file-version: 1
