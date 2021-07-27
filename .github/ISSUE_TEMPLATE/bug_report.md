@@ -3,7 +3,7 @@ name: Bug report
 about: Let us know about any unintentional flaws in the resource
 title: 'Bug: ...'
 labels: bug, unconfirmed
-assignees: lokka30
+assignees: ''
 
 ---
 

@@ -3,7 +3,7 @@ name: Feature request
 about: Suggest an idea for the plugin
 title: 'Request: '
 labels: enhancement
-assignees: lokka30
+assignees: ''
 
 ---
 

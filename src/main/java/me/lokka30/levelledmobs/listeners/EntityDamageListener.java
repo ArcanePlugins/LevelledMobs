@@ -29,6 +29,7 @@ public class EntityDamageListener implements Listener {
     public void onDamage(@NotNull final EntityDamageEvent event) {
         if (event.getFinalDamage() == 0.0) return;
         if (!(event.getEntity() instanceof LivingEntity)) return;
+        if (event.getFinalDamage() == 0.0) return;
 
         final LivingEntityWrapper lmEntity = new LivingEntityWrapper((LivingEntity) event.getEntity(), main);
 

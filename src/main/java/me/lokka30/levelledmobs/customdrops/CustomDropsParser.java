@@ -320,6 +320,11 @@ public class CustomDropsParser {
             if (dropInstance.overallChance == 0.0) dropInstance.overallChance = null;
         }
 
+        if (!Utils.isNullOrEmpty(cs.getString("overall_chance"))) {
+            dropInstance.overallChance = cs.getDouble("overall_chance");
+            if (dropInstance.overallChance == 0.0) dropInstance.overallChance = null;
+        }
+
         if (dropBase instanceof CustomCommand) {
             CustomCommand customCommand = (CustomCommand) dropBase;
             customCommand.command = ymlHelper.getString(cs,"command");

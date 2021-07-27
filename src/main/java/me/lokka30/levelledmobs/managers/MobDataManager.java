@@ -133,6 +133,6 @@ public class MobDataManager {
             return attributeValue * (((double) lmEntity.getMobLevel() - 1)/ maxLevel);
 
         // use revised formula for all attributes
-        return (defaultValue * attributeValue) * ((lmEntity.getMobLevel() - 1) / maxLevel);
+        return (defaultValue * attributeValue) * ((lmEntity.getMobLevel() - 1) / (maxLevel - 1));
     }
 }

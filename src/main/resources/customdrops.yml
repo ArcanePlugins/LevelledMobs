@@ -61,31 +61,31 @@ defaults:
 # +                                                                                          +LM3
 # +-------------------------------------------------------------------------------------------LM3
 all_mobs:
-  - 
+  -
 
 all_levellable_mobs:
   -
 
 all_hostile_mobs:
-  - 
+  -
 
 all_passive_mobs:
-  - 
+  -
 
 all_overworld_mobs:
-  - 
+  -
 
 all_nether_mobs:
-  - 
+  -
 
 all_flying_mobs:
-  - 
+  -
 
 all_ground_mobs:
-  - 
+  -
 
 all_aquatic_mobs:
-  - 
+  -
 
 
 # +-------------------------------------------------------------------------------------------LM3
@@ -94,217 +94,217 @@ all_aquatic_mobs:
 # +                                                                                          +LM3
 # +-------------------------------------------------------------------------------------------LM3
 #AXOLOTL:
-#  - 
+#  -
 
 BAT:
-  - 
+  -
 
 BEE:
-  - 
+  -
 
 BLAZE:
-  - 
+  -
 
 CAT:
-  - 
+  -
 
 CAVE_SPIDER:
-  - 
+  -
 
 CHICKEN:
-  - 
+  -
 
 COD:
-  - 
+  -
 
 COW:
-  - 
+  -
 
 CREEPER:
-  - 
+  -
 
 DOLPHIN:
-  - 
+  -
 
 DONKEY:
-  - 
+  -
 
 DROWNED:
-  - 
+  -
 
 ELDER_GUARDIAN:
-  - 
+  -
 
 ENDER_DRAGON:
-  - 
+  -
 
 ENDERMAN:
-  - 
+  -
 
 ENDERMITE:
-  - 
+  -
 
 EVOKER:
-  - 
+  -
 
 FOX:
-  - 
+  -
 
 GHAST:
-  - 
+  -
 
 #GLOW_SQUID:
-#  - 
+#  -
 
 #GOAT:
-#  - 
+#  -
 
 GUARDIAN:
-  - 
+  -
 
 HOGLIN:
-  - 
+  -
 
 HORSE:
-  - 
+  -
 
 HUSK:
-  - 
+  -
 
 ILLUSIONER:
-  - 
+  -
 
 IRON_GOLEM:
-  - 
+  -
 
 LLAMA:
-  - 
+  -
 
 MAGMA_CUBE:
-  - 
+  -
 
 MULE:
-  - 
+  -
 
 MUSHROOM_COW:
-  - 
+  -
 
 OCELOT:
-  - 
+  -
 
 PANDA:
-  - 
+  -
 
 PARROT:
-  - 
+  -
 
 PHANTOM:
-  - 
+  -
 
 PIG:
-  - 
+  -
 
 PIGLIN:
-  - 
+  -
 
 PIGLIN_BRUTE:
-  - 
+  -
 
 PILLAGER:
-  - 
+  -
 
 POLAR_BEAR:
-  - 
+  -
 
 PUFFERFISH:
-  - 
+  -
 
 RABBIT:
-  - 
+  -
 
 RAVAGER:
-  - 
+  -
 
 SALMON:
-  - 
+  -
 
 SHEEP:
-  - 
+  -
 
 SHULKER:
-  - 
+  -
 
 SILVERFISH:
-  - 
+  -
 
 SKELETON:
   -
 
 SKELETON_HORSE:
-  - 
+  -
 
 SLIME:
-  - 
+  -
 
 SNOWMAN:
-  - 
+  -
 
 SPIDER:
-  - 
+  -
 
 SQUID:
-  - 
+  -
 
 STRAY:
-  - 
+  -
 
 STRIDER:
-  - 
+  -
 
 TRADER_LLAMA:
-  - 
+  -
 
 TROPICAL_FISH:
-  - 
+  -
 
 TURTLE:
-  - 
+  -
 
 VEX:
-  - 
+  -
 
 VILLAGER:
-  - 
+  -
 
 VINDICATOR:
-  - 
+  -
 
 WANDERING_TRADER:
-  - 
+  -
 
 WITCH:
-  - 
+  -
 
 WITHER:
-  - 
+  -
 
 WITHER_SKELETON:
-  - 
+  -
 
 WOLF:
-  - 
+  -
 
 ZOGLIN:
-  - 
+  -
 
 ZOMBIE:
-  - 
-      
+  -
+
 ZOMBIE_HORSE:
-  - 
+  -
 
 ZOMBIE_VILLAGER:
-  - 
+  -
 
 ZOMBIFIED_PIGLIN:
   -

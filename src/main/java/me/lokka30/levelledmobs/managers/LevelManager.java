@@ -823,6 +823,8 @@ public class LevelManager implements LevelInterface {
         Utils.debugLog(main, DebugType.CREEPER_BLAST_RADIUS, String.format("lvl: %s, mulp: %s, max: %s, result: %s",
                 lmEntity.getMobLevel(), Utils.round(damage, 3), maxRadius, blastRadius));
 
+        if (blastRadius < 0) blastRadius = 0;
+
         creeper.setExplosionRadius(blastRadius);
     }
 

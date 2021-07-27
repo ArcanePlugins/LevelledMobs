@@ -139,6 +139,7 @@ public class Companion {
                     Utils.logger.warning("Unable to delete file " + lFile + ", " + e.getMessage());
                 }
             }
+
         }
 
         main.configUtils.load();
