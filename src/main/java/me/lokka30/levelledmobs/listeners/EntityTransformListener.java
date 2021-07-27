@@ -2,9 +2,7 @@ package me.lokka30.levelledmobs.listeners;
 
 import me.lokka30.levelledmobs.LevelInterface;
 import me.lokka30.levelledmobs.LevelledMobs;
-import me.lokka30.levelledmobs.misc.DebugType;
-import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
-import me.lokka30.levelledmobs.misc.Utils;
+import me.lokka30.levelledmobs.misc.*;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
@@ -63,8 +61,8 @@ public class EntityTransformListener implements Listener {
 
             final LivingEntityWrapper transformedLmEntity = new LivingEntityWrapper((LivingEntity) transformedEntity, main);
 
-            final LevelInterface.LevellableState levelledState = main.levelInterface.getLevellableState(transformedLmEntity);
-            if (levelledState != LevelInterface.LevellableState.ALLOWED) {
+            final LevellableState levelledState = main.levelInterface.getLevellableState(transformedLmEntity);
+            if (levelledState != LevellableState.ALLOWED) {
                 Utils.debugLog(main, DebugType.ENTITY_TRANSFORM_FAIL, transformedEntity.getType().name() + ": transformed entity was &bnot&7 levellable, reason: &b" + levelledState);
                 main.levelManager.updateNametag_WithDelay(transformedLmEntity);
                 continue;
@@ -76,7 +74,7 @@ public class EntityTransformListener implements Listener {
                         level,
                         false,
                         false,
-                        new HashSet<>(Collections.singletonList(LevelInterface.AdditionalLevelInformation.FROM_TRANSFORM_LISTENER))
+                        new HashSet<>(Collections.singletonList(AdditionalLevelInformation.FROM_TRANSFORM_LISTENER))
                 );
             }
             else

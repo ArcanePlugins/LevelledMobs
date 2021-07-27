@@ -72,9 +72,9 @@ public class LevelledMobs extends JavaPlugin {
 
         this.random = new Random();
         this.customMobGroups = new TreeMap<>();
-        this.levelInterface = new LevelInterface(this);
+        this.levelInterface = new LevelManager(this);
         companion.checkCompatibility();
-        if (!companion.loadFiles()) {
+        if (!companion.loadFiles(false)) {
             // had fatal error reading required files
             Bukkit.getPluginManager().disablePlugin(this);
             return;

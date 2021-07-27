@@ -480,7 +480,7 @@ public class RulesManager {
 
         if (ri.conditions_Chance != null && ri.conditions_Chance < 1.0){
             final double chanceRole = (double) ThreadLocalRandom.current().nextInt(0, 100001) * 0.00001;
-            if (chanceRole < ri.conditions_Chance){
+            if (chanceRole < (1.0 - ri.conditions_Chance)){
                 Utils.debugLog(main, DebugType.DENIED_RULE_CHANCE, String.format("&b%s&7, mob: &b%s&7, chance: &b%s&7, chance role: &b%s&7",
                         ri.getRuleName(), lmInterface.getTypeName(), ri.conditions_Chance, chanceRole));
                 return false;

@@ -78,6 +78,7 @@ public class CustomDropsParser {
         // now we'll use the attributes here for defaults
         this.defaults.setDefaultsFromDropItem(drop);
         this.defaults.override = dropInstance.overrideStockDrops;
+        this.defaults.overallChance = dropInstance.overallChance;
     }
 
     private void parseCustomDrops(final ConfigurationSection config){
@@ -146,6 +147,7 @@ public class CustomDropsParser {
                 }
 
                 dropInstance.overrideStockDrops = this.defaults.override;
+                dropInstance.overallChance = this.defaults.overallChance;
 
                 if (!isEntityTable) {
                     if (config.getList(item) != null) {
@@ -292,14 +294,20 @@ public class CustomDropsParser {
         dropBase.playerCausedOnly = cs.getBoolean("player-caused", this.defaults.playerCausedOnly);
         dropBase.maxDropGroup = cs.getInt("maxdropgroup", this.defaults.maxDropGroup);
 
-        if (!Utils.isNullOrEmpty(cs.getString("groupid"))) {
+        dropBase.groupId = defaults.groupId;
+        if (!Utils.isNullOrEmpty(cs.getString("groupid")))
             dropBase.groupId = cs.getString("groupid");
-            dropInstance.utilizesGroupIds = true;
-        }
+
+        dropInstance.utilizesGroupIds = !Utils.isNullOrEmpty(dropBase.groupId);
 
         if (!Utils.isNullOrEmpty(cs.getString("amount"))) {
             if (!dropBase.setAmountRangeFromString(cs.getString("amount")))
                 Utils.logger.warning(String.format("Invalid number or number range for amount on %s, %s", dropInstance.getMobOrGroupName(), cs.getString("amount")));
+        }
+
+        if (!Utils.isNullOrEmpty(cs.getString("overall_chance"))) {
+            dropInstance.overallChance = cs.getDouble("overall_chance");
+            if (dropInstance.overallChance == 0.0) dropInstance.overallChance = null;
         }
 
         if (dropBase instanceof CustomCommand) {
@@ -554,6 +562,19 @@ public class CustomDropsParser {
 
         if (baseItem.noSpawner) sb.append(", nospn");
 
+        if (!Utils.isNullOrEmpty(baseItem.groupId)) {
+            sb.append(", gId: ");
+            sb.append(baseItem.groupId);
+            if (baseItem.maxDropGroup > 0){
+                sb.append(", maxDropGroup: ");
+                sb.append(baseItem.maxDropGroup);
+            }
+        }
+        if (baseItem.priority > 0) {
+            sb.append(", pri: ");
+            sb.append(baseItem.priority);
+        }
+
         if (command != null){
             if (!Utils.isNullOrEmpty(command.commandName)) {
                 sb.append(", name: ");
@@ -577,18 +598,6 @@ public class CustomDropsParser {
         if (item.equippedSpawnChance > 0.0) {
             sb.append(", equipChance: ");
             sb.append(item.equippedSpawnChance);
-        }
-        if (!Utils.isNullOrEmpty(item.groupId)) {
-            sb.append(", gId: ");
-            sb.append(item.groupId);
-            if (item.maxDropGroup > 0){
-                sb.append(", maxDropGroup: ");
-                sb.append(item.maxDropGroup);
-            }
-        }
-        if (item.priority > 0) {
-            sb.append(", pri: ");
-            sb.append(item.priority);
         }
         if (item.itemFlags != null && !item.itemFlags.isEmpty()){
             sb.append(", itemflags: ");

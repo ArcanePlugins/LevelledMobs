@@ -464,6 +464,8 @@ defaults:
   maxdropgroup: 1
   priority: 0
   player-caused: true
+  groupid: ''
+  overall_chance: 0.0
 
 
 # |||-------------------------------------------------------------------------------------------|
