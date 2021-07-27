@@ -167,14 +167,20 @@ public class MetricsInfo {
     public Map<String, Integer> enabledCompats(){
         final Map<String, Integer> results = new TreeMap<>();
 
-        for (final ExternalCompatibilityManager.ExternalCompatibility compat : ExternalCompatibilityManager.ExternalCompatibility.values())
+        for (final ExternalCompatibilityManager.ExternalCompatibility compat : ExternalCompatibilityManager.ExternalCompatibility.values()) {
+            if (compat.equals(ExternalCompatibilityManager.ExternalCompatibility.NOT_APPLICABLE) ||
+                    compat.equals(ExternalCompatibilityManager.ExternalCompatibility.PLACEHOLDER_API))
+                    continue;
+
             results.put(compat.toString(), 0);
+        }
 
         for (final RuleInfo ruleInfo : main.rulesParsingManager.getAllRules()){
             if (!ruleInfo.ruleIsEnabled) continue;
 
             if (ruleInfo.enabledExtCompats != null){
                 for (final ExternalCompatibilityManager.ExternalCompatibility compat : ruleInfo.enabledExtCompats.keySet()){
+                    if (compat.equals(ExternalCompatibilityManager.ExternalCompatibility.NOT_APPLICABLE)) continue;
                     final Boolean enabled = ruleInfo.enabledExtCompats.get(compat);
                     if (enabled != null && enabled)
                         results.put(compat.toString(), 1);
