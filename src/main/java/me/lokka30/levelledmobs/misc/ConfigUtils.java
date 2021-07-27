@@ -3,7 +3,6 @@ package me.lokka30.levelledmobs.misc;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.microlib.MessageUtils;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.ConfigurationSection;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;

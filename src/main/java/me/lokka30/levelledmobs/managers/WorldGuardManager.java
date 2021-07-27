@@ -214,8 +214,6 @@ public class WorldGuardManager {
 
         if (regions == null) return true;
 
-        if (regions == null) return true;
-
         for (final ProtectedRegion region : regions) {
             return region.getFlag(WorldGuardManager.allowLevelledMobsFlag) != StateFlag.State.DENY;
         }

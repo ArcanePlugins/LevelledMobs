@@ -311,6 +311,7 @@ default-rule:
       ELITE_MOBS_NPCS: false
       ELITE_MOBS_SUPER_MOBS: false
       INFERNAL_MOBS: false
+      CITIZENS: false
       SHOPKEEPERS: false
 
 #    apply-above-y: 64

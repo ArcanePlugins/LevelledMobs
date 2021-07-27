@@ -14,6 +14,7 @@ import me.lokka30.levelledmobs.rules.MetricsInfo;
 import me.lokka30.microlib.UpdateChecker;
 import me.lokka30.microlib.VersionUtils;
 import org.bstats.bukkit.Metrics;
+import org.bstats.charts.SimpleBarChart;
 import org.bstats.charts.SimplePie;
 import org.bukkit.Bukkit;
 import org.bukkit.command.PluginCommand;
@@ -242,6 +243,7 @@ public class Companion {
         metrics.addCustomChart(new SimplePie("check_mobs_on_chunk_load", metricsInfo::checkMobsOnChunkLoad));
         metrics.addCustomChart(new SimplePie("custom-entity-names", metricsInfo::customEntityNamesCount));
         metrics.addCustomChart(new SimplePie("utilizes-nbtdata", metricsInfo::usesNbtData));
+        metrics.addCustomChart(new SimpleBarChart("enabled-compatibility", metricsInfo::enabledCompats));
     }
 
     //Check for updates on the Spigot page.

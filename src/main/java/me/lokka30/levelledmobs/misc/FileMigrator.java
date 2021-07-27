@@ -545,11 +545,7 @@ public class FileMigrator {
 
     @NotNull
     private static String getPadding(final int space){
-        final StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < space; i++)
-            sb.append(" ");
-
-        return sb.toString();
+        return " ".repeat(space);
     }
 
     private static boolean isEntitySameSubkey(@NotNull final String key1, @NotNull final String key2){

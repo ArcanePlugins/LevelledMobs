@@ -5,9 +5,6 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Set;
-import java.util.TreeSet;
-
 public class LivingEntityWrapperBase {
 
     public LivingEntityWrapperBase(final @NotNull LevelledMobs main, final @NotNull World world, final @NotNull Location location){

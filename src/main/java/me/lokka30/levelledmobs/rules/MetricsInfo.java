@@ -5,9 +5,10 @@ import me.lokka30.levelledmobs.managers.ExternalCompatibilityManager;
 import me.lokka30.levelledmobs.rules.strategies.RandomLevellingStrategy;
 import me.lokka30.levelledmobs.rules.strategies.SpawnDistanceStrategy;
 import me.lokka30.levelledmobs.rules.strategies.YDistanceStrategy;
-import org.bukkit.Bukkit;
 
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 public class MetricsInfo {
     public MetricsInfo(final LevelledMobs main){
@@ -161,5 +162,26 @@ public class MetricsInfo {
             return "Yes";
 
         return "No";
+    }
+
+    public Map<String, Integer> enabledCompats(){
+        final Map<String, Integer> results = new TreeMap<>();
+
+        for (final ExternalCompatibilityManager.ExternalCompatibility compat : ExternalCompatibilityManager.ExternalCompatibility.values())
+            results.put(compat.toString(), 0);
+
+        for (final RuleInfo ruleInfo : main.rulesParsingManager.getAllRules()){
+            if (!ruleInfo.ruleIsEnabled) continue;
+
+            if (ruleInfo.enabledExtCompats != null){
+                for (final ExternalCompatibilityManager.ExternalCompatibility compat : ruleInfo.enabledExtCompats.keySet()){
+                    final Boolean enabled = ruleInfo.enabledExtCompats.get(compat);
+                    if (enabled != null && enabled)
+                        results.put(compat.toString(), 1);
+                }
+            }
+        }
+
+        return results;
     }
 }

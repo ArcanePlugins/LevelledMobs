@@ -25,8 +25,8 @@
 # +                                      ++    limzikiki                                     +LM3
 # +                                      ++                                                  +LM3
 # --------------------------------------------------------------------------------------------LM3
-#                                     _____     _
-#                                    | __  |_ _| |___ ___
+#                                     _____     _         
+#                                    | __  |_ _| |___ ___ 
 #                                    |    -| | | | -_|_ -|
 #                                    |__|__|___|_|___|___|
 #
@@ -70,7 +70,7 @@ biome-groups:
 # +-------------------------------------------------------------------------------------------LM3
 presets:
   spawn_Levelling:
-    #   This Strategy Preset controls the Spawn-Distance-Levelling system.
+#   This Strategy Preset controls the Spawn-Distance-Levelling system.
     name: 'LVLling Strategy - Distance-From-Spawn'
     strategies:
       distance-from-spawn:
@@ -81,7 +81,7 @@ presets:
           z: default
 
   blended_Levelling:
-    #   This Strategy Preset controls the Blended-Levelling sub-system to Spawn-Distance-Levelling.
+#   This Strategy Preset controls the Blended-Levelling sub-system to Spawn-Distance-Levelling.
     name: 'LVLling Strategy - Blended-Levelling'
     strategies:
       distance-from-spawn:
@@ -93,14 +93,14 @@ presets:
           scale-downward: true
 
   random_Levelling:
-    #   This Strategy Preset controls the Random-Levelling system.
+#   This Strategy Preset controls the Random-Levelling system.
     name: 'LVLling Strategy - Random'
     strategies:
       random: true
       lower-mob-level-bias-factor: 5
 
   weighted_random_hard:
-    #   This Strategy Preset controls Weighted Random Bias.
+#   This Strategy Preset controls Weighted Random Bias.
     name: 'LVLling Strategy - Weighted Random Bias HARD DIFFICULTY'
     strategies:
       weighted-random:
@@ -111,7 +111,7 @@ presets:
         41-50: 1
 
   weighted_random_normal:
-    #   This Strategy Preset controls Weighted Random Bias.
+#   This Strategy Preset controls Weighted Random Bias.
     name: 'LVLling Strategy - Weighted Random Bias NORMAL DIFFICULTY'
     strategies:
       weighted-random:
@@ -122,7 +122,7 @@ presets:
         21-25: 1
 
   weighted_random_easy:
-    #   This Strategy Preset controls Weighted Random Bias.
+#   This Strategy Preset controls Weighted Random Bias.
     name: 'LVLling Strategy - Weighted Random Bias EASY DIFFICULTY'
     strategies:
       weighted-random:
@@ -131,9 +131,9 @@ presets:
         5-6: 3
         7-8: 2
         9-10: 1
-
+        
   player_Levelling:
-    #   This Strategy Preset controls the player-stat based levelling system.
+#   This Strategy Preset controls the player-stat based levelling system.
     name: 'LVLling Strategy - Player Based NORMAL DIFFIULTY'
     strategies:
       player-levelling:
@@ -148,13 +148,13 @@ presets:
         variable: '%level%'
 
   apply_LevellingVariance:
-    #   This Strategy Preset controls the random level variance applied.
+#   This Strategy Preset controls the random level variance applied.
     name: 'LVLling Strategy - Apply Variance'
     strategies:
       max-random-variance: 2
 
   ycoord_Levelling:
-    #   This Strategy Preset controls Y-Coordinate-Levelling.
+#   This Strategy Preset controls Y-Coordinate-Levelling.
     name: 'LVLling Strategy - Y-LVLling'
     strategies:
       y-coordinate:
@@ -163,15 +163,15 @@ presets:
         period: 0
 
   allowed_worlds:
-    #   This controls the allowed worlds to apply levels too.
+#   This controls the allowed worlds to apply levels too.
     name: 'Excluded Worldlist'
     conditions:
       worlds:
-        #        allowed-list: ['*']
+#        allowed-list: ['*']
         excluded-list: ['world_the_end']
 
   hard_difficulty:
-    #   This establishes the minimum and maximum levels, and the multipliers, for HARD.
+#   This establishes the minimum and maximum levels, and the multipliers, for HARD.
     name: 'HARD Difficulty Multipliers'
     apply-settings:
       minLevel: 1
@@ -196,9 +196,9 @@ presets:
         scale: 8
         max: 5
         merge: true
-
+        
   normal_difficulty:
-    #   This establishes the minimum and maximum levels, and the multipliers, for NORMAL.
+#   This establishes the minimum and maximum levels, and the multipliers, for NORMAL.
     name: 'NORMAL Difficulty Multipliers'
     apply-settings:
       minLevel: 1
@@ -223,9 +223,9 @@ presets:
         scale: 4
         max: 5
         merge: true
-
+        
   easy_difficulty:
-    #   This establishes the minimum and maximum levels, and the multipliers, for EASY.
+#   This establishes the minimum and maximum levels, and the multipliers, for EASY.
     name: 'EASY Difficulty Multipliers'
     apply-settings:
       minLevel: 1
@@ -252,7 +252,7 @@ presets:
         merge: true
 
   nametag_using_indicator:
-    #   This controls the nametag, where the health is displayed using %health-indicator%
+#   This controls the nametag, where the health is displayed using %health-indicator%
     name: 'Nametag - Health Indicator'
     apply-settings:
       nametag: '&8&l༺ %tiered%Lvl %mob-lvl%&8 | &f%displayname%&8 | &f%entity-health-rounded% %tiered%%heart_symbol% &r%health-indicator% &8&l༻'
@@ -270,7 +270,7 @@ presets:
         merge: true
 
   nametag_using_numbers:
-    #   This controls the nametag, where the health is displayed using %entity-health-rounded%
+#   This controls the nametag, where the health is displayed using %entity-health-rounded%
     name: 'Nametag - Health Numerical'
     apply-settings:
       nametag: '&8&l༺ %tiered%Lvl %mob-lvl%&8 | &f%displayname%&8 | &f%entity-health-rounded%&8/&f%entity-max-health-rounded% %tiered%%heart_symbol% &8&l༻'
@@ -286,19 +286,19 @@ default-rule:
   use-preset:
     - allowed_worlds
     - nametag_using_numbers
-    #    - nametag_using_indicator
+#    - nametag_using_indicator
     - hard_difficulty
-    #    - normal_difficulty
-    #    - easy_difficulty
-    #    - apply_LevellingVariance
+#    - normal_difficulty
+#    - easy_difficulty
+#    - apply_LevellingVariance
     - weighted_random_hard
-  #    - weighted_random_normal
-  #    - weighted_random_easy
-  #    - spawn_Levelling
-  #    - blended_Levelling
-  #    - ycoord_Levelling
-  #    - random_Levelling
-  #    - player_Levelling
+#    - weighted_random_normal
+#    - weighted_random_easy
+#    - spawn_Levelling
+#    - blended_Levelling
+#    - ycoord_Levelling
+#    - random_Levelling
+#    - player_Levelling
 
   conditions:
     allowed-spawn-reasons:
@@ -311,12 +311,13 @@ default-rule:
       ELITE_MOBS_NPCS: false
       ELITE_MOBS_SUPER_MOBS: false
       INFERNAL_MOBS: false
+      CITIZENS: false
       SHOPKEEPERS: false
 
-    #    apply-above-y: 64
-    #    apply-below-y: 59
-    #    min-distance-from-spawn: 1000
-    #    max-distance-from-spawn: 5000
+#    apply-above-y: 64
+#    apply-below-y: 59
+#    min-distance-from-spawn: 1000
+#    max-distance-from-spawn: 5000
 
     mob-customname-status: EITHER
     mob-tamed-status: EITHER
@@ -325,9 +326,9 @@ default-rule:
     sunlight-intensity: 5
 
     entity-name-override:
-    #      HUSK: ['Husk', 'Desert Zombie', 'Lost Soul', 'Dessicated Corpse']
-    #      SKELETON: ['Bones', 'Billy Bones', 'Verta Brae']
-    #      PILLAGER: ['Raider', 'Barbarian']
+#      HUSK: ['Husk', 'Desert Zombie', 'Lost Soul', 'Dessicated Corpse']
+#      SKELETON: ['Bones', 'Billy Bones', 'Verta Brae']
+#      PILLAGER: ['Raider', 'Barbarian']
 
     creature-death-nametag: '%tiered%Lvl %mob-lvl%&8 | &f%entity-name%'
     creature-nametag-always-visible: false
@@ -408,16 +409,16 @@ custom-rules:
             xp-drop: 1.0
       tiered-coloring:
         1-5: '&#22E76B' #Green
+            
 
-
-  # +-------------------------------------------------------------------------------------------LM3
-  # +                                                                                          +LM3
-  # +   Demonstration Custom Rules                                                             +LM3
-  # +   These rules demonstrate some different features, and are disabled by default.          +LM3
-  # +   Enable the Custom Rule below, make sure there are no conflicts with any other rules,   +LM3
-  # +   test it out, or use them as reference when crafting your own Custom Rules!             +LM3
-  # +                                                                                          +LM3
-  # +-------------------------------------------------------------------------------------------LM3
+# +-------------------------------------------------------------------------------------------LM3
+# +                                                                                          +LM3
+# +   Demonstration Custom Rules                                                             +LM3
+# +   These rules demonstrate some different features, and are disabled by default.          +LM3
+# +   Enable the Custom Rule below, make sure there are no conflicts with any other rules,   +LM3
+# +   test it out, or use them as reference when crafting your own Custom Rules!             +LM3
+# +                                                                                          +LM3
+# +-------------------------------------------------------------------------------------------LM3
   - enabled: false
     name: 'CR - Ender Dragon Fight'
     use-preset: normal_difficulty
@@ -460,13 +461,13 @@ custom-rules:
         BABY_ZOMBIE: ['Baby Undead']
 
   - enabled: false
-    #   This rule requires the soft-dependency NBT-API to function!
-    #   Make sure you have it installed prior to enabling this rule!
+#   This rule requires the soft-dependency NBT-API to function!
+#   Make sure you have it installed prior to enabling this rule!
     name: 'CR - NBT - 20% Startled Creepers, Short Fuse'
     use-preset: allowed_worlds
     conditions:
       chance: 0.2
-      #      apply-below-y: 59
+#      apply-below-y: 59
       entities:
         allowed-list: ['CREEPER']
     apply-settings:
