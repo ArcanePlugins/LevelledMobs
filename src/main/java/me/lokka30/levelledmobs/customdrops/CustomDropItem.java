@@ -22,6 +22,7 @@ public class CustomDropItem extends CustomDropBase {
     public boolean noMultiplier;
     public String customName;
     public String mobHeadTexture;
+    public String nbtData;
     public List<String> lore;
     public List<ItemFlag> itemFlags;
     private boolean hasDamageRange;

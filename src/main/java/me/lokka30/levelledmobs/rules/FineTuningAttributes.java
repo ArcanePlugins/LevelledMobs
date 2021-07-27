@@ -14,12 +14,13 @@ import java.util.List;
 public class FineTuningAttributes implements Cloneable {
     public EntityType applicableEntity;
 
-    public Double maxHealth;
     public Double attackDamage;
-    public Integer itemDrop;
+    public Double creeperExplosionRadius;
+    public Double maxHealth;
     public Double movementSpeed;
-    public Integer xpDrop;
     public Double rangedAttackDamage;
+    public Integer itemDrop;
+    public Integer xpDrop;
 
     public void mergeAttributes(final @Nullable FineTuningAttributes attributes){
         if (attributes == null) return;
@@ -30,6 +31,7 @@ public class FineTuningAttributes implements Cloneable {
         if (attributes.xpDrop != null) this.xpDrop = attributes.xpDrop;
         if (attributes.movementSpeed != null) this.movementSpeed = attributes.movementSpeed;
         if (attributes.rangedAttackDamage != null) this.rangedAttackDamage = attributes.rangedAttackDamage;
+        if (attributes.creeperExplosionRadius != null) this.creeperExplosionRadius = attributes.creeperExplosionRadius;
     }
 
     public String toString(){
@@ -41,6 +43,7 @@ public class FineTuningAttributes implements Cloneable {
         if (xpDrop != null) list.add("xpDrp: " + xpDrop);
         if (movementSpeed != null) list.add("moveSpd: " + movementSpeed);
         if (rangedAttackDamage != null) list.add("rangdAtkDmg: " + rangedAttackDamage);
+        if (creeperExplosionRadius != null) list.add("creeperDmg: " + creeperExplosionRadius);
 
         for (final String item : list){
             if (sb.length() > 0) sb.append(", ");

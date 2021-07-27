@@ -65,7 +65,7 @@ public class SpawnDistanceStrategy implements LevellingStrategy, Cloneable {
     }
 
     public int generateLevel(@NotNull final LivingEntityWrapper lmEntity, final int minLevel, final int maxLevel) {
-        Location spawnLocation = lmEntity.getLivingEntity().getWorld().getSpawnLocation();
+        Location spawnLocation = lmEntity.getWorld().getSpawnLocation();
 
         if (this.spawnLocation_Z != null || this.spawnLocation_X != null) {
             final double useX = this.spawnLocation_X == null ? spawnLocation.getX() : this.spawnLocation_X;
@@ -79,7 +79,7 @@ public class SpawnDistanceStrategy implements LevellingStrategy, Cloneable {
         }
 
         final int startDistance = this.startDistance == null ? 0 : this.startDistance;
-        final int distanceFromSpawn = (int) spawnLocation.distance(lmEntity.getLivingEntity().getLocation());
+        final int distanceFromSpawn = (int) spawnLocation.distance(lmEntity.getLocation());
         final int levelDistance = Math.max(distanceFromSpawn - startDistance, 0);
 
         int variance = lmEntity.getMainInstance().rulesManager.getRule_MaxRandomVariance(lmEntity);

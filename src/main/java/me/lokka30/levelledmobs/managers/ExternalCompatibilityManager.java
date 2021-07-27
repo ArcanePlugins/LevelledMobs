@@ -1,12 +1,12 @@
 package me.lokka30.levelledmobs.managers;
 
-import io.lumine.xikage.mythicmobs.MythicMobs;
-import io.lumine.xikage.mythicmobs.mobs.ActiveMob;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.LivingEntityInterface;
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.entity.Player;
+import org.bukkit.metadata.MetadataValue;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -45,6 +45,21 @@ public class ExternalCompatibilityManager {
         return  (!list.containsKey(externalCompatibility) || list.get(externalCompatibility) != null && list.get(externalCompatibility));
     }
 
+    public static boolean hasPAPI_Installed(){ return (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null); }
+
+    public static boolean hasNBTAPI_Installed(){
+        return Bukkit.getPluginManager().getPlugin("NBTAPI") != null;
+    }
+
+    public static boolean hasMCMMO_CoreInsatlled(){
+        return Bukkit.getPluginManager().getPlugin("MMOCore") != null;
+    }
+
+    @NotNull
+    public static String getPAPI_Placeholder(final Player player, final String placeholder){
+        return me.clip.placeholderapi.PlaceholderAPI.setPlaceholders(player, placeholder);
+    }
+
     public static boolean hasProtocolLibInstalled() {
         return Bukkit.getPluginManager().getPlugin("ProtocolLib") != null;
     }
@@ -62,16 +77,27 @@ public class ExternalCompatibilityManager {
     }
 
     public static boolean isMythicMob(@NotNull final LivingEntityWrapper lmEntity) {
+        if (lmEntity.getLivingEntity().hasMetadata("mythicmob")){
+            final List<MetadataValue> metadatas = lmEntity.getLivingEntity().getMetadata("mythicmob");
+            for (final MetadataValue md : metadatas){
+                if (md.asBoolean()) return true;
+            }
+        }
 
-        return MythicMobs.inst().getMobManager().isActiveMob(io.lumine.xikage.mythicmobs.adapters.bukkit.BukkitAdapter.adapt(lmEntity.getLivingEntity()));
+        return false;
     }
 
     @NotNull
     public static String getMythicMobInternalName(@NotNull final LivingEntityWrapper lmEntity){
-        if (!isMythicMob(lmEntity)) return "";
+        if (!isMythicMob(lmEntity) || !lmEntity.getLivingEntity().hasMetadata("mobname")) return "";
 
-        final ActiveMob mm = MythicMobs.inst().getMobManager().getMythicMobInstance(lmEntity.getLivingEntity());
-        return mm.getType().getInternalName();
+        final List<MetadataValue> metadatas = lmEntity.getLivingEntity().getMetadata("mobname");
+        for (final MetadataValue md : metadatas){
+            if ("true".equalsIgnoreCase(md.asString()))
+                return md.asString();
+        }
+
+        return "";
     }
 
     /**

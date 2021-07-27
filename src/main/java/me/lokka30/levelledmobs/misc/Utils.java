@@ -32,7 +32,7 @@ public final class Utils {
      */
     @NotNull
     public static List<String> getSupportedServerVersions() {
-        return Arrays.asList("1.14", "1.15", "1.16", "1.17");
+        return Arrays.asList("1.16", "1.17");
     }
 
     @NotNull
@@ -102,6 +102,7 @@ public final class Utils {
         }
     }
 
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public static boolean isDouble(@Nullable final String str) {
         if (isNullOrEmpty(str)) return false;
 
@@ -156,9 +157,8 @@ public final class Utils {
      * @param msg       Message to help de-bugging
      */
     public static void debugLog(@NotNull final LevelledMobs instance, @NotNull final DebugType debugType, @NotNull final String msg) {
-        if (instance.settingsCfg.getStringList("debug-misc").contains(debugType.toString())) {
+        if (instance.helperSettings.getStringSet(instance.settingsCfg, "debug-misc").contains(debugType.toString()))
             logger.info("&8[&bDebug: " + debugType + "&8]&7 " + msg);
-        }
     }
 
     /**

@@ -31,4 +31,6 @@ public interface LivingEntityInterface {
 
     @NotNull
     LevelledMobs getMainInstance();
+
+    double getDistanceFromSpawn();
 }

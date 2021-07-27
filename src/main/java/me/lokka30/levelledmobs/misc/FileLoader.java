@@ -17,10 +17,10 @@ import java.io.FileInputStream;
  */
 public final class FileLoader {
 
-    public static final int SETTINGS_FILE_VERSION = 30;   // Last changed: v3.0.0 b424
-    public static final int MESSAGES_FILE_VERSION = 4;    // Last changed: v3.0.0 b424
-    public static final int CUSTOMDROPS_FILE_VERSION = 9; // Last changed: v3.0.0 b424
-    public static final int RULES_FILE_VERSION = 1;       // Last changed: v3.0.0 b424
+    public static final int SETTINGS_FILE_VERSION = 31;    // Last changed: v3.1.0 b474
+    public static final int MESSAGES_FILE_VERSION = 5;     // Last changed: v3.1.0 b474
+    public static final int CUSTOMDROPS_FILE_VERSION = 10; // Last changed: v3.1.0 b474
+    public static final int RULES_FILE_VERSION = 2;        // Last changed: v3.1.0 b474
 
     private FileLoader() {
         throw new UnsupportedOperationException();
@@ -44,11 +44,13 @@ public final class FileLoader {
 
         YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
         cfg.options().copyDefaults(true);
+        final YmlParsingHelper ymlHelper = new YmlParsingHelper();
 
-        final int fileVersion = cfg.getInt("file-version");
+        final int fileVersion = ymlHelper.getInt(cfg,"file-version");
         final boolean isCustomDrops = cfgName.equals("customdrops.yml");
+        final boolean isRules = cfgName.equals("rules.yml"); // we are not migrating rules at this time
 
-        if (fileVersion < compatibleVersion) {
+        if (!isRules && fileVersion < compatibleVersion) {
             final File backedupFile = new File(plugin.getDataFolder(), cfgName + ".v" + fileVersion + ".old");
 
             // copy to old file
@@ -68,9 +70,9 @@ public final class FileLoader {
             // reload cfg from the updated values
             cfg = YamlConfiguration.loadConfiguration(file);
 
-        } else {
-            checkFileVersion(file, compatibleVersion, cfg.getInt("file-version"));
         }
+        else if (!isRules)
+            checkFileVersion(file, compatibleVersion, ymlHelper.getInt(cfg,"file-version"));
 
         return cfg;
     }
@@ -82,17 +84,19 @@ public final class FileLoader {
         }
     }
 
-    private static void checkFileVersion(final File file, final int compatibleVersion, final int installedVersion) {
-        if (compatibleVersion == installedVersion) {
-            return;
+    public static void saveResourceIfNotExists(final Plugin instance, @NotNull final File file, final String filename) {
+        if (!file.exists()) {
+            Utils.logger.info("&fFile Loader: &7File '&b" + file.getName() + "&7' doesn't exist, creating it now...");
+            instance.saveResource(filename, false);
         }
+    }
 
-        String what;
-        if (installedVersion < compatibleVersion) {
-            what = "outdated";
-        } else {
-            what = "ahead of the compatible version of this file for this version of the plugin";
-        }
+    private static void checkFileVersion(final File file, final int compatibleVersion, final int installedVersion) {
+        if (compatibleVersion == installedVersion)
+            return;
+
+        final String what = installedVersion < compatibleVersion ?
+                "outdated" : "ahead of the compatible version of this file for this version of the plugin";
 
         Utils.logger.error("&fFile Loader: &7The version of &b" + file.getName() + "&7 you have installed is " + what + "! Fix this as soon as possible, else the plugin will most likely malfunction.");
         Utils.logger.error("&fFile Loader: &8(&7You have &bv" + installedVersion + "&7 installed but you are meant to be running &bv" + compatibleVersion + "&8)");

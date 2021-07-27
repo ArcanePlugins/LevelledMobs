@@ -14,5 +14,7 @@ public enum Addition {
     // Prefix of CUSTOM if it is a custom value used in listeners
     CUSTOM_RANGED_ATTACK_DAMAGE,
     CUSTOM_ITEM_DROP,
-    CUSTOM_XP_DROP
+    CUSTOM_XP_DROP,
+
+    CREEPER_BLAST_DAMAGE
 }

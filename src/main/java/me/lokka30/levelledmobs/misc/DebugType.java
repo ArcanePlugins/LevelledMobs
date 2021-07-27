@@ -3,7 +3,7 @@ package me.lokka30.levelledmobs.misc;
 /**
  * Holds the enums used for showing debug data
  *
- * @author lokka30
+ * @author lokka30, stumper66
  */
 public enum DebugType {
     /**
@@ -27,6 +27,8 @@ public enum DebugType {
      * doesn't have attributes for these)
      */
     RANGED_DAMAGE_MODIFICATION,
+
+    CREEPER_BLAST_RADIUS,
 
     /**
      * Logged when LM processes a tamed
@@ -103,5 +105,11 @@ public enum DebugType {
 
     DENIED_RULE_Y_LEVEL,
 
-    DENIED_RULE_STOP_PROCESSING
+    DENIED_RULE_MIN_SPAWN_DISTANCE,
+
+    DENIED_RULE_MAX_SPAWN_DISTANCE,
+
+    DENIED_RULE_STOP_PROCESSING,
+
+    PLAYER_LEVELLING
 }

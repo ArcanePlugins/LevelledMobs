@@ -24,10 +24,9 @@ public class RuleInfo {
         this.ruleName = id;
 
         this.ruleIsEnabled = true;
-        this.entityNameOverrides = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
         this.ruleSourceNames = new TreeMap<>();
-        this.conditions_MobCustomnameStatus = MobCustomNameStatusEnum.NOT_SPECIFIED;
-        this.conditions_MobTamedStatus = MobTamedStatusEnum.NOT_SPECIFIED;
+        this.conditions_MobCustomnameStatus = MobCustomNameStatus.NOT_SPECIFIED;
+        this.conditions_MobTamedStatus = MobTamedStatus.NOT_SPECIFIED;
     }
 
     private String ruleName;
@@ -39,6 +38,7 @@ public class RuleInfo {
     public Boolean customDrops_UseOverride;
     public Boolean stopProcessingRules;
     public Boolean useRandomLevelling;
+    public Boolean mergeEntityNameOverrides;
     public int rulePriority;
     public Integer maxRandomVariance;
     public Integer creeperMaxDamageRadius;
@@ -49,17 +49,22 @@ public class RuleInfo {
     public Integer lowerMobLevelBiasFactor;
     public Integer conditions_ApplyAboveY;
     public Integer conditions_ApplyBelowY;
+    public Integer conditions_MinDistanceFromSpawn;
+    public Integer conditions_MaxDistanceFromSpawn;
     public Double conditions_Chance;
     public Double sunlightBurnAmount;
     public String nametag;
     public String nametag_CreatureDeath;
     public String presetName;
     public String customDrop_DropTableId;
-    public MobCustomNameStatusEnum conditions_MobCustomnameStatus;
-    public MobTamedStatusEnum conditions_MobTamedStatus;
+    public String mobNBT_Data;
+    public HealthIndicator healthIndicator;
+    public MobCustomNameStatus conditions_MobCustomnameStatus;
+    public MobTamedStatus conditions_MobTamedStatus;
     public LevellingStrategy levellingStrategy;
-    @NotNull
-    public Map<String, List<String>> entityNameOverrides;
+    public PlayerLevellingOptions playerLevellingOptions;
+    public Map<String, List<LevelTierMatching>> entityNameOverrides_Level;
+    public Map<String, LevelTierMatching> entityNameOverrides;
     @NotNull
     public final Map<String, String> ruleSourceNames;
     public List<TieredColoringInfo> tieredColoringInfos;
@@ -101,12 +106,24 @@ public class RuleInfo {
                 boolean skipSettingValue = false;
                 final Object presetValue = f.get(preset);
 
-                if (f.getName().equals("entityNameOverrides")){
-                    this.entityNameOverrides.putAll((Map<String, List<String>>) presetValue);
+                if (f.getName().equals("entityNameOverrides") && this.entityNameOverrides != null){
+                    this.entityNameOverrides.putAll((Map<String, LevelTierMatching>) presetValue);
                     skipSettingValue = true;
                 }
+                else if (f.getName().equals("entityNameOverrides_Level") && this.entityNameOverrides_Level != null){
+                    this.entityNameOverrides_Level.putAll((Map<String, List<LevelTierMatching>>) presetValue);
+                    skipSettingValue = true;
+                }
+                else if (f.getName().equals("healthIndicator")){
+                    final HealthIndicator mergingPreset = (HealthIndicator) presetValue;
+                    if (this.healthIndicator == null || mergingPreset.doMerge == null || !mergingPreset.doMerge)
+                        this.healthIndicator = mergingPreset;
+                    else
+                        this.healthIndicator.mergeIndicator(mergingPreset.cloneItem());
 
-                if (f.getName().equals("allMobMultipliers")){
+                    skipSettingValue = true;
+                }
+                else if (f.getName().equals("allMobMultipliers")){
                     FineTuningAttributes mergingPreset = (FineTuningAttributes) presetValue;
                     if (this.allMobMultipliers == null)
                         this.allMobMultipliers = mergingPreset.cloneItem();
@@ -118,7 +135,6 @@ public class RuleInfo {
                 if (presetValue instanceof CachedModalList){
                     CachedModalList<?> cachedModalList_preset = (CachedModalList<?>) presetValue;
                     CachedModalList<?> thisCachedModalList = (CachedModalList<?>) this.getClass().getDeclaredField(f.getName()).get(this);
-                    //if (cachedModalList_preset.isEmpty()) continue;
 
                     if (thisCachedModalList != null && cachedModalList_preset.doMerge)
                         thisCachedModalList.mergeCachedModal(cachedModalList_preset);
@@ -135,13 +151,13 @@ public class RuleInfo {
                     skipSettingValue = true;
                 }
 
-                if (presetValue instanceof TieredColoringInfo){
-                    this.getClass().getDeclaredField(f.getName()).set(this, ((TieredColoringInfo)presetValue).cloneItem());
+                if (presetValue instanceof TieredColoringInfo) {
+                    this.getClass().getDeclaredField(f.getName()).set(this, ((TieredColoringInfo) presetValue).cloneItem());
                     skipSettingValue = true;
                 }
 
-                if (presetValue == MobCustomNameStatusEnum.NOT_SPECIFIED) continue;
-                if (presetValue == MobTamedStatusEnum.NOT_SPECIFIED) continue;
+                if (presetValue == MobCustomNameStatus.NOT_SPECIFIED) continue;
+                if (presetValue == MobTamedStatus.NOT_SPECIFIED) continue;
 
                 // skip default values such as false, 0, 0.0
                 if (presetValue instanceof Boolean && !((Boolean) presetValue)) continue;

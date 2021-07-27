@@ -25,8 +25,8 @@
 # +                                      ++    limzikiki                                     +LM3
 # +                                      ++                                                  +LM3
 # --------------------------------------------------------------------------------------------LM3
-#                                     _____     _
-#                                    | __  |_ _| |___ ___
+#                                     _____     _         
+#                                    | __  |_ _| |___ ___ 
 #                                    |    -| | | | -_|_ -|
 #                                    |__|__|___|_|___|___|
 #
@@ -131,7 +131,7 @@ presets:
         5-6: 3
         7-8: 2
         9-10: 1
-
+        
   player_Levelling:
 #   This Strategy Preset controls the player-stat based levelling system.
     name: 'LVLling Strategy - Player Based NORMAL DIFFIULTY'
@@ -196,7 +196,7 @@ presets:
         scale: 8
         max: 5
         merge: true
-
+        
   normal_difficulty:
 #   This establishes the minimum and maximum levels, and the multipliers, for NORMAL.
     name: 'NORMAL Difficulty Multipliers'
@@ -223,7 +223,7 @@ presets:
         scale: 4
         max: 5
         merge: true
-
+        
   easy_difficulty:
 #   This establishes the minimum and maximum levels, and the multipliers, for EASY.
     name: 'EASY Difficulty Multipliers'
@@ -287,12 +287,12 @@ default-rule:
     - allowed_worlds
     - nametag_using_numbers
 #    - nametag_using_indicator
-#    - hard_difficulty
-    - normal_difficulty
+    - hard_difficulty
+#    - normal_difficulty
 #    - easy_difficulty
 #    - apply_LevellingVariance
-#    - weighted_random_hard
-    - weighted_random_normal
+    - weighted_random_hard
+#    - weighted_random_normal
 #    - weighted_random_easy
 #    - spawn_Levelling
 #    - blended_Levelling
@@ -409,7 +409,7 @@ custom-rules:
             xp-drop: 1.0
       tiered-coloring:
         1-5: '&#22E76B' #Green
-
+            
 
 # +-------------------------------------------------------------------------------------------LM3
 # +                                                                                          +LM3

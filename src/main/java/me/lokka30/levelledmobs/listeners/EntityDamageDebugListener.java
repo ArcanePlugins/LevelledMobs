@@ -42,7 +42,7 @@ public class EntityDamageDebugListener implements Listener {
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void onEntityDamageByEntity(final EntityDamageByEntityEvent event) {
         // Make sure debug entity damage is enabled
-        if (!main.settingsCfg.getBoolean("debug-entity-damage")) return;
+        if (!main.helperSettings.getBoolean(main.settingsCfg, "debug-entity-damage")) return;
 
         // Make sure the mob is a LivingEntity and the attacker is a Player
         if (!(event.getEntity() instanceof LivingEntity) || !(event.getDamager() instanceof Player)) return;

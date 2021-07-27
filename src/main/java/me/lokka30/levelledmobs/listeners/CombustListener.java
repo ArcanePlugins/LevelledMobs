@@ -60,6 +60,8 @@ public class CombustListener implements Listener {
         if (newHealth < 0.0) newHealth = 0.0;
 
         lmEntity.getLivingEntity().setHealth(newHealth);
-        main.levelManager.updateNametag(lmEntity);
+
+        if (lmEntity.isLevelled())
+            main.levelManager.updateNametag(lmEntity);
     }
 }

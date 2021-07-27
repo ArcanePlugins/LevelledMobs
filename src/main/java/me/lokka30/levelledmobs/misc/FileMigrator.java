@@ -39,12 +39,12 @@ public class FileMigrator {
         public final int depth;
         public boolean hasValue;
 
-        public FieldInfo(String value, int depth) {
+        public FieldInfo(final String value, int depth) {
             this.simpleValue = value;
             this.depth = depth;
         }
 
-        public FieldInfo(String value, int depth, boolean isListValue) {
+        public FieldInfo(final String value, final int depth, final boolean isListValue) {
             if (isListValue) addListValue(value);
             else this.simpleValue = value;
             this.depth = depth;
@@ -54,8 +54,8 @@ public class FileMigrator {
             return valueList != null;
         }
 
-        public void addListValue(String value){
-            if (valueList == null) valueList = new ArrayList<>();
+        public void addListValue(final String value){
+            if (valueList == null) valueList = new LinkedList<>();
             valueList.add(value);
         }
 
@@ -86,7 +86,7 @@ public class FileMigrator {
         public int sectionStartingLine;
     }
 
-    private static String getKeyFromList(@NotNull List<String> list, String currentKey){
+    private static String getKeyFromList(final @NotNull List<String> list, final String currentKey){
         if (list.size() == 0) return currentKey;
 
         String result = String.join(".", list);
@@ -103,7 +103,7 @@ public class FileMigrator {
         final File backedupFile = new File(main.getDataFolder(), "rules.yml.old");
         FileUtil.copy(fileRules, backedupFile);
 
-        final int worldListAllowedLine = 994 - 1; // minus 1 is due to 0 indexing of arrays
+        final int worldListAllowedLine = 170 - 1; // minus 1 is due to 0 indexing of arrays
         final int worldListExcludedLine = worldListAllowedLine + 1;
 
         final YamlConfiguration settings = YamlConfiguration.loadConfiguration(fileSettings);
@@ -174,7 +174,7 @@ public class FileMigrator {
             keySections_New = buildKeySections(newConfigLines);
 
             for (final String key : keySections_Old.keySet()){
-                if (key.startsWith("file-version")) continue;
+                if (key.toLowerCase().startsWith("file-version")) continue;
 
                 final KeySectionInfo oldSection = keySections_Old.get(key);
                 if (keySections_New.containsKey(key)){
@@ -224,8 +224,6 @@ public class FileMigrator {
             }
 
             // build an index so we can modify the collection as we enumerate thru it
-            //List<String> newSectionIndex = new ArrayList<>(keySections_New.keySet());
-
             Files.write(to.toPath(), newConfigLines, StandardCharsets.UTF_8, StandardOpenOption.TRUNCATE_EXISTING);
             Utils.logger.info("&fFile Loader: &8(Migration) &7Migrated &b" + to.getName() + "&7 successfully.");
         }
@@ -321,7 +319,7 @@ public class FileMigrator {
         boolean isSettings = to.getName().equalsIgnoreCase("settings.yml");
         boolean isCustomDrops = to.getName().equalsIgnoreCase("customdrops.yml");
         boolean showMessages = !to.getName().equalsIgnoreCase("messages.yml");
-        final List<String> processedKeys = new ArrayList<>();
+        final List<String> processedKeys = new LinkedList<>();
 
         // version 20 = 1.34 - last version before 2.0
         final List<String> version20KeysToKeep = Arrays.asList(
@@ -438,7 +436,7 @@ public class FileMigrator {
                                 if (isSettings && oldVersion <= 20 && !version20KeysToKeep.contains(key)) continue;
                                 if (isSettings && oldVersion > 20 && oldVersion <= 24 && version24Resets.contains(key)) continue;
                                 if (isSettings && oldVersion > 24 && oldVersion <= 26 && version26Resets.contains(key)) continue;
-                                if (key.startsWith("file-version")) continue;
+                                if (key.toLowerCase().startsWith("file-version")) continue;
                                 if (isSettings && key.equalsIgnoreCase("creature-nametag") && oldVersion > 20 && oldVersion < 26
                                         && migratedValue.equals("'&8[&7Level %level%&8 | &f%displayname%&8 | &c%health%&8/&c%max_health% %heart_symbol%&8]'")) {
                                 // updating to the new default introduced in file ver 26 if they were using the previous default
@@ -505,7 +503,7 @@ public class FileMigrator {
                 for (int i = 0; i < newConfigLines.size(); i++){
                     String line = newConfigLines.get(i).trim();
 
-                    if (line.startsWith("file-version")){
+                    if (line.toLowerCase().startsWith("file-version")){
                         startAt = i + 1;
                         break;
                     }
@@ -547,11 +545,7 @@ public class FileMigrator {
 
     @NotNull
     private static String getPadding(final int space){
-        final StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < space; i++)
-            sb.append(" ");
-
-        return sb.toString();
+        return " ".repeat(space);
     }
 
     private static boolean isEntitySameSubkey(@NotNull final String key1, @NotNull final String key2){
@@ -590,7 +584,7 @@ public class FileMigrator {
     @Nonnull
     private static SortedMap<String, FileMigrator.FieldInfo> getMapFromConfig(@NotNull List<String> input) {
         final SortedMap<String, FileMigrator.FieldInfo> configMap = new TreeMap<>();
-        final List<String> currentKey = new ArrayList<>();
+        final List<String> currentKey = new LinkedList<>();
         final String regexPattern = "^[^':]*:.*";
 
         int lineNum = -1;

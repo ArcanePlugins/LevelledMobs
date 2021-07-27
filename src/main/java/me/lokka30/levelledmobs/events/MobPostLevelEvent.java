@@ -1,6 +1,5 @@
 package me.lokka30.levelledmobs.events;
 
-import me.lokka30.levelledmobs.LevelInterface;
 import me.lokka30.levelledmobs.misc.AdditionalLevelInformation;
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
 import org.bukkit.Bukkit;

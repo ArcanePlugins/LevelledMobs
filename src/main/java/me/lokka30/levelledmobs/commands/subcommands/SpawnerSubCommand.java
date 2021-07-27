@@ -139,7 +139,7 @@ public class SpawnerSubCommand implements Subcommand{
         return args[argNumber + 1];
     }
 
-    private void generateSpawner(Player player, final int minLevel, final int maxLevel, final String customDropId, final String customName, final String label){
+    private void generateSpawner(final Player player, final int minLevel, final int maxLevel, final String customDropId, final String customName, final String label){
         final ItemStack item = new ItemStack(Material.SPAWNER);
         final ItemMeta meta = item.getItemMeta();
         if (meta != null){
@@ -203,7 +203,7 @@ public class SpawnerSubCommand implements Subcommand{
         if (!sender.hasPermission("levelledmobs.command.spawner"))
             return null;
 
-        List<String> CommandsList = new ArrayList<>(Arrays.asList("/minlevel", "/maxlevel", "/name", "/customdropid"));
+        final List<String> CommandsList = new ArrayList<>(Arrays.asList("/minlevel", "/maxlevel", "/name", "/customdropid"));
         boolean inQuotes = false;
 
         for (int i = 1; i < args.length; i++) {

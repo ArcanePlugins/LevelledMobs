@@ -1,233 +1,103 @@
-#              _                   _ _          _ __  __       _
-#             | |    _____   _____| | | ___  __| |  \/  | ___ | |__  ___
-#             | |   / _ \ \ / / _ \ | |/ _ \/ _` | |\/| |/ _ \| '_ \/ __|
-#             | |__|  __/\ V /  __/ | |  __/ (_| | |  | | (_) | |_) \__ \
-#             |_____\___| \_/ \___|_|_|\___|\__,_|_|  |_|\___/|_.__/|___/
-#                       The Ultimate RPG Levelled Mobs Solution
-#                           _____     _   _   _ 
-#                          |   __|___| |_| |_|_|___ ___ ___
-#                          |__   | -_|  _|  _| |   | . |_ -|
-#                          |_____|___|_| |_| |_|_|_|_  |___|
-#  ________________________________________________|___|______________________________
-# /.-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.\
-# lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\|\
-#'|    `-'     `-'     `-'     `-'     `-'     `-'     `-'     `-'     `-'     `-'    |\
-# |  Main Developers:                    |  Other Contributors:                       |\
-# |    lokka30 [Author / Developer]      |    Eyrian, iCodinqs, deiphiz, CoolBoy,     |\
-# |    stumper66 [Developer since v2.0]  |    Esophose, 7smile7, UltimaOath, Huge5551,|\
-# |                                      |    konsolas, Shevchik, limzikiki           |\
-# |                                      |                                            |\
-# |----------------------------------+---+--------------------------------------------|\
-# |  ArcanePlugins Support Discord   |  Special Thanks:                               |\
-# |    https://discord.gg/RQ8M4A5    |    ArcanePlugins Developers and Testers!       |\
-# |                                  |    Donators, Patrons, and other supporters!    |\
-# |                                  |    SpigotMC, PaperMC, ProtocolLib, and bStats! |\
-# |                                  |                                                |\
-# |.-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.|\
-# lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\|\
-#'|    `-'     `-'     `-'     `-'     `-'     `-'     `-'     `-'     `-'     `-'    |\
-# |  Useful Resources:                                                                |\
-# |    LevelledMobs Spigot                                                            |\
-# |      Download the latest updates or leave an honest review!                       |\
-# |        https://www.spigotmc.org/resources/levelledmobs-for-1-14-x-1-16-x.74304/   |\
-# |                                                                                   |\
-# |    LevelledMobs GitHub                                                            |\
-# |      Browse the code and wiki resources for LevelledMobs                          |\
-# |        https://github.com/lokka30/LevelledMobs/                                   |\
-# |                                                                                   |\
-# |    YAML-Parser                                                                    |\
-# |      Check your config files for any YAML errors.                                 |\
-# |      Good first step before seeking support!                                      |\
-# |        https://yaml-online-parser.appspot.com/                                    |\
-# |                                                                                   |\
-# |  Dependencies:                                                                    |\
-# |    ProtocolLib:                                                                   |\
-# |      A 'soft dependency'; Not *required* but highly recommended.                  |\
-# |      Without this, the plugin will not show LevelledMobs's nametags.              |\
-# |      Entities may still level without the nametag present.                        |\
-# |      https://www.spigotmc.org/resources/protocollib.1997/                         |\
-# |                                                                                   |\
-# |  Recommended Configuration:                                                       |\
-# |    LevelledMobs is tested using the latest PaperMC and SpigotMC server software.  |\
-# |    While other solutions may work, compatibility is not guaranteed.               |\
-# |    LevelledMobs comes ready-to-go out of the box with the default configuration,  ||\
-# |    which has been play-tested beforehand to provide an experience a bit harder    |||\
-# |    than the HARD vanilla difficulty, taking into account the vanilla armors       ||||\
-# |    and weapons when combined with the vanilla enchantments, making the toughest   |||||\
-# |    entities still challenging while not impossible.                               ||||||\
-# |                                                                                   |||||||\
-# |.-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.     .-.||||||||\
-# lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\lm\|||||||||\
-#'|    `-'     `-'     `-'     `-'     `-'     `-'     `-'     `-'     `-'     `-'    ||||||||||\
-# |||---------------------------------------------------------------------------------|||||||||||
-# |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
-# |||-------------------------------------------------------------------------------------------|
-# ||  ADVANCED USERS ONLY                                                                       |
-# ||  Should nametag packets be ignored if the mob has died?                                    |
-# ||                                                                                            |
-# ||     true | Packets will be ignored once the entity has reached zero health.                |
-# ||    false | Packets will continue to be sent once entity has reached zero health.           |
-# ||          | This is not recommended                                                         |
-# ||                                                                                            |
-# ||  This system attempts to fix any conflicts with plugins similar to ViaBackwards.           |
-# ||  It is not recommended that you change this setting unless you fully understand            |
-# ||  what you are doing.                                                                       |
-# ||                                                                                            |
-# |||-------------------------------------------------------------------------------------------|
-assert-entity-validity-with-nametag-packets: true
+#                    _                   _ _          _ __  __       _
+#                   | |    _____   _____| | | ___  __| |  \/  | ___ | |__  ___
+#                   | |   / _ \ \ / / _ \ | |/ _ \/ _` | |\/| |/ _ \| '_ \/ __|
+#                   | |__|  __/\ V /  __/ | |  __/ (_| | |  | | (_) | |_) \__ \
+#                   |_____\___| \_/ \___|_|_|\___|\__,_|_|  |_|\___/|_.__/|___/
+#                             The Ultimate RPG Levelled Mobs Solution
+#
+# --------------------------------------------------------------------------------------------LM3
+# +                                      ++                                                  +LM3
+# +  Main Developers                     ++  Need Support Documentation?                     +LM3
+# +    lokka30                           ++    https://github.com/lokka30/LevelledMobs/wiki  +LM3
+# +      Original Author and Developer   ++                                                  +LM3
+# +      https://ko-fi.com/lokka30       ++  ArcanePlugins Support Discord                   +LM3
+# +                                      ++    https://discord.gg/RQ8M4A5                    +LM3
+# +                                      ++                                                  +LM3
+# +    stumper66                         ++  Special Thanks:                                 +LM3
+# +      Developer since v2              ++    ArcanePlugins Developers and Testers!         +LM3
+# +      https://ko-fi.com/penalbuffalo  ++    Donators, Patrons, and other Supporters!      +LM3
+# +                                      ++    SpigotMC, PaperMC, ProtocolLib, NBT-API,      +LM3
+# +                                      ++    PlaceholderAPI, and bStats!                   +LM3
+# +    UltimaOath                        ++                                                  +LM3
+# +      Docs and Config since v2        ++  Other Contributors:                             +LM3
+# +      Support the actual Developers!  ++    Eyrian, iCodinqs, deiphiz, CoolBoy, Esophose, +LM3
+# +                                      ++    7smile7, Hugo5551, konsolas, Shevchik,        +LM3
+# +                                      ++    limzikiki                                     +LM3
+# +                                      ++                                                  +LM3
+# --------------------------------------------------------------------------------------------LM3
+#                               _____     _   _   _ 
+#                              |   __|___| |_| |_|_|___ ___ ___
+#                              |__   | -_|  _|  _| |   | . |_ -|
+#                              |_____|___|_| |_| |_|_|_|_  |___|
+#                                                      |___|
+#
+# --------------------------------------------------------------------------------------------LM3
+# ||  ADVANCED USERS ONLY | DEBUG
+debug-entity-damage: false
+debug-misc: [ '' ]
 
-
-# |||-------------------------------------------------------------------------------------------|
-# ||  ADVANCED USERS ONLY                                                                       |
-# ||  Automatic Asynchronous Nametag and Levelling Update                                       |
-# ||                                                                                            |
-# ||  This setting will check the area near players for any entities which should have          |
-# ||  been levelled, or are missing their LM attributes for whatever reason.                    |
-# ||                                                                                            |
-# ||  By default, this is set to 6 seconds.                                                     |
-# ||  It is not recommended that you change this setting unless you fully understand            |
-# ||  what you are doing.                                                                       |
-# ||                                                                                            |
-# |||-------------------------------------------------------------------------------------------|
+# ||  ADVANCED USERS ONLY | SYSTEM CRITICAL
+# ||  Automatic Asynchronous Nametag and Levelling Update
 nametag-auto-update-task-period: 6
 
+# ||  ADVANCED USERS ONLY | SYSTEM CRITICAL
+# ||  Customize Summon Command Limit
+customize-summon-command-limit: 10
 
-# |||-------------------------------------------------------------------------------------------|
-# ||  ADVANCED USERS ONLY                                                                       |
-# ||  Mob Head Drop Multiplier                                                                  |
-# ||                                                                                            |
-# ||  On some servers, PLAYER_HEADS are too valuable of a resource to be multiplied             |
-# ||  with the standard item drops. That is why this setting exists: to decide                  |
-# ||  whether you want head/skull drops to be multiplied alongside the item multiplier.         |
-# ||                                                                                            |
-# ||   true | PLAYER_HEADS will be multiplied using item-drop value                             |
-# ||  false | PLAYER_HEADS will NOT be multiplied (Default)                                     |
-# ||                                                                                            |
-# |||-------------------------------------------------------------------------------------------|
-mobs-multiply-head-drops: false
+# ||  ADVANCED USERS ONLY | SYSTEM CRITICAL
+# ||  CustomCommands Limiter
+customcommand-amount-limit: 100
 
+# ||  ADVANCED USERS ONLY | SYSTEM CRITICAL | IRREVERSIBLE
+# ||  Use CustomName field instead of packets for nametags
+use-customname-for-mob-nametags: false
 
-# |||-------------------------------------------------------------------------------------------|
-# ||  ADVANCED USERS ONLY | SYSTEM CRITICAL                                                     |
-# ||  CustomCommands Limiter                                                                    |
-# ||                                                                                            |
-# ||  This setting helps prevent your server from crashing due to a sudden influx of commands   |
-# ||  being run repeatedly. If you specify an 'amount:' within a CustomCommand drop, and that   |
-# ||  value is higher than this limiter, it will instead use the limit.                         |
-# ||                                                                                            |
-# ||  IT IS RECOMMENDED THAT YOU DO NOT CHANGE THIS SETTING WITHOUT UNDERSTANDING WHAT          |
-# ||  IMPACT THIS CHOICE WILL HAVE ON YOUR SERVER! YOU CAN CRASH YOUR SERVER BY RUNNING         |
-# ||  TOO MANY COMMANDS AT ONCE, AND THIS HELPS PREVENT THAT FROM OCCURRING.                    |
-# ||                                                                                            |
-# |||-------------------------------------------------------------------------------------------|
-customcommand-amount-limit: 10
+# ||  ADVANCED USERS ONLY
+# ||  Should nametag packets be ignored if the mob has died?
+assert-entity-validity-with-nametag-packets: true
 
-
-# |||-------------------------------------------------------------------------------------------|
-# ||  ADVANCED USERS ONLY                                                                       |
-# ||  Miscellaneous LevelledMobs Settings                                                       |
-# ||                                                                                            |
-# ||   mob-process-delay:                                                                       |
-# ||     | This will put an optional delay for when LevelledMobs processed a                    |
-# ||     | mob.  Useful if you have 3rd party plugins that modify mobs and this                 |
-# ||     | gives them a chance to process the mob fist.                                         |
-# ||                                                                                            |
-# ||   summon-command-spawn-distance-from-player:                                               |
-# ||     | This setting establishes how far away from a player an entity will spawn             |
-# ||     | when you use LevelledMobs' "/lm summon" command.                                     |
-# ||     | By default, the radius is 5 blocks.                                                  |
-# ||                                                                                            |
-# ||   kill-skip-conditions:                                                                    |
-# ||     | When using "/lm kill" command, any entity with the following tags set to             |
-# ||     | true will automatically be skipped. This is useful to prevent pets or                |
-# ||     | other unintended deaths, and it is recommended that you do not adjust                |
-# ||     | these settings without understanding what you are doing.                             |
-# ||                                                                                            |
-# ||     nametagged:                                                                            |
-# ||       | Entities with a nametag already applied                                            |
-# ||                                                                                            |
-# ||     tamed:                                                                                 |
-# ||       | Entities who have been already tamed                                               |
-# ||                                                                                            |
-# ||     leashed:                                                                               |
-# ||       | Entities currently attached to a leash                                             |
-# ||                                                                                            |
-# ||     convertingZombieVillager:                                                              |
-# ||       | Zombie Villagers in the process of transforming.                                   |
-# ||                                                                                            |
-# ||   ensure-mobs-are-levelled-on-chunk-load:                                                  |
-# ||       | This janitor-system runs through all entities in a loaded chunk to ensure          |
-# ||       | entities which *should* be levelled *are* levelled.                                |
-# ||       | We recommend that you do not change this setting.                                  |
-# ||                                                                                            |
-# ||   attributes-use-preset-base-values:                                                       |
-# ||       | This system will determine whether LevelledMobs uses the attribute value           |
-# ||       | spawned with the entity versus a static value. Some other plugins will             |
-# ||       | modify the entity's attributes before LevelledMobs has a chance to apply           |
-# ||       | level adjustments, which can cause inaccurate or unintended level values.          |
-# ||       | Setting this to true will utilize an internal list of attribute values based       |
-# ||       | on the vanilla values. This list provides the identical attribute values           |
-# ||       | each time, including things like horse statistics.                                 |
-# ||       | By default, this is set to false.                                                  |
-# ||                                                                                            |
-# |||-------------------------------------------------------------------------------------------|
+# ||  ADVANCED USERS ONLY
+# ||  Mob Processing Delay
 mob-process-delay: 0
+
+# ||  ADVANCED USERS ONLY
+# ||  Ensure Mobs are Levelled on chunk load
+ensure-mobs-are-levelled-on-chunk-load: true
+
+# ||  ADVANCED USERS ONLY
+# ||  Use Static Attributes File
+attributes-use-preset-base-values: false
+
+# ||  ADVANCED USERS ONLY
+# ||  Level Entities on Spawn
+level-mobs-upon-spawn: true
+
+# ||  ADVANCED USERS ONLY
+# ||  LM Summon Command Spawn Distance from Players
 summon-command-spawn-distance-from-player: 5
+
+# ||  Check for Updates?
+use-update-checker: true
+
+# ||  Kill Skip Conditions
 kill-skip-conditions:
   nametagged: true
   tamed: true
   leashed: true
   convertingZombieVillager: true
-ensure-mobs-are-levelled-on-chunk-load: true
-attributes-use-preset-base-values: false
+
+# ||  Mob Head Drop Multiplier
+mobs-multiply-head-drops: false
+
+# ||  Player Levelling Strategy Settings
+player-levelling-mob-distance-squared: 250
+player-levelling-relevel-min-time: 5000
 
 
-# |||-------------------------------------------------------------------------------------------|
-# ||  ADVANCED USERS ONLY                                                                       |
-# ||  Updates and Debug Settings                                                                |
-# ||                                                                                            |
-# ||  You should only change these settings by the direction of an official LevelledMobs        |
-# ||  developer, as they produce plenty of console spam and could potentially break             |
-# ||  your plugin due to an incorrect value.                                                    |
-# ||                                                                                            |
-# ||  The update task runs asynchronously (Async), and is only conducted once when the          |
-# ||  server starts up, and should not affect performance in any way.                           |
-# ||                                                                                            |
-# ||  The Debug-Misc setting is a very powerful tool to get to the bottom of any potential      |
-# ||  issues LevelledMobs might encounter while attempting to apply rules and levels.           |
-# ||  It will also report nearly every way LevelledMobs interacts with an entity depending      |
-# ||  on which tag you use. The tags listed below consist of the entire tree of possible        |
-# ||  options. It is NOT RECOMMENDED that you use this system without direction from a          |
-# ||  LevelledMobs Developer while diagnosing any potential issues, and should not be left      |
-# ||  on to prevent console-spam.                                                               |
-# ||                                                                                            |
-# ||          'APPLY_LEVEL_SUCCESS' | Reports when level applied successfully                   |
-# ||             'APPLY_LEVEL_FAIL' | Reports when level was not applied                        |
-# ||                 'ENTITY_SPAWN' | Reports when an entity has been spawned                   |
-# ||   'RANGED_DAMAGE_MODIFICATION' | Reports when LM adjusts ranged damage output              |
-# ||                  'ENTITY_TAME' | Reports when an entity has been tamed                     |
-# ||      'SET_LEVELLED_ITEM_DROPS' | Reports when LM adjusts item or experience drops          |
-# ||               'UPDATE_NAMETAG' | Reports when the nametag of an entity was updated         |
-# ||                 'CUSTOM_DROPS' | Reports all CustomDrops related debug options             |
-# ||        'ENTITY_TRANSFORM_FAIL' | Reports when a transformed entity does not level          |
-# ||                  'ENTITY_MISC' | Reports when a baby entity ages to levelled adult         |
-# ||              'CUSTOM_COMMANDS' | Reports all CustomCommands related debug options          |
-# ||                  'MOB_SPAWNER' | Reports entities which have spawned from spawner cube     |
-# ||    'DENIED_RULE_ENTITIES_LIST' | Reports denied levelling due to excluded entity           |
-# ||         'DENIED_RULE_MINLEVEL' | Reports denied levelling due to min level                 |
-# ||         'DENIED_RULE_MAXLEVEL' | Reports denied levelling due to max level                 |
-# ||       'DENIED_RULE_WORLD_LIST' | Reports denied levelling due to excluded world            |
-# ||       'DENIED_RULE_BIOME_LIST' | Reports denied levelling due to excluded biome            |
-# ||    'DENIED_RULE_PLUGIN_COMPAT' | Reports denied levelling due to plugin compatibility      |
-# ||     'DENIED_RULE_SPAWN_REASON' | Reports denied levelling due to 'other' spawn reason      |
-# ||      'DENIED_RULE_CUSTOM_NAME' | Reports denied levelling due to being nametagged          |
-# ||           'DENIED_RULE_CHANCE' | Reports denied levelling due to chance variable           |
-# ||        'DENIED_RULE_WG_REGION' | Reports denied levelling due to a WorldGuard region       |
-# ||          'DENIED_RULE_Y_LEVEL' | Reports denied levelling due to a y-level above/below rule|
-# ||  'DENIED_RULE_STOP_PROCESSING' | Reports denied levelling due to a stop-processing rule    |
-# ||                                                                                            |
-# |||-------------------------------------------------------------------------------------------|
-use-update-checker: true
-debug-entity-damage: false
-debug-misc: [ '' ]
-file-version: 30
+# +-------------------------------------------------------------------------------------------LM3
+# +                                                                                          +LM3
+# +   Advanced Settings                                                                      +LM3
+# +   DO NOT EDIT BEYOND HERE WITHOUT DEVELOPER APPROVAL                                     +LM3
+# +                                                                                          +LM3
+# +-------------------------------------------------------------------------------------------LM3
+file-version: 31

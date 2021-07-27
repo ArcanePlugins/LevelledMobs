@@ -90,7 +90,8 @@ public class PAPIManager extends PlaceholderExpansion {
         if (lmEntity.getLivingEntity().getCustomName() != null)
             return lmEntity.getLivingEntity().getCustomName();
 
-        final String overridenName = main.rulesManager.getRule_EntityOverriddenName(lmEntity);
+        final boolean useCustomNameForNametags = main.helperSettings.getBoolean(main.settingsCfg, "use-customname-for-mob-nametags");
+        final String overridenName = main.rulesManager.getRule_EntityOverriddenName(lmEntity, useCustomNameForNametags);
         return overridenName == null ?
                 Utils.capitalize(lmEntity.getTypeName().replaceAll("_", " ")) :
                 MessageUtils.colorizeAll(overridenName);

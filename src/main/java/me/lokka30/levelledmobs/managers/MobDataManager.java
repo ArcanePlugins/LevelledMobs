@@ -11,6 +11,8 @@ import org.bukkit.entity.EntityType;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -44,7 +46,7 @@ public class MobDataManager {
     public final boolean isLevelledDropManaged(final EntityType entityType, @NotNull final Material material) {
         // Head drops
         if (material.toString().endsWith("_HEAD") || material.toString().endsWith("_SKULL")) {
-            if (!main.settingsCfg.getBoolean("mobs-multiply-head-drops"))
+            if (!main.helperSettings.getBoolean(main.settingsCfg, "mobs-multiply-head-drops"))
                 return false;
         }
 
@@ -53,7 +55,7 @@ public class MobDataManager {
     }
 
     public void setAdditionsForLevel(@NotNull final LivingEntityWrapper lmEntity, final Attribute attribute, final Addition addition) {
-        final boolean useStaticValues = main.settingsCfg.getBoolean("attributes-use-preset-base-values");
+        final boolean useStaticValues = main.helperSettings.getBoolean(main.settingsCfg, "attributes-use-preset-base-values");
         final double defaultValue = useStaticValues ?
                 (double) Objects.requireNonNull(getAttributeDefaultValue(lmEntity, attribute)) :
                 Objects.requireNonNull(lmEntity.getLivingEntity().getAttribute(attribute)).getBaseValue();
@@ -61,16 +63,35 @@ public class MobDataManager {
 
         if (additionValue == 0.0) return;
 
-        final AttributeModifier mod = new AttributeModifier("health", additionValue, AttributeModifier.Operation.ADD_NUMBER);
+        final AttributeModifier mod = new AttributeModifier(attribute.name(), additionValue, AttributeModifier.Operation.ADD_NUMBER);
         final AttributeInstance attrib = lmEntity.getLivingEntity().getAttribute(attribute);
 
         if (attrib != null) {
-            if (useStaticValues) attrib.setBaseValue(defaultValue);
-            attrib.addModifier(mod);
+            double existingDamage = 0;
+            if (attribute == Attribute.GENERIC_MAX_HEALTH && lmEntity.getLivingEntity().getAttribute(attribute) != null)
+                existingDamage = Objects.requireNonNull(lmEntity.getLivingEntity().getAttribute(attribute)).getValue() - lmEntity.getLivingEntity().getHealth();
+
+            if (attrib.getModifiers().size() > 0){
+                final List<AttributeModifier> existingMods = new ArrayList<>(attrib.getModifiers().size());
+                existingMods.addAll(attrib.getModifiers());
+
+                for (final AttributeModifier existingMod : existingMods)
+                    attrib.removeModifier(existingMod);
+            }
+
+            if (useStaticValues)
+                attrib.setBaseValue(defaultValue);
+            else
+                attrib.addModifier(mod);
 
             // MAX_HEALTH specific: set health to max health
             if (attribute == Attribute.GENERIC_MAX_HEALTH) {
-                lmEntity.getLivingEntity().setHealth(attrib.getValue());
+                double newHealth = attrib.getValue() - existingDamage;
+                if (newHealth < 0.0) newHealth = 0.0;
+                try {
+                    lmEntity.getLivingEntity().setHealth(newHealth);
+                }
+                catch (IllegalArgumentException ignored) {}
             }
         }
     }
@@ -98,6 +119,9 @@ public class MobDataManager {
                     break;
                 case CUSTOM_RANGED_ATTACK_DAMAGE:
                     if (lmEntity.getFineTuningAttributes().rangedAttackDamage != null) attributeValue = lmEntity.getFineTuningAttributes().rangedAttackDamage;
+                    break;
+                case CREEPER_BLAST_DAMAGE:
+                    if (lmEntity.getFineTuningAttributes().creeperExplosionRadius != null) attributeValue = lmEntity.getFineTuningAttributes().creeperExplosionRadius;
                     break;
             }
         }

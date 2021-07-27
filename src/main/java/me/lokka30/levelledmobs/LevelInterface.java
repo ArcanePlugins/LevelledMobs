@@ -16,11 +16,20 @@ import java.util.HashSet;
  * apply and modify the main functions
  * of LevelledMobs.
  *
- * @author lokka30
+ * @author lokka30, stumper66
  * @since 2.5
  */
 public interface LevelInterface {
 
+    /**
+     * Check if an existing mob is allowed to be levelled, according to the
+     * user's configuration.
+     * <p>
+     * Thread-safety intended, but not tested.
+     *
+     * @param lmInterface target mob
+     * @return if the mob is allowed to be levelled (yes/no), with reason
+     */
     @NotNull
     LevellableState getLevellableState(@NotNull final LivingEntityInterface lmInterface);
 

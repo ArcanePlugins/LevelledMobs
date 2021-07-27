@@ -9,13 +9,13 @@ import me.lokka30.levelledmobs.managers.ExternalCompatibilityManager;
 import me.lokka30.levelledmobs.managers.LevelManager;
 import me.lokka30.levelledmobs.managers.PAPIManager;
 import me.lokka30.levelledmobs.managers.WorldGuardManager;
-import me.lokka30.levelledmobs.misc.FileLoader;
-import me.lokka30.levelledmobs.misc.FileMigrator;
-import me.lokka30.levelledmobs.misc.Utils;
-import me.lokka30.levelledmobs.misc.VersionInfo;
+import me.lokka30.levelledmobs.misc.*;
+import me.lokka30.levelledmobs.rules.MetricsInfo;
 import me.lokka30.microlib.UpdateChecker;
 import me.lokka30.microlib.VersionUtils;
 import org.bstats.bukkit.Metrics;
+import org.bstats.charts.SimpleBarChart;
+import org.bstats.charts.SimplePie;
 import org.bukkit.Bukkit;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -41,6 +41,7 @@ public class Companion {
         this.main = main;
         this.updateResult = new LinkedList<>();
         buildUniversalGroups();
+        this.metricsInfo = new MetricsInfo(main);
     }
 
     public HashSet<EntityType> groups_HostileMobs;
@@ -49,6 +50,7 @@ public class Companion {
     public HashSet<EntityType> groups_NetherMobs;
     final private PluginManager pluginManager = Bukkit.getPluginManager();
     public List<String> updateResult;
+    final private MetricsInfo metricsInfo;
 
     void checkWorldGuard() {
         // Hook into WorldGuard, register LM's flags.
@@ -63,7 +65,7 @@ public class Companion {
         Utils.logger.info("&fCompatibility Checker: &7Checking compatibility with your server...");
 
         // Using a List system in case more compatibility checks are added.
-        final List<String> incompatibilities = new ArrayList<>();
+        final List<String> incompatibilities = new LinkedList<>();
 
         // Check the MC version of the server.
         if (!VersionUtils.isOneFourteen()) {
@@ -89,7 +91,7 @@ public class Companion {
         if (!file.exists()) return 0;
 
         final YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
-        return cfg.getInt("file-version");
+        return main.helperSettings.getInt(cfg,"file-version");
     }
 
     // Note: also called by the reload subcommand.
@@ -100,6 +102,8 @@ public class Companion {
         FileLoader.saveResourceIfNotExists(main, new File(main.getDataFolder(), "license.txt"));
 
         main.rulesParsingManager.parseRulesMain(FileLoader.loadFile(main, "rules", FileLoader.RULES_FILE_VERSION));
+
+        main.configUtils.playerLevellingEnabled = main.rulesManager.isPlayerLevellingEnabled();
 
         final int settingsVersion = getSettingsVersion();
         if (settingsVersion > 20 && settingsVersion < 30) { // anything older than 2.0 will not be migrated
@@ -119,6 +123,7 @@ public class Companion {
         main.customDropsHandler.customDropsParser.loadDrops(
                 FileLoader.loadFile(main, "customdrops", FileLoader.CUSTOMDROPS_FILE_VERSION)
         );
+
         if (!isReload) {
             main.attributesCfg = loadEmbeddedResource("defaultAttributes.yml");
             main.dropsCfg = loadEmbeddedResource("defaultDrops.yml");
@@ -138,6 +143,8 @@ public class Companion {
         }
 
         main.configUtils.load();
+        main.playerLevellingDistance = main.helperSettings.getDouble(main.settingsCfg, "player-levelling-mob-distance-squared", 150);
+        main.playerLevellingMinRelevelTime = main.helperSettings.getInt(main.settingsCfg, "player-levelling-relevel-min-time", 5000);
 
         return true;
     }
@@ -167,10 +174,11 @@ public class Companion {
         main.queueManager_mobs.start();
         main.queueManager_nametags.start();
         main.levelManager.entitySpawnListener = new EntitySpawnListener(main); // we're saving this reference so the summon command has access to it
+        main.levelManager.entitySpawnListener.processMobSpawns = main.helperSettings.getBoolean(main.settingsCfg, "level-mobs-upon-spawn", true);
         main.entityDamageDebugListener = new EntityDamageDebugListener(main);
         main.blockPlaceListener = new BlockPlaceListener(main);
 
-        if (main.settingsCfg.getBoolean("debug-entity-damage")) {
+        if (main.helperSettings.getBoolean(main.settingsCfg,"debug-entity-damage")) {
             // we'll load and unload this listener based on the above setting when reloading
             main.configUtils.debugEntityDamageWasEnabled = true;
             pluginManager.registerEvents(main.entityDamageDebugListener, main);
@@ -195,10 +203,7 @@ public class Companion {
             main.papiManager.register();
         }
 
-        if (ExternalCompatibilityManager.hasMythicMobsInstalled())
-            pluginManager.registerEvents(new MythicMobsListener(main), main);
-
-        if (main.settingsCfg.getBoolean("ensure-mobs-are-levelled-on-chunk-load", true))
+        if (main.helperSettings.getBoolean(main.settingsCfg,"ensure-mobs-are-levelled-on-chunk-load", true))
             pluginManager.registerEvents(main.chunkLoadListener, main);
     }
 
@@ -227,12 +232,24 @@ public class Companion {
     }
 
     void setupMetrics() {
-        new Metrics(main, 6269);
+        final Metrics metrics = new Metrics(main, 6269);
+
+        metrics.addCustomChart(new SimplePie("maxlevel_used", metricsInfo::getMaxLevelRange));
+        metrics.addCustomChart(new SimplePie("custom_rules_used", metricsInfo::getCustomRulesUsed));
+        metrics.addCustomChart(new SimplePie("custom_drops_enabled", metricsInfo::getUsesCustomDrops));
+        metrics.addCustomChart(new SimplePie("health_indicator_enabled", metricsInfo::getUsesHealthIndicator));
+        metrics.addCustomChart(new SimplePie("levelling_strategy", metricsInfo::getLevellingStrategy));
+        metrics.addCustomChart(new SimplePie("autoupdate_checker_enabled", metricsInfo::usesAutoUpdateChecker));
+        metrics.addCustomChart(new SimplePie("level_mobs_upon_spawn", metricsInfo::levelMobsUponSpawn));
+        metrics.addCustomChart(new SimplePie("check_mobs_on_chunk_load", metricsInfo::checkMobsOnChunkLoad));
+        metrics.addCustomChart(new SimplePie("custom-entity-names", metricsInfo::customEntityNamesCount));
+        metrics.addCustomChart(new SimplePie("utilizes-nbtdata", metricsInfo::usesNbtData));
+        metrics.addCustomChart(new SimpleBarChart("enabled-compatibility", metricsInfo::enabledCompats));
     }
 
     //Check for updates on the Spigot page.
     void checkUpdates() {
-        if (main.settingsCfg.getBoolean("use-update-checker", true)) {
+        if (main.helperSettings.getBoolean(main.settingsCfg,"use-update-checker", true)) {
             final UpdateChecker updateChecker = new UpdateChecker(main, 74304);
             updateChecker.getLatestVersion(latestVersion -> {
                 final String currentVersion = updateChecker.getCurrentVersion().split(" ")[0];

@@ -1,5 +1,6 @@
 package me.lokka30.levelledmobs.events;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
@@ -41,6 +42,7 @@ public class SummonedMobPreLevelEvent extends Event implements Cancellable {
     private int level;
 
     public SummonedMobPreLevelEvent(LivingEntity entity, int level) {
+        super(!Bukkit.isPrimaryThread());
         this.entity = entity;
         this.level = level;
     }

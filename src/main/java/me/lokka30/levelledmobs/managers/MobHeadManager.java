@@ -142,7 +142,8 @@ public class MobHeadManager {
             final Player killerPlayer = lmEntity.getLivingEntity().getKiller();
             if (killerPlayer != null)
                 killerName = killerPlayer.getDisplayName();
-            final String overridenName = main.rulesManager.getRule_EntityOverriddenName(lmEntity);
+            final boolean useCustomNameForNametags = main.helperSettings.getBoolean(main.settingsCfg, "use-customname-for-mob-nametags");
+            final String overridenName = main.rulesManager.getRule_EntityOverriddenName(lmEntity, useCustomNameForNametags);
             final String mobName = overridenName == null ?
                     Utils.capitalize(lmEntity.getTypeName().replace("_", " ")) :
                     overridenName;

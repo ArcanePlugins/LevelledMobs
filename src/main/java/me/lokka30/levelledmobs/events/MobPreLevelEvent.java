@@ -7,7 +7,6 @@ import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.HashSet;
 
@@ -64,7 +63,7 @@ public class MobPreLevelEvent extends Event implements Cancellable {
     private final LevelCause levelCause;
     private final HashSet<AdditionalLevelInformation> additionalInformation;
 
-    public MobPreLevelEvent(@NotNull final LivingEntity entity, final int level, @NotNull final LevelCause levelCause, @Nullable final HashSet<AdditionalLevelInformation> additionalInformation) {
+    public MobPreLevelEvent(@NotNull final LivingEntity entity, final int level, @NotNull final LevelCause levelCause, final @NotNull HashSet<AdditionalLevelInformation> additionalInformation) {
         super(!Bukkit.isPrimaryThread());
         this.entity = entity;
         this.level = level;

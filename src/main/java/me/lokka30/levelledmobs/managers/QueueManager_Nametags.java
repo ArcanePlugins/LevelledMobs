@@ -6,11 +6,10 @@ import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 import me.lokka30.levelledmobs.LevelledMobs;
-import me.lokka30.levelledmobs.misc.DebugType;
-import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
-import me.lokka30.levelledmobs.misc.QueueItem;
-import me.lokka30.levelledmobs.misc.Utils;
+import me.lokka30.levelledmobs.misc.*;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Tameable;
+import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 
@@ -80,8 +79,13 @@ public class QueueManager_Nametags {
 
     private void updateNametag(final @NotNull LivingEntityWrapper lmEntity, final String nametag, final List<Player> players) {
 
+        if (main.helperSettings.getBoolean(main.settingsCfg, "use-customname-for-mob-nametags")){
+            updateNametag_CustomName(lmEntity, nametag);
+            return;
+        }
+
         if (!ExternalCompatibilityManager.hasProtocolLibInstalled()) return;
-        if (main.settingsCfg.getBoolean("assert-entity-validity-with-nametag-packets") && !lmEntity.getLivingEntity().isValid())
+        if (main.helperSettings.getBoolean(main.settingsCfg, "assert-entity-validity-with-nametag-packets") && !lmEntity.getLivingEntity().isValid())
             return;
 
         final WrappedDataWatcher dataWatcher;
@@ -139,5 +143,20 @@ public class QueueManager_Nametags {
                 ex.printStackTrace();
             }
         }
+    }
+
+    private void updateNametag_CustomName(final @NotNull LivingEntityWrapper lmEntity, final String nametag){
+        if (lmEntity.getPDC().has(main.levelManager.hasCustomNameTag, PersistentDataType.INTEGER))
+            return;
+
+        final boolean hadCustomName = lmEntity.getLivingEntity().getCustomName() != null;
+
+        lmEntity.getLivingEntity().setCustomName(nametag);
+        lmEntity.getLivingEntity().setCustomNameVisible(true);
+
+        final boolean isTamable = (lmEntity.getLivingEntity() instanceof Tameable);
+
+        if (!hadCustomName && !isTamable && !lmEntity.getTypeName().equalsIgnoreCase("Axolotl"))
+            lmEntity.getLivingEntity().setRemoveWhenFarAway(true);
     }
 }

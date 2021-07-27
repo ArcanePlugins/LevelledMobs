@@ -27,7 +27,7 @@ public class ChunkLoadListener implements Listener {
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void onChunkLoad(final ChunkLoadEvent event) {
 
-        if (!main.settingsCfg.getBoolean("ensure-mobs-are-levelled-on-chunk-load", true)) return;
+        if (!main.helperSettings.getBoolean(main.settingsCfg, "ensure-mobs-are-levelled-on-chunk-load", true)) return;
 
         // Check each entity in the chunk
         for (final Entity entity : event.getChunk().getEntities()) {

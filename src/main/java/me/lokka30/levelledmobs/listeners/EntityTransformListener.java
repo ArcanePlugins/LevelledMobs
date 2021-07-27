@@ -1,6 +1,5 @@
 package me.lokka30.levelledmobs.listeners;
 
-import me.lokka30.levelledmobs.LevelInterface;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.misc.*;
 import org.bukkit.entity.Entity;
@@ -30,7 +29,6 @@ public class EntityTransformListener implements Listener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void onTransform(@NotNull final EntityTransformEvent event) {
-
         // is the original entity a living entity
         if (!(event.getEntity() instanceof LivingEntity)) {
             Utils.debugLog(main, DebugType.ENTITY_TRANSFORM_FAIL, event.getEntity().getType().name() + ": entity was &bnot&7 an instance of LivingEntity");

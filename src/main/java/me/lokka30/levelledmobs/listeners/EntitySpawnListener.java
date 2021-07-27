@@ -1,13 +1,14 @@
 package me.lokka30.levelledmobs.listeners;
 
-import me.lokka30.levelledmobs.LevelInterface;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.misc.*;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.World;
 import org.bukkit.block.CreatureSpawner;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -33,6 +34,7 @@ import java.util.HashSet;
 public class EntitySpawnListener implements Listener {
 
     private final LevelledMobs main;
+    public boolean processMobSpawns;
 
     public EntitySpawnListener(final LevelledMobs main) {
         this.main = main;
@@ -45,18 +47,48 @@ public class EntitySpawnListener implements Listener {
 
         final LivingEntityWrapper lmEntity = new LivingEntityWrapper((LivingEntity) event.getEntity(), main);
 
-        if (event instanceof CreatureSpawnEvent && ((CreatureSpawnEvent) event).getSpawnReason().equals(CreatureSpawnEvent.SpawnReason.CUSTOM)) {
+        if (event instanceof CreatureSpawnEvent && ((CreatureSpawnEvent) event).getSpawnReason().equals(CreatureSpawnEvent.SpawnReason.CUSTOM) &&
+            !lmEntity.isLevelled()) {
             delayedAddToQueue(lmEntity, event, 20);
             return;
         }
 
-        int mobProcessDelay = main.settingsCfg.getInt("mob-process-delay", 0);
+        if (!processMobSpawns) return;
 
-        // here we will process the mob from an async thread which directs it back to preprocessMob(..)
+        if (main.configUtils.playerLevellingEnabled)
+            getClosestPlayer(lmEntity);
+
+        final int mobProcessDelay = main.helperSettings.getInt(main.settingsCfg, "mob-process-delay", 0);
+
         if (mobProcessDelay > 0)
             delayedAddToQueue(lmEntity, event, mobProcessDelay);
         else
             main.queueManager_mobs.addToQueue(new QueueItem(lmEntity, event));
+    }
+
+    private void getClosestPlayer(final @NotNull LivingEntityWrapper lmEntity){
+        if (lmEntity.getPlayerForLevelling() != null) return;
+
+        Entity closestEntity = null;
+        double closestRange = Double.MAX_VALUE;
+
+        for (final Entity entity : lmEntity.getLivingEntity().getNearbyEntities(50, 50, 50)){
+            if (!(entity instanceof Player)) continue;
+
+            double range = entity.getLocation().distanceSquared(lmEntity.getLocation());
+            if (range < closestRange && range <= main.playerLevellingDistance){
+                closestEntity = entity;
+                closestRange = range;
+            }
+        }
+
+        if (closestEntity != null) {
+            synchronized (closestEntity.getPersistentDataContainer()){
+                closestEntity.getPersistentDataContainer().set(main.levelManager.playerLevelling_Id, PersistentDataType.STRING, (closestEntity).getUniqueId().toString());
+            }
+
+            lmEntity.setPlayerForLevelling((Player) closestEntity);
+        }
     }
 
     private void delayedAddToQueue(final LivingEntityWrapper lmEntity, final Event event, final int delay){
