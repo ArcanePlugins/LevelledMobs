@@ -12,6 +12,7 @@ import me.lokka30.levelledmobs.rules.strategies.YDistanceStrategy;
 import org.bukkit.block.Biome;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.MemoryConfiguration;
+import org.bukkit.configuration.MemorySection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.EntityType;
 import org.bukkit.event.entity.CreatureSpawnEvent;
@@ -491,15 +492,23 @@ public class RulesParsingManager {
                 if (!names2.isEmpty())
                     entityNames.put(name, mobNames);
             }
-
             else if (cs.getString(name) != null) {
                 if ("merge".equalsIgnoreCase(name)){
                     parsingInfo.mergeEntityNameOverrides = cs.getBoolean(name);
                     continue;
                 }
-                final List<LevelTierMatching> tiers = parseNumberRange(objTo_CS(cs, name), name);
-                if (tiers != null && !tiers.isEmpty())
-                    levelTiers.put(name, tiers);
+                if (cs.get(name) instanceof String) {
+                    final LevelTierMatching mobNames = new LevelTierMatching();
+                    final List<String> names2 = List.of(Objects.requireNonNull(cs.getString(name)));
+                    mobNames.mobName = name;
+                    mobNames.names = names2;
+                    entityNames.put(name, mobNames);
+                }
+                else if (cs.get(name) instanceof MemorySection){
+                    final List<LevelTierMatching> tiers = parseNumberRange(objTo_CS(cs, name), name);
+                    if (tiers != null && !tiers.isEmpty())
+                        levelTiers.put(name, tiers);
+                }
             }
         }
 

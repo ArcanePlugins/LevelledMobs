@@ -47,7 +47,7 @@ public class MetricsInfo {
     }
 
     public String getUsesPlayerLevelling(){
-        boolean result =
+        final boolean result =
          (main.rulesParsingManager.defaultRule.playerLevellingOptions != null &&
             main.rulesParsingManager.defaultRule.playerLevellingOptions.enabled != null &&
             main.rulesParsingManager.defaultRule.playerLevellingOptions.enabled);
