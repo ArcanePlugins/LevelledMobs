@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2020-2021  lokka30. Use of this source code is governed by the GNU AGPL v3.0 license that can be found in the LICENSE.md file.
+ */
+
 package me.lokka30.levelledmobs.managers;
 
 import com.comphenix.protocol.PacketType;
@@ -6,7 +10,10 @@ import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 import me.lokka30.levelledmobs.LevelledMobs;
-import me.lokka30.levelledmobs.misc.*;
+import me.lokka30.levelledmobs.misc.DebugType;
+import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
+import me.lokka30.levelledmobs.misc.QueueItem;
+import me.lokka30.levelledmobs.misc.Utils;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Tameable;
 import org.bukkit.persistence.PersistentDataType;

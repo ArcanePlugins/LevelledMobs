@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2020-2021  lokka30. Use of this source code is governed by the GNU AGPL v3.0 license that can be found in the LICENSE.md file.
+ */
+
 package me.lokka30.levelledmobs.rules;
 
 import me.lokka30.levelledmobs.LevelledMobs;
@@ -40,17 +44,17 @@ public class MetricsInfo {
     public String getUsesHealthIndicator(){
         final boolean usesHealthIndicator =
                 main.rulesParsingManager.defaultRule.healthIndicator != null &&
-                main.rulesParsingManager.defaultRule.nametag != null &&
-                main.rulesParsingManager.defaultRule.nametag.toLowerCase().contains("%health-indicator%");
+                        main.rulesParsingManager.defaultRule.nametag != null &&
+                        main.rulesParsingManager.defaultRule.nametag.toLowerCase().contains("%health-indicator%");
 
         return convertBooleanToString(usesHealthIndicator);
     }
 
     public String getUsesPlayerLevelling(){
         final boolean result =
-         (main.rulesParsingManager.defaultRule.playerLevellingOptions != null &&
-            main.rulesParsingManager.defaultRule.playerLevellingOptions.enabled != null &&
-            main.rulesParsingManager.defaultRule.playerLevellingOptions.enabled);
+                (main.rulesParsingManager.defaultRule.playerLevellingOptions != null &&
+                        main.rulesParsingManager.defaultRule.playerLevellingOptions.enabled != null &&
+                        main.rulesParsingManager.defaultRule.playerLevellingOptions.enabled);
 
         return convertBooleanToString(result);
     }
@@ -96,16 +100,15 @@ public class MetricsInfo {
         final RuleInfo defaultRule = main.rulesParsingManager.defaultRule;
 
         if (defaultRule.levellingStrategy != null){
-            if (defaultRule.levellingStrategy instanceof SpawnDistanceStrategy){
+            if (defaultRule.levellingStrategy instanceof SpawnDistanceStrategy) {
                 final SpawnDistanceStrategy sds = (SpawnDistanceStrategy) defaultRule.levellingStrategy;
                 if (sds.blendedLevellingEnabled == null || !sds.blendedLevellingEnabled)
                     return "Spawn Distance";
                 else
                     return "Blended";
-            }
-            else if (defaultRule.levellingStrategy instanceof YDistanceStrategy)
+            } else if (defaultRule.levellingStrategy instanceof YDistanceStrategy)
                 return "Y-Levelling";
-            else if (defaultRule.levellingStrategy instanceof RandomLevellingStrategy){
+            else if (defaultRule.levellingStrategy instanceof RandomLevellingStrategy) {
                 final RandomLevellingStrategy random = (RandomLevellingStrategy) defaultRule.levellingStrategy;
                 if (random.weightedRandom != null && !random.weightedRandom.isEmpty())
                     return "Weighted Random";
@@ -170,7 +173,7 @@ public class MetricsInfo {
         for (final ExternalCompatibilityManager.ExternalCompatibility compat : ExternalCompatibilityManager.ExternalCompatibility.values()) {
             if (compat.equals(ExternalCompatibilityManager.ExternalCompatibility.NOT_APPLICABLE) ||
                     compat.equals(ExternalCompatibilityManager.ExternalCompatibility.PLACEHOLDER_API))
-                    continue;
+                continue;
 
             results.put(compat.toString(), 0);
         }

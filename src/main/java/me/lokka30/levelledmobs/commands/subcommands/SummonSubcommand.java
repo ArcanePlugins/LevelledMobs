@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2020-2021  lokka30. Use of this source code is governed by the GNU AGPL v3.0 license that can be found in the LICENSE.md file.
+ */
+
 package me.lokka30.levelledmobs.commands.subcommands;
 
 import me.lokka30.levelledmobs.LevelledMobs;
@@ -91,7 +95,6 @@ public class SummonSubcommand implements Subcommand {
         if (args.length > 4) {
             switch (args[4].toLowerCase()) {
                 case "here":
-                    summonType = SummonType.HERE;
                     break;
                 case "atplayer":
                     summonType = SummonType.AT_PLAYER;
@@ -405,8 +408,7 @@ public class SummonSubcommand implements Subcommand {
                     if (location.getBlock().isPassable() && location_YMinus1.getBlock().isPassable())
                         break; // found an open spot
                 }
-            }
-            else if (target == null && sender instanceof BlockCommandSender) {
+            } else if (target == null && sender instanceof BlockCommandSender) {
                 BlockCommandSender bcs = (BlockCommandSender) sender;
                 // increase the y by one so they don't spawn inside the command block
                 location = new Location(location.getWorld(), location.getBlockX(), location.getBlockY() + 1, location.getBlockZ());
@@ -485,26 +487,22 @@ public class SummonSubcommand implements Subcommand {
         else if (22.5 <= rotation && rotation < 67.5) { // NE
             newX += useDistFromPlayer;
             newZ -= useDistFromPlayer;
-        }
-        else if (67.5 <= rotation && rotation < 112.5) // E
+        } else if (67.5 <= rotation && rotation < 112.5) // E
             newX += useDistFromPlayer;
         else if (112.5 <= rotation && rotation < 157.5) { // SE
             newX += useDistFromPlayer;
             newZ += useDistFromPlayer;
-        }
-        else if (157.5 <= rotation && rotation < 202.5) // S
+        } else if (157.5 <= rotation && rotation < 202.5) // S
             newZ += useDistFromPlayer;
         else if (202.5 <= rotation && rotation < 247.5) { // SW
             newX -= useDistFromPlayer;
             newZ += useDistFromPlayer;
-        }
-        else if (247.5 <= rotation && rotation < 292.5) // W
+        } else if (247.5 <= rotation && rotation < 292.5) // W
             newX -= useDistFromPlayer;
         else if (292.5 <= rotation && rotation < 337.5) { // NW
             newX -= useDistFromPlayer;
             newZ -= useDistFromPlayer;
-        }
-        else // N
+        } else // N
             newZ -= useDistFromPlayer;
 
         return new Location(location.getWorld(), newX, location.getBlockY(), newZ);

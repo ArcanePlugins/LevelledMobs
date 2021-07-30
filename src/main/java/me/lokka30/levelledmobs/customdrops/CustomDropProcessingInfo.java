@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2020-2021  lokka30. Use of this source code is governed by the GNU AGPL v3.0 license that can be found in the LICENSE.md file.
+ */
+
 package me.lokka30.levelledmobs.customdrops;
 
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
@@ -7,7 +11,10 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.Nonnull;
-import java.util.*;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * Used to store information when a custom drop item

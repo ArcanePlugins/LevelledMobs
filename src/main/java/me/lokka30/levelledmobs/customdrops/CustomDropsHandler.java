@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2020-2021  lokka30. Use of this source code is governed by the GNU AGPL v3.0 license that can be found in the LICENSE.md file.
+ */
+
 package me.lokka30.levelledmobs.customdrops;
 
 import me.lokka30.levelledmobs.LevelledMobs;
@@ -6,7 +10,7 @@ import me.lokka30.microlib.MessageUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
-import org.bukkit.entity.*;
+import org.bukkit.entity.EntityType;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.inventory.ItemStack;
@@ -252,7 +256,7 @@ public class CustomDropsHandler {
 
     private void getDropsFromCustomDropItem(@NotNull final CustomDropProcessingInfo info, final CustomDropBase dropBase){
         if (dropBase instanceof CustomCommand && info.lmEntity.getLivingEntity().hasMetadata("noCommands") ||
-            info.lmEntity.deathCause.equals(EntityDamageEvent.DamageCause.VOID))
+                info.lmEntity.deathCause.equals(EntityDamageEvent.DamageCause.VOID))
             return;
 
         if (info.equippedOnly && dropBase instanceof CustomCommand) return;
@@ -312,9 +316,8 @@ public class CustomDropsHandler {
                 if (ymlHelper.getStringSet(main.settingsCfg, "debug-misc").contains("CUSTOM_DROPS")) {
                     if (dropBase instanceof CustomDropItem) {
                         Utils.logger.info(String.format("&8- &7level: &b%s&7, item: &b%s&7, gId: &b%s&7, maxDropGroup: &b%s&7, groupDropCount: &b%s&7, dropped: &bfalse",
-                                info.lmEntity.getMobLevel(), ((CustomDropItem)dropBase).getMaterial().name(), dropBase.groupId, dropBase.maxDropGroup, count));
-                    }
-                    else {
+                                info.lmEntity.getMobLevel(), ((CustomDropItem) dropBase).getMaterial().name(), dropBase.groupId, dropBase.maxDropGroup, count));
+                    } else {
                         Utils.logger.info(String.format("&8- &7level: &b%s&7, item: custom command, gId: &b%s&7, maxDropGroup: &b%s&7, groupDropCount: &b%s&7, executed: &bfalse",
                                 info.lmEntity.getMobLevel(), dropBase.groupId, dropBase.maxDropGroup, count));
                     }
@@ -329,7 +332,7 @@ public class CustomDropsHandler {
 
             if (hasGroupId){
                 final int count = info.groupIDsDroppedAlready.containsKey(dropBase.groupId) ?
-                        info.groupIDsDroppedAlready.get(dropBase.groupId) + 1:
+                        info.groupIDsDroppedAlready.get(dropBase.groupId) + 1 :
                         1;
 
                 info.groupIDsDroppedAlready.put(dropBase.groupId, count);
@@ -338,8 +341,7 @@ public class CustomDropsHandler {
                     Utils.logger.info(String.format("&8- &7level: &b%s&7, item: custom command, gId: &b%s&7, maxDropGroup: &b%s&7, groupDropCount: &b%s&7, executed: &btrue",
                             info.lmEntity.getMobLevel(), dropBase.groupId, dropBase.maxDropGroup, count));
                 }
-            }
-            else if (main.settingsCfg.getStringList("debug-misc").contains("CUSTOM_DROPS")) {
+            } else if (main.settingsCfg.getStringList("debug-misc").contains("CUSTOM_DROPS")) {
                 Utils.logger.info(String.format("&8- &7level: &b%s&7, item: custom command, gId: &b%s&7, maxDropGroup: &b%s&7, executed: &btrue",
                         info.lmEntity.getMobLevel(), dropBase.groupId, dropBase.maxDropGroup));
             }
@@ -377,8 +379,7 @@ public class CustomDropsHandler {
         if (!dropItem.noMultiplier && !info.doNotMultiplyDrops) {
             main.levelManager.multiplyDrop(info.lmEntity, newItem, info.addition, true);
             newDropAmount = newItem.getAmount();
-        }
-        else if (newDropAmount > newItem.getMaxStackSize()) newDropAmount = newItem.getMaxStackSize();
+        } else if (newDropAmount > newItem.getMaxStackSize()) newDropAmount = newItem.getMaxStackSize();
 
         if (newItem.getAmount() != newDropAmount) newItem.setAmount(newDropAmount);
 
@@ -429,7 +430,7 @@ public class CustomDropsHandler {
 
         final String playerName = info.wasKilledByPlayer ?
                 Objects.requireNonNull(info.lmEntity.getLivingEntity().getKiller()).getName() :
-            "";
+                "";
 
         command = Utils.replaceEx(command, "%player%", playerName);
         command = command.replace("%displayname%", displayName);

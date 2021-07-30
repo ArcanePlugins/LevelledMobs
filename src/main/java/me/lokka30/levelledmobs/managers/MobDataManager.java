@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2020-2021  lokka30. Use of this source code is governed by the GNU AGPL v3.0 license that can be found in the LICENSE.md file.
+ */
+
 package me.lokka30.levelledmobs.managers;
 
 import me.lokka30.levelledmobs.LevelledMobs;
@@ -39,8 +43,8 @@ public class MobDataManager {
         final String path = lmEntity.getTypeName() + "." + attribute;
 
         return main.attributesCfg.contains(path) ?
-            main.attributesCfg.get(path) :
-            null;
+                main.attributesCfg.get(path) :
+                null;
     }
 
     public final boolean isLevelledDropManaged(final EntityType entityType, @NotNull final Material material) {
@@ -90,8 +94,8 @@ public class MobDataManager {
                 if (newHealth < 0.0) newHealth = 0.0;
                 try {
                     lmEntity.getLivingEntity().setHealth(newHealth);
+                } catch (IllegalArgumentException ignored) {
                 }
-                catch (IllegalArgumentException ignored) {}
             }
         }
     }

@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2020-2021  lokka30. Use of this source code is governed by the GNU AGPL v3.0 license that can be found in the LICENSE.md file.
+ */
+
 package me.lokka30.levelledmobs.rules;
 
 import me.lokka30.levelledmobs.LevelledMobs;
@@ -371,15 +375,15 @@ public class RulesParsingManager {
         final List<RuleInfo> results = new LinkedList<>();
         if (rulesSection == null) return results;
 
-         for (final LinkedHashMap<String, Object> hashMap : (List<LinkedHashMap<String, Object>>)(rulesSection)){
-             final ConfigurationSection cs = objTo_CS_2(hashMap);
-             if (cs == null) {
-                 Utils.logger.info("cs was null (parsing custom-rules)");
-                 continue;
-             }
+        for (final LinkedHashMap<String, Object> hashMap : (List<LinkedHashMap<String, Object>>) (rulesSection)) {
+            final ConfigurationSection cs = objTo_CS_2(hashMap);
+            if (cs == null) {
+                Utils.logger.info("cs was null (parsing custom-rules)");
+                continue;
+            }
 
-             this.parsingInfo = new RuleInfo("rule " + results.size());
-             parseValues(cs);
+            this.parsingInfo = new RuleInfo("rule " + results.size());
+            parseValues(cs);
             results.add(this.parsingInfo);
         }
 
@@ -484,16 +488,15 @@ public class RulesParsingManager {
                 mobNames.names = names;
                 final List<String> names2 = new LinkedList<>();
 
-                for (final String nameFromList : names){
+                for (final String nameFromList : names) {
                     if (!nameFromList.isEmpty())
                         names2.add(nameFromList);
                 }
 
                 if (!names2.isEmpty())
                     entityNames.put(name, mobNames);
-            }
-            else if (cs.getString(name) != null) {
-                if ("merge".equalsIgnoreCase(name)){
+            } else if (cs.getString(name) != null) {
+                if ("merge".equalsIgnoreCase(name)) {
                     parsingInfo.mergeEntityNameOverrides = cs.getBoolean(name);
                     continue;
                 }
@@ -503,8 +506,7 @@ public class RulesParsingManager {
                     mobNames.mobName = name;
                     mobNames.names = names2;
                     entityNames.put(name, mobNames);
-                }
-                else if (cs.get(name) instanceof MemorySection){
+                } else if (cs.get(name) instanceof MemorySection) {
                     final List<LevelTierMatching> tiers = parseNumberRange(objTo_CS(cs, name), name);
                     if (tiers != null && !tiers.isEmpty())
                         levelTiers.put(name, tiers);
@@ -535,8 +537,7 @@ public class RulesParsingManager {
             if (!names.isEmpty()) {
                 // an array of names was provided
                 tier.names = names;
-            }
-            else if (cs.getString(name) != null) {
+            } else if (cs.getString(name) != null) {
                 // a string was provided
                 tier.names = new LinkedList<>();
                 tier.names.add(cs.getString(name));

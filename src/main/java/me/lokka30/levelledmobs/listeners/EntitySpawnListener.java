@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2020-2021  lokka30. Use of this source code is governed by the GNU AGPL v3.0 license that can be found in the LICENSE.md file.
+ */
+
 package me.lokka30.levelledmobs.listeners;
 
 import me.lokka30.levelledmobs.LevelledMobs;
@@ -48,7 +52,7 @@ public class EntitySpawnListener implements Listener {
         final LivingEntityWrapper lmEntity = new LivingEntityWrapper((LivingEntity) event.getEntity(), main);
 
         if (event instanceof CreatureSpawnEvent && ((CreatureSpawnEvent) event).getSpawnReason().equals(CreatureSpawnEvent.SpawnReason.CUSTOM) &&
-            !lmEntity.isLevelled()) {
+                !lmEntity.isLevelled()) {
             delayedAddToQueue(lmEntity, event, 20);
             return;
         }
@@ -162,7 +166,7 @@ public class EntitySpawnListener implements Listener {
         if (event instanceof SpawnerSpawnEvent) {
             SpawnerSpawnEvent spawnEvent = (SpawnerSpawnEvent) event;
 
-            if (spawnEvent.getSpawner().getPersistentDataContainer().has(main.blockPlaceListener.keySpawner, PersistentDataType.INTEGER)){
+            if (spawnEvent.getSpawner().getPersistentDataContainer().has(main.blockPlaceListener.keySpawner, PersistentDataType.INTEGER)) {
                 lmEntity.setSpawnReason(CreatureSpawnEvent.SpawnReason.SPAWNER);
                 lmSpawnerSpawn(lmEntity, spawnEvent);
                 return;
@@ -170,8 +174,7 @@ public class EntitySpawnListener implements Listener {
 
             Utils.debugLog(main, DebugType.MOB_SPAWNER, "Spawned mob from vanilla spawner: &b" + spawnEvent.getEntityType());
             spawnReason = CreatureSpawnEvent.SpawnReason.SPAWNER;
-        }
-        else if (event instanceof CreatureSpawnEvent){
+        } else if (event instanceof CreatureSpawnEvent) {
             final CreatureSpawnEvent spawnEvent = (CreatureSpawnEvent) event;
 
             if (spawnEvent.getSpawnReason().equals(CreatureSpawnEvent.SpawnReason.SPAWNER) ||
@@ -180,14 +183,13 @@ public class EntitySpawnListener implements Listener {
 
             if (spawnEvent.getSpawnReason().equals(CreatureSpawnEvent.SpawnReason.CUSTOM) &&
                     main.levelManager.summonedEntityType.equals(lmEntity.getEntityType()) &&
-                    areLocationsTheSame(main.levelManager.summonedLocation, lmEntity.getLocation())){
+                    areLocationsTheSame(main.levelManager.summonedLocation, lmEntity.getLocation())) {
                 // the mob was spawned by the summon command and will get processed directly
                 return;
             }
 
             spawnReason = spawnEvent.getSpawnReason();
-        }
-        else if (event instanceof ChunkLoadEvent)
+        } else if (event instanceof ChunkLoadEvent)
             additionalInfo = AdditionalLevelInformation.FROM_CHUNK_LISTENER;
 
         lmEntity.setSpawnReason(spawnReason);
