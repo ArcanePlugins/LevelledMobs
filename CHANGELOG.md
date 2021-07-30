@@ -1,4 +1,6 @@
 # Changelog
+⚠ Not all versions have been recorded in this changelog. Please check the Updates tab on our SpigotMC page for a full
+list of changelogs.
 
 ***
 

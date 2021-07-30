@@ -1,3 +1,6 @@
+# Author of file: Zombie_Striker (https://github.com/ZombieStriker)
+# Edited for suitability by: stumper66 (https://github.com/stumper66)
+# Sourced from: https://github.com/ZombieStriker/MobHeads/blob/788ab1e6274f748190ef6e1fa34f4c168cb6b4ec/resources/config.yml
 Mobs:
   - Name: Rabbit
     Variant: White
