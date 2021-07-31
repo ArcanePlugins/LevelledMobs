@@ -82,6 +82,11 @@ public enum DebugType {
     CUSTOM_COMMANDS,
 
     /**
+     * When applying NBT to a mob
+     */
+    NBT_APPLY_SUCCESS,
+
+    /**
      * Logged when LM is processing a mob
      * from a creature spawner
      **/

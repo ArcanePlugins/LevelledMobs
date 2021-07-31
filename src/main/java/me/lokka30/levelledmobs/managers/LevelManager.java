@@ -1066,10 +1066,11 @@ public class LevelManager implements LevelInterface {
 
                 if (finalNbtData != null) {
                     NBT_ApplyResult result = NBTManager.applyNBT_Data_Mob(lmEntity, finalNbtData);
-                    if (result.hadException())
-                        Utils.logger.warning("Error applying NBT data to " + lmEntity.getTypeName() + ", " + result.exceptionMessage);
-                    else
-                        Utils.logger.info("Successfully applied NBT data to " + lmEntity.getTypeName());
+                    if (result.hadException()) {
+                        Utils.logger.warning("Error applying NBT data to " + lmEntity.getTypeName() + ". Exception message: " + result.exceptionMessage);
+                    } else {
+                        Utils.debugLog(main, DebugType.NBT_APPLY_SUCCESS, "Successfully applied NBT data to '" + lmEntity.getTypeName() + "'.");
+                    }
                 }
 
                 if (lmEntity.getLivingEntity() instanceof Creeper)
