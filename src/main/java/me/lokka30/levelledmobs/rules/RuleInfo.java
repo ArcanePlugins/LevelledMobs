@@ -125,17 +125,26 @@ public class RuleInfo {
 
                     skipSettingValue = true;
                 } else if (f.getName().equals("allMobMultipliers")) {
-                    FineTuningAttributes mergingPreset = (FineTuningAttributes) presetValue;
+                    final FineTuningAttributes mergingPreset = (FineTuningAttributes) presetValue;
                     if (this.allMobMultipliers == null)
                         this.allMobMultipliers = mergingPreset.cloneItem();
                     else
                         this.allMobMultipliers.mergeAttributes(mergingPreset);
                     skipSettingValue = true;
+                } else if (f.getName().equals("specificMobMultipliers")){
+                    final Map<String, FineTuningAttributes> mergingPreset = (Map<String, FineTuningAttributes>) presetValue;
+                    if (this.specificMobMultipliers == null)
+                        this.specificMobMultipliers = new TreeMap<>();
+
+                    for (final String entityType : mergingPreset.keySet())
+                        this.specificMobMultipliers.put(entityType, mergingPreset.get(entityType).cloneItem());
+
+                    skipSettingValue = true;
                 }
 
                 if (presetValue instanceof CachedModalList){
-                    CachedModalList<?> cachedModalList_preset = (CachedModalList<?>) presetValue;
-                    CachedModalList<?> thisCachedModalList = (CachedModalList<?>) this.getClass().getDeclaredField(f.getName()).get(this);
+                    final CachedModalList<?> cachedModalList_preset = (CachedModalList<?>) presetValue;
+                    final CachedModalList<?> thisCachedModalList = (CachedModalList<?>) this.getClass().getDeclaredField(f.getName()).get(this);
 
                     if (thisCachedModalList != null && cachedModalList_preset.doMerge)
                         thisCachedModalList.mergeCachedModal(cachedModalList_preset);

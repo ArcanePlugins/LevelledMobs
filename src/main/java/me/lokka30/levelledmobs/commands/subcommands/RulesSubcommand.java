@@ -164,16 +164,16 @@ public class RulesSubcommand implements Subcommand {
         String filename;
 
         switch (difficulty){
-            case EASY: filename = "rules_easy.yml";
+            case EASY: filename = "predefined/rules_easy.yml";
                 break;
-            case HARD: filename = "rules_hard.yml";
+            case HARD: filename = "predefined/rules_hard.yml";
                 break;
-            default: filename = "rules_normal.yml";
+            default: filename = "rules.yml";
                 break;
         }
 
 
-        try (InputStream stream = main.getResource("predefined/" + filename)) {
+        try (InputStream stream = main.getResource(filename)) {
             if (stream == null){
                 Utils.logger.error(prefix + " Input stream was null");
                 return;
