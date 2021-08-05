@@ -39,7 +39,7 @@ public class HealthIndicator implements Cloneable {
         if (mergingIndicator.tiers == null) return;
 
         if (this.tiers == null) this.tiers = new TreeMap<>();
-        mergingIndicator.tiers.putAll(this.tiers);
+        this.tiers.putAll(mergingIndicator.tiers);
     }
 
     public String toString(){

@@ -50,20 +50,33 @@ public class SpawnDistanceStrategy implements LevellingStrategy, Cloneable {
     }
 
     public String toString(){
+        final StringBuilder sb = new StringBuilder();
         if (blendedLevellingEnabled != null && blendedLevellingEnabled) {
-            return String.format("sd: %s, ild: %s, t_yHght: %s, mp: %s, lvlMlp: %s, scdown: %s",
+            sb.append(String.format("sd: %s, ild: %s, t_yHght: %s, mp: %s, lvlMlp: %s, scdown: %s",
                     startDistance == null ? 0 : startDistance,
                     increaseLevelDistance == null ? 0 : increaseLevelDistance,
                     transition_Y_Height == null ? 0 : transition_Y_Height,
                     multiplierPeriod == null ? 0 : multiplierPeriod,
                     lvlMultiplier == null ? 0 : lvlMultiplier,
-                    scaleDownward == null || scaleDownward);
+                    scaleDownward == null || scaleDownward));
         } else {
-            return String.format("sd: %s, ild: %s",
+            sb.append(String.format("sd: %s, ild: %s",
                     startDistance == null ? 0 : startDistance,
                     increaseLevelDistance == null ? 0 : increaseLevelDistance
-            );
+            ));
         }
+
+        if (this.spawnLocation_X != null){
+            sb.append(" x: ");
+            sb.append(this.spawnLocation_X);
+        }
+
+        if (this.spawnLocation_Z != null){
+            sb.append(" z: ");
+            sb.append(this.spawnLocation_Z);
+        }
+
+        return sb.toString();
     }
 
     public int generateLevel(@NotNull final LivingEntityWrapper lmEntity, final int minLevel, final int maxLevel) {

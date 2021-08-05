@@ -155,6 +155,7 @@ public class EntitySpawnListener implements Listener {
         runnable.runTaskAsynchronously(main);
     }
 
+    @SuppressWarnings("ConstantConditions")
     public void preprocessMob(final LivingEntityWrapper lmEntity, @NotNull final Event event){
 
         if (!lmEntity.reEvaluateLevel && lmEntity.isLevelled())
@@ -166,7 +167,7 @@ public class EntitySpawnListener implements Listener {
         if (event instanceof SpawnerSpawnEvent) {
             SpawnerSpawnEvent spawnEvent = (SpawnerSpawnEvent) event;
 
-            if (spawnEvent.getSpawner().getPersistentDataContainer().has(main.blockPlaceListener.keySpawner, PersistentDataType.INTEGER)) {
+            if (spawnEvent.getSpawner() != null && spawnEvent.getSpawner().getPersistentDataContainer().has(main.blockPlaceListener.keySpawner, PersistentDataType.INTEGER)) {
                 lmEntity.setSpawnReason(CreatureSpawnEvent.SpawnReason.SPAWNER);
                 lmSpawnerSpawn(lmEntity, spawnEvent);
                 return;

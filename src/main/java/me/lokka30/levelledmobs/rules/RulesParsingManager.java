@@ -648,9 +648,9 @@ public class RulesParsingManager {
             spawnDistanceStrategy.increaseLevelDistance = ymlHelper.getInt2(cs_SpawnDistance, "increase-level-distance", spawnDistanceStrategy.increaseLevelDistance);
             spawnDistanceStrategy.startDistance = ymlHelper.getInt2(cs_SpawnDistance, "start-distance", spawnDistanceStrategy.startDistance);
 
-            if (ymlHelper.getString(cs_SpawnDistance,"spawn-location.x") != null)
+            if (cs_SpawnDistance.get(ymlHelper.getKeyNameFromConfig(cs_SpawnDistance,"spawn-location.x")) != null)
                 spawnDistanceStrategy.spawnLocation_X = parseOptionalSpawnCoordinate(ymlHelper.getKeyNameFromConfig(cs,"spawn-location.x"), cs_SpawnDistance);
-            if (ymlHelper.getString(cs_SpawnDistance,"spawn-location.z") != null)
+            if (cs_SpawnDistance.get(ymlHelper.getKeyNameFromConfig(cs_SpawnDistance,"spawn-location.z")) != null)
                 spawnDistanceStrategy.spawnLocation_Z = parseOptionalSpawnCoordinate(ymlHelper.getKeyNameFromConfig(cs,"spawn-location.z"), cs_SpawnDistance);
 
             if (ymlHelper.getString(cs_SpawnDistance,"blended-levelling") != null)

@@ -4,7 +4,9 @@
 
 package me.lokka30.levelledmobs.compatibility;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.EntityType;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashSet;
 import java.util.stream.Collectors;
@@ -20,11 +22,19 @@ import java.util.stream.Stream;
 public class MC1_16_Compat {
 
     public static HashSet<EntityType> getHostileMobs() {
-        return Stream.of(
-                EntityType.HOGLIN,
-                EntityType.PIGLIN,
-                EntityType.PIGLIN_BRUTE
-        ).collect(Collectors.toCollection(HashSet::new));
+        if (shouldIncludePiglinBrutes()) {
+            return Stream.of(
+                    EntityType.HOGLIN,
+                    EntityType.PIGLIN,
+                    EntityType.PIGLIN_BRUTE
+            ).collect(Collectors.toCollection(HashSet::new));
+        }
+        else {
+            return Stream.of(
+                    EntityType.HOGLIN,
+                    EntityType.PIGLIN
+            ).collect(Collectors.toCollection(HashSet::new));
+        }
     }
 
     public static HashSet<EntityType> getPassiveMobs() {
@@ -32,5 +42,15 @@ public class MC1_16_Compat {
                 EntityType.STRIDER,
                 EntityType.ZOMBIFIED_PIGLIN
         ).collect(Collectors.toCollection(HashSet::new));
+    }
+
+    private static boolean shouldIncludePiglinBrutes(){
+        final String ver = Bukkit.getBukkitVersion();
+        // 1.17.1-R0.1-SNAPSHOT
+        final int dash = ver.indexOf("-");
+        if (dash < 1) return false;
+
+        final String verCorrected = ver.substring(0, dash);
+        return (!verCorrected.equals("1.16") && !verCorrected.equals("1.16.1"));
     }
 }
