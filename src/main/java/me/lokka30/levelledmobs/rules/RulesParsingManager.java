@@ -637,7 +637,10 @@ public class RulesParsingManager {
             yDistanceStrategy.endingYLevel = ymlHelper.getInt2(cs_YDistance, "end", yDistanceStrategy.endingYLevel);
             yDistanceStrategy.yPeriod = ymlHelper.getInt2(cs_YDistance, "period", yDistanceStrategy.yPeriod);
 
-            this.parsingInfo.levellingStrategy = yDistanceStrategy;
+            if (this.parsingInfo.levellingStrategy != null && this.parsingInfo.levellingStrategy instanceof YDistanceStrategy)
+                this.parsingInfo.levellingStrategy.mergeRule(yDistanceStrategy);
+            else
+                this.parsingInfo.levellingStrategy = yDistanceStrategy;
         }
 
         final ConfigurationSection cs_SpawnDistance = objTo_CS(cs,"distance-from-spawn");
@@ -656,7 +659,10 @@ public class RulesParsingManager {
             if (ymlHelper.getString(cs_SpawnDistance,"blended-levelling") != null)
                 parseBlendedLevelling(objTo_CS(cs_SpawnDistance,"blended-levelling"), spawnDistanceStrategy);
 
-            this.parsingInfo.levellingStrategy = spawnDistanceStrategy;
+            if (this.parsingInfo.levellingStrategy != null && this.parsingInfo.levellingStrategy instanceof SpawnDistanceStrategy)
+                this.parsingInfo.levellingStrategy.mergeRule(spawnDistanceStrategy);
+            else
+                this.parsingInfo.levellingStrategy = spawnDistanceStrategy;
         }
 
         final ConfigurationSection cs_Random = objTo_CS(cs,"weighted-random");
@@ -674,7 +680,10 @@ public class RulesParsingManager {
             if (!randomMap.isEmpty())
                 randomLevelling.weightedRandom = randomMap;
 
-            this.parsingInfo.levellingStrategy = randomLevelling;
+            if (this.parsingInfo.levellingStrategy != null && this.parsingInfo.levellingStrategy instanceof RandomLevellingStrategy)
+                this.parsingInfo.levellingStrategy.mergeRule(randomLevelling);
+            else
+                this.parsingInfo.levellingStrategy = randomLevelling;
         }
 
         parsePlayerLevellingOptions(objTo_CS(cs,"player-levelling"));
@@ -726,7 +735,10 @@ public class RulesParsingManager {
             if (!tiers.isEmpty()) indicator.tiers = tiers;
         }
 
-        parsingInfo.healthIndicator = indicator;
+        if (parsingInfo.healthIndicator != null && parsingInfo.healthIndicator.doMerge != null && parsingInfo.healthIndicator.doMerge)
+            parsingInfo.healthIndicator.mergeIndicator(indicator);
+        else
+            parsingInfo.healthIndicator = indicator;
     }
 
     private void parsePlayerLevellingOptions(final ConfigurationSection cs){
@@ -825,7 +837,12 @@ public class RulesParsingManager {
             fineTuning.put(mobName, attribs);
         }
 
-        if (!fineTuning.isEmpty()) parsingInfo.specificMobMultipliers = fineTuning;
+        if (!fineTuning.isEmpty()) {
+            if (parsingInfo.specificMobMultipliers != null)
+                parsingInfo.specificMobMultipliers.putAll(fineTuning);
+            else
+                parsingInfo.specificMobMultipliers = fineTuning;
+        }
     }
 
     @Nullable
