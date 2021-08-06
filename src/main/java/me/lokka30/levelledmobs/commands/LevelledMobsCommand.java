@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2020-2021  lokka30. Use of this source code is governed by the GNU AGPL v3.0 license that can be found in the LICENSE.md file.
+ */
+
 package me.lokka30.levelledmobs.commands;
 
 import me.lokka30.levelledmobs.LevelledMobs;
@@ -9,7 +13,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.*;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * This class handles the command execution of '/levelledmobs'.
@@ -68,14 +73,14 @@ public class LevelledMobsCommand implements CommandExecutor, TabCompleter {
                     default:
                         sendMainUsage(sender, label);
                 }
-			}
-		} else {
+            }
+        } else {
             main.configUtils.sendNoPermissionMsg(sender);
         }
-		return true;
-	}
+        return true;
+    }
 
-	private void sendMainUsage(@NotNull final CommandSender sender, final String label) {
+    private void sendMainUsage(@NotNull final CommandSender sender, final String label) {
         List<String> mainUsage = main.messagesCfg.getStringList("command.levelledmobs.main-usage");
 
         mainUsage = Utils.replaceAllInList(mainUsage, "%prefix%", main.configUtils.getPrefix());
@@ -85,13 +90,13 @@ public class LevelledMobsCommand implements CommandExecutor, TabCompleter {
         mainUsage.forEach(sender::sendMessage);
     }
 
-	@Override
-	public List<String> onTabComplete(final CommandSender sender, final Command cmd, final String alias, @NotNull final String[] args) {
-		if (args.length == 1) {
-			List<String> suggestions = new LinkedList<>();
+    @Override
+    public List<String> onTabComplete(final CommandSender sender, final Command cmd, final String alias, @NotNull final String[] args) {
+        if (args.length == 1) {
+            List<String> suggestions = new LinkedList<>();
 
-			if (sender.hasPermission("levelledmobs.command.summon"))
-				suggestions.add("summon");
+            if (sender.hasPermission("levelledmobs.command.summon"))
+                suggestions.add("summon");
             if (sender.hasPermission("levelledmobs.command.kill"))
                 suggestions.add("kill");
             if (sender.hasPermission("levelledmobs.command.reload"))
@@ -107,7 +112,7 @@ public class LevelledMobsCommand implements CommandExecutor, TabCompleter {
 
             return suggestions;
         } else {
-			switch (args[0].toLowerCase()) {
+            switch (args[0].toLowerCase()) {
                 case "summon":
                     return summonSubcommand.parseTabCompletions(main, sender, args);
                 case "kill":
@@ -122,6 +127,6 @@ public class LevelledMobsCommand implements CommandExecutor, TabCompleter {
                 default:
                     return null;
             }
-		}
-	}
+        }
+    }
 }

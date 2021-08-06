@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2020-2021  lokka30. Use of this source code is governed by the GNU AGPL v3.0 license that can be found in the LICENSE.md file.
+ */
+
 package me.lokka30.levelledmobs.listeners;
 
 import me.lokka30.levelledmobs.LevelledMobs;
@@ -65,9 +69,9 @@ public class EntityDamageListener implements Listener {
         final LivingEntityWrapper shooter = new LivingEntityWrapper((LivingEntity) projectile.getShooter(), main);
 
         if (!shooter.getLivingEntity().isValid()) return;
-        if (!shooter.isLevelled()){
-             if (main.levelManager.entitySpawnListener.processMobSpawns)
-                 return;
+        if (!shooter.isLevelled()) {
+            if (main.levelManager.entitySpawnListener.processMobSpawns)
+                return;
 
             main.queueManager_mobs.addToQueue(new QueueItem(shooter, event));
         }

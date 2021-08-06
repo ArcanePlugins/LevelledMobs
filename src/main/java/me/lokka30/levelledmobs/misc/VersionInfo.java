@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2020-2021  lokka30. Use of this source code is governed by the GNU AGPL v3.0 license that can be found in the LICENSE.md file.
+ */
+
 package me.lokka30.levelledmobs.misc;
 
 import java.io.InvalidObjectException;
@@ -55,7 +59,7 @@ public class VersionInfo implements Comparable<VersionInfo> {
             if (v.thisVerSplit.size() <= i && this.thisVerSplit.size() - 1 <= i)
                 break;
 
-            // if one has extra digits we'll assume that one is newer
+                // if one has extra digits we'll assume that one is newer
             else if (v.thisVerSplit.size() <= i)
                 return 1;
             else if (this.thisVerSplit.size() <= i)

@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2020-2021  lokka30. Use of this source code is governed by the GNU AGPL v3.0 license that can be found in the LICENSE.md file.
+ */
+
 package me.lokka30.levelledmobs.managers;
 
 import com.mojang.authlib.GameProfile;
@@ -108,13 +112,11 @@ public class MobHeadManager {
 
             try {
                 id = UUID.fromString(mobData.id);
-            }
-            catch (IllegalArgumentException e){
+            } catch (IllegalArgumentException e) {
                 Utils.logger.warning("mob: " + lmEntity.getTypeName() + ", exception getting UUID for mob head. " + e.getMessage());
                 return playerHead;
             }
-        }
-        else {
+        } else {
             id = dropItem.customPlayerHeadId;
             textureCode = dropItem.mobHeadTexture;
         }
@@ -157,8 +159,7 @@ public class MobHeadManager {
             useName = useName.replace("%displayname%", displayName);
             useName = useName.replace("%playername%", killerName);
 
-        }
-        else
+        } else
             useName = "Mob Head";
 
         meta.setDisplayName(useName);

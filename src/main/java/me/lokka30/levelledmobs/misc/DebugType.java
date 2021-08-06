@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2020-2021  lokka30. Use of this source code is governed by the GNU AGPL v3.0 license that can be found in the LICENSE.md file.
+ */
+
 package me.lokka30.levelledmobs.misc;
 
 /**
@@ -76,6 +80,11 @@ public enum DebugType {
      * are being executed
      */
     CUSTOM_COMMANDS,
+
+    /**
+     * When applying NBT to a mob
+     */
+    NBT_APPLY_SUCCESS,
 
     /**
      * Logged when LM is processing a mob

@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2020-2021  lokka30. Use of this source code is governed by the GNU AGPL v3.0 license that can be found in the LICENSE.md file.
+ */
+
 package me.lokka30.levelledmobs.rules.strategies;
 
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
@@ -40,28 +44,39 @@ public class SpawnDistanceStrategy implements LevellingStrategy, Cloneable {
 
                 this.getClass().getDeclaredField(f.getName()).set(this, f.get(sds));
             }
-        }
-        catch (IllegalAccessException | NoSuchFieldException e){
+        } catch (IllegalAccessException | NoSuchFieldException e) {
             e.printStackTrace();
         }
     }
 
     public String toString(){
+        final StringBuilder sb = new StringBuilder();
         if (blendedLevellingEnabled != null && blendedLevellingEnabled) {
-            return String.format("sd: %s, ild: %s, t_yHght: %s, mp: %s, lvlMlp: %s, scdown: %s",
+            sb.append(String.format("sd: %s, ild: %s, t_yHght: %s, mp: %s, lvlMlp: %s, scdown: %s",
                     startDistance == null ? 0 : startDistance,
                     increaseLevelDistance == null ? 0 : increaseLevelDistance,
                     transition_Y_Height == null ? 0 : transition_Y_Height,
                     multiplierPeriod == null ? 0 : multiplierPeriod,
                     lvlMultiplier == null ? 0 : lvlMultiplier,
-                    scaleDownward == null || scaleDownward);
-        }
-        else {
-            return String.format("sd: %s, ild: %s",
+                    scaleDownward == null || scaleDownward));
+        } else {
+            sb.append(String.format("sd: %s, ild: %s",
                     startDistance == null ? 0 : startDistance,
                     increaseLevelDistance == null ? 0 : increaseLevelDistance
-            );
+            ));
         }
+
+        if (this.spawnLocation_X != null){
+            sb.append(" x: ");
+            sb.append(this.spawnLocation_X);
+        }
+
+        if (this.spawnLocation_Z != null){
+            sb.append(" z: ");
+            sb.append(this.spawnLocation_Z);
+        }
+
+        return sb.toString();
     }
 
     public int generateLevel(@NotNull final LivingEntityWrapper lmEntity, final int minLevel, final int maxLevel) {
@@ -111,8 +126,7 @@ public class SpawnDistanceStrategy implements LevellingStrategy, Cloneable {
                     transition_Y_Height - (double) currentYPos) /
                     multiplierPeriod) * lvlMultiplier)
                     * (double) spawnDistanceLevelAssignment);
-        }
-        else {
+        } else {
             result = ((((
                     transition_Y_Height - (double) currentYPos) /
                     multiplierPeriod) * (lvlMultiplier * -1.0))

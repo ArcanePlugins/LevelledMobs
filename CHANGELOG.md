@@ -1,5 +1,25 @@
 # Changelog
 
+⚠ Not all versions have been recorded in this changelog. Please check the Updates tab on our SpigotMC page for a full
+list of changelogs.
+
+***
+
+## v3.1.1 b481
+
+* @stumper66 fixed a few issues with rules using certain presets
+* @stumper66 reduced the filesize by removing embedded rules_normal.yml
+* @stumper66 fixed potential issue with using mob specific multipliers in presets
+* @stumper66 fixed health indicator issue not populating colored tiers when used in a preset
+* @stumper66 fixed custom x or z coordinate when used in spawn distance levelling. It also now shows up in the rules
+  command
+* @stumper66 fixed null reference exception when using OhTheDungeonsYoullGo plugin (not our fault)
+* @stumper66 fixed exception when starting the server when using version 1.16.1
+* @stumper66 fixed entity-name-override not accepting simple strings in rules.yml
+* @stumper66 fixed custom commands not respecting level constraints
+* @lokka30 fixed NBT apply spam (thanks to `___MrCrazy___` on Discord for reporting this issue)
+* @lokka30 added debug type `NBT_APPLY_SUCCESS`
+
 ***
 
 ## v3.0.4 b444

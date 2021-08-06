@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2020-2021  lokka30. Use of this source code is governed by the GNU AGPL v3.0 license that can be found in the LICENSE.md file.
+ */
+
 package me.lokka30.levelledmobs.rules;
 
 import me.lokka30.levelledmobs.LevelledMobs;
@@ -12,6 +16,7 @@ import me.lokka30.levelledmobs.rules.strategies.YDistanceStrategy;
 import org.bukkit.block.Biome;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.MemoryConfiguration;
+import org.bukkit.configuration.MemorySection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.EntityType;
 import org.bukkit.event.entity.CreatureSpawnEvent;
@@ -370,15 +375,15 @@ public class RulesParsingManager {
         final List<RuleInfo> results = new LinkedList<>();
         if (rulesSection == null) return results;
 
-         for (final LinkedHashMap<String, Object> hashMap : (List<LinkedHashMap<String, Object>>)(rulesSection)){
-             final ConfigurationSection cs = objTo_CS_2(hashMap);
-             if (cs == null) {
-                 Utils.logger.info("cs was null (parsing custom-rules)");
-                 continue;
-             }
+        for (final LinkedHashMap<String, Object> hashMap : (List<LinkedHashMap<String, Object>>) (rulesSection)) {
+            final ConfigurationSection cs = objTo_CS_2(hashMap);
+            if (cs == null) {
+                Utils.logger.info("cs was null (parsing custom-rules)");
+                continue;
+            }
 
-             this.parsingInfo = new RuleInfo("rule " + results.size());
-             parseValues(cs);
+            this.parsingInfo = new RuleInfo("rule " + results.size());
+            parseValues(cs);
             results.add(this.parsingInfo);
         }
 
@@ -483,23 +488,29 @@ public class RulesParsingManager {
                 mobNames.names = names;
                 final List<String> names2 = new LinkedList<>();
 
-                for (final String nameFromList : names){
+                for (final String nameFromList : names) {
                     if (!nameFromList.isEmpty())
                         names2.add(nameFromList);
                 }
 
                 if (!names2.isEmpty())
                     entityNames.put(name, mobNames);
-            }
-
-            else if (cs.getString(name) != null) {
-                if ("merge".equalsIgnoreCase(name)){
+            } else if (cs.getString(name) != null) {
+                if ("merge".equalsIgnoreCase(name)) {
                     parsingInfo.mergeEntityNameOverrides = cs.getBoolean(name);
                     continue;
                 }
-                final List<LevelTierMatching> tiers = parseNumberRange(objTo_CS(cs, name), name);
-                if (tiers != null && !tiers.isEmpty())
-                    levelTiers.put(name, tiers);
+                if (cs.get(name) instanceof String) {
+                    final LevelTierMatching mobNames = new LevelTierMatching();
+                    final List<String> names2 = List.of(Objects.requireNonNull(cs.getString(name)));
+                    mobNames.mobName = name;
+                    mobNames.names = names2;
+                    entityNames.put(name, mobNames);
+                } else if (cs.get(name) instanceof MemorySection) {
+                    final List<LevelTierMatching> tiers = parseNumberRange(objTo_CS(cs, name), name);
+                    if (tiers != null && !tiers.isEmpty())
+                        levelTiers.put(name, tiers);
+                }
             }
         }
 
@@ -526,8 +537,7 @@ public class RulesParsingManager {
             if (!names.isEmpty()) {
                 // an array of names was provided
                 tier.names = names;
-            }
-            else if (cs.getString(name) != null) {
+            } else if (cs.getString(name) != null) {
                 // a string was provided
                 tier.names = new LinkedList<>();
                 tier.names.add(cs.getString(name));
@@ -627,7 +637,10 @@ public class RulesParsingManager {
             yDistanceStrategy.endingYLevel = ymlHelper.getInt2(cs_YDistance, "end", yDistanceStrategy.endingYLevel);
             yDistanceStrategy.yPeriod = ymlHelper.getInt2(cs_YDistance, "period", yDistanceStrategy.yPeriod);
 
-            this.parsingInfo.levellingStrategy = yDistanceStrategy;
+            if (this.parsingInfo.levellingStrategy != null && this.parsingInfo.levellingStrategy instanceof YDistanceStrategy)
+                this.parsingInfo.levellingStrategy.mergeRule(yDistanceStrategy);
+            else
+                this.parsingInfo.levellingStrategy = yDistanceStrategy;
         }
 
         final ConfigurationSection cs_SpawnDistance = objTo_CS(cs,"distance-from-spawn");
@@ -638,15 +651,18 @@ public class RulesParsingManager {
             spawnDistanceStrategy.increaseLevelDistance = ymlHelper.getInt2(cs_SpawnDistance, "increase-level-distance", spawnDistanceStrategy.increaseLevelDistance);
             spawnDistanceStrategy.startDistance = ymlHelper.getInt2(cs_SpawnDistance, "start-distance", spawnDistanceStrategy.startDistance);
 
-            if (ymlHelper.getString(cs_SpawnDistance,"spawn-location.x") != null)
+            if (cs_SpawnDistance.get(ymlHelper.getKeyNameFromConfig(cs_SpawnDistance,"spawn-location.x")) != null)
                 spawnDistanceStrategy.spawnLocation_X = parseOptionalSpawnCoordinate(ymlHelper.getKeyNameFromConfig(cs,"spawn-location.x"), cs_SpawnDistance);
-            if (ymlHelper.getString(cs_SpawnDistance,"spawn-location.z") != null)
+            if (cs_SpawnDistance.get(ymlHelper.getKeyNameFromConfig(cs_SpawnDistance,"spawn-location.z")) != null)
                 spawnDistanceStrategy.spawnLocation_Z = parseOptionalSpawnCoordinate(ymlHelper.getKeyNameFromConfig(cs,"spawn-location.z"), cs_SpawnDistance);
 
             if (ymlHelper.getString(cs_SpawnDistance,"blended-levelling") != null)
                 parseBlendedLevelling(objTo_CS(cs_SpawnDistance,"blended-levelling"), spawnDistanceStrategy);
 
-            this.parsingInfo.levellingStrategy = spawnDistanceStrategy;
+            if (this.parsingInfo.levellingStrategy != null && this.parsingInfo.levellingStrategy instanceof SpawnDistanceStrategy)
+                this.parsingInfo.levellingStrategy.mergeRule(spawnDistanceStrategy);
+            else
+                this.parsingInfo.levellingStrategy = spawnDistanceStrategy;
         }
 
         final ConfigurationSection cs_Random = objTo_CS(cs,"weighted-random");
@@ -664,7 +680,10 @@ public class RulesParsingManager {
             if (!randomMap.isEmpty())
                 randomLevelling.weightedRandom = randomMap;
 
-            this.parsingInfo.levellingStrategy = randomLevelling;
+            if (this.parsingInfo.levellingStrategy != null && this.parsingInfo.levellingStrategy instanceof RandomLevellingStrategy)
+                this.parsingInfo.levellingStrategy.mergeRule(randomLevelling);
+            else
+                this.parsingInfo.levellingStrategy = randomLevelling;
         }
 
         parsePlayerLevellingOptions(objTo_CS(cs,"player-levelling"));
@@ -716,7 +735,10 @@ public class RulesParsingManager {
             if (!tiers.isEmpty()) indicator.tiers = tiers;
         }
 
-        parsingInfo.healthIndicator = indicator;
+        if (parsingInfo.healthIndicator != null && parsingInfo.healthIndicator.doMerge != null && parsingInfo.healthIndicator.doMerge)
+            parsingInfo.healthIndicator.mergeIndicator(indicator);
+        else
+            parsingInfo.healthIndicator = indicator;
     }
 
     private void parsePlayerLevellingOptions(final ConfigurationSection cs){
@@ -815,7 +837,12 @@ public class RulesParsingManager {
             fineTuning.put(mobName, attribs);
         }
 
-        if (!fineTuning.isEmpty()) parsingInfo.specificMobMultipliers = fineTuning;
+        if (!fineTuning.isEmpty()) {
+            if (parsingInfo.specificMobMultipliers != null)
+                parsingInfo.specificMobMultipliers.putAll(fineTuning);
+            else
+                parsingInfo.specificMobMultipliers = fineTuning;
+        }
     }
 
     @Nullable

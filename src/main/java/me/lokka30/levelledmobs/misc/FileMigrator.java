@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2020-2021  lokka30. Use of this source code is governed by the GNU AGPL v3.0 license that can be found in the LICENSE.md file.
+ */
+
 package me.lokka30.levelledmobs.misc;
 
 import me.lokka30.levelledmobs.LevelledMobs;
@@ -116,17 +120,15 @@ public class FileMigrator {
             final List<String> worldList = settings.getStringList("allowed-worlds-list.list");
 
             if ("ALL".equalsIgnoreCase(worldMode)) {
-                rulesLines.set(worldListAllowedLine,  "        allowed-list: ['*']");
+                rulesLines.set(worldListAllowedLine, "        allowed-list: ['*']");
                 rulesLines.set(worldListExcludedLine, "        excluded-list: ['']");
-            }
-            else if ("WHITELIST".equalsIgnoreCase(worldMode)) {
+            } else if ("WHITELIST".equalsIgnoreCase(worldMode)) {
                 final String newWorldList = compileListFromArray(worldList);
-                rulesLines.set(worldListAllowedLine,  "        allowed-list: " + newWorldList);
+                rulesLines.set(worldListAllowedLine, "        allowed-list: " + newWorldList);
                 rulesLines.set(worldListExcludedLine, "        excluded-list: ['']");
-            }
-            else {
+            } else {
                 final String newWorldList = compileListFromArray(worldList);
-                rulesLines.set(worldListAllowedLine,  "        allowed-list: ['']");
+                rulesLines.set(worldListAllowedLine, "        allowed-list: ['']");
                 rulesLines.set(worldListExcludedLine, "        excluded-list: " + newWorldList);
             }
 
@@ -141,8 +143,7 @@ public class FileMigrator {
             final String msg2 = Utils.colorizeAllInList(msg).toString();
             Utils.logger.warning(msg2.substring(1, msg2.length() - 2));
             main.migratedFromPre30 = true;
-        }
-        catch (IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
         }
 
@@ -191,18 +192,17 @@ public class FileMigrator {
 
                         keySections_New = buildKeySections(newConfigLines);
                     }
-                }
-                else {
+                } else {
                     // write the section into the new config, starting in corresponding new section
                     int insertAt = newConfigLines.size();
-                    if (fileVersion < 6){
+                    if (fileVersion < 6) {
                         if (key.toUpperCase().startsWith("ALL_"))
                             oldSection.sectionNumber = 2; // universal groups section
                         else
                             oldSection.sectionNumber = 3; // entity types section
                     }
 
-                    if (oldSection.sectionNumber > 0){
+                    if (oldSection.sectionNumber > 0) {
                         for (final String temp : keySections_New.keySet()){
                             final KeySectionInfo tempSection = keySections_New.get(temp);
                             if (tempSection.sectionNumber == oldSection.sectionNumber && tempSection.sectionStartingLine > 0){
@@ -226,8 +226,7 @@ public class FileMigrator {
             // build an index so we can modify the collection as we enumerate thru it
             Files.write(to.toPath(), newConfigLines, StandardCharsets.UTF_8, StandardOpenOption.TRUNCATE_EXISTING);
             Utils.logger.info("&fFile Loader: &8(Migration) &7Migrated &b" + to.getName() + "&7 successfully.");
-        }
-        catch (IOException e){
+        } catch (IOException e) {
             Utils.logger.error("&fFile Loader: &8(Migration) &7Failed to migrate &b" + to.getName() + "&7! Stack trace:");
             e.printStackTrace();
         }
@@ -277,7 +276,7 @@ public class FileMigrator {
                 foundNonComment = true;
             }
 
-            if (depth == 0){
+            if (depth == 0) {
                 if (keySection != null)
                     sections.put(keyName, keySection);
 
@@ -286,8 +285,7 @@ public class FileMigrator {
                 keySection.sectionNumber = sectionNumber;
                 keySection.sectionStartingLine = sectionStartingLine;
                 keyName = line;
-            }
-            else if (keySection != null){
+            } else if (keySection != null) {
                 keySection.lines.add(origline);
             }
         }
@@ -403,18 +401,19 @@ public class FileMigrator {
                                                 Utils.logger.info("&fFile Loader: &8(Migration) &7Added array value: &b" + oldValue);
                                         }
                                     }
-                                }
-                                else {
+                                } else {
                                     // non-array values go here.  Loop thru and find any subkeys under here
                                     final int numOfPeriods = countPeriods(key);
-                                    for (final String enumeratedKey : oldConfigMap.keySet()){
-                                        if (isSettings && oldVersion > 20 && oldVersion <= 24 && version24Resets.contains(enumeratedKey)) continue;
-                                        if (isSettings && oldVersion > 24 && oldVersion <= 26 && version26Resets.contains(enumeratedKey)) continue;
+                                    for (final String enumeratedKey : oldConfigMap.keySet()) {
+                                        if (isSettings && oldVersion > 20 && oldVersion <= 24 && version24Resets.contains(enumeratedKey))
+                                            continue;
+                                        if (isSettings && oldVersion > 24 && oldVersion <= 26 && version26Resets.contains(enumeratedKey))
+                                            continue;
 
                                         final int numOfPeriods_Enumerated = countPeriods(enumeratedKey);
-                                        if (enumeratedKey.startsWith(key) && numOfPeriods_Enumerated == numOfPeriods + 1 && !newConfigMap.containsKey(enumeratedKey)){
+                                        if (enumeratedKey.startsWith(key) && numOfPeriods_Enumerated == numOfPeriods + 1 && !newConfigMap.containsKey(enumeratedKey)) {
                                             final FileMigrator.FieldInfo fi = oldConfigMap.get(enumeratedKey);
-                                            if (!fi.isList() && fi.simpleValue != null){
+                                            if (!fi.isList() && fi.simpleValue != null) {
                                                 final String newPadding = getPadding(depth * 2);
                                                 final String newline = padding + getEndingKey(enumeratedKey) + ": " + fi.simpleValue;
                                                 newConfigLines.add(currentLine + 1, newline);
@@ -426,27 +425,29 @@ public class FileMigrator {
                                     }
                                 }
                             }
-                        } else
-                            if (oldConfigMap.containsKey(key)) {
-                                keysMatched++;
-                                final String value = line.substring(firstColon + 1).trim();
-                                final FileMigrator.FieldInfo fi = oldConfigMap.get(key);
-                                final String migratedValue = fi.simpleValue;
+                        } else if (oldConfigMap.containsKey(key)) {
+                            keysMatched++;
+                            final String value = line.substring(firstColon + 1).trim();
+                            final FileMigrator.FieldInfo fi = oldConfigMap.get(key);
+                            final String migratedValue = fi.simpleValue;
 
-                                if (isSettings && oldVersion <= 20 && !version20KeysToKeep.contains(key)) continue;
-                                if (isSettings && oldVersion > 20 && oldVersion <= 24 && version24Resets.contains(key)) continue;
-                                if (isSettings && oldVersion > 24 && oldVersion <= 26 && version26Resets.contains(key)) continue;
-                                if (key.toLowerCase().startsWith("file-version")) continue;
-                                if (isSettings && key.equalsIgnoreCase("creature-nametag") && oldVersion > 20 && oldVersion < 26
-                                        && migratedValue.equals("'&8[&7Level %level%&8 | &f%displayname%&8 | &c%health%&8/&c%max_health% %heart_symbol%&8]'")) {
+                            if (isSettings && oldVersion <= 20 && !version20KeysToKeep.contains(key)) continue;
+                            if (isSettings && oldVersion > 20 && oldVersion <= 24 && version24Resets.contains(key))
+                                continue;
+                            if (isSettings && oldVersion > 24 && oldVersion <= 26 && version26Resets.contains(key))
+                                continue;
+                            if (key.toLowerCase().startsWith("file-version")) continue;
+                            if (isSettings && key.equalsIgnoreCase("creature-nametag") && oldVersion > 20 && oldVersion < 26
+                                    && migratedValue.equals("'&8[&7Level %level%&8 | &f%displayname%&8 | &c%health%&8/&c%max_health% %heart_symbol%&8]'")) {
                                 // updating to the new default introduced in file ver 26 if they were using the previous default
                                 continue;
                             }
                             if (isSettings && oldVersion < 28 && key.equalsIgnoreCase(useCustomDrops) &&
                                     oldConfigMap.containsKey(useCustomDrops) &&
-                                    oldConfigMap.get(useCustomDrops).simpleValue.equalsIgnoreCase("true")){
+                                    oldConfigMap.get(useCustomDrops).simpleValue.equalsIgnoreCase("true")) {
 
-                                if (showMessages) Utils.logger.info("&fFile Loader: &8(Migration) &7Current key: &b" + key + "&7, resetting to: &rfalse&7.");
+                                if (showMessages)
+                                    Utils.logger.info("&fFile Loader: &8(Migration) &7Current key: &b" + key + "&7, resetting to: &rfalse&7.");
                                 newConfigMap.get(useCustomDrops).simpleValue = "false";
                                 valuesUpdated++;
                                 continue;

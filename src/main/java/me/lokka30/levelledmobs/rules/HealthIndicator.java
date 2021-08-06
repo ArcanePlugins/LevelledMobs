@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2020-2021  lokka30. Use of this source code is governed by the GNU AGPL v3.0 license that can be found in the LICENSE.md file.
+ */
+
 package me.lokka30.levelledmobs.rules;
 
 import java.util.Map;
@@ -35,7 +39,7 @@ public class HealthIndicator implements Cloneable {
         if (mergingIndicator.tiers == null) return;
 
         if (this.tiers == null) this.tiers = new TreeMap<>();
-        mergingIndicator.tiers.putAll(this.tiers);
+        this.tiers.putAll(mergingIndicator.tiers);
     }
 
     public String toString(){

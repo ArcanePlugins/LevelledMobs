@@ -1,3 +1,15 @@
-/.idea/workspace.xml
+# Non-redistributables
+#   Why? We respect other developer's work.
+/libs
+
+# IntelliJ IDE
+#   Why? Different developers use different IDE settings.
 /target/
-/.idea/shelf/
+/.idea
+LevelledMobs.iml
+
+# Eclipse IDE
+#   Why? Different developers use different IDE settings.
+.classpath
+.project
+/.settings

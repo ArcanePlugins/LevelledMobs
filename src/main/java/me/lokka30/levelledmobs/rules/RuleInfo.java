@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2020-2021  lokka30. Use of this source code is governed by the GNU AGPL v3.0 license that can be found in the LICENSE.md file.
+ */
+
 package me.lokka30.levelledmobs.rules;
 
 import me.lokka30.levelledmobs.managers.ExternalCompatibilityManager;
@@ -106,15 +110,13 @@ public class RuleInfo {
                 boolean skipSettingValue = false;
                 final Object presetValue = f.get(preset);
 
-                if (f.getName().equals("entityNameOverrides") && this.entityNameOverrides != null){
+                if (f.getName().equals("entityNameOverrides") && this.entityNameOverrides != null) {
                     this.entityNameOverrides.putAll((Map<String, LevelTierMatching>) presetValue);
                     skipSettingValue = true;
-                }
-                else if (f.getName().equals("entityNameOverrides_Level") && this.entityNameOverrides_Level != null){
+                } else if (f.getName().equals("entityNameOverrides_Level") && this.entityNameOverrides_Level != null) {
                     this.entityNameOverrides_Level.putAll((Map<String, List<LevelTierMatching>>) presetValue);
                     skipSettingValue = true;
-                }
-                else if (f.getName().equals("healthIndicator")){
+                } else if (f.getName().equals("healthIndicator")) {
                     final HealthIndicator mergingPreset = (HealthIndicator) presetValue;
                     if (this.healthIndicator == null || mergingPreset.doMerge == null || !mergingPreset.doMerge)
                         this.healthIndicator = mergingPreset;
@@ -122,19 +124,27 @@ public class RuleInfo {
                         this.healthIndicator.mergeIndicator(mergingPreset.cloneItem());
 
                     skipSettingValue = true;
-                }
-                else if (f.getName().equals("allMobMultipliers")){
-                    FineTuningAttributes mergingPreset = (FineTuningAttributes) presetValue;
+                } else if (f.getName().equals("allMobMultipliers")) {
+                    final FineTuningAttributes mergingPreset = (FineTuningAttributes) presetValue;
                     if (this.allMobMultipliers == null)
                         this.allMobMultipliers = mergingPreset.cloneItem();
                     else
                         this.allMobMultipliers.mergeAttributes(mergingPreset);
                     skipSettingValue = true;
+                } else if (f.getName().equals("specificMobMultipliers")){
+                    final Map<String, FineTuningAttributes> mergingPreset = (Map<String, FineTuningAttributes>) presetValue;
+                    if (this.specificMobMultipliers == null)
+                        this.specificMobMultipliers = new TreeMap<>();
+
+                    for (final String entityType : mergingPreset.keySet())
+                        this.specificMobMultipliers.put(entityType, mergingPreset.get(entityType).cloneItem());
+
+                    skipSettingValue = true;
                 }
 
                 if (presetValue instanceof CachedModalList){
-                    CachedModalList<?> cachedModalList_preset = (CachedModalList<?>) presetValue;
-                    CachedModalList<?> thisCachedModalList = (CachedModalList<?>) this.getClass().getDeclaredField(f.getName()).get(this);
+                    final CachedModalList<?> cachedModalList_preset = (CachedModalList<?>) presetValue;
+                    final CachedModalList<?> thisCachedModalList = (CachedModalList<?>) this.getClass().getDeclaredField(f.getName()).get(this);
 
                     if (thisCachedModalList != null && cachedModalList_preset.doMerge)
                         thisCachedModalList.mergeCachedModal(cachedModalList_preset);

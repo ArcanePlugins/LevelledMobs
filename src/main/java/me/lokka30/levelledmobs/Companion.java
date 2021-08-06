@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2020-2021  lokka30. Use of this source code is governed by the GNU AGPL v3.0 license that can be found in the LICENSE.md file.
+ */
+
 package me.lokka30.levelledmobs;
 
 import me.lokka30.levelledmobs.commands.LevelledMobsCommand;
@@ -9,7 +13,10 @@ import me.lokka30.levelledmobs.managers.ExternalCompatibilityManager;
 import me.lokka30.levelledmobs.managers.LevelManager;
 import me.lokka30.levelledmobs.managers.PAPIManager;
 import me.lokka30.levelledmobs.managers.WorldGuardManager;
-import me.lokka30.levelledmobs.misc.*;
+import me.lokka30.levelledmobs.misc.FileLoader;
+import me.lokka30.levelledmobs.misc.FileMigrator;
+import me.lokka30.levelledmobs.misc.Utils;
+import me.lokka30.levelledmobs.misc.VersionInfo;
 import me.lokka30.levelledmobs.rules.MetricsInfo;
 import me.lokka30.microlib.UpdateChecker;
 import me.lokka30.microlib.VersionUtils;
@@ -223,8 +230,7 @@ public class Companion {
             main.levelManager.attributeMaxHealthMax = Bukkit.getServer().spigot().getConfig().getDouble("settings.attribute.maxHealth.max", 2048.0);
             main.levelManager.attributeMovementSpeedMax = Bukkit.getServer().spigot().getConfig().getDouble("settings.attribute.movementSpeed.max", 2048.0);
             main.levelManager.attributeAttackDamageMax = Bukkit.getServer().spigot().getConfig().getDouble("settings.attribute.attackDamage.max", 2048.0);
-        }
-        catch (NoSuchMethodError ignored) {
+        } catch (NoSuchMethodError ignored) {
             main.levelManager.attributeMaxHealthMax = Integer.MAX_VALUE;
             main.levelManager.attributeMovementSpeedMax = Integer.MAX_VALUE;
             main.levelManager.attributeAttackDamageMax = Integer.MAX_VALUE;
@@ -265,15 +271,14 @@ public class Companion {
 
                     isOutOfDate = (thisVersion.compareTo(spigotVersion) < 0);
                     isNewerVersion = (thisVersion.compareTo(spigotVersion) > 0);
-                }
-                catch (InvalidObjectException e){
+                } catch (InvalidObjectException e) {
                     Utils.logger.warning("Got exception creating version objects: " + e.getMessage());
 
                     isOutOfDate = !currentVersion.equals(latestVersion);
                     isNewerVersion = currentVersion.contains("indev");
                 }
 
-                if (isNewerVersion){
+                if (isNewerVersion) {
                     updateResult = Collections.singletonList(
                             "&7Your &bLevelledMobs&7 version is &ba pre-release&7. Latest release version is &bv%latestVersion%&7. &8(&7You're running &bv%currentVersion%&8)");
 
@@ -282,8 +287,7 @@ public class Companion {
                     updateResult = Utils.colorizeAllInList(updateResult);
 
                     updateResult.forEach(Utils.logger::warning);
-                }
-                else if (isOutOfDate) {
+                } else if (isOutOfDate) {
 
                     // for some reason config#getStringList doesn't allow defaults??
                     if (main.messagesCfg.contains("other.update-notice.messages")) {

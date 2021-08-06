@@ -1,5 +1,5 @@
 # This is NOT a configuration file! All changes to this file will not take effect and be reset!
-# Add your own custom drops only in the customdrops.yml file.
+# Add your own custom drops only in the customdrops.yml file, NOT this file!
 # Use https://minecraft.gamepedia.com/Drops#Mob_drops when modifying this file.
 # This file does not *add* drops to mobs. It just tells LM what drops are *multipliable*.
 ELDER_GUARDIAN:

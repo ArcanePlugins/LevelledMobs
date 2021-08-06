@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2020-2021  lokka30. Use of this source code is governed by the GNU AGPL v3.0 license that can be found in the LICENSE.md file.
+ */
+
 package me.lokka30.levelledmobs.commands.subcommands;
 
 import me.lokka30.levelledmobs.LevelledMobs;
@@ -7,7 +11,9 @@ import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
 import me.lokka30.levelledmobs.misc.Utils;
 import me.lokka30.levelledmobs.rules.RuleInfo;
 import me.lokka30.microlib.MessageUtils;
-import net.md_5.bungee.api.chat.*;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.chat.hover.content.Text;
 import org.bukkit.Location;
 import org.bukkit.Particle;
@@ -21,10 +27,13 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.nio.file.*;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.*;
 
 /**
@@ -155,16 +164,16 @@ public class RulesSubcommand implements Subcommand {
         String filename;
 
         switch (difficulty){
-            case EASY: filename = "rules_easy.yml";
+            case EASY: filename = "predefined/rules_easy.yml";
                 break;
-            case HARD: filename = "rules_hard.yml";
+            case HARD: filename = "predefined/rules_hard.yml";
                 break;
-            default: filename = "rules_normal.yml";
+            default: filename = "rules.yml";
                 break;
         }
 
 
-        try (InputStream stream = main.getResource("predefined/" + filename)) {
+        try (InputStream stream = main.getResource(filename)) {
             if (stream == null){
                 Utils.logger.error(prefix + " Input stream was null");
                 return;
@@ -200,8 +209,7 @@ public class RulesSubcommand implements Subcommand {
             component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(url)));
             final Player p = (Player) sender;
             p.spigot().sendMessage(component);
-        }
-        else
+        } else
             sender.sendMessage(url);
     }
 
@@ -359,10 +367,10 @@ public class RulesSubcommand implements Subcommand {
                 if (value.toString().equalsIgnoreCase("{}")) continue;
                 if (value.toString().equalsIgnoreCase("[]")) continue;
                 if (value.toString().equalsIgnoreCase("0") &&
-                    f.getName().equals("rulePriority")) continue;
+                        f.getName().equals("rulePriority")) continue;
                 if (value.toString().equalsIgnoreCase("0.0")) continue;
                 if (value.toString().equalsIgnoreCase("false") &&
-                    !f.getName().equals("ruleIsEnabled")) continue;
+                        !f.getName().equals("ruleIsEnabled")) continue;
                 if (value.toString().equalsIgnoreCase("NONE")) continue;
                 if (value instanceof CachedModalList<?>) {
                     CachedModalList<?> cml = (CachedModalList<?>) value;
@@ -454,12 +462,11 @@ public class RulesSubcommand implements Subcommand {
         if (args.length == 2)
             return Arrays.asList("help_discord", "help_wiki", "reset", "show_all", "show_effective", "show_rule");
         else if (args.length >= 3) {
-            if ("reset".equalsIgnoreCase(args[1]) && args.length == 3){
+            if ("reset".equalsIgnoreCase(args[1]) && args.length == 3) {
                 suggestions.add("easy");
                 suggestions.add("normal");
                 suggestions.add("hard");
-            }
-            else if ("show_all".equalsIgnoreCase(args[1])){
+            } else if ("show_all".equalsIgnoreCase(args[1])) {
                 boolean showOnConsole = false;
                 for (int i = 2; i < args.length; i++) {
                     final String arg = args[i].toLowerCase();
@@ -470,8 +477,7 @@ public class RulesSubcommand implements Subcommand {
                     }
                 }
                 if (!showOnConsole) suggestions.add("/console");
-            }
-            else if ("show_rule".equalsIgnoreCase(args[1]) || "show_effective".equalsIgnoreCase(args[1])) {
+            } else if ("show_rule".equalsIgnoreCase(args[1]) || "show_effective".equalsIgnoreCase(args[1])) {
                 final boolean isShowRule = "show_rule".equalsIgnoreCase(args[1]);
                 final boolean isEffective = "show_effective".equalsIgnoreCase(args[1]);
                 boolean showOnConsole = false;
