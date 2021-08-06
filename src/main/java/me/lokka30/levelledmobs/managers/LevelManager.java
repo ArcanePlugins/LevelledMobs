@@ -60,6 +60,8 @@ public class LevelManager implements LevelInterface {
     public final NamespacedKey overridenEntityNameKey;
     public final NamespacedKey hasCustomNameTag;
     public final NamespacedKey playerLevelling_Id;
+    public final NamespacedKey chanceRule_Allowed;
+    public final NamespacedKey chanceRule_Denied;
     public double attributeMaxHealthMax = 2048.0;
     public double attributeMovementSpeedMax = 2048.0;
     public double attributeAttackDamageMax = 2048.0;
@@ -94,6 +96,8 @@ public class LevelManager implements LevelInterface {
         overridenEntityNameKey = new NamespacedKey(main, "overridenEntityName");
         hasCustomNameTag = new NamespacedKey(main, "hasCustomNameTag");
         playerLevelling_Id = new NamespacedKey(main, "playerLevelling_Id");
+        chanceRule_Allowed = new NamespacedKey(main, "chanceRule_Allowed");
+        chanceRule_Denied = new NamespacedKey(main, "chanceRule_Denied");
         this.summonedEntityType = EntityType.UNKNOWN;
         this.randomLevellingCache = new TreeMap<>();
 

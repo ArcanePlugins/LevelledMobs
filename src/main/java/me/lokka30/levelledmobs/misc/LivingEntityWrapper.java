@@ -7,6 +7,7 @@ package me.lokka30.levelledmobs.misc;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.LivingEntityInterface;
 import me.lokka30.levelledmobs.managers.ExternalCompatibilityManager;
+import me.lokka30.levelledmobs.rules.ApplicableRulesResult;
 import me.lokka30.levelledmobs.rules.FineTuningAttributes;
 import me.lokka30.levelledmobs.rules.RuleInfo;
 import org.bukkit.World;
@@ -18,10 +19,7 @@ import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -62,6 +60,7 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
     private boolean groupsAreBuilt;
     private Double calculatedDistanceFromSpawn;
     private Player playerForLevelling;
+    private Map<String, Boolean> prevChanceRuleResults;
     private final ReentrantLock cacheLock;
     private final static Object playerLock = new Object();
 
@@ -80,7 +79,10 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
 
             this.hasCache = true;
             // the lines below must remain after hasCache = true to prevent stack overflow
-            this.applicableRules = main.rulesManager.getApplicableRules(this);
+            cachePrevChanceResults();
+            final ApplicableRulesResult applicableRulesResult = main.rulesManager.getApplicableRules(this);
+            this.applicableRules = applicableRulesResult.allApplicableRules;
+            checkChanceRules(applicableRulesResult);
             this.fineTuningAttributes = main.rulesManager.getFineTuningAttributes(this);
             this.isBuildingCache = false;
         } catch (InterruptedException e) {
@@ -96,6 +98,66 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
         this.groupsAreBuilt = false;
         this.applicableGroups.clear();
         this.applicableRules.clear();
+    }
+
+    private void checkChanceRules(final ApplicableRulesResult result){
+        if (result.allApplicableRules_MadeChance.isEmpty() && result.allApplicableRules_DidNotMakeChance.isEmpty())
+            return;
+
+        final StringBuilder sbAllowed = new StringBuilder();
+        for (final RuleInfo ruleInfo : result.allApplicableRules_MadeChance){
+            if (sbAllowed.length() > 0) sbAllowed.append(";");
+            sbAllowed.append(ruleInfo.getRuleName());
+        }
+
+        final StringBuilder sbDenied = new StringBuilder();
+        for (final RuleInfo ruleInfo : result.allApplicableRules_DidNotMakeChance){
+            if (sbDenied.length() > 0) sbDenied.append(";");
+            sbDenied.append(ruleInfo.getRuleName());
+        }
+
+        synchronized (this.livingEntity.getPersistentDataContainer()){
+            if (sbAllowed.length() > 0)
+                this.livingEntity.getPersistentDataContainer().set(main.levelManager.chanceRule_Allowed, PersistentDataType.STRING, sbAllowed.toString());
+            if (sbDenied.length() > 0)
+                this.livingEntity.getPersistentDataContainer().set(main.levelManager.chanceRule_Denied, PersistentDataType.STRING, sbDenied.toString());
+        }
+    }
+
+    private void cachePrevChanceResults(){
+        if (!main.rulesManager.anyRuleHasChance) return;
+
+        String rulesPassed = null;
+        String rulesDenied = null;
+
+        synchronized (this.livingEntity.getPersistentDataContainer()){
+            if (this.livingEntity.getPersistentDataContainer().has(main.levelManager.chanceRule_Allowed, PersistentDataType.STRING)){
+                rulesPassed = this.livingEntity.getPersistentDataContainer().get(main.levelManager.chanceRule_Allowed, PersistentDataType.STRING);
+            }
+            if (this.livingEntity.getPersistentDataContainer().has(main.levelManager.chanceRule_Denied, PersistentDataType.STRING)){
+                rulesDenied = this.livingEntity.getPersistentDataContainer().get(main.levelManager.chanceRule_Denied, PersistentDataType.STRING);
+            }
+        }
+
+        if (rulesPassed == null && rulesDenied == null) return;
+        this.prevChanceRuleResults = new TreeMap<>();
+
+        if (rulesPassed != null){
+            for (final String ruleName : rulesPassed.split(";")){
+                this.prevChanceRuleResults.put(ruleName, true);
+            }
+        }
+
+        if (rulesDenied != null){
+            for (final String ruleName : rulesDenied.split(";")){
+                this.prevChanceRuleResults.put(ruleName, false);
+            }
+        }
+    }
+
+    @Nullable
+    public Map<String, Boolean> getPrevChanceRuleResults(){
+        return this.prevChanceRuleResults;
     }
 
     @NotNull

@@ -70,12 +70,15 @@ public class RulesParsingManager {
         this.defaultRule = parseDefaults(objTo_CS(config, "default-rule"));
         this.main.rulesManager.rulesInEffect.put(Integer.MIN_VALUE, new LinkedList<>());
         this.main.rulesManager.rulesInEffect.get(Integer.MIN_VALUE).add(defaultRule);
+        this.main.rulesManager.anyRuleHasChance = this.defaultRule.conditions_Chance != null;
+
         this.customRules = parseCustomRules(config.get(ymlHelper.getKeyNameFromConfig(config, "custom-rules")));
         for (final RuleInfo ruleInfo : customRules) {
             if (!this.main.rulesManager.rulesInEffect.containsKey(ruleInfo.rulePriority))
                 this.main.rulesManager.rulesInEffect.put(ruleInfo.rulePriority, new LinkedList<>());
 
             this.main.rulesManager.rulesInEffect.get(ruleInfo.rulePriority).add(ruleInfo);
+            if (ruleInfo.conditions_Chance != null) this.main.rulesManager.anyRuleHasChance = true;
         }
 
         this.main.rulesManager.buildBiomeGroupMappings(customBiomeGroups);

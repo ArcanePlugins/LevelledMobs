@@ -37,6 +37,7 @@ public class RulesManager {
     public final SortedMap<Integer, List<RuleInfo>> rulesInEffect;
     @NotNull
     public final Map<String, List<String>> biomeGroupMappings;
+    public boolean anyRuleHasChance;
 
     public boolean getRule_IsWorldAllowedInAnyRule(final World world){
         if (world == null) return false;
@@ -465,8 +466,8 @@ public class RulesManager {
     }
 
     @NotNull
-    public List<RuleInfo> getApplicableRules(final LivingEntityInterface lmInterface){
-        final List<RuleInfo> applicableRules = new LinkedList<>();
+    public ApplicableRulesResult getApplicableRules(final LivingEntityInterface lmInterface){
+        final ApplicableRulesResult applicableRules = new ApplicableRulesResult();
 
         for (final int rulePriority : rulesInEffect.keySet()) {
             final List<RuleInfo> rules = rulesInEffect.get(rulePriority);
@@ -477,21 +478,27 @@ public class RulesManager {
                 if (lmInterface instanceof LivingEntityWrapper && !isRuleApplicable_Entity((LivingEntityWrapper) lmInterface, ruleInfo))
                     continue;
 
-                if (!isRuleApplicable_Interface(lmInterface, ruleInfo))
+                final RuleCheckResult checkResult = isRuleApplicable_Interface(lmInterface, ruleInfo);
+                if (!checkResult.useResult) {
+                    if (checkResult.ruleMadeChance != null && !checkResult.ruleMadeChance)
+                        applicableRules.allApplicableRules_DidNotMakeChance.add(ruleInfo);
                     continue;
+                }
+                else if (checkResult.ruleMadeChance != null && checkResult.ruleMadeChance)
+                    applicableRules.allApplicableRules_MadeChance.add(ruleInfo);
 
                 if (ruleInfo.stopProcessingRules != null && ruleInfo.stopProcessingRules) {
                     Utils.debugLog(main, DebugType.DENIED_RULE_STOP_PROCESSING, String.format("&b%s&7, mob: &b%s&7, rule count: &b%s",
-                            ruleInfo.getRuleName(), lmInterface.getTypeName(), applicableRules.size()));
+                            ruleInfo.getRuleName(), lmInterface.getTypeName(), applicableRules.allApplicableRules.size()));
                     break;
                 }
 
-                applicableRules.add(ruleInfo);
+                applicableRules.allApplicableRules.add(ruleInfo);
             }
         }
 
         boolean hasWorldListSpecified = false;
-        for (final RuleInfo ri : applicableRules) {
+        for (final RuleInfo ri : applicableRules.allApplicableRules) {
             if (ri.conditions_Worlds != null && (!ri.conditions_Worlds.isEmpty() || ri.conditions_Worlds.allowAll)){
                 hasWorldListSpecified = true;
                 break;
@@ -499,7 +506,7 @@ public class RulesManager {
         }
 
         return hasWorldListSpecified ?
-                applicableRules : Collections.emptyList();
+                applicableRules : new ApplicableRulesResult();
     }
 
     private boolean isRuleApplicable_Entity(final LivingEntityWrapper lmEntity, @NotNull final RuleInfo ri){
@@ -545,31 +552,31 @@ public class RulesManager {
         return true;
     }
 
-    private boolean isRuleApplicable_Interface(final LivingEntityInterface lmInterface, final RuleInfo ri){
+    private RuleCheckResult isRuleApplicable_Interface(final LivingEntityInterface lmInterface, final RuleInfo ri){
 
         if (lmInterface instanceof LivingEntityWrapper) {
             if (ri.conditions_Entities != null && !Utils.isLivingEntityInModalList(ri.conditions_Entities, (LivingEntityWrapper) lmInterface)) {
                 Utils.debugLog(main, DebugType.DENIED_RULE_ENTITIES_LIST, String.format("&b%s&7, mob: &b%s&7", ri.getRuleName(), lmInterface.getTypeName()));
-                return false;
+                return new RuleCheckResult(false);
             }
         } else {
             // can't check groups if not a living entity wrapper
             if (ri.conditions_Entities != null && !ri.conditions_Entities.isEnabledInList(lmInterface.getTypeName(), null)) {
                 Utils.debugLog(main, DebugType.DENIED_RULE_ENTITIES_LIST, String.format("&b%s&7, mob: &b%s&7", ri.getRuleName(), lmInterface.getTypeName()));
-                return false;
+                return new RuleCheckResult(false);
             }
         }
 
         if (ri.conditions_Worlds != null && !ri.conditions_Worlds.isEnabledInList(lmInterface.getWorld().getName(), null)) {
             Utils.debugLog(main, DebugType.DENIED_RULE_WORLD_LIST, String.format("&b%s&7, mob: &b%s&7, mob world: &b%s&7",
                     ri.getRuleName(), lmInterface.getTypeName(), lmInterface.getWorld().getName()));
-            return false;
+            return new RuleCheckResult(false);
         }
 
         if (ri.conditions_Biomes != null && !Utils.isBiomeInModalList(ri.conditions_Biomes, lmInterface.getLocation().getBlock().getBiome(), main.rulesManager)) {
             Utils.debugLog(main, DebugType.DENIED_RULE_BIOME_LIST, String.format("&b%s&7, mob: &b%s&7, mob biome: &b%s&7",
                     ri.getRuleName(), lmInterface.getTypeName(), lmInterface.getLocation().getBlock().getBiome().name()));
-            return false;
+            return new RuleCheckResult(false);
         }
 
         if (ri.conditions_WGRegions != null){
@@ -587,27 +594,27 @@ public class RulesManager {
             if (!isInList){
                 Utils.debugLog(main, DebugType.DENIED_RULE_WG_REGION, String.format("&b%s&7, mob: &b%s&7, wg_regions: &b%s&7",
                         ri.getRuleName(), lmInterface.getTypeName(), wgRegions));
-                return false;
+                return new RuleCheckResult(false);
             }
         }
 
         if (ri.conditions_ApplyAboveY != null && lmInterface.getLocation().getBlockY() < ri.conditions_ApplyAboveY){
             Utils.debugLog(main, DebugType.DENIED_RULE_Y_LEVEL, String.format("&b%s&7, mob: &b%s&7, y-level: &b%s&7, max-y: &b%s&7",
                     ri.getRuleName(), lmInterface.getTypeName(), lmInterface.getLocation().getBlockY(), ri.conditions_ApplyAboveY));
-            return false;
+            return new RuleCheckResult(false);
         }
 
         if (ri.conditions_ApplyBelowY != null && lmInterface.getLocation().getBlockY() > ri.conditions_ApplyBelowY){
             Utils.debugLog(main, DebugType.DENIED_RULE_Y_LEVEL, String.format("&b%s&7, mob: &b%s&7, y-level: &b%s&7, min-y: &b%s&7",
                     ri.getRuleName(), lmInterface.getTypeName(), lmInterface.getLocation().getBlockY(), ri.conditions_ApplyBelowY));
-            return false;
+            return new RuleCheckResult(false);
         }
 
         if (ri.conditions_MinDistanceFromSpawn != null){
             if (lmInterface.getDistanceFromSpawn() < ri.conditions_MinDistanceFromSpawn){
                 Utils.debugLog(main, DebugType.DENIED_RULE_MIN_SPAWN_DISTANCE, String.format("&b%s&7, mob: &b%s&7, spawn-distance: &b%s&7, min-sd: &b%s&7",
                         ri.getRuleName(), lmInterface.getTypeName(), Utils.round(lmInterface.getDistanceFromSpawn()), ri.conditions_MinDistanceFromSpawn));
-                return false;
+                return new RuleCheckResult(false);
             }
         }
 
@@ -615,20 +622,34 @@ public class RulesManager {
             if (lmInterface.getDistanceFromSpawn() > ri.conditions_MaxDistanceFromSpawn){
                 Utils.debugLog(main, DebugType.DENIED_RULE_MAX_SPAWN_DISTANCE, String.format("&b%s&7, mob: &b%s&7, spawn-distance: &b%s&7, min-sd: &b%s&7",
                         ri.getRuleName(), lmInterface.getTypeName(), Utils.round(lmInterface.getDistanceFromSpawn()), ri.conditions_MaxDistanceFromSpawn));
-                return false;
+                return new RuleCheckResult(false);
             }
         }
 
+        Boolean ruleMadeChance = null;
+
         if (ri.conditions_Chance != null && ri.conditions_Chance < 1.0){
+            if (lmInterface instanceof LivingEntityWrapper){
+                final LivingEntityWrapper lmEntity = (LivingEntityWrapper) lmInterface;
+                // find out if this entity previously lost or won the chance previously and use that result if present
+                final Map<String, Boolean> prevChanceResults = lmEntity.getPrevChanceRuleResults();
+                if (prevChanceResults != null && prevChanceResults.containsKey(ri.getRuleName())){
+                    boolean prevResult = prevChanceResults.get(ri.getRuleName());
+                    return new RuleCheckResult(prevResult);
+                }
+            }
+
             final double chanceRole = (double) ThreadLocalRandom.current().nextInt(0, 100001) * 0.00001;
             if (chanceRole < (1.0 - ri.conditions_Chance)){
                 Utils.debugLog(main, DebugType.DENIED_RULE_CHANCE, String.format("&b%s&7, mob: &b%s&7, chance: &b%s&7, chance role: &b%s&7",
                         ri.getRuleName(), lmInterface.getTypeName(), ri.conditions_Chance, chanceRole));
-                return false;
+                return new RuleCheckResult(false, false);
             }
+
+            ruleMadeChance = true;
         }
 
-        return true;
+        return new RuleCheckResult(true, ruleMadeChance);
     }
 
     public void buildBiomeGroupMappings(final Map<String, Set<String>> customBiomeGroups){
