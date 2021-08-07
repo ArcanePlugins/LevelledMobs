@@ -9,10 +9,10 @@ import me.lokka30.levelledmobs.LivingEntityInterface;
 import me.lokka30.levelledmobs.managers.ExternalCompatibilityManager;
 import me.lokka30.levelledmobs.rules.ApplicableRulesResult;
 import me.lokka30.levelledmobs.rules.FineTuningAttributes;
+import me.lokka30.levelledmobs.rules.LM_SpawnReason;
 import me.lokka30.levelledmobs.rules.RuleInfo;
 import org.bukkit.World;
 import org.bukkit.entity.*;
-import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
@@ -36,7 +36,7 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
         this.applicableGroups = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
         this.applicableRules = new LinkedList<>();
         this.mobExternalType = ExternalCompatibilityManager.ExternalCompatibility.NOT_APPLICABLE;
-        this.spawnReason = CreatureSpawnEvent.SpawnReason.DEFAULT;
+        this.spawnReason = LM_SpawnReason.DEFAULT;
         this.deathCause = EntityDamageEvent.DamageCause.CUSTOM;
         this.cacheLock = new ReentrantLock(true);
     }
@@ -53,7 +53,7 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
     private List<String> spawnedWGRegions;
     private ExternalCompatibilityManager.ExternalCompatibility mobExternalType;
     private FineTuningAttributes fineTuningAttributes;
-    private CreatureSpawnEvent.SpawnReason spawnReason;
+    private LM_SpawnReason spawnReason;
     public EntityDamageEvent.DamageCause deathCause;
     public String mythicMobInternalName;
     public boolean reEvaluateLevel;
@@ -247,10 +247,10 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
     }
 
     @NotNull
-    public CreatureSpawnEvent.SpawnReason getSpawnReason() {
+    public LM_SpawnReason getSpawnReason() {
         synchronized (this.livingEntity.getPersistentDataContainer()) {
             if (livingEntity.getPersistentDataContainer().has(main.levelManager.spawnReasonKey, PersistentDataType.STRING)) {
-                return CreatureSpawnEvent.SpawnReason.valueOf(
+                return LM_SpawnReason.valueOf(
                         livingEntity.getPersistentDataContainer().get(main.levelManager.spawnReasonKey, PersistentDataType.STRING)
                 );
             }
@@ -259,7 +259,7 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
         return this.spawnReason;
     }
 
-    public void setSpawnReason(final CreatureSpawnEvent.SpawnReason spawnReason){
+    public void setSpawnReason(final LM_SpawnReason spawnReason){
         synchronized (this.livingEntity.getPersistentDataContainer()) {
             if (!livingEntity.getPersistentDataContainer().has(main.levelManager.spawnReasonKey, PersistentDataType.STRING)) {
                 livingEntity.getPersistentDataContainer().set(main.levelManager.spawnReasonKey, PersistentDataType.STRING, spawnReason.toString());

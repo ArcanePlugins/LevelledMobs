@@ -19,7 +19,6 @@ import org.bukkit.configuration.MemoryConfiguration;
 import org.bukkit.configuration.MemorySection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.EntityType;
-import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -161,15 +160,15 @@ public class RulesParsingManager {
     }
 
     @NotNull
-    private CachedModalList<CreatureSpawnEvent.SpawnReason> buildCachedModalListOfSpawnReason(final ConfigurationSection cs,
-                                                                                              final CachedModalList<CreatureSpawnEvent.SpawnReason> defaultValue){
+    private CachedModalList<LM_SpawnReason> buildCachedModalListOfSpawnReason(final ConfigurationSection cs,
+                                                                                              final CachedModalList<LM_SpawnReason> defaultValue){
         if (cs == null) return defaultValue;
 
         final String useKeyName = ymlHelper.getKeyNameFromConfig(cs, "allowed-spawn-reasons");
         final ConfigurationSection cs2 = objTo_CS(cs, useKeyName);
         if (cs2 == null) return defaultValue;
 
-        final CachedModalList<CreatureSpawnEvent.SpawnReason> cachedModalList = new CachedModalList<>();
+        final CachedModalList<LM_SpawnReason> cachedModalList = new CachedModalList<>();
         cachedModalList.doMerge = ymlHelper.getBoolean(cs2, "merge");
 
         final String allowedList = ymlHelper.getKeyNameFromConfig(cs2, ml_AllowedItems);
@@ -184,9 +183,9 @@ public class RulesParsingManager {
                 continue;
             }
             try {
-                final CreatureSpawnEvent.SpawnReason reason = CreatureSpawnEvent.SpawnReason.valueOf(item.trim().toUpperCase());
+                final LM_SpawnReason reason = LM_SpawnReason.valueOf(item.trim().toUpperCase());
                 cachedModalList.allowedList.add(reason);
-            } catch (IllegalArgumentException e) {
+            } catch (IllegalArgumentException ignored) {
                 Utils.logger.warning("Invalid spawn reason: " + item);
             }
         }
@@ -197,9 +196,9 @@ public class RulesParsingManager {
                 continue;
             }
             try {
-                final CreatureSpawnEvent.SpawnReason reason = CreatureSpawnEvent.SpawnReason.valueOf(item.trim().toUpperCase());
+                final LM_SpawnReason reason = LM_SpawnReason.valueOf(item.trim().toUpperCase());
                 cachedModalList.excludedList.add(reason);
-            } catch (IllegalArgumentException e) {
+            } catch (IllegalArgumentException ignored) {
                 Utils.logger.warning("Invalid spawn reason: " + item);
             }
         }

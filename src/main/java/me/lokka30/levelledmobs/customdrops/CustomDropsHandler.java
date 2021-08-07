@@ -6,12 +6,12 @@ package me.lokka30.levelledmobs.customdrops;
 
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.misc.*;
+import me.lokka30.levelledmobs.rules.LM_SpawnReason;
 import me.lokka30.microlib.MessageUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.EntityType;
-import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
@@ -61,7 +61,7 @@ public class CustomDropsHandler {
         processingInfo.dropRules = main.rulesManager.getRule_UseCustomDropsForMob(lmEntity);
         synchronized (lmEntity.getLivingEntity().getPersistentDataContainer()) {
             processingInfo.isSpawner = (lmEntity.getPDC().has(main.levelManager.spawnReasonKey, PersistentDataType.STRING) &&
-                    CreatureSpawnEvent.SpawnReason.SPAWNER.toString().equals(
+                    LM_SpawnReason.SPAWNER.toString().equals(
                             lmEntity.getPDC().get(main.levelManager.spawnReasonKey, PersistentDataType.STRING))
             );
 

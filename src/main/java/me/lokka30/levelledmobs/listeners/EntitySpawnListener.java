@@ -6,6 +6,7 @@ package me.lokka30.levelledmobs.listeners;
 
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.misc.*;
+import me.lokka30.levelledmobs.rules.LM_SpawnReason;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.World;
@@ -68,6 +69,10 @@ public class EntitySpawnListener implements Listener {
             delayedAddToQueue(lmEntity, event, mobProcessDelay);
         else
             main.queueManager_mobs.addToQueue(new QueueItem(lmEntity, event));
+    }
+
+    private LM_SpawnReason adaptVanillaSpawnReason(final CreatureSpawnEvent.SpawnReason spawnReason){
+          return LM_SpawnReason.valueOf(spawnReason.toString());
     }
 
     private void getClosestPlayer(final @NotNull LivingEntityWrapper lmEntity){
@@ -161,20 +166,20 @@ public class EntitySpawnListener implements Listener {
         if (!lmEntity.reEvaluateLevel && lmEntity.isLevelled())
             return;
 
-        CreatureSpawnEvent.SpawnReason spawnReason = CreatureSpawnEvent.SpawnReason.DEFAULT;
+        LM_SpawnReason spawnReason = LM_SpawnReason.DEFAULT;
         AdditionalLevelInformation additionalInfo = AdditionalLevelInformation.NOT_APPLICABLE;
 
         if (event instanceof SpawnerSpawnEvent) {
             SpawnerSpawnEvent spawnEvent = (SpawnerSpawnEvent) event;
 
             if (spawnEvent.getSpawner() != null && spawnEvent.getSpawner().getPersistentDataContainer().has(main.blockPlaceListener.keySpawner, PersistentDataType.INTEGER)) {
-                lmEntity.setSpawnReason(CreatureSpawnEvent.SpawnReason.SPAWNER);
+                lmEntity.setSpawnReason(LM_SpawnReason.LM_SPAWNER);
                 lmSpawnerSpawn(lmEntity, spawnEvent);
                 return;
             }
 
             Utils.debugLog(main, DebugType.MOB_SPAWNER, "Spawned mob from vanilla spawner: &b" + spawnEvent.getEntityType());
-            spawnReason = CreatureSpawnEvent.SpawnReason.SPAWNER;
+            spawnReason = LM_SpawnReason.SPAWNER;
         } else if (event instanceof CreatureSpawnEvent) {
             final CreatureSpawnEvent spawnEvent = (CreatureSpawnEvent) event;
 
@@ -189,7 +194,7 @@ public class EntitySpawnListener implements Listener {
                 return;
             }
 
-            spawnReason = spawnEvent.getSpawnReason();
+            spawnReason = adaptVanillaSpawnReason(spawnEvent.getSpawnReason());
         } else if (event instanceof ChunkLoadEvent)
             additionalInfo = AdditionalLevelInformation.FROM_CHUNK_LISTENER;
 
