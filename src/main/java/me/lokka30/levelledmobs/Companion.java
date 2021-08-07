@@ -77,7 +77,7 @@ public class Companion {
         // Check the MC version of the server.
         if (!VersionUtils.isOneFourteen()) {
             incompatibilities.add("Your server version &8(&b" + Bukkit.getVersion() + "&8)&7 is unsupported by &bLevelledMobs v" + main.getDescription().getVersion() + "&7!" +
-                    "Compatible MC versions: &b" + String.join(", ", Utils.getSupportedServerVersions()) + "&7.");
+                    "Compatible MC versions: &b" + String.join("&7,&b ", Utils.getSupportedServerVersions()) + "&7.");
         }
 
         if (!ExternalCompatibilityManager.hasProtocolLibInstalled()) {
