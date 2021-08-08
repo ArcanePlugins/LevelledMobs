@@ -5,6 +5,7 @@
 package me.lokka30.levelledmobs.listeners;
 
 import me.lokka30.levelledmobs.LevelledMobs;
+import me.lokka30.levelledmobs.misc.Utils;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.block.Block;
@@ -36,7 +37,7 @@ public class BlockPlaceListener implements Listener {
     final public NamespacedKey keySpawner_MaxLevel;
     final public NamespacedKey keySpawner_CustomDropId;
     final public NamespacedKey keySpawner_Delay;
-    final public NamespacedKey keySpawner_MaxNearbyentities;
+    final public NamespacedKey keySpawner_MaxNearbyEntities;
     final public NamespacedKey keySpawner_MinSpawnDelay;
     final public NamespacedKey keySpawner_MaxSpawnDelay;
     final public NamespacedKey keySpawner_RequiredPlayerRange;
@@ -50,7 +51,7 @@ public class BlockPlaceListener implements Listener {
         keySpawner_MaxLevel = new NamespacedKey(main, "maxlevel");
         keySpawner_CustomDropId = new NamespacedKey(main, "customdropid");
         keySpawner_Delay = new NamespacedKey(main, "delay");
-        keySpawner_MaxNearbyentities = new NamespacedKey(main, "maxnearbyentities");
+        keySpawner_MaxNearbyEntities = new NamespacedKey(main, "maxnearbyentities");
         keySpawner_MinSpawnDelay = new NamespacedKey(main, "minspawndelay");
         keySpawner_MaxSpawnDelay = new NamespacedKey(main, "maxspawndelay");
         keySpawner_RequiredPlayerRange = new NamespacedKey(main, "requiredplayerrange");
@@ -85,7 +86,7 @@ public class BlockPlaceListener implements Listener {
                 keySpawner_MinLevel,
                 keySpawner_MaxLevel,
                 keySpawner_Delay,
-                keySpawner_MaxNearbyentities,
+                keySpawner_MaxNearbyEntities,
                 keySpawner_MinSpawnDelay,
                 keySpawner_MaxSpawnDelay,
                 keySpawner_RequiredPlayerRange,

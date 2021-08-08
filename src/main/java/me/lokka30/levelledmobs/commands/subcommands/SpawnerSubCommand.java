@@ -30,14 +30,14 @@ public class SpawnerSubCommand implements Subcommand{
 
     public SpawnerSubCommand(final LevelledMobs main) {
         this.main = main;
-        this.allCommandsList = new ArrayList<>(Arrays.asList(
+        this.allSpawnerOptions = new ArrayList<>(Arrays.asList(
                 "/name", "/customdropid", "/spawntype", "/minlevel", "/maxlevel", "/delay", "/maxnearbyentities",
                 "/minspawndelay", "/maxspawndelay", "/requiredplayerrange", "/spawncount", "/spawnrange"
         ));
     }
 
     final private LevelledMobs main;
-    final private List<String> allCommandsList;
+    final private List<String> allSpawnerOptions;
     private boolean hadInvalidArg;
 
     @Override
@@ -65,9 +65,9 @@ public class SpawnerSubCommand implements Subcommand{
 
         final CustomSpawnerInfo info = new CustomSpawnerInfo((Player) sender, label);
 
-        for (int i = 0; i < allCommandsList.size(); i++){
+        for (int i = 0; i < allSpawnerOptions.size(); i++){
             final boolean mustBeANumber = (i > 2);
-            final String command = allCommandsList.get(i);
+            final String command = allSpawnerOptions.get(i);
             final String foundValue = getArgValue(command, args, sender, label, mustBeANumber);
             if (hadInvalidArg) return;
             if (Utils.isNullOrEmpty(foundValue)) continue;
@@ -169,11 +169,21 @@ public class SpawnerSubCommand implements Subcommand{
     }
 
     private void generateSpawner(final CustomSpawnerInfo info){
+        if (info.maxSpawnDelay != null && (info.minSpawnDelay == null || info.minSpawnDelay > info.maxSpawnDelay)) {
+            // settting max spawn delay lower than min spawn delay will result in an exception
+            info.minSpawnDelay = info.maxSpawnDelay;
+        }
+
+        if (info.minSpawnDelay != null && (info.maxSpawnDelay == null || info.maxSpawnDelay > info.minSpawnDelay)) {
+            // settting min spawn delay higher than max spawn delay will result in an exception
+            info.maxSpawnDelay = info.minSpawnDelay;
+        }
+
         final ItemStack item = new ItemStack(Material.SPAWNER);
         final ItemMeta meta = item.getItemMeta();
         if (meta != null){
             meta.setDisplayName(info.customName == null ? "LM spawner" : info.customName);
-            List<String> lore = new LinkedList<>();
+            final List<String> lore = new LinkedList<>();
 
             try {
                 int itemsCount = 0;
@@ -209,6 +219,20 @@ public class SpawnerSubCommand implements Subcommand{
                 meta.getPersistentDataContainer().set(main.blockPlaceListener.keySpawner_CustomDropId, PersistentDataType.STRING, info.customDropId);
             if (!info.spawnType.equals(EntityType.UNKNOWN))
                 meta.getPersistentDataContainer().set(main.blockPlaceListener.keySpawner_SpawnType, PersistentDataType.STRING, info.spawnType.toString());
+            if (info.spawnRange != null)
+                meta.getPersistentDataContainer().set(main.blockPlaceListener.keySpawner_SpawnRange, PersistentDataType.INTEGER, info.spawnRange);
+            if (info.minSpawnDelay != null)
+                meta.getPersistentDataContainer().set(main.blockPlaceListener.keySpawner_MinSpawnDelay, PersistentDataType.INTEGER, info.minSpawnDelay);
+            if (info.maxSpawnDelay != null)
+                meta.getPersistentDataContainer().set(main.blockPlaceListener.keySpawner_MaxSpawnDelay, PersistentDataType.INTEGER, info.maxSpawnDelay);
+            if (info.spawnCount != null)
+                meta.getPersistentDataContainer().set(main.blockPlaceListener.keySpawner_SpawnCount, PersistentDataType.INTEGER, info.spawnCount);
+            if (info.requiredPlayerRange != null)
+                meta.getPersistentDataContainer().set(main.blockPlaceListener.keySpawner_RequiredPlayerRange, PersistentDataType.INTEGER, info.requiredPlayerRange);
+            if (info.maxNearbyEntities != null)
+                meta.getPersistentDataContainer().set(main.blockPlaceListener.keySpawner_MaxNearbyEntities, PersistentDataType.INTEGER, info.maxNearbyEntities);
+            if (info.delay != null)
+                meta.getPersistentDataContainer().set(main.blockPlaceListener.keySpawner_Delay, PersistentDataType.INTEGER, info.delay);
 
             item.setItemMeta(meta);
         }
@@ -260,19 +284,31 @@ public class SpawnerSubCommand implements Subcommand{
         if (!sender.hasPermission("levelledmobs.command.spawner"))
             return null;
 
-        if (args.length > 2) {
-            final String prevArg = args[args.length - 2];
-            if ("/spawntype".equalsIgnoreCase(prevArg)){
-                final List<String> entityNames = new LinkedList<>();
-                for (EntityType entityType : EntityType.values())
-                    entityNames.add(entityType.toString().toLowerCase());
+        if (args.length > 2 && !Utils.isNullOrEmpty(args[args.length - 2])) {
+            switch (args[args.length - 2].toLowerCase()){
+                case "/spawntype":
+                    final List<String> entityNames = new LinkedList<>();
+                    for (EntityType entityType : EntityType.values())
+                        entityNames.add(entityType.toString().toLowerCase());
 
-                return entityNames;
+                    return entityNames;
+                case "/delay":
+                    return Collections.singletonList("10");
+                case "/minspawndelay":
+                    return Collections.singletonList("200");
+                case "/maxspawndelay":
+                    return Collections.singletonList("800");
+                case "/maxnearbyentities":
+                case "/requiredplayerrange":
+                    return Collections.singletonList("16");
+                case "/spawncount":
+                case "/spawnrange":
+                    return Collections.singletonList("4");
             }
         }
 
         final Set<String> commandsList = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
-        commandsList.addAll(allCommandsList);
+        commandsList.addAll(allSpawnerOptions);
 
         boolean inQuotes = false;
 
