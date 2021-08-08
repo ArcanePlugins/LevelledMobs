@@ -65,37 +65,37 @@ public class MobDataManager {
                 Objects.requireNonNull(lmEntity.getLivingEntity().getAttribute(attribute)).getBaseValue();
         final double additionValue = getAdditionsForLevel(lmEntity, addition, defaultValue);
 
-        if (additionValue == 0.0) return;
-
         final AttributeModifier mod = new AttributeModifier(attribute.name(), additionValue, AttributeModifier.Operation.ADD_NUMBER);
         final AttributeInstance attrib = lmEntity.getLivingEntity().getAttribute(attribute);
 
-        if (attrib != null) {
-            double existingDamage = 0;
-            if (attribute == Attribute.GENERIC_MAX_HEALTH && lmEntity.getLivingEntity().getAttribute(attribute) != null)
-                existingDamage = Objects.requireNonNull(lmEntity.getLivingEntity().getAttribute(attribute)).getValue() - lmEntity.getLivingEntity().getHealth();
+        if (attrib == null) return;
 
-            if (attrib.getModifiers().size() > 0){
-                final List<AttributeModifier> existingMods = new ArrayList<>(attrib.getModifiers().size());
-                existingMods.addAll(attrib.getModifiers());
+        double existingDamage = 0;
+        if (attribute == Attribute.GENERIC_MAX_HEALTH && lmEntity.getLivingEntity().getAttribute(attribute) != null)
+            existingDamage = Objects.requireNonNull(lmEntity.getLivingEntity().getAttribute(attribute)).getValue() - lmEntity.getLivingEntity().getHealth();
 
-                for (final AttributeModifier existingMod : existingMods)
-                    attrib.removeModifier(existingMod);
-            }
+        if (attrib.getModifiers().size() > 0){
+            final List<AttributeModifier> existingMods = new ArrayList<>(attrib.getModifiers().size());
+            existingMods.addAll(attrib.getModifiers());
 
-            if (useStaticValues)
-                attrib.setBaseValue(defaultValue);
-            else
-                attrib.addModifier(mod);
+            for (final AttributeModifier existingMod : existingMods)
+                attrib.removeModifier(existingMod);
+        }
 
-            // MAX_HEALTH specific: set health to max health
-            if (attribute == Attribute.GENERIC_MAX_HEALTH) {
-                double newHealth = attrib.getValue() - existingDamage;
-                if (newHealth < 0.0) newHealth = 0.0;
-                try {
-                    lmEntity.getLivingEntity().setHealth(newHealth);
-                } catch (IllegalArgumentException ignored) {
-                }
+        if (additionValue == 0.0) return;
+
+        if (useStaticValues)
+            attrib.setBaseValue(defaultValue);
+        else
+            attrib.addModifier(mod);
+
+        // MAX_HEALTH specific: set health to max health
+        if (attribute == Attribute.GENERIC_MAX_HEALTH) {
+            double newHealth = attrib.getValue() - existingDamage;
+            if (newHealth < 0.0) newHealth = 0.0;
+            try {
+                lmEntity.getLivingEntity().setHealth(newHealth);
+            } catch (IllegalArgumentException ignored) {
             }
         }
     }

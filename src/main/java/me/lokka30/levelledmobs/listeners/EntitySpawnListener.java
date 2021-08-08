@@ -198,7 +198,8 @@ public class EntitySpawnListener implements Listener {
         } else if (event instanceof ChunkLoadEvent)
             additionalInfo = AdditionalLevelInformation.FROM_CHUNK_LISTENER;
 
-        lmEntity.setSpawnReason(spawnReason);
+        if (!lmEntity.reEvaluateLevel)
+            lmEntity.setSpawnReason(spawnReason);
 
         final HashSet<AdditionalLevelInformation> additionalLevelInfo = new HashSet<>(Collections.singletonList(additionalInfo));
         final LevellableState levellableState = getLevellableState(lmEntity, event);

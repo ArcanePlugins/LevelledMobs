@@ -286,8 +286,6 @@ public class CustomDropsHandler {
                 }
             }
             else if (dropBase instanceof CustomCommand) {
-                final CustomCommand customCommand = (CustomCommand) dropBase; //TODO unused declaration.
-
                 if (isCustomDropsDebuggingEnabled()) {
                     Utils.logger.info(String.format("&8- custom-cmd: &7level: &b%s&7, fromSpawner: &b%s&7, minL: &b%s&7, maxL: &b%s&7, nospawner: &b%s&7, executed: &bfalse",
                             info.lmEntity.getMobLevel(), info.isSpawner, dropBase.minLevel, dropBase.maxLevel, dropBase.noSpawner));
@@ -300,7 +298,7 @@ public class CustomDropsHandler {
         double chanceRole = 0.0;
 
         if (!info.equippedOnly && dropBase.chance < 1.0){
-            chanceRole = (double) ThreadLocalRandom.current().nextInt(0, 100001) * 0.00001;
+            chanceRole = ThreadLocalRandom.current().nextDouble(0, 1.00001);
             if (1.0 - chanceRole >= dropBase.chance) didNotMakeChance = true;
         }
 
