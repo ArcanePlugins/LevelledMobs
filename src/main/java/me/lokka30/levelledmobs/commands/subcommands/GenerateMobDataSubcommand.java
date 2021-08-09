@@ -32,7 +32,7 @@ import java.util.*;
  */
 public class GenerateMobDataSubcommand implements Subcommand {
 
-    private final static String PASSWORD = "ThisMightDestroyMyWorldIUnderstand"; // This is the password I also use for all my accounts. You won't use it.. right?
+    // Password for this command: ThisMightDestroyMyWorldIUnderstand
 
     private int attempts = 3;
     private boolean acknowledged = false;
@@ -56,7 +56,8 @@ public class GenerateMobDataSubcommand implements Subcommand {
             return;
         }
 
-        if (!args[1].equals(PASSWORD)) {
+        // This is the password I also use for all my accounts. You won't use it.. right?
+        if (!args[1].equals("ThisMightDestroyMyWorldIUnderstand")) {
             sender.sendMessage(MessageUtils.colorizeAll(main.configUtils.getPrefix() + " Invalid password '&b%password%&7'! You have &b" + attempts + "&7 more attempt(s) before this command is locked until next restart.").replace("%password%", args[1]));
             attempts--;
             return;
