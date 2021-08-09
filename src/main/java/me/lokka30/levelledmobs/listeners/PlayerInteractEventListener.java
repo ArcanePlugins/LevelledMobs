@@ -1,7 +1,13 @@
+/*
+ * Copyright (c) 2020-2021  lokka30. Use of this source code is governed by the GNU AGPL v3.0 license that can be found in the LICENSE.md file.
+ */
+
 package me.lokka30.levelledmobs.listeners;
 
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.commands.subcommands.SpawnerSubCommand;
+import me.lokka30.levelledmobs.misc.Cooldown;
+import me.lokka30.levelledmobs.misc.Point;
 import me.lokka30.levelledmobs.misc.Utils;
 import me.lokka30.microlib.MessageUtils;
 import org.bukkit.Material;
@@ -17,17 +23,22 @@ import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 
 public class PlayerInteractEventListener implements Listener {
-    public PlayerInteractEventListener(final LevelledMobs main){
-        this.main = main;
-    }
 
     final private LevelledMobs main;
 
+    public PlayerInteractEventListener(final LevelledMobs main) {
+        this.main = main;
+    }
+
+    private final HashMap<UUID, Cooldown> cooldownMap = new HashMap<>();
+
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
-    void onPlayerInteractEvent(final PlayerInteractEvent event){
+    void onPlayerInteractEvent(final PlayerInteractEvent event) {
         if (main.companion.spawner_InfoIds.isEmpty() && main.companion.spawner_CopyIds.isEmpty()) return;
         if (event.getHand() == null || !event.getHand().equals(EquipmentSlot.HAND)) return;
         if (!event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) return;
@@ -39,6 +50,16 @@ public class PlayerInteractEventListener implements Listener {
 
         if (event.getClickedBlock() == null || !event.getClickedBlock().getType().equals(Material.SPAWNER))
             return;
+
+        final UUID uuid = event.getPlayer().getUniqueId();
+        final Point point = new Point(event.getClickedBlock().getLocation());
+        if (cooldownMap.containsKey(uuid)) {
+            if (cooldownMap.get(uuid).doesCooldownBelongToIdentifier(point.toString())) {
+                if (!cooldownMap.get(uuid).hasCooldownExpired(2)) return;
+            }
+            cooldownMap.remove(uuid);
+        }
+        cooldownMap.put(uuid, new Cooldown(System.currentTimeMillis(), point.toString()));
 
         final CreatureSpawner cs = (CreatureSpawner) event.getClickedBlock().getState();
         if (doShowInfo)

@@ -16,6 +16,7 @@ import java.util.Objects;
  * Used for managing configuration data
  *
  * @author lokka30, stumper66
+ * @since unknown
  */
 public class ConfigUtils {
 

@@ -15,6 +15,7 @@ import java.util.TreeSet;
  * A standardized list used for holding various rule lists
  *
  * @author stumper66
+ * @since unknown
  */
 public class CachedModalList<T extends Comparable<T>> implements Cloneable {
     public CachedModalList(){

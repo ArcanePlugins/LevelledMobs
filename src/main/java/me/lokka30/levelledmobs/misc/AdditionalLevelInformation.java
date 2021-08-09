@@ -4,6 +4,10 @@
 
 package me.lokka30.levelledmobs.misc;
 
+/**
+ * @author stumper66
+ * @since unknown
+ */
 public enum AdditionalLevelInformation {
     NOT_APPLICABLE,
 

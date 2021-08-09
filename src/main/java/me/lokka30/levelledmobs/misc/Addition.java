@@ -7,7 +7,9 @@ package me.lokka30.levelledmobs.misc;
 /**
  * Holds the attributes that can have multipliers applied
  *
- * @author lokka30
+ * @author lokka30, stumper66
+ * @see org.bukkit.attribute.Attribute
+ * @since unknown
  */
 public enum Addition {
     // Prefix of ATTRIBUTE if it is a Minecraft vanilla attribute like GENERIC_MOVEMENT_SPEED
