@@ -64,6 +64,7 @@ public class CombustListener implements Listener {
         double newHealth = lmEntity.getLivingEntity().getHealth() - multiplier;
         if (newHealth < 0.0) newHealth = 0.0;
 
+        if (lmEntity.getLivingEntity().getHealth() <= 0.0) return;
         lmEntity.getLivingEntity().setHealth(newHealth);
 
         if (lmEntity.isLevelled())
