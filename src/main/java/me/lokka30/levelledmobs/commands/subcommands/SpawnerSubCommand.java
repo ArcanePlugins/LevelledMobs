@@ -27,6 +27,7 @@ import java.util.*;
  * criteria
  *
  * @author stumper66
+ * @since 3.0.0
  */
 public class SpawnerSubCommand implements Subcommand{
 

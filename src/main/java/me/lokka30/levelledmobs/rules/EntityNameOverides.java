@@ -8,6 +8,12 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
+/**
+ * Holds rule information for entity names overrides
+ *
+ * @author stumper66
+ * @since 3.1.0
+ */
 public class EntityNameOverides {
     public EntityNameOverides(final @NotNull String mobNameOrLevelRange) {
         this.mobNameOrLevelRange = mobNameOrLevelRange;

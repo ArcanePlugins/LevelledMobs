@@ -14,6 +14,7 @@ import java.util.List;
  * drop items
  *
  * @author stumper66
+ * @since 2.4.0
  */
 public class CustomDropsDefaults {
     public boolean noMultiplier;

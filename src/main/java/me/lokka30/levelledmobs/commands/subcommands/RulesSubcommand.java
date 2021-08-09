@@ -40,6 +40,7 @@ import java.util.*;
  * Shows the current rules as parsed from the various config files
  *
  * @author stumper66
+ * @since 3.0.0
  */
 public class RulesSubcommand implements Subcommand {
 

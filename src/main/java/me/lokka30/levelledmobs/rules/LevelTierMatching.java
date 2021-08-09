@@ -9,6 +9,12 @@ import me.lokka30.levelledmobs.misc.Utils;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * Holds any rule information relating to leveled tiers
+ *
+ * @author stumper66
+ * @since 3.1.0
+ */
 public class LevelTierMatching {
     public List<String> names;
     public int[] valueRanges;

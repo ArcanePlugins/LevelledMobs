@@ -26,6 +26,7 @@ import java.util.List;
  * sunlight damage if desired
  *
  * @author stumper66
+ * @since 2.4.0
  */
 public class CombustListener implements Listener {
 

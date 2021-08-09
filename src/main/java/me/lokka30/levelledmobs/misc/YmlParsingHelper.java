@@ -15,6 +15,7 @@ import java.util.TreeSet;
 
 /**
  * @author stumper66
+ * @since 3.1.0
  */
 public class YmlParsingHelper {
     public boolean getBoolean(final ConfigurationSection cs, @NotNull final String name){

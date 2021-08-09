@@ -23,6 +23,7 @@ import java.util.TreeMap;
  * the mob will potentially drop
  *
  * @author stumper66
+ * @since 2.4.1
  */
 public class CustomDropProcessingInfo {
     public CustomDropProcessingInfo() {

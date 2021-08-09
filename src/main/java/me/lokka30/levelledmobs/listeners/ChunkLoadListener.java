@@ -20,6 +20,7 @@ import org.bukkit.event.world.ChunkLoadEvent;
  * moving around
  *
  * @author stumper66
+ * @since 2.4.0
  */
 public class ChunkLoadListener implements Listener {
 

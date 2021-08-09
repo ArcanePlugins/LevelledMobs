@@ -9,7 +9,7 @@ package me.lokka30.levelledmobs.misc;
  *
  * @author lokka30, stumper66
  * @see org.bukkit.attribute.Attribute
- * @since unknown
+ * @since 2.6.0
  */
 public enum Addition {
     // Prefix of ATTRIBUTE if it is a Minecraft vanilla attribute like GENERIC_MOVEMENT_SPEED

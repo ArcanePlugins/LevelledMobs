@@ -8,6 +8,7 @@ package me.lokka30.levelledmobs.misc;
  * Holds the enums used for showing debug data
  *
  * @author lokka30, stumper66
+ * @since 2.5.0
  */
 public enum DebugType {
     /**

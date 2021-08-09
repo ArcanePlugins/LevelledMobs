@@ -30,6 +30,7 @@ import java.util.concurrent.ThreadLocalRandom;
  * parsing, instantizing and more of custom drop items
  *
  * @author stumper66
+ * @since 2.4.0
  */
 public class CustomDropsHandler {
     private final LevelledMobs main;

@@ -8,6 +8,7 @@ package me.lokka30.levelledmobs.rules;
  * Holds values parsed from rules.yml
  *
  * @author stumper66
+ * @since 3.0.0
  */
 public enum MobTamedStatus {
     NOT_SPECIFIED,  // default

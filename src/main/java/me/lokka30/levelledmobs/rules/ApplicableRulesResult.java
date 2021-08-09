@@ -5,6 +5,12 @@ import org.jetbrains.annotations.NotNull;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * Holds results information when applying custom drops
+ *
+ * @author stumper66
+ * @since 3.1.2
+ */
 public class ApplicableRulesResult {
     public ApplicableRulesResult(){
         this.allApplicableRules = new LinkedList<>();

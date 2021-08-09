@@ -29,6 +29,7 @@ import java.util.*;
  * This subcommand is considered dangerous as it spawns in all types of 'living entities' on the first loaded world at coordinates (0, 512, 0). It also freezes the server for a moment.
  *
  * @author lokka30
+ * @since 2.4.0
  */
 public class GenerateMobDataSubcommand implements Subcommand {
 

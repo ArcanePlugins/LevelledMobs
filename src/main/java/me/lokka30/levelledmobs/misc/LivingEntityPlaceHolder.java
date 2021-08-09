@@ -21,6 +21,7 @@ import java.util.List;
  * Used only with the summon command
  *
  * @author stumper66
+ * @since 3.0.0
  */
 public class LivingEntityPlaceHolder extends LivingEntityWrapperBase implements LivingEntityInterface {
 

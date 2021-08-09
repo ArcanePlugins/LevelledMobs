@@ -14,6 +14,7 @@ import java.util.concurrent.ThreadLocalRandom;
  * based upon the distance y level height
  *
  * @author stumper66
+ * @since 3.0.0
  */
 public class YDistanceStrategy implements LevellingStrategy, Cloneable {
     public Integer startingYLevel;

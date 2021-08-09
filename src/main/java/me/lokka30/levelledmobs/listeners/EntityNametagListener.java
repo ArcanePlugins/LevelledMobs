@@ -21,6 +21,7 @@ import org.jetbrains.annotations.NotNull;
  * can apply various rules around nametagged entities
  *
  * @author lokka30
+ * @since 2.4.0
  */
 public class EntityNametagListener implements Listener {
 

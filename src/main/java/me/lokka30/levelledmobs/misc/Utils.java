@@ -19,6 +19,7 @@ import java.util.*;
  * Holds common utilities
  *
  * @author lokka30, stumper66
+ * @since 2.5.0
  */
 public final class Utils {
 

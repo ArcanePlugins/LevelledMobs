@@ -28,6 +28,7 @@ import java.util.concurrent.locks.ReentrantLock;
  * and settings used for processing rules
  *
  * @author stumper66
+ * @since 3.0.0
  */
 public class LivingEntityWrapper extends LivingEntityWrapperBase implements LivingEntityInterface {
     public LivingEntityWrapper(final @NotNull LivingEntity livingEntity, final @NotNull LevelledMobs main){

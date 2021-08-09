@@ -18,6 +18,7 @@ import org.jetbrains.annotations.NotNull;
  * be updated accordingly
  *
  * @author konsolas, lokka30
+ * @since 2.4.0
  */
 public class EntityRegainHealthListener implements Listener {
 

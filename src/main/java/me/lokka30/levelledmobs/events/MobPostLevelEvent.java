@@ -20,6 +20,7 @@ import java.util.HashSet;
  * Other plugins can cancel this event.
  *
  * @author lokka30
+ * @since 2.5.0
  */
 public class MobPostLevelEvent extends Event {
 

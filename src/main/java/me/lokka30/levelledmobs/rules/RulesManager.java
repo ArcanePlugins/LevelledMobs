@@ -21,7 +21,7 @@ import java.util.concurrent.ThreadLocalRandom;
  * defined mobs
  *
  * @author stumper66
- * @since 3.0
+ * @since 3.0.0
  */
 public class RulesManager {
     public RulesManager(final LevelledMobs main) {

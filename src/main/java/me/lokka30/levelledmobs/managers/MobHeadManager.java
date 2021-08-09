@@ -29,6 +29,7 @@ import java.util.*;
  * Holds the code used for dropping mob heads and applying textures
  *
  * @author stumper66
+ * @since 3.0.0
  */
 public class MobHeadManager {
 

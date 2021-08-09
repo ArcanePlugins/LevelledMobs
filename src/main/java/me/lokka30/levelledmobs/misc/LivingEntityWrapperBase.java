@@ -9,6 +9,13 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * Baseclass for LivingEntityWrapper and LivingEntityPlaceholder to hold various information
+ * about mobs
+ *
+ * @author stumper66
+ * @since 3.1.0
+ */
 public class LivingEntityWrapperBase {
 
     public LivingEntityWrapperBase(final @NotNull LevelledMobs main, final @NotNull World world, final @NotNull Location location){

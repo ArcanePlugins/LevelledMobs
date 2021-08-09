@@ -18,6 +18,7 @@ import java.io.FileInputStream;
  * Used to load various configuration files and migrate if necessary
  *
  * @author lokka30, stumper66
+ * @since 2.4.0
  */
 public final class FileLoader {
 

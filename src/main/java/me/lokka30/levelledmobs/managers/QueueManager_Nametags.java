@@ -31,6 +31,7 @@ import java.util.concurrent.TimeUnit;
  * Queues up mob nametag updates so they can be applied in a background thread
  *
  * @author stumper66
+ * @since 3.0.0
  */
 public class QueueManager_Nametags {
 

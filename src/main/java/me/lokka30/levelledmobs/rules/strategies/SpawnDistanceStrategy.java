@@ -17,6 +17,7 @@ import java.util.concurrent.ThreadLocalRandom;
  * based upon the distance from the world spawn
  *
  * @author stumper66, lokka30
+ * @since 3.0.0
  */
 public class SpawnDistanceStrategy implements LevellingStrategy, Cloneable {
     public Integer startDistance;

@@ -19,6 +19,7 @@ import java.util.UUID;
  * custom drop item
  *
  * @author stumper66
+ * @since 2.5.0
  */
 public class CustomDropItem extends CustomDropBase {
     public int customModelDataId;

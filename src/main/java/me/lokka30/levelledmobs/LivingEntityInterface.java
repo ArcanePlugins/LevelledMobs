@@ -17,6 +17,7 @@ import java.util.List;
  * and information
  *
  * @author stumper66
+ * @since 3.0.0
  */
 public interface LivingEntityInterface {
 

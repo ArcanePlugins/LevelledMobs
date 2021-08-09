@@ -16,6 +16,7 @@ import java.util.stream.Stream;
  * to maintain compatibility with older versions
  *
  * @author stumper66
+ * @since 3.0.0
  */
 public class MC1_17_Compat {
     public static HashSet<EntityType> getPassiveMobs() {

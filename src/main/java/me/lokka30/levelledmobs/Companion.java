@@ -39,6 +39,7 @@ import java.util.stream.Stream;
  * This class contains methods used by the main class.
  *
  * @author lokka30, stumper66
+ * @since 2.4.0
  */
 public class Companion {
 

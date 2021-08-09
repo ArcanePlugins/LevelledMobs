@@ -47,6 +47,7 @@ import java.util.*;
  *
  * @author lokka30, CoolBoy, Esophose, 7smile7,
  * wShevchik, Hugo5551, limzikiki
+ * @since 2.4.0
  */
 public class LevelManager implements LevelInterface {
 

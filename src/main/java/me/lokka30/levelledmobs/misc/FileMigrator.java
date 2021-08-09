@@ -24,6 +24,7 @@ import java.util.regex.Pattern;
  * Migrates older yml versions to the latest available
  *
  * @author stumper66
+ * @since 2.4.0
  */
 public class FileMigrator {
 

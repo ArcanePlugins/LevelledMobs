@@ -13,6 +13,7 @@ import java.util.List;
  * Holds data that goes into various queues for processing
  *
  * @author stumper66
+ * @since 3.0.0
  */
 public class QueueItem {
     public QueueItem(final LivingEntityWrapper lmEntity, final Event event){

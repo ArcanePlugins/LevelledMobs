@@ -30,6 +30,7 @@ import java.util.UUID;
  * will receive a bunch of data about the mob.
  *
  * @author lokka30
+ * @since 2.4.0
  */
 public class EntityDamageDebugListener implements Listener {
 
@@ -77,7 +78,8 @@ public class EntityDamageDebugListener implements Listener {
         send(player, "&f&nGlobal Values:", false);
         send(player, "&8&m->&b Level: &7" + lmEntity.getMobLevel());
         send(player, "&8&m->&b Current Health: &7" + Utils.round(lmEntity.getLivingEntity().getHealth()), false);
-        send(player, "&8&m->&b Nametag: &7" + lmEntity.getLivingEntity().getCustomName(), false);
+        if (lmEntity.getLivingEntity().getCustomName() != null)
+            send(player, "&8&m->&b Nametag: &7" + lmEntity.getLivingEntity().getCustomName(), false);
 
         // Print attributes
         player.sendMessage(" ");
@@ -85,6 +87,8 @@ public class EntityDamageDebugListener implements Listener {
         for (final Attribute attribute : Attribute.values()) {
             final AttributeInstance attributeInstance = lmEntity.getLivingEntity().getAttribute(attribute);
             if (attributeInstance == null) continue;
+            if (Utils.round(attributeInstance.getValue()) == 0.0) continue;
+
             final StringBuilder sb = new StringBuilder();
             sb.append("&8&m->&b ");
             sb.append(attribute.toString().replace("GENERIC_", ""));
@@ -108,11 +112,11 @@ public class EntityDamageDebugListener implements Listener {
             send(player, sb.toString(), false);
         }
 
-        // Print unique values (per-mob)
-        player.sendMessage(" ");
-        send(player, "&f&nUnique Values:", false);
-
         if (lmEntity.getLivingEntity() instanceof Creeper) {
+            // Print unique values (per-mob)
+            player.sendMessage(" ");
+            send(player, "&f&nUnique Values:", false);
+
             final Creeper creeper = (Creeper) lmEntity.getLivingEntity();
             send(player, "&8&m->&b Creeper Blast Radius: &7" + creeper.getExplosionRadius(), false);
         }

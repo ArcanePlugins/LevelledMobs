@@ -8,6 +8,7 @@ package me.lokka30.levelledmobs.rules;
  * When in conjunction when a customdrops is being processed
  *
  * @author stumper66
+ * @since 3.0.0
  */
 public class CustomDropsRuleSet {
     public boolean useDrops;

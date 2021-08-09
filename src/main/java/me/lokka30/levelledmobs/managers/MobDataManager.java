@@ -23,6 +23,7 @@ import java.util.Objects;
  * Manages data related to various mob levelling
  *
  * @author lokka30, stumper66
+ * @since 2.6.0
  */
 public class MobDataManager {
 

@@ -29,6 +29,7 @@ import java.util.List;
  * send messages as needed, update nametags or track the player
  *
  * @author lokka30, stumper66
+ * @since 2.4.0
  */
 public class PlayerJoinListener implements Listener {
 

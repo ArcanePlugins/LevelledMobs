@@ -27,6 +27,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
+
+/**
+ * Listens for when a player interacts with the environment.
+ * Currently only used to check for LM spawners
+ *
+ * @author stumper66
+ * @since 3.1.2
+ */
 public class PlayerInteractEventListener implements Listener {
 
     final private LevelledMobs main;

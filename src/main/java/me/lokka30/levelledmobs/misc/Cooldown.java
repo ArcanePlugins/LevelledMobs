@@ -28,7 +28,7 @@ public class Cooldown {
      */
     private final String identifier;
 
-    public Cooldown(long startingTime, String identifier) {
+    public Cooldown(final long startingTime, final String identifier) {
         this.startingTime = startingTime;
         this.identifier = identifier;
     }
@@ -39,7 +39,7 @@ public class Cooldown {
      * @param identifier ID to check if this cooldown has the same ID.
      * @return if the IDs match.
      */
-    public boolean doesCooldownBelongToIdentifier(String identifier) {
+    public boolean doesCooldownBelongToIdentifier(final String identifier) {
         return identifier.equals(this.identifier);
     }
 
@@ -51,7 +51,7 @@ public class Cooldown {
      * @return if the cooldown has expired.
      */
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
-    public boolean hasCooldownExpired(long requiredTimeInSeconds) {
+    public boolean hasCooldownExpired(final long requiredTimeInSeconds) {
         return ((System.currentTimeMillis() - startingTime) >= (requiredTimeInSeconds * 1000));
     }
 }

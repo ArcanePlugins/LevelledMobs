@@ -24,6 +24,7 @@ import java.util.List;
  * Listens for when an entity dies so it's drops can be multiplied, manipulated, etc
  *
  * @author lokka30
+ * @since 2.4.0
  */
 public class EntityDeathListener implements Listener {
 

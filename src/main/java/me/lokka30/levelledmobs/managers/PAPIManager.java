@@ -20,6 +20,7 @@ import java.util.UUID;
  * Manages communication to PlaceholderAPI (PAPI)
  *
  * @author stumper66
+ * @since 3.0.0
  */
 public class PAPIManager extends PlaceholderExpansion {
 

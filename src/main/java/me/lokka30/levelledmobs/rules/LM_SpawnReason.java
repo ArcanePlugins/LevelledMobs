@@ -1,5 +1,11 @@
 package me.lokka30.levelledmobs.rules;
 
+/**
+ * A duplicate of the built-in SpawnReason from spigot
+ *
+ * @author stumper66
+ * @since 3.1.2
+ */
 public enum LM_SpawnReason {
     NATURAL,
     JOCKEY,

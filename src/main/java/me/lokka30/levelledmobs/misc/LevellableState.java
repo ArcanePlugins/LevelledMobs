@@ -9,6 +9,9 @@ package me.lokka30.levelledmobs.misc;
  * is levellable or not, and if not,
  * a reason is supplied.
  * A mob is levellable if their LevellableState = ALLOW.
+ *
+ * @author lokka30
+ * @since 2.4.0
  */
 public enum LevellableState {
     /**

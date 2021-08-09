@@ -12,6 +12,7 @@ import java.util.List;
  * A custom implementation for comparing program versions
  *
  * @author stumper66
+ * @since 2.6.0
  */
 public class VersionInfo implements Comparable<VersionInfo> {
     public VersionInfo(final String version) throws InvalidObjectException {

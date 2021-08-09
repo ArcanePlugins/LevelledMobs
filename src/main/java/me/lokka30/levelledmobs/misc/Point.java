@@ -21,7 +21,7 @@ public class Point {
     public String worldName;
     public int x, y, z;
 
-    public Point(String worldName, int x, int y, int z) {
+    public Point(final String worldName, final int x, final int y, final int z) {
         this.worldName = worldName;
         this.x = x;
         this.y = y;
@@ -33,18 +33,18 @@ public class Point {
     }
 
     public String toString() {
-        return worldName + "," + x + "," + y + "," + z;
+        return String.format("%s, %s, %s, %s", worldName, x, y, z);
     }
 
-    public Point(String str) {
-        String[] split = str.split(",");
+    public Point(final String str) {
+        final String[] split = str.split(",");
         this.worldName = split[0];
         this.x = Integer.parseInt(split[1]);
         this.y = Integer.parseInt(split[2]);
         this.z = Integer.parseInt(split[3]);
     }
 
-    public Point(Location location) {
+    public Point(final Location location) {
         assert location.getWorld() != null;
         worldName = location.getWorld().getName();
         x = location.getBlockX();
@@ -52,7 +52,7 @@ public class Point {
         z = location.getBlockZ();
     }
 
-    public static boolean matches(Point point1, Point point2) {
-        return (point1.worldName.equals(point2.worldName)) && (point1.getCoordinates() == point2.getCoordinates());
+    public static boolean matches(final Point point1, final Point point2) {
+        return (point1.worldName.equals(point2.worldName) && point1.getCoordinates() == point2.getCoordinates());
     }
 }

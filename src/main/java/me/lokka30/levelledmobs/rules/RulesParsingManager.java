@@ -29,6 +29,7 @@ import java.util.*;
  * corresponding java classes
  *
  * @author stumper66
+ * @since 3.0.0
  */
 public class RulesParsingManager {
     public RulesParsingManager(final LevelledMobs main){

@@ -21,6 +21,7 @@ import java.util.TreeMap;
  * Holds rules parsed from rules.yml to make up a list of rules
  *
  * @author stumper66
+ * @since 3.0.0
  */
 public class RuleInfo {
     public RuleInfo(final String id){

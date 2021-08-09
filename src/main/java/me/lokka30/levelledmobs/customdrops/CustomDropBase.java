@@ -14,6 +14,7 @@ import java.util.TreeSet;
  * Base class for all custom drops including custom commands
  *
  * @author stumper66
+ * @since 3.0.0
  */
 public class CustomDropBase implements Cloneable {
 

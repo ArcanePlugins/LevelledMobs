@@ -23,6 +23,7 @@ import java.util.HashSet;
  * Listens when an entity is tamed so various rules can be applied
  *
  * @author stumper66
+ * @since 2.4.0
  */
 public class EntityTameListener implements Listener {
 
