@@ -13,6 +13,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -95,20 +96,13 @@ public class LevelledMobsCommand implements CommandExecutor, TabCompleter {
         if (args.length == 1) {
             List<String> suggestions = new LinkedList<>();
 
-            if (sender.hasPermission("levelledmobs.command.summon"))
-                suggestions.add("summon");
-            if (sender.hasPermission("levelledmobs.command.kill"))
-                suggestions.add("kill");
-            if (sender.hasPermission("levelledmobs.command.reload"))
-                suggestions.add("reload");
-            if (sender.hasPermission("levelledmobs.command.info"))
-                suggestions.add("info");
-            if (sender.hasPermission("levelledmobs.command.compatibility"))
-                suggestions.add("compatibility");
-            if (sender.hasPermission("levelledmobs.command.compatibility.spawner"))
-                suggestions.add("spawner");
-            if (sender.hasPermission("levelledmobs.command.rules"))
-                suggestions.add("rules");
+            List<String> commandsToCheck = Arrays.asList("summon", "kill", "reload", "info", "compatibility", "spawner", "rules");
+
+            commandsToCheck.forEach(command -> {
+                if (sender.hasPermission("levelledmobs.command." + command)) {
+                    suggestions.add(command);
+                }
+            });
 
             return suggestions;
         } else {
