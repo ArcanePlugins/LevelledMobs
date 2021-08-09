@@ -29,7 +29,7 @@ permissions:
     default: op
     children:
       levelledmobs.command: true
-      levelledmobs.command.summon.*: tru
+      levelledmobs.command.summon.*: true
       levelledmobs.command.kill.*: true
       levelledmobs.command.reload: true
       levelledmobs.command.info: true

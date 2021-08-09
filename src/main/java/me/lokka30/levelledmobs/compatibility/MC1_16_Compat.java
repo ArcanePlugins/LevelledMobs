@@ -6,7 +6,6 @@ package me.lokka30.levelledmobs.compatibility;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.EntityType;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.HashSet;
 import java.util.stream.Collectors;
