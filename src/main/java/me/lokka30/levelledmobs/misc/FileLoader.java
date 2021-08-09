@@ -22,7 +22,7 @@ import java.io.FileInputStream;
 public final class FileLoader {
 
     public static final int SETTINGS_FILE_VERSION = 31;    // Last changed: v3.1.0 b474
-    public static final int MESSAGES_FILE_VERSION = 5;     // Last changed: v3.1.0 b474
+    public static final int MESSAGES_FILE_VERSION = 6;     // Last changed: v3.1.2 b485
     public static final int CUSTOMDROPS_FILE_VERSION = 10; // Last changed: v3.1.0 b474
     public static final int RULES_FILE_VERSION = 2;        // Last changed: v3.1.0 b474
 

@@ -54,6 +54,9 @@ public class PlayerJoinListener implements Listener {
     private void onPlayerQuitEvent(final PlayerQuitEvent event){
         if (main.papiManager != null)
             main.papiManager.playedLoggedOut(event.getPlayer());
+
+        main.companion.spawner_CopyIds.remove(event.getPlayer().getUniqueId());
+        main.companion.spawner_InfoIds.remove(event.getPlayer().getUniqueId());
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)

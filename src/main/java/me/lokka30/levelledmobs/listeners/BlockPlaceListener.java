@@ -5,7 +5,6 @@
 package me.lokka30.levelledmobs.listeners;
 
 import me.lokka30.levelledmobs.LevelledMobs;
-import me.lokka30.levelledmobs.misc.Utils;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.block.Block;
@@ -44,6 +43,8 @@ public class BlockPlaceListener implements Listener {
     final public NamespacedKey keySpawner_SpawnCount;
     final public NamespacedKey keySpawner_SpawnType;
     final public NamespacedKey keySpawner_SpawnRange;
+    final public NamespacedKey keySpawner_CustomName;
+    final public NamespacedKey keySpawner_Lore;
 
     public BlockPlaceListener(final LevelledMobs main) {
         keySpawner = new NamespacedKey(main, "spawner");
@@ -57,7 +58,9 @@ public class BlockPlaceListener implements Listener {
         keySpawner_RequiredPlayerRange = new NamespacedKey(main, "requiredplayerrange");
         keySpawner_SpawnCount = new NamespacedKey(main, "spawncount");
         keySpawner_SpawnType = new NamespacedKey(main, "spawntype");
-        keySpawner_SpawnRange = new NamespacedKey(main, "spawnrangee");
+        keySpawner_SpawnRange = new NamespacedKey(main, "spawnrange");
+        keySpawner_CustomName = new NamespacedKey(main, "customname");
+        keySpawner_Lore = new NamespacedKey(main, "lore");
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
@@ -81,47 +84,49 @@ public class BlockPlaceListener implements Listener {
         final PersistentDataContainer targetPdc = cs.getPersistentDataContainer();
         final PersistentDataContainer sourcePdc = meta.getPersistentDataContainer();
         final List<NamespacedKey> keys = Arrays.asList(
-                keySpawner_CustomDropId,
-                keySpawner_SpawnType,
-                keySpawner_MinLevel,
-                keySpawner_MaxLevel,
-                keySpawner_Delay,
-                keySpawner_MaxNearbyEntities,
-                keySpawner_MinSpawnDelay,
-                keySpawner_MaxSpawnDelay,
-                keySpawner_RequiredPlayerRange,
-                keySpawner_SpawnCount,
-                keySpawner_SpawnRange
+                /* 0  */ keySpawner_CustomDropId,
+                /* 1  */ keySpawner_SpawnType,
+                /* 2  */ keySpawner_CustomName,
+                /* 3  */ keySpawner_Lore,
+                /* 4  */ keySpawner_MinLevel,
+                /* 5  */ keySpawner_MaxLevel,
+                /* 6  */ keySpawner_Delay,
+                /* 7  */ keySpawner_MaxNearbyEntities,
+                /* 8  */ keySpawner_MinSpawnDelay,
+                /* 9  */ keySpawner_MaxSpawnDelay,
+                /* 10 */ keySpawner_RequiredPlayerRange,
+                /* 11 */ keySpawner_SpawnCount,
+                /* 12 */ keySpawner_SpawnRange
         );
 
         targetPdc.set(keySpawner, PersistentDataType.INTEGER, 1);
         for (int i = 0; i < keys.size(); i++){
             final NamespacedKey key = keys.get(i);
-            if (i <= 1){
+            if (i <= 3) {
                 if (sourcePdc.has(key, PersistentDataType.STRING)) {
                     final String valueStr = sourcePdc.get(key, PersistentDataType.STRING);
                     if (valueStr != null) {
-                        if (i == 0)
-                            targetPdc.set(key, PersistentDataType.STRING, valueStr);
-                        else {
+                        if (i == 1) {
                             final EntityType entityType = EntityType.valueOf(valueStr);
                             cs.setSpawnedType(entityType);
                         }
+                        else
+                            targetPdc.set(key, PersistentDataType.STRING, valueStr);
                     }
                 }
             } else if (sourcePdc.has(key, PersistentDataType.INTEGER)){
                 final Integer valueInt = sourcePdc.get(key, PersistentDataType.INTEGER);
-                if (i < 4 && valueInt != null)
+                if (i < 6 && valueInt != null)
                     targetPdc.set(key, PersistentDataType.INTEGER, valueInt);
                 else if (valueInt != null) {
                     switch (i){
-                        case 4: cs.setDelay(valueInt); break;
-                        case 5: cs.setMaxNearbyEntities(valueInt); break;
-                        case 6: cs.setMinSpawnDelay(valueInt); break;
-                        case 7: cs.setMaxSpawnDelay(valueInt); break;
-                        case 8: cs.setRequiredPlayerRange(valueInt); break;
-                        case 9: cs.setSpawnCount(valueInt); break;
-                        case 10: cs.setSpawnRange(valueInt); break;
+                        case 6: cs.setDelay(valueInt); break;
+                        case 7: cs.setMaxNearbyEntities(valueInt); break;
+                        case 8: cs.setMinSpawnDelay(valueInt); break;
+                        case 9: cs.setMaxSpawnDelay(valueInt); break;
+                        case 10: cs.setRequiredPlayerRange(valueInt); break;
+                        case 11: cs.setSpawnCount(valueInt); break;
+                        case 12: cs.setSpawnRange(valueInt); break;
                     }
                 }
             }
