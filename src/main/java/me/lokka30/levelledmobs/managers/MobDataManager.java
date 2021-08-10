@@ -135,9 +135,9 @@ public class MobDataManager {
 
         // use old formula or item drops, xp drops
         if (defaultValue == 0.0)
-            return attributeValue * (((double) lmEntity.getMobLevel() - 1)/ maxLevel);
+            return attributeValue * (((double) lmEntity.getMobLevel()) / maxLevel);
 
         // use revised formula for all attributes
-        return (defaultValue * attributeValue) * ((lmEntity.getMobLevel() - 1) / (maxLevel - 1));
+        return (defaultValue * attributeValue) * ((lmEntity.getMobLevel()) / maxLevel);
     }
 }
