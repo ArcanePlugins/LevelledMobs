@@ -22,6 +22,7 @@ import java.util.HashSet;
  * Listens for when a mob transforms so the applicable rules can be applied
  *
  * @author stumper66
+ * @version 2.4.0
  */
 public class EntityTransformListener implements Listener {
 

@@ -34,6 +34,7 @@ import java.util.*;
  * java classes
  *
  * @author stumper66
+ * @since 3.0.0
  */
 public class CustomDropsParser {
 

@@ -9,6 +9,7 @@ import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.block.Block;
 import org.bukkit.block.CreatureSpawner;
+import org.bukkit.entity.EntityType;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -28,26 +29,46 @@ import java.util.List;
  * PDC data to a placed LM spawner
  *
  * @author stumper66
+ * @since 3.1.2
  */
 public class BlockPlaceListener implements Listener {
-    //private final LevelledMobs main;
     final public NamespacedKey keySpawner;
     final public NamespacedKey keySpawner_MinLevel;
     final public NamespacedKey keySpawner_MaxLevel;
     final public NamespacedKey keySpawner_CustomDropId;
+    final public NamespacedKey keySpawner_Delay;
+    final public NamespacedKey keySpawner_MaxNearbyEntities;
+    final public NamespacedKey keySpawner_MinSpawnDelay;
+    final public NamespacedKey keySpawner_MaxSpawnDelay;
+    final public NamespacedKey keySpawner_RequiredPlayerRange;
+    final public NamespacedKey keySpawner_SpawnCount;
+    final public NamespacedKey keySpawner_SpawnType;
+    final public NamespacedKey keySpawner_SpawnRange;
+    final public NamespacedKey keySpawner_CustomName;
+    final public NamespacedKey keySpawner_Lore;
 
     public BlockPlaceListener(final LevelledMobs main) {
-        //this.main = main;
         keySpawner = new NamespacedKey(main, "spawner");
         keySpawner_MinLevel = new NamespacedKey(main, "minlevel");
         keySpawner_MaxLevel = new NamespacedKey(main, "maxlevel");
         keySpawner_CustomDropId = new NamespacedKey(main, "customdropid");
+        keySpawner_Delay = new NamespacedKey(main, "delay");
+        keySpawner_MaxNearbyEntities = new NamespacedKey(main, "maxnearbyentities");
+        keySpawner_MinSpawnDelay = new NamespacedKey(main, "minspawndelay");
+        keySpawner_MaxSpawnDelay = new NamespacedKey(main, "maxspawndelay");
+        keySpawner_RequiredPlayerRange = new NamespacedKey(main, "requiredplayerrange");
+        keySpawner_SpawnCount = new NamespacedKey(main, "spawncount");
+        keySpawner_SpawnType = new NamespacedKey(main, "spawntype");
+        keySpawner_SpawnRange = new NamespacedKey(main, "spawnrange");
+        keySpawner_CustomName = new NamespacedKey(main, "customname");
+        keySpawner_Lore = new NamespacedKey(main, "lore");
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void onBlockPlaceEvent(@NotNull final BlockPlaceEvent event) {
-        if (!event.getBlockPlaced().getType().equals(Material.SPAWNER)) return;
-        if (!event.getItemInHand().getType().equals(Material.SPAWNER)) return;
+        if (!event.getBlockPlaced().getType().equals(Material.SPAWNER) ||
+            !event.getItemInHand().getType().equals(Material.SPAWNER))
+            return;
 
         processMobSpawner(event.getItemInHand(), event.getBlockPlaced());
     }
@@ -63,19 +84,52 @@ public class BlockPlaceListener implements Listener {
         final CreatureSpawner cs = (CreatureSpawner) blockPlaced.getState();
         final PersistentDataContainer targetPdc = cs.getPersistentDataContainer();
         final PersistentDataContainer sourcePdc = meta.getPersistentDataContainer();
-        final List<NamespacedKey> keys = Arrays.asList(keySpawner_MinLevel, keySpawner_MaxLevel, keySpawner_CustomDropId);
+        final List<NamespacedKey> keys = Arrays.asList(
+                /* 0  */ keySpawner_CustomDropId,
+                /* 1  */ keySpawner_SpawnType,
+                /* 2  */ keySpawner_CustomName,
+                /* 3  */ keySpawner_Lore,
+                /* 4  */ keySpawner_MinLevel,
+                /* 5  */ keySpawner_MaxLevel,
+                /* 6  */ keySpawner_Delay,
+                /* 7  */ keySpawner_MaxNearbyEntities,
+                /* 8  */ keySpawner_MinSpawnDelay,
+                /* 9  */ keySpawner_MaxSpawnDelay,
+                /* 10 */ keySpawner_RequiredPlayerRange,
+                /* 11 */ keySpawner_SpawnCount,
+                /* 12 */ keySpawner_SpawnRange
+        );
 
         targetPdc.set(keySpawner, PersistentDataType.INTEGER, 1);
         for (int i = 0; i < keys.size(); i++){
             final NamespacedKey key = keys.get(i);
-            if (i < 2){
-                if (sourcePdc.has(key, PersistentDataType.INTEGER)){
-                    final Integer valueInt = sourcePdc.get(key, PersistentDataType.INTEGER);
-                    if (valueInt != null) targetPdc.set(key, PersistentDataType.INTEGER, valueInt);
+            if (i <= 3) {
+                if (sourcePdc.has(key, PersistentDataType.STRING)) {
+                    final String valueStr = sourcePdc.get(key, PersistentDataType.STRING);
+                    if (valueStr != null) {
+                        if (i == 1) {
+                            final EntityType entityType = EntityType.valueOf(valueStr);
+                            cs.setSpawnedType(entityType);
+                        }
+                        else
+                            targetPdc.set(key, PersistentDataType.STRING, valueStr);
+                    }
                 }
-            } else if (sourcePdc.has(key, PersistentDataType.STRING)){
-                final String valueStr = sourcePdc.get(key, PersistentDataType.STRING);
-                if (valueStr != null) targetPdc.set(key, PersistentDataType.STRING, valueStr);
+            } else if (sourcePdc.has(key, PersistentDataType.INTEGER)){
+                final Integer valueInt = sourcePdc.get(key, PersistentDataType.INTEGER);
+                if (i < 6 && valueInt != null)
+                    targetPdc.set(key, PersistentDataType.INTEGER, valueInt);
+                else if (valueInt != null) {
+                    switch (i){
+                        case 6: cs.setDelay(valueInt); break;
+                        case 7: cs.setMaxNearbyEntities(valueInt); break;
+                        case 8: cs.setMinSpawnDelay(valueInt); break;
+                        case 9: cs.setMaxSpawnDelay(valueInt); break;
+                        case 10: cs.setRequiredPlayerRange(valueInt); break;
+                        case 11: cs.setSpawnCount(valueInt); break;
+                        case 12: cs.setSpawnRange(valueInt); break;
+                    }
+                }
             }
         }
 

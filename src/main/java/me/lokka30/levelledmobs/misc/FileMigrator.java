@@ -24,6 +24,7 @@ import java.util.regex.Pattern;
  * Migrates older yml versions to the latest available
  *
  * @author stumper66
+ * @since 2.4.0
  */
 public class FileMigrator {
 
@@ -314,9 +315,10 @@ public class FileMigrator {
     protected static void copyYmlValues(File from, @NotNull File to, int oldVersion) {
 
         final String regexPattern = "^[^':]*:.*";
-        boolean isSettings = to.getName().equalsIgnoreCase("settings.yml");
-        boolean isCustomDrops = to.getName().equalsIgnoreCase("customdrops.yml");
-        boolean showMessages = !to.getName().equalsIgnoreCase("messages.yml");
+        final boolean isSettings = to.getName().equalsIgnoreCase("settings.yml");
+        final boolean isCustomDrops = to.getName().equalsIgnoreCase("customdrops.yml");
+        final boolean isMessages = to.getName().equalsIgnoreCase("messages.yml");
+        final boolean showMessages = !isMessages;
         final List<String> processedKeys = new LinkedList<>();
 
         // version 20 = 1.34 - last version before 2.0
@@ -347,6 +349,12 @@ public class FileMigrator {
                 "world-level-override.max-level.example_world_123",
                 "world-level-override.max-level.example_world_456"
         );
+
+        final List<String> messagesExempt_v5 = Arrays.asList(
+                "command.levelledmobs.spawner.usage",
+                "command.levelledmobs.spawner.spawner-give-message"
+        );
+
 
         final String useCustomDrops = "use-custom-item-drops-for-mobs";
 
@@ -385,6 +393,7 @@ public class FileMigrator {
                             currentKey.add(keyOnly);
 
                             if (isSettings && oldVersion <= 20 && !version20KeysToKeep.contains(key)) continue;
+                            if (isMessages && oldVersion <= 5 && messagesExempt_v5.contains(key)) continue;
 
                             if (oldConfigMap.containsKey(key) && newConfigMap.containsKey(key)) {
                                 final FileMigrator.FieldInfo fiOld = oldConfigMap.get(key);
@@ -436,6 +445,7 @@ public class FileMigrator {
                                 continue;
                             if (isSettings && oldVersion > 24 && oldVersion <= 26 && version26Resets.contains(key))
                                 continue;
+                            if (isMessages && oldVersion <= 5 && messagesExempt_v5.contains(key)) continue;
                             if (key.toLowerCase().startsWith("file-version")) continue;
                             if (isSettings && key.equalsIgnoreCase("creature-nametag") && oldVersion > 20 && oldVersion < 26
                                     && migratedValue.equals("'&8[&7Level %level%&8 | &f%displayname%&8 | &c%health%&8/&c%max_health% %heart_symbol%&8]'")) {
@@ -462,6 +472,7 @@ public class FileMigrator {
                                     if (!isEntitySameSubkey(parentKey, oldValue)) continue;
                                     if (isSettings && oldVersion > 20 && oldVersion <= 24 && version24Resets.contains(oldValue)) continue;
                                     if (isSettings && oldVersion > 24 && oldVersion <= 26 && version26Resets.contains(oldValue)) continue;
+                                    if (isMessages && oldVersion <= 5 && messagesExempt_v5.contains(key)) continue;
 
                                     FileMigrator.FieldInfo fiOld = oldConfigMap.get(oldValue);
                                     if (fiOld.isList()) continue;
@@ -487,6 +498,8 @@ public class FileMigrator {
                     } else if (line.trim().startsWith("-")) {
                         final String key = getKeyFromList(currentKey, null);
                         final String value = line.trim().substring(1).trim();
+
+                        if (isMessages && oldVersion <= 5 && messagesExempt_v5.contains(key)) continue;
 
                         // we have an array value present in the new config but not the old, so it must've been removed
                         if (oldConfigMap.containsKey(key) && oldConfigMap.get(key).isList() && !oldConfigMap.get(key).valueList.contains(value)) {

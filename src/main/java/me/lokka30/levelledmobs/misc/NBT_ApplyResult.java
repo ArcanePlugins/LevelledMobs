@@ -8,6 +8,7 @@ import org.bukkit.inventory.ItemStack;
 
 /**
  * @author stumper66
+ * @since 3.1.0
  */
 public class NBT_ApplyResult {
     public ItemStack itemStack;

@@ -6,6 +6,7 @@ package me.lokka30.levelledmobs.misc;
 
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.LivingEntityInterface;
+import me.lokka30.levelledmobs.rules.ApplicableRulesResult;
 import me.lokka30.levelledmobs.rules.RuleInfo;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -20,6 +21,7 @@ import java.util.List;
  * Used only with the summon command
  *
  * @author stumper66
+ * @since 3.0.0
  */
 public class LivingEntityPlaceHolder extends LivingEntityWrapperBase implements LivingEntityInterface {
 
@@ -37,6 +39,10 @@ public class LivingEntityPlaceHolder extends LivingEntityWrapperBase implements 
     }
 
     public List<RuleInfo> getApplicableRules(){
+        return main.rulesManager.getApplicableRules(this).allApplicableRules;
+    }
+
+    public ApplicableRulesResult getRules(){
         return main.rulesManager.getApplicableRules(this);
     }
 

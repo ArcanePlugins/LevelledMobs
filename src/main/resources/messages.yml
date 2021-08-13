@@ -158,7 +158,12 @@ command:
 # +-------------------------------------------------------------------------------------------LM3
     spawner:
       usage:
-        - '%prefix% Usage: &b/%label%&7 spawner &b/minlevel&7 1 &b/maxlevel&7 10 &b/name&7 "My customized LM spawner" &b/customDropsId&7 Id1'
+        - '%prefix% Spawner command syntax:'
+        - '&8 &m->&b /%label% spawner create'
+        - '&8 &m->&b /%label% spawner copy'
+        - '&8 &m->&b /%label% spawner info'
+        - '&7&o Sample Spawner'
+        - '&7/%label% spawner create &b/minlevel&7 1 &b/maxlevel&7 10 &b/name&7 "My customized LM spawner" &b/customDropsId&7 Id1'
       no-value:
         - '%prefix% No value was specified for: &b%keyname%&7'
       invalid-value:
@@ -168,9 +173,30 @@ command:
       inventory-full:
         - '%prefix% &4Your inventory is full!'
       spawner-give-message:
-        - '%prefix% Gave you a LM spawner, minLevel: &b%minlevel%&7, maxLevel: &b%maxlevel%&7'
+        - '%prefix% Gave you a LM spawner'
       spawner-give-message-console:
         - '%prefix% Gave &r%playername%&7 a LM spawner, minLevel &b%minlevel%&7, maxLevel: &b%maxlevel%&7'
+      info:
+        status-enabled:
+          - '%prefix% Spawner Info is &cenabled&f.'
+        status-not-enabled:
+          - '%prefix% Spawner Info is &cnot enabled&f.'
+        enabled:
+          - '%prefix% Spawner Info is &aenabled&f. Right-Click any Spawner for details!'
+        disabled:
+          - '%prefix% Spawner Info has been &adisabled&f.'
+      copy:
+        vanilla-spawner:
+          - '%prefix% Spawner Copy only works with LM spawners'
+        status-enabled:
+          - '%prefix% Spawner Copy is &cenabled&f.'
+        status-not-enabled:
+          - '%prefix% Spawner Copy is &cnot enabled&f.'
+        enabled:
+          - '%prefix% Spawner Copy is &aenabled&f. Right-Click a LM Spawner to make a copy.'
+          - 'Your hand must be empty.'
+        disabled:
+          - '%prefix% Spawner Copy has been &adisabled&f.'
 
 
 # +-------------------------------------------------------------------------------------------LM3
@@ -233,4 +259,4 @@ other:
 # +   DO NOT EDIT BEYOND HERE WITHOUT DEVELOPER APPROVAL                                     +LM3
 # +                                                                                          +LM3
 # +-------------------------------------------------------------------------------------------LM3
-file-version: 5
+file-version: 6

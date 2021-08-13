@@ -22,6 +22,7 @@ import org.jetbrains.annotations.NotNull;
  * Listens for when a player dies
  *
  * @author stumper66
+ * @since 2.6.0
  */
 public class PlayerDeathListener implements Listener {
 

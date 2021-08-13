@@ -16,6 +16,7 @@ import java.util.concurrent.TimeUnit;
  * Queues up mob info so they can be processed in a background thread
  *
  * @author stumper66
+ * @since 3.0.0
  */
 public class QueueManager_Mobs {
 

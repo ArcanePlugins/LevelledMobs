@@ -13,6 +13,7 @@ import java.util.List;
  * Reloads all LevelledMobs configuration from disk
  *
  * @author lokka30
+ * @since 2.0
  */
 public class ReloadSubcommand implements Subcommand {
 

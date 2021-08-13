@@ -17,6 +17,7 @@ import java.util.List;
  * This is where the override for a mob / group is set
  *
  * @author stumper66
+ * @since 2.4.0
  */
 public class CustomDropInstance {
     public CustomDropInstance(final EntityType associatedMob){

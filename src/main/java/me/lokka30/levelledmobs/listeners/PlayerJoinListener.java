@@ -29,6 +29,7 @@ import java.util.List;
  * send messages as needed, update nametags or track the player
  *
  * @author lokka30, stumper66
+ * @since 2.4.0
  */
 public class PlayerJoinListener implements Listener {
 
@@ -54,6 +55,9 @@ public class PlayerJoinListener implements Listener {
     private void onPlayerQuitEvent(final PlayerQuitEvent event){
         if (main.papiManager != null)
             main.papiManager.playedLoggedOut(event.getPlayer());
+
+        main.companion.spawner_CopyIds.remove(event.getPlayer().getUniqueId());
+        main.companion.spawner_InfoIds.remove(event.getPlayer().getUniqueId());
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)

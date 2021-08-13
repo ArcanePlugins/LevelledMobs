@@ -14,6 +14,7 @@ import java.util.List;
  * Holds any custom multipliers values parsed from rules.yml
  *
  * @author stumper66
+ * @since 3.0.0
  */
 public class FineTuningAttributes implements Cloneable {
     public EntityType applicableEntity;

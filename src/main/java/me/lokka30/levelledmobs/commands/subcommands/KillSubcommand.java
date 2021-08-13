@@ -21,6 +21,7 @@ import java.util.*;
  * or levelled mobs in your proximity
  *
  * @author stumper66
+ * @since 2.0
  */
 public class KillSubcommand implements Subcommand {
 

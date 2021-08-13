@@ -29,6 +29,7 @@ import java.util.*;
  * and flag information
  *
  * @author Eyrian, lokka30, stumper66
+ * @since 2.4.0
  */
 public class WorldGuardManager {
 

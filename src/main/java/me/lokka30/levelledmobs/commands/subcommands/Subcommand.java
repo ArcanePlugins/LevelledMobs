@@ -13,6 +13,7 @@ import java.util.List;
  * Provides the interface for parsing commands sent to LevelledMobs
  *
  * @author lokka30
+ * @since 2.4.0
  */
 public interface Subcommand {
 

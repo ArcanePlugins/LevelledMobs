@@ -39,6 +39,7 @@ import java.util.stream.Stream;
  * This class contains methods used by the main class.
  *
  * @author lokka30, stumper66
+ * @since 2.4.0
  */
 public class Companion {
 
@@ -49,14 +50,19 @@ public class Companion {
         this.updateResult = new LinkedList<>();
         buildUniversalGroups();
         this.metricsInfo = new MetricsInfo(main);
+        this.spawner_CopyIds = new LinkedList<>();
+        this.spawner_InfoIds = new LinkedList<>();
     }
 
     public HashSet<EntityType> groups_HostileMobs;
     public HashSet<EntityType> groups_AquaticMobs;
     public HashSet<EntityType> groups_PassiveMobs;
     public HashSet<EntityType> groups_NetherMobs;
-    final private PluginManager pluginManager = Bukkit.getPluginManager();
     public List<String> updateResult;
+    final public List<UUID> spawner_CopyIds;
+    final public List<UUID> spawner_InfoIds;
+    public boolean playerInteractListenerIsRegistered;
+    final private PluginManager pluginManager = Bukkit.getPluginManager();
     final private MetricsInfo metricsInfo;
 
     void checkWorldGuard() {
@@ -77,7 +83,7 @@ public class Companion {
         // Check the MC version of the server.
         if (!VersionUtils.isOneFourteen()) {
             incompatibilities.add("Your server version &8(&b" + Bukkit.getVersion() + "&8)&7 is unsupported by &bLevelledMobs v" + main.getDescription().getVersion() + "&7!" +
-                    "Compatible MC versions: &b" + String.join(", ", Utils.getSupportedServerVersions()) + "&7.");
+                    "Compatible MC versions: &b" + String.join("&7,&b ", Utils.getSupportedServerVersions()) + "&7.");
         }
 
         if (!ExternalCompatibilityManager.hasProtocolLibInstalled()) {
@@ -204,6 +210,7 @@ public class Companion {
         pluginManager.registerEvents(new CombustListener(main), main);
         pluginManager.registerEvents(main.blockPlaceListener, main);
         main.chunkLoadListener = new ChunkLoadListener(main);
+        main.playerInteractEventListener = new PlayerInteractEventListener(main);
 
         if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
             main.papiManager = new PAPIManager(main);

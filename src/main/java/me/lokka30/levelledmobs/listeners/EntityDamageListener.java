@@ -19,6 +19,7 @@ import org.jetbrains.annotations.NotNull;
  * a multiplier to the damage amount
  *
  * @author lokka30
+ * @since 2.4.0
  */
 public class EntityDamageListener implements Listener {
 

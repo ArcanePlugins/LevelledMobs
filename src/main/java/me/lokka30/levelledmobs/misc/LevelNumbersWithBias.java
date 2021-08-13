@@ -15,6 +15,7 @@ import java.util.concurrent.ThreadLocalRandom;
  * to the levelling systems
  *
  * @author stumper66
+ * @since 3.0.0
  */
 public class LevelNumbersWithBias {
 

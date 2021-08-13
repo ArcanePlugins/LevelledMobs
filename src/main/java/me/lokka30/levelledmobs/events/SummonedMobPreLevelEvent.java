@@ -16,6 +16,7 @@ import org.bukkit.event.HandlerList;
  * spawned using the `/lm summon` command.
  *
  * @author lokka30
+ * @since 2.5.0
  */
 public class SummonedMobPreLevelEvent extends Event implements Cancellable {
 

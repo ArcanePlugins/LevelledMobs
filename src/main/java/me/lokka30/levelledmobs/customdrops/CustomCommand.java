@@ -13,6 +13,7 @@ import java.util.TreeMap;
  * Holds any custom commands as parsed from customdrops.yml
  *
  * @author stumper66
+ * @since 3.0.0
  */
 public class CustomCommand extends CustomDropBase {
 

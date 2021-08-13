@@ -12,6 +12,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 
+/**
+ * Holds the configuration and logic for applying a levelling system that is
+ * based upon random levelling
+ *
+ * @author stumper66
+ * @since 3.1.0
+ */
 public class RandomLevellingStrategy implements LevellingStrategy, Cloneable {
 
     public Map<String, Integer> weightedRandom;

@@ -9,6 +9,7 @@ package me.lokka30.levelledmobs.customdrops;
  * vanilla items should be removed or not
  *
  * @author stumper66
+ * @since 2.6.0
  */
 public enum CustomDropResult {
     HAS_OVERRIDE,

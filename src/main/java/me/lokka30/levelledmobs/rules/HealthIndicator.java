@@ -7,6 +7,13 @@ package me.lokka30.levelledmobs.rules;
 import java.util.Map;
 import java.util.TreeMap;
 
+
+/**
+ * Holds any rule information regarding the health indicator
+ *
+ * @author stumper66
+ * @since 3.1.0
+ */
 public class HealthIndicator implements Cloneable {
     public String indicator;
     public String indicatorHalf;

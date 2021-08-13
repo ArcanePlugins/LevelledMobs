@@ -8,7 +8,6 @@ import me.lokka30.levelledmobs.managers.ExternalCompatibilityManager;
 import me.lokka30.levelledmobs.misc.CachedModalList;
 import me.lokka30.levelledmobs.rules.strategies.LevellingStrategy;
 import org.bukkit.block.Biome;
-import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -22,6 +21,7 @@ import java.util.TreeMap;
  * Holds rules parsed from rules.yml to make up a list of rules
  *
  * @author stumper66
+ * @since 3.0.0
  */
 public class RuleInfo {
     public RuleInfo(final String id){
@@ -82,7 +82,7 @@ public class RuleInfo {
     public CachedModalList<String> conditions_NoDropEntities;
     public CachedModalList<String> conditions_WGRegions;
     public CachedModalList<String> conditions_MM_Names;
-    public CachedModalList<CreatureSpawnEvent.SpawnReason> conditions_SpawnReasons;
+    public CachedModalList<LM_SpawnReason> conditions_SpawnReasons;
     @Nullable
     public FineTuningAttributes allMobMultipliers;
     public Map<String, FineTuningAttributes> specificMobMultipliers;

@@ -9,6 +9,12 @@ import org.jetbrains.annotations.NotNull;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * Holds any rules relating to player levelling
+ *
+ * @author stumper66
+ * @since 3.1.0
+ */
 public class PlayerLevellingOptions implements Cloneable {
     public PlayerLevellingOptions() {
         this.levelTiers = new LinkedList<>();

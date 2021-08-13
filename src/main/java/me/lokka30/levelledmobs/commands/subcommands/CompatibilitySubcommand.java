@@ -15,6 +15,7 @@ import java.util.List;
  * Shows if your server has known compatibility issues with LevelledMobs
  *
  * @author lokka30
+ * @since 2.4.0
  */
 public class CompatibilitySubcommand implements Subcommand {
 

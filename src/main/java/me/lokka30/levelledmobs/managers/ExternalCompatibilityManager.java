@@ -22,6 +22,7 @@ import java.util.Map;
  * This class handles compatibility with other plugins such as EliteMobs and Citizens
  *
  * @author lokka30, stumper66
+ * @since 2.4.0
  */
 public class ExternalCompatibilityManager {
 

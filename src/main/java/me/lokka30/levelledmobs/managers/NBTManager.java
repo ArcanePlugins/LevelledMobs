@@ -14,6 +14,7 @@ import org.jetbrains.annotations.NotNull;
 
 /**
  * @author stumper66
+ * @since 3.1.0
  */
 public class NBTManager {
 

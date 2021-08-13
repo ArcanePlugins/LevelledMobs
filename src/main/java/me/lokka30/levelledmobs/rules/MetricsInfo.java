@@ -14,6 +14,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+/**
+ * Holds function to generate metrics to be sent to bstats
+ *
+ * @author stumper66
+ * @since 3.1.0
+ */
 public class MetricsInfo {
     public MetricsInfo(final LevelledMobs main){
         this.main = main;

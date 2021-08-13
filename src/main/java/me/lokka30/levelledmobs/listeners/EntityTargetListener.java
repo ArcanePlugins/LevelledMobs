@@ -19,6 +19,7 @@ import org.jetbrains.annotations.NotNull;
  * Used as a workaround to ensure mob nametags are properly updated
  *
  * @author stumper66
+ * @since 2.4.0
  */
 public class EntityTargetListener implements Listener {
 

@@ -13,6 +13,7 @@ import org.jetbrains.annotations.Nullable;
  * placeholder for nametags
  *
  * @author stumper66
+ * @since 3.0.0
  */
 public class TieredColoringInfo implements Cloneable {
     public int minLevel;

@@ -19,7 +19,6 @@ import org.bukkit.configuration.MemoryConfiguration;
 import org.bukkit.configuration.MemorySection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.EntityType;
-import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -30,6 +29,7 @@ import java.util.*;
  * corresponding java classes
  *
  * @author stumper66
+ * @since 3.0.0
  */
 public class RulesParsingManager {
     public RulesParsingManager(final LevelledMobs main){
@@ -70,12 +70,15 @@ public class RulesParsingManager {
         this.defaultRule = parseDefaults(objTo_CS(config, "default-rule"));
         this.main.rulesManager.rulesInEffect.put(Integer.MIN_VALUE, new LinkedList<>());
         this.main.rulesManager.rulesInEffect.get(Integer.MIN_VALUE).add(defaultRule);
+        this.main.rulesManager.anyRuleHasChance = this.defaultRule.conditions_Chance != null;
+
         this.customRules = parseCustomRules(config.get(ymlHelper.getKeyNameFromConfig(config, "custom-rules")));
         for (final RuleInfo ruleInfo : customRules) {
             if (!this.main.rulesManager.rulesInEffect.containsKey(ruleInfo.rulePriority))
                 this.main.rulesManager.rulesInEffect.put(ruleInfo.rulePriority, new LinkedList<>());
 
             this.main.rulesManager.rulesInEffect.get(ruleInfo.rulePriority).add(ruleInfo);
+            if (ruleInfo.conditions_Chance != null) this.main.rulesManager.anyRuleHasChance = true;
         }
 
         this.main.rulesManager.buildBiomeGroupMappings(customBiomeGroups);
@@ -158,15 +161,15 @@ public class RulesParsingManager {
     }
 
     @NotNull
-    private CachedModalList<CreatureSpawnEvent.SpawnReason> buildCachedModalListOfSpawnReason(final ConfigurationSection cs,
-                                                                                              final CachedModalList<CreatureSpawnEvent.SpawnReason> defaultValue){
+    private CachedModalList<LM_SpawnReason> buildCachedModalListOfSpawnReason(final ConfigurationSection cs,
+                                                                                              final CachedModalList<LM_SpawnReason> defaultValue){
         if (cs == null) return defaultValue;
 
         final String useKeyName = ymlHelper.getKeyNameFromConfig(cs, "allowed-spawn-reasons");
         final ConfigurationSection cs2 = objTo_CS(cs, useKeyName);
         if (cs2 == null) return defaultValue;
 
-        final CachedModalList<CreatureSpawnEvent.SpawnReason> cachedModalList = new CachedModalList<>();
+        final CachedModalList<LM_SpawnReason> cachedModalList = new CachedModalList<>();
         cachedModalList.doMerge = ymlHelper.getBoolean(cs2, "merge");
 
         final String allowedList = ymlHelper.getKeyNameFromConfig(cs2, ml_AllowedItems);
@@ -181,9 +184,9 @@ public class RulesParsingManager {
                 continue;
             }
             try {
-                final CreatureSpawnEvent.SpawnReason reason = CreatureSpawnEvent.SpawnReason.valueOf(item.trim().toUpperCase());
+                final LM_SpawnReason reason = LM_SpawnReason.valueOf(item.trim().toUpperCase());
                 cachedModalList.allowedList.add(reason);
-            } catch (IllegalArgumentException e) {
+            } catch (IllegalArgumentException ignored) {
                 Utils.logger.warning("Invalid spawn reason: " + item);
             }
         }
@@ -194,9 +197,9 @@ public class RulesParsingManager {
                 continue;
             }
             try {
-                final CreatureSpawnEvent.SpawnReason reason = CreatureSpawnEvent.SpawnReason.valueOf(item.trim().toUpperCase());
+                final LM_SpawnReason reason = LM_SpawnReason.valueOf(item.trim().toUpperCase());
                 cachedModalList.excludedList.add(reason);
-            } catch (IllegalArgumentException e) {
+            } catch (IllegalArgumentException ignored) {
                 Utils.logger.warning("Invalid spawn reason: " + item);
             }
         }
