@@ -18,9 +18,9 @@ import java.util.concurrent.TimeUnit;
  * @author stumper66
  * @since 3.0.0
  */
-public class QueueManager_Mobs {
+public class MobsQueueManager {
 
-    public QueueManager_Mobs(final LevelledMobs main){
+    public MobsQueueManager(final LevelledMobs main) {
         this.main = main;
         this.queue = new LinkedBlockingQueue<>();
     }

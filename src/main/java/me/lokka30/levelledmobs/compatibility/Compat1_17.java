@@ -18,7 +18,7 @@ import java.util.stream.Stream;
  * @author stumper66
  * @since 3.0.0
  */
-public class MC1_17_Compat {
+public class Compat1_17 {
     public static HashSet<EntityType> getPassiveMobs() {
         return Stream.of(
                 EntityType.AXOLOTL,

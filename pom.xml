@@ -10,7 +10,7 @@
 
     <groupId>me.lokka30</groupId>
     <artifactId>LevelledMobs</artifactId>
-    <version>3.1.2 b490</version>
+    <version>3.1.3 b491</version>
     <packaging>jar</packaging>
 
     <name>LevelledMobs</name>
@@ -125,8 +125,8 @@
         <dependency>
             <groupId>com.mojang</groupId>
             <artifactId>authlib</artifactId>
-            <scope>provided</scope>
             <version>1.5.25</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.spigotmc</groupId>

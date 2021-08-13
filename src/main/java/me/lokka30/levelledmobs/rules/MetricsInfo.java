@@ -28,8 +28,7 @@ public class MetricsInfo {
     private final LevelledMobs main;
 
     private String convertBooleanToString(final boolean result){
-        return result ?
-                "Yes" : "No";
+        return result ? "Yes" : "No";
     }
 
     private boolean isCustomDropsEnabed(){

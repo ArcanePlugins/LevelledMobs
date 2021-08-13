@@ -5,14 +5,14 @@
 package me.lokka30.levelledmobs;
 
 import me.lokka30.levelledmobs.commands.LevelledMobsCommand;
-import me.lokka30.levelledmobs.compatibility.MC1_16_Compat;
-import me.lokka30.levelledmobs.compatibility.MC1_17_Compat;
+import me.lokka30.levelledmobs.compatibility.Compat1_16;
+import me.lokka30.levelledmobs.compatibility.Compat1_17;
 import me.lokka30.levelledmobs.customdrops.CustomDropsHandler;
 import me.lokka30.levelledmobs.listeners.*;
 import me.lokka30.levelledmobs.managers.ExternalCompatibilityManager;
 import me.lokka30.levelledmobs.managers.LevelManager;
-import me.lokka30.levelledmobs.managers.PAPIManager;
-import me.lokka30.levelledmobs.managers.WorldGuardManager;
+import me.lokka30.levelledmobs.managers.PlaceholderApiIntegration;
+import me.lokka30.levelledmobs.managers.WorldGuardIntegration;
 import me.lokka30.levelledmobs.misc.FileLoader;
 import me.lokka30.levelledmobs.misc.FileMigrator;
 import me.lokka30.levelledmobs.misc.Utils;
@@ -69,7 +69,7 @@ public class Companion {
         // Hook into WorldGuard, register LM's flags.
         // This cannot be moved to onEnable (stated in WorldGuard's documentation). It MUST be ran in onLoad.
         if (ExternalCompatibilityManager.hasWorldGuardInstalled()) {
-            main.worldGuardManager = new WorldGuardManager();
+            main.worldGuardIntegration = new WorldGuardIntegration();
         }
     }
 
@@ -184,14 +184,14 @@ public class Companion {
         Utils.logger.info("&fListeners: &7Registering event listeners...");
 
         main.levelManager = new LevelManager(main);
-        main.queueManager_mobs.start();
-        main.queueManager_nametags.start();
+        main._mobsQueueManager.start();
+        main.nametagQueueManager_.start();
         main.levelManager.entitySpawnListener = new EntitySpawnListener(main); // we're saving this reference so the summon command has access to it
         main.levelManager.entitySpawnListener.processMobSpawns = main.helperSettings.getBoolean(main.settingsCfg, "level-mobs-upon-spawn", true);
         main.entityDamageDebugListener = new EntityDamageDebugListener(main);
         main.blockPlaceListener = new BlockPlaceListener(main);
 
-        if (main.helperSettings.getBoolean(main.settingsCfg,"debug-entity-damage")) {
+        if (main.helperSettings.getBoolean(main.settingsCfg, "debug-entity-damage")) {
             // we'll load and unload this listener based on the above setting when reloading
             main.configUtils.debugEntityDamageWasEnabled = true;
             pluginManager.registerEvents(main.entityDamageDebugListener, main);
@@ -213,8 +213,8 @@ public class Companion {
         main.playerInteractEventListener = new PlayerInteractEventListener(main);
 
         if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
-            main.papiManager = new PAPIManager(main);
-            main.papiManager.register();
+            main.placeholderApiIntegration = new PlaceholderApiIntegration(main);
+            main.placeholderApiIntegration.register();
         }
 
         if (main.helperSettings.getBoolean(main.settingsCfg,"ensure-mobs-are-levelled-on-chunk-load", true))
@@ -331,8 +331,8 @@ public class Companion {
 
     void shutDownAsyncTasks() {
         Utils.logger.info("&fTasks: &7Shutting down other async tasks...");
-        main.queueManager_mobs.stop();
-        main.queueManager_nametags.stop();
+        main._mobsQueueManager.stop();
+        main.nametagQueueManager_.stop();
         Bukkit.getScheduler().cancelTasks(main);
     }
 
@@ -349,7 +349,7 @@ public class Companion {
         ).collect(Collectors.toCollection(HashSet::new));
 
         if (VersionUtils.isOneSeventeen() || VersionUtils.isOneSixteen())
-            groups_HostileMobs.addAll(MC1_16_Compat.getHostileMobs());
+            groups_HostileMobs.addAll(Compat1_16.getHostileMobs());
 
         // include interfaces: Animals, WaterMob
         groups_PassiveMobs = Stream.of(
@@ -358,10 +358,10 @@ public class Companion {
         ).collect(Collectors.toCollection(HashSet::new));
 
         if (VersionUtils.isOneSeventeen())
-            groups_PassiveMobs.addAll(MC1_17_Compat.getPassiveMobs());
+            groups_PassiveMobs.addAll(Compat1_17.getPassiveMobs());
 
         if (VersionUtils.isOneSeventeen() || VersionUtils.isOneSixteen())
-            groups_HostileMobs.addAll(MC1_16_Compat.getPassiveMobs());
+            groups_HostileMobs.addAll(Compat1_16.getPassiveMobs());
 
         // include interfaces: WaterMob
         groups_AquaticMobs = Stream.of(

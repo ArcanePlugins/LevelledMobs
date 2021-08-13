@@ -9,8 +9,10 @@ import me.lokka30.levelledmobs.LivingEntityInterface;
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.MetadataValue;
+import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -36,6 +38,9 @@ public class ExternalCompatibilityManager {
         SHOPKEEPERS,
         PLACEHOLDER_API
     }
+
+    /* Store any external namespaced keys with null values by default */
+    public static NamespacedKey dangerousCavesMobTypeKey = null;
 
     public static boolean isExternalCompatibilityEnabled(final ExternalCompatibility externalCompatibility, @NotNull final LivingEntityWrapper lmEntity) {
         if (lmEntity.getApplicableRules().isEmpty())
@@ -106,16 +111,28 @@ public class ExternalCompatibilityManager {
     }
 
     /**
+     * NOTE: Works on DC2 but not DC1.
+     *
      * @param lmEntity mob to check
      * @return if Dangerous Caves compatibility enabled and entity is from DangerousCaves
+     * @author lokka30, stumper66, imDaniX (author of DC2 who provided part of this method).
      */
     public static boolean checkDangerousCaves(final LivingEntityWrapper lmEntity) {
-        final boolean isExternalType = ExternalCompatibilityManager.isExternalCompatibilityEnabled(ExternalCompatibility.DANGEROUS_CAVES, lmEntity)
-                && lmEntity.getLivingEntity().hasMetadata("DangerousCaves");
+        if (!ExternalCompatibilityManager.isExternalCompatibilityEnabled(ExternalCompatibility.DANGEROUS_CAVES, lmEntity))
+            return false;
 
-        if (isExternalType) lmEntity.setMobExternalType(ExternalCompatibility.DANGEROUS_CAVES);
+        if (!Bukkit.getPluginManager().isPluginEnabled("DangerousCaves")) return false;
 
-        return isExternalType;
+        if (dangerousCavesMobTypeKey == null) {
+            //noinspection ConstantConditions
+            dangerousCavesMobTypeKey = new NamespacedKey(Bukkit.getPluginManager().getPlugin("DangerousCaves"), "mob-type");
+        }
+
+        if (!lmEntity.getLivingEntity().getPersistentDataContainer().has(dangerousCavesMobTypeKey, PersistentDataType.STRING))
+            return false;
+
+        lmEntity.setMobExternalType(ExternalCompatibility.DANGEROUS_CAVES);
+        return true;
     }
 
     /**
@@ -194,13 +211,13 @@ public class ExternalCompatibilityManager {
      */
     public static boolean checkWorldGuard(final Location location, final LevelledMobs main) {
         return ExternalCompatibilityManager.hasWorldGuardInstalled()
-                && !main.worldGuardManager.regionAllowsLevelling(location);
+                && !main.worldGuardIntegration.regionAllowsLevelling(location);
     }
 
     @Nullable
     public static List<String> getWGRegionsAtLocation(@NotNull final LivingEntityInterface lmInterface){
         if (!ExternalCompatibilityManager.hasWorldGuardInstalled()) return null;
 
-        return WorldGuardManager.getWorldGuardRegionsForLocation(lmInterface);
+        return WorldGuardIntegration.getWorldGuardRegionsForLocation(lmInterface);
     }
 }

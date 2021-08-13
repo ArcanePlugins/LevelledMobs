@@ -19,7 +19,7 @@ import java.util.stream.Stream;
  * @author stumper66
  * @since 2.4.0
  */
-public class MC1_16_Compat {
+public class Compat1_16 {
 
     public static HashSet<EntityType> getHostileMobs() {
         if (shouldIncludePiglinBrutes()) {
@@ -28,8 +28,7 @@ public class MC1_16_Compat {
                     EntityType.PIGLIN,
                     EntityType.PIGLIN_BRUTE
             ).collect(Collectors.toCollection(HashSet::new));
-        }
-        else {
+        } else {
             return Stream.of(
                     EntityType.HOGLIN,
                     EntityType.PIGLIN

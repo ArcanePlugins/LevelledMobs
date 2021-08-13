@@ -44,7 +44,7 @@ public class ChunkLoadListener implements Listener {
 
             if (lmEntity.isLevelled()) continue;
 
-            main.queueManager_mobs.addToQueue(new QueueItem(lmEntity, event));
+            main._mobsQueueManager.addToQueue(new QueueItem(lmEntity, event));
         }
     }
 }

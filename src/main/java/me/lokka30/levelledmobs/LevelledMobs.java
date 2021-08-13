@@ -38,7 +38,7 @@ public class LevelledMobs extends JavaPlugin {
     public LevelInterface levelInterface;
     public LevelManager levelManager;
     public final MobDataManager mobDataManager = new MobDataManager(this);
-    public WorldGuardManager worldGuardManager;
+    public WorldGuardIntegration worldGuardIntegration;
     public CustomDropsHandler customDropsHandler;
     public ChunkLoadListener chunkLoadListener;
     public BlockPlaceListener blockPlaceListener;
@@ -47,11 +47,11 @@ public class LevelledMobs extends JavaPlugin {
     public final MobHeadManager mobHeadManager = new MobHeadManager(this);
     public final RulesParsingManager rulesParsingManager = new RulesParsingManager(this);
     public final RulesManager rulesManager = new RulesManager(this);
-    public final QueueManager_Mobs queueManager_mobs = new QueueManager_Mobs(this);
-    public final QueueManager_Nametags queueManager_nametags = new QueueManager_Nametags(this);
+    public final MobsQueueManager _mobsQueueManager = new MobsQueueManager(this);
+    public final NametagQueueManager nametagQueueManager_ = new NametagQueueManager(this);
     public final Object attributeSyncObject = new Object();
     public Random random;
-    public PAPIManager papiManager;
+    public PlaceholderApiIntegration placeholderApiIntegration;
     public boolean migratedFromPre30;
     public YmlParsingHelper helperSettings;
     public double playerLevellingDistance;

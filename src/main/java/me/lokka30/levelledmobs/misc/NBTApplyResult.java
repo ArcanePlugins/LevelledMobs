@@ -10,11 +10,11 @@ import org.bukkit.inventory.ItemStack;
  * @author stumper66
  * @since 3.1.0
  */
-public class NBT_ApplyResult {
+public class NBTApplyResult {
     public ItemStack itemStack;
     public String exceptionMessage;
 
-    public boolean hadException(){
+    public boolean hadException() {
         return this.exceptionMessage != null;
     }
 }

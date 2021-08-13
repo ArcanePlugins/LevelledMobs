@@ -6,7 +6,7 @@ package me.lokka30.levelledmobs.listeners;
 
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.misc.*;
-import me.lokka30.levelledmobs.rules.LM_SpawnReason;
+import me.lokka30.levelledmobs.rules.LevelledMobSpawnReason;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.World;
@@ -69,20 +69,20 @@ public class EntitySpawnListener implements Listener {
         if (mobProcessDelay > 0)
             delayedAddToQueue(lmEntity, event, mobProcessDelay);
         else
-            main.queueManager_mobs.addToQueue(new QueueItem(lmEntity, event));
+            main._mobsQueueManager.addToQueue(new QueueItem(lmEntity, event));
     }
 
-    private LM_SpawnReason adaptVanillaSpawnReason(final CreatureSpawnEvent.SpawnReason spawnReason){
-          return LM_SpawnReason.valueOf(spawnReason.toString());
+    private LevelledMobSpawnReason adaptVanillaSpawnReason(final CreatureSpawnEvent.SpawnReason spawnReason) {
+        return LevelledMobSpawnReason.valueOf(spawnReason.toString());
     }
 
-    private void getClosestPlayer(final @NotNull LivingEntityWrapper lmEntity){
+    private void getClosestPlayer(final @NotNull LivingEntityWrapper lmEntity) {
         if (lmEntity.getPlayerForLevelling() != null) return;
 
         Entity closestEntity = null;
         double closestRange = Double.MAX_VALUE;
 
-        for (final Entity entity : lmEntity.getLivingEntity().getNearbyEntities(50, 50, 50)){
+        for (final Entity entity : lmEntity.getLivingEntity().getNearbyEntities(50, 50, 50)) {
             if (!(entity instanceof Player)) continue;
 
             double range = entity.getLocation().distanceSquared(lmEntity.getLocation());
@@ -105,7 +105,7 @@ public class EntitySpawnListener implements Listener {
         final BukkitRunnable runnable = new BukkitRunnable() {
             @Override
             public void run() {
-                main.queueManager_mobs.addToQueue(new QueueItem(lmEntity, event));
+                main._mobsQueueManager.addToQueue(new QueueItem(lmEntity, event));
             }
         };
 
@@ -167,20 +167,20 @@ public class EntitySpawnListener implements Listener {
         if (!lmEntity.reEvaluateLevel && lmEntity.isLevelled())
             return;
 
-        LM_SpawnReason spawnReason = LM_SpawnReason.DEFAULT;
+        LevelledMobSpawnReason spawnReason = LevelledMobSpawnReason.DEFAULT;
         AdditionalLevelInformation additionalInfo = AdditionalLevelInformation.NOT_APPLICABLE;
 
         if (event instanceof SpawnerSpawnEvent) {
             SpawnerSpawnEvent spawnEvent = (SpawnerSpawnEvent) event;
 
             if (spawnEvent.getSpawner() != null && spawnEvent.getSpawner().getPersistentDataContainer().has(main.blockPlaceListener.keySpawner, PersistentDataType.INTEGER)) {
-                lmEntity.setSpawnReason(LM_SpawnReason.LM_SPAWNER);
+                lmEntity.setSpawnReason(LevelledMobSpawnReason.LM_SPAWNER);
                 lmSpawnerSpawn(lmEntity, spawnEvent);
                 return;
             }
 
             Utils.debugLog(main, DebugType.MOB_SPAWNER, "Spawned mob from vanilla spawner: &b" + spawnEvent.getEntityType());
-            spawnReason = LM_SpawnReason.SPAWNER;
+            spawnReason = LevelledMobSpawnReason.SPAWNER;
         } else if (event instanceof CreatureSpawnEvent) {
             final CreatureSpawnEvent spawnEvent = (CreatureSpawnEvent) event;
 

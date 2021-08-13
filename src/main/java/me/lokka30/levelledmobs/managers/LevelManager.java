@@ -308,7 +308,7 @@ public class LevelManager implements LevelInterface {
 
         // world guard regions take precedence over any other min / max settings
         // livingEntity is null if passed from summon mobs command
-        if (ExternalCompatibilityManager.hasWorldGuardInstalled() && main.worldGuardManager.checkRegionFlags(lmInterface)) {
+        if (ExternalCompatibilityManager.hasWorldGuardInstalled() && main.worldGuardIntegration.checkRegionFlags(lmInterface)) {
             final int[] levels = generateWorldGuardRegionLevel(lmInterface);
             if (levels[0] > -1) minLevel = levels[0];
             if (levels[1] > -1) maxLevel = levels[1];
@@ -324,7 +324,7 @@ public class LevelManager implements LevelInterface {
     }
 
     public int[] generateWorldGuardRegionLevel(final LivingEntityInterface lmInterface) {
-        return main.worldGuardManager.getRegionLevel(lmInterface);
+        return main.worldGuardIntegration.getRegionLevel(lmInterface);
     }
 
     // This sets the levelled currentDrops on a levelled mob that just died.
@@ -602,7 +602,7 @@ public class LevelManager implements LevelInterface {
     }
 
     public void updateNametag(final @NotNull LivingEntityWrapper lmEntity, final String nametag, final List<Player> players) {
-        main.queueManager_nametags.addToQueue(new QueueItem(lmEntity, nametag, players));
+        main.nametagQueueManager_.addToQueue(new QueueItem(lmEntity, nametag, players));
     }
 
     /*
@@ -678,7 +678,7 @@ public class LevelManager implements LevelInterface {
                         // if the mob was a baby at some point, aged and now is eligable for levelling, we'll apply a level to it now
                         Utils.debugLog(main, DebugType.ENTITY_MISC, "&b" + lmEntity.getTypeName() + " &7was a baby and is now an adult, applying levelling rules");
 
-                        main.queueManager_mobs.addToQueue(new QueueItem(lmEntity, null));
+                        main._mobsQueueManager.addToQueue(new QueueItem(lmEntity, null));
                     }
                 }
             }
@@ -713,7 +713,7 @@ public class LevelManager implements LevelInterface {
 
             lmEntity.setPlayerForLevelling(closestPlayer);
             lmEntity.reEvaluateLevel = true;
-            main.queueManager_mobs.addToQueue(new QueueItem(lmEntity, null));
+            main._mobsQueueManager.addToQueue(new QueueItem(lmEntity, null));
         }
     }
 
@@ -733,7 +733,7 @@ public class LevelManager implements LevelInterface {
                     location.getWorld().getName().equals(lmEntity.getWorld().getName()) &&
                     lmEntity.getLocation().distanceSquared(location) <= maxDistance) {
                 //if within distance, update nametag.
-                main.queueManager_nametags.addToQueue(new QueueItem(lmEntity, main.levelManager.getNametag(lmEntity, false), Collections.singletonList(player)));
+                main.nametagQueueManager_.addToQueue(new QueueItem(lmEntity, main.levelManager.getNametag(lmEntity, false), Collections.singletonList(player)));
             }
         }
     }
@@ -1070,7 +1070,7 @@ public class LevelManager implements LevelInterface {
                 }
 
                 if (finalNbtData != null) {
-                    NBT_ApplyResult result = NBTManager.applyNBT_Data_Mob(lmEntity, finalNbtData);
+                    NBTApplyResult result = NBTManager.applyNBT_Data_Mob(lmEntity, finalNbtData);
                     if (result.hadException()) {
                         Utils.logger.warning("Error applying NBT data to " + lmEntity.getTypeName() + ". Exception message: " + result.exceptionMessage);
                     } else {

@@ -33,9 +33,9 @@ import java.util.concurrent.TimeUnit;
  * @author stumper66
  * @since 3.0.0
  */
-public class QueueManager_Nametags {
+public class NametagQueueManager {
 
-    public QueueManager_Nametags(final LevelledMobs main){
+    public NametagQueueManager(final LevelledMobs main) {
         this.main = main;
         this.queue = new LinkedBlockingQueue<>();
     }

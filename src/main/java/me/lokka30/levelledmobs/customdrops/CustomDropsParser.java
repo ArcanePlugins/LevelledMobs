@@ -8,7 +8,7 @@ import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.managers.ExternalCompatibilityManager;
 import me.lokka30.levelledmobs.managers.NBTManager;
 import me.lokka30.levelledmobs.misc.CustomUniversalGroups;
-import me.lokka30.levelledmobs.misc.NBT_ApplyResult;
+import me.lokka30.levelledmobs.misc.NBTApplyResult;
 import me.lokka30.levelledmobs.misc.Utils;
 import me.lokka30.levelledmobs.misc.YmlParsingHelper;
 import me.lokka30.levelledmobs.rules.RuleInfo;
@@ -406,7 +406,7 @@ public class CustomDropsParser {
         final String nbtStuff = ymlHelper.getString(cs,"nbt-data");
         if (!Utils.isNullOrEmpty(nbtStuff)){
             if (ExternalCompatibilityManager.hasNBTAPI_Installed()) {
-                final NBT_ApplyResult result = NBTManager.applyNBT_Data_Item(item, nbtStuff);
+                final NBTApplyResult result = NBTManager.applyNBT_Data_Item(item, nbtStuff);
                 if (result.hadException())
                     Utils.logger.warning("custom drop " + item.getMaterial().toString() + " for " + dropInstance.getMobOrGroupName() + " has invalid NBT data: " + result.exceptionMessage);
                 else {
