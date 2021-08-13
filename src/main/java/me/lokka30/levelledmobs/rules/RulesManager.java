@@ -487,13 +487,13 @@ public class RulesManager {
                 else if (checkResult.ruleMadeChance != null && checkResult.ruleMadeChance)
                     applicableRules.allApplicableRules_MadeChance.add(ruleInfo);
 
+                applicableRules.allApplicableRules.add(ruleInfo);
+
                 if (ruleInfo.stopProcessingRules != null && ruleInfo.stopProcessingRules) {
                     Utils.debugLog(main, DebugType.DENIED_RULE_STOP_PROCESSING, String.format("&b%s&7, mob: &b%s&7, rule count: &b%s",
                             ruleInfo.getRuleName(), lmInterface.getTypeName(), applicableRules.allApplicableRules.size()));
                     break;
                 }
-
-                applicableRules.allApplicableRules.add(ruleInfo);
             }
         }
 
