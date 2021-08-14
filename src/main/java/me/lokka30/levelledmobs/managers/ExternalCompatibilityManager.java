@@ -30,17 +30,35 @@ public class ExternalCompatibilityManager {
 
     public enum ExternalCompatibility {
         NOT_APPLICABLE,
+
+        // DangerousCaves plugin
         DANGEROUS_CAVES,
+
+        // EcoBosses plugin
+        ECO_BOSSES,
+
+        // MythicMobs plugin
         MYTHIC_MOBS,
+
+        // EliteMobs plugin
         ELITE_MOBS, ELITE_MOBS_NPCS, ELITE_MOBS_SUPER_MOBS,
+
+        // InfernalMobs plugin
         INFERNAL_MOBS,
+
+        // Citizens plugin
         CITIZENS,
+
+        // Shopkeepers plugin
         SHOPKEEPERS,
+
+        // PlaceholderAPI plugin
         PLACEHOLDER_API
     }
 
     /* Store any external namespaced keys with null values by default */
     public static NamespacedKey dangerousCavesMobTypeKey = null;
+    public static NamespacedKey ecoBossesKey = null;
 
     public static boolean isExternalCompatibilityEnabled(final ExternalCompatibility externalCompatibility, @NotNull final LivingEntityWrapper lmEntity) {
         if (lmEntity.getApplicableRules().isEmpty())
@@ -115,7 +133,7 @@ public class ExternalCompatibilityManager {
      *
      * @param lmEntity mob to check
      * @return if Dangerous Caves compatibility enabled and entity is from DangerousCaves
-     * @author lokka30, stumper66, imDaniX (author of DC2 who provided part of this method).
+     * @author lokka30, stumper66, imDaniX (author of DC2 - provided part of this method)
      */
     public static boolean checkDangerousCaves(final LivingEntityWrapper lmEntity) {
         if (!ExternalCompatibilityManager.isExternalCompatibilityEnabled(ExternalCompatibility.DANGEROUS_CAVES, lmEntity))
@@ -132,6 +150,29 @@ public class ExternalCompatibilityManager {
             return false;
 
         lmEntity.setMobExternalType(ExternalCompatibility.DANGEROUS_CAVES);
+        return true;
+    }
+
+    /**
+     * @param lmEntity mob to check
+     * @return if the compat is enabled and if the mob belongs to EcoBosses
+     * @author lokka30, Auxilor (author of EcoBosses - provided part of this method)
+     */
+    public static boolean checkEcoBosses(final LivingEntityWrapper lmEntity) {
+        if (!ExternalCompatibilityManager.isExternalCompatibilityEnabled(ExternalCompatibility.ECO_BOSSES, lmEntity))
+            return false;
+
+        if (!Bukkit.getPluginManager().isPluginEnabled("EcoBosses")) return false;
+
+        if (ecoBossesKey == null) {
+            //noinspection ConstantConditions
+            ecoBossesKey = new NamespacedKey(Bukkit.getPluginManager().getPlugin("ecobosses"), "boss");
+        }
+
+        if (!lmEntity.getLivingEntity().getPersistentDataContainer().has(ecoBossesKey, PersistentDataType.STRING))
+            return false;
+
+        lmEntity.setMobExternalType(ExternalCompatibility.ECO_BOSSES);
         return true;
     }
 

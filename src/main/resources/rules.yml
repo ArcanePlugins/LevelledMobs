@@ -306,6 +306,7 @@ default-rule:
 
     level-plugins:
       DANGEROUS_CAVES: false
+      ECO_BOSSES: false
       MYTHIC_MOBS: false
       ELITE_MOBS: false
       ELITE_MOBS_NPCS: false

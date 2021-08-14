@@ -948,6 +948,10 @@ public class LevelManager implements LevelInterface {
                 ExternalCompatibilityManager.checkDangerousCaves(lmEntity))
             return LevellableState.DENIED_CONFIGURATION_COMPATIBILITY_DANGEROUS_CAVES;
 
+        if (!ExternalCompatibilityManager.isExternalCompatibilityEnabled(ExternalCompatibilityManager.ExternalCompatibility.ECO_BOSSES, compatRules) &&
+                ExternalCompatibilityManager.checkEcoBosses(lmEntity))
+            return LevellableState.DENIED_CONFIGURATION_COMPATIBILITY_ECO_BOSSES;
+
         if (!ExternalCompatibilityManager.isExternalCompatibilityEnabled(ExternalCompatibilityManager.ExternalCompatibility.ELITE_MOBS, compatRules) &&
                 ExternalCompatibilityManager.checkEliteMobs(lmEntity))
             return LevellableState.DENIED_CONFIGURATION_COMPATIBILITY_ELITE_MOBS;
