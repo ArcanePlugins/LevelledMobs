@@ -434,32 +434,36 @@ public class CustomDropsHandler {
         if (info.lmEntity.getLivingEntity().getCustomName() != null)
             displayName = info.lmEntity.getLivingEntity().getCustomName();
 
-        String command = main.levelManager.replaceStringPlaceholders(customCommand.command, info.lmEntity, displayName);
+        int commandCount = 0;
+        for (String command : customCommand.commands){
+            commandCount++;
+            command = main.levelManager.replaceStringPlaceholders(command, info.lmEntity, displayName);
 
-        final String playerName = info.wasKilledByPlayer ?
-                Objects.requireNonNull(info.lmEntity.getLivingEntity().getKiller()).getName() :
-                "";
+            final String playerName = info.wasKilledByPlayer ?
+                    Objects.requireNonNull(info.lmEntity.getLivingEntity().getKiller()).getName() :
+                    "";
 
-        command = Utils.replaceEx(command, "%player%", playerName);
-        command = command.replace("%displayname%", displayName);
-        command = processRangedCommand(command, customCommand);
+            command = Utils.replaceEx(command, "%player%", playerName);
+            command = command.replace("%displayname%", displayName);
+            command = processRangedCommand(command, customCommand);
 
-        final int maxAllowedTimesToRun = ymlHelper.getInt(main.settingsCfg, "customcommand-amount-limit", 10);
-        int timesToRun = customCommand.getAmount();
+            final int maxAllowedTimesToRun = ymlHelper.getInt(main.settingsCfg, "customcommand-amount-limit", 10);
+            int timesToRun = customCommand.getAmount();
 
-        if (customCommand.getHasAmountRange())
-            timesToRun = main.random.nextInt(customCommand.getAmountRangeMax() - customCommand.amountRangeMin + 1) + customCommand.amountRangeMin;
+            if (customCommand.getHasAmountRange())
+                timesToRun = main.random.nextInt(customCommand.getAmountRangeMax() - customCommand.amountRangeMin + 1) + customCommand.amountRangeMin;
 
-        if (timesToRun > maxAllowedTimesToRun)
-            timesToRun = maxAllowedTimesToRun;
+            if (timesToRun > maxAllowedTimesToRun)
+                timesToRun = maxAllowedTimesToRun;
 
-        final String debugCommand = timesToRun > 1 ?
-                String.format("Command (%sx): ", timesToRun) : "Command: ";
+            final String debugCommand = timesToRun > 1 ?
+                    String.format("Command (%sx): ", timesToRun) : "Command: ";
 
-        Utils.debugLog(main, DebugType.CUSTOM_COMMANDS, debugCommand + command);
+            Utils.debugLog(main, DebugType.CUSTOM_COMMANDS, debugCommand + command);
 
-        for (int i = 0; i < timesToRun; i++)
-            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
+            for (int i = 0; i < timesToRun; i++)
+                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
+        }
     }
 
     @NotNull
