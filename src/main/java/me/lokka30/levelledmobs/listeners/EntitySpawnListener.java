@@ -133,7 +133,6 @@ public class EntitySpawnListener implements Listener {
             }
         }
 
-
         Utils.debugLog(main, DebugType.MOB_SPAWNER, String.format(
                 "Spawned mob from LM spawner: &b%s&7, minLevel:&b %s&7, maxLevel: &b%s&7, generatedLevel: &b%s&b%s",
                 event.getEntityType(), useMinLevel, useMaxLevel, generatedLevel, (customDropId == null ? "" : ", dropid: " + customDropId)));

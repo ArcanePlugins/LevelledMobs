@@ -16,7 +16,7 @@ import java.util.TreeSet;
  * @author stumper66
  * @since 3.0.0
  */
-public class CustomDropBase implements Cloneable {
+public class CustomDropBase {
 
     public CustomDropBase(@NotNull final CustomDropsDefaults defaults){
         this.amount = defaults.amount;
@@ -44,6 +44,7 @@ public class CustomDropBase implements Cloneable {
         this.amount = amount;
         if (this.amount > 64) this.amount = 64;
         if (this.amount < 1) this.amount = 1;
+        this.hasAmountRange = false;
     }
 
     public int getAmountRangeMin(){

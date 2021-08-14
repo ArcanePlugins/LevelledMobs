@@ -131,8 +131,8 @@ public class PlayerInteractEventListener implements Listener {
         else
             sb.append("Vanilla Spawner\n");
 
-        addSpawnerAttributeFromPdc("min level", main.blockPlaceListener.keySpawner_MinLevel, pdc, sb);
-        addSpawnerAttributeFromPdc("max level", main.blockPlaceListener.keySpawner_MaxLevel, pdc, sb);
+        addSpawnerAttributeFromPdc_Int("min level", main.blockPlaceListener.keySpawner_MinLevel, pdc, sb);
+        addSpawnerAttributeFromPdc_Int("max level", main.blockPlaceListener.keySpawner_MaxLevel, pdc, sb);
         sb.append('\n');
         addSpawnerAttribute("delay", cs.getDelay(), sb);
         addSpawnerAttribute("max nearby entities", cs.getMaxNearbyEntities(), sb);
@@ -142,14 +142,14 @@ public class PlayerInteractEventListener implements Listener {
         addSpawnerAttribute("required player range", cs.getRequiredPlayerRange(), sb);
         addSpawnerAttribute("spawn count", cs.getSpawnCount(), sb);
         sb.append('\n');
-        addSpawnerAttributeFromPdc("custom drop id", main.blockPlaceListener.keySpawner_CustomDropId, pdc, sb);
+        addSpawnerAttributeFromPdc_Str("custom drop id", main.blockPlaceListener.keySpawner_CustomDropId, pdc, sb);
         // customName
         addSpawnerAttribute("spawn type", cs.getSpawnedType(), sb);
 
         player.sendMessage(MessageUtils.colorizeAll(sb.toString()));
     }
 
-    private void addSpawnerAttributeFromPdc(final String name, final NamespacedKey key, final PersistentDataContainer pdc, final StringBuilder sb){
+    private void addSpawnerAttributeFromPdc_Int(final String name, final NamespacedKey key, final PersistentDataContainer pdc, final StringBuilder sb){
         if (!pdc.has(key, PersistentDataType.INTEGER)) return;
 
         if (!sb.substring(sb.length() - 1).equals("\n"))
@@ -159,6 +159,19 @@ public class PlayerInteractEventListener implements Listener {
         sb.append(name);
         sb.append(": &b");
         sb.append(pdc.get(key, PersistentDataType.INTEGER));
+        sb.append("&r");
+    }
+
+    private void addSpawnerAttributeFromPdc_Str(final String name, final NamespacedKey key, final PersistentDataContainer pdc, final StringBuilder sb){
+        if (!pdc.has(key, PersistentDataType.STRING)) return;
+
+        if (!sb.substring(sb.length() - 1).equals("\n"))
+            sb.append(", ");
+
+        sb.append("&7");
+        sb.append(name);
+        sb.append(": &b");
+        sb.append(pdc.get(key, PersistentDataType.STRING));
         sb.append("&r");
     }
 
