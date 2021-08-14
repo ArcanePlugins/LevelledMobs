@@ -60,6 +60,7 @@ public class ExternalCompatibilityManager {
     public static NamespacedKey dangerousCavesMobTypeKey = null;
     public static NamespacedKey ecoBossesKey = null;
 
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public static boolean isExternalCompatibilityEnabled(final ExternalCompatibility externalCompatibility, @NotNull final LivingEntityWrapper lmEntity) {
         if (lmEntity.getApplicableRules().isEmpty())
             return false;
