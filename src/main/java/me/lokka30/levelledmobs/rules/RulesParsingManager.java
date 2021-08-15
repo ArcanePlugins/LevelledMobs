@@ -509,7 +509,7 @@ public class RulesParsingManager {
                     mobNames.mobName = name;
                     mobNames.names = names2;
                     entityNames.put(name, mobNames);
-                } else if (cs.get(name) instanceof MemorySection) {
+                } else if (cs.get(name) instanceof MemorySection || cs.get(name) instanceof LinkedHashMap) {
                     final List<LevelTierMatching> tiers = parseNumberRange(objTo_CS(cs, name), name);
                     if (tiers != null && !tiers.isEmpty())
                         levelTiers.put(name, tiers);
