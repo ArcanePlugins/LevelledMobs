@@ -5,10 +5,7 @@
 package me.lokka30.levelledmobs.listeners;
 
 import me.lokka30.levelledmobs.LevelledMobs;
-import me.lokka30.levelledmobs.misc.AdditionalLevelInformation;
-import me.lokka30.levelledmobs.misc.DebugType;
-import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
-import me.lokka30.levelledmobs.misc.Utils;
+import me.lokka30.levelledmobs.misc.*;
 import me.lokka30.levelledmobs.rules.MobTamedStatus;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -36,6 +33,12 @@ public class EntityTameListener implements Listener {
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     private void onEntityTameEvent(@NotNull final EntityTameEvent event) {
         final LivingEntityWrapper lmEntity = new LivingEntityWrapper(event.getEntity(), main);
+        final LevellableState levellableState = main.levelInterface.getLevellableState(lmEntity);
+
+        if (levellableState != LevellableState.ALLOWED){
+            Utils.debugLog(main, DebugType.ENTITY_TAME, "Levelable state was " + levellableState);
+            return;
+        }
 
         if (main.rulesManager.getRule_MobTamedStatus(lmEntity) == MobTamedStatus.NOT_TAMED) {
             Utils.debugLog(main, DebugType.ENTITY_TAME, "no-level-conditions.tamed = &btrue");

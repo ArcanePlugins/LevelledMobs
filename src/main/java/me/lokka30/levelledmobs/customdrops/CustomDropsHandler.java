@@ -41,7 +41,7 @@ public class CustomDropsHandler {
     @Nullable
     public Map<String, CustomDropInstance> customItemGroups;
     public final CustomDropsParser customDropsParser;
-    public NamespacedKey overallChanceKey;
+    public final NamespacedKey overallChanceKey;
     private final YmlParsingHelper ymlHelper;
 
     public CustomDropsHandler(final LevelledMobs main) {

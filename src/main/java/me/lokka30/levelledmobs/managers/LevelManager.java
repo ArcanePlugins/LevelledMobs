@@ -239,6 +239,7 @@ public class LevelManager implements LevelInterface {
         }
 
         levelSource = (int) Math.round(origLevelSource * scale);
+        if (levelSource < 1) levelSource = 1;
         final int[] results = new int[]{ 1, 1};
         String tierMatched = null;
 

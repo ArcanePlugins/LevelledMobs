@@ -29,7 +29,7 @@ public class CustomCommand extends CustomDropBase {
     @NotNull
     final public List<String> commands;
     @NotNull
-    public Map<String, String> rangedEntries;
+    final public Map<String, String> rangedEntries;
 
     public CustomCommand cloneItem() {
         CustomCommand copy = null;
