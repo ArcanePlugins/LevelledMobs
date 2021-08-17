@@ -696,14 +696,23 @@ public class LevelManager implements LevelInterface {
 
         if (players.size() > 1) {
             for (final Player p : players) {
+                if (p.getLocation().getWorld() == null || mob.getLocation().getWorld() == null ||
+                        !p.getLocation().getWorld().getUID().equals(mob.getLocation().getWorld().getUID()))
+                    continue;
+
                 double distance = mob.getLocation().distanceSquared(p.getLocation());
                 if (distance < closestDistance) {
                     closestPlayer = p;
                     closestDistance = distance;
                 }
             }
-        } else
+        } else {
+            if (closestPlayer.getLocation().getWorld() == null || mob.getLocation().getWorld() == null ||
+                    !closestPlayer.getLocation().getWorld().getUID().equals(mob.getLocation().getWorld().getUID()))
+                return;
+
             closestDistance = mob.getLocation().distanceSquared(closestPlayer.getLocation());
+        }
 
         if (closestDistance <= main.playerLevellingDistance &&
                 doesMobNeedRelevelling(mob, closestPlayer)) {

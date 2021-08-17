@@ -85,6 +85,9 @@ public class EntitySpawnListener implements Listener {
         for (final Entity entity : lmEntity.getLivingEntity().getNearbyEntities(50, 50, 50)) {
             if (!(entity instanceof Player)) continue;
 
+            if (entity.getLocation().getWorld() == null || !entity.getLocation().getWorld().getUID().equals(lmEntity.getWorld().getUID()))
+                continue;
+
             double range = entity.getLocation().distanceSquared(lmEntity.getLocation());
             if (range < closestRange && range <= main.playerLevellingDistance){
                 closestEntity = entity;
