@@ -5,6 +5,28 @@ list of changelogs.
 
 ***
 
+## v3.1.3 b501
+
+All of the following changes by @stumper66:
+
+* fixed the rule condition stop-processing not applying the applicable rule before stopping processing
+* added EcoBosses compatibility, thanks to Auxilor for providing the code
+* Improved settings.yml comments
+* fixed issue when using LM spawners referencing a drop table, they would only drop items if the item was equipped
+* fixed command /LM spawner info not showing CustomDropId
+* added ability to run multiple commands within a single customCommand
+* fixed entity-override-names not working with level tiers
+* fixed issue when a wolf or other tamable animals gets tamed it gets levelled
+* fixed issue when using player levelling and the player has 0 experience that it will cause mobs to get random levels
+* changed use-player-max-level in player levelling to default of false
+* fixed potential IllegalArgumentException when using player levelling and a player teleports to a different world
+* fixed dangerous caves compatibility
+* a mob being processed by LM can now have more than one external plugin defined (used by level-plugin rule in
+  rules.yml)
+* player-levelling will not be triggered by users in spectator mode
+
+***
+
 ## v3.1.1 b481
 
 * @stumper66 fixed a few issues with rules using certain presets
