@@ -16,6 +16,6 @@ public class RuleCheckResult {
         this.ruleMadeChance = ruleMadeChance;
     }
 
-    public boolean useResult;
+    public final boolean useResult;
     public Boolean ruleMadeChance;
 }

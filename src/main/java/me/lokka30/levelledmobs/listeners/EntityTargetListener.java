@@ -49,10 +49,10 @@ public class EntityTargetListener implements Listener {
                 return;
 
             if (lmEntity.getMobLevel() < 0) lmEntity.reEvaluateLevel = true;
-            main.queueManager_mobs.addToQueue(new QueueItem(lmEntity, event));
+            main._mobsQueueManager.addToQueue(new QueueItem(lmEntity, event));
         }
 
         // Update the nametag.
-        main.queueManager_nametags.addToQueue(new QueueItem(lmEntity, main.levelManager.getNametag(lmEntity, false), lmEntity.getLivingEntity().getWorld().getPlayers()));
+        main.nametagQueueManager_.addToQueue(new QueueItem(lmEntity, main.levelManager.getNametag(lmEntity, false), lmEntity.getLivingEntity().getWorld().getPlayers()));
     }
 }

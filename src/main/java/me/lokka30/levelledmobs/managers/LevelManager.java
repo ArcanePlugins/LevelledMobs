@@ -19,10 +19,7 @@ import me.lokka30.levelledmobs.rules.strategies.RandomLevellingStrategy;
 import me.lokka30.levelledmobs.rules.strategies.SpawnDistanceStrategy;
 import me.lokka30.levelledmobs.rules.strategies.YDistanceStrategy;
 import me.lokka30.microlib.MessageUtils;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
+import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.enchantments.EnchantmentTarget;
@@ -239,6 +236,7 @@ public class LevelManager implements LevelInterface {
         }
 
         levelSource = (int) Math.round(origLevelSource * scale);
+        if (levelSource < 1) levelSource = 1;
         final int[] results = new int[]{ 1, 1};
         String tierMatched = null;
 
@@ -308,7 +306,7 @@ public class LevelManager implements LevelInterface {
 
         // world guard regions take precedence over any other min / max settings
         // livingEntity is null if passed from summon mobs command
-        if (ExternalCompatibilityManager.hasWorldGuardInstalled() && main.worldGuardManager.checkRegionFlags(lmInterface)) {
+        if (ExternalCompatibilityManager.hasWorldGuardInstalled() && main.worldGuardIntegration.checkRegionFlags(lmInterface)) {
             final int[] levels = generateWorldGuardRegionLevel(lmInterface);
             if (levels[0] > -1) minLevel = levels[0];
             if (levels[1] > -1) maxLevel = levels[1];
@@ -324,7 +322,7 @@ public class LevelManager implements LevelInterface {
     }
 
     public int[] generateWorldGuardRegionLevel(final LivingEntityInterface lmInterface) {
-        return main.worldGuardManager.getRegionLevel(lmInterface);
+        return main.worldGuardIntegration.getRegionLevel(lmInterface);
     }
 
     // This sets the levelled currentDrops on a levelled mob that just died.
@@ -602,7 +600,7 @@ public class LevelManager implements LevelInterface {
     }
 
     public void updateNametag(final @NotNull LivingEntityWrapper lmEntity, final String nametag, final List<Player> players) {
-        main.queueManager_nametags.addToQueue(new QueueItem(lmEntity, nametag, players));
+        main.nametagQueueManager_.addToQueue(new QueueItem(lmEntity, nametag, players));
     }
 
     /*
@@ -678,7 +676,7 @@ public class LevelManager implements LevelInterface {
                         // if the mob was a baby at some point, aged and now is eligable for levelling, we'll apply a level to it now
                         Utils.debugLog(main, DebugType.ENTITY_MISC, "&b" + lmEntity.getTypeName() + " &7was a baby and is now an adult, applying levelling rules");
 
-                        main.queueManager_mobs.addToQueue(new QueueItem(lmEntity, null));
+                        main._mobsQueueManager.addToQueue(new QueueItem(lmEntity, null));
                     }
                 }
             }
@@ -695,14 +693,25 @@ public class LevelManager implements LevelInterface {
 
         if (players.size() > 1) {
             for (final Player p : players) {
+                if (p.getGameMode().equals(GameMode.SPECTATOR)) continue;
+                if (p.getLocation().getWorld() == null || mob.getLocation().getWorld() == null ||
+                        !p.getLocation().getWorld().getUID().equals(mob.getLocation().getWorld().getUID()))
+                    continue;
+
                 double distance = mob.getLocation().distanceSquared(p.getLocation());
                 if (distance < closestDistance) {
                     closestPlayer = p;
                     closestDistance = distance;
                 }
             }
-        } else
+        } else {
+            if (closestPlayer.getGameMode().equals(GameMode.SPECTATOR) ||
+                closestPlayer.getLocation().getWorld() == null || mob.getLocation().getWorld() == null ||
+                !closestPlayer.getLocation().getWorld().getUID().equals(mob.getLocation().getWorld().getUID()))
+                return;
+
             closestDistance = mob.getLocation().distanceSquared(closestPlayer.getLocation());
+        }
 
         if (closestDistance <= main.playerLevellingDistance &&
                 doesMobNeedRelevelling(mob, closestPlayer)) {
@@ -713,7 +722,7 @@ public class LevelManager implements LevelInterface {
 
             lmEntity.setPlayerForLevelling(closestPlayer);
             lmEntity.reEvaluateLevel = true;
-            main.queueManager_mobs.addToQueue(new QueueItem(lmEntity, null));
+            main._mobsQueueManager.addToQueue(new QueueItem(lmEntity, null));
         }
     }
 
@@ -733,7 +742,7 @@ public class LevelManager implements LevelInterface {
                     location.getWorld().getName().equals(lmEntity.getWorld().getName()) &&
                     lmEntity.getLocation().distanceSquared(location) <= maxDistance) {
                 //if within distance, update nametag.
-                main.queueManager_nametags.addToQueue(new QueueItem(lmEntity, main.levelManager.getNametag(lmEntity, false), Collections.singletonList(player)));
+                main.nametagQueueManager_.addToQueue(new QueueItem(lmEntity, main.levelManager.getNametag(lmEntity, false), Collections.singletonList(player)));
             }
         }
     }
@@ -921,7 +930,7 @@ public class LevelManager implements LevelInterface {
             return LevellableState.DENIED_NO_APPLICABLE_RULES;
 
         // Check WorldGuard
-        if (ExternalCompatibilityManager.checkWorldGuard(lmInterface.getLocation(), main))
+        if (!ExternalCompatibilityManager.doesWorldGuardRegionAllowLevelling(lmInterface.getLocation(), main))
             return LevellableState.DENIED_CONFIGURATION_COMPATIBILITY_WORLD_GUARD;
 
         if (!main.rulesManager.getRule_IsMobAllowedInEntityOverride(lmInterface))
@@ -935,37 +944,9 @@ public class LevelManager implements LevelInterface {
 
         LivingEntityWrapper lmEntity = (LivingEntityWrapper) lmInterface;
 
-        /*
-        Compatibility with other plugins: users may want to stop LM from acting on mobs modified by other plugins.
-         */
-        final Map<ExternalCompatibilityManager.ExternalCompatibility, Boolean> compatRules = main.rulesManager.getRule_ExternalCompatibility(lmEntity);
-
-        if (!ExternalCompatibilityManager.isExternalCompatibilityEnabled(ExternalCompatibilityManager.ExternalCompatibility.MYTHIC_MOBS, compatRules) &&
-                ExternalCompatibilityManager.checkMythicMobs(lmEntity))
-            return LevellableState.DENIED_CONFIGURATION_COMPATIBILITY_MYTHIC_MOBS;
-
-        if (!ExternalCompatibilityManager.isExternalCompatibilityEnabled(ExternalCompatibilityManager.ExternalCompatibility.DANGEROUS_CAVES, compatRules) &&
-                ExternalCompatibilityManager.checkDangerousCaves(lmEntity))
-            return LevellableState.DENIED_CONFIGURATION_COMPATIBILITY_DANGEROUS_CAVES;
-
-        if (!ExternalCompatibilityManager.isExternalCompatibilityEnabled(ExternalCompatibilityManager.ExternalCompatibility.ELITE_MOBS, compatRules) &&
-                ExternalCompatibilityManager.checkEliteMobs(lmEntity))
-            return LevellableState.DENIED_CONFIGURATION_COMPATIBILITY_ELITE_MOBS;
-
-        if (!ExternalCompatibilityManager.isExternalCompatibilityEnabled(ExternalCompatibilityManager.ExternalCompatibility.INFERNAL_MOBS, compatRules) &&
-                ExternalCompatibilityManager.checkInfernalMobs(lmEntity))
-            return LevellableState.DENIED_CONFIGURATION_COMPATIBILITY_INFERNAL_MOBS;
-
-        if (!ExternalCompatibilityManager.isExternalCompatibilityEnabled(ExternalCompatibilityManager.ExternalCompatibility.CITIZENS, compatRules) &&
-                ExternalCompatibilityManager.checkCitizens(lmEntity))
-            return LevellableState.DENIED_CONFIGURATION_COMPATIBILITY_CITIZENS;
-
-        if (!ExternalCompatibilityManager.isExternalCompatibilityEnabled(ExternalCompatibilityManager.ExternalCompatibility.SHOPKEEPERS, compatRules) &&
-                ExternalCompatibilityManager.checkShopkeepers(lmEntity))
-            return LevellableState.DENIED_CONFIGURATION_COMPATIBILITY_SHOPKEEPERS;
-
-        if (ExternalCompatibilityManager.checkWorldGuard(lmEntity.getLivingEntity().getLocation(), main))
-            return LevellableState.DENIED_CONFIGURATION_COMPATIBILITY_WORLD_GUARD;
+        final LevellableState externalCompatResult = ExternalCompatibilityManager.checkAllExternalCompats(lmEntity, main);
+        if (externalCompatResult != LevellableState.ALLOWED)
+            return externalCompatResult;
 
         if (lmEntity.isMobOfExternalType()) {
             lmEntity.invalidateCache();
@@ -1070,7 +1051,7 @@ public class LevelManager implements LevelInterface {
                 }
 
                 if (finalNbtData != null) {
-                    NBT_ApplyResult result = NBTManager.applyNBT_Data_Mob(lmEntity, finalNbtData);
+                    NBTApplyResult result = NBTManager.applyNBT_Data_Mob(lmEntity, finalNbtData);
                     if (result.hadException()) {
                         Utils.logger.warning("Error applying NBT data to " + lmEntity.getTypeName() + ". Exception message: " + result.exceptionMessage);
                     } else {

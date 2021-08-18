@@ -9,7 +9,7 @@ import de.tr7zw.nbtapi.NBTEntity;
 import de.tr7zw.nbtapi.NBTItem;
 import me.lokka30.levelledmobs.customdrops.CustomDropItem;
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
-import me.lokka30.levelledmobs.misc.NBT_ApplyResult;
+import me.lokka30.levelledmobs.misc.NBTApplyResult;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -19,8 +19,8 @@ import org.jetbrains.annotations.NotNull;
 public class NBTManager {
 
     @NotNull
-    public static NBT_ApplyResult applyNBT_Data_Item(@NotNull final CustomDropItem item, @NotNull final String nbtStuff){
-        final NBT_ApplyResult result = new NBT_ApplyResult();
+    public static NBTApplyResult applyNBT_Data_Item(@NotNull final CustomDropItem item, @NotNull final String nbtStuff) {
+        final NBTApplyResult result = new NBTApplyResult();
         final NBTItem nbtent = new NBTItem(item.getItemStack());
 
         try {
@@ -33,8 +33,8 @@ public class NBTManager {
         return result;
     }
 
-    public static NBT_ApplyResult applyNBT_Data_Mob(@NotNull final LivingEntityWrapper lmEntity, @NotNull final String nbtStuff){
-        final NBT_ApplyResult result = new NBT_ApplyResult();
+    public static NBTApplyResult applyNBT_Data_Mob(@NotNull final LivingEntityWrapper lmEntity, @NotNull final String nbtStuff) {
+        final NBTApplyResult result = new NBTApplyResult();
 
         try {
             final NBTEntity nbtent = new NBTEntity(lmEntity.getLivingEntity());

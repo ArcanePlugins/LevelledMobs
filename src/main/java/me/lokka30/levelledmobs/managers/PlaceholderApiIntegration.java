@@ -22,9 +22,9 @@ import java.util.UUID;
  * @author stumper66
  * @since 3.0.0
  */
-public class PAPIManager extends PlaceholderExpansion {
+public class PlaceholderApiIntegration extends PlaceholderExpansion {
 
-    public PAPIManager(final LevelledMobs main){
+    public PlaceholderApiIntegration(final LevelledMobs main) {
         this.main = main;
         this.lastKilledEntitiesByPlayer = new TreeMap<>();
     }
@@ -32,7 +32,7 @@ public class PAPIManager extends PlaceholderExpansion {
     private final LevelledMobs main;
     private final Map<UUID, LivingEntityWrapper> lastKilledEntitiesByPlayer;
 
-    public void putEntityDeath(final @NotNull Player player, final LivingEntityWrapper lmEntity){
+    public void putEntityDeath(final @NotNull Player player, final LivingEntityWrapper lmEntity) {
         this.lastKilledEntitiesByPlayer.put(player.getUniqueId(), lmEntity);
     }
 

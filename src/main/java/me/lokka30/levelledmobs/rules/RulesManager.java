@@ -487,13 +487,13 @@ public class RulesManager {
                 else if (checkResult.ruleMadeChance != null && checkResult.ruleMadeChance)
                     applicableRules.allApplicableRules_MadeChance.add(ruleInfo);
 
+                applicableRules.allApplicableRules.add(ruleInfo);
+
                 if (ruleInfo.stopProcessingRules != null && ruleInfo.stopProcessingRules) {
                     Utils.debugLog(main, DebugType.DENIED_RULE_STOP_PROCESSING, String.format("&b%s&7, mob: &b%s&7, rule count: &b%s",
                             ruleInfo.getRuleName(), lmInterface.getTypeName(), applicableRules.allApplicableRules.size()));
                     break;
                 }
-
-                applicableRules.allApplicableRules.add(ruleInfo);
             }
         }
 
@@ -537,11 +537,11 @@ public class RulesManager {
 
         if (lmEntity.isMobOfExternalType() && ri.conditions_ApplyPlugins != null && !ri.conditions_ApplyPlugins.isEnabledInList(lmEntity.getTypeName(), lmEntity)){
             Utils.debugLog(main, DebugType.DENIED_RULE_PLUGIN_COMPAT, String.format("&b%s&7, mob: &b%s&7, mob plugin: &b%s&7",
-                    ri.getRuleName(), lmEntity.getTypeName(), lmEntity.getMobExternalType()));
+                    ri.getRuleName(), lmEntity.getTypeName(), lmEntity.getMobExternalTypes()));
             return false;
         }
 
-        if (ri.conditions_MM_Names != null && lmEntity.getMobExternalType().equals(ExternalCompatibilityManager.ExternalCompatibility.MYTHIC_MOBS)){
+        if (ri.conditions_MM_Names != null && lmEntity.isMobOfExternalType(ExternalCompatibilityManager.ExternalCompatibility.MYTHIC_MOBS)){
             String mm_Name = lmEntity.mythicMobInternalName;
             if (mm_Name == null) mm_Name = "";
 

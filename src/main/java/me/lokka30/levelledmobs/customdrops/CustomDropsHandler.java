@@ -6,7 +6,7 @@ package me.lokka30.levelledmobs.customdrops;
 
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.misc.*;
-import me.lokka30.levelledmobs.rules.LM_SpawnReason;
+import me.lokka30.levelledmobs.rules.LevelledMobSpawnReason;
 import me.lokka30.microlib.MessageUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -41,7 +41,7 @@ public class CustomDropsHandler {
     @Nullable
     public Map<String, CustomDropInstance> customItemGroups;
     public final CustomDropsParser customDropsParser;
-    public NamespacedKey overallChanceKey;
+    public final NamespacedKey overallChanceKey;
     private final YmlParsingHelper ymlHelper;
 
     public CustomDropsHandler(final LevelledMobs main) {
@@ -62,11 +62,11 @@ public class CustomDropsHandler {
         processingInfo.dropRules = main.rulesManager.getRule_UseCustomDropsForMob(lmEntity);
         synchronized (lmEntity.getLivingEntity().getPersistentDataContainer()) {
             processingInfo.isSpawner = (lmEntity.getPDC().has(main.levelManager.spawnReasonKey, PersistentDataType.STRING) &&
-                    LM_SpawnReason.SPAWNER.toString().equals(
+                    LevelledMobSpawnReason.SPAWNER.toString().equals(
                             lmEntity.getPDC().get(main.levelManager.spawnReasonKey, PersistentDataType.STRING))
             );
 
-            if (equippedOnly && lmEntity.getPDC().has(main.blockPlaceListener.keySpawner_CustomDropId, PersistentDataType.STRING)){
+            if (lmEntity.getPDC().has(main.blockPlaceListener.keySpawner_CustomDropId, PersistentDataType.STRING)){
                 processingInfo.customDropId = lmEntity.getPDC().get(main.blockPlaceListener.keySpawner_CustomDropId, PersistentDataType.STRING);
                 processingInfo.hasCustomDropId = !Utils.isNullOrEmpty(processingInfo.customDropId);
             }
@@ -136,25 +136,25 @@ public class CustomDropsHandler {
         processingInfo.prioritizedDrops = new HashMap<>();
         processingInfo.hasOverride = false;
         boolean usesGroupIds = false;
+        String customDropId = null;
 
         final boolean overrideNonDropTableDrops = processingInfo.dropRules != null && processingInfo.dropRules.override;
-        if (processingInfo.dropRules != null && processingInfo.dropRules.useDropTableId != null){
-            final String[] useIds = processingInfo.dropRules.useDropTableId.split(",");
-            for (final String id : useIds){
-                if (this.customItemGroups == null || !this.customItemGroups.containsKey(id.trim())){
-                    Utils.logger.warning("rule specified an invalid value for use-droptable-id: " + id);
-                    continue;
-                }
+        final String[] useIds = getDropIds(processingInfo);
 
-                final CustomDropInstance dropInstance = this.customItemGroups.get(id.trim());
-                processingInfo.allDropInstances.add(dropInstance);
-
-                for (final CustomDropBase baseItem : dropInstance.customItems)
-                    processDropPriorities(baseItem, processingInfo);
-
-                if (dropInstance.utilizesGroupIds) usesGroupIds = true;
-                if (dropInstance.overrideStockDrops) processingInfo.hasOverride = true;
+        for (final String id : useIds){
+            if (this.customItemGroups == null || !this.customItemGroups.containsKey(id.trim())){
+                Utils.logger.warning("rule specified an invalid value for use-droptable-id: " + id);
+                continue;
             }
+
+            final CustomDropInstance dropInstance = this.customItemGroups.get(id.trim());
+            processingInfo.allDropInstances.add(dropInstance);
+
+            for (final CustomDropBase baseItem : dropInstance.customItems)
+                processDropPriorities(baseItem, processingInfo);
+
+            if (dropInstance.utilizesGroupIds) usesGroupIds = true;
+            if (dropInstance.overrideStockDrops) processingInfo.hasOverride = true;
         }
 
         if (!overrideNonDropTableDrops) {
@@ -190,6 +190,17 @@ public class CustomDropsHandler {
         return checkOverallChance(processingInfo);
     }
 
+    @NotNull
+    private String[] getDropIds(@NotNull final CustomDropProcessingInfo processingInfo){
+        List<String> dropIds = (processingInfo.dropRules != null && processingInfo.dropRules.useDropTableId != null) ?
+                Arrays.asList(processingInfo.dropRules.useDropTableId.split(",")) : new LinkedList<>();
+
+        if (processingInfo.hasCustomDropId && !dropIds.contains(processingInfo.customDropId))
+            dropIds.add(processingInfo.customDropId);
+
+        return dropIds.toArray(new String[0]);
+    }
+
     private void processDropPriorities(@NotNull final CustomDropBase baseItem, @NotNull final CustomDropProcessingInfo processingInfo){
         final int priority = -baseItem.priority;
         if (processingInfo.prioritizedDrops.containsKey(priority))
@@ -205,22 +216,6 @@ public class CustomDropsHandler {
     }
 
     private void getCustomItemsFromDropInstance(@NotNull final CustomDropProcessingInfo info){
-        if (info.equippedOnly && info.hasCustomDropId){
-            if (!this.customDropIDs.containsKey(info.customDropId)){
-                Utils.logger.warning("Custom drop id '&b" + info.customDropId + "&7' was not found in customdrops!");
-                return;
-            }
-
-            final CustomDropInstance instance = this.customDropIDs.get(info.customDropId);
-
-            for (final CustomDropBase baseItem : instance.customItems)
-                getDropsFromCustomDropItem(info, baseItem);
-
-            return;
-        }
-
-        // non equipped items get processed below
-
         for (final int itemPriority : info.prioritizedDrops.keySet()) {
             final List<CustomDropBase> items = info.prioritizedDrops.get(itemPriority);
 
@@ -439,32 +434,36 @@ public class CustomDropsHandler {
         if (info.lmEntity.getLivingEntity().getCustomName() != null)
             displayName = info.lmEntity.getLivingEntity().getCustomName();
 
-        String command = main.levelManager.replaceStringPlaceholders(customCommand.command, info.lmEntity, displayName);
+        int commandCount = 0;
+        for (String command : customCommand.commands){
+            commandCount++;
+            command = main.levelManager.replaceStringPlaceholders(command, info.lmEntity, displayName);
 
-        final String playerName = info.wasKilledByPlayer ?
-                Objects.requireNonNull(info.lmEntity.getLivingEntity().getKiller()).getName() :
-                "";
+            final String playerName = info.wasKilledByPlayer ?
+                    Objects.requireNonNull(info.lmEntity.getLivingEntity().getKiller()).getName() :
+                    "";
 
-        command = Utils.replaceEx(command, "%player%", playerName);
-        command = command.replace("%displayname%", displayName);
-        command = processRangedCommand(command, customCommand);
+            command = Utils.replaceEx(command, "%player%", playerName);
+            command = command.replace("%displayname%", displayName);
+            command = processRangedCommand(command, customCommand);
 
-        final int maxAllowedTimesToRun = ymlHelper.getInt(main.settingsCfg, "customcommand-amount-limit", 10);
-        int timesToRun = customCommand.getAmount();
+            final int maxAllowedTimesToRun = ymlHelper.getInt(main.settingsCfg, "customcommand-amount-limit", 10);
+            int timesToRun = customCommand.getAmount();
 
-        if (customCommand.getHasAmountRange())
-            timesToRun = main.random.nextInt(customCommand.getAmountRangeMax() - customCommand.amountRangeMin + 1) + customCommand.amountRangeMin;
+            if (customCommand.getHasAmountRange())
+                timesToRun = main.random.nextInt(customCommand.getAmountRangeMax() - customCommand.amountRangeMin + 1) + customCommand.amountRangeMin;
 
-        if (timesToRun > maxAllowedTimesToRun)
-            timesToRun = maxAllowedTimesToRun;
+            if (timesToRun > maxAllowedTimesToRun)
+                timesToRun = maxAllowedTimesToRun;
 
-        final String debugCommand = timesToRun > 1 ?
-                String.format("Command (%sx): ", timesToRun) : "Command: ";
+            final String debugCommand = timesToRun > 1 ?
+                    String.format("Command (%sx): ", timesToRun) : "Command: ";
 
-        Utils.debugLog(main, DebugType.CUSTOM_COMMANDS, debugCommand + command);
+            Utils.debugLog(main, DebugType.CUSTOM_COMMANDS, debugCommand + command);
 
-        for (int i = 0; i < timesToRun; i++)
-            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
+            for (int i = 0; i < timesToRun; i++)
+                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
+        }
     }
 
     @NotNull

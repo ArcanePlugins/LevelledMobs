@@ -82,7 +82,7 @@ public class RuleInfo {
     public CachedModalList<String> conditions_NoDropEntities;
     public CachedModalList<String> conditions_WGRegions;
     public CachedModalList<String> conditions_MM_Names;
-    public CachedModalList<LM_SpawnReason> conditions_SpawnReasons;
+    public CachedModalList<LevelledMobSpawnReason> conditions_SpawnReasons;
     @Nullable
     public FineTuningAttributes allMobMultipliers;
     public Map<String, FineTuningAttributes> specificMobMultipliers;

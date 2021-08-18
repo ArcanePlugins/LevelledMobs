@@ -138,7 +138,7 @@ presets:
     strategies:
       player-levelling:
         match-level: true
-        use-player-max-level: true
+        use-player-max-level: false
         player-level-scale: 1.0
         level-cap: 30
         tiers:

@@ -44,6 +44,7 @@ public class CustomDropBase implements Cloneable {
         this.amount = amount;
         if (this.amount > 64) this.amount = 64;
         if (this.amount < 1) this.amount = 1;
+        this.hasAmountRange = false;
     }
 
     public int getAmountRangeMin(){
@@ -85,5 +86,16 @@ public class CustomDropBase implements Cloneable {
         this.hasAmountRange = true;
 
         return true;
+    }
+
+    public CustomDropBase cloneItem() {
+        CustomDropBase copy = null;
+        try {
+            copy = (CustomDropBase) super.clone();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return copy;
     }
 }

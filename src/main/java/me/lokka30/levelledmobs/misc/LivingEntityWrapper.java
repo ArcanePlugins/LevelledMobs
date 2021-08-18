@@ -9,7 +9,7 @@ import me.lokka30.levelledmobs.LivingEntityInterface;
 import me.lokka30.levelledmobs.managers.ExternalCompatibilityManager;
 import me.lokka30.levelledmobs.rules.ApplicableRulesResult;
 import me.lokka30.levelledmobs.rules.FineTuningAttributes;
-import me.lokka30.levelledmobs.rules.LM_SpawnReason;
+import me.lokka30.levelledmobs.rules.LevelledMobSpawnReason;
 import me.lokka30.levelledmobs.rules.RuleInfo;
 import org.bukkit.World;
 import org.bukkit.entity.*;
@@ -36,8 +36,8 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
         this.livingEntity = livingEntity;
         this.applicableGroups = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
         this.applicableRules = new LinkedList<>();
-        this.mobExternalType = ExternalCompatibilityManager.ExternalCompatibility.NOT_APPLICABLE;
-        this.spawnReason = LM_SpawnReason.DEFAULT;
+        this.mobExternalTypes = new LinkedList<>();
+        this.spawnReason = LevelledMobSpawnReason.DEFAULT;
         this.deathCause = EntityDamageEvent.DamageCause.CUSTOM;
         this.cacheLock = new ReentrantLock(true);
     }
@@ -52,9 +52,10 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
     @NotNull
     private List<RuleInfo> applicableRules;
     private List<String> spawnedWGRegions;
-    private ExternalCompatibilityManager.ExternalCompatibility mobExternalType;
+    @NotNull
+    private final List<ExternalCompatibilityManager.ExternalCompatibility> mobExternalTypes;
     private FineTuningAttributes fineTuningAttributes;
-    private LM_SpawnReason spawnReason;
+    private LevelledMobSpawnReason spawnReason;
     public EntityDamageEvent.DamageCause deathCause;
     public String mythicMobInternalName;
     public boolean reEvaluateLevel;
@@ -248,10 +249,10 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
     }
 
     @NotNull
-    public LM_SpawnReason getSpawnReason() {
+    public LevelledMobSpawnReason getSpawnReason() {
         synchronized (this.livingEntity.getPersistentDataContainer()) {
             if (livingEntity.getPersistentDataContainer().has(main.levelManager.spawnReasonKey, PersistentDataType.STRING)) {
-                return LM_SpawnReason.valueOf(
+                return LevelledMobSpawnReason.valueOf(
                         livingEntity.getPersistentDataContainer().get(main.levelManager.spawnReasonKey, PersistentDataType.STRING)
                 );
             }
@@ -260,7 +261,7 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
         return this.spawnReason;
     }
 
-    public void setSpawnReason(final LM_SpawnReason spawnReason){
+    public void setSpawnReason(final LevelledMobSpawnReason spawnReason) {
         synchronized (this.livingEntity.getPersistentDataContainer()) {
             if (!livingEntity.getPersistentDataContainer().has(main.levelManager.spawnReasonKey, PersistentDataType.STRING)) {
                 livingEntity.getPersistentDataContainer().set(main.levelManager.spawnReasonKey, PersistentDataType.STRING, spawnReason.toString());
@@ -282,16 +283,21 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
     }
 
     public void setMobExternalType(final ExternalCompatibilityManager.ExternalCompatibility externalType){
-        this.mobExternalType = externalType;
+        if (!this.mobExternalTypes.contains(externalType))
+            this.mobExternalTypes.add(externalType);
     }
 
     @NotNull
-    public ExternalCompatibilityManager.ExternalCompatibility getMobExternalType(){
-        return this.mobExternalType;
+    public List<ExternalCompatibilityManager.ExternalCompatibility> getMobExternalTypes() {
+        return this.mobExternalTypes;
     }
 
     public boolean isMobOfExternalType(){
-        return this.mobExternalType != null;
+        return !this.mobExternalTypes.isEmpty();
+    }
+
+    public boolean isMobOfExternalType(final ExternalCompatibilityManager.ExternalCompatibility externalType){
+        return this.mobExternalTypes.contains(externalType);
     }
 
     public boolean hasOverridenEntityName(){

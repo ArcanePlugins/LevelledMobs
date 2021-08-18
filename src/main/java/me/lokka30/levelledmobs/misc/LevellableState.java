@@ -53,31 +53,37 @@ public enum LevellableState {
     DENIED_CONFIGURATION_COMPATIBILITY_DANGEROUS_CAVES,
 
     /**
-     * settings.yml has been configured to block
+     * A rule has been configured to block
+     * EcoBosses mobs from being levelled.
+     */
+    DENIED_CONFIGURATION_COMPATIBILITY_ECO_BOSSES,
+
+    /**
+     * A rule has been configured to block
      * MythicMobs mobs from being levelled.
      */
     DENIED_CONFIGURATION_COMPATIBILITY_MYTHIC_MOBS,
 
     /**
-     * settings.yml has been configured to block
+     * A rule has been configured to block
      * EliteMobs mobs from being levelled.
      */
     DENIED_CONFIGURATION_COMPATIBILITY_ELITE_MOBS,
 
     /**
-     * settings.yml has been configured to block
+     * A rule has been configured to block
      * Infernal Mobs mobs from being levelled.
      */
     DENIED_CONFIGURATION_COMPATIBILITY_INFERNAL_MOBS,
 
     /**
-     * settings.yml has been configured to block
+     * A rule has been configured to block
      * Citizens NPCs from being levelled.
      */
     DENIED_CONFIGURATION_COMPATIBILITY_CITIZENS,
 
     /**
-     * settings.yml has been configured to block
+     * A rule has been configured to block
      * Shopkeepers NPCs from being levelled.
      */
     DENIED_CONFIGURATION_COMPATIBILITY_SHOPKEEPERS,
@@ -89,13 +95,13 @@ public enum LevellableState {
     DENIED_CONFIGURATION_COMPATIBILITY_WORLD_GUARD,
 
     /**
-     * settings.yml has been configured to block
+     * A rule has been configured to block
      * nametagged mobs from being levelled.
      */
     DENIED_CONFIGURATION_CONDITION_NAMETAGGED,
 
     /**
-     * settings.yml has been configured to block
+     * A rule has been configured to block
      * tamed mobs from being levelled.
      */
     DENIED_CONFIGURATION_CONDITION_TAMED,

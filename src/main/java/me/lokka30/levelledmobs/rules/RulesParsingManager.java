@@ -161,15 +161,15 @@ public class RulesParsingManager {
     }
 
     @NotNull
-    private CachedModalList<LM_SpawnReason> buildCachedModalListOfSpawnReason(final ConfigurationSection cs,
-                                                                                              final CachedModalList<LM_SpawnReason> defaultValue){
+    private CachedModalList<LevelledMobSpawnReason> buildCachedModalListOfSpawnReason(final ConfigurationSection cs,
+                                                                                      final CachedModalList<LevelledMobSpawnReason> defaultValue) {
         if (cs == null) return defaultValue;
 
         final String useKeyName = ymlHelper.getKeyNameFromConfig(cs, "allowed-spawn-reasons");
         final ConfigurationSection cs2 = objTo_CS(cs, useKeyName);
         if (cs2 == null) return defaultValue;
 
-        final CachedModalList<LM_SpawnReason> cachedModalList = new CachedModalList<>();
+        final CachedModalList<LevelledMobSpawnReason> cachedModalList = new CachedModalList<>();
         cachedModalList.doMerge = ymlHelper.getBoolean(cs2, "merge");
 
         final String allowedList = ymlHelper.getKeyNameFromConfig(cs2, ml_AllowedItems);
@@ -184,7 +184,7 @@ public class RulesParsingManager {
                 continue;
             }
             try {
-                final LM_SpawnReason reason = LM_SpawnReason.valueOf(item.trim().toUpperCase());
+                final LevelledMobSpawnReason reason = LevelledMobSpawnReason.valueOf(item.trim().toUpperCase());
                 cachedModalList.allowedList.add(reason);
             } catch (IllegalArgumentException ignored) {
                 Utils.logger.warning("Invalid spawn reason: " + item);
@@ -197,7 +197,7 @@ public class RulesParsingManager {
                 continue;
             }
             try {
-                final LM_SpawnReason reason = LM_SpawnReason.valueOf(item.trim().toUpperCase());
+                final LevelledMobSpawnReason reason = LevelledMobSpawnReason.valueOf(item.trim().toUpperCase());
                 cachedModalList.excludedList.add(reason);
             } catch (IllegalArgumentException ignored) {
                 Utils.logger.warning("Invalid spawn reason: " + item);
@@ -509,7 +509,7 @@ public class RulesParsingManager {
                     mobNames.mobName = name;
                     mobNames.names = names2;
                     entityNames.put(name, mobNames);
-                } else if (cs.get(name) instanceof MemorySection) {
+                } else if (cs.get(name) instanceof MemorySection || cs.get(name) instanceof LinkedHashMap) {
                     final List<LevelTierMatching> tiers = parseNumberRange(objTo_CS(cs, name), name);
                     if (tiers != null && !tiers.isEmpty())
                         levelTiers.put(name, tiers);

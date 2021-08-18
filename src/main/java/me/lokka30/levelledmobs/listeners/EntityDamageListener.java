@@ -44,7 +44,7 @@ public class EntityDamageListener implements Listener {
                 return;
 
             if (lmEntity.getMobLevel() < 0) lmEntity.reEvaluateLevel = true;
-            main.queueManager_mobs.addToQueue(new QueueItem(lmEntity, event));
+            main._mobsQueueManager.addToQueue(new QueueItem(lmEntity, event));
         }
 
         // Update their nametag with a 1 tick delay so that their health after the damage is shown
@@ -74,7 +74,7 @@ public class EntityDamageListener implements Listener {
             if (main.levelManager.entitySpawnListener.processMobSpawns)
                 return;
 
-            main.queueManager_mobs.addToQueue(new QueueItem(shooter, event));
+            main._mobsQueueManager.addToQueue(new QueueItem(shooter, event));
         }
 
         Utils.debugLog(main, DebugType.RANGED_DAMAGE_MODIFICATION, "Range attack damage modified for &b" + shooter.getLivingEntity().getName() + "&7:");
