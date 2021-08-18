@@ -8,7 +8,6 @@ import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.LivingEntityInterface;
 import me.lokka30.levelledmobs.misc.LevellableState;
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
-import me.lokka30.levelledmobs.misc.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
@@ -194,7 +193,6 @@ public class ExternalCompatibilityManager {
      */
     public static boolean isMobOfEcoBosses(final LivingEntityWrapper lmEntity) {
         final Plugin plugin = Bukkit.getPluginManager().getPlugin("EcoBosses");
-        Utils.logger.info("has ecobosses: " + (plugin != null));
         if (plugin == null) return false;
 
         if (ecoBossesKey == null)
