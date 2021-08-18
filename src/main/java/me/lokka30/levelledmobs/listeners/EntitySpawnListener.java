@@ -7,6 +7,7 @@ package me.lokka30.levelledmobs.listeners;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.misc.*;
 import me.lokka30.levelledmobs.rules.LevelledMobSpawnReason;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.World;
@@ -84,11 +85,12 @@ public class EntitySpawnListener implements Listener {
 
         for (final Entity entity : lmEntity.getLivingEntity().getNearbyEntities(50, 50, 50)) {
             if (!(entity instanceof Player)) continue;
+            if (((Player) entity).getGameMode().equals(GameMode.SPECTATOR)) continue;
 
             if (entity.getLocation().getWorld() == null || !entity.getLocation().getWorld().getUID().equals(lmEntity.getWorld().getUID()))
                 continue;
 
-            double range = entity.getLocation().distanceSquared(lmEntity.getLocation());
+            final double range = entity.getLocation().distanceSquared(lmEntity.getLocation());
             if (range < closestRange && range <= main.playerLevellingDistance){
                 closestEntity = entity;
                 closestRange = range;

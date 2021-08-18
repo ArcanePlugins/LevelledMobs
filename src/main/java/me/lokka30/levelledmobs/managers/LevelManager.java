@@ -19,10 +19,7 @@ import me.lokka30.levelledmobs.rules.strategies.RandomLevellingStrategy;
 import me.lokka30.levelledmobs.rules.strategies.SpawnDistanceStrategy;
 import me.lokka30.levelledmobs.rules.strategies.YDistanceStrategy;
 import me.lokka30.microlib.MessageUtils;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
+import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.enchantments.EnchantmentTarget;
@@ -696,6 +693,7 @@ public class LevelManager implements LevelInterface {
 
         if (players.size() > 1) {
             for (final Player p : players) {
+                if (p.getGameMode().equals(GameMode.SPECTATOR)) continue;
                 if (p.getLocation().getWorld() == null || mob.getLocation().getWorld() == null ||
                         !p.getLocation().getWorld().getUID().equals(mob.getLocation().getWorld().getUID()))
                     continue;
@@ -707,8 +705,9 @@ public class LevelManager implements LevelInterface {
                 }
             }
         } else {
-            if (closestPlayer.getLocation().getWorld() == null || mob.getLocation().getWorld() == null ||
-                    !closestPlayer.getLocation().getWorld().getUID().equals(mob.getLocation().getWorld().getUID()))
+            if (closestPlayer.getGameMode().equals(GameMode.SPECTATOR) ||
+                closestPlayer.getLocation().getWorld() == null || mob.getLocation().getWorld() == null ||
+                !closestPlayer.getLocation().getWorld().getUID().equals(mob.getLocation().getWorld().getUID()))
                 return;
 
             closestDistance = mob.getLocation().distanceSquared(closestPlayer.getLocation());
@@ -931,7 +930,7 @@ public class LevelManager implements LevelInterface {
             return LevellableState.DENIED_NO_APPLICABLE_RULES;
 
         // Check WorldGuard
-        if (ExternalCompatibilityManager.checkWorldGuard(lmInterface.getLocation(), main))
+        if (!ExternalCompatibilityManager.doesWorldGuardRegionAllowLevelling(lmInterface.getLocation(), main))
             return LevellableState.DENIED_CONFIGURATION_COMPATIBILITY_WORLD_GUARD;
 
         if (!main.rulesManager.getRule_IsMobAllowedInEntityOverride(lmInterface))
@@ -945,41 +944,9 @@ public class LevelManager implements LevelInterface {
 
         LivingEntityWrapper lmEntity = (LivingEntityWrapper) lmInterface;
 
-        /*
-        Compatibility with other plugins: users may want to stop LM from acting on mobs modified by other plugins.
-         */
-        final Map<ExternalCompatibilityManager.ExternalCompatibility, Boolean> compatRules = main.rulesManager.getRule_ExternalCompatibility(lmEntity);
-
-        if (!ExternalCompatibilityManager.isExternalCompatibilityEnabled(ExternalCompatibilityManager.ExternalCompatibility.MYTHIC_MOBS, compatRules) &&
-                ExternalCompatibilityManager.checkMythicMobs(lmEntity))
-            return LevellableState.DENIED_CONFIGURATION_COMPATIBILITY_MYTHIC_MOBS;
-
-        if (!ExternalCompatibilityManager.isExternalCompatibilityEnabled(ExternalCompatibilityManager.ExternalCompatibility.DANGEROUS_CAVES, compatRules) &&
-                ExternalCompatibilityManager.checkDangerousCaves(lmEntity))
-            return LevellableState.DENIED_CONFIGURATION_COMPATIBILITY_DANGEROUS_CAVES;
-
-        if (!ExternalCompatibilityManager.isExternalCompatibilityEnabled(ExternalCompatibilityManager.ExternalCompatibility.ECO_BOSSES, compatRules) &&
-                ExternalCompatibilityManager.checkEcoBosses(lmEntity))
-            return LevellableState.DENIED_CONFIGURATION_COMPATIBILITY_ECO_BOSSES;
-
-        if (!ExternalCompatibilityManager.isExternalCompatibilityEnabled(ExternalCompatibilityManager.ExternalCompatibility.ELITE_MOBS, compatRules) &&
-                ExternalCompatibilityManager.checkEliteMobs(lmEntity))
-            return LevellableState.DENIED_CONFIGURATION_COMPATIBILITY_ELITE_MOBS;
-
-        if (!ExternalCompatibilityManager.isExternalCompatibilityEnabled(ExternalCompatibilityManager.ExternalCompatibility.INFERNAL_MOBS, compatRules) &&
-                ExternalCompatibilityManager.checkInfernalMobs(lmEntity))
-            return LevellableState.DENIED_CONFIGURATION_COMPATIBILITY_INFERNAL_MOBS;
-
-        if (!ExternalCompatibilityManager.isExternalCompatibilityEnabled(ExternalCompatibilityManager.ExternalCompatibility.CITIZENS, compatRules) &&
-                ExternalCompatibilityManager.checkCitizens(lmEntity))
-            return LevellableState.DENIED_CONFIGURATION_COMPATIBILITY_CITIZENS;
-
-        if (!ExternalCompatibilityManager.isExternalCompatibilityEnabled(ExternalCompatibilityManager.ExternalCompatibility.SHOPKEEPERS, compatRules) &&
-                ExternalCompatibilityManager.checkShopkeepers(lmEntity))
-            return LevellableState.DENIED_CONFIGURATION_COMPATIBILITY_SHOPKEEPERS;
-
-        if (ExternalCompatibilityManager.checkWorldGuard(lmEntity.getLivingEntity().getLocation(), main))
-            return LevellableState.DENIED_CONFIGURATION_COMPATIBILITY_WORLD_GUARD;
+        final LevellableState externalCompatResult = ExternalCompatibilityManager.checkAllExternalCompats(lmEntity, main);
+        if (externalCompatResult != LevellableState.ALLOWED)
+            return externalCompatResult;
 
         if (lmEntity.isMobOfExternalType()) {
             lmEntity.invalidateCache();
