@@ -5,6 +5,15 @@ list of changelogs.
 
 ***
 
+## v3.1.4 b502
+
+* Hotfix update. We accidentally left a line of code used for debugging in, which spammed people's consoles. Thanks to
+  @Bexchp for informing me - I've removed it now.
+* If you haven't read the changelog for `v3.1.3 b501`, you are able to read it by
+  visiting [this](https://www.spigotmc.org/resources/levelledmobs.74304/update?update=419488) link.
+
+***
+
 ## v3.1.3 b501
 
 All of the following changes by @stumper66:
