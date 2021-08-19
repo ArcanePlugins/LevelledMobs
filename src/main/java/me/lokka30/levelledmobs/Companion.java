@@ -155,6 +155,10 @@ public class Companion {
 
         }
 
+        final List<String> debugsEnabled = main.settingsCfg.getStringList(main.helperSettings.getKeyNameFromConfig(main.settingsCfg, "debug-misc"));
+        if (!debugsEnabled.isEmpty())
+            Utils.logger.info("misc debugs enabled: &b" + debugsEnabled);
+
         main.configUtils.load();
         main.playerLevellingDistance = main.helperSettings.getDouble(main.settingsCfg, "player-levelling-mob-distance-squared", 150);
         main.playerLevellingMinRelevelTime = main.helperSettings.getInt(main.settingsCfg, "player-levelling-relevel-min-time", 5000);
