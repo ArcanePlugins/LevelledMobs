@@ -4,8 +4,11 @@
 
 package me.lokka30.levelledmobs;
 
-import me.lokka30.levelledmobs.levelling.NamespacedKeys;
+import me.lokka30.levelledmobs.handlers.LevelHandler;
+import me.lokka30.levelledmobs.misc.Utils;
+import me.lokka30.microlib.maths.QuickTimer;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author lokka30
@@ -13,16 +16,28 @@ import org.bukkit.plugin.java.JavaPlugin;
  */
 public class LevelledMobs extends JavaPlugin {
 
+    /**
+     * @author lokka30
+     * @since v4.0.0
+     * Called by Bukkit's plugin manager
+     * in the 'loading' stage of the server.
+     * This runs before 'onEnable', so any
+     * important things to get done before
+     * 'onEnable' must be added here.
+     */
     @Override
     public void onLoad() {
-        NamespacedKeys.register(this);
+        final QuickTimer timer = new QuickTimer();
+        Utils.LOGGER.info("&3Start-up: &f~ Initiating pre-start-up sequence ~");
+
         //TODO lokka30: Complete this method's body.
+
+        Utils.LOGGER.info("&3Start-up: &f~ Pre-start-up complete, took &b" + timer.getTimer() + "ms&f ~");
     }
 
     /**
      * @author lokka30
      * @since v4.0.0
-     * <p>
      * Called by Bukkit's plugin manager
      * when it enables the plugin.
      * Ensure reloads are factored in to
@@ -30,13 +45,17 @@ public class LevelledMobs extends JavaPlugin {
      */
     @Override
     public void onEnable() {
+        final QuickTimer timer = new QuickTimer();
+        Utils.LOGGER.info("&3Start-up: &f~ Initiating start-up sequence ~");
+
         //TODO lokka30: Complete this method's body.
+
+        Utils.LOGGER.info("&3Start-up: &f~ Start-up complete, took &b" + timer.getTimer() + "ms&f ~");
     }
 
     /**
      * @author lokka30
      * @since v4.0.0
-     * <p>
      * Called by Bukkit's plugin manager
      * when it enables the plugin.
      * Ensure reloads are factored in to
@@ -45,5 +64,13 @@ public class LevelledMobs extends JavaPlugin {
     @Override
     public void onDisable() {
         //TODO lokka30: Complete this method's body.
+    }
+
+    @NotNull
+    private final LevelHandler levelHandler = new LevelHandler(this);
+
+    @NotNull
+    public LevelHandler getLevelHandler() {
+        return levelHandler;
     }
 }

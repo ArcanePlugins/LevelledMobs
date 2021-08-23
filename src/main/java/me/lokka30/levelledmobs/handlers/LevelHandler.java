@@ -4,6 +4,10 @@
 
 package me.lokka30.levelledmobs.handlers;
 
+import me.lokka30.levelledmobs.LevelledMobs;
+import me.lokka30.levelledmobs.levelling.NamespacedKeys;
+import org.jetbrains.annotations.NotNull;
+
 /**
  * @author lokka30
  * @since v4.0.0
@@ -12,6 +16,18 @@ package me.lokka30.levelledmobs.handlers;
  */
 public class LevelHandler {
 
-    //TODO
+    private final LevelledMobs main;
 
+    public LevelHandler(final LevelledMobs main) {
+        this.main = main;
+        this.namespacedKeys = new NamespacedKeys(main);
+    }
+
+    @NotNull
+    public final NamespacedKeys namespacedKeys;
+
+    /*
+    TODO
+        lokka30: Complete class body.
+     */
 }

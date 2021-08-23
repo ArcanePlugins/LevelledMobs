@@ -4,6 +4,6 @@
 
 package me.lokka30.levelledmobs.customdrops;
 
-public class MobSkullGetter {
+public class Drop {
     //TODO
 }
