@@ -128,6 +128,9 @@ public class MobDataManager {
                 case CREEPER_BLAST_DAMAGE:
                     if (lmEntity.getFineTuningAttributes().creeperExplosionRadius != null) attributeValue = lmEntity.getFineTuningAttributes().creeperExplosionRadius;
                     break;
+                case ATTRIBUTE_HORSE_JUMP_STRENGTH:
+                    if (lmEntity.getFineTuningAttributes().horseJumpStrength != null) attributeValue = lmEntity.getFineTuningAttributes().horseJumpStrength;
+                    break;
             }
         }
 
