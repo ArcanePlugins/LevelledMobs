@@ -5,22 +5,12 @@
 package me.lokka30.levelledmobs.listeners;
 
 import me.lokka30.levelledmobs.LevelledMobs;
-import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
-import me.lokka30.levelledmobs.misc.QueueItem;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.world.ChunkLoadEvent;
 
 /**
- * Listens for when chunks are loaded and processes any mobs accordingly
- * Needed for server startup and for mostly passive mobs when players are
- * moving around
- *
- * @author stumper66
- * @since 2.4.0
+ * @author lokka30
+ * @since v4.0.0
+ * TODO Edit Description Here
  */
 public class ChunkLoadListener implements Listener {
 
@@ -30,21 +20,11 @@ public class ChunkLoadListener implements Listener {
         this.main = main;
     }
 
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
-    public void onChunkLoad(final ChunkLoadEvent event) {
+    /*
+    TODO
+        lokka30: edit javadoc description
+        lokka30: add event handler
+        lokka30: complete event handler
+     */
 
-        if (!main.helperSettings.getBoolean(main.settingsCfg, "ensure-mobs-are-levelled-on-chunk-load", true)) return;
-
-        // Check each entity in the chunk
-        for (final Entity entity : event.getChunk().getEntities()) {
-
-            // Must be a *living* entity
-            if (!(entity instanceof LivingEntity)) continue;
-            final LivingEntityWrapper lmEntity = new LivingEntityWrapper((LivingEntity) entity, main);
-
-            if (lmEntity.isLevelled()) continue;
-
-            main._mobsQueueManager.addToQueue(new QueueItem(lmEntity, event));
-        }
-    }
 }

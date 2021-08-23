@@ -5,21 +5,12 @@
 package me.lokka30.levelledmobs.listeners;
 
 import me.lokka30.levelledmobs.LevelledMobs;
-import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
-import me.lokka30.levelledmobs.misc.QueueItem;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityTargetEvent;
-import org.jetbrains.annotations.NotNull;
 
 /**
- * Used as a workaround to ensure mob nametags are properly updated
- *
- * @author stumper66
- * @since 2.4.0
+ * @author lokka30
+ * @since v4.0.0
+ * TODO Edit Description Here
  */
 public class EntityTargetListener implements Listener {
 
@@ -29,30 +20,11 @@ public class EntityTargetListener implements Listener {
         this.main = main;
     }
 
-    /**
-     * This event is listened to update the nametag of a mob when they start targeting a player.
-     * Should provide another band-aid for packets not appearing sometimes for mob nametags.
-     *
-     * @param event EntityTargetEvent
+    /*
+    TODO
+        lokka30: edit javadoc description
+        lokka30: add event handler
+        lokka30: complete event handler
      */
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
-    public void onTarget(@NotNull final EntityTargetEvent event) {
 
-        // Must target a player and must be a living entity
-        if (!(event.getTarget() instanceof Player) || !(event.getEntity() instanceof LivingEntity)) return;
-
-        final LivingEntityWrapper lmEntity = new LivingEntityWrapper((LivingEntity) event.getEntity(), main);
-
-        // Must be a levelled entity
-        if (!lmEntity.isLevelled()){
-            if (main.levelManager.entitySpawnListener.processMobSpawns)
-                return;
-
-            if (lmEntity.getMobLevel() < 0) lmEntity.reEvaluateLevel = true;
-            main._mobsQueueManager.addToQueue(new QueueItem(lmEntity, event));
-        }
-
-        // Update the nametag.
-        main.nametagQueueManager_.addToQueue(new QueueItem(lmEntity, main.levelManager.getNametag(lmEntity, false), lmEntity.getLivingEntity().getWorld().getPlayers()));
-    }
 }

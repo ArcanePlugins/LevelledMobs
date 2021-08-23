@@ -1,0 +1,5 @@
+//TODO
+Copyright (c) lokka30 2020-2021, All Rights Reserved.
+This software is licensed under GNU AGPL v3.0.
+
+This license file will be updated later.
