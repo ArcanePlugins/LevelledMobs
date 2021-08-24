@@ -4,8 +4,27 @@
 
 package me.lokka30.levelledmobs.integrations;
 
-public class PlaceholderAPIIntegration {
+import org.bukkit.Bukkit;
 
-    //TODO lokka30: Complete this class.
+/**
+ * @author lokka30
+ * @since v4.0.0
+ * A LevelledMobs integration.
+ * Plugin:     PlaceholderAPI
+ * Author:     clip
+ * Link:       https://www.spigotmc.org/resources/placeholderapi.6245/
+ */
+public class PlaceholderAPIIntegration implements Integration {
+
+    @Override
+    public boolean isInstalled() {
+        return Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI");
+    }
+
+    @Override
+    public boolean isForceDisabled() {
+        // TODO
+        return false;
+    }
 
 }

@@ -5,14 +5,33 @@
 package me.lokka30.levelledmobs.integrations;
 
 import me.lokka30.levelledmobs.levelling.LevelledMob;
+import org.bukkit.Bukkit;
 
-public class ItemsAdderIntegration implements IMobOwner {
+/**
+ * @author lokka30
+ * @since v4.0.0
+ * A LevelledMobs integration.
+ * Plugin:     ItemsAdder
+ * Author:     LoneDev
+ * Link:       https://www.spigotmc.org/resources/itemsadder.73355/
+ */
+public class ItemsAdderIntegration implements Integration, MobOwner {
 
     @Override
-    public boolean isMobOwner(LevelledMob mob) {
+    public boolean isInstalled() {
+        return Bukkit.getPluginManager().isPluginEnabled("ItemsAdder");
+    }
+
+    @Override
+    public boolean isForceDisabled() {
+        // TODO
         return false;
     }
 
-    //TODO lokka30: Complete this class.
+    @Override
+    public boolean isMobOwner(LevelledMob mob) {
+        // TODO
+        return false;
+    }
 
 }

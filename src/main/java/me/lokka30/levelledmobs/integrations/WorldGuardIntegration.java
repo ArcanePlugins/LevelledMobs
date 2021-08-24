@@ -4,12 +4,26 @@
 
 package me.lokka30.levelledmobs.integrations;
 
-import me.lokka30.levelledmobs.levelling.LevelledMob;
+import org.bukkit.Bukkit;
 
-public class WorldGuardIntegration implements IMobOwner {
+/**
+ * @author lokka30
+ * @since v4.0.0
+ * A LevelledMobs integration.
+ * Plugin:     WorldGuard
+ * Author:     sk89q
+ * Link:       https://dev.bukkit.org/projects/worldguard
+ */
+public class WorldGuardIntegration implements Integration {
 
     @Override
-    public boolean isMobOwner(LevelledMob mob) {
+    public boolean isInstalled() {
+        return Bukkit.getPluginManager().isPluginEnabled("WorldGuard") && Bukkit.getPluginManager().isPluginEnabled("WorldEdit");
+    }
+
+    @Override
+    public boolean isForceDisabled() {
+        // TODO
         return false;
     }
 

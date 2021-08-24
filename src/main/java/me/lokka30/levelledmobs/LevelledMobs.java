@@ -4,6 +4,7 @@
 
 package me.lokka30.levelledmobs;
 
+import me.lokka30.levelledmobs.handlers.IntegrationHandler;
 import me.lokka30.levelledmobs.handlers.LevelHandler;
 import me.lokka30.levelledmobs.misc.Utils;
 import me.lokka30.microlib.maths.QuickTimer;
@@ -72,5 +73,13 @@ public class LevelledMobs extends JavaPlugin {
     @NotNull
     public LevelHandler getLevelHandler() {
         return levelHandler;
+    }
+
+    @NotNull
+    private final IntegrationHandler integrationHandler = new IntegrationHandler(this);
+
+    @NotNull
+    public IntegrationHandler getIntegrationHandler() {
+        return integrationHandler;
     }
 }

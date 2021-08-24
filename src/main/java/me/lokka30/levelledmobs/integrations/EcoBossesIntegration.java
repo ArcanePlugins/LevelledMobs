@@ -5,14 +5,33 @@
 package me.lokka30.levelledmobs.integrations;
 
 import me.lokka30.levelledmobs.levelling.LevelledMob;
+import org.bukkit.Bukkit;
 
-public class EcoBossesIntegration implements IMobOwner {
+/**
+ * @author lokka30
+ * @since v4.0.0
+ * A LevelledMobs integration.
+ * Plugin:     EcoBosses
+ * Author:     Auxilor
+ * Link:       https://www.spigotmc.org/resources/ecobosses.86576/
+ */
+public class EcoBossesIntegration implements Integration, MobOwner {
 
     @Override
-    public boolean isMobOwner(LevelledMob mob) {
+    public boolean isInstalled() {
+        return Bukkit.getPluginManager().isPluginEnabled("EcoBosses");
+    }
+
+    @Override
+    public boolean isForceDisabled() {
+        // TODO
         return false;
     }
 
-    //TODO lokka30: Complete this class.
+    @Override
+    public boolean isMobOwner(LevelledMob mob) {
+        // TODO
+        return false;
+    }
 
 }

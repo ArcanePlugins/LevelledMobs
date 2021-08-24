@@ -4,22 +4,21 @@
 
 package me.lokka30.levelledmobs.integrations;
 
-import me.lokka30.levelledmobs.levelling.LevelledMob;
 import org.bukkit.Bukkit;
 
 /**
  * @author lokka30
  * @since v4.0.0
  * A LevelledMobs integration.
- * Plugin:     EliteMobs
- * Author:     MagmaGuy
- * Link:       https://www.spigotmc.org/resources/elitemobs.40090/
+ * Plugin:     ProtocolLib
+ * Author:     dmulloy2
+ * Link:       https://www.spigotmc.org/resources/protocollib.1997/
  */
-public class EliteMobsIntegration implements Integration, MobOwner {
+public class ProtocolLibIntegration implements Integration {
 
     @Override
     public boolean isInstalled() {
-        return Bukkit.getPluginManager().isPluginEnabled("EliteMobs");
+        return Bukkit.getPluginManager().isPluginEnabled("ProtocolLib");
     }
 
     @Override
@@ -27,11 +26,4 @@ public class EliteMobsIntegration implements Integration, MobOwner {
         // TODO
         return false;
     }
-
-    @Override
-    public boolean isMobOwner(LevelledMob mob) {
-        // TODO
-        return false;
-    }
-
 }

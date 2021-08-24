@@ -5,14 +5,33 @@
 package me.lokka30.levelledmobs.integrations;
 
 import me.lokka30.levelledmobs.levelling.LevelledMob;
+import org.bukkit.Bukkit;
 
-public class CitizensIntegration implements IMobOwner {
+/**
+ * @author lokka30
+ * @since v4.0.0
+ * A LevelledMobs integration.
+ * Plugin:     Citizens
+ * Author:     fullwall
+ * Link:       https://www.spigotmc.org/resources/citizens.13811/
+ */
+public class CitizensIntegration implements Integration, MobOwner {
 
     @Override
-    public boolean isMobOwner(LevelledMob mob) {
+    public boolean isInstalled() {
+        return Bukkit.getPluginManager().isPluginEnabled("Citizens");
+    }
+
+    @Override
+    public boolean isForceDisabled() {
+        // TODO
         return false;
     }
 
-    //TODO lokka30: Complete this class.
+    @Override
+    public boolean isMobOwner(LevelledMob mob) {
+        // TODO
+        return false;
+    }
 
 }

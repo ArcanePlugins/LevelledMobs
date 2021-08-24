@@ -15,7 +15,7 @@ import me.lokka30.levelledmobs.levelling.LevelledMob;
  * mobs. Example mob owners are MythicMobs, DangerousCaves mobs,
  * and so on.
  */
-public interface IMobOwner {
+public interface MobOwner {
 
     /**
      * @param mob the mob in question

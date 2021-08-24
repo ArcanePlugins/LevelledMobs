@@ -5,14 +5,33 @@
 package me.lokka30.levelledmobs.integrations;
 
 import me.lokka30.levelledmobs.levelling.LevelledMob;
+import org.bukkit.Bukkit;
 
-public class DangerousCavesIntegration implements IMobOwner {
+/**
+ * @author lokka30
+ * @since v4.0.0
+ * A LevelledMobs integration.
+ * Plugin:     Dangerous Caves 2
+ * Author:     imDaniX (v2 maintainer), OkDexter12 (v1 maintainer)
+ * Link:       https://www.spigotmc.org/resources/dangerous-caves-2.76212/
+ */
+public class DangerousCavesIntegration implements Integration, MobOwner {
 
     @Override
-    public boolean isMobOwner(LevelledMob mob) {
+    public boolean isInstalled() {
+        return Bukkit.getPluginManager().isPluginEnabled("DangerousCaves");
+    }
+
+    @Override
+    public boolean isForceDisabled() {
+        // TODO
         return false;
     }
 
-    //TODO lokka30: Complete this class.
+    @Override
+    public boolean isMobOwner(LevelledMob mob) {
+        // TODO
+        return false;
+    }
 
 }

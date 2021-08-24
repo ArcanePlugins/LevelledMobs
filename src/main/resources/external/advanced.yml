@@ -2,6 +2,15 @@
 
 # TODO
 
+# What debugging systems are enabled in the plugin?
+# This list is empty by default.
+debugging-systems: [ ]
+
+# What integrations are force-disabled in the plugin?
+# This list is empty by default.
+disabled-integrations: [ ]
+
+# Do not touch any of this, it's used by the auto-migrator.
 file:
-  version: '??' #TODO
+  version: -1 #TODO
   generated-with: '${project.version}'
