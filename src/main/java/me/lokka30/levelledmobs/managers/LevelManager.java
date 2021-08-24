@@ -624,9 +624,10 @@ public class LevelManager implements LevelInterface {
             @Override
             public void run() {
                 final Map<Player, List<Entity>> entitiesPerPlayer = new LinkedHashMap<>();
+                final int checkDistance = main.helperSettings.getInt(main.settingsCfg,"async-task-update-period", 100);
 
                 for (final Player player : Bukkit.getOnlinePlayers()) {
-                    final List<Entity> entities = player.getNearbyEntities(50, 50, 50);
+                    final List<Entity> entities = player.getNearbyEntities(checkDistance, checkDistance, checkDistance);
                     entitiesPerPlayer.put(player, entities);
                 }
 
@@ -669,15 +670,17 @@ public class LevelManager implements LevelInterface {
                     synchronized (lmEntity.getLivingEntity().getPersistentDataContainer()) {
                         wasBabyMob = lmEntity.getPDC().has(main.levelManager.wasBabyMobKey, PersistentDataType.INTEGER);
                     }
-                    if (
-                            !lmEntity.isBabyMob() &&
+                    final LevellableState levellableState = main.levelInterface.getLevellableState(lmEntity);
+                    if (!lmEntity.isBabyMob() &&
                                     wasBabyMob &&
-                                    main.levelInterface.getLevellableState(lmEntity) == LevellableState.ALLOWED) {
+                                    levellableState == LevellableState.ALLOWED) {
                         // if the mob was a baby at some point, aged and now is eligable for levelling, we'll apply a level to it now
                         Utils.debugLog(main, DebugType.ENTITY_MISC, "&b" + lmEntity.getTypeName() + " &7was a baby and is now an adult, applying levelling rules");
 
                         main._mobsQueueManager.addToQueue(new QueueItem(lmEntity, null));
                     }
+                    else if (levellableState == LevellableState.ALLOWED)
+                        main._mobsQueueManager.addToQueue(new QueueItem(lmEntity, null));
                 }
             }
         }

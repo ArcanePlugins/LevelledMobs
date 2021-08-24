@@ -70,7 +70,10 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
         if (isBuildingCache || this.hasCache) return;
 
         try{
-            if (!this.cacheLock.tryLock(1000, TimeUnit.MILLISECONDS)) return;
+            if (!this.cacheLock.tryLock(1000, TimeUnit.MILLISECONDS)) {
+                Utils.logger.warning("lock timed out building cache");
+                return;
+            }
 
             if (this.hasCache) return;
             isBuildingCache = true;
