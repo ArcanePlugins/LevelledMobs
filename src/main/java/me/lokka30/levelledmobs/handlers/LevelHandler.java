@@ -24,7 +24,12 @@ public class LevelHandler {
     }
 
     @NotNull
-    public final NamespacedKeys namespacedKeys;
+    private final NamespacedKeys namespacedKeys;
+
+    @NotNull
+    public NamespacedKeys getNamespacedKeys() {
+        return namespacedKeys;
+    }
 
     /*
     TODO

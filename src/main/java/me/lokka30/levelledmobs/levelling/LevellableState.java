@@ -4,16 +4,24 @@
 
 package me.lokka30.levelledmobs.levelling;
 
+/**
+ * @author lokka30
+ * @since v4.0.0
+ * This enum contains constants that allow
+ * LM code to say 'this mob is levellable/not levellable',
+ * and if 'not levellable', there are a bunch of constants
+ * in this enum that can explain why a mob is considered such.
+ */
 public enum LevellableState {
 
     /*
     TODO
-        lokka30: Add more levellable states
+        lokka30: Add more constants as they become required.
      */
 
     /**
      * @since v4.0.0
-     * The mob is not levellable.
+     * The mob is levellable.
      */
-    NOT_LEVELLABLE
+    LEVELLABLE
 }

@@ -19,14 +19,8 @@ import org.jetbrains.annotations.NotNull;
  */
 public class NamespacedKeys {
 
-    /**
-     * @param main plugin's main class
-     * @author lokka30
-     * @since v4.0.0
-     * Register all of LevelledMobs' namespaced keys.
-     */
     public NamespacedKeys(final LevelledMobs main) {
-        level = new NamespacedKey(main, "level");
+        levelKey = new NamespacedKey(main, "level");
     }
 
     /**
@@ -34,7 +28,12 @@ public class NamespacedKeys {
      * What level a levelled mob is (e.g., `52`)
      */
     @NotNull
-    public final NamespacedKey level;
+    private final NamespacedKey levelKey;
+
+    @NotNull
+    public NamespacedKey getLevelKey() {
+        return levelKey;
+    }
 
     /*
     TODO
