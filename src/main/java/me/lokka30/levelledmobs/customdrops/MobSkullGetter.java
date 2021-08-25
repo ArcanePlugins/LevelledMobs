@@ -4,6 +4,26 @@
 
 package me.lokka30.levelledmobs.customdrops;
 
+import me.lokka30.levelledmobs.LevelledMobs;
+import me.lokka30.levelledmobs.handlers.FileHandler;
+
+/**
+ * @author TODO change author
+ * @see FileHandler#loadInternalFiles()
+ * @since v4.0.0
+ * TODO Describe
+ */
 public class MobSkullGetter {
-    //TODO
+
+    private final LevelledMobs main;
+
+    public MobSkullGetter(final LevelledMobs main) {
+        this.main = main;
+    }
+
+    /*
+    TODO:
+        - complete class.
+     */
+
 }

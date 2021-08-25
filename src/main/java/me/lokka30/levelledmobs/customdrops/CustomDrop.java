@@ -4,6 +4,17 @@
 
 package me.lokka30.levelledmobs.customdrops;
 
-public class Drop {
-    //TODO
+/**
+ * @author TODO change author
+ * @see CustomDropParser
+ * @since v4.0.0
+ * TODO Description
+ */
+public class CustomDrop {
+
+    /*
+    TODO:
+        - complete class.
+     */
+
 }

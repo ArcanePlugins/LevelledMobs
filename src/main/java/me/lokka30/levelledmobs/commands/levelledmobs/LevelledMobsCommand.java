@@ -36,6 +36,7 @@ public class LevelledMobsCommand implements TabExecutor {
         TODO
             lokka30: Complete method body.
          */
+        sender.sendMessage("Pong!");
         return true;
     }
 

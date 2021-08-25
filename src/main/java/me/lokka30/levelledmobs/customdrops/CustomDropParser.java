@@ -4,6 +4,24 @@
 
 package me.lokka30.levelledmobs.customdrops;
 
+import me.lokka30.levelledmobs.LevelledMobs;
+
+/**
+ * @author TODO change author
+ * @see CustomDrop
+ * @since v4.0.0
+ * TODO Description
+ */
 public class CustomDropParser {
-    //TODO
+
+    private final LevelledMobs main;
+
+    public CustomDropParser(final LevelledMobs main) {
+        this.main = main;
+    }
+
+    /*
+    TODO:
+        - complete class.
+     */
 }

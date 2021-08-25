@@ -11,9 +11,6 @@ import org.jetbrains.annotations.NotNull;
 
 /**
  * @author lokka30
- * @see Event
- * @see Cancellable
- * @see MobPostLevelEvent
  * @since v4.0.0
  * This event is fired by LevelledMobs when it
  * is about to level a mob. It can be cancelled
@@ -24,6 +21,9 @@ import org.jetbrains.annotations.NotNull;
  * integrations to add mob metadata and so on
  * before LevelledMobs processes the mob,
  * maximising the plugin's reliability.
+ * @see Event
+ * @see Cancellable
+ * @see MobPostLevelEvent
  */
 public class MobPreLevelEvent extends Event implements Cancellable {
 

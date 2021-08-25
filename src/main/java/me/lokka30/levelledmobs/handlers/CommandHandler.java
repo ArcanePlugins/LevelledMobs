@@ -15,6 +15,9 @@ import java.util.List;
 
 /**
  * @author lokka30
+ * @see PluginCommand
+ * @see TabExecutor
+ * @see CommandUtils
  * @since v4.0.0
  * This class handles common methods
  * and command registration for
@@ -49,6 +52,7 @@ public class CommandHandler {
 
     /**
      * @author lokka30
+     * @see CommandHandler
      * @since v4.0.0
      * This is a static class that contains common methods
      * used across LevelledMobs' commands that make it easier
@@ -67,6 +71,7 @@ public class CommandHandler {
          * @param sender     CommandSender that executed the command
          * @param permission Permission the CommandSender requires to run the command
          * @return whether the CommandSender has the required permission or not
+         * @see CommandSender#hasPermission(String)
          */
         public static boolean senderDoesNotHaveRequiredPermission(final LevelledMobs main, final CommandSender sender, final String permission) {
             if (sender.hasPermission(permission)) return false;
