@@ -1,9 +1,5 @@
 ---
-name: Feature request
-about: Suggest an idea for the plugin
-title: 'Request: '
-labels: enhancement
-assignees: ''
+name: Feature request about: Suggest an idea for the plugin title: 'Untitled' labels: enhancement assignees: ''
 
 ---
 

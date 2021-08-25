@@ -4,11 +4,8 @@
 messages:
 
 # TODO
-entities:
-  ZOMBIE: 'Zombie'
-
-# TODO
-numbers:
+# Add as many level translations as you want, it doesn't stop at 10. :)
+levels:
   0: '0'
   1: '1'
   2: '2'
@@ -19,6 +16,11 @@ numbers:
   7: '7'
   8: '8'
   9: '9'
+  10: '10'
+
+# TODO
+entity-names:
+  ZOMBIE: 'Zombie'
 
 file:
   version: '??' #TODO
