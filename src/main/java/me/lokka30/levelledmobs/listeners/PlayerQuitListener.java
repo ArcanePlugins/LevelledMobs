@@ -5,7 +5,10 @@
 package me.lokka30.levelledmobs.listeners;
 
 import me.lokka30.levelledmobs.LevelledMobs;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerQuitEvent;
 
 /**
  * @author lokka30
@@ -23,8 +26,12 @@ public class PlayerQuitListener implements Listener {
     /*
     TODO
         lokka30: edit javadoc description
-        lokka30: add event handler
         lokka30: complete event handler
      */
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onPlayerQuit(final PlayerQuitEvent event) {
+        //TODO
+    }
 
 }

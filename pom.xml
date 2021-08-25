@@ -41,11 +41,15 @@
                     <relocations>
                         <relocation>
                             <pattern>org.bstats</pattern>
-                            <shadedPattern>me.lokka30.levelledmobs.bstats</shadedPattern>
+                            <shadedPattern>${project.groupId}.${project.artifactId}.bstats</shadedPattern>
                         </relocation>
                         <relocation>
                             <pattern>me.lokka30.microlib</pattern>
-                            <shadedPattern>me.lokka30.levelledmobs.microlib</shadedPattern>
+                            <shadedPattern>${project.groupId}.${project.artifactId}.microlib</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>de.leonhard.storage</pattern>
+                            <shadedPattern>${project.groupId}.${project.artifactId}.simplixstorage</shadedPattern>
                         </relocation>
                     </relocations>
                     <filters>
@@ -116,6 +120,11 @@
             <groupId>com.github.lokka30</groupId>
             <artifactId>MicroLib</artifactId>
             <version>3.0.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.simplix-softworks</groupId>
+            <artifactId>simplixstorage</artifactId>
+            <version>3.2.3</version>
         </dependency>
     </dependencies>
 </project>

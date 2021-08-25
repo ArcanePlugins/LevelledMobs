@@ -54,21 +54,9 @@ public class StaticMobDataHandler {
                             - ROTTEN_FLESH
      */
 
-    public HashMap<EntityType, MobData> mobDataMap = new HashMap<>();
+    public final HashMap<EntityType, MobData> mobDataMap = new HashMap<>();
 
-    public void init() {
-        loadMobData();
-        parseMobData();
-    }
-
-    private void loadMobData() {
-        /*
-        TODO
-            lokka30: Load the JSON file (embedded resource)
-         */
-    }
-
-    private void parseMobData() {
+    public void loadMobData() {
         /*
         TODO
             lokka30: For each entity type existing, check if the mob data file

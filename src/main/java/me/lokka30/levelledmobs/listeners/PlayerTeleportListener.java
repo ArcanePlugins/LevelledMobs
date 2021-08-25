@@ -5,7 +5,10 @@
 package me.lokka30.levelledmobs.listeners;
 
 import me.lokka30.levelledmobs.LevelledMobs;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerTeleportEvent;
 
 /**
  * @author lokka30
@@ -23,8 +26,12 @@ public class PlayerTeleportListener implements Listener {
     /*
     TODO
         lokka30: edit javadoc description
-        lokka30: add event handler
         lokka30: complete event handler
      */
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
+    public void onHELLO(final PlayerTeleportEvent event) {
+        //TODO
+    }
 
 }
