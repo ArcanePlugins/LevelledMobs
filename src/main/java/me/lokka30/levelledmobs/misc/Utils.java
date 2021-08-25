@@ -18,17 +18,9 @@ import me.lokka30.microlib.messaging.MicroLogger;
 public class Utils {
 
     /**
-     * @since v4.0.0
-     * author: lokka30
+     * @since v2.0.0
      * This contains an instance of MicroLogger, used
      * across the plugin to log things to the console.
      */
     public static final MicroLogger LOGGER = new MicroLogger("&b&lLevelledMobs: &7");
-
-    /*
-    TODO
-        lokka30: Fill class with new methods as they are required
-                 whilst programming the rest of the plugin.
-     */
-
 }

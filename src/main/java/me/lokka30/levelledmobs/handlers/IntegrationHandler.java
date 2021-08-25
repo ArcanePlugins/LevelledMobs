@@ -6,6 +6,7 @@ package me.lokka30.levelledmobs.handlers;
 
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.integrations.*;
+import me.lokka30.levelledmobs.integrations.interfaces.Integration;
 import me.lokka30.levelledmobs.misc.Utils;
 import org.jetbrains.annotations.NotNull;
 

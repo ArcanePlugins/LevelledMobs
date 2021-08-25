@@ -4,8 +4,56 @@
 
 package me.lokka30.levelledmobs.misc;
 
+/**
+ * @author lokka30
+ * @see System#currentTimeMillis()
+ * @since v3.1.2
+ * This class is used to put cooldowns on certain actions,
+ * on certain in-game objects - e.g. clicking entities or blocks.
+ * For example, this is used in Debug Entity Damage to stop spam from
+ * clicking the same entity over and over. It is also used in the
+ * Spawner Info for the same reason: blocks unnecessary chat spam.
+ */
 public class ActionCooldown {
 
-    //TODO lokka30: This class is the exact same as 'Cooldown.java' in LevelledMobs 3. Grab the code from there.
+    /**
+     * @since v3.1.2
+     * The starting point of the cooldown - just run System#currentTimeMillis()
+     */
+    private final long startingTime;
 
+    /**
+     * @since v3.1.2
+     * What this cooldown should be identifiable by - e.g. entity ID, location
+     */
+    private final String identifier;
+
+    public ActionCooldown(final long startingTime, final String identifier) {
+        this.startingTime = startingTime;
+        this.identifier = identifier;
+    }
+
+    /**
+     * @param identifier ID to check if this cooldown has the same ID.
+     * @return if the IDs match.
+     * @author lokka30
+     * @since v3.1.2
+     * Checks if this cooldown belongs to something with a certain ID.
+     */
+    public boolean doesCooldownBelongToIdentifier(final String identifier) {
+        return identifier.equals(this.identifier);
+    }
+
+    /**
+     * @param requiredTimeInSeconds how many seconds should the cooldown have lasted?
+     * @return if the cooldown has expired.
+     * @author lokka30
+     * @since v3.1.2
+     * Check if the cooldown's required time (seconds!) has surpassed since
+     * the starting point.
+     */
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
+    public boolean hasCooldownExpired(final long requiredTimeInSeconds) {
+        return ((System.currentTimeMillis() - startingTime) >= (requiredTimeInSeconds * 1000));
+    }
 }
