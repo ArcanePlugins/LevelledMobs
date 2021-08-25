@@ -123,6 +123,10 @@ public class MetricsInfo {
         return "Random";
     }
 
+    public String usesPlayerLevelling(){
+        return convertBooleanToString(main.rulesManager.isPlayerLevellingEnabled());
+    }
+
     public String usesAutoUpdateChecker(){
         return convertBooleanToString(main.helperSettings.getBoolean(main.settingsCfg, "use-update-checker", true));
     }

@@ -261,6 +261,7 @@ public class Companion {
         metrics.addCustomChart(new SimplePie("check_mobs_on_chunk_load", metricsInfo::checkMobsOnChunkLoad));
         metrics.addCustomChart(new SimplePie("custom-entity-names", metricsInfo::customEntityNamesCount));
         metrics.addCustomChart(new SimplePie("utilizes-nbtdata", metricsInfo::usesNbtData));
+        metrics.addCustomChart(new SimplePie("utilizes_player_levelling", metricsInfo::usesPlayerLevelling));
         metrics.addCustomChart(new SimpleBarChart("enabled-compatibility", metricsInfo::enabledCompats));
     }
 
