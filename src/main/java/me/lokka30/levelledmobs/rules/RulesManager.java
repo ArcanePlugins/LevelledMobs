@@ -524,11 +524,11 @@ public class RulesManager {
 
         if (ri.conditions_CustomNames != null){
             final String customName = lmEntity.getLivingEntity().getCustomName() != null ?
-                    lmEntity.getLivingEntity().getCustomName() : "";
+                    lmEntity.getLivingEntity().getCustomName() : "(none)";
 
             if (!ri.conditions_CustomNames.isEnabledInList(customName, lmEntity)){
                 Utils.debugLog(main, DebugType.DENIED_RULE_CUSTOM_NAME, String.format("&b%s&7, mob: &b%s&7, name: &b%s&7",
-                        ri.getRuleName(), lmEntity.getTypeName(), lmEntity.getLivingEntity().getCustomName()));
+                        ri.getRuleName(), lmEntity.getTypeName(), customName));
                 return false;
             }
         }
