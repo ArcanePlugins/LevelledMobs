@@ -522,11 +522,15 @@ public class RulesManager {
             return false;
         }
 
-        if (ri.conditions_CustomNames != null && lmEntity.getLivingEntity().getCustomName() != null &&
-                !ri.conditions_CustomNames.isEnabledInList(lmEntity.getLivingEntity().getCustomName(), lmEntity)) {
-            Utils.debugLog(main, DebugType.DENIED_RULE_CUSTOM_NAME, String.format("&b%s&7, mob: &b%s&7, name: &b%s&7",
-                    ri.getRuleName(), lmEntity.getTypeName(), lmEntity.getLivingEntity().getCustomName()));
-            return false;
+        if (ri.conditions_CustomNames != null){
+            final String customName = lmEntity.getLivingEntity().getCustomName() != null ?
+                    lmEntity.getLivingEntity().getCustomName() : "";
+
+            if (!ri.conditions_CustomNames.isEnabledInList(customName, lmEntity)){
+                Utils.debugLog(main, DebugType.DENIED_RULE_CUSTOM_NAME, String.format("&b%s&7, mob: &b%s&7, name: &b%s&7",
+                        ri.getRuleName(), lmEntity.getTypeName(), lmEntity.getLivingEntity().getCustomName()));
+                return false;
+            }
         }
 
         if (ri.conditions_SpawnReasons != null && !ri.conditions_SpawnReasons.isEnabledInList(lmEntity.getSpawnReason(), lmEntity)){
