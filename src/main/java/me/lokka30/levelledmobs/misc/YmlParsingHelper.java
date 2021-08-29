@@ -24,21 +24,20 @@ public class YmlParsingHelper {
 
     public boolean getBoolean(final ConfigurationSection cs, @NotNull final String name, final boolean defaultValue){
         if (cs == null) return defaultValue;
-        for (final String key : cs.getKeys(false)){
-            if (name.equalsIgnoreCase(key)) return cs.getBoolean(key, defaultValue);
-        }
+        final String useName = getKeyNameFromConfig(cs, name);
 
-        return defaultValue;
+        return cs.getBoolean(useName, defaultValue);
     }
 
     @Nullable
     public Boolean getBoolean2(final ConfigurationSection cs, @NotNull final String name, final Boolean defaultValue){
         if (cs == null) return defaultValue;
-        for (final String key : cs.getKeys(false)){
-            if (name.equalsIgnoreCase(key)) return cs.getBoolean(key);
-        }
+        final String useName = getKeyNameFromConfig(cs, name);
 
-        return defaultValue;
+        if (cs.get(useName) != null)
+            return cs.getBoolean(useName);
+        else
+            return defaultValue;
     }
 
     @Nullable
@@ -49,11 +48,9 @@ public class YmlParsingHelper {
     @Nullable
     public String getString(final ConfigurationSection cs, @NotNull final String name, final String defaultValue){
         if (cs == null) return defaultValue;
-        for (final String key : cs.getKeys(false)){
-            if (name.equalsIgnoreCase(key)) return cs.getString(key, defaultValue);
-        }
+        final String useName = getKeyNameFromConfig(cs, name);
 
-        return defaultValue;
+        return cs.getString(name, defaultValue);
     }
 
     @NotNull
@@ -71,21 +68,21 @@ public class YmlParsingHelper {
 
     public int getInt(final ConfigurationSection cs, @NotNull final String name, final int defaultValue){
         if (cs == null) return defaultValue;
-        for (final String key : cs.getKeys(false)){
-            if (name.equalsIgnoreCase(key)) return cs.getInt(key, defaultValue);
-        }
 
-        return defaultValue;
+        final String useName = getKeyNameFromConfig(cs, name);
+        return cs.getInt(useName, defaultValue);
     }
 
     @Nullable
     public Integer getInt2(final ConfigurationSection cs, @NotNull final String name, final Integer defaultValue){
         if (cs == null) return defaultValue;
-        for (final String key : cs.getKeys(false)){
-            if (name.equalsIgnoreCase(key)) return cs.getInt(key);
-        }
 
-        return defaultValue;
+        final String useName = getKeyNameFromConfig(cs, name);
+
+        if (cs.get(useName) != null)
+            return cs.getInt(useName);
+        else
+            return defaultValue;
     }
 
     public double getDouble(final ConfigurationSection cs, @NotNull final String name){
@@ -94,21 +91,20 @@ public class YmlParsingHelper {
 
     public double getDouble(final ConfigurationSection cs, @NotNull final String name, final double defaultValue){
         if (cs == null) return defaultValue;
-        for (final String key : cs.getKeys(false)){
-            if (name.equalsIgnoreCase(key)) return cs.getDouble(key, defaultValue);
-        }
+        final String useName = getKeyNameFromConfig(cs, name);
 
-        return defaultValue;
+        return cs.getDouble(useName, defaultValue);
     }
 
     @Nullable
     public Double getDouble2(final ConfigurationSection cs, @NotNull final String name, final Double defaultValue){
         if (cs == null) return defaultValue;
-        for (final String key : cs.getKeys(false)){
-            if (name.equalsIgnoreCase(key)) return cs.getDouble(key);
-        }
+        final String useName = getKeyNameFromConfig(cs, name);
 
-        return defaultValue;
+        if (cs.get(useName) != null)
+            return cs.getDouble(useName);
+        else
+            return defaultValue;
     }
 
     @NotNull

@@ -95,9 +95,10 @@ public class MobDataManager {
             double newHealth = attrib.getValue() - existingDamage;
             if (newHealth < 0.0) newHealth = 0.0;
             try {
+                if (lmEntity.getLivingEntity().getHealth() <= 0.0) return;
                 lmEntity.getLivingEntity().setHealth(newHealth);
-            } catch (IllegalArgumentException ignored) {
-            }
+            } catch (IllegalArgumentException ignored) { }
+
         }
     }
 

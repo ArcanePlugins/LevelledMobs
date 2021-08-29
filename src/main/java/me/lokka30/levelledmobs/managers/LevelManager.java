@@ -42,8 +42,7 @@ import java.util.*;
 /**
  * Generates levels and manages other functions related to levelling mobs
  *
- * @author lokka30, CoolBoy, Esophose, 7smile7,
- * wShevchik, Hugo5551, limzikiki
+ * @author lokka30, stumper66, CoolBoy, Esophose, 7smile7, Shevchik, Hugo5551, limzikiki
  * @since 2.4.0
  */
 public class LevelManager implements LevelInterface {
@@ -72,10 +71,19 @@ public class LevelManager implements LevelInterface {
     public EntitySpawnListener entitySpawnListener;
 
     /**
-     * The following entity types MUST be not levellable.
+     * The following entity types *MUST NOT* be levellable.
      * Stored as Strings since older versions may not contain certain entity type constants
      */
-    public final HashSet<String> FORCED_BLOCKED_ENTITY_TYPES = new HashSet<>(Arrays.asList("PLAYER", "UNKNOWN", "ARMOR_STAND", "NPC"));
+    public final HashSet<String> FORCED_BLOCKED_ENTITY_TYPES = new HashSet<>(Arrays.asList(
+            "AREA_EFFECT_CLOUD", "ARMOR_STAND", "ARROW", "BOAT", "DRAGON_FIREBALL", "DROPPED_ITEM",
+            "EGG", "ENDER_CRYSTAL", "ENDER_PEARL", "ENDER_SIGNAL", "EXPERIENCE_ORB",
+            "FALLING_BLOCK", "FIREBALL", "FIREWORK", "FISHING_HOOK", "GLOW_ITEM_FRAME",
+            "ITEM_FRAME", "LEASH_HITCH", "LIGHTNING", "LLAMA_SPIT", "MARKER", "MINECART",
+            "MINECART_CHEST", "MINECART_COMMAND", "MINECART_FURNACE", "MINECART_HOPPER",
+            "MINECART_MOB_SPAWNER", "MINECART_TNT", "NPC", "PAINTING", "PLAYER", "PRIMED_TNT",
+            "SMALL_FIREBALL", "SNOWBALL", "SPECTRAL_ARROW", "SPLASH_POTION", "THROWN_EXP_BOTTLE",
+            "TRIDENT", "UNKNOWN", "WITHER_SKULL"
+    ));
 
     /**
      * The following entity types must be manually ALLOWED in 'getLevellableState',
@@ -624,9 +632,10 @@ public class LevelManager implements LevelInterface {
             @Override
             public void run() {
                 final Map<Player, List<Entity>> entitiesPerPlayer = new LinkedHashMap<>();
+                final int checkDistance = main.helperSettings.getInt(main.settingsCfg,"async-task-update-period", 100);
 
                 for (final Player player : Bukkit.getOnlinePlayers()) {
-                    final List<Entity> entities = player.getNearbyEntities(50, 50, 50);
+                    final List<Entity> entities = player.getNearbyEntities(checkDistance, checkDistance, checkDistance);
                     entitiesPerPlayer.put(player, entities);
                 }
 
@@ -669,15 +678,17 @@ public class LevelManager implements LevelInterface {
                     synchronized (lmEntity.getLivingEntity().getPersistentDataContainer()) {
                         wasBabyMob = lmEntity.getPDC().has(main.levelManager.wasBabyMobKey, PersistentDataType.INTEGER);
                     }
-                    if (
-                            !lmEntity.isBabyMob() &&
+                    final LevellableState levellableState = main.levelInterface.getLevellableState(lmEntity);
+                    if (!lmEntity.isBabyMob() &&
                                     wasBabyMob &&
-                                    main.levelInterface.getLevellableState(lmEntity) == LevellableState.ALLOWED) {
+                                    levellableState == LevellableState.ALLOWED) {
                         // if the mob was a baby at some point, aged and now is eligable for levelling, we'll apply a level to it now
                         Utils.debugLog(main, DebugType.ENTITY_MISC, "&b" + lmEntity.getTypeName() + " &7was a baby and is now an adult, applying levelling rules");
 
                         main._mobsQueueManager.addToQueue(new QueueItem(lmEntity, null));
                     }
+                    else if (levellableState == LevellableState.ALLOWED)
+                        main._mobsQueueManager.addToQueue(new QueueItem(lmEntity, null));
                 }
             }
         }

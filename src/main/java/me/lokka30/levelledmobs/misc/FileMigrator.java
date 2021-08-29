@@ -380,6 +380,9 @@ public class FileMigrator {
                         boolean hasValues = line.length() > firstColon + 1;
                         String key = line.substring(0, firstColon).replace("\t", "").trim();
                         final String keyOnly = key;
+                        String oldKey = key;
+                        if (isSettings && oldVersion < 32 && key.equalsIgnoreCase("async-task-update-period"))
+                            oldKey = "nametag-auto-update-task-period";
 
                         if (depth == 0)
                             currentKey.clear();
@@ -395,8 +398,8 @@ public class FileMigrator {
                             if (isSettings && oldVersion <= 20 && !version20KeysToKeep.contains(key)) continue;
                             if (isMessages && oldVersion <= 5 && messagesExempt_v5.contains(key)) continue;
 
-                            if (oldConfigMap.containsKey(key) && newConfigMap.containsKey(key)) {
-                                final FileMigrator.FieldInfo fiOld = oldConfigMap.get(key);
+                            if (oldConfigMap.containsKey(oldKey) && newConfigMap.containsKey(key)) {
+                                final FileMigrator.FieldInfo fiOld = oldConfigMap.get(oldKey);
                                 final FileMigrator.FieldInfo fiNew = newConfigMap.get(key);
                                 final String padding = getPadding((depth + 1) * 2);
                                 // arrays go here:
@@ -434,10 +437,10 @@ public class FileMigrator {
                                     }
                                 }
                             }
-                        } else if (oldConfigMap.containsKey(key)) {
+                        } else if (oldConfigMap.containsKey(oldKey)) {
                             keysMatched++;
                             final String value = line.substring(firstColon + 1).trim();
-                            final FileMigrator.FieldInfo fi = oldConfigMap.get(key);
+                            final FileMigrator.FieldInfo fi = oldConfigMap.get(oldKey);
                             final String migratedValue = fi.simpleValue;
 
                             if (isSettings && oldVersion <= 20 && !version20KeysToKeep.contains(key)) continue;
@@ -494,6 +497,12 @@ public class FileMigrator {
                                 }
                             } else
                                 valuesMatched++;
+                        }
+                        else {
+                            // keys present in the new config but not the old one fall here
+                            if (isSettings && oldVersion < 32 && keyOnly.equalsIgnoreCase("async-task-update-period")){
+
+                            }
                         }
                     } else if (line.trim().startsWith("-")) {
                         final String key = getKeyFromList(currentKey, null);

@@ -43,10 +43,12 @@ debug-misc: [ ]
 # ||  ADVANCED USERS ONLY
 # ||  Do not touch this unless a LM developer tells you to.
 # ||  This setting controls the repeating asynchronous nametag
-# ||  and player-levelling value update task's delay. The longer,
-# ||  the less CPU operation but worse user experience. Vice-versa.
-# ||  Best to keep it at the default of 6 seconds.
-nametag-auto-update-task-period: 6
+# ||  and levelling update tasks.
+# ||  This controls the timing and distance from players
+# ||  when the check is performed. This can be resource intensive
+# ||  if you perform updates too frequently, or too far away.
+async-task-update-period: 6
+async-task-max-blocks-from-player: 100
 
 # ||  ADVANCED USERS ONLY
 # ||  Do not touch this unless a LM developer tells you to.
@@ -134,4 +136,4 @@ player-levelling-relevel-min-time: 5000
 # ||  may be corrupted by the migrator, since the migrator uses
 # ||  this value to check what changes the file requires to
 # ||  become updated to the latest file version.
-file-version: 31
+file-version: 32
