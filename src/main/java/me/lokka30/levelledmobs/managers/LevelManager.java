@@ -948,7 +948,7 @@ public class LevelManager implements LevelInterface {
             return LevellableState.DENIED_CONFIGURATION_BLOCKED_ENTITY_TYPE;
 
         if (main.rulesManager.getRule_MobMaxLevel(lmInterface) < 1)
-            return LevellableState.DENIED_OTHER;
+            return LevellableState.DENIED_LEVEL_0;
 
         if (!(lmInterface instanceof LivingEntityWrapper))
             return LevellableState.ALLOWED;

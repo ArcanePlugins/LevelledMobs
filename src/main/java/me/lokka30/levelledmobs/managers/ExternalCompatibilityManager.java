@@ -119,7 +119,26 @@ public class ExternalCompatibilityManager {
 
     @NotNull
     public static String getMythicMobInternalName(@NotNull final LivingEntityWrapper lmEntity){
-        if (!isMythicMob(lmEntity) || !lmEntity.getLivingEntity().hasMetadata("mobname")) return "";
+        if (!isMythicMob(lmEntity)) return "";
+
+        final Plugin p = Bukkit.getPluginManager().getPlugin("MythicMobs");
+        if (p == null) return "";
+
+        if (!p.getDescription().getVersion().startsWith("4")) {
+            // MM version 5 must use this method for internal name detection
+            NamespacedKey mmKey = new NamespacedKey(p, "type");
+            if (lmEntity.getPDC().has(mmKey, PersistentDataType.STRING)) {
+                final String type = lmEntity.getPDC().get(mmKey, PersistentDataType.STRING);
+                return type == null ? "" : type;
+            }
+            else
+                return "";
+        }
+
+        // MM version 4 detection below:
+
+        if (!lmEntity.getLivingEntity().hasMetadata("mobname"))
+            return "";
 
         final List<MetadataValue> metadatas = lmEntity.getLivingEntity().getMetadata("mobname");
         for (final MetadataValue md : metadatas){

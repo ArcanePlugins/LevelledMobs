@@ -545,12 +545,18 @@ public class RulesManager {
             return false;
         }
 
-        if (ri.conditions_MM_Names != null && lmEntity.isMobOfExternalType(ExternalCompatibilityManager.ExternalCompatibility.MYTHIC_MOBS)){
-            String mm_Name = lmEntity.mythicMobInternalName;
-            if (mm_Name == null) mm_Name = "";
+        Utils.logger.info(String.format("is mm: %s, mm name: %s",
+                ExternalCompatibilityManager.isMythicMob(lmEntity), ExternalCompatibilityManager.getMythicMobInternalName(lmEntity)));
 
-            //noinspection RedundantIfStatement
-            if (!ri.conditions_MM_Names.isEnabledInList(mm_Name, lmEntity)) return false;
+        if (ri.conditions_MM_Names != null){
+            String mm_Name = ExternalCompatibilityManager.getMythicMobInternalName(lmEntity);
+            if ("".equals(mm_Name)) mm_Name = "(none)";
+
+            if (!ri.conditions_MM_Names.isEnabledInList(mm_Name, lmEntity)) {
+                Utils.debugLog(main, DebugType.DENIED_RULE_MYTHIC_MOBS_INTERNAL_NAME, String.format("&b%s&7, mob: &b%s&7, mm_name: &b%s&7",
+                        ri.getRuleName(), lmEntity.getTypeName(), mm_Name));
+                return false;
+            }
         }
 
         return true;
