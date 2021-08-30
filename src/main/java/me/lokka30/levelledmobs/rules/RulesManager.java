@@ -545,9 +545,6 @@ public class RulesManager {
             return false;
         }
 
-        Utils.logger.info(String.format("is mm: %s, mm name: %s",
-                ExternalCompatibilityManager.isMythicMob(lmEntity), ExternalCompatibilityManager.getMythicMobInternalName(lmEntity)));
-
         if (ri.conditions_MM_Names != null){
             String mm_Name = ExternalCompatibilityManager.getMythicMobInternalName(lmEntity);
             if ("".equals(mm_Name)) mm_Name = "(none)";
