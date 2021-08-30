@@ -61,7 +61,6 @@ public class IntegrationHandler {
      * to the Available Integrations set.
      */
     public void loadDefaultIntegrations() {
-        addIntegration(new AureliumMobsIntegration());
         addIntegration(new BossIntegration());
         addIntegration(new CitizensIntegration());
         addIntegration(new DangerousCavesIntegration());
