@@ -5,6 +5,7 @@
 package me.lokka30.levelledmobs.commands.levelledmobs;
 
 import me.lokka30.levelledmobs.LevelledMobs;
+import me.lokka30.levelledmobs.commands.CommandHandler;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
@@ -19,7 +20,7 @@ import java.util.List;
  * @since v4.0.0
  * This class handles execution of the `/levelledmobs` command.
  * @see TabExecutor
- * @see me.lokka30.levelledmobs.handlers.CommandHandler
+ * @see CommandHandler
  */
 public class LevelledMobsCommand implements TabExecutor {
 

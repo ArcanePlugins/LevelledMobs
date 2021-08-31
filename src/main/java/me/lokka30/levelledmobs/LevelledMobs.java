@@ -4,7 +4,10 @@
 
 package me.lokka30.levelledmobs;
 
-import me.lokka30.levelledmobs.handlers.*;
+import me.lokka30.levelledmobs.files.FileHandler;
+import me.lokka30.levelledmobs.files.StaticMobDataHandler;
+import me.lokka30.levelledmobs.integrations.IntegrationHandler;
+import me.lokka30.levelledmobs.levelling.LevelHandler;
 import me.lokka30.levelledmobs.listeners.*;
 import me.lokka30.levelledmobs.misc.Utils;
 import me.lokka30.microlib.maths.QuickTimer;

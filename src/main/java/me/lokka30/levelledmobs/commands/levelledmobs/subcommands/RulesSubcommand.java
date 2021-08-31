@@ -5,7 +5,7 @@
 package me.lokka30.levelledmobs.commands.levelledmobs.subcommands;
 
 import me.lokka30.levelledmobs.LevelledMobs;
-import me.lokka30.levelledmobs.handlers.CommandHandler;
+import me.lokka30.levelledmobs.commands.CommandHandler;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 

@@ -4,8 +4,6 @@
 
 package me.lokka30.levelledmobs.integrations;
 
-import me.lokka30.levelledmobs.integrations.interfaces.Integration;
-import me.lokka30.levelledmobs.integrations.interfaces.MobOwner;
 import me.lokka30.levelledmobs.levelling.LevelledMob;
 import org.bukkit.Bukkit;
 

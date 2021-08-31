@@ -5,7 +5,7 @@
 package me.lokka30.levelledmobs.customdrops;
 
 import me.lokka30.levelledmobs.LevelledMobs;
-import me.lokka30.levelledmobs.handlers.FileHandler;
+import me.lokka30.levelledmobs.files.FileHandler;
 
 /**
  * @author TODO change author
