@@ -4,10 +4,7 @@
 
 package me.lokka30.levelledmobs;
 
-import me.lokka30.levelledmobs.handlers.FileHandler;
-import me.lokka30.levelledmobs.handlers.IntegrationHandler;
-import me.lokka30.levelledmobs.handlers.LevelHandler;
-import me.lokka30.levelledmobs.handlers.StaticMobDataHandler;
+import me.lokka30.levelledmobs.handlers.*;
 import me.lokka30.levelledmobs.listeners.*;
 import me.lokka30.levelledmobs.misc.Utils;
 import me.lokka30.microlib.maths.QuickTimer;
@@ -23,7 +20,7 @@ import java.util.HashSet;
 /**
  * @author lokka30
  * @since v4.0.0
- * Main class of the plugin.
+ * Main class of the plugin. Acts as a 'hub' of sorts in the plugin's code.
  */
 public class LevelledMobs extends JavaPlugin {
 
@@ -99,16 +96,17 @@ public class LevelledMobs extends JavaPlugin {
 
     /**
      * @author lokka30
-     * @see me.lokka30.levelledmobs.listeners
-     * @see org.bukkit.plugin.PluginManager#registerEvents(Listener, Plugin)
      * @since v4.0.0
      * Registers ALL of LevelledMobs' listener classes through Bukkit's plugin manager.
      * Only to be ran from onEnable, do not use elsewhere.
      * The HashSet of Listeners must be updated manually if a new Listener is added to LM.
+     * @see me.lokka30.levelledmobs.listeners
+     * @see org.bukkit.plugin.PluginManager#registerEvents(Listener, Plugin)
      */
     private void loadListeners() {
         Utils.LOGGER.info("&3Start-up: &7Loading listeners...");
 
+        // Retain alphabetical order when modifying this list! :)
         final HashSet<Listener> listeners = new HashSet<>(Arrays.asList(
                 new BlockPlaceListener(this),
                 new ChunkLoadListener(this),
@@ -134,13 +132,9 @@ public class LevelledMobs extends JavaPlugin {
     }
 
     /* Instances of handler classes to be used across the plugin and by other plugins too */
-
-    @NotNull
-    public final FileHandler fileHandler = new FileHandler(this);
-    @NotNull
-    public final LevelHandler levelHandler = new LevelHandler(this);
-    @NotNull
-    public final IntegrationHandler integrationHandler = new IntegrationHandler(this);
-    @NotNull
-    public final StaticMobDataHandler staticMobDataHandler = new StaticMobDataHandler(this);
+    @NotNull public final FileHandler fileHandler = new FileHandler(this);
+    @NotNull public final LevelHandler levelHandler = new LevelHandler(this);
+    @NotNull public final QueueHandler queueHandler = new QueueHandler(this);
+    @NotNull public final IntegrationHandler integrationHandler = new IntegrationHandler(this);
+    @NotNull public final StaticMobDataHandler staticMobDataHandler = new StaticMobDataHandler(this);
 }
