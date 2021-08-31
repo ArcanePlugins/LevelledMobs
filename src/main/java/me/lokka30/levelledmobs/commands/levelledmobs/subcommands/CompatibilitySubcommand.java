@@ -14,10 +14,11 @@ import java.util.List;
 
 /**
  * @author lokka30
- * @see me.lokka30.levelledmobs.commands.levelledmobs.LevelledMobsCommand
- * @see CommandHandler
  * @since v4.0.0
  * This is a subcommand of the '/levelledmobs' command.
+ * This subcommand allows users to re-run the LM compat checker and view its results.
+ * @see me.lokka30.levelledmobs.commands.levelledmobs.LevelledMobsCommand
+ * @see CommandHandler
  */
 public class CompatibilitySubcommand implements CommandHandler.Subcommand {
 

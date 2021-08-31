@@ -14,10 +14,11 @@ import java.util.List;
 
 /**
  * @author lokka30
- * @see me.lokka30.levelledmobs.commands.levelledmobs.LevelledMobsCommand
- * @see CommandHandler
  * @since v4.0.0
  * This is a subcommand of the '/levelledmobs' command.
+ * This subcommand kills levelled mobs in chosen world(s) as specified by the user.
+ * @see me.lokka30.levelledmobs.commands.levelledmobs.LevelledMobsCommand
+ * @see CommandHandler
  */
 public class KillSubcommand implements CommandHandler.Subcommand {
 

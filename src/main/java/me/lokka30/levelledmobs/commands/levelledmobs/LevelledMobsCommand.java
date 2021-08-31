@@ -16,11 +16,10 @@ import java.util.List;
 
 /**
  * @author lokka30
+ * @since v4.0.0
+ * This class handles execution of the `/levelledmobs` command.
  * @see TabExecutor
  * @see me.lokka30.levelledmobs.handlers.CommandHandler
- * @since v4.0.0
- * This class handles execution of the
- * `/levelledmobs` command.
  */
 public class LevelledMobsCommand implements TabExecutor {
 

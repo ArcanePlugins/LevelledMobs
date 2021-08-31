@@ -14,10 +14,11 @@ import java.util.List;
 
 /**
  * @author lokka30
- * @see me.lokka30.levelledmobs.commands.levelledmobs.LevelledMobsCommand
- * @see CommandHandler
  * @since v4.0.0
  * This is a subcommand of the '/levelledmobs' command.
+ * This subcommand scans the entire server of all its existing mobs, and levels them if they are levellable.
+ * @see me.lokka30.levelledmobs.commands.levelledmobs.LevelledMobsCommand
+ * @see CommandHandler
  */
 public class ScanSubcommand implements CommandHandler.Subcommand {
 
