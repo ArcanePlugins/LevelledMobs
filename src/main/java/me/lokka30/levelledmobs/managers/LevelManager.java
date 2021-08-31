@@ -632,7 +632,7 @@ public class LevelManager implements LevelInterface {
             @Override
             public void run() {
                 final Map<Player, List<Entity>> entitiesPerPlayer = new LinkedHashMap<>();
-                final int checkDistance = main.helperSettings.getInt(main.settingsCfg,"async-task-update-period", 100);
+                final int checkDistance = main.helperSettings.getInt(main.settingsCfg,"async-task-max-blocks-from-player", 100);
 
                 for (final Player player : Bukkit.getOnlinePlayers()) {
                     final List<Entity> entities = player.getNearbyEntities(checkDistance, checkDistance, checkDistance);

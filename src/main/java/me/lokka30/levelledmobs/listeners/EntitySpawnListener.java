@@ -82,7 +82,7 @@ public class EntitySpawnListener implements Listener {
 
         Entity closestPlayer = null;
         double closestRange = Double.MAX_VALUE;
-        final int checkDistance = main.helperSettings.getInt(main.settingsCfg,"async-task-update-period", 100);
+        final int checkDistance = main.helperSettings.getInt(main.settingsCfg,"async-task-max-blocks-from-player", 100);
 
         for (final Entity entity : lmEntity.getLivingEntity().getNearbyEntities(checkDistance, checkDistance, checkDistance)) {
             if (!(entity instanceof Player)) continue;
