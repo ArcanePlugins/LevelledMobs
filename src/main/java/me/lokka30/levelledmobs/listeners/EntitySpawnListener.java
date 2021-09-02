@@ -80,10 +80,11 @@ public class EntitySpawnListener implements Listener {
     private void getClosestPlayer(final @NotNull LivingEntityWrapper lmEntity) {
         if (lmEntity.getPlayerForLevelling() != null) return;
 
-        Entity closestEntity = null;
+        Entity closestPlayer = null;
         double closestRange = Double.MAX_VALUE;
+        final int checkDistance = main.helperSettings.getInt(main.settingsCfg,"async-task-max-blocks-from-player", 100);
 
-        for (final Entity entity : lmEntity.getLivingEntity().getNearbyEntities(50, 50, 50)) {
+        for (final Entity entity : lmEntity.getLivingEntity().getNearbyEntities(checkDistance, checkDistance, checkDistance)) {
             if (!(entity instanceof Player)) continue;
             if (((Player) entity).getGameMode().equals(GameMode.SPECTATOR)) continue;
 
@@ -92,17 +93,17 @@ public class EntitySpawnListener implements Listener {
 
             final double range = entity.getLocation().distanceSquared(lmEntity.getLocation());
             if (range < closestRange && range <= main.playerLevellingDistance){
-                closestEntity = entity;
+                closestPlayer = entity;
                 closestRange = range;
             }
         }
 
-        if (closestEntity != null) {
-            synchronized (closestEntity.getPersistentDataContainer()){
-                closestEntity.getPersistentDataContainer().set(main.levelManager.playerLevelling_Id, PersistentDataType.STRING, (closestEntity).getUniqueId().toString());
+        if (closestPlayer != null) {
+            synchronized (lmEntity.getLivingEntity().getPersistentDataContainer()){
+                lmEntity.getLivingEntity().getPersistentDataContainer().set(main.levelManager.playerLevelling_Id, PersistentDataType.STRING, closestPlayer.getUniqueId().toString());
             }
 
-            lmEntity.setPlayerForLevelling((Player) closestEntity);
+            lmEntity.setPlayerForLevelling((Player) closestPlayer);
         }
     }
 

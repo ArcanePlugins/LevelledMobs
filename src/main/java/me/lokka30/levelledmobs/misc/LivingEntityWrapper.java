@@ -57,7 +57,6 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
     private FineTuningAttributes fineTuningAttributes;
     private LevelledMobSpawnReason spawnReason;
     public EntityDamageEvent.DamageCause deathCause;
-    public String mythicMobInternalName;
     public boolean reEvaluateLevel;
     private boolean groupsAreBuilt;
     private Double calculatedDistanceFromSpawn;
