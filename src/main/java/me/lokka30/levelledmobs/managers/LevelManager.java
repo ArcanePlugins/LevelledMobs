@@ -38,6 +38,7 @@ import java.math.RoundingMode;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Generates levels and manages other functions related to levelling mobs
@@ -661,7 +662,7 @@ public class LevelManager implements LevelInterface {
 
                 // Mob must be a livingentity that is ...living.
                 if (!(entity instanceof LivingEntity) || entity instanceof Player) continue;
-                LivingEntityWrapper lmEntity = new LivingEntityWrapper((LivingEntity) entity, main);
+                final LivingEntityWrapper lmEntity = new LivingEntityWrapper((LivingEntity) entity, main);
 
                 if (lmEntity.isLevelled()) {
                     if (main.configUtils.playerLevellingEnabled) {
@@ -698,34 +699,26 @@ public class LevelManager implements LevelInterface {
     }
 
     private void checkEntityForPlayerLevelling(final LivingEntityWrapper lmEntity, final List<Player> players){
-        Player closestPlayer = players.get(0);
-        double closestDistance = Double.MAX_VALUE;
         final LivingEntity mob = lmEntity.getLivingEntity();
+        final List<Player> sortedPlayers = players.stream()
+                .filter(p -> mob.getWorld().equals(p.getWorld()))
+                .filter(p -> !p.getGameMode().equals(GameMode.SPECTATOR))
+                .map(p -> Map.entry(mob.getLocation().distanceSquared(p.getLocation()), p))
+                .sorted(Comparator.comparingDouble(Map.Entry::getKey))
+                .map(Map.Entry::getValue)
+                .collect(Collectors.toList());
 
-        if (players.size() > 1) {
-            for (final Player p : players) {
-                if (p.getGameMode().equals(GameMode.SPECTATOR)) continue;
-                if (p.getLocation().getWorld() == null || mob.getLocation().getWorld() == null ||
-                        !p.getLocation().getWorld().getUID().equals(mob.getLocation().getWorld().getUID()))
-                    continue;
+        Player closestPlayer = null;
+        for (final Player player : sortedPlayers){
+            if (ExternalCompatibilityManager.isMobOfCitizens(player))
+                continue;
 
-                double distance = mob.getLocation().distanceSquared(p.getLocation());
-                if (distance < closestDistance) {
-                    closestPlayer = p;
-                    closestDistance = distance;
-                }
-            }
-        } else {
-            if (closestPlayer.getGameMode().equals(GameMode.SPECTATOR) ||
-                closestPlayer.getLocation().getWorld() == null || mob.getLocation().getWorld() == null ||
-                !closestPlayer.getLocation().getWorld().getUID().equals(mob.getLocation().getWorld().getUID()))
-                return;
-
-            closestDistance = mob.getLocation().distanceSquared(closestPlayer.getLocation());
+            closestPlayer = player;
+            break;
         }
 
-        if (closestDistance <= main.playerLevellingDistance &&
-                doesMobNeedRelevelling(mob, closestPlayer)) {
+        if (closestPlayer == null) return;
+        if (doesMobNeedRelevelling(mob, closestPlayer)) {
 
             synchronized (mob.getPersistentDataContainer()) {
                 mob.getPersistentDataContainer().set(main.levelManager.playerLevelling_Id, PersistentDataType.STRING, closestPlayer.getUniqueId().toString());

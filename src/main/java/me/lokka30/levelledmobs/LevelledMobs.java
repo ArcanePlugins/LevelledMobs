@@ -54,7 +54,6 @@ public class LevelledMobs extends JavaPlugin {
     public PlaceholderApiIntegration placeholderApiIntegration;
     public boolean migratedFromPre30;
     public YmlParsingHelper helperSettings;
-    public double playerLevellingDistance;
     public int playerLevellingMinRelevelTime;
 
     // Configuration

@@ -11,6 +11,7 @@ import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.persistence.PersistentDataType;
@@ -274,11 +275,15 @@ public class ExternalCompatibilityManager {
      * @return if Citizens compatibility enabled and entity is from Citizens
      */
     public static boolean isMobOfCitizens(final LivingEntityWrapper lmEntity) {
-        final boolean isExternalType = lmEntity.getLivingEntity().hasMetadata("NPC");
+        final boolean isExternalType = isMobOfCitizens(lmEntity.getLivingEntity());
 
         if (isExternalType) lmEntity.setMobExternalType(ExternalCompatibility.CITIZENS);
 
         return isExternalType;
+    }
+
+    public static boolean isMobOfCitizens(final LivingEntity livingEntity) {
+        return livingEntity.hasMetadata("NPC");
     }
 
     /**
