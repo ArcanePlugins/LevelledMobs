@@ -67,6 +67,13 @@ biome-groups:
 # +                                                                                          +LM3
 # +   Section 02 - Presets                                                                   +LM3
 # +                                                                                          +LM3
+# +   This section comes prebuilt with several sets of PRESETS to use with LevelledMobs!     +LM3
+# +   Out-of-the-box most of these PRESETS are not enabled, and are only here to both        +LM3
+# +   demonstrate the system and allow you to quickly change or use many of the most         +LM3
+# +   popular features LevelledMobs has to offer! If you need help understanding PRESETS,    +LM3
+# +   read the official LevelledMobs Wiki!                                                   +LM3
+# +   https://github.com/lokka30/LevelledMobs/wiki/Documentation---rules.yml#presets         +LM3
+# +                                                                                          +LM3
 # +-------------------------------------------------------------------------------------------LM3
 presets:
   spawn_Levelling:
@@ -281,6 +288,12 @@ presets:
 # +   L O W E S T   P R I O R I T Y                                                          +LM3
 # +   Section 03 - Default Rules                                                             +LM3
 # +                                                                                          +LM3
+# +   This section sets the minimum required information for LevelledMobs to function!       +LM3
+# +   Much of this is managed by the PRESETS system, however a few configuration lines are   +LM3
+# +   listed individually as well. If you need help understanding the DEFAULT RULES,         +LM3
+# +   read the official LevelledMobs Wiki!                                                   +LM3
+# +   https://github.com/lokka30/LevelledMobs/wiki/Documentation---rules.yml#default-rule    +LM3
+# +                                                                                          +LM3
 # +-------------------------------------------------------------------------------------------LM3
 default-rule:
   use-preset:
@@ -344,6 +357,12 @@ default-rule:
 # +                                                                                          +LM3
 # +   H I G H E S T   P R I O R I T Y                                                        +LM3
 # +   Section 04 - Custom Rules                                                              +LM3
+# +                                                                                          +LM3
+# +   This section applies CUSTOM RULES, or exceptions, to the DEFAULT RULE. These rules     +LM3
+# +   modify the DEFAULT RULE to achieve your desired effect. Establish a CONDITION to       +LM3
+# +   check for, then set either a STRATEGY or APPLY-SETTINGS when the CONDITION is met.     +LM3
+# +   If you need help understanding CUSTOM RULES, read the official LevelledMobs Wiki!      +LM3
+# +   https://github.com/lokka30/LevelledMobs/wiki/Documentation---rules.yml#custom-rules    +LM3
 # +                                                                                          +LM3
 # +-------------------------------------------------------------------------------------------LM3
 custom-rules:
