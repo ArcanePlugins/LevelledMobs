@@ -53,6 +53,10 @@ public class EntitySpawnListener implements Listener {
 
         if (event instanceof CreatureSpawnEvent && ((CreatureSpawnEvent) event).getSpawnReason().equals(CreatureSpawnEvent.SpawnReason.CUSTOM) &&
                 !lmEntity.isLevelled()) {
+
+            if (main.configUtils.playerLevellingEnabled && lmEntity.getPlayerForLevelling() == null)
+                updateMobForPlayerLevelling(lmEntity);
+
             delayedAddToQueue(lmEntity, event, 20);
             return;
         }

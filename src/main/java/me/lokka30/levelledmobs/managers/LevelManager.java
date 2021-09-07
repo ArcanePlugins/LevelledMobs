@@ -761,6 +761,7 @@ public class LevelManager implements LevelInterface {
 
         String playerId;
         main.playerLevellingEntities.put(mob, Instant.now());
+        if (main.playerLevellingMinRelevelTime <= 0) return false;
 
         synchronized (mob.getPersistentDataContainer()) {
             if (!mob.getPersistentDataContainer().has(main.levelManager.playerLevelling_Id, PersistentDataType.STRING))
