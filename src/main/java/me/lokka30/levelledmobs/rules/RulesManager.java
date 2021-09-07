@@ -522,11 +522,15 @@ public class RulesManager {
             return false;
         }
 
-        if (ri.conditions_CustomNames != null && lmEntity.getLivingEntity().getCustomName() != null &&
-                !ri.conditions_CustomNames.isEnabledInList(lmEntity.getLivingEntity().getCustomName(), lmEntity)) {
-            Utils.debugLog(main, DebugType.DENIED_RULE_CUSTOM_NAME, String.format("&b%s&7, mob: &b%s&7, name: &b%s&7",
-                    ri.getRuleName(), lmEntity.getTypeName(), lmEntity.getLivingEntity().getCustomName()));
-            return false;
+        if (ri.conditions_CustomNames != null){
+            final String customName = lmEntity.getLivingEntity().getCustomName() != null ?
+                    lmEntity.getLivingEntity().getCustomName() : "(none)";
+
+            if (!ri.conditions_CustomNames.isEnabledInList(customName, lmEntity)){
+                Utils.debugLog(main, DebugType.DENIED_RULE_CUSTOM_NAME, String.format("&b%s&7, mob: &b%s&7, name: &b%s&7",
+                        ri.getRuleName(), lmEntity.getTypeName(), customName));
+                return false;
+            }
         }
 
         if (ri.conditions_SpawnReasons != null && !ri.conditions_SpawnReasons.isEnabledInList(lmEntity.getSpawnReason(), lmEntity)){
@@ -541,12 +545,15 @@ public class RulesManager {
             return false;
         }
 
-        if (ri.conditions_MM_Names != null && lmEntity.isMobOfExternalType(ExternalCompatibilityManager.ExternalCompatibility.MYTHIC_MOBS)){
-            String mm_Name = lmEntity.mythicMobInternalName;
-            if (mm_Name == null) mm_Name = "";
+        if (ri.conditions_MM_Names != null){
+            String mm_Name = ExternalCompatibilityManager.getMythicMobInternalName(lmEntity);
+            if ("".equals(mm_Name)) mm_Name = "(none)";
 
-            //noinspection RedundantIfStatement
-            if (!ri.conditions_MM_Names.isEnabledInList(mm_Name, lmEntity)) return false;
+            if (!ri.conditions_MM_Names.isEnabledInList(mm_Name, lmEntity)) {
+                Utils.debugLog(main, DebugType.DENIED_RULE_MYTHIC_MOBS_INTERNAL_NAME, String.format("&b%s&7, mob: &b%s&7, mm_name: &b%s&7",
+                        ri.getRuleName(), lmEntity.getTypeName(), mm_Name));
+                return false;
+            }
         }
 
         return true;

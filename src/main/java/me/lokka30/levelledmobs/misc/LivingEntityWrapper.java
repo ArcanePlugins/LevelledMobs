@@ -57,7 +57,6 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
     private FineTuningAttributes fineTuningAttributes;
     private LevelledMobSpawnReason spawnReason;
     public EntityDamageEvent.DamageCause deathCause;
-    public String mythicMobInternalName;
     public boolean reEvaluateLevel;
     private boolean groupsAreBuilt;
     private Double calculatedDistanceFromSpawn;
@@ -70,7 +69,10 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
         if (isBuildingCache || this.hasCache) return;
 
         try{
-            if (!this.cacheLock.tryLock(1000, TimeUnit.MILLISECONDS)) return;
+            if (!this.cacheLock.tryLock(1000, TimeUnit.MILLISECONDS)) {
+                Utils.logger.warning("lock timed out building cache");
+                return;
+            }
 
             if (this.hasCache) return;
             isBuildingCache = true;

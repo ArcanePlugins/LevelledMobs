@@ -8,6 +8,7 @@ import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.managers.ExternalCompatibilityManager;
 import me.lokka30.levelledmobs.misc.CachedModalList;
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
+import me.lokka30.levelledmobs.misc.QueueItem;
 import me.lokka30.levelledmobs.misc.Utils;
 import me.lokka30.levelledmobs.rules.RuleInfo;
 import me.lokka30.microlib.MessageUtils;
@@ -15,6 +16,7 @@ import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.chat.hover.content.Text;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.World;
@@ -112,8 +114,31 @@ public class RulesSubcommand implements Subcommand {
             showHyperlink(sender, "Click to open the wiki","https://github.com/lokka30/LevelledMobs/wiki");
         else if ("reset".equalsIgnoreCase(args[1]))
             resetRules(sender, label, args);
+        else if ("force_all".equalsIgnoreCase(args[1]))
+            forceRelevel(sender, label, args);
         else
             sender.sendMessage(MessageUtils.colorizeAll("&b&lLevelledMobs: &7Invalid command"));
+    }
+
+    private void forceRelevel(final CommandSender sender, final String label, @NotNull final String[] args){
+        int worldCount = 0;
+        int entityCount = 0;
+
+        for (final World world : Bukkit.getWorlds()) {
+            worldCount++;
+            for (final Entity entity : world.getEntities()) {
+                if (!(entity instanceof LivingEntity)) continue;
+
+                entityCount++;
+                final LivingEntityWrapper lmEntity = new LivingEntityWrapper((LivingEntity) entity, main);
+                lmEntity.reEvaluateLevel = true;
+                main._mobsQueueManager.addToQueue(new QueueItem(lmEntity, null));
+            }
+        }
+
+        sender.sendMessage(MessageUtils.colorizeAll(String.format(
+                "%s Checked &b%s&7 mobs in &b%s&7 world(s)",
+                label, entityCount, worldCount)));
     }
 
     private void resetRules(final CommandSender sender, final String label, @NotNull final String[] args){
@@ -461,7 +486,7 @@ public class RulesSubcommand implements Subcommand {
         final List<String> suggestions = new LinkedList<>();
 
         if (args.length == 2)
-            return Arrays.asList("help_discord", "help_wiki", "reset", "show_all", "show_effective", "show_rule");
+            return Arrays.asList("force_all", "help_discord", "help_wiki", "reset", "show_all", "show_effective", "show_rule");
         else if (args.length >= 3) {
             if ("reset".equalsIgnoreCase(args[1]) && args.length == 3) {
                 suggestions.add("easy");

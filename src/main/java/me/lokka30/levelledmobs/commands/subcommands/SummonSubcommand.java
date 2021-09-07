@@ -337,6 +337,15 @@ public class SummonSubcommand implements Subcommand {
         final LevelledMobs main = lmPlaceHolder.getMainInstance();
         Location location = lmPlaceHolder.getLocation();
 
+        if (main.levelManager.FORCED_BLOCKED_ENTITY_TYPES.contains(lmPlaceHolder.getTypeName())) {
+            List<String> messages = main.messagesCfg.getStringList("command.levelledmobs.summon.not-levellable");
+            messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.getPrefix());
+            messages = Utils.replaceAllInList(messages, "%entity%", lmPlaceHolder.getTypeName());
+            messages = Utils.colorizeAllInList(messages);
+            messages.forEach(sender::sendMessage);
+            return;
+        }
+
         if (!sender.isOp() && !override && main.levelInterface.getLevellableState(lmPlaceHolder) != LevellableState.ALLOWED) {
             List<String> messages = main.messagesCfg.getStringList("command.levelledmobs.summon.not-levellable");
             messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.getPrefix());

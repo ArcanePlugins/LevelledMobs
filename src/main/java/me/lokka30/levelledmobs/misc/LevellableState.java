@@ -117,5 +117,7 @@ public enum LevellableState {
      * Please contact a lead developer if you
      * believe you must resort to using this.
      */
-    DENIED_OTHER
+    DENIED_OTHER,
+
+    DENIED_LEVEL_0
 }

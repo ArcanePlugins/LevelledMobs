@@ -5,14 +5,11 @@
 package me.lokka30.levelledmobs.listeners;
 
 import me.lokka30.levelledmobs.LevelledMobs;
+import me.lokka30.levelledmobs.managers.ExternalCompatibilityManager;
 import me.lokka30.levelledmobs.misc.*;
 import me.lokka30.levelledmobs.rules.LevelledMobSpawnReason;
-import org.bukkit.GameMode;
-import org.bukkit.Location;
-import org.bukkit.Particle;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.block.CreatureSpawner;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
@@ -27,8 +24,8 @@ import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Collections;
-import java.util.HashSet;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * This class handles mob spawning on the server,
@@ -56,14 +53,18 @@ public class EntitySpawnListener implements Listener {
 
         if (event instanceof CreatureSpawnEvent && ((CreatureSpawnEvent) event).getSpawnReason().equals(CreatureSpawnEvent.SpawnReason.CUSTOM) &&
                 !lmEntity.isLevelled()) {
+
+            if (main.configUtils.playerLevellingEnabled && lmEntity.getPlayerForLevelling() == null)
+                updateMobForPlayerLevelling(lmEntity);
+
             delayedAddToQueue(lmEntity, event, 20);
             return;
         }
 
         if (!processMobSpawns) return;
 
-        if (main.configUtils.playerLevellingEnabled)
-            getClosestPlayer(lmEntity);
+        if (main.configUtils.playerLevellingEnabled && lmEntity.getPlayerForLevelling() == null)
+            updateMobForPlayerLevelling(lmEntity);
 
         final int mobProcessDelay = main.helperSettings.getInt(main.settingsCfg, "mob-process-delay", 0);
 
@@ -73,37 +74,58 @@ public class EntitySpawnListener implements Listener {
             main._mobsQueueManager.addToQueue(new QueueItem(lmEntity, event));
     }
 
-    private LevelledMobSpawnReason adaptVanillaSpawnReason(final CreatureSpawnEvent.SpawnReason spawnReason) {
-        return LevelledMobSpawnReason.valueOf(spawnReason.toString());
-    }
+    private void updateMobForPlayerLevelling(final LivingEntityWrapper lmEntity){
+        final int onlinePlayerCount = Bukkit.getOnlinePlayers().size();
+        final int checkDistance = main.helperSettings.getInt(main.settingsCfg, "async-task-max-blocks-from-player", 100);
+        final List<org.bukkit.entity.Player> playerList = onlinePlayerCount <= 10 ?
+                getPlayersMethod1(lmEntity.getLivingEntity(), checkDistance) :
+                getPlayersMethod2(lmEntity.getLivingEntity(), checkDistance);
 
-    private void getClosestPlayer(final @NotNull LivingEntityWrapper lmEntity) {
-        if (lmEntity.getPlayerForLevelling() != null) return;
-
-        Entity closestEntity = null;
-        double closestRange = Double.MAX_VALUE;
-
-        for (final Entity entity : lmEntity.getLivingEntity().getNearbyEntities(50, 50, 50)) {
-            if (!(entity instanceof Player)) continue;
-            if (((Player) entity).getGameMode().equals(GameMode.SPECTATOR)) continue;
-
-            if (entity.getLocation().getWorld() == null || !entity.getLocation().getWorld().getUID().equals(lmEntity.getWorld().getUID()))
+        Player closestPlayer = null;
+        for (final org.bukkit.entity.Player player : playerList) {
+            if (ExternalCompatibilityManager.isMobOfCitizens(player))
                 continue;
 
-            final double range = entity.getLocation().distanceSquared(lmEntity.getLocation());
-            if (range < closestRange && range <= main.playerLevellingDistance){
-                closestEntity = entity;
-                closestRange = range;
-            }
+            closestPlayer = player;
+            break;
         }
 
-        if (closestEntity != null) {
-            synchronized (closestEntity.getPersistentDataContainer()){
-                closestEntity.getPersistentDataContainer().set(main.levelManager.playerLevelling_Id, PersistentDataType.STRING, (closestEntity).getUniqueId().toString());
-            }
+        if (closestPlayer == null) return;
 
-            lmEntity.setPlayerForLevelling((Player) closestEntity);
+        synchronized (lmEntity.getLivingEntity().getPersistentDataContainer()) {
+            lmEntity.getPDC().set(main.levelManager.playerLevelling_Id, PersistentDataType.STRING, closestPlayer.getUniqueId().toString());
         }
+
+        lmEntity.setPlayerForLevelling(closestPlayer);
+    }
+
+    @NotNull
+    private static List<org.bukkit.entity.Player> getPlayersMethod1(final LivingEntity mob, final int checkDistance){
+        final double maxDistanceSquared = checkDistance * 4;
+
+        return Bukkit.getOnlinePlayers().stream()
+                .filter(p -> mob.getWorld().equals(p.getWorld()))
+                .filter(p -> !p.getGameMode().equals(GameMode.SPECTATOR))
+                .map(p -> Map.entry(mob.getLocation().distanceSquared(p.getLocation()), p))
+                .filter(e -> e.getKey() <= maxDistanceSquared)
+                .sorted(Comparator.comparingDouble(Map.Entry::getKey))
+                .map(Map.Entry::getValue)
+                .collect(Collectors.toList());
+    }
+
+    @NotNull
+    private static List<org.bukkit.entity.Player> getPlayersMethod2(final LivingEntity mob, final int checkDistance){
+        return mob.getNearbyEntities(checkDistance, checkDistance, checkDistance).stream()
+                .filter(e -> e instanceof org.bukkit.entity.Player)
+                .filter(e -> !((org.bukkit.entity.Player) e).getGameMode().equals(GameMode.SPECTATOR))
+                .map(e -> Map.entry(mob.getLocation().distanceSquared(e.getLocation()), (org.bukkit.entity.Player) e))
+                .sorted(Comparator.comparingDouble(Map.Entry::getKey))
+                .map(Map.Entry::getValue)
+                .collect(Collectors.toList());
+    }
+
+    private LevelledMobSpawnReason adaptVanillaSpawnReason(final CreatureSpawnEvent.SpawnReason spawnReason) {
+        return LevelledMobSpawnReason.valueOf(spawnReason.toString());
     }
 
     private void delayedAddToQueue(final LivingEntityWrapper lmEntity, final Event event, final int delay){

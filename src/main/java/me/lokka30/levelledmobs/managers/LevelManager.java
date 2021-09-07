@@ -38,12 +38,12 @@ import java.math.RoundingMode;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Generates levels and manages other functions related to levelling mobs
  *
- * @author lokka30, CoolBoy, Esophose, 7smile7,
- * wShevchik, Hugo5551, limzikiki
+ * @author lokka30, stumper66, CoolBoy, Esophose, 7smile7, Shevchik, Hugo5551, limzikiki
  * @since 2.4.0
  */
 public class LevelManager implements LevelInterface {
@@ -72,10 +72,19 @@ public class LevelManager implements LevelInterface {
     public EntitySpawnListener entitySpawnListener;
 
     /**
-     * The following entity types MUST be not levellable.
+     * The following entity types *MUST NOT* be levellable.
      * Stored as Strings since older versions may not contain certain entity type constants
      */
-    public final HashSet<String> FORCED_BLOCKED_ENTITY_TYPES = new HashSet<>(Arrays.asList("PLAYER", "UNKNOWN", "ARMOR_STAND", "NPC"));
+    public final HashSet<String> FORCED_BLOCKED_ENTITY_TYPES = new HashSet<>(Arrays.asList(
+            "AREA_EFFECT_CLOUD", "ARMOR_STAND", "ARROW", "BOAT", "DRAGON_FIREBALL", "DROPPED_ITEM",
+            "EGG", "ENDER_CRYSTAL", "ENDER_PEARL", "ENDER_SIGNAL", "EXPERIENCE_ORB",
+            "FALLING_BLOCK", "FIREBALL", "FIREWORK", "FISHING_HOOK", "GLOW_ITEM_FRAME",
+            "ITEM_FRAME", "LEASH_HITCH", "LIGHTNING", "LLAMA_SPIT", "MARKER", "MINECART",
+            "MINECART_CHEST", "MINECART_COMMAND", "MINECART_FURNACE", "MINECART_HOPPER",
+            "MINECART_MOB_SPAWNER", "MINECART_TNT", "NPC", "PAINTING", "PLAYER", "PRIMED_TNT",
+            "SMALL_FIREBALL", "SNOWBALL", "SPECTRAL_ARROW", "SPLASH_POTION", "THROWN_EXP_BOTTLE",
+            "TRIDENT", "UNKNOWN", "WITHER_SKULL"
+    ));
 
     /**
      * The following entity types must be manually ALLOWED in 'getLevellableState',
@@ -624,9 +633,10 @@ public class LevelManager implements LevelInterface {
             @Override
             public void run() {
                 final Map<Player, List<Entity>> entitiesPerPlayer = new LinkedHashMap<>();
+                final int checkDistance = main.helperSettings.getInt(main.settingsCfg,"async-task-max-blocks-from-player", 100);
 
                 for (final Player player : Bukkit.getOnlinePlayers()) {
-                    final List<Entity> entities = player.getNearbyEntities(50, 50, 50);
+                    final List<Entity> entities = player.getNearbyEntities(checkDistance, checkDistance, checkDistance);
                     entitiesPerPlayer.put(player, entities);
                 }
 
@@ -652,7 +662,7 @@ public class LevelManager implements LevelInterface {
 
                 // Mob must be a livingentity that is ...living.
                 if (!(entity instanceof LivingEntity) || entity instanceof Player) continue;
-                LivingEntityWrapper lmEntity = new LivingEntityWrapper((LivingEntity) entity, main);
+                final LivingEntityWrapper lmEntity = new LivingEntityWrapper((LivingEntity) entity, main);
 
                 if (lmEntity.isLevelled()) {
                     if (main.configUtils.playerLevellingEnabled) {
@@ -669,15 +679,17 @@ public class LevelManager implements LevelInterface {
                     synchronized (lmEntity.getLivingEntity().getPersistentDataContainer()) {
                         wasBabyMob = lmEntity.getPDC().has(main.levelManager.wasBabyMobKey, PersistentDataType.INTEGER);
                     }
-                    if (
-                            !lmEntity.isBabyMob() &&
+                    final LevellableState levellableState = main.levelInterface.getLevellableState(lmEntity);
+                    if (!lmEntity.isBabyMob() &&
                                     wasBabyMob &&
-                                    main.levelInterface.getLevellableState(lmEntity) == LevellableState.ALLOWED) {
+                                    levellableState == LevellableState.ALLOWED) {
                         // if the mob was a baby at some point, aged and now is eligable for levelling, we'll apply a level to it now
                         Utils.debugLog(main, DebugType.ENTITY_MISC, "&b" + lmEntity.getTypeName() + " &7was a baby and is now an adult, applying levelling rules");
 
                         main._mobsQueueManager.addToQueue(new QueueItem(lmEntity, null));
                     }
+                    else if (levellableState == LevellableState.ALLOWED)
+                        main._mobsQueueManager.addToQueue(new QueueItem(lmEntity, null));
                 }
             }
         }
@@ -687,34 +699,26 @@ public class LevelManager implements LevelInterface {
     }
 
     private void checkEntityForPlayerLevelling(final LivingEntityWrapper lmEntity, final List<Player> players){
-        Player closestPlayer = players.get(0);
-        double closestDistance = Double.MAX_VALUE;
         final LivingEntity mob = lmEntity.getLivingEntity();
+        final List<Player> sortedPlayers = players.stream()
+                .filter(p -> mob.getWorld().equals(p.getWorld()))
+                .filter(p -> !p.getGameMode().equals(GameMode.SPECTATOR))
+                .map(p -> Map.entry(mob.getLocation().distanceSquared(p.getLocation()), p))
+                .sorted(Comparator.comparingDouble(Map.Entry::getKey))
+                .map(Map.Entry::getValue)
+                .collect(Collectors.toList());
 
-        if (players.size() > 1) {
-            for (final Player p : players) {
-                if (p.getGameMode().equals(GameMode.SPECTATOR)) continue;
-                if (p.getLocation().getWorld() == null || mob.getLocation().getWorld() == null ||
-                        !p.getLocation().getWorld().getUID().equals(mob.getLocation().getWorld().getUID()))
-                    continue;
+        Player closestPlayer = null;
+        for (final Player player : sortedPlayers){
+            if (ExternalCompatibilityManager.isMobOfCitizens(player))
+                continue;
 
-                double distance = mob.getLocation().distanceSquared(p.getLocation());
-                if (distance < closestDistance) {
-                    closestPlayer = p;
-                    closestDistance = distance;
-                }
-            }
-        } else {
-            if (closestPlayer.getGameMode().equals(GameMode.SPECTATOR) ||
-                closestPlayer.getLocation().getWorld() == null || mob.getLocation().getWorld() == null ||
-                !closestPlayer.getLocation().getWorld().getUID().equals(mob.getLocation().getWorld().getUID()))
-                return;
-
-            closestDistance = mob.getLocation().distanceSquared(closestPlayer.getLocation());
+            closestPlayer = player;
+            break;
         }
 
-        if (closestDistance <= main.playerLevellingDistance &&
-                doesMobNeedRelevelling(mob, closestPlayer)) {
+        if (closestPlayer == null) return;
+        if (doesMobNeedRelevelling(mob, closestPlayer)) {
 
             synchronized (mob.getPersistentDataContainer()) {
                 mob.getPersistentDataContainer().set(main.levelManager.playerLevelling_Id, PersistentDataType.STRING, closestPlayer.getUniqueId().toString());
@@ -757,6 +761,7 @@ public class LevelManager implements LevelInterface {
 
         String playerId;
         main.playerLevellingEntities.put(mob, Instant.now());
+        if (main.playerLevellingMinRelevelTime <= 0) return false;
 
         synchronized (mob.getPersistentDataContainer()) {
             if (!mob.getPersistentDataContainer().has(main.levelManager.playerLevelling_Id, PersistentDataType.STRING))
@@ -941,7 +946,7 @@ public class LevelManager implements LevelInterface {
             return LevellableState.DENIED_CONFIGURATION_BLOCKED_ENTITY_TYPE;
 
         if (main.rulesManager.getRule_MobMaxLevel(lmInterface) < 1)
-            return LevellableState.DENIED_OTHER;
+            return LevellableState.DENIED_LEVEL_0;
 
         if (!(lmInterface instanceof LivingEntityWrapper))
             return LevellableState.ALLOWED;
