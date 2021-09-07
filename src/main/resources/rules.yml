@@ -211,6 +211,15 @@ presets:
         creeper-blast-damage: 1.0
         item-drop: 3
         xp-drop: 5
+        armor-bonus: 0
+        armor-toughness: 0
+        attack-knockback: 0
+        attack-speed: 0
+        flying-speed: 0
+        knockback-resistance: 0
+        luck: 0
+        horse-jump-strength: 0
+        zombie-spawn-reinforcements: 0
       creeper-max-damage-radius: 3
       tiered-coloring:
         1-5: '&#22E76B' #Green

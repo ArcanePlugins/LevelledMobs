@@ -7,8 +7,12 @@ package me.lokka30.levelledmobs.rules;
 import org.bukkit.entity.EntityType;
 import org.jetbrains.annotations.Nullable;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * Holds any custom multipliers values parsed from rules.yml
@@ -17,42 +21,86 @@ import java.util.List;
  * @since 3.0.0
  */
 public class FineTuningAttributes implements Cloneable {
-    public EntityType applicableEntity;
+    public FineTuningAttributes(){
+        this.shortNameMappings = Map.ofEntries(
+                Map.entry("maxHealth", "maxHlth"),
+                Map.entry("attackDamage", "attkDamage"),
+                Map.entry("itemDrop", "itemDrp"),
+                Map.entry("xpDrop", "xpDrp"),
+                Map.entry("movementSpeed", "moveSpd"),
+                Map.entry("rangedAttackDamage", "rangdAtkDmg"),
+                Map.entry("creeperExplosionRadius", "creeperDmg"),
+                Map.entry("armorBonus", "armorBns"),
+                Map.entry("armorToughness", "armorTfs"),
+                Map.entry("attackKnockback", "attackKb"),
+                Map.entry("flyingSpeed", "flyingSpd"),
+                Map.entry("knockbackResistance", "kbResist"),
+                Map.entry("horseJumpStrength", "horseJump"),
+                Map.entry("zombieReinforcements", "zombieRe")
+        );
+    }
 
+    private final Map<String, String> shortNameMappings;
+    public EntityType applicableEntity;
     public Double attackDamage;
     public Double creeperExplosionRadius;
     public Double maxHealth;
     public Double movementSpeed;
     public Double rangedAttackDamage;
     public Integer itemDrop;
+    public Double armorBonus;
+    public Double armorToughness;
+    public Double attackKnockback;
+    public Double attackSpeed;
+    public Double flyingSpeed;
+    public Double knockbackResistance;
+    public Double luck;
+    public Double horseJumpStrength;
+    public Double zombieReinforcements;
     public Integer xpDrop;
 
     public void mergeAttributes(final @Nullable FineTuningAttributes attributes){
         if (attributes == null) return;
 
-        if (attributes.maxHealth != null) this.maxHealth = attributes.maxHealth;
-        if (attributes.attackDamage != null) this.attackDamage = attributes.attackDamage;
-        if (attributes.itemDrop != null) this.itemDrop = attributes.itemDrop;
-        if (attributes.xpDrop != null) this.xpDrop = attributes.xpDrop;
-        if (attributes.movementSpeed != null) this.movementSpeed = attributes.movementSpeed;
-        if (attributes.rangedAttackDamage != null) this.rangedAttackDamage = attributes.rangedAttackDamage;
-        if (attributes.creeperExplosionRadius != null) this.creeperExplosionRadius = attributes.creeperExplosionRadius;
+        try {
+            for (final Field f : attributes.getClass().getDeclaredFields()) {
+                if (!Modifier.isPublic(f.getModifiers())) continue;
+                if (f.getName().equals("applicableEntity")) continue;
+
+                final Object presetValue = f.get(attributes);
+                if (presetValue == null) continue;
+
+                this.getClass().getDeclaredField(f.getName()).set(this, presetValue);
+            }
+        }
+        catch (IllegalAccessException | NoSuchFieldException e){
+            e.printStackTrace();
+        }
     }
 
     public String toString(){
         final StringBuilder sb = new StringBuilder();
-        final List<String> list = new LinkedList<>();
-        if (maxHealth != null) list.add("maxHlth: " + maxHealth);
-        if (attackDamage != null) list.add("attkDamage: " + attackDamage);
-        if (itemDrop != null) list.add("itemDrp: " + itemDrop);
-        if (xpDrop != null) list.add("xpDrp: " + xpDrop);
-        if (movementSpeed != null) list.add("moveSpd: " + movementSpeed);
-        if (rangedAttackDamage != null) list.add("rangdAtkDmg: " + rangedAttackDamage);
-        if (creeperExplosionRadius != null) list.add("creeperDmg: " + creeperExplosionRadius);
 
-        for (final String item : list){
-            if (sb.length() > 0) sb.append(", ");
-            sb.append(item);
+        try {
+            for (final Field f : this.getClass().getDeclaredFields()) {
+                if (!Modifier.isPublic(f.getModifiers())) continue;
+                if (f.getName().equals("applicableEntity")) continue;
+
+                final Object presetValue = f.get(this);
+                if (presetValue == null) continue;
+
+                if (sb.length() > 0) sb.append(", ");
+                if (this.shortNameMappings.containsKey(f.getName()))
+                    sb.append(this.shortNameMappings.get(f.getName()));
+                else
+                    sb.append(f.getName());
+
+                sb.append(": ");
+                sb.append(presetValue);
+            }
+        }
+        catch (IllegalAccessException e){
+            e.printStackTrace();
         }
 
         if (sb.length() == 0)
