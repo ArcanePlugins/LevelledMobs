@@ -1,7 +1,7 @@
 ---
 name: Bug report
 about: Let us know about any unintentional flaws in the resource
-title: 'Bug: ...'
+title: Untitled Bug Report
 labels: bug, unconfirmed
 assignees: ''
 

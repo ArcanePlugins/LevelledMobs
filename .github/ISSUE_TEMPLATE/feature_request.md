@@ -1,7 +1,7 @@
 ---
 name: Feature request
 about: Suggest an idea for the plugin
-title: 'Request: '
+title: Untitled Feature Request
 labels: enhancement
 assignees: ''
 
