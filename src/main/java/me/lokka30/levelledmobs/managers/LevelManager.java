@@ -60,6 +60,7 @@ public class LevelManager implements LevelInterface {
     public final NamespacedKey playerLevelling_Id;
     public final NamespacedKey chanceRule_Allowed;
     public final NamespacedKey chanceRule_Denied;
+    public final NamespacedKey denyLM_Nametag;
     public double attributeMaxHealthMax = 2048.0;
     public double attributeMovementSpeedMax = 2048.0;
     public double attributeAttackDamageMax = 2048.0;
@@ -105,6 +106,7 @@ public class LevelManager implements LevelInterface {
         playerLevelling_Id = new NamespacedKey(main, "playerLevelling_Id");
         chanceRule_Allowed = new NamespacedKey(main, "chanceRule_Allowed");
         chanceRule_Denied = new NamespacedKey(main, "chanceRule_Denied");
+        denyLM_Nametag = new NamespacedKey(main, "denyLM_Nametag");
         this.summonedEntityType = EntityType.UNKNOWN;
         this.randomLevellingCache = new TreeMap<>();
 
@@ -313,14 +315,6 @@ public class LevelManager implements LevelInterface {
             }
         }
 
-        // world guard regions take precedence over any other min / max settings
-        // livingEntity is null if passed from summon mobs command
-        if (ExternalCompatibilityManager.hasWorldGuardInstalled() && main.worldGuardIntegration.checkRegionFlags(lmInterface)) {
-            final int[] levels = generateWorldGuardRegionLevel(lmInterface);
-            if (levels[0] > -1) minLevel = levels[0];
-            if (levels[1] > -1) maxLevel = levels[1];
-        }
-
         // this will prevent an unhandled exception:
         if (minLevel < 1) minLevel = 1;
         if (maxLevel < 1) maxLevel = 1;
@@ -328,10 +322,6 @@ public class LevelManager implements LevelInterface {
         if (minLevel > maxLevel) minLevel = maxLevel;
 
         return new int[]{ minLevel, maxLevel };
-    }
-
-    public int[] generateWorldGuardRegionLevel(final LivingEntityInterface lmInterface) {
-        return main.worldGuardIntegration.getRegionLevel(lmInterface);
     }
 
     // This sets the levelled currentDrops on a levelled mob that just died.
@@ -803,6 +793,7 @@ public class LevelManager implements LevelInterface {
             case ATTRIBUTE_ATTACK_KNOCKBACK:            attribute = Attribute.GENERIC_ATTACK_KNOCKBACK; break;
             case ATTRIBUTE_LUCK:                        attribute = Attribute.GENERIC_LUCK; break;
             case ATTRIBUTE_ZOMBIE_SPAWN_REINFORCEMENTS: attribute = Attribute.ZOMBIE_SPAWN_REINFORCEMENTS; break;
+            case ATTRIBUTE_FOLLOW_RANGE:                attribute = Attribute.GENERIC_FOLLOW_RANGE; break;
 
             default:
                 throw new IllegalStateException("Addition must be an Attribute, if so, it has not been considered in this method");
@@ -938,10 +929,6 @@ public class LevelManager implements LevelInterface {
         if (lmInterface.getApplicableRules().isEmpty())
             return LevellableState.DENIED_NO_APPLICABLE_RULES;
 
-        // Check WorldGuard
-        if (!ExternalCompatibilityManager.doesWorldGuardRegionAllowLevelling(lmInterface.getLocation(), main))
-            return LevellableState.DENIED_CONFIGURATION_COMPATIBILITY_WORLD_GUARD;
-
         if (!main.rulesManager.getRule_IsMobAllowedInEntityOverride(lmInterface))
             return LevellableState.DENIED_CONFIGURATION_BLOCKED_ENTITY_TYPE;
 
@@ -1007,6 +994,7 @@ public class LevelManager implements LevelInterface {
             level = generateLevel(lmEntity);
 
         assert bypassLimits || isSummoned || getLevellableState(lmEntity) == LevellableState.ALLOWED;
+        boolean skipLM_Nametag = false;
 
         if (isSummoned) {
             SummonedMobPreLevelEvent summonedMobPreLevelEvent = new SummonedMobPreLevelEvent(lmEntity.getLivingEntity(), level);
@@ -1020,6 +1008,10 @@ public class LevelManager implements LevelInterface {
             if (mobPreLevelEvent.isCancelled()) return;
 
             level = mobPreLevelEvent.getLevel();
+            if (!mobPreLevelEvent.getShowLM_Nametag()) {
+                skipLM_Nametag = true;
+                lmEntity.setShouldShowLM_Nametag(false);
+            }
         }
 
         boolean hasNoLevelKey;
@@ -1086,7 +1078,8 @@ public class LevelManager implements LevelInterface {
         };
         applyAttribs.runTask(main);
 
-        main.levelManager.updateNametag_WithDelay(lmEntity);
+        if (!skipLM_Nametag)
+            main.levelManager.updateNametag_WithDelay(lmEntity);
         main.levelManager.applyLevelledEquipment(lmEntity, lmEntity.getMobLevel());
 
         MobPostLevelEvent.LevelCause levelCause = isSummoned ? MobPostLevelEvent.LevelCause.SUMMONED : MobPostLevelEvent.LevelCause.NORMAL;

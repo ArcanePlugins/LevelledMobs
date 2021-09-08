@@ -9,7 +9,6 @@ import me.lokka30.levelledmobs.LivingEntityInterface;
 import me.lokka30.levelledmobs.misc.LevellableState;
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -296,16 +295,6 @@ public class ExternalCompatibilityManager {
         if (isExternalType) lmEntity.setMobExternalType(ExternalCompatibility.SHOPKEEPERS);
 
         return isExternalType;
-    }
-
-    /**
-     * @param location location to check regions of
-     * @param main the main LevelledMobs instance
-     * @return if WorldGuard is installed and region of entity blocks levelling (flag derived)
-     */
-    public static boolean doesWorldGuardRegionAllowLevelling(final Location location, final LevelledMobs main) {
-        return !ExternalCompatibilityManager.hasWorldGuardInstalled() ||
-                main.worldGuardIntegration.regionAllowsLevelling(location);
     }
 
     @Nullable

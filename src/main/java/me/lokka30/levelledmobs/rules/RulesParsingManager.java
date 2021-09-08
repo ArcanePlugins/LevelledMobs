@@ -870,6 +870,7 @@ public class RulesParsingManager {
         attribs.luck = ymlHelper.getDouble2(cs, "luck", attribs.luck);
         attribs.horseJumpStrength = ymlHelper.getDouble2(cs, "horse-jump-strength", attribs.horseJumpStrength);
         attribs.zombieReinforcements = ymlHelper.getDouble2(cs, "zombie-spawn-reinforcements", attribs.zombieReinforcements);
+        attribs.followRange = ymlHelper.getDouble2(cs, "follow-range", attribs.followRange);
 
         return attribs;
     }

@@ -335,6 +335,21 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
         }
     }
 
+    public void setShouldShowLM_Nametag(final boolean doShow){
+        synchronized (this.livingEntity.getPersistentDataContainer()) {
+            if (doShow && getPDC().has(main.levelManager.denyLM_Nametag, PersistentDataType.INTEGER))
+                getPDC().remove(main.levelManager.denyLM_Nametag);
+            else if (!doShow && !getPDC().has(main.levelManager.denyLM_Nametag, PersistentDataType.INTEGER))
+                getPDC().set(main.levelManager.denyLM_Nametag, PersistentDataType.INTEGER, 1);
+        }
+    }
+
+    public boolean getShouldShowLM_Nametag(){
+        synchronized (this.livingEntity.getPersistentDataContainer()) {
+            return !getPDC().has(main.levelManager.denyLM_Nametag, PersistentDataType.INTEGER);
+        }
+    }
+
     @NotNull
     private Set<String> buildApplicableGroupsForMob(){
         final Set<String> groups = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);

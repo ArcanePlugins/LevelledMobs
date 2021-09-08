@@ -7,6 +7,7 @@ package me.lokka30.levelledmobs.managers;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.misc.Addition;
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
+import me.lokka30.levelledmobs.misc.Utils;
 import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
@@ -131,6 +132,33 @@ public class MobDataManager {
                     break;
                 case ATTRIBUTE_HORSE_JUMP_STRENGTH:
                     if (lmEntity.getFineTuningAttributes().horseJumpStrength != null) attributeValue = lmEntity.getFineTuningAttributes().horseJumpStrength;
+                    break;
+                case ATTRIBUTE_ARMOR_BONUS:
+                    if (lmEntity.getFineTuningAttributes().armorBonus != null) attributeValue = lmEntity.getFineTuningAttributes().armorBonus;
+                    break;
+                case ATTRIBUTE_ARMOR_TOUGHNESS:
+                    if (lmEntity.getFineTuningAttributes().armorToughness != null) attributeValue = lmEntity.getFineTuningAttributes().armorToughness;
+                    break;
+                case ATTRIBUTE_ATTACK_KNOCKBACK:
+                    if (lmEntity.getFineTuningAttributes().attackKnockback != null) attributeValue = lmEntity.getFineTuningAttributes().attackKnockback;
+                    break;
+                case ATTRIBUTE_ATTACK_SPEED:
+                    if (lmEntity.getFineTuningAttributes().attackSpeed != null) attributeValue = lmEntity.getFineTuningAttributes().attackSpeed;
+                    break;
+                case ATTRIBUTE_FLYING_SPEED:
+                    if (lmEntity.getFineTuningAttributes().flyingSpeed != null) attributeValue = lmEntity.getFineTuningAttributes().flyingSpeed;
+                    break;
+                case ATTRIBUTE_KNOCKBACK_RESISTANCE:
+                    if (lmEntity.getFineTuningAttributes().knockbackResistance != null) attributeValue = lmEntity.getFineTuningAttributes().knockbackResistance;
+                    break;
+                case ATTRIBUTE_LUCK:
+                    if (lmEntity.getFineTuningAttributes().luck != null) attributeValue = lmEntity.getFineTuningAttributes().luck;
+                    break;
+                case ATTRIBUTE_ZOMBIE_SPAWN_REINFORCEMENTS:
+                    if (lmEntity.getFineTuningAttributes().zombieReinforcements != null) attributeValue = lmEntity.getFineTuningAttributes().zombieReinforcements;
+                    break;
+                case ATTRIBUTE_FOLLOW_RANGE:
+                    if (lmEntity.getFineTuningAttributes().followRange != null) attributeValue = lmEntity.getFineTuningAttributes().followRange;
                     break;
             }
         }

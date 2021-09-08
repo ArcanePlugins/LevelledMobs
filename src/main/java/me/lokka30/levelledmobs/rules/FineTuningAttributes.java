@@ -57,6 +57,7 @@ public class FineTuningAttributes implements Cloneable {
     public Double luck;
     public Double horseJumpStrength;
     public Double zombieReinforcements;
+    public Double followRange;
     public Integer xpDrop;
 
     public void mergeAttributes(final @Nullable FineTuningAttributes attributes){

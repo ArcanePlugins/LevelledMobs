@@ -62,6 +62,7 @@ public class MobsQueueManager {
             final QueueItem item = queue.poll(200, TimeUnit.MILLISECONDS);
             if (item == null) continue;
 
+            if (!item.lmEntity.getShouldShowLM_Nametag()) continue;
             main.levelManager.entitySpawnListener.preprocessMob(item.lmEntity, item.event);
         }
 

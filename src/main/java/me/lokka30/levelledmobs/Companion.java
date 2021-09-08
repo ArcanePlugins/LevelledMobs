@@ -66,7 +66,7 @@ public class Companion {
     final private MetricsInfo metricsInfo;
 
     void checkWorldGuard() {
-        // Hook into WorldGuard, register LM's flags.
+        // Hook into WorldGuard
         // This cannot be moved to onEnable (stated in WorldGuard's documentation). It MUST be ran in onLoad.
         if (ExternalCompatibilityManager.hasWorldGuardInstalled()) {
             main.worldGuardIntegration = new WorldGuardIntegration();

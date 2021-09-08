@@ -67,6 +67,7 @@ public class MobPreLevelEvent extends Event implements Cancellable {
     private int level;
     private final LevelCause levelCause;
     private final HashSet<AdditionalLevelInformation> additionalInformation;
+    private boolean showLM_Nametag;
 
     public MobPreLevelEvent(@NotNull final LivingEntity entity, final int level, @NotNull final LevelCause levelCause, final @NotNull HashSet<AdditionalLevelInformation> additionalInformation) {
         super(!Bukkit.isPrimaryThread());
@@ -94,5 +95,13 @@ public class MobPreLevelEvent extends Event implements Cancellable {
 
     public void setLevel(int level) {
         this.level = level;
+    }
+
+    public void setShowLM_Nametag(final boolean doRemove){
+        this.showLM_Nametag = doRemove;
+    }
+
+    public boolean getShowLM_Nametag(){
+        return this.showLM_Nametag;
     }
 }
