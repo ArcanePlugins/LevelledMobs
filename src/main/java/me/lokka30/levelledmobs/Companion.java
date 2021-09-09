@@ -141,6 +141,18 @@ public class Companion {
             main.attributesCfg = loadEmbeddedResource("defaultAttributes.yml");
             main.dropsCfg = loadEmbeddedResource("defaultDrops.yml");
             main.mobHeadManager.loadTextures(Objects.requireNonNull(loadEmbeddedResource("textures.yml")));
+
+            // remove legacy files if they exist
+            final String[] legacyFile = {"attributes.yml", "drops.yml"};
+            for (String lFile : legacyFile) {
+                final File delFile = new File(main.getDataFolder(), lFile);
+                try {
+                    if (delFile.exists()) delFile.delete();
+                } catch (Exception e) {
+                    Utils.logger.warning("Unable to delete file " + lFile + ", " + e.getMessage());
+                }
+            }
+
         }
 
         final List<String> debugsEnabled = main.settingsCfg.getStringList(main.helperSettings.getKeyNameFromConfig(main.settingsCfg, "debug-misc"));

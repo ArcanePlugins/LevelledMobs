@@ -861,15 +861,6 @@ public class RulesParsingManager {
         attribs.itemDrop = ymlHelper.getInt2(cs, "item-drop", attribs.itemDrop);
         attribs.xpDrop = ymlHelper.getInt2(cs, "xp-drop", attribs.xpDrop);
         attribs.creeperExplosionRadius = ymlHelper.getDouble2(cs, "creeper-blast-damage", attribs.creeperExplosionRadius);
-        attribs.armorBonus = ymlHelper.getDouble2(cs, "armor-bonus", attribs.armorBonus);
-        attribs.armorToughness = ymlHelper.getDouble2(cs, "armor-toughness", attribs.armorToughness);
-        attribs.attackKnockback = ymlHelper.getDouble2(cs, "attack-knockback", attribs.attackKnockback);
-        attribs.attackSpeed = ymlHelper.getDouble2(cs, "attack-speed", attribs.attackSpeed);
-        attribs.flyingSpeed = ymlHelper.getDouble2(cs, "flying-speed", attribs.flyingSpeed);
-        attribs.knockbackResistance = ymlHelper.getDouble2(cs, "knockback-resistance", attribs.knockbackResistance);
-        attribs.luck = ymlHelper.getDouble2(cs, "luck", attribs.luck);
-        attribs.horseJumpStrength = ymlHelper.getDouble2(cs, "horse-jump-strength", attribs.horseJumpStrength);
-        attribs.zombieReinforcements = ymlHelper.getDouble2(cs, "zombie-spawn-reinforcements", attribs.zombieReinforcements);
 
         return attribs;
     }

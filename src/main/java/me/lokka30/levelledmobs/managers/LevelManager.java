@@ -788,22 +788,18 @@ public class LevelManager implements LevelInterface {
     public void applyLevelledAttributes(@NotNull final LivingEntityWrapper lmEntity, @NotNull final Addition addition) {
         assert lmEntity.isLevelled();
 
-        // TODO: This functionality should be added into the enum.
+        // This functionality should be added into the enum.
         Attribute attribute;
         switch (addition) {
-            case ATTRIBUTE_MAX_HEALTH:                  attribute = Attribute.GENERIC_MAX_HEALTH; break;
-            case ATTRIBUTE_ATTACK_DAMAGE:               attribute = Attribute.GENERIC_ATTACK_DAMAGE; break;
-            case ATTRIBUTE_MOVEMENT_SPEED:              attribute = Attribute.GENERIC_MOVEMENT_SPEED; break;
-            case ATTRIBUTE_HORSE_JUMP_STRENGTH:         attribute = Attribute.HORSE_JUMP_STRENGTH; break;
-            case ATTRIBUTE_ARMOR_BONUS:                 attribute = Attribute.GENERIC_ARMOR; break;
-            case ATTRIBUTE_ARMOR_TOUGHNESS:             attribute = Attribute.GENERIC_ARMOR_TOUGHNESS; break;
-            case ATTRIBUTE_KNOCKBACK_RESISTANCE:        attribute = Attribute.GENERIC_KNOCKBACK_RESISTANCE; break;
-            case ATTRIBUTE_ATTACK_SPEED:                attribute = Attribute.GENERIC_ATTACK_SPEED; break;
-            case ATTRIBUTE_FLYING_SPEED:                attribute = Attribute.GENERIC_FLYING_SPEED; break;
-            case ATTRIBUTE_ATTACK_KNOCKBACK:            attribute = Attribute.GENERIC_ATTACK_KNOCKBACK; break;
-            case ATTRIBUTE_LUCK:                        attribute = Attribute.GENERIC_LUCK; break;
-            case ATTRIBUTE_ZOMBIE_SPAWN_REINFORCEMENTS: attribute = Attribute.ZOMBIE_SPAWN_REINFORCEMENTS; break;
-
+            case ATTRIBUTE_MAX_HEALTH:
+                attribute = Attribute.GENERIC_MAX_HEALTH;
+                break;
+            case ATTRIBUTE_ATTACK_DAMAGE:
+                attribute = Attribute.GENERIC_ATTACK_DAMAGE;
+                break;
+            case ATTRIBUTE_MOVEMENT_SPEED:
+                attribute = Attribute.GENERIC_MOVEMENT_SPEED;
+                break;
             default:
                 throw new IllegalStateException("Addition must be an Attribute, if so, it has not been considered in this method");
         }
@@ -1053,31 +1049,19 @@ public class LevelManager implements LevelInterface {
         final BukkitRunnable applyAttribs = new BukkitRunnable() {
             @Override
             public void run() {
-                // TODO: to improve performance have it get the values async for all attributes then run the task to apply the values
                 synchronized (main.attributeSyncObject) {
                     main.levelManager.applyLevelledAttributes(lmEntity, Addition.ATTRIBUTE_ATTACK_DAMAGE);
                     main.levelManager.applyLevelledAttributes(lmEntity, Addition.ATTRIBUTE_MAX_HEALTH);
                     main.levelManager.applyLevelledAttributes(lmEntity, Addition.ATTRIBUTE_MOVEMENT_SPEED);
-                    main.levelManager.applyLevelledAttributes(lmEntity, Addition.ATTRIBUTE_LUCK);
-                    main.levelManager.applyLevelledAttributes(lmEntity, Addition.ATTRIBUTE_ARMOR_BONUS);
-                    main.levelManager.applyLevelledAttributes(lmEntity, Addition.ATTRIBUTE_ARMOR_TOUGHNESS);
-                    main.levelManager.applyLevelledAttributes(lmEntity, Addition.ATTRIBUTE_ATTACK_KNOCKBACK);
-                    main.levelManager.applyLevelledAttributes(lmEntity, Addition.ATTRIBUTE_ATTACK_SPEED);
-                    main.levelManager.applyLevelledAttributes(lmEntity, Addition.ATTRIBUTE_FLYING_SPEED);
-                    main.levelManager.applyLevelledAttributes(lmEntity, Addition.ATTRIBUTE_KNOCKBACK_RESISTANCE);
-
-                    if (lmEntity.getLivingEntity() instanceof Zombie)
-                        main.levelManager.applyLevelledAttributes(lmEntity, Addition.ATTRIBUTE_ZOMBIE_SPAWN_REINFORCEMENTS);
-                    else if (lmEntity.getLivingEntity() instanceof Horse)
-                        main.levelManager.applyLevelledAttributes(lmEntity, Addition.ATTRIBUTE_HORSE_JUMP_STRENGTH);
                 }
 
                 if (finalNbtData != null) {
                     NBTApplyResult result = NBTManager.applyNBT_Data_Mob(lmEntity, finalNbtData);
-                    if (result.hadException())
+                    if (result.hadException()) {
                         Utils.logger.warning("Error applying NBT data to " + lmEntity.getTypeName() + ". Exception message: " + result.exceptionMessage);
-                    else
+                    } else {
                         Utils.debugLog(main, DebugType.NBT_APPLY_SUCCESS, "Successfully applied NBT data to '" + lmEntity.getTypeName() + "'.");
+                    }
                 }
 
                 if (lmEntity.getLivingEntity() instanceof Creeper)
