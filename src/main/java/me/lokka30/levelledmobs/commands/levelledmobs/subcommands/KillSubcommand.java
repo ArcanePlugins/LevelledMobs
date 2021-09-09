@@ -28,6 +28,7 @@ public class KillSubcommand implements CommandHandler.Subcommand {
         TODO
             lokka30: Complete method body
          */
+        sender.sendMessage("Kill.work in progress");
     }
 
     @Override

@@ -28,6 +28,7 @@ public class RulesSubcommand implements CommandHandler.Subcommand {
         TODO
             lokka30: Complete method body
          */
+        sender.sendMessage("Rules.work in progress");
     }
 
     @Override

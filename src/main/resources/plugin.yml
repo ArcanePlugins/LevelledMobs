@@ -10,15 +10,15 @@
 # General plugin information
 name: 'LevelledMobs'
 version: '${project.version}'
-authors: [ 'lokka30', 'stumper66 (aka. PenalBuffalo)', 'UltimaOath (aka. Oathkeeper)' ]
+authors: [ 'lokka30', 'stumper66 (aka. PenalBuffalo)', 'UltimaOath (aka. Oathkeeper)' ] # The LevelledMobs team
 description: '${project.description}'
 website: 'https://github.com/lokka30/LevelledMobs/'
 
 # Other info for plugin loader
 main: 'me.lokka30.levelledmobs.LevelledMobs'
 softdepend: [ 'WorldEdit', 'WorldGuard', 'ProtocolLib', 'PlaceholderAPI', 'NBTAPI' ]
-api-version: '1.13' # Yes, '1.13' is intended. Don't change it.
-load: 'POSTWORLD'
+api-version: '1.14' # Use the MINIMUM POSSIBLE version the plugin can run on WITH configuration.
+load: 'STARTUP' # We want it to load before the worlds so all mobs are detected.
 
 # Base commands registered by the plugin
 commands:
@@ -27,11 +27,26 @@ commands:
     aliases: [ 'leveledmobs', 'lm', 'lvlmobs' ]
     usage: '/<command>'
 
-# All non-dynamic permissions registered by the plugin
+# All static permissions registered by the plugin
 permissions:
-
-  #TODO
 
   levelledmobs.*:
     default: op
-    #TODO
+    description: 'Gain all LevelledMobs operator permissions'
+    children: #TODO
+
+  levelledmobs.command.*:
+    default: op
+    description: 'Gain access to all LevelledMobs commands'
+    children: #TODO
+
+  levelledmobs.command.levelledmobs.*:
+    default: op
+    description: 'Gain access to /levelledmobs and all of its subcommands'
+    children: #TODO
+
+  levelledmobs.command.levelledmobs:
+    default: op
+    description: 'Gain access to the base command of /levelledmobs'
+
+  # TODO Add other permissions

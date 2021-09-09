@@ -10,6 +10,7 @@ import me.lokka30.levelledmobs.integrations.IntegrationHandler;
 import me.lokka30.levelledmobs.levelling.LevelHandler;
 import me.lokka30.levelledmobs.listeners.*;
 import me.lokka30.levelledmobs.misc.Utils;
+import me.lokka30.levelledmobs.queue.QueueHandler;
 import me.lokka30.microlib.maths.QuickTimer;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
@@ -41,11 +42,11 @@ public class LevelledMobs extends JavaPlugin {
     @Override
     public void onLoad() {
         final QuickTimer timer = new QuickTimer();
-        Utils.LOGGER.info("&3Start-up: &f~ Initiating pre-start-up sequence ~");
+        Utils.LOGGER.info("&f~ Initiating pre-start-up sequence ~");
 
         //TODO lokka30: Complete this method's body.
 
-        Utils.LOGGER.info("&3Start-up: &f~ Pre-start-up complete, took &b" + timer.getTimer() + "ms&f ~");
+        Utils.LOGGER.info("&f~ Pre-start-up complete, took &b" + timer.getTimer() + "ms&f ~");
     }
 
     /**
@@ -63,7 +64,7 @@ public class LevelledMobs extends JavaPlugin {
     @Override
     public void onEnable() {
         final QuickTimer timer = new QuickTimer();
-        Utils.LOGGER.info("&3Start-up: &f~ Initiating start-up sequence ~");
+        Utils.LOGGER.info("&f~ Initiating start-up sequence ~");
 
         // IMPORTANT: Do not mess with the order of these methods being ran!
 
@@ -72,7 +73,7 @@ public class LevelledMobs extends JavaPlugin {
         fileHandler.loadExternalFiles();
         loadListeners();
 
-        Utils.LOGGER.info("&3Start-up: &f~ Start-up complete, took &b" + timer.getTimer() + "ms&f ~");
+        Utils.LOGGER.info("&f~ Start-up complete, took &b" + timer.getTimer() + "ms&f ~");
     }
 
     /**
@@ -86,13 +87,13 @@ public class LevelledMobs extends JavaPlugin {
     @Override
     public void onDisable() {
         final QuickTimer timer = new QuickTimer();
-        Utils.LOGGER.info("&3Shut-down: &f~ Initiating shut-down sequence ~");
+        Utils.LOGGER.info("&f~ Initiating shut-down sequence ~");
 
         // IMPORTANT: Do not mess with the order of these methods being ran!
 
         //TODO lokka30: Complete this method's body.
 
-        Utils.LOGGER.info("&3Shut-down: &f~ Shut-down complete, took &b" + timer.getTimer() + "ms&f ~");
+        Utils.LOGGER.info("&f~ Shut-down complete, took &b" + timer.getTimer() + "ms&f ~");
     }
 
     /* Methods ran by onLoad, onEnable and onDisable */
@@ -107,7 +108,7 @@ public class LevelledMobs extends JavaPlugin {
      * @see org.bukkit.plugin.PluginManager#registerEvents(Listener, Plugin)
      */
     private void loadListeners() {
-        Utils.LOGGER.info("&3Start-up: &7Loading listeners...");
+        Utils.LOGGER.info("Loading listeners...");
 
         // Retain alphabetical order when modifying this list! :)
         final HashSet<Listener> listeners = new HashSet<>(Arrays.asList(

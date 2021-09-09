@@ -28,6 +28,7 @@ public class SummonSubcommand implements CommandHandler.Subcommand {
         TODO
             lokka30: Complete method body
          */
+        sender.sendMessage("Summon.work in progress");
     }
 
     @Override

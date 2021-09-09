@@ -28,6 +28,7 @@ public class AdvancedSubcommand implements CommandHandler.Subcommand {
         TODO
             lokka30: Complete method body
          */
+        sender.sendMessage("Advanced.work in progress");
     }
 
     @Override

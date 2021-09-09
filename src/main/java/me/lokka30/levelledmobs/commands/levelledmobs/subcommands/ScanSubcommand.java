@@ -28,6 +28,7 @@ public class ScanSubcommand implements CommandHandler.Subcommand {
         TODO
             lokka30: Complete method body
          */
+        sender.sendMessage("Scan.work in progress");
     }
 
     @Override

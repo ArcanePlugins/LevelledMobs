@@ -28,6 +28,7 @@ public class ReloadSubcommand implements CommandHandler.Subcommand {
         TODO
             lokka30: Complete method body
          */
+        sender.sendMessage("Reload.work in progress");
     }
 
     @Override

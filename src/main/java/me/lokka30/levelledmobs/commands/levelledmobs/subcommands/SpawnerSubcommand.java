@@ -28,6 +28,7 @@ public class SpawnerSubcommand implements CommandHandler.Subcommand {
         TODO
             lokka30: Complete method body
          */
+        sender.sendMessage("Spawner.work in progress");
     }
 
     @Override

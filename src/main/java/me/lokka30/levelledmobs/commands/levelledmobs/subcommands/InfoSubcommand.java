@@ -28,6 +28,7 @@ public class InfoSubcommand implements CommandHandler.Subcommand {
         TODO
             lokka30: Complete method body
          */
+        sender.sendMessage("Info.work in progress");
     }
 
     @Override

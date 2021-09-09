@@ -82,14 +82,14 @@ public class FileHandler {
      * be ran on start-up (onEnable).
      */
     public void loadInternalFiles() {
-        Utils.LOGGER.info("&3FileHandler: &7Started loading internal files...");
+        Utils.LOGGER.info("Started loading internal files...");
 
         //TODO load static mob data file
         main.staticMobDataHandler.loadMobData();
 
         //TODO add the other internal files to here.
 
-        Utils.LOGGER.info("&3FileHandler: &7All external files have been loaded.");
+        Utils.LOGGER.info("All external files have been loaded.");
     }
 
     /**
@@ -99,36 +99,36 @@ public class FileHandler {
      * This must be called on start-up and also on reload.
      */
     public void loadExternalFiles() {
-        Utils.LOGGER.info("&3FileHandler: &7Started loading external files...");
+        Utils.LOGGER.info("Started loading external files...");
 
-        Utils.LOGGER.info("&3FileHandler: &7Loading external file '&badvanced.yml&7'...");
+        Utils.LOGGER.info("Loading external file '&badvanced.yml&7'...");
         advancedCfg = LightningBuilder
                 .fromFile(new File(main.getDataFolder(), "advanced.yml"))
                 .setConfigSettings(ConfigSettings.PRESERVE_COMMENTS)
                 .createConfig();
 
-        Utils.LOGGER.info("&3FileHandler: &7Loading external file '&bcustomdrops.yml&7'...");
+        Utils.LOGGER.info("Loading external file '&bcustomdrops.yml&7'...");
         customDropsCfg = LightningBuilder
                 .fromFile(new File(main.getDataFolder(), "customdrops.yml"))
                 .setConfigSettings(ConfigSettings.PRESERVE_COMMENTS)
                 .createConfig();
 
-        Utils.LOGGER.info("&3FileHandler: &7Loading external file '&brules.yml&7'...");
+        Utils.LOGGER.info("Loading external file '&brules.yml&7'...");
         rulesCfg = LightningBuilder
                 .fromFile(new File(main.getDataFolder(), "rules.yml"))
                 .setConfigSettings(ConfigSettings.PRESERVE_COMMENTS)
                 .createConfig();
 
-        Utils.LOGGER.info("&3FileHandler: &7Loading external file '&btranslations.yml&7'...");
+        Utils.LOGGER.info("Loading external file '&btranslations.yml&7'...");
         translationsCfg = LightningBuilder
                 .fromFile(new File(main.getDataFolder(), "translations.yml"))
                 .setConfigSettings(ConfigSettings.PRESERVE_COMMENTS)
                 .createConfig();
 
-        Utils.LOGGER.info("&3FileHandler: &7Loading external file '&blicense.txt&7'...");
+        Utils.LOGGER.info("Loading external file '&blicense.txt&7'...");
         main.saveResource("license.txt", true);
 
-        Utils.LOGGER.info("&3FileHandler: &7All external files have been loaded.");
+        Utils.LOGGER.info("All external files have been loaded.");
     }
 
 }

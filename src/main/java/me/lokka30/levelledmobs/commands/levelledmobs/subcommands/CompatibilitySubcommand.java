@@ -28,6 +28,7 @@ public class CompatibilitySubcommand implements CommandHandler.Subcommand {
         TODO
             lokka30: Complete method body
          */
+        sender.sendMessage("Compatibility.work in progress");
     }
 
     @Override
