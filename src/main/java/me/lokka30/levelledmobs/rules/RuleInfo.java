@@ -43,6 +43,7 @@ public class RuleInfo {
     public Boolean stopProcessingRules;
     public Boolean useRandomLevelling;
     public Boolean mergeEntityNameOverrides;
+    public Boolean passengerMatchLevel;
     public int rulePriority;
     public Integer maxRandomVariance;
     public Integer creeperMaxDamageRadius;
@@ -82,6 +83,7 @@ public class RuleInfo {
     public CachedModalList<String> conditions_NoDropEntities;
     public CachedModalList<String> conditions_WGRegions;
     public CachedModalList<String> conditions_MM_Names;
+    public CachedModalList<String> conditions_SpawnerNames;
     public CachedModalList<LevelledMobSpawnReason> conditions_SpawnReasons;
     @Nullable
     public FineTuningAttributes allMobMultipliers;

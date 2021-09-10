@@ -579,6 +579,7 @@ public class RulesParsingManager {
         parsingInfo.sunlightBurnAmount = ymlHelper.getDouble2(cs, "sunlight-intensity", parsingInfo.sunlightBurnAmount);
         parsingInfo.lowerMobLevelBiasFactor = ymlHelper.getInt2(cs, "lower-mob-level-bias-factor", parsingInfo.lowerMobLevelBiasFactor);
         parsingInfo.mobNBT_Data = ymlHelper.getString(cs, "nbt-data", parsingInfo.mobNBT_Data);
+        parsingInfo.passengerMatchLevel = ymlHelper.getBoolean2(cs, "passenger-match-level", parsingInfo.passengerMatchLevel);
     }
 
     private void parseConditions(final ConfigurationSection cs){
@@ -623,6 +624,7 @@ public class RulesParsingManager {
         parsingInfo.conditions_Biomes = buildCachedModalListOfBiome(cs, parsingInfo.conditions_Biomes);
         parsingInfo.conditions_ApplyPlugins = buildCachedModalListOfString(cs, "apply-plugins", parsingInfo.conditions_ApplyPlugins);
         parsingInfo.conditions_MM_Names = buildCachedModalListOfString(cs,"mythicmobs-internal-names", parsingInfo.conditions_MM_Names);
+        parsingInfo.conditions_SpawnerNames = buildCachedModalListOfString(cs,"spawner-names", parsingInfo.conditions_SpawnerNames);
     }
 
     private void parseStrategies(final ConfigurationSection cs){

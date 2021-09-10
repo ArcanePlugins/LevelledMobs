@@ -61,6 +61,7 @@ public class LevelManager implements LevelInterface {
     public final NamespacedKey chanceRule_Allowed;
     public final NamespacedKey chanceRule_Denied;
     public final NamespacedKey denyLM_Nametag;
+    public final NamespacedKey sourceSpawnerName;
     public double attributeMaxHealthMax = 2048.0;
     public double attributeMovementSpeedMax = 2048.0;
     public double attributeAttackDamageMax = 2048.0;
@@ -107,6 +108,7 @@ public class LevelManager implements LevelInterface {
         chanceRule_Allowed = new NamespacedKey(main, "chanceRule_Allowed");
         chanceRule_Denied = new NamespacedKey(main, "chanceRule_Denied");
         denyLM_Nametag = new NamespacedKey(main, "denyLM_Nametag");
+        sourceSpawnerName = new NamespacedKey(main, "sourceSpawnerName");
         this.summonedEntityType = EntityType.UNKNOWN;
         this.randomLevellingCache = new TreeMap<>();
 
@@ -995,6 +997,18 @@ public class LevelManager implements LevelInterface {
 
         assert bypassLimits || isSummoned || getLevellableState(lmEntity) == LevellableState.ALLOWED;
         boolean skipLM_Nametag = false;
+
+        if (lmEntity.getLivingEntity().isInsideVehicle() && main.rulesManager.getRule_PassengerMatchLevel(lmEntity)
+                && lmEntity.getLivingEntity().getVehicle() instanceof LivingEntity){
+            // entity is a passenger. grab the level from the "vehicle" entity
+            final LivingEntityWrapper vehicle = new LivingEntityWrapper((LivingEntity) lmEntity.getLivingEntity().getVehicle(), main);
+            if (vehicle.isLevelled()) {
+                Utils.logger.info(lmEntity.getNameIfBaby() + " got level " + vehicle.getMobLevel() + " from vehicle " + vehicle.getNameIfBaby());
+                level = vehicle.getMobLevel();
+            }
+            else
+                Utils.logger.info(lmEntity.getNameIfBaby() + " vehicle was unlevelled: " + vehicle.getNameIfBaby());
+        }
 
         if (isSummoned) {
             SummonedMobPreLevelEvent summonedMobPreLevelEvent = new SummonedMobPreLevelEvent(lmEntity.getLivingEntity(), level);

@@ -385,6 +385,17 @@ public class RulesManager {
         return tieredText;
     }
 
+    public boolean getRule_PassengerMatchLevel(@NotNull final LivingEntityWrapper lmEntity){
+        boolean result = false;
+
+        for (final RuleInfo ruleInfo : lmEntity.getApplicableRules()){
+            if (ruleInfo.passengerMatchLevel != null)
+                result = ruleInfo.passengerMatchLevel;
+        }
+
+        return result;
+    }
+
     @Nullable
     public String getRule_EntityOverriddenName(@NotNull final LivingEntityWrapper lmEntity, final boolean useCustomNameForNametags){
         Map<String, List<LevelTierMatching>> entityNameOverrides_Level = null;
@@ -552,6 +563,17 @@ public class RulesManager {
             if (!ri.conditions_MM_Names.isEnabledInList(mm_Name, lmEntity)) {
                 Utils.debugLog(main, DebugType.DENIED_RULE_MYTHIC_MOBS_INTERNAL_NAME, String.format("&b%s&7, mob: &b%s&7, mm_name: &b%s&7",
                         ri.getRuleName(), lmEntity.getTypeName(), mm_Name));
+                return false;
+            }
+        }
+
+        if (ri.conditions_SpawnerNames != null) {
+            String checkName = lmEntity.getSourceSpawnerName();
+            if (checkName == null) checkName = "(none)";
+
+            if (!ri.conditions_SpawnerNames.isEnabledInList(checkName, lmEntity)) {
+                Utils.debugLog(main, DebugType.DENIED_RULE_SPAWN_REASON, String.format("&b%s&7, mob: &b%s&7, spawner: &b%s&7",
+                        ri.getRuleName(), lmEntity.getNameIfBaby(), checkName));
                 return false;
             }
         }

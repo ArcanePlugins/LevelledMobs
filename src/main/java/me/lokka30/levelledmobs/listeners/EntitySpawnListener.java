@@ -150,6 +150,8 @@ public class EntitySpawnListener implements Listener {
         final int useMinLevel = minLevel == null ? -1 : minLevel;
         final int useMaxLevel = maxLevel == null ? -1 : maxLevel;
         final int generatedLevel = main.levelInterface.generateLevel(lmEntity, useMinLevel, useMaxLevel);
+        final String spawnerName = cs.getPersistentDataContainer().has(main.blockPlaceListener.keySpawner_CustomName, PersistentDataType.STRING) ?
+            cs.getPersistentDataContainer().get(main.blockPlaceListener.keySpawner_CustomName, PersistentDataType.STRING) : null;
         String customDropId = null;
         if (cs.getPersistentDataContainer().has(main.blockPlaceListener.keySpawner_CustomDropId, PersistentDataType.STRING)) {
             customDropId = cs.getPersistentDataContainer().get(main.blockPlaceListener.keySpawner_CustomDropId, PersistentDataType.STRING);
@@ -159,6 +161,8 @@ public class EntitySpawnListener implements Listener {
                 }
             }
         }
+
+        lmEntity.setSourceSpawnerName(spawnerName);
 
         Utils.debugLog(main, DebugType.MOB_SPAWNER, String.format(
                 "Spawned mob from LM spawner: &b%s&7, minLevel:&b %s&7, maxLevel: &b%s&7, generatedLevel: &b%s&b%s",

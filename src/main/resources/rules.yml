@@ -359,6 +359,7 @@ default-rule:
 
     baby-mobs-inherit-adult-setting: true
     level-inheritance: true
+    passenger-match-level: false
 
     use-custom-item-drops-for-mobs: false
 

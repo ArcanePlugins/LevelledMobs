@@ -64,6 +64,7 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
     private Map<String, Boolean> prevChanceRuleResults;
     private final ReentrantLock cacheLock;
     private final static Object playerLock = new Object();
+    private String sourceSpawnerName;
 
     private void buildCache(){
         if (isBuildingCache || this.hasCache) return;
@@ -271,6 +272,34 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
         }
 
         this.spawnReason = spawnReason;
+    }
+
+    public void setSourceSpawnerName(final String name) {
+        this.sourceSpawnerName = name;
+        synchronized (this.livingEntity.getPersistentDataContainer()){
+            if (name == null && getPDC().has(main.levelManager.sourceSpawnerName, PersistentDataType.STRING))
+                getPDC().remove(main.levelManager.sourceSpawnerName);
+            else if (name != null)
+                getPDC().set(main.levelManager.sourceSpawnerName, PersistentDataType.STRING, name);
+        }
+    }
+
+    @Nullable
+    public String getSourceSpawnerName(){
+        String spawnerName = this.sourceSpawnerName;
+
+        if (this.sourceSpawnerName == null){
+            synchronized (livingEntity.getPersistentDataContainer()){
+                if (getPDC().has(main.levelManager.sourceSpawnerName, PersistentDataType.STRING))
+                    spawnerName = getPDC().get(main.levelManager.sourceSpawnerName, PersistentDataType.STRING);
+            }
+            if (spawnerName == null){
+                this.sourceSpawnerName = "(none)";
+                spawnerName = this.sourceSpawnerName;
+            }
+        }
+
+        return spawnerName;
     }
 
     @NotNull
