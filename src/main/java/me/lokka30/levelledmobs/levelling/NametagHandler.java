@@ -5,6 +5,7 @@
 package me.lokka30.levelledmobs.levelling;
 
 import me.lokka30.levelledmobs.LevelledMobs;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author lokka30
@@ -17,11 +18,12 @@ public class NametagHandler {
 
     private final LevelledMobs main;
 
-    public NametagHandler(final LevelledMobs main) {
+    public NametagHandler(@NotNull final LevelledMobs main) {
         this.main = main;
     }
 
     /**
+     * @since v4.0.0
      * A list of available nametag systems
      */
     public enum NametagSystem {
@@ -32,7 +34,7 @@ public class NametagHandler {
          * the ProtocolLib plugin, if it's
          * installed.
          */
-        PROTOCOL_LIB_SYSTEM,
+        PACKETS,
 
         /**
          * @since v4.0.0
@@ -42,7 +44,7 @@ public class NametagHandler {
          * Not recommended, but available in case
          * specific server requirements justify it.
          */
-        CUSTOM_NAME_SYSTEM,
+        CUSTOM_NAMES,
 
         /**
          * @since v4.0.0

@@ -22,13 +22,7 @@ public class LevelHandler {
         this.namespacedKeys = new NamespacedKeys(main);
     }
 
-    @NotNull
-    private final NamespacedKeys namespacedKeys;
-
-    @NotNull
-    public NamespacedKeys getNamespacedKeys() {
-        return namespacedKeys;
-    }
+    @NotNull public final NamespacedKeys namespacedKeys;
 
     /*
     TODO

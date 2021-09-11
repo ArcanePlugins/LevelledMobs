@@ -4,6 +4,8 @@
 
 package me.lokka30.levelledmobs.levelling;
 
+import org.jetbrains.annotations.NotNull;
+
 /**
  * @author lokka30
  * @since v4.0.0
@@ -23,5 +25,16 @@ public enum LevellableState {
      * @since v4.0.0
      * The mob is levellable.
      */
-    LEVELLABLE
+    LEVELLABLE(LevellableState.defaultInfo);
+
+    @NotNull public static final String defaultInfo = "N/A";
+    @NotNull public String additionalInfo;
+    LevellableState(@NotNull final String additionalInfo) { this.additionalInfo = additionalInfo; }
+
+    /**
+     * @author lokka30
+     * @since v4.0.0
+     * @param additionalInfo what additional info the levellable state should have
+     */
+    public void setAdditionalInfo(@NotNull final String additionalInfo) { this.additionalInfo = additionalInfo; }
 }

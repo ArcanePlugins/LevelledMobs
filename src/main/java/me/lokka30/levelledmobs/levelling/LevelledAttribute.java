@@ -19,6 +19,7 @@ package me.lokka30.levelledmobs.levelling;
  * various listeners.
  */
 public enum LevelledAttribute {
+
     /**
      * @since v4.0.0
      * Armor bonus of an Entity.

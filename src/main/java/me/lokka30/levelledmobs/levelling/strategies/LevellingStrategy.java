@@ -6,6 +6,7 @@ package me.lokka30.levelledmobs.levelling.strategies;
 
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.levelling.LevelledMob;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author lokka30
@@ -26,5 +27,5 @@ public interface LevellingStrategy {
      * @param mob the mob that is having their level calculated
      * @return the level calculated for specified mob
      */
-    int calculateLevel(LevelledMobs main, LevelledMob mob);
+    int calculateLevel(@NotNull LevelledMobs main, @NotNull LevelledMob mob);
 }

@@ -5,6 +5,7 @@
 package me.lokka30.levelledmobs.levelling;
 
 import org.bukkit.entity.LivingEntity;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author lokka30
@@ -15,15 +16,9 @@ import org.bukkit.entity.LivingEntity;
  */
 public class LevelledMob {
 
-    private final LivingEntity livingEntity;
+    public LevelledMob(@NotNull final LivingEntity livingEntity) { this.livingEntity = livingEntity; }
 
-    public LevelledMob(final LivingEntity livingEntity) {
-        this.livingEntity = livingEntity;
-    }
-
-    public LivingEntity getLivingEntity() {
-        return livingEntity;
-    }
+    @NotNull public final LivingEntity livingEntity;
 
     /*
     TODO
