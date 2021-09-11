@@ -21,19 +21,38 @@ public class NamespacedKeys {
 
     public NamespacedKeys(final LevelledMobs main) {
         levelKey = new NamespacedKey(main, "level");
+        spawnReasonKey = new NamespacedKey(main, "spawnReason");
+        noLevelKey = new NamespacedKey(main, "noLevel");
+        wasBabyMobKey = new NamespacedKey(main, "wasBabyMob");
+        overridenEntityNameKey = new NamespacedKey(main, "overridenEntityName");
+        playerLevellingId = new NamespacedKey(main, "playerLevelling_Id");
+        chanceRuleAllowed = new NamespacedKey(main, "chanceRule_Allowed");
+        chanceRuleDenied = new NamespacedKey(main, "chanceRule_Denied");
     }
 
     /**
      * @since v4.0.0
      * What level a levelled mob is (e.g., `52`)
      */
-    @NotNull
-    private final NamespacedKey levelKey;
+    @NotNull public final NamespacedKey levelKey;
 
-    @NotNull
-    public NamespacedKey getLevelKey() {
-        return levelKey;
-    }
+    /**
+     * @since v4.0.0
+     * Says how a mob was spawned
+     */
+    @NotNull public final NamespacedKey spawnReasonKey;
+
+    @NotNull public final NamespacedKey noLevelKey;
+
+    @NotNull public final NamespacedKey wasBabyMobKey;
+
+    @NotNull public final NamespacedKey overridenEntityNameKey;
+
+    @NotNull public final NamespacedKey playerLevellingId;
+
+    @NotNull public final NamespacedKey chanceRuleAllowed;
+
+    @NotNull public final NamespacedKey chanceRuleDenied;
 
     /*
     TODO
