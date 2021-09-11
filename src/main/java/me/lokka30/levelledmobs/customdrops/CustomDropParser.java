@@ -5,6 +5,7 @@
 package me.lokka30.levelledmobs.customdrops;
 
 import me.lokka30.levelledmobs.LevelledMobs;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author TODO change author
@@ -14,9 +15,8 @@ import me.lokka30.levelledmobs.LevelledMobs;
  */
 public class CustomDropParser {
 
-    private final LevelledMobs main;
-
-    public CustomDropParser(final LevelledMobs main) {
+    @NotNull private final LevelledMobs main;
+    public CustomDropParser(@NotNull final LevelledMobs main) {
         this.main = main;
     }
 

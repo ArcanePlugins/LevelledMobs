@@ -6,6 +6,7 @@ package me.lokka30.levelledmobs.customdrops;
 
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.files.FileHandler;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author TODO change author
@@ -15,9 +16,8 @@ import me.lokka30.levelledmobs.files.FileHandler;
  */
 public class MobSkullGetter {
 
-    private final LevelledMobs main;
-
-    public MobSkullGetter(final LevelledMobs main) {
+    @NotNull private final LevelledMobs main;
+    public MobSkullGetter(@NotNull final LevelledMobs main) {
         this.main = main;
     }
 

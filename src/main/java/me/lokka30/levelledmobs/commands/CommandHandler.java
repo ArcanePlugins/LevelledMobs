@@ -27,7 +27,7 @@ public class CommandHandler {
 
     private final LevelledMobs main;
 
-    public CommandHandler(final LevelledMobs main) {
+    public CommandHandler(@NotNull final LevelledMobs main) {
         this.main = main;
     }
 
@@ -39,7 +39,7 @@ public class CommandHandler {
      * This method attempts to register a command with
      * the specifies base-label and TabExecutor class.
      */
-    public void register(String baseCommandLabel, TabExecutor clazz) {
+    public void register(@NotNull final String baseCommandLabel, @NotNull final TabExecutor clazz) {
         final PluginCommand pluginCmd = main.getCommand(baseCommandLabel);
 
         if (pluginCmd == null) {
@@ -73,7 +73,7 @@ public class CommandHandler {
          * @return whether the CommandSender has the required permission or not
          * @see CommandSender#hasPermission(String)
          */
-        public static boolean senderDoesNotHaveRequiredPermission(final LevelledMobs main, final CommandSender sender, final String permission) {
+        public static boolean senderDoesNotHaveRequiredPermission(@NotNull final LevelledMobs main, @NotNull final CommandSender sender, @NotNull final String permission) {
             if (sender.hasPermission(permission)) return false;
 
             //TODO send no permission message.

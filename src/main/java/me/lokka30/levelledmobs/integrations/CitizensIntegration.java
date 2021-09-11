@@ -30,8 +30,7 @@ public class CitizensIntegration implements Integration, MobOwner {
 
     @Override
     public boolean isMobOwner(LevelledMob mob) {
-        // TODO
-        return false;
+        return mob.livingEntity.hasMetadata("NPC");
     }
 
 }

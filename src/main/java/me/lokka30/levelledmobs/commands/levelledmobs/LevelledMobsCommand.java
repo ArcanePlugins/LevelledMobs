@@ -27,21 +27,20 @@ import java.util.Locale;
  */
 public class LevelledMobsCommand implements TabExecutor {
 
-    private final LevelledMobs main;
-
-    public LevelledMobsCommand(final LevelledMobs main) {
+    @NotNull private final LevelledMobs main;
+    public LevelledMobsCommand(@NotNull final LevelledMobs main) {
         this.main = main;
     }
 
-    final AdvancedSubcommand advancedSubcommand = new AdvancedSubcommand();
-    final CompatibilitySubcommand compatibilitySubcommand = new CompatibilitySubcommand();
-    final InfoSubcommand infoSubcommand = new InfoSubcommand();
-    final KillSubcommand killSubcommand = new KillSubcommand();
-    final ReloadSubcommand reloadSubcommand = new ReloadSubcommand();
-    final RulesSubcommand rulesSubcommand = new RulesSubcommand();
-    final ScanSubcommand scanSubcommand = new ScanSubcommand();
-    final SpawnerSubcommand spawnerSubcommand = new SpawnerSubcommand();
-    final SummonSubcommand summonSubcommand = new SummonSubcommand();
+    @NotNull final AdvancedSubcommand advancedSubcommand = new AdvancedSubcommand();
+    @NotNull final CompatibilitySubcommand compatibilitySubcommand = new CompatibilitySubcommand();
+    @NotNull final InfoSubcommand infoSubcommand = new InfoSubcommand();
+    @NotNull final KillSubcommand killSubcommand = new KillSubcommand();
+    @NotNull final ReloadSubcommand reloadSubcommand = new ReloadSubcommand();
+    @NotNull final RulesSubcommand rulesSubcommand = new RulesSubcommand();
+    @NotNull final ScanSubcommand scanSubcommand = new ScanSubcommand();
+    @NotNull final SpawnerSubcommand spawnerSubcommand = new SpawnerSubcommand();
+    @NotNull final SummonSubcommand summonSubcommand = new SummonSubcommand();
 
     @Override
     public boolean onCommand(@NotNull final CommandSender sender, @NotNull final Command cmd, @NotNull final String label, @NotNull final String[] args) {
