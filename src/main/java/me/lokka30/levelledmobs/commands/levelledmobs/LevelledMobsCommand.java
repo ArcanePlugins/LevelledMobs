@@ -104,7 +104,9 @@ public class LevelledMobsCommand implements TabExecutor {
     public List<String> onTabComplete(@NotNull final CommandSender sender, @NotNull final Command cmd, @NotNull final String label, @NotNull final String[] args) {
         // TODO Test
 
-        if(args.length == 1) {
+        if(args.length == 0) {
+            return new ArrayList<>();
+        } else if(args.length == 1) {
             return Arrays.asList(
                     "advanced",
                     "compatibility",
@@ -116,8 +118,29 @@ public class LevelledMobsCommand implements TabExecutor {
                     "spawner",
                     "summon"
             );
+        } else {
+            switch(args[0].toLowerCase(Locale.ROOT)) {
+                case "advanced":
+                    return advancedSubcommand.parseTabCompletions(main, sender, label, args);
+                case "compatibility":
+                    return compatibilitySubcommand.parseTabCompletions(main, sender, label, args);
+                case "info":
+                    return infoSubcommand.parseTabCompletions(main, sender, label, args);
+                case "kill":
+                    return killSubcommand.parseTabCompletions(main, sender, label, args);
+                case "reload":
+                    return reloadSubcommand.parseTabCompletions(main, sender, label, args);
+                case "rules":
+                    return rulesSubcommand.parseTabCompletions(main, sender, label, args);
+                case "scan":
+                    return scanSubcommand.parseTabCompletions(main, sender, label, args);
+                case "spawner":
+                    return spawnerSubcommand.parseTabCompletions(main, sender, label, args);
+                case "summon":
+                    return summonSubcommand.parseTabCompletions(main, sender, label, args);
+                default:
+                    return new ArrayList<>();
+            }
         }
-
-        return new ArrayList<>();
     }
 }
