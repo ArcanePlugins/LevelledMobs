@@ -31,16 +31,13 @@ import java.util.*;
  */
 public class SpawnerSubCommand implements Subcommand{
 
-    public SpawnerSubCommand(final LevelledMobs main) {
-        this.main = main;
-        this.allSpawnerOptions = new ArrayList<>(Arrays.asList(
-                "/name", "/customdropid", "/spawntype", "/minlevel", "/maxlevel", "/delay", "/maxnearbyentities",
-                "/minspawndelay", "/maxspawndelay", "/requiredplayerrange", "/spawncount", "/spawnrange"
-        ));
-    }
+    public SpawnerSubCommand(final LevelledMobs main) {this.main = main;}
 
     final private LevelledMobs main;
-    final private List<String> allSpawnerOptions;
+    final private List<String> allSpawnerOptions = Arrays.asList(
+            "/name", "/customdropid", "/spawntype", "/minlevel", "/maxlevel", "/delay", "/maxnearbyentities",
+            "/minspawndelay", "/maxspawndelay", "/requiredplayerrange", "/spawncount", "/spawnrange"
+    );
     private boolean hadInvalidArg;
 
     @Override
