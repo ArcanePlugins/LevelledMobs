@@ -11,6 +11,7 @@ import me.lokka30.levelledmobs.rules.RuleInfo;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.EntityType;
+import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -49,5 +50,19 @@ public class LivingEntityPlaceHolder extends LivingEntityWrapperBase implements 
     @NotNull
     public String getTypeName(){
         return this.entityType.name();
+    }
+
+    public void setSpawnedTimeOfDay(final int ticks){
+        this.spawnedTimeOfDay = ticks;
+    }
+
+    public int getSpawnedTimeOfDay(){
+        if (this.spawnedTimeOfDay != null)
+            return this.spawnedTimeOfDay;
+
+        final int result = (int) getWorld().getTime();
+        setSpawnedTimeOfDay(result);
+
+        return result;
     }
 }

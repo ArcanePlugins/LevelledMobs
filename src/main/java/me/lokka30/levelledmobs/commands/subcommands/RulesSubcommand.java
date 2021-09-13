@@ -141,7 +141,7 @@ public class RulesSubcommand implements Subcommand {
                 label, entityCount, worldCount)));
     }
 
-    private void resetRules(final CommandSender sender, final String label, @NotNull final String[] args){
+    private void resetRules(final CommandSender sender, final String label, @NotNull final String @NotNull [] args){
         final String prefix = main.configUtils.getPrefix();
 
         if (args.length < 3 || args.length > 4){
@@ -183,7 +183,7 @@ public class RulesSubcommand implements Subcommand {
         resetRules(sender, difficulty);
     }
 
-    private void resetRules(final CommandSender sender, final ResetDifficulty difficulty){
+    private void resetRules(final @NotNull CommandSender sender, final @NotNull ResetDifficulty difficulty){
         final String prefix = main.configUtils.getPrefix();
         sender.sendMessage(prefix + " Resetting rules to " + difficulty);
 
@@ -239,7 +239,7 @@ public class RulesSubcommand implements Subcommand {
             sender.sendMessage(url);
     }
 
-    private void showRule(final CommandSender sender, @NotNull final String[] args){
+    private void showRule(final CommandSender sender, @NotNull final String @NotNull [] args){
         if (args.length < 3){
             sender.sendMessage("Must specify a rule name.");
             return;
@@ -479,9 +479,9 @@ public class RulesSubcommand implements Subcommand {
     }
 
     @Override
-    public List<String> parseTabCompletions(final LevelledMobs main, final CommandSender sender, @NotNull final String[] args) {
+    public List<String> parseTabCompletions(final LevelledMobs main, final @NotNull CommandSender sender, @NotNull final String[] args) {
         if (!sender.hasPermission("levelledmobs.command.rules"))
-            return null;
+            return Collections.emptyList();
 
         final List<String> suggestions = new LinkedList<>();
 
@@ -532,7 +532,7 @@ public class RulesSubcommand implements Subcommand {
             }
         }
 
-        if (suggestions.isEmpty()) suggestions.add("");
+        if (suggestions.isEmpty()) return Collections.emptyList();
         return suggestions;
     }
 }

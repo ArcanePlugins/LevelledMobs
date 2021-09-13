@@ -625,6 +625,7 @@ public class RulesParsingManager {
         parsingInfo.conditions_ApplyPlugins = buildCachedModalListOfString(cs, "apply-plugins", parsingInfo.conditions_ApplyPlugins);
         parsingInfo.conditions_MM_Names = buildCachedModalListOfString(cs,"mythicmobs-internal-names", parsingInfo.conditions_MM_Names);
         parsingInfo.conditions_SpawnerNames = buildCachedModalListOfString(cs,"spawner-names", parsingInfo.conditions_SpawnerNames);
+        parsingInfo.conditions_WorldTickTime = parseWorldTimeTicks(cs, parsingInfo.conditions_WorldTickTime);
     }
 
     private void parseStrategies(final ConfigurationSection cs){
@@ -692,6 +693,52 @@ public class RulesParsingManager {
         }
 
         parsePlayerLevellingOptions(objTo_CS(cs,"player-levelling"));
+    }
+
+    @Nullable
+    private CachedModalList<MinAndMax> parseWorldTimeTicks(final ConfigurationSection cs, final CachedModalList<MinAndMax> existingList){
+        if (cs == null) return existingList;
+
+        final CachedModalList<String> temp = buildCachedModalListOfString(cs, "world-time-tick", null);
+        if (temp == null) return existingList;
+        final CachedModalList<MinAndMax> result = new CachedModalList<>();
+        result.allowAll = temp.allowAll;
+        result.excludeAll = temp.excludeAll;
+        result.excludedList.addAll(parseMinMaxValue(temp.excludedList));
+        result.allowedList.addAll(parseMinMaxValue(temp.allowedList));
+
+        return result;
+    }
+
+    @NotNull
+    private Set<MinAndMax> parseMinMaxValue(@NotNull final Set<String> numberPairs){
+        final Set<MinAndMax> result = new TreeSet<>();
+
+        for (final String numberPair : numberPairs) {
+            final String[] split = numberPair.split("-");
+            final MinAndMax minAndMax = new MinAndMax();
+            boolean hadInvalidValue = false;
+            for (int i = 0; i <= 1; i++) {
+                if (!Utils.isInteger(split[i])) {
+                    Utils.logger.warning("Invalid world-time-tick value: '" + split[i] + "' in rule " + parsingInfo.getRuleName());
+                    hadInvalidValue = true;
+                    break;
+                }
+                final int parsedNum = Integer.parseInt(split[i]);
+
+                if (i == 0) {
+                    minAndMax.min = parsedNum;
+                    if (split.length == 1) minAndMax.max = parsedNum;
+                }
+                else
+                    minAndMax.max = parsedNum;
+            }
+
+            if (hadInvalidValue) continue;
+            result.add(minAndMax);
+        }
+
+        return result;
     }
 
     private void parseHealthIndicator(final ConfigurationSection cs){

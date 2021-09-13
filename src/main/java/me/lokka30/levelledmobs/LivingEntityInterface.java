@@ -38,4 +38,8 @@ public interface LivingEntityInterface {
     LevelledMobs getMainInstance();
 
     double getDistanceFromSpawn();
+
+    int getSpawnedTimeOfDay();
+
+    void setSpawnedTimeOfDay(final int ticks);
 }

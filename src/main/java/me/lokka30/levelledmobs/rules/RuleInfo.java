@@ -34,6 +34,7 @@ public class RuleInfo {
     }
 
     private String ruleName;
+    @DoNotMerge
     public boolean ruleIsEnabled;
     public Boolean CreatureNametagAlwaysVisible;
     public Boolean babyMobsInheritAdultSetting;
@@ -60,6 +61,7 @@ public class RuleInfo {
     public Double sunlightBurnAmount;
     public String nametag;
     public String nametag_CreatureDeath;
+    @DoNotMerge
     public String presetName;
     public String customDrop_DropTableId;
     public String mobNBT_Data;
@@ -70,7 +72,7 @@ public class RuleInfo {
     public PlayerLevellingOptions playerLevellingOptions;
     public Map<String, List<LevelTierMatching>> entityNameOverrides_Level;
     public Map<String, LevelTierMatching> entityNameOverrides;
-    @NotNull
+    @NotNull @DoNotMerge
     public final Map<String, String> ruleSourceNames;
     public List<TieredColoringInfo> tieredColoringInfos;
     public Map<ExternalCompatibilityManager.ExternalCompatibility, Boolean> enabledExtCompats;
@@ -84,6 +86,7 @@ public class RuleInfo {
     public CachedModalList<String> conditions_WGRegions;
     public CachedModalList<String> conditions_MM_Names;
     public CachedModalList<String> conditions_SpawnerNames;
+    public CachedModalList<MinAndMax> conditions_WorldTickTime;
     public CachedModalList<LevelledMobSpawnReason> conditions_SpawnReasons;
     @Nullable
     public FineTuningAttributes allMobMultipliers;
@@ -104,9 +107,7 @@ public class RuleInfo {
         try {
             for (final Field f : preset.getClass().getDeclaredFields()) {
                 if (!Modifier.isPublic(f.getModifiers())) continue;
-                if (f.getName().equals("ruleIsEnabled")) continue;
-                if (f.getName().equals("presetName")) continue;
-                if (f.getName().equals("ruleSourceNames")) continue;
+                if (f.isAnnotationPresent(DoNotMerge.class)) continue;
                 if (f.get(preset) == null) continue;
 
                 boolean skipSettingValue = false;

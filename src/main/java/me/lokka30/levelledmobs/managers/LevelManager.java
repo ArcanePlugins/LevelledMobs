@@ -62,6 +62,7 @@ public class LevelManager implements LevelInterface {
     public final NamespacedKey chanceRule_Denied;
     public final NamespacedKey denyLM_Nametag;
     public final NamespacedKey sourceSpawnerName;
+    public final NamespacedKey spawnedTimeOfDay;
     public double attributeMaxHealthMax = 2048.0;
     public double attributeMovementSpeedMax = 2048.0;
     public double attributeAttackDamageMax = 2048.0;
@@ -109,6 +110,7 @@ public class LevelManager implements LevelInterface {
         chanceRule_Denied = new NamespacedKey(main, "chanceRule_Denied");
         denyLM_Nametag = new NamespacedKey(main, "denyLM_Nametag");
         sourceSpawnerName = new NamespacedKey(main, "sourceSpawnerName");
+        spawnedTimeOfDay = new NamespacedKey(main, "spawnedTimeOfDay");
         this.summonedEntityType = EntityType.UNKNOWN;
         this.randomLevellingCache = new TreeMap<>();
 

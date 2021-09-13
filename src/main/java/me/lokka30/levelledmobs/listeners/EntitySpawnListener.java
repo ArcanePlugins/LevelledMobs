@@ -200,8 +200,10 @@ public class EntitySpawnListener implements Listener {
         LevelledMobSpawnReason spawnReason = LevelledMobSpawnReason.DEFAULT;
         AdditionalLevelInformation additionalInfo = AdditionalLevelInformation.NOT_APPLICABLE;
 
+        lmEntity.setSpawnedTimeOfDay((int) lmEntity.getWorld().getTime());
+
         if (event instanceof SpawnerSpawnEvent) {
-            SpawnerSpawnEvent spawnEvent = (SpawnerSpawnEvent) event;
+            final SpawnerSpawnEvent spawnEvent = (SpawnerSpawnEvent) event;
 
             if (spawnEvent.getSpawner() != null && spawnEvent.getSpawner().getPersistentDataContainer().has(main.blockPlaceListener.keySpawner, PersistentDataType.INTEGER)) {
                 lmEntity.setSpawnReason(LevelledMobSpawnReason.LM_SPAWNER);

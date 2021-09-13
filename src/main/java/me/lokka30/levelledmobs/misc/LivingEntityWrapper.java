@@ -379,6 +379,34 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
         }
     }
 
+    public void setSpawnedTimeOfDay(final int ticks){
+        synchronized (livingEntity.getPersistentDataContainer()) {
+            if (getPDC().has(main.levelManager.spawnedTimeOfDay, PersistentDataType.INTEGER))
+                return;
+
+            getPDC().set(main.levelManager.spawnedTimeOfDay, PersistentDataType.INTEGER, ticks);
+        }
+
+        this.spawnedTimeOfDay = ticks;
+    }
+
+    public int getSpawnedTimeOfDay(){
+        if (this.spawnedTimeOfDay != null)
+            return this.spawnedTimeOfDay;
+
+        synchronized (livingEntity.getPersistentDataContainer()) {
+            if (getPDC().has(main.levelManager.spawnedTimeOfDay, PersistentDataType.INTEGER)) {
+                final Integer result = getPDC().get(main.levelManager.spawnedTimeOfDay, PersistentDataType.INTEGER);
+                if (result != null) return result;
+            }
+        }
+
+        final int result = (int) getWorld().getTime();
+        setSpawnedTimeOfDay(result);
+
+        return result;
+    }
+
     @NotNull
     private Set<String> buildApplicableGroupsForMob(){
         final Set<String> groups = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);

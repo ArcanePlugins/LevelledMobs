@@ -9,6 +9,7 @@ import me.lokka30.levelledmobs.misc.Utils;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -43,6 +44,6 @@ public class CompatibilitySubcommand implements Subcommand {
     @Override
     public List<String> parseTabCompletions(final LevelledMobs main, final CommandSender sender, final String[] args) {
         // This subcommand has no tab completions.
-        return null;
+        return Collections.emptyList();
     }
 }

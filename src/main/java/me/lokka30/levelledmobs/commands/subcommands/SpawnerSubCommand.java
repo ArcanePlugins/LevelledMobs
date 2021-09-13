@@ -74,7 +74,7 @@ public class SpawnerSubCommand implements Subcommand{
         }
     }
 
-    private void parseInfoCommand(@NotNull final CommandSender sender, final String label, final String[] args){
+    private void parseInfoCommand(@NotNull final CommandSender sender, final String label, final String @NotNull [] args){
         final UUID playerId = ((Player) sender).getUniqueId();
 
         if (args.length == 2){
@@ -152,7 +152,7 @@ public class SpawnerSubCommand implements Subcommand{
         checkListener();
     }
 
-    private void copyGotDisabled(final CommandSender sender, final UUID playerId, final String label){
+    private void copyGotDisabled(final @NotNull CommandSender sender, final UUID playerId, final String label){
         main.companion.spawner_CopyIds.remove(playerId);
         List<String> messages = main.messagesCfg.getStringList("command.levelledmobs.spawner.copy.disabled");
         messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.getPrefix());
@@ -161,7 +161,7 @@ public class SpawnerSubCommand implements Subcommand{
         messages.forEach(sender::sendMessage);
     }
 
-    private void infoGotDisabled(final CommandSender sender, final UUID playerId, final String label){
+    private void infoGotDisabled(final @NotNull CommandSender sender, final UUID playerId, final String label){
         main.companion.spawner_InfoIds.remove(playerId);
         List<String> messages = main.messagesCfg.getStringList("command.levelledmobs.spawner.info.disabled");
         messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.getPrefix());
@@ -232,7 +232,7 @@ public class SpawnerSubCommand implements Subcommand{
     }
 
     @Nullable
-    private String getArgValue(final String key, final String[] args, final CommandSender sender, final String label, final boolean mustBeNumber){
+    private String getArgValue(final String key, final String @NotNull [] args, final CommandSender sender, final String label, final boolean mustBeNumber){
         int keyFlag = -1;
         int nameStartFlag = - 1;
         int nameEndFlag = - 1;
@@ -265,7 +265,7 @@ public class SpawnerSubCommand implements Subcommand{
         return keyValue;
     }
 
-    private String parseFlagValue(final CommandSender sender, final String keyName, final int argNumber, final String[] args, final boolean mustBeNumber, final String label){
+    private @Nullable String parseFlagValue(final CommandSender sender, final String keyName, final int argNumber, final String @NotNull [] args, final boolean mustBeNumber, final String label){
         if (argNumber + 1 >= args.length || args[argNumber + 1].startsWith("/")){
             List<String> message = main.messagesCfg.getStringList("command.levelledmobs.spawner.no-value");
             message = Utils.replaceAllInList(message, "%prefix%", main.configUtils.getPrefix());
@@ -291,7 +291,7 @@ public class SpawnerSubCommand implements Subcommand{
         return args[argNumber + 1];
     }
 
-    public static void generateSpawner(final CustomSpawnerInfo info){
+    public static void generateSpawner(final @NotNull CustomSpawnerInfo info){
         if (info.maxSpawnDelay != null && (info.minSpawnDelay == null || info.minSpawnDelay > info.maxSpawnDelay)) {
             // settting max spawn delay lower than min spawn delay will result in an exception
             info.minSpawnDelay = info.maxSpawnDelay;
@@ -424,22 +424,22 @@ public class SpawnerSubCommand implements Subcommand{
     }
 
     @Override
-    public List<String> parseTabCompletions(final LevelledMobs main, final CommandSender sender, @NotNull final String[] args) {
+    public List<String> parseTabCompletions(final LevelledMobs main, final @NotNull CommandSender sender, @NotNull final String[] args) {
         if (!sender.hasPermission("levelledmobs.command.spawner"))
-            return null;
+            return Collections.emptyList();
 
         if (args.length <= 2)
             return Arrays.asList("copy", "create", "info");
 
         if ("create".equalsIgnoreCase(args[1]))
             return tabCompletions_Create(args);
-        else if ("info".equalsIgnoreCase(args[1]) || "copy".equalsIgnoreCase(args[1]))
+        else if (("info".equalsIgnoreCase(args[1]) || "copy".equalsIgnoreCase(args[1])) && args.length <= 3)
             return Arrays.asList("on", "off");
 
-        return List.of("");
+        return Collections.emptyList();
     }
 
-    private List<String> tabCompletions_Create(@NotNull final String[] args){
+    private @NotNull List<String> tabCompletions_Create(@NotNull final String @NotNull [] args){
         if (!Utils.isNullOrEmpty(args[args.length - 2])) {
             switch (args[args.length - 2].toLowerCase()){
                 case "/spawntype":

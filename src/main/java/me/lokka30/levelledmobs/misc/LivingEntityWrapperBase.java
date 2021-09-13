@@ -31,6 +31,7 @@ public class LivingEntityWrapperBase {
     final Location location;
     @NotNull
     final LevelledMobs main;
+    Integer spawnedTimeOfDay;
 
     public double getDistanceFromSpawn() {
         if (this.calculatedDistanceFromSpawn == null)

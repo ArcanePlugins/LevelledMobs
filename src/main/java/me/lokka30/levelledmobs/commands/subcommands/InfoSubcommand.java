@@ -10,6 +10,7 @@ import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -56,6 +57,6 @@ public class InfoSubcommand implements Subcommand {
     @Override
     public List<String> parseTabCompletions(final LevelledMobs main, final CommandSender sender, final String[] args) {
         // This subcommand has no tab completions.
-        return null;
+        return Collections.emptyList();
     }
 }

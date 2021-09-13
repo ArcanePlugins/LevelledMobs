@@ -13,6 +13,7 @@ import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.*;
 import org.bukkit.metadata.FixedMetadataValue;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
@@ -26,7 +27,7 @@ import java.util.*;
 public class KillSubcommand implements Subcommand {
 
     @Override
-    public void parseSubcommand(final LevelledMobs main, final CommandSender sender, final String label, final String[] args) {
+    public void parseSubcommand(final LevelledMobs main, final @NotNull CommandSender sender, final String label, final String[] args) {
         if (!sender.hasPermission("levelledmobs.command.kill")) {
             main.configUtils.sendNoPermissionMsg(sender);
             return;
@@ -191,9 +192,9 @@ public class KillSubcommand implements Subcommand {
     }
 
     @Override
-    public List<String> parseTabCompletions(final LevelledMobs main, final CommandSender sender, final String[] args) {
+    public List<String> parseTabCompletions(final LevelledMobs main, final @NotNull CommandSender sender, final String[] args) {
         if (!sender.hasPermission("levelledmobs.command.kill"))
-            return null;
+            return Collections.emptyList();
 
         boolean containsNoDrops = false;
 
@@ -235,10 +236,10 @@ public class KillSubcommand implements Subcommand {
             return Collections.singletonList("/nodrops");
 
         // Nothing to suggest.
-        return Collections.singletonList("");
+        return Collections.emptyList();
     }
 
-    private void sendUsageMsg(final CommandSender sender, final String label, final LevelledMobs instance) {
+    private void sendUsageMsg(final @NotNull CommandSender sender, final String label, final @NotNull LevelledMobs instance) {
         List<String> messages = instance.messagesCfg.getStringList("command.levelledmobs.kill.usage");
         messages = Utils.replaceAllInList(messages, "%prefix%", instance.configUtils.getPrefix());
         messages = Utils.replaceAllInList(messages, "%label%", label);
@@ -246,7 +247,7 @@ public class KillSubcommand implements Subcommand {
         messages.forEach(sender::sendMessage);
     }
 
-    private void parseKillAll(final CommandSender sender, final List<World> worlds, final LevelledMobs main, final boolean useNoDrops) {
+    private void parseKillAll(final CommandSender sender, final @NotNull List<World> worlds, final LevelledMobs main, final boolean useNoDrops) {
         int killed = 0;
         int skipped = 0;
 
@@ -281,7 +282,7 @@ public class KillSubcommand implements Subcommand {
         messages.forEach(sender::sendMessage);
     }
 
-    private boolean skipKillingEntity(final LevelledMobs main, final LivingEntity livingEntity) {
+    private boolean skipKillingEntity(final LevelledMobs main, final @NotNull LivingEntity livingEntity) {
         if (livingEntity.getCustomName() != null && main.helperSettings.getBoolean(main.settingsCfg,"kill-skip-conditions.nametagged"))
             return true;
 

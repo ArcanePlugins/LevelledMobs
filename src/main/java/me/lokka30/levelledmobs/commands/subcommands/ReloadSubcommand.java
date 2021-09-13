@@ -6,7 +6,9 @@ package me.lokka30.levelledmobs.commands.subcommands;
 
 import me.lokka30.levelledmobs.LevelledMobs;
 import org.bukkit.command.CommandSender;
+import org.jetbrains.annotations.NotNull;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -18,7 +20,7 @@ import java.util.List;
 public class ReloadSubcommand implements Subcommand {
 
     @Override
-    public void parseSubcommand(final LevelledMobs main, final CommandSender sender, final String label, final String[] args) {
+    public void parseSubcommand(final LevelledMobs main, final @NotNull CommandSender sender, final String label, final String[] args) {
         if (!sender.hasPermission("levelledmobs.command.reload")){
             main.configUtils.sendNoPermissionMsg(sender);
             return;
@@ -29,6 +31,6 @@ public class ReloadSubcommand implements Subcommand {
 
     @Override
     public List<String> parseTabCompletions(final LevelledMobs main, final CommandSender sender, final String[] args) {
-        return null; //No tab completions.
+        return Collections.emptyList(); //No tab completions.
     }
 }

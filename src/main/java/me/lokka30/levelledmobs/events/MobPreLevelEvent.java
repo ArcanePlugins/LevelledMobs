@@ -75,6 +75,7 @@ public class MobPreLevelEvent extends Event implements Cancellable {
         this.level = level;
         this.levelCause = levelCause;
         this.additionalInformation = additionalInformation;
+        this.showLM_Nametag = true;
     }
 
     public LivingEntity getEntity() {

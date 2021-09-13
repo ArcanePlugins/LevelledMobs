@@ -15,6 +15,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -29,7 +30,7 @@ import java.util.*;
 public class SummonSubcommand implements Subcommand {
 
     @Override
-    public void parseSubcommand(final LevelledMobs main, final CommandSender sender, final String label, @NotNull final String[] args) {
+    public void parseSubcommand(final LevelledMobs main, final CommandSender sender, final String label, @NotNull final String @NotNull [] args) {
         boolean useOverride = false;
         final List<String> useArgs = new LinkedList<>();
         for (final String arg : args) {
@@ -237,7 +238,7 @@ public class SummonSubcommand implements Subcommand {
     }
 
     @Override
-    public List<String> parseTabCompletions(final LevelledMobs main, final CommandSender sender, @NotNull final String[] args) {
+    public List<String> parseTabCompletions(final LevelledMobs main, final @NotNull CommandSender sender, @NotNull final String[] args) {
         if (!sender.hasPermission("levelledmobs.command.summon"))
             return null;
 
@@ -481,8 +482,9 @@ public class SummonSubcommand implements Subcommand {
         }
     }
 
+    @Contract("_, _, _ -> new")
     @NotNull
-    private Location getLocationNearPlayer(final Player player, final Location location, final int useDistFromPlayer){
+    private Location getLocationNearPlayer(final @NotNull Player player, final @NotNull Location location, final int useDistFromPlayer){
         int newX = location.getBlockX();
         int newZ = location.getBlockZ();
 

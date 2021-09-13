@@ -655,6 +655,16 @@ public class RulesManager {
             }
         }
 
+        if (ri.conditions_WorldTickTime != null){
+            final int currentWorldTickTime = lmInterface.getSpawnedTimeOfDay();
+
+            if (!Utils.isIntegerInModalList(ri.conditions_WorldTickTime, currentWorldTickTime)){
+                Utils.debugLog(main, DebugType.DENIED_RULE_WORLD_TIME_TICK, String.format("&b%s&7, mob: &b%s&7, tick time: &b%s&7",
+                        ri.getRuleName(), lmInterface.getTypeName(), currentWorldTickTime));
+                return new RuleCheckResult(false, false);
+            }
+        }
+
         Boolean ruleMadeChance = null;
 
         if (ri.conditions_Chance != null && ri.conditions_Chance < 1.0){
