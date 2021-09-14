@@ -216,7 +216,7 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
         if (!hasCache) buildCache();
 
         return this.mobLevel == null ?
-                -1 :
+                0 :
                 this.mobLevel;
     }
 

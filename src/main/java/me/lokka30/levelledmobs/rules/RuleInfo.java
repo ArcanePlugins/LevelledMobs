@@ -45,6 +45,7 @@ public class RuleInfo {
     public Boolean useRandomLevelling;
     public Boolean mergeEntityNameOverrides;
     public Boolean passengerMatchLevel;
+    @DoNotMerge
     public int rulePriority;
     public Integer maxRandomVariance;
     public Integer creeperMaxDamageRadius;

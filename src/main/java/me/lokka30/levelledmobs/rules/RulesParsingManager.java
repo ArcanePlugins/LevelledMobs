@@ -86,7 +86,7 @@ public class RulesParsingManager {
 
     @NotNull
     public List<RuleInfo> getAllRules(){
-        List<RuleInfo> results = new LinkedList<>();
+        final List<RuleInfo> results = new LinkedList<>();
         if (this.defaultRule != null) results.add(this.defaultRule);
         results.addAll(this.rulePresets.values());
         results.addAll(this.customRules);
@@ -436,7 +436,7 @@ public class RulesParsingManager {
         final Map<ExternalCompatibilityManager.ExternalCompatibility, Boolean> results = new TreeMap<>();
 
         for (final String key : cs.getKeys(false)){
-            boolean value = cs.getBoolean(key);
+            final boolean value = cs.getBoolean(key);
 
             ExternalCompatibilityManager.ExternalCompatibility compat;
             try {
@@ -901,7 +901,7 @@ public class RulesParsingManager {
     private FineTuningAttributes parseFineTuningValues(final ConfigurationSection cs){
         if (cs == null) return null;
 
-        FineTuningAttributes attribs = new FineTuningAttributes();
+        final FineTuningAttributes attribs = new FineTuningAttributes();
 
         attribs.maxHealth = ymlHelper.getDouble2(cs, "max-health", attribs.maxHealth);
         attribs.movementSpeed = ymlHelper.getDouble2(cs, "movement-speed", attribs.movementSpeed);
@@ -936,7 +936,7 @@ public class RulesParsingManager {
 
     @NotNull
     private static List<String> getListOrItemFromConfig(final String name, @NotNull final ConfigurationSection cs){
-        List<String> result = cs.getStringList(name);
+        final List<String> result = cs.getStringList(name);
         if (result.isEmpty() && !Utils.isNullOrEmpty(cs.getString(name)))
             result.add(cs.getString(name));
 

@@ -449,13 +449,12 @@ public class LevelManager implements LevelInterface {
             return xp;
     }
 
-    // When the persistent data container levelled key has not been set on the entity yet (i.e. for use in EntitySpawnListener)
     @Nullable
     public String getNametag(final LivingEntityWrapper lmEntity, final boolean isDeathNametag) {
-        final boolean useCustomNameForNametags = main.helperSettings.getBoolean(main.settingsCfg, "use-customname-for-mob-nametags");
-        String nametag = isDeathNametag ? main.rulesManager.getRule_Nametag_CreatureDeath(lmEntity) : main.rulesManager.getRule_Nametag(lmEntity);
+        final String nametag = isDeathNametag ? main.rulesManager.getRule_Nametag_CreatureDeath(lmEntity) : main.rulesManager.getRule_Nametag(lmEntity);
         if ("disabled".equalsIgnoreCase(nametag) || "none".equalsIgnoreCase(nametag)) return null;
 
+        final boolean useCustomNameForNametags = main.helperSettings.getBoolean(main.settingsCfg, "use-customname-for-mob-nametags");
         // ignore if 'disabled'
         if (nametag.isEmpty()) {
             if (useCustomNameForNametags)
@@ -464,6 +463,11 @@ public class LevelManager implements LevelInterface {
                 return lmEntity.getLivingEntity().getCustomName(); // CustomName can be null, that is meant to be the case.
         }
 
+        return updateNametag(lmEntity, nametag, useCustomNameForNametags);
+    }
+
+    @NotNull
+    public String updateNametag(final LivingEntityWrapper lmEntity, @NotNull String nametag, final boolean useCustomNameForNametags) {
         final String overridenName = main.rulesManager.getRule_EntityOverriddenName(lmEntity, useCustomNameForNametags);
 
         String displayName = overridenName == null ?

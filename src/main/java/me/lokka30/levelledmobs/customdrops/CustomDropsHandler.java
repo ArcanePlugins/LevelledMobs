@@ -401,12 +401,27 @@ public class CustomDropsHandler {
         if (dropItem.getHasDamageRange())
             damage = ThreadLocalRandom.current().nextInt(dropItem.getDamageRangeMin(), dropItem.getDamageRangeMax() + 1);
 
-        if (damage > 0){
+        if (damage > 0 || dropItem.lore != null || dropItem.customName != null){
             ItemMeta meta = newItem.getItemMeta();
-            if (meta instanceof Damageable){
+
+            if (damage > 0 && meta instanceof Damageable)
                 ((Damageable) meta).setDamage(damage);
-                newItem.setItemMeta(meta);
+
+            if (meta != null && dropItem.lore != null && !dropItem.lore.isEmpty()){
+                final List<String> newLore = new ArrayList<>(dropItem.lore.size());
+                final String mobLvl = info.lmEntity.isLevelled() ?
+                        info.lmEntity.getMobLevel() + "" : "0";
+                for (final String lore : dropItem.lore){
+                    newLore.add(main.levelManager.updateNametag(info.lmEntity, lore, false));
+
+                    meta.setLore(newLore);
+                }
             }
+
+            if (meta != null && dropItem.customName != null && !"".equals(dropItem.customName))
+                meta.setDisplayName(MessageUtils.colorizeAll(main.levelManager.updateNametag(info.lmEntity, dropItem.customName, false)));
+
+            newItem.setItemMeta(meta);
         }
 
         if (!info.equippedOnly && hasGroupId){
@@ -424,27 +439,16 @@ public class CustomDropsHandler {
     }
 
     private void executeCommand(@NotNull final CustomCommand customCommand, @NotNull final CustomDropProcessingInfo info){
-        final boolean useCustomNameForNametags = ymlHelper.getBoolean(main.settingsCfg, "use-customname-for-mob-nametags");
-        final String overridenName = main.rulesManager.getRule_EntityOverriddenName(info.lmEntity, useCustomNameForNametags);
-
-        String displayName = overridenName == null ?
-                Utils.capitalize(info.lmEntity.getTypeName().replaceAll("_", " ")) :
-                MessageUtils.colorizeAll(overridenName);
-
-        if (info.lmEntity.getLivingEntity().getCustomName() != null)
-            displayName = info.lmEntity.getLivingEntity().getCustomName();
-
         int commandCount = 0;
         for (String command : customCommand.commands){
             commandCount++;
-            command = main.levelManager.replaceStringPlaceholders(command, info.lmEntity, displayName);
+            command = main.levelManager.updateNametag(info.lmEntity, command,false);
 
             final String playerName = info.wasKilledByPlayer ?
                     Objects.requireNonNull(info.lmEntity.getLivingEntity().getKiller()).getName() :
                     "";
 
             command = Utils.replaceEx(command, "%player%", playerName);
-            command = command.replace("%displayname%", displayName);
             command = processRangedCommand(command, customCommand);
 
             final int maxAllowedTimesToRun = ymlHelper.getInt(main.settingsCfg, "customcommand-amount-limit", 10);
