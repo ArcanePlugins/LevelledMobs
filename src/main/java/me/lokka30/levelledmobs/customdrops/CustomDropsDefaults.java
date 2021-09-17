@@ -27,12 +27,15 @@ public class CustomDropsDefaults {
     public int maxLevel;
     public int customModelData;
     public int maxDropGroup;
+    public Integer minPlayerLevel;
+    public Integer maxPlayerLevel;
     public double chance;
     public double equippedSpawnChance;
     public Double overallChance;
     public String groupId;
     public String damage;
     public String nbtData;
+    public String playerLevelVariable;
     public List<ItemFlag> itemFlags;
 
     public CustomDropsDefaults() {
@@ -66,5 +69,8 @@ public class CustomDropsDefaults {
         this.groupId = drop.groupId;
         this.nbtData = drop.nbtData;
         this.itemFlags = drop.itemFlags;
+        this.minPlayerLevel = drop.minPlayerLevel;
+        this.maxPlayerLevel = drop.maxPlayerLevel;
+        this.playerLevelVariable = drop.playerLevelVariable;
     }
 }

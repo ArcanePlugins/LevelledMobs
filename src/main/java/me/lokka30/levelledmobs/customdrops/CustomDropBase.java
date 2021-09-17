@@ -30,10 +30,13 @@ public class CustomDropBase implements Cloneable {
     public int maxLevel;
     public int priority;
     public int maxDropGroup;
+    public Integer minPlayerLevel;
+    public Integer maxPlayerLevel;
     public double chance;
     public boolean playerCausedOnly;
     public boolean noSpawner;
     public String groupId;
+    public String playerLevelVariable;
     public final Set<String> excludedMobs = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
 
     public int getAmount(){

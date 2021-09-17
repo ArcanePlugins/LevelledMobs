@@ -209,46 +209,11 @@ public class LevelManager implements LevelInterface {
         if (player == null) return null;
 
         int levelSource;
-        double origLevelSource;
         final String variableToUse = Utils.isNullOrEmpty(options.variable) ? "%level%" : options.variable;
         final double scale = options.playerLevelScale != null ? options.playerLevelScale : 1.0;
         final boolean usePlayerMax = options.usePlayerMaxLevel != null && options.matchPlayerLevel;
         final boolean matchPlayerLvl = options.matchPlayerLevel != null && options.matchPlayerLevel;
-
-        if (variableToUse.equalsIgnoreCase("%level%"))
-            origLevelSource = player.getLevel();
-        else if (variableToUse.equalsIgnoreCase("%exp%"))
-            origLevelSource = player.getExp();
-        else if (variableToUse.equalsIgnoreCase("%exp-to-level%"))
-            origLevelSource = player.getExpToLevel();
-        else if (variableToUse.equalsIgnoreCase("%total-exp%"))
-            origLevelSource = player.getTotalExperience();
-        else if (variableToUse.equalsIgnoreCase("%world_time_ticks%"))
-            origLevelSource = lmEntity.getWorld().getTime();
-        else{
-            boolean usePlayerLevel = false;
-            String PAPIResult = null;
-
-            if (ExternalCompatibilityManager.hasPAPI_Installed()) {
-                PAPIResult = ExternalCompatibilityManager.getPAPI_Placeholder(lmEntity.getPlayerForLevelling(), variableToUse);
-                if (Utils.isNullOrEmpty(PAPIResult)) {
-                    Utils.logger.warning("Got blank result for '" + variableToUse + "' from PAPI");
-                    usePlayerLevel = true;
-                }
-                if (!Utils.isDouble(PAPIResult)) {
-                    Utils.logger.warning("Got invalid number for '" + variableToUse + "' from PAPI");
-                    usePlayerLevel = true;
-                }
-            } else {
-                Utils.logger.warning("PlaceHolderAPI is not installed, unable to get variable " + variableToUse);
-                usePlayerLevel = true;
-            }
-
-            if (usePlayerLevel)
-                origLevelSource = player.getLevel();
-            else
-                origLevelSource = (int) Double.parseDouble(PAPIResult);
-        }
+        final double origLevelSource = getPlayerLevelSourceNumber(lmEntity.getPlayerForLevelling(), variableToUse);
 
         levelSource = (int) Math.round(origLevelSource * scale);
         if (levelSource < 1) levelSource = 1;
@@ -301,6 +266,49 @@ public class LevelManager implements LevelInterface {
         }
 
         return results;
+    }
+
+    public int getPlayerLevelSourceNumber(final Player player, final String variableToUse){
+        if (player == null) return 1;
+
+        double origLevelSource;
+
+        if (variableToUse.equalsIgnoreCase("%level%"))
+            origLevelSource = player.getLevel();
+        else if (variableToUse.equalsIgnoreCase("%exp%"))
+            origLevelSource = player.getExp();
+        else if (variableToUse.equalsIgnoreCase("%exp-to-level%"))
+            origLevelSource = player.getExpToLevel();
+        else if (variableToUse.equalsIgnoreCase("%total-exp%"))
+            origLevelSource = player.getTotalExperience();
+        else if (variableToUse.equalsIgnoreCase("%world_time_ticks%"))
+            origLevelSource = player.getWorld().getTime();
+        else{
+            boolean usePlayerLevel = false;
+            String PAPIResult = null;
+
+            if (ExternalCompatibilityManager.hasPAPI_Installed()) {
+                PAPIResult = ExternalCompatibilityManager.getPAPI_Placeholder(player, variableToUse);
+                if (Utils.isNullOrEmpty(PAPIResult)) {
+                    Utils.logger.warning("Got blank result for '" + variableToUse + "' from PAPI");
+                    usePlayerLevel = true;
+                }
+                if (!Utils.isDouble(PAPIResult)) {
+                    Utils.logger.warning("Got invalid number for '" + variableToUse + "' from PAPI");
+                    usePlayerLevel = true;
+                }
+            } else {
+                Utils.logger.warning("PlaceHolderAPI is not installed, unable to get variable " + variableToUse);
+                usePlayerLevel = true;
+            }
+
+            if (usePlayerLevel)
+                origLevelSource = player.getLevel();
+            else
+                origLevelSource = (int) Double.parseDouble(PAPIResult);
+        }
+
+        return (int) Math.round(origLevelSource);
     }
 
     public int[] getMinAndMaxLevels(final @NotNull LivingEntityInterface lmInterface) {

@@ -71,7 +71,13 @@ public class CustomDropsHandler {
                 processingInfo.hasCustomDropId = !Utils.isNullOrEmpty(processingInfo.customDropId);
             }
         }
-        processingInfo.wasKilledByPlayer = lmEntity.getLivingEntity().getKiller() != null;
+
+        if (lmEntity.getLivingEntity().getKiller() != null){
+            processingInfo.wasKilledByPlayer = true;
+            processingInfo.mobKiller = lmEntity.getLivingEntity().getKiller();
+        }
+        else
+            processingInfo.wasKilledByPlayer = false;
         processingInfo.addition = BigDecimal.valueOf(main.mobDataManager.getAdditionsForLevel(lmEntity, Addition.CUSTOM_ITEM_DROP, 0.0))
                 .setScale(0, RoundingMode.HALF_DOWN).intValueExact(); // truncate double to int
 
@@ -260,6 +266,8 @@ public class CustomDropsHandler {
         if (!info.equippedOnly && dropBase.playerCausedOnly && !info.wasKilledByPlayer) return;
         if (dropBase.noSpawner && info.isSpawner) return;
 
+        if (!madePlayerLevelRequirement(info, dropBase)) return;
+
         if (dropBase.excludedMobs.contains(info.lmEntity.getTypeName())){
             if (dropBase instanceof CustomDropItem && !info.equippedOnly && isCustomDropsDebuggingEnabled()) {
                 final CustomDropItem dropItem = (CustomDropItem) dropBase;
@@ -436,6 +444,41 @@ public class CustomDropsHandler {
             newItem = main.mobHeadManager.getMobHeadFromPlayerHead(newItem, info.lmEntity, dropItem);
 
         info.newDrops.add(newItem);
+    }
+
+    private boolean madePlayerLevelRequirement(final CustomDropProcessingInfo info, final CustomDropBase dropBase){
+        if (!info.equippedOnly && (dropBase.minPlayerLevel != null || dropBase.maxPlayerLevel != null)){
+            // check if the variable result has been cached already and use it if so
+            final String variableToUse = Utils.isNullOrEmpty(dropBase.playerLevelVariable) ?
+                    "%level%" : dropBase.playerLevelVariable;
+            final int mobLevel = info.lmEntity.getMobLevel();
+            int levelToUse = 1;
+            if (info.playerLevelVariableCache.containsKey(variableToUse))
+                levelToUse = info.playerLevelVariableCache.get(variableToUse);
+            else {
+                levelToUse = main.levelManager.getPlayerLevelSourceNumber(info.mobKiller, variableToUse);
+                info.playerLevelVariableCache.put(variableToUse, levelToUse);
+            }
+
+            if (dropBase.minPlayerLevel != null && levelToUse < dropBase.minPlayerLevel ||
+                    dropBase.maxPlayerLevel != null && levelToUse > dropBase.maxPlayerLevel){
+                if (ymlHelper.getStringSet(main.settingsCfg, "debug-misc").contains("CUSTOM_DROPS")){
+                    if (dropBase instanceof CustomDropItem) {
+                        Utils.logger.info(String.format(
+                                "&8 - &7Mob: &b%s&7, item: %s, lvl-source: %s, minlvl: %s, maxlvl: %s player level criteria not met",
+                                info.lmEntity.getTypeName(), ((CustomDropItem) dropBase).getMaterial(), levelToUse, dropBase.minPlayerLevel, dropBase.maxPlayerLevel));
+                    }
+                    else {
+                        Utils.logger.info(String.format(
+                                "&8 - &7Mob: &b%s&7, (customCommand), lvl-source: %s, minlvl: %s, maxlvl: %s player level criteria not met",
+                                info.lmEntity.getTypeName(), levelToUse, dropBase.minPlayerLevel, dropBase.maxPlayerLevel));
+                    }
+                }
+                return false;
+            }
+        }
+
+        return true;
     }
 
     private void executeCommand(@NotNull final CustomCommand customCommand, @NotNull final CustomDropProcessingInfo info){

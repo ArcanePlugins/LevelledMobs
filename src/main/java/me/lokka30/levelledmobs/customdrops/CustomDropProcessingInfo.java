@@ -6,6 +6,7 @@ package me.lokka30.levelledmobs.customdrops;
 
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
 import me.lokka30.levelledmobs.rules.CustomDropsRuleSet;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -29,10 +30,14 @@ public class CustomDropProcessingInfo {
     public CustomDropProcessingInfo() {
         this.groupIDsDroppedAlready = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
         this.allDropInstances = new LinkedList<>();
+        this.playerLevelVariableCache = new TreeMap<>();
     }
 
     public LivingEntityWrapper lmEntity;
     public int addition;
+    public Player mobKiller;
+    @NotNull
+    final public Map<String, Integer> playerLevelVariableCache;
     public boolean isSpawner;
     public boolean equippedOnly;
     public boolean deathByFire;
@@ -43,6 +48,7 @@ public class CustomDropProcessingInfo {
     public boolean madeOverallChance;
     public boolean hasEquippedItems;
     public String customDropId;
+    public String playerLevelVariable;
     public List<ItemStack> newDrops;
     @Nonnull
     final public Map<String, Integer> groupIDsDroppedAlready;
