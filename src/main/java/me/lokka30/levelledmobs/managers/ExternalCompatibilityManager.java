@@ -11,6 +11,7 @@ import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.persistence.PersistentDataType;
@@ -95,11 +96,7 @@ public class ExternalCompatibilityManager {
     }
 
     public static boolean hasMythicMobsInstalled() {
-        final Plugin p = Bukkit.getPluginManager().getPlugin("MythicMobs");
-        if (p != null && p.getDescription().getVersion().startsWith("5"))
-            return false;
-        else
-            return p != null;
+        return Bukkit.getPluginManager().getPlugin("MythicMobs") != null;
     }
 
     public static boolean hasWorldGuardInstalled() {
@@ -107,6 +104,14 @@ public class ExternalCompatibilityManager {
     }
 
     public static boolean isMythicMob(@NotNull final LivingEntityWrapper lmEntity) {
+        final Plugin p = Bukkit.getPluginManager().getPlugin("MythicMobs");
+        if (p == null) return false;
+
+        if (!p.getDescription().getVersion().startsWith("4")) {
+            final NamespacedKey mmKey = new NamespacedKey(p, "type");
+            return lmEntity.getPDC().has(mmKey, PersistentDataType.STRING);
+        }
+
         if (lmEntity.getLivingEntity().hasMetadata("mythicmob")){
             final List<MetadataValue> metadatas = lmEntity.getLivingEntity().getMetadata("mythicmob");
             for (final MetadataValue md : metadatas){
@@ -126,7 +131,7 @@ public class ExternalCompatibilityManager {
 
         if (!p.getDescription().getVersion().startsWith("4")) {
             // MM version 5 must use this method for internal name detection
-            NamespacedKey mmKey = new NamespacedKey(p, "type");
+            final NamespacedKey mmKey = new NamespacedKey(p, "type");
             if (lmEntity.getPDC().has(mmKey, PersistentDataType.STRING)) {
                 final String type = lmEntity.getPDC().get(mmKey, PersistentDataType.STRING);
                 return type == null ? "" : type;
@@ -274,11 +279,15 @@ public class ExternalCompatibilityManager {
      * @return if Citizens compatibility enabled and entity is from Citizens
      */
     public static boolean isMobOfCitizens(final LivingEntityWrapper lmEntity) {
-        final boolean isExternalType = lmEntity.getLivingEntity().hasMetadata("NPC");
+        final boolean isExternalType = isMobOfCitizens(lmEntity.getLivingEntity());
 
         if (isExternalType) lmEntity.setMobExternalType(ExternalCompatibility.CITIZENS);
 
         return isExternalType;
+    }
+
+    public static boolean isMobOfCitizens(final LivingEntity livingEntity) {
+        return livingEntity.hasMetadata("NPC");
     }
 
     /**

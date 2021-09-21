@@ -160,7 +160,6 @@ public class Companion {
             Utils.logger.info("misc debugs enabled: &b" + debugsEnabled);
 
         main.configUtils.load();
-        main.playerLevellingDistance = main.helperSettings.getDouble(main.settingsCfg, "player-levelling-mob-distance-squared", 150);
         main.playerLevellingMinRelevelTime = main.helperSettings.getInt(main.settingsCfg, "player-levelling-relevel-min-time", 5000);
 
         return true;
