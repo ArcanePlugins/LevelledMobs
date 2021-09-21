@@ -96,11 +96,7 @@ public class ExternalCompatibilityManager {
     }
 
     public static boolean hasMythicMobsInstalled() {
-        final Plugin p = Bukkit.getPluginManager().getPlugin("MythicMobs");
-        if (p != null && p.getDescription().getVersion().startsWith("5"))
-            return false;
-        else
-            return p != null;
+        return Bukkit.getPluginManager().getPlugin("MythicMobs") != null;
     }
 
     public static boolean hasWorldGuardInstalled() {
@@ -108,6 +104,14 @@ public class ExternalCompatibilityManager {
     }
 
     public static boolean isMythicMob(@NotNull final LivingEntityWrapper lmEntity) {
+        final Plugin p = Bukkit.getPluginManager().getPlugin("MythicMobs");
+        if (p == null) return false;
+
+        if (!p.getDescription().getVersion().startsWith("4")) {
+            final NamespacedKey mmKey = new NamespacedKey(p, "type");
+            return lmEntity.getPDC().has(mmKey, PersistentDataType.STRING);
+        }
+
         if (lmEntity.getLivingEntity().hasMetadata("mythicmob")){
             final List<MetadataValue> metadatas = lmEntity.getLivingEntity().getMetadata("mythicmob");
             for (final MetadataValue md : metadatas){
@@ -127,7 +131,7 @@ public class ExternalCompatibilityManager {
 
         if (!p.getDescription().getVersion().startsWith("4")) {
             // MM version 5 must use this method for internal name detection
-            NamespacedKey mmKey = new NamespacedKey(p, "type");
+            final NamespacedKey mmKey = new NamespacedKey(p, "type");
             if (lmEntity.getPDC().has(mmKey, PersistentDataType.STRING)) {
                 final String type = lmEntity.getPDC().get(mmKey, PersistentDataType.STRING);
                 return type == null ? "" : type;
