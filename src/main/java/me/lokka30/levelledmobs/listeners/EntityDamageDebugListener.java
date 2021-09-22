@@ -49,9 +49,13 @@ public class EntityDamageDebugListener implements Listener {
 
         // Make sure the mob is a LivingEntity and the attacker is a Player
         if (!(event.getEntity() instanceof LivingEntity) || !(event.getDamager() instanceof Player)) return;
-        final LivingEntityWrapper lmEntity = new LivingEntityWrapper((LivingEntity) event.getEntity(), main);
-        final Player player = (Player) event.getDamager();
+        final LivingEntityWrapper lmEntity = LevelledMobs.getWrapper((LivingEntity) event.getEntity(), main);
 
+        checkEntity((Player) event.getDamager(), lmEntity);
+        LevelledMobs.doneWithCachedWrapper(lmEntity);
+    }
+
+    private void checkEntity(final Player player, final @NotNull LivingEntityWrapper lmEntity){
         // Make sure the mob is levelled
         if (!lmEntity.isLevelled()) return;
 

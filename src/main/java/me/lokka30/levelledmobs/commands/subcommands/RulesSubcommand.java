@@ -130,9 +130,10 @@ public class RulesSubcommand implements Subcommand {
                 if (!(entity instanceof LivingEntity)) continue;
 
                 entityCount++;
-                final LivingEntityWrapper lmEntity = new LivingEntityWrapper((LivingEntity) entity, main);
+                final LivingEntityWrapper lmEntity = LevelledMobs.getWrapper((LivingEntity) entity, main);
                 lmEntity.reEvaluateLevel = true;
                 main._mobsQueueManager.addToQueue(new QueueItem(lmEntity, null));
+                LevelledMobs.doneWithCachedWrapper(lmEntity);
             }
         }
 
@@ -321,7 +322,7 @@ public class RulesSubcommand implements Subcommand {
                 livingEntity = entities.get(entities.firstKey());
 
             createParticleEffect(livingEntity.getLocation());
-            final LivingEntityWrapper lmEntity = new LivingEntityWrapper(livingEntity, main);
+            final LivingEntityWrapper lmEntity = LevelledMobs.getWrapper(livingEntity, main);
 
             String entityName = lmEntity.getTypeName();
             if (ExternalCompatibilityManager.hasMythicMobsInstalled() && ExternalCompatibilityManager.isMythicMob(lmEntity))
@@ -349,7 +350,9 @@ public class RulesSubcommand implements Subcommand {
                 }
             };
 
+            lmEntity.inUseCount.getAndIncrement();
             runnable.runTaskLater(main, 25);
+            LevelledMobs.doneWithCachedWrapper(lmEntity);
         }
     }
 

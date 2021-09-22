@@ -139,8 +139,9 @@ public class SummonSubcommand implements Subcommand {
                     return;
                 }
 
-                final LivingEntityPlaceHolder lmPlaceHolder = new LivingEntityPlaceHolder(entityType, location, location.getWorld(), main);
+                final LivingEntityPlaceHolder lmPlaceHolder = LevelledMobs.getWrapper(entityType, location, main);
                 summonMobs(lmPlaceHolder, amount, sender, level, summonType, player, override);
+                LevelledMobs.doneWithCachedWrapper(lmPlaceHolder);
             } else {
                 List<String> messages = main.messagesCfg.getStringList("command.levelledmobs.summon.here.usage");
                 messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.getPrefix());
@@ -177,8 +178,9 @@ public class SummonSubcommand implements Subcommand {
                     return;
                 }
 
-                final LivingEntityPlaceHolder lmPlaceHolder = new LivingEntityPlaceHolder(entityType, location, world, main);
+                final LivingEntityPlaceHolder lmPlaceHolder = LevelledMobs.getWrapper(entityType, location, main);
                 summonMobs(lmPlaceHolder, amount, sender, level, summonType, target, override);
+                LevelledMobs.doneWithCachedWrapper(lmPlaceHolder);
             } else {
                 List<String> messages = main.messagesCfg.getStringList("command.levelledmobs.summon.atPlayer.usage");
                 messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.getPrefix());
@@ -224,8 +226,9 @@ public class SummonSubcommand implements Subcommand {
                     messages = Utils.colorizeAllInList(messages);
                     messages.forEach(sender::sendMessage);
                 } else {
-                    LivingEntityPlaceHolder lmPlaceHolder = new LivingEntityPlaceHolder(entityType, location, location.getWorld(), main);
+                    LivingEntityPlaceHolder lmPlaceHolder = LevelledMobs.getWrapper(entityType, location, main);
                     summonMobs(lmPlaceHolder, amount, sender, level, summonType, null, override);
+                    LevelledMobs.doneWithCachedWrapper(lmPlaceHolder);
                 }
             } else {
                 List<String> messages = main.messagesCfg.getStringList("command.levelledmobs.summon.atLocation.usage");
@@ -433,8 +436,9 @@ public class SummonSubcommand implements Subcommand {
             final Entity entity = location.getWorld().spawnEntity(location, lmPlaceHolder.getEntityType());
 
             if (entity instanceof LivingEntity) {
-                final LivingEntityWrapper lmEntity = new LivingEntityWrapper((LivingEntity) entity, main);
+                final LivingEntityWrapper lmEntity = LevelledMobs.getWrapper((LivingEntity) entity, main);
                 main.levelInterface.applyLevelToMob(lmEntity, level, true, override, new HashSet<>(Collections.singletonList(AdditionalLevelInformation.NOT_APPLICABLE)));
+                LevelledMobs.doneWithCachedWrapper(lmEntity);
             }
         }
 

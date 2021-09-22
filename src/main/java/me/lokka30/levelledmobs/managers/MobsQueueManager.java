@@ -54,7 +54,10 @@ public class MobsQueueManager {
         doThread = false;
     }
 
-    public void addToQueue(final QueueItem item) { this.queue.offer(item); }
+    public void addToQueue(final QueueItem item) {
+        item.lmEntity.inUseCount.getAndIncrement();
+        this.queue.offer(item);
+    }
 
     private void main() throws InterruptedException{
         while (doThread) {
@@ -62,8 +65,11 @@ public class MobsQueueManager {
             final QueueItem item = queue.poll(200, TimeUnit.MILLISECONDS);
             if (item == null) continue;
 
+            if (!item.lmEntity.getIsPopulated()) continue;
             if (!item.lmEntity.getShouldShowLM_Nametag()) continue;
             main.levelManager.entitySpawnListener.preprocessMob(item.lmEntity, item.event);
+
+            LevelledMobs.doneWithCachedWrapper(item.lmEntity);
         }
 
         isRunning = false;

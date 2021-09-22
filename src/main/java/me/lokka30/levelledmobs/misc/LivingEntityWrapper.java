@@ -31,9 +31,8 @@ import java.util.concurrent.locks.ReentrantLock;
  * @since 3.0.0
  */
 public class LivingEntityWrapper extends LivingEntityWrapperBase implements LivingEntityInterface {
-    public LivingEntityWrapper(final @NotNull LivingEntity livingEntity, final @NotNull LevelledMobs main){
-        super(main, livingEntity.getWorld(), livingEntity.getLocation());
-        this.livingEntity = livingEntity;
+    public LivingEntityWrapper(final @NotNull LevelledMobs main){
+        super(main);
         this.applicableGroups = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
         this.applicableRules = new LinkedList<>();
         this.mobExternalTypes = new LinkedList<>();
@@ -42,7 +41,7 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
         this.cacheLock = new ReentrantLock(true);
     }
 
-    private final LivingEntity livingEntity;
+    private LivingEntity livingEntity;
     @NotNull
     private Set<String> applicableGroups;
     private boolean hasCache;
@@ -59,12 +58,37 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
     public EntityDamageEvent.DamageCause deathCause;
     public boolean reEvaluateLevel;
     private boolean groupsAreBuilt;
-    private Double calculatedDistanceFromSpawn;
     private Player playerForLevelling;
     private Map<String, Boolean> prevChanceRuleResults;
     private final ReentrantLock cacheLock;
     private final static Object playerLock = new Object();
     private String sourceSpawnerName;
+
+    public void setLivingEntity(final @NotNull LivingEntity livingEntity){
+        this.livingEntity = livingEntity;
+        super.populateData(livingEntity.getWorld(), livingEntity.getLocation());
+    }
+
+    public void clearEntityData(){
+        this.livingEntity = null;
+        this.applicableGroups.clear();
+        this.applicableRules.clear();
+        this.mobExternalTypes.clear();
+        this.spawnReason = LevelledMobSpawnReason.DEFAULT;
+        this.deathCause = EntityDamageEvent.DamageCause.CUSTOM;
+        this.isBuildingCache = false;
+        this.hasCache = false;
+        this.mobLevel = null;
+        this.spawnedWGRegions = null;
+        this.fineTuningAttributes = null;
+        this.reEvaluateLevel = false;
+        this.groupsAreBuilt = false;
+        this.playerForLevelling = null;
+        this.prevChanceRuleResults = null;
+        this.sourceSpawnerName = null;
+
+        super.clearEntityData();
+    }
 
     private void buildCache(){
         if (isBuildingCache || this.hasCache) return;

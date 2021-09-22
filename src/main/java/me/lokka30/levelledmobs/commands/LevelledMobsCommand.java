@@ -13,7 +13,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -43,6 +43,7 @@ public class LevelledMobsCommand implements CommandExecutor, TabCompleter {
     private final RulesSubcommand rulesSubcommand;
     private final SpawnerSubCommand spawnerSubCommand;
     private final SummonSubcommand summonSubcommand = new SummonSubcommand();
+    private final DebugSubcommand debugSubcommand = new DebugSubcommand();
 
     public boolean onCommand(@NotNull final CommandSender sender, final Command command, final String label, final String[] args) {
         if (sender.hasPermission("levelledmobs.command")) {
@@ -53,6 +54,9 @@ public class LevelledMobsCommand implements CommandExecutor, TabCompleter {
                     // Retain alphabetical order please.
                     case "compatibility":
                         compatibilitySubcommand.parseSubcommand(main, sender, label, args);
+                        break;
+                    case "debug":
+                        debugSubcommand.parseSubcommand(main, sender, label, args);
                         break;
                     case "generatemobdata":
                         generateMobDataSubcommand.parseSubcommand(main, sender, label, args);
@@ -75,6 +79,9 @@ public class LevelledMobsCommand implements CommandExecutor, TabCompleter {
                     case "summon":
                         summonSubcommand.parseSubcommand(main, sender, label, args);
                         break;
+                    case "test":
+                        test(sender);
+                        break;
                     default:
                         sendMainUsage(sender, label);
                         break;
@@ -86,6 +93,11 @@ public class LevelledMobsCommand implements CommandExecutor, TabCompleter {
         return true;
     }
 
+    private void test(@NotNull final CommandSender sender) {
+        final String counts = LevelledMobs.getWrapperCounts();
+        sender.sendMessage("counts: " + counts);
+    }
+
     private void sendMainUsage(@NotNull final CommandSender sender, final String label) {
         List<String> mainUsage = main.messagesCfg.getStringList("command.levelledmobs.main-usage");
         mainUsage = Utils.replaceAllInList(mainUsage, "%prefix%", main.configUtils.getPrefix());
@@ -95,7 +107,7 @@ public class LevelledMobsCommand implements CommandExecutor, TabCompleter {
     }
 
     // Retain alphabetical order please.
-    private final List<String> commandsToCheck = Arrays.asList("summon", "kill", "reload", "info", "compatibility", "spawner", "rules");
+    private final List<String> commandsToCheck = Arrays.asList("debug", "summon", "kill", "reload", "info", "compatibility", "spawner", "rules");
 
     @Override
     public List<String> onTabComplete(final CommandSender sender, final Command cmd, final String alias, @NotNull final String[] args) {
@@ -124,7 +136,7 @@ public class LevelledMobsCommand implements CommandExecutor, TabCompleter {
                     return summonSubcommand.parseTabCompletions(main, sender, args);
                 // the missing subcommands don't have tab completions, don't bother including them.
                 default:
-                    return new ArrayList<>();
+                    return Collections.emptyList();
             }
         }
     }

@@ -57,17 +57,25 @@ public class CombustListener implements Listener {
                 return;
         }
 
-        final LivingEntityWrapper lmEntity = new LivingEntityWrapper((LivingEntity) event.getEntity(), main);
+        final LivingEntityWrapper lmEntity = LevelledMobs.getWrapper((LivingEntity) event.getEntity(), main);
         double multiplier = main.rulesManager.getRule_SunlightBurnIntensity(lmEntity);
-        if (multiplier == 0.0) return;
+        if (multiplier == 0.0) {
+            LevelledMobs.doneWithCachedWrapper(lmEntity);
+            return;
+        }
 
         double newHealth = lmEntity.getLivingEntity().getHealth() - multiplier;
         if (newHealth < 0.0) newHealth = 0.0;
 
-        if (lmEntity.getLivingEntity().getHealth() <= 0.0) return;
+        if (lmEntity.getLivingEntity().getHealth() <= 0.0) {
+            LevelledMobs.doneWithCachedWrapper(lmEntity);
+            return;
+        }
         lmEntity.getLivingEntity().setHealth(newHealth);
 
         if (lmEntity.isLevelled())
             main.levelManager.updateNametag(lmEntity);
+
+        LevelledMobs.doneWithCachedWrapper(lmEntity);
     }
 }

@@ -8,6 +8,7 @@ import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
 import me.lokka30.levelledmobs.misc.Utils;
 import me.lokka30.microlib.MessageUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -83,6 +84,10 @@ public class PlayerJoinListener implements Listener {
     }
 
     private void updateNametagsInWorld(final Player player, @NotNull final List<Entity> entities) {
+        final int currentPlayers = Bukkit.getOnlinePlayers().size();
+        if (currentPlayers > main.maxPlayersRecorded)
+            main.maxPlayersRecorded = currentPlayers;
+
         for (final Entity entity : entities) {
             if (!(entity instanceof LivingEntity)) continue;
 
@@ -92,11 +97,12 @@ public class PlayerJoinListener implements Listener {
             if (!livingEntity.isValid()) continue;
 
             // mob must be levelled
-            final LivingEntityWrapper lmEntity = new LivingEntityWrapper(livingEntity, main);
-            if (!lmEntity.isLevelled()) continue;
+            if (!main.levelManager.isLevelled(livingEntity)) continue;
 
-            // public void updateNametagWithDelay(final LivingEntityWrapper lmEntity, final List<Player> playerList, final long delay) {
+            final LivingEntityWrapper lmEntity = LevelledMobs.getWrapper(livingEntity, main);
+
             main.levelManager.updateNametag(lmEntity, main.levelManager.getNametag(lmEntity, false), Collections.singletonList(player));
+            LevelledMobs.doneWithCachedWrapper(lmEntity);
         }
     }
 

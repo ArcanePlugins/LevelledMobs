@@ -589,7 +589,7 @@ public class LevelManager implements LevelInterface {
         return result;
     }
 
-    public void updateNametag_WithDelay(final LivingEntityWrapper lmEntity){
+    public void updateNametag_WithDelay(final @NotNull LivingEntityWrapper lmEntity){
         final BukkitRunnable runnable = new BukkitRunnable() {
             @Override
             public void run() {
@@ -597,9 +597,12 @@ public class LevelManager implements LevelInterface {
                         lmEntity,
                         getNametag(lmEntity, false)
                 );
+
+                LevelledMobs.doneWithCachedWrapper(lmEntity);
             }
         };
 
+        lmEntity.inUseCount.getAndIncrement();
         runnable.runTaskLater(main, 1L);
     }
 
@@ -668,7 +671,7 @@ public class LevelManager implements LevelInterface {
 
                 // Mob must be a livingentity that is ...living.
                 if (!(entity instanceof LivingEntity) || entity instanceof Player) continue;
-                final LivingEntityWrapper lmEntity = new LivingEntityWrapper((LivingEntity) entity, main);
+                final LivingEntityWrapper lmEntity = LevelledMobs.getWrapper((LivingEntity) entity, main);
 
                 if (lmEntity.isLevelled()) {
                     if (main.configUtils.playerLevellingEnabled) {
@@ -697,6 +700,8 @@ public class LevelManager implements LevelInterface {
                     else if (levellableState == LevellableState.ALLOWED)
                         main._mobsQueueManager.addToQueue(new QueueItem(lmEntity, null));
                 }
+
+                LevelledMobs.doneWithCachedWrapper(lmEntity);
             }
         }
 
@@ -1015,13 +1020,15 @@ public class LevelManager implements LevelInterface {
         if (lmEntity.getLivingEntity().isInsideVehicle() && main.rulesManager.getRule_PassengerMatchLevel(lmEntity)
                 && lmEntity.getLivingEntity().getVehicle() instanceof LivingEntity){
             // entity is a passenger. grab the level from the "vehicle" entity
-            final LivingEntityWrapper vehicle = new LivingEntityWrapper((LivingEntity) lmEntity.getLivingEntity().getVehicle(), main);
+            final LivingEntityWrapper vehicle = LevelledMobs.getWrapper((LivingEntity) lmEntity.getLivingEntity().getVehicle(), main);
             if (vehicle.isLevelled()) {
                 Utils.logger.info(lmEntity.getNameIfBaby() + " got level " + vehicle.getMobLevel() + " from vehicle " + vehicle.getNameIfBaby());
                 level = vehicle.getMobLevel();
             }
             else
                 Utils.logger.info(lmEntity.getNameIfBaby() + " vehicle was unlevelled: " + vehicle.getNameIfBaby());
+
+            LevelledMobs.doneWithCachedWrapper(vehicle);
         }
 
         if (isSummoned) {
@@ -1102,8 +1109,12 @@ public class LevelManager implements LevelInterface {
 
                 if (lmEntity.getLivingEntity() instanceof Creeper)
                     main.levelManager.applyCreeperBlastRadius(lmEntity, creeperLevel);
+
+                LevelledMobs.doneWithCachedWrapper(lmEntity);
             }
         };
+
+        lmEntity.inUseCount.getAndIncrement();
         applyAttribs.runTask(main);
 
         if (!skipLM_Nametag)

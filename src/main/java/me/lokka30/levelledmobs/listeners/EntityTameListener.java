@@ -32,11 +32,12 @@ public class EntityTameListener implements Listener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     private void onEntityTameEvent(@NotNull final EntityTameEvent event) {
-        final LivingEntityWrapper lmEntity = new LivingEntityWrapper(event.getEntity(), main);
+        final LivingEntityWrapper lmEntity = LevelledMobs.getWrapper(event.getEntity(), main);
         final LevellableState levellableState = main.levelInterface.getLevellableState(lmEntity);
 
         if (levellableState != LevellableState.ALLOWED){
             Utils.debugLog(main, DebugType.ENTITY_TAME, "Levelable state was " + levellableState);
+            LevelledMobs.doneWithCachedWrapper(lmEntity);
             return;
         }
 
@@ -47,6 +48,7 @@ public class EntityTameListener implements Listener {
             main.levelInterface.removeLevel(lmEntity);
 
             Utils.debugLog(main, DebugType.ENTITY_TAME, "Removed level of tamed mob");
+            LevelledMobs.doneWithCachedWrapper(lmEntity);
             return;
         }
 
@@ -67,5 +69,6 @@ public class EntityTameListener implements Listener {
                 false,
                 new HashSet<>(Collections.singletonList(AdditionalLevelInformation.FROM_TAME_LISTENER))
         );
+        LevelledMobs.doneWithCachedWrapper(lmEntity);
     }
 }

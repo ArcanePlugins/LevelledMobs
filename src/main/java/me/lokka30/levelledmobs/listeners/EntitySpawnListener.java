@@ -49,7 +49,7 @@ public class EntitySpawnListener implements Listener {
         // Must be a LivingEntity.
         if (!(event.getEntity() instanceof LivingEntity)) return;
 
-        final LivingEntityWrapper lmEntity = new LivingEntityWrapper((LivingEntity) event.getEntity(), main);
+        final LivingEntityWrapper lmEntity = LevelledMobs.getWrapper((LivingEntity) event.getEntity(), main);
 
         if (event instanceof CreatureSpawnEvent && ((CreatureSpawnEvent) event).getSpawnReason().equals(CreatureSpawnEvent.SpawnReason.CUSTOM) &&
                 !lmEntity.isLevelled()) {
@@ -58,10 +58,14 @@ public class EntitySpawnListener implements Listener {
                 updateMobForPlayerLevelling(lmEntity);
 
             delayedAddToQueue(lmEntity, event, 20);
+            LevelledMobs.doneWithCachedWrapper(lmEntity);
             return;
         }
 
-        if (!processMobSpawns) return;
+        if (!processMobSpawns) {
+            LevelledMobs.doneWithCachedWrapper(lmEntity);
+            return;
+        }
 
         if (main.configUtils.playerLevellingEnabled && lmEntity.getPlayerForLevelling() == null)
             updateMobForPlayerLevelling(lmEntity);
@@ -72,6 +76,8 @@ public class EntitySpawnListener implements Listener {
             delayedAddToQueue(lmEntity, event, mobProcessDelay);
         else
             main._mobsQueueManager.addToQueue(new QueueItem(lmEntity, event));
+
+        LevelledMobs.doneWithCachedWrapper(lmEntity);
     }
 
     private void updateMobForPlayerLevelling(final LivingEntityWrapper lmEntity){
@@ -193,7 +199,6 @@ public class EntitySpawnListener implements Listener {
 
     @SuppressWarnings("ConstantConditions")
     public void preprocessMob(final LivingEntityWrapper lmEntity, @NotNull final Event event){
-
         if (!lmEntity.reEvaluateLevel && lmEntity.isLevelled())
             return;
 

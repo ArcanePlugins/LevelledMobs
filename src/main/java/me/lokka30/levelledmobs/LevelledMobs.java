@@ -10,18 +10,19 @@ import me.lokka30.levelledmobs.listeners.ChunkLoadListener;
 import me.lokka30.levelledmobs.listeners.EntityDamageDebugListener;
 import me.lokka30.levelledmobs.listeners.PlayerInteractEventListener;
 import me.lokka30.levelledmobs.managers.*;
-import me.lokka30.levelledmobs.misc.ConfigUtils;
-import me.lokka30.levelledmobs.misc.Utils;
-import me.lokka30.levelledmobs.misc.YmlParsingHelper;
+import me.lokka30.levelledmobs.misc.*;
 import me.lokka30.levelledmobs.rules.RulesManager;
 import me.lokka30.levelledmobs.rules.RulesParsingManager;
 import me.lokka30.microlib.QuickTimer;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.NotNull;
 
 import java.time.Instant;
 import java.util.*;
@@ -55,6 +56,11 @@ public class LevelledMobs extends JavaPlugin {
     public boolean migratedFromPre30;
     public YmlParsingHelper helperSettings;
     public int playerLevellingMinRelevelTime;
+    public int maxPlayersRecorded;
+    private static Stack<LivingEntityWrapper> cachedLM_Wrappers;
+    private static Stack<LivingEntityPlaceHolder> cachedPlaceHolders;
+    private static final Object cachedLM_Wrappers_Lock = new Object();
+    private static final Object cachedPlaceHolders_Lock = new Object();
 
     // Configuration
     public YamlConfiguration settingsCfg;
@@ -84,6 +90,8 @@ public class LevelledMobs extends JavaPlugin {
     public void onEnable() {
         final QuickTimer timer = new QuickTimer();
 
+        cachedLM_Wrappers = new Stack<>();
+        cachedPlaceHolders = new Stack<>();
         this.playerLevellingEntities = new WeakHashMap<>();
         this.helperSettings = new YmlParsingHelper();
         this.random = new Random();
@@ -149,6 +157,78 @@ public class LevelledMobs extends JavaPlugin {
         configUtils.playerLevellingEnabled = rulesManager.isPlayerLevellingEnabled();
 
         reloadFinishedMsg.forEach(sender::sendMessage);
+    }
+
+    @NotNull
+    public static LivingEntityWrapper getWrapper(final @NotNull LivingEntity livingEntity, final @NotNull LevelledMobs main){
+        LivingEntityWrapper lew;
+
+        synchronized (cachedLM_Wrappers_Lock) {
+            if (cachedLM_Wrappers.empty())
+                lew = new LivingEntityWrapper(main);
+            else
+                lew = cachedLM_Wrappers.pop();
+        }
+
+        lew.setLivingEntity(livingEntity);
+        lew.inUseCount.set(1);
+        return lew;
+    }
+
+    @NotNull
+    public static LivingEntityPlaceHolder getWrapper(final EntityType entityType, final @NotNull Location location, final @NotNull LevelledMobs main){
+        LivingEntityPlaceHolder leph;
+
+        if (location.getWorld() == null)
+            throw new NullPointerException("World can't be null");
+
+        synchronized (cachedPlaceHolders_Lock) {
+            if (cachedPlaceHolders.empty())
+                leph = new LivingEntityPlaceHolder(main);
+            else
+                leph = cachedPlaceHolders.pop();
+        }
+
+        leph.populateEntityData(entityType, location, location.getWorld());
+        leph.inUseCount.set(1);
+        return leph;
+    }
+
+    public static void doneWithCachedWrapper(final @NotNull LivingEntityWrapperBase lmBase){
+        if (!lmBase.getIsPopulated()) {
+            Utils.logger.info("doneWithCachedWrapper: item was not populated");
+            return;
+        }
+
+        if (lmBase.inUseCount.decrementAndGet() > 0) return;
+
+        lmBase.clearEntityData();
+
+        if (lmBase instanceof LivingEntityWrapper) {
+            synchronized (cachedLM_Wrappers_Lock) {
+                cachedLM_Wrappers.push((LivingEntityWrapper) lmBase);
+            }
+        }
+        else if (lmBase instanceof LivingEntityPlaceHolder){
+            synchronized (cachedPlaceHolders_Lock){
+                cachedPlaceHolders.push((LivingEntityPlaceHolder) lmBase);
+            }
+        }
+    }
+
+    //TODO: remove this function when enough testing has been done
+    public static String getWrapperCounts(){
+        int count0;
+        int count1;
+
+        synchronized (cachedLM_Wrappers_Lock){
+            count0 = cachedLM_Wrappers.size();
+        }
+        synchronized (cachedPlaceHolders_Lock){
+            count1 = cachedPlaceHolders.size();
+        }
+
+        return String.format("%s, %s", count0, count1);
     }
 
     @Override

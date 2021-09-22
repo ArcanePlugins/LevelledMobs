@@ -25,16 +25,27 @@ import java.util.List;
  */
 public class LivingEntityPlaceHolder extends LivingEntityWrapperBase implements LivingEntityInterface {
 
-    public LivingEntityPlaceHolder(final EntityType entityType, final @NotNull Location location, final @NotNull World world, final @NotNull LevelledMobs main){
-        super(main, world, location);
-
-        this.entityType = entityType;
+    public LivingEntityPlaceHolder(final @NotNull LevelledMobs main){
+        super(main);
     }
 
-    private final EntityType entityType;
+    private EntityType entityType;
+
+    public void populateEntityData(final EntityType entityType, final @NotNull Location location, final @NotNull World world){
+        this.entityType = entityType;
+        super.populateData(world, location);
+    }
+
+    public void clearEntityData(){
+        this.entityType = null;
+        super.clearEntityData();
+    }
 
     @NotNull
     public EntityType getEntityType() {
+        if (this.entityType == null)
+            throw new NullPointerException("EntityType was null");
+
         return this.entityType;
     }
 

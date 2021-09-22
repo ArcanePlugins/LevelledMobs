@@ -69,7 +69,8 @@ public class NametagQueueManager {
         doThread = false;
     }
 
-    public void addToQueue(final QueueItem item){
+    public void addToQueue(final QueueItem item) {
+        item.lmEntity.inUseCount.getAndIncrement();
         queue.offer(item);
     }
 
@@ -80,12 +81,15 @@ public class NametagQueueManager {
             if (item == null) continue;
 
             updateNametag(item.lmEntity, item.nametag, item.players);
+
+            LevelledMobs.doneWithCachedWrapper(item.lmEntity);
         }
 
         isRunning = false;
     }
 
     private void updateNametag(final @NotNull LivingEntityWrapper lmEntity, final String nametag, final List<Player> players) {
+        if (!lmEntity.getIsPopulated()) return;
 
         if (main.helperSettings.getBoolean(main.settingsCfg, "use-customname-for-mob-nametags")){
             updateNametag_CustomName(lmEntity, nametag);
