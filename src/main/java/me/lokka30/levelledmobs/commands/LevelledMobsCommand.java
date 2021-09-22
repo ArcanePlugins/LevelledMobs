@@ -6,11 +6,15 @@ package me.lokka30.levelledmobs.commands;
 
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.commands.subcommands.*;
+import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
 import me.lokka30.levelledmobs.misc.Utils;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
@@ -80,7 +84,7 @@ public class LevelledMobsCommand implements CommandExecutor, TabCompleter {
                         summonSubcommand.parseSubcommand(main, sender, label, args);
                         break;
                     case "test":
-                        test(sender);
+                        test(sender, args);
                         break;
                     default:
                         sendMainUsage(sender, label);
@@ -93,9 +97,10 @@ public class LevelledMobsCommand implements CommandExecutor, TabCompleter {
         return true;
     }
 
-    private void test(@NotNull final CommandSender sender) {
-        final String counts = LevelledMobs.getWrapperCounts();
-        sender.sendMessage("counts: " + counts);
+    private void test(@NotNull final CommandSender sender, final String @NotNull [] args) {
+        final String counts = main.cacheCheck == null ?
+                "stack size: (null)" : "stack size: " + main.cacheCheck.size();
+        sender.sendMessage(counts);
     }
 
     private void sendMainUsage(@NotNull final CommandSender sender, final String label) {
@@ -110,7 +115,7 @@ public class LevelledMobsCommand implements CommandExecutor, TabCompleter {
     private final List<String> commandsToCheck = Arrays.asList("debug", "summon", "kill", "reload", "info", "compatibility", "spawner", "rules");
 
     @Override
-    public List<String> onTabComplete(final CommandSender sender, final Command cmd, final String alias, @NotNull final String[] args) {
+    public List<String> onTabComplete(final CommandSender sender, final Command cmd, final String alias, @NotNull final String @NotNull [] args) {
         if (args.length == 1) {
             List<String> suggestions = new LinkedList<>();
 

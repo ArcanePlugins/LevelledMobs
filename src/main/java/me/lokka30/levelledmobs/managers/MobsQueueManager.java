@@ -69,7 +69,7 @@ public class MobsQueueManager {
             if (!item.lmEntity.getShouldShowLM_Nametag()) continue;
             main.levelManager.entitySpawnListener.preprocessMob(item.lmEntity, item.event);
 
-            LevelledMobs.doneWithCachedWrapper(item.lmEntity);
+            item.lmEntity.free();
         }
 
         isRunning = false;

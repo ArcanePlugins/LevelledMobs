@@ -60,14 +60,14 @@ public class PlayerDeathListener implements Listener {
 
         if (!main.levelManager.isLevelled(killer)) return;
 
-        final LivingEntityWrapper lmKiller = LevelledMobs.getWrapper(killer, main);
+        final LivingEntityWrapper lmKiller = LivingEntityWrapper.getInstance(killer, main);
         final String deathMessage = main.levelManager.getNametag(lmKiller, true);
         if (Utils.isNullOrEmpty(deathMessage) || "disabled".equalsIgnoreCase(deathMessage)) {
-            LevelledMobs.doneWithCachedWrapper(lmKiller);
+            lmKiller.free();
             return;
         }
 
         event.setDeathMessage(Utils.replaceEx(event.getDeathMessage(), killer.getName(), deathMessage));
-        LevelledMobs.doneWithCachedWrapper(lmKiller);
+        lmKiller.free();
     }
 }

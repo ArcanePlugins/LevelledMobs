@@ -41,12 +41,12 @@ public class EntityTargetListener implements Listener {
         // Must target a player and must be a living entity
         if (!(event.getTarget() instanceof Player) || !(event.getEntity() instanceof LivingEntity)) return;
 
-        final LivingEntityWrapper lmEntity = LevelledMobs.getWrapper((LivingEntity) event.getEntity(), main);
+        final LivingEntityWrapper lmEntity = LivingEntityWrapper.getInstance((LivingEntity) event.getEntity(), main);
 
         // Must be a levelled entity
         if (!lmEntity.isLevelled()){
             if (main.levelManager.entitySpawnListener.processMobSpawns) {
-                LevelledMobs.doneWithCachedWrapper(lmEntity);
+                lmEntity.free();
                 return;
             }
 
@@ -56,6 +56,6 @@ public class EntityTargetListener implements Listener {
 
         // Update the nametag.
         main.nametagQueueManager_.addToQueue(new QueueItem(lmEntity, main.levelManager.getNametag(lmEntity, false), lmEntity.getLivingEntity().getWorld().getPlayers()));
-        LevelledMobs.doneWithCachedWrapper(lmEntity);
+        lmEntity.free();
     }
 }

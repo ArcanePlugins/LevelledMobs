@@ -82,7 +82,7 @@ public class NametagQueueManager {
 
             updateNametag(item.lmEntity, item.nametag, item.players);
 
-            LevelledMobs.doneWithCachedWrapper(item.lmEntity);
+            item.lmEntity.free();
         }
 
         isRunning = false;

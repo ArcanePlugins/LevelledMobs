@@ -36,10 +36,10 @@ public class EntityRegainHealthListener implements Listener {
         // Make sure the mob is levelled
         if (!main.levelManager.isLevelled((LivingEntity) event.getEntity())) return;
 
-        final LivingEntityWrapper lmEntity = LevelledMobs.getWrapper((LivingEntity) event.getEntity(), main);
+        final LivingEntityWrapper lmEntity = LivingEntityWrapper.getInstance((LivingEntity) event.getEntity(), main);
 
         main.levelManager.updateNametag_WithDelay(lmEntity);
-        LevelledMobs.doneWithCachedWrapper(lmEntity);
+        lmEntity.free();
     }
 
 }

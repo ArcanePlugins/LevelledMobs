@@ -40,15 +40,15 @@ public class ChunkLoadListener implements Listener {
 
             // Must be a *living* entity
             if (!(entity instanceof LivingEntity)) continue;
-            final LivingEntityWrapper lmEntity = LevelledMobs.getWrapper((LivingEntity) entity, main);
+            final LivingEntityWrapper lmEntity = LivingEntityWrapper.getInstance((LivingEntity) entity, main);
 
             if (lmEntity.isLevelled()) {
-                LevelledMobs.doneWithCachedWrapper(lmEntity);
+                lmEntity.free();
                 continue;
             }
 
             main._mobsQueueManager.addToQueue(new QueueItem(lmEntity, event));
-            LevelledMobs.doneWithCachedWrapper(lmEntity);
+            lmEntity.free();
         }
     }
 }

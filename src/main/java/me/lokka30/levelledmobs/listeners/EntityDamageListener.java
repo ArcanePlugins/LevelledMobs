@@ -36,12 +36,12 @@ public class EntityDamageListener implements Listener {
         if (!(event.getEntity() instanceof LivingEntity)) return;
         if (event.getFinalDamage() == 0.0) return;
 
-        final LivingEntityWrapper lmEntity = LevelledMobs.getWrapper((LivingEntity) event.getEntity(), main);
+        final LivingEntityWrapper lmEntity = LivingEntityWrapper.getInstance((LivingEntity) event.getEntity(), main);
 
         //Make sure the mob is levelled
         if (!lmEntity.isLevelled()){
             if (main.levelManager.entitySpawnListener.processMobSpawns) {
-                LevelledMobs.doneWithCachedWrapper(lmEntity);
+                lmEntity.free();
                 return;
             }
 
@@ -51,7 +51,7 @@ public class EntityDamageListener implements Listener {
 
         // Update their nametag with a 1 tick delay so that their health after the damage is shown
         main.levelManager.updateNametag_WithDelay(lmEntity);
-        LevelledMobs.doneWithCachedWrapper(lmEntity);
+        lmEntity.free();
     }
 
     // Check for levelled ranged damage.
@@ -70,10 +70,10 @@ public class EntityDamageListener implements Listener {
         if (projectile.getShooter() == null) return;
         if (!(projectile.getShooter() instanceof LivingEntity)) return;
 
-        final LivingEntityWrapper shooter = LevelledMobs.getWrapper((LivingEntity) projectile.getShooter(), main);
+        final LivingEntityWrapper shooter = LivingEntityWrapper.getInstance((LivingEntity) projectile.getShooter(), main);
         processRangedDamage2(shooter, event);
 
-        LevelledMobs.doneWithCachedWrapper(shooter);
+        shooter.free();
     }
 
     private void processRangedDamage2(@NotNull final LivingEntityWrapper shooter, @NotNull final EntityDamageByEntityEvent event) {
@@ -110,9 +110,9 @@ public class EntityDamageListener implements Listener {
         Utils.debugLog(main, DebugType.RANGED_DAMAGE_MODIFICATION, "Range attack damage modified for &b" + livingEntity.getName() + "&7:");
         Utils.debugLog(main, DebugType.RANGED_DAMAGE_MODIFICATION, "Previous guardianDamage: &b" + event.getDamage());
 
-        final LivingEntityWrapper lmEntity = LevelledMobs.getWrapper(livingEntity, main);
+        final LivingEntityWrapper lmEntity = LivingEntityWrapper.getInstance(livingEntity, main);
         event.setDamage(main.mobDataManager.getAdditionsForLevel(lmEntity, Addition.CUSTOM_RANGED_ATTACK_DAMAGE, event.getDamage())); // use ranged attack damage value
         Utils.debugLog(main, DebugType.RANGED_DAMAGE_MODIFICATION, "New guardianDamage: &b" + event.getDamage());
-        LevelledMobs.doneWithCachedWrapper(lmEntity);
+        lmEntity.free();
     }
 }

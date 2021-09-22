@@ -43,16 +43,16 @@ public class EntityNametagListener implements Listener {
             // Must be a levelled mob
             if (!main.levelManager.isLevelled((LivingEntity) event.getRightClicked())) return;
 
-            final LivingEntityWrapper lmEntity = LevelledMobs.getWrapper((LivingEntity) event.getRightClicked(), main);
+            final LivingEntityWrapper lmEntity = LivingEntityWrapper.getInstance((LivingEntity) event.getRightClicked(), main);
 
             if (main.rulesManager.getRule_MobCustomNameStatus(lmEntity) == MobCustomNameStatus.NOT_NAMETAGGED) {
                 main.levelInterface.removeLevel(lmEntity);
-                LevelledMobs.doneWithCachedWrapper(lmEntity);
+                lmEntity.free();
                 return;
             }
 
             main.levelManager.updateNametag(lmEntity);
-            LevelledMobs.doneWithCachedWrapper(lmEntity);
+            lmEntity.free();
         }
     }
 }

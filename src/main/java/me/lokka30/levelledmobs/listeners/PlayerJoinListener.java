@@ -99,10 +99,10 @@ public class PlayerJoinListener implements Listener {
             // mob must be levelled
             if (!main.levelManager.isLevelled(livingEntity)) continue;
 
-            final LivingEntityWrapper lmEntity = LevelledMobs.getWrapper(livingEntity, main);
+            final LivingEntityWrapper lmEntity = LivingEntityWrapper.getInstance(livingEntity, main);
 
             main.levelManager.updateNametag(lmEntity, main.levelManager.getNametag(lmEntity, false), Collections.singletonList(player));
-            LevelledMobs.doneWithCachedWrapper(lmEntity);
+            lmEntity.free();
         }
     }
 

@@ -31,7 +31,7 @@ import java.util.concurrent.locks.ReentrantLock;
  * @since 3.0.0
  */
 public class LivingEntityWrapper extends LivingEntityWrapperBase implements LivingEntityInterface {
-    public LivingEntityWrapper(final @NotNull LevelledMobs main){
+    private LivingEntityWrapper(final @NotNull LevelledMobs main){
         super(main);
         this.applicableGroups = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
         this.applicableRules = new LinkedList<>();
@@ -39,6 +39,23 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
         this.spawnReason = LevelledMobSpawnReason.DEFAULT;
         this.deathCause = EntityDamageEvent.DamageCause.CUSTOM;
         this.cacheLock = new ReentrantLock(true);
+    }
+
+    @Deprecated(since = "3.2.0")
+    public LivingEntityWrapper(final @NotNull LivingEntity livingEntity, final @NotNull LevelledMobs main){
+        // this constructor is provided for backwards compatibility only
+        // to get an instance, LivingEntityWrapper#getInstance should be called instead
+        // when finished with it, LivingEntityWrapper#free should be called
+
+        super(main);
+        this.applicableGroups = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+        this.applicableRules = new LinkedList<>();
+        this.mobExternalTypes = new LinkedList<>();
+        this.spawnReason = LevelledMobSpawnReason.DEFAULT;
+        this.deathCause = EntityDamageEvent.DamageCause.CUSTOM;
+        this.cacheLock = new ReentrantLock(true);
+
+        setLivingEntity(livingEntity);
     }
 
     private LivingEntity livingEntity;
@@ -62,7 +79,35 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
     private Map<String, Boolean> prevChanceRuleResults;
     private final ReentrantLock cacheLock;
     private final static Object playerLock = new Object();
+    private final static Object cachedLM_Wrappers_Lock = new Object();
     private String sourceSpawnerName;
+    private final static Stack<LivingEntityWrapper> cache = new Stack<>();
+
+    public static @NotNull LivingEntityWrapper getInstance(final LivingEntity livingEntity, final @NotNull LevelledMobs main){
+        LivingEntityWrapper lew;
+
+        synchronized (cachedLM_Wrappers_Lock) {
+            if (cache.empty())
+                lew = new LivingEntityWrapper(main);
+            else
+                lew = cache.pop();
+        }
+
+        if (main.cacheCheck == null)
+            main.cacheCheck = LivingEntityWrapper.cache;
+
+        lew.setLivingEntity(livingEntity);
+        lew.inUseCount.set(1);
+        return lew;
+    }
+
+    public void free(){
+        if (inUseCount.decrementAndGet() > 0) return;
+        if (!getIsPopulated()) return;
+
+        clearEntityData();
+        cache.push(this);
+    }
 
     public void setLivingEntity(final @NotNull LivingEntity livingEntity){
         this.livingEntity = livingEntity;
@@ -129,7 +174,7 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
         this.applicableRules.clear();
     }
 
-    private void checkChanceRules(final ApplicableRulesResult result){
+    private void checkChanceRules(final @NotNull ApplicableRulesResult result){
         if (result.allApplicableRules_MadeChance.isEmpty() && result.allApplicableRules_DidNotMakeChance.isEmpty())
             return;
 

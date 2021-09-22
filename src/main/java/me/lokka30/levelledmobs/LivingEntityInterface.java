@@ -44,4 +44,6 @@ public interface LivingEntityInterface {
     void setSpawnedTimeOfDay(final int ticks);
 
     void clearEntityData();
+
+    void free();
 }

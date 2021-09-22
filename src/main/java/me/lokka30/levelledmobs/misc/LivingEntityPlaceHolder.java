@@ -14,6 +14,7 @@ import org.bukkit.entity.EntityType;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
+import java.util.Stack;
 
 /**
  * A wrapper for the LivingEntity class that provides various common function
@@ -25,15 +26,53 @@ import java.util.List;
  */
 public class LivingEntityPlaceHolder extends LivingEntityWrapperBase implements LivingEntityInterface {
 
-    public LivingEntityPlaceHolder(final @NotNull LevelledMobs main){
+    private LivingEntityPlaceHolder(final @NotNull LevelledMobs main){
         super(main);
     }
 
+    @Deprecated
+    public LivingEntityPlaceHolder(final EntityType entityType, final @NotNull Location location, final @NotNull World world, final @NotNull LevelledMobs main){
+        // this constructor is provided for backwards compatibility only
+        // to get an instance, LivingEntityPlaceHolder#getInstance should be called instead
+        // when finished with it, LivingEntityPlaceHolder#free should be called
+
+        super(main);
+        populateEntityData(entityType, location, world);
+    }
+
     private EntityType entityType;
+    private final static Object cachedPlaceHolders_Lock = new Object();
+    private final static Stack<LivingEntityPlaceHolder> cache = new Stack<>();
+
+    public static @NotNull LivingEntityPlaceHolder getInstance(final EntityType entityType, final @NotNull Location location, final @NotNull LevelledMobs main){
+        LivingEntityPlaceHolder leph;
+
+        if (location.getWorld() == null)
+            throw new NullPointerException("World can't be null");
+
+        synchronized (cachedPlaceHolders_Lock) {
+            if (cache.empty())
+                leph = new LivingEntityPlaceHolder(main);
+            else
+                leph = cache.pop();
+        }
+
+        leph.populateEntityData(entityType, location, location.getWorld());
+        leph.inUseCount.set(1);
+        return leph;
+    }
 
     public void populateEntityData(final EntityType entityType, final @NotNull Location location, final @NotNull World world){
         this.entityType = entityType;
         super.populateData(world, location);
+    }
+
+    public void free(){
+        if (inUseCount.decrementAndGet() > 0) return;
+        if (!getIsPopulated()) return;
+
+        clearEntityData();
+        cache.push(this);
     }
 
     public void clearEntityData(){

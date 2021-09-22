@@ -42,7 +42,7 @@ public class EntityDeathListener implements Listener {
         if (bypassDrops.contains(event.getEntityType().toString()))
             return;
 
-        final LivingEntityWrapper lmEntity = LevelledMobs.getWrapper(event.getEntity(), main);
+        final LivingEntityWrapper lmEntity = LivingEntityWrapper.getInstance(event.getEntity(), main);
         final EntityDamageEvent damage = lmEntity.getLivingEntity().getLastDamageCause();
         if (damage != null)
             lmEntity.deathCause = damage.getCause();
@@ -67,6 +67,6 @@ public class EntityDeathListener implements Listener {
 
             event.getDrops().addAll(drops);
         }
-        LevelledMobs.doneWithCachedWrapper(lmEntity);
+        lmEntity.free();
     }
 }
