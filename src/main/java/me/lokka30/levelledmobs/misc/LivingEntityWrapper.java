@@ -83,7 +83,8 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
     private String sourceSpawnerName;
     private final static Stack<LivingEntityWrapper> cache = new Stack<>();
 
-    public static @NotNull LivingEntityWrapper getInstance(final LivingEntity livingEntity, final @NotNull LevelledMobs main){
+    @NotNull
+    public static LivingEntityWrapper getInstance(final LivingEntity livingEntity, final @NotNull LevelledMobs main){
         LivingEntityWrapper lew;
 
         synchronized (cachedLM_Wrappers_Lock) {
@@ -106,7 +107,9 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
         if (!getIsPopulated()) return;
 
         clearEntityData();
-        cache.push(this);
+        synchronized (cachedLM_Wrappers_Lock) {
+            cache.push(this);
+        }
     }
 
     public void setLivingEntity(final @NotNull LivingEntity livingEntity){

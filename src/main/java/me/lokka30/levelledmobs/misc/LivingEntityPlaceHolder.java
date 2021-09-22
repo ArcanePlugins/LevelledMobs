@@ -44,7 +44,8 @@ public class LivingEntityPlaceHolder extends LivingEntityWrapperBase implements 
     private final static Object cachedPlaceHolders_Lock = new Object();
     private final static Stack<LivingEntityPlaceHolder> cache = new Stack<>();
 
-    public static @NotNull LivingEntityPlaceHolder getInstance(final EntityType entityType, final @NotNull Location location, final @NotNull LevelledMobs main){
+    @NotNull
+    public static LivingEntityPlaceHolder getInstance(final EntityType entityType, final @NotNull Location location, final @NotNull LevelledMobs main){
         LivingEntityPlaceHolder leph;
 
         if (location.getWorld() == null)
@@ -72,7 +73,9 @@ public class LivingEntityPlaceHolder extends LivingEntityWrapperBase implements 
         if (!getIsPopulated()) return;
 
         clearEntityData();
-        cache.push(this);
+        synchronized (cachedPlaceHolders_Lock) {
+            cache.push(this);
+        }
     }
 
     public void clearEntityData(){
