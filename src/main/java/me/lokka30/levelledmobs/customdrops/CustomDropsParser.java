@@ -144,13 +144,19 @@ public class CustomDropsParser {
                     if (mobTypeOrGroup.equalsIgnoreCase("defaults"))
                         continue;
 
+                    boolean isBabyMob = false;
+                    if (mobTypeOrGroup.toLowerCase().startsWith("baby_")){
+                        isBabyMob = true;
+                        mobTypeOrGroup = mobTypeOrGroup.substring(5);
+                    }
+
                     try {
                         entityType = EntityType.valueOf(mobTypeOrGroup.toUpperCase());
                     } catch (Exception e) {
                         Utils.logger.warning("invalid mob type in customdrops.yml: " + mobTypeOrGroup);
                         continue;
                     }
-                    dropInstance = new CustomDropInstance(entityType);
+                    dropInstance = new CustomDropInstance(entityType, isBabyMob);
                 } else {
                     // item groups, we processed them beforehand
                     continue;
@@ -192,10 +198,13 @@ public class CustomDropsParser {
                         else
                             handler.customDropsitems_groups.put(universalGroup.toString(), dropInstance);
                     } else {
-                        if (handler.customDropsitems.containsKey(entityType))
-                            handler.customDropsitems.get(entityType).combineDrop(dropInstance);
+                        final TreeMap<EntityType, CustomDropInstance> dropMap = dropInstance.isBabyMob ?
+                                handler.customDropsitems_Babies : handler.customDropsitems;
+
+                        if (dropMap.containsKey(entityType))
+                            dropMap.get(entityType).combineDrop(dropInstance);
                         else
-                            handler.customDropsitems.put(entityType, dropInstance);
+                            dropMap.put(entityType, dropInstance);
                     }
                 }
             } // next mob or group
@@ -215,8 +224,9 @@ public class CustomDropsParser {
             }
 
             final StringBuilder sbMain = new StringBuilder();
+            final int itemsCount = handler.customDropsitems_groups.size() + handler.customDropsitems_Babies.size();
             sbMain.append(String.format("drop instances: %s, custom groups: %s, item groups: %s, items: %s, commands: %s",
-                    handler.customDropsitems.size(), handler.customDropsitems_groups.size(), handler.customItemGroups.size(), dropsCount, commandsCount));
+                    handler.customDropsitems.size(), itemsCount, handler.customItemGroups.size(), dropsCount, commandsCount));
 
             showCustomDropsDebugInfo(sbMain);
         }
@@ -581,13 +591,28 @@ public class CustomDropsParser {
     }
 
     private void showCustomDropsDebugInfo(final StringBuilder sbMain){
-        for (final EntityType ent : handler.customDropsitems.keySet()) {
-            final CustomDropInstance dropInstance = handler.customDropsitems.get(ent);
+        // build string list to alphabeticalize the drops by entity type including babies
+        final SortedMap<String, EntityType> typeNames = new TreeMap<>();
+
+        for (final EntityType ent : handler.customDropsitems.keySet())
+            typeNames.put(ent.toString(), ent);
+
+        for (final EntityType ent : handler.customDropsitems_Babies.keySet())
+            typeNames.put(ent.toString() + "_2", ent);
+
+        for (final String entTypeStr : typeNames.keySet()) {
+            final boolean isBaby = entTypeStr.endsWith("_2");
+            final EntityType ent = EntityType.valueOf(isBaby ? entTypeStr.substring(0, entTypeStr.length() - 2) : entTypeStr);
+            final CustomDropInstance dropInstance = isBaby ?
+                    handler.customDropsitems_Babies.get(ent) : handler.customDropsitems.get(ent);
+
             final String override = dropInstance.overrideStockDrops ? " (override)" : "";
             final String overallChance = dropInstance.overallChance != null ? " (overall_chance: " + dropInstance.overallChance + ")" : "";
             sbMain.append(System.lineSeparator());
-            sbMain.append("mob: ");
+            sbMain.append("mob: &b");
+            if (isBaby) sbMain.append("(baby) ");
             sbMain.append(ent.name());
+            sbMain.append("&r");
             sbMain.append(override);
             sbMain.append(overallChance);
             for (final CustomDropBase baseItem : dropInstance.customItems) {
@@ -627,47 +652,55 @@ public class CustomDropsParser {
 
         final StringBuilder sb = new StringBuilder();
         if (item != null)
-            sb.append(String.format("    %s, amount: %s, chance: %s", item.getMaterial(), item.getAmountAsString(), baseItem.chance));
+            sb.append(String.format("    &b%s&r, amount: &b%s&r, chance: &b%s&r", item.getMaterial(), item.getAmountAsString(), baseItem.chance));
         else
-            sb.append(String.format("    COMMAND, chance: %s", baseItem.chance));
+            sb.append(String.format("    COMMAND, chance: &b%s&r", baseItem.chance));
 
         if (baseItem.minLevel > -1) {
-            sb.append(", minL: ");
+            sb.append(", minL: &b");
             sb.append(baseItem.minLevel);
+            sb.append("&r");
         }
         if (baseItem.maxLevel > -1) {
-            sb.append(", maxL: ");
+            sb.append(", maxL: &b");
             sb.append(baseItem.maxLevel);
+            sb.append("&r");
         }
 
         if (baseItem.minPlayerLevel != null){
-            sb.append(", minPL: ");
+            sb.append(", minPL: &b");
             sb.append(baseItem.minPlayerLevel);
+            sb.append("&r");
         }
         if (baseItem.maxPlayerLevel != null){
-            sb.append(", maxPL: ");
+            sb.append(", maxPL: &b");
             sb.append(baseItem.maxPlayerLevel);
+            sb.append("&r");
         }
 
         if (baseItem.noSpawner) sb.append(", nospn");
 
         if (!Utils.isNullOrEmpty(baseItem.groupId)) {
-            sb.append(", gId: ");
+            sb.append(", gId: &b");
             sb.append(baseItem.groupId);
+            sb.append("&r");
             if (baseItem.maxDropGroup > 0){
-                sb.append(", maxDropGroup: ");
+                sb.append(", maxDropGroup: &b");
                 sb.append(baseItem.maxDropGroup);
+                sb.append("&r");
             }
         }
         if (baseItem.priority > 0) {
-            sb.append(", pri: ");
+            sb.append(", pri: &b");
             sb.append(baseItem.priority);
+            sb.append("&r");
         }
 
         if (command != null){
             if (!Utils.isNullOrEmpty(command.commandName)) {
-                sb.append(", name: ");
+                sb.append(", name: &b");
                 sb.append(command.commandName);
+                sb.append("&r");
             }
 
             return sb.toString();
@@ -679,17 +712,20 @@ public class CustomDropsParser {
         if (item.lore != null && !item.lore.isEmpty()) sb.append(", hasLore");
         if (item.customName != null && !"".equals(item.customName)) sb.append(", hasName");
         if (item.getDamage() != 0 || item.getHasDamageRange()) {
-            sb.append(", dmg: ");
+            sb.append(", dmg: &b");
             sb.append(item.getDamageAsString());
+            sb.append("&r");
         }
         if (!item.excludedMobs.isEmpty()) sb.append(", hasExcludes");
         if (item.equippedSpawnChance > 0.0) {
-            sb.append(", equipChance: ");
+            sb.append(", equipChance: &b");
             sb.append(item.equippedSpawnChance);
+            sb.append("&r");
         }
         if (item.itemFlags != null && !item.itemFlags.isEmpty()){
-            sb.append(", itemflags: ");
+            sb.append(", itemflags: &b");
             sb.append(item.itemFlags.size());
+            sb.append("&r");
         }
 
         final ItemMeta meta = item.getItemStack().getItemMeta();
@@ -698,7 +734,7 @@ public class CustomDropsParser {
             boolean isFirst = true;
             for (final Enchantment enchant : meta.getEnchants().keySet()) {
                 if (sb2.length() > 0) sb.append(", ");
-                sb2.append(String.format("%s (%s)", enchant.getKey().getKey(), item.getItemStack().getItemMeta().getEnchants().get(enchant)));
+                sb2.append(String.format("&b%s&r (%s)", enchant.getKey().getKey(), item.getItemStack().getItemMeta().getEnchants().get(enchant)));
             }
         }
 

@@ -17,6 +17,7 @@ import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import simplepets.brainsynder.api.plugin.SimplePets;
 
 import java.util.List;
 import java.util.Map;
@@ -54,7 +55,9 @@ public class ExternalCompatibilityManager {
         SHOPKEEPERS,
 
         // PlaceholderAPI plugin
-        PLACEHOLDER_API
+        PLACEHOLDER_API,
+
+        SIMPLE_PETS
     }
 
     /* Store any external namespaced keys with null values by default */
@@ -98,8 +101,28 @@ public class ExternalCompatibilityManager {
         return Bukkit.getPluginManager().getPlugin("MythicMobs") != null;
     }
 
+    public static boolean hasSimplePetsInstalled() {
+        return Bukkit.getPluginManager().getPlugin("SimplePets") != null;
+    }
+
     public static boolean hasWorldGuardInstalled() {
         return Bukkit.getPluginManager().getPlugin("WorldGuard") != null;
+    }
+
+    public static boolean isMobOfSimplePets(@NotNull final LivingEntityWrapper lmEntity){
+        final Plugin plugin = Bukkit.getPluginManager().getPlugin("SimplePets");
+        if (plugin == null) return false;
+
+        // version 5 uses the API, older versions we'll check for metadata
+        if (plugin.getDescription().getVersion().startsWith("4")) {
+            for (final MetadataValue meta : lmEntity.getLivingEntity().getMetadata("pet")) {
+                if (!meta.asString().isEmpty()) return true;
+            }
+
+            return false;
+        }
+        else
+            return SimplePets.isPetEntity(lmEntity.getLivingEntity());
     }
 
     public static boolean isMythicMob(@NotNull final LivingEntityWrapper lmEntity) {
@@ -184,6 +207,10 @@ public class ExternalCompatibilityManager {
         if (isMobOfShopkeepers(lmEntity) && !isExternalCompatibilityEnabled(ExternalCompatibility.SHOPKEEPERS, compatRules) &&
                 result.equals(LevellableState.ALLOWED))
             result = LevellableState.DENIED_CONFIGURATION_COMPATIBILITY_SHOPKEEPERS;
+
+        if (isMobOfSimplePets(lmEntity) && !isExternalCompatibilityEnabled(ExternalCompatibility.SIMPLE_PETS, compatRules) &&
+                result.equals(LevellableState.ALLOWED))
+            result = LevellableState.DENIED_CONFIGURATION_COMPATIBILITY_SIMPLEPETS;
 
         return result;
     }

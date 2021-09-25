@@ -661,7 +661,7 @@ public class LevelManager implements LevelInterface {
         }.runTaskTimer(main, 0, 20 * period);
     }
 
-    private void runNametagCheck_aSync(final Map<Player,List<Entity>> entitiesPerPlayer){
+    private void runNametagCheck_aSync(final @NotNull Map<Player,List<Entity>> entitiesPerPlayer){
         final Map<LivingEntityWrapper, List<Player>> entityToPlayer = new LinkedHashMap<>();
 
         for (final Player player : entitiesPerPlayer.keySet()) {
@@ -700,16 +700,16 @@ public class LevelManager implements LevelInterface {
                     else if (levellableState == LevellableState.ALLOWED)
                         main._mobsQueueManager.addToQueue(new QueueItem(lmEntity, null));
                 }
-
-                lmEntity.free();
             }
         }
 
-        for (final LivingEntityWrapper lmEntity : entityToPlayer.keySet())
-            checkEntityForPlayerLevelling(lmEntity, entityToPlayer.get(lmEntity));
+        for (final LivingEntityWrapper lmEntity : entityToPlayer.keySet()) {
+            if (entityToPlayer.containsKey(lmEntity))
+                checkEntityForPlayerLevelling(lmEntity, entityToPlayer.get(lmEntity));
+        }
     }
 
-    private void checkEntityForPlayerLevelling(final LivingEntityWrapper lmEntity, final List<Player> players){
+    private void checkEntityForPlayerLevelling(final @NotNull LivingEntityWrapper lmEntity, final @NotNull List<Player> players){
         final LivingEntity mob = lmEntity.getLivingEntity();
         final List<Player> sortedPlayers = players.stream()
                 .filter(p -> mob.getWorld().equals(p.getWorld()))
@@ -728,7 +728,10 @@ public class LevelManager implements LevelInterface {
             break;
         }
 
-        if (closestPlayer == null) return;
+        if (closestPlayer == null) {
+            lmEntity.free();
+            return;
+        }
         if (doesMobNeedRelevelling(mob, closestPlayer)) {
 
             synchronized (mob.getPersistentDataContainer()) {
@@ -739,6 +742,7 @@ public class LevelManager implements LevelInterface {
             lmEntity.reEvaluateLevel = true;
             main._mobsQueueManager.addToQueue(new QueueItem(lmEntity, null));
         }
+        lmEntity.free();
     }
 
     private void checkLevelledEntity(@NotNull final LivingEntityWrapper lmEntity, @NotNull final Player player){
@@ -830,7 +834,7 @@ public class LevelManager implements LevelInterface {
         main.mobDataManager.setAdditionsForLevel(lmEntity, attribute, addition);
     }
 
-    public void applyCreeperBlastRadius(final LivingEntityWrapper lmEntity, int level) {
+    public void applyCreeperBlastRadius(final @NotNull LivingEntityWrapper lmEntity, int level) {
         final Creeper creeper = (Creeper) lmEntity.getLivingEntity();
 
         final FineTuningAttributes tuning = main.rulesManager.getFineTuningAttributes(lmEntity);

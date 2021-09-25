@@ -313,6 +313,7 @@ default-rule:
       INFERNAL_MOBS: false
       CITIZENS: false
       SHOPKEEPERS: false
+      SIMPLE_PETS: false
 
 #    apply-above-y: 64
 #    apply-below-y: 59

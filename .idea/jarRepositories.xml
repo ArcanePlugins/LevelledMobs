@@ -22,6 +22,11 @@
       <option name="url" value="https://hub.spigotmc.org/nexus/content/groups/public/" />
     </remote-repository>
     <remote-repository>
+      <option name="id" value="bs-repo" />
+      <option name="name" value="bs-repo" />
+      <option name="url" value="https://ci.pluginwiki.us/plugin/repository/everything/" />
+    </remote-repository>
+    <remote-repository>
       <option name="id" value="central" />
       <option name="name" value="Maven Central repository" />
       <option name="url" value="https://repo1.maven.org/maven2" />

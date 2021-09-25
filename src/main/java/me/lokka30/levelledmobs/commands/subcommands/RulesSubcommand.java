@@ -294,7 +294,7 @@ public class RulesSubcommand implements Subcommand {
     private void getMobBeingLookedAt(@NotNull final Player player, final boolean showOnConsole, final boolean findNearbyEntities){
         LivingEntity livingEntity = null;
         final Location eye = player.getEyeLocation();
-        SortedMap<Double, LivingEntity> entities = new TreeMap<>();
+        final SortedMap<Double, LivingEntity> entities = new TreeMap<>();
 
         for(final Entity entity : player.getNearbyEntities(10, 10, 10)){
             if (!(entity instanceof LivingEntity)) continue;
@@ -305,7 +305,7 @@ public class RulesSubcommand implements Subcommand {
                 entities.put(distance, le);
             } else {
                 final Vector toEntity = le.getEyeLocation().toVector().subtract(eye.toVector());
-                double dot = toEntity.normalize().dot(eye.getDirection());
+                final double dot = toEntity.normalize().dot(eye.getDirection());
                 if (dot >= 0.975D) {
                     livingEntity = le;
                     break;

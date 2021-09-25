@@ -24,12 +24,21 @@ public class CustomDropInstance {
         this.associatedMob = associatedMob;
         this.entityGroup = null;
         this.customItems = new LinkedList<>();
+        this.isBabyMob = false;
+    }
+
+    public CustomDropInstance(final EntityType associatedMob, final boolean isBabyMob){
+        this.associatedMob = associatedMob;
+        this.entityGroup = null;
+        this.customItems = new LinkedList<>();
+        this.isBabyMob = isBabyMob;
     }
 
     public CustomDropInstance(final CustomUniversalGroups entityGroup){
         this.associatedMob = null;
         this.entityGroup = entityGroup;
         this.customItems = new LinkedList<>();
+        isBabyMob = false;
     }
 
     final public EntityType associatedMob;
@@ -38,6 +47,7 @@ public class CustomDropInstance {
     public Double overallChance;
     public boolean overrideStockDrops;
     public boolean utilizesGroupIds;
+    final public boolean isBabyMob;
 
     public boolean getIsGroup() {
         return this.entityGroup != null;

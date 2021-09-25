@@ -5,7 +5,9 @@
 package me.lokka30.levelledmobs.customdrops;
 
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
+import me.lokka30.levelledmobs.misc.Utils;
 import me.lokka30.levelledmobs.rules.CustomDropsRuleSet;
+import me.lokka30.microlib.MessageUtils;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
@@ -57,4 +59,22 @@ public class CustomDropProcessingInfo {
     public CustomDropsRuleSet dropRules;
     @NotNull
     final public List<CustomDropInstance> allDropInstances;
+    public StringBuilder debugMessages;
+
+    public void addDebugMessage(final String message){
+        if (this.debugMessages == null)
+            this.debugMessages = new StringBuilder();
+
+        if (this.debugMessages.length() > 0)
+            this.debugMessages.append(System.lineSeparator());
+
+        this.debugMessages.append(message);
+    }
+
+    public void writeAnyDebugMessages(){
+        if (this.debugMessages == null) return;
+
+        Utils.logger.info(MessageUtils.colorizeAll(this.debugMessages.toString()));
+        this.debugMessages.setLength(0);
+    }
 }
