@@ -81,7 +81,7 @@ public class EntitySpawnListener implements Listener {
     }
 
     private void updateMobForPlayerLevelling(final LivingEntityWrapper lmEntity){
-        final int onlinePlayerCount = Bukkit.getOnlinePlayers().size();
+        final int onlinePlayerCount = lmEntity.getWorld().getPlayers().size();
         final int checkDistance = main.helperSettings.getInt(main.settingsCfg, "async-task-max-blocks-from-player", 100);
         final List<org.bukkit.entity.Player> playerList = onlinePlayerCount <= 10 ?
                 getPlayersMethod1(lmEntity.getLivingEntity(), checkDistance) :
@@ -99,7 +99,7 @@ public class EntitySpawnListener implements Listener {
         if (closestPlayer == null) return;
 
         synchronized (lmEntity.getLivingEntity().getPersistentDataContainer()) {
-            lmEntity.getPDC().set(main.levelManager.playerLevelling_Id, PersistentDataType.STRING, closestPlayer.getUniqueId().toString());
+            lmEntity.getPDC().set(main.namespaced_keys.playerLevelling_Id, PersistentDataType.STRING, closestPlayer.getUniqueId().toString());
         }
 
         lmEntity.setPlayerForLevelling(closestPlayer);
@@ -109,7 +109,7 @@ public class EntitySpawnListener implements Listener {
     private static List<org.bukkit.entity.Player> getPlayersMethod1(final LivingEntity mob, final int checkDistance){
         final double maxDistanceSquared = checkDistance * 4;
 
-        return Bukkit.getOnlinePlayers().stream()
+        return mob.getWorld().getPlayers().stream()
                 .filter(p -> mob.getWorld().equals(p.getWorld()))
                 .filter(p -> !p.getGameMode().equals(GameMode.SPECTATOR))
                 .map(p -> Map.entry(mob.getLocation().distanceSquared(p.getLocation()), p))
@@ -151,19 +151,19 @@ public class EntitySpawnListener implements Listener {
         // mob was spawned from a custom LM spawner
         createParticleEffect(cs.getLocation().add(0, 1, 0));
 
-        final Integer minLevel = cs.getPersistentDataContainer().get(main.blockPlaceListener.keySpawner_MinLevel, PersistentDataType.INTEGER);
-        final Integer maxLevel = cs.getPersistentDataContainer().get(main.blockPlaceListener.keySpawner_MaxLevel, PersistentDataType.INTEGER);
+        final Integer minLevel = cs.getPersistentDataContainer().get(main.namespaced_keys.keySpawner_MinLevel, PersistentDataType.INTEGER);
+        final Integer maxLevel = cs.getPersistentDataContainer().get(main.namespaced_keys.keySpawner_MaxLevel, PersistentDataType.INTEGER);
         final int useMinLevel = minLevel == null ? -1 : minLevel;
         final int useMaxLevel = maxLevel == null ? -1 : maxLevel;
         final int generatedLevel = main.levelInterface.generateLevel(lmEntity, useMinLevel, useMaxLevel);
-        final String spawnerName = cs.getPersistentDataContainer().has(main.blockPlaceListener.keySpawner_CustomName, PersistentDataType.STRING) ?
-            cs.getPersistentDataContainer().get(main.blockPlaceListener.keySpawner_CustomName, PersistentDataType.STRING) : null;
+        final String spawnerName = cs.getPersistentDataContainer().has(main.namespaced_keys.keySpawner_CustomName, PersistentDataType.STRING) ?
+            cs.getPersistentDataContainer().get(main.namespaced_keys.keySpawner_CustomName, PersistentDataType.STRING) : null;
         String customDropId = null;
-        if (cs.getPersistentDataContainer().has(main.blockPlaceListener.keySpawner_CustomDropId, PersistentDataType.STRING)) {
-            customDropId = cs.getPersistentDataContainer().get(main.blockPlaceListener.keySpawner_CustomDropId, PersistentDataType.STRING);
+        if (cs.getPersistentDataContainer().has(main.namespaced_keys.keySpawner_CustomDropId, PersistentDataType.STRING)) {
+            customDropId = cs.getPersistentDataContainer().get(main.namespaced_keys.keySpawner_CustomDropId, PersistentDataType.STRING);
             if (!Utils.isNullOrEmpty(customDropId)) {
                 synchronized (lmEntity.getLivingEntity().getPersistentDataContainer()) {
-                    lmEntity.getPDC().set(main.blockPlaceListener.keySpawner_CustomDropId, PersistentDataType.STRING, customDropId);
+                    lmEntity.getPDC().set(main.namespaced_keys.keySpawner_CustomDropId, PersistentDataType.STRING, customDropId);
                 }
             }
         }
@@ -210,7 +210,7 @@ public class EntitySpawnListener implements Listener {
         if (event instanceof SpawnerSpawnEvent) {
             final SpawnerSpawnEvent spawnEvent = (SpawnerSpawnEvent) event;
 
-            if (spawnEvent.getSpawner() != null && spawnEvent.getSpawner().getPersistentDataContainer().has(main.blockPlaceListener.keySpawner, PersistentDataType.INTEGER)) {
+            if (spawnEvent.getSpawner() != null && spawnEvent.getSpawner().getPersistentDataContainer().has(main.namespaced_keys.keySpawner, PersistentDataType.INTEGER)) {
                 lmEntity.setSpawnReason(LevelledMobSpawnReason.LM_SPAWNER);
                 lmSpawnerSpawn(lmEntity, spawnEvent);
                 return;
@@ -255,7 +255,7 @@ public class EntitySpawnListener implements Listener {
             else if (lmEntity.isBabyMob()) {
                 // add a tag so we can potentially level the mob when/if it ages
                 synchronized (lmEntity.getLivingEntity().getPersistentDataContainer()) {
-                    lmEntity.getPDC().set(main.levelManager.wasBabyMobKey, PersistentDataType.INTEGER, 1);
+                    lmEntity.getPDC().set(main.namespaced_keys.wasBabyMobKey, PersistentDataType.INTEGER, 1);
                 }
             }
         }

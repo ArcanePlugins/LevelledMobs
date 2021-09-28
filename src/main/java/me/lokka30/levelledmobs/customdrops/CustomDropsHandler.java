@@ -63,13 +63,13 @@ public class CustomDropsHandler {
         processingInfo.newDrops = drops;
         processingInfo.dropRules = main.rulesManager.getRule_UseCustomDropsForMob(lmEntity);
         synchronized (lmEntity.getLivingEntity().getPersistentDataContainer()) {
-            processingInfo.isSpawner = (lmEntity.getPDC().has(main.levelManager.spawnReasonKey, PersistentDataType.STRING) &&
+            processingInfo.isSpawner = (lmEntity.getPDC().has(main.namespaced_keys.spawnReasonKey, PersistentDataType.STRING) &&
                     LevelledMobSpawnReason.SPAWNER.toString().equals(
-                            lmEntity.getPDC().get(main.levelManager.spawnReasonKey, PersistentDataType.STRING))
+                            lmEntity.getPDC().get(main.namespaced_keys.spawnReasonKey, PersistentDataType.STRING))
             );
 
-            if (lmEntity.getPDC().has(main.blockPlaceListener.keySpawner_CustomDropId, PersistentDataType.STRING)){
-                processingInfo.customDropId = lmEntity.getPDC().get(main.blockPlaceListener.keySpawner_CustomDropId, PersistentDataType.STRING);
+            if (lmEntity.getPDC().has(main.namespaced_keys.keySpawner_CustomDropId, PersistentDataType.STRING)){
+                processingInfo.customDropId = lmEntity.getPDC().get(main.namespaced_keys.keySpawner_CustomDropId, PersistentDataType.STRING);
                 processingInfo.hasCustomDropId = !Utils.isNullOrEmpty(processingInfo.customDropId);
             }
         }

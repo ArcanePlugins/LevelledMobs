@@ -149,6 +149,7 @@ public class Companion {
 
         main.configUtils.load();
         main.playerLevellingMinRelevelTime = main.helperSettings.getInt(main.settingsCfg, "player-levelling-relevel-min-time", 5000);
+        main.nametagTimerResetTime = main.helperSettings.getInt(main.settingsCfg, "nametag-always-visible-time", 8000);
 
         return true;
     }

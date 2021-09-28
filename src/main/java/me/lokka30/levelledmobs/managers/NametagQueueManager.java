@@ -21,6 +21,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.InvocationTargetException;
+import java.time.Instant;
 import java.util.ConcurrentModificationException;
 import java.util.List;
 import java.util.Optional;
@@ -80,7 +81,18 @@ public class NametagQueueManager {
             final QueueItem item = queue.poll(200, TimeUnit.MILLISECONDS);
             if (item == null) continue;
 
-            updateNametag(item.lmEntity, item.nametag, item.players);
+            boolean useNametagCooldown = main.nametagTimerResetTime > 0L && item.doResetNametagTimer;
+
+            if (main.nametagTimerResetTime > 0L) {
+                synchronized (main.nametagTimer_Lock) {
+                    if (useNametagCooldown)
+                        main.nametagTimer.put(item.lmEntity.getLivingEntity(), Instant.now());
+                    else if (main.nametagTimer.containsKey(item.lmEntity.getLivingEntity()))
+                        useNametagCooldown = true;
+                }
+            }
+
+            updateNametag(item.lmEntity, item.nametag, item.players, useNametagCooldown);
 
             item.lmEntity.free();
         }
@@ -88,7 +100,7 @@ public class NametagQueueManager {
         isRunning = false;
     }
 
-    private void updateNametag(final @NotNull LivingEntityWrapper lmEntity, final String nametag, final List<Player> players) {
+    private void updateNametag(final @NotNull LivingEntityWrapper lmEntity, final String nametag, final List<Player> players, final boolean useNametagCooldown) {
         if (!lmEntity.getIsPopulated()) return;
 
         if (main.helperSettings.getBoolean(main.settingsCfg, "use-customname-for-mob-nametags")){
@@ -121,25 +133,24 @@ public class NametagQueueManager {
         }
 
         final WrappedDataWatcher.WrappedDataWatcherObject watcherObject = new WrappedDataWatcher.WrappedDataWatcherObject(2, chatSerializer);
-
-        Optional<Object> optional;
-        if (Utils.isNullOrEmpty(nametag)) {
-            optional = Optional.empty();
-        } else {
-            optional = Optional.of(WrappedChatComponent.fromChatMessage(nametag)[0].getHandle());
-        }
+        final int objectIndex = 3;
+        final int fieldIndex = 0;
+        final Optional<Object> optional = Utils.isNullOrEmpty(nametag) ?
+                Optional.empty() : Optional.of(WrappedChatComponent.fromChatMessage(nametag)[0].getHandle());
 
         dataWatcher.setObject(watcherObject, optional);
-        if (nametag == null) {
-            dataWatcher.setObject(3, false);
-        } else {
-            dataWatcher.setObject(3, !"".equals(nametag) && lmEntity.getLivingEntity().isCustomNameVisible() ||
-                    main.rulesManager.getRule_CreatureNametagAlwaysVisible(lmEntity));
+        if (nametag == null)
+            dataWatcher.setObject(objectIndex, false);
+        else {
+            final boolean doAlwaysVisible = useNametagCooldown ||
+                    !"".equals(nametag) && lmEntity.getLivingEntity().isCustomNameVisible() ||
+                    main.rulesManager.getRule_CreatureNametagAlwaysVisible(lmEntity);
+            dataWatcher.setObject(objectIndex, doAlwaysVisible);
         }
 
         final PacketContainer packet = ProtocolLibrary.getProtocolManager().createPacket(PacketType.Play.Server.ENTITY_METADATA);
-        packet.getWatchableCollectionModifier().write(0, dataWatcher.getWatchableObjects());
-        packet.getIntegers().write(0, lmEntity.getLivingEntity().getEntityId());
+        packet.getWatchableCollectionModifier().write(fieldIndex, dataWatcher.getWatchableObjects());
+        packet.getIntegers().write(fieldIndex, lmEntity.getLivingEntity().getEntityId());
 
         for (final Player player : players) {
             if (!player.isOnline()) continue;
@@ -158,7 +169,7 @@ public class NametagQueueManager {
     }
 
     private void updateNametag_CustomName(final @NotNull LivingEntityWrapper lmEntity, final String nametag){
-        if (lmEntity.getPDC().has(main.levelManager.hasCustomNameTag, PersistentDataType.INTEGER))
+        if (lmEntity.getPDC().has(main.namespaced_keys.hasCustomNameTag, PersistentDataType.INTEGER))
             return;
 
         final boolean hadCustomName = lmEntity.getLivingEntity().getCustomName() != null;

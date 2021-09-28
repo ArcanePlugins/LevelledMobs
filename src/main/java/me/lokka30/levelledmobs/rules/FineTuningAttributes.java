@@ -9,10 +9,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 
 /**
  * Holds any custom multipliers values parsed from rules.yml
@@ -51,10 +48,8 @@ public class FineTuningAttributes implements Cloneable {
     public Double armorBonus;
     public Double armorToughness;
     public Double attackKnockback;
-    public Double attackSpeed;
     public Double flyingSpeed;
     public Double knockbackResistance;
-    public Double luck;
     public Double horseJumpStrength;
     public Double zombieReinforcements;
     public Double followRange;

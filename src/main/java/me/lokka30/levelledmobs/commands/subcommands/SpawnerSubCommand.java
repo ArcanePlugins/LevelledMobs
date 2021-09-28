@@ -347,38 +347,38 @@ public class SpawnerSubCommand implements Subcommand{
                     if (sbLore.length() > 0) sbLore.append("\n");
                     sbLore.append(loreLine);
                 }
-                meta.getPersistentDataContainer().set(info.main.blockPlaceListener.keySpawner_Lore, PersistentDataType.STRING, sbLore.toString());
+                meta.getPersistentDataContainer().set(info.main.namespaced_keys.keySpawner_Lore, PersistentDataType.STRING, sbLore.toString());
             }
             else {
                 lore.clear();
                 lore.addAll(Arrays.asList(info.lore.split("\n")));
                 meta.setLore(lore);
-                meta.getPersistentDataContainer().set(info.main.blockPlaceListener.keySpawner_Lore, PersistentDataType.STRING, info.lore);
+                meta.getPersistentDataContainer().set(info.main.namespaced_keys.keySpawner_Lore, PersistentDataType.STRING, info.lore);
             }
 
-            meta.getPersistentDataContainer().set(info.main.blockPlaceListener.keySpawner, PersistentDataType.INTEGER, 1);
-            meta.getPersistentDataContainer().set(info.main.blockPlaceListener.keySpawner_MinLevel, PersistentDataType.INTEGER, info.minLevel);
-            meta.getPersistentDataContainer().set(info.main.blockPlaceListener.keySpawner_MaxLevel, PersistentDataType.INTEGER, info.maxLevel);
+            meta.getPersistentDataContainer().set(info.main.namespaced_keys.keySpawner, PersistentDataType.INTEGER, 1);
+            meta.getPersistentDataContainer().set(info.main.namespaced_keys.keySpawner_MinLevel, PersistentDataType.INTEGER, info.minLevel);
+            meta.getPersistentDataContainer().set(info.main.namespaced_keys.keySpawner_MaxLevel, PersistentDataType.INTEGER, info.maxLevel);
             if (!Utils.isNullOrEmpty(info.customDropId))
-                meta.getPersistentDataContainer().set(info.main.blockPlaceListener.keySpawner_CustomDropId, PersistentDataType.STRING, info.customDropId);
+                meta.getPersistentDataContainer().set(info.main.namespaced_keys.keySpawner_CustomDropId, PersistentDataType.STRING, info.customDropId);
             if (!info.spawnType.equals(EntityType.UNKNOWN))
-                meta.getPersistentDataContainer().set(info.main.blockPlaceListener.keySpawner_SpawnType, PersistentDataType.STRING, info.spawnType.toString());
+                meta.getPersistentDataContainer().set(info.main.namespaced_keys.keySpawner_SpawnType, PersistentDataType.STRING, info.spawnType.toString());
             if (info.spawnRange != null)
-                meta.getPersistentDataContainer().set(info.main.blockPlaceListener.keySpawner_SpawnRange, PersistentDataType.INTEGER, info.spawnRange);
+                meta.getPersistentDataContainer().set(info.main.namespaced_keys.keySpawner_SpawnRange, PersistentDataType.INTEGER, info.spawnRange);
             if (info.minSpawnDelay != null)
-                meta.getPersistentDataContainer().set(info.main.blockPlaceListener.keySpawner_MinSpawnDelay, PersistentDataType.INTEGER, info.minSpawnDelay);
+                meta.getPersistentDataContainer().set(info.main.namespaced_keys.keySpawner_MinSpawnDelay, PersistentDataType.INTEGER, info.minSpawnDelay);
             if (info.maxSpawnDelay != null)
-                meta.getPersistentDataContainer().set(info.main.blockPlaceListener.keySpawner_MaxSpawnDelay, PersistentDataType.INTEGER, info.maxSpawnDelay);
+                meta.getPersistentDataContainer().set(info.main.namespaced_keys.keySpawner_MaxSpawnDelay, PersistentDataType.INTEGER, info.maxSpawnDelay);
             if (info.spawnCount != null)
-                meta.getPersistentDataContainer().set(info.main.blockPlaceListener.keySpawner_SpawnCount, PersistentDataType.INTEGER, info.spawnCount);
+                meta.getPersistentDataContainer().set(info.main.namespaced_keys.keySpawner_SpawnCount, PersistentDataType.INTEGER, info.spawnCount);
             if (info.requiredPlayerRange != null)
-                meta.getPersistentDataContainer().set(info.main.blockPlaceListener.keySpawner_RequiredPlayerRange, PersistentDataType.INTEGER, info.requiredPlayerRange);
+                meta.getPersistentDataContainer().set(info.main.namespaced_keys.keySpawner_RequiredPlayerRange, PersistentDataType.INTEGER, info.requiredPlayerRange);
             if (info.maxNearbyEntities != null)
-                meta.getPersistentDataContainer().set(info.main.blockPlaceListener.keySpawner_MaxNearbyEntities, PersistentDataType.INTEGER, info.maxNearbyEntities);
+                meta.getPersistentDataContainer().set(info.main.namespaced_keys.keySpawner_MaxNearbyEntities, PersistentDataType.INTEGER, info.maxNearbyEntities);
             if (info.delay != null)
-                meta.getPersistentDataContainer().set(info.main.blockPlaceListener.keySpawner_Delay, PersistentDataType.INTEGER, info.delay);
+                meta.getPersistentDataContainer().set(info.main.namespaced_keys.keySpawner_Delay, PersistentDataType.INTEGER, info.delay);
             if (info.customName != null)
-                meta.getPersistentDataContainer().set(info.main.blockPlaceListener.keySpawner_CustomName, PersistentDataType.STRING, info.customName);
+                meta.getPersistentDataContainer().set(info.main.namespaced_keys.keySpawner_CustomName, PersistentDataType.STRING, info.customName);
 
             item.setItemMeta(meta);
         }

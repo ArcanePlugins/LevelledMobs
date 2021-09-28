@@ -1,5 +1,12 @@
 package me.lokka30.levelledmobs.misc;
 
+/**
+ * Used as a placeholder for when a number or a number-range is passed
+ * from a user argument
+ *
+ * @author stumper66
+ * @since 3.2.0
+ */
 public class RequestedLevel {
     public RequestedLevel(final int level){
         this.level = level;

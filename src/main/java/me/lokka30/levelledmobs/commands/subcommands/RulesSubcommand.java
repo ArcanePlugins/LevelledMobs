@@ -25,6 +25,7 @@ import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
@@ -128,6 +129,11 @@ public class RulesSubcommand implements Subcommand {
             worldCount++;
             for (final Entity entity : world.getEntities()) {
                 if (!(entity instanceof LivingEntity)) continue;
+
+                synchronized (entity.getPersistentDataContainer()){
+                    if (entity.getPersistentDataContainer().has(main.namespaced_keys.wasSummoned, PersistentDataType.INTEGER))
+                        continue; // was summon using lm summon command.  don't relevel it
+                }
 
                 entityCount++;
                 final LivingEntityWrapper lmEntity = LivingEntityWrapper.getInstance((LivingEntity) entity, main);

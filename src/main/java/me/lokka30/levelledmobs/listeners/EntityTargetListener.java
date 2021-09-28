@@ -55,7 +55,7 @@ public class EntityTargetListener implements Listener {
         }
 
         // Update the nametag.
-        main.nametagQueueManager_.addToQueue(new QueueItem(lmEntity, main.levelManager.getNametag(lmEntity, false), lmEntity.getLivingEntity().getWorld().getPlayers()));
+        main.levelManager.updateNametag(lmEntity, true);
         lmEntity.free();
     }
 }

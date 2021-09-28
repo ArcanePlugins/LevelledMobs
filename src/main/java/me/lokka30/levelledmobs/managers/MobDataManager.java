@@ -141,17 +141,11 @@ public class MobDataManager {
                 case ATTRIBUTE_ATTACK_KNOCKBACK:
                     if (lmEntity.getFineTuningAttributes().attackKnockback != null) attributeValue = lmEntity.getFineTuningAttributes().attackKnockback;
                     break;
-                case ATTRIBUTE_ATTACK_SPEED:
-                    if (lmEntity.getFineTuningAttributes().attackSpeed != null) attributeValue = lmEntity.getFineTuningAttributes().attackSpeed;
-                    break;
                 case ATTRIBUTE_FLYING_SPEED:
                     if (lmEntity.getFineTuningAttributes().flyingSpeed != null) attributeValue = lmEntity.getFineTuningAttributes().flyingSpeed;
                     break;
                 case ATTRIBUTE_KNOCKBACK_RESISTANCE:
                     if (lmEntity.getFineTuningAttributes().knockbackResistance != null) attributeValue = lmEntity.getFineTuningAttributes().knockbackResistance;
-                    break;
-                case ATTRIBUTE_LUCK:
-                    if (lmEntity.getFineTuningAttributes().luck != null) attributeValue = lmEntity.getFineTuningAttributes().luck;
                     break;
                 case ATTRIBUTE_ZOMBIE_SPAWN_REINFORCEMENTS:
                     if (lmEntity.getFineTuningAttributes().zombieReinforcements != null) attributeValue = lmEntity.getFineTuningAttributes().zombieReinforcements;
@@ -163,10 +157,6 @@ public class MobDataManager {
         }
 
         if (maxLevel == 0) return 0.0;
-
-        // use old formula or item drops, xp drops
-        if (defaultValue == 0.0)
-            return attributeValue * (((double) lmEntity.getMobLevel()) / maxLevel);
 
         // use revised formula for all attributes
         return (defaultValue * attributeValue) * ((lmEntity.getMobLevel()) / maxLevel);

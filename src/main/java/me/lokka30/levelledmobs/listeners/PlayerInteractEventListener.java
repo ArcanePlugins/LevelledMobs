@@ -80,7 +80,7 @@ public class PlayerInteractEventListener implements Listener {
         final SpawnerSubCommand.CustomSpawnerInfo info = new SpawnerSubCommand.CustomSpawnerInfo(main, player, "lm");
         final PersistentDataContainer pdc = cs.getPersistentDataContainer();
 
-        if (!pdc.has(main.blockPlaceListener.keySpawner, PersistentDataType.INTEGER)){
+        if (!pdc.has(main.namespaced_keys.keySpawner, PersistentDataType.INTEGER)){
             List<String> messages = main.messagesCfg.getStringList("command.levelledmobs.spawner.copy.vanilla-spawner");
             messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.getPrefix());
             messages = Utils.replaceAllInList(messages, "%label%", "lm");
@@ -89,20 +89,20 @@ public class PlayerInteractEventListener implements Listener {
             return;
         }
 
-        if (pdc.has(main.blockPlaceListener.keySpawner_CustomDropId, PersistentDataType.STRING))
-            info.customDropId = pdc.get(main.blockPlaceListener.keySpawner_CustomDropId, PersistentDataType.STRING);
-        if (pdc.has(main.blockPlaceListener.keySpawner_CustomName, PersistentDataType.STRING))
-            info.customName = pdc.get(main.blockPlaceListener.keySpawner_CustomName, PersistentDataType.STRING);
-        if (pdc.has(main.blockPlaceListener.keySpawner_MinLevel, PersistentDataType.INTEGER)) {
-            final Integer minLevel = pdc.get(main.blockPlaceListener.keySpawner_MinLevel, PersistentDataType.INTEGER);
+        if (pdc.has(main.namespaced_keys.keySpawner_CustomDropId, PersistentDataType.STRING))
+            info.customDropId = pdc.get(main.namespaced_keys.keySpawner_CustomDropId, PersistentDataType.STRING);
+        if (pdc.has(main.namespaced_keys.keySpawner_CustomName, PersistentDataType.STRING))
+            info.customName = pdc.get(main.namespaced_keys.keySpawner_CustomName, PersistentDataType.STRING);
+        if (pdc.has(main.namespaced_keys.keySpawner_MinLevel, PersistentDataType.INTEGER)) {
+            final Integer minLevel = pdc.get(main.namespaced_keys.keySpawner_MinLevel, PersistentDataType.INTEGER);
             if (minLevel != null) info.minLevel = minLevel;
         }
-        if (pdc.has(main.blockPlaceListener.keySpawner_MaxLevel, PersistentDataType.INTEGER)) {
-            final Integer maxLevel = pdc.get(main.blockPlaceListener.keySpawner_MaxLevel, PersistentDataType.INTEGER);
+        if (pdc.has(main.namespaced_keys.keySpawner_MaxLevel, PersistentDataType.INTEGER)) {
+            final Integer maxLevel = pdc.get(main.namespaced_keys.keySpawner_MaxLevel, PersistentDataType.INTEGER);
             if (maxLevel != null) info.maxLevel = maxLevel;
         }
-        if (pdc.has(main.blockPlaceListener.keySpawner_Lore, PersistentDataType.STRING))
-            info.lore = pdc.get(main.blockPlaceListener.keySpawner_Lore, PersistentDataType.STRING);
+        if (pdc.has(main.namespaced_keys.keySpawner_Lore, PersistentDataType.STRING))
+            info.lore = pdc.get(main.namespaced_keys.keySpawner_Lore, PersistentDataType.STRING);
 
         info.spawnType = cs.getSpawnedType();
         info.minSpawnDelay = cs.getMinSpawnDelay();
@@ -120,19 +120,19 @@ public class PlayerInteractEventListener implements Listener {
         final PersistentDataContainer pdc = cs.getPersistentDataContainer();
         final StringBuilder sb = new StringBuilder();
 
-        if (pdc.has(main.blockPlaceListener.keySpawner, PersistentDataType.INTEGER)) {
+        if (pdc.has(main.namespaced_keys.keySpawner, PersistentDataType.INTEGER)) {
             sb.append("LM Spawner");
-            if (pdc.has(main.blockPlaceListener.keySpawner_CustomName, PersistentDataType.STRING)){
+            if (pdc.has(main.namespaced_keys.keySpawner_CustomName, PersistentDataType.STRING)){
                 sb.append(": &7");
-                sb.append(pdc.get(main.blockPlaceListener.keySpawner_CustomName, PersistentDataType.STRING));
+                sb.append(pdc.get(main.namespaced_keys.keySpawner_CustomName, PersistentDataType.STRING));
                 sb.append("&r\n");
             }
         }
         else
             sb.append("Vanilla Spawner\n");
 
-        addSpawnerAttributeFromPdc_Int("min level", main.blockPlaceListener.keySpawner_MinLevel, pdc, sb);
-        addSpawnerAttributeFromPdc_Int("max level", main.blockPlaceListener.keySpawner_MaxLevel, pdc, sb);
+        addSpawnerAttributeFromPdc_Int("min level", main.namespaced_keys.keySpawner_MinLevel, pdc, sb);
+        addSpawnerAttributeFromPdc_Int("max level", main.namespaced_keys.keySpawner_MaxLevel, pdc, sb);
         sb.append('\n');
         addSpawnerAttribute("delay", cs.getDelay(), sb);
         addSpawnerAttribute("max nearby entities", cs.getMaxNearbyEntities(), sb);
@@ -142,7 +142,7 @@ public class PlayerInteractEventListener implements Listener {
         addSpawnerAttribute("required player range", cs.getRequiredPlayerRange(), sb);
         addSpawnerAttribute("spawn count", cs.getSpawnCount(), sb);
         sb.append('\n');
-        addSpawnerAttributeFromPdc_Str("custom drop id", main.blockPlaceListener.keySpawner_CustomDropId, pdc, sb);
+        addSpawnerAttributeFromPdc_Str("custom drop id", main.namespaced_keys.keySpawner_CustomDropId, pdc, sb);
         // customName
         addSpawnerAttribute("spawn type", cs.getSpawnedType(), sb);
 

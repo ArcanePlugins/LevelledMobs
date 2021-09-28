@@ -205,12 +205,13 @@ presets:
         merge: true
 
   normal_difficulty:
-#   This establishes the minimum and maximum levels, and the multipliers, for NORMAL.
+    #   This establishes the minimum and maximum levels, and the multipliers, for NORMAL.
     name: 'NORMAL Difficulty Multipliers'
     apply-settings:
       minLevel: 1
       maxLevel: 25
       multipliers:
+        #       All Entities/Default Attributes
         max-health: 5.0
         movement-speed: 0.15
         attack-damage: 2.25
@@ -221,13 +222,15 @@ presets:
         armor-bonus: 0
         armor-toughness: 0
         attack-knockback: 0
-        attack-speed: 0
-        flying-speed: 0
         knockback-resistance: 0
-        luck: 0
-        horse-jump-strength: 0
-        zombie-spawn-reinforcements: 0
         follow-range: 0
+        #       Horse Attributes
+        horse-jump-strength: 0
+        #       Parrot/Bee Attributes
+        flying-speed: 0
+        #       Adult Zombie Attributes
+        zombie-spawn-reinforcements: 0
+
       creeper-max-damage-radius: 3
       tiered-coloring:
         1-5: '&#22E76B' #Green

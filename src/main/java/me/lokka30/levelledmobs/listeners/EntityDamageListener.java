@@ -40,23 +40,29 @@ public class EntityDamageListener implements Listener {
 
         //Make sure the mob is levelled
         if (!lmEntity.isLevelled()){
+            // TODO: should the boolean on the line below be reversed?
             if (main.levelManager.entitySpawnListener.processMobSpawns) {
                 lmEntity.free();
                 return;
             }
 
             if (lmEntity.getMobLevel() < 0) lmEntity.reEvaluateLevel = true;
-            main._mobsQueueManager.addToQueue(new QueueItem(lmEntity, event));
+        }
+
+        boolean resetNametagTimer = false;
+        if (main.nametagTimerResetTime > 0L && event instanceof EntityDamageByEntityEvent){
+            final EntityDamageByEntityEvent entityDamageByEntityEvent = (EntityDamageByEntityEvent) event;
+            resetNametagTimer = entityDamageByEntityEvent.getDamager() instanceof Player;
         }
 
         // Update their nametag with a 1 tick delay so that their health after the damage is shown
-        main.levelManager.updateNametag_WithDelay(lmEntity);
+        main.levelManager.updateNametag_WithDelay(lmEntity, resetNametagTimer);
         lmEntity.free();
     }
 
     // Check for levelled ranged damage.
     @EventHandler(ignoreCancelled = true, priority = EventPriority.NORMAL)
-    public void onRangedDamage(final EntityDamageByEntityEvent event) {
+    public void onEntityDamageByEntityEvent(final @NotNull EntityDamageByEntityEvent event) {
         if (event.getFinalDamage() == 0.0) return;
 
         processRangedDamage(event);

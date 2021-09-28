@@ -41,6 +41,7 @@ public class LevelledMobs extends JavaPlugin {
     public ChunkLoadListener chunkLoadListener;
     public BlockPlaceListener blockPlaceListener;
     public PlayerInteractEventListener playerInteractEventListener;
+    public Namespaced_Keys namespaced_keys;
     public final Companion companion = new Companion(this);
     public final MobHeadManager mobHeadManager = new MobHeadManager(this);
     public final RulesParsingManager rulesParsingManager = new RulesParsingManager(this);
@@ -48,12 +49,14 @@ public class LevelledMobs extends JavaPlugin {
     public final MobsQueueManager _mobsQueueManager = new MobsQueueManager(this);
     public final NametagQueueManager nametagQueueManager_ = new NametagQueueManager(this);
     public final Object attributeSyncObject = new Object();
+    public final Object nametagTimer_Lock = new Object();
     public Random random;
     public PlaceholderApiIntegration placeholderApiIntegration;
     public boolean migratedFromPre30;
     public YmlParsingHelper helperSettings;
     public int playerLevellingMinRelevelTime;
     public int maxPlayersRecorded;
+    public long nametagTimerResetTime;
 
     // Configuration
     public YamlConfiguration settingsCfg;
@@ -68,6 +71,7 @@ public class LevelledMobs extends JavaPlugin {
     public int incompatibilitiesAmount;
     private long loadTime;
     public WeakHashMap<LivingEntity, Instant> playerLevellingEntities;
+    public WeakHashMap<LivingEntity, Instant> nametagTimer;
     public Stack<LivingEntityWrapper> cacheCheck;
 
     @Override
@@ -84,7 +88,9 @@ public class LevelledMobs extends JavaPlugin {
     public void onEnable() {
         final QuickTimer timer = new QuickTimer();
 
+        this.namespaced_keys = new Namespaced_Keys(this);
         this.playerLevellingEntities = new WeakHashMap<>();
+        this.nametagTimer = new WeakHashMap<>();
         this.helperSettings = new YmlParsingHelper();
         this.random = new Random();
         this.customMobGroups = new TreeMap<>();
@@ -100,7 +106,10 @@ public class LevelledMobs extends JavaPlugin {
         companion.loadSpigotConfig();
 
         Utils.logger.info("&fStart-up: &7Running misc procedures...");
-        if (ExternalCompatibilityManager.hasProtocolLibInstalled()) levelManager.startNametagAutoUpdateTask();
+        if (ExternalCompatibilityManager.hasProtocolLibInstalled()) {
+            levelManager.startNametagAutoUpdateTask();
+            levelManager.startNametagTimer();
+        }
         companion.setupMetrics();
         companion.checkUpdates();
 

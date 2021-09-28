@@ -195,9 +195,9 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
 
         synchronized (this.livingEntity.getPersistentDataContainer()){
             if (sbAllowed.length() > 0)
-                this.livingEntity.getPersistentDataContainer().set(main.levelManager.chanceRule_Allowed, PersistentDataType.STRING, sbAllowed.toString());
+                this.livingEntity.getPersistentDataContainer().set(main.namespaced_keys.chanceRule_Allowed, PersistentDataType.STRING, sbAllowed.toString());
             if (sbDenied.length() > 0)
-                this.livingEntity.getPersistentDataContainer().set(main.levelManager.chanceRule_Denied, PersistentDataType.STRING, sbDenied.toString());
+                this.livingEntity.getPersistentDataContainer().set(main.namespaced_keys.chanceRule_Denied, PersistentDataType.STRING, sbDenied.toString());
         }
     }
 
@@ -208,11 +208,11 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
         String rulesDenied = null;
 
         synchronized (this.livingEntity.getPersistentDataContainer()){
-            if (this.livingEntity.getPersistentDataContainer().has(main.levelManager.chanceRule_Allowed, PersistentDataType.STRING)){
-                rulesPassed = this.livingEntity.getPersistentDataContainer().get(main.levelManager.chanceRule_Allowed, PersistentDataType.STRING);
+            if (this.livingEntity.getPersistentDataContainer().has(main.namespaced_keys.chanceRule_Allowed, PersistentDataType.STRING)){
+                rulesPassed = this.livingEntity.getPersistentDataContainer().get(main.namespaced_keys.chanceRule_Allowed, PersistentDataType.STRING);
             }
-            if (this.livingEntity.getPersistentDataContainer().has(main.levelManager.chanceRule_Denied, PersistentDataType.STRING)){
-                rulesDenied = this.livingEntity.getPersistentDataContainer().get(main.levelManager.chanceRule_Denied, PersistentDataType.STRING);
+            if (this.livingEntity.getPersistentDataContainer().has(main.namespaced_keys.chanceRule_Denied, PersistentDataType.STRING)){
+                rulesDenied = this.livingEntity.getPersistentDataContainer().get(main.namespaced_keys.chanceRule_Denied, PersistentDataType.STRING);
             }
         }
 
@@ -326,9 +326,9 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
     @NotNull
     public LevelledMobSpawnReason getSpawnReason() {
         synchronized (this.livingEntity.getPersistentDataContainer()) {
-            if (livingEntity.getPersistentDataContainer().has(main.levelManager.spawnReasonKey, PersistentDataType.STRING)) {
+            if (livingEntity.getPersistentDataContainer().has(main.namespaced_keys.spawnReasonKey, PersistentDataType.STRING)) {
                 return LevelledMobSpawnReason.valueOf(
-                        livingEntity.getPersistentDataContainer().get(main.levelManager.spawnReasonKey, PersistentDataType.STRING)
+                        livingEntity.getPersistentDataContainer().get(main.namespaced_keys.spawnReasonKey, PersistentDataType.STRING)
                 );
             }
         }
@@ -338,8 +338,8 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
 
     public void setSpawnReason(final LevelledMobSpawnReason spawnReason) {
         synchronized (this.livingEntity.getPersistentDataContainer()) {
-            if (!livingEntity.getPersistentDataContainer().has(main.levelManager.spawnReasonKey, PersistentDataType.STRING)) {
-                livingEntity.getPersistentDataContainer().set(main.levelManager.spawnReasonKey, PersistentDataType.STRING, spawnReason.toString());
+            if (!livingEntity.getPersistentDataContainer().has(main.namespaced_keys.spawnReasonKey, PersistentDataType.STRING)) {
+                livingEntity.getPersistentDataContainer().set(main.namespaced_keys.spawnReasonKey, PersistentDataType.STRING, spawnReason.toString());
             }
         }
 
@@ -349,10 +349,10 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
     public void setSourceSpawnerName(final String name) {
         this.sourceSpawnerName = name;
         synchronized (this.livingEntity.getPersistentDataContainer()){
-            if (name == null && getPDC().has(main.levelManager.sourceSpawnerName, PersistentDataType.STRING))
-                getPDC().remove(main.levelManager.sourceSpawnerName);
+            if (name == null && getPDC().has(main.namespaced_keys.sourceSpawnerName, PersistentDataType.STRING))
+                getPDC().remove(main.namespaced_keys.sourceSpawnerName);
             else if (name != null)
-                getPDC().set(main.levelManager.sourceSpawnerName, PersistentDataType.STRING, name);
+                getPDC().set(main.namespaced_keys.sourceSpawnerName, PersistentDataType.STRING, name);
         }
     }
 
@@ -362,8 +362,8 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
 
         if (this.sourceSpawnerName == null){
             synchronized (livingEntity.getPersistentDataContainer()){
-                if (getPDC().has(main.levelManager.sourceSpawnerName, PersistentDataType.STRING))
-                    spawnerName = getPDC().get(main.levelManager.sourceSpawnerName, PersistentDataType.STRING);
+                if (getPDC().has(main.namespaced_keys.sourceSpawnerName, PersistentDataType.STRING))
+                    spawnerName = getPDC().get(main.namespaced_keys.sourceSpawnerName, PersistentDataType.STRING);
             }
             if (spawnerName == null){
                 this.sourceSpawnerName = "(none)";
@@ -405,14 +405,14 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
 
     public boolean hasOverridenEntityName(){
         synchronized (this.livingEntity.getPersistentDataContainer()) {
-            return livingEntity.getPersistentDataContainer().has(main.levelManager.overridenEntityNameKey, PersistentDataType.STRING);
+            return livingEntity.getPersistentDataContainer().has(main.namespaced_keys.overridenEntityNameKey, PersistentDataType.STRING);
         }
     }
 
     @Nullable
     public String getOverridenEntityName(){
         synchronized (this.livingEntity.getPersistentDataContainer()) {
-            return livingEntity.getPersistentDataContainer().get(main.levelManager.overridenEntityNameKey, PersistentDataType.STRING);
+            return livingEntity.getPersistentDataContainer().get(main.namespaced_keys.overridenEntityNameKey, PersistentDataType.STRING);
         }
     }
 
@@ -432,31 +432,31 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
 
     public void setOverridenEntityName(final String name){
         synchronized (this.getLivingEntity().getPersistentDataContainer()) {
-            livingEntity.getPersistentDataContainer().set(main.levelManager.overridenEntityNameKey, PersistentDataType.STRING, name);
+            livingEntity.getPersistentDataContainer().set(main.namespaced_keys.overridenEntityNameKey, PersistentDataType.STRING, name);
         }
     }
 
     public void setShouldShowLM_Nametag(final boolean doShow){
         synchronized (this.livingEntity.getPersistentDataContainer()) {
-            if (doShow && getPDC().has(main.levelManager.denyLM_Nametag, PersistentDataType.INTEGER))
-                getPDC().remove(main.levelManager.denyLM_Nametag);
-            else if (!doShow && !getPDC().has(main.levelManager.denyLM_Nametag, PersistentDataType.INTEGER))
-                getPDC().set(main.levelManager.denyLM_Nametag, PersistentDataType.INTEGER, 1);
+            if (doShow && getPDC().has(main.namespaced_keys.denyLM_Nametag, PersistentDataType.INTEGER))
+                getPDC().remove(main.namespaced_keys.denyLM_Nametag);
+            else if (!doShow && !getPDC().has(main.namespaced_keys.denyLM_Nametag, PersistentDataType.INTEGER))
+                getPDC().set(main.namespaced_keys.denyLM_Nametag, PersistentDataType.INTEGER, 1);
         }
     }
 
     public boolean getShouldShowLM_Nametag(){
         synchronized (this.livingEntity.getPersistentDataContainer()) {
-            return !getPDC().has(main.levelManager.denyLM_Nametag, PersistentDataType.INTEGER);
+            return !getPDC().has(main.namespaced_keys.denyLM_Nametag, PersistentDataType.INTEGER);
         }
     }
 
     public void setSpawnedTimeOfDay(final int ticks){
         synchronized (livingEntity.getPersistentDataContainer()) {
-            if (getPDC().has(main.levelManager.spawnedTimeOfDay, PersistentDataType.INTEGER))
+            if (getPDC().has(main.namespaced_keys.spawnedTimeOfDay, PersistentDataType.INTEGER))
                 return;
 
-            getPDC().set(main.levelManager.spawnedTimeOfDay, PersistentDataType.INTEGER, ticks);
+            getPDC().set(main.namespaced_keys.spawnedTimeOfDay, PersistentDataType.INTEGER, ticks);
         }
 
         this.spawnedTimeOfDay = ticks;
@@ -467,8 +467,8 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
             return this.spawnedTimeOfDay;
 
         synchronized (livingEntity.getPersistentDataContainer()) {
-            if (getPDC().has(main.levelManager.spawnedTimeOfDay, PersistentDataType.INTEGER)) {
-                final Integer result = getPDC().get(main.levelManager.spawnedTimeOfDay, PersistentDataType.INTEGER);
+            if (getPDC().has(main.namespaced_keys.spawnedTimeOfDay, PersistentDataType.INTEGER)) {
+                final Integer result = getPDC().get(main.namespaced_keys.spawnedTimeOfDay, PersistentDataType.INTEGER);
                 if (result != null) return result;
             }
         }
