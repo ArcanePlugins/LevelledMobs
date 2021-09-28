@@ -250,7 +250,7 @@ public class CustomDropsHandler {
             }
 
             // we'll roll the dice to see if we get any drops at all and store it in the PDC
-            final double chanceRole = (double) ThreadLocalRandom.current().nextInt(0, 100001) * 0.00001;
+            final double chanceRole = ThreadLocalRandom.current().nextDouble();
             final boolean madeChance = 1.0 - chanceRole < dropInstance.overallChance;
             if (info.equippedOnly) {
                 synchronized (info.lmEntity.getLivingEntity().getPersistentDataContainer()) {
@@ -310,7 +310,7 @@ public class CustomDropsHandler {
         double chanceRole = 0.0;
 
         if (!info.equippedOnly && dropBase.chance < 1.0){
-            chanceRole = ThreadLocalRandom.current().nextDouble(0, 1.00001);
+            chanceRole = ThreadLocalRandom.current().nextDouble();
             if (1.0 - chanceRole >= dropBase.chance) didNotMakeChance = true;
         }
 
@@ -322,7 +322,7 @@ public class CustomDropsHandler {
                 if (isCustomDropsDebuggingEnabled()) {
                     info.addDebugMessage(String.format(
                             "&8 - &7item: &b%s&7, amount: &b%s&7, chance: &b%s&7, chanceRole: &b%s&7, dropped: &bfalse&7.",
-                            itemStack.getType().name(), dropItem.getAmountAsString(), dropBase.chance, chanceRole)
+                            itemStack.getType().name(), dropItem.getAmountAsString(), dropBase.chance, Utils.round(chanceRole, 4))
                     );
                 }
             }
@@ -376,11 +376,11 @@ public class CustomDropsHandler {
         CustomDropItem dropItem = (CustomDropItem) dropBase;
 
         if (info.equippedOnly && dropItem.equippedSpawnChance < 1.0) {
-            chanceRole = (double) ThreadLocalRandom.current().nextInt(0, 100001) * 0.00001;
+            chanceRole = ThreadLocalRandom.current().nextDouble();
             if (1.0 - chanceRole >= dropItem.equippedSpawnChance){
                 if (ymlHelper.getStringSet(main.settingsCfg, "debug-misc").contains("CUSTOM_DROPS")) {
                     info.addDebugMessage(String.format("&8- Mob: &b%s&7, &7level: &b%s&7, item: &b%s&7, spawnchance: &b%s&7, chancerole: &b%s&7, did not make spawn chance",
-                            info.lmEntity.getTypeName(), info.lmEntity.getMobLevel(), dropItem.getMaterial().name(), dropItem.equippedSpawnChance, chanceRole));
+                            info.lmEntity.getTypeName(), info.lmEntity.getMobLevel(), dropItem.getMaterial().name(), dropItem.equippedSpawnChance, Utils.round(chanceRole, 4)));
                 }
                 return;
             }
@@ -410,7 +410,7 @@ public class CustomDropsHandler {
         if (ymlHelper.getStringSet(main.settingsCfg, "debug-misc").contains("CUSTOM_DROPS")){
             info.addDebugMessage(String.format(
                     "&8 - &7item: &b%s&7, amount: &b%s&7, newAmount: &b%s&7, chance: &b%s&7, chanceRole: &b%s&7, dropped: &btrue&7.",
-                    newItem.getType().name(), dropItem.getAmountAsString(), newDropAmount, dropItem.chance, chanceRole));
+                    newItem.getType().name(), dropItem.getAmountAsString(), newDropAmount, dropItem.chance, Utils.round(chanceRole, 4)));
         }
 
         int damage = dropItem.getDamage();
@@ -460,7 +460,7 @@ public class CustomDropsHandler {
             final String variableToUse = Utils.isNullOrEmpty(dropBase.playerLevelVariable) ?
                     "%level%" : dropBase.playerLevelVariable;
             final int mobLevel = info.lmEntity.getMobLevel();
-            int levelToUse = 1;
+            int levelToUse;
             if (info.playerLevelVariableCache.containsKey(variableToUse))
                 levelToUse = info.playerLevelVariableCache.get(variableToUse);
             else {
