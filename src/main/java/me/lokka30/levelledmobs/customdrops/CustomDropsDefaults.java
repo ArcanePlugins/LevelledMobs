@@ -21,6 +21,7 @@ public class CustomDropsDefaults {
     public boolean noSpawner;
     public boolean override;
     public boolean playerCausedOnly;
+    public boolean onlyDropIfEquipped;
     public int amount;
     public int priority;
     public int minLevel;
@@ -72,5 +73,6 @@ public class CustomDropsDefaults {
         this.minPlayerLevel = drop.minPlayerLevel;
         this.maxPlayerLevel = drop.maxPlayerLevel;
         this.playerLevelVariable = drop.playerLevelVariable;
+        this.onlyDropIfEquipped = drop.onlyDropIfEquipped;
     }
 }

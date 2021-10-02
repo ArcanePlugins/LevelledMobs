@@ -193,10 +193,11 @@ public class SummonSubcommand implements Subcommand {
                 final String worldName;
 
                 if (args.length == 8) {
-                    if (sender instanceof Player) {
-                        final Player player = (Player) sender;
-                        worldName = player.getWorld().getName();
-                    } else {
+                    if (sender instanceof Player)
+                        worldName = ((Player) sender).getWorld().getName();
+                    else if (sender instanceof BlockCommandSender)
+                        worldName = ((BlockCommandSender) sender).getBlock().getWorld().getName();
+                    else {
                         List<String> messages = main.messagesCfg.getStringList("command.levelledmobs.summon.atLocation.usage-console");
                         messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.getPrefix());
                         messages = Utils.replaceAllInList(messages, "%label%", label);

@@ -468,6 +468,9 @@ public class LevelManager implements LevelInterface {
         if (nametag.toLowerCase().contains("%health-indicator%"))
             nametag = nametag.replace("%health-indicator%", formatHealthIndicator(lmEntity));
 
+        if (nametag.contains("%") && ExternalCompatibilityManager.hasPAPI_Installed())
+            nametag = ExternalCompatibilityManager.getPAPI_Placeholder(null, nametag);
+
         return nametag;
     }
 

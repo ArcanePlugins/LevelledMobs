@@ -12,7 +12,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -126,7 +128,7 @@ public class CustomDropsHandler {
                     processingInfo.addDebugMessage(String.format("&7Custom equipment for &b%s &r(%s)", lmEntity.getTypeName(), lmEntity.getMobLevel()));
                 else
                     processingInfo.addDebugMessage("&7Custom equipment for &b" + lmEntity.getTypeName() + "&r");
-                StringBuilder sb = new StringBuilder();
+                final StringBuilder sb = new StringBuilder();
                 for (final ItemStack drop : drops) {
                     if (sb.length() > 0) sb.append(", ");
                     sb.append(drop.getType().name());
@@ -306,6 +308,20 @@ public class CustomDropsHandler {
             return;
         }
 
+        // equip-chance and equip-drop-chance:
+        if (!info.equippedOnly && dropBase instanceof CustomDropItem) {
+            final CustomDropItem item = (CustomDropItem) dropBase;
+            if (!checkIfMadeEquippedDropChance(info, item)) {
+                if (isCustomDropsDebuggingEnabled()) {
+                    info.addDebugMessage(String.format(
+                            "&8 - &7item: &b%s&7, was not equipped on mob, dropped: &bfalse&7.",
+                            item.getItemStack().getType().name())
+                    );
+                }
+                return;
+            }
+        }
+
         boolean didNotMakeChance = false;
         double chanceRole = 0.0;
 
@@ -328,7 +344,6 @@ public class CustomDropsHandler {
             }
         }
         if (!info.equippedOnly && didNotMakeChance) return;
-
 
         final boolean hasGroupId = !Utils.isNullOrEmpty(dropBase.groupId);
         if (!info.equippedOnly && hasGroupId){
@@ -373,7 +388,11 @@ public class CustomDropsHandler {
             return;
             // -----------------------------------------------------------------------------------------------------------------------------------------------
         }
-        CustomDropItem dropItem = (CustomDropItem) dropBase;
+        if (!(dropBase instanceof CustomDropItem)){
+            Utils.logger.warning("Unsupported drop type: " + dropBase.getClass().getName());
+            return;
+        }
+        final CustomDropItem dropItem = (CustomDropItem) dropBase;
 
         if (info.equippedOnly && dropItem.equippedSpawnChance < 1.0) {
             chanceRole = ThreadLocalRandom.current().nextDouble();
@@ -408,9 +427,16 @@ public class CustomDropsHandler {
         if (newItem.getAmount() != newDropAmount) newItem.setAmount(newDropAmount);
 
         if (ymlHelper.getStringSet(main.settingsCfg, "debug-misc").contains("CUSTOM_DROPS")){
-            info.addDebugMessage(String.format(
-                    "&8 - &7item: &b%s&7, amount: &b%s&7, newAmount: &b%s&7, chance: &b%s&7, chanceRole: &b%s&7, dropped: &btrue&7.",
-                    newItem.getType().name(), dropItem.getAmountAsString(), newDropAmount, dropItem.chance, Utils.round(chanceRole, 4)));
+            if (info.equippedOnly) {
+                info.addDebugMessage(String.format(
+                        "&8 - &7item: &b%s&7, equipChance: &b%s&7, chanceRole: &b%s&7, equipped: &btrue&7.",
+                        newItem.getType().name(), dropItem.equippedSpawnChance, Utils.round(chanceRole, 4)));
+            }
+            else {
+                info.addDebugMessage(String.format(
+                        "&8 - &7item: &b%s&7, amount: &b%s&7, newAmount: &b%s&7, chance: &b%s&7, chanceRole: &b%s&7, dropped: &btrue&7.",
+                        newItem.getType().name(), dropItem.getAmountAsString(), newDropAmount, dropItem.chance, Utils.round(chanceRole, 4)));
+            }
         }
 
         int damage = dropItem.getDamage();
@@ -454,7 +480,48 @@ public class CustomDropsHandler {
         info.newDrops.add(newItem);
     }
 
-    private boolean madePlayerLevelRequirement(final CustomDropProcessingInfo info, final CustomDropBase dropBase){
+    private boolean checkIfMadeEquippedDropChance(final CustomDropProcessingInfo info, final @NotNull CustomDropItem item){
+        if (item.equippedSpawnChance >= 1.0 || !item.onlyDropIfEquipped) return true;
+        if (item.equippedSpawnChance <= 0.0) return false;
+
+        return isMobWearingItem(item.getItemStack(), info.lmEntity.getLivingEntity());
+    }
+
+    private boolean isMobWearingItem(final ItemStack item, final @NotNull LivingEntity mob){
+        final EntityEquipment equipment = mob.getEquipment();
+        if (equipment == null) return false;
+
+        switch (item.getType()){
+            case LEATHER_CHESTPLATE:
+            case CHAINMAIL_CHESTPLATE:
+            case IRON_CHESTPLATE:
+            case DIAMOND_CHESTPLATE:
+            case NETHERITE_CHESTPLATE:
+                return item.isSimilar(equipment.getChestplate());
+            case LEATHER_LEGGINGS:
+            case CHAINMAIL_LEGGINGS:
+            case IRON_LEGGINGS:
+            case DIAMOND_LEGGINGS:
+            case NETHERITE_LEGGINGS:
+                return item.isSimilar(equipment.getLeggings());
+            case LEATHER_BOOTS:
+            case CHAINMAIL_BOOTS:
+            case IRON_BOOTS:
+            case DIAMOND_BOOTS:
+            case NETHERITE_BOOTS:
+                return item.isSimilar(equipment.getBoots());
+        }
+
+        if (item.isSimilar(equipment.getItemInMainHand()))
+            return true;
+
+        if (item.isSimilar(equipment.getItemInOffHand()))
+            return true;
+
+        return item.isSimilar(equipment.getHelmet());
+    }
+
+    private boolean madePlayerLevelRequirement(final @NotNull CustomDropProcessingInfo info, final CustomDropBase dropBase){
         if (!info.equippedOnly && (dropBase.minPlayerLevel != null || dropBase.maxPlayerLevel != null)){
             // check if the variable result has been cached already and use it if so
             final String variableToUse = Utils.isNullOrEmpty(dropBase.playerLevelVariable) ?
@@ -522,7 +589,7 @@ public class CustomDropsHandler {
     }
 
     @NotNull
-    private String processRangedCommand(@NotNull String command, final CustomCommand cc){
+    private String processRangedCommand(@NotNull String command, final @NotNull CustomCommand cc){
         if (cc.rangedEntries.isEmpty()) return command;
 
         for (final String rangedKey : cc.rangedEntries.keySet()) {

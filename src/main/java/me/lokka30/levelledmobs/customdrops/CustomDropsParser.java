@@ -367,6 +367,7 @@ public class CustomDropsParser {
 
         checkEquippedChance(item, cs);
         parseItemFlags(item, ymlHelper.getString(cs,"itemflags"), dropInstance);
+        item.onlyDropIfEquipped = ymlHelper.getBoolean(cs, "only-drop-if-equipped", this.defaults.onlyDropIfEquipped);
         item.priority = ymlHelper.getInt(cs,"priority", this.defaults.priority);
         item.noMultiplier = ymlHelper.getBoolean(cs,"nomultiplier", this.defaults.noMultiplier);
         item.noSpawner = ymlHelper.getBoolean(cs,"nospawner", this.defaults.noSpawner);
@@ -398,30 +399,7 @@ public class CustomDropsParser {
                 item.excludedMobs.add(exclude.trim());
         }
 
-        final ConfigurationSection enchantments = objectToConfigurationSection2(cs, "enchantments");
-        if (enchantments != null) {
-            final Map<String, Object> enchantMap = enchantments.getValues(false);
-            for (final String enchantName : enchantMap.keySet()) {
-                final Object value = enchantMap.get(enchantName);
-
-                int enchantLevel = 1;
-                if (value != null && Utils.isInteger(value.toString()))
-                    enchantLevel = Integer.parseInt(value.toString());
-
-                final Enchantment en = Enchantment.getByKey(NamespacedKey.minecraft(enchantName.toLowerCase()));
-                if (en != null) {
-                    if (item.getMaterial().equals(Material.ENCHANTED_BOOK)) {
-                        EnchantmentStorageMeta meta = (EnchantmentStorageMeta) item.getItemStack().getItemMeta();
-                        if (meta != null) {
-                            meta.addStoredEnchant(en, enchantLevel, true);
-                            item.getItemStack().setItemMeta(meta);
-                        }
-                    } else
-                        item.getItemStack().addUnsafeEnchantment(en, enchantLevel);
-                } else
-                    Utils.logger.warning("Invalid enchantment: " + enchantName);
-            }
-        }
+        parseEnchantments(objectToConfigurationSection2(cs, "enchantments"), item);
 
         final String nbtStuff = ymlHelper.getString(cs,"nbt-data");
         if (!Utils.isNullOrEmpty(nbtStuff)){
@@ -441,6 +419,33 @@ public class CustomDropsParser {
         }
 
         applyMetaAttributes(item);
+    }
+
+    private void parseEnchantments(final ConfigurationSection cs, final CustomDropItem item){
+        if (cs == null) return;
+
+        final Map<String, Object> enchantMap = cs.getValues(false);
+        for (final String enchantName : enchantMap.keySet()) {
+            final Object value = enchantMap.get(enchantName);
+
+            int enchantLevel = 1;
+            if (value != null && Utils.isInteger(value.toString()))
+                enchantLevel = Integer.parseInt(value.toString());
+
+            final Enchantment en = Enchantment.getByKey(NamespacedKey.minecraft(enchantName.toLowerCase()));
+            if (en != null) {
+                if (item.getMaterial().equals(Material.ENCHANTED_BOOK)) {
+                    EnchantmentStorageMeta meta = (EnchantmentStorageMeta) item.getItemStack().getItemMeta();
+                    if (meta != null) {
+                        meta.addStoredEnchant(en, enchantLevel, true);
+                        item.getItemStack().setItemMeta(meta);
+                    }
+                } else
+                    item.getItemStack().addUnsafeEnchantment(en, enchantLevel);
+            } else
+                Utils.logger.warning("Invalid enchantment: " + enchantName);
+        }
+
     }
 
     private void parseRangedVariables(final CustomCommand cc, @NotNull final ConfigurationSection cs){
@@ -615,6 +620,7 @@ public class CustomDropsParser {
             sbMain.append("&r");
             sbMain.append(override);
             sbMain.append(overallChance);
+
             for (final CustomDropBase baseItem : dropInstance.customItems) {
                 final String result = showCustomDropsDebugInfo2(baseItem);
                 if (!Utils.isNullOrEmpty(result)){
@@ -722,6 +728,8 @@ public class CustomDropsParser {
             sb.append(item.equippedSpawnChance);
             sb.append("&r");
         }
+        if (item.onlyDropIfEquipped)
+            sb.append(", &bonlyDropIfEquipped&r");
         if (item.itemFlags != null && !item.itemFlags.isEmpty()){
             sb.append(", itemflags: &b");
             sb.append(item.itemFlags.size());

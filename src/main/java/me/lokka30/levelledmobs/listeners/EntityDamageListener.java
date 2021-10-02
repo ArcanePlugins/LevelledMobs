@@ -31,10 +31,26 @@ public class EntityDamageListener implements Listener {
 
     // When the mob is damaged, update their nametag.
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
-    public void onDamage(@NotNull final EntityDamageEvent event) {
+    public void onEntityDamageEvent(@NotNull final EntityDamageEvent event) {
         if (event.getFinalDamage() == 0.0) return;
         if (!(event.getEntity() instanceof LivingEntity)) return;
         if (event.getFinalDamage() == 0.0) return;
+
+        if (event.getEntity() instanceof Player){
+            if (main.nametagTimerResetTime <= 0) return;
+            if (!(event instanceof EntityDamageByEntityEvent))
+                return;
+
+            // if a mob hit a player then show the mob's nametag
+            final EntityDamageByEntityEvent entityDamageByEntityEvent = (EntityDamageByEntityEvent) event;
+            if (entityDamageByEntityEvent.getDamager() instanceof Player)
+                return;
+
+            final LivingEntityWrapper theHitter = LivingEntityWrapper.getInstance((LivingEntity) entityDamageByEntityEvent.getDamager(), main);
+            main.levelManager.updateNametag_WithDelay(theHitter, true);
+            theHitter.free();
+            return;
+        }
 
         final LivingEntityWrapper lmEntity = LivingEntityWrapper.getInstance((LivingEntity) event.getEntity(), main);
 

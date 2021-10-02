@@ -129,7 +129,7 @@ public class ExternalCompatibilityManager {
         final Plugin p = Bukkit.getPluginManager().getPlugin("MythicMobs");
         if (p == null) return false;
 
-        if (!p.getDescription().getVersion().startsWith("4")) {
+        if (!p.getDescription().getVersion().startsWith("4.12")) {
             final NamespacedKey mmKey = new NamespacedKey(p, "type");
             return lmEntity.getPDC().has(mmKey, PersistentDataType.STRING);
         }

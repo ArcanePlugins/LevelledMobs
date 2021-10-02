@@ -25,6 +25,7 @@ public class CustomDropItem extends CustomDropBase {
     public int customModelDataId;
     public double equippedSpawnChance;
     public boolean noMultiplier;
+    public boolean onlyDropIfEquipped;
     public String customName;
     public String mobHeadTexture;
     public String nbtData;
@@ -49,6 +50,7 @@ public class CustomDropItem extends CustomDropBase {
         this.maxDropGroup = defaults.maxDropGroup;
         this.equippedSpawnChance = defaults.equippedSpawnChance;
         this.noMultiplier = defaults.noMultiplier;
+        this.onlyDropIfEquipped = defaults.onlyDropIfEquipped;
     }
 
     public CustomDropItem cloneItem() {

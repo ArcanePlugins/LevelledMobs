@@ -53,6 +53,7 @@ defaults:
   groupid: ''
   overall_chance: 0.0
   nbt-data: ''
+  only-drop-if-equipped: false
 
 
 # +-------------------------------------------------------------------------------------------LM3
