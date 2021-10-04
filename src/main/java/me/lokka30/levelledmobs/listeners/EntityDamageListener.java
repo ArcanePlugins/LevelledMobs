@@ -43,7 +43,7 @@ public class EntityDamageListener implements Listener {
 
             // if a mob hit a player then show the mob's nametag
             final EntityDamageByEntityEvent entityDamageByEntityEvent = (EntityDamageByEntityEvent) event;
-            if (entityDamageByEntityEvent.getDamager() instanceof Player)
+            if (!(entityDamageByEntityEvent.getDamager() instanceof LivingEntity) || entityDamageByEntityEvent.getDamager() instanceof Player)
                 return;
 
             final LivingEntityWrapper theHitter = LivingEntityWrapper.getInstance((LivingEntity) entityDamageByEntityEvent.getDamager(), main);
