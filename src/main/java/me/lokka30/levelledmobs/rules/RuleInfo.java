@@ -89,6 +89,7 @@ public class RuleInfo {
     public CachedModalList<String> conditions_SpawnerNames;
     public CachedModalList<MinAndMax> conditions_WorldTickTime;
     public CachedModalList<LevelledMobSpawnReason> conditions_SpawnReasons;
+    public CachedModalList<String> conditions_Permission;
     @Nullable
     public FineTuningAttributes allMobMultipliers;
     public Map<String, FineTuningAttributes> specificMobMultipliers;

@@ -43,6 +43,9 @@ public class EntityDeathListener implements Listener {
             return;
 
         final LivingEntityWrapper lmEntity = LivingEntityWrapper.getInstance(event.getEntity(), main);
+        if (event.getEntity().getKiller() != null)
+            lmEntity.playerForPermissionsCheck = event.getEntity().getKiller();
+
         final EntityDamageEvent damage = lmEntity.getLivingEntity().getLastDamageCause();
         if (damage != null)
             lmEntity.deathCause = damage.getCause();

@@ -39,6 +39,8 @@ public class Namespaced_Keys {
         keySpawner_SpawnRange = new NamespacedKey(main, "spawnrange");
         keySpawner_CustomName = new NamespacedKey(main, "customname");
         keySpawner_Lore = new NamespacedKey(main, "lore");
+
+        this.overallChanceKey = new NamespacedKey(main, "overallChance");
     }
 
     public final NamespacedKey levelKey; // This stores the mob's level.
@@ -69,4 +71,6 @@ public class Namespaced_Keys {
     final public NamespacedKey keySpawner_SpawnRange;
     final public NamespacedKey keySpawner_CustomName;
     final public NamespacedKey keySpawner_Lore;
+
+    public final NamespacedKey overallChanceKey;
 }

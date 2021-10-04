@@ -74,6 +74,7 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
     private LevelledMobSpawnReason spawnReason;
     public EntityDamageEvent.DamageCause deathCause;
     public boolean reEvaluateLevel;
+    public Player playerForPermissionsCheck;
     private boolean groupsAreBuilt;
     private Player playerForLevelling;
     private Map<String, Boolean> prevChanceRuleResults;
@@ -134,6 +135,7 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
         this.playerForLevelling = null;
         this.prevChanceRuleResults = null;
         this.sourceSpawnerName = null;
+        this.playerForPermissionsCheck = null;
 
         super.clearEntityData();
     }
@@ -268,6 +270,7 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
         synchronized (playerLock){
             this.playerForLevelling = player;
         }
+        this.playerForPermissionsCheck = player;
     }
 
     @Nullable

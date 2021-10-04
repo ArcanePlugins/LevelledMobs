@@ -626,6 +626,7 @@ public class RulesParsingManager {
         parsingInfo.conditions_MM_Names = buildCachedModalListOfString(cs,"mythicmobs-internal-names", parsingInfo.conditions_MM_Names);
         parsingInfo.conditions_SpawnerNames = buildCachedModalListOfString(cs,"spawner-names", parsingInfo.conditions_SpawnerNames);
         parsingInfo.conditions_WorldTickTime = parseWorldTimeTicks(cs, parsingInfo.conditions_WorldTickTime);
+        parsingInfo.conditions_Permission = buildCachedModalListOfString(cs, "permission", parsingInfo.conditions_Permission);
     }
 
     private void parseStrategies(final ConfigurationSection cs){

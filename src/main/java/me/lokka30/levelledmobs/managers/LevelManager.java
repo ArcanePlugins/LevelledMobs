@@ -681,6 +681,7 @@ public class LevelManager implements LevelInterface {
                 // Mob must be a livingentity that is ...living.
                 if (!(entity instanceof LivingEntity) || entity instanceof Player) continue;
                 final LivingEntityWrapper lmEntity = LivingEntityWrapper.getInstance((LivingEntity) entity, main);
+                lmEntity.playerForPermissionsCheck = player;
 
                 if (lmEntity.isLevelled()) {
                     if (main.configUtils.playerLevellingEnabled) {

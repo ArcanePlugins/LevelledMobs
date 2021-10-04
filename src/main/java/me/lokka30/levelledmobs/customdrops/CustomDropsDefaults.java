@@ -7,6 +7,7 @@ package me.lokka30.levelledmobs.customdrops;
 import org.bukkit.inventory.ItemFlag;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -38,6 +39,8 @@ public class CustomDropsDefaults {
     public String nbtData;
     public String playerLevelVariable;
     public List<ItemFlag> itemFlags;
+    final public List<String> permissions;
+    final public List<String> overallPermissions;
 
     public CustomDropsDefaults() {
         // these are the defaults of the defaults
@@ -53,6 +56,8 @@ public class CustomDropsDefaults {
         this.noSpawner = false;
         this.override = false;
         this.playerCausedOnly = false;
+        this.permissions = new LinkedList<>();
+        this.overallPermissions = new LinkedList<>();
     }
 
     public void setDefaultsFromDropItem(@NotNull final CustomDropItem drop) {
@@ -74,5 +79,6 @@ public class CustomDropsDefaults {
         this.maxPlayerLevel = drop.maxPlayerLevel;
         this.playerLevelVariable = drop.playerLevelVariable;
         this.onlyDropIfEquipped = drop.onlyDropIfEquipped;
+        this.permissions.addAll(drop.permissions);
     }
 }

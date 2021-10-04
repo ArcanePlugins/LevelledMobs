@@ -91,6 +91,7 @@ public class CustomDropsParser {
         this.defaults.setDefaultsFromDropItem(drop);
         this.defaults.override = dropInstance.overrideStockDrops;
         this.defaults.overallChance = dropInstance.overallChance;
+        this.defaults.overallPermissions.addAll(dropInstance.overallPermissions);
     }
 
     private void parseCustomDrops(final ConfigurationSection config){
@@ -276,6 +277,14 @@ public class CustomDropsParser {
 
                     continue;
                 }
+                else if ("overall_permission".equalsIgnoreCase(materialName)){
+                    if (itemEntry.getValue() instanceof String)
+                        dropInstance.overallPermissions.add((String) itemEntry.getValue());
+                    else if (itemEntry.getValue() instanceof ArrayList)
+                        dropInstance.overallPermissions.addAll((ArrayList<String>) itemEntry.getValue());
+
+                    continue;
+                }
 
                 if ("usedroptable".equalsIgnoreCase(materialName)) {
                     if (itemEntry.getValue() == null){
@@ -316,8 +325,10 @@ public class CustomDropsParser {
         } // next item
     }
 
-    private void parseCustomDropsAttributes(@NotNull final CustomDropBase dropBase, @NotNull final ConfigurationSection cs, final CustomDropInstance dropInstance){
+    private void parseCustomDropsAttributes(@NotNull final CustomDropBase dropBase, @NotNull final ConfigurationSection cs, final @NotNull CustomDropInstance dropInstance){
         dropBase.chance = ymlHelper.getDouble(cs, "chance", this.defaults.chance);
+        dropBase.permissions.addAll(this.defaults.permissions);
+        dropBase.permissions.addAll(ymlHelper.getStringSet(cs, "permission"));
         dropBase.minLevel = ymlHelper.getInt(cs,"minlevel", this.defaults.minLevel);
         dropBase.maxLevel = ymlHelper.getInt(cs,"maxlevel", this.defaults.maxLevel);
         dropBase.minPlayerLevel = ymlHelper.getInt2(cs, "min-player-level", this.defaults.minPlayerLevel);
@@ -334,15 +345,13 @@ public class CustomDropsParser {
                 Utils.logger.warning(String.format("Invalid number or number range for amount on %s, %s", dropInstance.getMobOrGroupName(), ymlHelper.getString(cs,"amount")));
         }
 
-        if (!Utils.isNullOrEmpty(cs.getString("overall_chance"))) {
-            dropInstance.overallChance = cs.getDouble("overall_chance");
+        if (!Utils.isNullOrEmpty(ymlHelper.getString(cs,"overall_chance"))) {
+            dropInstance.overallChance = ymlHelper.getDouble(cs, "overall_chance");
             if (dropInstance.overallChance == 0.0) dropInstance.overallChance = null;
         }
 
-        if (!Utils.isNullOrEmpty(cs.getString("overall_chance"))) {
-            dropInstance.overallChance = cs.getDouble("overall_chance");
-            if (dropInstance.overallChance == 0.0) dropInstance.overallChance = null;
-        }
+        if (cs.get(ymlHelper.getKeyNameFromConfig(cs, "overall_permission")) != null)
+            dropInstance.overallPermissions.addAll(ymlHelper.getStringSet(cs, "overall_permission"));
 
         if (dropBase instanceof CustomCommand) {
             final CustomCommand customCommand = (CustomCommand) dropBase;
@@ -620,6 +629,11 @@ public class CustomDropsParser {
             sbMain.append("&r");
             sbMain.append(override);
             sbMain.append(overallChance);
+            if (!dropInstance.overallPermissions.isEmpty()) {
+                sbMain.append(" (overall perms: ");
+                sbMain.append(dropInstance.overallPermissions);
+                sbMain.append(")");
+            }
 
             for (final CustomDropBase baseItem : dropInstance.customItems) {
                 final String result = showCustomDropsDebugInfo2(baseItem);
@@ -650,7 +664,7 @@ public class CustomDropsParser {
         Utils.logger.info(sbMain.toString());
     }
 
-    private String showCustomDropsDebugInfo2(final CustomDropBase baseItem){
+    private @NotNull String showCustomDropsDebugInfo2(final CustomDropBase baseItem){
         final CustomCommand command = baseItem instanceof CustomCommand ?
                 (CustomCommand) baseItem : null;
         final CustomDropItem item = baseItem instanceof CustomDropItem ?
@@ -681,6 +695,12 @@ public class CustomDropsParser {
         if (baseItem.maxPlayerLevel != null){
             sb.append(", maxPL: &b");
             sb.append(baseItem.maxPlayerLevel);
+            sb.append("&r");
+        }
+
+        if (!baseItem.permissions.isEmpty()){
+            sb.append(", perms: &b");
+            sb.append(baseItem.permissions);
             sb.append("&r");
         }
 

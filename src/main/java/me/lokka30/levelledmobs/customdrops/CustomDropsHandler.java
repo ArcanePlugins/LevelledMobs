@@ -10,7 +10,6 @@ import me.lokka30.levelledmobs.rules.LevelledMobSpawnReason;
 import me.lokka30.microlib.MessageUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.entity.EntityDamageEvent;
@@ -44,12 +43,10 @@ public class CustomDropsHandler {
     @Nullable
     public Map<String, CustomDropInstance> customItemGroups;
     public final CustomDropsParser customDropsParser;
-    public final NamespacedKey overallChanceKey;
     private final YmlParsingHelper ymlHelper;
 
     public CustomDropsHandler(final LevelledMobs main) {
         this.main = main;
-        this.overallChanceKey = new NamespacedKey(main, "overallChance");
         this.customDropsitems = new TreeMap<>();
         this.customDropsitems_Babies = new TreeMap<>();
         this.customDropsitems_groups = new TreeMap<>();
@@ -108,10 +105,15 @@ public class CustomDropsHandler {
             groupsList.add(group);
         }
 
-        if (!buildDropsListFromGroupsAndEntity(groupsList, lmEntity.getEntityType(), processingInfo)){
+        final DropInstanceBuildResult buildResult = buildDropsListFromGroupsAndEntity(groupsList, lmEntity.getEntityType(), processingInfo);
+        if (buildResult != DropInstanceBuildResult.SUCCESSFUL){
             // didn't make overall chance
             if (isCustomDropsDebuggingEnabled()) {
-                processingInfo.addDebugMessage(String.format("&7%s (%s) - didn't make overall chance", lmEntity.getTypeName(), lmEntity.getMobLevel()));
+                if (buildResult == DropInstanceBuildResult.DID_NOT_MAKE_CHANCE)
+                    processingInfo.addDebugMessage(String.format("&7%s (%s) - didn't make overall chance", lmEntity.getTypeName(), lmEntity.getMobLevel()));
+                else
+                    processingInfo.addDebugMessage(String.format("&7%s (%s) - didn't make overall chance permission for player: &b%s &r",
+                            lmEntity.getTypeName(), lmEntity.getMobLevel(), processingInfo.mobKiller.getName()));
                 processingInfo.writeAnyDebugMessages();
             }
             return processingInfo.hasOverride ?
@@ -144,14 +146,14 @@ public class CustomDropsHandler {
                 CustomDropResult.HAS_OVERRIDE : CustomDropResult.NO_OVERRIDE;
     }
 
-    private boolean buildDropsListFromGroupsAndEntity(final List<String> groups, final EntityType entityType, @NotNull final CustomDropProcessingInfo processingInfo){
-        processingInfo.prioritizedDrops = new HashMap<>();
-        processingInfo.hasOverride = false;
+    private DropInstanceBuildResult buildDropsListFromGroupsAndEntity(final List<String> groups, final EntityType entityType, @NotNull final CustomDropProcessingInfo info){
+        info.prioritizedDrops = new HashMap<>();
+        info.hasOverride = false;
         boolean usesGroupIds = false;
         String customDropId = null;
 
-        final boolean overrideNonDropTableDrops = processingInfo.dropRules != null && processingInfo.dropRules.override;
-        final String[] useIds = getDropIds(processingInfo);
+        final boolean overrideNonDropTableDrops = info.dropRules != null && info.dropRules.override;
+        final String[] useIds = getDropIds(info);
 
         for (final String id : useIds){
             if (this.customItemGroups == null || !this.customItemGroups.containsKey(id.trim())){
@@ -160,50 +162,74 @@ public class CustomDropsHandler {
             }
 
             final CustomDropInstance dropInstance = this.customItemGroups.get(id.trim());
-            processingInfo.allDropInstances.add(dropInstance);
+            info.allDropInstances.add(dropInstance);
 
             for (final CustomDropBase baseItem : dropInstance.customItems)
-                processDropPriorities(baseItem, processingInfo);
+                processDropPriorities(baseItem, info);
 
             if (dropInstance.utilizesGroupIds) usesGroupIds = true;
-            if (dropInstance.overrideStockDrops) processingInfo.hasOverride = true;
+            if (dropInstance.overrideStockDrops) info.hasOverride = true;
         }
 
         if (!overrideNonDropTableDrops) {
             for (String group : groups) {
                 final CustomDropInstance dropInstance = customDropsitems_groups.get(group);
-                processingInfo.allDropInstances.add(dropInstance);
+                info.allDropInstances.add(dropInstance);
 
                 for (final CustomDropBase baseItem : dropInstance.customItems)
-                    processDropPriorities(baseItem, processingInfo);
+                    processDropPriorities(baseItem, info);
 
                 if (dropInstance.utilizesGroupIds) usesGroupIds = true;
-                if (dropInstance.overrideStockDrops) processingInfo.hasOverride = true;
+                if (dropInstance.overrideStockDrops) info.hasOverride = true;
             }
 
             final TreeMap<EntityType, CustomDropInstance> dropMap =
-                    processingInfo.lmEntity.isBabyMob() && customDropsitems_Babies.containsKey(entityType) ?
+                    info.lmEntity.isBabyMob() && customDropsitems_Babies.containsKey(entityType) ?
                     customDropsitems_Babies : customDropsitems;
 
             if (dropMap.containsKey(entityType)){
                 final CustomDropInstance dropInstance = dropMap.get(entityType);
-                processingInfo.allDropInstances.add(dropInstance);
+                info.allDropInstances.add(dropInstance);
 
                 for (final CustomDropBase baseItem : dropInstance.customItems)
-                    processDropPriorities(baseItem, processingInfo);
+                    processDropPriorities(baseItem, info);
 
                 if (dropInstance.utilizesGroupIds) usesGroupIds = true;
-                if (dropInstance.overrideStockDrops) processingInfo.hasOverride = true;
+                if (dropInstance.overrideStockDrops) info.hasOverride = true;
             }
         }
 
         if (usesGroupIds){
-            for (final int pri : processingInfo.prioritizedDrops.keySet())
-                Collections.shuffle(processingInfo.prioritizedDrops.get(pri));
+            for (final int pri : info.prioritizedDrops.keySet())
+                Collections.shuffle(info.prioritizedDrops.get(pri));
         }
 
-        if (processingInfo.equippedOnly && !processingInfo.hasEquippedItems) return true;
-        return checkOverallChance(processingInfo);
+        if (!checkOverallPermissions(info))
+            return DropInstanceBuildResult.PERMISSION_DENIED;
+
+        if (info.equippedOnly && !info.hasEquippedItems)
+            return DropInstanceBuildResult.SUCCESSFUL;
+
+        return checkOverallChance(info) ?
+                DropInstanceBuildResult.SUCCESSFUL : DropInstanceBuildResult.DID_NOT_MAKE_CHANCE;
+    }
+
+    private boolean checkOverallPermissions(@NotNull final CustomDropProcessingInfo info){
+        if (info.mobKiller == null) return false;
+
+        boolean hadAnyPerms = false;
+        for (final CustomDropInstance dropInstance : info.allDropInstances) {
+            if (dropInstance.overallPermissions.isEmpty()) continue;
+
+            hadAnyPerms = true;
+            for (final String perm : dropInstance.overallPermissions) {
+                final String checkPerm = "LevelledMobs.permission." + perm;
+                if (info.mobKiller.hasPermission(checkPerm))
+                    return true;
+            }
+        }
+
+        return !hadAnyPerms;
     }
 
     @NotNull
@@ -245,8 +271,8 @@ public class CustomDropsHandler {
             if (dropInstance.overallChance == null || dropInstance.overallChance >= 1.0 || dropInstance.overallChance <= 0.0) continue;
 
             synchronized (info.lmEntity.getLivingEntity().getPersistentDataContainer()) {
-                if (info.lmEntity.getPDC().has(this.overallChanceKey, PersistentDataType.INTEGER)) {
-                    final int value = Objects.requireNonNull(info.lmEntity.getPDC().get(this.overallChanceKey, PersistentDataType.INTEGER));
+                if (info.lmEntity.getPDC().has(main.namespaced_keys.overallChanceKey, PersistentDataType.INTEGER)) {
+                    final int value = Objects.requireNonNull(info.lmEntity.getPDC().get(main.namespaced_keys.overallChanceKey, PersistentDataType.INTEGER));
                     return value == 1;
                 }
             }
@@ -256,7 +282,7 @@ public class CustomDropsHandler {
             final boolean madeChance = 1.0 - chanceRole < dropInstance.overallChance;
             if (info.equippedOnly) {
                 synchronized (info.lmEntity.getLivingEntity().getPersistentDataContainer()) {
-                    info.lmEntity.getPDC().set(this.overallChanceKey, PersistentDataType.INTEGER, madeChance ? 1 : 0);
+                    info.lmEntity.getPDC().set(main.namespaced_keys.overallChanceKey, PersistentDataType.INTEGER, madeChance ? 1 : 0);
                 }
             }
 
@@ -321,6 +347,8 @@ public class CustomDropsHandler {
                 return;
             }
         }
+
+        if (!checkDropPermissions(info, dropBase)) return;
 
         boolean didNotMakeChance = false;
         double chanceRole = 0.0;
@@ -478,6 +506,42 @@ public class CustomDropsHandler {
             newItem = main.mobHeadManager.getMobHeadFromPlayerHead(newItem, info.lmEntity, dropItem);
 
         info.newDrops.add(newItem);
+    }
+
+    private boolean checkDropPermissions(final CustomDropProcessingInfo info, final @NotNull CustomDropBase dropBase){
+        if (info.equippedOnly || dropBase.permissions.isEmpty()) return true;
+
+        if (info.mobKiller == null){
+            if (isCustomDropsDebuggingEnabled()){
+                info.addDebugMessage(String.format(
+                        "&8 - &7item: &b%s&7, not player was provided for item permissions",
+                        (dropBase instanceof CustomDropItem) ?
+                                ((CustomDropItem) dropBase).getItemStack().getType().name() : "custom command"));
+            }
+            return false;
+        }
+
+        boolean hadPermission = false;
+        for (final String perm : dropBase.permissions){
+            final String permCheck = "levelledmobs.permission." + perm;
+            if (info.mobKiller.hasPermission(permCheck)) {
+                hadPermission = true;
+                break;
+            }
+        }
+
+        if (!hadPermission){
+            if (isCustomDropsDebuggingEnabled()){
+                info.addDebugMessage(String.format(
+                        "&8 - &7item: &b%s&7, player: &b%s&7 didn't have permission: &b%s&7",
+                        (dropBase instanceof CustomDropItem) ?
+                                ((CustomDropItem) dropBase).getItemStack().getType().name() : "custom command",
+                        info.mobKiller.getName(), dropBase.permissions));
+            }
+            return false;
+        }
+
+        return true;
     }
 
     private boolean checkIfMadeEquippedDropChance(final CustomDropProcessingInfo info, final @NotNull CustomDropItem item){

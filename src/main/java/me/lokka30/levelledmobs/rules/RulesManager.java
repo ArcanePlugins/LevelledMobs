@@ -10,6 +10,8 @@ import me.lokka30.levelledmobs.managers.ExternalCompatibilityManager;
 import me.lokka30.levelledmobs.misc.*;
 import me.lokka30.levelledmobs.rules.strategies.LevellingStrategy;
 import org.bukkit.World;
+import org.bukkit.entity.Player;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -55,7 +57,7 @@ public class RulesManager {
     }
 
     @Nullable
-    public String getRule_NBT_Data(final LivingEntityWrapper lmEntity){
+    public String getRule_NBT_Data(final @NotNull LivingEntityWrapper lmEntity){
         String nbtData = null;
 
         for (final RuleInfo ruleInfo : lmEntity.getApplicableRules()){
@@ -66,7 +68,7 @@ public class RulesManager {
         return nbtData;
     }
 
-    public double getRule_SunlightBurnIntensity(final LivingEntityWrapper lmEntity){
+    public double getRule_SunlightBurnIntensity(final @NotNull LivingEntityWrapper lmEntity){
         double result = 0.0;
 
         for (final RuleInfo ruleInfo : lmEntity.getApplicableRules()){
@@ -578,10 +580,25 @@ public class RulesManager {
             }
         }
 
+        if (ri.conditions_Permission != null){
+            if (lmEntity.playerForPermissionsCheck == null){
+                Utils.debugLog(main, DebugType.DENIED_RULE_PERMISSION, String.format("&b%s&7, mob: &b%s&7, no player was provided",
+                        ri.getRuleName(), lmEntity.getNameIfBaby()));
+                return false;
+            }
+
+            if (!doesPlayerPassPermissionChecks(ri.conditions_Permission, lmEntity.playerForPermissionsCheck)){
+                Utils.debugLog(main, DebugType.DENIED_RULE_PERMISSION, String.format("&b%s&7, mob: &b%s&7, player: &b%s&7, permission denied",
+                        ri.getRuleName(), lmEntity.getNameIfBaby(), lmEntity.playerForPermissionsCheck.getName()));
+                return false;
+            }
+        }
+
         return true;
     }
 
-    private RuleCheckResult isRuleApplicable_Interface(final LivingEntityInterface lmInterface, final RuleInfo ri){
+    @Contract("_, _ -> new")
+    private @NotNull RuleCheckResult isRuleApplicable_Interface(final LivingEntityInterface lmInterface, final RuleInfo ri){
 
         if (lmInterface instanceof LivingEntityWrapper) {
             if (ri.conditions_Entities != null && !Utils.isLivingEntityInModalList(ri.conditions_Entities, (LivingEntityWrapper) lmInterface)) {
@@ -689,6 +706,26 @@ public class RulesManager {
         }
 
         return new RuleCheckResult(true, ruleMadeChance);
+    }
+
+    private boolean doesPlayerPassPermissionChecks(final @NotNull CachedModalList<String> perms, final @NotNull Player player){
+        if (perms.allowAll) return true;
+        if (perms.excludeAll) return false;
+        if (perms.isEmpty()) return true;
+
+        for (final String perm : perms.excludedList){
+            final String permCheck = "levelledmobs.permission." + perm;
+            if (player.hasPermission(permCheck))
+                return false;
+        }
+
+        for (final String perm : perms.allowedList){
+            final String permCheck = "levelledmobs.permission." + perm;
+            if (player.hasPermission(permCheck))
+                return true;
+        }
+
+        return perms.isBlacklist();
     }
 
     public void buildBiomeGroupMappings(final Map<String, Set<String>> customBiomeGroups){
