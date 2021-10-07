@@ -71,6 +71,9 @@ public class LevelledMobs extends JavaPlugin {
         //TODO lokka30: Complete this method's body.
         fileHandler.loadInternalFiles();
         fileHandler.loadExternalFiles();
+
+        queueHandler.startQueues();
+
         loadListeners();
 
         Utils.LOGGER.info("&f~ Start-up complete, took &b" + timer.getTimer() + "ms&f ~");
@@ -92,6 +95,8 @@ public class LevelledMobs extends JavaPlugin {
         // IMPORTANT: Do not mess with the order of these methods being ran!
 
         //TODO lokka30: Complete this method's body.
+
+        queueHandler.stopQueues();
 
         Utils.LOGGER.info("&f~ Shut-down complete, took &b" + timer.getTimer() + "ms&f ~");
     }

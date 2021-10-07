@@ -64,6 +64,7 @@ public class MobProcessingQueue implements Queue {
         if(!isRunning) throw new UnsupportedOperationException("Queue is not running");
 
         isCancelled = true;
+        queue.clear();
     }
 
     @Override
