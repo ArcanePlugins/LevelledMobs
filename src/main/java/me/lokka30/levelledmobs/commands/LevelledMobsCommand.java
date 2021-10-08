@@ -94,9 +94,11 @@ public class LevelledMobsCommand implements CommandExecutor, TabCompleter {
     }
 
     private void test(@NotNull final CommandSender sender, final String @NotNull [] args) {
-        final String counts = main.cacheCheck == null ?
-                "stack size: (null)" : "stack size: " + main.cacheCheck.size();
-        sender.sendMessage(counts);
+        final String test = String.format("size: %s\ntest: %s",
+                main.nametagCooldownQueue.size(),
+                main.nametagCooldownQueue
+        );
+        Utils.logger.info(test);
     }
 
     private void sendMainUsage(@NotNull final CommandSender sender, final String label) {

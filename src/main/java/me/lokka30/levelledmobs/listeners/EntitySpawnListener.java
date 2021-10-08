@@ -8,6 +8,7 @@ import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.managers.ExternalCompatibilityManager;
 import me.lokka30.levelledmobs.misc.*;
 import me.lokka30.levelledmobs.rules.LevelledMobSpawnReason;
+import me.lokka30.levelledmobs.rules.NametagVisibilityEnum;
 import org.bukkit.*;
 import org.bukkit.block.CreatureSpawner;
 import org.bukkit.entity.LivingEntity;
@@ -80,12 +81,12 @@ public class EntitySpawnListener implements Listener {
         lmEntity.free();
     }
 
-    private void updateMobForPlayerLevelling(final LivingEntityWrapper lmEntity){
+    private void updateMobForPlayerLevelling(final @NotNull LivingEntityWrapper lmEntity){
         final int onlinePlayerCount = lmEntity.getWorld().getPlayers().size();
         final int checkDistance = main.helperSettings.getInt(main.settingsCfg, "async-task-max-blocks-from-player", 100);
         final List<org.bukkit.entity.Player> playerList = onlinePlayerCount <= 10 ?
-                getPlayersMethod1(lmEntity.getLivingEntity(), checkDistance) :
-                getPlayersMethod2(lmEntity.getLivingEntity(), checkDistance);
+                getPlayersOnServerNearMob(lmEntity.getLivingEntity(), checkDistance) :
+                getPlayersNearMob(lmEntity.getLivingEntity(), checkDistance);
 
         Player closestPlayer = null;
         for (final org.bukkit.entity.Player player : playerList) {
@@ -103,10 +104,14 @@ public class EntitySpawnListener implements Listener {
         }
 
         lmEntity.setPlayerForLevelling(closestPlayer);
+        final NametagVisibilityEnum nametagVisibilityEnum = main.rulesManager.getRule_CreatureNametagVisbility(lmEntity);
+        if ((nametagVisibilityEnum == NametagVisibilityEnum.TARGETED_AND_ATTACKED || nametagVisibilityEnum == NametagVisibilityEnum.TARGETED) &&
+            lmEntity.getLivingEntity().hasLineOfSight(closestPlayer))
+            main.levelManager.updateNametag(lmEntity);
     }
 
     @NotNull
-    private static List<org.bukkit.entity.Player> getPlayersMethod1(final LivingEntity mob, final int checkDistance){
+    private static List<Player> getPlayersOnServerNearMob(final @NotNull LivingEntity mob, final int checkDistance){
         final double maxDistanceSquared = checkDistance * 4;
 
         return mob.getWorld().getPlayers().stream()
@@ -120,7 +125,7 @@ public class EntitySpawnListener implements Listener {
     }
 
     @NotNull
-    private static List<org.bukkit.entity.Player> getPlayersMethod2(final LivingEntity mob, final int checkDistance){
+    public static List<Player> getPlayersNearMob(final @NotNull LivingEntity mob, final int checkDistance){
         return mob.getNearbyEntities(checkDistance, checkDistance, checkDistance).stream()
                 .filter(e -> e instanceof org.bukkit.entity.Player)
                 .filter(e -> !((org.bukkit.entity.Player) e).getGameMode().equals(GameMode.SPECTATOR))
@@ -130,7 +135,7 @@ public class EntitySpawnListener implements Listener {
                 .collect(Collectors.toList());
     }
 
-    private LevelledMobSpawnReason adaptVanillaSpawnReason(final CreatureSpawnEvent.SpawnReason spawnReason) {
+    private LevelledMobSpawnReason adaptVanillaSpawnReason(final CreatureSpawnEvent.@NotNull SpawnReason spawnReason) {
         return LevelledMobSpawnReason.valueOf(spawnReason.toString());
     }
 
@@ -198,7 +203,7 @@ public class EntitySpawnListener implements Listener {
     }
 
     @SuppressWarnings("ConstantConditions")
-    public void preprocessMob(final LivingEntityWrapper lmEntity, @NotNull final Event event){
+    public void preprocessMob(final @NotNull LivingEntityWrapper lmEntity, @NotNull final Event event){
         if (!lmEntity.reEvaluateLevel && lmEntity.isLevelled())
             return;
 

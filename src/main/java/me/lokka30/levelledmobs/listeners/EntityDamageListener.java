@@ -6,6 +6,7 @@ package me.lokka30.levelledmobs.listeners;
 
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.misc.*;
+import me.lokka30.levelledmobs.rules.NametagVisibilityEnum;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -37,7 +38,6 @@ public class EntityDamageListener implements Listener {
         if (event.getFinalDamage() == 0.0) return;
 
         if (event.getEntity() instanceof Player){
-            if (main.nametagTimerResetTime <= 0) return;
             if (!(event instanceof EntityDamageByEntityEvent))
                 return;
 
@@ -47,7 +47,14 @@ public class EntityDamageListener implements Listener {
                 return;
 
             final LivingEntityWrapper theHitter = LivingEntityWrapper.getInstance((LivingEntity) entityDamageByEntityEvent.getDamager(), main);
-            main.levelManager.updateNametag_WithDelay(theHitter, true);
+            final NametagVisibilityEnum nametagVisibilityEnum = main.rulesManager.getRule_CreatureNametagVisbility(theHitter);
+            final int nametagVisibleTime = main.rulesManager.getRule_nametagVisibleTime(theHitter);
+
+            if (nametagVisibleTime > 0 && (
+                nametagVisibilityEnum == NametagVisibilityEnum.TARGETED ||
+                nametagVisibilityEnum == NametagVisibilityEnum.TARGETED_AND_ATTACKED)) {
+                    main.levelManager.updateNametag_WithDelay(theHitter);
+            }
             theHitter.free();
             return;
         }
@@ -65,14 +72,19 @@ public class EntityDamageListener implements Listener {
             if (lmEntity.getMobLevel() < 0) lmEntity.reEvaluateLevel = true;
         }
 
-        boolean resetNametagTimer = false;
-        if (main.nametagTimerResetTime > 0L && event instanceof EntityDamageByEntityEvent){
+        final NametagVisibilityEnum nametagVisibilityEnum = main.rulesManager.getRule_CreatureNametagVisbility(lmEntity);
+        final int nametagVisibleTime = main.rulesManager.getRule_nametagVisibleTime(lmEntity);
+
+        if (nametagVisibleTime > 0 && event instanceof EntityDamageByEntityEvent && (
+                nametagVisibilityEnum == NametagVisibilityEnum.ATTACKED ||
+                nametagVisibilityEnum == NametagVisibilityEnum.TARGETED_AND_ATTACKED)){
             final EntityDamageByEntityEvent entityDamageByEntityEvent = (EntityDamageByEntityEvent) event;
-            resetNametagTimer = entityDamageByEntityEvent.getDamager() instanceof Player;
+            //TODO: update below
+            //resetNametagTimer = entityDamageByEntityEvent.getDamager() instanceof Player;
         }
 
         // Update their nametag with a 1 tick delay so that their health after the damage is shown
-        main.levelManager.updateNametag_WithDelay(lmEntity, resetNametagTimer);
+        main.levelManager.updateNametag_WithDelay(lmEntity);
         lmEntity.free();
     }
 

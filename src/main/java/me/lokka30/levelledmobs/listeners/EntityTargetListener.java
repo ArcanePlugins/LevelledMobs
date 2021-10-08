@@ -55,7 +55,7 @@ public class EntityTargetListener implements Listener {
         }
 
         // Update the nametag.
-        main.levelManager.updateNametag(lmEntity, true);
+        //main.levelManager.updateNametag(lmEntity);
         lmEntity.free();
     }
 }

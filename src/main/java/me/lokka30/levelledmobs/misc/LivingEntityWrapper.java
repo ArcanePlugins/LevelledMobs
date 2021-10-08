@@ -77,6 +77,7 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
     public Player playerForPermissionsCheck;
     private boolean groupsAreBuilt;
     private Player playerForLevelling;
+    public Set<Player> playersNeedingNametagCooldownUpdate;
     private Map<String, Boolean> prevChanceRuleResults;
     private final ReentrantLock cacheLock;
     private final static Object playerLock = new Object();
@@ -136,6 +137,7 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
         this.prevChanceRuleResults = null;
         this.sourceSpawnerName = null;
         this.playerForPermissionsCheck = null;
+        this.playersNeedingNametagCooldownUpdate = null;
 
         super.clearEntityData();
     }

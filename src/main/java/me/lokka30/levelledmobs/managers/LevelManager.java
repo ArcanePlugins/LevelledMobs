@@ -562,20 +562,20 @@ public class LevelManager implements LevelInterface {
         result = result.replace("%wg_region%", lmEntity.getWGRegionName());
         result = result.replace("%world%", lmEntity.getWorldName());
         result = result.replace("%location%", locationStr);
+        result = result.replace("%x%", lmEntity.getLivingEntity().getLocation().getBlockX() + "");
+        result = result.replace("%y%", lmEntity.getLivingEntity().getLocation().getBlockY() + "");
+        result = result.replace("%z%", lmEntity.getLivingEntity().getLocation().getBlockZ() + "");
+
         result = MessageUtils.colorizeAll(result);
 
         return result;
     }
 
     public void updateNametag_WithDelay(final @NotNull LivingEntityWrapper lmEntity){
-        updateNametag_WithDelay(lmEntity, false);
-    }
-
-    public void updateNametag_WithDelay(final @NotNull LivingEntityWrapper lmEntity, final boolean resetNametagTimer){
         final BukkitRunnable runnable = new BukkitRunnable() {
             @Override
             public void run() {
-                updateNametag(lmEntity, resetNametagTimer);
+                updateNametag(lmEntity);
 
                 lmEntity.free();
             }
@@ -586,20 +586,12 @@ public class LevelManager implements LevelInterface {
     }
 
     public void updateNametag(final LivingEntityWrapper lmEntity){
-        updateNametag(
-                lmEntity,
-                getNametag(lmEntity, false)
-        );
-    }
-
-    public void updateNametag(final LivingEntityWrapper lmEntity, final boolean resetNametagTimer){
         final QueueItem queueItem = new QueueItem(
                 lmEntity,
                 getNametag(lmEntity, false),
                 lmEntity.getLivingEntity().getWorld().getPlayers()
         );
 
-        queueItem.doResetNametagTimer = resetNametagTimer;
         main.nametagQueueManager_.addToQueue(queueItem);
     }
 
@@ -627,7 +619,7 @@ public class LevelManager implements LevelInterface {
     public void startNametagAutoUpdateTask() {
         Utils.logger.info("&fTasks: &7Starting async nametag auto update task...");
 
-        final long period = main.helperSettings.getInt(main.settingsCfg, "nametag-auto-update-task-period", 6); // run every ? seconds.
+        final long period = main.helperSettings.getInt(main.settingsCfg, "async-task-update-period", 6); // run every ? seconds.
 
         nametagAutoUpdateTask = new BukkitRunnable() {
             @Override
@@ -692,6 +684,19 @@ public class LevelManager implements LevelInterface {
                         if (!hasKey) entityToPlayer.put(lmEntity, players);
                     }
 
+                    boolean useResetTimer = false;
+                    final NametagVisibilityEnum nametagVisibilityEnum = main.rulesManager.getRule_CreatureNametagVisbility(lmEntity);
+                    final int nametagVisibleTime = main.rulesManager.getRule_nametagVisibleTime(lmEntity);
+                   if (nametagVisibleTime > 0 && (
+                            nametagVisibilityEnum == NametagVisibilityEnum.TARGETED ||
+                            nametagVisibilityEnum == NametagVisibilityEnum.TARGETED_AND_ATTACKED) &&
+                            lmEntity.getLivingEntity().hasLineOfSight(player)) {
+
+                        if (lmEntity.playersNeedingNametagCooldownUpdate == null)
+                            lmEntity.playersNeedingNametagCooldownUpdate = new HashSet<>();
+                        lmEntity.playersNeedingNametagCooldownUpdate.add(player);
+                    }
+
                     checkLevelledEntity(lmEntity, player);
                 } else {
                     boolean wasBabyMob;
@@ -712,6 +717,7 @@ public class LevelManager implements LevelInterface {
                 }
             }
         }
+
 
         for (final LivingEntityWrapper lmEntity : entityToPlayer.keySet()) {
             if (entityToPlayer.containsKey(lmEntity))
@@ -1131,6 +1137,11 @@ public class LevelManager implements LevelInterface {
         lmEntity.inUseCount.getAndIncrement();
         applyAttribs.runTask(main);
 
+        final NametagVisibilityEnum nametagVisibilityEnum = main.rulesManager.getRule_CreatureNametagVisbility(lmEntity);
+        if (nametagVisibilityEnum == NametagVisibilityEnum.TARGETED || nametagVisibilityEnum == NametagVisibilityEnum.TARGETED_AND_ATTACKED){
+            //getPlayersNearMob(lmEntity);
+        }
+
         if (!skipLM_Nametag)
             main.levelManager.updateNametag_WithDelay(lmEntity);
         main.levelManager.applyLevelledEquipment(lmEntity, lmEntity.getMobLevel());
@@ -1150,6 +1161,19 @@ public class LevelManager implements LevelInterface {
         if (lmEntity.isBabyMob()) sb.append(" (baby)");
 
         Utils.debugLog(main, DebugType.APPLY_LEVEL_SUCCESS, sb.toString());
+    }
+
+    private void getPlayersNearMob(final @NotNull LivingEntityWrapper lmEntity){
+        final int checkDistance = main.helperSettings.getInt(main.settingsCfg, "async-task-max-blocks-from-player", 100);
+        final List<Player> players = EntitySpawnListener.getPlayersNearMob(lmEntity.getLivingEntity(), checkDistance);
+
+        for (final Player player : players){
+            if (lmEntity.getLivingEntity().hasLineOfSight(player)){
+                if (lmEntity.playersNeedingNametagCooldownUpdate == null)
+                    lmEntity.playersNeedingNametagCooldownUpdate = new HashSet<>();
+                lmEntity.playersNeedingNametagCooldownUpdate.add(player);
+            }
+        }
     }
 
     /**

@@ -24,6 +24,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.WeakHashMap;
 
 /**
  * Listens for when a player joins, leaves or changes worlds so that
@@ -42,6 +43,9 @@ public class PlayerJoinListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onJoin(@NotNull final PlayerJoinEvent event) {
+        synchronized (main.nametagTimer_Lock){
+            main.nametagCooldownQueue.put(event.getPlayer(), new WeakHashMap<>());
+        }
         parseCompatibilityChecker(event.getPlayer());
         parseUpdateChecker(event.getPlayer());
 
@@ -59,6 +63,7 @@ public class PlayerJoinListener implements Listener {
 
         main.companion.spawner_CopyIds.remove(event.getPlayer().getUniqueId());
         main.companion.spawner_InfoIds.remove(event.getPlayer().getUniqueId());
+        main.nametagCooldownQueue.remove(event.getPlayer());
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)

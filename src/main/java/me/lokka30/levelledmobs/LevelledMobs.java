@@ -18,6 +18,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -56,7 +57,6 @@ public class LevelledMobs extends JavaPlugin {
     public YmlParsingHelper helperSettings;
     public int playerLevellingMinRelevelTime;
     public int maxPlayersRecorded;
-    public long nametagTimerResetTime;
 
     // Configuration
     public YamlConfiguration settingsCfg;
@@ -71,7 +71,8 @@ public class LevelledMobs extends JavaPlugin {
     public int incompatibilitiesAmount;
     private long loadTime;
     public WeakHashMap<LivingEntity, Instant> playerLevellingEntities;
-    public WeakHashMap<LivingEntity, Instant> nametagTimer;
+    public Map<Player, WeakHashMap<LivingEntity, Instant>> nametagCooldownQueue;
+    //public WeakHashMap<LivingEntity, Set<Player>> nametagCooldownPlayerMap;
     public Stack<LivingEntityWrapper> cacheCheck;
 
     @Override
@@ -90,7 +91,8 @@ public class LevelledMobs extends JavaPlugin {
 
         this.namespaced_keys = new Namespaced_Keys(this);
         this.playerLevellingEntities = new WeakHashMap<>();
-        this.nametagTimer = new WeakHashMap<>();
+        this.nametagCooldownQueue = new HashMap<>();
+        //this.nametagCooldownPlayerMap = new WeakHashMap<>();
         this.helperSettings = new YmlParsingHelper();
         this.random = new Random();
         this.customMobGroups = new TreeMap<>();

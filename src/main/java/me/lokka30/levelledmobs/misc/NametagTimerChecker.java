@@ -3,6 +3,7 @@ package me.lokka30.levelledmobs.misc;
 
 import me.lokka30.levelledmobs.LevelledMobs;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -25,26 +26,28 @@ public class NametagTimerChecker {
     private final LevelledMobs main;
 
     public void checkNametags(){
-        if (main.nametagTimerResetTime <= 0)
-            return;
-
         final List<LivingEntity> entitiesToRemove = new LinkedList<>();
 
         synchronized (main.nametagTimer_Lock){
-            for (final LivingEntity livingEntity : main.nametagTimer.keySet()){
-                final Duration duration = Duration.between(main.nametagTimer.get(livingEntity), Instant.now());
-                if (duration.toMillis() < main.nametagTimerResetTime)
-                    continue;
+            for (final Player player : main.nametagCooldownQueue.keySet()){
+                for (final LivingEntity livingEntity : main.nametagCooldownQueue.get(player).keySet()){
+                    if (!livingEntity.isValid()) continue;
 
-                final LivingEntityWrapper lmEntity = LivingEntityWrapper.getInstance(livingEntity, main);
-                main.levelManager.updateNametag(lmEntity);
+                    final Duration timeDuration = Duration.between(main.nametagCooldownQueue.get(player).get(livingEntity), Instant.now());
+                    if (timeDuration.toMillis() >= 8000)
+                        entitiesToRemove.add(livingEntity);
+                }
 
-                lmEntity.free();
-                entitiesToRemove.add(livingEntity);
+                for (final LivingEntity livingEntity : entitiesToRemove) {
+                    main.nametagCooldownQueue.get(player).remove(livingEntity);
+
+                    final LivingEntityWrapper lmEntity = LivingEntityWrapper.getInstance(livingEntity, main);
+                    main.levelManager.updateNametag(lmEntity, main.levelManager.getNametag(lmEntity, false), List.of(player));
+                    lmEntity.free();
+                }
+
+                entitiesToRemove.clear();
             }
-
-            for (final LivingEntity livingEntity : entitiesToRemove)
-                main.nametagTimer.remove(livingEntity);
         }
     }
 }

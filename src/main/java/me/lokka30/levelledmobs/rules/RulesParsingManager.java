@@ -127,6 +127,7 @@ public class RulesParsingManager {
         parsingInfo.babyMobsInheritAdultSetting = true;
         parsingInfo.mobLevelInheritance = true;
         parsingInfo.creeperMaxDamageRadius = 5;
+        parsingInfo.nametagVisibleTime = 4000;
 
         if (cs == null){
             Utils.logger.info("default-rule section was null");
@@ -575,11 +576,24 @@ public class RulesParsingManager {
         parsingInfo.customDrop_DropTableId = ymlHelper.getString(cs,"use-droptable-id", parsingInfo.customDrop_DropTableId);
         parsingInfo.nametag = ymlHelper.getString(cs,"nametag", parsingInfo.nametag);
         parsingInfo.nametag_CreatureDeath = ymlHelper.getString(cs,"creature-death-nametag", parsingInfo.nametag_CreatureDeath);
-        parsingInfo.CreatureNametagAlwaysVisible = ymlHelper.getBoolean2(cs,"creature-nametag-always-visible", parsingInfo.CreatureNametagAlwaysVisible);
         parsingInfo.sunlightBurnAmount = ymlHelper.getDouble2(cs, "sunlight-intensity", parsingInfo.sunlightBurnAmount);
         parsingInfo.lowerMobLevelBiasFactor = ymlHelper.getInt2(cs, "lower-mob-level-bias-factor", parsingInfo.lowerMobLevelBiasFactor);
         parsingInfo.mobNBT_Data = ymlHelper.getString(cs, "nbt-data", parsingInfo.mobNBT_Data);
         parsingInfo.passengerMatchLevel = ymlHelper.getBoolean2(cs, "passenger-match-level", parsingInfo.passengerMatchLevel);
+        parsingInfo.nametagVisibleTime = ymlHelper.getInt2(cs, "nametag-visible-time", parsingInfo.nametagVisibleTime);
+
+        final boolean creatureNametagAlwaysVisible_BackwardsCompat = ymlHelper.getBoolean(cs, "creature-nametag-always-visible");
+        final String nametagVisibility = ymlHelper.getString(cs, "nametag-visibility-method", parsingInfo.nametagVisibilityEnum.toString());
+        if (!Utils.isNullOrEmpty(nametagVisibility)){
+            try {
+                parsingInfo.nametagVisibilityEnum = NametagVisibilityEnum.valueOf(nametagVisibility.toUpperCase());
+            }
+            catch (Exception ignored){
+                Utils.logger.warning("Invalid value for nametag-visibility-method: " + nametagVisibility + ", in rule: " + parsingInfo.getRuleName());
+            }
+        }
+        else if (creatureNametagAlwaysVisible_BackwardsCompat)
+            parsingInfo.nametagVisibilityEnum = NametagVisibilityEnum.ALWAYS_ON;
     }
 
     private void parseConditions(final ConfigurationSection cs){

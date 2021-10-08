@@ -353,15 +353,32 @@ public class RulesManager {
         return indicator;
     }
 
-    public boolean getRule_CreatureNametagAlwaysVisible(@NotNull final LivingEntityWrapper lmEntity){
-        boolean creatureNametagAlwaysVisible = false;
+    public NametagVisibilityEnum getRule_CreatureNametagVisbility(@NotNull final LivingEntityWrapper lmEntity){
+        NametagVisibilityEnum result = NametagVisibilityEnum.TARGETED_AND_ATTACKED;
+        int visibleTime = 0;
 
         for (final RuleInfo ruleInfo : lmEntity.getApplicableRules()){
-            if (ruleInfo.CreatureNametagAlwaysVisible != null)
-                creatureNametagAlwaysVisible = ruleInfo.CreatureNametagAlwaysVisible;
+            if (ruleInfo.nametagVisibilityEnum != NametagVisibilityEnum.NOT_SPECIFIED)
+                result = ruleInfo.nametagVisibilityEnum;
+            if (ruleInfo.nametagVisibleTime != null)
+                visibleTime = ruleInfo.nametagVisibleTime;
         }
 
-        return creatureNametagAlwaysVisible;
+        if (visibleTime <= 0 && (result == NametagVisibilityEnum.ATTACKED || result == NametagVisibilityEnum.TARGETED || result == NametagVisibilityEnum.TARGETED_AND_ATTACKED))
+            result = NametagVisibilityEnum.WITHIN_REACH;
+
+        return result;
+    }
+
+    public int getRule_nametagVisibleTime(@NotNull final LivingEntityWrapper lmEntity){
+        int result = 8000;
+
+        for (final RuleInfo ruleInfo : lmEntity.getApplicableRules()){
+            if (ruleInfo.nametagVisibleTime != null)
+                result = ruleInfo.nametagVisibleTime;
+        }
+
+        return result;
     }
 
     @Nullable

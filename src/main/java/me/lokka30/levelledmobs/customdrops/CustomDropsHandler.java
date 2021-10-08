@@ -113,7 +113,7 @@ public class CustomDropsHandler {
                     processingInfo.addDebugMessage(String.format("&7%s (%s) - didn't make overall chance", lmEntity.getTypeName(), lmEntity.getMobLevel()));
                 else
                     processingInfo.addDebugMessage(String.format("&7%s (%s) - didn't make overall chance permission for player: &b%s &r",
-                            lmEntity.getTypeName(), lmEntity.getMobLevel(), processingInfo.mobKiller.getName()));
+                            lmEntity.getTypeName(), lmEntity.getMobLevel(),  processingInfo.mobKiller == null ? "(null)" : processingInfo.mobKiller.getName()));
                 processingInfo.writeAnyDebugMessages();
             }
             return processingInfo.hasOverride ?

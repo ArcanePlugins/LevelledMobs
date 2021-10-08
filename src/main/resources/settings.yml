@@ -78,8 +78,6 @@ assert-entity-validity-with-nametag-packets: true
 # ||  a 1 tick delay in addition to this setting.
 mob-process-delay: 0
 
-nametag-always-visible-time: 8000
-
 # ||  ADVANCED USERS ONLY
 # ||  Do not touch this unless a LM developer tells you to.
 # ||  Ensure mobs are levelled on chunk load?

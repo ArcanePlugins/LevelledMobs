@@ -34,5 +34,4 @@ public class QueueItem {
     public List<Player> players;
     public String nametag;
     public final boolean isMobProcessQueue;
-    public boolean doResetNametagTimer;
 }
