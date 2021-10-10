@@ -84,7 +84,7 @@ public class NametagQueueManager {
                 continue;
             }
 
-            final int nametagTimerResetTime = main.rulesManager.getRule_nametagVisibleTime(item.lmEntity);
+            final int nametagTimerResetTime = item.lmEntity.getNametagCooldownTime();
 
             if (nametagTimerResetTime > 0) {
                 synchronized (NametagTimerChecker.nametagTimer_Lock) {
@@ -95,6 +95,7 @@ public class NametagQueueManager {
                             if (!main.nametagTimerChecker.nametagCooldownQueue.containsKey(player)) continue;
 
                             main.nametagTimerChecker.nametagCooldownQueue.get(player).put(item.lmEntity.getLivingEntity(), Instant.now());
+                            main.nametagTimerChecker.cooldownTimes.put(item.lmEntity.getLivingEntity(), item.lmEntity.getNametagCooldownTime());
                         }
 
                         // if any players already have a cooldown on this mob then don't remove the cooldown

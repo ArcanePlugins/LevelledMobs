@@ -583,7 +583,6 @@ public class RulesParsingManager {
         parsingInfo.passengerMatchLevel = ymlHelper.getBoolean2(cs, "passenger-match-level", parsingInfo.passengerMatchLevel);
         parsingInfo.nametagVisibleTime = ymlHelper.getInt2(cs, "nametag-visible-time", parsingInfo.nametagVisibleTime);
 
-        final boolean creatureNametagAlwaysVisible_BackwardsCompat = ymlHelper.getBoolean(cs, "creature-nametag-always-visible");
         final Set<String> nametagVisibility = ymlHelper.getStringSet(cs, "nametag-visibility-method");
         final List<NametagVisibilityEnum> nametagVisibilityEnums = new LinkedList<>();
         for (final String nametagVisEnum : nametagVisibility) {

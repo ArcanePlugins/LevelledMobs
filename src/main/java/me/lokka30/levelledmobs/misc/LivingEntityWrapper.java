@@ -76,6 +76,7 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
     public boolean reEvaluateLevel;
     public Player playerForPermissionsCheck;
     private boolean groupsAreBuilt;
+    private int nametagCooldownTime;
     private Player playerForLevelling;
     public Set<Player> playersNeedingNametagCooldownUpdate;
     private Map<String, Boolean> prevChanceRuleResults;
@@ -138,6 +139,7 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
         this.sourceSpawnerName = null;
         this.playerForPermissionsCheck = null;
         this.playersNeedingNametagCooldownUpdate = null;
+        this.nametagCooldownTime = 0;
 
         super.clearEntityData();
     }
@@ -157,6 +159,7 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
                     main.levelInterface.getLevelOfMob(livingEntity) : null;
 
             this.spawnedWGRegions = ExternalCompatibilityManager.getWGRegionsAtLocation(this);
+            this.nametagCooldownTime = main.rulesManager.getRule_nametagVisibleTime(this);
 
             this.hasCache = true;
             // the lines below must remain after hasCache = true to prevent stack overflow
@@ -258,6 +261,12 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
         }
 
         return this.applicableGroups;
+    }
+
+    public int getNametagCooldownTime(){
+        if (!hasCache) buildCache();
+
+        return this.nametagCooldownTime;
     }
 
     @Nullable

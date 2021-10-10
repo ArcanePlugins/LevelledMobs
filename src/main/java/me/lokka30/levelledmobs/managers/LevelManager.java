@@ -684,7 +684,7 @@ public class LevelManager implements LevelInterface {
 
                     boolean useResetTimer = false;
                     final List<NametagVisibilityEnum> nametagVisibilityEnums = main.rulesManager.getRule_CreatureNametagVisbility(lmEntity);
-                    final int nametagVisibleTime = main.rulesManager.getRule_nametagVisibleTime(lmEntity);
+                    final int nametagVisibleTime = lmEntity.getNametagCooldownTime();
                    if (nametagVisibleTime > 0 &&
                             nametagVisibilityEnums.contains(NametagVisibilityEnum.TARGETED) &&
                             lmEntity.getLivingEntity().hasLineOfSight(player)) {

@@ -51,7 +51,7 @@ public class EntityDamageListener implements Listener {
 
             final LivingEntityWrapper theHitter = LivingEntityWrapper.getInstance((LivingEntity) entityDamageByEntityEvent.getDamager(), main);
             final List<NametagVisibilityEnum> nametagVisibilityEnums = main.rulesManager.getRule_CreatureNametagVisbility(theHitter);
-            final int nametagVisibleTime = main.rulesManager.getRule_nametagVisibleTime(theHitter);
+            final int nametagVisibleTime = theHitter.getNametagCooldownTime();
 
             if (nametagVisibleTime > 0 &&
                 nametagVisibilityEnums.contains(NametagVisibilityEnum.ATTACKED)) {
@@ -78,7 +78,7 @@ public class EntityDamageListener implements Listener {
         }
 
         final List<NametagVisibilityEnum> nametagVisibilityEnums = main.rulesManager.getRule_CreatureNametagVisbility(lmEntity);
-        final int nametagVisibleTime = main.rulesManager.getRule_nametagVisibleTime(lmEntity);
+        final int nametagVisibleTime = lmEntity.getNametagCooldownTime();
 
         if (nametagVisibleTime > 0 && event instanceof EntityDamageByEntityEvent &&
                 nametagVisibilityEnums.contains(NametagVisibilityEnum.ATTACKED)){

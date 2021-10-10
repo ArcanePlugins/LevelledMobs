@@ -22,10 +22,12 @@ public class NametagTimerChecker {
         this.main = main;
         this.nametagCooldownQueue = new HashMap<>();
         this.entityTargetMap = new WeakHashMap<>();
+        this.cooldownTimes = new WeakHashMap<>();
     }
 
     private final LevelledMobs main;
     public final Map<Player, WeakHashMap<LivingEntity, Instant>> nametagCooldownQueue;
+    public final WeakHashMap<LivingEntity, Integer> cooldownTimes;
     public final WeakHashMap<LivingEntity, Player> entityTargetMap;
     public final static Object nametagTimer_Lock = new Object();
     public final static Object entityTarget_Lock = new Object();
@@ -39,7 +41,8 @@ public class NametagTimerChecker {
                     if (!livingEntity.isValid()) continue;
 
                     final Duration timeDuration = Duration.between(nametagCooldownQueue.get(player).get(livingEntity), Instant.now());
-                    if (timeDuration.toMillis() >= 8000)
+                    final int cooldownTime = cooldownTimes.get(livingEntity);
+                    if (timeDuration.toMillis() >= cooldownTime)
                         entitiesToRemove.add(livingEntity);
                 }
 
