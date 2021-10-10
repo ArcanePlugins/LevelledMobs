@@ -4,8 +4,8 @@ public enum NametagVisibilityEnum {
     NOT_SPECIFIED,
     DISABLED,
     ALWAYS_ON,
-    WITHIN_REACH,
+    MELEE,
     TARGETED,
     ATTACKED,
-    TARGETED_AND_ATTACKED
+    TRACKING
 }

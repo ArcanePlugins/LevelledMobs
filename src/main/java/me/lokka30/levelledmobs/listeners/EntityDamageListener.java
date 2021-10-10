@@ -15,6 +15,9 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.HashSet;
+import java.util.List;
+
 /**
  * Listens for when an entity is damaged so LevelledMobs can apply
  * a multiplier to the damage amount
@@ -47,12 +50,14 @@ public class EntityDamageListener implements Listener {
                 return;
 
             final LivingEntityWrapper theHitter = LivingEntityWrapper.getInstance((LivingEntity) entityDamageByEntityEvent.getDamager(), main);
-            final NametagVisibilityEnum nametagVisibilityEnum = main.rulesManager.getRule_CreatureNametagVisbility(theHitter);
+            final List<NametagVisibilityEnum> nametagVisibilityEnums = main.rulesManager.getRule_CreatureNametagVisbility(theHitter);
             final int nametagVisibleTime = main.rulesManager.getRule_nametagVisibleTime(theHitter);
 
-            if (nametagVisibleTime > 0 && (
-                nametagVisibilityEnum == NametagVisibilityEnum.TARGETED ||
-                nametagVisibilityEnum == NametagVisibilityEnum.TARGETED_AND_ATTACKED)) {
+            if (nametagVisibleTime > 0 &&
+                nametagVisibilityEnums.contains(NametagVisibilityEnum.ATTACKED)) {
+                    if (theHitter.playersNeedingNametagCooldownUpdate == null)
+                        theHitter.playersNeedingNametagCooldownUpdate = new HashSet<>();
+                    theHitter.playersNeedingNametagCooldownUpdate.add((Player) event.getEntity());
                     main.levelManager.updateNametag_WithDelay(theHitter);
             }
             theHitter.free();
@@ -72,15 +77,19 @@ public class EntityDamageListener implements Listener {
             if (lmEntity.getMobLevel() < 0) lmEntity.reEvaluateLevel = true;
         }
 
-        final NametagVisibilityEnum nametagVisibilityEnum = main.rulesManager.getRule_CreatureNametagVisbility(lmEntity);
+        final List<NametagVisibilityEnum> nametagVisibilityEnums = main.rulesManager.getRule_CreatureNametagVisbility(lmEntity);
         final int nametagVisibleTime = main.rulesManager.getRule_nametagVisibleTime(lmEntity);
 
-        if (nametagVisibleTime > 0 && event instanceof EntityDamageByEntityEvent && (
-                nametagVisibilityEnum == NametagVisibilityEnum.ATTACKED ||
-                nametagVisibilityEnum == NametagVisibilityEnum.TARGETED_AND_ATTACKED)){
+        if (nametagVisibleTime > 0 && event instanceof EntityDamageByEntityEvent &&
+                nametagVisibilityEnums.contains(NametagVisibilityEnum.ATTACKED)){
             final EntityDamageByEntityEvent entityDamageByEntityEvent = (EntityDamageByEntityEvent) event;
-            //TODO: update below
-            //resetNametagTimer = entityDamageByEntityEvent.getDamager() instanceof Player;
+
+            if (entityDamageByEntityEvent.getDamager() instanceof Player){
+                if (lmEntity.playersNeedingNametagCooldownUpdate == null)
+                    lmEntity.playersNeedingNametagCooldownUpdate = new HashSet<>();
+
+                lmEntity.playersNeedingNametagCooldownUpdate.add((Player) entityDamageByEntityEvent.getDamager());
+            }
         }
 
         // Update their nametag with a 1 tick delay so that their health after the damage is shown

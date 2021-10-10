@@ -353,25 +353,23 @@ public class RulesManager {
         return indicator;
     }
 
-    public NametagVisibilityEnum getRule_CreatureNametagVisbility(@NotNull final LivingEntityWrapper lmEntity){
-        NametagVisibilityEnum result = NametagVisibilityEnum.TARGETED_AND_ATTACKED;
-        int visibleTime = 0;
+    @NotNull
+    public List<NametagVisibilityEnum> getRule_CreatureNametagVisbility(@NotNull final LivingEntityWrapper lmEntity){
+        List<NametagVisibilityEnum> result = null;
 
         for (final RuleInfo ruleInfo : lmEntity.getApplicableRules()){
-            if (ruleInfo.nametagVisibilityEnum != NametagVisibilityEnum.NOT_SPECIFIED)
+            if (ruleInfo.nametagVisibilityEnum != null)
                 result = ruleInfo.nametagVisibilityEnum;
-            if (ruleInfo.nametagVisibleTime != null)
-                visibleTime = ruleInfo.nametagVisibleTime;
         }
 
-        if (visibleTime <= 0 && (result == NametagVisibilityEnum.ATTACKED || result == NametagVisibilityEnum.TARGETED || result == NametagVisibilityEnum.TARGETED_AND_ATTACKED))
-            result = NametagVisibilityEnum.WITHIN_REACH;
-
-        return result;
+        if (result == null || result.isEmpty())
+            return List.of(NametagVisibilityEnum.ATTACKED, NametagVisibilityEnum.TARGETED, NametagVisibilityEnum.TRACKING);
+        else
+            return result;
     }
 
     public int getRule_nametagVisibleTime(@NotNull final LivingEntityWrapper lmEntity){
-        int result = 8000;
+        int result = 4000;
 
         for (final RuleInfo ruleInfo : lmEntity.getApplicableRules()){
             if (ruleInfo.nametagVisibleTime != null)

@@ -215,14 +215,13 @@ public class CustomDropsHandler {
     }
 
     private boolean checkOverallPermissions(@NotNull final CustomDropProcessingInfo info){
-        if (info.mobKiller == null) return false;
-
         boolean hadAnyPerms = false;
         for (final CustomDropInstance dropInstance : info.allDropInstances) {
             if (dropInstance.overallPermissions.isEmpty()) continue;
 
             hadAnyPerms = true;
             for (final String perm : dropInstance.overallPermissions) {
+                if (info.mobKiller == null) continue;
                 final String checkPerm = "LevelledMobs.permission." + perm;
                 if (info.mobKiller.hasPermission(checkPerm))
                     return true;

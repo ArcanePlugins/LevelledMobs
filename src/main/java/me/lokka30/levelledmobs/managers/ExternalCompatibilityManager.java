@@ -131,7 +131,9 @@ public class ExternalCompatibilityManager {
 
         if (!p.getDescription().getVersion().startsWith("4.12")) {
             final NamespacedKey mmKey = new NamespacedKey(p, "type");
-            return lmEntity.getPDC().has(mmKey, PersistentDataType.STRING);
+            synchronized (lmEntity.getLivingEntity().getPersistentDataContainer()) {
+                return lmEntity.getPDC().has(mmKey, PersistentDataType.STRING);
+            }
         }
 
         if (lmEntity.getLivingEntity().hasMetadata("mythicmob")){
@@ -154,12 +156,13 @@ public class ExternalCompatibilityManager {
         if (!p.getDescription().getVersion().startsWith("4")) {
             // MM version 5 must use this method for internal name detection
             final NamespacedKey mmKey = new NamespacedKey(p, "type");
-            if (lmEntity.getPDC().has(mmKey, PersistentDataType.STRING)) {
-                final String type = lmEntity.getPDC().get(mmKey, PersistentDataType.STRING);
-                return type == null ? "" : type;
+            synchronized (lmEntity.getLivingEntity().getPersistentDataContainer()) {
+                if (lmEntity.getPDC().has(mmKey, PersistentDataType.STRING)) {
+                    final String type = lmEntity.getPDC().get(mmKey, PersistentDataType.STRING);
+                    return type == null ? "" : type;
+                } else
+                    return "";
             }
-            else
-                return "";
         }
 
         // MM version 4 detection below:
@@ -229,8 +232,10 @@ public class ExternalCompatibilityManager {
         if (dangerousCavesMobTypeKey == null)
             dangerousCavesMobTypeKey = new NamespacedKey(plugin, "mob-type");
 
-        if (!lmEntity.getPDC().has(dangerousCavesMobTypeKey, PersistentDataType.STRING))
-            return false;
+        synchronized (lmEntity.getLivingEntity().getPersistentDataContainer()) {
+            if (!lmEntity.getPDC().has(dangerousCavesMobTypeKey, PersistentDataType.STRING))
+                return false;
+        }
 
         lmEntity.setMobExternalType(ExternalCompatibility.DANGEROUS_CAVES);
         return true;
@@ -248,8 +253,10 @@ public class ExternalCompatibilityManager {
         if (ecoBossesKey == null)
             ecoBossesKey = new NamespacedKey(plugin, "boss");
 
-        if (!lmEntity.getPDC().has(ecoBossesKey, PersistentDataType.STRING))
-            return false;
+        synchronized (lmEntity.getLivingEntity().getPersistentDataContainer()) {
+            if (!lmEntity.getPDC().has(ecoBossesKey, PersistentDataType.STRING))
+                return false;
+        }
 
         lmEntity.setMobExternalType(ExternalCompatibility.ECO_BOSSES);
         return true;

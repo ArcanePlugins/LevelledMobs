@@ -94,11 +94,6 @@ public class LevelledMobsCommand implements CommandExecutor, TabCompleter {
     }
 
     private void test(@NotNull final CommandSender sender, final String @NotNull [] args) {
-        final String test = String.format("size: %s\ntest: %s",
-                main.nametagCooldownQueue.size(),
-                main.nametagCooldownQueue
-        );
-        Utils.logger.info(test);
     }
 
     private void sendMainUsage(@NotNull final CommandSender sender, final String label) {

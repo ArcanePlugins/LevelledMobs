@@ -360,7 +360,7 @@ default-rule:
 
     creature-death-nametag: '%tiered%Lvl %mob-lvl%&8 | &f%entity-name%'
     nametag-visible-time: 4000
-    nametag-visibility-method: TARGETED_AND_ATTACKED
+    nametag-visibility-method: ['TARGETED', 'ATTACKED', 'TRACKING']
 
     baby-mobs-inherit-adult-setting: true
     level-inheritance: true

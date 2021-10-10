@@ -104,8 +104,8 @@ public class EntitySpawnListener implements Listener {
         }
 
         lmEntity.setPlayerForLevelling(closestPlayer);
-        final NametagVisibilityEnum nametagVisibilityEnum = main.rulesManager.getRule_CreatureNametagVisbility(lmEntity);
-        if ((nametagVisibilityEnum == NametagVisibilityEnum.TARGETED_AND_ATTACKED || nametagVisibilityEnum == NametagVisibilityEnum.TARGETED) &&
+        final List<NametagVisibilityEnum> nametagVisibilityEnums = main.rulesManager.getRule_CreatureNametagVisbility(lmEntity);
+        if (nametagVisibilityEnums.contains(NametagVisibilityEnum.TARGETED) &&
             lmEntity.getLivingEntity().hasLineOfSight(closestPlayer))
             main.levelManager.updateNametag(lmEntity);
     }

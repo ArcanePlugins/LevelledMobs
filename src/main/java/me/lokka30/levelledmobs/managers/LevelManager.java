@@ -645,15 +645,13 @@ public class LevelManager implements LevelInterface {
     }
 
     public void startNametagTimer(){
-        final NametagTimerChecker nametagTimerChecker = new NametagTimerChecker(main);
-
         nametagTimerTask = new BukkitRunnable() {
             @Override
             public void run() {
                 final BukkitRunnable runnable = new BukkitRunnable() {
                     @Override
                     public void run() {
-                        nametagTimerChecker.checkNametags();
+                        main.nametagTimerChecker.checkNametags();
                     }
                 };
 
@@ -685,11 +683,10 @@ public class LevelManager implements LevelInterface {
                     }
 
                     boolean useResetTimer = false;
-                    final NametagVisibilityEnum nametagVisibilityEnum = main.rulesManager.getRule_CreatureNametagVisbility(lmEntity);
+                    final List<NametagVisibilityEnum> nametagVisibilityEnums = main.rulesManager.getRule_CreatureNametagVisbility(lmEntity);
                     final int nametagVisibleTime = main.rulesManager.getRule_nametagVisibleTime(lmEntity);
-                   if (nametagVisibleTime > 0 && (
-                            nametagVisibilityEnum == NametagVisibilityEnum.TARGETED ||
-                            nametagVisibilityEnum == NametagVisibilityEnum.TARGETED_AND_ATTACKED) &&
+                   if (nametagVisibleTime > 0 &&
+                            nametagVisibilityEnums.contains(NametagVisibilityEnum.TARGETED) &&
                             lmEntity.getLivingEntity().hasLineOfSight(player)) {
 
                         if (lmEntity.playersNeedingNametagCooldownUpdate == null)
@@ -1033,6 +1030,8 @@ public class LevelManager implements LevelInterface {
      * @param additionalLevelInformation used to determine the source event
      */
     public void applyLevelToMob(@NotNull final LivingEntityWrapper lmEntity, int level, final boolean isSummoned, final boolean bypassLimits, @NotNull final HashSet<AdditionalLevelInformation> additionalLevelInformation) {
+        // this thread runs in async.  if adding any functions make sure they can be run in this fashion
+
         if (level <= 0)
             level = generateLevel(lmEntity);
 
@@ -1137,10 +1136,9 @@ public class LevelManager implements LevelInterface {
         lmEntity.inUseCount.getAndIncrement();
         applyAttribs.runTask(main);
 
-        final NametagVisibilityEnum nametagVisibilityEnum = main.rulesManager.getRule_CreatureNametagVisbility(lmEntity);
-        if (nametagVisibilityEnum == NametagVisibilityEnum.TARGETED || nametagVisibilityEnum == NametagVisibilityEnum.TARGETED_AND_ATTACKED){
-            //getPlayersNearMob(lmEntity);
-        }
+//        final List<NametagVisibilityEnum> nametagVisibilityEnums = main.rulesManager.getRule_CreatureNametagVisbility(lmEntity);
+//        if (nametagVisibilityEnums.contains(NametagVisibilityEnum.TARGETED))
+//            getPlayersNearMob(lmEntity);
 
         if (!skipLM_Nametag)
             main.levelManager.updateNametag_WithDelay(lmEntity);

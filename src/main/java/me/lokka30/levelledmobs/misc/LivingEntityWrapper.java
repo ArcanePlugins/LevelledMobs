@@ -241,7 +241,6 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
         return this.prevChanceRuleResults;
     }
 
-    @NotNull
     public LivingEntity getLivingEntity(){
         return this.livingEntity;
     }

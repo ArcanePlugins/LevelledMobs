@@ -648,6 +648,7 @@ public class CustomDropsParser {
             final CustomDropInstance dropInstance = handler.customDropsitems_groups.get(group);
             final String override = dropInstance.overrideStockDrops ? " (override)" : "";
             final String overallChance = dropInstance.overallChance != null ? " (overall_chance: " + dropInstance.overallChance + ")" : "";
+            if (sbMain.length() > 0) sbMain.append(System.lineSeparator());
             sbMain.append("group: ");
             sbMain.append(group);
             sbMain.append(override);

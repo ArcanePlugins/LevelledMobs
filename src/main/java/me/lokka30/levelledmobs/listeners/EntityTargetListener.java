@@ -6,7 +6,11 @@ package me.lokka30.levelledmobs.listeners;
 
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
+import me.lokka30.levelledmobs.misc.NametagTimerChecker;
 import me.lokka30.levelledmobs.misc.QueueItem;
+import me.lokka30.levelledmobs.misc.Utils;
+import me.lokka30.levelledmobs.rules.NametagVisibilityEnum;
+import org.bukkit.Utility;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -37,9 +41,17 @@ public class EntityTargetListener implements Listener {
      */
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void onTarget(@NotNull final EntityTargetEvent event) {
+        if (!(event.getEntity() instanceof LivingEntity)) return;
+
+        if (event.getTarget() == null){
+            synchronized (NametagTimerChecker.entityTarget_Lock){
+                main.nametagTimerChecker.entityTargetMap.remove((LivingEntity) event.getEntity());
+            }
+            return;
+        }
 
         // Must target a player and must be a living entity
-        if (!(event.getTarget() instanceof Player) || !(event.getEntity() instanceof LivingEntity)) return;
+        if (!(event.getTarget() instanceof Player)) return;
 
         final LivingEntityWrapper lmEntity = LivingEntityWrapper.getInstance((LivingEntity) event.getEntity(), main);
 
@@ -52,10 +64,17 @@ public class EntityTargetListener implements Listener {
 
             if (lmEntity.getMobLevel() < 0) lmEntity.reEvaluateLevel = true;
             main._mobsQueueManager.addToQueue(new QueueItem(lmEntity, event));
+            return;
+        }
+
+        if (main.rulesManager.getRule_CreatureNametagVisbility(lmEntity).contains(NametagVisibilityEnum.TRACKING)) {
+            synchronized (NametagTimerChecker.entityTarget_Lock) {
+                main.nametagTimerChecker.entityTargetMap.put(lmEntity.getLivingEntity(), (Player) event.getTarget());
+            }
         }
 
         // Update the nametag.
-        //main.levelManager.updateNametag(lmEntity);
+        main.levelManager.updateNametag(lmEntity);
         lmEntity.free();
     }
 }

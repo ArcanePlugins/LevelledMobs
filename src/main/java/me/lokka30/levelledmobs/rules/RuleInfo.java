@@ -31,7 +31,6 @@ public class RuleInfo {
         this.ruleSourceNames = new TreeMap<>();
         this.conditions_MobCustomnameStatus = MobCustomNameStatus.NOT_SPECIFIED;
         this.conditions_MobTamedStatus = MobTamedStatus.NOT_SPECIFIED;
-        this.nametagVisibilityEnum = NametagVisibilityEnum.NOT_SPECIFIED;
     }
 
     private String ruleName;
@@ -74,7 +73,7 @@ public class RuleInfo {
     public PlayerLevellingOptions playerLevellingOptions;
     public Map<String, List<LevelTierMatching>> entityNameOverrides_Level;
     public Map<String, LevelTierMatching> entityNameOverrides;
-    public NametagVisibilityEnum nametagVisibilityEnum;
+    public List<NametagVisibilityEnum> nametagVisibilityEnum;
     @NotNull @DoNotMerge
     public final Map<String, String> ruleSourceNames;
     public List<TieredColoringInfo> tieredColoringInfos;

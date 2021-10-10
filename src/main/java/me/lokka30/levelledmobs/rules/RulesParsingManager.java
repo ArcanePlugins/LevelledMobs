@@ -128,6 +128,7 @@ public class RulesParsingManager {
         parsingInfo.mobLevelInheritance = true;
         parsingInfo.creeperMaxDamageRadius = 5;
         parsingInfo.nametagVisibleTime = 4000;
+        parsingInfo.nametagVisibilityEnum = List.of(NametagVisibilityEnum.TARGETED, NametagVisibilityEnum.ATTACKED, NametagVisibilityEnum.TRACKING);
 
         if (cs == null){
             Utils.logger.info("default-rule section was null");
@@ -583,17 +584,20 @@ public class RulesParsingManager {
         parsingInfo.nametagVisibleTime = ymlHelper.getInt2(cs, "nametag-visible-time", parsingInfo.nametagVisibleTime);
 
         final boolean creatureNametagAlwaysVisible_BackwardsCompat = ymlHelper.getBoolean(cs, "creature-nametag-always-visible");
-        final String nametagVisibility = ymlHelper.getString(cs, "nametag-visibility-method", parsingInfo.nametagVisibilityEnum.toString());
-        if (!Utils.isNullOrEmpty(nametagVisibility)){
+        final Set<String> nametagVisibility = ymlHelper.getStringSet(cs, "nametag-visibility-method");
+        final List<NametagVisibilityEnum> nametagVisibilityEnums = new LinkedList<>();
+        for (final String nametagVisEnum : nametagVisibility) {
             try {
-                parsingInfo.nametagVisibilityEnum = NametagVisibilityEnum.valueOf(nametagVisibility.toUpperCase());
+                final NametagVisibilityEnum nametagVisibilityEnum = NametagVisibilityEnum.valueOf(nametagVisEnum.toUpperCase());
+                nametagVisibilityEnums.add(nametagVisibilityEnum);
             }
             catch (Exception ignored){
-                Utils.logger.warning("Invalid value for nametag-visibility-method: " + nametagVisibility + ", in rule: " + parsingInfo.getRuleName());
+                Utils.logger.warning("Invalid value in nametag-visibility-method: " + nametagVisibility + ", in rule: " + parsingInfo.getRuleName());
             }
         }
-        else if (creatureNametagAlwaysVisible_BackwardsCompat)
-            parsingInfo.nametagVisibilityEnum = NametagVisibilityEnum.ALWAYS_ON;
+
+        if (!nametagVisibilityEnums.isEmpty())
+            parsingInfo.nametagVisibilityEnum = nametagVisibilityEnums;
     }
 
     private void parseConditions(final ConfigurationSection cs){

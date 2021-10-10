@@ -67,7 +67,7 @@ public class NametagQueueManager {
     }
 
     public void addToQueue(final @NotNull QueueItem item) {
-        if (main.rulesManager.getRule_CreatureNametagVisbility(item.lmEntity) == NametagVisibilityEnum.DISABLED)
+        if (main.rulesManager.getRule_CreatureNametagVisbility(item.lmEntity).contains(NametagVisibilityEnum.DISABLED))
             return;
 
         item.lmEntity.inUseCount.getAndIncrement();
@@ -79,32 +79,36 @@ public class NametagQueueManager {
 
             final QueueItem item = queue.poll(200, TimeUnit.MILLISECONDS);
             if (item == null) continue;
+            if (item.lmEntity.getLivingEntity() == null){
+                item.lmEntity.free();
+                continue;
+            }
 
             final int nametagTimerResetTime = main.rulesManager.getRule_nametagVisibleTime(item.lmEntity);
 
             if (nametagTimerResetTime > 0) {
-                synchronized (main.nametagTimer_Lock) {
+                synchronized (NametagTimerChecker.nametagTimer_Lock) {
                     if (item.lmEntity.playersNeedingNametagCooldownUpdate != null) {
                         // record which players should get the cooldown for this mob
                         // public Map<Player, WeakHashMap<LivingEntity, Instant>> nametagCooldownQueue;
                         for (final Player player : item.lmEntity.playersNeedingNametagCooldownUpdate) {
-                            if (!main.nametagCooldownQueue.containsKey(player)) continue;
+                            if (!main.nametagTimerChecker.nametagCooldownQueue.containsKey(player)) continue;
 
-                            main.nametagCooldownQueue.get(player).put(item.lmEntity.getLivingEntity(), Instant.now());
+                            main.nametagTimerChecker.nametagCooldownQueue.get(player).put(item.lmEntity.getLivingEntity(), Instant.now());
                         }
 
                         // if any players already have a cooldown on this mob then don't remove the cooldown
-                        for (final Player player : main.nametagCooldownQueue.keySet()){
+                        for (final Player player : main.nametagTimerChecker.nametagCooldownQueue.keySet()){
                             if (item.lmEntity.playersNeedingNametagCooldownUpdate.contains(player)) continue;
 
-                            if (main.nametagCooldownQueue.get(player).containsKey(item.lmEntity.getLivingEntity()))
+                            if (main.nametagTimerChecker.nametagCooldownQueue.get(player).containsKey(item.lmEntity.getLivingEntity()))
                                 item.lmEntity.playersNeedingNametagCooldownUpdate.add(player);
                         }
                     }
                     else{
                         // if there's any existing cooldowns we'll use them
-                        for (final Player player : main.nametagCooldownQueue.keySet()){
-                            if (main.nametagCooldownQueue.get(player).containsKey(item.lmEntity.getLivingEntity())) {
+                        for (final Player player : main.nametagTimerChecker.nametagCooldownQueue.keySet()){
+                            if (main.nametagTimerChecker.nametagCooldownQueue.get(player).containsKey(item.lmEntity.getLivingEntity())) {
                                 if (item.lmEntity.playersNeedingNametagCooldownUpdate == null)
                                     item.lmEntity.playersNeedingNametagCooldownUpdate = new HashSet<>();
 
@@ -116,6 +120,15 @@ public class NametagQueueManager {
             }
             else if (item.lmEntity.playersNeedingNametagCooldownUpdate != null)
                 item.lmEntity.playersNeedingNametagCooldownUpdate = null;
+
+            synchronized (NametagTimerChecker.entityTarget_Lock){
+                if (main.nametagTimerChecker.entityTargetMap.containsKey(item.lmEntity.getLivingEntity())){
+                    if (item.lmEntity.playersNeedingNametagCooldownUpdate == null)
+                        item.lmEntity.playersNeedingNametagCooldownUpdate = new HashSet<>();
+
+                    item.lmEntity.playersNeedingNametagCooldownUpdate.add(main.nametagTimerChecker.entityTargetMap.get(item.lmEntity.getLivingEntity()));
+                }
+            }
 
             updateNametag(item.lmEntity, item.nametag, item.players);
             item.lmEntity.free();
@@ -173,10 +186,10 @@ public class NametagQueueManager {
             if (nametag == null)
                 dataWatcher.setObject(objectIndex, false);
             else {
-                final NametagVisibilityEnum nametagVisibilityEnum = main.rulesManager.getRule_CreatureNametagVisbility(lmEntity);
+                final List<NametagVisibilityEnum> nametagVisibilityEnum = main.rulesManager.getRule_CreatureNametagVisbility(lmEntity);
                 final boolean doAlwaysVisible = i == 1 ||
                         !"".equals(nametag) && lmEntity.getLivingEntity().isCustomNameVisible() ||
-                        nametagVisibilityEnum == NametagVisibilityEnum.ALWAYS_ON;
+                        nametagVisibilityEnum.contains(NametagVisibilityEnum.ALWAYS_ON);
 
                 dataWatcher.setObject(objectIndex, doAlwaysVisible);
             }
@@ -202,6 +215,7 @@ public class NametagQueueManager {
         }
     }
 
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     private boolean sendPacket(final @NotNull Player player, final LivingEntityWrapper lmEntity, final PacketContainer packet){
         if (!player.isOnline()) return true;
         if (!lmEntity.getLivingEntity().isValid()) return false;
@@ -220,8 +234,10 @@ public class NametagQueueManager {
     }
 
     private void updateNametag_CustomName(final @NotNull LivingEntityWrapper lmEntity, final String nametag){
-        if (lmEntity.getPDC().has(main.namespaced_keys.hasCustomNameTag, PersistentDataType.INTEGER))
-            return;
+        synchronized (lmEntity.getLivingEntity().getPersistentDataContainer()) {
+            if (lmEntity.getPDC().has(main.namespaced_keys.hasCustomNameTag, PersistentDataType.INTEGER))
+                return;
+        }
 
         final boolean hadCustomName = lmEntity.getLivingEntity().getCustomName() != null;
 
