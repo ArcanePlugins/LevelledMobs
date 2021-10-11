@@ -189,8 +189,16 @@ presets:
         attack-damage: 3.5
         ranged-attack-damage: 2.75
         creeper-blast-damage: 1.25
+        follow-range: 0.25
         item-drop: 3
         xp-drop: 5
+        #       Special Multipliers (0.0 Min - 1.0 Max)
+        armor-bonus: 1.0
+        armor-toughness: 0.5
+        attack-knockback: 0.5
+        knockback-resistance: 0.5
+        zombie-spawn-reinforcements: 0.45
+
       creeper-max-damage-radius: 5
       tiered-coloring:
         1-9: '&#22E76B' #Green
@@ -217,19 +225,15 @@ presets:
         attack-damage: 2.25
         ranged-attack-damage: 2.0
         creeper-blast-damage: 1.0
+        follow-range: 0
         item-drop: 3
         xp-drop: 5
-        armor-bonus: 0
-        armor-toughness: 0
-        attack-knockback: 0
-        knockback-resistance: 0
-        follow-range: 0
-        #       Horse Attributes
-        horse-jump-strength: 0
-        #       Parrot/Bee Attributes
-        flying-speed: 0
-        #       Adult Zombie Attributes
-        zombie-spawn-reinforcements: 0
+        #       Special Multipliers (0.0 Min - 1.0 Max)
+        armor-bonus: 0.5
+        armor-toughness: 0.2
+        attack-knockback: 0.25
+        knockback-resistance: 0.2
+        zombie-spawn-reinforcements: 0.25
 
       creeper-max-damage-radius: 3
       tiered-coloring:
@@ -256,8 +260,16 @@ presets:
         attack-damage: 1.0
         ranged-attack-damage: 1.0
         creeper-blast-damage: 0.5
+        follow-range: 0
         item-drop: 3
         xp-drop: 5
+        #       Special Multipliers (0.0 Min - 1.0 Max)
+        armor-bonus: 0.1
+        armor-toughness: 0.0
+        attack-knockback: 0.1
+        knockback-resistance: 0.15
+        zombie-spawn-reinforcements: 0.1
+
       creeper-max-damage-radius: 1
       tiered-coloring:
         1-2: '&#22E76B' #Green
