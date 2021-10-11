@@ -597,6 +597,17 @@ public class RulesParsingManager {
 
         if (!nametagVisibilityEnums.isEmpty())
             parsingInfo.nametagVisibilityEnum = nametagVisibilityEnums;
+        else if (cs.get(ymlHelper.getKeyNameFromConfig(cs, "creature-nametag-always-visible")) != null)  {
+            final Boolean nametagVisibilityBackwardsComat = ymlHelper.getBoolean2(cs, "creature-nametag-always-visible", null);
+            if (nametagVisibilityBackwardsComat != null){
+                if (nametagVisibilityBackwardsComat)
+                    parsingInfo.nametagVisibilityEnum = List.of(NametagVisibilityEnum.ALWAYS_ON);
+                else
+                    parsingInfo.nametagVisibilityEnum = List.of(NametagVisibilityEnum.MELEE);
+            }
+            else
+                parsingInfo.nametagVisibilityEnum = List.of(NametagVisibilityEnum.MELEE);
+        }
     }
 
     private void parseConditions(final ConfigurationSection cs){

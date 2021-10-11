@@ -25,8 +25,8 @@
 # +                                      ++    limzikiki, and Zombie_Striker                 +LM3
 # +                                      ++                                                  +LM3
 # --------------------------------------------------------------------------------------------LM3
-#                                     _____     _         
-#                                    | __  |_ _| |___ ___ 
+#                                     _____     _
+#                                    | __  |_ _| |___ ___
 #                                    |    -| | | | -_|_ -|
 #                                    |__|__|___|_|___|___|
 #
@@ -67,10 +67,17 @@ biome-groups:
 # +                                                                                          +LM3
 # +   Section 02 - Presets                                                                   +LM3
 # +                                                                                          +LM3
+# +   This section comes prebuilt with several sets of PRESETS to use with LevelledMobs!     +LM3
+# +   Out-of-the-box most of these PRESETS are not enabled, and are only here to both        +LM3
+# +   demonstrate the system and allow you to quickly change or use many of the most         +LM3
+# +   popular features LevelledMobs has to offer! If you need help understanding PRESETS,    +LM3
+# +   read the official LevelledMobs Wiki!                                                   +LM3
+# +   https://github.com/lokka30/LevelledMobs/wiki/Documentation---rules.yml#presets         +LM3
+# +                                                                                          +LM3
 # +-------------------------------------------------------------------------------------------LM3
 presets:
   spawn_Levelling:
-#   This Strategy Preset controls the Spawn-Distance-Levelling system.
+    #   This Strategy Preset controls the Spawn-Distance-Levelling system.
     name: 'LVLling Strategy - Distance-From-Spawn'
     strategies:
       distance-from-spawn:
@@ -81,7 +88,7 @@ presets:
           z: default
 
   blended_Levelling:
-#   This Strategy Preset controls the Blended-Levelling sub-system to Spawn-Distance-Levelling.
+    #   This Strategy Preset controls the Blended-Levelling sub-system to Spawn-Distance-Levelling.
     name: 'LVLling Strategy - Blended-Levelling'
     strategies:
       distance-from-spawn:
@@ -93,14 +100,14 @@ presets:
           scale-downward: true
 
   random_Levelling:
-#   This Strategy Preset controls the Random-Levelling system.
+    #   This Strategy Preset controls the Random-Levelling system.
     name: 'LVLling Strategy - Random'
     strategies:
       random: true
       lower-mob-level-bias-factor: 5
 
   weighted_random_hard:
-#   This Strategy Preset controls Weighted Random Bias.
+    #   This Strategy Preset controls Weighted Random Bias.
     name: 'LVLling Strategy - Weighted Random Bias HARD DIFFICULTY'
     strategies:
       weighted-random:
@@ -111,7 +118,7 @@ presets:
         41-50: 1
 
   weighted_random_normal:
-#   This Strategy Preset controls Weighted Random Bias.
+    #   This Strategy Preset controls Weighted Random Bias.
     name: 'LVLling Strategy - Weighted Random Bias NORMAL DIFFICULTY'
     strategies:
       weighted-random:
@@ -122,7 +129,7 @@ presets:
         21-25: 1
 
   weighted_random_easy:
-#   This Strategy Preset controls Weighted Random Bias.
+    #   This Strategy Preset controls Weighted Random Bias.
     name: 'LVLling Strategy - Weighted Random Bias EASY DIFFICULTY'
     strategies:
       weighted-random:
@@ -131,9 +138,9 @@ presets:
         5-6: 3
         7-8: 2
         9-10: 1
-        
+
   player_Levelling:
-#   This Strategy Preset controls the player-stat based levelling system.
+    #   This Strategy Preset controls the player-stat based levelling system.
     name: 'LVLling Strategy - Player Based NORMAL DIFFIULTY'
     strategies:
       player-levelling:
@@ -148,13 +155,13 @@ presets:
         variable: '%level%'
 
   apply_LevellingVariance:
-#   This Strategy Preset controls the random level variance applied.
+    #   This Strategy Preset controls the random level variance applied.
     name: 'LVLling Strategy - Apply Variance'
     strategies:
       max-random-variance: 2
 
   ycoord_Levelling:
-#   This Strategy Preset controls Y-Coordinate-Levelling.
+    #   This Strategy Preset controls Y-Coordinate-Levelling.
     name: 'LVLling Strategy - Y-LVLling'
     strategies:
       y-coordinate:
@@ -163,15 +170,15 @@ presets:
         period: 0
 
   allowed_worlds:
-#   This controls the allowed worlds to apply levels too.
+    #   This controls the allowed worlds to apply levels too.
     name: 'Excluded Worldlist'
     conditions:
       worlds:
-#        allowed-list: ['*']
+        #        allowed-list: ['*']
         excluded-list: ['world_the_end']
 
   hard_difficulty:
-#   This establishes the minimum and maximum levels, and the multipliers, for HARD.
+    #   This establishes the minimum and maximum levels, and the multipliers, for HARD.
     name: 'HARD Difficulty Multipliers'
     apply-settings:
       minLevel: 1
@@ -196,14 +203,15 @@ presets:
         scale: 8
         max: 5
         merge: true
-        
+
   normal_difficulty:
-#   This establishes the minimum and maximum levels, and the multipliers, for NORMAL.
+    #   This establishes the minimum and maximum levels, and the multipliers, for NORMAL.
     name: 'NORMAL Difficulty Multipliers'
     apply-settings:
       minLevel: 1
       maxLevel: 25
       multipliers:
+        #       All Entities/Default Attributes
         max-health: 5.0
         movement-speed: 0.15
         attack-damage: 2.25
@@ -211,6 +219,18 @@ presets:
         creeper-blast-damage: 1.0
         item-drop: 3
         xp-drop: 5
+        armor-bonus: 0
+        armor-toughness: 0
+        attack-knockback: 0
+        knockback-resistance: 0
+        follow-range: 0
+        #       Horse Attributes
+        horse-jump-strength: 0
+        #       Parrot/Bee Attributes
+        flying-speed: 0
+        #       Adult Zombie Attributes
+        zombie-spawn-reinforcements: 0
+
       creeper-max-damage-radius: 3
       tiered-coloring:
         1-5: '&#22E76B' #Green
@@ -223,9 +243,9 @@ presets:
         scale: 4
         max: 5
         merge: true
-        
+
   easy_difficulty:
-#   This establishes the minimum and maximum levels, and the multipliers, for EASY.
+    #   This establishes the minimum and maximum levels, and the multipliers, for EASY.
     name: 'EASY Difficulty Multipliers'
     apply-settings:
       minLevel: 1
@@ -252,7 +272,7 @@ presets:
         merge: true
 
   nametag_using_indicator:
-#   This controls the nametag, where the health is displayed using %health-indicator%
+    #   This controls the nametag, where the health is displayed using %health-indicator%
     name: 'Nametag - Health Indicator'
     apply-settings:
       nametag: '&8&l༺ %tiered%Lvl %mob-lvl%&8 | &f%displayname%&8 | &f%entity-health-rounded% %tiered%%heart_symbol% &r%health-indicator% &8&l༻'
@@ -270,7 +290,7 @@ presets:
         merge: true
 
   nametag_using_numbers:
-#   This controls the nametag, where the health is displayed using %entity-health-rounded%
+    #   This controls the nametag, where the health is displayed using %entity-health-rounded%
     name: 'Nametag - Health Numerical'
     apply-settings:
       nametag: '&8&l༺ %tiered%Lvl %mob-lvl%&8 | &f%displayname%&8 | &f%entity-health-rounded%&8/&f%entity-max-health-rounded% %tiered%%heart_symbol% &8&l༻'
@@ -281,24 +301,30 @@ presets:
 # +   L O W E S T   P R I O R I T Y                                                          +LM3
 # +   Section 03 - Default Rules                                                             +LM3
 # +                                                                                          +LM3
+# +   This section sets the minimum required information for LevelledMobs to function!       +LM3
+# +   Much of this is managed by the PRESETS system, however a few configuration lines are   +LM3
+# +   listed individually as well. If you need help understanding the DEFAULT RULES,         +LM3
+# +   read the official LevelledMobs Wiki!                                                   +LM3
+# +   https://github.com/lokka30/LevelledMobs/wiki/Documentation---rules.yml#default-rule    +LM3
+# +                                                                                          +LM3
 # +-------------------------------------------------------------------------------------------LM3
 default-rule:
   use-preset:
     - allowed_worlds
     - nametag_using_numbers
-#    - nametag_using_indicator
-#    - hard_difficulty
-#    - normal_difficulty
+    #    - nametag_using_indicator
+    #    - hard_difficulty
+    #    - normal_difficulty
     - easy_difficulty
-#    - apply_LevellingVariance
-#    - weighted_random_hard
-#    - weighted_random_normal
+    #    - apply_LevellingVariance
+    #    - weighted_random_hard
+    #    - weighted_random_normal
     - weighted_random_easy
-#    - spawn_Levelling
-#    - blended_Levelling
-#    - ycoord_Levelling
-#    - random_Levelling
-#    - player_Levelling
+  #    - spawn_Levelling
+  #    - blended_Levelling
+  #    - ycoord_Levelling
+  #    - random_Levelling
+  #    - player_Levelling
 
   conditions:
     allowed-spawn-reasons:
@@ -306,6 +332,7 @@ default-rule:
 
     level-plugins:
       DANGEROUS_CAVES: false
+      ECO_BOSSES: false
       MYTHIC_MOBS: false
       ELITE_MOBS: false
       ELITE_MOBS_NPCS: false
@@ -315,10 +342,10 @@ default-rule:
       SHOPKEEPERS: false
       SIMPLE_PETS: false
 
-#    apply-above-y: 64
-#    apply-below-y: 59
-#    min-distance-from-spawn: 1000
-#    max-distance-from-spawn: 5000
+    #    apply-above-y: 64
+    #    apply-below-y: 59
+    #    min-distance-from-spawn: 1000
+    #    max-distance-from-spawn: 5000
 
     mob-customname-status: EITHER
     mob-tamed-status: EITHER
@@ -327,15 +354,17 @@ default-rule:
     sunlight-intensity: 5
 
     entity-name-override:
-#      HUSK: ['Husk', 'Desert Zombie', 'Lost Soul', 'Dessicated Corpse']
-#      SKELETON: ['Bones', 'Billy Bones', 'Verta Brae']
-#      PILLAGER: ['Raider', 'Barbarian']
+    #      HUSK: ['Husk', 'Desert Zombie', 'Lost Soul', 'Dessicated Corpse']
+    #      SKELETON: ['Bones', 'Billy Bones', 'Verta Brae']
+    #      PILLAGER: ['Raider', 'Barbarian']
 
     creature-death-nametag: '%tiered%Lvl %mob-lvl%&8 | &f%entity-name%'
-    creature-nametag-always-visible: false
+    nametag-visible-time: 1000
+    nametag-visibility-method: ['TARGETED', 'ATTACKED', 'TRACKING']
 
     baby-mobs-inherit-adult-setting: true
     level-inheritance: true
+    passenger-match-level: false
 
     use-custom-item-drops-for-mobs: false
 
@@ -344,6 +373,12 @@ default-rule:
 # +                                                                                          +LM3
 # +   H I G H E S T   P R I O R I T Y                                                        +LM3
 # +   Section 04 - Custom Rules                                                              +LM3
+# +                                                                                          +LM3
+# +   This section applies CUSTOM RULES, or exceptions, to the DEFAULT RULE. These rules     +LM3
+# +   modify the DEFAULT RULE to achieve your desired effect. Establish a CONDITION to       +LM3
+# +   check for, then set either a STRATEGY or APPLY-SETTINGS when the CONDITION is met.     +LM3
+# +   If you need help understanding CUSTOM RULES, read the official LevelledMobs Wiki!      +LM3
+# +   https://github.com/lokka30/LevelledMobs/wiki/Documentation---rules.yml#custom-rules    +LM3
 # +                                                                                          +LM3
 # +-------------------------------------------------------------------------------------------LM3
 custom-rules:
@@ -410,71 +445,7 @@ custom-rules:
             xp-drop: 1.0
       tiered-coloring:
         1-5: '&#22E76B' #Green
-            
 
-# +-------------------------------------------------------------------------------------------LM3
-# +                                                                                          +LM3
-# +   Demonstration Custom Rules                                                             +LM3
-# +   These rules demonstrate some different features, and are disabled by default.          +LM3
-# +   Enable the Custom Rule below, make sure there are no conflicts with any other rules,   +LM3
-# +   test it out, or use them as reference when crafting your own Custom Rules!             +LM3
-# +                                                                                          +LM3
-# +-------------------------------------------------------------------------------------------LM3
-  - enabled: false
-    name: 'CR - Ender Dragon Fight'
-    use-preset: normal_difficulty
-    conditions:
-      worlds:
-        allowed-list: ['world_the_end']
-      entities:
-        allowed-list: ['ENDER_DRAGON']
-    apply-settings:
-      minLevel: 25
-      multipliers:
-        custom-mob-level:
-          ENDER_DRAGON:
-            max-health: 3.0
-            attack-damage: 1.0
-
-  - enabled: false
-    name: 'CR - NoLevel Biomes'
-    conditions:
-      worlds:
-        allowed-list: ['world_nether']
-      biomes:
-        allowed-list: ['NETHER_WASTES']
-    apply-settings:
-      maxLevel: 0
-
-  - enabled: false
-    name: 'CR - Level Dependent Zombie Custom Names'
-    use-presets: allowed_worlds
-    apply-settings:
-      entity-name-override:
-        1-5:
-          ZOMBIE: ['Teething %displayname%']
-        6-10:
-          ZOMBIE: ['Scratching %displayname%']
-        11-20:
-          ZOMBIE: ['Biting %displayname%']
-        21-25:
-          ZOMBIE: ['Hunting %displayname%']
-        BABY_ZOMBIE: ['Baby Undead']
-
-  - enabled: false
-#   This rule requires the soft-dependency NBT-API to function!
-#   Make sure you have it installed prior to enabling this rule!
-    name: 'CR - NBT - 20% Startled Creepers, Short Fuse'
-    use-preset: allowed_worlds
-    conditions:
-      chance: 0.2
-#      apply-below-y: 59
-      entities:
-        allowed-list: ['CREEPER']
-    apply-settings:
-      nbt-data: '{Fuse:2,Attributes:[{Name:"generic.follow_range",Base:1f}]}'
-      entity-name-override:
-        CREEPER: ['Startled %displayname%']
 
 # +-------------------------------------------------------------------------------------------LM3
 # +                                                                                          +LM3
@@ -482,4 +453,4 @@ custom-rules:
 # +   DO NOT EDIT BEYOND HERE WITHOUT DEVELOPER APPROVAL                                     +LM3
 # +                                                                                          +LM3
 # +-------------------------------------------------------------------------------------------LM3
-file-version: 1
+file-version: 2

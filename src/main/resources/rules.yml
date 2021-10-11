@@ -359,7 +359,7 @@ default-rule:
 #      PILLAGER: ['Raider', 'Barbarian']
 
     creature-death-nametag: '%tiered%Lvl %mob-lvl%&8 | &f%entity-name%'
-    nametag-visible-time: 4000
+    nametag-visible-time: 1000
     nametag-visibility-method: ['TARGETED', 'ATTACKED', 'TRACKING']
 
     baby-mobs-inherit-adult-setting: true
@@ -453,4 +453,4 @@ custom-rules:
 # +   DO NOT EDIT BEYOND HERE WITHOUT DEVELOPER APPROVAL                                     +LM3
 # +                                                                                          +LM3
 # +-------------------------------------------------------------------------------------------LM3
-file-version: 1
+file-version: 2

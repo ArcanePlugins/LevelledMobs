@@ -10,7 +10,7 @@
 
     <groupId>me.lokka30</groupId>
     <artifactId>LevelledMobs</artifactId>
-    <version>3.2.0 b528</version>
+    <version>3.2.0 b529</version>
     <packaging>jar</packaging>
 
     <name>LevelledMobs</name>
@@ -45,7 +45,7 @@
                         </relocation>
                         <relocation>
                             <pattern>me.lokka30.microlib</pattern>
-                            <shadedPattern>me.lokka30.levelledmobs.microlib</shadedPattern>
+                            <shadedPattern>${project.groupId}.microlib</shadedPattern>
                         </relocation>
                     </relocations>
                     <filters>
@@ -170,7 +170,7 @@
         <dependency>
             <groupId>simplepets.brainsynder</groupId>
             <artifactId>API</artifactId>
-            <version>5.0-BUILD-87</version>
+            <version>5.0-BUILD-89</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>

@@ -249,6 +249,7 @@ public class Companion {
         metrics.addCustomChart(new SimplePie("custom-entity-names", metricsInfo::customEntityNamesCount));
         metrics.addCustomChart(new SimplePie("utilizes-nbtdata", metricsInfo::usesNbtData));
         metrics.addCustomChart(new SimplePie("utilizes_player_levelling", metricsInfo::usesPlayerLevelling));
+        metrics.addCustomChart(new SimplePie("nametag_visibility", metricsInfo::nametagVisibility));
         metrics.addCustomChart(new SimpleBarChart("enabled-compatibility", metricsInfo::enabledCompats));
     }
 
