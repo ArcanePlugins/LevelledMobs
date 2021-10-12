@@ -10,7 +10,7 @@
 
     <groupId>me.lokka30</groupId>
     <artifactId>LevelledMobs</artifactId>
-    <version>3.1.8 b517</version>
+    <version>3.2.0 b531</version>
     <packaging>jar</packaging>
 
     <name>LevelledMobs</name>
@@ -45,7 +45,7 @@
                         </relocation>
                         <relocation>
                             <pattern>me.lokka30.microlib</pattern>
-                            <shadedPattern>me.lokka30.levelledmobs.microlib</shadedPattern>
+                            <shadedPattern>${project.groupId}.microlib</shadedPattern>
                         </relocation>
                     </relocations>
                     <filters>
@@ -113,6 +113,10 @@
             <id>sk89q-repo</id>
             <url>https://maven.enginehub.org/repo/</url>
         </repository>
+        <repository>
+            <id>bs-repo</id>
+            <url>https://ci.pluginwiki.us/plugin/repository/everything/</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -143,7 +147,7 @@
         <dependency>
             <groupId>com.sk89q.worldguard</groupId>
             <artifactId>worldguard-bukkit</artifactId>
-            <version>7.0.4</version>
+            <version>7.0.5</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -161,6 +165,12 @@
             <groupId>de.tr7zw</groupId>
             <artifactId>item-nbt-api-plugin</artifactId>
             <version>2.8.0</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>simplepets.brainsynder</groupId>
+            <artifactId>API</artifactId>
+            <version>5.0-BUILD-89</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>

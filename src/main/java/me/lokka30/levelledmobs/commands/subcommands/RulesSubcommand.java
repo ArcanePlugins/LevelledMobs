@@ -25,6 +25,7 @@ import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
@@ -129,10 +130,16 @@ public class RulesSubcommand implements Subcommand {
             for (final Entity entity : world.getEntities()) {
                 if (!(entity instanceof LivingEntity)) continue;
 
+                synchronized (entity.getPersistentDataContainer()){
+                    if (entity.getPersistentDataContainer().has(main.namespaced_keys.wasSummoned, PersistentDataType.INTEGER))
+                        continue; // was summon using lm summon command.  don't relevel it
+                }
+
                 entityCount++;
-                final LivingEntityWrapper lmEntity = new LivingEntityWrapper((LivingEntity) entity, main);
+                final LivingEntityWrapper lmEntity = LivingEntityWrapper.getInstance((LivingEntity) entity, main);
                 lmEntity.reEvaluateLevel = true;
                 main._mobsQueueManager.addToQueue(new QueueItem(lmEntity, null));
+                lmEntity.free();
             }
         }
 
@@ -141,7 +148,7 @@ public class RulesSubcommand implements Subcommand {
                 label, entityCount, worldCount)));
     }
 
-    private void resetRules(final CommandSender sender, final String label, @NotNull final String[] args){
+    private void resetRules(final CommandSender sender, final String label, @NotNull final String @NotNull [] args){
         final String prefix = main.configUtils.getPrefix();
 
         if (args.length < 3 || args.length > 4){
@@ -183,7 +190,7 @@ public class RulesSubcommand implements Subcommand {
         resetRules(sender, difficulty);
     }
 
-    private void resetRules(final CommandSender sender, final ResetDifficulty difficulty){
+    private void resetRules(final @NotNull CommandSender sender, final @NotNull ResetDifficulty difficulty){
         final String prefix = main.configUtils.getPrefix();
         sender.sendMessage(prefix + " Resetting rules to " + difficulty);
 
@@ -239,7 +246,7 @@ public class RulesSubcommand implements Subcommand {
             sender.sendMessage(url);
     }
 
-    private void showRule(final CommandSender sender, @NotNull final String[] args){
+    private void showRule(final CommandSender sender, @NotNull final String @NotNull [] args){
         if (args.length < 3){
             sender.sendMessage("Must specify a rule name.");
             return;
@@ -293,7 +300,7 @@ public class RulesSubcommand implements Subcommand {
     private void getMobBeingLookedAt(@NotNull final Player player, final boolean showOnConsole, final boolean findNearbyEntities){
         LivingEntity livingEntity = null;
         final Location eye = player.getEyeLocation();
-        SortedMap<Double, LivingEntity> entities = new TreeMap<>();
+        final SortedMap<Double, LivingEntity> entities = new TreeMap<>();
 
         for(final Entity entity : player.getNearbyEntities(10, 10, 10)){
             if (!(entity instanceof LivingEntity)) continue;
@@ -304,7 +311,7 @@ public class RulesSubcommand implements Subcommand {
                 entities.put(distance, le);
             } else {
                 final Vector toEntity = le.getEyeLocation().toVector().subtract(eye.toVector());
-                double dot = toEntity.normalize().dot(eye.getDirection());
+                final double dot = toEntity.normalize().dot(eye.getDirection());
                 if (dot >= 0.975D) {
                     livingEntity = le;
                     break;
@@ -321,7 +328,7 @@ public class RulesSubcommand implements Subcommand {
                 livingEntity = entities.get(entities.firstKey());
 
             createParticleEffect(livingEntity.getLocation());
-            final LivingEntityWrapper lmEntity = new LivingEntityWrapper(livingEntity, main);
+            final LivingEntityWrapper lmEntity = LivingEntityWrapper.getInstance(livingEntity, main);
 
             String entityName = lmEntity.getTypeName();
             if (ExternalCompatibilityManager.hasMythicMobsInstalled() && ExternalCompatibilityManager.isMythicMob(lmEntity))
@@ -349,7 +356,9 @@ public class RulesSubcommand implements Subcommand {
                 }
             };
 
+            lmEntity.inUseCount.getAndIncrement();
             runnable.runTaskLater(main, 25);
+            lmEntity.free();
         }
     }
 
@@ -479,9 +488,9 @@ public class RulesSubcommand implements Subcommand {
     }
 
     @Override
-    public List<String> parseTabCompletions(final LevelledMobs main, final CommandSender sender, @NotNull final String[] args) {
+    public List<String> parseTabCompletions(final LevelledMobs main, final @NotNull CommandSender sender, @NotNull final String[] args) {
         if (!sender.hasPermission("levelledmobs.command.rules"))
-            return null;
+            return Collections.emptyList();
 
         final List<String> suggestions = new LinkedList<>();
 
@@ -532,7 +541,7 @@ public class RulesSubcommand implements Subcommand {
             }
         }
 
-        if (suggestions.isEmpty()) suggestions.add("");
+        if (suggestions.isEmpty()) return Collections.emptyList();
         return suggestions;
     }
 }

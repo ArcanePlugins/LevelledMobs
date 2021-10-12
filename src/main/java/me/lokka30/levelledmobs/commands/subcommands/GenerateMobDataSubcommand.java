@@ -88,7 +88,7 @@ public class GenerateMobDataSubcommand implements Subcommand {
         if (args.length == 2 && sender instanceof ConsoleCommandSender)
             return Collections.singletonList("(password?)");
 
-        return null;
+        return Collections.emptyList();
     }
 
     YamlConfiguration dropsConfig;

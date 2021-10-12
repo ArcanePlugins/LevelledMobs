@@ -13,9 +13,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 /**
  * This class handles the command execution of '/levelledmobs'.
@@ -33,14 +31,16 @@ public class LevelledMobsCommand implements CommandExecutor, TabCompleter {
         rulesSubcommand = new RulesSubcommand(main);
     }
 
+    // Retain alphabetical order please.
+    private final CompatibilitySubcommand compatibilitySubcommand = new CompatibilitySubcommand();
+    private final GenerateMobDataSubcommand generateMobDataSubcommand = new GenerateMobDataSubcommand();
     private final InfoSubcommand infoSubcommand = new InfoSubcommand();
     private final KillSubcommand killSubcommand = new KillSubcommand();
     private final ReloadSubcommand reloadSubcommand = new ReloadSubcommand();
-    private final SummonSubcommand summonSubcommand = new SummonSubcommand();
-    private final CompatibilitySubcommand compatibilitySubcommand = new CompatibilitySubcommand();
-    private final GenerateMobDataSubcommand generateMobDataSubcommand = new GenerateMobDataSubcommand();
-    private final SpawnerSubCommand spawnerSubCommand;
     private final RulesSubcommand rulesSubcommand;
+    private final SpawnerSubCommand spawnerSubCommand;
+    private final SummonSubcommand summonSubcommand = new SummonSubcommand();
+    private final DebugSubcommand debugSubcommand = new DebugSubcommand();
 
     public boolean onCommand(@NotNull final CommandSender sender, final Command command, final String label, final String[] args) {
         if (sender.hasPermission("levelledmobs.command")) {
@@ -48,32 +48,40 @@ public class LevelledMobsCommand implements CommandExecutor, TabCompleter {
                 sendMainUsage(sender, label);
             } else {
                 switch (args[0].toLowerCase()) {
+                    // Retain alphabetical order please.
+                    case "compatibility":
+                        compatibilitySubcommand.parseSubcommand(main, sender, label, args);
+                        break;
+                    case "debug":
+                        debugSubcommand.parseSubcommand(main, sender, label, args);
+                        break;
+                    case "generatemobdata":
+                        generateMobDataSubcommand.parseSubcommand(main, sender, label, args);
+                        break;
+                    case "info":
+                        infoSubcommand.parseSubcommand(main, sender, label, args);
+                        break;
                     case "kill":
                         killSubcommand.parseSubcommand(main, sender, label, args);
                         break;
                     case "reload":
                         reloadSubcommand.parseSubcommand(main, sender, label, args);
                         break;
-                    case "summon":
-                        summonSubcommand.parseSubcommand(main, sender, label, args);
-                        break;
-                    case "info":
-                        infoSubcommand.parseSubcommand(main, sender, label, args);
-                        break;
-                    case "compatibility":
-                        compatibilitySubcommand.parseSubcommand(main, sender, label, args);
-                        break;
-                    case "generatemobdata":
-                        generateMobDataSubcommand.parseSubcommand(main, sender, label, args);
+                    case "rules":
+                        rulesSubcommand.parseSubcommand(main, sender, label, args);
                         break;
                     case "spawner":
                         spawnerSubCommand.parseSubcommand(main, sender, label, args);
                         break;
-                    case "rules":
-                        rulesSubcommand.parseSubcommand(main, sender, label, args);
+                    case "summon":
+                        summonSubcommand.parseSubcommand(main, sender, label, args);
+                        break;
+                    case "test":
+                        test(sender, args);
                         break;
                     default:
                         sendMainUsage(sender, label);
+                        break;
                 }
             }
         } else {
@@ -82,22 +90,25 @@ public class LevelledMobsCommand implements CommandExecutor, TabCompleter {
         return true;
     }
 
+    private void test(@NotNull final CommandSender sender, final String @NotNull [] args) {
+
+    }
+
     private void sendMainUsage(@NotNull final CommandSender sender, final String label) {
         List<String> mainUsage = main.messagesCfg.getStringList("command.levelledmobs.main-usage");
-
         mainUsage = Utils.replaceAllInList(mainUsage, "%prefix%", main.configUtils.getPrefix());
         mainUsage = Utils.replaceAllInList(mainUsage, "%label%", label);
         mainUsage = Utils.colorizeAllInList(mainUsage);
-
         mainUsage.forEach(sender::sendMessage);
     }
 
+    // Retain alphabetical order please.
+    private final List<String> commandsToCheck = Arrays.asList("debug", "summon", "kill", "reload", "info", "compatibility", "spawner", "rules");
+
     @Override
-    public List<String> onTabComplete(final CommandSender sender, final Command cmd, final String alias, @NotNull final String[] args) {
+    public List<String> onTabComplete(final CommandSender sender, final Command cmd, final String alias, @NotNull final String @NotNull [] args) {
         if (args.length == 1) {
             List<String> suggestions = new LinkedList<>();
-
-            List<String> commandsToCheck = Arrays.asList("summon", "kill", "reload", "info", "compatibility", "spawner", "rules");
 
             commandsToCheck.forEach(command -> {
                 if (sender.hasPermission("levelledmobs.command." + command)) {
@@ -108,19 +119,20 @@ public class LevelledMobsCommand implements CommandExecutor, TabCompleter {
             return suggestions;
         } else {
             switch (args[0].toLowerCase()) {
-                case "summon":
-                    return summonSubcommand.parseTabCompletions(main, sender, args);
-                case "kill":
-                    return killSubcommand.parseTabCompletions(main, sender, args);
+                // Retain alphabetical order please.
                 case "generatemobdata":
                     return generateMobDataSubcommand.parseTabCompletions(main, sender, args);
-                case "spawner":
-                    return spawnerSubCommand.parseTabCompletions(main, sender, args);
+                case "kill":
+                    return killSubcommand.parseTabCompletions(main, sender, args);
                 case "rules":
                     return rulesSubcommand.parseTabCompletions(main, sender, args);
-                // missing subcommands don't have tab completions.
+                case "spawner":
+                    return spawnerSubCommand.parseTabCompletions(main, sender, args);
+                case "summon":
+                    return summonSubcommand.parseTabCompletions(main, sender, args);
+                // the missing subcommands don't have tab completions, don't bother including them.
                 default:
-                    return null;
+                    return Collections.emptyList();
             }
         }
     }

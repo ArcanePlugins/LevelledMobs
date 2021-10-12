@@ -6,8 +6,10 @@ package me.lokka30.levelledmobs.listeners;
 
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
+import me.lokka30.levelledmobs.misc.NametagTimerChecker;
 import me.lokka30.levelledmobs.misc.Utils;
 import me.lokka30.microlib.MessageUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -23,6 +25,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.WeakHashMap;
 
 /**
  * Listens for when a player joins, leaves or changes worlds so that
@@ -41,6 +44,9 @@ public class PlayerJoinListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onJoin(@NotNull final PlayerJoinEvent event) {
+        synchronized (NametagTimerChecker.nametagTimer_Lock){
+            main.nametagTimerChecker.nametagCooldownQueue.put(event.getPlayer(), new WeakHashMap<>());
+        }
         parseCompatibilityChecker(event.getPlayer());
         parseUpdateChecker(event.getPlayer());
 
@@ -58,6 +64,9 @@ public class PlayerJoinListener implements Listener {
 
         main.companion.spawner_CopyIds.remove(event.getPlayer().getUniqueId());
         main.companion.spawner_InfoIds.remove(event.getPlayer().getUniqueId());
+        synchronized (NametagTimerChecker.nametagTimer_Lock) {
+            main.nametagTimerChecker.nametagCooldownQueue.remove(event.getPlayer());
+        }
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
@@ -83,6 +92,10 @@ public class PlayerJoinListener implements Listener {
     }
 
     private void updateNametagsInWorld(final Player player, @NotNull final List<Entity> entities) {
+        final int currentPlayers = Bukkit.getOnlinePlayers().size();
+        if (currentPlayers > main.maxPlayersRecorded)
+            main.maxPlayersRecorded = currentPlayers;
+
         for (final Entity entity : entities) {
             if (!(entity instanceof LivingEntity)) continue;
 
@@ -92,11 +105,12 @@ public class PlayerJoinListener implements Listener {
             if (!livingEntity.isValid()) continue;
 
             // mob must be levelled
-            final LivingEntityWrapper lmEntity = new LivingEntityWrapper(livingEntity, main);
-            if (!lmEntity.isLevelled()) continue;
+            if (!main.levelManager.isLevelled(livingEntity)) continue;
 
-            // public void updateNametagWithDelay(final LivingEntityWrapper lmEntity, final List<Player> playerList, final long delay) {
+            final LivingEntityWrapper lmEntity = LivingEntityWrapper.getInstance(livingEntity, main);
+
             main.levelManager.updateNametag(lmEntity, main.levelManager.getNametag(lmEntity, false), Collections.singletonList(player));
+            lmEntity.free();
         }
     }
 

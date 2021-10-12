@@ -31,16 +31,13 @@ import java.util.*;
  */
 public class SpawnerSubCommand implements Subcommand{
 
-    public SpawnerSubCommand(final LevelledMobs main) {
-        this.main = main;
-        this.allSpawnerOptions = new ArrayList<>(Arrays.asList(
-                "/name", "/customdropid", "/spawntype", "/minlevel", "/maxlevel", "/delay", "/maxnearbyentities",
-                "/minspawndelay", "/maxspawndelay", "/requiredplayerrange", "/spawncount", "/spawnrange"
-        ));
-    }
+    public SpawnerSubCommand(final LevelledMobs main) {this.main = main;}
 
     final private LevelledMobs main;
-    final private List<String> allSpawnerOptions;
+    final private List<String> allSpawnerOptions = Arrays.asList(
+            "/name", "/customdropid", "/spawntype", "/minlevel", "/maxlevel", "/delay", "/maxnearbyentities",
+            "/minspawndelay", "/maxspawndelay", "/requiredplayerrange", "/spawncount", "/spawnrange"
+    );
     private boolean hadInvalidArg;
 
     @Override
@@ -77,7 +74,7 @@ public class SpawnerSubCommand implements Subcommand{
         }
     }
 
-    private void parseInfoCommand(@NotNull final CommandSender sender, final String label, final String[] args){
+    private void parseInfoCommand(@NotNull final CommandSender sender, final String label, final String @NotNull [] args){
         final UUID playerId = ((Player) sender).getUniqueId();
 
         if (args.length == 2){
@@ -155,7 +152,7 @@ public class SpawnerSubCommand implements Subcommand{
         checkListener();
     }
 
-    private void copyGotDisabled(final CommandSender sender, final UUID playerId, final String label){
+    private void copyGotDisabled(final @NotNull CommandSender sender, final UUID playerId, final String label){
         main.companion.spawner_CopyIds.remove(playerId);
         List<String> messages = main.messagesCfg.getStringList("command.levelledmobs.spawner.copy.disabled");
         messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.getPrefix());
@@ -164,7 +161,7 @@ public class SpawnerSubCommand implements Subcommand{
         messages.forEach(sender::sendMessage);
     }
 
-    private void infoGotDisabled(final CommandSender sender, final UUID playerId, final String label){
+    private void infoGotDisabled(final @NotNull CommandSender sender, final UUID playerId, final String label){
         main.companion.spawner_InfoIds.remove(playerId);
         List<String> messages = main.messagesCfg.getStringList("command.levelledmobs.spawner.info.disabled");
         messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.getPrefix());
@@ -235,7 +232,7 @@ public class SpawnerSubCommand implements Subcommand{
     }
 
     @Nullable
-    private String getArgValue(final String key, final String[] args, final CommandSender sender, final String label, final boolean mustBeNumber){
+    private String getArgValue(final String key, final String @NotNull [] args, final CommandSender sender, final String label, final boolean mustBeNumber){
         int keyFlag = -1;
         int nameStartFlag = - 1;
         int nameEndFlag = - 1;
@@ -268,7 +265,7 @@ public class SpawnerSubCommand implements Subcommand{
         return keyValue;
     }
 
-    private String parseFlagValue(final CommandSender sender, final String keyName, final int argNumber, final String[] args, final boolean mustBeNumber, final String label){
+    private @Nullable String parseFlagValue(final CommandSender sender, final String keyName, final int argNumber, final String @NotNull [] args, final boolean mustBeNumber, final String label){
         if (argNumber + 1 >= args.length || args[argNumber + 1].startsWith("/")){
             List<String> message = main.messagesCfg.getStringList("command.levelledmobs.spawner.no-value");
             message = Utils.replaceAllInList(message, "%prefix%", main.configUtils.getPrefix());
@@ -294,7 +291,7 @@ public class SpawnerSubCommand implements Subcommand{
         return args[argNumber + 1];
     }
 
-    public static void generateSpawner(final CustomSpawnerInfo info){
+    public static void generateSpawner(final @NotNull CustomSpawnerInfo info){
         if (info.maxSpawnDelay != null && (info.minSpawnDelay == null || info.minSpawnDelay > info.maxSpawnDelay)) {
             // settting max spawn delay lower than min spawn delay will result in an exception
             info.minSpawnDelay = info.maxSpawnDelay;
@@ -350,38 +347,38 @@ public class SpawnerSubCommand implements Subcommand{
                     if (sbLore.length() > 0) sbLore.append("\n");
                     sbLore.append(loreLine);
                 }
-                meta.getPersistentDataContainer().set(info.main.blockPlaceListener.keySpawner_Lore, PersistentDataType.STRING, sbLore.toString());
+                meta.getPersistentDataContainer().set(info.main.namespaced_keys.keySpawner_Lore, PersistentDataType.STRING, sbLore.toString());
             }
             else {
                 lore.clear();
                 lore.addAll(Arrays.asList(info.lore.split("\n")));
                 meta.setLore(lore);
-                meta.getPersistentDataContainer().set(info.main.blockPlaceListener.keySpawner_Lore, PersistentDataType.STRING, info.lore);
+                meta.getPersistentDataContainer().set(info.main.namespaced_keys.keySpawner_Lore, PersistentDataType.STRING, info.lore);
             }
 
-            meta.getPersistentDataContainer().set(info.main.blockPlaceListener.keySpawner, PersistentDataType.INTEGER, 1);
-            meta.getPersistentDataContainer().set(info.main.blockPlaceListener.keySpawner_MinLevel, PersistentDataType.INTEGER, info.minLevel);
-            meta.getPersistentDataContainer().set(info.main.blockPlaceListener.keySpawner_MaxLevel, PersistentDataType.INTEGER, info.maxLevel);
+            meta.getPersistentDataContainer().set(info.main.namespaced_keys.keySpawner, PersistentDataType.INTEGER, 1);
+            meta.getPersistentDataContainer().set(info.main.namespaced_keys.keySpawner_MinLevel, PersistentDataType.INTEGER, info.minLevel);
+            meta.getPersistentDataContainer().set(info.main.namespaced_keys.keySpawner_MaxLevel, PersistentDataType.INTEGER, info.maxLevel);
             if (!Utils.isNullOrEmpty(info.customDropId))
-                meta.getPersistentDataContainer().set(info.main.blockPlaceListener.keySpawner_CustomDropId, PersistentDataType.STRING, info.customDropId);
+                meta.getPersistentDataContainer().set(info.main.namespaced_keys.keySpawner_CustomDropId, PersistentDataType.STRING, info.customDropId);
             if (!info.spawnType.equals(EntityType.UNKNOWN))
-                meta.getPersistentDataContainer().set(info.main.blockPlaceListener.keySpawner_SpawnType, PersistentDataType.STRING, info.spawnType.toString());
+                meta.getPersistentDataContainer().set(info.main.namespaced_keys.keySpawner_SpawnType, PersistentDataType.STRING, info.spawnType.toString());
             if (info.spawnRange != null)
-                meta.getPersistentDataContainer().set(info.main.blockPlaceListener.keySpawner_SpawnRange, PersistentDataType.INTEGER, info.spawnRange);
+                meta.getPersistentDataContainer().set(info.main.namespaced_keys.keySpawner_SpawnRange, PersistentDataType.INTEGER, info.spawnRange);
             if (info.minSpawnDelay != null)
-                meta.getPersistentDataContainer().set(info.main.blockPlaceListener.keySpawner_MinSpawnDelay, PersistentDataType.INTEGER, info.minSpawnDelay);
+                meta.getPersistentDataContainer().set(info.main.namespaced_keys.keySpawner_MinSpawnDelay, PersistentDataType.INTEGER, info.minSpawnDelay);
             if (info.maxSpawnDelay != null)
-                meta.getPersistentDataContainer().set(info.main.blockPlaceListener.keySpawner_MaxSpawnDelay, PersistentDataType.INTEGER, info.maxSpawnDelay);
+                meta.getPersistentDataContainer().set(info.main.namespaced_keys.keySpawner_MaxSpawnDelay, PersistentDataType.INTEGER, info.maxSpawnDelay);
             if (info.spawnCount != null)
-                meta.getPersistentDataContainer().set(info.main.blockPlaceListener.keySpawner_SpawnCount, PersistentDataType.INTEGER, info.spawnCount);
+                meta.getPersistentDataContainer().set(info.main.namespaced_keys.keySpawner_SpawnCount, PersistentDataType.INTEGER, info.spawnCount);
             if (info.requiredPlayerRange != null)
-                meta.getPersistentDataContainer().set(info.main.blockPlaceListener.keySpawner_RequiredPlayerRange, PersistentDataType.INTEGER, info.requiredPlayerRange);
+                meta.getPersistentDataContainer().set(info.main.namespaced_keys.keySpawner_RequiredPlayerRange, PersistentDataType.INTEGER, info.requiredPlayerRange);
             if (info.maxNearbyEntities != null)
-                meta.getPersistentDataContainer().set(info.main.blockPlaceListener.keySpawner_MaxNearbyEntities, PersistentDataType.INTEGER, info.maxNearbyEntities);
+                meta.getPersistentDataContainer().set(info.main.namespaced_keys.keySpawner_MaxNearbyEntities, PersistentDataType.INTEGER, info.maxNearbyEntities);
             if (info.delay != null)
-                meta.getPersistentDataContainer().set(info.main.blockPlaceListener.keySpawner_Delay, PersistentDataType.INTEGER, info.delay);
+                meta.getPersistentDataContainer().set(info.main.namespaced_keys.keySpawner_Delay, PersistentDataType.INTEGER, info.delay);
             if (info.customName != null)
-                meta.getPersistentDataContainer().set(info.main.blockPlaceListener.keySpawner_CustomName, PersistentDataType.STRING, info.customName);
+                meta.getPersistentDataContainer().set(info.main.namespaced_keys.keySpawner_CustomName, PersistentDataType.STRING, info.customName);
 
             item.setItemMeta(meta);
         }
@@ -427,22 +424,22 @@ public class SpawnerSubCommand implements Subcommand{
     }
 
     @Override
-    public List<String> parseTabCompletions(final LevelledMobs main, final CommandSender sender, @NotNull final String[] args) {
+    public List<String> parseTabCompletions(final LevelledMobs main, final @NotNull CommandSender sender, @NotNull final String[] args) {
         if (!sender.hasPermission("levelledmobs.command.spawner"))
-            return null;
+            return Collections.emptyList();
 
         if (args.length <= 2)
             return Arrays.asList("copy", "create", "info");
 
         if ("create".equalsIgnoreCase(args[1]))
             return tabCompletions_Create(args);
-        else if ("info".equalsIgnoreCase(args[1]) || "copy".equalsIgnoreCase(args[1]))
+        else if (("info".equalsIgnoreCase(args[1]) || "copy".equalsIgnoreCase(args[1])) && args.length <= 3)
             return Arrays.asList("on", "off");
 
-        return List.of("");
+        return Collections.emptyList();
     }
 
-    private List<String> tabCompletions_Create(@NotNull final String[] args){
+    private @NotNull List<String> tabCompletions_Create(@NotNull final String @NotNull [] args){
         if (!Utils.isNullOrEmpty(args[args.length - 2])) {
             switch (args[args.length - 2].toLowerCase()){
                 case "/spawntype":

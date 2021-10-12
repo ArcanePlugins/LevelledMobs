@@ -40,17 +40,19 @@ public class EntityNametagListener implements Listener {
             if (!(player.getInventory().getItemInMainHand().getType() == Material.NAME_TAG || player.getInventory().getItemInOffHand().getType() == Material.NAME_TAG))
                 return;
 
-            final LivingEntityWrapper lmEntity = new LivingEntityWrapper((LivingEntity) event.getRightClicked(), main);
-
             // Must be a levelled mob
-            if (!lmEntity.isLevelled()) return;
+            if (!main.levelManager.isLevelled((LivingEntity) event.getRightClicked())) return;
+
+            final LivingEntityWrapper lmEntity = LivingEntityWrapper.getInstance((LivingEntity) event.getRightClicked(), main);
 
             if (main.rulesManager.getRule_MobCustomNameStatus(lmEntity) == MobCustomNameStatus.NOT_NAMETAGGED) {
                 main.levelInterface.removeLevel(lmEntity);
+                lmEntity.free();
                 return;
             }
 
             main.levelManager.updateNametag(lmEntity);
+            lmEntity.free();
         }
     }
 }

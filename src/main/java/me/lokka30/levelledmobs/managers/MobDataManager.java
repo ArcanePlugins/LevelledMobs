@@ -106,6 +106,8 @@ public class MobDataManager {
         final double maxLevel = main.rulesManager.getRule_MobMaxLevel(lmEntity);
 
         double attributeValue = 0;
+        double attributeMax = 0;
+
         if (lmEntity.getFineTuningAttributes() != null){
             switch (addition){
                 case CUSTOM_XP_DROP:
@@ -129,16 +131,45 @@ public class MobDataManager {
                 case CREEPER_BLAST_DAMAGE:
                     if (lmEntity.getFineTuningAttributes().creeperExplosionRadius != null) attributeValue = lmEntity.getFineTuningAttributes().creeperExplosionRadius;
                     break;
+                case ATTRIBUTE_HORSE_JUMP_STRENGTH:
+                    if (lmEntity.getFineTuningAttributes().horseJumpStrength != null) attributeValue = lmEntity.getFineTuningAttributes().horseJumpStrength;
+                    break;
+                case ATTRIBUTE_ARMOR_BONUS:
+                    attributeMax = 30.0;
+                    if (lmEntity.getFineTuningAttributes().armorBonus != null) attributeValue = lmEntity.getFineTuningAttributes().armorBonus;
+                    break;
+                case ATTRIBUTE_ARMOR_TOUGHNESS:
+                    attributeMax = 50.0;
+                    if (lmEntity.getFineTuningAttributes().armorToughness != null) attributeValue = lmEntity.getFineTuningAttributes().armorToughness;
+                    break;
+                case ATTRIBUTE_ATTACK_KNOCKBACK:
+                    attributeMax = 5.0;
+                    if (lmEntity.getFineTuningAttributes().attackKnockback != null) attributeValue = lmEntity.getFineTuningAttributes().attackKnockback;
+                    break;
+                case ATTRIBUTE_FLYING_SPEED:
+                    if (lmEntity.getFineTuningAttributes().flyingSpeed != null) attributeValue = lmEntity.getFineTuningAttributes().flyingSpeed;
+                    break;
+                case ATTRIBUTE_KNOCKBACK_RESISTANCE:
+                    attributeMax = 1.0;
+                    if (lmEntity.getFineTuningAttributes().knockbackResistance != null) attributeValue = lmEntity.getFineTuningAttributes().knockbackResistance;
+                    break;
+                case ATTRIBUTE_ZOMBIE_SPAWN_REINFORCEMENTS:
+                    attributeMax = 1.0;
+                    if (lmEntity.getFineTuningAttributes().zombieReinforcements != null) attributeValue = lmEntity.getFineTuningAttributes().zombieReinforcements;
+                    break;
+                case ATTRIBUTE_FOLLOW_RANGE:
+                    if (lmEntity.getFineTuningAttributes().followRange != null) attributeValue = lmEntity.getFineTuningAttributes().followRange;
+                    break;
             }
         }
 
         if (maxLevel == 0) return 0.0;
 
-        // use old formula or item drops, xp drops
-        if (defaultValue == 0.0)
-            return attributeValue * (((double) lmEntity.getMobLevel()) / maxLevel);
-
-        // use revised formula for all attributes
-        return (defaultValue * attributeValue) * ((lmEntity.getMobLevel()) / maxLevel);
+        // only used for 5 specific attributes
+        if (attributeMax > 0.0)
+            return (lmEntity.getMobLevel() / maxLevel) * (attributeMax * attributeValue);
+        else
+            // normal formula for most attributes
+            return (defaultValue * attributeValue) * ((lmEntity.getMobLevel()) / maxLevel);
     }
 }

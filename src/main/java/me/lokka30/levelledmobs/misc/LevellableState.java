@@ -89,6 +89,12 @@ public enum LevellableState {
     DENIED_CONFIGURATION_COMPATIBILITY_SHOPKEEPERS,
 
     /**
+     * A rule has been configured to block
+     * Simple Pets from being levelled
+     */
+    DENIED_CONFIGURATION_COMPATIBILITY_SIMPLEPETS,
+
+    /**
      * WorldGuard region flag states that
      * mobs are not levellable in its region
      */

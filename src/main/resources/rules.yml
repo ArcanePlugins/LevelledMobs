@@ -189,8 +189,16 @@ presets:
         attack-damage: 3.5
         ranged-attack-damage: 2.75
         creeper-blast-damage: 1.25
+        follow-range: 0.25
         item-drop: 3
         xp-drop: 5
+#       Special Multipliers (0.0 Min - 1.0 Max)
+        armor-bonus: 0.7
+        armor-toughness: 0.4
+        attack-knockback: 0.5
+        knockback-resistance: 0.5
+        zombie-spawn-reinforcements: 0.45
+
       creeper-max-damage-radius: 5
       tiered-coloring:
         1-9: '&#22E76B' #Green
@@ -211,13 +219,22 @@ presets:
       minLevel: 1
       maxLevel: 25
       multipliers:
+#       All Entities/Default Attributes
         max-health: 5.0
         movement-speed: 0.15
         attack-damage: 2.25
         ranged-attack-damage: 2.0
         creeper-blast-damage: 1.0
+        follow-range: 0
         item-drop: 3
         xp-drop: 5
+#       Special Multipliers (0.0 Min - 1.0 Max)
+        armor-bonus: 0.5
+        armor-toughness: 0.2
+        attack-knockback: 0.25
+        knockback-resistance: 0.2
+        zombie-spawn-reinforcements: 0.25
+
       creeper-max-damage-radius: 3
       tiered-coloring:
         1-5: '&#22E76B' #Green
@@ -243,8 +260,16 @@ presets:
         attack-damage: 1.0
         ranged-attack-damage: 1.0
         creeper-blast-damage: 0.5
+        follow-range: 0
         item-drop: 3
         xp-drop: 5
+#       Special Multipliers (0.0 Min - 1.0 Max)
+        armor-bonus: 0.4
+        armor-toughness: 0.2
+        attack-knockback: 0.1
+        knockback-resistance: 0.15
+        zombie-spawn-reinforcements: 0.1
+
       creeper-max-damage-radius: 1
       tiered-coloring:
         1-2: '&#22E76B' #Green
@@ -327,6 +352,7 @@ default-rule:
       INFERNAL_MOBS: false
       CITIZENS: false
       SHOPKEEPERS: false
+      SIMPLE_PETS: false
 
 #    apply-above-y: 64
 #    apply-below-y: 59
@@ -345,10 +371,12 @@ default-rule:
 #      PILLAGER: ['Raider', 'Barbarian']
 
     creature-death-nametag: '%tiered%Lvl %mob-lvl%&8 | &f%entity-name%'
-    creature-nametag-always-visible: false
+    nametag-visible-time: 1000
+    nametag-visibility-method: ['TARGETED', 'ATTACKED', 'TRACKING']
 
     baby-mobs-inherit-adult-setting: true
     level-inheritance: true
+    passenger-match-level: false
 
     use-custom-item-drops-for-mobs: false
 
@@ -437,4 +465,4 @@ custom-rules:
 # +   DO NOT EDIT BEYOND HERE WITHOUT DEVELOPER APPROVAL                                     +LM3
 # +                                                                                          +LM3
 # +-------------------------------------------------------------------------------------------LM3
-file-version: 1
+file-version: 2

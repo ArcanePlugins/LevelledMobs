@@ -7,6 +7,8 @@ package me.lokka30.levelledmobs.customdrops;
 import me.lokka30.levelledmobs.misc.Utils;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -18,8 +20,9 @@ import java.util.TreeSet;
  */
 public class CustomDropBase implements Cloneable {
 
-    public CustomDropBase(@NotNull final CustomDropsDefaults defaults){
+    public CustomDropBase(@NotNull final CustomDropsDefaults defaults) {
         this.amount = defaults.amount;
+        this.permissions = new LinkedList<>();
     }
 
     int amount;
@@ -30,10 +33,14 @@ public class CustomDropBase implements Cloneable {
     public int maxLevel;
     public int priority;
     public int maxDropGroup;
+    public Integer minPlayerLevel;
+    public Integer maxPlayerLevel;
     public double chance;
     public boolean playerCausedOnly;
     public boolean noSpawner;
     public String groupId;
+    public String playerLevelVariable;
+    final public List<String> permissions;
     public final Set<String> excludedMobs = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
 
     public int getAmount(){

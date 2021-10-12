@@ -6,7 +6,11 @@ package me.lokka30.levelledmobs.listeners;
 
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
+import me.lokka30.levelledmobs.misc.NametagTimerChecker;
 import me.lokka30.levelledmobs.misc.QueueItem;
+import me.lokka30.levelledmobs.misc.Utils;
+import me.lokka30.levelledmobs.rules.NametagVisibilityEnum;
+import org.bukkit.Utility;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -37,22 +41,40 @@ public class EntityTargetListener implements Listener {
      */
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void onTarget(@NotNull final EntityTargetEvent event) {
+        if (!(event.getEntity() instanceof LivingEntity)) return;
+
+        if (event.getTarget() == null){
+            synchronized (NametagTimerChecker.entityTarget_Lock){
+                main.nametagTimerChecker.entityTargetMap.remove((LivingEntity) event.getEntity());
+            }
+            return;
+        }
 
         // Must target a player and must be a living entity
-        if (!(event.getTarget() instanceof Player) || !(event.getEntity() instanceof LivingEntity)) return;
+        if (!(event.getTarget() instanceof Player)) return;
 
-        final LivingEntityWrapper lmEntity = new LivingEntityWrapper((LivingEntity) event.getEntity(), main);
+        final LivingEntityWrapper lmEntity = LivingEntityWrapper.getInstance((LivingEntity) event.getEntity(), main);
 
         // Must be a levelled entity
         if (!lmEntity.isLevelled()){
-            if (main.levelManager.entitySpawnListener.processMobSpawns)
+            if (main.levelManager.entitySpawnListener.processMobSpawns) {
+                lmEntity.free();
                 return;
+            }
 
             if (lmEntity.getMobLevel() < 0) lmEntity.reEvaluateLevel = true;
             main._mobsQueueManager.addToQueue(new QueueItem(lmEntity, event));
+            return;
+        }
+
+        if (main.rulesManager.getRule_CreatureNametagVisbility(lmEntity).contains(NametagVisibilityEnum.TRACKING)) {
+            synchronized (NametagTimerChecker.entityTarget_Lock) {
+                main.nametagTimerChecker.entityTargetMap.put(lmEntity.getLivingEntity(), (Player) event.getTarget());
+            }
         }
 
         // Update the nametag.
-        main.nametagQueueManager_.addToQueue(new QueueItem(lmEntity, main.levelManager.getNametag(lmEntity, false), lmEntity.getLivingEntity().getWorld().getPlayers()));
+        main.levelManager.updateNametag(lmEntity);
+        lmEntity.free();
     }
 }

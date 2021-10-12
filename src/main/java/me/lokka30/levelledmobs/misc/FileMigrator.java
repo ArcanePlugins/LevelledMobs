@@ -108,7 +108,7 @@ public class FileMigrator {
         final File backedupFile = new File(main.getDataFolder(), "rules.yml.old");
         FileUtil.copy(fileRules, backedupFile);
 
-        final int worldListAllowedLine = 170 - 1; // minus 1 is due to 0 indexing of arrays
+        final int worldListAllowedLine = 177 - 1; // minus 1 is due to 0 indexing of arrays
         final int worldListExcludedLine = worldListAllowedLine + 1;
 
         final YamlConfiguration settings = YamlConfiguration.loadConfiguration(fileSettings);
@@ -150,7 +150,8 @@ public class FileMigrator {
 
     }
 
-    private static String compileListFromArray(final List<String> list){
+    @NotNull
+    private static String compileListFromArray(final @NotNull List<String> list){
         final StringBuilder sb = new StringBuilder();
         sb.append("[");
         for (final String item : list){
@@ -310,6 +311,44 @@ public class FileMigrator {
         }
 
         return 0;
+    }
+
+    protected static void migrateRules(File from, @NotNull File to, int oldVersion) {
+        try {
+            final List<String> newConfigLines = Files.readAllLines(to.toPath(), StandardCharsets.UTF_8);
+            boolean hasVisibleTime = false;
+            for (final String line : newConfigLines){
+                if (line.toLowerCase().contains("nametag-visible-time")){
+                    hasVisibleTime = true;
+                    break;
+                }
+            }
+
+            for (int i = 0; i < newConfigLines.size(); i++){
+                final String line = newConfigLines.get(i);
+                if (line.trim().startsWith("#")) continue;
+
+                int startOfText = line.toLowerCase().indexOf("creature-nametag-always-visible:");
+                if (startOfText > 0){
+                    String newline = line.substring(0, startOfText) + "nametag-visibility-method: ['TARGETED', 'ATTACKED', 'TRACKING']";
+                    newConfigLines.set(i, newline);
+                    if (!hasVisibleTime){
+                        newline = line.substring(0, startOfText) + "nametag-visible-time: 1000";
+                        newConfigLines.add(i, newline);
+                        i++;
+                    }
+
+                }
+
+                if (line.startsWith("file-version"))
+                    newConfigLines.set(i, "file-version: 2");
+            }
+
+            Files.write(to.toPath(), newConfigLines, StandardCharsets.UTF_8, StandardOpenOption.TRUNCATE_EXISTING);
+        }
+        catch (IOException e){
+            e.printStackTrace();
+        }
     }
 
     protected static void copyYmlValues(File from, @NotNull File to, int oldVersion) {

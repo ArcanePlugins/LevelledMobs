@@ -66,7 +66,7 @@ public class Companion {
     final private MetricsInfo metricsInfo;
 
     void checkWorldGuard() {
-        // Hook into WorldGuard, register LM's flags.
+        // Hook into WorldGuard
         // This cannot be moved to onEnable (stated in WorldGuard's documentation). It MUST be ran in onLoad.
         if (ExternalCompatibilityManager.hasWorldGuardInstalled()) {
             main.worldGuardIntegration = new WorldGuardIntegration();
@@ -261,6 +261,7 @@ public class Companion {
         metrics.addCustomChart(new SimplePie("custom-entity-names", metricsInfo::customEntityNamesCount));
         metrics.addCustomChart(new SimplePie("utilizes-nbtdata", metricsInfo::usesNbtData));
         metrics.addCustomChart(new SimplePie("utilizes_player_levelling", metricsInfo::usesPlayerLevelling));
+        metrics.addCustomChart(new SimplePie("nametag_visibility", metricsInfo::nametagVisibility));
         metrics.addCustomChart(new SimpleBarChart("enabled-compatibility", metricsInfo::enabledCompats));
     }
 

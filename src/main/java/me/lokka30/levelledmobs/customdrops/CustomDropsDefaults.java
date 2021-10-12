@@ -7,6 +7,7 @@ package me.lokka30.levelledmobs.customdrops;
 import org.bukkit.inventory.ItemFlag;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -21,19 +22,25 @@ public class CustomDropsDefaults {
     public boolean noSpawner;
     public boolean override;
     public boolean playerCausedOnly;
+    public boolean onlyDropIfEquipped;
     public int amount;
     public int priority;
     public int minLevel;
     public int maxLevel;
     public int customModelData;
     public int maxDropGroup;
+    public Integer minPlayerLevel;
+    public Integer maxPlayerLevel;
     public double chance;
     public double equippedSpawnChance;
     public Double overallChance;
     public String groupId;
     public String damage;
     public String nbtData;
+    public String playerLevelVariable;
     public List<ItemFlag> itemFlags;
+    final public List<String> permissions;
+    final public List<String> overallPermissions;
 
     public CustomDropsDefaults() {
         // these are the defaults of the defaults
@@ -49,6 +56,8 @@ public class CustomDropsDefaults {
         this.noSpawner = false;
         this.override = false;
         this.playerCausedOnly = false;
+        this.permissions = new LinkedList<>();
+        this.overallPermissions = new LinkedList<>();
     }
 
     public void setDefaultsFromDropItem(@NotNull final CustomDropItem drop) {
@@ -66,5 +75,10 @@ public class CustomDropsDefaults {
         this.groupId = drop.groupId;
         this.nbtData = drop.nbtData;
         this.itemFlags = drop.itemFlags;
+        this.minPlayerLevel = drop.minPlayerLevel;
+        this.maxPlayerLevel = drop.maxPlayerLevel;
+        this.playerLevelVariable = drop.playerLevelVariable;
+        this.onlyDropIfEquipped = drop.onlyDropIfEquipped;
+        this.permissions.addAll(drop.permissions);
     }
 }

@@ -8,16 +8,10 @@ import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
-import com.sk89q.worldguard.protection.flags.Flag;
-import com.sk89q.worldguard.protection.flags.StateFlag;
-import com.sk89q.worldguard.protection.flags.StringFlag;
-import com.sk89q.worldguard.protection.flags.registry.FlagConflictException;
-import com.sk89q.worldguard.protection.flags.registry.FlagRegistry;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import com.sk89q.worldguard.protection.regions.RegionContainer;
 import me.lokka30.levelledmobs.LivingEntityInterface;
-import me.lokka30.levelledmobs.misc.Utils;
 import org.bukkit.Location;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -33,59 +27,8 @@ import java.util.*;
  */
 public class WorldGuardIntegration {
 
-    /* Flags */
-    public static StringFlag
-            customMinLevelFlag, // This flag forces mobs to not be levelled lower than the value stated in the flag. -1 = no minimum from WorldGuard.
-            customMaxLevelFlag; // This flag forces mobs to not be levelled higher than the value stated in the flag. -1 = no maximum from WorldGuard.
-    public static StateFlag
-            useCustomLevelsFlag, // This flag dictates if the custom min and max flags will be used or not. If false, then the min and max flags will have no effect.
-            allowLevelledMobsFlag; // This flag dictates if mobs that spawn in the WorldGuard region will be levelled or not.
-
     public WorldGuardIntegration() {
-        registerFlags();
-    }
 
-    public void registerFlags() {
-        final FlagRegistry flagRegistry = WorldGuard.getInstance().getFlagRegistry();
-
-        try {
-            StateFlag useCustomLevelsFlag, allowLevelledMobsFlag;
-            StringFlag customMinLevelFlag, customMaxLevelFlag;
-
-            allowLevelledMobsFlag = new StateFlag("LM-AllowLevelledMobs", true);
-            useCustomLevelsFlag = new StateFlag("LM-UseCustomLevels", false);
-            customMinLevelFlag = new StringFlag("LM-CustomMinLevel", "-1");
-            customMaxLevelFlag = new StringFlag("LM-CustomMaxLevel", "-1");
-
-            flagRegistry.register(allowLevelledMobsFlag);
-            flagRegistry.register(useCustomLevelsFlag);
-            flagRegistry.register(customMinLevelFlag);
-            flagRegistry.register(customMaxLevelFlag);
-
-            WorldGuardIntegration.allowLevelledMobsFlag = allowLevelledMobsFlag;
-            WorldGuardIntegration.useCustomLevelsFlag = useCustomLevelsFlag;
-            WorldGuardIntegration.customMinLevelFlag = customMinLevelFlag;
-            WorldGuardIntegration.customMaxLevelFlag = customMaxLevelFlag;
-
-        } catch (final FlagConflictException e) {
-
-            final Flag<?> allowLevelledMobs = flagRegistry.get("LM-AllowLevelledMobs");
-            final Flag<?> useCustomLevels = flagRegistry.get("LM-UseCustomLevels");
-            final Flag<?> customMinLevel = flagRegistry.get("LM-CustomMinLevel");
-            final Flag<?> customMaxLevel = flagRegistry.get("LM-CustomMaxLevel");
-
-            if (allowLevelledMobs instanceof StateFlag)
-                WorldGuardIntegration.allowLevelledMobsFlag = (StateFlag) allowLevelledMobs;
-
-            if (customMinLevel instanceof StringFlag)
-                WorldGuardIntegration.customMinLevelFlag = (StringFlag) customMinLevel;
-
-            if (customMaxLevel instanceof StringFlag)
-                WorldGuardIntegration.customMaxLevelFlag = (StringFlag) customMaxLevel;
-
-            if (useCustomLevels instanceof StateFlag)
-                WorldGuardIntegration.useCustomLevelsFlag = (StateFlag) useCustomLevels;
-        }
     }
 
     //Get all regions at an Entities' location.
@@ -158,87 +101,6 @@ public class WorldGuardIntegration {
         protectedRegionList.sort(Comparator.comparingInt(ProtectedRegion::getPriority));
 
         return protectedRegionList.toArray(protectedRegions);
-    }
-
-    //Check if region is applicable for region levelling.
-    public boolean checkRegionFlags(final LivingEntityInterface lmInterface) {
-        boolean minBool = false;
-        boolean maxBool = false;
-
-        if (!ExternalCompatibilityManager.hasWorldGuardInstalled()) {
-            return false;
-        }
-
-        //Sorted region array, highest priority comes last.
-        final ProtectedRegion[] regions = sortRegionsByPriority(getRegionSet(lmInterface));
-
-        if (regions == null) return true;
-
-        //Check region flags on integrity.
-        for (final ProtectedRegion region : regions) {
-            if (region.getFlag(WorldGuardIntegration.useCustomLevelsFlag) == StateFlag.State.DENY) {
-                return false;
-            }
-
-            if (Utils.isInteger(region.getFlag(WorldGuardIntegration.customMinLevelFlag))) {
-                minBool = Integer.parseInt(Objects.requireNonNull(Objects.requireNonNull(region.getFlag(WorldGuardIntegration.customMinLevelFlag)))) > -1;
-            }
-
-            if (Utils.isInteger(region.getFlag(WorldGuardIntegration.customMaxLevelFlag))) {
-                maxBool = Integer.parseInt(Objects.requireNonNull(region.getFlag(WorldGuardIntegration.customMaxLevelFlag))) > -1;
-            }
-        }
-
-        return minBool || maxBool;
-    }
-
-
-    //Generate level based on WorldGuard region flags.
-    public int[] getRegionLevel(final LivingEntityInterface lmInterface) {
-        final int[] levels = new int[]{ -1, -1};
-
-        final ProtectedRegion[] regions = sortRegionsByPriority(getRegionSet(lmInterface));
-
-        if (regions == null) return levels;
-
-        for (final ProtectedRegion region : regions) {
-            if (Utils.isInteger(region.getFlag(WorldGuardIntegration.customMinLevelFlag))) {
-                levels[0] = Integer.parseInt(Objects.requireNonNull(region.getFlag(WorldGuardIntegration.customMinLevelFlag)));
-            }
-
-            if (Utils.isInteger(region.getFlag(WorldGuardIntegration.customMaxLevelFlag))) {
-                levels[1] = Integer.parseInt(Objects.requireNonNull(region.getFlag(WorldGuardIntegration.customMaxLevelFlag)));
-            }
-        }
-
-        return levels;
-    }
-
-    public boolean regionAllowsLevelling(final LivingEntityInterface lmInterface) {
-        final ProtectedRegion[] regions = sortRegionsByPriority(getRegionSet(lmInterface));
-
-        if (regions == null) return true;
-
-        for (final ProtectedRegion region : regions) {
-            return region.getFlag(WorldGuardIntegration.allowLevelledMobsFlag) != StateFlag.State.DENY;
-        }
-
-        return true;
-    }
-
-    public boolean regionAllowsLevelling(final Location location) {
-        final ProtectedRegion[] regions = sortRegionsByPriority(getRegionSet(location));
-
-        if (regions == null) return true;
-
-        StateFlag.State state = null;
-
-        for (final ProtectedRegion region : regions) {
-            StateFlag.State foundState = region.getFlag(WorldGuardIntegration.allowLevelledMobsFlag);
-            if (foundState != null) state = foundState;
-        }
-
-        return state == null || state == StateFlag.State.ALLOW;
     }
 
     @NotNull

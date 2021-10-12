@@ -11,6 +11,7 @@ import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
@@ -25,6 +26,7 @@ public class CustomDropItem extends CustomDropBase {
     public int customModelDataId;
     public double equippedSpawnChance;
     public boolean noMultiplier;
+    public boolean onlyDropIfEquipped;
     public String customName;
     public String mobHeadTexture;
     public String nbtData;
@@ -49,6 +51,7 @@ public class CustomDropItem extends CustomDropBase {
         this.maxDropGroup = defaults.maxDropGroup;
         this.equippedSpawnChance = defaults.equippedSpawnChance;
         this.noMultiplier = defaults.noMultiplier;
+        this.onlyDropIfEquipped = defaults.onlyDropIfEquipped;
     }
 
     public CustomDropItem cloneItem() {

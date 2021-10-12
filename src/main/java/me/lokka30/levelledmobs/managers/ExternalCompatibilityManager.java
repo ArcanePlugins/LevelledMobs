@@ -9,7 +9,6 @@ import me.lokka30.levelledmobs.LivingEntityInterface;
 import me.lokka30.levelledmobs.misc.LevellableState;
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -18,6 +17,7 @@ import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import simplepets.brainsynder.api.plugin.SimplePets;
 
 import java.util.List;
 import java.util.Map;
@@ -55,7 +55,9 @@ public class ExternalCompatibilityManager {
         SHOPKEEPERS,
 
         // PlaceholderAPI plugin
-        PLACEHOLDER_API
+        PLACEHOLDER_API,
+
+        SIMPLE_PETS
     }
 
     /* Store any external namespaced keys with null values by default */
@@ -99,17 +101,39 @@ public class ExternalCompatibilityManager {
         return Bukkit.getPluginManager().getPlugin("MythicMobs") != null;
     }
 
+    public static boolean hasSimplePetsInstalled() {
+        return Bukkit.getPluginManager().getPlugin("SimplePets") != null;
+    }
+
     public static boolean hasWorldGuardInstalled() {
         return Bukkit.getPluginManager().getPlugin("WorldGuard") != null;
+    }
+
+    public static boolean isMobOfSimplePets(@NotNull final LivingEntityWrapper lmEntity){
+        final Plugin plugin = Bukkit.getPluginManager().getPlugin("SimplePets");
+        if (plugin == null) return false;
+
+        // version 5 uses the API, older versions we'll check for metadata
+        if (plugin.getDescription().getVersion().startsWith("4")) {
+            for (final MetadataValue meta : lmEntity.getLivingEntity().getMetadata("pet")) {
+                if (!meta.asString().isEmpty()) return true;
+            }
+
+            return false;
+        }
+        else
+            return SimplePets.isPetEntity(lmEntity.getLivingEntity());
     }
 
     public static boolean isMythicMob(@NotNull final LivingEntityWrapper lmEntity) {
         final Plugin p = Bukkit.getPluginManager().getPlugin("MythicMobs");
         if (p == null) return false;
 
-        if (!p.getDescription().getVersion().startsWith("4")) {
+        if (!p.getDescription().getVersion().startsWith("4.12")) {
             final NamespacedKey mmKey = new NamespacedKey(p, "type");
-            return lmEntity.getPDC().has(mmKey, PersistentDataType.STRING);
+            synchronized (lmEntity.getLivingEntity().getPersistentDataContainer()) {
+                return lmEntity.getPDC().has(mmKey, PersistentDataType.STRING);
+            }
         }
 
         if (lmEntity.getLivingEntity().hasMetadata("mythicmob")){
@@ -132,12 +156,13 @@ public class ExternalCompatibilityManager {
         if (!p.getDescription().getVersion().startsWith("4")) {
             // MM version 5 must use this method for internal name detection
             final NamespacedKey mmKey = new NamespacedKey(p, "type");
-            if (lmEntity.getPDC().has(mmKey, PersistentDataType.STRING)) {
-                final String type = lmEntity.getPDC().get(mmKey, PersistentDataType.STRING);
-                return type == null ? "" : type;
+            synchronized (lmEntity.getLivingEntity().getPersistentDataContainer()) {
+                if (lmEntity.getPDC().has(mmKey, PersistentDataType.STRING)) {
+                    final String type = lmEntity.getPDC().get(mmKey, PersistentDataType.STRING);
+                    return type == null ? "" : type;
+                } else
+                    return "";
             }
-            else
-                return "";
         }
 
         // MM version 4 detection below:
@@ -186,6 +211,10 @@ public class ExternalCompatibilityManager {
                 result.equals(LevellableState.ALLOWED))
             result = LevellableState.DENIED_CONFIGURATION_COMPATIBILITY_SHOPKEEPERS;
 
+        if (isMobOfSimplePets(lmEntity) && !isExternalCompatibilityEnabled(ExternalCompatibility.SIMPLE_PETS, compatRules) &&
+                result.equals(LevellableState.ALLOWED))
+            result = LevellableState.DENIED_CONFIGURATION_COMPATIBILITY_SIMPLEPETS;
+
         return result;
     }
 
@@ -203,8 +232,10 @@ public class ExternalCompatibilityManager {
         if (dangerousCavesMobTypeKey == null)
             dangerousCavesMobTypeKey = new NamespacedKey(plugin, "mob-type");
 
-        if (!lmEntity.getPDC().has(dangerousCavesMobTypeKey, PersistentDataType.STRING))
-            return false;
+        synchronized (lmEntity.getLivingEntity().getPersistentDataContainer()) {
+            if (!lmEntity.getPDC().has(dangerousCavesMobTypeKey, PersistentDataType.STRING))
+                return false;
+        }
 
         lmEntity.setMobExternalType(ExternalCompatibility.DANGEROUS_CAVES);
         return true;
@@ -222,8 +253,10 @@ public class ExternalCompatibilityManager {
         if (ecoBossesKey == null)
             ecoBossesKey = new NamespacedKey(plugin, "boss");
 
-        if (!lmEntity.getPDC().has(ecoBossesKey, PersistentDataType.STRING))
-            return false;
+        synchronized (lmEntity.getLivingEntity().getPersistentDataContainer()) {
+            if (!lmEntity.getPDC().has(ecoBossesKey, PersistentDataType.STRING))
+                return false;
+        }
 
         lmEntity.setMobExternalType(ExternalCompatibility.ECO_BOSSES);
         return true;
@@ -300,16 +333,6 @@ public class ExternalCompatibilityManager {
         if (isExternalType) lmEntity.setMobExternalType(ExternalCompatibility.SHOPKEEPERS);
 
         return isExternalType;
-    }
-
-    /**
-     * @param location location to check regions of
-     * @param main the main LevelledMobs instance
-     * @return if WorldGuard is installed and region of entity blocks levelling (flag derived)
-     */
-    public static boolean doesWorldGuardRegionAllowLevelling(final Location location, final LevelledMobs main) {
-        return !ExternalCompatibilityManager.hasWorldGuardInstalled() ||
-                main.worldGuardIntegration.regionAllowsLevelling(location);
     }
 
     @Nullable

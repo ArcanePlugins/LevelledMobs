@@ -86,7 +86,7 @@ public class RulesParsingManager {
 
     @NotNull
     public List<RuleInfo> getAllRules(){
-        List<RuleInfo> results = new LinkedList<>();
+        final List<RuleInfo> results = new LinkedList<>();
         if (this.defaultRule != null) results.add(this.defaultRule);
         results.addAll(this.rulePresets.values());
         results.addAll(this.customRules);
@@ -127,6 +127,8 @@ public class RulesParsingManager {
         parsingInfo.babyMobsInheritAdultSetting = true;
         parsingInfo.mobLevelInheritance = true;
         parsingInfo.creeperMaxDamageRadius = 5;
+        parsingInfo.nametagVisibleTime = 4000;
+        parsingInfo.nametagVisibilityEnum = List.of(NametagVisibilityEnum.TARGETED, NametagVisibilityEnum.ATTACKED, NametagVisibilityEnum.TRACKING);
 
         if (cs == null){
             Utils.logger.info("default-rule section was null");
@@ -436,7 +438,7 @@ public class RulesParsingManager {
         final Map<ExternalCompatibilityManager.ExternalCompatibility, Boolean> results = new TreeMap<>();
 
         for (final String key : cs.getKeys(false)){
-            boolean value = cs.getBoolean(key);
+            final boolean value = cs.getBoolean(key);
 
             ExternalCompatibilityManager.ExternalCompatibility compat;
             try {
@@ -575,10 +577,37 @@ public class RulesParsingManager {
         parsingInfo.customDrop_DropTableId = ymlHelper.getString(cs,"use-droptable-id", parsingInfo.customDrop_DropTableId);
         parsingInfo.nametag = ymlHelper.getString(cs,"nametag", parsingInfo.nametag);
         parsingInfo.nametag_CreatureDeath = ymlHelper.getString(cs,"creature-death-nametag", parsingInfo.nametag_CreatureDeath);
-        parsingInfo.CreatureNametagAlwaysVisible = ymlHelper.getBoolean2(cs,"creature-nametag-always-visible", parsingInfo.CreatureNametagAlwaysVisible);
         parsingInfo.sunlightBurnAmount = ymlHelper.getDouble2(cs, "sunlight-intensity", parsingInfo.sunlightBurnAmount);
         parsingInfo.lowerMobLevelBiasFactor = ymlHelper.getInt2(cs, "lower-mob-level-bias-factor", parsingInfo.lowerMobLevelBiasFactor);
         parsingInfo.mobNBT_Data = ymlHelper.getString(cs, "nbt-data", parsingInfo.mobNBT_Data);
+        parsingInfo.passengerMatchLevel = ymlHelper.getBoolean2(cs, "passenger-match-level", parsingInfo.passengerMatchLevel);
+        parsingInfo.nametagVisibleTime = ymlHelper.getInt2(cs, "nametag-visible-time", parsingInfo.nametagVisibleTime);
+
+        final Set<String> nametagVisibility = ymlHelper.getStringSet(cs, "nametag-visibility-method");
+        final List<NametagVisibilityEnum> nametagVisibilityEnums = new LinkedList<>();
+        for (final String nametagVisEnum : nametagVisibility) {
+            try {
+                final NametagVisibilityEnum nametagVisibilityEnum = NametagVisibilityEnum.valueOf(nametagVisEnum.toUpperCase());
+                nametagVisibilityEnums.add(nametagVisibilityEnum);
+            }
+            catch (Exception ignored){
+                Utils.logger.warning("Invalid value in nametag-visibility-method: " + nametagVisibility + ", in rule: " + parsingInfo.getRuleName());
+            }
+        }
+
+        if (!nametagVisibilityEnums.isEmpty())
+            parsingInfo.nametagVisibilityEnum = nametagVisibilityEnums;
+        else if (cs.get(ymlHelper.getKeyNameFromConfig(cs, "creature-nametag-always-visible")) != null)  {
+            final Boolean nametagVisibilityBackwardsComat = ymlHelper.getBoolean2(cs, "creature-nametag-always-visible", null);
+            if (nametagVisibilityBackwardsComat != null){
+                if (nametagVisibilityBackwardsComat)
+                    parsingInfo.nametagVisibilityEnum = List.of(NametagVisibilityEnum.ALWAYS_ON);
+                else
+                    parsingInfo.nametagVisibilityEnum = List.of(NametagVisibilityEnum.MELEE);
+            }
+            else
+                parsingInfo.nametagVisibilityEnum = List.of(NametagVisibilityEnum.MELEE);
+        }
     }
 
     private void parseConditions(final ConfigurationSection cs){
@@ -623,6 +652,9 @@ public class RulesParsingManager {
         parsingInfo.conditions_Biomes = buildCachedModalListOfBiome(cs, parsingInfo.conditions_Biomes);
         parsingInfo.conditions_ApplyPlugins = buildCachedModalListOfString(cs, "apply-plugins", parsingInfo.conditions_ApplyPlugins);
         parsingInfo.conditions_MM_Names = buildCachedModalListOfString(cs,"mythicmobs-internal-names", parsingInfo.conditions_MM_Names);
+        parsingInfo.conditions_SpawnerNames = buildCachedModalListOfString(cs,"spawner-names", parsingInfo.conditions_SpawnerNames);
+        parsingInfo.conditions_WorldTickTime = parseWorldTimeTicks(cs, parsingInfo.conditions_WorldTickTime);
+        parsingInfo.conditions_Permission = buildCachedModalListOfString(cs, "permission", parsingInfo.conditions_Permission);
     }
 
     private void parseStrategies(final ConfigurationSection cs){
@@ -690,6 +722,52 @@ public class RulesParsingManager {
         }
 
         parsePlayerLevellingOptions(objTo_CS(cs,"player-levelling"));
+    }
+
+    @Nullable
+    private CachedModalList<MinAndMax> parseWorldTimeTicks(final ConfigurationSection cs, final CachedModalList<MinAndMax> existingList){
+        if (cs == null) return existingList;
+
+        final CachedModalList<String> temp = buildCachedModalListOfString(cs, "world-time-tick", null);
+        if (temp == null) return existingList;
+        final CachedModalList<MinAndMax> result = new CachedModalList<>();
+        result.allowAll = temp.allowAll;
+        result.excludeAll = temp.excludeAll;
+        result.excludedList.addAll(parseMinMaxValue(temp.excludedList));
+        result.allowedList.addAll(parseMinMaxValue(temp.allowedList));
+
+        return result;
+    }
+
+    @NotNull
+    private Set<MinAndMax> parseMinMaxValue(@NotNull final Set<String> numberPairs){
+        final Set<MinAndMax> result = new TreeSet<>();
+
+        for (final String numberPair : numberPairs) {
+            final String[] split = numberPair.split("-");
+            final MinAndMax minAndMax = new MinAndMax();
+            boolean hadInvalidValue = false;
+            for (int i = 0; i <= 1; i++) {
+                if (!Utils.isInteger(split[i])) {
+                    Utils.logger.warning("Invalid world-time-tick value: '" + split[i] + "' in rule " + parsingInfo.getRuleName());
+                    hadInvalidValue = true;
+                    break;
+                }
+                final int parsedNum = Integer.parseInt(split[i]);
+
+                if (i == 0) {
+                    minAndMax.min = parsedNum;
+                    if (split.length == 1) minAndMax.max = parsedNum;
+                }
+                else
+                    minAndMax.max = parsedNum;
+            }
+
+            if (hadInvalidValue) continue;
+            result.add(minAndMax);
+        }
+
+        return result;
     }
 
     private void parseHealthIndicator(final ConfigurationSection cs){
@@ -852,7 +930,7 @@ public class RulesParsingManager {
     private FineTuningAttributes parseFineTuningValues(final ConfigurationSection cs){
         if (cs == null) return null;
 
-        FineTuningAttributes attribs = new FineTuningAttributes();
+        final FineTuningAttributes attribs = new FineTuningAttributes();
 
         attribs.maxHealth = ymlHelper.getDouble2(cs, "max-health", attribs.maxHealth);
         attribs.movementSpeed = ymlHelper.getDouble2(cs, "movement-speed", attribs.movementSpeed);
@@ -861,6 +939,14 @@ public class RulesParsingManager {
         attribs.itemDrop = ymlHelper.getInt2(cs, "item-drop", attribs.itemDrop);
         attribs.xpDrop = ymlHelper.getInt2(cs, "xp-drop", attribs.xpDrop);
         attribs.creeperExplosionRadius = ymlHelper.getDouble2(cs, "creeper-blast-damage", attribs.creeperExplosionRadius);
+        attribs.armorBonus = ymlHelper.getDouble2(cs, "armor-bonus", attribs.armorBonus);
+        attribs.armorToughness = ymlHelper.getDouble2(cs, "armor-toughness", attribs.armorToughness);
+        attribs.attackKnockback = ymlHelper.getDouble2(cs, "attack-knockback", attribs.attackKnockback);
+        attribs.flyingSpeed = ymlHelper.getDouble2(cs, "flying-speed", attribs.flyingSpeed);
+        attribs.knockbackResistance = ymlHelper.getDouble2(cs, "knockback-resistance", attribs.knockbackResistance);
+        attribs.horseJumpStrength = ymlHelper.getDouble2(cs, "horse-jump-strength", attribs.horseJumpStrength);
+        attribs.zombieReinforcements = ymlHelper.getDouble2(cs, "zombie-spawn-reinforcements", attribs.zombieReinforcements);
+        attribs.followRange = ymlHelper.getDouble2(cs, "follow-range", attribs.followRange);
 
         return attribs;
     }
@@ -877,7 +963,7 @@ public class RulesParsingManager {
 
     @NotNull
     private static List<String> getListOrItemFromConfig(final String name, @NotNull final ConfigurationSection cs){
-        List<String> result = cs.getStringList(name);
+        final List<String> result = cs.getStringList(name);
         if (result.isEmpty() && !Utils.isNullOrEmpty(cs.getString(name)))
             result.add(cs.getString(name));
 

@@ -40,13 +40,13 @@ public class EntityTransformListener implements Listener {
             return;
         }
 
-        final LivingEntityWrapper lmEntity = new LivingEntityWrapper((LivingEntity) event.getEntity(), main);
-
         // is the original entity levelled
-        if (!lmEntity.isLevelled()) {
-            Utils.debugLog(main, DebugType.ENTITY_TRANSFORM_FAIL, lmEntity.getTypeName() + ": original entity was &bnot&7 levelled");
+        if (!main.levelManager.isLevelled((LivingEntity) event.getEntity())) {
+            Utils.debugLog(main, DebugType.ENTITY_TRANSFORM_FAIL, event.getEntity() + ": original entity was &bnot&7 levelled");
             return;
         }
+
+        final LivingEntityWrapper lmEntity = LivingEntityWrapper.getInstance((LivingEntity) event.getEntity(), main);
 
         boolean useInheritance = false;
         int level = 1;
@@ -62,12 +62,12 @@ public class EntityTransformListener implements Listener {
                 continue;
             }
 
-            final LivingEntityWrapper transformedLmEntity = new LivingEntityWrapper((LivingEntity) transformedEntity, main);
-
+            final LivingEntityWrapper transformedLmEntity = LivingEntityWrapper.getInstance((LivingEntity) transformedEntity, main);
             final LevellableState levelledState = main.levelInterface.getLevellableState(transformedLmEntity);
             if (levelledState != LevellableState.ALLOWED) {
                 Utils.debugLog(main, DebugType.ENTITY_TRANSFORM_FAIL, transformedEntity.getType().name() + ": transformed entity was &bnot&7 levellable, reason: &b" + levelledState);
                 main.levelManager.updateNametag_WithDelay(transformedLmEntity);
+                transformedLmEntity.free();
                 continue;
             }
 
@@ -83,6 +83,9 @@ public class EntityTransformListener implements Listener {
                 main.levelManager.entitySpawnListener.preprocessMob(transformedLmEntity, new EntitySpawnEvent(transformedEntity));
 
             main.levelManager.updateNametag_WithDelay(lmEntity);
+            transformedLmEntity.free();
         }
+
+        lmEntity.free();
     }
 }

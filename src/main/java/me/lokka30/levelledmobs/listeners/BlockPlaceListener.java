@@ -32,37 +32,11 @@ import java.util.List;
  * @since 3.1.2
  */
 public class BlockPlaceListener implements Listener {
-    final public NamespacedKey keySpawner;
-    final public NamespacedKey keySpawner_MinLevel;
-    final public NamespacedKey keySpawner_MaxLevel;
-    final public NamespacedKey keySpawner_CustomDropId;
-    final public NamespacedKey keySpawner_Delay;
-    final public NamespacedKey keySpawner_MaxNearbyEntities;
-    final public NamespacedKey keySpawner_MinSpawnDelay;
-    final public NamespacedKey keySpawner_MaxSpawnDelay;
-    final public NamespacedKey keySpawner_RequiredPlayerRange;
-    final public NamespacedKey keySpawner_SpawnCount;
-    final public NamespacedKey keySpawner_SpawnType;
-    final public NamespacedKey keySpawner_SpawnRange;
-    final public NamespacedKey keySpawner_CustomName;
-    final public NamespacedKey keySpawner_Lore;
-
     public BlockPlaceListener(final LevelledMobs main) {
-        keySpawner = new NamespacedKey(main, "spawner");
-        keySpawner_MinLevel = new NamespacedKey(main, "minlevel");
-        keySpawner_MaxLevel = new NamespacedKey(main, "maxlevel");
-        keySpawner_CustomDropId = new NamespacedKey(main, "customdropid");
-        keySpawner_Delay = new NamespacedKey(main, "delay");
-        keySpawner_MaxNearbyEntities = new NamespacedKey(main, "maxnearbyentities");
-        keySpawner_MinSpawnDelay = new NamespacedKey(main, "minspawndelay");
-        keySpawner_MaxSpawnDelay = new NamespacedKey(main, "maxspawndelay");
-        keySpawner_RequiredPlayerRange = new NamespacedKey(main, "requiredplayerrange");
-        keySpawner_SpawnCount = new NamespacedKey(main, "spawncount");
-        keySpawner_SpawnType = new NamespacedKey(main, "spawntype");
-        keySpawner_SpawnRange = new NamespacedKey(main, "spawnrange");
-        keySpawner_CustomName = new NamespacedKey(main, "customname");
-        keySpawner_Lore = new NamespacedKey(main, "lore");
+        this.main = main;
     }
+
+    private final LevelledMobs main;
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void onBlockPlaceEvent(@NotNull final BlockPlaceEvent event) {
@@ -77,7 +51,7 @@ public class BlockPlaceListener implements Listener {
 
         final ItemMeta meta = invItem.getItemMeta();
         if (meta == null) return;
-        if (!meta.getPersistentDataContainer().has(keySpawner, PersistentDataType.INTEGER)) return;
+        if (!meta.getPersistentDataContainer().has(main.namespaced_keys.keySpawner, PersistentDataType.INTEGER)) return;
 
         // transfer PDC items from inventory spawner to placed spawner
 
@@ -85,22 +59,22 @@ public class BlockPlaceListener implements Listener {
         final PersistentDataContainer targetPdc = cs.getPersistentDataContainer();
         final PersistentDataContainer sourcePdc = meta.getPersistentDataContainer();
         final List<NamespacedKey> keys = Arrays.asList(
-                /* 0  */ keySpawner_CustomDropId,
-                /* 1  */ keySpawner_SpawnType,
-                /* 2  */ keySpawner_CustomName,
-                /* 3  */ keySpawner_Lore,
-                /* 4  */ keySpawner_MinLevel,
-                /* 5  */ keySpawner_MaxLevel,
-                /* 6  */ keySpawner_Delay,
-                /* 7  */ keySpawner_MaxNearbyEntities,
-                /* 8  */ keySpawner_MinSpawnDelay,
-                /* 9  */ keySpawner_MaxSpawnDelay,
-                /* 10 */ keySpawner_RequiredPlayerRange,
-                /* 11 */ keySpawner_SpawnCount,
-                /* 12 */ keySpawner_SpawnRange
+                /* 0  */ main.namespaced_keys.keySpawner_CustomDropId,
+                /* 1  */ main.namespaced_keys.keySpawner_SpawnType,
+                /* 2  */ main.namespaced_keys.keySpawner_CustomName,
+                /* 3  */ main.namespaced_keys.keySpawner_Lore,
+                /* 4  */ main.namespaced_keys.keySpawner_MinLevel,
+                /* 5  */ main.namespaced_keys.keySpawner_MaxLevel,
+                /* 6  */ main.namespaced_keys.keySpawner_Delay,
+                /* 7  */ main.namespaced_keys.keySpawner_MaxNearbyEntities,
+                /* 8  */ main.namespaced_keys.keySpawner_MinSpawnDelay,
+                /* 9  */ main.namespaced_keys.keySpawner_MaxSpawnDelay,
+                /* 10 */ main.namespaced_keys.keySpawner_RequiredPlayerRange,
+                /* 11 */ main.namespaced_keys.keySpawner_SpawnCount,
+                /* 12 */ main.namespaced_keys.keySpawner_SpawnRange
         );
 
-        targetPdc.set(keySpawner, PersistentDataType.INTEGER, 1);
+        targetPdc.set(main.namespaced_keys.keySpawner, PersistentDataType.INTEGER, 1);
         for (int i = 0; i < keys.size(); i++){
             final NamespacedKey key = keys.get(i);
             if (i <= 3) {

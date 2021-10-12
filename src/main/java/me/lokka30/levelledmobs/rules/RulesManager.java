@@ -10,6 +10,8 @@ import me.lokka30.levelledmobs.managers.ExternalCompatibilityManager;
 import me.lokka30.levelledmobs.misc.*;
 import me.lokka30.levelledmobs.rules.strategies.LevellingStrategy;
 import org.bukkit.World;
+import org.bukkit.entity.Player;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -55,7 +57,7 @@ public class RulesManager {
     }
 
     @Nullable
-    public String getRule_NBT_Data(final LivingEntityWrapper lmEntity){
+    public String getRule_NBT_Data(final @NotNull LivingEntityWrapper lmEntity){
         String nbtData = null;
 
         for (final RuleInfo ruleInfo : lmEntity.getApplicableRules()){
@@ -66,7 +68,7 @@ public class RulesManager {
         return nbtData;
     }
 
-    public double getRule_SunlightBurnIntensity(final LivingEntityWrapper lmEntity){
+    public double getRule_SunlightBurnIntensity(final @NotNull LivingEntityWrapper lmEntity){
         double result = 0.0;
 
         for (final RuleInfo ruleInfo : lmEntity.getApplicableRules()){
@@ -351,15 +353,30 @@ public class RulesManager {
         return indicator;
     }
 
-    public boolean getRule_CreatureNametagAlwaysVisible(@NotNull final LivingEntityWrapper lmEntity){
-        boolean creatureNametagAlwaysVisible = false;
+    @NotNull
+    public List<NametagVisibilityEnum> getRule_CreatureNametagVisbility(@NotNull final LivingEntityWrapper lmEntity){
+        List<NametagVisibilityEnum> result = null;
 
         for (final RuleInfo ruleInfo : lmEntity.getApplicableRules()){
-            if (ruleInfo.CreatureNametagAlwaysVisible != null)
-                creatureNametagAlwaysVisible = ruleInfo.CreatureNametagAlwaysVisible;
+            if (ruleInfo.nametagVisibilityEnum != null)
+                result = ruleInfo.nametagVisibilityEnum;
         }
 
-        return creatureNametagAlwaysVisible;
+        if (result == null || result.isEmpty())
+            return List.of(NametagVisibilityEnum.ATTACKED, NametagVisibilityEnum.TARGETED, NametagVisibilityEnum.TRACKING);
+        else
+            return result;
+    }
+
+    public int getRule_nametagVisibleTime(@NotNull final LivingEntityWrapper lmEntity){
+        int result = 4000;
+
+        for (final RuleInfo ruleInfo : lmEntity.getApplicableRules()){
+            if (ruleInfo.nametagVisibleTime != null)
+                result = ruleInfo.nametagVisibleTime;
+        }
+
+        return result;
     }
 
     @Nullable
@@ -383,6 +400,17 @@ public class RulesManager {
         }
 
         return tieredText;
+    }
+
+    public boolean getRule_PassengerMatchLevel(@NotNull final LivingEntityWrapper lmEntity){
+        boolean result = false;
+
+        for (final RuleInfo ruleInfo : lmEntity.getApplicableRules()){
+            if (ruleInfo.passengerMatchLevel != null)
+                result = ruleInfo.passengerMatchLevel;
+        }
+
+        return result;
     }
 
     @Nullable
@@ -556,10 +584,36 @@ public class RulesManager {
             }
         }
 
+        if (ri.conditions_SpawnerNames != null) {
+            String checkName = lmEntity.getSourceSpawnerName();
+            if (checkName == null) checkName = "(none)";
+
+            if (!ri.conditions_SpawnerNames.isEnabledInList(checkName, lmEntity)) {
+                Utils.debugLog(main, DebugType.DENIED_RULE_SPAWN_REASON, String.format("&b%s&7, mob: &b%s&7, spawner: &b%s&7",
+                        ri.getRuleName(), lmEntity.getNameIfBaby(), checkName));
+                return false;
+            }
+        }
+
+        if (ri.conditions_Permission != null){
+            if (lmEntity.playerForPermissionsCheck == null){
+                Utils.debugLog(main, DebugType.DENIED_RULE_PERMISSION, String.format("&b%s&7, mob: &b%s&7, no player was provided",
+                        ri.getRuleName(), lmEntity.getNameIfBaby()));
+                return false;
+            }
+
+            if (!doesPlayerPassPermissionChecks(ri.conditions_Permission, lmEntity.playerForPermissionsCheck)){
+                Utils.debugLog(main, DebugType.DENIED_RULE_PERMISSION, String.format("&b%s&7, mob: &b%s&7, player: &b%s&7, permission denied",
+                        ri.getRuleName(), lmEntity.getNameIfBaby(), lmEntity.playerForPermissionsCheck.getName()));
+                return false;
+            }
+        }
+
         return true;
     }
 
-    private RuleCheckResult isRuleApplicable_Interface(final LivingEntityInterface lmInterface, final RuleInfo ri){
+    @Contract("_, _ -> new")
+    private @NotNull RuleCheckResult isRuleApplicable_Interface(final LivingEntityInterface lmInterface, final RuleInfo ri){
 
         if (lmInterface instanceof LivingEntityWrapper) {
             if (ri.conditions_Entities != null && !Utils.isLivingEntityInModalList(ri.conditions_Entities, (LivingEntityWrapper) lmInterface)) {
@@ -633,6 +687,16 @@ public class RulesManager {
             }
         }
 
+        if (ri.conditions_WorldTickTime != null){
+            final int currentWorldTickTime = lmInterface.getSpawnedTimeOfDay();
+
+            if (!Utils.isIntegerInModalList(ri.conditions_WorldTickTime, currentWorldTickTime)){
+                Utils.debugLog(main, DebugType.DENIED_RULE_WORLD_TIME_TICK, String.format("&b%s&7, mob: &b%s&7, tick time: &b%s&7",
+                        ri.getRuleName(), lmInterface.getTypeName(), currentWorldTickTime));
+                return new RuleCheckResult(false, false);
+            }
+        }
+
         Boolean ruleMadeChance = null;
 
         if (ri.conditions_Chance != null && ri.conditions_Chance < 1.0){
@@ -646,10 +710,10 @@ public class RulesManager {
                 }
             }
 
-            final double chanceRole = (double) ThreadLocalRandom.current().nextInt(0, 100001) * 0.00001;
+            final double chanceRole = ThreadLocalRandom.current().nextDouble();
             if (chanceRole < (1.0 - ri.conditions_Chance)){
                 Utils.debugLog(main, DebugType.DENIED_RULE_CHANCE, String.format("&b%s&7, mob: &b%s&7, chance: &b%s&7, chance role: &b%s&7",
-                        ri.getRuleName(), lmInterface.getTypeName(), ri.conditions_Chance, chanceRole));
+                        ri.getRuleName(), lmInterface.getTypeName(), ri.conditions_Chance, Utils.round(chanceRole, 4)));
                 return new RuleCheckResult(false, false);
             }
 
@@ -657,6 +721,26 @@ public class RulesManager {
         }
 
         return new RuleCheckResult(true, ruleMadeChance);
+    }
+
+    private boolean doesPlayerPassPermissionChecks(final @NotNull CachedModalList<String> perms, final @NotNull Player player){
+        if (perms.allowAll) return true;
+        if (perms.excludeAll) return false;
+        if (perms.isEmpty()) return true;
+
+        for (final String perm : perms.excludedList){
+            final String permCheck = "levelledmobs.permission." + perm;
+            if (player.hasPermission(permCheck))
+                return false;
+        }
+
+        for (final String perm : perms.allowedList){
+            final String permCheck = "levelledmobs.permission." + perm;
+            if (player.hasPermission(permCheck))
+                return true;
+        }
+
+        return perms.isBlacklist();
     }
 
     public void buildBiomeGroupMappings(final Map<String, Set<String>> customBiomeGroups){

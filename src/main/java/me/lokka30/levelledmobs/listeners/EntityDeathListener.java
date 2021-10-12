@@ -7,6 +7,7 @@ package me.lokka30.levelledmobs.listeners;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.customdrops.CustomDropResult;
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
+import me.lokka30.levelledmobs.misc.NametagTimerChecker;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -39,10 +40,17 @@ public class EntityDeathListener implements Listener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.NORMAL)
     public void onDeath(@NotNull final EntityDeathEvent event) {
+        synchronized (NametagTimerChecker.entityTarget_Lock){
+            main.nametagTimerChecker.entityTargetMap.remove(event.getEntity());
+        }
+
         if (bypassDrops.contains(event.getEntityType().toString()))
             return;
 
-        final LivingEntityWrapper lmEntity = new LivingEntityWrapper(event.getEntity(), main);
+        final LivingEntityWrapper lmEntity = LivingEntityWrapper.getInstance(event.getEntity(), main);
+        if (event.getEntity().getKiller() != null)
+            lmEntity.playerForPermissionsCheck = event.getEntity().getKiller();
+
         final EntityDamageEvent damage = lmEntity.getLivingEntity().getLastDamageCause();
         if (damage != null)
             lmEntity.deathCause = damage.getCause();
@@ -67,5 +75,6 @@ public class EntityDeathListener implements Listener {
 
             event.getDrops().addAll(drops);
         }
+        lmEntity.free();
     }
 }

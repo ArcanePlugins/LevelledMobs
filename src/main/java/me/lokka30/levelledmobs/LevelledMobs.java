@@ -10,9 +10,7 @@ import me.lokka30.levelledmobs.listeners.ChunkLoadListener;
 import me.lokka30.levelledmobs.listeners.EntityDamageDebugListener;
 import me.lokka30.levelledmobs.listeners.PlayerInteractEventListener;
 import me.lokka30.levelledmobs.managers.*;
-import me.lokka30.levelledmobs.misc.ConfigUtils;
-import me.lokka30.levelledmobs.misc.Utils;
-import me.lokka30.levelledmobs.misc.YmlParsingHelper;
+import me.lokka30.levelledmobs.misc.*;
 import me.lokka30.levelledmobs.rules.RulesManager;
 import me.lokka30.levelledmobs.rules.RulesParsingManager;
 import me.lokka30.microlib.QuickTimer;
@@ -43,18 +41,21 @@ public class LevelledMobs extends JavaPlugin {
     public ChunkLoadListener chunkLoadListener;
     public BlockPlaceListener blockPlaceListener;
     public PlayerInteractEventListener playerInteractEventListener;
+    public Namespaced_Keys namespaced_keys;
     public final Companion companion = new Companion(this);
     public final MobHeadManager mobHeadManager = new MobHeadManager(this);
     public final RulesParsingManager rulesParsingManager = new RulesParsingManager(this);
     public final RulesManager rulesManager = new RulesManager(this);
     public final MobsQueueManager _mobsQueueManager = new MobsQueueManager(this);
     public final NametagQueueManager nametagQueueManager_ = new NametagQueueManager(this);
+    public final NametagTimerChecker nametagTimerChecker = new NametagTimerChecker(this);
     public final Object attributeSyncObject = new Object();
     public Random random;
     public PlaceholderApiIntegration placeholderApiIntegration;
     public boolean migratedFromPre30;
     public YmlParsingHelper helperSettings;
     public int playerLevellingMinRelevelTime;
+    public int maxPlayersRecorded;
 
     // Configuration
     public YamlConfiguration settingsCfg;
@@ -69,6 +70,7 @@ public class LevelledMobs extends JavaPlugin {
     public int incompatibilitiesAmount;
     private long loadTime;
     public WeakHashMap<LivingEntity, Instant> playerLevellingEntities;
+    public Stack<LivingEntityWrapper> cacheCheck;
 
     @Override
     public void onLoad() {
@@ -84,6 +86,7 @@ public class LevelledMobs extends JavaPlugin {
     public void onEnable() {
         final QuickTimer timer = new QuickTimer();
 
+        this.namespaced_keys = new Namespaced_Keys(this);
         this.playerLevellingEntities = new WeakHashMap<>();
         this.helperSettings = new YmlParsingHelper();
         this.random = new Random();
@@ -100,7 +103,10 @@ public class LevelledMobs extends JavaPlugin {
         companion.loadSpigotConfig();
 
         Utils.logger.info("&fStart-up: &7Running misc procedures...");
-        if (ExternalCompatibilityManager.hasProtocolLibInstalled()) levelManager.startNametagAutoUpdateTask();
+        if (ExternalCompatibilityManager.hasProtocolLibInstalled()) {
+            levelManager.startNametagAutoUpdateTask();
+            levelManager.startNametagTimer();
+        }
         companion.setupMetrics();
         companion.checkUpdates();
 

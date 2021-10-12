@@ -8,6 +8,7 @@ import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.managers.ExternalCompatibilityManager;
 import me.lokka30.levelledmobs.misc.*;
 import me.lokka30.levelledmobs.rules.LevelledMobSpawnReason;
+import me.lokka30.levelledmobs.rules.NametagVisibilityEnum;
 import org.bukkit.*;
 import org.bukkit.block.CreatureSpawner;
 import org.bukkit.entity.LivingEntity;
@@ -49,7 +50,7 @@ public class EntitySpawnListener implements Listener {
         // Must be a LivingEntity.
         if (!(event.getEntity() instanceof LivingEntity)) return;
 
-        final LivingEntityWrapper lmEntity = new LivingEntityWrapper((LivingEntity) event.getEntity(), main);
+        final LivingEntityWrapper lmEntity = LivingEntityWrapper.getInstance((LivingEntity) event.getEntity(), main);
 
         if (event instanceof CreatureSpawnEvent && ((CreatureSpawnEvent) event).getSpawnReason().equals(CreatureSpawnEvent.SpawnReason.CUSTOM) &&
                 !lmEntity.isLevelled()) {
@@ -58,10 +59,14 @@ public class EntitySpawnListener implements Listener {
                 updateMobForPlayerLevelling(lmEntity);
 
             delayedAddToQueue(lmEntity, event, 20);
+            lmEntity.free();
             return;
         }
 
-        if (!processMobSpawns) return;
+        if (!processMobSpawns) {
+            lmEntity.free();
+            return;
+        }
 
         if (main.configUtils.playerLevellingEnabled && lmEntity.getPlayerForLevelling() == null)
             updateMobForPlayerLevelling(lmEntity);
@@ -72,14 +77,16 @@ public class EntitySpawnListener implements Listener {
             delayedAddToQueue(lmEntity, event, mobProcessDelay);
         else
             main._mobsQueueManager.addToQueue(new QueueItem(lmEntity, event));
+
+        lmEntity.free();
     }
 
-    private void updateMobForPlayerLevelling(final LivingEntityWrapper lmEntity){
-        final int onlinePlayerCount = Bukkit.getOnlinePlayers().size();
+    private void updateMobForPlayerLevelling(final @NotNull LivingEntityWrapper lmEntity){
+        final int onlinePlayerCount = lmEntity.getWorld().getPlayers().size();
         final int checkDistance = main.helperSettings.getInt(main.settingsCfg, "async-task-max-blocks-from-player", 100);
         final List<org.bukkit.entity.Player> playerList = onlinePlayerCount <= 10 ?
-                getPlayersMethod1(lmEntity.getLivingEntity(), checkDistance) :
-                getPlayersMethod2(lmEntity.getLivingEntity(), checkDistance);
+                getPlayersOnServerNearMob(lmEntity.getLivingEntity(), checkDistance) :
+                getPlayersNearMob(lmEntity.getLivingEntity(), checkDistance);
 
         Player closestPlayer = null;
         for (final org.bukkit.entity.Player player : playerList) {
@@ -93,17 +100,21 @@ public class EntitySpawnListener implements Listener {
         if (closestPlayer == null) return;
 
         synchronized (lmEntity.getLivingEntity().getPersistentDataContainer()) {
-            lmEntity.getPDC().set(main.levelManager.playerLevelling_Id, PersistentDataType.STRING, closestPlayer.getUniqueId().toString());
+            lmEntity.getPDC().set(main.namespaced_keys.playerLevelling_Id, PersistentDataType.STRING, closestPlayer.getUniqueId().toString());
         }
 
         lmEntity.setPlayerForLevelling(closestPlayer);
+        final List<NametagVisibilityEnum> nametagVisibilityEnums = main.rulesManager.getRule_CreatureNametagVisbility(lmEntity);
+        if (nametagVisibilityEnums.contains(NametagVisibilityEnum.TARGETED) &&
+            lmEntity.getLivingEntity().hasLineOfSight(closestPlayer))
+            main.levelManager.updateNametag(lmEntity);
     }
 
     @NotNull
-    private static List<org.bukkit.entity.Player> getPlayersMethod1(final LivingEntity mob, final int checkDistance){
+    private static List<Player> getPlayersOnServerNearMob(final @NotNull LivingEntity mob, final int checkDistance){
         final double maxDistanceSquared = checkDistance * 4;
 
-        return Bukkit.getOnlinePlayers().stream()
+        return mob.getWorld().getPlayers().stream()
                 .filter(p -> mob.getWorld().equals(p.getWorld()))
                 .filter(p -> !p.getGameMode().equals(GameMode.SPECTATOR))
                 .map(p -> Map.entry(mob.getLocation().distanceSquared(p.getLocation()), p))
@@ -114,7 +125,7 @@ public class EntitySpawnListener implements Listener {
     }
 
     @NotNull
-    private static List<org.bukkit.entity.Player> getPlayersMethod2(final LivingEntity mob, final int checkDistance){
+    public static List<Player> getPlayersNearMob(final @NotNull LivingEntity mob, final int checkDistance){
         return mob.getNearbyEntities(checkDistance, checkDistance, checkDistance).stream()
                 .filter(e -> e instanceof org.bukkit.entity.Player)
                 .filter(e -> !((org.bukkit.entity.Player) e).getGameMode().equals(GameMode.SPECTATOR))
@@ -124,7 +135,7 @@ public class EntitySpawnListener implements Listener {
                 .collect(Collectors.toList());
     }
 
-    private LevelledMobSpawnReason adaptVanillaSpawnReason(final CreatureSpawnEvent.SpawnReason spawnReason) {
+    private LevelledMobSpawnReason adaptVanillaSpawnReason(final CreatureSpawnEvent.@NotNull SpawnReason spawnReason) {
         return LevelledMobSpawnReason.valueOf(spawnReason.toString());
     }
 
@@ -145,20 +156,24 @@ public class EntitySpawnListener implements Listener {
         // mob was spawned from a custom LM spawner
         createParticleEffect(cs.getLocation().add(0, 1, 0));
 
-        final Integer minLevel = cs.getPersistentDataContainer().get(main.blockPlaceListener.keySpawner_MinLevel, PersistentDataType.INTEGER);
-        final Integer maxLevel = cs.getPersistentDataContainer().get(main.blockPlaceListener.keySpawner_MaxLevel, PersistentDataType.INTEGER);
+        final Integer minLevel = cs.getPersistentDataContainer().get(main.namespaced_keys.keySpawner_MinLevel, PersistentDataType.INTEGER);
+        final Integer maxLevel = cs.getPersistentDataContainer().get(main.namespaced_keys.keySpawner_MaxLevel, PersistentDataType.INTEGER);
         final int useMinLevel = minLevel == null ? -1 : minLevel;
         final int useMaxLevel = maxLevel == null ? -1 : maxLevel;
         final int generatedLevel = main.levelInterface.generateLevel(lmEntity, useMinLevel, useMaxLevel);
+        final String spawnerName = cs.getPersistentDataContainer().has(main.namespaced_keys.keySpawner_CustomName, PersistentDataType.STRING) ?
+            cs.getPersistentDataContainer().get(main.namespaced_keys.keySpawner_CustomName, PersistentDataType.STRING) : null;
         String customDropId = null;
-        if (cs.getPersistentDataContainer().has(main.blockPlaceListener.keySpawner_CustomDropId, PersistentDataType.STRING)) {
-            customDropId = cs.getPersistentDataContainer().get(main.blockPlaceListener.keySpawner_CustomDropId, PersistentDataType.STRING);
+        if (cs.getPersistentDataContainer().has(main.namespaced_keys.keySpawner_CustomDropId, PersistentDataType.STRING)) {
+            customDropId = cs.getPersistentDataContainer().get(main.namespaced_keys.keySpawner_CustomDropId, PersistentDataType.STRING);
             if (!Utils.isNullOrEmpty(customDropId)) {
                 synchronized (lmEntity.getLivingEntity().getPersistentDataContainer()) {
-                    lmEntity.getPDC().set(main.blockPlaceListener.keySpawner_CustomDropId, PersistentDataType.STRING, customDropId);
+                    lmEntity.getPDC().set(main.namespaced_keys.keySpawner_CustomDropId, PersistentDataType.STRING, customDropId);
                 }
             }
         }
+
+        lmEntity.setSourceSpawnerName(spawnerName);
 
         Utils.debugLog(main, DebugType.MOB_SPAWNER, String.format(
                 "Spawned mob from LM spawner: &b%s&7, minLevel:&b %s&7, maxLevel: &b%s&7, generatedLevel: &b%s&b%s",
@@ -188,18 +203,19 @@ public class EntitySpawnListener implements Listener {
     }
 
     @SuppressWarnings("ConstantConditions")
-    public void preprocessMob(final LivingEntityWrapper lmEntity, @NotNull final Event event){
-
+    public void preprocessMob(final @NotNull LivingEntityWrapper lmEntity, @NotNull final Event event){
         if (!lmEntity.reEvaluateLevel && lmEntity.isLevelled())
             return;
 
         LevelledMobSpawnReason spawnReason = LevelledMobSpawnReason.DEFAULT;
         AdditionalLevelInformation additionalInfo = AdditionalLevelInformation.NOT_APPLICABLE;
 
-        if (event instanceof SpawnerSpawnEvent) {
-            SpawnerSpawnEvent spawnEvent = (SpawnerSpawnEvent) event;
+        lmEntity.setSpawnedTimeOfDay((int) lmEntity.getWorld().getTime());
 
-            if (spawnEvent.getSpawner() != null && spawnEvent.getSpawner().getPersistentDataContainer().has(main.blockPlaceListener.keySpawner, PersistentDataType.INTEGER)) {
+        if (event instanceof SpawnerSpawnEvent) {
+            final SpawnerSpawnEvent spawnEvent = (SpawnerSpawnEvent) event;
+
+            if (spawnEvent.getSpawner() != null && spawnEvent.getSpawner().getPersistentDataContainer().has(main.namespaced_keys.keySpawner, PersistentDataType.INTEGER)) {
                 lmEntity.setSpawnReason(LevelledMobSpawnReason.LM_SPAWNER);
                 lmSpawnerSpawn(lmEntity, spawnEvent);
                 return;
@@ -244,7 +260,7 @@ public class EntitySpawnListener implements Listener {
             else if (lmEntity.isBabyMob()) {
                 // add a tag so we can potentially level the mob when/if it ages
                 synchronized (lmEntity.getLivingEntity().getPersistentDataContainer()) {
-                    lmEntity.getPDC().set(main.levelManager.wasBabyMobKey, PersistentDataType.INTEGER, 1);
+                    lmEntity.getPDC().set(main.namespaced_keys.wasBabyMobKey, PersistentDataType.INTEGER, 1);
                 }
             }
         }
