@@ -623,7 +623,6 @@ public class CustomDropsHandler {
         int commandCount = 0;
         for (String command : customCommand.commands){
             commandCount++;
-            command = main.levelManager.updateNametag(info.lmEntity, command,false);
 
             final String playerName = info.wasKilledByPlayer ?
                     Objects.requireNonNull(info.lmEntity.getLivingEntity().getKiller()).getName() :
@@ -631,6 +630,7 @@ public class CustomDropsHandler {
 
             command = Utils.replaceEx(command, "%player%", playerName);
             command = processRangedCommand(command, customCommand);
+            command = main.levelManager.updateNametag(info.lmEntity, command,false);
 
             final int maxAllowedTimesToRun = ymlHelper.getInt(main.settingsCfg, "customcommand-amount-limit", 10);
             int timesToRun = customCommand.getAmount();
