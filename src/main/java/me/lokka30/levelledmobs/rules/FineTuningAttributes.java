@@ -7,9 +7,8 @@ package me.lokka30.levelledmobs.rules;
 import org.bukkit.entity.EntityType;
 import org.jetbrains.annotations.Nullable;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
-import java.util.Map;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Holds any custom multipliers values parsed from rules.yml
