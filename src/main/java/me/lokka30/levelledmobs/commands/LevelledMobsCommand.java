@@ -13,7 +13,10 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * This class handles the command execution of '/levelledmobs'.
@@ -76,9 +79,6 @@ public class LevelledMobsCommand implements CommandExecutor, TabCompleter {
                     case "summon":
                         summonSubcommand.parseSubcommand(main, sender, label, args);
                         break;
-                    case "test":
-                        test(sender, args);
-                        break;
                     default:
                         sendMainUsage(sender, label);
                         break;
@@ -88,10 +88,6 @@ public class LevelledMobsCommand implements CommandExecutor, TabCompleter {
             main.configUtils.sendNoPermissionMsg(sender);
         }
         return true;
-    }
-
-    private void test(@NotNull final CommandSender sender, final String @NotNull [] args) {
-
     }
 
     private void sendMainUsage(@NotNull final CommandSender sender, final String label) {
