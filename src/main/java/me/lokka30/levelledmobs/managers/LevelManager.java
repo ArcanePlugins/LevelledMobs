@@ -218,7 +218,7 @@ public class LevelManager implements LevelInterface {
 
             if (!foundMatch) {
                 Utils.debugLog(main, DebugType.PLAYER_LEVELLING, String.format(
-                        "mob: %s, player: %s, lvl-source: %s, lvl-scale: %s, %sno tiers matched",
+                        "mob: %s, player: %s, lvl-src: %s, lvl-scale: %s, %sno tiers matched",
                         lmEntity.getNameIfBaby(), player.getName(), origLevelSource, levelSource, capDisplay));
                 return null;
             }
@@ -233,11 +233,11 @@ public class LevelManager implements LevelInterface {
 
         if (tierMatched == null) {
             Utils.debugLog(main, DebugType.PLAYER_LEVELLING, String.format(
-                    "mob: %s, player: %s, lvl-source: %s, lvl-scale: %s, %sresult: %s",
+                    "mob: %s, player: %s, lvl-src: %s, lvl-scale: %s, %sresult: %s",
                     lmEntity.getNameIfBaby(), player.getName(), origLevelSource, levelSource, capDisplay, Arrays.toString(results)));
         } else {
             Utils.debugLog(main, DebugType.PLAYER_LEVELLING, String.format(
-                    "mob: %s, player: %s, lvl-source: %s, lvl-scale: %s, tier: %s, %sresult: %s",
+                    "mob: %s, player: %s, lvl-src: %s, lvl-scale: %s, tier: %s, %sresult: %s",
                     lmEntity.getNameIfBaby(), player.getName(), origLevelSource, levelSource, tierMatched, capDisplay, Arrays.toString(results)));
         }
 
@@ -781,7 +781,7 @@ public class LevelManager implements LevelInterface {
     }
 
     private boolean doesMobNeedRelevelling(final @NotNull LivingEntity mob, final @NotNull Player player){
-        if (main.playerLevellingEntities.containsKey(mob)){
+        if (main.playerLevellingMinRelevelTime > 0 && main.playerLevellingEntities.containsKey(mob)){
             final Instant lastCheck = main.playerLevellingEntities.get(mob);
             final Duration duration = Duration.between(lastCheck, Instant.now());
 
@@ -789,8 +789,8 @@ public class LevelManager implements LevelInterface {
         }
 
         String playerId;
-        main.playerLevellingEntities.put(mob, Instant.now());
-        if (main.playerLevellingMinRelevelTime <= 0) return false;
+        if (main.playerLevellingMinRelevelTime > 0)
+            main.playerLevellingEntities.put(mob, Instant.now());
 
         synchronized (mob.getPersistentDataContainer()) {
             if (!mob.getPersistentDataContainer().has(main.namespaced_keys.playerLevelling_Id, PersistentDataType.STRING))

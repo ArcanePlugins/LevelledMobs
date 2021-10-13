@@ -603,12 +603,12 @@ public class CustomDropsHandler {
                 if (ymlHelper.getStringSet(main.settingsCfg, "debug-misc").contains("CUSTOM_DROPS")){
                     if (dropBase instanceof CustomDropItem) {
                         info.addDebugMessage(String.format(
-                                "&8 - &7Mob: &b%s&7, item: %s, lvl-source: %s, minlvl: %s, maxlvl: %s player level criteria not met",
+                                "&8 - &7Mob: &b%s&7, item: %s, lvl-src: %s, minlvl: %s, maxlvl: %s player level criteria not met",
                                 info.lmEntity.getTypeName(), ((CustomDropItem) dropBase).getMaterial(), levelToUse, dropBase.minPlayerLevel, dropBase.maxPlayerLevel));
                     }
                     else {
                         info.addDebugMessage(String.format(
-                                "&8 - &7Mob: &b%s&7, (customCommand), lvl-source: %s, minlvl: %s, maxlvl: %s player level criteria not met",
+                                "&8 - &7Mob: &b%s&7, (customCommand), lvl-src: %s, minlvl: %s, maxlvl: %s player level criteria not met",
                                 info.lmEntity.getTypeName(), levelToUse, dropBase.minPlayerLevel, dropBase.maxPlayerLevel));
                     }
                 }

@@ -243,10 +243,20 @@ public class EntitySpawnListener implements Listener {
 
         if (!lmEntity.reEvaluateLevel)
             lmEntity.setSpawnReason(spawnReason);
+        else if (main.configUtils.playerLevellingEnabled){
+            synchronized (lmEntity.getLivingEntity().getPersistentDataContainer()){
+                if (lmEntity.getPDC().has(main.namespaced_keys.playerLevelling_Id, PersistentDataType.STRING))
+                    lmEntity.getPDC().remove(main.namespaced_keys.playerLevelling_Id);
+            }
+            lmEntity.setPlayerForLevelling(null);
+        }
 
         final HashSet<AdditionalLevelInformation> additionalLevelInfo = new HashSet<>(Collections.singletonList(additionalInfo));
         final LevellableState levellableState = getLevellableState(lmEntity, event);
         if (levellableState == LevellableState.ALLOWED) {
+            if (lmEntity.reEvaluateLevel && main.configUtils.playerLevellingEnabled)
+                updateMobForPlayerLevelling(lmEntity);
+
             main.levelInterface.applyLevelToMob(lmEntity, main.levelInterface.generateLevel(lmEntity),
                     false, false, additionalLevelInfo);
         } else {
