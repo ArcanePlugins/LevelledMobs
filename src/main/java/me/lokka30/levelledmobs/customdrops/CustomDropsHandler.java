@@ -585,7 +585,7 @@ public class CustomDropsHandler {
     }
 
     private boolean madePlayerLevelRequirement(final @NotNull CustomDropProcessingInfo info, final CustomDropBase dropBase){
-        if (!info.equippedOnly && (dropBase.minPlayerLevel != null || dropBase.maxPlayerLevel != null)){
+        if (!info.equippedOnly && (dropBase.minPlayerLevel > -1 || dropBase.maxPlayerLevel > -1)){
             // check if the variable result has been cached already and use it if so
             final String variableToUse = Utils.isNullOrEmpty(dropBase.playerLevelVariable) ?
                     "%level%" : dropBase.playerLevelVariable;
@@ -598,8 +598,8 @@ public class CustomDropsHandler {
                 info.playerLevelVariableCache.put(variableToUse, levelToUse);
             }
 
-            if (dropBase.minPlayerLevel != null && levelToUse < dropBase.minPlayerLevel ||
-                    dropBase.maxPlayerLevel != null && levelToUse > dropBase.maxPlayerLevel){
+            if (dropBase.minPlayerLevel > -1 && levelToUse < dropBase.minPlayerLevel ||
+                    dropBase.maxPlayerLevel > -1 && levelToUse > dropBase.maxPlayerLevel){
                 if (ymlHelper.getStringSet(main.settingsCfg, "debug-misc").contains("CUSTOM_DROPS")){
                     if (dropBase instanceof CustomDropItem) {
                         info.addDebugMessage(String.format(

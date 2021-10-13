@@ -331,8 +331,9 @@ public class CustomDropsParser {
         dropBase.permissions.addAll(ymlHelper.getStringSet(cs, "permission"));
         dropBase.minLevel = ymlHelper.getInt(cs,"minlevel", this.defaults.minLevel);
         dropBase.maxLevel = ymlHelper.getInt(cs,"maxlevel", this.defaults.maxLevel);
-        dropBase.minPlayerLevel = ymlHelper.getInt2(cs, "min-player-level", this.defaults.minPlayerLevel);
-        dropBase.maxPlayerLevel = ymlHelper.getInt2(cs, "max-player-level", this.defaults.maxPlayerLevel);
+
+        dropBase.minPlayerLevel = ymlHelper.getInt(cs, "min-player-level", this.defaults.minPlayerLevel);
+        dropBase.maxPlayerLevel = ymlHelper.getInt(cs, "max-player-level", this.defaults.maxPlayerLevel);
         dropBase.playerLevelVariable = ymlHelper.getString(cs, "player-level-variable", this.defaults.playerLevelVariable);
         dropBase.playerCausedOnly = ymlHelper.getBoolean(cs,"player-caused", this.defaults.playerCausedOnly);
         dropBase.maxDropGroup = ymlHelper.getInt(cs,"maxdropgroup", this.defaults.maxDropGroup);
@@ -688,12 +689,12 @@ public class CustomDropsParser {
             sb.append("&r");
         }
 
-        if (baseItem.minPlayerLevel != null){
+        if (baseItem.minPlayerLevel > -1){
             sb.append(", minPL: &b");
             sb.append(baseItem.minPlayerLevel);
             sb.append("&r");
         }
-        if (baseItem.maxPlayerLevel != null){
+        if (baseItem.maxPlayerLevel > -1){
             sb.append(", maxPL: &b");
             sb.append(baseItem.maxPlayerLevel);
             sb.append("&r");
