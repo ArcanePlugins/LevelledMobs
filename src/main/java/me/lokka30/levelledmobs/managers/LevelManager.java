@@ -820,7 +820,7 @@ public class LevelManager implements LevelInterface {
     public void applyLevelledAttributes(@NotNull final LivingEntityWrapper lmEntity, @NotNull final Addition addition) {
         assert lmEntity.isLevelled();
 
-        // TODO: This functionality should be added into the enum.
+        // This functionality should be added into the enum.
         Attribute attribute;
         switch (addition) {
             case ATTRIBUTE_MAX_HEALTH:                  attribute = Attribute.GENERIC_MAX_HEALTH; break;
@@ -1101,7 +1101,6 @@ public class LevelManager implements LevelInterface {
         final BukkitRunnable applyAttribs = new BukkitRunnable() {
             @Override
             public void run() {
-                // TODO: to improve performance have it get the values async for all attributes then run the task to apply the values
                 synchronized (main.attributeSyncObject) {
                     main.levelManager.applyLevelledAttributes(lmEntity, Addition.ATTRIBUTE_ATTACK_DAMAGE);
                     main.levelManager.applyLevelledAttributes(lmEntity, Addition.ATTRIBUTE_MAX_HEALTH);
@@ -1120,10 +1119,11 @@ public class LevelManager implements LevelInterface {
 
                 if (finalNbtData != null) {
                     NBTApplyResult result = NBTManager.applyNBT_Data_Mob(lmEntity, finalNbtData);
-                    if (result.hadException())
+                    if (result.hadException()) {
                         Utils.logger.warning("Error applying NBT data to " + lmEntity.getTypeName() + ". Exception message: " + result.exceptionMessage);
-                    else
+                    } else {
                         Utils.debugLog(main, DebugType.NBT_APPLY_SUCCESS, "Successfully applied NBT data to '" + lmEntity.getTypeName() + "'.");
+                    }
                 }
 
                 if (lmEntity.getLivingEntity() instanceof Creeper)

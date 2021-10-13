@@ -1,7 +1,7 @@
 ---
 name: Question
 about: If you have a general question, feel free to ask it using this template.
-title: 'Question: '
+title: Untitled Question
 labels: question
 assignees: ''
 
