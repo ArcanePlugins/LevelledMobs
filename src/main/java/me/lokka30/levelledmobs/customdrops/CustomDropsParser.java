@@ -507,24 +507,31 @@ public class CustomDropsParser {
     private void parseItemFlags(final CustomDropItem item, final ConfigurationSection cs, final CustomDropInstance dropInstance){
         if (cs == null) return;
 
-        String itemFlags = ymlHelper.getString(cs, "itemflags");
-        if (Utils.isNullOrEmpty(itemFlags))
-            itemFlags = ymlHelper.getString(cs, "item_flags");
+        List<String> flagList = cs.getStringList(ymlHelper.getKeyNameFromConfig(cs, "item_flags"));
+        String itemFlags = null;
 
-        if (Utils.isNullOrEmpty(itemFlags)) return;
-        List<ItemFlag> flagList = new LinkedList<>();
+        if (flagList.isEmpty()) {
+            itemFlags = ymlHelper.getString(cs, "itemflags");
+            if (Utils.isNullOrEmpty(itemFlags))
+                itemFlags = ymlHelper.getString(cs, "item_flags");
+        }
 
-        for (final String flag : itemFlags.replace(',',';').split(";")){
+        if (flagList.isEmpty() && Utils.isNullOrEmpty(itemFlags)) return;
+        final List<ItemFlag> results = new LinkedList<>();
+        final List<String> flagsToParse = flagList.isEmpty() ?
+                List.of(itemFlags.replace(',',';').split(";")) : flagList;
+
+        for (final String flag : flagsToParse){
             try {
                 ItemFlag newFlag = ItemFlag.valueOf(flag.trim().toUpperCase());
-                flagList.add(newFlag);
+                results.add(newFlag);
             } catch (Exception e) {
                 Utils.logger.warning(String.format("Invalid itemflag: %s, item: %s, mobOrGroup: %s",
                         flag, item.getMaterial().name(), dropInstance.getMobOrGroupName()));
             }
         }
 
-        if (flagList.size() > 0) item.itemFlags = flagList;
+        if (!results.isEmpty()) item.itemFlags = results;
     }
 
     private void checkEquippedChance(final CustomDropItem item, @NotNull final ConfigurationSection cs){
