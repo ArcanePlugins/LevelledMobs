@@ -376,7 +376,7 @@ public class CustomDropsParser {
         final CustomDropItem item = (CustomDropItem) dropBase;
 
         checkEquippedChance(item, cs);
-        parseItemFlags(item, ymlHelper.getString(cs,"itemflags"), dropInstance);
+        parseItemFlags(item, cs, dropInstance);
         item.onlyDropIfEquipped = ymlHelper.getBoolean(cs, "only-drop-if-equipped", this.defaults.onlyDropIfEquipped);
         item.priority = ymlHelper.getInt(cs,"priority", this.defaults.priority);
         item.noMultiplier = ymlHelper.getBoolean(cs,"nomultiplier", this.defaults.noMultiplier);
@@ -504,7 +504,13 @@ public class CustomDropsParser {
             item.getItemStack().setItemMeta(meta);
     }
 
-    private void parseItemFlags(final CustomDropItem item, final String itemFlags, final CustomDropInstance dropInstance){
+    private void parseItemFlags(final CustomDropItem item, final ConfigurationSection cs, final CustomDropInstance dropInstance){
+        if (cs == null) return;
+
+        String itemFlags = ymlHelper.getString(cs, "itemflags");
+        if (Utils.isNullOrEmpty(itemFlags))
+            itemFlags = ymlHelper.getString(cs, "item_flags");
+
         if (Utils.isNullOrEmpty(itemFlags)) return;
         List<ItemFlag> flagList = new LinkedList<>();
 

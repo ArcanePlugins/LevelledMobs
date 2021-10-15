@@ -10,6 +10,7 @@ import me.lokka30.levelledmobs.misc.LastMobKilledInfo;
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 import java.util.TreeMap;
@@ -25,31 +26,32 @@ public class PlaceholderApiIntegration extends PlaceholderExpansion {
 
     public PlaceholderApiIntegration(final LevelledMobs main) {
         this.main = main;
-        this.lastKilledEntitiesByPlayer = new TreeMap<>();
+        this.mobsByPlayerTracking = new TreeMap<>();
     }
 
     private final LevelledMobs main;
-    private final Map<UUID, LastMobKilledInfo> lastKilledEntitiesByPlayer;
+    private final Map<UUID, LastMobKilledInfo> mobsByPlayerTracking;
 
-    public void putEntityDeath(final @NotNull Player player, final @NotNull LivingEntityWrapper lmEntity) {
-        LastMobKilledInfo mobInfo = this.lastKilledEntitiesByPlayer.get(player.getUniqueId());
+    public void putPlayerOrMobDeath(final @NotNull Player player, final @Nullable LivingEntityWrapper lmEntity) {
+        LastMobKilledInfo mobInfo = this.mobsByPlayerTracking.get(player.getUniqueId());
         if (mobInfo == null){
             mobInfo = new LastMobKilledInfo();
-            this.lastKilledEntitiesByPlayer.put(player.getUniqueId(), mobInfo);
+            this.mobsByPlayerTracking.put(player.getUniqueId(), mobInfo);
         }
 
-        if (lmEntity.isLevelled())
-            mobInfo.mobLevel = lmEntity.getMobLevel();
+        mobInfo.entityLevel = lmEntity != null && lmEntity.isLevelled() ?
+                lmEntity.getMobLevel() : null;
 
-        mobInfo.mobName = main.levelManager.getNametag(lmEntity, false);
+        mobInfo.entityName = lmEntity != null ?
+                main.levelManager.getNametag(lmEntity, false) : null;
     }
 
     public void playedLoggedOut(final @NotNull Player player){
-        this.lastKilledEntitiesByPlayer.remove(player.getUniqueId());
+        this.mobsByPlayerTracking.remove(player.getUniqueId());
     }
 
     public void removePlayer(final @NotNull Player player){
-        this.lastKilledEntitiesByPlayer.remove(player.getUniqueId());
+        this.mobsByPlayerTracking.remove(player.getUniqueId());
     }
 
     @Override
@@ -81,7 +83,7 @@ public class PlaceholderApiIntegration extends PlaceholderExpansion {
     public String onPlaceholderRequest(final Player player, final @NotNull String identifier){
         if (player == null) return "";
 
-        if ("level".equalsIgnoreCase(identifier))
+        if ("mob-lvl".equalsIgnoreCase(identifier))
             return getLevelFromPlayer(player);
         else if ("displayname".equalsIgnoreCase(identifier))
             return getDisplaynameFromPlayer(player);
@@ -91,19 +93,19 @@ public class PlaceholderApiIntegration extends PlaceholderExpansion {
 
     @NotNull
     private String getLevelFromPlayer(final @NotNull Player player){
-        if (!this.lastKilledEntitiesByPlayer.containsKey(player.getUniqueId())) return "";
+        if (!this.mobsByPlayerTracking.containsKey(player.getUniqueId())) return "";
 
-        final LastMobKilledInfo mobInfo = this.lastKilledEntitiesByPlayer.get(player.getUniqueId());
-        return mobInfo.mobLevel == null ?
-                "" : mobInfo.mobLevel + "";
+        final LastMobKilledInfo mobInfo = this.mobsByPlayerTracking.get(player.getUniqueId());
+        return mobInfo.entityLevel == null ?
+                "" : mobInfo.entityLevel + "";
     }
 
     @NotNull
     private String getDisplaynameFromPlayer(final @NotNull Player player){
-        if (!this.lastKilledEntitiesByPlayer.containsKey(player.getUniqueId())) return "";
+        if (!this.mobsByPlayerTracking.containsKey(player.getUniqueId())) return "";
 
-        final LastMobKilledInfo mobInfo = this.lastKilledEntitiesByPlayer.get(player.getUniqueId());
-        return mobInfo == null ?
-            "" : mobInfo.mobName;
+        final LastMobKilledInfo mobInfo = this.mobsByPlayerTracking.get(player.getUniqueId());
+        return mobInfo == null || mobInfo.entityName == null ?
+            "" : mobInfo.entityName;
     }
 }

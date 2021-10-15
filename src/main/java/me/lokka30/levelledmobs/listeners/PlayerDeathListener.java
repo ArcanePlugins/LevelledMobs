@@ -9,6 +9,7 @@ import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
 import me.lokka30.levelledmobs.misc.Utils;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -17,6 +18,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Listens for when a player dies
@@ -40,11 +42,24 @@ public class PlayerDeathListener implements Listener {
      */
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void onPlayerDeath(@NotNull final PlayerDeathEvent event) {
-        if (event.getDeathMessage() == null) return;
+        final LivingEntityWrapper lmEntity = getPlayersKiller(event);
+
+        if (lmEntity == null){
+            main.placeholderApiIntegration.putPlayerOrMobDeath(event.getEntity(), null);
+            return;
+        }
+
+        main.placeholderApiIntegration.putPlayerOrMobDeath(event.getEntity(), lmEntity);
+        lmEntity.free();
+    }
+
+    @Nullable
+    private LivingEntityWrapper getPlayersKiller(@NotNull final PlayerDeathEvent event){
+        if (event.getDeathMessage() == null) return null;
 
         final EntityDamageEvent entityDamageEvent = event.getEntity().getLastDamageCause();
         if (entityDamageEvent == null || entityDamageEvent.isCancelled() || !(entityDamageEvent instanceof EntityDamageByEntityEvent))
-            return;
+            return null;
 
         final Entity damager = ((EntityDamageByEntityEvent) entityDamageEvent).getDamager();
         LivingEntity killer;
@@ -52,22 +67,21 @@ public class PlayerDeathListener implements Listener {
         if (damager instanceof Projectile)
             killer = (LivingEntity) ((Projectile) damager).getShooter();
         else if (!(damager instanceof LivingEntity))
-            return;
+            return null;
         else
             killer = (LivingEntity) damager;
 
-        if (killer == null || Utils.isNullOrEmpty(killer.getName())) return;
-
-        if (!main.levelManager.isLevelled(killer)) return;
+        if (killer == null || Utils.isNullOrEmpty(killer.getName()) || killer instanceof Player) return null;
 
         final LivingEntityWrapper lmKiller = LivingEntityWrapper.getInstance(killer, main);
+        if (!lmKiller.isLevelled())
+            return lmKiller;
+
         final String deathMessage = main.levelManager.getNametag(lmKiller, true);
-        if (Utils.isNullOrEmpty(deathMessage) || "disabled".equalsIgnoreCase(deathMessage)) {
-            lmKiller.free();
-            return;
-        }
+        if (Utils.isNullOrEmpty(deathMessage) || "disabled".equalsIgnoreCase(deathMessage))
+            return lmKiller;
 
         event.setDeathMessage(Utils.replaceEx(event.getDeathMessage(), killer.getName(), deathMessage));
-        lmKiller.free();
+        return lmKiller;
     }
 }
