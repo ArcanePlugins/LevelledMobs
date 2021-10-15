@@ -6,9 +6,8 @@ package me.lokka30.levelledmobs.managers;
 
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import me.lokka30.levelledmobs.LevelledMobs;
+import me.lokka30.levelledmobs.misc.LastMobKilledInfo;
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
-import me.lokka30.levelledmobs.misc.Utils;
-import me.lokka30.microlib.MessageUtils;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
@@ -30,13 +29,26 @@ public class PlaceholderApiIntegration extends PlaceholderExpansion {
     }
 
     private final LevelledMobs main;
-    private final Map<UUID, LivingEntityWrapper> lastKilledEntitiesByPlayer;
+    private final Map<UUID, LastMobKilledInfo> lastKilledEntitiesByPlayer;
 
-    public void putEntityDeath(final @NotNull Player player, final LivingEntityWrapper lmEntity) {
-        this.lastKilledEntitiesByPlayer.put(player.getUniqueId(), lmEntity);
+    public void putEntityDeath(final @NotNull Player player, final @NotNull LivingEntityWrapper lmEntity) {
+        LastMobKilledInfo mobInfo = this.lastKilledEntitiesByPlayer.get(player.getUniqueId());
+        if (mobInfo == null){
+            mobInfo = new LastMobKilledInfo();
+            this.lastKilledEntitiesByPlayer.put(player.getUniqueId(), mobInfo);
+        }
+
+        if (lmEntity.isLevelled())
+            mobInfo.mobLevel = lmEntity.getMobLevel();
+
+        mobInfo.mobName = main.levelManager.getNametag(lmEntity, false);
     }
 
     public void playedLoggedOut(final @NotNull Player player){
+        this.lastKilledEntitiesByPlayer.remove(player.getUniqueId());
+    }
+
+    public void removePlayer(final @NotNull Player player){
         this.lastKilledEntitiesByPlayer.remove(player.getUniqueId());
     }
 
@@ -78,27 +90,20 @@ public class PlaceholderApiIntegration extends PlaceholderExpansion {
     }
 
     @NotNull
-    private String getLevelFromPlayer(final Player player){
+    private String getLevelFromPlayer(final @NotNull Player player){
         if (!this.lastKilledEntitiesByPlayer.containsKey(player.getUniqueId())) return "";
 
-        final LivingEntityWrapper lmEntity = this.lastKilledEntitiesByPlayer.get(player.getUniqueId());
-        if (!lmEntity.isLevelled()) return "0";
-        return lmEntity.getMobLevel() + "";
+        final LastMobKilledInfo mobInfo = this.lastKilledEntitiesByPlayer.get(player.getUniqueId());
+        return mobInfo.mobLevel == null ?
+                "" : mobInfo.mobLevel + "";
     }
 
     @NotNull
-    private String getDisplaynameFromPlayer(final Player player){
+    private String getDisplaynameFromPlayer(final @NotNull Player player){
         if (!this.lastKilledEntitiesByPlayer.containsKey(player.getUniqueId())) return "";
 
-        final LivingEntityWrapper lmEntity = this.lastKilledEntitiesByPlayer.get(player.getUniqueId());
-
-        if (lmEntity.getLivingEntity().getCustomName() != null)
-            return lmEntity.getLivingEntity().getCustomName();
-
-        final boolean useCustomNameForNametags = main.helperSettings.getBoolean(main.settingsCfg, "use-customname-for-mob-nametags");
-        final String overridenName = main.rulesManager.getRule_EntityOverriddenName(lmEntity, useCustomNameForNametags);
-        return overridenName == null ?
-                Utils.capitalize(lmEntity.getTypeName().replaceAll("_", " ")) :
-                MessageUtils.colorizeAll(overridenName);
+        final LastMobKilledInfo mobInfo = this.lastKilledEntitiesByPlayer.get(player.getUniqueId());
+        return mobInfo == null ?
+            "" : mobInfo.mobName;
     }
 }
