@@ -111,6 +111,19 @@ public class EntityDamageListener implements Listener {
         final Projectile projectile = (Projectile) event.getDamager();
 
         if (projectile.getShooter() == null) return;
+
+        if (projectile.getShooter() instanceof Player && event.getEntity() instanceof LivingEntity){
+            final LivingEntityWrapper lmEntity = LivingEntityWrapper.getInstance((LivingEntity) event.getEntity(), main);
+            if (lmEntity.isLevelled() && main.rulesManager.getRule_CreatureNametagVisbility(lmEntity).contains(NametagVisibilityEnum.ATTACKED)) {
+                if (lmEntity.playersNeedingNametagCooldownUpdate == null)
+                    lmEntity.playersNeedingNametagCooldownUpdate = new HashSet<>();
+                lmEntity.playersNeedingNametagCooldownUpdate.add((Player) projectile.getShooter());
+                main.levelManager.updateNametag_WithDelay(lmEntity);
+            }
+            lmEntity.free();
+            return;
+        }
+
         if (!(projectile.getShooter() instanceof LivingEntity)) return;
 
         final LivingEntityWrapper shooter = LivingEntityWrapper.getInstance((LivingEntity) projectile.getShooter(), main);

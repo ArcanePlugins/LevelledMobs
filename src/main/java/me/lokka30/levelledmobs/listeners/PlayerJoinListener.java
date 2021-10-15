@@ -67,6 +67,8 @@ public class PlayerJoinListener implements Listener {
         synchronized (NametagTimerChecker.nametagTimer_Lock) {
             main.nametagTimerChecker.nametagCooldownQueue.remove(event.getPlayer());
         }
+        if (main.placeholderApiIntegration != null)
+            main.placeholderApiIntegration.removePlayer(event.getPlayer());
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)

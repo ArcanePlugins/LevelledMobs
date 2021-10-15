@@ -214,7 +214,7 @@ command:
     info:
       about:
         - ' '
-        - '&b&lLevelledMobs &fv%version%&7 by lokka30 & stumper66'
+        - '&b&lLevelledMobs &fv%version%&7 by lokka30, stumper66 and Oathkeeper'
         - '&7&o%description%'
         - ' '
         - '&7This version of the plugin supports: &fMinecraft %supportedVersions%'

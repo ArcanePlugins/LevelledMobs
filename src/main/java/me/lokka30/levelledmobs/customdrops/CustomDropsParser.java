@@ -331,8 +331,9 @@ public class CustomDropsParser {
         dropBase.permissions.addAll(ymlHelper.getStringSet(cs, "permission"));
         dropBase.minLevel = ymlHelper.getInt(cs,"minlevel", this.defaults.minLevel);
         dropBase.maxLevel = ymlHelper.getInt(cs,"maxlevel", this.defaults.maxLevel);
-        dropBase.minPlayerLevel = ymlHelper.getInt2(cs, "min-player-level", this.defaults.minPlayerLevel);
-        dropBase.maxPlayerLevel = ymlHelper.getInt2(cs, "max-player-level", this.defaults.maxPlayerLevel);
+
+        dropBase.minPlayerLevel = ymlHelper.getInt(cs, "min-player-level", this.defaults.minPlayerLevel);
+        dropBase.maxPlayerLevel = ymlHelper.getInt(cs, "max-player-level", this.defaults.maxPlayerLevel);
         dropBase.playerLevelVariable = ymlHelper.getString(cs, "player-level-variable", this.defaults.playerLevelVariable);
         dropBase.playerCausedOnly = ymlHelper.getBoolean(cs,"player-caused", this.defaults.playerCausedOnly);
         dropBase.maxDropGroup = ymlHelper.getInt(cs,"maxdropgroup", this.defaults.maxDropGroup);
@@ -375,7 +376,7 @@ public class CustomDropsParser {
         final CustomDropItem item = (CustomDropItem) dropBase;
 
         checkEquippedChance(item, cs);
-        parseItemFlags(item, ymlHelper.getString(cs,"itemflags"), dropInstance);
+        parseItemFlags(item, cs, dropInstance);
         item.onlyDropIfEquipped = ymlHelper.getBoolean(cs, "only-drop-if-equipped", this.defaults.onlyDropIfEquipped);
         item.priority = ymlHelper.getInt(cs,"priority", this.defaults.priority);
         item.noMultiplier = ymlHelper.getBoolean(cs,"nomultiplier", this.defaults.noMultiplier);
@@ -503,21 +504,34 @@ public class CustomDropsParser {
             item.getItemStack().setItemMeta(meta);
     }
 
-    private void parseItemFlags(final CustomDropItem item, final String itemFlags, final CustomDropInstance dropInstance){
-        if (Utils.isNullOrEmpty(itemFlags)) return;
-        List<ItemFlag> flagList = new LinkedList<>();
+    private void parseItemFlags(final CustomDropItem item, final ConfigurationSection cs, final CustomDropInstance dropInstance){
+        if (cs == null) return;
 
-        for (final String flag : itemFlags.replace(',',';').split(";")){
+        List<String> flagList = cs.getStringList(ymlHelper.getKeyNameFromConfig(cs, "item_flags"));
+        String itemFlags = null;
+
+        if (flagList.isEmpty()) {
+            itemFlags = ymlHelper.getString(cs, "itemflags");
+            if (Utils.isNullOrEmpty(itemFlags))
+                itemFlags = ymlHelper.getString(cs, "item_flags");
+        }
+
+        if (flagList.isEmpty() && Utils.isNullOrEmpty(itemFlags)) return;
+        final List<ItemFlag> results = new LinkedList<>();
+        final List<String> flagsToParse = flagList.isEmpty() ?
+                List.of(itemFlags.replace(',',';').split(";")) : flagList;
+
+        for (final String flag : flagsToParse){
             try {
                 ItemFlag newFlag = ItemFlag.valueOf(flag.trim().toUpperCase());
-                flagList.add(newFlag);
+                results.add(newFlag);
             } catch (Exception e) {
                 Utils.logger.warning(String.format("Invalid itemflag: %s, item: %s, mobOrGroup: %s",
                         flag, item.getMaterial().name(), dropInstance.getMobOrGroupName()));
             }
         }
 
-        if (flagList.size() > 0) item.itemFlags = flagList;
+        if (!results.isEmpty()) item.itemFlags = results;
     }
 
     private void checkEquippedChance(final CustomDropItem item, @NotNull final ConfigurationSection cs){
@@ -688,12 +702,12 @@ public class CustomDropsParser {
             sb.append("&r");
         }
 
-        if (baseItem.minPlayerLevel != null){
+        if (baseItem.minPlayerLevel > -1){
             sb.append(", minPL: &b");
             sb.append(baseItem.minPlayerLevel);
             sb.append("&r");
         }
-        if (baseItem.maxPlayerLevel != null){
+        if (baseItem.maxPlayerLevel > -1){
             sb.append(", maxPL: &b");
             sb.append(baseItem.maxPlayerLevel);
             sb.append("&r");
