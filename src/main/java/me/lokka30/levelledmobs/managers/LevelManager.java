@@ -720,6 +720,8 @@ public class LevelManager implements LevelInterface {
         for (final LivingEntityWrapper lmEntity : entityToPlayer.keySet()) {
             if (entityToPlayer.containsKey(lmEntity))
                 checkEntityForPlayerLevelling(lmEntity, entityToPlayer.get(lmEntity));
+
+            lmEntity.free();
         }
     }
 
@@ -742,10 +744,9 @@ public class LevelManager implements LevelInterface {
             break;
         }
 
-        if (closestPlayer == null) {
-            lmEntity.free();
+        if (closestPlayer == null)
             return;
-        }
+
         if (doesMobNeedRelevelling(mob, closestPlayer)) {
 
             synchronized (mob.getPersistentDataContainer()) {
@@ -756,7 +757,6 @@ public class LevelManager implements LevelInterface {
             lmEntity.reEvaluateLevel = true;
             main._mobsQueueManager.addToQueue(new QueueItem(lmEntity, null));
         }
-        lmEntity.free();
     }
 
     private void checkLevelledEntity(@NotNull final LivingEntityWrapper lmEntity, @NotNull final Player player){
@@ -772,7 +772,7 @@ public class LevelManager implements LevelInterface {
         } else {
             if (!main.helperSettings.getBoolean(main.settingsCfg, "use-customname-for-mob-nametags", false) &&
                     location.getWorld() != null &&
-                    location.getWorld().getName().equals(lmEntity.getWorld().getName()) &&
+                    location.getWorld().equals(lmEntity.getWorld()) &&
                     lmEntity.getLocation().distanceSquared(location) <= maxDistance) {
                 //if within distance, update nametag.
                 main.nametagQueueManager_.addToQueue(new QueueItem(lmEntity, main.levelManager.getNametag(lmEntity, false), Collections.singletonList(player)));

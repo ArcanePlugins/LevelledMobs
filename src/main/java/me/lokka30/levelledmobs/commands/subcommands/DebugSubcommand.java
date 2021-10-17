@@ -18,7 +18,9 @@ public class DebugSubcommand implements Subcommand {
             return;
         }
 
-        if (args.length < 3 || !"create".equalsIgnoreCase(args[1]) && !"confirm".equalsIgnoreCase(args[2])){
+        if (args.length == 3 && "create".equalsIgnoreCase(args[1]) && "confirm".equalsIgnoreCase(args[2]))
+            DebugCreator.createDebug(main, sender);
+        else{
             sender.sendMessage(MessageUtils.colorizeAll("&fBuild Debug Files&r\n" +
                     "If you're running this command, that means a LM Developer asked you to.\n" +
                     "We need copies of your LevelledMobs files, as well as a list of your current plugins, your current server build and version, " +
@@ -26,11 +28,7 @@ public class DebugSubcommand implements Subcommand {
                     "to be shared with a LM Developer. &fAbsolutely NOTHING&r within the .ZIP would contain private or personal information, and you can verify " +
                     "the contents of the .ZIP file prior to sending.\n" +
                     "If you are satisfied, please confirm by typing &b/lm debug create confirm"));
-
-            return;
         }
-
-        DebugCreator.createDebug(main, sender);
     }
 
     @Override

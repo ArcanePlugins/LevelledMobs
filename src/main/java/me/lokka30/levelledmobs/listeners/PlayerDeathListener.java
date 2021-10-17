@@ -44,13 +44,13 @@ public class PlayerDeathListener implements Listener {
     public void onPlayerDeath(@NotNull final PlayerDeathEvent event) {
         final LivingEntityWrapper lmEntity = getPlayersKiller(event);
 
-        if (lmEntity == null){
-            main.placeholderApiIntegration.putPlayerOrMobDeath(event.getEntity(), null);
+        if (main.placeholderApiIntegration != null){
+            main.placeholderApiIntegration.putPlayerOrMobDeath(event.getEntity(), lmEntity);
             return;
         }
 
-        main.placeholderApiIntegration.putPlayerOrMobDeath(event.getEntity(), lmEntity);
-        lmEntity.free();
+        if (lmEntity != null)
+            lmEntity.free();
     }
 
     @Nullable
