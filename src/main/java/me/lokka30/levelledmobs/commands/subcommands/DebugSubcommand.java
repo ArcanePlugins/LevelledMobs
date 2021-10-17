@@ -31,7 +31,8 @@ public class DebugSubcommand implements Subcommand {
                     "&8 &m->&7 The &blatest.log file&7 &8(/logs/latest.log)\n" +
                     "&r\n" +
                     "&7LevelledMobs developers will not redistribute or retain the data beyond the purpose of resolving any issue you may be experiencing. You may also verify the contents prior to sending the file.\n" +
-                    "&7To proceed in creating the ZIP file, please run &b/lm debug create confirm&7."));
+                    "&7To proceed in creating the ZIP file, please run:\n" +
+                    "&b/lm debug create confirm&7."));
         }
     }
 
