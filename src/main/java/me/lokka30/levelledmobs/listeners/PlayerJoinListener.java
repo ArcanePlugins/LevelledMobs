@@ -7,6 +7,7 @@ package me.lokka30.levelledmobs.listeners;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
 import me.lokka30.levelledmobs.misc.NametagTimerChecker;
+import me.lokka30.levelledmobs.misc.PlayerQueueItem;
 import me.lokka30.levelledmobs.misc.Utils;
 import me.lokka30.microlib.MessageUtils;
 import org.bukkit.Bukkit;
@@ -44,9 +45,7 @@ public class PlayerJoinListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onJoin(@NotNull final PlayerJoinEvent event) {
-        synchronized (NametagTimerChecker.nametagTimer_Lock){
-            main.nametagTimerChecker.nametagCooldownQueue.put(event.getPlayer(), new WeakHashMap<>());
-        }
+        main.nametagTimerChecker.addPlayerToQueue(new PlayerQueueItem(event.getPlayer(), true));
         parseCompatibilityChecker(event.getPlayer());
         parseUpdateChecker(event.getPlayer());
 
@@ -64,9 +63,8 @@ public class PlayerJoinListener implements Listener {
 
         main.companion.spawner_CopyIds.remove(event.getPlayer().getUniqueId());
         main.companion.spawner_InfoIds.remove(event.getPlayer().getUniqueId());
-        synchronized (NametagTimerChecker.nametagTimer_Lock) {
-            main.nametagTimerChecker.nametagCooldownQueue.remove(event.getPlayer());
-        }
+        main.nametagTimerChecker.addPlayerToQueue(new PlayerQueueItem(event.getPlayer(), false));
+
         if (main.placeholderApiIntegration != null)
             main.placeholderApiIntegration.removePlayer(event.getPlayer());
     }
