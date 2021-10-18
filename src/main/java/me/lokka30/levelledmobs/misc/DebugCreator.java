@@ -23,7 +23,8 @@ public class DebugCreator {
     public static void createDebug(final @NotNull LevelledMobs main, final CommandSender sender){
         final String pluginDir = main.getDataFolder().getAbsolutePath();
         final List<String> srcFiles = List.of(
-                "serverinfo.txt", "rules.yml", "settings.yml", "messages.yml", "customdrops.yml");
+                "serverinfo.txt", "rules.yml", "settings.yml", "messages.yml", "customdrops.yml",
+                Bukkit.getWorldContainer().getAbsolutePath().substring(0, Bukkit.getWorldContainer().getAbsolutePath().length() - 1) + "logs" + File.separator + "latest.log");
         final File serverInfoFile = new File(pluginDir, "serverinfo.txt");
         try{
             Files.writeString(serverInfoFile.toPath(), generateSystemInfo(main), StandardCharsets.UTF_8);
@@ -43,7 +44,9 @@ public class DebugCreator {
             zipOut = new ZipOutputStream(fos);
 
             for (String srcFile : srcFiles) {
-                final File fileToZip = new File(pluginDir, srcFile);
+                final File fileToZip = srcFile.contains(File.separator) ?
+                        new File(srcFile) : new File(pluginDir, srcFile);
+
                 fis = new FileInputStream(fileToZip);
                 final ZipEntry zipEntry = new ZipEntry(fileToZip.getName());
                 zipOut.putNextEntry(zipEntry);
@@ -69,6 +72,9 @@ public class DebugCreator {
             }
             catch (Exception ignored) {}
         }
+
+        final File serverInfo = new File(pluginDir, "serverinfo.txt");
+        if (serverInfo.exists()) serverInfo.delete();
 
         if (result)
             sender.sendMessage("Created file: " + zipFile.getAbsolutePath());

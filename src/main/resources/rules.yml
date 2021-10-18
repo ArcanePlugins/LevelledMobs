@@ -193,8 +193,8 @@ presets:
         item-drop: 3
         xp-drop: 5
 #       Special Multipliers (0.0 Min - 1.0 Max)
-        armor-bonus: 0.7
-        armor-toughness: 0.4
+        armor-bonus: 0.3
+        armor-toughness: 0.3
         attack-knockback: 0.5
         knockback-resistance: 0.5
         zombie-spawn-reinforcements: 0.45
@@ -229,8 +229,8 @@ presets:
         item-drop: 3
         xp-drop: 5
 #       Special Multipliers (0.0 Min - 1.0 Max)
-        armor-bonus: 0.5
-        armor-toughness: 0.2
+        armor-bonus: 0.2
+        armor-toughness: 0.15
         attack-knockback: 0.25
         knockback-resistance: 0.2
         zombie-spawn-reinforcements: 0.25
@@ -264,8 +264,8 @@ presets:
         item-drop: 3
         xp-drop: 5
 #       Special Multipliers (0.0 Min - 1.0 Max)
-        armor-bonus: 0.4
-        armor-toughness: 0.2
+        armor-bonus: 0.1
+        armor-toughness: 0.0
         attack-knockback: 0.1
         knockback-resistance: 0.15
         zombie-spawn-reinforcements: 0.1

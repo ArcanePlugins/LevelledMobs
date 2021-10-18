@@ -18,19 +18,22 @@ public class DebugSubcommand implements Subcommand {
             return;
         }
 
-        if (args.length < 3 || !"create".equalsIgnoreCase(args[1]) && !"confirm".equalsIgnoreCase(args[2])){
-            sender.sendMessage(MessageUtils.colorizeAll("&fBuild Debug Files&r\n" +
-                    "If you're running this command, that means a LM Developer asked you to.\n" +
-                    "We need copies of your LevelledMobs files, as well as a list of your current plugins, your current server build and version, " +
-                    "and your current and maximum player count. Confirming this command will create a .ZIP file containing the above mentioned information, " +
-                    "to be shared with a LM Developer. &fAbsolutely NOTHING&r within the .ZIP would contain private or personal information, and you can verify " +
-                    "the contents of the .ZIP file prior to sending.\n" +
-                    "If you are satisfied, please confirm by typing &b/lm debug create confirm"));
-
-            return;
+        if (args.length == 3 && "create".equalsIgnoreCase(args[1]) && "confirm".equalsIgnoreCase(args[2]))
+            DebugCreator.createDebug(main, sender);
+        else{
+            sender.sendMessage(MessageUtils.colorizeAll("&b&nCreate a Debugging ZIP\n" +
+                    "&7You should only run this command if a LevelledMobs developer has asked you to. It is used to assist users who are experiencing issues with the plugin.\n" +
+                    "&r\n" +
+                    "&7This command will generate a ZIP file containing the following required data:\n" +
+                    "&8 &m->&b Plugins list\n" +
+                    "&8 &m->&b Server version\n" +
+                    "&8 &m->&b Current and maximum online player count\n" +
+                    "&8 &m->&b The latest.log file&7 &8(/logs/latest.log)\n" +
+                    "&r\n" +
+                    "&7LevelledMobs developers will not redistribute or retain the data beyond the purpose of resolving any issue you may be experiencing. You may also verify the contents prior to sending the file.\n" +
+                    "&7To proceed in creating the ZIP file, please run:\n" +
+                    "&b/lm debug create confirm&7"));
         }
-
-        DebugCreator.createDebug(main, sender);
     }
 
     @Override
