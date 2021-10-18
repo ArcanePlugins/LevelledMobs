@@ -28,11 +28,11 @@ public class DebugSubcommand implements Subcommand {
                     "&8 &m->&b Plugins list\n" +
                     "&8 &m->&b Server version\n" +
                     "&8 &m->&b Current and maximum online player count\n" +
-                    "&8 &m->&7 The &blatest.log file&7 &8(/logs/latest.log)\n" +
+                    "&8 &m->&b The latest.log file&7 &8(/logs/latest.log)\n" +
                     "&r\n" +
                     "&7LevelledMobs developers will not redistribute or retain the data beyond the purpose of resolving any issue you may be experiencing. You may also verify the contents prior to sending the file.\n" +
                     "&7To proceed in creating the ZIP file, please run:\n" +
-                    "&b/lm debug create confirm&7."));
+                    "&b/lm debug create confirm&7"));
         }
     }
 
