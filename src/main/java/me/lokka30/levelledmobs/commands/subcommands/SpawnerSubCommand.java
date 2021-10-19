@@ -35,8 +35,9 @@ public class SpawnerSubCommand implements Subcommand{
 
     final private LevelledMobs main;
     final private List<String> allSpawnerOptions = Arrays.asList(
-            "/name", "/customdropid", "/spawntype", "/minlevel", "/maxlevel", "/delay", "/maxnearbyentities",
-            "/minspawndelay", "/maxspawndelay", "/requiredplayerrange", "/spawncount", "/spawnrange"
+            "/name", "/customdropid", "/spawntype", "/giveplayer", "/minlevel", "/maxlevel", "/delay",
+            "/maxnearbyentities", "/minspawndelay", "/maxspawndelay", "/requiredplayerrange",
+            "/spawncount", "/spawnrange"
     );
     private boolean hadInvalidArg;
 
@@ -47,17 +48,39 @@ public class SpawnerSubCommand implements Subcommand{
             return;
         }
 
-        if (!(sender instanceof Player)){
-            sender.sendMessage("Command can only be run by a player");
-            return;
-        }
-
         if (args.length < 2){
             List<String> messages = main.messagesCfg.getStringList("command.levelledmobs.spawner.usage");
             messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.getPrefix());
             messages = Utils.replaceAllInList(messages, "%label%", label);
             messages = Utils.colorizeAllInList(messages);
             messages.forEach(sender::sendMessage);
+            return;
+        }
+
+        OperationEnum operationEnum = OperationEnum.CREATE;
+
+        switch (args[1].toLowerCase()){
+            case "copy":
+                operationEnum = OperationEnum.COPY;
+                break;
+            case "info":
+                operationEnum = OperationEnum.INFO;
+                break;
+        }
+
+        boolean hasGivePlayer = false;
+        for (int i = 2; i < args.length; i++){
+            if ("/giveplayer".equalsIgnoreCase(args[i])){
+                hasGivePlayer = true;
+                break;
+            }
+        }
+
+        if ((!hasGivePlayer || operationEnum != OperationEnum.CREATE) && !(sender instanceof Player)){
+            if (operationEnum == OperationEnum.CREATE)
+                sender.sendMessage("Command can only be run by a player unless /giveplayer is specified");
+            else
+                sender.sendMessage("Command can only be run by a player");
             return;
         }
 
@@ -186,10 +209,12 @@ public class SpawnerSubCommand implements Subcommand{
     private void parseCreateCommand(@NotNull final CommandSender sender, final String label, final String[] args){
         hadInvalidArg = false;
 
-        final CustomSpawnerInfo info = new CustomSpawnerInfo(main, (Player) sender, label);
+        final CustomSpawnerInfo info = new CustomSpawnerInfo(main, label);
+        if (sender instanceof Player)
+            info.player = (Player) sender;
 
         for (int i = 0; i < allSpawnerOptions.size(); i++){
-            final boolean mustBeANumber = (i > 2);
+            final boolean mustBeANumber = (i > 3);
             final String command = allSpawnerOptions.get(i);
             final String foundValue = getArgValue(command, args, sender, label, mustBeANumber);
             if (hadInvalidArg) return;
@@ -216,6 +241,21 @@ public class SpawnerSubCommand implements Subcommand{
                 case "/requiredplayerrange": info.requiredPlayerRange = Integer.parseInt(foundValue); break;
                 case "/spawncount": info.spawnCount = Integer.parseInt(foundValue); break;
                 case "/spawnrange": info.spawnRange = Integer.parseInt(foundValue); break;
+                case "/giveplayer":
+                    if (Utils.isNullOrEmpty(foundValue)){
+                        sender.sendMessage("No player was specified");
+                        return;
+                    }
+                    try { info.player = Bukkit.getPlayer(foundValue); }
+                    catch (Exception e){
+                        sender.sendMessage("Invalid or offline player: " + foundValue);
+                        return;
+                    }
+                    if (info.player == null){
+                        sender.sendMessage("Invalid or offline player: " + foundValue);
+                        return;
+                    }
+                    break;
             }
         }
 
@@ -225,6 +265,11 @@ public class SpawnerSubCommand implements Subcommand{
             messages = Utils.replaceAllInList(messages, "%label%", label);
             messages = Utils.colorizeAllInList(messages);
             messages.forEach(sender::sendMessage);
+            return;
+        }
+
+        if (info.player == null){
+            sender.sendMessage("No player was specified");
             return;
         }
 
@@ -460,6 +505,12 @@ public class SpawnerSubCommand implements Subcommand{
                 case "/spawncount":
                 case "/spawnrange":
                     return Collections.singletonList("4");
+                case "/giveplayer":
+                    final List<String> players = new LinkedList<>();
+                    for (final Player player : Bukkit.getOnlinePlayers())
+                        players.add(player.getName());
+                    players.sort(String.CASE_INSENSITIVE_ORDER);
+                    return players;
             }
         }
 
@@ -482,7 +533,7 @@ public class SpawnerSubCommand implements Subcommand{
         final String lastArg = args[args.length - 1];
 
         if (inQuotes || lastArg.length() > 0 && lastArg.charAt(lastArg.length() - 1) == '\"')
-            return Collections.singletonList("");
+            return Collections.emptyList();
 
         final List<String> result = new ArrayList<>(commandsList.size());
         result.addAll(commandsList);
@@ -490,9 +541,8 @@ public class SpawnerSubCommand implements Subcommand{
     }
 
     public static class CustomSpawnerInfo{
-        public CustomSpawnerInfo(final LevelledMobs main, final Player player, final String label){
+        public CustomSpawnerInfo(final LevelledMobs main, final String label){
             this.main = main;
-            this.player = player;
             this.label = label;
             this.minLevel = -1;
             this.maxLevel = -1;
@@ -500,8 +550,8 @@ public class SpawnerSubCommand implements Subcommand{
         }
 
         final public LevelledMobs main;
-        final public Player player;
         final public String label;
+        public Player player;
         public int minLevel;
         public int maxLevel;
         public Integer delay;
@@ -515,5 +565,11 @@ public class SpawnerSubCommand implements Subcommand{
         public String customName;
         public EntityType spawnType;
         public String lore;
+    }
+
+    private enum OperationEnum{
+        CREATE,
+        COPY,
+        INFO
     }
 }

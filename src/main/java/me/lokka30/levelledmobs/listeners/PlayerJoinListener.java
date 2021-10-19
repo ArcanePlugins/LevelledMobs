@@ -6,7 +6,6 @@ package me.lokka30.levelledmobs.listeners;
 
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
-import me.lokka30.levelledmobs.misc.NametagTimerChecker;
 import me.lokka30.levelledmobs.misc.PlayerQueueItem;
 import me.lokka30.levelledmobs.misc.Utils;
 import me.lokka30.microlib.MessageUtils;
@@ -26,7 +25,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.WeakHashMap;
 
 /**
  * Listens for when a player joins, leaves or changes worlds so that
