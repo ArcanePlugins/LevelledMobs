@@ -6,6 +6,8 @@ package me.lokka30.levelledmobs.commands.subcommands;
 
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.misc.Utils;
+import me.lokka30.levelledmobs.rules.DoNotMerge;
+import me.lokka30.microlib.MessageUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
@@ -35,9 +37,9 @@ public class SpawnerSubCommand implements Subcommand{
 
     final private LevelledMobs main;
     final private List<String> allSpawnerOptions = Arrays.asList(
-            "/name", "/customdropid", "/spawntype", "/giveplayer", "/minlevel", "/maxlevel", "/delay",
+            "/name", "/customdropid", "/spawntype", "/giveplayer", "/lore", "/minlevel", "/maxlevel", "/delay",
             "/maxnearbyentities", "/minspawndelay", "/maxspawndelay", "/requiredplayerrange",
-            "/spawncount", "/spawnrange"
+            "/spawncount", "/spawnrange", "/nolore"
     );
     private boolean hadInvalidArg;
 
@@ -213,8 +215,17 @@ public class SpawnerSubCommand implements Subcommand{
         if (sender instanceof Player)
             info.player = (Player) sender;
 
-        for (int i = 0; i < allSpawnerOptions.size(); i++){
-            final boolean mustBeANumber = (i > 3);
+        // arguments with no values go here:
+        for (int i = 1; i < args.length; i++) {
+            final String arg = args[i];
+            if ("/nolore".equalsIgnoreCase(arg)) {
+                info.noLore = true;
+                break;
+            }
+        }
+
+        for (int i = 0; i < allSpawnerOptions.size() - 1; i++){
+            final boolean mustBeANumber = (i > 4);
             final String command = allSpawnerOptions.get(i);
             final String foundValue = getArgValue(command, args, sender, label, mustBeANumber);
             if (hadInvalidArg) return;
@@ -223,6 +234,7 @@ public class SpawnerSubCommand implements Subcommand{
             switch (command){
                 case "/name": info.customName = foundValue; break;
                 case "/customdropid": info.customDropId = foundValue; break;
+                case "/lore": info.customLore = foundValue; break;
                 case "/spawntype":
                     try{
                         info.spawnType = EntityType.valueOf(foundValue.toUpperCase());
@@ -360,8 +372,7 @@ public class SpawnerSubCommand implements Subcommand{
                     if (!Modifier.isPublic(f.getModifiers())) continue;
                     if (f.get(info) == null) continue;
                     final String name = f.getName();
-                    if (name.equals("player") || name.equals("label") || name.equals("customName") || name.equals("main"))
-                        continue;
+                    if (f.isAnnotationPresent(DoNotMerge.class)) continue;
 
                     if ("-1".equals(f.get(info).toString()) && (name.equals("minLevel") || name.equals("maxLevel")))
                         continue;
@@ -383,7 +394,7 @@ public class SpawnerSubCommand implements Subcommand{
                 e.printStackTrace();
             }
 
-            if (info.lore == null) {
+            if (!info.noLore && info.lore == null && info.customLore == null) {
                 lore = Utils.colorizeAllInList(lore);
                 meta.setLore(lore);
 
@@ -394,11 +405,14 @@ public class SpawnerSubCommand implements Subcommand{
                 }
                 meta.getPersistentDataContainer().set(info.main.namespaced_keys.keySpawner_Lore, PersistentDataType.STRING, sbLore.toString());
             }
-            else {
+            else if (!info.noLore || info.customLore != null){
+                final String useLore = info.customLore == null ?
+                        info.lore : MessageUtils.colorizeAll(info.customLore).replace("\\n", "\n");
+
                 lore.clear();
-                lore.addAll(Arrays.asList(info.lore.split("\n")));
+                lore.addAll(List.of(useLore.split("\n")));
                 meta.setLore(lore);
-                meta.getPersistentDataContainer().set(info.main.namespaced_keys.keySpawner_Lore, PersistentDataType.STRING, info.lore);
+                meta.getPersistentDataContainer().set(info.main.namespaced_keys.keySpawner_Lore, PersistentDataType.STRING, useLore);
             }
 
             meta.getPersistentDataContainer().set(info.main.namespaced_keys.keySpawner, PersistentDataType.INTEGER, 1);
@@ -549,11 +563,16 @@ public class SpawnerSubCommand implements Subcommand{
             this.spawnType = EntityType.UNKNOWN;
         }
 
+        @DoNotMerge
         final public LevelledMobs main;
+        @DoNotMerge
         final public String label;
+        @DoNotMerge
         public Player player;
         public int minLevel;
         public int maxLevel;
+        @DoNotMerge
+        public boolean noLore;
         public Integer delay;
         public Integer maxNearbyEntities;
         public Integer minSpawnDelay;
@@ -562,8 +581,11 @@ public class SpawnerSubCommand implements Subcommand{
         public Integer spawnCount;
         public Integer spawnRange;
         public String customDropId;
+        @DoNotMerge
         public String customName;
         public EntityType spawnType;
+        @DoNotMerge
+        public String customLore;
         public String lore;
     }
 
