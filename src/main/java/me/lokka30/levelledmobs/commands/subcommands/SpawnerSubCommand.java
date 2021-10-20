@@ -300,8 +300,10 @@ public class SpawnerSubCommand implements Subcommand{
                 keyFlag = i;
             else if (keyFlag == i - 1 && arg.startsWith("\""))
                 nameStartFlag = i;
-            else if (nameStartFlag > -1 && !arg.startsWith("/") && arg.endsWith("\""))
+            else if (nameStartFlag > -1 && !arg.startsWith("/") && arg.endsWith("\"")) {
                 nameEndFlag = i;
+                break;
+            }
         }
 
         if (keyFlag < 0) return null;
@@ -358,6 +360,8 @@ public class SpawnerSubCommand implements Subcommand{
             // settting min spawn delay higher than max spawn delay will result in an exception
             info.maxSpawnDelay = info.minSpawnDelay;
         }
+
+        if (info.customName != null) info.customName = MessageUtils.colorizeAll(info.customName);
 
         final ItemStack item = new ItemStack(Material.SPAWNER);
         final ItemMeta meta = item.getItemMeta();

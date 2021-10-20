@@ -167,19 +167,29 @@ public class RulesParsingManager {
                                                                                       final CachedModalList<LevelledMobSpawnReason> defaultValue) {
         if (cs == null) return defaultValue;
 
-        final String useKeyName = ymlHelper.getKeyNameFromConfig(cs, "allowed-spawn-reasons");
-        final ConfigurationSection cs2 = objTo_CS(cs, useKeyName);
-        if (cs2 == null) return defaultValue;
-
         final CachedModalList<LevelledMobSpawnReason> cachedModalList = new CachedModalList<>();
+        final Object simpleStringOrArray = cs.get(ymlHelper.getKeyNameFromConfig(cs, "allowed-spawn-reasons"));
+        ConfigurationSection cs2 = null;
+        List<String> useList = null;
+
+        if (simpleStringOrArray instanceof ArrayList)
+            useList = new LinkedList<>((ArrayList<String>) simpleStringOrArray);
+        else if (simpleStringOrArray instanceof String)
+            useList = List.of((String) simpleStringOrArray);
+
+        if (useList == null) {
+            final String useKeyName = ymlHelper.getKeyNameFromConfig(cs, "allowed-spawn-reasons");
+            cs2 = objTo_CS(cs, useKeyName);
+        }
+        if (cs2 == null && useList == null) return defaultValue;
+
         cachedModalList.doMerge = ymlHelper.getBoolean(cs2, "merge");
+        if (cs2 != null) {
+            final String allowedList = ymlHelper.getKeyNameFromConfig(cs2, ml_AllowedItems);
+            useList = getListFromConfigItem(cs2, allowedList);
+        }
 
-        final String allowedList = ymlHelper.getKeyNameFromConfig(cs2, ml_AllowedItems);
-        cachedModalList.allowedGroups = getSetOfGroups(cs, ml_AllowedGroups);
-        final String excludedList = ymlHelper.getKeyNameFromConfig(cs2, ml_ExcludedItems);
-        cachedModalList.excludedGroups = getSetOfGroups(cs, ml_ExcludedGroups);
-
-        for (final String item : getListFromConfigItem(cs2, allowedList)){
+        for (final String item : useList){
             if ("".equals(item.trim())) continue;
             if ("*".equals(item.trim())){
                 cachedModalList.allowAll = true;
@@ -192,6 +202,12 @@ public class RulesParsingManager {
                 Utils.logger.warning("Invalid spawn reason: " + item);
             }
         }
+        if (cs2 == null) return cachedModalList;
+
+        cachedModalList.allowedGroups = getSetOfGroups(cs, ml_AllowedGroups);
+        final String excludedList = ymlHelper.getKeyNameFromConfig(cs2, ml_ExcludedItems);
+        cachedModalList.excludedGroups = getSetOfGroups(cs, ml_ExcludedGroups);
+
         for (final String item : getListFromConfigItem(cs2, excludedList)){
             if ("".equals(item.trim())) continue;
             if ("*".equals(item.trim())){
@@ -216,35 +232,51 @@ public class RulesParsingManager {
     private CachedModalList<Biome> buildCachedModalListOfBiome(final ConfigurationSection cs, final CachedModalList<Biome> defaultValue){
         if (cs == null) return defaultValue;
 
-        final String useKeyName = ymlHelper.getKeyNameFromConfig(cs, "biomes");
-        final ConfigurationSection cs2 = objTo_CS(cs, useKeyName);
-        if (cs2 == null) return defaultValue;
-
         final CachedModalList<Biome> cachedModalList = new CachedModalList<>();
+        final Object simpleStringOrArray = cs.get(ymlHelper.getKeyNameFromConfig(cs, "biomes"));
+        ConfigurationSection cs2 = null;
+        List<String> useList = null;
+
+        if (simpleStringOrArray instanceof ArrayList)
+            useList = new LinkedList<>((ArrayList<String>) simpleStringOrArray);
+        else if (simpleStringOrArray instanceof String)
+            useList = List.of((String) simpleStringOrArray);
+
+        if (useList == null) {
+            final String useKeyName = ymlHelper.getKeyNameFromConfig(cs, "biomes");
+            cs2 = objTo_CS(cs, useKeyName);
+        }
+        if (cs2 == null && useList == null) return defaultValue;
+
         cachedModalList.doMerge = ymlHelper.getBoolean(cs2, "merge");
 
-        final String allowedList = ymlHelper.getKeyNameFromConfig(cs2, ml_AllowedItems);
-        cachedModalList.allowedGroups = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
-        final String excludedList = ymlHelper.getKeyNameFromConfig(cs2, ml_ExcludedItems);
-        cachedModalList.excludedGroups = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+        if (cs2 != null) {
+            cachedModalList.allowedGroups = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+            cachedModalList.excludedGroups = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
 
-        for (final String group : getListFromConfigItem(cs2, ml_AllowedGroups)){
-            if ("".equals(group.trim())) continue;
-            if (!main.rulesManager.biomeGroupMappings.containsKey(group))
-                Utils.logger.info("invalid biome group: " + group);
-            else
-                cachedModalList.allowedGroups.add(group);
+            for (final String group : getListFromConfigItem(cs2, ml_AllowedGroups)) {
+                if ("".equals(group.trim())) continue;
+                if (!main.rulesManager.biomeGroupMappings.containsKey(group))
+                    Utils.logger.info("invalid biome group: " + group);
+                else
+                    cachedModalList.allowedGroups.add(group);
+            }
+
+            for (final String group : getListFromConfigItem(cs2, ml_ExcludedGroups)) {
+                if ("".equals(group.trim())) continue;
+                if (!main.rulesManager.biomeGroupMappings.containsKey(group))
+                    Utils.logger.info("invalid biome group: " + group);
+                else
+                    cachedModalList.excludedGroups.add(group);
+            }
         }
 
-        for (final String group : getListFromConfigItem(cs2, ml_ExcludedGroups)){
-            if ("".equals(group.trim())) continue;
-            if (!main.rulesManager.biomeGroupMappings.containsKey(group))
-                Utils.logger.info("invalid biome group: " + group);
-            else
-                cachedModalList.excludedGroups.add(group);
+        if (useList == null) {
+            final String allowedList = ymlHelper.getKeyNameFromConfig(cs2, ml_AllowedItems);
+            useList = getListFromConfigItem(cs2, allowedList);
         }
 
-        for (final String item : getListFromConfigItem(cs2, allowedList)){
+        for (final String item : useList){
             if ("".equals(item.trim())) continue;
             if ("*".equals(item.trim())){
                 cachedModalList.allowAll = true;
@@ -257,6 +289,10 @@ public class RulesParsingManager {
                 Utils.logger.warning("Invalid allowed biome: " + item);
             }
         }
+        if (cs2 == null) return cachedModalList;
+
+        final String excludedList = ymlHelper.getKeyNameFromConfig(cs2, ml_ExcludedItems);
+
         for (final String item : getListFromConfigItem(cs2, excludedList)){
             if ("".equals(item.trim())) continue;
             if ("*".equals(item.trim())){
@@ -278,19 +314,30 @@ public class RulesParsingManager {
     private CachedModalList<String> buildCachedModalListOfString(final ConfigurationSection cs, @NotNull final String name, final CachedModalList<String> defaultValue){
         if (cs == null) return defaultValue;
 
-        final String useKeyName = ymlHelper.getKeyNameFromConfig(cs, name);
-        final ConfigurationSection cs2 = objTo_CS(cs, useKeyName);
-        if (cs2 == null) return defaultValue;
-
         final CachedModalList<String> cachedModalList = new CachedModalList<>(new TreeSet<>(String.CASE_INSENSITIVE_ORDER), new TreeSet<>(String.CASE_INSENSITIVE_ORDER));
+        final Object simpleStringOrArray = cs.get(ymlHelper.getKeyNameFromConfig(cs, name));
+        ConfigurationSection cs2 = null;
+        List<String> useList = null;
+
+        if (simpleStringOrArray instanceof ArrayList)
+            useList = new LinkedList<>((ArrayList<String>) simpleStringOrArray);
+        else if (simpleStringOrArray instanceof String)
+            useList = List.of((String) simpleStringOrArray);
+
+        if (useList == null) {
+            final String useKeyName = ymlHelper.getKeyNameFromConfig(cs, name);
+            cs2 = objTo_CS(cs, useKeyName);
+        }
+        if (cs2 == null && useList == null) return defaultValue;
+
         cachedModalList.doMerge = ymlHelper.getBoolean(cs2, "merge");
 
-        final String allowedList = ymlHelper.getKeyNameFromConfig(cs2, ml_AllowedItems);
-        final String allowedGroups = ymlHelper.getKeyNameFromConfig(cs2, ml_AllowedGroups);
-        final String excludedList = ymlHelper.getKeyNameFromConfig(cs2, ml_ExcludedItems);
-        final String excludedGroups = ymlHelper.getKeyNameFromConfig(cs2, ml_ExcludedGroups);
+        if (cs2 != null) {
+            final String allowedList = ymlHelper.getKeyNameFromConfig(cs2, ml_AllowedItems);
+            useList = getListFromConfigItem(cs2, allowedList);
+        }
 
-        for (final String item : getListFromConfigItem(cs2, allowedList)) {
+        for (final String item : useList) {
             if ("".equals(item.trim())) continue;
             if ("*".equals(item.trim())){
                 cachedModalList.allowAll = true;
@@ -298,7 +345,13 @@ public class RulesParsingManager {
             }
             cachedModalList.allowedList.add(item);
         }
+        if (cs2 == null) return cachedModalList;
+
+        final String allowedGroups = ymlHelper.getKeyNameFromConfig(cs2, ml_AllowedGroups);
+        final String excludedList = ymlHelper.getKeyNameFromConfig(cs2, ml_ExcludedItems);
+        final String excludedGroups = ymlHelper.getKeyNameFromConfig(cs2, ml_ExcludedGroups);
         cachedModalList.allowedGroups = getSetOfGroups(cs2, allowedGroups);
+
         for (final String item : getListFromConfigItem(cs2, excludedList)) {
             if ("".equals(item.trim())) continue;
             if ("*".equals(item.trim())){
