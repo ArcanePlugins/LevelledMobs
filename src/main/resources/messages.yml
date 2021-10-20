@@ -175,28 +175,28 @@ command:
       spawner-give-message:
         - '%prefix% Gave you a LM spawner'
       spawner-give-message-console:
-        - '%prefix% Gave &r%playername%&7 a LM spawner, minLevel &b%minlevel%&7, maxLevel: &b%maxlevel%&7'
+        - '%prefix% Gave &r%playername%&7 a LM spawner. &8|&7 minLevel: &b%minlevel%&7, maxLevel: &b%maxlevel%&7'
       info:
         status-enabled:
-          - '%prefix% Spawner Info is &cenabled&f.'
+          - '%prefix% Spawner Info is &aenabled&f.'
         status-not-enabled:
           - '%prefix% Spawner Info is &cnot enabled&f.'
         enabled:
           - '%prefix% Spawner Info is &aenabled&f. Right-Click any Spawner for details!'
         disabled:
-          - '%prefix% Spawner Info has been &adisabled&f.'
+          - '%prefix% Spawner Info has been &cdisabled&f.'
       copy:
         vanilla-spawner:
           - '%prefix% Spawner Copy only works with LM spawners'
         status-enabled:
-          - '%prefix% Spawner Copy is &cenabled&f.'
+          - '%prefix% Spawner Copy is &aenabled&f.'
         status-not-enabled:
           - '%prefix% Spawner Copy is &cnot enabled&f.'
         enabled:
           - '%prefix% Spawner Copy is &aenabled&f. Right-Click a LM Spawner to make a copy.'
           - 'Your hand must be empty.'
         disabled:
-          - '%prefix% Spawner Copy has been &adisabled&f.'
+          - '%prefix% Spawner Copy has been &cdisabled&f.'
 
 
 # +-------------------------------------------------------------------------------------------LM3
