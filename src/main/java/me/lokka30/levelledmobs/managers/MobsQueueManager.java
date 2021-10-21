@@ -55,6 +55,8 @@ public class MobsQueueManager {
     }
 
     public void addToQueue(final QueueItem item) {
+        if (item.lmEntity.getLivingEntity() == null) return;
+
         item.lmEntity.inUseCount.getAndIncrement();
         this.queue.offer(item);
     }
@@ -65,9 +67,11 @@ public class MobsQueueManager {
             final QueueItem item = queue.poll(200, TimeUnit.MILLISECONDS);
             if (item == null) continue;
 
-            if (!item.lmEntity.getIsPopulated()) continue;
-            if (!item.lmEntity.getShouldShowLM_Nametag()) continue;
-            main.levelManager.entitySpawnListener.preprocessMob(item.lmEntity, item.event);
+            if (item.lmEntity.getLivingEntity() != null) {
+                if (!item.lmEntity.getIsPopulated()) continue;
+                if (!item.lmEntity.getShouldShowLM_Nametag()) continue;
+                main.levelManager.entitySpawnListener.preprocessMob(item.lmEntity, item.event);
+            }
 
             item.lmEntity.free();
         }

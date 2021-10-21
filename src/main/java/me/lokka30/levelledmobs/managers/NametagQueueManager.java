@@ -68,7 +68,8 @@ public class NametagQueueManager {
     }
 
     public void addToQueue(final @NotNull QueueItem item) {
-        if (main.rulesManager.getRule_CreatureNametagVisbility(item.lmEntity).contains(NametagVisibilityEnum.DISABLED))
+        if (item.lmEntity.getLivingEntity() == null ||
+            main.rulesManager.getRule_CreatureNametagVisbility(item.lmEntity).contains(NametagVisibilityEnum.DISABLED))
             return;
 
         item.lmEntity.inUseCount.getAndIncrement();
