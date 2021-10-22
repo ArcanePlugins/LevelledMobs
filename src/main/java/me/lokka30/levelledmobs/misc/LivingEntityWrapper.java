@@ -12,6 +12,7 @@ import me.lokka30.levelledmobs.rules.FineTuningAttributes;
 import me.lokka30.levelledmobs.rules.LevelledMobSpawnReason;
 import me.lokka30.levelledmobs.rules.RuleInfo;
 import org.bukkit.World;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.*;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.persistence.PersistentDataContainer;
@@ -75,6 +76,8 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
     public EntityDamageEvent.DamageCause deathCause;
     public boolean reEvaluateLevel;
     public Player playerForPermissionsCheck;
+    public CommandSender summonedSender;
+    public String nbtData;
     private boolean groupsAreBuilt;
     private int nametagCooldownTime;
     private Player playerForLevelling;
@@ -140,6 +143,8 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
         this.playerForPermissionsCheck = null;
         this.playersNeedingNametagCooldownUpdate = null;
         this.nametagCooldownTime = 0;
+        this.nbtData = null;
+        this.summonedSender = null;
 
         super.clearEntityData();
     }
