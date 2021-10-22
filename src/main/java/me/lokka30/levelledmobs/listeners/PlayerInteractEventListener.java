@@ -22,6 +22,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.List;
@@ -76,8 +77,9 @@ public class PlayerInteractEventListener implements Listener {
             copySpawner(event.getPlayer(), cs);
     }
 
-    private void copySpawner(final Player player, final CreatureSpawner cs){
-        final SpawnerSubCommand.CustomSpawnerInfo info = new SpawnerSubCommand.CustomSpawnerInfo(main, player, "lm");
+    private void copySpawner(final Player player, final @NotNull CreatureSpawner cs){
+        final SpawnerSubCommand.CustomSpawnerInfo info = new SpawnerSubCommand.CustomSpawnerInfo(main, "lm");
+        info.player = player;
         final PersistentDataContainer pdc = cs.getPersistentDataContainer();
 
         if (!pdc.has(main.namespaced_keys.keySpawner, PersistentDataType.INTEGER)){
@@ -116,7 +118,7 @@ public class PlayerInteractEventListener implements Listener {
         SpawnerSubCommand.generateSpawner(info);
     }
 
-    private void showInfo(final Player player, final CreatureSpawner cs){
+    private void showInfo(final Player player, final @NotNull CreatureSpawner cs){
         final PersistentDataContainer pdc = cs.getPersistentDataContainer();
         final StringBuilder sb = new StringBuilder();
 
@@ -149,7 +151,7 @@ public class PlayerInteractEventListener implements Listener {
         player.sendMessage(MessageUtils.colorizeAll(sb.toString()));
     }
 
-    private void addSpawnerAttributeFromPdc_Int(final String name, final NamespacedKey key, final PersistentDataContainer pdc, final StringBuilder sb){
+    private void addSpawnerAttributeFromPdc_Int(final String name, final NamespacedKey key, final @NotNull PersistentDataContainer pdc, final StringBuilder sb){
         if (!pdc.has(key, PersistentDataType.INTEGER)) return;
 
         if (!sb.substring(sb.length() - 1).equals("\n"))
@@ -162,7 +164,7 @@ public class PlayerInteractEventListener implements Listener {
         sb.append("&r");
     }
 
-    private void addSpawnerAttributeFromPdc_Str(final String name, final NamespacedKey key, final PersistentDataContainer pdc, final StringBuilder sb){
+    private void addSpawnerAttributeFromPdc_Str(final String name, final NamespacedKey key, final @NotNull PersistentDataContainer pdc, final StringBuilder sb){
         if (!pdc.has(key, PersistentDataType.STRING)) return;
 
         if (!sb.substring(sb.length() - 1).equals("\n"))
@@ -175,7 +177,7 @@ public class PlayerInteractEventListener implements Listener {
         sb.append("&r");
     }
 
-    private void addSpawnerAttribute(final String name, final Object value, final StringBuilder sb){
+    private void addSpawnerAttribute(final String name, final Object value, final @NotNull StringBuilder sb){
         if (!sb.substring(sb.length() - 1).equals("\n"))
             sb.append(", ");
         sb.append("&7");

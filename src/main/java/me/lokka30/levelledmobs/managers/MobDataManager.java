@@ -6,7 +6,9 @@ package me.lokka30.levelledmobs.managers;
 
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.misc.Addition;
+import me.lokka30.levelledmobs.misc.DebugType;
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
+import me.lokka30.levelledmobs.misc.Utils;
 import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
@@ -59,7 +61,7 @@ public class MobDataManager {
         return main.dropsCfg.getStringList(entityType.toString()).contains(material.toString());
     }
 
-    public void setAdditionsForLevel(@NotNull final LivingEntityWrapper lmEntity, final Attribute attribute, final Addition addition) {
+    public void setAdditionsForLevel(@NotNull final LivingEntityWrapper lmEntity, final @NotNull Attribute attribute, final Addition addition) {
         final boolean useStaticValues = main.helperSettings.getBoolean(main.settingsCfg, "attributes-use-preset-base-values");
         final double defaultValue = useStaticValues ?
                 (double) Objects.requireNonNull(getAttributeDefaultValue(lmEntity, attribute)) :
@@ -85,10 +87,16 @@ public class MobDataManager {
 
         if (additionValue == 0.0) return;
 
-        if (useStaticValues)
+        if (useStaticValues) {
+            Utils.debugLog(main, DebugType.ATTRIBUTE_MULTIPLIERS, String.format("%s (%s): attrib: %s, base: %s, new base value: %s",
+                    lmEntity.getNameIfBaby(), lmEntity.getMobLevel(), attribute.name(), Utils.round(attrib.getBaseValue(), 3), Utils.round(defaultValue, 3)));
             attrib.setBaseValue(defaultValue);
-        else
+        }
+        else {
+            Utils.debugLog(main, DebugType.ATTRIBUTE_MULTIPLIERS, String.format("%s (%s): attrib: %s, base: %s, addtion: %s",
+                    lmEntity.getNameIfBaby(), lmEntity.getMobLevel(), attribute.name(), Utils.round(attrib.getBaseValue(), 3), Utils.round(additionValue, 3)));
             attrib.addModifier(mod);
+        }
 
         // MAX_HEALTH specific: set health to max health
         if (attribute == Attribute.GENERIC_MAX_HEALTH) {

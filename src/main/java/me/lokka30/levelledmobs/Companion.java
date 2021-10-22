@@ -189,7 +189,7 @@ public class Companion {
         main.levelManager = new LevelManager(main);
         main._mobsQueueManager.start();
         main.nametagQueueManager_.start();
-        main.levelManager.entitySpawnListener = new EntitySpawnListener(main); // we're saving this reference so the summon command has access to it
+        main.levelManager.entitySpawnListener = new EntitySpawnListener(main);
         main.levelManager.entitySpawnListener.processMobSpawns = main.helperSettings.getBoolean(main.settingsCfg, "level-mobs-upon-spawn", true);
         main.entityDamageDebugListener = new EntityDamageDebugListener(main);
         main.blockPlaceListener = new BlockPlaceListener(main);

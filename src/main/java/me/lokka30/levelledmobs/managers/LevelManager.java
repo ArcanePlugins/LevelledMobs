@@ -542,6 +542,8 @@ public class LevelManager implements LevelInterface {
                 1 : (int) Utils.round(entityHealth);
         final String roundedMaxHealth = Utils.round(maxHealth) + "";
         final String roundedMaxHealthInt = (int) Utils.round(maxHealth) + "";
+        final double percentHealthTemp = Math.round(entityHealth / maxHealth * 100.0);
+        final int percentHealth = percentHealthTemp < 1.0 ? 1 : (int) percentHealthTemp;
 
         String tieredPlaceholder = main.rulesManager.getRule_TieredPlaceholder(lmEntity);
         if (tieredPlaceholder == null) tieredPlaceholder = "";
@@ -563,6 +565,7 @@ public class LevelManager implements LevelInterface {
         result = result.replace("%wg_region%", lmEntity.getWGRegionName());
         result = result.replace("%world%", lmEntity.getWorldName());
         result = result.replace("%location%", locationStr);
+        result = result.replace("%health%-percent%", percentHealth + "");
         result = result.replace("%x%", lmEntity.getLivingEntity().getLocation().getBlockX() + "");
         result = result.replace("%y%", lmEntity.getLivingEntity().getLocation().getBlockY() + "");
         result = result.replace("%z%", lmEntity.getLivingEntity().getLocation().getBlockZ() + "");
@@ -670,7 +673,9 @@ public class LevelManager implements LevelInterface {
                 if (!entity.isValid()) continue; // async task, entity can despawn whilst it is running
 
                 // Mob must be a livingentity that is ...living.
-                if (!(entity instanceof LivingEntity) || entity instanceof Player) continue;
+                if (!(entity instanceof LivingEntity) || entity instanceof Player || !entity.isValid()) continue;
+
+                boolean wrapperHasReference = false;
                 final LivingEntityWrapper lmEntity = LivingEntityWrapper.getInstance((LivingEntity) entity, main);
                 lmEntity.playerForPermissionsCheck = player;
 
@@ -681,6 +686,7 @@ public class LevelManager implements LevelInterface {
                                 entityToPlayer.get(lmEntity) : new LinkedList<>();
                         players.add(player);
                         if (!hasKey) entityToPlayer.put(lmEntity, players);
+                        wrapperHasReference = true;
                     }
 
                     boolean useResetTimer = false;
@@ -701,21 +707,24 @@ public class LevelManager implements LevelInterface {
                     synchronized (lmEntity.getLivingEntity().getPersistentDataContainer()) {
                         wasBabyMob = lmEntity.getPDC().has(main.namespaced_keys.wasBabyMobKey, PersistentDataType.INTEGER);
                     }
-                    final LevellableState levellableState = main.levelInterface.getLevellableState(lmEntity);
-                    if (!lmEntity.isBabyMob() &&
-                                    wasBabyMob &&
-                                    levellableState == LevellableState.ALLOWED) {
-                        // if the mob was a baby at some point, aged and now is eligable for levelling, we'll apply a level to it now
-                        Utils.debugLog(main, DebugType.ENTITY_MISC, "&b" + lmEntity.getTypeName() + " &7was a baby and is now an adult, applying levelling rules");
+                    if (lmEntity.getLivingEntity() != null) { // a hack to prevent a null exception that was reported
+                        final LevellableState levellableState = main.levelInterface.getLevellableState(lmEntity);
+                        if (!lmEntity.isBabyMob() &&
+                                wasBabyMob &&
+                                levellableState == LevellableState.ALLOWED) {
+                            // if the mob was a baby at some point, aged and now is eligable for levelling, we'll apply a level to it now
+                            Utils.debugLog(main, DebugType.ENTITY_MISC, "&b" + lmEntity.getTypeName() + " &7was a baby and is now an adult, applying levelling rules");
 
-                        main._mobsQueueManager.addToQueue(new QueueItem(lmEntity, null));
+                            main._mobsQueueManager.addToQueue(new QueueItem(lmEntity, null));
+                        } else if (levellableState == LevellableState.ALLOWED)
+                            main._mobsQueueManager.addToQueue(new QueueItem(lmEntity, null));
                     }
-                    else if (levellableState == LevellableState.ALLOWED)
-                        main._mobsQueueManager.addToQueue(new QueueItem(lmEntity, null));
                 }
+
+                if (!wrapperHasReference)
+                    lmEntity.free();
             }
         }
-
 
         for (final LivingEntityWrapper lmEntity : entityToPlayer.keySet()) {
             if (entityToPlayer.containsKey(lmEntity))
@@ -1087,7 +1096,8 @@ public class LevelManager implements LevelInterface {
         }
         lmEntity.invalidateCache();
 
-        String nbtData = main.rulesManager.getRule_NBT_Data(lmEntity);
+        String nbtData = lmEntity.nbtData != null ?
+                lmEntity.nbtData : main.rulesManager.getRule_NBT_Data(lmEntity);
 
         if (nbtData != null && !ExternalCompatibilityManager.hasNBTAPI_Installed()){
             if (!hasMentionedNBTAPI_Missing) {
@@ -1122,10 +1132,13 @@ public class LevelManager implements LevelInterface {
                 if (finalNbtData != null) {
                     NBTApplyResult result = NBTManager.applyNBT_Data_Mob(lmEntity, finalNbtData);
                     if (result.hadException()) {
-                        Utils.logger.warning("Error applying NBT data to " + lmEntity.getTypeName() + ". Exception message: " + result.exceptionMessage);
-                    } else {
-                        Utils.debugLog(main, DebugType.NBT_APPLY_SUCCESS, "Successfully applied NBT data to '" + lmEntity.getTypeName() + "'.");
+                        if (lmEntity.summonedSender == null)
+                            Utils.logger.warning("Error applying NBT data to " + lmEntity.getTypeName() + ". Exception message: " + result.exceptionMessage);
+                        else
+                            lmEntity.summonedSender.sendMessage("Error applying NBT data to " + lmEntity.getTypeName() + ". Exception message: " + result.exceptionMessage);
                     }
+                    else
+                        Utils.debugLog(main, DebugType.NBT_APPLY_SUCCESS, "Successfully applied NBT data to '" + lmEntity.getTypeName() + "'.");
                 }
 
                 if (lmEntity.getLivingEntity() instanceof Creeper)

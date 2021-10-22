@@ -108,7 +108,7 @@ public class YmlParsingHelper {
     }
 
     @NotNull
-    public String getKeyNameFromConfig(final ConfigurationSection cs, final String key){
+    public String getKeyNameFromConfig(final @NotNull ConfigurationSection cs, final @NotNull String key){
         if (!key.contains(".")){
             for (final String enumeratedKey : cs.getKeys(false)) {
                 if (key.equalsIgnoreCase(enumeratedKey))

@@ -35,19 +35,40 @@ public class SummonSubcommand implements Subcommand {
     public void parseSubcommand(final LevelledMobs main, final CommandSender sender, final String label, @NotNull final String @NotNull [] args) {
         boolean useOverride = false;
         final List<String> useArgs = new LinkedList<>();
-        for (final String arg : args) {
+        int startOfNbt = -1;
+        int endOfNbt = -1;
+
+        for (int i = 0; i < args.length; i++) {
+            final String arg = args[i];
             if ("/override".equalsIgnoreCase(arg))
                 useOverride = true;
             else
                 useArgs.add(arg);
+
+            if (startOfNbt == -1 && arg.startsWith("{")) {
+                startOfNbt = i;
+                if (arg.endsWith("}"))
+                    endOfNbt = i;
+            }
+            else if (startOfNbt >= 0 && endOfNbt == -1 && arg.endsWith("}"))
+                endOfNbt = i;
+        }
+
+        String nbtData = null;
+        if (startOfNbt >= 0 && endOfNbt >= 0 && endOfNbt >= startOfNbt) {
+            nbtData = useArgs.subList(startOfNbt, endOfNbt + 1).toString();
+            nbtData = nbtData.substring(1, nbtData.length() - 1);
+            useArgs.subList(startOfNbt, endOfNbt + 1).clear();
         }
 
         final String[] useArgs2 = new String[useArgs.size()];
         useArgs.toArray(useArgs2);
-        parseSubcommand2(main, sender, label, useArgs2, useOverride);
+
+        parseSubcommand2(main, sender, label, useArgs2, useOverride, nbtData);
     }
 
-    private void parseSubcommand2(final LevelledMobs main, @NotNull final CommandSender sender, final String label, final String[] args, final boolean override) {
+    private void parseSubcommand2(final LevelledMobs main, @NotNull final CommandSender sender, final String label,
+                                  final String[] args, final boolean override, final String nbtData) {
         if (!sender.hasPermission("levelledmobs.command.summon")) {
             main.configUtils.sendNoPermissionMsg(sender);
             return;
@@ -140,7 +161,16 @@ public class SummonSubcommand implements Subcommand {
                 }
 
                 final LivingEntityPlaceHolder lmPlaceHolder = LivingEntityPlaceHolder.getInstance(entityType, location, main);
-                summonMobs(lmPlaceHolder, amount, sender, requestedLevel, summonType, player, override);
+
+                final SummonMobOptions options = new SummonMobOptions(lmPlaceHolder, sender);
+                options.amount = amount;
+                options.requestedLevel = requestedLevel;
+                options.summonType = summonType;
+                options.player = player;
+                options.override = override;
+                options.nbtData = nbtData;
+
+                summonMobs(options);
                 lmPlaceHolder.free();
             } else {
                 List<String> messages = main.messagesCfg.getStringList("command.levelledmobs.summon.here.usage");
@@ -179,7 +209,15 @@ public class SummonSubcommand implements Subcommand {
                 }
 
                 final LivingEntityPlaceHolder lmPlaceHolder = LivingEntityPlaceHolder.getInstance(entityType, location, main);
-                summonMobs(lmPlaceHolder, amount, sender, requestedLevel, summonType, target, override);
+                final SummonMobOptions options = new SummonMobOptions(lmPlaceHolder, sender);
+                options.amount = amount;
+                options.requestedLevel = requestedLevel;
+                options.summonType = summonType;
+                options.player = target;
+                options.override = override;
+                options.nbtData = nbtData;
+
+                summonMobs(options);
                 lmPlaceHolder.free();
             } else {
                 List<String> messages = main.messagesCfg.getStringList("command.levelledmobs.summon.atPlayer.usage");
@@ -228,7 +266,13 @@ public class SummonSubcommand implements Subcommand {
                     messages.forEach(sender::sendMessage);
                 } else {
                     LivingEntityPlaceHolder lmPlaceHolder = LivingEntityPlaceHolder.getInstance(entityType, location, main);
-                    summonMobs(lmPlaceHolder, amount, sender, requestedLevel, summonType, null, override);
+                    final SummonMobOptions options = new SummonMobOptions(lmPlaceHolder, sender);
+                    options.amount = amount;
+                    options.requestedLevel = requestedLevel;
+                    options.summonType = summonType;
+                    options.override = override;
+                    options.nbtData = nbtData;
+                    summonMobs(options);
                     lmPlaceHolder.free();
                 }
             } else {
@@ -276,6 +320,17 @@ public class SummonSubcommand implements Subcommand {
             return Arrays.asList("here", "atPlayer", "atLocation", "/override");
         }
 
+        boolean skipOverride = false;
+        for (int i = 5; i < args.length; i++){
+            final String arg = args[i];
+            if (arg.startsWith("{") && !arg.endsWith("}"))
+                skipOverride = true;
+            if (skipOverride && arg.endsWith("}"))
+                skipOverride = false;
+        }
+        if (args[args.length - 1].endsWith("}"))
+            skipOverride = true;
+
         // no suggestions for 'here' since it is the last argument for itself
         // these are for atPlayer and atLocation
         if (args.length > 5) {
@@ -295,7 +350,10 @@ public class SummonSubcommand implements Subcommand {
                         }
                         return suggestions;
                     } else if (args.length == 7){
-                        return Collections.singletonList("/override");
+                        if (!skipOverride)
+                            return Collections.singletonList("/override");
+                        else
+                            return Collections.emptyList();
                     }
                     break;
 
@@ -307,21 +365,27 @@ public class SummonSubcommand implements Subcommand {
                         Bukkit.getWorlds().forEach(world -> worlds.add(world.getName()));
                         return worlds;
                     } else if (args.length == 10){
-                        return Collections.singletonList("/override");
+                        if (!skipOverride)
+                            return Collections.singletonList("/override");
+                        else
+                            return Collections.emptyList();
                     }
 
                     break;
                 case "here":
-                    return Collections.singletonList("/override");
+                    if (!skipOverride)
+                        return Collections.singletonList("/override");
+                    else
+                        return Collections.emptyList();
                 default:
-                    return null;
+                    return Collections.emptyList();
             }
         }
 
-        return null;
+        return Collections.emptyList();
     }
 
-    private enum SummonType {
+    enum SummonType {
         HERE,
         AT_PLAYER,
         AT_LOCATION
@@ -336,31 +400,32 @@ public class SummonSubcommand implements Subcommand {
         messages.forEach(sender::sendMessage);
     }
 
-    private void summonMobs(@NotNull final LivingEntityPlaceHolder lmPlaceHolder, int amount, final CommandSender sender,
-                            RequestedLevel requestedLevel, final SummonType summonType, final @Nullable Player target, final boolean override) {
+    private void summonMobs(@NotNull final SummonMobOptions options) {
 
-        final LevelledMobs main = lmPlaceHolder.getMainInstance();
-        Location location = lmPlaceHolder.getLocation();
+        final CommandSender sender = options.sender;
+        final LevelledMobs main = options.lmPlaceHolder.getMainInstance();
+        final Player target = options.player;
+        Location location = options.lmPlaceHolder.getLocation();
 
-        if (main.levelManager.FORCED_BLOCKED_ENTITY_TYPES.contains(lmPlaceHolder.getTypeName())) {
+        if (main.levelManager.FORCED_BLOCKED_ENTITY_TYPES.contains(options.lmPlaceHolder.getTypeName())) {
             List<String> messages = main.messagesCfg.getStringList("command.levelledmobs.summon.not-levellable");
             messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.getPrefix());
-            messages = Utils.replaceAllInList(messages, "%entity%", lmPlaceHolder.getTypeName());
+            messages = Utils.replaceAllInList(messages, "%entity%", options.lmPlaceHolder.getTypeName());
             messages = Utils.colorizeAllInList(messages);
             messages.forEach(sender::sendMessage);
             return;
         }
 
-        if (!sender.isOp() && !override && main.levelInterface.getLevellableState(lmPlaceHolder) != LevellableState.ALLOWED) {
+        if (!sender.isOp() && !options.override && main.levelInterface.getLevellableState(options.lmPlaceHolder) != LevellableState.ALLOWED) {
             List<String> messages = main.messagesCfg.getStringList("command.levelledmobs.summon.not-levellable");
             messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.getPrefix());
-            messages = Utils.replaceAllInList(messages, "%entity%", lmPlaceHolder.getTypeName());
+            messages = Utils.replaceAllInList(messages, "%entity%", options.lmPlaceHolder.getTypeName());
             messages = Utils.colorizeAllInList(messages);
             messages.forEach(sender::sendMessage);
             return;
         }
 
-        if (amount < 1) {
+        if (options.amount < 1) {
             List<String> messages = main.messagesCfg.getStringList("command.levelledmobs.summon.amount-limited.min");
             messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.getPrefix());
             messages = Utils.colorizeAllInList(messages);
@@ -368,8 +433,8 @@ public class SummonSubcommand implements Subcommand {
         }
 
         final int maxAmount = main.helperSettings.getInt(main.settingsCfg, "customize-summon-command-limit", 100);
-        if (amount > maxAmount) {
-            amount = maxAmount;
+        if (options.amount > maxAmount) {
+            options.amount = maxAmount;
 
             List<String> messages = main.messagesCfg.getStringList("command.levelledmobs.summon.amount-limited.max");
             messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.getPrefix());
@@ -378,12 +443,12 @@ public class SummonSubcommand implements Subcommand {
             messages.forEach(sender::sendMessage);
         }
 
-        final int[] levels = main.levelManager.getMinAndMaxLevels(lmPlaceHolder);
+        final int[] levels = main.levelManager.getMinAndMaxLevels(options.lmPlaceHolder);
         final int minLevel = levels[0];
         final int maxLevel = levels[1];
 
-        if (requestedLevel.getLevelMin() < minLevel && !sender.hasPermission("levelledmobs.command.summon.bypass-level-limit") && !override) {
-            requestedLevel.setMinAllowedLevel(minLevel);
+        if (options.requestedLevel.getLevelMin() < minLevel && !sender.hasPermission("levelledmobs.command.summon.bypass-level-limit") && !options.override) {
+            options.requestedLevel.setMinAllowedLevel(minLevel);
 
             List<String> messages = main.messagesCfg.getStringList("command.levelledmobs.summon.level-limited.min");
             messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.getPrefix());
@@ -392,8 +457,8 @@ public class SummonSubcommand implements Subcommand {
             messages.forEach(sender::sendMessage);
         }
 
-        if (requestedLevel.getLevelMax() > maxLevel && !sender.hasPermission("levelledmobs.command.summon.bypass-level-limit") && !override) {
-            requestedLevel.setMaxAllowedLevel(maxLevel);
+        if (options.requestedLevel.getLevelMax() > maxLevel && !sender.hasPermission("levelledmobs.command.summon.bypass-level-limit") && !options.override) {
+            options.requestedLevel.setMaxAllowedLevel(maxLevel);
 
             List<String> messages = main.messagesCfg.getStringList("command.levelledmobs.summon.level-limited.max");
             messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.getPrefix());
@@ -402,10 +467,10 @@ public class SummonSubcommand implements Subcommand {
             messages.forEach(sender::sendMessage);
         }
 
-        if (summonType == SummonType.HERE)
+        if (options.summonType == SummonType.HERE)
             location = addVarianceToLocation(location);
 
-        if (summonType == SummonType.HERE || summonType == SummonType.AT_PLAYER) {
+        if (options.summonType == SummonType.HERE || options.summonType == SummonType.AT_PLAYER) {
             final int distFromPlayer = main.settingsCfg.getInt("summon-command-spawn-distance-from-player", 5);
             if (distFromPlayer > 0 && target != null) {
                 int useDistFromPlayer = distFromPlayer;
@@ -428,22 +493,23 @@ public class SummonSubcommand implements Subcommand {
             }
         }
 
-        main.levelManager.summonedEntityType = lmPlaceHolder.getEntityType();
+        main.levelManager.summonedEntityType = options.lmPlaceHolder.getEntityType();
         main.levelManager.summonedLocation = location;
 
-        for (int i = 0; i < amount; i++) {
+        for (int i = 0; i < options.amount; i++) {
             assert location.getWorld() != null;
 
-            final Entity entity = location.getWorld().spawnEntity(location, lmPlaceHolder.getEntityType());
+            final Entity entity = location.getWorld().spawnEntity(location, options.lmPlaceHolder.getEntityType());
 
-            final int useLevel = requestedLevel.hasLevelRange ?
-                ThreadLocalRandom.current().nextInt(requestedLevel.levelRangeMin, requestedLevel.levelRangeMax + 1) :
-                requestedLevel.level;
-
+            final int useLevel = options.requestedLevel.hasLevelRange ?
+                ThreadLocalRandom.current().nextInt(options.requestedLevel.levelRangeMin, options.requestedLevel.levelRangeMax + 1) :
+                    options.requestedLevel.level;
 
             if (entity instanceof LivingEntity) {
                 final LivingEntityWrapper lmEntity = LivingEntityWrapper.getInstance((LivingEntity) entity, main);
-                main.levelInterface.applyLevelToMob(lmEntity, useLevel, true, override, new HashSet<>(Collections.singletonList(AdditionalLevelInformation.NOT_APPLICABLE)));
+                lmEntity.nbtData = options.nbtData;
+                lmEntity.summonedSender = sender;
+                main.levelInterface.applyLevelToMob(lmEntity, useLevel, true, options.override, new HashSet<>(Collections.singletonList(AdditionalLevelInformation.NOT_APPLICABLE)));
                 synchronized (lmEntity.getLivingEntity().getPersistentDataContainer()){
                     lmEntity.getPDC().set(main.namespaced_keys.wasSummoned, PersistentDataType.INTEGER, 1);
                 }
@@ -454,13 +520,13 @@ public class SummonSubcommand implements Subcommand {
         main.levelManager.summonedEntityType = EntityType.UNKNOWN;
         main.levelManager.summonedLocation = null;
 
-        switch (summonType) {
+        switch (options.summonType) {
             case HERE:
                 List<String> hereSuccessmessages = main.messagesCfg.getStringList("command.levelledmobs.summon.here.success");
                 hereSuccessmessages = Utils.replaceAllInList(hereSuccessmessages, "%prefix%", main.configUtils.getPrefix());
-                hereSuccessmessages = Utils.replaceAllInList(hereSuccessmessages, "%amount%", amount + "");
-                hereSuccessmessages = Utils.replaceAllInList(hereSuccessmessages, "%level%", requestedLevel.toString());
-                hereSuccessmessages = Utils.replaceAllInList(hereSuccessmessages, "%entity%", lmPlaceHolder.getTypeName());
+                hereSuccessmessages = Utils.replaceAllInList(hereSuccessmessages, "%amount%", options.amount + "");
+                hereSuccessmessages = Utils.replaceAllInList(hereSuccessmessages, "%level%", options.requestedLevel.toString());
+                hereSuccessmessages = Utils.replaceAllInList(hereSuccessmessages, "%entity%", options.lmPlaceHolder.getTypeName());
                 hereSuccessmessages = Utils.colorizeAllInList(hereSuccessmessages);
                 hereSuccessmessages.forEach(sender::sendMessage);
                 break;
@@ -468,9 +534,9 @@ public class SummonSubcommand implements Subcommand {
             case AT_LOCATION:
                 List<String> atLocationSuccessMessages = main.messagesCfg.getStringList("command.levelledmobs.summon.atLocation.success");
                 atLocationSuccessMessages = Utils.replaceAllInList(atLocationSuccessMessages, "%prefix%", main.configUtils.getPrefix());
-                atLocationSuccessMessages = Utils.replaceAllInList(atLocationSuccessMessages, "%amount%", amount + "");
-                atLocationSuccessMessages = Utils.replaceAllInList(atLocationSuccessMessages, "%level%", requestedLevel.toString());
-                atLocationSuccessMessages = Utils.replaceAllInList(atLocationSuccessMessages, "%entity%", lmPlaceHolder.getTypeName());
+                atLocationSuccessMessages = Utils.replaceAllInList(atLocationSuccessMessages, "%amount%", options.amount + "");
+                atLocationSuccessMessages = Utils.replaceAllInList(atLocationSuccessMessages, "%level%", options.requestedLevel.toString());
+                atLocationSuccessMessages = Utils.replaceAllInList(atLocationSuccessMessages, "%entity%", options.lmPlaceHolder.getTypeName());
                 atLocationSuccessMessages = Utils.replaceAllInList(atLocationSuccessMessages, "%x%", location.getBlockX() + "");
                 atLocationSuccessMessages = Utils.replaceAllInList(atLocationSuccessMessages, "%y%", location.getBlockY() + "");
                 atLocationSuccessMessages = Utils.replaceAllInList(atLocationSuccessMessages, "%z%", location.getBlockZ() + "");
@@ -482,16 +548,16 @@ public class SummonSubcommand implements Subcommand {
             case AT_PLAYER:
                 List<String> atPlayerSuccessMessages = main.messagesCfg.getStringList("command.levelledmobs.summon.atPlayer.success");
                 atPlayerSuccessMessages = Utils.replaceAllInList(atPlayerSuccessMessages, "%prefix%", main.configUtils.getPrefix());
-                atPlayerSuccessMessages = Utils.replaceAllInList(atPlayerSuccessMessages, "%amount%", amount + "");
-                atPlayerSuccessMessages = Utils.replaceAllInList(atPlayerSuccessMessages, "%level%", requestedLevel.toString());
-                atPlayerSuccessMessages = Utils.replaceAllInList(atPlayerSuccessMessages, "%entity%", lmPlaceHolder.getTypeName());
+                atPlayerSuccessMessages = Utils.replaceAllInList(atPlayerSuccessMessages, "%amount%", options.amount + "");
+                atPlayerSuccessMessages = Utils.replaceAllInList(atPlayerSuccessMessages, "%level%", options.requestedLevel.toString());
+                atPlayerSuccessMessages = Utils.replaceAllInList(atPlayerSuccessMessages, "%entity%", options.lmPlaceHolder.getTypeName());
                 atPlayerSuccessMessages = Utils.replaceAllInList(atPlayerSuccessMessages, "%targetUsername%", target == null ? "(null)" : target.getName());
                 atPlayerSuccessMessages = Utils.replaceAllInList(atPlayerSuccessMessages, "%targetDisplayname%", target == null ? "(null)" : target.getDisplayName());
                 atPlayerSuccessMessages = Utils.colorizeAllInList(atPlayerSuccessMessages);
                 atPlayerSuccessMessages.forEach(sender::sendMessage);
                 break;
             default:
-                throw new IllegalStateException("Unexpected SummonType value of " + summonType + "!");
+                throw new IllegalStateException("Unexpected SummonType value of " + options.summonType + "!");
         }
     }
 

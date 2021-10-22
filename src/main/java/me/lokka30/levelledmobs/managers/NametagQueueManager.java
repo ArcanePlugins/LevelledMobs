@@ -12,6 +12,7 @@ import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.misc.*;
 import me.lokka30.levelledmobs.rules.NametagVisibilityEnum;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Tameable;
 import org.bukkit.persistence.PersistentDataType;
@@ -67,7 +68,8 @@ public class NametagQueueManager {
     }
 
     public void addToQueue(final @NotNull QueueItem item) {
-        if (main.rulesManager.getRule_CreatureNametagVisbility(item.lmEntity).contains(NametagVisibilityEnum.DISABLED))
+        if (item.lmEntity.getLivingEntity() == null ||
+            main.rulesManager.getRule_CreatureNametagVisbility(item.lmEntity).contains(NametagVisibilityEnum.DISABLED))
             return;
 
         item.lmEntity.inUseCount.getAndIncrement();
@@ -88,28 +90,30 @@ public class NametagQueueManager {
 
             if (nametagTimerResetTime > 0) {
                 synchronized (NametagTimerChecker.nametagTimer_Lock) {
+                    final Map<Player, WeakHashMap<LivingEntity, Instant>> nametagCooldownQueue = main.nametagTimerChecker.getNametagCooldownQueue();
+
                     if (item.lmEntity.playersNeedingNametagCooldownUpdate != null) {
                         // record which players should get the cooldown for this mob
                         // public Map<Player, WeakHashMap<LivingEntity, Instant>> nametagCooldownQueue;
                         for (final Player player : item.lmEntity.playersNeedingNametagCooldownUpdate) {
-                            if (!main.nametagTimerChecker.nametagCooldownQueue.containsKey(player)) continue;
+                            if (!nametagCooldownQueue.containsKey(player)) continue;
 
-                            main.nametagTimerChecker.nametagCooldownQueue.get(player).put(item.lmEntity.getLivingEntity(), Instant.now());
+                            nametagCooldownQueue.get(player).put(item.lmEntity.getLivingEntity(), Instant.now());
                             main.nametagTimerChecker.cooldownTimes.put(item.lmEntity.getLivingEntity(), item.lmEntity.getNametagCooldownTime());
                         }
 
                         // if any players already have a cooldown on this mob then don't remove the cooldown
-                        for (final Player player : main.nametagTimerChecker.nametagCooldownQueue.keySet()){
+                        for (final Player player : nametagCooldownQueue.keySet()){
                             if (item.lmEntity.playersNeedingNametagCooldownUpdate.contains(player)) continue;
 
-                            if (main.nametagTimerChecker.nametagCooldownQueue.get(player).containsKey(item.lmEntity.getLivingEntity()))
+                            if (nametagCooldownQueue.get(player).containsKey(item.lmEntity.getLivingEntity()))
                                 item.lmEntity.playersNeedingNametagCooldownUpdate.add(player);
                         }
                     }
                     else{
                         // if there's any existing cooldowns we'll use them
-                        for (final Player player : main.nametagTimerChecker.nametagCooldownQueue.keySet()){
-                            if (main.nametagTimerChecker.nametagCooldownQueue.get(player).containsKey(item.lmEntity.getLivingEntity())) {
+                        for (final Player player : nametagCooldownQueue.keySet()){
+                            if (nametagCooldownQueue.get(player).containsKey(item.lmEntity.getLivingEntity())) {
                                 if (item.lmEntity.playersNeedingNametagCooldownUpdate == null)
                                     item.lmEntity.playersNeedingNametagCooldownUpdate = new HashSet<>();
 
