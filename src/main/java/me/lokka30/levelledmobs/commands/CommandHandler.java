@@ -11,6 +11,7 @@ import org.bukkit.command.PluginCommand;
 import org.bukkit.command.TabExecutor;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -92,6 +93,16 @@ public class CommandHandler {
     public interface Subcommand {
 
         /**
+         * A label is the name or any alias that can be used to
+         * identify the subcommand. For example, 'info' is a label of
+         * {@link me.lokka30.levelledmobs.commands.levelledmobs.subcommands.InfoSubcommand}.
+         * @author lokka30
+         * @since v4.0.0
+         * @return a list containing the subcommand's available labels
+         */
+        @NotNull HashSet<String> getLabels();
+
+        /**
          * @param main   main class of LevelledMobs
          * @param sender who executed the command
          * @param label  what alias the sender used to run the command
@@ -100,7 +111,7 @@ public class CommandHandler {
          * @since v4.0.0
          * Make the Subcommand run with the specified information.
          */
-        void parseCommand(@NotNull final LevelledMobs main, @NotNull final CommandSender sender, @NotNull final String label, @NotNull final String[] args);
+        void run(@NotNull final LevelledMobs main, @NotNull final CommandSender sender, @NotNull final String label, @NotNull final String[] args);
 
         /**
          * @param main   main class of LevelledMobs
@@ -116,6 +127,6 @@ public class CommandHandler {
          * hence the @NonNull annotation.
          */
         @NotNull
-        List<String> parseTabCompletions(@NotNull final LevelledMobs main, @NotNull final CommandSender sender, @NotNull final String label, @NotNull final String[] args);
+        List<String> getSuggestions(@NotNull final LevelledMobs main, @NotNull final CommandSender sender, @NotNull final String label, @NotNull final String[] args);
     }
 }

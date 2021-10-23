@@ -10,6 +10,7 @@ import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -22,8 +23,14 @@ import java.util.List;
  */
 public class SpawnerSubcommand implements CommandHandler.Subcommand {
 
+    final HashSet<String> labels = new HashSet<>(List.of("spawner", "spawners"));
     @Override
-    public void parseCommand(@NotNull LevelledMobs main, @NotNull CommandSender sender, @NotNull String label, @NotNull String[] args) {
+    public @NotNull HashSet<String> getLabels() {
+        return labels;
+    }
+
+    @Override
+    public void run(@NotNull LevelledMobs main, @NotNull CommandSender sender, @NotNull String label, @NotNull String[] args) {
         /*
         TODO
             lokka30: Complete method body
@@ -32,7 +39,7 @@ public class SpawnerSubcommand implements CommandHandler.Subcommand {
     }
 
     @Override
-    public @NotNull List<String> parseTabCompletions(@NotNull LevelledMobs main, @NotNull CommandSender sender, @NotNull String label, @NotNull String[] args) {
+    public @NotNull List<String> getSuggestions(@NotNull LevelledMobs main, @NotNull CommandSender sender, @NotNull String label, @NotNull String[] args) {
         /*
         TODO
             lokka30: Complete method body

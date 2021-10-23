@@ -9,7 +9,7 @@ import me.lokka30.levelledmobs.commands.CommandHandler;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 
@@ -17,13 +17,13 @@ import java.util.List;
  * @author lokka30
  * @since v4.0.0
  * This is a subcommand of the '/levelledmobs' command.
- * This subcommand allows users to re-run the LM compat checker and view its results.
+ * This subcommand provides a list of available subcommands.
  * @see me.lokka30.levelledmobs.commands.levelledmobs.LevelledMobsCommand
  * @see CommandHandler
  */
-public class CompatibilitySubcommand implements CommandHandler.Subcommand {
+public class HelpSubcommand implements CommandHandler.Subcommand {
 
-    final HashSet<String> labels = new HashSet<>(List.of("compatibility", "compat"));
+    final HashSet<String> labels = new HashSet<>(List.of("help", "commands", "subcommands"));
     @Override
     public @NotNull HashSet<String> getLabels() {
         return labels;
@@ -35,7 +35,7 @@ public class CompatibilitySubcommand implements CommandHandler.Subcommand {
         TODO
             lokka30: Complete method body
          */
-        sender.sendMessage("Compatibility.work in progress");
+        sender.sendMessage("Help.work in progress");
     }
 
     @Override
@@ -45,6 +45,6 @@ public class CompatibilitySubcommand implements CommandHandler.Subcommand {
             lokka30: Complete method body
          */
 
-        return new ArrayList<>();
+        return Collections.emptyList();
     }
 }

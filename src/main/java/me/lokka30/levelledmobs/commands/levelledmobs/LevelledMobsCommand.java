@@ -13,10 +13,7 @@ import org.bukkit.command.TabExecutor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 
 /**
  * @author lokka30
@@ -30,81 +27,58 @@ public class LevelledMobsCommand implements TabExecutor {
     private final LevelledMobs main;
     public LevelledMobsCommand(@NotNull final LevelledMobs main) {
         this.main = main;
+
+        // create subcommands set
+        subcommands.addAll(
+                Arrays.asList(
+                        new AdvancedSubcommand(),
+                        new CompatibilitySubcommand(),
+                        new HelpSubcommand(),
+                        new InfoSubcommand(),
+                        new KillSubcommand(),
+                        new ReloadSubcommand(),
+                        new RulesSubcommand(),
+                        new SpawnerSubcommand(),
+                        new SummonSubcommand()
+                )
+        );
+
+        // create subcommands labels list
+        subcommands.forEach(subcommand -> subcommandsLabels.addAll(subcommand.getLabels()));
     }
 
-    final AdvancedSubcommand advancedSubcommand = new AdvancedSubcommand();
-    final CompatibilitySubcommand compatibilitySubcommand = new CompatibilitySubcommand();
-    final InfoSubcommand infoSubcommand = new InfoSubcommand();
-    final KillSubcommand killSubcommand = new KillSubcommand();
-    final ReloadSubcommand reloadSubcommand = new ReloadSubcommand();
-    final RulesSubcommand rulesSubcommand = new RulesSubcommand();
-    final SpawnerSubcommand spawnerSubcommand = new SpawnerSubcommand();
-    final SummonSubcommand summonSubcommand = new SummonSubcommand();
+    private final HashSet<CommandHandler.Subcommand> subcommands = new HashSet<>();
+    private final List<String> subcommandsLabels = new ArrayList<>();
+    //TODO make help subcommand.
+
+    @Nullable
+    public CommandHandler.Subcommand getSubcommand(@NotNull final String label) {
+        for(CommandHandler.Subcommand subcommand : subcommands) {
+            if(subcommand.getLabels().contains(label.toUpperCase(Locale.ROOT))) {
+                return subcommand;
+            }
+        }
+        return null;
+    }
 
     @Override
     public boolean onCommand(@NotNull final CommandSender sender, @NotNull final Command cmd, @NotNull final String label, @NotNull final String[] args) {
         if(CommandHandler.CommandUtils.senderDoesNotHaveRequiredPermission(main, sender, "levelledmobs.command.levelledmobs")) return true;
 
         if(args.length == 0) {
-            sendInvalidUsage(sender, label);
+            sender.sendMessage("Invalid usage - please specify a subcommand. For a list of available subcommands, try '/" + label + " help'.");
+            return true;
+        }
+
+        final CommandHandler.Subcommand subcommand = getSubcommand(args[0]);
+        if(subcommand == null) {
+            sender.sendMessage("Invalud usage - the subcommand '" + args[0] + "' does not exist. For a list of available subcommands, try '/" + label + " help'.");
         } else {
-            switch(args[0].toLowerCase(Locale.ROOT)) {
-                case "advanced":
-                    advancedSubcommand.parseCommand(main, sender, label, args);
-                    break;
-                case "compatibility":
-                    compatibilitySubcommand.parseCommand(main, sender, label, args);
-                    break;
-                case "info":
-                    infoSubcommand.parseCommand(main, sender, label, args);
-                    break;
-                case "kill":
-                    killSubcommand.parseCommand(main, sender, label, args);
-                    break;
-                case "reload":
-                    reloadSubcommand.parseCommand(main, sender, label, args);
-                    break;
-                case "rules":
-                    rulesSubcommand.parseCommand(main, sender, label, args);
-                    break;
-                case "spawner":
-                    spawnerSubcommand.parseCommand(main, sender, label, args);
-                    break;
-                case "summon":
-                    summonSubcommand.parseCommand(main, sender, label, args);
-                    break;
-                default:
-                    sendInvalidUsage(sender, label);
-                    break;
-            }
+            subcommand.run(main, sender, label, args);
         }
 
         return true;
     }
-
-    /**
-     * If a CommandSender specifies an invalid argument or
-     * invalid amount of arguments then this will be sent
-     * (only for the base command, not subcommands, which
-     * handle their own usage)
-     * @param sender who sent the command
-     * @param label alias used to run the command
-     */
-    private void sendInvalidUsage(final CommandSender sender, final String label) {
-        //TODO Complete method body.
-        sender.sendMessage("Invalid usage, label: " + label);
-    }
-
-    private final List<String> subcommandsList = Arrays.asList(
-            "advanced",
-            "compatibility",
-            "info",
-            "kill",
-            "reload",
-            "rules",
-            "spawner",
-            "summon"
-    );
 
     @Nullable
     @Override
@@ -112,30 +86,16 @@ public class LevelledMobsCommand implements TabExecutor {
         // TODO Test
 
         if(args.length == 0) {
-            return new ArrayList<>();
+            return Collections.emptyList();
         } else if(args.length == 1) {
-            return subcommandsList;
+            return subcommandsLabels;
         } else {
-            switch(args[0].toLowerCase(Locale.ROOT)) {
-                case "advanced":
-                    return advancedSubcommand.parseTabCompletions(main, sender, label, args);
-                case "compatibility":
-                    return compatibilitySubcommand.parseTabCompletions(main, sender, label, args);
-                case "info":
-                    return infoSubcommand.parseTabCompletions(main, sender, label, args);
-                case "kill":
-                    return killSubcommand.parseTabCompletions(main, sender, label, args);
-                case "reload":
-                    return reloadSubcommand.parseTabCompletions(main, sender, label, args);
-                case "rules":
-                    return rulesSubcommand.parseTabCompletions(main, sender, label, args);
-                case "spawner":
-                    return spawnerSubcommand.parseTabCompletions(main, sender, label, args);
-                case "summon":
-                    return summonSubcommand.parseTabCompletions(main, sender, label, args);
-                default:
-                    return new ArrayList<>();
+            final CommandHandler.Subcommand subcommand = getSubcommand(args[0]);
+            if(subcommand != null) {
+                return subcommand.getSuggestions(main, sender, label, args);
             }
         }
+
+        return Collections.emptyList();
     }
 }
