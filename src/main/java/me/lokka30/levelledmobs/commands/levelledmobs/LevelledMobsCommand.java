@@ -27,20 +27,19 @@ import java.util.Locale;
  */
 public class LevelledMobsCommand implements TabExecutor {
 
-    @NotNull private final LevelledMobs main;
+    private final LevelledMobs main;
     public LevelledMobsCommand(@NotNull final LevelledMobs main) {
         this.main = main;
     }
 
-    @NotNull final AdvancedSubcommand advancedSubcommand = new AdvancedSubcommand();
-    @NotNull final CompatibilitySubcommand compatibilitySubcommand = new CompatibilitySubcommand();
-    @NotNull final InfoSubcommand infoSubcommand = new InfoSubcommand();
-    @NotNull final KillSubcommand killSubcommand = new KillSubcommand();
-    @NotNull final ReloadSubcommand reloadSubcommand = new ReloadSubcommand();
-    @NotNull final RulesSubcommand rulesSubcommand = new RulesSubcommand();
-    @NotNull final ScanSubcommand scanSubcommand = new ScanSubcommand();
-    @NotNull final SpawnerSubcommand spawnerSubcommand = new SpawnerSubcommand();
-    @NotNull final SummonSubcommand summonSubcommand = new SummonSubcommand();
+    final AdvancedSubcommand advancedSubcommand = new AdvancedSubcommand();
+    final CompatibilitySubcommand compatibilitySubcommand = new CompatibilitySubcommand();
+    final InfoSubcommand infoSubcommand = new InfoSubcommand();
+    final KillSubcommand killSubcommand = new KillSubcommand();
+    final ReloadSubcommand reloadSubcommand = new ReloadSubcommand();
+    final RulesSubcommand rulesSubcommand = new RulesSubcommand();
+    final SpawnerSubcommand spawnerSubcommand = new SpawnerSubcommand();
+    final SummonSubcommand summonSubcommand = new SummonSubcommand();
 
     @Override
     public boolean onCommand(@NotNull final CommandSender sender, @NotNull final Command cmd, @NotNull final String label, @NotNull final String[] args) {
@@ -67,9 +66,6 @@ public class LevelledMobsCommand implements TabExecutor {
                     break;
                 case "rules":
                     rulesSubcommand.parseCommand(main, sender, label, args);
-                    break;
-                case "scan":
-                    scanSubcommand.parseCommand(main, sender, label, args);
                     break;
                 case "spawner":
                     spawnerSubcommand.parseCommand(main, sender, label, args);
@@ -99,6 +95,17 @@ public class LevelledMobsCommand implements TabExecutor {
         sender.sendMessage("Invalid usage, label: " + label);
     }
 
+    private final List<String> subcommandsList = Arrays.asList(
+            "advanced",
+            "compatibility",
+            "info",
+            "kill",
+            "reload",
+            "rules",
+            "spawner",
+            "summon"
+    );
+
     @Nullable
     @Override
     public List<String> onTabComplete(@NotNull final CommandSender sender, @NotNull final Command cmd, @NotNull final String label, @NotNull final String[] args) {
@@ -107,17 +114,7 @@ public class LevelledMobsCommand implements TabExecutor {
         if(args.length == 0) {
             return new ArrayList<>();
         } else if(args.length == 1) {
-            return Arrays.asList(
-                    "advanced",
-                    "compatibility",
-                    "info",
-                    "kill",
-                    "reload",
-                    "rules",
-                    "scan",
-                    "spawner",
-                    "summon"
-            );
+            return subcommandsList;
         } else {
             switch(args[0].toLowerCase(Locale.ROOT)) {
                 case "advanced":
@@ -132,8 +129,6 @@ public class LevelledMobsCommand implements TabExecutor {
                     return reloadSubcommand.parseTabCompletions(main, sender, label, args);
                 case "rules":
                     return rulesSubcommand.parseTabCompletions(main, sender, label, args);
-                case "scan":
-                    return scanSubcommand.parseTabCompletions(main, sender, label, args);
                 case "spawner":
                     return spawnerSubcommand.parseTabCompletions(main, sender, label, args);
                 case "summon":
