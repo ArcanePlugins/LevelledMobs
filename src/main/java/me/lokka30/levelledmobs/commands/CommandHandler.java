@@ -11,6 +11,7 @@ import org.bukkit.command.PluginCommand;
 import org.bukkit.command.TabExecutor;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 
@@ -105,28 +106,29 @@ public class CommandHandler {
         /**
          * @param main   main class of LevelledMobs
          * @param sender who executed the command
-         * @param label  what alias the sender used to run the command
+         * @param baseCommandLabel  what alias the sender used to run the base command
+         * @param subCommandLabel what alias the sender used to run the subcommand
          * @param args   what arguments the sender specified with the command
          * @author lokka30
          * @since v4.0.0
          * Make the Subcommand run with the specified information.
          */
-        void run(@NotNull final LevelledMobs main, @NotNull final CommandSender sender, @NotNull final String label, @NotNull final String[] args);
+        void run(@NotNull final LevelledMobs main, @NotNull final CommandSender sender, @NotNull final String baseCommandLabel, @NotNull final String subCommandLabel, @NotNull final String[] args);
 
         /**
          * @param main   main class of LevelledMobs
          * @param sender who executed the command
-         * @param label  what alias the sender used to run the command
+         * @param baseCommandLabel  what alias the sender used to run the base command
+         * @param subCommandLabel what alias the sender used to run the subcommand
          * @param args   what arguments the sender specified with the command
          * @author lokka30
          * @since v4.0.0
          * Make the Subcommand return a list of tab
          * completions with the specified information.
-         * If no tab completions should be sent, do not
-         * return `null`, just return `new ArrayList<>()`,
-         * hence the @NonNull annotation.
+         * If no tab completions should be sent, return
+         * {@link Collections#emptyList()}.
          */
         @NotNull
-        List<String> getSuggestions(@NotNull final LevelledMobs main, @NotNull final CommandSender sender, @NotNull final String label, @NotNull final String[] args);
+        List<String> getSuggestions(@NotNull final LevelledMobs main, @NotNull final CommandSender sender, @NotNull final String baseCommandLabel, @NotNull final String subCommandLabel, @NotNull final String[] args);
     }
 }

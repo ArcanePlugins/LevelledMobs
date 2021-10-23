@@ -49,7 +49,6 @@ public class LevelledMobsCommand implements TabExecutor {
 
     private final HashSet<CommandHandler.Subcommand> subcommands = new HashSet<>();
     private final List<String> subcommandsLabels = new ArrayList<>();
-    //TODO make help subcommand.
 
     @Nullable
     public CommandHandler.Subcommand getSubcommand(@NotNull final String label) {
@@ -62,19 +61,19 @@ public class LevelledMobsCommand implements TabExecutor {
     }
 
     @Override
-    public boolean onCommand(@NotNull final CommandSender sender, @NotNull final Command cmd, @NotNull final String label, @NotNull final String[] args) {
+    public boolean onCommand(@NotNull final CommandSender sender, @NotNull final Command cmd, @NotNull final String baseCommandLabel, @NotNull final String[] args) {
         if(CommandHandler.CommandUtils.senderDoesNotHaveRequiredPermission(main, sender, "levelledmobs.command.levelledmobs")) return true;
 
         if(args.length == 0) {
-            sender.sendMessage("Invalid usage - please specify a subcommand. For a list of available subcommands, try '/" + label + " help'.");
+            sender.sendMessage("Invalid usage - please specify a subcommand. For a list of available subcommands, try '/" + baseCommandLabel + " help'.");
             return true;
         }
 
         final CommandHandler.Subcommand subcommand = getSubcommand(args[0]);
         if(subcommand == null) {
-            sender.sendMessage("Invalud usage - the subcommand '" + args[0] + "' does not exist. For a list of available subcommands, try '/" + label + " help'.");
+            sender.sendMessage("Invalid usage - the subcommand '" + args[0] + "' does not exist. For a list of available subcommands, try '/" + baseCommandLabel + " help'.");
         } else {
-            subcommand.run(main, sender, label, args);
+            subcommand.run(main, sender, baseCommandLabel, args[0].toLowerCase(Locale.ROOT), args);
         }
 
         return true;
@@ -82,9 +81,7 @@ public class LevelledMobsCommand implements TabExecutor {
 
     @Nullable
     @Override
-    public List<String> onTabComplete(@NotNull final CommandSender sender, @NotNull final Command cmd, @NotNull final String label, @NotNull final String[] args) {
-        // TODO Test
-
+    public List<String> onTabComplete(@NotNull final CommandSender sender, @NotNull final Command cmd, @NotNull final String baseCommandLabel, @NotNull final String[] args) {
         if(args.length == 0) {
             return Collections.emptyList();
         } else if(args.length == 1) {
@@ -92,7 +89,7 @@ public class LevelledMobsCommand implements TabExecutor {
         } else {
             final CommandHandler.Subcommand subcommand = getSubcommand(args[0]);
             if(subcommand != null) {
-                return subcommand.getSuggestions(main, sender, label, args);
+                return subcommand.getSuggestions(main, sender, baseCommandLabel, args[0].toLowerCase(Locale.ROOT), args);
             }
         }
 

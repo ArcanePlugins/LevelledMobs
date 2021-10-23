@@ -12,6 +12,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author lokka30
@@ -23,14 +24,14 @@ import java.util.List;
  */
 public class HelpSubcommand implements CommandHandler.Subcommand {
 
-    final HashSet<String> labels = new HashSet<>(List.of("help", "commands", "subcommands"));
+    final HashSet<String> labels = new HashSet<>(Set.of("HELP", "COMMANDS", "SUBCOMMANDS"));
     @Override
     public @NotNull HashSet<String> getLabels() {
         return labels;
     }
 
     @Override
-    public void run(@NotNull LevelledMobs main, @NotNull CommandSender sender, @NotNull String label, @NotNull String[] args) {
+    public void run(@NotNull LevelledMobs main, @NotNull CommandSender sender, @NotNull String baseCommandLabel, @NotNull String subCommandLabel, @NotNull String[] args) {
         /*
         TODO
             lokka30: Complete method body
@@ -39,7 +40,7 @@ public class HelpSubcommand implements CommandHandler.Subcommand {
     }
 
     @Override
-    public @NotNull List<String> getSuggestions(@NotNull LevelledMobs main, @NotNull CommandSender sender, @NotNull String label, @NotNull String[] args) {
+    public @NotNull List<String> getSuggestions(@NotNull LevelledMobs main, @NotNull CommandSender sender, @NotNull String baseCommandLabel, @NotNull String subCommandLabel, @NotNull String[] args) {
         /*
         TODO
             lokka30: Complete method body
