@@ -31,7 +31,7 @@ public class LevelledMobsCommand implements TabExecutor {
         // create subcommands set
         subcommands.addAll(
                 Arrays.asList(
-                        new AdvancedSubcommand(),
+                        new ExecuteSubcommand(),
                         new CompatibilitySubcommand(),
                         new HelpSubcommand(),
                         new InfoSubcommand(),
@@ -47,8 +47,9 @@ public class LevelledMobsCommand implements TabExecutor {
         subcommands.forEach(subcommand -> subcommandsLabels.addAll(subcommand.getLabels()));
     }
 
-    private final HashSet<CommandHandler.Subcommand> subcommands = new HashSet<>();
-    private final List<String> subcommandsLabels = new ArrayList<>();
+    public static final HashSet<CommandHandler.Subcommand> subcommands = new HashSet<>();
+
+    public static final List<String> subcommandsLabels = new ArrayList<>();
 
     @Nullable
     public CommandHandler.Subcommand getSubcommand(@NotNull final String label) {

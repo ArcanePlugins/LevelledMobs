@@ -94,6 +94,17 @@ public class CommandHandler {
     public interface Subcommand {
 
         /**
+         * This method returns the main label (used in descriptions
+         * of the subcommand, and so on), not aliases.
+         * The String returned should be in `camelCase`, e.g.
+         * `killAllMobs` for `/lm killAllMobs`.
+         * @author lokka30
+         * @since v4.0.0
+         * @return the main label of the subcommand.
+         */
+        @NotNull String getMainLabel();
+
+        /**
          * A label is the name or any alias that can be used to
          * identify the subcommand. For example, 'info' is a label of
          * {@link me.lokka30.levelledmobs.commands.levelledmobs.subcommands.InfoSubcommand}.
@@ -102,6 +113,18 @@ public class CommandHandler {
          * @return a list containing the subcommand's available labels
          */
         @NotNull HashSet<String> getLabels();
+
+        /**
+         * The usage of a subcommand states how the subcommand can be ran,
+         * e.g. {@code /broadcast <message>} requires the {@code message}
+         * argument to be specified.
+         * If the subcommand does not allow any further arguments to
+         * be specified ({@code args.length == 1}, specify an empty String.
+         * @author lokka30
+         * @since v4.0.0
+         * @return the usage description of the subcommand.
+         */
+        @NotNull default String getUsage() { return ""; }
 
         /**
          * @param main   main class of LevelledMobs
@@ -128,7 +151,8 @@ public class CommandHandler {
          * If no tab completions should be sent, return
          * {@link Collections#emptyList()}.
          */
-        @NotNull
-        List<String> getSuggestions(@NotNull final LevelledMobs main, @NotNull final CommandSender sender, @NotNull final String baseCommandLabel, @NotNull final String subCommandLabel, @NotNull final String[] args);
+        @NotNull default List<String> getSuggestions(@NotNull final LevelledMobs main, @NotNull final CommandSender sender, @NotNull final String baseCommandLabel, @NotNull final String subCommandLabel, @NotNull final String[] args) {
+            return Collections.emptyList();
+        }
     }
 }

@@ -9,9 +9,7 @@ import me.lokka30.levelledmobs.commands.CommandHandler;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -24,7 +22,21 @@ import java.util.Set;
  */
 public class CompatibilitySubcommand implements CommandHandler.Subcommand {
 
+    /*
+    TODO LIST:
+        - Complete method body for the run method.
+        - Test if the logic is working correctly.
+        - Add customisable messages to the run method.
+        - Test if the customisable messages are working correctly.
+     */
+
     final HashSet<String> labels = new HashSet<>(Set.of("COMPATIBILITY", "COMPAT"));
+
+    @Override
+    public @NotNull String getMainLabel() {
+        return "compatibility";
+    }
+
     @Override
     public @NotNull HashSet<String> getLabels() {
         return labels;
@@ -32,20 +44,7 @@ public class CompatibilitySubcommand implements CommandHandler.Subcommand {
 
     @Override
     public void run(@NotNull LevelledMobs main, @NotNull CommandSender sender, @NotNull String baseCommandLabel, @NotNull String subCommandLabel, @NotNull String[] args) {
-        /*
-        TODO
-            lokka30: Complete method body
-         */
-        sender.sendMessage("Compatibility.work in progress");
-    }
-
-    @Override
-    public @NotNull List<String> getSuggestions(@NotNull LevelledMobs main, @NotNull CommandSender sender, @NotNull String subCommandLabel, @NotNull String baseCommandLabel, @NotNull String[] args) {
-        /*
-        TODO
-            lokka30: Complete method body
-         */
-
-        return new ArrayList<>();
+        // TODO complete method body.
+        sender.sendMessage("The compatibility subcommand is work-in-progress.");
     }
 }

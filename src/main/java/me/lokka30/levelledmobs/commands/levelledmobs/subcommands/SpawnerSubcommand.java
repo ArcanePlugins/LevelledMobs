@@ -9,7 +9,7 @@ import me.lokka30.levelledmobs.commands.CommandHandler;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -24,6 +24,22 @@ import java.util.Set;
  */
 public class SpawnerSubcommand implements CommandHandler.Subcommand {
 
+    /*
+    TODO LIST:
+        - complete the getUsage method body.
+        - Complete the run method body.
+        - Complete the getSuggestions method body.
+        - Test if the run method works properly.
+        - Test if the getSuggestions method works properly.
+        - Add customisable messages to the run method.
+        - Test if the customisable messages work properly.
+     */
+
+    @Override
+    public @NotNull String getMainLabel() {
+        return "spawner";
+    }
+
     final HashSet<String> labels = new HashSet<>(Set.of("SPAWNER", "SPAWNERS"));
     @Override
     public @NotNull HashSet<String> getLabels() {
@@ -31,21 +47,19 @@ public class SpawnerSubcommand implements CommandHandler.Subcommand {
     }
 
     @Override
+    public @NotNull String getUsage() {
+        return ""; //TODO
+    }
+
+    @Override
     public void run(@NotNull LevelledMobs main, @NotNull CommandSender sender, @NotNull String baseCommandLabel, @NotNull String subCommandLabel, @NotNull String[] args) {
-        /*
-        TODO
-            lokka30: Complete method body
-         */
-        sender.sendMessage("Spawner.work in progress");
+        //TODO
+        sender.sendMessage("The spawner subcommand is work-in-progress.");
     }
 
     @Override
     public @NotNull List<String> getSuggestions(@NotNull LevelledMobs main, @NotNull CommandSender sender, @NotNull String baseCommandLabel, @NotNull String subCommandLabel, @NotNull String[] args) {
-        /*
-        TODO
-            lokka30: Complete method body
-         */
-
-        return new ArrayList<>();
+        //TODO
+        return Collections.emptyList();
     }
 }

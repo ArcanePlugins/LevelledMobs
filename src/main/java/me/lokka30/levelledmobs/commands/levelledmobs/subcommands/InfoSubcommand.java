@@ -9,9 +9,7 @@ import me.lokka30.levelledmobs.commands.CommandHandler;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -24,6 +22,19 @@ import java.util.Set;
  */
 public class InfoSubcommand implements CommandHandler.Subcommand {
 
+    /*
+    TODO LIST:
+        - Complete the run method's body.
+        - Test if the run method works properly.
+        - Add customisable messages to the run method.
+        - Test if the customisable messages work properly.
+     */
+
+    @Override
+    public @NotNull String getMainLabel() {
+        return "info";
+    }
+
     final HashSet<String> labels = new HashSet<>(Set.of("INFO", "ABOUT"));
     @Override
     public @NotNull HashSet<String> getLabels() {
@@ -32,20 +43,7 @@ public class InfoSubcommand implements CommandHandler.Subcommand {
 
     @Override
     public void run(@NotNull LevelledMobs main, @NotNull CommandSender sender, @NotNull String baseCommandLabel, @NotNull String subCommandLabel, @NotNull String[] args) {
-        /*
-        TODO
-            lokka30: Complete method body
-         */
-        sender.sendMessage("Info.work in progress");
-    }
-
-    @Override
-    public @NotNull List<String> getSuggestions(@NotNull LevelledMobs main, @NotNull CommandSender sender, @NotNull String baseCommandLabel, @NotNull String subCommandLabel, @NotNull String[] args) {
-        /*
-        TODO
-            lokka30: Complete method body
-         */
-
-        return new ArrayList<>();
+        //TODO
+        sender.sendMessage("The info subcommand is work-in-progress.");
     }
 }

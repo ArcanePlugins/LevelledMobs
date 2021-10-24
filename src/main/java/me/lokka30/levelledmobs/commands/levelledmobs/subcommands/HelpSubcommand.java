@@ -6,12 +6,11 @@ package me.lokka30.levelledmobs.commands.levelledmobs.subcommands;
 
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.commands.CommandHandler;
+import me.lokka30.levelledmobs.commands.levelledmobs.LevelledMobsCommand;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -24,6 +23,13 @@ import java.util.Set;
  */
 public class HelpSubcommand implements CommandHandler.Subcommand {
 
+    /*
+    TODO LIST:
+        - Test if the run method works properly.
+        - Add customisable messages to the run method.
+        - Test if the customisable messages work properly.
+     */
+
     final HashSet<String> labels = new HashSet<>(Set.of("HELP", "COMMANDS", "SUBCOMMANDS"));
     @Override
     public @NotNull HashSet<String> getLabels() {
@@ -31,21 +37,16 @@ public class HelpSubcommand implements CommandHandler.Subcommand {
     }
 
     @Override
-    public void run(@NotNull LevelledMobs main, @NotNull CommandSender sender, @NotNull String baseCommandLabel, @NotNull String subCommandLabel, @NotNull String[] args) {
-        /*
-        TODO
-            lokka30: Complete method body
-         */
-        sender.sendMessage("Help.work in progress");
+    public @NotNull String getMainLabel() {
+        return "help";
     }
 
     @Override
-    public @NotNull List<String> getSuggestions(@NotNull LevelledMobs main, @NotNull CommandSender sender, @NotNull String baseCommandLabel, @NotNull String subCommandLabel, @NotNull String[] args) {
-        /*
-        TODO
-            lokka30: Complete method body
-         */
+    public void run(@NotNull LevelledMobs main, @NotNull CommandSender sender, @NotNull String baseCommandLabel, @NotNull String subCommandLabel, @NotNull String[] args) {
+        sender.sendMessage("Available subcommands:");
 
-        return Collections.emptyList();
+        for(CommandHandler.Subcommand availableSubcommand : LevelledMobsCommand.subcommands) {
+            sender.sendMessage(" -> /" + baseCommandLabel + " " + availableSubcommand.getMainLabel() + " " + availableSubcommand.getUsage());
+        }
     }
 }
