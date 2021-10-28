@@ -12,6 +12,7 @@ import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.misc.*;
 import me.lokka30.levelledmobs.rules.NametagVisibilityEnum;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Tameable;
@@ -68,6 +69,7 @@ public class NametagQueueManager {
     }
 
     public void addToQueue(final @NotNull QueueItem item) {
+        if (Bukkit.getOnlinePlayers().size() == 0) return;
         if (item.lmEntity.getLivingEntity() == null ||
             main.rulesManager.getRule_CreatureNametagVisbility(item.lmEntity).contains(NametagVisibilityEnum.DISABLED))
             return;

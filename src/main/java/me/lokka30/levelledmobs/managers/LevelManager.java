@@ -690,6 +690,7 @@ public class LevelManager implements LevelInterface {
                     }
 
                     boolean useResetTimer = false;
+                    if (lmEntity.getLivingEntity() == null) continue;
                     final List<NametagVisibilityEnum> nametagVisibilityEnums = main.rulesManager.getRule_CreatureNametagVisbility(lmEntity);
                     final int nametagVisibleTime = lmEntity.getNametagCooldownTime();
                    if (nametagVisibleTime > 0 &&
@@ -769,6 +770,7 @@ public class LevelManager implements LevelInterface {
     }
 
     private void checkLevelledEntity(@NotNull final LivingEntityWrapper lmEntity, @NotNull final Player player){
+        if (lmEntity.getLivingEntity() == null || !lmEntity.getLivingEntity().isValid()) return;
         final double maxDistance = Math.pow(128, 2); // square the distance we are using Location#distanceSquared. This is because it is faster than Location#distance since it does not need to sqrt which is taxing on the CPU.
         final Location location = player.getLocation();
 
@@ -778,14 +780,13 @@ public class LevelManager implements LevelInterface {
         } else if (lmEntity.isMobTamed() && main.rulesManager.getRule_MobTamedStatus(lmEntity) == MobTamedStatus.NOT_TAMED) {
             // mob is tamed with a level but the rules don't allow it, remove the level
             main.levelInterface.removeLevel(lmEntity);
-        } else {
-            if (!main.helperSettings.getBoolean(main.settingsCfg, "use-customname-for-mob-nametags", false) &&
-                    location.getWorld() != null &&
-                    location.getWorld().equals(lmEntity.getWorld()) &&
-                    lmEntity.getLocation().distanceSquared(location) <= maxDistance) {
-                //if within distance, update nametag.
-                main.nametagQueueManager_.addToQueue(new QueueItem(lmEntity, main.levelManager.getNametag(lmEntity, false), Collections.singletonList(player)));
-            }
+        } else if (lmEntity.getLivingEntity().isValid() &&
+                !main.helperSettings.getBoolean(main.settingsCfg, "use-customname-for-mob-nametags", false) &&
+                location.getWorld() != null &&
+                location.getWorld().equals(lmEntity.getWorld()) &&
+                lmEntity.getLocation().distanceSquared(location) <= maxDistance) {
+            //if within distance, update nametag.
+            main.nametagQueueManager_.addToQueue(new QueueItem(lmEntity, main.levelManager.getNametag(lmEntity, false), Collections.singletonList(player)));
         }
     }
 
