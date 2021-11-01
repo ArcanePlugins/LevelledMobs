@@ -435,7 +435,7 @@ public class LevelManager implements LevelInterface {
 
     @Nullable
     public String getNametag(final LivingEntityWrapper lmEntity, final boolean isDeathNametag) {
-        final String nametag = isDeathNametag ? main.rulesManager.getRule_Nametag_CreatureDeath(lmEntity) : main.rulesManager.getRule_Nametag(lmEntity);
+        String nametag = isDeathNametag ? main.rulesManager.getRule_Nametag_CreatureDeath(lmEntity) : main.rulesManager.getRule_Nametag(lmEntity);
         if ("disabled".equalsIgnoreCase(nametag) || "none".equalsIgnoreCase(nametag)) return null;
 
         final boolean useCustomNameForNametags = main.helperSettings.getBoolean(main.settingsCfg, "use-customname-for-mob-nametags");
@@ -446,12 +446,15 @@ public class LevelManager implements LevelInterface {
             else
                 return lmEntity.getLivingEntity().getCustomName(); // CustomName can be null, that is meant to be the case.
         }
+        if (!lmEntity.isLevelled())
+            nametag = "";
 
         return updateNametag(lmEntity, nametag, useCustomNameForNametags);
     }
 
     @NotNull
     public String updateNametag(final LivingEntityWrapper lmEntity, @NotNull String nametag, final boolean useCustomNameForNametags) {
+        if ("".equals(nametag)) return nametag;
         final String overridenName = main.rulesManager.getRule_EntityOverriddenName(lmEntity, useCustomNameForNametags);
 
         String displayName = overridenName == null ?
@@ -1054,12 +1057,8 @@ public class LevelManager implements LevelInterface {
                 && lmEntity.getLivingEntity().getVehicle() instanceof LivingEntity){
             // entity is a passenger. grab the level from the "vehicle" entity
             final LivingEntityWrapper vehicle = LivingEntityWrapper.getInstance((LivingEntity) lmEntity.getLivingEntity().getVehicle(), main);
-            if (vehicle.isLevelled()) {
-                Utils.logger.info(lmEntity.getNameIfBaby() + " got level " + vehicle.getMobLevel() + " from vehicle " + vehicle.getNameIfBaby());
+            if (vehicle.isLevelled())
                 level = vehicle.getMobLevel();
-            }
-            else
-                Utils.logger.info(lmEntity.getNameIfBaby() + " vehicle was unlevelled: " + vehicle.getNameIfBaby());
 
             vehicle.free();
         }

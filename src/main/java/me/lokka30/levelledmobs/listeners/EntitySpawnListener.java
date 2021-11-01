@@ -266,13 +266,15 @@ public class EntitySpawnListener implements Listener {
             // Check if the mob is already levelled - if so, remove their level
             if (lmEntity.isLevelled())
                 main.levelInterface.removeLevel(lmEntity);
-
             else if (lmEntity.isBabyMob()) {
                 // add a tag so we can potentially level the mob when/if it ages
                 synchronized (lmEntity.getLivingEntity().getPersistentDataContainer()) {
                     lmEntity.getPDC().set(main.namespaced_keys.wasBabyMobKey, PersistentDataType.INTEGER, 1);
                 }
             }
+
+            if (lmEntity.wasPreviouslyLevelled)
+                main.levelManager.updateNametag(lmEntity);
         }
     }
 
