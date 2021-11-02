@@ -573,6 +573,9 @@ public class LevelManager implements LevelInterface {
         result = result.replace("%y%", lmEntity.getLivingEntity().getLocation().getBlockY() + "");
         result = result.replace("%z%", lmEntity.getLivingEntity().getLocation().getBlockZ() + "");
 
+        if (result.contains("%") && ExternalCompatibilityManager.hasPAPI_Installed())
+            result = ExternalCompatibilityManager.getPAPI_Placeholder(null, result);
+
         result = MessageUtils.colorizeAll(result);
 
         return result;

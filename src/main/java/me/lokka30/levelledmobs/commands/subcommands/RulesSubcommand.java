@@ -125,6 +125,8 @@ public class RulesSubcommand implements Subcommand {
         int worldCount = 0;
         int entityCount = 0;
 
+        main.reloadLM(sender);
+
         for (final World world : Bukkit.getWorlds()) {
             worldCount++;
             for (final Entity entity : world.getEntities()) {
