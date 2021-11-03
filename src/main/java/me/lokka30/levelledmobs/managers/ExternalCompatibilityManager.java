@@ -129,7 +129,7 @@ public class ExternalCompatibilityManager {
         final Plugin p = Bukkit.getPluginManager().getPlugin("MythicMobs");
         if (p == null) return false;
 
-        if (!p.getDescription().getVersion().startsWith("4.12")) {
+        if (!p.getDescription().getVersion().startsWith("4.12") && !p.getDescription().getVersion().startsWith("5.")) {
             final NamespacedKey mmKey = new NamespacedKey(p, "type");
             synchronized (lmEntity.getLivingEntity().getPersistentDataContainer()) {
                 return lmEntity.getPDC().has(mmKey, PersistentDataType.STRING);
@@ -153,7 +153,7 @@ public class ExternalCompatibilityManager {
         final Plugin p = Bukkit.getPluginManager().getPlugin("MythicMobs");
         if (p == null) return "";
 
-        if (!p.getDescription().getVersion().startsWith("4.12")) {
+        if (!p.getDescription().getVersion().startsWith("4.12") && !p.getDescription().getVersion().startsWith("5.")) {
             // MM version 5 must use this method for internal name detection
             final NamespacedKey mmKey = new NamespacedKey(p, "type");
             synchronized (lmEntity.getLivingEntity().getPersistentDataContainer()) {
