@@ -28,11 +28,14 @@ import org.jetbrains.annotations.Nullable;
  */
 public class PlayerDeathListener implements Listener {
 
-    public PlayerDeathListener(final LevelledMobs main){
+    public PlayerDeathListener(final LevelledMobs main) {
         this.main = main;
+        if (main.serverIsPaper)
+            paperListener = new me.lokka30.levelledmobs.listeners.paper.PlayerDeathListener(main);
     }
 
     final private LevelledMobs main;
+    private me.lokka30.levelledmobs.listeners.paper.PlayerDeathListener paperListener;
 
     /**
      * This listener handles death nametags so we can determine which mob killed
@@ -42,6 +45,13 @@ public class PlayerDeathListener implements Listener {
      */
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void onPlayerDeath(@NotNull final PlayerDeathEvent event) {
+        // returns false if not a translatable component, in which case just use the old method
+        // this can happen if another plugin has buthered the event by using the deprecated method (*cough* mythic mobs)
+        if (!main.serverIsPaper || !paperListener.onPlayerDeathEvent(event))
+            nonPaper_PlayerDeath(event);
+    }
+
+    private void nonPaper_PlayerDeath(@NotNull final PlayerDeathEvent event){
         final LivingEntityWrapper lmEntity = getPlayersKiller(event);
 
         if (main.placeholderApiIntegration != null){
@@ -55,6 +65,7 @@ public class PlayerDeathListener implements Listener {
 
     @Nullable
     private LivingEntityWrapper getPlayersKiller(@NotNull final PlayerDeathEvent event){
+        // ignore any deprecated events.  they are not deprecated in spigot api
         if (event.getDeathMessage() == null) return null;
 
         final EntityDamageEvent entityDamageEvent = event.getEntity().getLastDamageCause();

@@ -53,6 +53,7 @@ public class LevelledMobs extends JavaPlugin {
     public Random random;
     public PlaceholderApiIntegration placeholderApiIntegration;
     public boolean migratedFromPre30;
+    public boolean serverIsPaper;
     public YmlParsingHelper helperSettings;
     public int playerLevellingMinRelevelTime;
     public int maxPlayersRecorded;
@@ -86,6 +87,7 @@ public class LevelledMobs extends JavaPlugin {
     public void onEnable() {
         final QuickTimer timer = new QuickTimer();
 
+        this.serverIsPaper = "Paper".equalsIgnoreCase(Bukkit.getServer().getName());
         this.namespaced_keys = new Namespaced_Keys(this);
         this.playerLevellingEntities = new WeakHashMap<>();
         this.helperSettings = new YmlParsingHelper();
