@@ -283,7 +283,12 @@ public class ExternalCompatibilityManager {
     public static boolean isMobOfEliteMobs(final @NotNull LivingEntityWrapper lmEntity) {
         final Plugin p = Bukkit.getPluginManager().getPlugin("EliteMobs");
         if (p != null){
-            if (lmEntity.getPDC().has(new NamespacedKey(p, "EliteMobsCullable"), PersistentDataType.STRING)){
+            boolean isEliteMob;
+            synchronized (lmEntity.getLivingEntity().getPersistentDataContainer()) {
+                isEliteMob = lmEntity.getPDC().has(new NamespacedKey(p, "EliteMobsCullable"), PersistentDataType.STRING);
+            }
+
+            if (isEliteMob){
                 lmEntity.setMobExternalType(ExternalCompatibility.ELITE_MOBS);
                 return true;
             }
