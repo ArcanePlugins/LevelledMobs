@@ -7,7 +7,7 @@ package me.lokka30.levelledmobs.customdrops;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.misc.*;
 import me.lokka30.levelledmobs.rules.LevelledMobSpawnReason;
-import me.lokka30.microlib.MessageUtils;
+import me.lokka30.microlib.messaging.MessageUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;

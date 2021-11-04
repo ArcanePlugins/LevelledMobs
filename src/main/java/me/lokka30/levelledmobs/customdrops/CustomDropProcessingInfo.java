@@ -7,7 +7,7 @@ package me.lokka30.levelledmobs.customdrops;
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
 import me.lokka30.levelledmobs.misc.Utils;
 import me.lokka30.levelledmobs.rules.CustomDropsRuleSet;
-import me.lokka30.microlib.MessageUtils;
+import me.lokka30.microlib.messaging.MessageUtils;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;

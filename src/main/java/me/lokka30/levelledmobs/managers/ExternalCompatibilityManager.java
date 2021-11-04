@@ -281,18 +281,23 @@ public class ExternalCompatibilityManager {
      * @return if EliteMobs compatibility enabled and entity is from EliteMobs
      */
     public static boolean isMobOfEliteMobs(final LivingEntityWrapper lmEntity) {
-        final boolean isExternalType1 =
-                lmEntity.getLivingEntity().hasMetadata("Elitemob");
-        final boolean isExternalType2 =
-                lmEntity.getLivingEntity().hasMetadata("Elitemobs_NPC");
-        final boolean isExternalType3 =
-                lmEntity.getLivingEntity().hasMetadata("Supermob");
+        final Plugin p = Bukkit.getPluginManager().getPlugin("EliteMobs");
+        if (p != null) {
+            if (lmEntity.getPDC().has(new NamespacedKey(p, "EliteMobsCullable"), PersistentDataType.STRING)) {
+                boolean isEliteMob;
+                synchronized (lmEntity.getLivingEntity().getPersistentDataContainer()) {
+                    isEliteMob = lmEntity.getPDC().has(new NamespacedKey(p, "EliteMobsCullable"), PersistentDataType.STRING);
+                }
 
-        if (isExternalType1) lmEntity.setMobExternalType(ExternalCompatibility.ELITE_MOBS);
-        else if (isExternalType2) lmEntity.setMobExternalType(ExternalCompatibility.ELITE_MOBS_NPCS);
-        else if (isExternalType3) lmEntity.setMobExternalType(ExternalCompatibility.ELITE_MOBS_SUPER_MOBS);
+                if (isEliteMob) {
+                    lmEntity.setMobExternalType(ExternalCompatibility.ELITE_MOBS);
+                    return true;
+                }
 
-        return (isExternalType1 || isExternalType2 || isExternalType3);
+            }
+        }
+
+        return false;
     }
 
     /**

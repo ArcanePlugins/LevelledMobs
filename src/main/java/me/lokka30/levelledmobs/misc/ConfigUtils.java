@@ -5,7 +5,7 @@
 package me.lokka30.levelledmobs.misc;
 
 import me.lokka30.levelledmobs.LevelledMobs;
-import me.lokka30.microlib.MessageUtils;
+import me.lokka30.microlib.messaging.MessageUtils;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 

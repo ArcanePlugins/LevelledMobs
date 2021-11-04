@@ -7,7 +7,7 @@ package me.lokka30.levelledmobs.commands.subcommands;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.misc.Utils;
 import me.lokka30.levelledmobs.rules.DoNotMerge;
-import me.lokka30.microlib.MessageUtils;
+import me.lokka30.microlib.messaging.MessageUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;

@@ -12,7 +12,7 @@ import me.lokka30.levelledmobs.misc.NBTApplyResult;
 import me.lokka30.levelledmobs.misc.Utils;
 import me.lokka30.levelledmobs.misc.YmlParsingHelper;
 import me.lokka30.levelledmobs.rules.RuleInfo;
-import me.lokka30.microlib.MessageUtils;
+import me.lokka30.microlib.messaging.MessageUtils;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.configuration.ConfigurationSection;

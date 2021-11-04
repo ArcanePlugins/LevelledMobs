@@ -10,7 +10,7 @@
 
     <groupId>me.lokka30</groupId>
     <artifactId>LevelledMobs</artifactId>
-    <version>3.3.0 b553</version>
+    <version>3.3.0 b556</version>
     <packaging>jar</packaging>
 
     <name>LevelledMobs</name>
@@ -49,14 +49,14 @@
                         </relocation>
                     </relocations>
                     <filters>
+<!--                        <filter>-->
+<!--                            <artifact>*:MicroLib</artifact>-->
+<!--                            <excludes>-->
+<!--                                <exclude>plugin.yml</exclude>-->
+<!--                            </excludes>-->
+<!--                        </filter>-->
                         <filter>
-                            <artifact>*:MicroLib</artifact>
-                            <excludes>
-                                <exclude>plugin.yml</exclude>
-                            </excludes>
-                        </filter>
-                        <filter>
-                            <artifact>*:*</artifact>
+                            <artifact>org.bstats</artifact>
                             <excludes>
                                 <exclude>META-INF/MANIFEST.MF</exclude>
                             </excludes>
@@ -71,6 +71,11 @@
                         </goals>
                         <configuration>
                             <createDependencyReducedPom>false</createDependencyReducedPom>
+                            <artifactSet>
+                                <includes>
+                                    <include>*:*</include>
+                                </includes>
+                            </artifactSet>
                         </configuration>
                     </execution>
                 </executions>
@@ -163,7 +168,8 @@
         <dependency>
             <groupId>com.github.lokka30</groupId>
             <artifactId>MicroLib</artifactId>
-            <version>2.3.1</version>
+            <version>3.1.2</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.github.dmulloy2</groupId>
@@ -180,7 +186,7 @@
         <dependency>
             <groupId>simplepets.brainsynder</groupId>
             <artifactId>API</artifactId>
-            <version>5.0-BUILD-89</version>
+            <version>5.0-BUILD-90</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>

@@ -18,7 +18,7 @@ import me.lokka30.levelledmobs.rules.strategies.LevellingStrategy;
 import me.lokka30.levelledmobs.rules.strategies.RandomLevellingStrategy;
 import me.lokka30.levelledmobs.rules.strategies.SpawnDistanceStrategy;
 import me.lokka30.levelledmobs.rules.strategies.YDistanceStrategy;
-import me.lokka30.microlib.MessageUtils;
+import me.lokka30.microlib.messaging.MessageUtils;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
@@ -1153,10 +1153,6 @@ public class LevelManager implements LevelInterface {
 
         lmEntity.inUseCount.getAndIncrement();
         applyAttribs.runTask(main);
-
-//        final List<NametagVisibilityEnum> nametagVisibilityEnums = main.rulesManager.getRule_CreatureNametagVisbility(lmEntity);
-//        if (nametagVisibilityEnums.contains(NametagVisibilityEnum.TARGETED))
-//            getPlayersNearMob(lmEntity);
 
         if (!skipLM_Nametag)
             main.levelManager.updateNametag_WithDelay(lmEntity);

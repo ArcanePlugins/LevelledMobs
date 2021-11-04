@@ -6,8 +6,8 @@ package me.lokka30.levelledmobs.commands.subcommands;
 
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.misc.Utils;
-import me.lokka30.microlib.MessageUtils;
-import me.lokka30.microlib.QuickTimer;
+import me.lokka30.microlib.maths.QuickTimer;
+import me.lokka30.microlib.messaging.MessageUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;

@@ -9,7 +9,7 @@ import me.lokka30.levelledmobs.commands.subcommands.SpawnerSubCommand;
 import me.lokka30.levelledmobs.misc.Cooldown;
 import me.lokka30.levelledmobs.misc.Point;
 import me.lokka30.levelledmobs.misc.Utils;
-import me.lokka30.microlib.MessageUtils;
+import me.lokka30.microlib.messaging.MessageUtils;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.block.CreatureSpawner;

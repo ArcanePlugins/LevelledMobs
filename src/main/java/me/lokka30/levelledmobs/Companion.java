@@ -18,8 +18,9 @@ import me.lokka30.levelledmobs.misc.FileMigrator;
 import me.lokka30.levelledmobs.misc.Utils;
 import me.lokka30.levelledmobs.misc.VersionInfo;
 import me.lokka30.levelledmobs.rules.MetricsInfo;
-import me.lokka30.microlib.UpdateChecker;
-import me.lokka30.microlib.VersionUtils;
+import me.lokka30.microlib.exceptions.OutdatedServerVersionException;
+import me.lokka30.microlib.other.UpdateChecker;
+import me.lokka30.microlib.other.VersionUtils;
 import org.bstats.bukkit.Metrics;
 import org.bstats.charts.SimpleBarChart;
 import org.bstats.charts.SimplePie;
@@ -269,68 +270,73 @@ public class Companion {
     void checkUpdates() {
         if (main.helperSettings.getBoolean(main.settingsCfg,"use-update-checker", true)) {
             final UpdateChecker updateChecker = new UpdateChecker(main, 74304);
-            updateChecker.getLatestVersion(latestVersion -> {
-                final String currentVersion = updateChecker.getCurrentVersion().split(" ")[0];
+            try {
+                updateChecker.getLatestVersion(latestVersion -> {
+                    final String currentVersion = updateChecker.getCurrentVersion().split(" ")[0];
 
-                VersionInfo thisVersion;
-                VersionInfo spigotVersion;
-                boolean isOutOfDate;
-                boolean isNewerVersion;
+                    VersionInfo thisVersion;
+                    VersionInfo spigotVersion;
+                    boolean isOutOfDate;
+                    boolean isNewerVersion;
 
-                try {
-                    thisVersion = new VersionInfo(currentVersion);
-                    spigotVersion = new VersionInfo(latestVersion);
+                    try {
+                        thisVersion = new VersionInfo(currentVersion);
+                        spigotVersion = new VersionInfo(latestVersion);
 
-                    isOutOfDate = (thisVersion.compareTo(spigotVersion) < 0);
-                    isNewerVersion = (thisVersion.compareTo(spigotVersion) > 0);
-                } catch (InvalidObjectException e) {
-                    Utils.logger.warning("Got exception creating version objects: " + e.getMessage());
+                        isOutOfDate = (thisVersion.compareTo(spigotVersion) < 0);
+                        isNewerVersion = (thisVersion.compareTo(spigotVersion) > 0);
+                    } catch (InvalidObjectException e) {
+                        Utils.logger.warning("Got exception creating version objects: " + e.getMessage());
 
-                    isOutOfDate = !currentVersion.equals(latestVersion);
-                    isNewerVersion = currentVersion.contains("indev");
-                }
-
-                if (isNewerVersion) {
-                    updateResult = Collections.singletonList(
-                            "&7Your &bLevelledMobs&7 version is &ba pre-release&7. Latest release version is &bv%latestVersion%&7. &8(&7You're running &bv%currentVersion%&8)");
-
-                    updateResult = Utils.replaceAllInList(updateResult, "%currentVersion%", currentVersion);
-                    updateResult = Utils.replaceAllInList(updateResult, "%latestVersion%", latestVersion);
-                    updateResult = Utils.colorizeAllInList(updateResult);
-
-                    updateResult.forEach(Utils.logger::warning);
-                } else if (isOutOfDate) {
-
-                    // for some reason config#getStringList doesn't allow defaults??
-                    if (main.messagesCfg.contains("other.update-notice.messages")) {
-                        updateResult = main.messagesCfg.getStringList("other.update-notice.messages");
-                    } else {
-                        updateResult = Arrays.asList(
-                                "&b&nLevelledMobs Update Checker Notice:",
-                                "&7Your &bLevelledMobs&7 version is &boutdated&7! Please update to" +
-                                        "&bv%latestVersion%&7 as soon as possible. &8(&7You''re running &bv%currentVersion%&8)");
+                        isOutOfDate = !currentVersion.equals(latestVersion);
+                        isNewerVersion = currentVersion.contains("indev");
                     }
 
-                    updateResult = Utils.replaceAllInList(updateResult, "%currentVersion%", currentVersion);
-                    updateResult = Utils.replaceAllInList(updateResult, "%latestVersion%", latestVersion);
-                    updateResult = Utils.colorizeAllInList(updateResult);
+                    if (isNewerVersion) {
+                        updateResult = Collections.singletonList(
+                                "&7Your &bLevelledMobs&7 version is &ba pre-release&7. Latest release version is &bv%latestVersion%&7. &8(&7You're running &bv%currentVersion%&8)");
 
-                    if (main.messagesCfg.getBoolean("other.update-notice.send-in-console", true))
+                        updateResult = Utils.replaceAllInList(updateResult, "%currentVersion%", currentVersion);
+                        updateResult = Utils.replaceAllInList(updateResult, "%latestVersion%", latestVersion);
+                        updateResult = Utils.colorizeAllInList(updateResult);
+
                         updateResult.forEach(Utils.logger::warning);
+                    } else if (isOutOfDate) {
 
-                    // notify any players that may be online already
-                    if (main.messagesCfg.getBoolean("other.update-notice.send-on-join", true)) {
-                        Bukkit.getOnlinePlayers().forEach(onlinePlayer -> {
-                            if (onlinePlayer.hasPermission("levelledmobs.receive-update-notifications")) {
-                                for (String msg : updateResult) {
-                                    onlinePlayer.sendMessage(msg);
+                        // for some reason config#getStringList doesn't allow defaults??
+                        if (main.messagesCfg.contains("other.update-notice.messages")) {
+                            updateResult = main.messagesCfg.getStringList("other.update-notice.messages");
+                        } else {
+                            updateResult = Arrays.asList(
+                                    "&b&nLevelledMobs Update Checker Notice:",
+                                    "&7Your &bLevelledMobs&7 version is &boutdated&7! Please update to" +
+                                            "&bv%latestVersion%&7 as soon as possible. &8(&7You''re running &bv%currentVersion%&8)");
+                        }
+
+                        updateResult = Utils.replaceAllInList(updateResult, "%currentVersion%", currentVersion);
+                        updateResult = Utils.replaceAllInList(updateResult, "%latestVersion%", latestVersion);
+                        updateResult = Utils.colorizeAllInList(updateResult);
+
+                        if (main.messagesCfg.getBoolean("other.update-notice.send-in-console", true))
+                            updateResult.forEach(Utils.logger::warning);
+
+                        // notify any players that may be online already
+                        if (main.messagesCfg.getBoolean("other.update-notice.send-on-join", true)) {
+                            Bukkit.getOnlinePlayers().forEach(onlinePlayer -> {
+                                if (onlinePlayer.hasPermission("levelledmobs.receive-update-notifications")) {
+                                    for (String msg : updateResult) {
+                                        onlinePlayer.sendMessage(msg);
+                                    }
+                                    //updateResult.forEach(onlinePlayer::sendMessage); //compiler didn't like this :(
                                 }
-                                //updateResult.forEach(onlinePlayer::sendMessage); //compiler didn't like this :(
-                            }
-                        });
+                            });
+                        }
                     }
-                }
-            });
+                });
+            }
+            catch (OutdatedServerVersionException e){
+                e.printStackTrace();
+            }
         }
     }
 

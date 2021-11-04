@@ -13,7 +13,7 @@ import me.lokka30.levelledmobs.managers.*;
 import me.lokka30.levelledmobs.misc.*;
 import me.lokka30.levelledmobs.rules.RulesManager;
 import me.lokka30.levelledmobs.rules.RulesParsingManager;
-import me.lokka30.microlib.QuickTimer;
+import me.lokka30.microlib.maths.QuickTimer;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -53,7 +53,6 @@ public class LevelledMobs extends JavaPlugin {
     public Random random;
     public PlaceholderApiIntegration placeholderApiIntegration;
     public boolean migratedFromPre30;
-    public boolean serverIsPaper;
     public YmlParsingHelper helperSettings;
     public int playerLevellingMinRelevelTime;
     public int maxPlayersRecorded;
@@ -87,7 +86,6 @@ public class LevelledMobs extends JavaPlugin {
     public void onEnable() {
         final QuickTimer timer = new QuickTimer();
 
-        this.serverIsPaper = "Paper".equalsIgnoreCase(Bukkit.getServer().getName());
         this.namespaced_keys = new Namespaced_Keys(this);
         this.playerLevellingEntities = new WeakHashMap<>();
         this.helperSettings = new YmlParsingHelper();
