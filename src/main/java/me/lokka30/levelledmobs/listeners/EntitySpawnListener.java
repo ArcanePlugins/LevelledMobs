@@ -254,8 +254,14 @@ public class EntitySpawnListener implements Listener {
         final HashSet<AdditionalLevelInformation> additionalLevelInfo = new HashSet<>(Collections.singletonList(additionalInfo));
         final LevellableState levellableState = getLevellableState(lmEntity, event);
         if (levellableState == LevellableState.ALLOWED) {
-            if (lmEntity.reEvaluateLevel && main.configUtils.playerLevellingEnabled)
-                updateMobForPlayerLevelling(lmEntity);
+            if (lmEntity.reEvaluateLevel && main.configUtils.playerLevellingEnabled) {
+                final Object syncObj = new Object();
+                final BukkitRunnable runnable = new BukkitRunnable() {
+                    @Override
+                    public void run() { updateMobForPlayerLevelling(lmEntity); }
+                };
+                runnable.runTask(main);
+            }
 
             main.levelInterface.applyLevelToMob(lmEntity, main.levelInterface.generateLevel(lmEntity),
                     false, false, additionalLevelInfo);

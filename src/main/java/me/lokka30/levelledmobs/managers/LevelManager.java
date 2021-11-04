@@ -1154,10 +1154,6 @@ public class LevelManager implements LevelInterface {
         lmEntity.inUseCount.getAndIncrement();
         applyAttribs.runTask(main);
 
-//        final List<NametagVisibilityEnum> nametagVisibilityEnums = main.rulesManager.getRule_CreatureNametagVisbility(lmEntity);
-//        if (nametagVisibilityEnums.contains(NametagVisibilityEnum.TARGETED))
-//            getPlayersNearMob(lmEntity);
-
         if (!skipLM_Nametag)
             main.levelManager.updateNametag_WithDelay(lmEntity);
         main.levelManager.applyLevelledEquipment(lmEntity, lmEntity.getMobLevel());
