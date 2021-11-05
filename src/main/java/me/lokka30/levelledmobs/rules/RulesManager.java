@@ -358,6 +358,7 @@ public class RulesManager {
         List<NametagVisibilityEnum> result = null;
 
         for (final RuleInfo ruleInfo : lmEntity.getApplicableRules()){
+            if (ruleInfo == null) continue;
             if (ruleInfo.nametagVisibilityEnum != null)
                 result = ruleInfo.nametagVisibilityEnum;
         }

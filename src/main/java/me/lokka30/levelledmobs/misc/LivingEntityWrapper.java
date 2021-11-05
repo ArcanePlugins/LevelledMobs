@@ -67,7 +67,7 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
     private Integer mobLevel;
     private final static Object lockObj = new Object();
     @NotNull
-    private List<RuleInfo> applicableRules;
+    private final List<RuleInfo> applicableRules;
     private List<String> spawnedWGRegions;
     @NotNull
     private final List<ExternalCompatibilityManager.ExternalCompatibility> mobExternalTypes;
@@ -75,6 +75,8 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
     private LevelledMobSpawnReason spawnReason;
     public EntityDamageEvent.DamageCause deathCause;
     public boolean reEvaluateLevel;
+    public boolean wasPreviouslyLevelled;
+    public boolean isRulesForceAll;
     public Player playerForPermissionsCheck;
     public CommandSender summonedSender;
     public String nbtData;
@@ -136,6 +138,8 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
         this.spawnedWGRegions = null;
         this.fineTuningAttributes = null;
         this.reEvaluateLevel = false;
+        this.isRulesForceAll = false;
+        this.wasPreviouslyLevelled = false;
         this.groupsAreBuilt = false;
         this.playerForLevelling = null;
         this.prevChanceRuleResults = null;
@@ -164,15 +168,16 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
                     main.levelInterface.getLevelOfMob(livingEntity) : null;
 
             this.spawnedWGRegions = ExternalCompatibilityManager.getWGRegionsAtLocation(this);
-            this.nametagCooldownTime = main.rulesManager.getRule_nametagVisibleTime(this);
 
             this.hasCache = true;
             // the lines below must remain after hasCache = true to prevent stack overflow
             cachePrevChanceResults();
             final ApplicableRulesResult applicableRulesResult = main.rulesManager.getApplicableRules(this);
-            this.applicableRules = applicableRulesResult.allApplicableRules;
+            this.applicableRules.clear();
+            this.applicableRules.addAll(applicableRulesResult.allApplicableRules);
             checkChanceRules(applicableRulesResult);
             this.fineTuningAttributes = main.rulesManager.getFineTuningAttributes(this);
+            this.nametagCooldownTime = main.rulesManager.getRule_nametagVisibleTime(this);
             this.isBuildingCache = false;
         } catch (InterruptedException e) {
             Utils.logger.warning("exception in buildCache: " + e.getMessage());
@@ -205,11 +210,22 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
             sbDenied.append(ruleInfo.getRuleName());
         }
 
-        synchronized (this.livingEntity.getPersistentDataContainer()){
-            if (sbAllowed.length() > 0)
-                this.livingEntity.getPersistentDataContainer().set(main.namespaced_keys.chanceRule_Allowed, PersistentDataType.STRING, sbAllowed.toString());
-            if (sbDenied.length() > 0)
-                this.livingEntity.getPersistentDataContainer().set(main.namespaced_keys.chanceRule_Denied, PersistentDataType.STRING, sbDenied.toString());
+        for (int i = 0; i < 2; i++) {
+            try {
+                synchronized (this.livingEntity.getPersistentDataContainer()) {
+                    if (sbAllowed.length() > 0)
+                        this.livingEntity.getPersistentDataContainer().set(main.namespaced_keys.chanceRule_Allowed, PersistentDataType.STRING, sbAllowed.toString());
+                    if (sbDenied.length() > 0)
+                        this.livingEntity.getPersistentDataContainer().set(main.namespaced_keys.chanceRule_Denied, PersistentDataType.STRING, sbDenied.toString());
+                    break;
+                }
+            } catch (java.util.ConcurrentModificationException ignored) {
+                try {
+                    Thread.sleep(10);
+                } catch (InterruptedException ignored2) {
+                    break;
+                }
+            }
         }
     }
 
@@ -469,12 +485,22 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
         }
     }
 
-    public void setSpawnedTimeOfDay(final int ticks){
-        synchronized (livingEntity.getPersistentDataContainer()) {
-            if (getPDC().has(main.namespaced_keys.spawnedTimeOfDay, PersistentDataType.INTEGER))
-                return;
+    public void setSpawnedTimeOfDay(final int ticks) {
+        for (int i = 0; i < 2; i++) {
+            try {
+                synchronized (livingEntity.getPersistentDataContainer()) {
+                    if (getPDC().has(main.namespaced_keys.spawnedTimeOfDay, PersistentDataType.INTEGER))
+                        return;
 
-            getPDC().set(main.namespaced_keys.spawnedTimeOfDay, PersistentDataType.INTEGER, ticks);
+                    getPDC().set(main.namespaced_keys.spawnedTimeOfDay, PersistentDataType.INTEGER, ticks);
+                }
+            } catch(java.util.ConcurrentModificationException ignored){
+                try {
+                    Thread.sleep(10);
+                } catch (InterruptedException ignored2) {
+                    break;
+                }
+            }
         }
 
         this.spawnedTimeOfDay = ticks;

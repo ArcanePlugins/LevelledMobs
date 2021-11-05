@@ -125,6 +125,8 @@ public class RulesSubcommand implements Subcommand {
         int worldCount = 0;
         int entityCount = 0;
 
+        main.reloadLM(sender);
+
         for (final World world : Bukkit.getWorlds()) {
             worldCount++;
             for (final Entity entity : world.getEntities()) {
@@ -138,13 +140,15 @@ public class RulesSubcommand implements Subcommand {
                 entityCount++;
                 final LivingEntityWrapper lmEntity = LivingEntityWrapper.getInstance((LivingEntity) entity, main);
                 lmEntity.reEvaluateLevel = true;
+                lmEntity.isRulesForceAll = true;
+                lmEntity.wasPreviouslyLevelled = lmEntity.isLevelled();
                 main._mobsQueueManager.addToQueue(new QueueItem(lmEntity, null));
                 lmEntity.free();
             }
         }
 
         sender.sendMessage(MessageUtils.colorizeAll(String.format(
-                "%s Checked &b%s&7 mobs in &b%s&7 world(s)",
+                "%s Rules Reprocessed for &b%s&7 mobs in &b%s&7 world(s)",
                 label, entityCount, worldCount)));
     }
 

@@ -435,7 +435,7 @@ public class LevelManager implements LevelInterface {
 
     @Nullable
     public String getNametag(final LivingEntityWrapper lmEntity, final boolean isDeathNametag) {
-        final String nametag = isDeathNametag ? main.rulesManager.getRule_Nametag_CreatureDeath(lmEntity) : main.rulesManager.getRule_Nametag(lmEntity);
+        String nametag = isDeathNametag ? main.rulesManager.getRule_Nametag_CreatureDeath(lmEntity) : main.rulesManager.getRule_Nametag(lmEntity);
         if ("disabled".equalsIgnoreCase(nametag) || "none".equalsIgnoreCase(nametag)) return null;
 
         final boolean useCustomNameForNametags = main.helperSettings.getBoolean(main.settingsCfg, "use-customname-for-mob-nametags");
@@ -446,12 +446,15 @@ public class LevelManager implements LevelInterface {
             else
                 return lmEntity.getLivingEntity().getCustomName(); // CustomName can be null, that is meant to be the case.
         }
+        if (!lmEntity.isLevelled())
+            nametag = "";
 
         return updateNametag(lmEntity, nametag, useCustomNameForNametags);
     }
 
     @NotNull
     public String updateNametag(final LivingEntityWrapper lmEntity, @NotNull String nametag, final boolean useCustomNameForNametags) {
+        if ("".equals(nametag)) return nametag;
         final String overridenName = main.rulesManager.getRule_EntityOverriddenName(lmEntity, useCustomNameForNametags);
 
         String displayName = overridenName == null ?
@@ -569,6 +572,9 @@ public class LevelManager implements LevelInterface {
         result = result.replace("%x%", lmEntity.getLivingEntity().getLocation().getBlockX() + "");
         result = result.replace("%y%", lmEntity.getLivingEntity().getLocation().getBlockY() + "");
         result = result.replace("%z%", lmEntity.getLivingEntity().getLocation().getBlockZ() + "");
+
+        if (result.contains("%") && ExternalCompatibilityManager.hasPAPI_Installed())
+            result = ExternalCompatibilityManager.getPAPI_Placeholder(null, result);
 
         result = MessageUtils.colorizeAll(result);
 
@@ -690,6 +696,7 @@ public class LevelManager implements LevelInterface {
                     }
 
                     boolean useResetTimer = false;
+                    if (lmEntity.getLivingEntity() == null) continue;
                     final List<NametagVisibilityEnum> nametagVisibilityEnums = main.rulesManager.getRule_CreatureNametagVisbility(lmEntity);
                     final int nametagVisibleTime = lmEntity.getNametagCooldownTime();
                    if (nametagVisibleTime > 0 &&
@@ -769,6 +776,7 @@ public class LevelManager implements LevelInterface {
     }
 
     private void checkLevelledEntity(@NotNull final LivingEntityWrapper lmEntity, @NotNull final Player player){
+        if (lmEntity.getLivingEntity() == null || !lmEntity.getLivingEntity().isValid()) return;
         final double maxDistance = Math.pow(128, 2); // square the distance we are using Location#distanceSquared. This is because it is faster than Location#distance since it does not need to sqrt which is taxing on the CPU.
         final Location location = player.getLocation();
 
@@ -778,14 +786,13 @@ public class LevelManager implements LevelInterface {
         } else if (lmEntity.isMobTamed() && main.rulesManager.getRule_MobTamedStatus(lmEntity) == MobTamedStatus.NOT_TAMED) {
             // mob is tamed with a level but the rules don't allow it, remove the level
             main.levelInterface.removeLevel(lmEntity);
-        } else {
-            if (!main.helperSettings.getBoolean(main.settingsCfg, "use-customname-for-mob-nametags", false) &&
-                    location.getWorld() != null &&
-                    location.getWorld().equals(lmEntity.getWorld()) &&
-                    lmEntity.getLocation().distanceSquared(location) <= maxDistance) {
-                //if within distance, update nametag.
-                main.nametagQueueManager_.addToQueue(new QueueItem(lmEntity, main.levelManager.getNametag(lmEntity, false), Collections.singletonList(player)));
-            }
+        } else if (lmEntity.getLivingEntity().isValid() &&
+                !main.helperSettings.getBoolean(main.settingsCfg, "use-customname-for-mob-nametags", false) &&
+                location.getWorld() != null &&
+                location.getWorld().equals(lmEntity.getWorld()) &&
+                lmEntity.getLocation().distanceSquared(location) <= maxDistance) {
+            //if within distance, update nametag.
+            main.nametagQueueManager_.addToQueue(new QueueItem(lmEntity, main.levelManager.getNametag(lmEntity, false), Collections.singletonList(player)));
         }
     }
 
@@ -1053,12 +1060,8 @@ public class LevelManager implements LevelInterface {
                 && lmEntity.getLivingEntity().getVehicle() instanceof LivingEntity){
             // entity is a passenger. grab the level from the "vehicle" entity
             final LivingEntityWrapper vehicle = LivingEntityWrapper.getInstance((LivingEntity) lmEntity.getLivingEntity().getVehicle(), main);
-            if (vehicle.isLevelled()) {
-                Utils.logger.info(lmEntity.getNameIfBaby() + " got level " + vehicle.getMobLevel() + " from vehicle " + vehicle.getNameIfBaby());
+            if (vehicle.isLevelled())
                 level = vehicle.getMobLevel();
-            }
-            else
-                Utils.logger.info(lmEntity.getNameIfBaby() + " vehicle was unlevelled: " + vehicle.getNameIfBaby());
 
             vehicle.free();
         }
@@ -1150,10 +1153,6 @@ public class LevelManager implements LevelInterface {
 
         lmEntity.inUseCount.getAndIncrement();
         applyAttribs.runTask(main);
-
-//        final List<NametagVisibilityEnum> nametagVisibilityEnums = main.rulesManager.getRule_CreatureNametagVisbility(lmEntity);
-//        if (nametagVisibilityEnums.contains(NametagVisibilityEnum.TARGETED))
-//            getPlayersNearMob(lmEntity);
 
         if (!skipLM_Nametag)
             main.levelManager.updateNametag_WithDelay(lmEntity);

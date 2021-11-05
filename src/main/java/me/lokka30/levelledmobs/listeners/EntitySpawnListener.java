@@ -243,7 +243,7 @@ public class EntitySpawnListener implements Listener {
 
         if (!lmEntity.reEvaluateLevel)
             lmEntity.setSpawnReason(spawnReason);
-        else if (main.configUtils.playerLevellingEnabled){
+        else if (main.configUtils.playerLevellingEnabled && lmEntity.isRulesForceAll){
             synchronized (lmEntity.getLivingEntity().getPersistentDataContainer()){
                 if (lmEntity.getPDC().has(main.namespaced_keys.playerLevelling_Id, PersistentDataType.STRING))
                     lmEntity.getPDC().remove(main.namespaced_keys.playerLevelling_Id);
@@ -254,8 +254,14 @@ public class EntitySpawnListener implements Listener {
         final HashSet<AdditionalLevelInformation> additionalLevelInfo = new HashSet<>(Collections.singletonList(additionalInfo));
         final LevellableState levellableState = getLevellableState(lmEntity, event);
         if (levellableState == LevellableState.ALLOWED) {
-            if (lmEntity.reEvaluateLevel && main.configUtils.playerLevellingEnabled)
-                updateMobForPlayerLevelling(lmEntity);
+            if (lmEntity.reEvaluateLevel && main.configUtils.playerLevellingEnabled) {
+                final Object syncObj = new Object();
+                final BukkitRunnable runnable = new BukkitRunnable() {
+                    @Override
+                    public void run() { updateMobForPlayerLevelling(lmEntity); }
+                };
+                runnable.runTask(main);
+            }
 
             main.levelInterface.applyLevelToMob(lmEntity, main.levelInterface.generateLevel(lmEntity),
                     false, false, additionalLevelInfo);
@@ -266,13 +272,15 @@ public class EntitySpawnListener implements Listener {
             // Check if the mob is already levelled - if so, remove their level
             if (lmEntity.isLevelled())
                 main.levelInterface.removeLevel(lmEntity);
-
             else if (lmEntity.isBabyMob()) {
                 // add a tag so we can potentially level the mob when/if it ages
                 synchronized (lmEntity.getLivingEntity().getPersistentDataContainer()) {
                     lmEntity.getPDC().set(main.namespaced_keys.wasBabyMobKey, PersistentDataType.INTEGER, 1);
                 }
             }
+
+            if (lmEntity.wasPreviouslyLevelled)
+                main.levelManager.updateNametag(lmEntity);
         }
     }
 

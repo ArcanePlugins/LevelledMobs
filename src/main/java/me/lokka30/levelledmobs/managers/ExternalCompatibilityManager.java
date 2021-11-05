@@ -129,7 +129,7 @@ public class ExternalCompatibilityManager {
         final Plugin p = Bukkit.getPluginManager().getPlugin("MythicMobs");
         if (p == null) return false;
 
-        if (!p.getDescription().getVersion().startsWith("4.12")) {
+        if (!p.getDescription().getVersion().startsWith("4.12") && !p.getDescription().getVersion().startsWith("5.")) {
             final NamespacedKey mmKey = new NamespacedKey(p, "type");
             synchronized (lmEntity.getLivingEntity().getPersistentDataContainer()) {
                 return lmEntity.getPDC().has(mmKey, PersistentDataType.STRING);
@@ -153,7 +153,7 @@ public class ExternalCompatibilityManager {
         final Plugin p = Bukkit.getPluginManager().getPlugin("MythicMobs");
         if (p == null) return "";
 
-        if (!p.getDescription().getVersion().startsWith("4")) {
+        if (!p.getDescription().getVersion().startsWith("4.12") && !p.getDescription().getVersion().startsWith("5.")) {
             // MM version 5 must use this method for internal name detection
             final NamespacedKey mmKey = new NamespacedKey(p, "type");
             synchronized (lmEntity.getLivingEntity().getPersistentDataContainer()) {
@@ -179,7 +179,7 @@ public class ExternalCompatibilityManager {
         return "";
     }
 
-    public static LevellableState checkAllExternalCompats(final LivingEntityWrapper lmEntity, final LevelledMobs main){
+    public static LevellableState checkAllExternalCompats(final LivingEntityWrapper lmEntity, final @NotNull LevelledMobs main){
         final Map<ExternalCompatibilityManager.ExternalCompatibility, Boolean> compatRules = main.rulesManager.getRule_ExternalCompatibility(lmEntity);
 
         LevellableState result = LevellableState.ALLOWED;
@@ -280,26 +280,28 @@ public class ExternalCompatibilityManager {
      * @param lmEntity mob to check
      * @return if EliteMobs compatibility enabled and entity is from EliteMobs
      */
-    public static boolean isMobOfEliteMobs(final LivingEntityWrapper lmEntity) {
-        final boolean isExternalType1 =
-                lmEntity.getLivingEntity().hasMetadata("Elitemob");
-        final boolean isExternalType2 =
-                lmEntity.getLivingEntity().hasMetadata("Elitemobs_NPC");
-        final boolean isExternalType3 =
-                lmEntity.getLivingEntity().hasMetadata("Supermob");
+    public static boolean isMobOfEliteMobs(final @NotNull LivingEntityWrapper lmEntity) {
+        final Plugin p = Bukkit.getPluginManager().getPlugin("EliteMobs");
+        if (p != null){
+            boolean isEliteMob;
+            synchronized (lmEntity.getLivingEntity().getPersistentDataContainer()) {
+                isEliteMob = lmEntity.getPDC().has(new NamespacedKey(p, "EliteMobsCullable"), PersistentDataType.STRING);
+            }
 
-        if (isExternalType1) lmEntity.setMobExternalType(ExternalCompatibility.ELITE_MOBS);
-        else if (isExternalType2) lmEntity.setMobExternalType(ExternalCompatibility.ELITE_MOBS_NPCS);
-        else if (isExternalType3) lmEntity.setMobExternalType(ExternalCompatibility.ELITE_MOBS_SUPER_MOBS);
+            if (isEliteMob){
+                lmEntity.setMobExternalType(ExternalCompatibility.ELITE_MOBS);
+                return true;
+            }
+        }
 
-        return (isExternalType1 || isExternalType2 || isExternalType3);
+        return false;
     }
 
     /**
      * @param lmEntity mob to check
      * @return if InfernalMobs compatibility enabled and entity is from InfernalMobs
      */
-    public static boolean isMobOfInfernalMobs(final LivingEntityWrapper lmEntity) {
+    public static boolean isMobOfInfernalMobs(final @NotNull LivingEntityWrapper lmEntity) {
         final boolean isExternalType = lmEntity.getLivingEntity().hasMetadata("infernalMetadata");
 
         if (isExternalType) lmEntity.setMobExternalType(ExternalCompatibility.INFERNAL_MOBS);
@@ -311,7 +313,7 @@ public class ExternalCompatibilityManager {
      * @param lmEntity mob to check
      * @return if Citizens compatibility enabled and entity is from Citizens
      */
-    public static boolean isMobOfCitizens(final LivingEntityWrapper lmEntity) {
+    public static boolean isMobOfCitizens(final @NotNull LivingEntityWrapper lmEntity) {
         final boolean isExternalType = isMobOfCitizens(lmEntity.getLivingEntity());
 
         if (isExternalType) lmEntity.setMobExternalType(ExternalCompatibility.CITIZENS);
@@ -319,7 +321,7 @@ public class ExternalCompatibilityManager {
         return isExternalType;
     }
 
-    public static boolean isMobOfCitizens(final LivingEntity livingEntity) {
+    public static boolean isMobOfCitizens(final @NotNull LivingEntity livingEntity) {
         return livingEntity.hasMetadata("NPC");
     }
 
@@ -327,7 +329,7 @@ public class ExternalCompatibilityManager {
      * @param lmEntity mob to check
      * @return if Shopkeepers compatibility enabled and entity is from Shopkeepers
      */
-    public static boolean isMobOfShopkeepers(final LivingEntityWrapper lmEntity) {
+    public static boolean isMobOfShopkeepers(final @NotNull LivingEntityWrapper lmEntity) {
         final boolean isExternalType = lmEntity.getLivingEntity().hasMetadata("shopkeeper");
 
         if (isExternalType) lmEntity.setMobExternalType(ExternalCompatibility.SHOPKEEPERS);
