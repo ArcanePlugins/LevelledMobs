@@ -140,6 +140,7 @@ public class RulesSubcommand implements Subcommand {
                 entityCount++;
                 final LivingEntityWrapper lmEntity = LivingEntityWrapper.getInstance((LivingEntity) entity, main);
                 lmEntity.reEvaluateLevel = true;
+                lmEntity.isRulesForceAll = true;
                 lmEntity.wasPreviouslyLevelled = lmEntity.isLevelled();
                 main._mobsQueueManager.addToQueue(new QueueItem(lmEntity, null));
                 lmEntity.free();

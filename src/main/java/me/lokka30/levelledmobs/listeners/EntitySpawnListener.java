@@ -243,7 +243,7 @@ public class EntitySpawnListener implements Listener {
 
         if (!lmEntity.reEvaluateLevel)
             lmEntity.setSpawnReason(spawnReason);
-        else if (main.configUtils.playerLevellingEnabled){
+        else if (main.configUtils.playerLevellingEnabled && lmEntity.isRulesForceAll){
             synchronized (lmEntity.getLivingEntity().getPersistentDataContainer()){
                 if (lmEntity.getPDC().has(main.namespaced_keys.playerLevelling_Id, PersistentDataType.STRING))
                     lmEntity.getPDC().remove(main.namespaced_keys.playerLevelling_Id);

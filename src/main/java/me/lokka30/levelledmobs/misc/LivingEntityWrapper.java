@@ -76,6 +76,7 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
     public EntityDamageEvent.DamageCause deathCause;
     public boolean reEvaluateLevel;
     public boolean wasPreviouslyLevelled;
+    public boolean isRulesForceAll;
     public Player playerForPermissionsCheck;
     public CommandSender summonedSender;
     public String nbtData;
@@ -137,6 +138,7 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
         this.spawnedWGRegions = null;
         this.fineTuningAttributes = null;
         this.reEvaluateLevel = false;
+        this.isRulesForceAll = false;
         this.wasPreviouslyLevelled = false;
         this.groupsAreBuilt = false;
         this.playerForLevelling = null;
