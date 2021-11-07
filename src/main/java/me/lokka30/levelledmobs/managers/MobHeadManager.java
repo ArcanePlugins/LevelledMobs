@@ -9,8 +9,11 @@ import com.mojang.authlib.properties.Property;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.customdrops.CustomDropItem;
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
+import me.lokka30.levelledmobs.misc.PaperUtils;
+import me.lokka30.levelledmobs.misc.SpigotUtils;
 import me.lokka30.levelledmobs.misc.Utils;
 import me.lokka30.microlib.messaging.MessageUtils;
+import me.lokka30.microlib.other.VersionUtils;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -144,7 +147,8 @@ public class MobHeadManager {
             String killerName = "";
             final Player killerPlayer = lmEntity.getLivingEntity().getKiller();
             if (killerPlayer != null)
-                killerName = killerPlayer.getDisplayName();
+                killerName = VersionUtils.isRunningPaper() ?
+                        PaperUtils.getPlayerDisplayName(killerPlayer) : SpigotUtils.getPlayerDisplayName(killerPlayer);
             final boolean useCustomNameForNametags = main.helperSettings.getBoolean(main.settingsCfg, "use-customname-for-mob-nametags");
             final String overridenName = main.rulesManager.getRule_EntityOverriddenName(lmEntity, useCustomNameForNametags);
             final String mobName = overridenName == null ?
@@ -163,7 +167,11 @@ public class MobHeadManager {
         } else
             useName = "Mob Head";
 
-        meta.setDisplayName(useName);
+        if (VersionUtils.isRunningPaper())
+            PaperUtils.updateItemDisplayName(meta, useName);
+        else
+            SpigotUtils.updateItemDisplayName(meta, useName);
+
         playerHead.setItemMeta(meta);
 
         return playerHead;

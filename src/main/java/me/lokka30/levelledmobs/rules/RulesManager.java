@@ -304,6 +304,7 @@ public class RulesManager {
         return maxLevel;
     }
 
+    @Nullable
     public PlayerLevellingOptions getRule_PlayerLevellingOptions(@NotNull final LivingEntityWrapper lmEntity){
         PlayerLevellingOptions levellingOptions = null;
 
@@ -470,6 +471,7 @@ public class RulesManager {
         return result;
     }
 
+    @Nullable
     private LevelTierMatching getEntityNameOverrideLevel(final Map<String, List<LevelTierMatching>> entityNameOverrides_Level, final LivingEntityWrapper lmEntity){
         if (entityNameOverrides_Level == null) return null;
 

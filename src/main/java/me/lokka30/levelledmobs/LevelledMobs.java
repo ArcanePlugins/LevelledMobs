@@ -20,6 +20,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.NotNull;
 
 import java.time.Instant;
 import java.util.*;
@@ -114,7 +115,7 @@ public class LevelledMobs extends JavaPlugin {
         Utils.logger.info("&f~ Start-up complete, took &b" + loadTime + "ms&f ~");
     }
 
-    public void reloadLM(final CommandSender sender){
+    public void reloadLM(final @NotNull CommandSender sender){
         migratedFromPre30 = false;
         List<String> reloadStartedMsg = messagesCfg.getStringList("command.levelledmobs.reload.started");
         reloadStartedMsg = Utils.replaceAllInList(reloadStartedMsg, "%prefix%", configUtils.getPrefix());

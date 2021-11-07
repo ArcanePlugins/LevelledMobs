@@ -537,12 +537,6 @@ public class FileMigrator {
                             } else
                                 valuesMatched++;
                         }
-                        else {
-                            // keys present in the new config but not the old one fall here
-                            if (isSettings && oldVersion < 32 && keyOnly.equalsIgnoreCase("async-task-update-period")){
-
-                            }
-                        }
                     } else if (line.trim().startsWith("-")) {
                         final String key = getKeyFromList(currentKey, null);
                         final String value = line.trim().substring(1).trim();

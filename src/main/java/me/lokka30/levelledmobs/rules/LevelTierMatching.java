@@ -5,6 +5,7 @@
 package me.lokka30.levelledmobs.rules;
 
 import me.lokka30.levelledmobs.misc.Utils;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 import java.util.List;
@@ -49,7 +50,7 @@ public class LevelTierMatching {
         return true;
     }
 
-    public static int[] getRangeFromString(final String range){
+    public static int @NotNull [] getRangeFromString(final String range){
         final int[] result = new int[]{ -1, -1};
 
         if (range == null || range.isEmpty()) return result;

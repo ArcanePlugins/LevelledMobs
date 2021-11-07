@@ -8,6 +8,7 @@ import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.misc.*;
 import me.lokka30.levelledmobs.rules.LevelledMobSpawnReason;
 import me.lokka30.microlib.messaging.MessageUtils;
+import me.lokka30.microlib.other.VersionUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
@@ -483,12 +484,20 @@ public class CustomDropsHandler {
                 for (final String lore : dropItem.lore){
                     newLore.add(main.levelManager.updateNametag(info.lmEntity, lore, false));
 
-                    meta.setLore(newLore);
+                    if (VersionUtils.isRunningPaper())
+                        PaperUtils.updateItemMetaLore(meta, newLore);
+                    else
+                        SpigotUtils.updateItemMetaLore(meta, newLore);
                 }
             }
 
-            if (meta != null && dropItem.customName != null && !"".equals(dropItem.customName))
-                meta.setDisplayName(MessageUtils.colorizeAll(main.levelManager.updateNametag(info.lmEntity, dropItem.customName, false)));
+            if (meta != null && dropItem.customName != null && !"".equals(dropItem.customName)) {
+                final String displayName = MessageUtils.colorizeAll(main.levelManager.updateNametag(info.lmEntity, dropItem.customName, false));
+                if (VersionUtils.isRunningPaper())
+                    PaperUtils.updateItemDisplayName(meta, displayName);
+                else
+                    SpigotUtils.updateItemDisplayName(meta, displayName);
+            }
 
             newItem.setItemMeta(meta);
         }
@@ -507,7 +516,7 @@ public class CustomDropsHandler {
         info.newDrops.add(newItem);
     }
 
-    private boolean checkDropPermissions(final CustomDropProcessingInfo info, final @NotNull CustomDropBase dropBase){
+    private boolean checkDropPermissions(final @NotNull CustomDropProcessingInfo info, final @NotNull CustomDropBase dropBase){
         if (info.equippedOnly || dropBase.permissions.isEmpty()) return true;
 
         if (info.mobKiller == null){

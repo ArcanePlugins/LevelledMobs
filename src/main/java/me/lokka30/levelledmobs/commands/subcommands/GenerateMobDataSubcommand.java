@@ -84,7 +84,7 @@ public class GenerateMobDataSubcommand implements Subcommand {
     }
 
     @Override
-    public List<String> parseTabCompletions(final LevelledMobs main, final CommandSender sender, @NotNull final String[] args) {
+    public List<String> parseTabCompletions(final LevelledMobs main, final CommandSender sender, @NotNull final String @NotNull [] args) {
         if (args.length == 2 && sender instanceof ConsoleCommandSender)
             return Collections.singletonList("(password?)");
 

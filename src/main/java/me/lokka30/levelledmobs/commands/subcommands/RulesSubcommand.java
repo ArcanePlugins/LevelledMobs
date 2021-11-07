@@ -6,16 +6,10 @@ package me.lokka30.levelledmobs.commands.subcommands;
 
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.managers.ExternalCompatibilityManager;
-import me.lokka30.levelledmobs.misc.CachedModalList;
-import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
-import me.lokka30.levelledmobs.misc.QueueItem;
-import me.lokka30.levelledmobs.misc.Utils;
+import me.lokka30.levelledmobs.misc.*;
 import me.lokka30.levelledmobs.rules.RuleInfo;
 import me.lokka30.microlib.messaging.MessageUtils;
-import net.md_5.bungee.api.chat.ClickEvent;
-import net.md_5.bungee.api.chat.HoverEvent;
-import net.md_5.bungee.api.chat.TextComponent;
-import net.md_5.bungee.api.chat.hover.content.Text;
+import me.lokka30.microlib.other.VersionUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Particle;
@@ -239,14 +233,15 @@ public class RulesSubcommand implements Subcommand {
     }
 
     private void showHyperlink(final CommandSender sender, final String message, final String url){
-        if (sender instanceof Player) {
-            final TextComponent component = new TextComponent(message);
-            component.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, url));
-            component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(url)));
-            final Player p = (Player) sender;
-            p.spigot().sendMessage(component);
-        } else
+        if (!(sender instanceof Player)){
             sender.sendMessage(url);
+            return;
+        }
+
+        if (VersionUtils.isRunningPaper())
+            PaperUtils.sendHyperlink(sender, message, url);
+        else
+            SpigotUtils.sendHyperlink(sender, message, url);
     }
 
     private void showRule(final CommandSender sender, @NotNull final String @NotNull [] args){

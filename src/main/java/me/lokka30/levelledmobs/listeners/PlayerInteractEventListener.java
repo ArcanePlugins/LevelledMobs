@@ -144,7 +144,7 @@ public class PlayerInteractEventListener implements Listener {
         addSpawnerAttribute("required player range", cs.getRequiredPlayerRange(), sb);
         addSpawnerAttribute("spawn count", cs.getSpawnCount(), sb);
         sb.append('\n');
-        addSpawnerAttributeFromPdc_Str("custom drop id", main.namespaced_keys.keySpawner_CustomDropId, pdc, sb);
+        addSpawnerAttributeFromPdc_Str(main.namespaced_keys.keySpawner_CustomDropId, pdc, sb);
         // customName
         addSpawnerAttribute("spawn type", cs.getSpawnedType(), sb);
 
@@ -164,15 +164,13 @@ public class PlayerInteractEventListener implements Listener {
         sb.append("&r");
     }
 
-    private void addSpawnerAttributeFromPdc_Str(final String name, final NamespacedKey key, final @NotNull PersistentDataContainer pdc, final StringBuilder sb){
+    private void addSpawnerAttributeFromPdc_Str(final NamespacedKey key, final @NotNull PersistentDataContainer pdc, final StringBuilder sb){
         if (!pdc.has(key, PersistentDataType.STRING)) return;
 
         if (!sb.substring(sb.length() - 1).equals("\n"))
             sb.append(", ");
 
-        sb.append("&7");
-        sb.append(name);
-        sb.append(": &b");
+        sb.append("&7custom drop id: &b");
         sb.append(pdc.get(key, PersistentDataType.STRING));
         sb.append("&r");
     }

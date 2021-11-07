@@ -4,6 +4,8 @@
 
 package me.lokka30.levelledmobs.rules;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -37,7 +39,7 @@ public class HealthIndicator implements Cloneable {
         return copy;
     }
 
-    public void mergeIndicator(final HealthIndicator mergingIndicator){
+    public void mergeIndicator(final @NotNull HealthIndicator mergingIndicator){
         if (mergingIndicator.indicator != null) this.indicator = mergingIndicator.indicator;
         if (mergingIndicator.indicatorHalf != null) this.indicatorHalf = mergingIndicator.indicatorHalf;
         if (mergingIndicator.scale != null) this.scale = mergingIndicator.scale;

@@ -72,8 +72,6 @@ public class PlayerDeathListener {
     }
 
     private void updateDeathMessage(@NotNull final PlayerDeathEvent event, final String mobName){
-        //final TranslatableComponent tc = (TranslatableComponent) event.deathMessage();
-        Utils.logger.info("test: " + event.deathMessage().getClass().getName() + ", " + event.deathMessage().examinableName());
         final TranslatableComponent tc = (TranslatableComponent) event.deathMessage();
         if (tc == null) return;
         String playerKilled = null;

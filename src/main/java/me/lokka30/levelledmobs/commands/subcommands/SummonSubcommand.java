@@ -6,6 +6,7 @@ package me.lokka30.levelledmobs.commands.subcommands;
 
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.misc.*;
+import me.lokka30.microlib.other.VersionUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -154,8 +155,10 @@ public class SummonSubcommand implements Subcommand {
                     List<String> messages = main.messagesCfg.getStringList("common.player-offline");
                     messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.getPrefix());
                     messages = Utils.colorizeAllInList(messages);
-                    messages = Utils.replaceAllInList(messages, "%player%", (player != null) ?
-                            player.getDisplayName() : "(null)");
+                    final String playerName = VersionUtils.isRunningPaper() ?
+                            PaperUtils.getPlayerDisplayName(player) : SpigotUtils.getPlayerDisplayName(player);
+                    messages = Utils.replaceAllInList(messages, "%player%", (!"".equals(playerName)) ?
+                            playerName : "(null)");
                     messages.forEach(sender::sendMessage);
                     return;
                 }
@@ -552,7 +555,9 @@ public class SummonSubcommand implements Subcommand {
                 atPlayerSuccessMessages = Utils.replaceAllInList(atPlayerSuccessMessages, "%level%", options.requestedLevel.toString());
                 atPlayerSuccessMessages = Utils.replaceAllInList(atPlayerSuccessMessages, "%entity%", options.lmPlaceHolder.getTypeName());
                 atPlayerSuccessMessages = Utils.replaceAllInList(atPlayerSuccessMessages, "%targetUsername%", target == null ? "(null)" : target.getName());
-                atPlayerSuccessMessages = Utils.replaceAllInList(atPlayerSuccessMessages, "%targetDisplayname%", target == null ? "(null)" : target.getDisplayName());
+                final String playerName = VersionUtils.isRunningPaper() ?
+                        PaperUtils.getPlayerDisplayName(target) : SpigotUtils.getPlayerDisplayName(target);
+                atPlayerSuccessMessages = Utils.replaceAllInList(atPlayerSuccessMessages, "%targetDisplayname%", target == null ? "(null)" : playerName);
                 atPlayerSuccessMessages = Utils.colorizeAllInList(atPlayerSuccessMessages);
                 atPlayerSuccessMessages.forEach(sender::sendMessage);
                 break;

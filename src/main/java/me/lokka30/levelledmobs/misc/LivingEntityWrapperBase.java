@@ -49,6 +49,7 @@ public class LivingEntityWrapperBase {
         this.isPopulated = false;
     }
 
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public boolean getIsPopulated(){
         return isPopulated;
     }

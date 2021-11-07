@@ -578,6 +578,7 @@ public class RulesParsingManager {
             parsingInfo.entityNameOverrides_Level = levelTiers;
     }
 
+    @Nullable
     private List<LevelTierMatching> parseNumberRange(final ConfigurationSection cs, final String keyName){
         if (cs == null) return null;
 

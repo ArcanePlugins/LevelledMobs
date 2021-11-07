@@ -8,6 +8,7 @@ import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.misc.QueueItem;
 import me.lokka30.levelledmobs.misc.Utils;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
@@ -54,7 +55,7 @@ public class MobsQueueManager {
         doThread = false;
     }
 
-    public void addToQueue(final QueueItem item) {
+    public void addToQueue(final @NotNull QueueItem item) {
         if (item.lmEntity.getLivingEntity() == null) return;
 
         item.lmEntity.inUseCount.getAndIncrement();

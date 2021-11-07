@@ -33,7 +33,7 @@ public class NBTManager {
         return result;
     }
 
-    public static NBTApplyResult applyNBT_Data_Mob(@NotNull final LivingEntityWrapper lmEntity, @NotNull final String nbtStuff) {
+    public static @NotNull NBTApplyResult applyNBT_Data_Mob(@NotNull final LivingEntityWrapper lmEntity, @NotNull final String nbtStuff) {
         final NBTApplyResult result = new NBTApplyResult();
 
         try {

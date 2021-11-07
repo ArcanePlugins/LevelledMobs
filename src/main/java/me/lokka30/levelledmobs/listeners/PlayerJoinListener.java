@@ -72,8 +72,10 @@ public class PlayerJoinListener implements Listener {
         updateNametagsInWorldAsync(event.getPlayer(), event.getPlayer().getWorld().getEntities());
     }
 
+    @SuppressWarnings("ConstantConditions")
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void onTeleport(@NotNull final PlayerTeleportEvent event) {
+        // on spigot API .getTo is nullable but not Paper
         if (event.getTo() != null && event.getTo().getWorld() != null)
             updateNametagsInWorldAsync(event.getPlayer(), event.getTo().getWorld().getEntities());
     }

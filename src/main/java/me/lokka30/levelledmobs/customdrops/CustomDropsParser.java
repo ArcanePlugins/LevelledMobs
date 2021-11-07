@@ -7,12 +7,9 @@ package me.lokka30.levelledmobs.customdrops;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.managers.ExternalCompatibilityManager;
 import me.lokka30.levelledmobs.managers.NBTManager;
-import me.lokka30.levelledmobs.misc.CustomUniversalGroups;
-import me.lokka30.levelledmobs.misc.NBTApplyResult;
-import me.lokka30.levelledmobs.misc.Utils;
-import me.lokka30.levelledmobs.misc.YmlParsingHelper;
+import me.lokka30.levelledmobs.misc.*;
 import me.lokka30.levelledmobs.rules.RuleInfo;
-import me.lokka30.microlib.messaging.MessageUtils;
+import me.lokka30.microlib.other.VersionUtils;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.configuration.ConfigurationSection;
@@ -476,13 +473,21 @@ public class CustomDropsParser {
         boolean madeChanges = false;
 
         if (item.lore != null && !item.lore.isEmpty()){
-            meta.setLore(Utils.colorizeAllInList(item.lore));
+            if (VersionUtils.isRunningPaper())
+                PaperUtils.updateItemMetaLore(meta, item.lore);
+            else
+                SpigotUtils.updateItemMetaLore(meta, item.lore);
+
             item.getItemStack().setItemMeta(meta);
             madeChanges = true;
         }
 
         if (item.customName != null && !"".equals(item.customName)){
-            meta.setDisplayName(MessageUtils.colorizeAll(item.customName));
+            if (VersionUtils.isRunningPaper())
+                PaperUtils.updateItemDisplayName(meta, item.customName);
+            else
+                SpigotUtils.updateItemDisplayName(meta, item.customName);
+
             item.getItemStack().setItemMeta(meta);
             madeChanges = true;
         }

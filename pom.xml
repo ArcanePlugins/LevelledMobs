@@ -10,7 +10,7 @@
 
     <groupId>me.lokka30</groupId>
     <artifactId>LevelledMobs</artifactId>
-    <version>3.3.0 b556</version>
+    <version>3.3.0 b558</version>
     <packaging>jar</packaging>
 
     <name>LevelledMobs</name>
@@ -49,14 +49,14 @@
                         </relocation>
                     </relocations>
                     <filters>
-<!--                        <filter>-->
-<!--                            <artifact>*:MicroLib</artifact>-->
-<!--                            <excludes>-->
-<!--                                <exclude>plugin.yml</exclude>-->
-<!--                            </excludes>-->
-<!--                        </filter>-->
                         <filter>
-                            <artifact>org.bstats</artifact>
+                            <artifact>*:MicroLib</artifact>
+                            <excludes>
+                                <exclude>plugin.yml</exclude>
+                            </excludes>
+                        </filter>
+                        <filter>
+                            <artifact>*:*</artifact>
                             <excludes>
                                 <exclude>META-INF/MANIFEST.MF</exclude>
                             </excludes>
@@ -169,7 +169,7 @@
             <groupId>com.github.lokka30</groupId>
             <artifactId>MicroLib</artifactId>
             <version>3.1.2</version>
-            <scope>provided</scope>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>com.github.dmulloy2</groupId>

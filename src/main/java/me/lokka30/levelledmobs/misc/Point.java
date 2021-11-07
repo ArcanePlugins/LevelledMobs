@@ -5,6 +5,7 @@
 package me.lokka30.levelledmobs.misc;
 
 import org.bukkit.Location;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * A smaller version of the Location class only including
@@ -36,7 +37,7 @@ public class Point {
         return String.format("%s, %s, %s, %s", worldName, x, y, z);
     }
 
-    public Point(final String str) {
+    public Point(final @NotNull String str) {
         final String[] split = str.split(",");
         this.worldName = split[0];
         this.x = Integer.parseInt(split[1]);
@@ -44,7 +45,7 @@ public class Point {
         this.z = Integer.parseInt(split[3]);
     }
 
-    public Point(final Location location) {
+    public Point(final @NotNull Location location) {
         assert location.getWorld() != null;
         worldName = location.getWorld().getName();
         x = location.getBlockX();
@@ -52,7 +53,7 @@ public class Point {
         z = location.getBlockZ();
     }
 
-    public static boolean matches(final Point point1, final Point point2) {
+    public static boolean matches(final @NotNull Point point1, final @NotNull Point point2) {
         return (point1.worldName.equals(point2.worldName) && point1.getCoordinates() == point2.getCoordinates());
     }
 }

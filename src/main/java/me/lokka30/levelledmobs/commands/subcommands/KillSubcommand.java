@@ -201,7 +201,7 @@ public class KillSubcommand implements Subcommand {
     }
 
     @Nullable
-    private RequestedLevel getLevelFromCommand(final @NotNull CommandSender sender, final String[] args){
+    private RequestedLevel getLevelFromCommand(final @NotNull CommandSender sender, final String @NotNull [] args){
         int rangeSpecifiedFlag = -1;
 
         for (int i = 0; i < args.length; i++) {
