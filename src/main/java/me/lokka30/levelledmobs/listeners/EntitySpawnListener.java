@@ -68,6 +68,9 @@ public class EntitySpawnListener implements Listener {
             return;
         }
 
+        if (event instanceof CreatureSpawnEvent && ((CreatureSpawnEvent) event).getSpawnReason().equals(CreatureSpawnEvent.SpawnReason.SPAWNER))
+            lmEntity.setSpawnReason(LevelledMobSpawnReason.SPAWNER);
+
         if (main.configUtils.playerLevellingEnabled && lmEntity.getPlayerForLevelling() == null)
             updateMobForPlayerLevelling(lmEntity);
 
