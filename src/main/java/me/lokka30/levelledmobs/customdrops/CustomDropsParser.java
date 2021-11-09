@@ -18,6 +18,7 @@ import org.bukkit.configuration.MemorySection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.EntityType;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -374,6 +375,7 @@ public class CustomDropsParser {
 
         checkEquippedChance(item, cs);
         parseItemFlags(item, cs, dropInstance);
+        item.causeOfDeathReqs = buildCachedModalListOfDamageCause(cs, this.defaults.causeOfDeathReqs);
         item.onlyDropIfEquipped = ymlHelper.getBoolean(cs, "only-drop-if-equipped", this.defaults.onlyDropIfEquipped);
         item.priority = ymlHelper.getInt(cs,"priority", this.defaults.priority);
         item.noMultiplier = ymlHelper.getBoolean(cs,"nomultiplier", this.defaults.noMultiplier);
@@ -426,6 +428,71 @@ public class CustomDropsParser {
         }
 
         applyMetaAttributes(item);
+    }
+
+    @NotNull
+    private CachedModalList<EntityDamageEvent.DamageCause> buildCachedModalListOfDamageCause(final ConfigurationSection cs,
+                                                                                             final CachedModalList<EntityDamageEvent.DamageCause> defaultValue) {
+        if (cs == null) return defaultValue;
+
+        final CachedModalList<EntityDamageEvent.DamageCause> cachedModalList = new CachedModalList<>();
+        final Object simpleStringOrArray = cs.get(ymlHelper.getKeyNameFromConfig(cs, "cause-of-death"));
+        ConfigurationSection cs2 = null;
+        List<String> useList = null;
+
+        if (simpleStringOrArray instanceof ArrayList)
+            useList = new LinkedList<>((ArrayList<String>) simpleStringOrArray);
+        else if (simpleStringOrArray instanceof String)
+            useList = List.of((String) simpleStringOrArray);
+
+        if (useList == null) {
+            final String useKeyName = ymlHelper.getKeyNameFromConfig(cs, "cause-of-death");
+
+            cs2 = objTo_CS(cs, useKeyName);
+        }
+        if (cs2 == null && useList == null) return defaultValue;
+
+        cachedModalList.doMerge = ymlHelper.getBoolean(cs2, "merge");
+        if (cs2 != null) {
+            final String allowedList = ymlHelper.getKeyNameFromConfig(cs2, "allowed-list");
+            useList = YmlParsingHelper.getListFromConfigItem(cs2, allowedList);
+        }
+
+        for (final String item : useList){
+            if ("".equals(item.trim())) continue;
+            if ("*".equals(item.trim())){
+                cachedModalList.allowAll = true;
+                continue;
+            }
+            try {
+                final EntityDamageEvent.DamageCause cause = EntityDamageEvent.DamageCause.valueOf(item.trim().toUpperCase());
+                cachedModalList.allowedList.add(cause);
+            } catch (IllegalArgumentException ignored) {
+                Utils.logger.warning("Invalid damage cause: " + item);
+            }
+        }
+        if (cs2 == null) return cachedModalList;
+
+        final String excludedList = ymlHelper.getKeyNameFromConfig(cs2, "excluded-list");
+
+        for (final String item : YmlParsingHelper.getListFromConfigItem(cs2, excludedList)){
+            if ("".equals(item.trim())) continue;
+            if ("*".equals(item.trim())){
+                cachedModalList.excludeAll = true;
+                continue;
+            }
+            try {
+                final EntityDamageEvent.DamageCause cause = EntityDamageEvent.DamageCause.valueOf(item.trim().toUpperCase());
+                cachedModalList.excludedList.add(cause);
+            } catch (IllegalArgumentException ignored) {
+                Utils.logger.warning("Invalid damage cause: " + item);
+            }
+        }
+
+        if (cachedModalList.isEmpty() && !cachedModalList.allowAll && !cachedModalList.excludeAll)
+            return defaultValue;
+
+        return cachedModalList;
     }
 
     private void parseEnchantments(final ConfigurationSection cs, final CustomDropItem item){
@@ -726,6 +793,11 @@ public class CustomDropsParser {
 
         if (baseItem.noSpawner) sb.append(", nospn");
 
+        if (baseItem.causeOfDeathReqs != null){
+            sb.append(", ");
+            sb.append(baseItem.causeOfDeathReqs);
+        }
+
         if (!Utils.isNullOrEmpty(baseItem.groupId)) {
             sb.append(", gId: &b");
             sb.append(baseItem.groupId);
@@ -793,5 +865,27 @@ public class CustomDropsParser {
         }
 
         return sb.toString();
+    }
+
+    @Nullable
+    private ConfigurationSection objTo_CS(final ConfigurationSection cs, final String path){
+        if (cs == null) return null;
+        final String useKey = ymlHelper.getKeyNameFromConfig(cs, path);
+        final Object object = cs.get(useKey);
+
+        if (object == null) return null;
+
+        if (object instanceof ConfigurationSection) {
+            return (ConfigurationSection) object;
+        } else if (object instanceof Map) {
+            final MemoryConfiguration result = new MemoryConfiguration();
+            result.addDefaults((Map<String, Object>) object);
+            return result.getDefaultSection();
+        } else {
+            final String currentPath = Utils.isNullOrEmpty(cs.getCurrentPath()) ?
+                    path : cs.getCurrentPath() + "." + path;
+            Utils.logger.warning(currentPath + ": couldn't parse Config of type: " + object.getClass().getSimpleName() + ", value: " + object);
+            return null;
+        }
     }
 }

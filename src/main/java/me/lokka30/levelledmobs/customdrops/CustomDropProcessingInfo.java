@@ -9,6 +9,7 @@ import me.lokka30.levelledmobs.misc.Utils;
 import me.lokka30.levelledmobs.rules.CustomDropsRuleSet;
 import me.lokka30.microlib.messaging.MessageUtils;
 import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -44,6 +45,7 @@ public class CustomDropProcessingInfo {
     public boolean equippedOnly;
     public boolean deathByFire;
     public boolean wasKilledByPlayer;
+    public EntityDamageEvent.DamageCause deathCause;
     public boolean doNotMultiplyDrops;
     public boolean hasOverride;
     public boolean hasCustomDropId;

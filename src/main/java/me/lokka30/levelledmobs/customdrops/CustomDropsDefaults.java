@@ -4,6 +4,8 @@
 
 package me.lokka30.levelledmobs.customdrops;
 
+import me.lokka30.levelledmobs.misc.CachedModalList;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.inventory.ItemFlag;
 import org.jetbrains.annotations.NotNull;
 
@@ -41,6 +43,7 @@ public class CustomDropsDefaults {
     public List<ItemFlag> itemFlags;
     final public List<String> permissions;
     final public List<String> overallPermissions;
+    public CachedModalList<EntityDamageEvent.DamageCause> causeOfDeathReqs;
 
     public CustomDropsDefaults() {
         // these are the defaults of the defaults
@@ -82,5 +85,6 @@ public class CustomDropsDefaults {
         this.playerLevelVariable = drop.playerLevelVariable;
         this.onlyDropIfEquipped = drop.onlyDropIfEquipped;
         this.permissions.addAll(drop.permissions);
+        this.causeOfDeathReqs = drop.causeOfDeathReqs;
     }
 }

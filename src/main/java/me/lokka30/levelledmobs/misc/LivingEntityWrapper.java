@@ -67,7 +67,7 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
     private Integer mobLevel;
     private final static Object lockObj = new Object();
     @NotNull
-    private List<RuleInfo> applicableRules;
+    private final List<RuleInfo> applicableRules;
     private List<String> spawnedWGRegions;
     @NotNull
     private final List<ExternalCompatibilityManager.ExternalCompatibility> mobExternalTypes;
@@ -76,6 +76,7 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
     public EntityDamageEvent.DamageCause deathCause;
     public boolean reEvaluateLevel;
     public boolean wasPreviouslyLevelled;
+    public boolean isRulesForceAll;
     public Player playerForPermissionsCheck;
     public CommandSender summonedSender;
     public String nbtData;
@@ -137,6 +138,7 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
         this.spawnedWGRegions = null;
         this.fineTuningAttributes = null;
         this.reEvaluateLevel = false;
+        this.isRulesForceAll = false;
         this.wasPreviouslyLevelled = false;
         this.groupsAreBuilt = false;
         this.playerForLevelling = null;
@@ -171,7 +173,8 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
             // the lines below must remain after hasCache = true to prevent stack overflow
             cachePrevChanceResults();
             final ApplicableRulesResult applicableRulesResult = main.rulesManager.getApplicableRules(this);
-            this.applicableRules = applicableRulesResult.allApplicableRules;
+            this.applicableRules.clear();
+            this.applicableRules.addAll(applicableRulesResult.allApplicableRules);
             checkChanceRules(applicableRulesResult);
             this.fineTuningAttributes = main.rulesManager.getFineTuningAttributes(this);
             this.nametagCooldownTime = main.rulesManager.getRule_nametagVisibleTime(this);

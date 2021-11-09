@@ -11,6 +11,7 @@ import me.lokka30.microlib.messaging.MessageUtils;
 import me.lokka30.microlib.messaging.MicroLogger;
 import org.bukkit.block.Biome;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -280,5 +281,17 @@ public final class Utils {
         }
 
         return list.isBlacklist() || list.allowedList.contains(biome);
+    }
+
+    public static boolean isDamageCauseInModalList(@NotNull final CachedModalList<EntityDamageEvent.DamageCause> list, final EntityDamageEvent.DamageCause cause) {
+        if (list.allowAll) return true;
+        if (list.excludeAll) return false;
+        if (list.isEmpty()) return true;
+
+        // note: no group support
+
+        if (list.excludedList.contains(cause)) return false;
+
+        return list.isBlacklist() || list.allowedList.contains(cause);
     }
 }

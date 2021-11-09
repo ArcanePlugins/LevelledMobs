@@ -4,7 +4,9 @@
 
 package me.lokka30.levelledmobs.customdrops;
 
+import me.lokka30.levelledmobs.misc.CachedModalList;
 import me.lokka30.levelledmobs.misc.Utils;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.LinkedList;
@@ -42,6 +44,7 @@ public class CustomDropBase implements Cloneable {
     public String playerLevelVariable;
     final public List<String> permissions;
     public final Set<String> excludedMobs = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+    public CachedModalList<EntityDamageEvent.DamageCause> causeOfDeathReqs;
 
     public int getAmount(){
         return this.amount;
@@ -99,6 +102,8 @@ public class CustomDropBase implements Cloneable {
         CustomDropBase copy = null;
         try {
             copy = (CustomDropBase) super.clone();
+            if (this.causeOfDeathReqs != null)
+                copy.causeOfDeathReqs = (CachedModalList<EntityDamageEvent.DamageCause>) this.causeOfDeathReqs.clone();
         } catch (Exception e) {
             e.printStackTrace();
         }

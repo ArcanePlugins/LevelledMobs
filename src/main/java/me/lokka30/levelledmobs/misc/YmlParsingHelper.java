@@ -9,9 +9,7 @@ import org.bukkit.configuration.MemoryConfiguration;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 
 /**
  * @author stumper66
@@ -105,6 +103,25 @@ public class YmlParsingHelper {
             return cs.getDouble(useName);
         else
             return defaultValue;
+    }
+
+    @NotNull
+    public static List<String> getListFromConfigItem(@NotNull final ConfigurationSection cs, final String key){
+        String foundKeyName = null;
+        for (final String enumeratedKey : cs.getKeys(false)){
+            if (key.equalsIgnoreCase(enumeratedKey)){
+                foundKeyName = enumeratedKey;
+                break;
+            }
+        }
+
+        if (foundKeyName == null) return new LinkedList<>();
+
+        final List<String> result = cs.getStringList(foundKeyName);
+        if (result.isEmpty() && cs.getString(foundKeyName) != null && !"".equals(cs.getString(foundKeyName)))
+            result.add(cs.getString(foundKeyName));
+
+        return result;
     }
 
     @NotNull

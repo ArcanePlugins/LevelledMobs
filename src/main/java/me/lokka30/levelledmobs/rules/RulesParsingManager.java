@@ -186,7 +186,7 @@ public class RulesParsingManager {
         cachedModalList.doMerge = ymlHelper.getBoolean(cs2, "merge");
         if (cs2 != null) {
             final String allowedList = ymlHelper.getKeyNameFromConfig(cs2, ml_AllowedItems);
-            useList = getListFromConfigItem(cs2, allowedList);
+            useList = YmlParsingHelper.getListFromConfigItem(cs2, allowedList);
         }
 
         for (final String item : useList){
@@ -208,7 +208,7 @@ public class RulesParsingManager {
         final String excludedList = ymlHelper.getKeyNameFromConfig(cs2, ml_ExcludedItems);
         cachedModalList.excludedGroups = getSetOfGroups(cs, ml_ExcludedGroups);
 
-        for (final String item : getListFromConfigItem(cs2, excludedList)){
+        for (final String item : YmlParsingHelper.getListFromConfigItem(cs2, excludedList)){
             if ("".equals(item.trim())) continue;
             if ("*".equals(item.trim())){
                 cachedModalList.excludeAll = true;
@@ -254,7 +254,7 @@ public class RulesParsingManager {
             cachedModalList.allowedGroups = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
             cachedModalList.excludedGroups = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
 
-            for (final String group : getListFromConfigItem(cs2, ml_AllowedGroups)) {
+            for (final String group : YmlParsingHelper.getListFromConfigItem(cs2, ml_AllowedGroups)) {
                 if ("".equals(group.trim())) continue;
                 if (!main.rulesManager.biomeGroupMappings.containsKey(group))
                     Utils.logger.info("invalid biome group: " + group);
@@ -262,7 +262,7 @@ public class RulesParsingManager {
                     cachedModalList.allowedGroups.add(group);
             }
 
-            for (final String group : getListFromConfigItem(cs2, ml_ExcludedGroups)) {
+            for (final String group : YmlParsingHelper.getListFromConfigItem(cs2, ml_ExcludedGroups)) {
                 if ("".equals(group.trim())) continue;
                 if (!main.rulesManager.biomeGroupMappings.containsKey(group))
                     Utils.logger.info("invalid biome group: " + group);
@@ -273,7 +273,7 @@ public class RulesParsingManager {
 
         if (useList == null) {
             final String allowedList = ymlHelper.getKeyNameFromConfig(cs2, ml_AllowedItems);
-            useList = getListFromConfigItem(cs2, allowedList);
+            useList = YmlParsingHelper.getListFromConfigItem(cs2, allowedList);
         }
 
         for (final String item : useList){
@@ -293,7 +293,7 @@ public class RulesParsingManager {
 
         final String excludedList = ymlHelper.getKeyNameFromConfig(cs2, ml_ExcludedItems);
 
-        for (final String item : getListFromConfigItem(cs2, excludedList)){
+        for (final String item : YmlParsingHelper.getListFromConfigItem(cs2, excludedList)){
             if ("".equals(item.trim())) continue;
             if ("*".equals(item.trim())){
                 cachedModalList.excludeAll = true;
@@ -334,7 +334,7 @@ public class RulesParsingManager {
 
         if (cs2 != null) {
             final String allowedList = ymlHelper.getKeyNameFromConfig(cs2, ml_AllowedItems);
-            useList = getListFromConfigItem(cs2, allowedList);
+            useList = YmlParsingHelper.getListFromConfigItem(cs2, allowedList);
         }
 
         for (final String item : useList) {
@@ -352,7 +352,7 @@ public class RulesParsingManager {
         final String excludedGroups = ymlHelper.getKeyNameFromConfig(cs2, ml_ExcludedGroups);
         cachedModalList.allowedGroups = getSetOfGroups(cs2, allowedGroups);
 
-        for (final String item : getListFromConfigItem(cs2, excludedList)) {
+        for (final String item : YmlParsingHelper.getListFromConfigItem(cs2, excludedList)) {
             if ("".equals(item.trim())) continue;
             if ("*".equals(item.trim())){
                 cachedModalList.excludeAll = true;
@@ -407,25 +407,6 @@ public class RulesParsingManager {
         }
 
         return results;
-    }
-
-    @NotNull
-    private List<String> getListFromConfigItem(@NotNull final ConfigurationSection cs, final String key){
-        String foundKeyName = null;
-        for (final String enumeratedKey : cs.getKeys(false)){
-            if (key.equalsIgnoreCase(enumeratedKey)){
-                foundKeyName = enumeratedKey;
-                break;
-            }
-        }
-
-        if (foundKeyName == null) return new LinkedList<>();
-
-        final List<String> result = cs.getStringList(foundKeyName);
-        if (result.isEmpty() && cs.getString(foundKeyName) != null && !"".equals(cs.getString(foundKeyName)))
-            result.add(cs.getString(foundKeyName));
-
-        return result;
     }
 
     @NotNull

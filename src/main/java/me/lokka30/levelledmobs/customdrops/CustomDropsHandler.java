@@ -80,6 +80,10 @@ public class CustomDropsHandler {
         }
         else
             processingInfo.wasKilledByPlayer = false;
+
+        if (lmEntity.getLivingEntity().getLastDamageCause() != null)
+            processingInfo.deathCause = lmEntity.getLivingEntity().getLastDamageCause().getCause();
+
         processingInfo.addition = BigDecimal.valueOf(main.mobDataManager.getAdditionsForLevel(lmEntity, Addition.CUSTOM_ITEM_DROP, 0.0))
                 .setScale(0, RoundingMode.HALF_DOWN).intValueExact(); // truncate double to int
 
@@ -301,6 +305,18 @@ public class CustomDropsHandler {
         if (info.equippedOnly && dropBase instanceof CustomDropItem && ((CustomDropItem) dropBase).equippedSpawnChance <= 0.0) return;
         if (!info.equippedOnly && dropBase.playerCausedOnly && !info.wasKilledByPlayer) return;
         if (dropBase.noSpawner && info.isSpawner) return;
+
+        if (dropBase.causeOfDeathReqs != null && (info.deathCause == null || !Utils.isDamageCauseInModalList(dropBase.causeOfDeathReqs, info.deathCause))){
+            if (isCustomDropsDebuggingEnabled()) {
+                final String itemName = dropBase instanceof CustomDropItem ?
+                        ((CustomDropItem) dropBase).getMaterial().name() : "(command)";
+                info.addDebugMessage(String.format(
+                        "&8 - &7item: &b%s&7, death-cause: &b%s&7, death-cause-req: &b%s&7, dropped: &bfalse&7.",
+                        itemName, info.deathCause, dropBase.causeOfDeathReqs)
+                );
+            }
+            return;
+        }
 
         if (!madePlayerLevelRequirement(info, dropBase)) return;
 
