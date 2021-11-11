@@ -129,6 +129,8 @@ mobs-multiply-head-drops: false
 # ||  this only affects LM if you are using Player Levelling.
 player-levelling-relevel-min-time: 5000
 
+# ||  This setting determines how far away an entity can be
+# ||  for it to register under `%levelledmobs_mob-target%`.
 nametag-placeholder-maxblocks: 30
 
 # ||  ADVANCED USERS ONLY
