@@ -59,12 +59,16 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
         setLivingEntity(livingEntity);
     }
 
+    // privates:
     private LivingEntity livingEntity;
     @NotNull
     private Set<String> applicableGroups;
     private boolean hasCache;
     private boolean isBuildingCache;
+    private boolean groupsAreBuilt;
     private Integer mobLevel;
+    private int nametagCooldownTime;
+    private String sourceSpawnerName;
     private final static Object lockObj = new Object();
     @NotNull
     private final List<RuleInfo> applicableRules;
@@ -73,23 +77,23 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
     private final List<ExternalCompatibilityManager.ExternalCompatibility> mobExternalTypes;
     private FineTuningAttributes fineTuningAttributes;
     private LevelledMobSpawnReason spawnReason;
-    public EntityDamageEvent.DamageCause deathCause;
-    public boolean reEvaluateLevel;
-    public boolean wasPreviouslyLevelled;
-    public boolean isRulesForceAll;
-    public Player playerForPermissionsCheck;
-    public CommandSender summonedSender;
-    public String nbtData;
-    private boolean groupsAreBuilt;
-    private int nametagCooldownTime;
     private Player playerForLevelling;
-    public Set<Player> playersNeedingNametagCooldownUpdate;
     private Map<String, Boolean> prevChanceRuleResults;
     private final ReentrantLock cacheLock;
     private final static Object playerLock = new Object();
     private final static Object cachedLM_Wrappers_Lock = new Object();
-    private String sourceSpawnerName;
     private final static Stack<LivingEntityWrapper> cache = new Stack<>();
+    // publics:
+    public boolean reEvaluateLevel;
+    public boolean wasPreviouslyLevelled;
+    public boolean isRulesForceAll;
+    public Boolean playerLevellingAllowDecrease;
+    public Set<Player> playersNeedingNametagCooldownUpdate;
+    public EntityDamageEvent.DamageCause deathCause;
+    public String nbtData;
+    public String pendingPlayerIdToSet;
+    public Player playerForPermissionsCheck;
+    public CommandSender summonedSender;
 
     @NotNull
     public static LivingEntityWrapper getInstance(final LivingEntity livingEntity, final @NotNull LevelledMobs main){
@@ -149,6 +153,8 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
         this.nametagCooldownTime = 0;
         this.nbtData = null;
         this.summonedSender = null;
+        this.playerLevellingAllowDecrease = null;
+        this.pendingPlayerIdToSet = null;
 
         super.clearEntityData();
     }

@@ -328,6 +328,22 @@ public class RulesManager {
         return nametag;
     }
 
+    @Nullable
+    public String getRule_Nametag_Placeholder(@NotNull final LivingEntityWrapper lmEntity){
+        String nametag = null;
+        final boolean isLevelled = lmEntity.isLevelled();
+
+        for (final RuleInfo ruleInfo : lmEntity.getApplicableRules()) {
+            if (ruleInfo == null) continue;
+            final String nametagRule = isLevelled ?
+                    ruleInfo.nametag_Placeholder_Levelled : ruleInfo.nametag_Placeholder_Unlevelled;
+            if (nametagRule != null)
+                nametag = nametagRule;
+        }
+
+        return nametag;
+    }
+
     @NotNull
     public String getRule_Nametag_CreatureDeath(@NotNull final LivingEntityWrapper lmEntity){
         String nametag = "";

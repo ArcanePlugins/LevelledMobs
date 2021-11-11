@@ -176,7 +176,7 @@ public class LevelManager implements LevelInterface {
         return randomLevelling.generateLevel(minLevel, maxLevel);
     }
 
-    private int[] getPlayerLevels(final @NotNull LivingEntityWrapper lmEntity){
+    private int @Nullable [] getPlayerLevels(final @NotNull LivingEntityWrapper lmEntity){
         final PlayerLevellingOptions options = main.rulesManager.getRule_PlayerLevellingOptions(lmEntity);
         if (options == null) return null;
 
@@ -240,6 +240,8 @@ public class LevelManager implements LevelInterface {
                     "mob: %s, player: %s, lvl-src: %s, lvl-scale: %s, tier: %s, %sresult: %s",
                     lmEntity.getNameIfBaby(), player.getName(), origLevelSource, levelSource, tierMatched, capDisplay, Arrays.toString(results)));
         }
+
+        lmEntity.playerLevellingAllowDecrease = options.decreaseLevel;
 
         return results;
     }
@@ -764,11 +766,7 @@ public class LevelManager implements LevelInterface {
             return;
 
         if (doesMobNeedRelevelling(mob, closestPlayer)) {
-
-            synchronized (mob.getPersistentDataContainer()) {
-                mob.getPersistentDataContainer().set(main.namespaced_keys.playerLevelling_Id, PersistentDataType.STRING, closestPlayer.getUniqueId().toString());
-            }
-
+            lmEntity.pendingPlayerIdToSet = closestPlayer.getUniqueId().toString();
             lmEntity.setPlayerForLevelling(closestPlayer);
             lmEntity.reEvaluateLevel = true;
             main._mobsQueueManager.addToQueue(new QueueItem(lmEntity, null));

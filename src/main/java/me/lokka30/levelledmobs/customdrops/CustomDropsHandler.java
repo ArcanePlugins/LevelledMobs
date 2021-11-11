@@ -303,7 +303,7 @@ public class CustomDropsHandler {
 
         if (info.equippedOnly && dropBase instanceof CustomCommand) return;
         if (info.equippedOnly && dropBase instanceof CustomDropItem && ((CustomDropItem) dropBase).equippedSpawnChance <= 0.0) return;
-        if (!info.equippedOnly && dropBase.playerCausedOnly && !info.wasKilledByPlayer) return;
+        if (!info.equippedOnly && dropBase.playerCausedOnly && (dropBase.causeOfDeathReqs == null || dropBase.causeOfDeathReqs.isEmpty()) && !info.wasKilledByPlayer) return;
         if (dropBase.noSpawner && info.isSpawner) return;
 
         if (dropBase.causeOfDeathReqs != null && (info.deathCause == null || !Utils.isDamageCauseInModalList(dropBase.causeOfDeathReqs, info.deathCause))){

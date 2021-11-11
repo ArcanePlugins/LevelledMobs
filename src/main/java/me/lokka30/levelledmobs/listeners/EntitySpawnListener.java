@@ -257,17 +257,26 @@ public class EntitySpawnListener implements Listener {
         final HashSet<AdditionalLevelInformation> additionalLevelInfo = new HashSet<>(Collections.singletonList(additionalInfo));
         final LevellableState levellableState = getLevellableState(lmEntity, event);
         if (levellableState == LevellableState.ALLOWED) {
-            if (lmEntity.reEvaluateLevel && main.configUtils.playerLevellingEnabled) {
-                final Object syncObj = new Object();
-                final BukkitRunnable runnable = new BukkitRunnable() {
-                    @Override
-                    public void run() { updateMobForPlayerLevelling(lmEntity); }
-                };
-                runnable.runTask(main);
+            final int levelAssignment = main.levelInterface.generateLevel(lmEntity);
+            if (shouldDenyLevel(lmEntity, levelAssignment)){
+                Utils.debugLog(main, DebugType.PLAYER_LEVELLING, String.format(
+                        "Entity &b%s (lvl %s)&r denied relevelling to &b%s&r due to decrease-level disabled",
+                        lmEntity.getNameIfBaby(), lmEntity.getMobLevel(), levelAssignment));
             }
+            else {
+                if (lmEntity.reEvaluateLevel && main.configUtils.playerLevellingEnabled) {
+                    final Object syncObj = new Object();
+                    final BukkitRunnable runnable = new BukkitRunnable() {
+                        @Override
+                        public void run() { updateMobForPlayerLevelling(lmEntity); }
+                    };
+                    lmEntity.inUseCount.getAndIncrement();
+                    runnable.runTask(main);
+                }
 
-            main.levelInterface.applyLevelToMob(lmEntity, main.levelInterface.generateLevel(lmEntity),
-                    false, false, additionalLevelInfo);
+                main.levelInterface.applyLevelToMob(lmEntity, levelAssignment,
+                        false, false, additionalLevelInfo);
+            }
         } else {
             Utils.debugLog(main, DebugType.APPLY_LEVEL_FAIL, "Entity &b" + lmEntity.getNameIfBaby() + "&7 in wo" +
                     "rld&b " + lmEntity.getWorldName() + "&7 was not levelled -> levellable state: &b" + levellableState);
@@ -285,6 +294,24 @@ public class EntitySpawnListener implements Listener {
             if (lmEntity.wasPreviouslyLevelled)
                 main.levelManager.updateNametag(lmEntity);
         }
+    }
+
+    private static boolean shouldDenyLevel(final @NotNull LivingEntityWrapper lmEntity, final int levelAssignment){
+        final boolean result =
+            lmEntity.reEvaluateLevel &&
+            !lmEntity.isRulesForceAll &&
+            lmEntity.playerLevellingAllowDecrease != null &&
+            !lmEntity.playerLevellingAllowDecrease &&
+            lmEntity.isLevelled() &&
+            levelAssignment < lmEntity.getMobLevel();
+
+        if (!result && lmEntity.pendingPlayerIdToSet != null) {
+            synchronized (lmEntity.getLivingEntity().getPersistentDataContainer()) {
+                lmEntity.getPDC().set(lmEntity.getMainInstance().namespaced_keys.playerLevelling_Id, PersistentDataType.STRING, lmEntity.pendingPlayerIdToSet);
+            }
+        }
+
+        return result;
     }
 
     private static boolean areLocationsTheSame(final Location location1, final Location location2){

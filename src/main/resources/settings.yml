@@ -129,6 +129,8 @@ mobs-multiply-head-drops: false
 # ||  this only affects LM if you are using Player Levelling.
 player-levelling-relevel-min-time: 5000
 
+nametag-placeholder-maxblocks: 30
+
 # ||  ADVANCED USERS ONLY
 # ||  Do not touch this unless a LM developer tells you to.
 # ||  This value must not be modified, else your configuration

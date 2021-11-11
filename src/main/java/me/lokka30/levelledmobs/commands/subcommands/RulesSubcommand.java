@@ -304,7 +304,7 @@ public class RulesSubcommand implements Subcommand {
         for(final Entity entity : player.getNearbyEntities(10, 10, 10)){
             if (!(entity instanceof LivingEntity)) continue;
 
-            LivingEntity le = (LivingEntity) entity;
+            final LivingEntity le = (LivingEntity) entity;
             if (findNearbyEntities) {
                 final double distance = le.getLocation().distanceSquared(player.getLocation());
                 entities.put(distance, le);

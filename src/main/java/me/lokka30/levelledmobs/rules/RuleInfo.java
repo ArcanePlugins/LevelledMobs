@@ -62,6 +62,8 @@ public class RuleInfo {
     public Double sunlightBurnAmount;
     public String nametag;
     public String nametag_CreatureDeath;
+    public String nametag_Placeholder_Levelled;
+    public String nametag_Placeholder_Unlevelled;
     @DoNotMerge
     public String presetName;
     public String customDrop_DropTableId;

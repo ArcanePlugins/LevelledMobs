@@ -8,11 +8,17 @@ import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.misc.LastMobKilledInfo;
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
+import me.lokka30.levelledmobs.misc.Utils;
+import org.bukkit.Location;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
+import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.UUID;
 
@@ -87,6 +93,8 @@ public class PlaceholderApiIntegration extends PlaceholderExpansion {
             return getLevelFromPlayer(player);
         else if ("displayname".equalsIgnoreCase(identifier))
             return getDisplaynameFromPlayer(player);
+        else if ("mob-target".equalsIgnoreCase(identifier))
+            return getMobNametagWithinPlayerSight(player);
 
         return null;
     }
@@ -107,5 +115,52 @@ public class PlaceholderApiIntegration extends PlaceholderExpansion {
         final LastMobKilledInfo mobInfo = this.mobsByPlayerTracking.get(player.getUniqueId());
         return mobInfo == null || mobInfo.entityName == null ?
             "" : mobInfo.entityName;
+    }
+
+    @NotNull
+    private String getMobNametagWithinPlayerSight(final @Nullable Player player){
+        if (player == null) return "";
+
+        final LivingEntity targetMob = getMobBeingLookedAt(player);
+        if (targetMob == null) return "";
+
+        final LivingEntityWrapper lmEntity = LivingEntityWrapper.getInstance(targetMob, main);
+        String nametag = main.rulesManager.getRule_Nametag_Placeholder(lmEntity);
+        if (!Utils.isNullOrEmpty(nametag)){
+            final boolean useCustomNameForNametags = main.helperSettings.getBoolean(main.settingsCfg, "use-customname-for-mob-nametags");
+            nametag = main.levelManager.updateNametag(lmEntity, nametag, useCustomNameForNametags);
+
+            if ("disabled".equalsIgnoreCase(nametag)) return "";
+        }
+
+        if (Utils.isNullOrEmpty(nametag) && lmEntity.isLevelled())
+            nametag = main.levelManager.getNametag(lmEntity, false);
+
+        lmEntity.free();
+
+        return nametag != null ?
+                nametag : "";
+    }
+
+    @Nullable
+    private LivingEntity getMobBeingLookedAt(final @NotNull Player player){
+        LivingEntity livingEntity = null;
+        final Location eye = player.getEyeLocation();
+        final SortedMap<Double, LivingEntity> entities = new TreeMap<>();
+        final int maxBlocks = main.helperSettings.getInt(main.settingsCfg, "nametag-placeholder-maxblocks", 30);
+
+        for(final Entity entity : player.getNearbyEntities(maxBlocks, maxBlocks, maxBlocks)){
+            if (!(entity instanceof LivingEntity)) continue;
+
+            final LivingEntity le = (LivingEntity) entity;
+            final Vector toEntity = le.getEyeLocation().toVector().subtract(eye.toVector());
+            final double dot = toEntity.normalize().dot(eye.getDirection());
+            if (dot >= 0.975D) {
+                livingEntity = le;
+                break;
+            }
+        }
+
+        return livingEntity;
     }
 }

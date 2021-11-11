@@ -612,6 +612,8 @@ public class RulesParsingManager {
         parsingInfo.customDrop_DropTableId = ymlHelper.getString(cs,"use-droptable-id", parsingInfo.customDrop_DropTableId);
         parsingInfo.nametag = ymlHelper.getString(cs,"nametag", parsingInfo.nametag);
         parsingInfo.nametag_CreatureDeath = ymlHelper.getString(cs,"creature-death-nametag", parsingInfo.nametag_CreatureDeath);
+        parsingInfo.nametag_Placeholder_Levelled = ymlHelper.getString(cs, "nametag-placeholder-levelled", parsingInfo.nametag_Placeholder_Levelled);
+        parsingInfo.nametag_Placeholder_Unlevelled = ymlHelper.getString(cs, "nametag-placeholder-unlevelled", parsingInfo.nametag_Placeholder_Unlevelled);
         parsingInfo.sunlightBurnAmount = ymlHelper.getDouble2(cs, "sunlight-intensity", parsingInfo.sunlightBurnAmount);
         parsingInfo.lowerMobLevelBiasFactor = ymlHelper.getInt2(cs, "lower-mob-level-bias-factor", parsingInfo.lowerMobLevelBiasFactor);
         parsingInfo.mobNBT_Data = ymlHelper.getString(cs, "nbt-data", parsingInfo.mobNBT_Data);
@@ -867,6 +869,7 @@ public class RulesParsingManager {
         options.levelCap = ymlHelper.getInt2(cs, "level-cap", options.levelCap);
         options.enabled = ymlHelper.getBoolean2(cs, "enabled", options.enabled);
         options.variable = ymlHelper.getString(cs, "variable", options.variable);
+        options.decreaseLevel = ymlHelper.getBoolean(cs, "decrease-level", true);
         parsingInfo.playerLevellingOptions = options;
 
         final ConfigurationSection csTiers = objTo_CS(cs,"tiers");

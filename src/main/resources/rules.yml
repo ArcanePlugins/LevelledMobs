@@ -371,6 +371,8 @@ default-rule:
 #      PILLAGER: ['Raider', 'Barbarian']
 
     creature-death-nametag: '%tiered%Lvl %mob-lvl%&8 | &f%entity-name%'
+    nametag-placeholder-levelled: ''
+    nametag-placeholder-unlevelled: ''
     nametag-visible-time: 1000
     nametag-visibility-method: ['TARGETED', 'ATTACKED', 'TRACKING']
 
