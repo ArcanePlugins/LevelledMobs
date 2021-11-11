@@ -209,6 +209,7 @@ public class EntitySpawnListener implements Listener {
     public void preprocessMob(final @NotNull LivingEntityWrapper lmEntity, @NotNull final Event event){
         if (!lmEntity.reEvaluateLevel && lmEntity.isLevelled())
             return;
+        if (lmEntity.getLivingEntity() == null) return;
 
         LevelledMobSpawnReason spawnReason = LevelledMobSpawnReason.DEFAULT;
         AdditionalLevelInformation additionalInfo = AdditionalLevelInformation.NOT_APPLICABLE;

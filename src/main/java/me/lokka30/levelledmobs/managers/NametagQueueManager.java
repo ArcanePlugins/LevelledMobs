@@ -88,60 +88,74 @@ public class NametagQueueManager {
                 continue;
             }
 
-            final int nametagTimerResetTime = item.lmEntity.getNametagCooldownTime();
-
-            if (nametagTimerResetTime > 0 && !"".equals(item.nametag)) {
-                synchronized (NametagTimerChecker.nametagTimer_Lock) {
-                    final Map<Player, WeakHashMap<LivingEntity, Instant>> nametagCooldownQueue = main.nametagTimerChecker.getNametagCooldownQueue();
-
-                    if (item.lmEntity.playersNeedingNametagCooldownUpdate != null) {
-                        // record which players should get the cooldown for this mob
-                        // public Map<Player, WeakHashMap<LivingEntity, Instant>> nametagCooldownQueue;
-                        for (final Player player : item.lmEntity.playersNeedingNametagCooldownUpdate) {
-                            if (!nametagCooldownQueue.containsKey(player)) continue;
-
-                            nametagCooldownQueue.get(player).put(item.lmEntity.getLivingEntity(), Instant.now());
-                            main.nametagTimerChecker.cooldownTimes.put(item.lmEntity.getLivingEntity(), item.lmEntity.getNametagCooldownTime());
-                        }
-
-                        // if any players already have a cooldown on this mob then don't remove the cooldown
-                        for (final Player player : nametagCooldownQueue.keySet()){
-                            if (item.lmEntity.playersNeedingNametagCooldownUpdate.contains(player)) continue;
-
-                            if (nametagCooldownQueue.get(player).containsKey(item.lmEntity.getLivingEntity()))
-                                item.lmEntity.playersNeedingNametagCooldownUpdate.add(player);
-                        }
-                    }
-                    else{
-                        // if there's any existing cooldowns we'll use them
-                        for (final Player player : nametagCooldownQueue.keySet()){
-                            if (nametagCooldownQueue.get(player).containsKey(item.lmEntity.getLivingEntity())) {
-                                if (item.lmEntity.playersNeedingNametagCooldownUpdate == null)
-                                    item.lmEntity.playersNeedingNametagCooldownUpdate = new HashSet<>();
-
-                                item.lmEntity.playersNeedingNametagCooldownUpdate.add(player);
-                            }
-                        }
-                    }
-                }
+            String lastEntityType = null;
+            try {
+                lastEntityType = item.lmEntity.getNameIfBaby();
+                processItem(item);
             }
-            else if (item.lmEntity.playersNeedingNametagCooldownUpdate != null)
-                item.lmEntity.playersNeedingNametagCooldownUpdate = null;
-
-            synchronized (NametagTimerChecker.entityTarget_Lock){
-                if (main.nametagTimerChecker.entityTargetMap.containsKey(item.lmEntity.getLivingEntity())){
-                    if (item.lmEntity.playersNeedingNametagCooldownUpdate == null)
-                        item.lmEntity.playersNeedingNametagCooldownUpdate = new HashSet<>();
-
-                    item.lmEntity.playersNeedingNametagCooldownUpdate.add(main.nametagTimerChecker.entityTargetMap.get(item.lmEntity.getLivingEntity()));
-                }
+            catch (Exception e){
+                Utils.logger.error("Got exception while processing nametag updates on " + (lastEntityType != null ? lastEntityType : "(unknown)"));
+                e.printStackTrace();
             }
-
-            updateNametag(item.lmEntity, item.nametag, item.players);
-            item.lmEntity.free();
+            finally {
+                item.lmEntity.free();
+            }
         }
 
         isRunning = false;
+    }
+
+    private void processItem(final @NotNull QueueItem item){
+        final int nametagTimerResetTime = item.lmEntity.getNametagCooldownTime();
+
+        if (nametagTimerResetTime > 0 && !"".equals(item.nametag)) {
+            synchronized (NametagTimerChecker.nametagTimer_Lock) {
+                final Map<Player, WeakHashMap<LivingEntity, Instant>> nametagCooldownQueue = main.nametagTimerChecker.getNametagCooldownQueue();
+
+                if (item.lmEntity.playersNeedingNametagCooldownUpdate != null) {
+                    // record which players should get the cooldown for this mob
+                    // public Map<Player, WeakHashMap<LivingEntity, Instant>> nametagCooldownQueue;
+                    for (final Player player : item.lmEntity.playersNeedingNametagCooldownUpdate) {
+                        if (!nametagCooldownQueue.containsKey(player)) continue;
+
+                        nametagCooldownQueue.get(player).put(item.lmEntity.getLivingEntity(), Instant.now());
+                        main.nametagTimerChecker.cooldownTimes.put(item.lmEntity.getLivingEntity(), item.lmEntity.getNametagCooldownTime());
+                    }
+
+                    // if any players already have a cooldown on this mob then don't remove the cooldown
+                    for (final Player player : nametagCooldownQueue.keySet()){
+                        if (item.lmEntity.playersNeedingNametagCooldownUpdate.contains(player)) continue;
+
+                        if (nametagCooldownQueue.get(player).containsKey(item.lmEntity.getLivingEntity()))
+                            item.lmEntity.playersNeedingNametagCooldownUpdate.add(player);
+                    }
+                }
+                else{
+                    // if there's any existing cooldowns we'll use them
+                    for (final Player player : nametagCooldownQueue.keySet()){
+                        if (nametagCooldownQueue.get(player).containsKey(item.lmEntity.getLivingEntity())) {
+                            if (item.lmEntity.playersNeedingNametagCooldownUpdate == null)
+                                item.lmEntity.playersNeedingNametagCooldownUpdate = new HashSet<>();
+
+                            item.lmEntity.playersNeedingNametagCooldownUpdate.add(player);
+                        }
+                    }
+                }
+            }
+        }
+        else if (item.lmEntity.playersNeedingNametagCooldownUpdate != null)
+            item.lmEntity.playersNeedingNametagCooldownUpdate = null;
+
+        synchronized (NametagTimerChecker.entityTarget_Lock){
+            if (main.nametagTimerChecker.entityTargetMap.containsKey(item.lmEntity.getLivingEntity())){
+                if (item.lmEntity.playersNeedingNametagCooldownUpdate == null)
+                    item.lmEntity.playersNeedingNametagCooldownUpdate = new HashSet<>();
+
+                item.lmEntity.playersNeedingNametagCooldownUpdate.add(main.nametagTimerChecker.entityTargetMap.get(item.lmEntity.getLivingEntity()));
+            }
+        }
+
+        updateNametag(item.lmEntity, item.nametag, item.players);
     }
 
     private void updateNametag(final @NotNull LivingEntityWrapper lmEntity, final String nametag, final List<Player> players) {
