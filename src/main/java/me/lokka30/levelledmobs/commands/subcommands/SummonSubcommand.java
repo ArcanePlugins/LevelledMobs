@@ -510,7 +510,8 @@ public class SummonSubcommand implements Subcommand {
 
             if (entity instanceof LivingEntity) {
                 final LivingEntityWrapper lmEntity = LivingEntityWrapper.getInstance((LivingEntity) entity, main);
-                lmEntity.nbtData = options.nbtData;
+                if (!Utils.isNullOrEmpty(options.nbtData))
+                    lmEntity.nbtData = List.of(options.nbtData);
                 lmEntity.summonedSender = sender;
                 main.levelInterface.applyLevelToMob(lmEntity, useLevel, true, options.override, new HashSet<>(Collections.singletonList(AdditionalLevelInformation.NOT_APPLICABLE)));
                 synchronized (lmEntity.getLivingEntity().getPersistentDataContainer()){

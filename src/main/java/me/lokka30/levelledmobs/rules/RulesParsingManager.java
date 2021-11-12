@@ -616,7 +616,7 @@ public class RulesParsingManager {
         parsingInfo.nametag_Placeholder_Unlevelled = ymlHelper.getString(cs, "nametag-placeholder-unlevelled", parsingInfo.nametag_Placeholder_Unlevelled);
         parsingInfo.sunlightBurnAmount = ymlHelper.getDouble2(cs, "sunlight-intensity", parsingInfo.sunlightBurnAmount);
         parsingInfo.lowerMobLevelBiasFactor = ymlHelper.getInt2(cs, "lower-mob-level-bias-factor", parsingInfo.lowerMobLevelBiasFactor);
-        parsingInfo.mobNBT_Data = ymlHelper.getString(cs, "nbt-data", parsingInfo.mobNBT_Data);
+        parseNBT_Data(cs);
         parsingInfo.passengerMatchLevel = ymlHelper.getBoolean2(cs, "passenger-match-level", parsingInfo.passengerMatchLevel);
         parsingInfo.nametagVisibleTime = ymlHelper.getInt2(cs, "nametag-visible-time", parsingInfo.nametagVisibleTime);
 
@@ -647,7 +647,40 @@ public class RulesParsingManager {
         }
     }
 
-    private void parseConditions(final ConfigurationSection cs){
+    private void parseNBT_Data(final @Nullable ConfigurationSection cs){
+        if (cs == null) return;
+
+        final String keyName = ymlHelper.getKeyNameFromConfig(cs, "nbt-data");
+        final Object temp = cs.get(keyName);
+
+        if (temp == null) return;
+
+        if (temp instanceof MemorySection){
+            final ConfigurationSection cs2 = ymlHelper.objTo_CS(cs, keyName);
+            if (cs2 == null) return;
+
+            final String nbt = ymlHelper.getString(cs2, "data", null);
+            final Set<String> nbtList = ymlHelper.getStringSet(cs2, "data");
+            if (nbt == null && nbtList.isEmpty()) return;
+            boolean doMerge = ymlHelper.getBoolean(cs2, "merge", false);
+
+            if (!nbtList.isEmpty()) {
+                parsingInfo.mobNBT_Data = new MergeableStringList();
+                parsingInfo.mobNBT_Data.setItemFromList(nbtList);
+                parsingInfo.mobNBT_Data.doMerge = doMerge;
+            }
+            else
+                parsingInfo.mobNBT_Data = new MergeableStringList(nbt, doMerge);
+        }
+        else if (temp instanceof Collection){
+            parsingInfo.mobNBT_Data = new MergeableStringList();
+            parsingInfo.mobNBT_Data.setItemFromList((Collection<String>) temp);
+        }
+        else if (temp instanceof String)
+            parsingInfo.mobNBT_Data = new MergeableStringList((String) temp);
+    }
+
+    private void parseConditions(final @Nullable ConfigurationSection cs){
         if (cs == null) return;
 
         parsingInfo.conditions_Worlds = buildCachedModalListOfString(cs, "worlds", parsingInfo.conditions_Worlds);
@@ -658,7 +691,7 @@ public class RulesParsingManager {
 
         parsingInfo.stopProcessingRules = ymlHelper.getBoolean2(cs,"stop-processing", parsingInfo.stopProcessingRules);
         parsingInfo.conditions_Chance = ymlHelper.getDouble2(cs,"chance", parsingInfo.conditions_Chance);
-        // final String mobCustomNameStatus = cs.getString(YmlParsingHelper.getKeyNameFromConfig(cs,"mob-customname-status"));
+
         final String mobCustomNameStatus = ymlHelper.getString(cs,"mob-customname-status");
         if (mobCustomNameStatus != null) {
             try {

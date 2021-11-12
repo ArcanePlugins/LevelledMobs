@@ -1097,17 +1097,16 @@ public class LevelManager implements LevelInterface {
         }
         lmEntity.invalidateCache();
 
-        String nbtData = lmEntity.nbtData != null ?
+        final List<String> nbtDatas = lmEntity.nbtData != null && !lmEntity.nbtData.isEmpty() ?
                 lmEntity.nbtData : main.rulesManager.getRule_NBT_Data(lmEntity);
 
-        if (nbtData != null && !ExternalCompatibilityManager.hasNBTAPI_Installed()){
+        if (!nbtDatas.isEmpty() && !ExternalCompatibilityManager.hasNBTAPI_Installed()){
             if (!hasMentionedNBTAPI_Missing) {
                 Utils.logger.warning("NBT Data has been specified in customdrops.yml but required plugin NBTAPI is not installed!");
                 hasMentionedNBTAPI_Missing = true;
             }
-            nbtData = null;
+            nbtDatas.clear();
         }
-        final String finalNbtData = nbtData;
         final int creeperLevel = level;
 
         // setting attributes should be only done in the main thread.
@@ -1130,16 +1129,20 @@ public class LevelManager implements LevelInterface {
                         main.levelManager.applyLevelledAttributes(lmEntity, Addition.ATTRIBUTE_HORSE_JUMP_STRENGTH);
                 }
 
-                if (finalNbtData != null) {
-                    NBTApplyResult result = NBTManager.applyNBT_Data_Mob(lmEntity, finalNbtData);
-                    if (result.hadException()) {
-                        if (lmEntity.summonedSender == null)
-                            Utils.logger.warning("Error applying NBT data to " + lmEntity.getTypeName() + ". Exception message: " + result.exceptionMessage);
-                        else
-                            lmEntity.summonedSender.sendMessage("Error applying NBT data to " + lmEntity.getTypeName() + ". Exception message: " + result.exceptionMessage);
+                if (!nbtDatas.isEmpty()) {
+                    for (final String nbtData : nbtDatas) {
+                        NBTApplyResult result = NBTManager.applyNBT_Data_Mob(lmEntity, nbtData);
+                        if (result.hadException()) {
+                            if (lmEntity.summonedSender == null) {
+                                Utils.logger.warning(String.format(
+                                        "Error applying NBT data '%s' to %s. Exception message: %s",
+                                        nbtData, lmEntity.getNameIfBaby(), result.exceptionMessage));
+                            }
+                            else
+                                lmEntity.summonedSender.sendMessage("Error applying NBT data to " + lmEntity.getTypeName() + ". Exception message: " + result.exceptionMessage);
+                        } else
+                            Utils.debugLog(main, DebugType.NBT_APPLY_SUCCESS, "Successfully applied NBT data to '" + lmEntity.getTypeName() + "'.");
                     }
-                    else
-                        Utils.debugLog(main, DebugType.NBT_APPLY_SUCCESS, "Successfully applied NBT data to '" + lmEntity.getTypeName() + "'.");
                 }
 
                 if (lmEntity.getLivingEntity() instanceof Creeper)

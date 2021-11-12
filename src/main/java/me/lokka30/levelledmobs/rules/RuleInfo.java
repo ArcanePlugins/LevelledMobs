@@ -67,7 +67,6 @@ public class RuleInfo {
     @DoNotMerge
     public String presetName;
     public String customDrop_DropTableId;
-    public String mobNBT_Data;
     public HealthIndicator healthIndicator;
     public MobCustomNameStatus conditions_MobCustomnameStatus;
     public MobTamedStatus conditions_MobTamedStatus;
@@ -80,6 +79,7 @@ public class RuleInfo {
     public final Map<String, String> ruleSourceNames;
     public List<TieredColoringInfo> tieredColoringInfos;
     public Map<ExternalCompatibilityManager.ExternalCompatibility, Boolean> enabledExtCompats;
+    public MergeableStringList mobNBT_Data;
     public CachedModalList<String> allowedEntities;
     public CachedModalList<String> conditions_Worlds;
     public CachedModalList<String> conditions_Entities;
@@ -148,6 +148,14 @@ public class RuleInfo {
                         this.specificMobMultipliers.put(entityType, mergingPreset.get(entityType).cloneItem());
 
                     skipSettingValue = true;
+                }
+                else if (presetValue instanceof MergeableStringList && this.getClass().getDeclaredField(f.getName()).get(this) != null){
+                    final MergeableStringList mergingPreset = (MergeableStringList) presetValue;
+                    if (mergingPreset.doMerge && !mergingPreset.isEmpty()) {
+                        final MergeableStringList current = (MergeableStringList) this.getClass().getDeclaredField(f.getName()).get(this);
+                        current.items.addAll(mergingPreset.items);
+                        skipSettingValue = true;
+                    }
                 }
 
                 if (presetValue instanceof CachedModalList){

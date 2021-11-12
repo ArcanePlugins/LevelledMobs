@@ -56,13 +56,18 @@ public class RulesManager {
         return result;
     }
 
-    @Nullable
-    public String getRule_NBT_Data(final @NotNull LivingEntityWrapper lmEntity){
-        String nbtData = null;
+    @NotNull
+    public List<String> getRule_NBT_Data(final @NotNull LivingEntityWrapper lmEntity){
+        List<String> nbtData = new LinkedList<>();
 
         for (final RuleInfo ruleInfo : lmEntity.getApplicableRules()){
-            if (ruleInfo.mobNBT_Data != null)
-                nbtData = ruleInfo.mobNBT_Data;
+            if (ruleInfo.mobNBT_Data != null) {
+                final MergeableStringList nbt = ruleInfo.mobNBT_Data;
+                if (!nbt.doMerge)
+                    nbtData.clear();
+
+                nbtData.addAll(nbt.items);
+            }
         }
 
         return nbtData;

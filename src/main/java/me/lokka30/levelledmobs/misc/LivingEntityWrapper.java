@@ -90,7 +90,7 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
     public Boolean playerLevellingAllowDecrease;
     public Set<Player> playersNeedingNametagCooldownUpdate;
     public EntityDamageEvent.DamageCause deathCause;
-    public String nbtData;
+    public List<String> nbtData;
     public String pendingPlayerIdToSet;
     public Player playerForPermissionsCheck;
     public CommandSender summonedSender;
