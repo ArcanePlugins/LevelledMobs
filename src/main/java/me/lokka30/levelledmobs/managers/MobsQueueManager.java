@@ -67,13 +67,22 @@ public class MobsQueueManager {
             final QueueItem item = queue.poll(200, TimeUnit.MILLISECONDS);
             if (item == null) continue;
 
-            if (item.lmEntity.getLivingEntity() != null) {
-                if (!item.lmEntity.getIsPopulated()) continue;
-                if (!item.lmEntity.getShouldShowLM_Nametag()) continue;
-                main.levelManager.entitySpawnListener.preprocessMob(item.lmEntity, item.event);
+            String lastEntityType = null;
+            try {
+                if (item.lmEntity.getLivingEntity() != null) {
+                    if (!item.lmEntity.getIsPopulated()) continue;
+                    if (!item.lmEntity.getShouldShowLM_Nametag()) continue;
+                    lastEntityType = item.lmEntity.getNameIfBaby();
+                    main.levelManager.entitySpawnListener.preprocessMob(item.lmEntity, item.event);
+                }
             }
-
-            item.lmEntity.free();
+            catch (Exception e){
+                Utils.logger.error("Got exception while processing " + (lastEntityType != null ? lastEntityType : "(unknown)"));
+                e.printStackTrace();
+            }
+            finally {
+                item.lmEntity.free();
+            }
         }
 
         isRunning = false;

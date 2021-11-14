@@ -1198,9 +1198,34 @@ public class LevelManager implements LevelInterface {
      * @return if the mob is levelled or not
      */
     public boolean isLevelled(@NotNull final LivingEntity livingEntity) {
-        synchronized (livingEntity.getPersistentDataContainer()) {
-            return livingEntity.getPersistentDataContainer().has(main.namespaced_keys.levelKey, PersistentDataType.INTEGER);
+        boolean hadError = false;
+        boolean succeeded = false;
+        boolean isLevelled = false;
+
+        for (int i = 0; i < 2; i++) {
+            try {
+                synchronized (livingEntity.getPersistentDataContainer()) {
+                    isLevelled = livingEntity.getPersistentDataContainer().has(main.namespaced_keys.levelKey, PersistentDataType.INTEGER);
+                }
+                succeeded = true;
+                break;
+            }
+            catch (ConcurrentModificationException ignored) {
+                hadError = true;
+                try
+                { Thread.sleep(10); }
+                catch (InterruptedException ignored2) { return false; }
+            }
         }
+
+        if (hadError) {
+            if (succeeded)
+                Utils.logger.warning("Got ConcurrentModificationException in LevelManager checking entity isLevelled, succeeded on retry");
+            else
+                Utils.logger.warning("Got ConcurrentModificationException (2x) in LevelManager checking entity isLevelled");
+        }
+
+        return isLevelled;
     }
 
     /**
