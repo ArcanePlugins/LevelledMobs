@@ -257,7 +257,7 @@ public class CustomDropsHandler {
             processingInfo.prioritizedDrops.put(priority, items);
         }
 
-        if (baseItem instanceof CustomDropItem && ((CustomDropItem) baseItem).equippedSpawnChance > 0.0)
+        if (baseItem instanceof CustomDropItem && ((CustomDropItem) baseItem).equippedSpawnChance > 0.0F)
             processingInfo.hasEquippedItems = true;
     }
 
@@ -282,8 +282,8 @@ public class CustomDropsHandler {
             }
 
             // we'll roll the dice to see if we get any drops at all and store it in the PDC
-            final double chanceRole = ThreadLocalRandom.current().nextDouble();
-            final boolean madeChance = 1.0 - chanceRole < dropInstance.overallChance;
+            float chanceRole = (float) ThreadLocalRandom.current().nextInt(0, 100001) * 0.00001F;
+            final boolean madeChance = 1.0F - chanceRole < dropInstance.overallChance;
             if (info.equippedOnly) {
                 synchronized (info.lmEntity.getLivingEntity().getPersistentDataContainer()) {
                     info.lmEntity.getPDC().set(main.namespaced_keys.overallChanceKey, PersistentDataType.INTEGER, madeChance ? 1 : 0);
@@ -302,7 +302,7 @@ public class CustomDropsHandler {
             return;
 
         if (info.equippedOnly && dropBase instanceof CustomCommand) return;
-        if (info.equippedOnly && dropBase instanceof CustomDropItem && ((CustomDropItem) dropBase).equippedSpawnChance <= 0.0) return;
+        if (info.equippedOnly && dropBase instanceof CustomDropItem && ((CustomDropItem) dropBase).equippedSpawnChance <= 0.0F) return;
         if (!info.equippedOnly && dropBase.playerCausedOnly && (dropBase.causeOfDeathReqs == null || dropBase.causeOfDeathReqs.isEmpty()) && !info.wasKilledByPlayer) return;
         if (dropBase.noSpawner && info.isSpawner) return;
 
@@ -367,11 +367,11 @@ public class CustomDropsHandler {
         if (!checkDropPermissions(info, dropBase)) return;
 
         boolean didNotMakeChance = false;
-        double chanceRole = 0.0;
+        float chanceRole = 0.0F;
 
         if (!info.equippedOnly && dropBase.chance < 1.0){
-            chanceRole = ThreadLocalRandom.current().nextDouble();
-            if (1.0 - chanceRole >= dropBase.chance) didNotMakeChance = true;
+            chanceRole = (float) ThreadLocalRandom.current().nextInt(0, 100001) * 0.00001F;
+            if (1.0F - chanceRole >= dropBase.chance) didNotMakeChance = true;
         }
 
         if (didNotMakeChance && !info.equippedOnly && ymlHelper.getStringSet(main.settingsCfg, "debug-misc").contains("CUSTOM_DROPS")) {
@@ -438,9 +438,9 @@ public class CustomDropsHandler {
         }
         final CustomDropItem dropItem = (CustomDropItem) dropBase;
 
-        if (info.equippedOnly && dropItem.equippedSpawnChance < 1.0) {
-            chanceRole = ThreadLocalRandom.current().nextDouble();
-            if (1.0 - chanceRole >= dropItem.equippedSpawnChance){
+        if (info.equippedOnly && dropItem.equippedSpawnChance < 1.0F) {
+            chanceRole = (float) ThreadLocalRandom.current().nextInt(0, 100001) * 0.00001F;
+            if (1.0F - chanceRole >= dropItem.equippedSpawnChance){
                 if (ymlHelper.getStringSet(main.settingsCfg, "debug-misc").contains("CUSTOM_DROPS")) {
                     info.addDebugMessage(String.format("&8- Mob: &b%s&7, &7level: &b%s&7, item: &b%s&7, spawnchance: &b%s&7, chancerole: &b%s&7, did not make spawn chance",
                             info.lmEntity.getTypeName(), info.lmEntity.getMobLevel(), dropItem.getMaterial().name(), dropItem.equippedSpawnChance, Utils.round(chanceRole, 4)));
@@ -569,8 +569,8 @@ public class CustomDropsHandler {
     }
 
     private boolean checkIfMadeEquippedDropChance(final CustomDropProcessingInfo info, final @NotNull CustomDropItem item){
-        if (item.equippedSpawnChance >= 1.0 || !item.onlyDropIfEquipped) return true;
-        if (item.equippedSpawnChance <= 0.0) return false;
+        if (item.equippedSpawnChance >= 1.0F || !item.onlyDropIfEquipped) return true;
+        if (item.equippedSpawnChance <= 0.0F) return false;
 
         return isMobWearingItem(item.getItemStack(), info.lmEntity.getLivingEntity());
     }

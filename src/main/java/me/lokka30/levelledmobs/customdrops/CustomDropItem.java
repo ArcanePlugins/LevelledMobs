@@ -23,7 +23,7 @@ import java.util.UUID;
  */
 public class CustomDropItem extends CustomDropBase {
     public int customModelDataId;
-    public double equippedSpawnChance;
+    public float equippedSpawnChance;
     public boolean noMultiplier;
     public boolean onlyDropIfEquipped;
     public String customName;

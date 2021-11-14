@@ -655,7 +655,7 @@ public class RulesParsingManager {
 
         if (temp == null) return;
 
-        if (temp instanceof MemorySection){
+        if (temp instanceof MemorySection || temp instanceof LinkedHashMap){
             final ConfigurationSection cs2 = ymlHelper.objTo_CS(cs, keyName);
             if (cs2 == null) return;
 
@@ -690,7 +690,7 @@ public class RulesParsingManager {
         parsingInfo.conditions_MaxLevel = ymlHelper.getInt2(cs,"maxlevel", parsingInfo.conditions_MaxLevel);
 
         parsingInfo.stopProcessingRules = ymlHelper.getBoolean2(cs,"stop-processing", parsingInfo.stopProcessingRules);
-        parsingInfo.conditions_Chance = ymlHelper.getDouble2(cs,"chance", parsingInfo.conditions_Chance);
+        parsingInfo.conditions_Chance = ymlHelper.getFloat2(cs,"chance", parsingInfo.conditions_Chance);
 
         final String mobCustomNameStatus = ymlHelper.getString(cs,"mob-customname-status");
         if (mobCustomNameStatus != null) {

@@ -37,7 +37,7 @@ public class CustomDropBase implements Cloneable {
     public int maxDropGroup;
     public int minPlayerLevel;
     public int maxPlayerLevel;
-    public double chance;
+    public float chance;
     public boolean playerCausedOnly;
     public boolean noSpawner;
     public String groupId;

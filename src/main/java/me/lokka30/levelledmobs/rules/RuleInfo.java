@@ -58,7 +58,7 @@ public class RuleInfo {
     public Integer conditions_MinDistanceFromSpawn;
     public Integer conditions_MaxDistanceFromSpawn;
     public Integer nametagVisibleTime;
-    public Double conditions_Chance;
+    public Float conditions_Chance;
     public Double sunlightBurnAmount;
     public String nametag;
     public String nametag_CreatureDeath;

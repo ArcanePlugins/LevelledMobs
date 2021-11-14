@@ -1130,6 +1130,9 @@ public class LevelManager implements LevelInterface {
                 }
 
                 if (!nbtDatas.isEmpty()) {
+                    boolean hadSuccess = false;
+                    final List<NBTApplyResult> allResults = new LinkedList<>();
+
                     for (final String nbtData : nbtDatas) {
                         NBTApplyResult result = NBTManager.applyNBT_Data_Mob(lmEntity, nbtData);
                         if (result.hadException()) {
@@ -1139,9 +1142,17 @@ public class LevelManager implements LevelInterface {
                                         nbtData, lmEntity.getNameIfBaby(), result.exceptionMessage));
                             }
                             else
-                                lmEntity.summonedSender.sendMessage("Error applying NBT data to " + lmEntity.getTypeName() + ". Exception message: " + result.exceptionMessage);
-                        } else
-                            Utils.debugLog(main, DebugType.NBT_APPLY_SUCCESS, "Successfully applied NBT data to '" + lmEntity.getTypeName() + "'.");
+                                lmEntity.summonedSender.sendMessage("Error applying NBT data to " + lmEntity.getNameIfBaby() + ". Exception message: " + result.exceptionMessage);
+                        } else {
+                            hadSuccess = true;
+                            allResults.add(result);
+                        }
+                    }
+
+                    if (hadSuccess && lmEntity.getMainInstance().helperSettings.getStringSet(lmEntity.getMainInstance().settingsCfg, "debug-misc").contains("NBT_APPLY_SUCCESS")) {
+                        final String changes = getNBT_DebugMessage(allResults);
+
+                        Utils.debugLog(main, DebugType.NBT_APPLY_SUCCESS, "Applied NBT data to '" + lmEntity.getNameIfBaby() + "'. " + changes);
                     }
                 }
 
@@ -1174,6 +1185,49 @@ public class LevelManager implements LevelInterface {
         if (lmEntity.isBabyMob()) sb.append(" (baby)");
 
         Utils.debugLog(main, DebugType.APPLY_LEVEL_SUCCESS, sb.toString());
+    }
+
+    @NotNull
+    private String getNBT_DebugMessage(final @NotNull List<NBTApplyResult> results){
+        final StringBuilder sb = new StringBuilder();
+
+        for (final NBTApplyResult result : results) {
+            if (result.objectsAdded == null) continue;
+
+            for (int i = 0; i < result.objectsAdded.size(); i++) {
+                if (i > 0) sb.append(", ");
+                else sb.append("added: ");
+
+                sb.append(result.objectsAdded.get(i));
+            }
+        }
+
+        for (final NBTApplyResult result : results) {
+            if (result.objectsUpdated == null) continue;
+
+            for (int i = 0; i < result.objectsUpdated.size(); i++) {
+                if (i > 0 || sb.length() > 0) sb.append(", ");
+                if (i == 0) sb.append("updated: ");
+
+                sb.append(result.objectsUpdated.get(i));
+            }
+        }
+
+        for (final NBTApplyResult result : results) {
+            if (result.objectsRemoved == null) continue;
+
+            for (int i = 0; i < result.objectsRemoved.size(); i++) {
+                if (i > 0 || sb.length() > 0) sb.append(", ");
+                if (i == 0) sb.append("removed: ");
+
+                sb.append(result.objectsRemoved.get(i));
+            }
+        }
+
+        if (sb.length() > 0)
+            return sb.toString();
+        else
+            return "";
     }
 
     private void getPlayersNearMob(final @NotNull LivingEntityWrapper lmEntity){

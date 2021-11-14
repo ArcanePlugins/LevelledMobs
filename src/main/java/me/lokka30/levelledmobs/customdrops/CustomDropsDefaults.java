@@ -33,9 +33,9 @@ public class CustomDropsDefaults {
     public int maxDropGroup;
     public int minPlayerLevel;
     public int maxPlayerLevel;
-    public double chance;
-    public double equippedSpawnChance;
-    public Double overallChance;
+    public float chance;
+    public float equippedSpawnChance;
+    public Float overallChance;
     public String groupId;
     public String damage;
     public String nbtData;
@@ -47,7 +47,7 @@ public class CustomDropsDefaults {
 
     public CustomDropsDefaults() {
         // these are the defaults of the defaults
-        this.chance = 0.2;
+        this.chance = 0.2F;
         this.amount = 1;
         this.minLevel = -1;
         this.maxLevel = -1;
@@ -55,7 +55,7 @@ public class CustomDropsDefaults {
         this.maxPlayerLevel = -1;
         this.customModelData = -1;
         this.priority = 0;
-        this.equippedSpawnChance = 0.0;
+        this.equippedSpawnChance = 0.0F;
         this.maxDropGroup = 0;
         this.noMultiplier = false;
         this.noSpawner = false;

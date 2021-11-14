@@ -269,10 +269,9 @@ public class CustomDropsParser {
 
                 if ("overall_chance".equalsIgnoreCase(materialName)){
                     if (itemEntry.getValue() instanceof Double)
-                        dropInstance.overallChance = (Double) itemEntry.getValue();
+                        dropInstance.overallChance = (float) itemEntry.getValue();
                     else if (itemEntry.getValue() instanceof Integer)
-                        dropInstance.overallChance =  Double.valueOf((Integer) itemEntry.getValue());
-
+                        dropInstance.overallChance = Float.valueOf((Integer) itemEntry.getValue());
                     continue;
                 }
                 else if ("overall_permission".equalsIgnoreCase(materialName)){
@@ -324,7 +323,7 @@ public class CustomDropsParser {
     }
 
     private void parseCustomDropsAttributes(@NotNull final CustomDropBase dropBase, @NotNull final ConfigurationSection cs, final @NotNull CustomDropInstance dropInstance){
-        dropBase.chance = ymlHelper.getDouble(cs, "chance", this.defaults.chance);
+        dropBase.chance = ymlHelper.getFloat(cs, "chance", this.defaults.chance);
         dropBase.permissions.addAll(this.defaults.permissions);
         dropBase.permissions.addAll(ymlHelper.getStringSet(cs, "permission"));
         dropBase.minLevel = ymlHelper.getInt(cs,"minlevel", this.defaults.minLevel);
@@ -345,7 +344,7 @@ public class CustomDropsParser {
         }
 
         if (!Utils.isNullOrEmpty(ymlHelper.getString(cs,"overall_chance"))) {
-            dropInstance.overallChance = ymlHelper.getDouble(cs, "overall_chance");
+            dropInstance.overallChance = ymlHelper.getFloat(cs, "overall_chance");
             if (dropInstance.overallChance == 0.0) dropInstance.overallChance = null;
         }
 
@@ -611,14 +610,14 @@ public class CustomDropsParser {
         if (Utils.isNullOrEmpty(temp)) return;
 
         if ("false".equalsIgnoreCase(temp)) {
-            item.equippedSpawnChance = 0.0;
+            item.equippedSpawnChance = 0.0F;
             return;
         } else if ("true".equalsIgnoreCase(temp)) {
-            item.equippedSpawnChance = 1.0;
+            item.equippedSpawnChance = 1.0F;
             return;
         }
 
-        item.equippedSpawnChance = ymlHelper.getDouble(cs,"equipped", this.defaults.equippedSpawnChance);
+        item.equippedSpawnChance = ymlHelper.getFloat(cs,"equipped", this.defaults.equippedSpawnChance);
     }
 
     @Nullable

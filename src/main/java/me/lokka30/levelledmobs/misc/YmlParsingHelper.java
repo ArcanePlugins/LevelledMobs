@@ -105,6 +105,28 @@ public class YmlParsingHelper {
             return defaultValue;
     }
 
+    public float getFloat(final ConfigurationSection cs, @NotNull final String name){
+        return getFloat(cs, name, 0.0F);
+    }
+
+    public float getFloat(final ConfigurationSection cs, @NotNull final String name, final float defaultValue){
+        if (cs == null) return defaultValue;
+        final String useName = getKeyNameFromConfig(cs, name);
+
+        return (float) cs.getDouble(useName, defaultValue);
+    }
+
+    @Nullable
+    public Float getFloat2(final ConfigurationSection cs, @NotNull final String name, final Float defaultValue){
+        if (cs == null) return defaultValue;
+        final String useName = getKeyNameFromConfig(cs, name);
+
+        if (cs.get(useName) != null)
+            return (float) cs.getDouble(useName);
+        else
+            return defaultValue;
+    }
+
     @NotNull
     public static List<String> getListFromConfigItem(@NotNull final ConfigurationSection cs, final String key){
         String foundKeyName = null;
