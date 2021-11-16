@@ -55,6 +55,7 @@ public class EntitySpawnListener implements Listener {
         if (event instanceof CreatureSpawnEvent && ((CreatureSpawnEvent) event).getSpawnReason().equals(CreatureSpawnEvent.SpawnReason.CUSTOM) &&
                 !lmEntity.isLevelled()) {
 
+            lmEntity.setSpawnReason(LevelledMobSpawnReason.CUSTOM);
             if (main.configUtils.playerLevellingEnabled && lmEntity.getPlayerForLevelling() == null)
                 updateMobForPlayerLevelling(lmEntity);
 
@@ -68,8 +69,8 @@ public class EntitySpawnListener implements Listener {
             return;
         }
 
-        if (event instanceof CreatureSpawnEvent && ((CreatureSpawnEvent) event).getSpawnReason().equals(CreatureSpawnEvent.SpawnReason.SPAWNER))
-            lmEntity.setSpawnReason(LevelledMobSpawnReason.SPAWNER);
+        if (event instanceof CreatureSpawnEvent)
+            lmEntity.setSpawnReason(adaptVanillaSpawnReason(((CreatureSpawnEvent) event).getSpawnReason()));
 
         if (main.configUtils.playerLevellingEnabled && lmEntity.getPlayerForLevelling() == null)
             updateMobForPlayerLevelling(lmEntity);
@@ -245,9 +246,7 @@ public class EntitySpawnListener implements Listener {
         } else if (event instanceof ChunkLoadEvent)
             additionalInfo = AdditionalLevelInformation.FROM_CHUNK_LISTENER;
 
-        if (!lmEntity.reEvaluateLevel)
-            lmEntity.setSpawnReason(spawnReason);
-        else if (main.configUtils.playerLevellingEnabled && lmEntity.isRulesForceAll){
+        if (lmEntity.reEvaluateLevel && main.configUtils.playerLevellingEnabled && lmEntity.isRulesForceAll){
             synchronized (lmEntity.getLivingEntity().getPersistentDataContainer()){
                 if (lmEntity.getPDC().has(main.namespaced_keys.playerLevelling_Id, PersistentDataType.STRING))
                     lmEntity.getPDC().remove(main.namespaced_keys.playerLevelling_Id);

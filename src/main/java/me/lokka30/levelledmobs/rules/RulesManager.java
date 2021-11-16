@@ -295,7 +295,7 @@ public class RulesManager {
     }
 
     public int getRule_MobMaxLevel(@NotNull final LivingEntityInterface lmInterface){
-        int maxLevel = 10;
+        int maxLevel = 0;
 
         for (final RuleInfo ruleInfo : lmInterface.getApplicableRules()) {
             if (ruleInfo.restrictions_MaxLevel != null) maxLevel = ruleInfo.restrictions_MaxLevel;
