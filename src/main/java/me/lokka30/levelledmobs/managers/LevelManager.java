@@ -48,17 +48,30 @@ import java.util.stream.Collectors;
  */
 public class LevelManager implements LevelInterface {
 
+    public LevelManager(final LevelledMobs main) {
+        this.main = main;
+        this.randomLevellingCache = new TreeMap<>();
+        this.summonedOrSpawnEggs = new WeakHashMap<>();
+
+        this.vehicleNoMultiplierItems = Arrays.asList(
+                Material.SADDLE,
+                Material.LEATHER_HORSE_ARMOR,
+                Material.IRON_HORSE_ARMOR,
+                Material.GOLDEN_HORSE_ARMOR,
+                Material.DIAMOND_HORSE_ARMOR
+        );
+    }
+
     private final LevelledMobs main;
     private final static int maxLevelNumsCache = 10;
     final private List<Material> vehicleNoMultiplierItems;
     public double attributeMaxHealthMax = 2048.0;
     public double attributeMovementSpeedMax = 2048.0;
     public double attributeAttackDamageMax = 2048.0;
-    public Location summonedLocation;
-    public EntityType summonedEntityType;
+    public final Map<LivingEntity, Object> summonedOrSpawnEggs;
+    public static final Object summonedOrSpawnEggs_Lock = new Object();
     private boolean hasMentionedNBTAPI_Missing;
     private final Map<String, RandomLevellingStrategy> randomLevellingCache;
-
     public final static int maxCreeperBlastRadius = 100;
     public EntitySpawnListener entitySpawnListener;
 
@@ -83,20 +96,6 @@ public class LevelManager implements LevelInterface {
      * Stored as Strings since older versions may not contain certain entity type constants
      */
     public final HashSet<String> OTHER_HOSTILE_MOBS = new HashSet<>(Arrays.asList("GHAST", "HOGLIN", "SHULKER", "PHANTOM", "ENDER_DRAGON", "SLIME", "MAGMA_CUBE", "ZOMBIFIED_PIGLIN"));
-
-    public LevelManager(final LevelledMobs main) {
-        this.main = main;
-        this.summonedEntityType = EntityType.UNKNOWN;
-        this.randomLevellingCache = new TreeMap<>();
-
-        this.vehicleNoMultiplierItems = Arrays.asList(
-                Material.SADDLE,
-                Material.LEATHER_HORSE_ARMOR,
-                Material.IRON_HORSE_ARMOR,
-                Material.GOLDEN_HORSE_ARMOR,
-                Material.DIAMOND_HORSE_ARMOR
-        );
-    }
 
     public void clearRandomLevellingCache(){
         this.randomLevellingCache.clear();
@@ -725,8 +724,10 @@ public class LevelManager implements LevelInterface {
                             Utils.debugLog(main, DebugType.ENTITY_MISC, "&b" + lmEntity.getTypeName() + " &7was a baby and is now an adult, applying levelling rules");
 
                             main._mobsQueueManager.addToQueue(new QueueItem(lmEntity, null));
-                        } else if (levellableState == LevellableState.ALLOWED)
+                        } else if (levellableState == LevellableState.ALLOWED) {
+                            Utils.logger.info("async, levelling mob 2");
                             main._mobsQueueManager.addToQueue(new QueueItem(lmEntity, null));
+                        }
                     }
                 }
 

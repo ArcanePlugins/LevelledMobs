@@ -31,11 +31,13 @@ public class PlayerDeathListener {
         final LivingEntityWrapper lmEntity = getPlayersKiller(event);
 
         if (lmEntity == null){
-            main.placeholderApiIntegration.putPlayerOrMobDeath(event.getEntity(), null);
+            if (main.placeholderApiIntegration != null)
+                main.placeholderApiIntegration.putPlayerOrMobDeath(event.getEntity(), null);
             return true;
         }
 
-        main.placeholderApiIntegration.putPlayerOrMobDeath(event.getEntity(), lmEntity);
+        if (main.placeholderApiIntegration != null)
+            main.placeholderApiIntegration.putPlayerOrMobDeath(event.getEntity(), lmEntity);
         lmEntity.free();
 
         return true;

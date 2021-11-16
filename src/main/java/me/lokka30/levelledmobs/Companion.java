@@ -62,7 +62,6 @@ public class Companion {
     public List<String> updateResult;
     final public List<UUID> spawner_CopyIds;
     final public List<UUID> spawner_InfoIds;
-    public boolean playerInteractListenerIsRegistered;
     final private PluginManager pluginManager = Bukkit.getPluginManager();
     final private MetricsInfo metricsInfo;
 
@@ -215,6 +214,7 @@ public class Companion {
         pluginManager.registerEvents(main.blockPlaceListener, main);
         main.chunkLoadListener = new ChunkLoadListener(main);
         main.playerInteractEventListener = new PlayerInteractEventListener(main);
+        pluginManager.registerEvents(main.playerInteractEventListener, main);
 
         if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
             main.placeholderApiIntegration = new PlaceholderApiIntegration(main);
@@ -228,12 +228,12 @@ public class Companion {
     void registerCommands() {
         Utils.logger.info("&fCommands: &7Registering commands...");
 
+        main.levelledMobsCommand = new LevelledMobsCommand(main);
         final PluginCommand levelledMobsCommand = main.getCommand("levelledmobs");
-        if (levelledMobsCommand == null) {
+        if (levelledMobsCommand == null)
             Utils.logger.error("Command &b/levelledmobs&7 is unavailable, is it not registered in plugin.yml?");
-        } else {
-            levelledMobsCommand.setExecutor(new LevelledMobsCommand(main));
-        }
+        else
+            levelledMobsCommand.setExecutor(main.levelledMobsCommand);
     }
 
     void loadSpigotConfig(){

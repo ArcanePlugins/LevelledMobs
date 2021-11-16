@@ -25,6 +25,7 @@ public class Namespaced_Keys {
         spawnedTimeOfDay = new NamespacedKey(main, "spawnedTimeOfDay");
         wasSummoned = new NamespacedKey(main, "wasSummoned");
 
+        spawnerEgg = new NamespacedKey(main, "spawnerEgg");
         keySpawner = new NamespacedKey(main, "spawner");
         keySpawner_MinLevel = new NamespacedKey(main, "minlevel");
         keySpawner_MaxLevel = new NamespacedKey(main, "maxlevel");
@@ -57,6 +58,7 @@ public class Namespaced_Keys {
     public final NamespacedKey spawnedTimeOfDay;
     public final NamespacedKey wasSummoned;
 
+    final public NamespacedKey spawnerEgg;
     final public NamespacedKey keySpawner;
     final public NamespacedKey keySpawner_MinLevel;
     final public NamespacedKey keySpawner_MaxLevel;

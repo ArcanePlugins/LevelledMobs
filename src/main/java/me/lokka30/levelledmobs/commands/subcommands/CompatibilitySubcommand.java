@@ -5,6 +5,7 @@
 package me.lokka30.levelledmobs.commands.subcommands;
 
 import me.lokka30.levelledmobs.LevelledMobs;
+import me.lokka30.levelledmobs.commands.MessagesBase;
 import me.lokka30.levelledmobs.misc.Utils;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
@@ -18,27 +19,27 @@ import java.util.List;
  * @author lokka30
  * @since 2.4.0
  */
-public class CompatibilitySubcommand implements Subcommand {
+public class CompatibilitySubcommand extends MessagesBase implements Subcommand {
+    public CompatibilitySubcommand(final LevelledMobs main){
+        super(main);
+    }
 
     @Override
     public void parseSubcommand(final LevelledMobs main, @NotNull final CommandSender sender, final String label, final String[] args) {
-        if (sender.hasPermission("levelledmobs.command.compatibility")) {
-            if (args.length == 1) {
-                List<String> messages = main.messagesCfg.getStringList("command.levelledmobs.compatibility.notice");
-                messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.getPrefix());
-                messages = Utils.colorizeAllInList(messages);
-                messages.forEach(sender::sendMessage);
-                main.companion.checkCompatibility();
-            } else {
-                List<String> messages = main.messagesCfg.getStringList("command.levelledmobs.compatibility.usage");
-                messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.getPrefix());
-                messages = Utils.replaceAllInList(messages, "%label%", label);
-                messages = Utils.colorizeAllInList(messages);
-                messages.forEach(sender::sendMessage);
-            }
-        } else {
+        commandSender = sender;
+        messageLabel = label;
+
+        if (!sender.hasPermission("levelledmobs.command.compatibility")) {
             main.configUtils.sendNoPermissionMsg(sender);
+            return;
         }
+
+        if (args.length == 1) {
+            showMessage("command.levelledmobs.compatibility.notice");
+            main.companion.checkCompatibility();
+        }
+        else
+            showMessage("command.levelledmobs.compatibility.usage");
     }
 
     @Override

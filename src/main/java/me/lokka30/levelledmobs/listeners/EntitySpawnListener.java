@@ -6,6 +6,7 @@ package me.lokka30.levelledmobs.listeners;
 
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.managers.ExternalCompatibilityManager;
+import me.lokka30.levelledmobs.managers.LevelManager;
 import me.lokka30.levelledmobs.misc.*;
 import me.lokka30.levelledmobs.rules.LevelledMobSpawnReason;
 import me.lokka30.levelledmobs.rules.NametagVisibilityEnum;
@@ -52,15 +53,19 @@ public class EntitySpawnListener implements Listener {
 
         final LivingEntityWrapper lmEntity = LivingEntityWrapper.getInstance((LivingEntity) event.getEntity(), main);
 
-        if (event instanceof CreatureSpawnEvent && ((CreatureSpawnEvent) event).getSpawnReason().equals(CreatureSpawnEvent.SpawnReason.CUSTOM) &&
-                !lmEntity.isLevelled()) {
+        if (event instanceof CreatureSpawnEvent) {
+            final CreatureSpawnEvent.SpawnReason spawnReason = ((CreatureSpawnEvent) event).getSpawnReason();
 
-            if (main.configUtils.playerLevellingEnabled && lmEntity.getPlayerForLevelling() == null)
-                updateMobForPlayerLevelling(lmEntity);
+            lmEntity.setSpawnReason(LevelledMobSpawnReason.CUSTOM);
+            if ((spawnReason.equals(CreatureSpawnEvent.SpawnReason.CUSTOM) || spawnReason.equals(CreatureSpawnEvent.SpawnReason.SPAWNER_EGG)) &&
+                    !lmEntity.isLevelled()) {
+                if (main.configUtils.playerLevellingEnabled && lmEntity.getPlayerForLevelling() == null)
+                    updateMobForPlayerLevelling(lmEntity);
 
-            delayedAddToQueue(lmEntity, event, 20);
-            lmEntity.free();
-            return;
+                delayedAddToQueue(lmEntity, event, 20);
+                lmEntity.free();
+                return;
+            }
         }
 
         if (!processMobSpawns) {
@@ -68,8 +73,8 @@ public class EntitySpawnListener implements Listener {
             return;
         }
 
-        if (event instanceof CreatureSpawnEvent && ((CreatureSpawnEvent) event).getSpawnReason().equals(CreatureSpawnEvent.SpawnReason.SPAWNER))
-            lmEntity.setSpawnReason(LevelledMobSpawnReason.SPAWNER);
+        if (event instanceof CreatureSpawnEvent)
+            lmEntity.setSpawnReason(adaptVanillaSpawnReason(((CreatureSpawnEvent) event).getSpawnReason()));
 
         if (main.configUtils.playerLevellingEnabled && lmEntity.getPlayerForLevelling() == null)
             updateMobForPlayerLevelling(lmEntity);
@@ -233,20 +238,23 @@ public class EntitySpawnListener implements Listener {
                     spawnEvent.getSpawnReason().equals(CreatureSpawnEvent.SpawnReason.SLIME_SPLIT))
                 return;
 
-            if (spawnEvent.getSpawnReason().equals(CreatureSpawnEvent.SpawnReason.CUSTOM) &&
-                    main.levelManager.summonedEntityType.equals(lmEntity.getEntityType()) &&
-                    areLocationsTheSame(main.levelManager.summonedLocation, lmEntity.getLocation())) {
-                // the mob was spawned by the summon command and will get processed directly
-                return;
+            if (spawnEvent.getSpawnReason().equals(CreatureSpawnEvent.SpawnReason.CUSTOM) ||
+                    spawnEvent.getSpawnReason().equals(CreatureSpawnEvent.SpawnReason.SPAWNER_EGG)) {
+                synchronized (LevelManager.summonedOrSpawnEggs_Lock){
+                    if (main.levelManager.summonedOrSpawnEggs.containsKey(lmEntity.getLivingEntity())) {
+                        // the mob was spawned by the summon command and will get processed directly
+                        return;
+                    }
+                }
             }
 
             spawnReason = adaptVanillaSpawnReason(spawnEvent.getSpawnReason());
+            if (!lmEntity.reEvaluateLevel)
+                lmEntity.setSpawnReason(spawnReason);
         } else if (event instanceof ChunkLoadEvent)
             additionalInfo = AdditionalLevelInformation.FROM_CHUNK_LISTENER;
 
-        if (!lmEntity.reEvaluateLevel)
-            lmEntity.setSpawnReason(spawnReason);
-        else if (main.configUtils.playerLevellingEnabled && lmEntity.isRulesForceAll){
+        if (lmEntity.reEvaluateLevel && main.configUtils.playerLevellingEnabled && lmEntity.isRulesForceAll){
             synchronized (lmEntity.getLivingEntity().getPersistentDataContainer()){
                 if (lmEntity.getPDC().has(main.namespaced_keys.playerLevelling_Id, PersistentDataType.STRING))
                     lmEntity.getPDC().remove(main.namespaced_keys.playerLevelling_Id);

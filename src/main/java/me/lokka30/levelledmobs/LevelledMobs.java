@@ -4,6 +4,7 @@
 
 package me.lokka30.levelledmobs;
 
+import me.lokka30.levelledmobs.commands.LevelledMobsCommand;
 import me.lokka30.levelledmobs.customdrops.CustomDropsHandler;
 import me.lokka30.levelledmobs.listeners.BlockPlaceListener;
 import me.lokka30.levelledmobs.listeners.ChunkLoadListener;
@@ -51,6 +52,7 @@ public class LevelledMobs extends JavaPlugin {
     public final NametagQueueManager nametagQueueManager_ = new NametagQueueManager(this);
     public final NametagTimerChecker nametagTimerChecker = new NametagTimerChecker(this);
     public final Object attributeSyncObject = new Object();
+    public LevelledMobsCommand levelledMobsCommand;
     public Random random;
     public PlaceholderApiIntegration placeholderApiIntegration;
     public boolean migratedFromPre30;

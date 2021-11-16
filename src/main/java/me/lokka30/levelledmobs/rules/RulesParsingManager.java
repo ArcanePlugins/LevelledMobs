@@ -120,8 +120,8 @@ public class RulesParsingManager {
     @NotNull
     private RuleInfo parseDefaults(final ConfigurationSection cs) {
         this.parsingInfo = new RuleInfo("defaults");
-        parsingInfo.restrictions_MinLevel = 1;
-        parsingInfo.restrictions_MaxLevel = 10;
+        parsingInfo.restrictions_MinLevel = 0;
+        parsingInfo.restrictions_MaxLevel = 0;
         parsingInfo.conditions_MobCustomnameStatus = MobCustomNameStatus.EITHER;
         parsingInfo.conditions_MobTamedStatus = MobTamedStatus.EITHER;
         parsingInfo.babyMobsInheritAdultSetting = true;

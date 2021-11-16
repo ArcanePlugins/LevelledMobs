@@ -6,32 +6,39 @@ package me.lokka30.levelledmobs.listeners;
 
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.commands.subcommands.SpawnerSubCommand;
-import me.lokka30.levelledmobs.misc.Cooldown;
-import me.lokka30.levelledmobs.misc.Point;
-import me.lokka30.levelledmobs.misc.Utils;
+import me.lokka30.levelledmobs.managers.LevelManager;
+import me.lokka30.levelledmobs.misc.*;
 import me.lokka30.microlib.messaging.MessageUtils;
+import me.lokka30.microlib.other.VersionUtils;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.block.CreatureSpawner;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 
 
 /**
  * Listens for when a player interacts with the environment.
- * Currently only used to check for LM spawners
+ * Currently only used to check for LM spawners and LM spawn eggs
  *
  * @author stumper66
  * @since 3.1.2
@@ -47,10 +54,15 @@ public class PlayerInteractEventListener implements Listener {
     private final HashMap<UUID, Cooldown> cooldownMap = new HashMap<>();
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
-    void onPlayerInteractEvent(final PlayerInteractEvent event) {
+    void onPlayerInteractEvent(final @NotNull PlayerInteractEvent event) {
+        if (!event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) return;
+
+        if (event.getMaterial().name().toLowerCase().endsWith("_spawn_egg")){
+            if (processLMSpawnEgg(event)) return;
+        }
+
         if (main.companion.spawner_InfoIds.isEmpty() && main.companion.spawner_CopyIds.isEmpty()) return;
         if (event.getHand() == null || !event.getHand().equals(EquipmentSlot.HAND)) return;
-        if (!event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) return;
 
         final boolean doShowInfo = main.companion.spawner_InfoIds.contains(event.getPlayer().getUniqueId());
         final boolean doCopy = main.companion.spawner_CopyIds.contains(event.getPlayer().getUniqueId());
@@ -75,6 +87,77 @@ public class PlayerInteractEventListener implements Listener {
             showInfo(event.getPlayer(), cs);
         else if (event.getMaterial().equals(Material.AIR))
             copySpawner(event.getPlayer(), cs);
+    }
+
+    private boolean processLMSpawnEgg(final @NotNull PlayerInteractEvent event){
+        if (!VersionUtils.isRunningPaper()) return false;
+        if (event.getItem() == null) return false;
+        final ItemMeta meta = event.getItem().getItemMeta();
+        if (meta == null) return false;
+        if (event.getClickedBlock() == null) return false;
+        if (!meta.getPersistentDataContainer().has(main.namespaced_keys.spawnerEgg, PersistentDataType.INTEGER)) return false;
+
+        // we've confirmed it is a LM spawn egg. cancel the event and spawn the mob manually
+        event.setCancelled(true);
+        final Location location = event.getClickedBlock().getLocation().add(0, 1, 0);
+        int minLevel = 1;
+        int maxLevel = 1;
+        String customDropId = null;
+        EntityType spawnType = EntityType.ZOMBIE;
+
+        if (meta.getPersistentDataContainer().has(main.namespaced_keys.keySpawner_MinLevel, PersistentDataType.INTEGER)) {
+            final Integer temp = meta.getPersistentDataContainer().get(main.namespaced_keys.keySpawner_MinLevel, PersistentDataType.INTEGER);
+            if (temp != null) minLevel = temp;
+        }
+        if (meta.getPersistentDataContainer().has(main.namespaced_keys.keySpawner_MaxLevel, PersistentDataType.INTEGER)) {
+            final Integer temp = meta.getPersistentDataContainer().get(main.namespaced_keys.keySpawner_MaxLevel, PersistentDataType.INTEGER);
+            if (temp != null) maxLevel = temp;
+        }
+        if (meta.getPersistentDataContainer().has(main.namespaced_keys.keySpawner_CustomDropId, PersistentDataType.STRING))
+            customDropId = meta.getPersistentDataContainer().get(main.namespaced_keys.keySpawner_CustomDropId, PersistentDataType.STRING);
+
+        if (meta.getPersistentDataContainer().has(main.namespaced_keys.keySpawner_SpawnType, PersistentDataType.STRING)) {
+            final String temp = meta.getPersistentDataContainer().get(main.namespaced_keys.keySpawner_SpawnType, PersistentDataType.STRING);
+            if (temp != null){
+                try
+                { spawnType = EntityType.valueOf(temp); }
+                catch (Exception ignored)
+                { Utils.logger.warning("Invalid spawn type on spawner egg: " + temp); }
+            }
+        }
+
+        if (event.getClickedBlock().getBlockData().getMaterial().equals(Material.SPAWNER)){
+            convertSpawner(event);
+            return true;
+        }
+
+        final Entity entity = location.getWorld().spawnEntity(location, spawnType, CreatureSpawnEvent.SpawnReason.SPAWNER_EGG);
+        if (!(entity instanceof LivingEntity)) return true;
+
+        final LivingEntityWrapper lmEntity = LivingEntityWrapper.getInstance((LivingEntity) entity, main);
+
+        synchronized (LevelManager.summonedOrSpawnEggs_Lock){
+            main.levelManager.summonedOrSpawnEggs.put(lmEntity.getLivingEntity(), null);
+        }
+
+        int useLevel = minLevel;
+        if (minLevel != maxLevel)
+            useLevel = ThreadLocalRandom.current().nextInt(minLevel, maxLevel + 1);
+
+        main.levelInterface.applyLevelToMob(lmEntity, useLevel, true, true, new HashSet<>(Collections.singletonList(AdditionalLevelInformation.NOT_APPLICABLE)));
+        synchronized (lmEntity.getLivingEntity().getPersistentDataContainer()){
+            lmEntity.getPDC().set(main.namespaced_keys.wasSummoned, PersistentDataType.INTEGER, 1);
+            if (!Utils.isNullOrEmpty(customDropId))
+                lmEntity.getPDC().set(main.namespaced_keys.keySpawner_CustomDropId, PersistentDataType.STRING, customDropId);
+        }
+
+        lmEntity.free();
+        return true;
+    }
+
+    private void convertSpawner(final @NotNull PlayerInteractEvent event){
+        //TODO: finish spawner conversion
+        event.getPlayer().sendMessage(Component.text().content("Converting spawners not supported yet!  Check back on the next build.").build());
     }
 
     private void copySpawner(final Player player, final @NotNull CreatureSpawner cs){
@@ -115,7 +198,7 @@ public class PlayerInteractEventListener implements Listener {
         info.spawnCount = cs.getSpawnCount();
         info.spawnRange = cs.getSpawnRange();
 
-        SpawnerSubCommand.generateSpawner(info);
+        main.levelledMobsCommand.spawnerSubCommand.generateSpawner(info);
     }
 
     private void showInfo(final Player player, final @NotNull CreatureSpawner cs){
