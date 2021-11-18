@@ -5,13 +5,13 @@
 package me.lokka30.levelledmobs.listeners;
 
 import me.lokka30.levelledmobs.LevelledMobs;
+import me.lokka30.levelledmobs.commands.MessagesBase;
+import me.lokka30.levelledmobs.commands.subcommands.SpawnerBaseClass;
 import me.lokka30.levelledmobs.commands.subcommands.SpawnerSubCommand;
 import me.lokka30.levelledmobs.managers.LevelManager;
 import me.lokka30.levelledmobs.misc.*;
 import me.lokka30.microlib.messaging.MessageUtils;
 import me.lokka30.microlib.other.VersionUtils;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -31,6 +31,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
@@ -43,12 +44,9 @@ import java.util.concurrent.ThreadLocalRandom;
  * @author stumper66
  * @since 3.1.2
  */
-public class PlayerInteractEventListener implements Listener {
-
-    final private LevelledMobs main;
-
+public class PlayerInteractEventListener extends MessagesBase implements Listener {
     public PlayerInteractEventListener(final LevelledMobs main) {
-        this.main = main;
+        super(main);
     }
 
     private final HashMap<UUID, Cooldown> cooldownMap = new HashMap<>();
@@ -56,6 +54,9 @@ public class PlayerInteractEventListener implements Listener {
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     void onPlayerInteractEvent(final @NotNull PlayerInteractEvent event) {
         if (!event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) return;
+
+        commandSender = event.getPlayer();
+        messageLabel = "lm";
 
         if (event.getMaterial().name().toLowerCase().endsWith("_spawn_egg")){
             if (processLMSpawnEgg(event)) return;
@@ -127,7 +128,17 @@ public class PlayerInteractEventListener implements Listener {
         }
 
         if (event.getClickedBlock().getBlockData().getMaterial().equals(Material.SPAWNER)){
-            convertSpawner(event);
+            final SpawnerBaseClass.CustomSpawnerInfo info = new SpawnerBaseClass.CustomSpawnerInfo(main, null);
+            info.minLevel = minLevel;
+            info.maxLevel = maxLevel;
+            info.spawnType = spawnType;
+            info.customDropId = customDropId;
+            if (meta.getPersistentDataContainer().has(main.namespaced_keys.keySpawner_CustomName, PersistentDataType.STRING))
+                info.customName = meta.getPersistentDataContainer().get(main.namespaced_keys.keySpawner_CustomName, PersistentDataType.STRING);
+            if (meta.getPersistentDataContainer().has(main.namespaced_keys.keySpawner_Lore, PersistentDataType.STRING))
+                info.lore = meta.getPersistentDataContainer().get(main.namespaced_keys.keySpawner_Lore, PersistentDataType.STRING);
+
+            convertSpawner(event, info);
             return true;
         }
 
@@ -155,9 +166,43 @@ public class PlayerInteractEventListener implements Listener {
         return true;
     }
 
-    private void convertSpawner(final @NotNull PlayerInteractEvent event){
-        //TODO: finish spawner conversion
-        event.getPlayer().sendMessage(Component.text().content("Converting spawners not supported yet!  Check back on the next build.").build());
+    private void convertSpawner(final @NotNull PlayerInteractEvent event, final SpawnerBaseClass.CustomSpawnerInfo info){
+        if (event.getClickedBlock() == null) return;
+
+        if (!event.getPlayer().hasPermission("levelledmobs.convert-spawner")){
+            showMessage("command.levelledmobs.spawner.permission-denied");
+            return;
+        }
+
+        final CreatureSpawner cs = (CreatureSpawner) event.getClickedBlock().getState();
+        final PersistentDataContainer pdc = cs.getPersistentDataContainer();
+        final boolean wasLMSpawner = pdc.has(main.namespaced_keys.keySpawner, PersistentDataType.INTEGER);
+
+        pdc.set(info.main.namespaced_keys.keySpawner, PersistentDataType.INTEGER, 1);
+        pdc.set(info.main.namespaced_keys.keySpawner_MinLevel, PersistentDataType.INTEGER, info.minLevel);
+        pdc.set(info.main.namespaced_keys.keySpawner_MaxLevel, PersistentDataType.INTEGER, info.maxLevel);
+
+        updateKeyString(main.namespaced_keys.keySpawner_CustomDropId, pdc, info.customDropId);
+        updateKeyString(info.main.namespaced_keys.keySpawner_SpawnType, pdc, info.spawnType.toString());
+        updateKeyString(info.main.namespaced_keys.keySpawner_CustomName, pdc, info.customName);
+
+        cs.setSpawnedType(info.spawnType);
+        cs.update();
+
+        if (Utils.isNullOrEmpty(info.customName))
+            info.customName = "LM Spawner";
+
+        if (!wasLMSpawner)
+            showMessage("command.levelledmobs.spawner.spawner-converted", "%spawnername%", info.customName);
+        else
+            showMessage("command.levelledmobs.spawner.spawner-updated", "%spawnername%", info.customName);
+    }
+
+    private void updateKeyString(final NamespacedKey key, final @NotNull PersistentDataContainer pdc, final @Nullable String value){
+        if (!Utils.isNullOrEmpty(value))
+            pdc.set(key, PersistentDataType.STRING, value);
+        else if (pdc.has(key, PersistentDataType.STRING))
+            pdc.remove(key);
     }
 
     private void copySpawner(final Player player, final @NotNull CreatureSpawner cs){
@@ -166,11 +211,7 @@ public class PlayerInteractEventListener implements Listener {
         final PersistentDataContainer pdc = cs.getPersistentDataContainer();
 
         if (!pdc.has(main.namespaced_keys.keySpawner, PersistentDataType.INTEGER)){
-            List<String> messages = main.messagesCfg.getStringList("command.levelledmobs.spawner.copy.vanilla-spawner");
-            messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.getPrefix());
-            messages = Utils.replaceAllInList(messages, "%label%", "lm");
-            messages = Utils.colorizeAllInList(messages);
-            messages.forEach(player::sendMessage);
+            showMessage("command.levelledmobs.spawner.copy.vanilla-spawner");
             return;
         }
 

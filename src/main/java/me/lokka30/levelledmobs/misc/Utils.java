@@ -166,7 +166,7 @@ public final class Utils {
     public static void debugLog(@NotNull final LevelledMobs instance, @NotNull final DebugType debugType, @NotNull final String msg) {
         if (instance.settingsCfg == null) return;
 
-        if (instance.helperSettings.getStringSet(instance.settingsCfg, "debug-misc").contains(debugType.toString()))
+        if (instance.companion.debugsEnabled.contains(debugType))
             logger.info("&8[&bDebug: " + debugType + "&8]&7 " + msg);
     }
 

@@ -1150,7 +1150,7 @@ public class LevelManager implements LevelInterface {
                         }
                     }
 
-                    if (hadSuccess && lmEntity.getMainInstance().helperSettings.getStringSet(lmEntity.getMainInstance().settingsCfg, "debug-misc").contains("NBT_APPLY_SUCCESS")) {
+                    if (hadSuccess && lmEntity.getMainInstance().companion.debugsEnabled.contains(DebugType.NBT_APPLY_SUCCESS)) {
                         final String changes = getNBT_DebugMessage(allResults);
 
                         Utils.debugLog(main, DebugType.NBT_APPLY_SUCCESS, "Applied NBT data to '" + lmEntity.getNameIfBaby() + "'. " + changes);

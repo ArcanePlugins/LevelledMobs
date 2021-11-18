@@ -1,9 +1,9 @@
 package me.lokka30.levelledmobs.misc;
 
+import me.lokka30.microlib.other.VersionUtils;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.event.ClickEvent;
-import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -46,8 +46,14 @@ public class PaperUtils {
     public static String getPlayerDisplayName(final @Nullable Player player){
         if (player == null) return "";
         final Component comp = player.displayName();
-        if (comp instanceof TextComponent)
-            return PlainTextComponentSerializer.plainText().serialize(comp);
+        if (comp instanceof TextComponent) {
+            if (VersionUtils.isOneSeventeen()) {
+                // this is needed because PlainTextComponentSerializer is available in 1.16.5
+                return Paper117Utils.serializeTextComponent((TextComponent) comp);
+            }
+            else
+                return net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacySection().serialize(comp);
+        }
         else
             return comp.toString(); // this is never happen but just in case.  it will return a bunch of garbage
     }

@@ -335,8 +335,9 @@ public class CustomDropsHandler {
         if (!doDrop){
             if (dropBase instanceof CustomDropItem) {
                 final CustomDropItem dropItem = (CustomDropItem) dropBase;
-                if (!info.equippedOnly && ymlHelper.getStringSet(main.settingsCfg, "debug-misc").contains("CUSTOM_DROPS")) {
+                if (!info.equippedOnly && isCustomDropsDebuggingEnabled()) {
                     final ItemStack itemStack = info.deathByFire ? getCookedVariantOfMeat(dropItem.getItemStack()) : dropItem.getItemStack();
+
                     info.addDebugMessage(String.format("&8- &7level: &b%s&7, fromSpawner: &b%s&7, item: &b%s&7, minL: &b%s&7, maxL: &b%s&7, nospawner: &b%s&7, dropped: &bfalse",
                             info.lmEntity.getMobLevel(), info.isSpawner, itemStack.getType().name(), dropBase.minLevel, dropBase.maxLevel, dropBase.noSpawner));
                 }
@@ -374,7 +375,7 @@ public class CustomDropsHandler {
             if (1.0F - chanceRole >= dropBase.chance) didNotMakeChance = true;
         }
 
-        if (didNotMakeChance && !info.equippedOnly && ymlHelper.getStringSet(main.settingsCfg, "debug-misc").contains("CUSTOM_DROPS")) {
+        if (didNotMakeChance && !info.equippedOnly && isCustomDropsDebuggingEnabled()) {
             if (dropBase instanceof CustomDropItem) {
                 CustomDropItem dropItem = (CustomDropItem) dropBase;
                 final ItemStack itemStack = info.deathByFire ? getCookedVariantOfMeat(dropItem.getItemStack()) : dropItem.getItemStack();
@@ -396,7 +397,7 @@ public class CustomDropsHandler {
                 count = info.groupIDsDroppedAlready.get(dropBase.groupId);
 
             if (dropBase.maxDropGroup > 0 && count >= dropBase.maxDropGroup || dropBase.maxDropGroup == 0 && count > 0){
-                if (ymlHelper.getStringSet(main.settingsCfg, "debug-misc").contains("CUSTOM_DROPS")) {
+                if (isCustomDropsDebuggingEnabled()) {
                     if (dropBase instanceof CustomDropItem) {
                         info.addDebugMessage(String.format("&8- &7level: &b%s&7, item: &b%s&7, gId: &b%s&7, maxDropGroup: &b%s&7, groupDropCount: &b%s&7, dropped: &bfalse",
                                 info.lmEntity.getMobLevel(), ((CustomDropItem) dropBase).getMaterial().name(), dropBase.groupId, dropBase.maxDropGroup, count));
@@ -420,11 +421,11 @@ public class CustomDropsHandler {
 
                 info.groupIDsDroppedAlready.put(dropBase.groupId, count);
 
-                if (main.settingsCfg.getStringList("debug-misc").contains("CUSTOM_DROPS")) {
+                if (isCustomDropsDebuggingEnabled()) {
                     info.addDebugMessage(String.format("&8- &7level: &b%s&7, item: custom command, gId: &b%s&7, maxDropGroup: &b%s&7, groupDropCount: &b%s&7, executed: &btrue",
                             info.lmEntity.getMobLevel(), dropBase.groupId, dropBase.maxDropGroup, count));
                 }
-            } else if (main.settingsCfg.getStringList("debug-misc").contains("CUSTOM_DROPS")) {
+            } else if (isCustomDropsDebuggingEnabled()) {
                 info.addDebugMessage(String.format("&8- &7level: &b%s&7, item: custom command, gId: &b%s&7, maxDropGroup: &b%s&7, executed: &btrue",
                         info.lmEntity.getMobLevel(), dropBase.groupId, dropBase.maxDropGroup));
             }
@@ -441,7 +442,7 @@ public class CustomDropsHandler {
         if (info.equippedOnly && dropItem.equippedSpawnChance < 1.0F) {
             chanceRole = (float) ThreadLocalRandom.current().nextInt(0, 100001) * 0.00001F;
             if (1.0F - chanceRole >= dropItem.equippedSpawnChance){
-                if (ymlHelper.getStringSet(main.settingsCfg, "debug-misc").contains("CUSTOM_DROPS")) {
+                if (isCustomDropsDebuggingEnabled()) {
                     info.addDebugMessage(String.format("&8- Mob: &b%s&7, &7level: &b%s&7, item: &b%s&7, spawnchance: &b%s&7, chancerole: &b%s&7, did not make spawn chance",
                             info.lmEntity.getTypeName(), info.lmEntity.getMobLevel(), dropItem.getMaterial().name(), dropItem.equippedSpawnChance, Utils.round(chanceRole, 4)));
                 }
@@ -470,7 +471,7 @@ public class CustomDropsHandler {
 
         if (newItem.getAmount() != newDropAmount) newItem.setAmount(newDropAmount);
 
-        if (ymlHelper.getStringSet(main.settingsCfg, "debug-misc").contains("CUSTOM_DROPS")){
+        if (isCustomDropsDebuggingEnabled()){
             if (info.equippedOnly) {
                 info.addDebugMessage(String.format(
                         "&8 - &7item: &b%s&7, equipChance: &b%s&7, chanceRole: &b%s&7, equipped: &btrue&7.",
@@ -625,7 +626,7 @@ public class CustomDropsHandler {
 
             if (dropBase.minPlayerLevel > -1 && levelToUse < dropBase.minPlayerLevel ||
                     dropBase.maxPlayerLevel > -1 && levelToUse > dropBase.maxPlayerLevel){
-                if (ymlHelper.getStringSet(main.settingsCfg, "debug-misc").contains("CUSTOM_DROPS")){
+                if (isCustomDropsDebuggingEnabled()){
                     if (dropBase instanceof CustomDropItem) {
                         info.addDebugMessage(String.format(
                                 "&8 - &7Mob: &b%s&7, item: %s, lvl-src: %s, minlvl: %s, maxlvl: %s player level criteria not met",
@@ -722,6 +723,6 @@ public class CustomDropsHandler {
     }
 
     private boolean isCustomDropsDebuggingEnabled() {
-        return ymlHelper.getStringSet(main.settingsCfg, "debug-misc").contains("CUSTOM_DROPS");
+        return main.companion.debugsEnabled.contains(DebugType.CUSTOM_DROPS);
     }
 }

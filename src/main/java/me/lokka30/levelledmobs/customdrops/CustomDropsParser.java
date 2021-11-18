@@ -209,7 +209,7 @@ public class CustomDropsParser {
             } // next mob or group
         } // next root item from file
 
-        if (ymlHelper.getStringSet(main.settingsCfg, "debug-misc").contains("CUSTOM_DROPS")) {
+        if (main.companion.debugsEnabled.contains(DebugType.CUSTOM_DROPS)) {
             int dropsCount = 0;
             int commandsCount = 0;
             for (final EntityType et : handler.customDropsitems.keySet()){

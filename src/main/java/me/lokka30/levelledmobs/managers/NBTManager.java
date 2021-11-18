@@ -10,6 +10,7 @@ import de.tr7zw.nbtapi.NBTContainer;
 import de.tr7zw.nbtapi.NBTEntity;
 import de.tr7zw.nbtapi.NBTItem;
 import me.lokka30.levelledmobs.customdrops.CustomDropItem;
+import me.lokka30.levelledmobs.misc.DebugType;
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
 import me.lokka30.levelledmobs.misc.NBTApplyResult;
 import org.jetbrains.annotations.NotNull;
@@ -48,7 +49,7 @@ public class NBTManager {
             nbtent.mergeCompound(new NBTContainer(nbtStuff));
             final String jsonAfter = nbtent.toString();
 
-            if (lmEntity.getMainInstance().helperSettings.getStringSet(lmEntity.getMainInstance().settingsCfg, "debug-misc").contains("NBT_APPLY_SUCCESS"))
+            if (lmEntity.getMainInstance().companion.debugsEnabled.contains(DebugType.NBT_APPLY_SUCCESS))
                 showChangedJson(jsonBefore, jsonAfter, result);
 
             if (jsonBefore.equals(jsonAfter))

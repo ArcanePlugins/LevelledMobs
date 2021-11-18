@@ -13,10 +13,7 @@ import me.lokka30.levelledmobs.managers.ExternalCompatibilityManager;
 import me.lokka30.levelledmobs.managers.LevelManager;
 import me.lokka30.levelledmobs.managers.PlaceholderApiIntegration;
 import me.lokka30.levelledmobs.managers.WorldGuardIntegration;
-import me.lokka30.levelledmobs.misc.FileLoader;
-import me.lokka30.levelledmobs.misc.FileMigrator;
-import me.lokka30.levelledmobs.misc.Utils;
-import me.lokka30.levelledmobs.misc.VersionInfo;
+import me.lokka30.levelledmobs.misc.*;
 import me.lokka30.levelledmobs.rules.MetricsInfo;
 import me.lokka30.microlib.exceptions.OutdatedServerVersionException;
 import me.lokka30.microlib.other.UpdateChecker;
@@ -53,6 +50,7 @@ public class Companion {
         this.metricsInfo = new MetricsInfo(main);
         this.spawner_CopyIds = new LinkedList<>();
         this.spawner_InfoIds = new LinkedList<>();
+        this.debugsEnabled = new LinkedList<>();
     }
 
     public HashSet<EntityType> groups_HostileMobs;
@@ -62,6 +60,7 @@ public class Companion {
     public List<String> updateResult;
     final public List<UUID> spawner_CopyIds;
     final public List<UUID> spawner_InfoIds;
+    final public List<DebugType> debugsEnabled;
     final private PluginManager pluginManager = Bukkit.getPluginManager();
     final private MetricsInfo metricsInfo;
 
@@ -155,14 +154,34 @@ public class Companion {
 
         }
 
-        final List<String> debugsEnabled = main.settingsCfg.getStringList(main.helperSettings.getKeyNameFromConfig(main.settingsCfg, "debug-misc"));
-        if (!debugsEnabled.isEmpty())
-            Utils.logger.info("misc debugs enabled: &b" + debugsEnabled);
+        parseDebugsEnabled();
 
         main.configUtils.load();
         main.playerLevellingMinRelevelTime = main.helperSettings.getInt(main.settingsCfg, "player-levelling-relevel-min-time", 5000);
 
         return true;
+    }
+
+    private void parseDebugsEnabled(){
+        this.debugsEnabled.clear();
+
+        final List<String> debugsEnabled = main.settingsCfg.getStringList(main.helperSettings.getKeyNameFromConfig(main.settingsCfg, "debug-misc"));
+        if (debugsEnabled.isEmpty()) return;
+
+        for (final String debug : debugsEnabled){
+            if (Utils.isNullOrEmpty(debug)) continue;
+
+            try {
+                final DebugType debugType = DebugType.valueOf(debug.toUpperCase());
+                this.debugsEnabled.add(debugType);
+            }
+            catch (Exception ignored) {
+                Utils.logger.warning("Invalid value for debug-misc: " + debug);
+            }
+        }
+
+        if (!this.debugsEnabled.isEmpty())
+            Utils.logger.info("debug-misc items enabled: &b" + this.debugsEnabled);
     }
 
     @Nullable

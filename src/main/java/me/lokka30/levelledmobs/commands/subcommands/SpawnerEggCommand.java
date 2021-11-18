@@ -155,6 +155,8 @@ public class SpawnerEggCommand extends SpawnerBaseClass implements Subcommand {
                 meta.getPersistentDataContainer().set(info.main.namespaced_keys.keySpawner_CustomDropId, PersistentDataType.STRING, info.customDropId);
             if (!info.spawnType.equals(EntityType.UNKNOWN))
                 meta.getPersistentDataContainer().set(info.main.namespaced_keys.keySpawner_SpawnType, PersistentDataType.STRING, info.spawnType.toString());
+            if (info.customName != null)
+                meta.getPersistentDataContainer().set(info.main.namespaced_keys.keySpawner_CustomName, PersistentDataType.STRING, info.customName);
 
             item.setItemMeta(meta);
         }

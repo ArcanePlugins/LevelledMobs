@@ -215,7 +215,6 @@ public class EntitySpawnListener implements Listener {
         if (!lmEntity.reEvaluateLevel && lmEntity.isLevelled())
             return;
 
-        LevelledMobSpawnReason spawnReason = LevelledMobSpawnReason.DEFAULT;
         AdditionalLevelInformation additionalInfo = AdditionalLevelInformation.NOT_APPLICABLE;
 
         lmEntity.setSpawnedTimeOfDay((int) lmEntity.getWorld().getTime());
@@ -230,7 +229,6 @@ public class EntitySpawnListener implements Listener {
             }
 
             Utils.debugLog(main, DebugType.MOB_SPAWNER, "Spawned mob from vanilla spawner: &b" + spawnEvent.getEntityType());
-            spawnReason = LevelledMobSpawnReason.SPAWNER;
         } else if (event instanceof CreatureSpawnEvent) {
             final CreatureSpawnEvent spawnEvent = (CreatureSpawnEvent) event;
 
@@ -248,9 +246,8 @@ public class EntitySpawnListener implements Listener {
                 }
             }
 
-            spawnReason = adaptVanillaSpawnReason(spawnEvent.getSpawnReason());
             if (!lmEntity.reEvaluateLevel)
-                lmEntity.setSpawnReason(spawnReason);
+                lmEntity.setSpawnReason(adaptVanillaSpawnReason(spawnEvent.getSpawnReason()));
         } else if (event instanceof ChunkLoadEvent)
             additionalInfo = AdditionalLevelInformation.FROM_CHUNK_LISTENER;
 

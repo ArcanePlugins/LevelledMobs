@@ -182,6 +182,12 @@ command:
         - '%prefix% Gave you a LM spawner'
       spawner-give-message-console:
         - '%prefix% Gave &r%playername%&7 a LM spawner. &8|&7 minLevel: &b%minlevel%&7, maxLevel: &b%maxlevel%&7'
+      permission-denied:
+        - '%prefix% You don''t have permissions to update a spawner or convert a spawner to a LM spawner.'
+      spawner-converted:
+        - '%prefix% Converted vanilla spawner into a LM spawner with name "%spawnername%".'
+      spawner-updated:
+        - '%prefix% Updated LM spawner from spawn egg. Spawner name: "%spawnername%"'
       info:
         status-enabled:
           - '%prefix% Spawner Info is &aenabled&f.'
