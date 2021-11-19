@@ -19,6 +19,7 @@ import java.util.List;
 public class LevelTierMatching {
     public List<String> names;
     public int[] valueRanges;
+    public String sourceTierName;
     public Integer minLevel;
     public Integer maxLevel;
     public String mobName;
@@ -73,8 +74,23 @@ public class LevelTierMatching {
         return result;
     }
 
+    public boolean isNumericSource(){
+        return this.sourceTierName == null;
+    }
+
     public String toString(){
-        if (!hasLevelRestriction()) return names.toString();
+        if (!hasLevelRestriction()) {
+            if (names != null && !names.isEmpty())
+                return names.toString();
+            else if (sourceTierName != null) {
+                if (valueRanges == null)
+                    return sourceTierName;
+                else
+                    return String.format("%s: %s", sourceTierName, Arrays.toString(valueRanges));
+            }
+            else
+                return "(empty)";
+        }
 
         if (minLevel != null && maxLevel != null)
             return String.format("%s-%s %s", minLevel, maxLevel, names == null ? Arrays.toString(valueRanges) : names);

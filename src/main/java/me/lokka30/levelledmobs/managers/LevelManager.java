@@ -187,7 +187,8 @@ public class LevelManager implements LevelInterface {
         final double scale = options.playerLevelScale != null ? options.playerLevelScale : 1.0;
         final boolean usePlayerMax = options.usePlayerMaxLevel != null && options.matchPlayerLevel;
         final boolean matchPlayerLvl = options.matchPlayerLevel != null && options.matchPlayerLevel;
-        final double origLevelSource = getPlayerLevelSourceNumber(lmEntity.getPlayerForLevelling(), variableToUse);
+        final PlayerLevelSourceResult playerLevelSourceResult = getPlayerLevelSourceNumber(lmEntity.getPlayerForLevelling(), variableToUse);
+        final double origLevelSource = playerLevelSourceResult.isNumericResult ? playerLevelSourceResult.numericResult : 1;
 
         levelSource = (int) Math.round(origLevelSource * scale);
         if (levelSource < 1) levelSource = 1;
@@ -198,15 +199,23 @@ public class LevelManager implements LevelInterface {
         if (options.usePlayerMaxLevel) {
             results[0] = levelSource;
             results[1] = results[0];
-        } else if (options.matchPlayerLevel) {
+        } else if (options.matchPlayerLevel)
             results[1] = levelSource;
-        } else {
+        else {
             boolean foundMatch = false;
             for (final LevelTierMatching tier : options.levelTiers) {
-                final boolean meetsMin = (tier.minLevel == null || levelSource >= tier.minLevel);
-                final boolean meetsMax = (tier.maxLevel == null || levelSource <= tier.maxLevel);
+                boolean meetsMin = false;
+                boolean meetsMax = false;
+                boolean hasStringMatch = false;
 
-                if (meetsMin && meetsMax) {
+                if (!playerLevelSourceResult.isNumericResult && tier.sourceTierName != null)
+                    hasStringMatch = playerLevelSourceResult.stringResult.equalsIgnoreCase(tier.sourceTierName);
+                else if (playerLevelSourceResult.isNumericResult) {
+                    meetsMin = (tier.minLevel == null || levelSource >= tier.minLevel);
+                    meetsMax = (tier.maxLevel == null || levelSource <= tier.maxLevel);
+                }
+
+                if (meetsMin && meetsMax || hasStringMatch) {
                     if (tier.valueRanges[0] > 0) results[0] = tier.valueRanges[0];
                     if (tier.valueRanges[1] > 0) results[1] = tier.valueRanges[1];
                     tierMatched = tier.toString();
@@ -216,9 +225,16 @@ public class LevelManager implements LevelInterface {
             }
 
             if (!foundMatch) {
-                Utils.debugLog(main, DebugType.PLAYER_LEVELLING, String.format(
-                        "mob: %s, player: %s, lvl-src: %s, lvl-scale: %s, %sno tiers matched",
-                        lmEntity.getNameIfBaby(), player.getName(), origLevelSource, levelSource, capDisplay));
+                if (playerLevelSourceResult.isNumericResult) {
+                    Utils.debugLog(main, DebugType.PLAYER_LEVELLING, String.format(
+                            "mob: %s, player: %s, lvl-src: %s, lvl-scale: %s, %sno tiers matched",
+                            lmEntity.getNameIfBaby(), player.getName(), origLevelSource, levelSource, capDisplay));
+                }
+                else {
+                    Utils.debugLog(main, DebugType.PLAYER_LEVELLING, String.format(
+                            "mob: %s, player: %s, lvl-src: '%s', %sno tiers matched",
+                            lmEntity.getNameIfBaby(), player.getName(), playerLevelSourceResult.stringResult, capDisplay));
+                }
                 return null;
             }
         }
@@ -235,9 +251,16 @@ public class LevelManager implements LevelInterface {
                     "mob: %s, player: %s, lvl-src: %s, lvl-scale: %s, %sresult: %s",
                     lmEntity.getNameIfBaby(), player.getName(), origLevelSource, levelSource, capDisplay, Arrays.toString(results)));
         } else {
-            Utils.debugLog(main, DebugType.PLAYER_LEVELLING, String.format(
-                    "mob: %s, player: %s, lvl-src: %s, lvl-scale: %s, tier: %s, %sresult: %s",
-                    lmEntity.getNameIfBaby(), player.getName(), origLevelSource, levelSource, tierMatched, capDisplay, Arrays.toString(results)));
+            if (playerLevelSourceResult.isNumericResult) {
+                Utils.debugLog(main, DebugType.PLAYER_LEVELLING, String.format(
+                        "mob: %s, player: %s, lvl-src: %s, lvl-scale: %s, tier: %s, %sresult: %s",
+                        lmEntity.getNameIfBaby(), player.getName(), origLevelSource, levelSource, tierMatched, capDisplay, Arrays.toString(results)));
+            }
+            else {
+                Utils.debugLog(main, DebugType.PLAYER_LEVELLING, String.format(
+                        "mob: %s, player: %s, lvl-src: '%s', tier: %s, %sresult: %s",
+                        lmEntity.getNameIfBaby(), player.getName(), playerLevelSourceResult.stringResult, tierMatched, capDisplay, Arrays.toString(results)));
+            }
         }
 
         lmEntity.playerLevellingAllowDecrease = options.decreaseLevel;
@@ -245,8 +268,8 @@ public class LevelManager implements LevelInterface {
         return results;
     }
 
-    public int getPlayerLevelSourceNumber(final Player player, final String variableToUse){
-        if (player == null) return 1;
+    public PlayerLevelSourceResult getPlayerLevelSourceNumber(final Player player, final String variableToUse){
+        if (player == null) return new PlayerLevelSourceResult(1);
 
         double origLevelSource;
 
@@ -270,10 +293,9 @@ public class LevelManager implements LevelInterface {
                     Utils.logger.warning("Got blank result for '" + variableToUse + "' from PAPI");
                     usePlayerLevel = true;
                 }
-                if (!Utils.isDouble(PAPIResult)) {
-                    Utils.logger.warning("Got invalid number for '" + variableToUse + "' from PAPI");
-                    usePlayerLevel = true;
-                }
+
+                if (!Utils.isDouble(PAPIResult))
+                    return new PlayerLevelSourceResult(PAPIResult);
             } else {
                 Utils.logger.warning("PlaceHolderAPI is not installed, unable to get variable " + variableToUse);
                 usePlayerLevel = true;
@@ -285,7 +307,7 @@ public class LevelManager implements LevelInterface {
                 origLevelSource = (int) Double.parseDouble(PAPIResult);
         }
 
-        return (int) Math.round(origLevelSource);
+        return new PlayerLevelSourceResult((int) Math.round(origLevelSource));
     }
 
     public int[] getMinAndMaxLevels(final @NotNull LivingEntityInterface lmInterface) {

@@ -906,39 +906,44 @@ public class RulesParsingManager {
         parsingInfo.playerLevellingOptions = options;
 
         final ConfigurationSection csTiers = objTo_CS(cs,"tiers");
-        if (csTiers != null){
-            final List<LevelTierMatching> levelTiers = new LinkedList<>();
+        if (csTiers == null) return;
 
-            for (final String name : csTiers.getKeys(false)){
-                final LevelTierMatching info = new LevelTierMatching();
+        final List<LevelTierMatching> levelTiers = new LinkedList<>();
 
-                final String value = csTiers.getString(name);
-                if (value == null) {
-                    Utils.logger.warning("No value was specified for: " + name);
-                    continue;
-                }
+        for (final String name : csTiers.getKeys(false)){
+            final LevelTierMatching info = new LevelTierMatching();
 
-                if (!info.setRangeFromString(name)){
-                    Utils.logger.warning("Invalid number range: " + name);
-                    continue;
-                }
-
-                final int[] levelRange = LevelTierMatching.getRangeFromString(value);
-                if (levelRange.length < 2) {
-                    Utils.logger.warning("Invalid number range (len): " + value);
-                    continue;
-                }
-                if (levelRange[0] == -1 && levelRange[1] == -1){
-                    Utils.logger.warning("Invalid number range: " + value);
-                    continue;
-                }
-
-                info.valueRanges = levelRange;
-                levelTiers.add(info);
+            final String value = csTiers.getString(name);
+            if (value == null) {
+                Utils.logger.warning("No value was specified for: " + name);
+                continue;
             }
 
-            if (!levelTiers.isEmpty()) options.levelTiers.addAll(levelTiers);
+            if (!name.contains("-") && !Utils.isInteger(name)){
+                // found a source tier name rather than number
+                info.sourceTierName = name;
+            }
+            else if (!info.setRangeFromString(name)){
+                Utils.logger.warning("Invalid number range: " + name);
+                continue;
+            }
+
+            final int[] levelRange = LevelTierMatching.getRangeFromString(value);
+            if (levelRange.length < 2) {
+                Utils.logger.warning("Invalid number range (len): " + value);
+                continue;
+            }
+            if (levelRange[0] == -1 && levelRange[1] == -1){
+                Utils.logger.warning("Invalid number range: " + value);
+                continue;
+            }
+
+            info.valueRanges = levelRange;
+            levelTiers.add(info);
         }
+
+        if (!levelTiers.isEmpty()) options.levelTiers.addAll(levelTiers);
+
     }
 
     private void parseBlendedLevelling(final ConfigurationSection cs, final @NotNull SpawnDistanceStrategy spawnDistanceStrategy){
