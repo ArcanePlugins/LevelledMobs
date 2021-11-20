@@ -63,18 +63,19 @@ public class NametagTimerChecker {
                 }
             }
 
-            for (final Player player : nametagCooldownQueue.keySet()){
-                for (final LivingEntity livingEntity : nametagCooldownQueue.get(player).keySet()){
+            for (final Map.Entry<Player, WeakHashMap<LivingEntity, Instant>> entry : nametagCooldownQueue.entrySet()){
+                final Player player = entry.getKey();
+                for (final LivingEntity livingEntity : entry.getValue().keySet()){
                     if (!livingEntity.isValid()) continue;
 
-                    final Duration timeDuration = Duration.between(nametagCooldownQueue.get(player).get(livingEntity), Instant.now());
+                    final Duration timeDuration = Duration.between(entry.getValue().get(livingEntity), Instant.now());
                     final int cooldownTime = cooldownTimes.get(livingEntity);
                     if (timeDuration.toMillis() >= cooldownTime) {
                         // if using LoS targeting check if it's still within LoS and don't remove if so.
                         final LivingEntityWrapper lmEntity = LivingEntityWrapper.getInstance(livingEntity, main);
                         final boolean usesLoS = main.rulesManager.getRule_CreatureNametagVisbility(lmEntity).contains(NametagVisibilityEnum.TARGETED);
                         if (usesLoS && livingEntity.hasLineOfSight(player)){
-                            nametagCooldownQueue.get(player).put(livingEntity, Instant.now());
+                            entry.getValue().put(livingEntity, Instant.now());
                         }
                         else
                             entitiesToRemove.add(livingEntity);
@@ -84,7 +85,7 @@ public class NametagTimerChecker {
                 }
 
                 for (final LivingEntity livingEntity : entitiesToRemove) {
-                    nametagCooldownQueue.get(player).remove(livingEntity);
+                    entry.getValue().remove(livingEntity);
 
                     final LivingEntityWrapper lmEntity = LivingEntityWrapper.getInstance(livingEntity, main);
                     main.levelManager.updateNametag(lmEntity, main.levelManager.getNametag(lmEntity, false), List.of(player));

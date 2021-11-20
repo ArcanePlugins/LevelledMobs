@@ -176,10 +176,11 @@ public class FileMigrator {
             keySections_Old = buildKeySections(oldConfigLines);
             keySections_New = buildKeySections(newConfigLines);
 
-            for (final String key : keySections_Old.keySet()){
+            for (final Map.Entry<String, KeySectionInfo> entry : keySections_Old.entrySet()){
+                final String key = entry.getKey();
                 if (key.toLowerCase().startsWith("file-version")) continue;
 
-                final KeySectionInfo oldSection = keySections_Old.get(key);
+                final KeySectionInfo oldSection = entry.getValue();
                 if (keySections_New.containsKey(key)){
                     // overwrite new section if different
                     final KeySectionInfo newSection = keySections_New.get(key);
@@ -205,8 +206,7 @@ public class FileMigrator {
                     }
 
                     if (oldSection.sectionNumber > 0) {
-                        for (final String temp : keySections_New.keySet()){
-                            final KeySectionInfo tempSection = keySections_New.get(temp);
+                        for (final KeySectionInfo tempSection : keySections_New.values()){
                             if (tempSection.sectionNumber == oldSection.sectionNumber && tempSection.sectionStartingLine > 0){
                                 insertAt = tempSection.sectionStartingLine;
                             }
@@ -415,7 +415,7 @@ public class FileMigrator {
                     if (line.trim().startsWith("#") || line.trim().isEmpty()) continue;
 
                     if (line.matches(regexPattern)) {
-                        int firstColon = line.indexOf(":");
+                        int firstColon = line.indexOf(':');
                         boolean hasValues = line.length() > firstColon + 1;
                         String key = line.substring(0, firstColon).replace("\t", "").trim();
                         final String keyOnly = key;
@@ -455,7 +455,8 @@ public class FileMigrator {
                                 } else {
                                     // non-array values go here.  Loop thru and find any subkeys under here
                                     final int numOfPeriods = countPeriods(key);
-                                    for (final String enumeratedKey : oldConfigMap.keySet()) {
+                                    for (final Map.Entry<String, FieldInfo> entry : oldConfigMap.entrySet()) {
+                                        final String enumeratedKey = entry.getKey();
                                         if (isSettings && oldVersion > 20 && oldVersion <= 24 && version24Resets.contains(enumeratedKey))
                                             continue;
                                         if (isSettings && oldVersion > 24 && oldVersion <= 26 && version26Resets.contains(enumeratedKey))
@@ -463,7 +464,7 @@ public class FileMigrator {
 
                                         final int numOfPeriods_Enumerated = countPeriods(enumeratedKey);
                                         if (enumeratedKey.startsWith(key) && numOfPeriods_Enumerated == numOfPeriods + 1 && !newConfigMap.containsKey(enumeratedKey)) {
-                                            final FileMigrator.FieldInfo fi = oldConfigMap.get(enumeratedKey);
+                                            final FileMigrator.FieldInfo fi = entry.getValue();
                                             if (!fi.isList() && fi.simpleValue != null) {
                                                 final String newPadding = getPadding(depth * 2);
                                                 final String newline = padding + getEndingKey(enumeratedKey) + ": " + fi.simpleValue;
@@ -508,7 +509,8 @@ public class FileMigrator {
                             final String parentKey = getParentKey(key);
                             if (fi.hasValue && parentKey != null && !processedKeys.contains(parentKey)){
                                 // here's where we add values from the old config not present in the new
-                                for (String oldValue : oldConfigMap.keySet()){
+                                for (Map.Entry<String, FieldInfo> entry : oldConfigMap.entrySet()){
+                                    String oldValue = entry.getKey();
                                     if (!oldValue.startsWith(parentKey)) continue;
                                     if (newConfigMap.containsKey(oldValue)) continue;
                                     if (!isEntitySameSubkey(parentKey, oldValue)) continue;
@@ -516,7 +518,7 @@ public class FileMigrator {
                                     if (isSettings && oldVersion > 24 && oldVersion <= 26 && version26Resets.contains(oldValue)) continue;
                                     if (isMessages && oldVersion <= 5 && messagesExempt_v5.contains(key)) continue;
 
-                                    FileMigrator.FieldInfo fiOld = oldConfigMap.get(oldValue);
+                                    FileMigrator.FieldInfo fiOld = entry.getValue();
                                     if (fiOld.isList()) continue;
                                     final String padding = getPadding(depth * 2);
                                     final String newline = padding + getEndingKey(oldValue) + ": " + fiOld.simpleValue;
@@ -611,7 +613,7 @@ public class FileMigrator {
     }
 
     private static boolean isEntitySameSubkey(@NotNull final String key1, @NotNull final String key2){
-        final int lastPeriod = key2.lastIndexOf(".");
+        final int lastPeriod = key2.lastIndexOf('.');
         final String checkKey = lastPeriod > 0 ? key2.substring(0, lastPeriod) : key2;
 
         return (key1.equalsIgnoreCase(checkKey));
@@ -619,7 +621,7 @@ public class FileMigrator {
 
     @NotNull
     private static String getEndingKey(@NotNull String input){
-        final int lastPeriod = input.lastIndexOf(".");
+        final int lastPeriod = input.lastIndexOf('.');
         if (lastPeriod < 0) return input;
 
         return input.substring(lastPeriod + 1);
@@ -627,7 +629,7 @@ public class FileMigrator {
 
     @Nullable
     private static String getParentKey(@NotNull String input){
-        final int lastPeriod = input.lastIndexOf(".");
+        final int lastPeriod = input.lastIndexOf('.');
         if (lastPeriod < 0) return null;
 
         return input.substring(0, lastPeriod);
@@ -654,14 +656,14 @@ public class FileMigrator {
             lineNum++;
 
             final int depth = getFieldDepth(line);
-            line = line.replace("\t", "").trim();
-            if (line.startsWith("#") || line.isEmpty()) continue;
+            String trim = line.replace("\t", "").trim();
+            if (trim.startsWith("#") || trim.isEmpty()) continue;
 
             //if (line.contains(":")) {
-            if (line.matches(regexPattern)) {
-                int firstColon = line.indexOf(":");
-                boolean hasValues = line.length() > firstColon + 1;
-                String key = line.substring(0, firstColon).replace("\t", "").trim();
+            if (trim.matches(regexPattern)) {
+                int firstColon = trim.indexOf(':');
+                boolean hasValues = trim.length() > firstColon + 1;
+                String key = trim.substring(0, firstColon).replace("\t", "").trim();
                 final String origKey = key;
 
                 if (origKey.startsWith("-")) {
@@ -691,21 +693,21 @@ public class FileMigrator {
 
                 if (!hasValues) {
                     currentKey.add(origKey);
-                    if (!configMap.containsKey(key)) configMap.put(key, new FileMigrator.FieldInfo(null, depth));
+                    if (!configMap.containsKey(key)) configMap.put(key, new FieldInfo(null, depth));
                 } else {
-                    final String value = line.substring(firstColon + 1).trim();
-                    final FileMigrator.FieldInfo fi = new FileMigrator.FieldInfo(value, depth);
+                    final String value = trim.substring(firstColon + 1).trim();
+                    final FieldInfo fi = new FieldInfo(value, depth);
                     fi.hasValue = true;
                     configMap.put(key, fi);
                 }
-            } else if (line.startsWith("-")) {
+            } else if (trim.startsWith("-")) {
                 final String key = getKeyFromList(currentKey, null);
-                final String value = line.trim().substring(1).trim();
+                final String value = trim.trim().substring(1).trim();
                 if (configMap.containsKey(key)) {
-                    FileMigrator.FieldInfo fi = configMap.get(key);
+                    FieldInfo fi = configMap.get(key);
                     fi.addListValue(value);
                 } else
-                    configMap.put(key, new FileMigrator.FieldInfo(value, depth, true));
+                    configMap.put(key, new FieldInfo(value, depth, true));
             }
         }
 

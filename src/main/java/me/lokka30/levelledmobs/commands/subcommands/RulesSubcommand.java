@@ -81,8 +81,7 @@ public class RulesSubcommand implements Subcommand {
 
             final StringBuilder sb = new StringBuilder();
 
-            for (final String key : main.rulesParsingManager.rulePresets.keySet()) {
-                final RuleInfo rpi = main.rulesParsingManager.rulePresets.get(key);
+            for (final RuleInfo rpi : main.rulesParsingManager.rulePresets.values()) {
                 sb.append("\n--------------------------------- Preset rule ----------------------------------\n");
                 formatRulesVisually(rpi, sender, showOnConsole, Collections.singletonList("ruleIsEnabled"), sb);
             }
@@ -172,7 +171,7 @@ public class RulesSubcommand implements Subcommand {
                 break;
         }
 
-        if (difficulty.equals(ResetDifficulty.UNSPECIFIED)){
+        if (difficulty == ResetDifficulty.UNSPECIFIED){
             sender.sendMessage(prefix+ " Invalid difficulty: " + args[2]);
             return;
         }
@@ -422,8 +421,8 @@ public class RulesSubcommand implements Subcommand {
             e.printStackTrace();
         }
 
-        for (final String key : values.keySet()){
-            sb.append(MessageUtils.colorizeAll(values.get(key)));
+        for (final String s : values.values()){
+            sb.append(MessageUtils.colorizeAll(s));
             sb.append("\n");
         }
 
@@ -478,8 +477,8 @@ public class RulesSubcommand implements Subcommand {
         sb.append(fineTuning);
         sb.append("&r\n");
 
-        for (final String key : values.keySet()){
-            sb.append(values.get(key));
+        for (final String s : values.values()){
+            sb.append(s);
             sb.append("&r\n");
         }
 

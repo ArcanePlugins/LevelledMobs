@@ -101,8 +101,8 @@ public class MobHeadManager {
 
             if (mobData == null){
                 // grab first one
-                for (final String variant : mobDatas.keySet()){
-                    mobData = mobDatas.get(variant);
+                for (final MobDataInfo mobDataInfo : mobDatas.values()){
+                    mobData = mobDataInfo;
                     break;
                 }
             }
@@ -200,54 +200,54 @@ public class MobHeadManager {
         }
 
         // uncharged creepers already got processed
-        if (et.equals(EntityType.CREEPER))
+        if (et == EntityType.CREEPER)
             return mobDatas.get("Charged");
 
-        if (et.equals(EntityType.CAT)){
+        if (et == EntityType.CAT){
             final Cat cat = (Cat) livingEntity;
             return mobDatas.get(cat.getCatType().name());
         }
 
-        if (et.equals(EntityType.FOX)){
-            if (((Fox) livingEntity).getFoxType().equals(Fox.Type.RED))
+        if (et == EntityType.FOX){
+            if (((Fox) livingEntity).getFoxType() == Fox.Type.RED)
                 return mobDatas.get("Normal");
             else
                 return mobDatas.get("Snow");
         }
 
-        if (et.equals(EntityType.HORSE)){
+        if (et == EntityType.HORSE){
             final Horse horse = (Horse) livingEntity;
             return mobDatas.get(horse.getColor().name());
         }
 
-        if (et.equals(EntityType.LLAMA)){
+        if (et == EntityType.LLAMA){
             final Llama llama = (Llama) livingEntity;
             return mobDatas.get(llama.getColor().name());
         }
 
-        if (et.equals(EntityType.MUSHROOM_COW)){
+        if (et == EntityType.MUSHROOM_COW){
             final MushroomCow mushroomCow = (MushroomCow) livingEntity;
             return mobDatas.get(
-                    mushroomCow.getVariant().equals(MushroomCow.Variant.RED) ?
+                    mushroomCow.getVariant() == MushroomCow.Variant.RED ?
                             "" : "Brown"
             );
         }
 
-        if (et.equals(EntityType.PANDA))
+        if (et == EntityType.PANDA)
             return mobDatas.get(((Panda) livingEntity).getMainGene().name());
 
-        if (et.equals(EntityType.RABBIT))
+        if (et == EntityType.RABBIT)
             return mobDatas.get(((Rabbit) livingEntity).getRabbitType().name());
 
-        if (et.equals(EntityType.VILLAGER)){
+        if (et == EntityType.VILLAGER){
             final Villager.Profession profession = ((Villager) livingEntity).getProfession();
-            if (profession.equals(Villager.Profession.NONE) || profession.equals(Villager.Profession.NITWIT))
+            if (profession == Villager.Profession.NONE || profession == Villager.Profession.NITWIT)
                 return mobDatas.get("");
             else
                 return mobDatas.get(profession.name());
         }
 
-        if (et.equals(EntityType.WOLF)){
+        if (et == EntityType.WOLF){
             return mobDatas.get(
                     lmEntity.isMobTamed() ?
                             "Tamed" : "Wild"

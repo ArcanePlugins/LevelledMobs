@@ -330,7 +330,7 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
         return main.levelInterface.isLevelled(this.livingEntity);
     }
 
-    public EntityType getEntityType(){
+    public @NotNull EntityType getEntityType(){
         return this.livingEntity.getType();
     }
 
@@ -527,10 +527,10 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
     private Set<String> buildApplicableGroupsForMob(){
         final Set<String> groups = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
 
-        for (final String groupName : main.customMobGroups.keySet()){
-            final Set<String> mobNames = main.customMobGroups.get(groupName);
+        for (final Map.Entry<String, Set<String>> entry : main.customMobGroups.entrySet()){
+            final Set<String> mobNames = entry.getValue();
             if (mobNames.contains(this.getTypeName()))
-                groups.add(groupName);
+                groups.add(entry.getKey());
         }
 
         groups.add(CustomUniversalGroups.ALL_MOBS.toString());
@@ -547,18 +547,18 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
             groups.add(CustomUniversalGroups.ALL_AQUATIC_MOBS.toString());
         }
 
-        if (livingEntity.getWorld().getEnvironment().equals(World.Environment.NORMAL)){
+        if (livingEntity.getWorld().getEnvironment() == World.Environment.NORMAL){
             groups.add(CustomUniversalGroups.ALL_OVERWORLD_MOBS.toString());
-        } else if (livingEntity.getWorld().getEnvironment().equals(World.Environment.NETHER)){
+        } else if (livingEntity.getWorld().getEnvironment() == World.Environment.NETHER){
             groups.add(CustomUniversalGroups.ALL_NETHER_MOBS.toString());
         }
 
-        if (livingEntity instanceof Flying || eType.equals(EntityType.PARROT) || eType.equals(EntityType.BAT)){
+        if (livingEntity instanceof Flying || eType == EntityType.PARROT || eType == EntityType.BAT){
             groups.add(CustomUniversalGroups.ALL_FLYING_MOBS.toString());
         }
 
         // why bats aren't part of Flying interface is beyond me
-        if (!(livingEntity instanceof Flying) && !(livingEntity instanceof WaterMob) && !(livingEntity instanceof Boss) && !(eType.equals(EntityType.BAT))){
+        if (!(livingEntity instanceof Flying) && !(livingEntity instanceof WaterMob) && !(livingEntity instanceof Boss) && eType != EntityType.BAT){
             groups.add(CustomUniversalGroups.ALL_GROUND_MOBS.toString());
         }
 

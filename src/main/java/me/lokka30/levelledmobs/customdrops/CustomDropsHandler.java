@@ -200,8 +200,8 @@ public class CustomDropsHandler {
         }
 
         if (usesGroupIds){
-            for (final int pri : info.prioritizedDrops.keySet())
-                Collections.shuffle(info.prioritizedDrops.get(pri));
+            for (final List<CustomDropBase> customDropBases : info.prioritizedDrops.values())
+                Collections.shuffle(customDropBases);
         }
 
         if (!checkOverallPermissions(info))
@@ -257,8 +257,7 @@ public class CustomDropsHandler {
     }
 
     private void getCustomItemsFromDropInstance(@NotNull final CustomDropProcessingInfo info){
-        for (final int itemPriority : info.prioritizedDrops.keySet()) {
-            final List<CustomDropBase> items = info.prioritizedDrops.get(itemPriority);
+        for (final List<CustomDropBase> items : info.prioritizedDrops.values()) {
 
             for (final CustomDropBase drop : items)
                 getDropsFromCustomDropItem(info, drop);
@@ -293,7 +292,7 @@ public class CustomDropsHandler {
 
     private void getDropsFromCustomDropItem(@NotNull final CustomDropProcessingInfo info, final CustomDropBase dropBase){
         if (dropBase instanceof CustomCommand && info.lmEntity.getLivingEntity().hasMetadata("noCommands") ||
-                info.lmEntity.deathCause.equals(EntityDamageEvent.DamageCause.VOID))
+                info.lmEntity.deathCause == EntityDamageEvent.DamageCause.VOID)
             return;
 
         if (info.equippedOnly && dropBase instanceof CustomCommand) return;
@@ -479,7 +478,7 @@ public class CustomDropsHandler {
             if (meta != null && dropItem.lore != null && !dropItem.lore.isEmpty()){
                 final List<String> newLore = new ArrayList<>(dropItem.lore.size());
                 final String mobLvl = info.lmEntity.isLevelled() ?
-                        info.lmEntity.getMobLevel() + "" : "0";
+                        String.valueOf(info.lmEntity.getMobLevel()) : "0";
                 for (final String lore : dropItem.lore){
                     newLore.add(main.levelManager.updateNametag(info.lmEntity, lore, false));
 
@@ -487,7 +486,7 @@ public class CustomDropsHandler {
                 }
             }
 
-            if (meta != null && dropItem.customName != null && !"".equals(dropItem.customName))
+            if (meta != null && dropItem.customName != null && !dropItem.customName.isEmpty())
                 meta.setDisplayName(MessageUtils.colorizeAll(main.levelManager.updateNametag(info.lmEntity, dropItem.customName, false)));
 
             newItem.setItemMeta(meta);
@@ -501,7 +500,7 @@ public class CustomDropsHandler {
             info.groupIDsDroppedAlready.put(dropItem.groupId, count);
         }
 
-        if (newItem.getType().equals(Material.PLAYER_HEAD))
+        if (newItem.getType() == Material.PLAYER_HEAD)
             newItem = main.mobHeadManager.getMobHeadFromPlayerHead(newItem, info.lmEntity, dropItem);
 
         info.newDrops.add(newItem);
@@ -628,9 +627,9 @@ public class CustomDropsHandler {
                     Objects.requireNonNull(info.lmEntity.getLivingEntity().getKiller()).getName() :
                     "";
 
-            command = Utils.replaceEx(command, "%player%", playerName);
-            command = processRangedCommand(command, customCommand);
-            command = main.levelManager.updateNametag(info.lmEntity, command,false);
+            String replaceEx = Utils.replaceEx(command, "%player%", playerName);
+            replaceEx = processRangedCommand(replaceEx, customCommand);
+            replaceEx = main.levelManager.updateNametag(info.lmEntity, replaceEx,false);
 
             final int maxAllowedTimesToRun = ymlHelper.getInt(main.settingsCfg, "customcommand-amount-limit", 10);
             int timesToRun = customCommand.getAmount();
@@ -644,10 +643,10 @@ public class CustomDropsHandler {
             final String debugCommand = timesToRun > 1 ?
                     String.format("Command (%sx): ", timesToRun) : "Command: ";
 
-            Utils.debugLog(main, DebugType.CUSTOM_COMMANDS, debugCommand + command);
+            Utils.debugLog(main, DebugType.CUSTOM_COMMANDS, debugCommand + replaceEx);
 
             for (int i = 0; i < timesToRun; i++)
-                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
+                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), replaceEx);
         }
     }
 
@@ -655,8 +654,9 @@ public class CustomDropsHandler {
     private String processRangedCommand(@NotNull String command, final @NotNull CustomCommand cc){
         if (cc.rangedEntries.isEmpty()) return command;
 
-        for (final String rangedKey : cc.rangedEntries.keySet()) {
-            final String rangedValue = cc.rangedEntries.get(rangedKey);
+        for (final Map.Entry<String, String> entry : cc.rangedEntries.entrySet()) {
+            final String rangedKey = entry.getKey();
+            final String rangedValue = entry.getValue();
             if (!rangedValue.contains("-")) {
                 command = command.replace("%" + rangedKey + "%", rangedValue);
                 continue;
@@ -671,7 +671,7 @@ public class CustomDropsHandler {
             if (max < min) min = max;
 
             final int rangedNum = main.random.nextInt(max - min + 1) + min;
-            command = command.replace("%" + rangedKey + "%", rangedNum + "");
+            command = command.replace("%" + rangedKey + "%", String.valueOf(rangedNum));
         }
 
         return command;

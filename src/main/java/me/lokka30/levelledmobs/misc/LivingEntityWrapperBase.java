@@ -32,7 +32,7 @@ public class LivingEntityWrapperBase {
     final LevelledMobs main;
     Integer spawnedTimeOfDay;
     boolean isPopulated;
-    public AtomicInteger inUseCount;
+    public final AtomicInteger inUseCount;
 
     public void populateData(final @NotNull World world, final @NotNull Location location){
         this.world = world;

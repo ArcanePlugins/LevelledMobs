@@ -187,12 +187,11 @@ public class RulesManager {
 
     @NotNull
     public Map<ExternalCompatibilityManager.ExternalCompatibility, Boolean> getRule_ExternalCompatibility(@NotNull final LivingEntityWrapper lmEntity){
-        final Map<ExternalCompatibilityManager.ExternalCompatibility, Boolean> result = new TreeMap<>();
+        final Map<ExternalCompatibilityManager.ExternalCompatibility, Boolean> result = new EnumMap<>(ExternalCompatibilityManager.ExternalCompatibility.class);
 
         for (final RuleInfo ruleInfo : lmEntity.getApplicableRules()){
             if (ruleInfo.enabledExtCompats != null) {
-                for (final ExternalCompatibilityManager.ExternalCompatibility compatibility : ruleInfo.enabledExtCompats.keySet())
-                    result.put(compatibility, ruleInfo.enabledExtCompats.get(compatibility));
+                result.putAll(ruleInfo.enabledExtCompats);
             }
         }
 
@@ -498,8 +497,7 @@ public class RulesManager {
     public ApplicableRulesResult getApplicableRules(final LivingEntityInterface lmInterface){
         final ApplicableRulesResult applicableRules = new ApplicableRulesResult();
 
-        for (final int rulePriority : rulesInEffect.keySet()) {
-            final List<RuleInfo> rules = rulesInEffect.get(rulePriority);
+        for (final List<RuleInfo> rules : rulesInEffect.values()) {
             for (final RuleInfo ruleInfo : rules) {
 
                 if (!ruleInfo.ruleIsEnabled) continue;
@@ -576,7 +574,7 @@ public class RulesManager {
 
         if (ri.conditions_MM_Names != null){
             String mm_Name = ExternalCompatibilityManager.getMythicMobInternalName(lmEntity);
-            if ("".equals(mm_Name)) mm_Name = "(none)";
+            if (mm_Name.isEmpty()) mm_Name = "(none)";
 
             if (!ri.conditions_MM_Names.isEnabledInList(mm_Name, lmEntity)) {
                 Utils.debugLog(main, DebugType.DENIED_RULE_MYTHIC_MOBS_INTERNAL_NAME, String.format("&b%s&7, mob: &b%s&7, mm_name: &b%s&7",
@@ -772,11 +770,11 @@ public class RulesManager {
 
         if (customBiomeGroups == null) return;
 
-        for (final String groupName : customBiomeGroups.keySet()){
-            final Set<String> groupMembers = customBiomeGroups.get(groupName);
+        for (final Map.Entry<String, Set<String>> entry : customBiomeGroups.entrySet()){
+            final Set<String> groupMembers = entry.getValue();
             final List<String> newList = new ArrayList<>(groupMembers.size());
             newList.addAll(groupMembers);
-            this.biomeGroupMappings.put(groupName, newList);
+            this.biomeGroupMappings.put(entry.getKey(), newList);
         }
     }
 }

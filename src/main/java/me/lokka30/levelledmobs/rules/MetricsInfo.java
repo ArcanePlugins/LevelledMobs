@@ -194,8 +194,8 @@ public class MetricsInfo {
         final Map<String, Integer> results = new TreeMap<>();
 
         for (final ExternalCompatibilityManager.ExternalCompatibility compat : ExternalCompatibilityManager.ExternalCompatibility.values()) {
-            if (compat.equals(ExternalCompatibilityManager.ExternalCompatibility.NOT_APPLICABLE) ||
-                    compat.equals(ExternalCompatibilityManager.ExternalCompatibility.PLACEHOLDER_API))
+            if (compat == ExternalCompatibilityManager.ExternalCompatibility.NOT_APPLICABLE ||
+                    compat == ExternalCompatibilityManager.ExternalCompatibility.PLACEHOLDER_API)
                 continue;
 
             results.put(compat.toString(), 0);
@@ -205,9 +205,10 @@ public class MetricsInfo {
             if (!ruleInfo.ruleIsEnabled) continue;
 
             if (ruleInfo.enabledExtCompats != null){
-                for (final ExternalCompatibilityManager.ExternalCompatibility compat : ruleInfo.enabledExtCompats.keySet()){
-                    if (compat.equals(ExternalCompatibilityManager.ExternalCompatibility.NOT_APPLICABLE)) continue;
-                    final Boolean enabled = ruleInfo.enabledExtCompats.get(compat);
+                for (final Map.Entry<ExternalCompatibilityManager.ExternalCompatibility, Boolean> entry : ruleInfo.enabledExtCompats.entrySet()){
+                    final ExternalCompatibilityManager.ExternalCompatibility compat = entry.getKey();
+                    if (compat == ExternalCompatibilityManager.ExternalCompatibility.NOT_APPLICABLE) continue;
+                    final Boolean enabled = entry.getValue();
                     if (enabled != null && enabled)
                         results.put(compat.toString(), 1);
                 }

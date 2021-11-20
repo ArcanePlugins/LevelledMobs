@@ -78,15 +78,21 @@ public final class Utils {
                 (replaceTo.length() - replaceWhat.length());
         char[] chars = new char[message.length() + Math.max(0, inc)];
         while ((position1 = upperString.indexOf(upperPattern, position0)) != -1) {
-            for (int i = position0; i < position1; ++i)
-                chars[count++] = message.charAt(i);
-            for (int i = 0; i < replaceTo.length(); ++i)
-                chars[count++] = replaceTo.charAt(i);
+            for (int i = position0; i < position1; ++i) {
+                chars[count] = message.charAt(i);
+                count++;
+            }
+            for (int i = 0; i < replaceTo.length(); ++i) {
+                chars[count] = replaceTo.charAt(i);
+                count++;
+            }
             position0 = position1 + replaceWhat.length();
         }
         if (position0 == 0) return message;
-        for (int i = position0; i < message.length(); ++i)
-            chars[count++] = message.charAt(i);
+        for (int i = position0; i < message.length(); ++i) {
+            chars[count] = message.charAt(i);
+            count++;
+        }
 
         return new String(chars, 0, count);
     }

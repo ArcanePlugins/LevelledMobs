@@ -190,7 +190,7 @@ public class RulesParsingManager {
         }
 
         for (final String item : useList){
-            if ("".equals(item.trim())) continue;
+            if (item.trim().isEmpty()) continue;
             if ("*".equals(item.trim())){
                 cachedModalList.allowAll = true;
                 continue;
@@ -209,7 +209,7 @@ public class RulesParsingManager {
         cachedModalList.excludedGroups = getSetOfGroups(cs, ml_ExcludedGroups);
 
         for (final String item : getListFromConfigItem(cs2, excludedList)){
-            if ("".equals(item.trim())) continue;
+            if (item.trim().isEmpty()) continue;
             if ("*".equals(item.trim())){
                 cachedModalList.excludeAll = true;
                 continue;
@@ -255,7 +255,7 @@ public class RulesParsingManager {
             cachedModalList.excludedGroups = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
 
             for (final String group : getListFromConfigItem(cs2, ml_AllowedGroups)) {
-                if ("".equals(group.trim())) continue;
+                if (group.trim().isEmpty()) continue;
                 if (!main.rulesManager.biomeGroupMappings.containsKey(group))
                     Utils.logger.info("invalid biome group: " + group);
                 else
@@ -263,7 +263,7 @@ public class RulesParsingManager {
             }
 
             for (final String group : getListFromConfigItem(cs2, ml_ExcludedGroups)) {
-                if ("".equals(group.trim())) continue;
+                if (group.trim().isEmpty()) continue;
                 if (!main.rulesManager.biomeGroupMappings.containsKey(group))
                     Utils.logger.info("invalid biome group: " + group);
                 else
@@ -277,7 +277,7 @@ public class RulesParsingManager {
         }
 
         for (final String item : useList){
-            if ("".equals(item.trim())) continue;
+            if (item.trim().isEmpty()) continue;
             if ("*".equals(item.trim())){
                 cachedModalList.allowAll = true;
                 continue;
@@ -294,7 +294,7 @@ public class RulesParsingManager {
         final String excludedList = ymlHelper.getKeyNameFromConfig(cs2, ml_ExcludedItems);
 
         for (final String item : getListFromConfigItem(cs2, excludedList)){
-            if ("".equals(item.trim())) continue;
+            if (item.trim().isEmpty()) continue;
             if ("*".equals(item.trim())){
                 cachedModalList.excludeAll = true;
                 continue;
@@ -338,7 +338,7 @@ public class RulesParsingManager {
         }
 
         for (final String item : useList) {
-            if ("".equals(item.trim())) continue;
+            if (item.trim().isEmpty()) continue;
             if ("*".equals(item.trim())){
                 cachedModalList.allowAll = true;
                 continue;
@@ -353,7 +353,7 @@ public class RulesParsingManager {
         cachedModalList.allowedGroups = getSetOfGroups(cs2, allowedGroups);
 
         for (final String item : getListFromConfigItem(cs2, excludedList)) {
-            if ("".equals(item.trim())) continue;
+            if (item.trim().isEmpty()) continue;
             if ("*".equals(item.trim())){
                 cachedModalList.excludeAll = true;
                 continue;
@@ -386,7 +386,7 @@ public class RulesParsingManager {
             groups.add(cs.getString(foundKeyName));
 
         for (final String group : groups) {
-            if ("".equals(group.trim())) continue;
+            if (group.trim().isEmpty()) continue;
             boolean invalidGroup = false;
             if (group.toLowerCase().startsWith("all_")) {
                 try {
@@ -488,7 +488,7 @@ public class RulesParsingManager {
     private void parseExternalCompat(final ConfigurationSection cs){
         if (cs == null) return;
 
-        final Map<ExternalCompatibilityManager.ExternalCompatibility, Boolean> results = new TreeMap<>();
+        final Map<ExternalCompatibilityManager.ExternalCompatibility, Boolean> results = new EnumMap<>(ExternalCompatibilityManager.ExternalCompatibility.class);
 
         for (final String key : cs.getKeys(false)){
             final boolean value = cs.getBoolean(key);

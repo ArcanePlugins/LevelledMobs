@@ -67,9 +67,10 @@ public class RandomLevellingStrategy implements LevellingStrategy, Cloneable {
 
         // first loop parses the number range string and counts totals
         // so we know how big to size the array
-        for (final String range : this.weightedRandom.keySet()){
+        for (final Map.Entry<String, Integer> entry : this.weightedRandom.entrySet()){
+            final String range = entry.getKey();
             if (Utils.isNullOrEmpty(range)) continue;
-            final int value = this.weightedRandom.get(range);
+            final int value = entry.getValue();
 
             final int[] numRange = parseNumberRange(range);
             if (numRange[0] == -1 && numRange[1] == -1){

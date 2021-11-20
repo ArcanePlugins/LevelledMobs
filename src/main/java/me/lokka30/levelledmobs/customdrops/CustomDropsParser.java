@@ -107,9 +107,10 @@ public class CustomDropsParser {
             if (ms != null) {
                 final Map<String, Object> itemGroups = ms.getValues(true);
 
-                for (final String itemGroupName : itemGroups.keySet()) {
+                for (final Map.Entry<String, Object> entry : itemGroups.entrySet()) {
+                    final String itemGroupName = entry.getKey();
                     final CustomDropInstance dropInstance = new CustomDropInstance(EntityType.AREA_EFFECT_CLOUD); // entity type doesn't matter
-                    parseCustomDrops2((List<?>) itemGroups.get(itemGroupName), dropInstance);
+                    parseCustomDrops2((List<?>) entry.getValue(), dropInstance);
                     if (!dropInstance.customItems.isEmpty()) {
                         handler.customItemGroups.put(itemGroupName, dropInstance);
                         handler.customDropIDs.put(itemGroupName, dropInstance);
@@ -124,37 +125,37 @@ public class CustomDropsParser {
             mobTypeOrGroups = item.split(";");
 
             for (String mobTypeOrGroup : mobTypeOrGroups) {
-                mobTypeOrGroup = mobTypeOrGroup.trim();
-                if ("".equals(mobTypeOrGroup)) continue;
-                if (mobTypeOrGroup.toLowerCase().startsWith("file-version")) continue;
+                String trim = mobTypeOrGroup.trim();
+                if (trim.isEmpty()) continue;
+                if (trim.toLowerCase().startsWith("file-version")) continue;
 
                 CustomUniversalGroups universalGroup = null;
-                final boolean isEntityTable = (mobTypeOrGroup.equalsIgnoreCase("drop-table"));
-                final boolean isUniversalGroup = mobTypeOrGroup.toLowerCase().startsWith("all_");
+                final boolean isEntityTable = (trim.equalsIgnoreCase("drop-table"));
+                final boolean isUniversalGroup = trim.toLowerCase().startsWith("all_");
                 CustomDropInstance dropInstance;
 
                 if (isUniversalGroup) {
                     try {
-                        universalGroup = CustomUniversalGroups.valueOf(mobTypeOrGroup.toUpperCase());
+                        universalGroup = CustomUniversalGroups.valueOf(trim.toUpperCase());
                     } catch (Exception e) {
-                        Utils.logger.warning("invalid universal group in customdrops.yml: " + mobTypeOrGroup);
+                        Utils.logger.warning("invalid universal group in customdrops.yml: " + trim);
                         continue;
                     }
                     dropInstance = new CustomDropInstance(universalGroup);
                 } else if (!isEntityTable) {
-                    if (mobTypeOrGroup.equalsIgnoreCase("defaults"))
+                    if (trim.equalsIgnoreCase("defaults"))
                         continue;
 
                     boolean isBabyMob = false;
-                    if (mobTypeOrGroup.toLowerCase().startsWith("baby_")){
+                    if (trim.toLowerCase().startsWith("baby_")){
                         isBabyMob = true;
-                        mobTypeOrGroup = mobTypeOrGroup.substring(5);
+                        trim = trim.substring(5);
                     }
 
                     try {
-                        entityType = EntityType.valueOf(mobTypeOrGroup.toUpperCase());
+                        entityType = EntityType.valueOf(trim.toUpperCase());
                     } catch (Exception e) {
-                        Utils.logger.warning("invalid mob type in customdrops.yml: " + mobTypeOrGroup);
+                        Utils.logger.warning("invalid mob type in customdrops.yml: " + trim);
                         continue;
                     }
                     dropInstance = new CustomDropInstance(entityType, isBabyMob);
@@ -214,8 +215,7 @@ public class CustomDropsParser {
         if (ymlHelper.getStringSet(main.settingsCfg, "debug-misc").contains("CUSTOM_DROPS")) {
             int dropsCount = 0;
             int commandsCount = 0;
-            for (final EntityType et : handler.customDropsitems.keySet()){
-                final CustomDropInstance cdi = handler.customDropsitems.get(et);
+            for (final CustomDropInstance cdi : handler.customDropsitems.values()){
                 for (final CustomDropBase base : cdi.customItems){
                     if (base instanceof CustomDropItem)
                         dropsCount++;
@@ -435,8 +435,9 @@ public class CustomDropsParser {
         if (cs == null) return;
 
         final Map<String, Object> enchantMap = cs.getValues(false);
-        for (final String enchantName : enchantMap.keySet()) {
-            final Object value = enchantMap.get(enchantName);
+        for (final Map.Entry<String, Object> entry : enchantMap.entrySet()) {
+            final String enchantName = entry.getKey();
+            final Object value = entry.getValue();
 
             int enchantLevel = 1;
             if (value != null && Utils.isInteger(value.toString()))
@@ -444,7 +445,7 @@ public class CustomDropsParser {
 
             final Enchantment en = Enchantment.getByKey(NamespacedKey.minecraft(enchantName.toLowerCase()));
             if (en != null) {
-                if (item.getMaterial().equals(Material.ENCHANTED_BOOK)) {
+                if (item.getMaterial() == Material.ENCHANTED_BOOK) {
                     EnchantmentStorageMeta meta = (EnchantmentStorageMeta) item.getItemStack().getItemMeta();
                     if (meta != null) {
                         meta.addStoredEnchant(en, enchantLevel, true);
@@ -481,7 +482,7 @@ public class CustomDropsParser {
             madeChanges = true;
         }
 
-        if (item.customName != null && !"".equals(item.customName)){
+        if (item.customName != null && !item.customName.isEmpty()){
             meta.setDisplayName(MessageUtils.colorizeAll(item.customName));
             item.getItemStack().setItemMeta(meta);
             madeChanges = true;
@@ -658,13 +659,13 @@ public class CustomDropsParser {
             }
         }
 
-        for (final String group : handler.customDropsitems_groups.keySet()) {
-            final CustomDropInstance dropInstance = handler.customDropsitems_groups.get(group);
+        for (final Map.Entry<String, CustomDropInstance> entry : handler.customDropsitems_groups.entrySet()) {
+            final CustomDropInstance dropInstance = entry.getValue();
             final String override = dropInstance.overrideStockDrops ? " (override)" : "";
             final String overallChance = dropInstance.overallChance != null ? " (overall_chance: " + dropInstance.overallChance + ")" : "";
             if (sbMain.length() > 0) sbMain.append(System.lineSeparator());
             sbMain.append("group: ");
-            sbMain.append(group);
+            sbMain.append(entry.getKey());
             sbMain.append(override);
             sbMain.append(overallChance);
             for (final CustomDropBase baseItem : dropInstance.customItems) {
@@ -751,7 +752,7 @@ public class CustomDropsParser {
 
         if (item.noMultiplier) sb.append(", nomultp");
         if (item.lore != null && !item.lore.isEmpty()) sb.append(", hasLore");
-        if (item.customName != null && !"".equals(item.customName)) sb.append(", hasName");
+        if (item.customName != null && !item.customName.isEmpty()) sb.append(", hasName");
         if (item.getDamage() != 0 || item.getHasDamageRange()) {
             sb.append(", dmg: &b");
             sb.append(item.getDamageAsString());

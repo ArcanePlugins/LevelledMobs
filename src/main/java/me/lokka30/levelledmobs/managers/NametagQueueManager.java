@@ -123,21 +123,22 @@ public class NametagQueueManager {
                     }
 
                     // if any players already have a cooldown on this mob then don't remove the cooldown
-                    for (final Player player : nametagCooldownQueue.keySet()){
+                    for (final Map.Entry<Player, WeakHashMap<LivingEntity, Instant>> entry : nametagCooldownQueue.entrySet()){
+                        final Player player = entry.getKey();
                         if (item.lmEntity.playersNeedingNametagCooldownUpdate.contains(player)) continue;
 
-                        if (nametagCooldownQueue.get(player).containsKey(item.lmEntity.getLivingEntity()))
+                        if (entry.getValue().containsKey(item.lmEntity.getLivingEntity()))
                             item.lmEntity.playersNeedingNametagCooldownUpdate.add(player);
                     }
                 }
                 else{
                     // if there's any existing cooldowns we'll use them
-                    for (final Player player : nametagCooldownQueue.keySet()){
-                        if (nametagCooldownQueue.get(player).containsKey(item.lmEntity.getLivingEntity())) {
+                    for (final Map.Entry<Player, WeakHashMap<LivingEntity, Instant>> entry : nametagCooldownQueue.entrySet()){
+                        if (entry.getValue().containsKey(item.lmEntity.getLivingEntity())) {
                             if (item.lmEntity.playersNeedingNametagCooldownUpdate == null)
                                 item.lmEntity.playersNeedingNametagCooldownUpdate = new HashSet<>();
 
-                            item.lmEntity.playersNeedingNametagCooldownUpdate.add(player);
+                            item.lmEntity.playersNeedingNametagCooldownUpdate.add(entry.getKey());
                         }
                     }
                 }
@@ -209,7 +210,7 @@ public class NametagQueueManager {
             else {
                 final List<NametagVisibilityEnum> nametagVisibilityEnum = main.rulesManager.getRule_CreatureNametagVisbility(lmEntity);
                 final boolean doAlwaysVisible = i == 1 ||
-                        !"".equals(nametag) && lmEntity.getLivingEntity().isCustomNameVisible() ||
+                        !nametag.isEmpty() && lmEntity.getLivingEntity().isCustomNameVisible() ||
                         nametagVisibilityEnum.contains(NametagVisibilityEnum.ALWAYS_ON);
 
                 dataWatcher.setObject(objectIndex, doAlwaysVisible);

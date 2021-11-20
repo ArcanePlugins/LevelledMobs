@@ -49,15 +49,15 @@ public class PlayerInteractEventListener implements Listener {
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     void onPlayerInteractEvent(final PlayerInteractEvent event) {
         if (main.companion.spawner_InfoIds.isEmpty() && main.companion.spawner_CopyIds.isEmpty()) return;
-        if (event.getHand() == null || !event.getHand().equals(EquipmentSlot.HAND)) return;
-        if (!event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) return;
+        if (event.getHand() == null || event.getHand() != EquipmentSlot.HAND) return;
+        if (event.getAction() != Action.RIGHT_CLICK_BLOCK) return;
 
         final boolean doShowInfo = main.companion.spawner_InfoIds.contains(event.getPlayer().getUniqueId());
         final boolean doCopy = main.companion.spawner_CopyIds.contains(event.getPlayer().getUniqueId());
 
         if (!doCopy && !doShowInfo) return;
 
-        if (event.getClickedBlock() == null || !event.getClickedBlock().getType().equals(Material.SPAWNER))
+        if (event.getClickedBlock() == null || event.getClickedBlock().getType() != Material.SPAWNER)
             return;
 
         final UUID uuid = event.getPlayer().getUniqueId();
@@ -73,7 +73,7 @@ public class PlayerInteractEventListener implements Listener {
         final CreatureSpawner cs = (CreatureSpawner) event.getClickedBlock().getState();
         if (doShowInfo)
             showInfo(event.getPlayer(), cs);
-        else if (event.getMaterial().equals(Material.AIR))
+        else if (event.getMaterial() == Material.AIR)
             copySpawner(event.getPlayer(), cs);
     }
 

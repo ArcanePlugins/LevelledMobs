@@ -124,7 +124,7 @@ public class PlayerJoinListener implements Listener {
 
         List<String> messages = main.messagesCfg.getStringList("other.compatibility-notice.messages");
         messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.getPrefix());
-        messages = Utils.replaceAllInList(messages, "%incompatibilities%", main.incompatibilitiesAmount + "");
+        messages = Utils.replaceAllInList(messages, "%incompatibilities%", String.valueOf(main.incompatibilitiesAmount));
         messages = Utils.colorizeAllInList(messages);
         messages.forEach(player::sendMessage);
     }

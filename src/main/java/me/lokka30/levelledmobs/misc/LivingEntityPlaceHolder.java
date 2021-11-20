@@ -91,7 +91,7 @@ public class LivingEntityPlaceHolder extends LivingEntityWrapperBase implements 
         return this.entityType;
     }
 
-    public List<RuleInfo> getApplicableRules(){
+    public @NotNull List<RuleInfo> getApplicableRules(){
         return main.rulesManager.getApplicableRules(this).allApplicableRules;
     }
 

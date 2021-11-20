@@ -142,8 +142,8 @@ public class RuleInfo {
                     if (this.specificMobMultipliers == null)
                         this.specificMobMultipliers = new TreeMap<>();
 
-                    for (final String entityType : mergingPreset.keySet())
-                        this.specificMobMultipliers.put(entityType, mergingPreset.get(entityType).cloneItem());
+                    for (final Map.Entry<String, FineTuningAttributes> entry : mergingPreset.entrySet())
+                        this.specificMobMultipliers.put(entry.getKey(), entry.getValue().cloneItem());
 
                     skipSettingValue = true;
                 }

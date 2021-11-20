@@ -135,7 +135,7 @@ public class KillSubcommand implements Subcommand {
 
                         List<String> messages = main.messagesCfg.getStringList("command.levelledmobs.kill.near.invalid-radius-max");
                         messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.getPrefix());
-                        messages = Utils.replaceAllInList(messages, "%maxRadius%", maxRadius + "");
+                        messages = Utils.replaceAllInList(messages, "%maxRadius%", String.valueOf(maxRadius));
                         messages = Utils.colorizeAllInList(messages);
                         messages.forEach(sender::sendMessage);
                     }
@@ -146,7 +146,7 @@ public class KillSubcommand implements Subcommand {
 
                         List<String> messages = main.messagesCfg.getStringList("command.levelledmobs.kill.near.invalid-radius-min");
                         messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.getPrefix());
-                        messages = Utils.replaceAllInList(messages, "%minRadius%", minRadius + "");
+                        messages = Utils.replaceAllInList(messages, "%minRadius%", String.valueOf(minRadius));
                         messages = Utils.colorizeAllInList(messages);
                         messages.forEach(sender::sendMessage);
                     }
@@ -181,9 +181,9 @@ public class KillSubcommand implements Subcommand {
 
                     List<String> messages = main.messagesCfg.getStringList("command.levelledmobs.kill.near.success");
                     messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.getPrefix());
-                    messages = Utils.replaceAllInList(messages, "%killed%", killed + "");
-                    messages = Utils.replaceAllInList(messages, "%skipped%", skipped + "");
-                    messages = Utils.replaceAllInList(messages, "%radius%", radius + "");
+                    messages = Utils.replaceAllInList(messages, "%killed%", String.valueOf(killed));
+                    messages = Utils.replaceAllInList(messages, "%skipped%", String.valueOf(skipped));
+                    messages = Utils.replaceAllInList(messages, "%radius%", String.valueOf(radius));
                     messages = Utils.colorizeAllInList(messages);
                     messages.forEach(sender::sendMessage);
                 } else {
@@ -320,9 +320,9 @@ public class KillSubcommand implements Subcommand {
 
         List<String> messages = main.messagesCfg.getStringList("command.levelledmobs.kill.all.success");
         messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.getPrefix());
-        messages = Utils.replaceAllInList(messages, "%killed%", killed + "");
-        messages = Utils.replaceAllInList(messages, "%skipped%", skipped + "");
-        messages = Utils.replaceAllInList(messages, "%worlds%", worlds.size() + "");
+        messages = Utils.replaceAllInList(messages, "%killed%", String.valueOf(killed));
+        messages = Utils.replaceAllInList(messages, "%skipped%", String.valueOf(skipped));
+        messages = Utils.replaceAllInList(messages, "%worlds%", String.valueOf(worlds.size()));
         messages = Utils.colorizeAllInList(messages);
         messages.forEach(sender::sendMessage);
     }

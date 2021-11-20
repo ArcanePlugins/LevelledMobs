@@ -103,7 +103,7 @@ public class EntityDamageDebugListener implements Listener {
             for (final AttributeModifier mod : attributeInstance.getModifiers()){
                 if (count == 0) sb.append(" (");
                 else sb.append(", ");
-                if (mod.getOperation().equals(AttributeModifier.Operation.MULTIPLY_SCALAR_1))
+                if (mod.getOperation() == AttributeModifier.Operation.MULTIPLY_SCALAR_1)
                     sb.append("* ");
                 else
                     sb.append("+ ");

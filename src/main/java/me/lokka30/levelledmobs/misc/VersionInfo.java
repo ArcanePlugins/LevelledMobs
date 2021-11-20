@@ -4,6 +4,8 @@
 
 package me.lokka30.levelledmobs.misc;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.io.InvalidObjectException;
 import java.util.LinkedList;
 import java.util.List;
@@ -54,7 +56,7 @@ public class VersionInfo implements Comparable<VersionInfo> {
     }
 
     @Override
-    public int compareTo(final VersionInfo v) {
+    public int compareTo(final @NotNull VersionInfo v) {
         for (int i = 0; i < 4; i++) {
 
             if (v.thisVerSplit.size() <= i && this.thisVerSplit.size() - 1 <= i)

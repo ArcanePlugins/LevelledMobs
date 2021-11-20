@@ -45,7 +45,7 @@ public class LevelledMobsCommand implements CommandExecutor, TabCompleter {
     private final SummonSubcommand summonSubcommand = new SummonSubcommand();
     private final DebugSubcommand debugSubcommand = new DebugSubcommand();
 
-    public boolean onCommand(@NotNull final CommandSender sender, final Command command, final String label, final String[] args) {
+    public boolean onCommand(@NotNull final CommandSender sender, final @NotNull Command command, final @NotNull String label, final String[] args) {
         if (sender.hasPermission("levelledmobs.command")) {
             if (args.length == 0) {
                 sendMainUsage(sender, label);
@@ -102,7 +102,7 @@ public class LevelledMobsCommand implements CommandExecutor, TabCompleter {
     private final List<String> commandsToCheck = Arrays.asList("debug", "summon", "kill", "reload", "info", "compatibility", "spawner", "rules");
 
     @Override
-    public List<String> onTabComplete(final CommandSender sender, final Command cmd, final String alias, @NotNull final String @NotNull [] args) {
+    public List<String> onTabComplete(final @NotNull CommandSender sender, final @NotNull Command cmd, final @NotNull String alias, @NotNull final String @NotNull [] args) {
         if (args.length == 1) {
             List<String> suggestions = new LinkedList<>();
 

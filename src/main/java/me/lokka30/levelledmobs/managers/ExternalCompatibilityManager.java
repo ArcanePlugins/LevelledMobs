@@ -188,31 +188,31 @@ public class ExternalCompatibilityManager {
             result = LevellableState.DENIED_CONFIGURATION_COMPATIBILITY_DANGEROUS_CAVES;
 
         if (isMobOfEcoBosses(lmEntity) && !isExternalCompatibilityEnabled(ExternalCompatibility.ECO_BOSSES, compatRules) &&
-                result.equals(LevellableState.ALLOWED))
+                result == LevellableState.ALLOWED)
             result = LevellableState.DENIED_CONFIGURATION_COMPATIBILITY_ECO_BOSSES;
 
         if (isMobOfMythicMobs(lmEntity) && !isExternalCompatibilityEnabled(ExternalCompatibility.MYTHIC_MOBS, compatRules) &&
-                result.equals(LevellableState.ALLOWED))
+                result == LevellableState.ALLOWED)
             result = LevellableState.DENIED_CONFIGURATION_COMPATIBILITY_MYTHIC_MOBS;
 
         if (isMobOfEliteMobs(lmEntity) && !isExternalCompatibilityEnabled(ExternalCompatibility.ELITE_MOBS, compatRules) &&
-                result.equals(LevellableState.ALLOWED))
+                result == LevellableState.ALLOWED)
             result = LevellableState.DENIED_CONFIGURATION_COMPATIBILITY_ELITE_MOBS;
 
         if (isMobOfInfernalMobs(lmEntity) && !isExternalCompatibilityEnabled(ExternalCompatibility.INFERNAL_MOBS, compatRules) &&
-                result.equals(LevellableState.ALLOWED))
+                result == LevellableState.ALLOWED)
             result = LevellableState.DENIED_CONFIGURATION_COMPATIBILITY_INFERNAL_MOBS;
 
         if (isMobOfCitizens(lmEntity) && !isExternalCompatibilityEnabled(ExternalCompatibility.CITIZENS, compatRules) &&
-                result.equals(LevellableState.ALLOWED))
+                result == LevellableState.ALLOWED)
             result = LevellableState.DENIED_CONFIGURATION_COMPATIBILITY_CITIZENS;
 
         if (isMobOfShopkeepers(lmEntity) && !isExternalCompatibilityEnabled(ExternalCompatibility.SHOPKEEPERS, compatRules) &&
-                result.equals(LevellableState.ALLOWED))
+                result == LevellableState.ALLOWED)
             result = LevellableState.DENIED_CONFIGURATION_COMPATIBILITY_SHOPKEEPERS;
 
         if (isMobOfSimplePets(lmEntity) && !isExternalCompatibilityEnabled(ExternalCompatibility.SIMPLE_PETS, compatRules) &&
-                result.equals(LevellableState.ALLOWED))
+                result == LevellableState.ALLOWED)
             result = LevellableState.DENIED_CONFIGURATION_COMPATIBILITY_SIMPLEPETS;
 
         return result;

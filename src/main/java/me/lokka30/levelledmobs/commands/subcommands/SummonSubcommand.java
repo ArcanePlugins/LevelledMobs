@@ -438,7 +438,7 @@ public class SummonSubcommand implements Subcommand {
 
             List<String> messages = main.messagesCfg.getStringList("command.levelledmobs.summon.amount-limited.max");
             messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.getPrefix());
-            messages = Utils.replaceAllInList(messages, "%maxAmount%", maxAmount + "");
+            messages = Utils.replaceAllInList(messages, "%maxAmount%", String.valueOf(maxAmount));
             messages = Utils.colorizeAllInList(messages);
             messages.forEach(sender::sendMessage);
         }
@@ -452,7 +452,7 @@ public class SummonSubcommand implements Subcommand {
 
             List<String> messages = main.messagesCfg.getStringList("command.levelledmobs.summon.level-limited.min");
             messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.getPrefix());
-            messages = Utils.replaceAllInList(messages, "%minLevel%", minLevel + "");
+            messages = Utils.replaceAllInList(messages, "%minLevel%", String.valueOf(minLevel));
             messages = Utils.colorizeAllInList(messages);
             messages.forEach(sender::sendMessage);
         }
@@ -462,7 +462,7 @@ public class SummonSubcommand implements Subcommand {
 
             List<String> messages = main.messagesCfg.getStringList("command.levelledmobs.summon.level-limited.max");
             messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.getPrefix());
-            messages = Utils.replaceAllInList(messages, "%maxLevel%", maxLevel + "");
+            messages = Utils.replaceAllInList(messages, "%maxLevel%", String.valueOf(maxLevel));
             messages = Utils.colorizeAllInList(messages);
             messages.forEach(sender::sendMessage);
         }
@@ -524,7 +524,7 @@ public class SummonSubcommand implements Subcommand {
             case HERE:
                 List<String> hereSuccessmessages = main.messagesCfg.getStringList("command.levelledmobs.summon.here.success");
                 hereSuccessmessages = Utils.replaceAllInList(hereSuccessmessages, "%prefix%", main.configUtils.getPrefix());
-                hereSuccessmessages = Utils.replaceAllInList(hereSuccessmessages, "%amount%", options.amount + "");
+                hereSuccessmessages = Utils.replaceAllInList(hereSuccessmessages, "%amount%", String.valueOf(options.amount));
                 hereSuccessmessages = Utils.replaceAllInList(hereSuccessmessages, "%level%", options.requestedLevel.toString());
                 hereSuccessmessages = Utils.replaceAllInList(hereSuccessmessages, "%entity%", options.lmPlaceHolder.getTypeName());
                 hereSuccessmessages = Utils.colorizeAllInList(hereSuccessmessages);
@@ -534,12 +534,12 @@ public class SummonSubcommand implements Subcommand {
             case AT_LOCATION:
                 List<String> atLocationSuccessMessages = main.messagesCfg.getStringList("command.levelledmobs.summon.atLocation.success");
                 atLocationSuccessMessages = Utils.replaceAllInList(atLocationSuccessMessages, "%prefix%", main.configUtils.getPrefix());
-                atLocationSuccessMessages = Utils.replaceAllInList(atLocationSuccessMessages, "%amount%", options.amount + "");
+                atLocationSuccessMessages = Utils.replaceAllInList(atLocationSuccessMessages, "%amount%", String.valueOf(options.amount));
                 atLocationSuccessMessages = Utils.replaceAllInList(atLocationSuccessMessages, "%level%", options.requestedLevel.toString());
                 atLocationSuccessMessages = Utils.replaceAllInList(atLocationSuccessMessages, "%entity%", options.lmPlaceHolder.getTypeName());
-                atLocationSuccessMessages = Utils.replaceAllInList(atLocationSuccessMessages, "%x%", location.getBlockX() + "");
-                atLocationSuccessMessages = Utils.replaceAllInList(atLocationSuccessMessages, "%y%", location.getBlockY() + "");
-                atLocationSuccessMessages = Utils.replaceAllInList(atLocationSuccessMessages, "%z%", location.getBlockZ() + "");
+                atLocationSuccessMessages = Utils.replaceAllInList(atLocationSuccessMessages, "%x%", String.valueOf(location.getBlockX()));
+                atLocationSuccessMessages = Utils.replaceAllInList(atLocationSuccessMessages, "%y%", String.valueOf(location.getBlockY()));
+                atLocationSuccessMessages = Utils.replaceAllInList(atLocationSuccessMessages, "%z%", String.valueOf(location.getBlockZ()));
                 atLocationSuccessMessages = Utils.replaceAllInList(atLocationSuccessMessages, "%world%", location.getWorld() == null ? "(null)" : location.getWorld().getName());
                 atLocationSuccessMessages = Utils.colorizeAllInList(atLocationSuccessMessages);
                 atLocationSuccessMessages.forEach(sender::sendMessage);
@@ -548,7 +548,7 @@ public class SummonSubcommand implements Subcommand {
             case AT_PLAYER:
                 List<String> atPlayerSuccessMessages = main.messagesCfg.getStringList("command.levelledmobs.summon.atPlayer.success");
                 atPlayerSuccessMessages = Utils.replaceAllInList(atPlayerSuccessMessages, "%prefix%", main.configUtils.getPrefix());
-                atPlayerSuccessMessages = Utils.replaceAllInList(atPlayerSuccessMessages, "%amount%", options.amount + "");
+                atPlayerSuccessMessages = Utils.replaceAllInList(atPlayerSuccessMessages, "%amount%", String.valueOf(options.amount));
                 atPlayerSuccessMessages = Utils.replaceAllInList(atPlayerSuccessMessages, "%level%", options.requestedLevel.toString());
                 atPlayerSuccessMessages = Utils.replaceAllInList(atPlayerSuccessMessages, "%entity%", options.lmPlaceHolder.getTypeName());
                 atPlayerSuccessMessages = Utils.replaceAllInList(atPlayerSuccessMessages, "%targetUsername%", target == null ? "(null)" : target.getName());
