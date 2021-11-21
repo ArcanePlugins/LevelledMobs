@@ -73,11 +73,11 @@ public final class Utils {
     public static String replaceEx(@NotNull final String message, @NotNull final String replaceWhat, @NotNull final String replaceTo) {
         int count, position0, position1;
         count = position0 = 0;
-        String upperString = message.toUpperCase();
-        String upperPattern = replaceWhat.toUpperCase();
-        int inc = (message.length() / replaceWhat.length()) *
+        final String upperString = message.toUpperCase();
+        final String upperPattern = replaceWhat.toUpperCase();
+        final int inc = (message.length() / replaceWhat.length()) *
                 (replaceTo.length() - replaceWhat.length());
-        char[] chars = new char[message.length() + Math.max(0, inc)];
+        final char[] chars = new char[message.length() + Math.max(0, inc)];
         while ((position1 = upperString.indexOf(upperPattern, position0)) != -1) {
             for (int i = position0; i < position1; ++i)
                 chars[count++] = message.charAt(i);
@@ -104,7 +104,7 @@ public final class Utils {
         try {
             Integer.parseInt(str);
             return true;
-        } catch (NumberFormatException ex) {
+        } catch (final NumberFormatException ex) {
             return false;
         }
     }
@@ -116,7 +116,7 @@ public final class Utils {
         try {
             Double.parseDouble(str);
             return true;
-        } catch (NumberFormatException ex) {
+        } catch (final NumberFormatException ex) {
             return false;
         }
     }
@@ -177,7 +177,7 @@ public final class Utils {
      * @param object2 a non-nullable object
      * @return object2 if object1 is null, otherwise, object1
      */
-    public static Object getNonNull(@Nullable Object object1, @NotNull Object object2) {
+    public static Object getNonNull(@Nullable final Object object1, @NotNull final Object object2) {
         return object1 == null ? object2 : object1;
     }
 

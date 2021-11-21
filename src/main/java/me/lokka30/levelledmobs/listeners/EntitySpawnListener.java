@@ -57,7 +57,7 @@ public class EntitySpawnListener implements Listener {
             final CreatureSpawnEvent.SpawnReason spawnReason = ((CreatureSpawnEvent) event).getSpawnReason();
 
             lmEntity.setSpawnReason(LevelledMobSpawnReason.CUSTOM);
-            if ((spawnReason.equals(CreatureSpawnEvent.SpawnReason.CUSTOM) || spawnReason.equals(CreatureSpawnEvent.SpawnReason.SPAWNER_EGG)) &&
+            if ((spawnReason == CreatureSpawnEvent.SpawnReason.CUSTOM || spawnReason == CreatureSpawnEvent.SpawnReason.SPAWNER_EGG) &&
                     !lmEntity.isLevelled()) {
                 if (main.configUtils.playerLevellingEnabled && lmEntity.getPlayerForLevelling() == null)
                     updateMobForPlayerLevelling(lmEntity);
@@ -124,7 +124,7 @@ public class EntitySpawnListener implements Listener {
 
         return mob.getWorld().getPlayers().stream()
                 .filter(p -> mob.getWorld().equals(p.getWorld()))
-                .filter(p -> !p.getGameMode().equals(GameMode.SPECTATOR))
+                .filter(p -> p.getGameMode() != GameMode.SPECTATOR)
                 .map(p -> Map.entry(mob.getLocation().distanceSquared(p.getLocation()), p))
                 .filter(e -> e.getKey() <= maxDistanceSquared)
                 .sorted(Comparator.comparingDouble(Map.Entry::getKey))
@@ -136,7 +136,7 @@ public class EntitySpawnListener implements Listener {
     public static List<Player> getPlayersNearMob(final @NotNull LivingEntity mob, final int checkDistance){
         return mob.getNearbyEntities(checkDistance, checkDistance, checkDistance).stream()
                 .filter(e -> e instanceof org.bukkit.entity.Player)
-                .filter(e -> !((org.bukkit.entity.Player) e).getGameMode().equals(GameMode.SPECTATOR))
+                .filter(e -> ((Player) e).getGameMode() != GameMode.SPECTATOR)
                 .map(e -> Map.entry(mob.getLocation().distanceSquared(e.getLocation()), (org.bukkit.entity.Player) e))
                 .sorted(Comparator.comparingDouble(Map.Entry::getKey))
                 .map(Map.Entry::getValue)
@@ -203,7 +203,7 @@ public class EntitySpawnListener implements Listener {
                         world.spawnParticle(Particle.SOUL, location, 20, 0, 0, 0, 0.1);
                         Thread.sleep(50);
                     }
-                } catch (InterruptedException ignored) { }
+                } catch (final InterruptedException ignored) { }
             }
         };
 
@@ -232,12 +232,12 @@ public class EntitySpawnListener implements Listener {
         } else if (event instanceof CreatureSpawnEvent) {
             final CreatureSpawnEvent spawnEvent = (CreatureSpawnEvent) event;
 
-            if (spawnEvent.getSpawnReason().equals(CreatureSpawnEvent.SpawnReason.SPAWNER) ||
-                    spawnEvent.getSpawnReason().equals(CreatureSpawnEvent.SpawnReason.SLIME_SPLIT))
+            if (spawnEvent.getSpawnReason() == CreatureSpawnEvent.SpawnReason.SPAWNER ||
+                    spawnEvent.getSpawnReason() == CreatureSpawnEvent.SpawnReason.SLIME_SPLIT)
                 return;
 
-            if (spawnEvent.getSpawnReason().equals(CreatureSpawnEvent.SpawnReason.CUSTOM) ||
-                    spawnEvent.getSpawnReason().equals(CreatureSpawnEvent.SpawnReason.SPAWNER_EGG)) {
+            if (spawnEvent.getSpawnReason() == CreatureSpawnEvent.SpawnReason.CUSTOM ||
+                    spawnEvent.getSpawnReason() == CreatureSpawnEvent.SpawnReason.SPAWNER_EGG) {
                 synchronized (LevelManager.summonedOrSpawnEggs_Lock){
                     if (main.levelManager.summonedOrSpawnEggs.containsKey(lmEntity.getLivingEntity())) {
                         // the mob was spawned by the summon command and will get processed directly
@@ -330,16 +330,16 @@ public class EntitySpawnListener implements Listener {
 
     @NotNull
     private LevellableState getLevellableState(final LivingEntityWrapper lmEntity, @NotNull final Event event) {
-        LevellableState levellableState = main.levelInterface.getLevellableState(lmEntity);
+        final LevellableState levellableState = main.levelInterface.getLevellableState(lmEntity);
 
         if (levellableState != LevellableState.ALLOWED)
             return levellableState;
 
         if (event instanceof CreatureSpawnEvent) {
-            CreatureSpawnEvent creatureSpawnEvent = (CreatureSpawnEvent) event;
+            final CreatureSpawnEvent creatureSpawnEvent = (CreatureSpawnEvent) event;
 
             // the mob gets processed via SpawnerSpawnEvent
-            if (((CreatureSpawnEvent) event).getSpawnReason().equals(CreatureSpawnEvent.SpawnReason.SPAWNER))
+            if (((CreatureSpawnEvent) event).getSpawnReason() == CreatureSpawnEvent.SpawnReason.SPAWNER)
                 return LevellableState.DENIED_OTHER;
 
             Utils.debugLog(main, DebugType.ENTITY_SPAWN, "instanceof CreatureSpawnListener: &b" + creatureSpawnEvent.getEntityType() + "&7, with spawnReason &b" + creatureSpawnEvent.getSpawnReason() + "&7.");

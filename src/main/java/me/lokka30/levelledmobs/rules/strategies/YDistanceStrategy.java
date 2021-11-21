@@ -26,7 +26,7 @@ public class YDistanceStrategy implements LevellingStrategy, Cloneable {
             mergeYDistanceStrategy((YDistanceStrategy) levellingStrategy);
     }
 
-    public void mergeYDistanceStrategy(final YDistanceStrategy yds){
+    private void mergeYDistanceStrategy(final YDistanceStrategy yds){
         if (yds == null) return;
 
         if (yds.startingYLevel != null) this.startingYLevel = yds.startingYLevel;
@@ -45,15 +45,15 @@ public class YDistanceStrategy implements LevellingStrategy, Cloneable {
     public int generateLevel(@NotNull final LivingEntityWrapper lmEntity, final int minLevel, final int maxLevel) {
 
         final int mobYLocation = lmEntity.getLivingEntity().getLocation().getBlockY();
-        int yStart = this.startingYLevel == null ? 0 : this.startingYLevel;
-        int yEnd = this.endingYLevel == null ? 0 : this.endingYLevel;
+        final int yStart = this.startingYLevel == null ? 0 : this.startingYLevel;
+        final int yEnd = this.endingYLevel == null ? 0 : this.endingYLevel;
         final double yPeriod = this.yPeriod == null ? 0.0 : this.yPeriod;
         int useLevel;
         final double diff = yEnd - yStart;
 
         if (yPeriod > 0) {
             final double percent = (mobYLocation - yStart) / diff;
-            double lvlPerPeriod = (maxLevel - minLevel) / (diff / yPeriod);
+            final double lvlPerPeriod = (maxLevel - minLevel) / (diff / yPeriod);
             useLevel = (int) Math.floor(minLevel + (lvlPerPeriod * (mobYLocation - yStart) / yPeriod));
         } else {
             final double useMobYLocation = mobYLocation - yStart;
@@ -91,7 +91,7 @@ public class YDistanceStrategy implements LevellingStrategy, Cloneable {
         YDistanceStrategy copy = null;
         try {
             copy = (YDistanceStrategy) super.clone();
-        } catch (Exception e) {
+        } catch (final Exception e) {
             e.printStackTrace();
         }
 

@@ -6,9 +6,9 @@ import java.lang.ref.WeakReference;
 import java.time.Instant;
 
 public class NametagCooldownInfo {
-    public Instant timestamp;
+    private Instant timestamp;
     public WeakReference<LivingEntity> livingEntity;
-    public int duration;
+    private int duration;
 
     public NametagCooldownInfo(){ }
 

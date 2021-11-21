@@ -33,14 +33,14 @@ public class NBTManager {
         try {
             nbtent.mergeCompound(new NBTContainer(nbtStuff));
             result.itemStack = nbtent.getItem();
-        } catch (Exception e) {
+        } catch (final Exception e) {
             result.exceptionMessage = e.getMessage();
         }
 
         return result;
     }
 
-    public static @NotNull NBTApplyResult applyNBT_Data_Mob(@NotNull final LivingEntityWrapper lmEntity, @NotNull final String nbtStuff) {
+    static @NotNull NBTApplyResult applyNBT_Data_Mob(@NotNull final LivingEntityWrapper lmEntity, @NotNull final String nbtStuff) {
         final NBTApplyResult result = new NBTApplyResult();
 
         try {
@@ -54,7 +54,7 @@ public class NBTManager {
 
             if (jsonBefore.equals(jsonAfter))
                 result.exceptionMessage = "No NBT data changed.  Make sure you have used proper NBT strings";
-        } catch (Exception e) {
+        } catch (final Exception e) {
             result.exceptionMessage = e.getMessage();
         }
 
@@ -74,8 +74,7 @@ public class NBTManager {
             for (final String key : jsonObjectAfter.keySet()) {
                 objectsAfter.put(key, jsonObjectAfter.get(key).toString());
             }
-        }
-        catch (Exception e){
+        } catch (final Exception e){
             e.printStackTrace();
             return;
         }

@@ -32,17 +32,17 @@ import java.util.*;
  * @author lokka30, stumper66
  * @since 1.0
  */
-public class LevelledMobs extends JavaPlugin {
+public final class LevelledMobs extends JavaPlugin {
 
     // Manager classes
     public LevelInterface levelInterface;
     public LevelManager levelManager;
     public final MobDataManager mobDataManager = new MobDataManager(this);
-    public WorldGuardIntegration worldGuardIntegration;
+    WorldGuardIntegration worldGuardIntegration;
     public CustomDropsHandler customDropsHandler;
-    public ChunkLoadListener chunkLoadListener;
-    public BlockPlaceListener blockPlaceListener;
-    public PlayerInteractEventListener playerInteractEventListener;
+    ChunkLoadListener chunkLoadListener;
+    BlockPlaceListener blockPlaceListener;
+    PlayerInteractEventListener playerInteractEventListener;
     public Namespaced_Keys namespaced_keys;
     public final Companion companion = new Companion(this);
     public final MobHeadManager mobHeadManager = new MobHeadManager(this);
@@ -69,7 +69,7 @@ public class LevelledMobs extends JavaPlugin {
 
     // Misc
     public Map<String, Set<String>> customMobGroups;
-    public EntityDamageDebugListener entityDamageDebugListener;
+    EntityDamageDebugListener entityDamageDebugListener;
     public int incompatibilitiesAmount;
     private long loadTime;
     public WeakHashMap<LivingEntity, Instant> playerLevellingEntities;

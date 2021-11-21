@@ -10,9 +10,9 @@ import org.jetbrains.annotations.NotNull;
  * @author stumper66
  * @since 3.3.0
  */
-public class Paper117Utils {
+class Paper117Utils {
     @NotNull
-    public static String serializeTextComponent(final @NotNull TextComponent textComponent){
+    static String serializeTextComponent(final @NotNull TextComponent textComponent){
         return PlainTextComponentSerializer.plainText().serialize(textComponent);
     }
 }

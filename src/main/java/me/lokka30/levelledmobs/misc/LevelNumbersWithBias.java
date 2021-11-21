@@ -24,14 +24,13 @@ public class LevelNumbersWithBias {
         this.maxLevel = maxLevel;
         this.factor = factor;
         this.numberList = new LinkedList<>();
-        this.createdTime = LocalDateTime.now();
+        final LocalDateTime createdTime = LocalDateTime.now();
     }
 
     final private int minLevel;
     final private int maxLevel;
     final private int factor;
     final private List<Integer> numberList;
-    final LocalDateTime createdTime;
 
     public int getNumberWithinLimits(){
         return this.numberList.get(ThreadLocalRandom.current().nextInt(0, numberList.size() - 1));
@@ -76,7 +75,7 @@ public class LevelNumbersWithBias {
         if (obj == null) return false;
         if (this.getClass() != obj.getClass()) return false;
 
-        LevelNumbersWithBias levelNumbersWithBias = (LevelNumbersWithBias) obj;
+        final LevelNumbersWithBias levelNumbersWithBias = (LevelNumbersWithBias) obj;
         return this.minLevel == levelNumbersWithBias.minLevel && this.maxLevel == levelNumbersWithBias.maxLevel && this.factor == levelNumbersWithBias.factor;
     }
 }

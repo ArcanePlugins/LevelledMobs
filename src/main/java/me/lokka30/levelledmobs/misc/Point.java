@@ -5,7 +5,10 @@
 package me.lokka30.levelledmobs.misc;
 
 import org.bukkit.Location;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Arrays;
 
 /**
  * A smaller version of the Location class only including
@@ -19,8 +22,10 @@ import org.jetbrains.annotations.NotNull;
  */
 public class Point {
 
-    public String worldName;
-    public int x, y, z;
+    private final String worldName;
+    private final int x;
+    private final int y;
+    private final int z;
 
     public Point(final String worldName, final int x, final int y, final int z) {
         this.worldName = worldName;
@@ -29,7 +34,8 @@ public class Point {
         this.z = z;
     }
 
-    public Integer[] getCoordinates() {
+    @Contract(value = " -> new", pure = true)
+    private Integer @NotNull [] getCoordinates() {
         return new Integer[]{x, y, z};
     }
 
@@ -54,6 +60,6 @@ public class Point {
     }
 
     public static boolean matches(final @NotNull Point point1, final @NotNull Point point2) {
-        return (point1.worldName.equals(point2.worldName) && point1.getCoordinates() == point2.getCoordinates());
+        return (point1.worldName.equals(point2.worldName) && Arrays.equals(point1.getCoordinates(), point2.getCoordinates()));
     }
 }

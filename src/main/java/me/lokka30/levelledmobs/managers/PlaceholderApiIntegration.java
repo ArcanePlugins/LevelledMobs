@@ -105,7 +105,7 @@ public class PlaceholderApiIntegration extends PlaceholderExpansion {
 
         final LastMobKilledInfo mobInfo = this.mobsByPlayerTracking.get(player.getUniqueId());
         return mobInfo.entityLevel == null ?
-                "" : mobInfo.entityLevel + "";
+                "" : String.valueOf(mobInfo.entityLevel);
     }
 
     @NotNull

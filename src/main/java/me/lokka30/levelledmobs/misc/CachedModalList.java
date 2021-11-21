@@ -128,14 +128,14 @@ public class CachedModalList<T extends Comparable<T>> implements Cloneable {
             copy.allowedGroups = (TreeSet<String>) ((TreeSet<String>) (this.allowedGroups)).clone();
             copy.excludedList = (TreeSet<T>) ((TreeSet<T>) (this.excludedList)).clone();
             copy.excludedGroups = (TreeSet<String>) ((TreeSet<String>) (this.excludedGroups)).clone();
-        } catch (CloneNotSupportedException e) {
+        } catch (final CloneNotSupportedException e) {
             e.printStackTrace();
         }
 
         return copy;
     }
 
-    public void mergeCachedModal(@NotNull CachedModalList<?> cachedModalList){
+    public void mergeCachedModal(@NotNull final CachedModalList<?> cachedModalList){
         this.allowedList.addAll((Collection<? extends T>) cachedModalList.allowedList);
         this.excludedList.addAll((Collection<? extends T>) cachedModalList.excludedList);
 

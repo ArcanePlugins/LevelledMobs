@@ -109,14 +109,14 @@ public class SpawnerSubCommand extends SpawnerBaseClass implements Subcommand{
         if ("on".equalsIgnoreCase(args[2])){
             if (main.companion.spawner_CopyIds.contains(playerId)) {
                 // can't have both enabled.  We'll disable copy first
-                copyGotDisabled(sender, playerId, label);
+                copyGotDisabled(playerId);
             }
 
             main.companion.spawner_InfoIds.add(playerId);
             showMessage("command.levelledmobs.spawner.info.enabled");
         }
         else if ("off".equalsIgnoreCase(args[2]))
-            infoGotDisabled(sender, playerId, label);
+            infoGotDisabled(playerId);
     }
 
     private void parseCopyCommand(@NotNull final CommandSender sender, final String label, final String[] args){
@@ -136,22 +136,22 @@ public class SpawnerSubCommand extends SpawnerBaseClass implements Subcommand{
         if ("on".equalsIgnoreCase(args[2])){
             if (main.companion.spawner_InfoIds.contains(playerId)) {
                 // can't have both enabled.  We'll disable info first
-                infoGotDisabled(sender, playerId, label);
+                infoGotDisabled(playerId);
             }
 
             main.companion.spawner_CopyIds.add(playerId);
             showMessage("command.levelledmobs.spawner.copy.enabled");
         }
         else if ("off".equalsIgnoreCase(args[2]))
-            copyGotDisabled(sender, playerId, label);
+            copyGotDisabled(playerId);
     }
 
-    private void copyGotDisabled(final @NotNull CommandSender sender, final UUID playerId, final String label){
+    private void copyGotDisabled(final UUID playerId){
         main.companion.spawner_CopyIds.remove(playerId);
         showMessage("command.levelledmobs.spawner.copy.disabled");
     }
 
-    private void infoGotDisabled(final @NotNull CommandSender sender, final UUID playerId, final String label){
+    private void infoGotDisabled(final UUID playerId){
         main.companion.spawner_InfoIds.remove(playerId);
         showMessage("command.levelledmobs.spawner.info.disabled");
     }
@@ -187,7 +187,7 @@ public class SpawnerSubCommand extends SpawnerBaseClass implements Subcommand{
                     try{
                         info.spawnType = EntityType.valueOf(foundValue.toUpperCase());
                     }
-                    catch (Exception ignored){
+                    catch (final Exception ignored){
                         sender.sendMessage("Invalid spawn type: " + foundValue);
                         return;
                     }
@@ -207,7 +207,7 @@ public class SpawnerSubCommand extends SpawnerBaseClass implements Subcommand{
                         return;
                     }
                     try { info.player = Bukkit.getPlayer(foundValue); }
-                    catch (Exception e){
+                    catch (final Exception e){
                         showMessage("common.player-offline", "%player%", foundValue);
                         return;
                     }
@@ -255,7 +255,7 @@ public class SpawnerSubCommand extends SpawnerBaseClass implements Subcommand{
             meta.getPersistentDataContainer().set(info.main.namespaced_keys.keySpawner_MaxLevel, PersistentDataType.INTEGER, info.maxLevel);
             if (!Utils.isNullOrEmpty(info.customDropId))
                 meta.getPersistentDataContainer().set(info.main.namespaced_keys.keySpawner_CustomDropId, PersistentDataType.STRING, info.customDropId);
-            if (!info.spawnType.equals(EntityType.UNKNOWN))
+            if (info.spawnType != EntityType.UNKNOWN)
                 meta.getPersistentDataContainer().set(info.main.namespaced_keys.keySpawner_SpawnType, PersistentDataType.STRING, info.spawnType.toString());
             if (info.spawnRange != null)
                 meta.getPersistentDataContainer().set(info.main.namespaced_keys.keySpawner_SpawnRange, PersistentDataType.INTEGER, info.spawnRange);
@@ -301,7 +301,7 @@ public class SpawnerSubCommand extends SpawnerBaseClass implements Subcommand{
 
         final List<String> message = getMessage("command.levelledmobs.spawner.spawner-give-message-console",
                 new String[]{ "%minlevel%", "%maxlevel%", "%playername%" },
-                new String[]{ info.minLevel + "", info.maxLevel + "", playerName }
+                new String[]{String.valueOf(info.minLevel), String.valueOf(info.maxLevel), playerName }
         );
 
         if (!message.isEmpty()) Utils.logger.info(message.get(0).replace(main.configUtils.getPrefix() + " ", ""));
@@ -330,7 +330,7 @@ public class SpawnerSubCommand extends SpawnerBaseClass implements Subcommand{
             switch (args[args.length - 2].toLowerCase()){
                 case "/spawntype":
                     final List<String> entityNames = new LinkedList<>();
-                    for (EntityType entityType : EntityType.values())
+                    for (final EntityType entityType : EntityType.values())
                         entityNames.add(entityType.toString().toLowerCase());
 
                     return entityNames;

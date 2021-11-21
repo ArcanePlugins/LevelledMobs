@@ -26,7 +26,7 @@ import java.util.*;
  * @since 3.3.0
  */
 public class SpawnerBaseClass extends MessagesBase {
-    public SpawnerBaseClass(final LevelledMobs main){
+    SpawnerBaseClass(final LevelledMobs main){
         super(main);
     }
 
@@ -70,7 +70,7 @@ public class SpawnerBaseClass extends MessagesBase {
     }
 
     @Nullable
-    String parseFlagValue(final String keyName, final int argNumber, final String @NotNull [] args, final boolean mustBeNumber){
+    private String parseFlagValue(final String keyName, final int argNumber, final String @NotNull [] args, final boolean mustBeNumber){
         if (argNumber + 1 >= args.length || args[argNumber + 1].startsWith("/")){
             showMessage("command.levelledmobs.spawner.no-value", "%keyname%", keyName);
             hadInvalidArg = true;
@@ -121,7 +121,7 @@ public class SpawnerBaseClass extends MessagesBase {
             if (itemsCount > 0)
                 lore.add(loreLine.toString());
         }
-        catch (Exception e){
+        catch (final Exception e){
             e.printStackTrace();
         }
 
@@ -193,13 +193,13 @@ public class SpawnerBaseClass extends MessagesBase {
         @DoNotMerge
         final public LevelledMobs main;
         @DoNotMerge
-        final public String label;
+        final String label;
         @DoNotMerge
         public Player player;
         public int minLevel;
         public int maxLevel;
         @DoNotMerge
-        public boolean noLore;
+        boolean noLore;
         public Integer delay;
         public Integer maxNearbyEntities;
         public Integer minSpawnDelay;
@@ -212,7 +212,7 @@ public class SpawnerBaseClass extends MessagesBase {
         public String customName;
         public EntityType spawnType;
         @DoNotMerge
-        public String customLore;
+        String customLore;
         public String lore;
     }
 }

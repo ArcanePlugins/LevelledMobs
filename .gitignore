@@ -6,6 +6,8 @@
 #   Why? Different developers use different IDE settings.
 /target/
 /.idea
+.idea
+.idea/
 LevelledMobs.iml
 
 # Eclipse IDE
@@ -13,5 +15,4 @@ LevelledMobs.iml
 .classpath
 .project
 /.settings
-.idea/jarRepositories.xml
-.idea/jarRepositories.xml
+/.idea/

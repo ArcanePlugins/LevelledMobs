@@ -40,9 +40,9 @@ public final class FileLoader {
         final File file = new File(plugin.getDataFolder(), cfgName);
 
         saveResourceIfNotExists(plugin, file);
-        try (FileInputStream fs = new FileInputStream(file)) {
+        try (final FileInputStream fs = new FileInputStream(file)) {
             new Yaml().load(fs);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             Utils.logger.error("&4Error reading " + cfgName + ". " + e.getMessage());
             return null;
         }
@@ -73,7 +73,7 @@ public final class FileLoader {
             else if (!isRules)
                 FileMigrator.copyYmlValues(backedupFile, file, fileVersion);
             else
-                FileMigrator.migrateRules(backedupFile, file, fileVersion);
+                FileMigrator.migrateRules(file);
 
             // reload cfg from the updated values
             cfg = YamlConfiguration.loadConfiguration(file);

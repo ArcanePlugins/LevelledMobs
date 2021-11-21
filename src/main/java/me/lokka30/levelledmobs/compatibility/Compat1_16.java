@@ -46,7 +46,7 @@ public class Compat1_16 {
     private static boolean shouldIncludePiglinBrutes(){
         final String ver = Bukkit.getBukkitVersion();
         // 1.17.1-R0.1-SNAPSHOT
-        final int dash = ver.indexOf("-");
+        final int dash = ver.indexOf('-');
         if (dash < 1) return false;
 
         final String verCorrected = ver.substring(0, dash);

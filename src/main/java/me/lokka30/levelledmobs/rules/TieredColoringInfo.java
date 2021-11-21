@@ -19,13 +19,13 @@ public class TieredColoringInfo implements Cloneable {
     public int minLevel;
     public int maxLevel;
     public String text;
-    public boolean isDefault;
+    boolean isDefault;
 
-    public TieredColoringInfo(){}
+    private TieredColoringInfo(){}
 
     @NotNull
-    public static TieredColoringInfo createDefault(final @NotNull String value){
-        TieredColoringInfo coloringInfo = new TieredColoringInfo();
+    static TieredColoringInfo createDefault(final @NotNull String value){
+        final TieredColoringInfo coloringInfo = new TieredColoringInfo();
         coloringInfo.isDefault = true;
         coloringInfo.text = value;
 
@@ -33,14 +33,14 @@ public class TieredColoringInfo implements Cloneable {
     }
 
     @Nullable
-    public static TieredColoringInfo createFromString(final @NotNull String key, final @NotNull String value){
+    static TieredColoringInfo createFromString(final @NotNull String key, final @NotNull String value){
         final String[] numbers = key.split("-");
         if (numbers.length != 2) {
             Utils.logger.warning("Invalid tiered coloring key: " + key);
             return null;
         }
 
-        TieredColoringInfo coloringInfo = new TieredColoringInfo();
+        final TieredColoringInfo coloringInfo = new TieredColoringInfo();
 
         for (int i = 0; i < 2; i++){
             final String num = numbers[i].trim();
@@ -69,7 +69,7 @@ public class TieredColoringInfo implements Cloneable {
         TieredColoringInfo copy = null;
         try {
             copy = (TieredColoringInfo) super.clone();
-        } catch (Exception e) {
+        } catch (final Exception e) {
             e.printStackTrace();
         }
 

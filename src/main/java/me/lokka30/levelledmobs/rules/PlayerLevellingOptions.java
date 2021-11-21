@@ -16,7 +16,7 @@ import java.util.List;
  * @since 3.1.0
  */
 public class PlayerLevellingOptions implements Cloneable {
-    public PlayerLevellingOptions() {
+    PlayerLevellingOptions() {
         this.levelTiers = new LinkedList<>();
         this.decreaseLevel = true;
     }
@@ -46,7 +46,7 @@ public class PlayerLevellingOptions implements Cloneable {
         PlayerLevellingOptions copy = null;
         try {
             copy = (PlayerLevellingOptions) super.clone();
-        } catch (Exception e) {
+        } catch (final Exception e) {
             e.printStackTrace();
         }
 

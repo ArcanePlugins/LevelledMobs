@@ -64,7 +64,7 @@ public class LevelManager implements LevelInterface {
 
     private final LevelledMobs main;
     private final static int maxLevelNumsCache = 10;
-    final private List<Material> vehicleNoMultiplierItems;
+    private final List<Material> vehicleNoMultiplierItems;
     public double attributeMaxHealthMax = 2048.0;
     public double attributeMovementSpeedMax = 2048.0;
     public double attributeAttackDamageMax = 2048.0;
@@ -110,7 +110,7 @@ public class LevelManager implements LevelInterface {
      * @param lmEntity the entity to generate a level for
      * @return a level for the entity
      */
-    public int generateLevel(final LivingEntityWrapper lmEntity) {
+    public int generateLevel(final @NotNull LivingEntityWrapper lmEntity) {
         return generateLevel(lmEntity, -1, -1);
     }
 
@@ -125,7 +125,7 @@ public class LevelManager implements LevelInterface {
      * @param maxLevel_Pre the maximum level to be used for the mob
      * @return a level for the entity
      */
-    public int generateLevel(final LivingEntityWrapper lmEntity, final int minLevel_Pre, final int maxLevel_Pre) {
+    public int generateLevel(final @NotNull LivingEntityWrapper lmEntity, final int minLevel_Pre, final int maxLevel_Pre) {
         int minLevel = minLevel_Pre;
         int maxLevel = maxLevel_Pre;
 
@@ -192,7 +192,7 @@ public class LevelManager implements LevelInterface {
 
         levelSource = (int) Math.round(origLevelSource * scale);
         if (levelSource < 1) levelSource = 1;
-        final int[] results = new int[]{ 1, 1};
+        final int[] results = { 1, 1};
         String tierMatched = null;
         final String capDisplay = options.levelCap == null ? "" : "cap: " + options.levelCap + ", ";
 
@@ -271,7 +271,7 @@ public class LevelManager implements LevelInterface {
     public PlayerLevelSourceResult getPlayerLevelSourceNumber(final Player player, final String variableToUse){
         if (player == null) return new PlayerLevelSourceResult(1);
 
-        double origLevelSource;
+        final double origLevelSource;
 
         if (variableToUse.equalsIgnoreCase("%level%"))
             origLevelSource = player.getLevel();
@@ -375,7 +375,7 @@ public class LevelManager implements LevelInterface {
         if (!dropsToMultiply.isEmpty()) currentDrops.addAll(dropsToMultiply);
     }
 
-    public void multiplyDrop(LivingEntityWrapper lmEntity, @NotNull final ItemStack currentDrop, final int addition, final boolean isCustomDrop){
+    public void multiplyDrop(final LivingEntityWrapper lmEntity, @NotNull final ItemStack currentDrop, final int addition, final boolean isCustomDrop){
         Utils.debugLog(main, DebugType.SET_LEVELLED_ITEM_DROPS, "&86:&7 Scanning drop &b" + currentDrop.getType() + "&7 with current amount &b" + currentDrop.getAmount() + "&7...");
 
         if (isCustomDrop || main.mobDataManager.isLevelledDropManaged(lmEntity.getLivingEntity().getType(), currentDrop.getType())) {
@@ -401,7 +401,7 @@ public class LevelManager implements LevelInterface {
             final ItemStack[] chestItems = inv.getContents();
             // look thru the animal's inventory for leather. That is the only item that will get duplicated
             for (final ItemStack item : chestItems){
-                if (item.getType().equals(Material.LEATHER))
+                if (item.getType() == Material.LEATHER)
                     return Collections.singletonList(item);
             }
 
@@ -433,7 +433,7 @@ public class LevelManager implements LevelInterface {
             chestItems.add(new ItemStack(Material.CHEST));
         } else if (lmEntity.getLivingEntity() instanceof Vehicle) {
             for (final ItemStack itemStack : drops) {
-                if (itemStack.getType().equals(Material.SADDLE)) {
+                if (itemStack.getType() == Material.SADDLE) {
                     hadSaddle = true;
                     break;
                 }
@@ -477,7 +477,7 @@ public class LevelManager implements LevelInterface {
 
     @NotNull
     public String updateNametag(final LivingEntityWrapper lmEntity, @NotNull String nametag, final boolean useCustomNameForNametags) {
-        if ("".equals(nametag)) return nametag;
+        if (nametag.isEmpty()) return nametag;
         final String overridenName = main.rulesManager.getRule_EntityOverriddenName(lmEntity, useCustomNameForNametags);
 
         String displayName = overridenName == null ?
@@ -487,7 +487,7 @@ public class LevelManager implements LevelInterface {
         if (lmEntity.getLivingEntity().getCustomName() != null && !useCustomNameForNametags)
             displayName = lmEntity.getLivingEntity().getCustomName();
 
-        nametag = replaceStringPlaceholders(nametag, lmEntity, displayName);
+        nametag = replaceStringPlaceholders(nametag, lmEntity);
 
         // This is after colorize so that color codes in nametags dont get translated
         nametag = nametag.replace("%displayname%", displayName);
@@ -559,15 +559,15 @@ public class LevelManager implements LevelInterface {
         return MessageUtils.colorizeAll(result);
     }
 
-    public String replaceStringPlaceholders(final String nametag, @NotNull final LivingEntityWrapper lmEntity, final String displayName){
+    public String replaceStringPlaceholders(final String nametag, @NotNull final LivingEntityWrapper lmEntity){
         String result = nametag;
 
         final double maxHealth = getMobAttributeValue(lmEntity, Attribute.GENERIC_MAX_HEALTH);
         final double entityHealth = getMobHealth(lmEntity);
         final int entityHealthRounded = entityHealth < 1.0 && entityHealth > 0.0 ?
                 1 : (int) Utils.round(entityHealth);
-        final String roundedMaxHealth = Utils.round(maxHealth) + "";
-        final String roundedMaxHealthInt = (int) Utils.round(maxHealth) + "";
+        final String roundedMaxHealth = String.valueOf(Utils.round(maxHealth));
+        final String roundedMaxHealthInt = String.valueOf((int) Utils.round(maxHealth));
         final double percentHealthTemp = Math.round(entityHealth / maxHealth * 100.0);
         final int percentHealth = percentHealthTemp < 1.0 ? 1 : (int) percentHealthTemp;
 
@@ -580,10 +580,10 @@ public class LevelManager implements LevelInterface {
                 lmEntity.getLivingEntity().getLocation().getBlockZ());
 
         // replace them placeholders ;)
-        result = result.replace("%mob-lvl%", lmEntity.getMobLevel() + "");
+        result = result.replace("%mob-lvl%", String.valueOf(lmEntity.getMobLevel()));
         result = result.replace("%entity-name%", Utils.capitalize(lmEntity.getNameIfBaby().replace("_", " ")));
-        result = result.replace("%entity-health%", Utils.round(entityHealth) + "");
-        result = result.replace("%entity-health-rounded%", entityHealthRounded + "");
+        result = result.replace("%entity-health%", String.valueOf(Utils.round(entityHealth)));
+        result = result.replace("%entity-health-rounded%", String.valueOf(entityHealthRounded));
         result = result.replace("%entity-max-health%", roundedMaxHealth);
         result = result.replace("%entity-max-health-rounded%", roundedMaxHealthInt);
         result = result.replace("%heart_symbol%", "❤");
@@ -591,10 +591,10 @@ public class LevelManager implements LevelInterface {
         result = result.replace("%wg_region%", lmEntity.getWGRegionName());
         result = result.replace("%world%", lmEntity.getWorldName());
         result = result.replace("%location%", locationStr);
-        result = result.replace("%health%-percent%", percentHealth + "");
-        result = result.replace("%x%", lmEntity.getLivingEntity().getLocation().getBlockX() + "");
-        result = result.replace("%y%", lmEntity.getLivingEntity().getLocation().getBlockY() + "");
-        result = result.replace("%z%", lmEntity.getLivingEntity().getLocation().getBlockZ() + "");
+        result = result.replace("%health%-percent%", String.valueOf(percentHealth));
+        result = result.replace("%x%", String.valueOf(lmEntity.getLivingEntity().getLocation().getBlockX()));
+        result = result.replace("%y%", String.valueOf(lmEntity.getLivingEntity().getLocation().getBlockY()));
+        result = result.replace("%z%", String.valueOf(lmEntity.getLivingEntity().getLocation().getBlockZ()));
 
         if (result.contains("%") && ExternalCompatibilityManager.hasPAPI_Installed())
             result = ExternalCompatibilityManager.getPAPI_Placeholder(null, result);
@@ -628,7 +628,7 @@ public class LevelManager implements LevelInterface {
         main.nametagQueueManager_.addToQueue(queueItem);
     }
 
-    public void updateNametag(final @NotNull LivingEntityWrapper lmEntity, final String nametag) {
+    private void updateNametag(final @NotNull LivingEntityWrapper lmEntity, final String nametag) {
         updateNametag(lmEntity, nametag, lmEntity.getLivingEntity().getWorld().getPlayers());
     }
 
@@ -647,7 +647,7 @@ public class LevelManager implements LevelInterface {
      */
 
     public BukkitTask nametagAutoUpdateTask;
-    public BukkitTask nametagTimerTask;
+    private BukkitTask nametagTimerTask;
 
     public void startNametagAutoUpdateTask() {
         Utils.logger.info("&fTasks: &7Starting async nametag auto update task...");
@@ -718,7 +718,7 @@ public class LevelManager implements LevelInterface {
                         wrapperHasReference = true;
                     }
 
-                    boolean useResetTimer = false;
+                    final boolean useResetTimer = false;
                     if (lmEntity.getLivingEntity() == null) continue;
                     final List<NametagVisibilityEnum> nametagVisibilityEnums = main.rulesManager.getRule_CreatureNametagVisbility(lmEntity);
                     final int nametagVisibleTime = lmEntity.getNametagCooldownTime();
@@ -733,7 +733,7 @@ public class LevelManager implements LevelInterface {
 
                     checkLevelledEntity(lmEntity, player);
                 } else {
-                    boolean wasBabyMob;
+                    final boolean wasBabyMob;
                     synchronized (lmEntity.getLivingEntity().getPersistentDataContainer()) {
                         wasBabyMob = lmEntity.getPDC().has(main.namespaced_keys.wasBabyMobKey, PersistentDataType.INTEGER);
                     }
@@ -758,9 +758,10 @@ public class LevelManager implements LevelInterface {
             }
         }
 
-        for (final LivingEntityWrapper lmEntity : entityToPlayer.keySet()) {
+        for (final Map.Entry<LivingEntityWrapper, List<Player>> entry : entityToPlayer.entrySet()) {
+            final LivingEntityWrapper lmEntity = entry.getKey();
             if (entityToPlayer.containsKey(lmEntity))
-                checkEntityForPlayerLevelling(lmEntity, entityToPlayer.get(lmEntity));
+                checkEntityForPlayerLevelling(lmEntity, entry.getValue());
 
             lmEntity.free();
         }
@@ -770,7 +771,7 @@ public class LevelManager implements LevelInterface {
         final LivingEntity mob = lmEntity.getLivingEntity();
         final List<Player> sortedPlayers = players.stream()
                 .filter(p -> mob.getWorld().equals(p.getWorld()))
-                .filter(p -> !p.getGameMode().equals(GameMode.SPECTATOR))
+                .filter(p -> p.getGameMode() != GameMode.SPECTATOR)
                 .map(p -> Map.entry(mob.getLocation().distanceSquared(p.getLocation()), p))
                 .sorted(Comparator.comparingDouble(Map.Entry::getKey))
                 .map(Map.Entry::getValue)
@@ -825,7 +826,7 @@ public class LevelManager implements LevelInterface {
             if (duration.toMillis() < main.playerLevellingMinRelevelTime) return false;
         }
 
-        String playerId;
+        final String playerId;
         if (main.playerLevellingMinRelevelTime > 0)
             main.playerLevellingEntities.put(mob, Instant.now());
 
@@ -856,11 +857,11 @@ public class LevelManager implements LevelInterface {
         }
     }
 
-    public void applyLevelledAttributes(@NotNull final LivingEntityWrapper lmEntity, @NotNull final Addition addition) {
+    private void applyLevelledAttributes(@NotNull final LivingEntityWrapper lmEntity, @NotNull final Addition addition) {
         assert lmEntity.isLevelled();
 
         // This functionality should be added into the enum.
-        Attribute attribute;
+        final Attribute attribute;
         switch (addition) {
             case ATTRIBUTE_MAX_HEALTH:                  attribute = Attribute.GENERIC_MAX_HEALTH; break;
             case ATTRIBUTE_ATTACK_DAMAGE:               attribute = Attribute.GENERIC_ATTACK_DAMAGE; break;
@@ -888,7 +889,7 @@ public class LevelManager implements LevelInterface {
         main.mobDataManager.setAdditionsForLevel(lmEntity, attribute, addition);
     }
 
-    public void applyCreeperBlastRadius(final @NotNull LivingEntityWrapper lmEntity, int level) {
+    private void applyCreeperBlastRadius(final @NotNull LivingEntityWrapper lmEntity) {
         final Creeper creeper = (Creeper) lmEntity.getLivingEntity();
 
         final FineTuningAttributes tuning = main.rulesManager.getFineTuningAttributes(lmEntity);
@@ -902,7 +903,7 @@ public class LevelManager implements LevelInterface {
         }
 
         final int maxRadius = main.rulesManager.getRule_CreeperMaxBlastRadius(lmEntity);
-        double damage = main.mobDataManager.getAdditionsForLevel(lmEntity, Addition.CREEPER_BLAST_DAMAGE, 3);
+        final double damage = main.mobDataManager.getAdditionsForLevel(lmEntity, Addition.CREEPER_BLAST_DAMAGE, 3);
         int blastRadius = 3 + (int) Math.floor(damage);
 
         if (blastRadius > maxRadius) blastRadius = maxRadius;
@@ -925,7 +926,7 @@ public class LevelManager implements LevelInterface {
      * @param lmEntity a levelled mob to apply levelled equipment to
      * @param level        the level of the levelled mob
      */
-    public void applyLevelledEquipment(@NotNull final LivingEntityWrapper lmEntity, final int level) {
+    private void applyLevelledEquipment(@NotNull final LivingEntityWrapper lmEntity, final int level) {
         if (!lmEntity.isLevelled()) {
             // if you summon a mob and it isn't levelled due to a config rule (baby zombies exempt for example)
             // then we'll be here with a non-levelled entity
@@ -975,7 +976,7 @@ public class LevelManager implements LevelInterface {
         }
     }
 
-    public double getMobAttributeValue(@NotNull final LivingEntityWrapper lmEntity, final Attribute attribute){
+    private double getMobAttributeValue(@NotNull final LivingEntityWrapper lmEntity, final Attribute attribute){
         double result = 0.0;
         synchronized (main.attributeSyncObject){
             final AttributeInstance attrib = lmEntity.getLivingEntity().getAttribute(attribute);
@@ -986,8 +987,8 @@ public class LevelManager implements LevelInterface {
         return result;
     }
 
-    public double getMobHealth(@NotNull final LivingEntityWrapper lmEntity){
-        double result;
+    private double getMobHealth(@NotNull final LivingEntityWrapper lmEntity){
+        final double result;
         synchronized (main.attributeSyncObject){
             result = lmEntity.getLivingEntity().getHealth();
         }
@@ -1017,7 +1018,7 @@ public class LevelManager implements LevelInterface {
         if (!(lmInterface instanceof LivingEntityWrapper))
             return LevellableState.ALLOWED;
 
-        LivingEntityWrapper lmEntity = (LivingEntityWrapper) lmInterface;
+        final LivingEntityWrapper lmEntity = (LivingEntityWrapper) lmInterface;
 
         final LevellableState externalCompatResult = ExternalCompatibilityManager.checkAllExternalCompats(lmEntity, main);
         if (externalCompatResult != LevellableState.ALLOWED)
@@ -1088,12 +1089,12 @@ public class LevelManager implements LevelInterface {
         }
 
         if (isSummoned) {
-            SummonedMobPreLevelEvent summonedMobPreLevelEvent = new SummonedMobPreLevelEvent(lmEntity.getLivingEntity(), level);
+            final SummonedMobPreLevelEvent summonedMobPreLevelEvent = new SummonedMobPreLevelEvent(lmEntity.getLivingEntity(), level);
             Bukkit.getPluginManager().callEvent(summonedMobPreLevelEvent);
 
             if (summonedMobPreLevelEvent.isCancelled()) return;
         } else {
-            MobPreLevelEvent mobPreLevelEvent = new MobPreLevelEvent(lmEntity.getLivingEntity(), level, MobPreLevelEvent.LevelCause.NORMAL, additionalLevelInformation);
+            final MobPreLevelEvent mobPreLevelEvent = new MobPreLevelEvent(lmEntity.getLivingEntity(), level, MobPreLevelEvent.LevelCause.NORMAL, additionalLevelInformation);
 
             Bukkit.getPluginManager().callEvent(mobPreLevelEvent);
             if (mobPreLevelEvent.isCancelled()) return;
@@ -1105,7 +1106,7 @@ public class LevelManager implements LevelInterface {
             }
         }
 
-        boolean hasNoLevelKey;
+        final boolean hasNoLevelKey;
         synchronized (lmEntity.getLivingEntity().getPersistentDataContainer()) {
             hasNoLevelKey = lmEntity.getPDC().has(main.namespaced_keys.noLevelKey, PersistentDataType.STRING);
         }
@@ -1157,7 +1158,7 @@ public class LevelManager implements LevelInterface {
                     final List<NBTApplyResult> allResults = new LinkedList<>();
 
                     for (final String nbtData : nbtDatas) {
-                        NBTApplyResult result = NBTManager.applyNBT_Data_Mob(lmEntity, nbtData);
+                        final NBTApplyResult result = NBTManager.applyNBT_Data_Mob(lmEntity, nbtData);
                         if (result.hadException()) {
                             if (lmEntity.summonedSender == null) {
                                 Utils.logger.warning(String.format(
@@ -1180,7 +1181,7 @@ public class LevelManager implements LevelInterface {
                 }
 
                 if (lmEntity.getLivingEntity() instanceof Creeper)
-                    main.levelManager.applyCreeperBlastRadius(lmEntity, creeperLevel);
+                    main.levelManager.applyCreeperBlastRadius(lmEntity);
 
                 lmEntity.free();
             }
@@ -1193,7 +1194,7 @@ public class LevelManager implements LevelInterface {
             main.levelManager.updateNametag_WithDelay(lmEntity);
         main.levelManager.applyLevelledEquipment(lmEntity, lmEntity.getMobLevel());
 
-        MobPostLevelEvent.LevelCause levelCause = isSummoned ? MobPostLevelEvent.LevelCause.SUMMONED : MobPostLevelEvent.LevelCause.NORMAL;
+        final MobPostLevelEvent.LevelCause levelCause = isSummoned ? MobPostLevelEvent.LevelCause.SUMMONED : MobPostLevelEvent.LevelCause.NORMAL;
         Bukkit.getPluginManager().callEvent(new MobPostLevelEvent(lmEntity, levelCause, additionalLevelInformation));
 
         final StringBuilder sb = new StringBuilder();
@@ -1314,7 +1315,7 @@ public class LevelManager implements LevelInterface {
 
         // reset attributes
         synchronized (main.attributeSyncObject) {
-            for (Attribute attribute : Attribute.values()) {
+            for (final Attribute attribute : Attribute.values()) {
                 final AttributeInstance attInst = lmEntity.getLivingEntity().getAttribute(attribute);
 
                 if (attInst == null) continue;

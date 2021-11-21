@@ -38,7 +38,7 @@ public class SummonSubcommand extends MessagesBase implements Subcommand {
     }
 
     @Override
-    public void parseSubcommand(final LevelledMobs main, final CommandSender sender, final String label, @NotNull final String @NotNull [] args) {
+    public void parseSubcommand(final LevelledMobs main, final @NotNull CommandSender sender, final String label, @NotNull final String @NotNull [] args) {
         commandSender = sender;
         messageLabel = label;
 
@@ -87,19 +87,19 @@ public class SummonSubcommand extends MessagesBase implements Subcommand {
             return;
         }
 
-        int amount;
+        final int amount;
         try {
             amount = Integer.parseInt(args[1]);
-        } catch (NumberFormatException ex) {
+        } catch (final NumberFormatException ex) {
             showMessage("command.levelledmobs.summon.invalid-amount", "%amount%", args[1]);
             // messages = Utils.replaceAllInList(messages, "%amount%", args[1]); // This is after colorize so that args[1] is not colorized.
             return;
         }
 
-        EntityType entityType;
+        final EntityType entityType;
         try {
             entityType = EntityType.valueOf(args[2].toUpperCase());
-        } catch (IllegalArgumentException ex) {
+        } catch (final IllegalArgumentException ex) {
             showMessage("command.levelledmobs.summon.invalid-entity-type", "%entityType%", args[2]);
             // messages = Utils.replaceAllInList(messages, "%entityType%", args[2]); // This is after colorize so that args[2] is not colorized.
             return;
@@ -228,12 +228,12 @@ public class SummonSubcommand extends MessagesBase implements Subcommand {
                         worldName = world.getName();
                 }
 
-                Location location = getRelativeLocation(commandSender, args[5], args[6], args[7], worldName);
+                final Location location = getRelativeLocation(commandSender, args[5], args[6], args[7], worldName);
 
                 if (location == null || location.getWorld() == null)
                     showMessage("command.levelledmobs.summon.atLocation.invalid-location");
                 else {
-                    LivingEntityPlaceHolder lmPlaceHolder = LivingEntityPlaceHolder.getInstance(entityType, location, main);
+                    final LivingEntityPlaceHolder lmPlaceHolder = LivingEntityPlaceHolder.getInstance(entityType, location, main);
                     final SummonMobOptions options = new SummonMobOptions(lmPlaceHolder, commandSender);
                     options.amount = amount;
                     options.requestedLevel = requestedLevel;
@@ -266,8 +266,8 @@ public class SummonSubcommand extends MessagesBase implements Subcommand {
 
         // <entity>
         if (args.length == 3) {
-            List<String> entityNames = new LinkedList<>();
-            for (EntityType entityType : EntityType.values()) {
+            final List<String> entityNames = new LinkedList<>();
+            for (final EntityType entityType : EntityType.values()) {
                 entityNames.add(entityType.toString().toLowerCase());
             }
             return entityNames;
@@ -300,10 +300,10 @@ public class SummonSubcommand extends MessagesBase implements Subcommand {
             switch (args[4].toLowerCase()) {
                 case "atplayer":
                     if (args.length == 6) {
-                        List<String> suggestions = new LinkedList<>();
-                        for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
+                        final List<String> suggestions = new LinkedList<>();
+                        for (final Player onlinePlayer : Bukkit.getOnlinePlayers()) {
                             if (sender instanceof Player) {
-                                Player player = (Player) sender;
+                                final Player player = (Player) sender;
                                 if (player.canSee(onlinePlayer) || player.isOp()) {
                                     suggestions.add(onlinePlayer.getName());
                                 }
@@ -324,7 +324,7 @@ public class SummonSubcommand extends MessagesBase implements Subcommand {
                     if (args.length < 9) { // args 6, 7 and 8 = x, y and z
                         return Collections.singletonList("~");
                     } else if (args.length == 9) {
-                        List<String> worlds = new LinkedList<>();
+                        final List<String> worlds = new LinkedList<>();
                         Bukkit.getWorlds().forEach(world -> worlds.add(world.getName()));
                         return worlds;
                     } else if (args.length == 10){
@@ -392,7 +392,7 @@ public class SummonSubcommand extends MessagesBase implements Subcommand {
 
             List<String> messages = main.messagesCfg.getStringList("command.levelledmobs.summon.amount-limited.max");
             messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.getPrefix());
-            messages = Utils.replaceAllInList(messages, "%maxAmount%", maxAmount + "");
+            messages = Utils.replaceAllInList(messages, "%maxAmount%", String.valueOf(maxAmount));
             messages = Utils.colorizeAllInList(messages);
             messages.forEach(sender::sendMessage);
         }
@@ -406,7 +406,7 @@ public class SummonSubcommand extends MessagesBase implements Subcommand {
 
             List<String> messages = main.messagesCfg.getStringList("command.levelledmobs.summon.level-limited.min");
             messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.getPrefix());
-            messages = Utils.replaceAllInList(messages, "%minLevel%", minLevel + "");
+            messages = Utils.replaceAllInList(messages, "%minLevel%", String.valueOf(minLevel));
             messages = Utils.colorizeAllInList(messages);
             messages.forEach(sender::sendMessage);
         }
@@ -416,7 +416,7 @@ public class SummonSubcommand extends MessagesBase implements Subcommand {
 
             List<String> messages = main.messagesCfg.getStringList("command.levelledmobs.summon.level-limited.max");
             messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.getPrefix());
-            messages = Utils.replaceAllInList(messages, "%maxLevel%", maxLevel + "");
+            messages = Utils.replaceAllInList(messages, "%maxLevel%", String.valueOf(maxLevel));
             messages = Utils.colorizeAllInList(messages);
             messages.forEach(sender::sendMessage);
         }
@@ -441,7 +441,7 @@ public class SummonSubcommand extends MessagesBase implements Subcommand {
                         break; // found an open spot
                 }
             } else if (target == null && sender instanceof BlockCommandSender) {
-                BlockCommandSender bcs = (BlockCommandSender) sender;
+                final BlockCommandSender bcs = (BlockCommandSender) sender;
                 // increase the y by one so they don't spawn inside the command block
                 location = new Location(location.getWorld(), location.getBlockX(), location.getBlockY() + 1, location.getBlockZ());
             }
@@ -476,15 +476,15 @@ public class SummonSubcommand extends MessagesBase implements Subcommand {
             case HERE:
                 showMessage("command.levelledmobs.summon.here.success",
                         new String[]{ "%amount%", "%level%", "%entity%"},
-                        new String[]{ options.amount + "", options.requestedLevel.toString(), options.lmPlaceHolder.getTypeName() }
+                        new String[]{String.valueOf(options.amount), options.requestedLevel.toString(), options.lmPlaceHolder.getTypeName() }
                 );
                 break;
 
             case AT_LOCATION:
                 showMessage("command.levelledmobs.summon.atLocation.success",
                         new String[]{ "%amount%", "%level%", "%entity%", "%x%", "%x%", "%x%", "%world%"},
-                        new String[]{ options.amount + "", options.requestedLevel.toString(), options.lmPlaceHolder.getTypeName(),
-                                location.getBlockX() + "", location.getBlockY() + "", location.getBlockX() + "",
+                        new String[]{String.valueOf(options.amount), options.requestedLevel.toString(), options.lmPlaceHolder.getTypeName(),
+                                String.valueOf(location.getBlockX()), String.valueOf(location.getBlockY()), String.valueOf(location.getBlockX()),
                                 location.getWorld() == null ? "(null)" : location.getWorld().getName() }
                 );
 
@@ -495,7 +495,7 @@ public class SummonSubcommand extends MessagesBase implements Subcommand {
                         PaperUtils.getPlayerDisplayName(target) : SpigotUtils.getPlayerDisplayName(target);
                 showMessage("command.levelledmobs.summon.atPlayer.success",
                         new String[]{ "%amount%", "%level%", "%entity%", "%targetUsername%", "%targetDisplayname%"},
-                        new String[]{ options.amount + "", options.requestedLevel.toString(), options.lmPlaceHolder.getTypeName(),
+                        new String[]{String.valueOf(options.amount), options.requestedLevel.toString(), options.lmPlaceHolder.getTypeName(),
                                 target == null ? "(null)" : target.getName(), target == null ? "(null)" : playerName }
                 );
 
@@ -554,10 +554,10 @@ public class SummonSubcommand extends MessagesBase implements Subcommand {
                     x = ((BlockCommandSender) sender).getBlock().getX();
 
                 if (xStr.length() > 1) {
-                    double addition;
+                    final double addition;
                     try {
                         addition = Double.parseDouble(xStr.substring(1));
-                    } catch (NumberFormatException ex) {
+                    } catch (final NumberFormatException ex) {
                         return null;
                     }
                     x += addition;
@@ -572,10 +572,10 @@ public class SummonSubcommand extends MessagesBase implements Subcommand {
                     y = ((BlockCommandSender) sender).getBlock().getY();
 
                 if (yStr.length() > 1) {
-                    double addition;
+                    final double addition;
                     try {
                         addition = Double.parseDouble(yStr.substring(1));
-                    } catch (NumberFormatException ex) {
+                    } catch (final NumberFormatException ex) {
                         return null;
                     }
 
@@ -591,10 +591,10 @@ public class SummonSubcommand extends MessagesBase implements Subcommand {
                     z = ((BlockCommandSender) sender).getBlock().getZ();
 
                 if (zStr.length() > 1) {
-                    double addition;
+                    final double addition;
                     try {
                         addition = Double.parseDouble(zStr.substring(1));
-                    } catch (NumberFormatException ex) {
+                    } catch (final NumberFormatException ex) {
                         return null;
                     }
                     z += addition;
@@ -607,21 +607,21 @@ public class SummonSubcommand extends MessagesBase implements Subcommand {
         if (!xRelative) {
             try {
                 x = Double.parseDouble(xStr);
-            } catch (NumberFormatException ex) {
+            } catch (final NumberFormatException ex) {
                 return null;
             }
         }
         if (!yRelative) {
             try {
                 y = Double.parseDouble(yStr);
-            } catch (NumberFormatException ex) {
+            } catch (final NumberFormatException ex) {
                 return null;
             }
         }
         if (!zRelative) {
             try {
                 z = Double.parseDouble(zStr);
-            } catch (NumberFormatException ex) {
+            } catch (final NumberFormatException ex) {
                 return null;
             }
         }

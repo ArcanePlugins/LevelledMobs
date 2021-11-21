@@ -64,7 +64,7 @@ public class RulesParsingManager {
         parseCustomMobGroups(objTo_CS(config, "biome-groups"));
 
         final List<RuleInfo> presets = parsePresets(objTo_CS(config, "presets"));
-        for (RuleInfo ri : presets)
+        for (final RuleInfo ri : presets)
             this.rulePresets.put(ri.presetName, ri);
 
         this.defaultRule = parseDefaults(objTo_CS(config, "default-rule"));
@@ -190,7 +190,7 @@ public class RulesParsingManager {
         }
 
         for (final String item : useList){
-            if ("".equals(item.trim())) continue;
+            if (item.trim().isEmpty()) continue;
             if ("*".equals(item.trim())){
                 cachedModalList.allowAll = true;
                 continue;
@@ -198,7 +198,7 @@ public class RulesParsingManager {
             try {
                 final LevelledMobSpawnReason reason = LevelledMobSpawnReason.valueOf(item.trim().toUpperCase());
                 cachedModalList.allowedList.add(reason);
-            } catch (IllegalArgumentException ignored) {
+            } catch (final IllegalArgumentException ignored) {
                 Utils.logger.warning("Invalid spawn reason: " + item);
             }
         }
@@ -209,7 +209,7 @@ public class RulesParsingManager {
         cachedModalList.excludedGroups = getSetOfGroups(cs, ml_ExcludedGroups);
 
         for (final String item : YmlParsingHelper.getListFromConfigItem(cs2, excludedList)){
-            if ("".equals(item.trim())) continue;
+            if (item.trim().isEmpty()) continue;
             if ("*".equals(item.trim())){
                 cachedModalList.excludeAll = true;
                 continue;
@@ -217,7 +217,7 @@ public class RulesParsingManager {
             try {
                 final LevelledMobSpawnReason reason = LevelledMobSpawnReason.valueOf(item.trim().toUpperCase());
                 cachedModalList.excludedList.add(reason);
-            } catch (IllegalArgumentException ignored) {
+            } catch (final IllegalArgumentException ignored) {
                 Utils.logger.warning("Invalid spawn reason: " + item);
             }
         }
@@ -255,7 +255,7 @@ public class RulesParsingManager {
             cachedModalList.excludedGroups = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
 
             for (final String group : YmlParsingHelper.getListFromConfigItem(cs2, ml_AllowedGroups)) {
-                if ("".equals(group.trim())) continue;
+                if (group.trim().isEmpty()) continue;
                 if (!main.rulesManager.biomeGroupMappings.containsKey(group))
                     Utils.logger.info("invalid biome group: " + group);
                 else
@@ -263,7 +263,7 @@ public class RulesParsingManager {
             }
 
             for (final String group : YmlParsingHelper.getListFromConfigItem(cs2, ml_ExcludedGroups)) {
-                if ("".equals(group.trim())) continue;
+                if (group.trim().isEmpty()) continue;
                 if (!main.rulesManager.biomeGroupMappings.containsKey(group))
                     Utils.logger.info("invalid biome group: " + group);
                 else
@@ -277,7 +277,7 @@ public class RulesParsingManager {
         }
 
         for (final String item : useList){
-            if ("".equals(item.trim())) continue;
+            if (item.trim().isEmpty()) continue;
             if ("*".equals(item.trim())){
                 cachedModalList.allowAll = true;
                 continue;
@@ -285,7 +285,7 @@ public class RulesParsingManager {
             try {
                 final Biome biome = Biome.valueOf(item.trim().toUpperCase());
                 cachedModalList.allowedList.add(biome);
-            } catch (IllegalArgumentException e) {
+            } catch (final IllegalArgumentException e) {
                 Utils.logger.warning("Invalid allowed biome: " + item);
             }
         }
@@ -294,7 +294,7 @@ public class RulesParsingManager {
         final String excludedList = ymlHelper.getKeyNameFromConfig(cs2, ml_ExcludedItems);
 
         for (final String item : YmlParsingHelper.getListFromConfigItem(cs2, excludedList)){
-            if ("".equals(item.trim())) continue;
+            if (item.trim().isEmpty()) continue;
             if ("*".equals(item.trim())){
                 cachedModalList.excludeAll = true;
                 continue;
@@ -302,7 +302,7 @@ public class RulesParsingManager {
             try {
                 final Biome biome = Biome.valueOf(item.trim().toUpperCase());
                 cachedModalList.excludedList.add(biome);
-            } catch (IllegalArgumentException e) {
+            } catch (final IllegalArgumentException e) {
                 Utils.logger.warning("Invalid excluded biome: " + item);
             }
         }
@@ -338,7 +338,7 @@ public class RulesParsingManager {
         }
 
         for (final String item : useList) {
-            if ("".equals(item.trim())) continue;
+            if (item.trim().isEmpty()) continue;
             if ("*".equals(item.trim())){
                 cachedModalList.allowAll = true;
                 continue;
@@ -353,7 +353,7 @@ public class RulesParsingManager {
         cachedModalList.allowedGroups = getSetOfGroups(cs2, allowedGroups);
 
         for (final String item : YmlParsingHelper.getListFromConfigItem(cs2, excludedList)) {
-            if ("".equals(item.trim())) continue;
+            if (item.trim().isEmpty()) continue;
             if ("*".equals(item.trim())){
                 cachedModalList.excludeAll = true;
                 continue;
@@ -386,14 +386,14 @@ public class RulesParsingManager {
             groups.add(cs.getString(foundKeyName));
 
         for (final String group : groups) {
-            if ("".equals(group.trim())) continue;
+            if (group.trim().isEmpty()) continue;
             boolean invalidGroup = false;
             if (group.toLowerCase().startsWith("all_")) {
                 try {
                     final CustomUniversalGroups customGroup = CustomUniversalGroups.valueOf(group.toUpperCase());
                     results.add(group);
                     continue;
-                } catch (IllegalArgumentException e) {
+                } catch (final IllegalArgumentException e) {
                     invalidGroup = true;
                 }
             }
@@ -469,16 +469,16 @@ public class RulesParsingManager {
     private void parseExternalCompat(final ConfigurationSection cs){
         if (cs == null) return;
 
-        final Map<ExternalCompatibilityManager.ExternalCompatibility, Boolean> results = new TreeMap<>();
+        final Map<ExternalCompatibilityManager.ExternalCompatibility, Boolean> results = new EnumMap<>(ExternalCompatibilityManager.ExternalCompatibility.class);
 
         for (final String key : cs.getKeys(false)){
             final boolean value = cs.getBoolean(key);
 
-            ExternalCompatibilityManager.ExternalCompatibility compat;
+            final ExternalCompatibilityManager.ExternalCompatibility compat;
             try {
                 compat = ExternalCompatibilityManager.ExternalCompatibility.valueOf(key.toUpperCase());
                 results.put(compat, value);
-            } catch (IllegalArgumentException e) {
+            } catch (final IllegalArgumentException e) {
                 Utils.logger.warning("Invalid level-plugins key: " + key);
             }
         }
@@ -493,7 +493,7 @@ public class RulesParsingManager {
             final String value = cs.getString(name);
 
             if (!Utils.isNullOrEmpty(name) && value != null){
-                TieredColoringInfo coloringInfo;
+                final TieredColoringInfo coloringInfo;
 
                 if ("default".equalsIgnoreCase(name))
                     coloringInfo = TieredColoringInfo.createDefault(value);
@@ -627,7 +627,7 @@ public class RulesParsingManager {
                 final NametagVisibilityEnum nametagVisibilityEnum = NametagVisibilityEnum.valueOf(nametagVisEnum.toUpperCase());
                 nametagVisibilityEnums.add(nametagVisibilityEnum);
             }
-            catch (Exception ignored){
+            catch (final Exception ignored){
                 Utils.logger.warning("Invalid value in nametag-visibility-method: " + nametagVisibility + ", in rule: " + parsingInfo.getRuleName());
             }
         }
@@ -662,7 +662,7 @@ public class RulesParsingManager {
             final String nbt = ymlHelper.getString(cs2, "data", null);
             final Set<String> nbtList = ymlHelper.getStringSet(cs2, "data");
             if (nbt == null && nbtList.isEmpty()) return;
-            boolean doMerge = ymlHelper.getBoolean(cs2, "merge", false);
+            final boolean doMerge = ymlHelper.getBoolean(cs2, "merge", false);
 
             if (!nbtList.isEmpty()) {
                 parsingInfo.mobNBT_Data = new MergeableStringList();
@@ -696,7 +696,7 @@ public class RulesParsingManager {
         if (mobCustomNameStatus != null) {
             try {
                 parsingInfo.conditions_MobCustomnameStatus = MobCustomNameStatus.valueOf(mobCustomNameStatus.toUpperCase());
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 Utils.logger.warning("Invalid value for " + mobCustomNameStatus);
             }
         }
@@ -705,7 +705,7 @@ public class RulesParsingManager {
         if (mobTamedStatus != null) {
             try {
                 parsingInfo.conditions_MobTamedStatus = MobTamedStatus.valueOf(mobTamedStatus.toUpperCase());
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 Utils.logger.warning("Invalid value for " + mobTamedStatus);
             }
         }
@@ -979,10 +979,10 @@ public class RulesParsingManager {
             if (checkName.toLowerCase().startsWith("baby_"))
                 checkName = checkName.substring(5);
 
-            EntityType entityType;
+            final EntityType entityType;
             try {
                 entityType = EntityType.valueOf(checkName.toUpperCase());
-            } catch (IllegalArgumentException e) {
+            } catch (final IllegalArgumentException e) {
                 Utils.logger.warning("Invalid entity type: " + mobName + " for fine-tuning in rule: " + parsingInfo.getRuleName());
                 continue;
             }

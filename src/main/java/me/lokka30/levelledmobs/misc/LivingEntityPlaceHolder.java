@@ -46,7 +46,7 @@ public class LivingEntityPlaceHolder extends LivingEntityWrapperBase implements 
 
     @NotNull
     public static LivingEntityPlaceHolder getInstance(final EntityType entityType, final @NotNull Location location, final @NotNull LevelledMobs main){
-        LivingEntityPlaceHolder leph;
+        final LivingEntityPlaceHolder leph;
 
         if (location.getWorld() == null)
             throw new NullPointerException("World can't be null");
@@ -63,7 +63,7 @@ public class LivingEntityPlaceHolder extends LivingEntityWrapperBase implements 
         return leph;
     }
 
-    public void populateEntityData(final EntityType entityType, final @NotNull Location location, final @NotNull World world){
+    private void populateEntityData(final EntityType entityType, final @NotNull Location location, final @NotNull World world){
         this.entityType = entityType;
         super.populateData(world, location);
     }
@@ -91,7 +91,7 @@ public class LivingEntityPlaceHolder extends LivingEntityWrapperBase implements 
         return this.entityType;
     }
 
-    public List<RuleInfo> getApplicableRules(){
+    public @NotNull List<RuleInfo> getApplicableRules(){
         return main.rulesManager.getApplicableRules(this).allApplicableRules;
     }
 

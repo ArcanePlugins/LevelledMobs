@@ -9,5 +9,5 @@ public class PlayerQueueItem {
     }
 
     public final Player player;
-    public boolean isPlayerJoin;
+    final boolean isPlayerJoin;
 }

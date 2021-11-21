@@ -20,27 +20,27 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class LivingEntityWrapperBase {
 
-    public LivingEntityWrapperBase(final @NotNull LevelledMobs main){
+    LivingEntityWrapperBase(final @NotNull LevelledMobs main){
         this.main = main;
         this.inUseCount = new AtomicInteger();
     }
 
-    Double calculatedDistanceFromSpawn;
-    World world;
-    Location location;
+    private Double calculatedDistanceFromSpawn;
+    private World world;
+    private Location location;
     @NotNull
     final LevelledMobs main;
     Integer spawnedTimeOfDay;
-    boolean isPopulated;
-    public AtomicInteger inUseCount;
+    private boolean isPopulated;
+    public final AtomicInteger inUseCount;
 
-    public void populateData(final @NotNull World world, final @NotNull Location location){
+    void populateData(final @NotNull World world, final @NotNull Location location){
         this.world = world;
         this.location = location;
         this.isPopulated = true;
     }
 
-    public void clearEntityData(){
+    void clearEntityData(){
         this.world = null;
         this.location = null;
         this.calculatedDistanceFromSpawn = null;

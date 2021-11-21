@@ -95,7 +95,7 @@ public class SpawnerEggCommand extends SpawnerBaseClass implements Subcommand {
                     try{
                         info.spawnType = EntityType.valueOf(foundValue.toUpperCase());
                     }
-                    catch (Exception ignored){
+                    catch (final Exception ignored){
                         commandSender.sendMessage("Invalid spawn type: " + foundValue);
                         return;
                     }
@@ -108,7 +108,7 @@ public class SpawnerEggCommand extends SpawnerBaseClass implements Subcommand {
                         return;
                     }
                     try { info.player = Bukkit.getPlayer(foundValue); }
-                    catch (Exception e){
+                    catch (final Exception e){
                         showMessage("common.player-offline", "%player%", foundValue);
                         return;
                     }
@@ -120,7 +120,7 @@ public class SpawnerEggCommand extends SpawnerBaseClass implements Subcommand {
             }
         }
 
-        if (info.minLevel == -1 || info.maxLevel == -1 || info.spawnType.equals(EntityType.UNKNOWN)) {
+        if (info.minLevel == -1 || info.maxLevel == -1 || info.spawnType == EntityType.UNKNOWN) {
             showMessage("command.levelledmobs.spawn_egg.no-level-specified");
             return;
         }
@@ -153,7 +153,7 @@ public class SpawnerEggCommand extends SpawnerBaseClass implements Subcommand {
             meta.getPersistentDataContainer().set(info.main.namespaced_keys.keySpawner_MaxLevel, PersistentDataType.INTEGER, info.maxLevel);
             if (!Utils.isNullOrEmpty(info.customDropId))
                 meta.getPersistentDataContainer().set(info.main.namespaced_keys.keySpawner_CustomDropId, PersistentDataType.STRING, info.customDropId);
-            if (!info.spawnType.equals(EntityType.UNKNOWN))
+            if (info.spawnType != EntityType.UNKNOWN)
                 meta.getPersistentDataContainer().set(info.main.namespaced_keys.keySpawner_SpawnType, PersistentDataType.STRING, info.spawnType.toString());
             if (info.customName != null)
                 meta.getPersistentDataContainer().set(info.main.namespaced_keys.keySpawner_CustomName, PersistentDataType.STRING, info.customName);
@@ -186,7 +186,7 @@ public class SpawnerEggCommand extends SpawnerBaseClass implements Subcommand {
 
         final List<String> message = getMessage("command.levelledmobs.spawn_egg.give-message-console",
                 new String[]{ "%minlevel%", "%maxlevel%", "%playername%", "%entitytype%" },
-                new String[]{ info.minLevel + "", info.maxLevel + "", playerName, info.spawnType.name() }
+                new String[]{String.valueOf(info.minLevel), String.valueOf(info.maxLevel), playerName, info.spawnType.name() }
         );
 
         if (!message.isEmpty()) {
@@ -196,7 +196,7 @@ public class SpawnerEggCommand extends SpawnerBaseClass implements Subcommand {
 
         showMessage("command.levelledmobs.spawn_egg.give-message",
                 new String[]{ "%minlevel%", "%maxlevel%", "%playername%", "%entitytype%" },
-                new String[]{ info.minLevel + "", info.maxLevel + "", playerName, info.spawnType.name() },
+                new String[]{String.valueOf(info.minLevel), String.valueOf(info.maxLevel), playerName, info.spawnType.name() },
                 info.player
         );
     }
@@ -207,7 +207,7 @@ public class SpawnerEggCommand extends SpawnerBaseClass implements Subcommand {
             switch (args[args.length - 2].toLowerCase()){
                 case "/entity":
                     final List<String> entityNames = new LinkedList<>();
-                    for (EntityType entityType : EntityType.values())
+                    for (final EntityType entityType : EntityType.values())
                         entityNames.add(entityType.toString().toLowerCase());
 
                     return entityNames;

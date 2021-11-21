@@ -19,11 +19,11 @@ public class MessagesBase {
         this.main = main;
     }
 
-    public final LevelledMobs main;
-    public String messageLabel;
-    public CommandSender commandSender;
+    protected final LevelledMobs main;
+    protected String messageLabel;
+    protected CommandSender commandSender;
 
-    public void showMessage(final @NotNull String path){
+    protected void showMessage(final @NotNull String path){
         if (commandSender == null)
             throw new NullPointerException("CommandSender must be set before calling showMessage");
 
@@ -34,7 +34,7 @@ public class MessagesBase {
         messages.forEach(commandSender::sendMessage);
     }
 
-    public void showMessage(final @NotNull String path, final @NotNull CommandSender sender){
+    protected void showMessage(final @NotNull String path, final @NotNull CommandSender sender){
         List<String> messages = main.messagesCfg.getStringList(path);
         messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.getPrefix());
         messages = Utils.replaceAllInList(messages, "%label%", messageLabel != null ? messageLabel : "");
@@ -42,7 +42,7 @@ public class MessagesBase {
         messages.forEach(sender::sendMessage);
     }
 
-    public void showMessage(final @NotNull String path, final @NotNull String replaceWhat, final @NotNull String replaceWith){
+    protected void showMessage(final @NotNull String path, final @NotNull String replaceWhat, final @NotNull String replaceWith){
         showMessage(
                 path,
                 new String[] { replaceWhat },
@@ -50,7 +50,7 @@ public class MessagesBase {
         );
     }
 
-    public void showMessage(final @NotNull String path, final String @NotNull [] replaceWhat, final String @NotNull [] replaceWith){
+    protected void showMessage(final @NotNull String path, final String @NotNull [] replaceWhat, final String @NotNull [] replaceWith){
         if (commandSender == null)
             throw new NullPointerException("CommandSender must be set before calling showMessage");
 
@@ -58,13 +58,13 @@ public class MessagesBase {
         messages.forEach(commandSender::sendMessage);
     }
 
-    public void showMessage(final @NotNull String path, final String @NotNull [] replaceWhat, final String @NotNull [] replaceWith, final @NotNull CommandSender sender){
+    protected void showMessage(final @NotNull String path, final String @NotNull [] replaceWhat, final String @NotNull [] replaceWith, final @NotNull CommandSender sender){
         final List<String> messages = getMessage(path, replaceWhat, replaceWith);
         messages.forEach(sender::sendMessage);
     }
 
     @NotNull
-    public String getMessage(final @NotNull String path){
+    protected String getMessage(final @NotNull String path){
         List<String> messages = main.messagesCfg.getStringList(path);
         messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.getPrefix());
         messages = Utils.replaceAllInList(messages, "%label%", messageLabel != null ? messageLabel : "");
@@ -76,7 +76,7 @@ public class MessagesBase {
     }
 
     @NotNull
-    public List<String> getMessage(final @NotNull String path, final @NotNull String replaceWhat, final @NotNull String replaceWith){
+    protected List<String> getMessage(final @NotNull String path, final @NotNull String replaceWhat, final @NotNull String replaceWith){
         return getMessage(
                 path,
                 new String[]{ replaceWhat },
@@ -84,7 +84,7 @@ public class MessagesBase {
         );
     }
     @NotNull
-    public List<String> getMessage(final @NotNull String path, final String @NotNull [] replaceWhat, final String @NotNull [] replaceWith){
+    protected List<String> getMessage(final @NotNull String path, final String @NotNull [] replaceWhat, final String @NotNull [] replaceWith){
         if (replaceWhat.length != replaceWith.length)
             throw new ArrayIndexOutOfBoundsException("replaceWhat must be the same size as replaceWith");
 

@@ -87,7 +87,7 @@ public class YmlParsingHelper {
         return getDouble(cs, name, 0);
     }
 
-    public double getDouble(final ConfigurationSection cs, @NotNull final String name, final double defaultValue){
+    private double getDouble(final ConfigurationSection cs, @NotNull final String name, final double defaultValue){
         if (cs == null) return defaultValue;
         final String useName = getKeyNameFromConfig(cs, name);
 

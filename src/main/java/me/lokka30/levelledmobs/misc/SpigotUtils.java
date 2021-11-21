@@ -59,7 +59,7 @@ public class SpigotUtils {
             return null;
 
         final Entity damager = ((EntityDamageByEntityEvent) entityDamageEvent).getDamager();
-        LivingEntity killer;
+        final LivingEntity killer;
 
         if (damager instanceof Projectile)
             killer = (LivingEntity) ((Projectile) damager).getShooter();

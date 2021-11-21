@@ -22,7 +22,7 @@ public class HealthIndicator implements Cloneable {
     public Double scale;
     public Integer maxIndicators;
     public Map<Integer, String> tiers;
-    public Boolean doMerge;
+    Boolean doMerge;
 
     public HealthIndicator cloneItem() {
         HealthIndicator copy = null;
@@ -32,14 +32,14 @@ public class HealthIndicator implements Cloneable {
                 copy.tiers = new TreeMap<>();
                 copy.tiers.putAll(this.tiers);
             }
-        } catch (Exception e) {
+        } catch (final Exception e) {
             e.printStackTrace();
         }
 
         return copy;
     }
 
-    public void mergeIndicator(final @NotNull HealthIndicator mergingIndicator){
+    void mergeIndicator(final @NotNull HealthIndicator mergingIndicator){
         if (mergingIndicator.indicator != null) this.indicator = mergingIndicator.indicator;
         if (mergingIndicator.indicatorHalf != null) this.indicatorHalf = mergingIndicator.indicatorHalf;
         if (mergingIndicator.scale != null) this.scale = mergingIndicator.scale;

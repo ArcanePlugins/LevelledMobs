@@ -37,12 +37,11 @@ import java.util.concurrent.ThreadLocalRandom;
 public class CustomDropsHandler {
     private final LevelledMobs main;
 
-    public final TreeMap<EntityType, CustomDropInstance> customDropsitems;
-    public final TreeMap<EntityType, CustomDropInstance> customDropsitems_Babies;
-    public final TreeMap<String, CustomDropInstance> customDropsitems_groups;
-    public final TreeMap<String, CustomDropInstance> customDropIDs;
-    @Nullable
-    public Map<String, CustomDropInstance> customItemGroups;
+    final TreeMap<EntityType, CustomDropInstance> customDropsitems;
+    final TreeMap<EntityType, CustomDropInstance> customDropsitems_Babies;
+    final TreeMap<String, CustomDropInstance> customDropsitems_groups;
+    final TreeMap<String, CustomDropInstance> customDropIDs;
+    @Nullable Map<String, CustomDropInstance> customItemGroups;
     public final CustomDropsParser customDropsParser;
     private final YmlParsingHelper ymlHelper;
 
@@ -98,7 +97,7 @@ public class CustomDropsHandler {
 
         if (!equippedOnly && isCustomDropsDebuggingEnabled()) {
 
-            String mobLevel = lmEntity.getMobLevel() > 0 ? "&r (level " + lmEntity.getMobLevel() + ")" : "";
+            final String mobLevel = lmEntity.getMobLevel() > 0 ? "&r (level " + lmEntity.getMobLevel() + ")" : "";
             processingInfo.addDebugMessage("&7Custom drops for &b" + lmEntity.getNameIfBaby() + mobLevel);
             processingInfo.addDebugMessage("&8- &7Groups: &b" + String.join("&7, &b", lmEntity.getApplicableGroups()) + "&7.");
         }
@@ -155,7 +154,7 @@ public class CustomDropsHandler {
         info.prioritizedDrops = new HashMap<>();
         info.hasOverride = false;
         boolean usesGroupIds = false;
-        String customDropId = null;
+        final String customDropId = null;
 
         final boolean overrideNonDropTableDrops = info.dropRules != null && info.dropRules.override;
         final String[] useIds = getDropIds(info);
@@ -177,7 +176,7 @@ public class CustomDropsHandler {
         }
 
         if (!overrideNonDropTableDrops) {
-            for (String group : groups) {
+            for (final String group : groups) {
                 final CustomDropInstance dropInstance = customDropsitems_groups.get(group);
                 info.allDropInstances.add(dropInstance);
 
@@ -205,8 +204,8 @@ public class CustomDropsHandler {
         }
 
         if (usesGroupIds){
-            for (final int pri : info.prioritizedDrops.keySet())
-                Collections.shuffle(info.prioritizedDrops.get(pri));
+            for (final List<CustomDropBase> customDropBases : info.prioritizedDrops.values())
+                Collections.shuffle(customDropBases);
         }
 
         if (!checkOverallPermissions(info))
@@ -238,7 +237,7 @@ public class CustomDropsHandler {
 
     @NotNull
     private String[] getDropIds(@NotNull final CustomDropProcessingInfo processingInfo){
-        List<String> dropIds = (processingInfo.dropRules != null && processingInfo.dropRules.useDropTableId != null) ?
+        final List<String> dropIds = (processingInfo.dropRules != null && processingInfo.dropRules.useDropTableId != null) ?
                 Arrays.asList(processingInfo.dropRules.useDropTableId.split(",")) : new LinkedList<>();
 
         if (processingInfo.hasCustomDropId && !dropIds.contains(processingInfo.customDropId))
@@ -262,9 +261,7 @@ public class CustomDropsHandler {
     }
 
     private void getCustomItemsFromDropInstance(@NotNull final CustomDropProcessingInfo info){
-        for (final int itemPriority : info.prioritizedDrops.keySet()) {
-            final List<CustomDropBase> items = info.prioritizedDrops.get(itemPriority);
-
+        for (final List<CustomDropBase> items : info.prioritizedDrops.values()) {
             for (final CustomDropBase drop : items)
                 getDropsFromCustomDropItem(info, drop);
         }
@@ -282,7 +279,7 @@ public class CustomDropsHandler {
             }
 
             // we'll roll the dice to see if we get any drops at all and store it in the PDC
-            float chanceRole = (float) ThreadLocalRandom.current().nextInt(0, 100001) * 0.00001F;
+            final float chanceRole = (float) ThreadLocalRandom.current().nextInt(0, 100001) * 0.00001F;
             final boolean madeChance = 1.0F - chanceRole < dropInstance.overallChance;
             if (info.equippedOnly) {
                 synchronized (info.lmEntity.getLivingEntity().getPersistentDataContainer()) {
@@ -298,7 +295,7 @@ public class CustomDropsHandler {
 
     private void getDropsFromCustomDropItem(@NotNull final CustomDropProcessingInfo info, final CustomDropBase dropBase){
         if (dropBase instanceof CustomCommand && info.lmEntity.getLivingEntity().hasMetadata("noCommands") ||
-                info.lmEntity.deathCause.equals(EntityDamageEvent.DamageCause.VOID))
+                info.lmEntity.deathCause == EntityDamageEvent.DamageCause.VOID)
             return;
 
         if (info.equippedOnly && dropBase instanceof CustomCommand) return;
@@ -377,7 +374,7 @@ public class CustomDropsHandler {
 
         if (didNotMakeChance && !info.equippedOnly && isCustomDropsDebuggingEnabled()) {
             if (dropBase instanceof CustomDropItem) {
-                CustomDropItem dropItem = (CustomDropItem) dropBase;
+                final CustomDropItem dropItem = (CustomDropItem) dropBase;
                 final ItemStack itemStack = info.deathByFire ? getCookedVariantOfMeat(dropItem.getItemStack()) : dropItem.getItemStack();
 
                 if (isCustomDropsDebuggingEnabled()) {
@@ -489,7 +486,7 @@ public class CustomDropsHandler {
             damage = ThreadLocalRandom.current().nextInt(dropItem.getDamageRangeMin(), dropItem.getDamageRangeMax() + 1);
 
         if (damage > 0 || dropItem.lore != null || dropItem.customName != null){
-            ItemMeta meta = newItem.getItemMeta();
+            final ItemMeta meta = newItem.getItemMeta();
 
             if (damage > 0 && meta instanceof Damageable)
                 ((Damageable) meta).setDamage(damage);
@@ -497,7 +494,7 @@ public class CustomDropsHandler {
             if (meta != null && dropItem.lore != null && !dropItem.lore.isEmpty()){
                 final List<String> newLore = new ArrayList<>(dropItem.lore.size());
                 final String mobLvl = info.lmEntity.isLevelled() ?
-                        info.lmEntity.getMobLevel() + "" : "0";
+                        String.valueOf(info.lmEntity.getMobLevel()) : "0";
                 for (final String lore : dropItem.lore){
                     newLore.add(main.levelManager.updateNametag(info.lmEntity, lore, false));
 
@@ -508,7 +505,7 @@ public class CustomDropsHandler {
                 }
             }
 
-            if (meta != null && dropItem.customName != null && !"".equals(dropItem.customName)) {
+            if (meta != null && dropItem.customName != null && !dropItem.customName.isEmpty()) {
                 final String displayName = MessageUtils.colorizeAll(main.levelManager.updateNametag(info.lmEntity, dropItem.customName, false));
                 if (VersionUtils.isRunningPaper())
                     PaperUtils.updateItemDisplayName(meta, displayName);
@@ -527,7 +524,7 @@ public class CustomDropsHandler {
             info.groupIDsDroppedAlready.put(dropItem.groupId, count);
         }
 
-        if (newItem.getType().equals(Material.PLAYER_HEAD))
+        if (newItem.getType() == Material.PLAYER_HEAD)
             newItem = main.mobHeadManager.getMobHeadFromPlayerHead(newItem, info.lmEntity, dropItem);
 
         info.newDrops.add(newItem);
@@ -616,7 +613,7 @@ public class CustomDropsHandler {
             final String variableToUse = Utils.isNullOrEmpty(dropBase.playerLevelVariable) ?
                     "%level%" : dropBase.playerLevelVariable;
             final int mobLevel = info.lmEntity.getMobLevel();
-            int levelToUse;
+            final int levelToUse;
             if (info.playerLevelVariableCache.containsKey(variableToUse))
                 levelToUse = info.playerLevelVariableCache.get(variableToUse);
             else {
@@ -683,8 +680,9 @@ public class CustomDropsHandler {
     private String processRangedCommand(@NotNull String command, final @NotNull CustomCommand cc){
         if (cc.rangedEntries.isEmpty()) return command;
 
-        for (final String rangedKey : cc.rangedEntries.keySet()) {
-            final String rangedValue = cc.rangedEntries.get(rangedKey);
+        for (final Map.Entry<String, String> rangeds : cc.rangedEntries.entrySet()) {
+            final String rangedKey = rangeds.getKey();
+            final String rangedValue = rangeds.getValue();
             if (!rangedValue.contains("-")) {
                 command = command.replace("%" + rangedKey + "%", rangedValue);
                 continue;
@@ -699,7 +697,7 @@ public class CustomDropsHandler {
             if (max < min) min = max;
 
             final int rangedNum = main.random.nextInt(max - min + 1) + min;
-            command = command.replace("%" + rangedKey + "%", rangedNum + "");
+            command = command.replace("%" + rangedKey + "%", String.valueOf(rangedNum));
         }
 
         return command;

@@ -114,7 +114,7 @@ public class PlayerJoinListener implements Listener {
         }
     }
 
-    void parseCompatibilityChecker(@NotNull final Player player) {
+    private void parseCompatibilityChecker(@NotNull final Player player) {
         // Player must have permission
         if (!player.hasPermission("levelledmobs.compatibility-notice")) return;
 
@@ -126,12 +126,12 @@ public class PlayerJoinListener implements Listener {
 
         List<String> messages = main.messagesCfg.getStringList("other.compatibility-notice.messages");
         messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.getPrefix());
-        messages = Utils.replaceAllInList(messages, "%incompatibilities%", main.incompatibilitiesAmount + "");
+        messages = Utils.replaceAllInList(messages, "%incompatibilities%", String.valueOf(main.incompatibilitiesAmount));
         messages = Utils.colorizeAllInList(messages);
         messages.forEach(player::sendMessage);
     }
 
-    void parseUpdateChecker(final Player player) {
+    private void parseUpdateChecker(final Player player) {
         if (main.messagesCfg.getBoolean("other.update-notice.send-on-join", true) && player.hasPermission("levelledmobs.receive-update-notifications"))
             main.companion.updateResult.forEach(player::sendMessage);
     }

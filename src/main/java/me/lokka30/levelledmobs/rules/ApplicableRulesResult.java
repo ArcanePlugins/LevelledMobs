@@ -12,7 +12,7 @@ import java.util.List;
  * @since 3.1.2
  */
 public class ApplicableRulesResult {
-    public ApplicableRulesResult(){
+    ApplicableRulesResult(){
         this.allApplicableRules = new LinkedList<>();
         this.allApplicableRules_MadeChance = new LinkedList<>();
         this.allApplicableRules_DidNotMakeChance = new LinkedList<>();
