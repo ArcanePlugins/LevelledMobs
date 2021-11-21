@@ -104,7 +104,7 @@ public class RulesManager {
     }
 
     public int getRule_MaxRandomVariance(@NotNull final LivingEntityWrapper lmEntity){
-        var result = 0;
+        int result = 0;
 
         for (final RuleInfo ruleInfo : lmEntity.getApplicableRules()){
             if (ruleInfo.maxRandomVariance != null) result = ruleInfo.maxRandomVariance;
