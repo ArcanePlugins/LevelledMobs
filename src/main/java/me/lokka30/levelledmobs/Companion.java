@@ -107,7 +107,7 @@ public class Companion {
     }
 
     // Note: also called by the reload subcommand.
-    public boolean loadFiles(final boolean isReload) {
+    boolean loadFiles(final boolean isReload) {
         Utils.logger.info("&fFile Loader: &7Loading files...");
 
         // save license.txt
@@ -143,11 +143,11 @@ public class Companion {
 
             // remove legacy files if they exist
             final String[] legacyFile = {"attributes.yml", "drops.yml"};
-            for (String lFile : legacyFile) {
+            for (final String lFile : legacyFile) {
                 final File delFile = new File(main.getDataFolder(), lFile);
                 try {
                     if (delFile.exists()) delFile.delete();
-                } catch (Exception e) {
+                } catch (final Exception e) {
                     Utils.logger.warning("Unable to delete file " + lFile + ", " + e.getMessage());
                 }
             }
@@ -174,8 +174,7 @@ public class Companion {
             try {
                 final DebugType debugType = DebugType.valueOf(debug.toUpperCase());
                 this.debugsEnabled.add(debugType);
-            }
-            catch (Exception ignored) {
+            } catch (final Exception ignored) {
                 Utils.logger.warning("Invalid value for debug-misc: " + debug);
             }
         }
@@ -185,17 +184,17 @@ public class Companion {
     }
 
     @Nullable
-    YamlConfiguration loadEmbeddedResource(final String filename) {
+    private YamlConfiguration loadEmbeddedResource(final String filename) {
         YamlConfiguration result = null;
         final InputStream inputStream = main.getResource(filename);
         if (inputStream == null) return null;
 
         try {
-            InputStreamReader reader = new InputStreamReader(inputStream);
+            final InputStreamReader reader = new InputStreamReader(inputStream);
             result = YamlConfiguration.loadConfiguration(reader);
             reader.close();
             inputStream.close();
-        } catch (IOException e) {
+        } catch (final IOException e) {
             Utils.logger.error("Error reading embedded file: " + filename + ", " + e.getMessage());
         }
 
@@ -260,7 +259,7 @@ public class Companion {
             main.levelManager.attributeMaxHealthMax = Bukkit.getServer().spigot().getConfig().getDouble("settings.attribute.maxHealth.max", 2048.0);
             main.levelManager.attributeMovementSpeedMax = Bukkit.getServer().spigot().getConfig().getDouble("settings.attribute.movementSpeed.max", 2048.0);
             main.levelManager.attributeAttackDamageMax = Bukkit.getServer().spigot().getConfig().getDouble("settings.attribute.attackDamage.max", 2048.0);
-        } catch (NoSuchMethodError ignored) {
+        } catch (final NoSuchMethodError ignored) {
             main.levelManager.attributeMaxHealthMax = Integer.MAX_VALUE;
             main.levelManager.attributeMovementSpeedMax = Integer.MAX_VALUE;
             main.levelManager.attributeAttackDamageMax = Integer.MAX_VALUE;
@@ -293,8 +292,8 @@ public class Companion {
                 updateChecker.getLatestVersion(latestVersion -> {
                     final String currentVersion = updateChecker.getCurrentVersion().split(" ")[0];
 
-                    VersionInfo thisVersion;
-                    VersionInfo spigotVersion;
+                    final VersionInfo thisVersion;
+                    final VersionInfo spigotVersion;
                     boolean isOutOfDate;
                     boolean isNewerVersion;
 
@@ -304,7 +303,7 @@ public class Companion {
 
                         isOutOfDate = (thisVersion.compareTo(spigotVersion) < 0);
                         isNewerVersion = (thisVersion.compareTo(spigotVersion) > 0);
-                    } catch (InvalidObjectException e) {
+                    } catch (final InvalidObjectException e) {
                         Utils.logger.warning("Got exception creating version objects: " + e.getMessage());
 
                         isOutOfDate = !currentVersion.equals(latestVersion);
@@ -343,7 +342,7 @@ public class Companion {
                         if (main.messagesCfg.getBoolean("other.update-notice.send-on-join", true)) {
                             Bukkit.getOnlinePlayers().forEach(onlinePlayer -> {
                                 if (onlinePlayer.hasPermission("levelledmobs.receive-update-notifications")) {
-                                    for (String msg : updateResult) {
+                                    for (final String msg : updateResult) {
                                         onlinePlayer.sendMessage(msg);
                                     }
                                     //updateResult.forEach(onlinePlayer::sendMessage); //compiler didn't like this :(
@@ -353,7 +352,7 @@ public class Companion {
                     }
                 });
             }
-            catch (OutdatedServerVersionException e){
+            catch (final OutdatedServerVersionException e){
                 e.printStackTrace();
             }
         }

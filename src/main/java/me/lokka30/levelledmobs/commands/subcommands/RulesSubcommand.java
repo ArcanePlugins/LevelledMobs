@@ -77,18 +77,17 @@ public class RulesSubcommand extends MessagesBase implements Subcommand {
 
             final StringBuilder sb = new StringBuilder();
 
-            for (final String key : main.rulesParsingManager.rulePresets.keySet()) {
-                final RuleInfo rpi = main.rulesParsingManager.rulePresets.get(key);
+            for (final RuleInfo rpi : main.rulesParsingManager.rulePresets.values()) {
                 sb.append("\n--------------------------------- Preset rule ----------------------------------\n");
-                formatRulesVisually(rpi, sender, showOnConsole, Collections.singletonList("ruleIsEnabled"), sb);
+                formatRulesVisually(rpi, Collections.singletonList("ruleIsEnabled"), sb);
             }
 
             sb.append("\n--------------------------------- Default values -------------------------------\n");
-            formatRulesVisually(main.rulesParsingManager.defaultRule, sender, showOnConsole, null, sb);
+            formatRulesVisually(main.rulesParsingManager.defaultRule, null, sb);
 
             for (final RuleInfo rpi : main.rulesParsingManager.customRules) {
                 sb.append("\n--------------------------------- Custom rule ----------------------------------\n");
-                formatRulesVisually(rpi, sender, showOnConsole, null, sb);
+                formatRulesVisually(rpi, null, sb);
             }
             sb.append("\n--------------------------------------------------------------------------------------");
 
@@ -114,14 +113,14 @@ public class RulesSubcommand extends MessagesBase implements Subcommand {
             showHyperlink(sender, message, "https://github.com/lokka30/LevelledMobs/wiki");
         }
         else if ("reset".equalsIgnoreCase(args[1]))
-            resetRules(sender, label, args);
+            resetRules(sender, args);
         else if ("force_all".equalsIgnoreCase(args[1]))
-            forceRelevel(sender, label, args);
+            forceRelevel(sender);
         else
             showMessage("common.invalid-command");
     }
 
-    private void forceRelevel(final CommandSender sender, final String label, @NotNull final String[] args){
+    private void forceRelevel(final CommandSender sender){
         int worldCount = 0;
         int entityCount = 0;
 
@@ -149,11 +148,11 @@ public class RulesSubcommand extends MessagesBase implements Subcommand {
 
         showMessage("command.levelledmobs.rules.rules-reprocessed",
                 new String[]{ "%entitycount%", "%worldcount%" },
-                new String[]{ entityCount + "", worldCount + "" }
+                new String[]{String.valueOf(entityCount), String.valueOf(worldCount)}
         );
     }
 
-    private void resetRules(final CommandSender sender, final String label, @NotNull final String @NotNull [] args){
+    private void resetRules(final CommandSender sender, @NotNull final String @NotNull [] args){
         final String prefix = main.configUtils.getPrefix();
 
         if (args.length < 3 || args.length > 4){
@@ -171,7 +170,7 @@ public class RulesSubcommand extends MessagesBase implements Subcommand {
                 break;
         }
 
-        if (difficulty.equals(ResetDifficulty.UNSPECIFIED)){
+        if (difficulty == ResetDifficulty.UNSPECIFIED){
             showMessage("command.levelledmobs.rules.invalid-difficulty", "%difficulty%", args[2]);
             return;
         }
@@ -186,9 +185,9 @@ public class RulesSubcommand extends MessagesBase implements Subcommand {
 
     private void resetRules(final @NotNull CommandSender sender, final @NotNull ResetDifficulty difficulty){
         final String prefix = main.configUtils.getPrefix();
-        showMessage("command.levelledmobs.rules.resetting", "%difficulty%", difficulty + "");
+        showMessage("command.levelledmobs.rules.resetting", "%difficulty%", String.valueOf(difficulty));
 
-        String filename;
+        final String filename;
 
         switch (difficulty){
             case EASY: filename = "predefined/rules_easy.yml";
@@ -200,7 +199,7 @@ public class RulesSubcommand extends MessagesBase implements Subcommand {
         }
 
 
-        try (InputStream stream = main.getResource(filename)) {
+        try (final InputStream stream = main.getResource(filename)) {
             if (stream == null){
                 Utils.logger.error(prefix + " Input stream was null");
                 return;
@@ -216,7 +215,7 @@ public class RulesSubcommand extends MessagesBase implements Subcommand {
 
             Files.copy(rulesFile.toPath(), rulesBackupFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
             Files.copy(stream, rulesFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-        } catch (IOException ex) {
+        } catch (final IOException ex) {
             ex.printStackTrace();
             return;
         }
@@ -287,7 +286,7 @@ public class RulesSubcommand extends MessagesBase implements Subcommand {
         sb.append(getMessage("command.levelledmobs.rules.showing-rules", "%rulename%", rule.getRuleName()));
         sb.append("\n");
 
-        formatRulesVisually(rule, sender, showOnConsole, List.of("id"), sb);
+        formatRulesVisually(rule, List.of("id"), sb);
         if (showOnConsole)
             Utils.logger.info(sb.toString());
         else
@@ -372,7 +371,7 @@ public class RulesSubcommand extends MessagesBase implements Subcommand {
                         world.spawnParticle(Particle.SPELL, location, 20, 0, 0, 0, 0.1);
                         Thread.sleep(50);
                     }
-                } catch (InterruptedException ignored) { }
+                } catch (final InterruptedException ignored) { }
             }
         };
 
@@ -380,7 +379,7 @@ public class RulesSubcommand extends MessagesBase implements Subcommand {
     }
 
 
-    private void formatRulesVisually(@NotNull final RuleInfo pi, final CommandSender sender, final boolean showOnConsole, final List<String> excludedKeys, final StringBuilder sb){
+    private void formatRulesVisually(@NotNull final RuleInfo pi, final List<String> excludedKeys, final StringBuilder sb){
         final SortedMap<String, String> values = new TreeMap<>();
 
         if (excludedKeys == null || !excludedKeys.contains("id")) {
@@ -406,18 +405,18 @@ public class RulesSubcommand extends MessagesBase implements Subcommand {
                         !f.getName().equals("ruleIsEnabled")) continue;
                 if (value.toString().equalsIgnoreCase("NONE")) continue;
                 if (value instanceof CachedModalList<?>) {
-                    CachedModalList<?> cml = (CachedModalList<?>) value;
+                    final CachedModalList<?> cml = (CachedModalList<?>) value;
                     if (cml.isEmpty() && !cml.allowAll && !cml.excludeAll) continue;
                 }
                 final String showValue = "&b" + f.getName() + "&r, value: &b" + value + "&r";
                 values.put(f.getName(), showValue);
             }
-        } catch (Exception e) {
+        } catch (final Exception e) {
             e.printStackTrace();
         }
 
-        for (final String key : values.keySet()){
-            sb.append(MessageUtils.colorizeAll(values.get(key)));
+        for (final String s : values.values()){
+            sb.append(MessageUtils.colorizeAll(s));
             sb.append("\n");
         }
 
@@ -464,7 +463,7 @@ public class RulesSubcommand extends MessagesBase implements Subcommand {
                     printedKeys.add(f.getName());
                 }
             }
-        } catch (Exception e) {
+        } catch (final Exception e) {
             e.printStackTrace();
         }
 
@@ -472,8 +471,8 @@ public class RulesSubcommand extends MessagesBase implements Subcommand {
         sb.append(fineTuning);
         sb.append("&r\n");
 
-        for (final String key : values.keySet()){
-            sb.append(values.get(key));
+        for (final String s : values.values()){
+            sb.append(s);
             sb.append("&r\n");
         }
 

@@ -97,7 +97,7 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
 
     @NotNull
     public static LivingEntityWrapper getInstance(final LivingEntity livingEntity, final @NotNull LevelledMobs main){
-        LivingEntityWrapper lew;
+        final LivingEntityWrapper lew;
 
         synchronized (cachedLM_Wrappers_Lock) {
             if (cache.empty())
@@ -124,7 +124,7 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
         }
     }
 
-    public void setLivingEntity(final @NotNull LivingEntity livingEntity){
+    private void setLivingEntity(final @NotNull LivingEntity livingEntity){
         this.livingEntity = livingEntity;
         super.populateData(livingEntity.getWorld(), livingEntity.getLocation());
     }
@@ -185,7 +185,7 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
             this.fineTuningAttributes = main.rulesManager.getFineTuningAttributes(this);
             this.nametagCooldownTime = main.rulesManager.getRule_nametagVisibleTime(this);
             this.isBuildingCache = false;
-        } catch (InterruptedException e) {
+        } catch (final InterruptedException e) {
             Utils.logger.warning("exception in buildCache: " + e.getMessage());
         } finally {
             if (cacheLock.isHeldByCurrentThread())
@@ -225,10 +225,10 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
                         this.livingEntity.getPersistentDataContainer().set(main.namespaced_keys.chanceRule_Denied, PersistentDataType.STRING, sbDenied.toString());
                     break;
                 }
-            } catch (java.util.ConcurrentModificationException ignored) {
+            } catch (final java.util.ConcurrentModificationException ignored) {
                 try {
                     Thread.sleep(10);
-                } catch (InterruptedException ignored2) {
+                } catch (final InterruptedException ignored2) {
                     break;
                 }
             }
@@ -336,7 +336,7 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
         return main.levelInterface.isLevelled(this.livingEntity);
     }
 
-    public EntityType getEntityType(){
+    public @NotNull EntityType getEntityType(){
         return this.livingEntity.getType();
     }
 
@@ -348,11 +348,11 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
     public boolean isBabyMob() {
         if (livingEntity instanceof Zombie) {
             // for backwards compatibility
-            Zombie zombie = (Zombie) livingEntity;
+            final Zombie zombie = (Zombie) livingEntity;
             try {
                 zombie.isAdult();
                 return !zombie.isAdult();
-            } catch (NoSuchMethodError err) {
+            } catch (final NoSuchMethodError err) {
                 //noinspection deprecation
                 return zombie.isBaby();
             }
@@ -500,10 +500,10 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
 
                     getPDC().set(main.namespaced_keys.spawnedTimeOfDay, PersistentDataType.INTEGER, ticks);
                 }
-            } catch(java.util.ConcurrentModificationException ignored){
+            } catch(final java.util.ConcurrentModificationException ignored){
                 try {
                     Thread.sleep(10);
-                } catch (InterruptedException ignored2) {
+                } catch (final InterruptedException ignored2) {
                     break;
                 }
             }
@@ -533,10 +533,10 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
     private Set<String> buildApplicableGroupsForMob(){
         final Set<String> groups = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
 
-        for (final String groupName : main.customMobGroups.keySet()){
-            final Set<String> mobNames = main.customMobGroups.get(groupName);
+        for (final Map.Entry<String, Set<String>> mobGroup : main.customMobGroups.entrySet()){
+            final Set<String> mobNames = mobGroup.getValue();
             if (mobNames.contains(this.getTypeName()))
-                groups.add(groupName);
+                groups.add(mobGroup.getKey());
         }
 
         groups.add(CustomUniversalGroups.ALL_MOBS.toString());
@@ -553,18 +553,18 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
             groups.add(CustomUniversalGroups.ALL_AQUATIC_MOBS.toString());
         }
 
-        if (livingEntity.getWorld().getEnvironment().equals(World.Environment.NORMAL)){
+        if (livingEntity.getWorld().getEnvironment() == World.Environment.NORMAL){
             groups.add(CustomUniversalGroups.ALL_OVERWORLD_MOBS.toString());
-        } else if (livingEntity.getWorld().getEnvironment().equals(World.Environment.NETHER)){
+        } else if (livingEntity.getWorld().getEnvironment() == World.Environment.NETHER){
             groups.add(CustomUniversalGroups.ALL_NETHER_MOBS.toString());
         }
 
-        if (livingEntity instanceof Flying || eType.equals(EntityType.PARROT) || eType.equals(EntityType.BAT)){
+        if (livingEntity instanceof Flying || eType == EntityType.PARROT || eType == EntityType.BAT){
             groups.add(CustomUniversalGroups.ALL_FLYING_MOBS.toString());
         }
 
         // why bats aren't part of Flying interface is beyond me
-        if (!(livingEntity instanceof Flying) && !(livingEntity instanceof WaterMob) && !(livingEntity instanceof Boss) && !(eType.equals(EntityType.BAT))){
+        if (!(livingEntity instanceof Flying) && !(livingEntity instanceof WaterMob) && !(livingEntity instanceof Boss) && eType != EntityType.BAT){
             groups.add(CustomUniversalGroups.ALL_GROUND_MOBS.toString());
         }
 

@@ -19,33 +19,31 @@ import java.util.List;
  * @author stumper66
  * @since 2.4.0
  */
-public class CustomDropsDefaults {
-    public boolean noMultiplier;
-    public boolean noSpawner;
+class CustomDropsDefaults {
+    boolean noMultiplier;
+    boolean noSpawner;
     public boolean override;
-    public boolean playerCausedOnly;
-    public boolean onlyDropIfEquipped;
+    boolean playerCausedOnly;
+    boolean onlyDropIfEquipped;
     public int amount;
     public int priority;
     public int minLevel;
     public int maxLevel;
-    public int customModelData;
-    public int maxDropGroup;
-    public int minPlayerLevel;
-    public int maxPlayerLevel;
+    int customModelData;
+    int maxDropGroup;
+    int minPlayerLevel;
+    int maxPlayerLevel;
     public float chance;
-    public float equippedSpawnChance;
-    public Float overallChance;
-    public String groupId;
+    float equippedSpawnChance;
+    Float overallChance;
+    String groupId;
     public String damage;
-    public String nbtData;
-    public String playerLevelVariable;
-    public List<ItemFlag> itemFlags;
-    final public List<String> permissions;
-    final public List<String> overallPermissions;
-    public CachedModalList<EntityDamageEvent.DamageCause> causeOfDeathReqs;
+    String playerLevelVariable;
+    public final List<String> permissions;
+    final List<String> overallPermissions;
+    CachedModalList<EntityDamageEvent.DamageCause> causeOfDeathReqs;
 
-    public CustomDropsDefaults() {
+    CustomDropsDefaults() {
         // these are the defaults of the defaults
         this.chance = 0.2F;
         this.amount = 1;
@@ -65,7 +63,7 @@ public class CustomDropsDefaults {
         this.overallPermissions = new LinkedList<>();
     }
 
-    public void setDefaultsFromDropItem(@NotNull final CustomDropItem drop) {
+    void setDefaultsFromDropItem(@NotNull final CustomDropItem drop) {
         this.chance = drop.chance;
         this.amount = drop.getAmount();
         this.minLevel = drop.minLevel;
@@ -78,8 +76,8 @@ public class CustomDropsDefaults {
         this.noSpawner = drop.noSpawner;
         this.playerCausedOnly = drop.playerCausedOnly;
         this.groupId = drop.groupId;
-        this.nbtData = drop.nbtData;
-        this.itemFlags = drop.itemFlags;
+        final String nbtData = drop.nbtData;
+        final List<ItemFlag> itemFlags = drop.itemFlags;
         this.minPlayerLevel = drop.minPlayerLevel;
         this.maxPlayerLevel = drop.maxPlayerLevel;
         this.playerLevelVariable = drop.playerLevelVariable;

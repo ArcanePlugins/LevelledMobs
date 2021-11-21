@@ -20,8 +20,8 @@ import java.util.Objects;
  */
 public class ConfigUtils {
 
-    public static int SETTINGS_CREEPER_MAX_RADIUS;
-    public static int SETTINGS_SPAWN_DISTANCE_FROM_PLAYER;
+    private static int SETTINGS_CREEPER_MAX_RADIUS;
+    private static int SETTINGS_SPAWN_DISTANCE_FROM_PLAYER;
 
     private final LevelledMobs main;
 

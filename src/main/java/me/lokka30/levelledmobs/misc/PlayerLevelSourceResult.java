@@ -19,5 +19,5 @@ public class PlayerLevelSourceResult {
 
     public int numericResult;
     public String stringResult;
-    public boolean isNumericResult;
+    public final boolean isNumericResult;
 }

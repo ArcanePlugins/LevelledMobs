@@ -75,6 +75,6 @@ public class RequestedLevel {
         if (this.hasLevelRange)
             return String.format("%s-%s", this.levelRangeMin, this.levelRangeMax);
         else
-            return this.level + "";
+            return String.valueOf(this.level);
     }
 }

@@ -5,16 +5,16 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 
 public class MergeableStringList {
-    public MergeableStringList() {}
+    MergeableStringList() {}
 
-    public MergeableStringList(final @Nullable String item){
+    MergeableStringList(final @Nullable String item){
         if (item == null) return;
 
         this.items = new LinkedList<>();
         this.items.add(item);
     }
 
-    public MergeableStringList(final @Nullable String item, final boolean doMerge){
+    MergeableStringList(final @Nullable String item, final boolean doMerge){
         if (item == null) return;
 
         this.items = new LinkedList<>();
@@ -23,7 +23,7 @@ public class MergeableStringList {
     }
 
     public List<String> items;
-    public boolean doMerge;
+    boolean doMerge;
 
     public void setItemFromString(final @Nullable String input){
         if (input == null) return;
@@ -32,7 +32,7 @@ public class MergeableStringList {
         this.items.add(input);
     }
 
-    public void setItemFromList(final @Nullable Collection<String> input){
+    void setItemFromList(final @Nullable Collection<String> input){
         if (input == null) return;
 
         this.items = new LinkedList<>();

@@ -40,8 +40,8 @@ public class CombustListener implements Listener {
     public void onCombust(final EntityCombustEvent event) {
         if (event instanceof EntityCombustByBlockEvent || event instanceof EntityCombustByEntityEvent) return;
 
-        if (event.getEntity().getWorld().getEnvironment().equals(World.Environment.NETHER) ||
-                event.getEntity().getWorld().getEnvironment().equals(World.Environment.THE_END))
+        if (event.getEntity().getWorld().getEnvironment() == World.Environment.NETHER ||
+                event.getEntity().getWorld().getEnvironment() == World.Environment.THE_END)
             return;
 
         final List<EntityType> entityTypesCanBurnInSunlight2 = Arrays.asList(
@@ -58,7 +58,7 @@ public class CombustListener implements Listener {
         }
 
         final LivingEntityWrapper lmEntity = LivingEntityWrapper.getInstance((LivingEntity) event.getEntity(), main);
-        double multiplier = main.rulesManager.getRule_SunlightBurnIntensity(lmEntity);
+        final double multiplier = main.rulesManager.getRule_SunlightBurnIntensity(lmEntity);
         if (multiplier == 0.0) {
             lmEntity.free();
             return;

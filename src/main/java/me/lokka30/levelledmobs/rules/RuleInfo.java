@@ -35,78 +35,77 @@ public class RuleInfo {
 
     private String ruleName;
     @DoNotMerge
-    public boolean ruleIsEnabled;
-    public Boolean babyMobsInheritAdultSetting;
-    public Boolean mobLevelInheritance;
+    boolean ruleIsEnabled;
+    Boolean babyMobsInheritAdultSetting;
+    Boolean mobLevelInheritance;
     public Boolean customDrops_UseForMobs;
-    public Boolean customDrops_UseOverride;
-    public Boolean stopProcessingRules;
-    public Boolean useRandomLevelling;
-    public Boolean mergeEntityNameOverrides;
-    public Boolean passengerMatchLevel;
+    Boolean customDrops_UseOverride;
+    Boolean stopProcessingRules;
+    Boolean useRandomLevelling;
+    Boolean mergeEntityNameOverrides;
+    Boolean passengerMatchLevel;
     @DoNotMerge
-    public int rulePriority;
-    public Integer maxRandomVariance;
-    public Integer creeperMaxDamageRadius;
-    public Integer conditions_MinLevel;
-    public Integer conditions_MaxLevel;
-    public Integer restrictions_MinLevel;
-    public Integer restrictions_MaxLevel;
-    public Integer lowerMobLevelBiasFactor;
-    public Integer conditions_ApplyAboveY;
-    public Integer conditions_ApplyBelowY;
-    public Integer conditions_MinDistanceFromSpawn;
-    public Integer conditions_MaxDistanceFromSpawn;
-    public Integer nametagVisibleTime;
-    public Float conditions_Chance;
-    public Double sunlightBurnAmount;
+    int rulePriority;
+    Integer maxRandomVariance;
+    Integer creeperMaxDamageRadius;
+    Integer conditions_MinLevel;
+    Integer conditions_MaxLevel;
+    Integer restrictions_MinLevel;
+    Integer restrictions_MaxLevel;
+    Integer lowerMobLevelBiasFactor;
+    Integer conditions_ApplyAboveY;
+    Integer conditions_ApplyBelowY;
+    Integer conditions_MinDistanceFromSpawn;
+    Integer conditions_MaxDistanceFromSpawn;
+    Integer nametagVisibleTime;
+    Float conditions_Chance;
+    Double sunlightBurnAmount;
     public String nametag;
-    public String nametag_CreatureDeath;
-    public String nametag_Placeholder_Levelled;
-    public String nametag_Placeholder_Unlevelled;
+    String nametag_CreatureDeath;
+    String nametag_Placeholder_Levelled;
+    String nametag_Placeholder_Unlevelled;
     @DoNotMerge
-    public String presetName;
-    public String customDrop_DropTableId;
-    public HealthIndicator healthIndicator;
-    public MobCustomNameStatus conditions_MobCustomnameStatus;
-    public MobTamedStatus conditions_MobTamedStatus;
-    public LevellingStrategy levellingStrategy;
-    public PlayerLevellingOptions playerLevellingOptions;
-    public Map<String, List<LevelTierMatching>> entityNameOverrides_Level;
-    public Map<String, LevelTierMatching> entityNameOverrides;
+    String presetName;
+    String customDrop_DropTableId;
+    HealthIndicator healthIndicator;
+    MobCustomNameStatus conditions_MobCustomnameStatus;
+    MobTamedStatus conditions_MobTamedStatus;
+    LevellingStrategy levellingStrategy;
+    PlayerLevellingOptions playerLevellingOptions;
+    Map<String, List<LevelTierMatching>> entityNameOverrides_Level;
+    Map<String, LevelTierMatching> entityNameOverrides;
     public List<NametagVisibilityEnum> nametagVisibilityEnum;
     @NotNull @DoNotMerge
     public final Map<String, String> ruleSourceNames;
-    public List<TieredColoringInfo> tieredColoringInfos;
-    public Map<ExternalCompatibilityManager.ExternalCompatibility, Boolean> enabledExtCompats;
-    public MergeableStringList mobNBT_Data;
-    public CachedModalList<String> allowedEntities;
-    public CachedModalList<String> conditions_Worlds;
-    public CachedModalList<String> conditions_Entities;
-    public CachedModalList<Biome> conditions_Biomes;
-    public CachedModalList<String> conditions_ApplyPlugins;
-    public CachedModalList<String> conditions_CustomNames;
-    public CachedModalList<String> conditions_NoDropEntities;
-    public CachedModalList<String> conditions_WGRegions;
-    public CachedModalList<String> conditions_MM_Names;
-    public CachedModalList<String> conditions_SpawnerNames;
-    public CachedModalList<MinAndMax> conditions_WorldTickTime;
-    public CachedModalList<LevelledMobSpawnReason> conditions_SpawnReasons;
-    public CachedModalList<String> conditions_Permission;
-    @Nullable
-    public FineTuningAttributes allMobMultipliers;
-    public Map<String, FineTuningAttributes> specificMobMultipliers;
+    List<TieredColoringInfo> tieredColoringInfos;
+    Map<ExternalCompatibilityManager.ExternalCompatibility, Boolean> enabledExtCompats;
+    MergeableStringList mobNBT_Data;
+    CachedModalList<String> allowedEntities;
+    CachedModalList<String> conditions_Worlds;
+    CachedModalList<String> conditions_Entities;
+    CachedModalList<Biome> conditions_Biomes;
+    CachedModalList<String> conditions_ApplyPlugins;
+    CachedModalList<String> conditions_CustomNames;
+    CachedModalList<String> conditions_NoDropEntities;
+    CachedModalList<String> conditions_WGRegions;
+    CachedModalList<String> conditions_MM_Names;
+    CachedModalList<String> conditions_SpawnerNames;
+    CachedModalList<MinAndMax> conditions_WorldTickTime;
+    CachedModalList<LevelledMobSpawnReason> conditions_SpawnReasons;
+    CachedModalList<String> conditions_Permission;
+    @Nullable FineTuningAttributes allMobMultipliers;
+    Map<String, FineTuningAttributes> specificMobMultipliers;
 
     public String getRuleName(){
         return this.ruleName;
     }
 
-    public void setRuleName(final String name){
+    void setRuleName(final String name){
         this.ruleName = name;
     }
 
     // this is only used for presets
-    public void mergePresetRules(final RuleInfo preset){
+    void mergePresetRules(final RuleInfo preset){
         if (preset == null) return;
 
         try {
@@ -144,8 +143,8 @@ public class RuleInfo {
                     if (this.specificMobMultipliers == null)
                         this.specificMobMultipliers = new TreeMap<>();
 
-                    for (final String entityType : mergingPreset.keySet())
-                        this.specificMobMultipliers.put(entityType, mergingPreset.get(entityType).cloneItem());
+                    for (final Map.Entry<String, FineTuningAttributes> entityType : mergingPreset.entrySet())
+                        this.specificMobMultipliers.put(entityType.getKey(), entityType.getValue().cloneItem());
 
                     skipSettingValue = true;
                 }
@@ -194,7 +193,7 @@ public class RuleInfo {
                     this.getClass().getDeclaredField(f.getName()).set(this, presetValue);
                 this.ruleSourceNames.put(f.getName(), preset.ruleName);
             }
-        } catch (IllegalAccessException | NoSuchFieldException e) {
+        } catch (final IllegalAccessException | NoSuchFieldException e) {
             e.printStackTrace();
         }
     }

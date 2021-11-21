@@ -53,7 +53,7 @@ public class PlayerInteractEventListener extends MessagesBase implements Listene
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     void onPlayerInteractEvent(final @NotNull PlayerInteractEvent event) {
-        if (!event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) return;
+        if (event.getAction() != Action.RIGHT_CLICK_BLOCK) return;
 
         commandSender = event.getPlayer();
         messageLabel = "lm";
@@ -63,14 +63,14 @@ public class PlayerInteractEventListener extends MessagesBase implements Listene
         }
 
         if (main.companion.spawner_InfoIds.isEmpty() && main.companion.spawner_CopyIds.isEmpty()) return;
-        if (event.getHand() == null || !event.getHand().equals(EquipmentSlot.HAND)) return;
+        if (event.getHand() == null || event.getHand() != EquipmentSlot.HAND) return;
 
         final boolean doShowInfo = main.companion.spawner_InfoIds.contains(event.getPlayer().getUniqueId());
         final boolean doCopy = main.companion.spawner_CopyIds.contains(event.getPlayer().getUniqueId());
 
         if (!doCopy && !doShowInfo) return;
 
-        if (event.getClickedBlock() == null || !event.getClickedBlock().getType().equals(Material.SPAWNER))
+        if (event.getClickedBlock() == null || event.getClickedBlock().getType() != Material.SPAWNER)
             return;
 
         final UUID uuid = event.getPlayer().getUniqueId();
@@ -86,7 +86,7 @@ public class PlayerInteractEventListener extends MessagesBase implements Listene
         final CreatureSpawner cs = (CreatureSpawner) event.getClickedBlock().getState();
         if (doShowInfo)
             showInfo(event.getPlayer(), cs);
-        else if (event.getMaterial().equals(Material.AIR))
+        else if (event.getMaterial() == Material.AIR)
             copySpawner(event.getPlayer(), cs);
     }
 
@@ -120,14 +120,14 @@ public class PlayerInteractEventListener extends MessagesBase implements Listene
         if (meta.getPersistentDataContainer().has(main.namespaced_keys.keySpawner_SpawnType, PersistentDataType.STRING)) {
             final String temp = meta.getPersistentDataContainer().get(main.namespaced_keys.keySpawner_SpawnType, PersistentDataType.STRING);
             if (temp != null){
-                try
-                { spawnType = EntityType.valueOf(temp); }
-                catch (Exception ignored)
+                try {
+                    spawnType = EntityType.valueOf(temp);
+                } catch (final Exception ignored)
                 { Utils.logger.warning("Invalid spawn type on spawner egg: " + temp); }
             }
         }
 
-        if (event.getClickedBlock().getBlockData().getMaterial().equals(Material.SPAWNER)){
+        if (event.getClickedBlock().getBlockData().getMaterial() == Material.SPAWNER){
             final SpawnerBaseClass.CustomSpawnerInfo info = new SpawnerBaseClass.CustomSpawnerInfo(main, null);
             info.minLevel = minLevel;
             info.maxLevel = maxLevel;

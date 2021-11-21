@@ -72,28 +72,28 @@ public class KillSubcommand extends MessagesBase implements Subcommand {
                 if (checkArgs == 2) {
                     if (sender instanceof Player) {
                         final Player player = (Player) sender;
-                        parseKillAll(sender, Collections.singletonList(player.getWorld()), main, useNoDrops, rl);
+                        parseKillAll(Collections.singletonList(player.getWorld()), main, useNoDrops, rl);
                     }
                     else
                         showMessage("command.levelledmobs.kill.all.usage-console");
 
                 } else if (checkArgs == 3 || checkArgs == 4) {
                     if (args[2].equals("*")) {
-                        parseKillAll(sender, Bukkit.getWorlds(), main, useNoDrops, rl);
+                        parseKillAll(Bukkit.getWorlds(), main, useNoDrops, rl);
                         return;
                     }
 
                     if ("/nodrops".equalsIgnoreCase(args[2]))
-                        parseKillAll(sender, Bukkit.getWorlds(), main, true, rl);
+                        parseKillAll(Bukkit.getWorlds(), main, true, rl);
                     else {
-                        World world = Bukkit.getWorld(args[2]);
+                        final World world = Bukkit.getWorld(args[2]);
                         if (world == null) {
                             showMessage("command.levelledmobs.kill.all.invalid-world", "%world%", args[2]);
                             // TODO: see if we still need to follow the instructions below
                             //messages = Utils.replaceAllInList(messages, "%world%", args[2]); //This is after the list is colourised to ensure that an input of a world name '&aGreen' will not be colourised.
                             return;
                         }
-                        parseKillAll(sender, Collections.singletonList(world), main, useNoDrops, rl);
+                        parseKillAll(Collections.singletonList(world), main, useNoDrops, rl);
                     }
                 }
                 else
@@ -114,22 +114,22 @@ public class KillSubcommand extends MessagesBase implements Subcommand {
                     int radius;
                     try {
                         radius = Integer.parseInt(args[2]);
-                    } catch (NumberFormatException exception) {
+                    } catch (final NumberFormatException exception) {
                         showMessage("command.levelledmobs.kill.near.invalid-radius", "%radius%", args[2]);
                         //messages = Utils.replaceAllInList(messages, "%radius%", args[2]); //After the list is colourised, so %radius% is not coloursied.
                         return;
                     }
 
-                    int maxRadius = 1000;
+                    final int maxRadius = 1000;
                     if (radius > maxRadius) {
                         radius = maxRadius;
-                        showMessage("command.levelledmobs.kill.near.invalid-radius-max", "%maxRadius%", maxRadius + "");
+                        showMessage("command.levelledmobs.kill.near.invalid-radius-max", "%maxRadius%", String.valueOf(maxRadius));
                     }
 
-                    int minRadius = 1;
+                    final int minRadius = 1;
                     if (radius < minRadius) {
                         radius = minRadius;
-                        showMessage("command.levelledmobs.kill.near.invalid-radius-min", "%minRadius%", minRadius + "");
+                        showMessage("command.levelledmobs.kill.near.invalid-radius-min", "%minRadius%", String.valueOf(minRadius));
                     }
 
                     int killed = 0;
@@ -162,7 +162,7 @@ public class KillSubcommand extends MessagesBase implements Subcommand {
 
                     showMessage("command.levelledmobs.kill.near.success",
                             new String[]{ "%killed%", "%skipped%", "%radius%" },
-                            new String[]{ killed + "", skipped + "", radius + ""}
+                            new String[]{String.valueOf(killed), String.valueOf(skipped), String.valueOf(radius)}
                     );
                 }
                 else
@@ -211,8 +211,8 @@ public class KillSubcommand extends MessagesBase implements Subcommand {
         boolean containsNoDrops = false;
         boolean containsLevels = false;
 
-        StringBuilder sb = new StringBuilder();
-        for (String arg : args) {
+        final StringBuilder sb = new StringBuilder();
+        for (final String arg : args) {
             if ("/nodrops".equalsIgnoreCase(arg))
                 containsNoDrops = true;
             else if ("/levels".equalsIgnoreCase(arg))
@@ -225,12 +225,12 @@ public class KillSubcommand extends MessagesBase implements Subcommand {
 
         if (args[1].equalsIgnoreCase("all") && (args.length == 3 || args.length == 4)) {
             if (sender.hasPermission("levelledmobs.command.kill.all")) {
-                List<String> worlds = new LinkedList<>();
+                final List<String> worlds = new LinkedList<>();
 
                 if (!containsNoDrops) worlds.add("/nodrops");
                 if (!containsLevels) worlds.add("/levels");
                 if (args.length == 3 ) {
-                    for (World world : Bukkit.getWorlds()) {
+                    for (final World world : Bukkit.getWorlds()) {
                         worlds.add("*");
                         if (main.rulesManager.getRule_IsWorldAllowedInAnyRule(world))
                             worlds.add(world.getName());
@@ -258,7 +258,7 @@ public class KillSubcommand extends MessagesBase implements Subcommand {
         return result;
     }
 
-    private void parseKillAll(final CommandSender sender, final @NotNull List<World> worlds, final LevelledMobs main, final boolean useNoDrops, final RequestedLevel rl) {
+    private void parseKillAll(final @NotNull List<World> worlds, final LevelledMobs main, final boolean useNoDrops, final RequestedLevel rl) {
         int killed = 0;
         int skipped = 0;
 
@@ -286,7 +286,7 @@ public class KillSubcommand extends MessagesBase implements Subcommand {
 
         showMessage("command.levelledmobs.kill.all.success",
                 new String[]{ "%killed%", "%skipped%", "%worlds%"},
-                new String[]{ killed + "", skipped + "", worlds.size() + ""}
+                new String[]{String.valueOf(killed), String.valueOf(skipped), String.valueOf(worlds.size())}
         );
     }
 

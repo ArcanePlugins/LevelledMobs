@@ -41,7 +41,7 @@ public class MobsQueueManager {
             public void run() {
                 try {
                     main();
-                } catch (InterruptedException ignored) {
+                } catch (final InterruptedException ignored) {
                     isRunning = false;
                 }
                 Utils.logger.info("Mob processing queue Manager has exited");
@@ -76,8 +76,7 @@ public class MobsQueueManager {
                     lastEntityType = item.lmEntity.getNameIfBaby();
                     main.levelManager.entitySpawnListener.preprocessMob(item.lmEntity, item.event);
                 }
-            }
-            catch (Exception e){
+            } catch (final Exception e){
                 Utils.logger.error("Got exception while processing " + (lastEntityType != null ? lastEntityType : "(unknown)"));
                 e.printStackTrace();
             }

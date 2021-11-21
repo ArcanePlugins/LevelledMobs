@@ -29,7 +29,7 @@ public class DebugCreator {
         try{
             Files.writeString(serverInfoFile.toPath(), generateSystemInfo(main), StandardCharsets.UTF_8);
         }
-        catch (IOException e){
+        catch (final IOException e){
             e.printStackTrace();
         }
 
@@ -43,7 +43,7 @@ public class DebugCreator {
             fos = new FileOutputStream(zipFile);
             zipOut = new ZipOutputStream(fos);
 
-            for (String srcFile : srcFiles) {
+            for (final String srcFile : srcFiles) {
                 final File fileToZip = srcFile.contains(File.separator) ?
                         new File(srcFile) : new File(pluginDir, srcFile);
 
@@ -61,7 +61,7 @@ public class DebugCreator {
 
             result = true;
         }
-        catch (IOException e){
+        catch (final IOException e){
             e.printStackTrace();
         }
         finally {
@@ -70,7 +70,7 @@ public class DebugCreator {
                 if (fis != null) fis.close();
                 if (fos != null) fos.close();
             }
-            catch (Exception ignored) {}
+            catch (final Exception ignored) {}
         }
 
         final File serverInfo = new File(pluginDir, "serverinfo.txt");
@@ -92,7 +92,7 @@ public class DebugCreator {
         try{
             shaDigest = MessageDigest.getInstance("SHA-256");
         }
-        catch (Exception ignored) {}
+        catch (final Exception ignored) {}
 
         sb.append(main.getDescription().getName());
         sb.append(" ");
@@ -148,19 +148,18 @@ public class DebugCreator {
     }
 
     @Nullable
-    private static String getFileChecksum(final MessageDigest digest, final File file)
-    {
+    private static String getFileChecksum(final MessageDigest digest, final File file) {
         // taken from https://howtodoinjava.com/java/io/sha-md5-file-checksum-hash/
 
         final byte[] byteArray = new byte[1024];
         int bytesCount;
 
-        try (FileInputStream fis = new FileInputStream(file)){
+        try (final FileInputStream fis = new FileInputStream(file)){
             while ((bytesCount = fis.read(byteArray)) != -1) {
                 digest.update(byteArray, 0, bytesCount);
             }
         }
-        catch (IOException e) {
+        catch (final IOException e) {
             e.printStackTrace();
             return null;
         }
@@ -168,7 +167,7 @@ public class DebugCreator {
         final byte[] bytes = digest.digest();
         final StringBuilder sb = new StringBuilder();
 
-        for (byte aByte : bytes) sb.append(Integer.toString((aByte & 0xff) + 0x100, 16).substring(1));
+        for (final byte aByte : bytes) sb.append(Integer.toString((aByte & 0xff) + 0x100, 16).substring(1));
 
         return sb.toString();
     }

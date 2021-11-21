@@ -58,7 +58,7 @@ public class RulesManager {
 
     @NotNull
     public List<String> getRule_NBT_Data(final @NotNull LivingEntityWrapper lmEntity){
-        List<String> nbtData = new LinkedList<>();
+        final List<String> nbtData = new LinkedList<>();
 
         for (final RuleInfo ruleInfo : lmEntity.getApplicableRules()){
             if (ruleInfo.mobNBT_Data != null) {
@@ -98,7 +98,7 @@ public class RulesManager {
         if (this.levelNumbersWithBiasMapCache.containsKey(checkName))
             return this.levelNumbersWithBiasMapCache.get(checkName);
 
-        LevelNumbersWithBias levelNumbersWithBias = new LevelNumbersWithBias(minLevel, maxLevel, lowerMobLevelBiasFactor);
+        final LevelNumbersWithBias levelNumbersWithBias = new LevelNumbersWithBias(minLevel, maxLevel, lowerMobLevelBiasFactor);
         this.levelNumbersWithBiasMapCache.put(checkName, levelNumbersWithBias);
         return levelNumbersWithBias;
     }
@@ -149,7 +149,7 @@ public class RulesManager {
         }
 
         if (lmInterface instanceof LivingEntityWrapper) {
-            LivingEntityWrapper lmEntity = (LivingEntityWrapper) lmInterface;
+            final LivingEntityWrapper lmEntity = (LivingEntityWrapper) lmInterface;
             return (
                     allowedEntitiesList == null ||
                             !babyMobsInheritAdultSetting && lmEntity.isBabyMob() && Utils.isLivingEntityInModalList(allowedEntitiesList, lmEntity, true)) ||
@@ -192,12 +192,11 @@ public class RulesManager {
 
     @NotNull
     public Map<ExternalCompatibilityManager.ExternalCompatibility, Boolean> getRule_ExternalCompatibility(@NotNull final LivingEntityWrapper lmEntity){
-        final Map<ExternalCompatibilityManager.ExternalCompatibility, Boolean> result = new TreeMap<>();
+        final Map<ExternalCompatibilityManager.ExternalCompatibility, Boolean> result = new EnumMap<>(ExternalCompatibilityManager.ExternalCompatibility.class);
 
         for (final RuleInfo ruleInfo : lmEntity.getApplicableRules()){
             if (ruleInfo.enabledExtCompats != null) {
-                for (final ExternalCompatibilityManager.ExternalCompatibility compatibility : ruleInfo.enabledExtCompats.keySet())
-                    result.put(compatibility, ruleInfo.enabledExtCompats.get(compatibility));
+                result.putAll(ruleInfo.enabledExtCompats);
             }
         }
 
@@ -414,7 +413,7 @@ public class RulesManager {
         if (coloringInfo == null) return  null;
 
         final int mobLevel = lmEntity.getMobLevel();
-        for (TieredColoringInfo info : coloringInfo){
+        for (final TieredColoringInfo info : coloringInfo){
             if (info.isDefault) tieredText = info.text;
             if (mobLevel >= info.minLevel && mobLevel <= info.maxLevel){
                 tieredText = info.text;
@@ -445,7 +444,7 @@ public class RulesManager {
             return lmEntity.getOverridenEntityName();
 
         for (final RuleInfo ruleInfo : lmEntity.getApplicableRules()){
-            boolean doMerge = ruleInfo.mergeEntityNameOverrides != null && ruleInfo.mergeEntityNameOverrides;
+            final boolean doMerge = ruleInfo.mergeEntityNameOverrides != null && ruleInfo.mergeEntityNameOverrides;
             if (ruleInfo.entityNameOverrides != null){
                 if (entityNameOverrides != null && doMerge)
                     entityNameOverrides.putAll(ruleInfo.entityNameOverrides);
@@ -521,8 +520,7 @@ public class RulesManager {
     public ApplicableRulesResult getApplicableRules(final LivingEntityInterface lmInterface){
         final ApplicableRulesResult applicableRules = new ApplicableRulesResult();
 
-        for (final int rulePriority : rulesInEffect.keySet()) {
-            final List<RuleInfo> rules = rulesInEffect.get(rulePriority);
+        for (final List<RuleInfo> rules : rulesInEffect.values()) {
             for (final RuleInfo ruleInfo : rules) {
 
                 if (!ruleInfo.ruleIsEnabled) continue;
@@ -599,7 +597,7 @@ public class RulesManager {
 
         if (ri.conditions_MM_Names != null){
             String mm_Name = ExternalCompatibilityManager.getMythicMobInternalName(lmEntity);
-            if ("".equals(mm_Name)) mm_Name = "(none)";
+            if (mm_Name.isEmpty()) mm_Name = "(none)";
 
             if (!ri.conditions_MM_Names.isEnabledInList(mm_Name, lmEntity)) {
                 Utils.debugLog(main, DebugType.DENIED_RULE_MYTHIC_MOBS_INTERNAL_NAME, String.format("&b%s&7, mob: &b%s&7, mm_name: &b%s&7",
@@ -729,12 +727,12 @@ public class RulesManager {
                 // find out if this entity previously lost or won the chance previously and use that result if present
                 final Map<String, Boolean> prevChanceResults = lmEntity.getPrevChanceRuleResults();
                 if (prevChanceResults != null && prevChanceResults.containsKey(ri.getRuleName())){
-                    boolean prevResult = prevChanceResults.get(ri.getRuleName());
+                    final boolean prevResult = prevChanceResults.get(ri.getRuleName());
                     return new RuleCheckResult(prevResult);
                 }
             }
 
-            float chanceRole = (float) ThreadLocalRandom.current().nextInt(0, 100001) * 0.00001F;
+            final float chanceRole = (float) ThreadLocalRandom.current().nextInt(0, 100001) * 0.00001F;
             if (chanceRole < (1.0F - ri.conditions_Chance)){
                 Utils.debugLog(main, DebugType.DENIED_RULE_CHANCE, String.format("&b%s&7, mob: &b%s&7, chance: &b%s&7, chance role: &b%s&7",
                         ri.getRuleName(), lmInterface.getTypeName(), ri.conditions_Chance, Utils.round(chanceRole, 4)));
@@ -795,11 +793,11 @@ public class RulesManager {
 
         if (customBiomeGroups == null) return;
 
-        for (final String groupName : customBiomeGroups.keySet()){
-            final Set<String> groupMembers = customBiomeGroups.get(groupName);
+        for (final Map.Entry<String, Set<String>> groupName : customBiomeGroups.entrySet()){
+            final Set<String> groupMembers = groupName.getValue();
             final List<String> newList = new ArrayList<>(groupMembers.size());
             newList.addAll(groupMembers);
-            this.biomeGroupMappings.put(groupName, newList);
+            this.biomeGroupMappings.put(groupName.getKey(), newList);
         }
     }
 }

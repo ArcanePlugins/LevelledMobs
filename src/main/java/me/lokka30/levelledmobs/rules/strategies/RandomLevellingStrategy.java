@@ -67,9 +67,10 @@ public class RandomLevellingStrategy implements LevellingStrategy, Cloneable {
 
         // first loop parses the number range string and counts totals
         // so we know how big to size the array
-        for (final String range : this.weightedRandom.keySet()){
+        for (final Map.Entry<String, Integer> ranges : this.weightedRandom.entrySet()){
+            final String range = ranges.getKey();
             if (Utils.isNullOrEmpty(range)) continue;
-            final int value = this.weightedRandom.get(range);
+            final int value = ranges.getValue();
 
             final int[] numRange = parseNumberRange(range);
             if (numRange[0] == -1 && numRange[1] == -1){
@@ -77,8 +78,8 @@ public class RandomLevellingStrategy implements LevellingStrategy, Cloneable {
                 continue;
             }
 
-            int start = numRange[0] < 0 ? numRange[1] : numRange[0];
-            int end = numRange[1] < 0 ? numRange[0] : numRange[1];
+            final int start = numRange[0] < 0 ? numRange[1] : numRange[0];
+            final int end = numRange[1] < 0 ? numRange[0] : numRange[1];
             numbers.add(new int[]{start, end});
             values.add(value);
 
@@ -119,7 +120,7 @@ public class RandomLevellingStrategy implements LevellingStrategy, Cloneable {
     }
 
     private int[] parseNumberRange(final String range){
-        final int[] results = new int[] {-1, -1};
+        final int[] results = {-1, -1};
 
         if (!range.contains("-")){
             if (!Utils.isInteger(range)) return results;
@@ -129,7 +130,7 @@ public class RandomLevellingStrategy implements LevellingStrategy, Cloneable {
             return results;
         }
 
-        String[] nums = range.split("-");
+        final String[] nums = range.split("-");
         if (nums.length < 2) return results;
 
         nums[0] = nums[0].trim();
@@ -164,7 +165,7 @@ public class RandomLevellingStrategy implements LevellingStrategy, Cloneable {
         RandomLevellingStrategy copy = null;
         try {
             copy = (RandomLevellingStrategy) super.clone();
-        } catch (Exception e) {
+        } catch (final Exception e) {
             e.printStackTrace();
         }
 

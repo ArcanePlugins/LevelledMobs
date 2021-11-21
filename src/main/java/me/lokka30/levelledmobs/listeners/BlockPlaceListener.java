@@ -40,8 +40,8 @@ public class BlockPlaceListener implements Listener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void onBlockPlaceEvent(@NotNull final BlockPlaceEvent event) {
-        if (!event.getBlockPlaced().getType().equals(Material.SPAWNER) ||
-            !event.getItemInHand().getType().equals(Material.SPAWNER))
+        if (event.getBlockPlaced().getType() != Material.SPAWNER ||
+                event.getItemInHand().getType() != Material.SPAWNER)
             return;
 
         processMobSpawner(event.getItemInHand(), event.getBlockPlaced());

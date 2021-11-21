@@ -4,6 +4,8 @@
 
 package me.lokka30.levelledmobs.misc;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.io.InvalidObjectException;
 import java.util.LinkedList;
 import java.util.List;
@@ -19,11 +21,11 @@ public class VersionInfo implements Comparable<VersionInfo> {
         if (version == null) throw new NullPointerException("version can't be null");
 
         this.versionStr = version;
-        String[] split = version.split("\\.");
+        final String[] split = version.split("\\.");
         this.thisVerSplit = new LinkedList<>();
         for (final String numTemp : split){
             if (!Utils.isDouble(numTemp)) throw new InvalidObjectException("Version can only contain numbers and periods");
-            int intD = Integer.parseInt(numTemp);
+            final int intD = Integer.parseInt(numTemp);
             thisVerSplit.add(intD);
         }
 
@@ -31,8 +33,8 @@ public class VersionInfo implements Comparable<VersionInfo> {
             thisVerSplit.add(0);
     }
 
-    final private String versionStr;
-    final List<Integer> thisVerSplit;
+    private final String versionStr;
+    private final List<Integer> thisVerSplit;
 
     @Override
     public boolean equals(final Object o) {
@@ -49,12 +51,12 @@ public class VersionInfo implements Comparable<VersionInfo> {
         return this.versionStr;
     }
 
-    public String getVersion(){
+    private String getVersion(){
         return this.versionStr;
     }
 
     @Override
-    public int compareTo(final VersionInfo v) {
+    public int compareTo(final @NotNull VersionInfo v) {
         for (int i = 0; i < 4; i++) {
 
             if (v.thisVerSplit.size() <= i && this.thisVerSplit.size() - 1 <= i)

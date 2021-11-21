@@ -33,5 +33,5 @@ public class QueueItem {
     public Event event;
     public List<Player> players;
     public String nametag;
-    public final boolean isMobProcessQueue;
+    private final boolean isMobProcessQueue;
 }

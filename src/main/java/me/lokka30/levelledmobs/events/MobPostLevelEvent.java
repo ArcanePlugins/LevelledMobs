@@ -27,7 +27,7 @@ public class MobPostLevelEvent extends Event {
     private static final HandlerList HANDLERS = new HandlerList();
 
     @Override
-    public HandlerList getHandlers() {
+    public @NotNull HandlerList getHandlers() {
         return HANDLERS;
     }
 
