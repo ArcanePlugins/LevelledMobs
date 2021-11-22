@@ -25,6 +25,7 @@ import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 
+import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -102,6 +103,12 @@ public class EntitySpawnListener implements Listener {
         }
 
         if (closestPlayer == null) return;
+        // if player has been logged in for less than 5 seconds then ignore
+        final Instant logonTime = main.companion.getRecentlyJoinedPlayerLogonTime(closestPlayer);
+        if (logonTime != null) {
+            if (Utils.getMillisecondsFromInstant(logonTime) < 5000L) return;
+            main.companion.removeRecentlyJoinedPlayer(closestPlayer);
+        }
 
         synchronized (lmEntity.getLivingEntity().getPersistentDataContainer()) {
             lmEntity.getPDC().set(main.namespaced_keys.playerLevelling_Id, PersistentDataType.STRING, closestPlayer.getUniqueId().toString());

@@ -266,11 +266,15 @@ public class LevelManager implements LevelInterface {
             if (ExternalCompatibilityManager.hasPAPI_Installed()) {
                 PAPIResult = ExternalCompatibilityManager.getPAPI_Placeholder(player, variableToUse);
                 if (Utils.isNullOrEmpty(PAPIResult)) {
-                    Utils.logger.warning("Got blank result for '" + variableToUse + "' from PAPI");
+                    final Location l = player.getLocation();
+                    Utils.debugLog(main, DebugType.PLAYER_LEVELLING, String.format("Got blank result for '%s' from PAPI. Player %s at %s,%s,%s in %s",
+                            variableToUse, player.getName(), l.getBlockX(), l.getBlockY(), l.getBlockZ(), player.getWorld().getName()));
                     usePlayerLevel = true;
                 }
-                if (!Utils.isDouble(PAPIResult)) {
-                    Utils.logger.warning("Got invalid number for '" + variableToUse + "' from PAPI");
+                else if (!Utils.isDouble(PAPIResult)) {
+                    final Location l = player.getLocation();
+                    Utils.debugLog(main, DebugType.PLAYER_LEVELLING, String.format("Got invalid number for '%s', result: '%s' from PAPI. Player %s at %s,%s,%s in %s",
+                            variableToUse, PAPIResult, player.getName(), l.getBlockX(), l.getBlockY(), l.getBlockZ(), player.getWorld().getName()));
                     usePlayerLevel = true;
                 }
             } else {
@@ -762,6 +766,13 @@ public class LevelManager implements LevelInterface {
 
         if (closestPlayer == null)
             return;
+
+        // if player has been logged in for less than 5 seconds then ignore
+        final Instant logonTime = main.companion.getRecentlyJoinedPlayerLogonTime(closestPlayer);
+        if (logonTime != null) {
+            if (Utils.getMillisecondsFromInstant(logonTime) < 5000L) return;
+            main.companion.removeRecentlyJoinedPlayer(closestPlayer);
+        }
 
         if (doesMobNeedRelevelling(mob, closestPlayer)) {
 

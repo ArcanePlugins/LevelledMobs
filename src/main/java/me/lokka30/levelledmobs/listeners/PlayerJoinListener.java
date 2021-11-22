@@ -43,6 +43,7 @@ public class PlayerJoinListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onJoin(@NotNull final PlayerJoinEvent event) {
+        main.companion.addRecentlyJoinedPlayer(event.getPlayer());
         main.nametagTimerChecker.addPlayerToQueue(new PlayerQueueItem(event.getPlayer(), true));
         parseCompatibilityChecker(event.getPlayer());
         parseUpdateChecker(event.getPlayer());
