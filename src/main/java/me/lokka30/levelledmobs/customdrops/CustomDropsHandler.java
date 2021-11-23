@@ -154,7 +154,6 @@ public class CustomDropsHandler {
         info.prioritizedDrops = new HashMap<>();
         info.hasOverride = false;
         boolean usesGroupIds = false;
-        final String customDropId = null;
 
         final boolean overrideNonDropTableDrops = info.dropRules != null && info.dropRules.override;
         final String[] useIds = getDropIds(info);
@@ -493,8 +492,6 @@ public class CustomDropsHandler {
 
             if (meta != null && dropItem.lore != null && !dropItem.lore.isEmpty()){
                 final List<String> newLore = new ArrayList<>(dropItem.lore.size());
-                final String mobLvl = info.lmEntity.isLevelled() ?
-                        String.valueOf(info.lmEntity.getMobLevel()) : "0";
                 for (final String lore : dropItem.lore){
                     newLore.add(main.levelManager.updateNametag(info.lmEntity, lore, false));
 
@@ -612,7 +609,6 @@ public class CustomDropsHandler {
             // check if the variable result has been cached already and use it if so
             final String variableToUse = Utils.isNullOrEmpty(dropBase.playerLevelVariable) ?
                     "%level%" : dropBase.playerLevelVariable;
-            final int mobLevel = info.lmEntity.getMobLevel();
             final int levelToUse;
             if (info.playerLevelVariableCache.containsKey(variableToUse))
                 levelToUse = info.playerLevelVariableCache.get(variableToUse);
@@ -645,9 +641,7 @@ public class CustomDropsHandler {
     }
 
     private void executeCommand(@NotNull final CustomCommand customCommand, @NotNull final CustomDropProcessingInfo info){
-        int commandCount = 0;
         for (String command : customCommand.commands){
-            commandCount++;
 
             final String playerName = info.wasKilledByPlayer ?
                     Objects.requireNonNull(info.lmEntity.getLivingEntity().getKiller()).getName() :

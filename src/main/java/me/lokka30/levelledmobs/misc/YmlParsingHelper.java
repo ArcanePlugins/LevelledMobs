@@ -48,7 +48,7 @@ public class YmlParsingHelper {
         if (cs == null) return defaultValue;
         final String useName = getKeyNameFromConfig(cs, name);
 
-        return cs.getString(name, defaultValue);
+        return cs.getString(useName, defaultValue);
     }
 
     @NotNull
@@ -83,15 +83,12 @@ public class YmlParsingHelper {
             return defaultValue;
     }
 
-    public double getDouble(final ConfigurationSection cs, @NotNull final String name){
-        return getDouble(cs, name, 0);
-    }
-
-    private double getDouble(final ConfigurationSection cs, @NotNull final String name, final double defaultValue){
-        if (cs == null) return defaultValue;
+    @SuppressWarnings("unused")
+    private double getDouble(final ConfigurationSection cs, @NotNull final String name){
+        if (cs == null) return 0;
         final String useName = getKeyNameFromConfig(cs, name);
 
-        return cs.getDouble(useName, defaultValue);
+        return cs.getDouble(useName, 0);
     }
 
     @Nullable
@@ -203,6 +200,7 @@ public class YmlParsingHelper {
             return (ConfigurationSection) object;
         } else if (object instanceof Map) {
             final MemoryConfiguration result = new MemoryConfiguration();
+            //noinspection unchecked
             result.addDefaults((Map<String, Object>) object);
             return result.getDefaultSection();
         } else {

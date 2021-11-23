@@ -74,7 +74,8 @@ public class DebugCreator {
         }
 
         final File serverInfo = new File(pluginDir, "serverinfo.txt");
-        if (serverInfo.exists()) serverInfo.delete();
+        if (serverInfo.exists()) //noinspection ResultOfMethodCallIgnored
+            serverInfo.delete();
 
         if (result)
             sender.sendMessage("Created file: " + zipFile.getAbsolutePath());

@@ -31,7 +31,6 @@ public class ConfigUtils {
 
     public boolean debugEntityDamageWasEnabled = false;
     public boolean chunkLoadListenerWasEnabled = false;
-    public boolean mythicMobsWasEnabled = false;
     public boolean playerLevellingEnabled = false;
 
     public void load() {

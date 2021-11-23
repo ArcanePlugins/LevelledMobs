@@ -10,7 +10,6 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
-import java.lang.reflect.Field;
 import java.util.List;
 import java.util.UUID;
 
@@ -63,12 +62,6 @@ public class CustomDropItem extends CustomDropBase {
         }
 
         return copy;
-    }
-
-    private static String getContent(@NotNull final Object aClass, final String name) throws NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
-        final Field declaredField = aClass.getClass().getDeclaredField(name);
-        declaredField.setAccessible(true);
-        return (String) declaredField.get(aClass);
     }
 
     boolean setDamageRangeFromString(final String numberOrNumberRange){

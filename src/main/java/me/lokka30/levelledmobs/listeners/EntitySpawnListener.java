@@ -270,7 +270,6 @@ public class EntitySpawnListener implements Listener {
             }
             else {
                 if (lmEntity.reEvaluateLevel && main.configUtils.playerLevellingEnabled) {
-                    final Object syncObj = new Object();
                     final BukkitRunnable runnable = new BukkitRunnable() {
                         @Override
                         public void run() { updateMobForPlayerLevelling(lmEntity); }
@@ -317,15 +316,6 @@ public class EntitySpawnListener implements Listener {
         }
 
         return result;
-    }
-
-    private static boolean areLocationsTheSame(final Location location1, final Location location2){
-        if (location1 == null || location2 == null) return false;
-        if (location1.getWorld() == null || location2.getWorld() == null) return false;
-
-        return  location1.getBlockX() == location2.getBlockX() &&
-                location1.getBlockY() == location2.getBlockY() &&
-                location1.getBlockZ() == location2.getBlockZ();
     }
 
     @NotNull

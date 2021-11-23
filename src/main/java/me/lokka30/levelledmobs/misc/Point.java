@@ -20,6 +20,7 @@ import java.util.Arrays;
  * @see Location
  * @since 3.1.2
  */
+@SuppressWarnings("unused")
 public class Point {
 
     private final String worldName;

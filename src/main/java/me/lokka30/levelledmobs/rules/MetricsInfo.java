@@ -59,16 +59,6 @@ public class MetricsInfo {
     }
 
     @NotNull
-    public String getUsesPlayerLevelling(){
-        final boolean result =
-                (main.rulesParsingManager.defaultRule.playerLevellingOptions != null &&
-                        main.rulesParsingManager.defaultRule.playerLevellingOptions.enabled != null &&
-                        main.rulesParsingManager.defaultRule.playerLevellingOptions.enabled);
-
-        return convertBooleanToString(result);
-    }
-
-    @NotNull
     public String getMaxLevelRange(){
         // 1-10, 11-24, 25-50, 51-100, 101-499, 500+
         final int maxLevel = main.rulesParsingManager.defaultRule.restrictions_MaxLevel == null ?

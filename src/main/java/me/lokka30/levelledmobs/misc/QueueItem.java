@@ -19,13 +19,11 @@ public class QueueItem {
     public QueueItem(final LivingEntityWrapper lmEntity, final Event event){
         this.lmEntity = lmEntity;
         this.event = event;
-        this.isMobProcessQueue = true;
     }
 
     public QueueItem(final LivingEntityWrapper lmEntity, final String nametag, final List<Player> players){
         this.lmEntity = lmEntity;
         this.nametag = nametag;
-        this.isMobProcessQueue = false;
         this.players = players;
     }
 
@@ -33,5 +31,4 @@ public class QueueItem {
     public Event event;
     public List<Player> players;
     public String nametag;
-    private final boolean isMobProcessQueue;
 }

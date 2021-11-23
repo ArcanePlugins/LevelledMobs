@@ -211,7 +211,6 @@ public class KillSubcommand extends MessagesBase implements Subcommand {
         boolean containsNoDrops = false;
         boolean containsLevels = false;
 
-        final StringBuilder sb = new StringBuilder();
         for (final String arg : args) {
             if ("/nodrops".equalsIgnoreCase(arg))
                 containsNoDrops = true;

@@ -46,6 +46,7 @@ public class MobHeadManager {
     public void loadTextures(@NotNull final YamlConfiguration textureData){
         mobMap = new LinkedHashMap<>();
 
+        //noinspection unchecked
         final List<LinkedHashMap<String, Object>> lst = (List<LinkedHashMap<String, Object>>) textureData.getList("Mobs");
         if (lst == null) return;
 
@@ -83,10 +84,9 @@ public class MobHeadManager {
             if (vanillaMaterial != Material.AIR) {
                 final ItemStack newItem = new ItemStack(vanillaMaterial, playerHead.getAmount());
                 final ItemMeta meta = playerHead.getItemMeta();
-                if (meta != null) {
-                    final ItemMeta newMeta = meta.clone();
-                    newItem.setItemMeta(meta);
-                }
+                if (meta != null)
+                    newItem.setItemMeta(meta.clone());
+
                 return newItem;
             }
 
@@ -149,13 +149,8 @@ public class MobHeadManager {
             if (killerPlayer != null)
                 killerName = VersionUtils.isRunningPaper() ?
                         PaperUtils.getPlayerDisplayName(killerPlayer) : SpigotUtils.getPlayerDisplayName(killerPlayer);
-            final boolean useCustomNameForNametags = main.helperSettings.getBoolean(main.settingsCfg, "use-customname-for-mob-nametags");
-            final String overridenName = main.rulesManager.getRule_EntityOverriddenName(lmEntity, useCustomNameForNametags);
-            final String mobName = overridenName == null ?
-                    Utils.capitalize(lmEntity.getTypeName().replace("_", " ")) :
-                    overridenName;
-            useName = main.levelManager.replaceStringPlaceholders(dropItem.customName, lmEntity);
 
+            useName = main.levelManager.replaceStringPlaceholders(dropItem.customName, lmEntity);
             useName = MessageUtils.colorizeAll(useName);
 
             final String displayName = lmEntity.getLivingEntity().getCustomName() == null ?

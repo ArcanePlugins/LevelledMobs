@@ -92,9 +92,7 @@ public class RandomLevellingStrategy implements LevellingStrategy, Cloneable {
         }
 
         count -= numbersUsed.size();
-
-        for (final int number : overallNumberRange)
-            count++;
+        count += overallNumberRange.size();
 
         this.randomArray = new int[count];
         int newCount = 0;

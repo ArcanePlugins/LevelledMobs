@@ -22,6 +22,7 @@ import java.util.HashSet;
  * @author lokka30
  * @since 2.5.0
  */
+@SuppressWarnings("unused")
 public class MobPostLevelEvent extends Event {
 
     private static final HandlerList HANDLERS = new HandlerList();

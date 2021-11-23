@@ -31,6 +31,7 @@ import java.util.*;
  * @author stumper66
  * @since 3.0.0
  */
+@SuppressWarnings("unchecked")
 public class RulesParsingManager {
     public RulesParsingManager(final LevelledMobs main){
         this.main = main;
@@ -61,7 +62,7 @@ public class RulesParsingManager {
         this.main.customMobGroups.clear();
 
         parseCustomMobGroups(objTo_CS(config, "mob-groups"));
-        parseCustomMobGroups(objTo_CS(config, "biome-groups"));
+        parseCustomBiomeGroups(objTo_CS(config, "biome-groups"));
 
         final List<RuleInfo> presets = parsePresets(objTo_CS(config, "presets"));
         for (final RuleInfo ri : presets)
@@ -391,7 +392,7 @@ public class RulesParsingManager {
             if (group.toLowerCase().startsWith("all_")) {
                 try {
                     final CustomUniversalGroups customGroup = CustomUniversalGroups.valueOf(group.toUpperCase());
-                    results.add(group);
+                    results.add(customGroup.toString());
                     continue;
                 } catch (final IllegalArgumentException e) {
                     invalidGroup = true;
@@ -1025,25 +1026,6 @@ public class RulesParsingManager {
         attribs.followRange = ymlHelper.getDouble2(cs, "follow-range", attribs.followRange);
 
         return attribs;
-    }
-
-    private void parseStategiesRandom(final ConfigurationSection cs){
-        if (cs == null) {
-            Utils.logger.info("random was null, " + parsingInfo.getRuleName());
-            return;
-        }
-
-        // if they simply specified 'random:' then we enabled random levelling
-        parsingInfo.useRandomLevelling = true;
-    }
-
-    @NotNull
-    private static List<String> getListOrItemFromConfig(final String name, @NotNull final ConfigurationSection cs){
-        final List<String> result = cs.getStringList(name);
-        if (result.isEmpty() && !Utils.isNullOrEmpty(cs.getString(name)))
-            result.add(cs.getString(name));
-
-        return result;
     }
 
     @Nullable

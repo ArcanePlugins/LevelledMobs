@@ -63,7 +63,6 @@ public class LevelManager implements LevelInterface {
     }
 
     private final LevelledMobs main;
-    private final static int maxLevelNumsCache = 10;
     private final List<Material> vehicleNoMultiplierItems;
     public double attributeMaxHealthMax = 2048.0;
     public double attributeMovementSpeedMax = 2048.0;
@@ -72,7 +71,6 @@ public class LevelManager implements LevelInterface {
     public static final Object summonedOrSpawnEggs_Lock = new Object();
     private boolean hasMentionedNBTAPI_Missing;
     private final Map<String, RandomLevellingStrategy> randomLevellingCache;
-    public final static int maxCreeperBlastRadius = 100;
     public EntitySpawnListener entitySpawnListener;
 
     /**
@@ -89,13 +87,6 @@ public class LevelManager implements LevelInterface {
             "SMALL_FIREBALL", "SNOWBALL", "SPECTRAL_ARROW", "SPLASH_POTION", "THROWN_EXP_BOTTLE",
             "TRIDENT", "UNKNOWN", "WITHER_SKULL"
     ));
-
-    /**
-     * The following entity types must be manually ALLOWED in 'getLevellableState',
-     * as they are not instanceof Monster or Boss
-     * Stored as Strings since older versions may not contain certain entity type constants
-     */
-    public final HashSet<String> OTHER_HOSTILE_MOBS = new HashSet<>(Arrays.asList("GHAST", "HOGLIN", "SHULKER", "PHANTOM", "ENDER_DRAGON", "SLIME", "MAGMA_CUBE", "ZOMBIFIED_PIGLIN"));
 
     public void clearRandomLevellingCache(){
         this.randomLevellingCache.clear();
@@ -185,8 +176,6 @@ public class LevelManager implements LevelInterface {
         int levelSource;
         final String variableToUse = Utils.isNullOrEmpty(options.variable) ? "%level%" : options.variable;
         final double scale = options.playerLevelScale != null ? options.playerLevelScale : 1.0;
-        final boolean usePlayerMax = options.usePlayerMaxLevel != null && options.matchPlayerLevel;
-        final boolean matchPlayerLvl = options.matchPlayerLevel != null && options.matchPlayerLevel;
         final PlayerLevelSourceResult playerLevelSourceResult = getPlayerLevelSourceNumber(lmEntity.getPlayerForLevelling(), variableToUse);
         final double origLevelSource = playerLevelSourceResult.isNumericResult ? playerLevelSourceResult.numericResult : 1;
 
@@ -246,15 +235,18 @@ public class LevelManager implements LevelInterface {
                 results[1] = options.levelCap;
         }
 
+        final String homeName = playerLevelSourceResult.homeNameUsed != null ?
+                String.format(" (%s)", playerLevelSourceResult.homeNameUsed) : "";
+
         if (tierMatched == null) {
             Utils.debugLog(main, DebugType.PLAYER_LEVELLING, String.format(
-                    "mob: %s, player: %s, lvl-src: %s, lvl-scale: %s, %sresult: %s",
-                    lmEntity.getNameIfBaby(), player.getName(), origLevelSource, levelSource, capDisplay, Arrays.toString(results)));
+                    "mob: %s, player: %s, lvl-src: %s%s, lvl-scale: %s, %sresult: %s",
+                    lmEntity.getNameIfBaby(), player.getName(), origLevelSource, homeName, levelSource, capDisplay, Arrays.toString(results)));
         } else {
             if (playerLevelSourceResult.isNumericResult) {
                 Utils.debugLog(main, DebugType.PLAYER_LEVELLING, String.format(
-                        "mob: %s, player: %s, lvl-src: %s, lvl-scale: %s, tier: %s, %sresult: %s",
-                        lmEntity.getNameIfBaby(), player.getName(), origLevelSource, levelSource, tierMatched, capDisplay, Arrays.toString(results)));
+                        "mob: %s, player: %s, lvl-src: %s%s, lvl-scale: %s, tier: %s, %sresult: %s",
+                        lmEntity.getNameIfBaby(), player.getName(), origLevelSource, homeName, levelSource, tierMatched, capDisplay, Arrays.toString(results)));
             }
             else {
                 Utils.debugLog(main, DebugType.PLAYER_LEVELLING, String.format(
@@ -272,17 +264,54 @@ public class LevelManager implements LevelInterface {
         if (player == null) return new PlayerLevelSourceResult(1);
 
         final double origLevelSource;
+        final PlayerLevelSourceResult sourceResult = new PlayerLevelSourceResult(1);
 
-        if (variableToUse.equalsIgnoreCase("%level%"))
+        if ("%level%".equalsIgnoreCase(variableToUse))
             origLevelSource = player.getLevel();
-        else if (variableToUse.equalsIgnoreCase("%exp%"))
+        else if ("%exp%".equalsIgnoreCase(variableToUse))
             origLevelSource = player.getExp();
-        else if (variableToUse.equalsIgnoreCase("%exp-to-level%"))
+        else if ("%exp-to-level%".equalsIgnoreCase(variableToUse))
             origLevelSource = player.getExpToLevel();
-        else if (variableToUse.equalsIgnoreCase("%total-exp%"))
+        else if ("%total-exp%".equalsIgnoreCase(variableToUse))
             origLevelSource = player.getTotalExperience();
-        else if (variableToUse.equalsIgnoreCase("%world_time_ticks%"))
+        else if ("%world_time_ticks%".equalsIgnoreCase(variableToUse))
             origLevelSource = player.getWorld().getTime();
+        else if ("%home_distance%".equalsIgnoreCase(variableToUse) || "%home_distance_with_bed%".equalsIgnoreCase(variableToUse)){
+            final boolean allowBed = "%home_distance_with_bed%".equalsIgnoreCase(variableToUse);
+            final PlayerHomeCheckResult result = ExternalCompatibilityManager.getPlayerHomeLocation(player, allowBed);
+            sourceResult.homeNameUsed = result.homeNameUsed;
+
+            Location useLocation = result.location;
+            if (useLocation == null) {
+                if (result.resultMessage != null)
+                    Utils.debugLog(main, DebugType.PLAYER_LEVELLING, result.resultMessage);
+            }
+            else if (useLocation.getWorld() != player.getWorld()){
+                useLocation = null;
+                Utils.debugLog(main, DebugType.PLAYER_LEVELLING, "player is in a different world from home, using spawn distance");
+            }
+            else if (result.resultMessage != null)
+                Utils.debugLog(main, DebugType.PLAYER_LEVELLING, result.resultMessage);
+
+            if (useLocation == null) {
+                useLocation = player.getWorld().getSpawnLocation();
+                sourceResult.homeNameUsed = "spawn";
+            }
+
+            origLevelSource = useLocation.distance(player.getLocation());
+        }
+        else if ("%bed_distance%".equalsIgnoreCase(variableToUse)){
+            final Location bedLocation = player.getBedSpawnLocation();
+            if (bedLocation != null && bedLocation.getWorld() == player.getWorld()) {
+                origLevelSource = bedLocation.distance(player.getLocation());
+                sourceResult.homeNameUsed = "bed";
+            }
+            else{
+                Utils.debugLog(main, DebugType.PLAYER_LEVELLING, "no bed set for player, using spawn distance");
+                origLevelSource = player.getWorld().getSpawnLocation().distance(player.getLocation());
+                sourceResult.homeNameUsed = "spawn";
+            }
+        }
         else{
             boolean usePlayerLevel = false;
             String PAPIResult = null;
@@ -304,10 +333,11 @@ public class LevelManager implements LevelInterface {
             if (usePlayerLevel)
                 origLevelSource = player.getLevel();
             else
-                origLevelSource = (int) Double.parseDouble(PAPIResult);
+                origLevelSource = Double.parseDouble(PAPIResult);
         }
 
-        return new PlayerLevelSourceResult((int) Math.round(origLevelSource));
+        sourceResult.numericResult = (int) Math.round(origLevelSource);
+        return sourceResult;
     }
 
     public int[] getMinAndMaxLevels(final @NotNull LivingEntityInterface lmInterface) {
@@ -508,11 +538,9 @@ public class LevelManager implements LevelInterface {
 
         if (indicator == null || mobHealth == 0.0) return "";
 
-        final StringBuilder sb = new StringBuilder();
         final int maxIndicators = indicator.maxIndicators != null ? indicator.maxIndicators : 10;
         final String indicatorStr = indicator.indicator != null ? indicator.indicator : "▐";
         final double scale = indicator.scale != null ? indicator.scale : 5.0;
-        final double healthPerTier = scale * maxIndicators;
 
         int indicatorsToUse = scale == 0 ?
                 (int) Math.ceil(mobHealth) : (int) Math.ceil(mobHealth / scale);
@@ -562,7 +590,7 @@ public class LevelManager implements LevelInterface {
     public String replaceStringPlaceholders(final String nametag, @NotNull final LivingEntityWrapper lmEntity){
         String result = nametag;
 
-        final double maxHealth = getMobAttributeValue(lmEntity, Attribute.GENERIC_MAX_HEALTH);
+        final double maxHealth = getMobAttributeValue(lmEntity);
         final double entityHealth = getMobHealth(lmEntity);
         final int entityHealthRounded = entityHealth < 1.0 && entityHealth > 0.0 ?
                 1 : (int) Utils.round(entityHealth);
@@ -718,7 +746,6 @@ public class LevelManager implements LevelInterface {
                         wrapperHasReference = true;
                     }
 
-                    final boolean useResetTimer = false;
                     if (lmEntity.getLivingEntity() == null) continue;
                     final List<NametagVisibilityEnum> nametagVisibilityEnums = main.rulesManager.getRule_CreatureNametagVisbility(lmEntity);
                     final int nametagVisibleTime = lmEntity.getNametagCooldownTime();
@@ -976,10 +1003,10 @@ public class LevelManager implements LevelInterface {
         }
     }
 
-    private double getMobAttributeValue(@NotNull final LivingEntityWrapper lmEntity, final Attribute attribute){
+    private double getMobAttributeValue(@NotNull final LivingEntityWrapper lmEntity){
         double result = 0.0;
         synchronized (main.attributeSyncObject){
-            final AttributeInstance attrib = lmEntity.getLivingEntity().getAttribute(attribute);
+            final AttributeInstance attrib = lmEntity.getLivingEntity().getAttribute(Attribute.GENERIC_MAX_HEALTH);
             if (attrib != null)
                 result = attrib.getValue();
         }
@@ -1131,7 +1158,6 @@ public class LevelManager implements LevelInterface {
             }
             nbtDatas.clear();
         }
-        final int creeperLevel = level;
 
         // setting attributes should be only done in the main thread.
         final BukkitRunnable applyAttribs = new BukkitRunnable() {
@@ -1252,19 +1278,6 @@ public class LevelManager implements LevelInterface {
             return sb.toString();
         else
             return "";
-    }
-
-    private void getPlayersNearMob(final @NotNull LivingEntityWrapper lmEntity){
-        final int checkDistance = main.helperSettings.getInt(main.settingsCfg, "async-task-max-blocks-from-player", 100);
-        final List<Player> players = EntitySpawnListener.getPlayersNearMob(lmEntity.getLivingEntity(), checkDistance);
-
-        for (final Player player : players){
-            if (lmEntity.getLivingEntity().hasLineOfSight(player)){
-                if (lmEntity.playersNeedingNametagCooldownUpdate == null)
-                    lmEntity.playersNeedingNametagCooldownUpdate = new HashSet<>();
-                lmEntity.playersNeedingNametagCooldownUpdate.add(player);
-            }
-        }
     }
 
     /**

@@ -17,6 +17,7 @@ import java.util.TreeSet;
  * @author stumper66
  * @since 3.0.0
  */
+@SuppressWarnings("unchecked")
 public class CachedModalList<T extends Comparable<T>> implements Cloneable {
     public CachedModalList(){
         this.allowedList = new TreeSet<>();
@@ -110,6 +111,7 @@ public class CachedModalList<T extends Comparable<T>> implements Cloneable {
         return sb.toString();
     }
 
+    @SuppressWarnings("unused")
     public boolean isWhitelist(){
         return (!this.allowedList.isEmpty() || !this.allowedGroups.isEmpty()) &&
                 (this.excludedList.isEmpty() && this.excludedGroups.isEmpty());

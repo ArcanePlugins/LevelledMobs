@@ -69,7 +69,6 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
     private Integer mobLevel;
     private int nametagCooldownTime;
     private String sourceSpawnerName;
-    private final static Object lockObj = new Object();
     @NotNull
     private final List<RuleInfo> applicableRules;
     private List<String> spawnedWGRegions;
@@ -454,13 +453,6 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
         synchronized (this.livingEntity.getPersistentDataContainer()) {
             return livingEntity.getPersistentDataContainer().get(main.namespaced_keys.overridenEntityNameKey, PersistentDataType.STRING);
         }
-    }
-
-    @Nullable
-    public List<String> getSpawnedWGRegions(){
-        if (!hasCache) buildCache();
-
-        return this.spawnedWGRegions;
     }
 
     @NotNull

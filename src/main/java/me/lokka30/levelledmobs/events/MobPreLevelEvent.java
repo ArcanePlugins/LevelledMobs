@@ -25,6 +25,7 @@ import java.util.HashSet;
  * @author lokka30
  * @since 2.5.0
  */
+@SuppressWarnings("unused")
 public class MobPreLevelEvent extends Event implements Cancellable {
 
     private static final HandlerList HANDLERS = new HandlerList();

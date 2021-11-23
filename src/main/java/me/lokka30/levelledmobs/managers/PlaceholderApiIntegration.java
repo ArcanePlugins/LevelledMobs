@@ -18,7 +18,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
-import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.UUID;
 
@@ -146,7 +145,6 @@ public class PlaceholderApiIntegration extends PlaceholderExpansion {
     private LivingEntity getMobBeingLookedAt(final @NotNull Player player){
         LivingEntity livingEntity = null;
         final Location eye = player.getEyeLocation();
-        final SortedMap<Double, LivingEntity> entities = new TreeMap<>();
         final int maxBlocks = main.helperSettings.getInt(main.settingsCfg, "nametag-placeholder-maxblocks", 30);
 
         for(final Entity entity : player.getNearbyEntities(maxBlocks, maxBlocks, maxBlocks)){

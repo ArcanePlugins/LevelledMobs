@@ -12,7 +12,6 @@ import me.lokka30.levelledmobs.listeners.*;
 import me.lokka30.levelledmobs.managers.ExternalCompatibilityManager;
 import me.lokka30.levelledmobs.managers.LevelManager;
 import me.lokka30.levelledmobs.managers.PlaceholderApiIntegration;
-import me.lokka30.levelledmobs.managers.WorldGuardIntegration;
 import me.lokka30.levelledmobs.misc.*;
 import me.lokka30.levelledmobs.rules.MetricsInfo;
 import me.lokka30.microlib.exceptions.OutdatedServerVersionException;
@@ -56,21 +55,12 @@ public class Companion {
     public HashSet<EntityType> groups_HostileMobs;
     public HashSet<EntityType> groups_AquaticMobs;
     public HashSet<EntityType> groups_PassiveMobs;
-    public HashSet<EntityType> groups_NetherMobs;
     public List<String> updateResult;
     final public List<UUID> spawner_CopyIds;
     final public List<UUID> spawner_InfoIds;
     final public List<DebugType> debugsEnabled;
     final private PluginManager pluginManager = Bukkit.getPluginManager();
     final private MetricsInfo metricsInfo;
-
-    void checkWorldGuard() {
-        // Hook into WorldGuard
-        // This cannot be moved to onEnable (stated in WorldGuard's documentation). It MUST be ran in onLoad.
-        if (ExternalCompatibilityManager.hasWorldGuardInstalled()) {
-            main.worldGuardIntegration = new WorldGuardIntegration();
-        }
-    }
 
     //Checks if the server version is supported
     public void checkCompatibility() {
@@ -146,7 +136,8 @@ public class Companion {
             for (final String lFile : legacyFile) {
                 final File delFile = new File(main.getDataFolder(), lFile);
                 try {
-                    if (delFile.exists()) delFile.delete();
+                    if (delFile.exists()) //noinspection ResultOfMethodCallIgnored
+                        delFile.delete();
                 } catch (final Exception e) {
                     Utils.logger.warning("Unable to delete file " + lFile + ", " + e.getMessage());
                 }

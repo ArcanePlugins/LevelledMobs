@@ -8,6 +8,7 @@ import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.commands.subcommands.*;
 import me.lokka30.levelledmobs.misc.PaperUtils;
 import me.lokka30.levelledmobs.misc.Utils;
+import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -89,7 +90,6 @@ public class LevelledMobsCommand implements CommandExecutor, TabCompleter {
                         spawnerEggCommand.parseSubcommand(main, sender, label, args);
                         break;
                     default:
-                        sender.sendMessage("player name: " + PaperUtils.getPlayerDisplayName((Player) sender));
                         sendMainUsage(sender, label);
                         break;
                 }

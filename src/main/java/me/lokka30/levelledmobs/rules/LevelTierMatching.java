@@ -74,10 +74,6 @@ public class LevelTierMatching {
         return result;
     }
 
-    public boolean isNumericSource(){
-        return this.sourceTierName == null;
-    }
-
     public String toString(){
         if (!hasLevelRestriction()) {
             if (names != null && !names.isEmpty())

@@ -10,7 +10,6 @@ import me.lokka30.levelledmobs.rules.RulesManager;
 import me.lokka30.microlib.messaging.MessageUtils;
 import me.lokka30.microlib.messaging.MicroLogger;
 import org.bukkit.block.Biome;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -125,14 +124,6 @@ public final class Utils {
         return (str == null || str.isEmpty());
     }
 
-    public static int getDefaultIfNull(@NotNull final YamlConfiguration cfg, @NotNull final String path, final int def) {
-        return cfg.contains(path) ? cfg.getInt(path) : def;
-    }
-
-    public static int getDefaultIfNull(@NotNull final TreeMap<String, Integer> map, @NotNull final String item, final int def) {
-        return map.getOrDefault(item, def);
-    }
-
     @NotNull
     public static final List<String> oneToNine = Arrays.asList("1", "2", "3", "4", "5", "6", "7", "8", "9");
 
@@ -168,17 +159,6 @@ public final class Utils {
 
         if (instance.companion.debugsEnabled.contains(debugType))
             logger.info("&8[&bDebug: " + debugType + "&8]&7 " + msg);
-    }
-
-    /**
-     * If object1 is null, return object2
-     *
-     * @param object1 a nullable object
-     * @param object2 a non-nullable object
-     * @return object2 if object1 is null, otherwise, object1
-     */
-    public static Object getNonNull(@Nullable final Object object1, @NotNull final Object object2) {
-        return object1 == null ? object2 : object1;
     }
 
     /**

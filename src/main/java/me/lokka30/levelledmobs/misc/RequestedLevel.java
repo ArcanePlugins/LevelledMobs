@@ -8,12 +8,6 @@ package me.lokka30.levelledmobs.misc;
  * @since 3.2.0
  */
 public class RequestedLevel {
-    public RequestedLevel(final int level){
-        this.level = level;
-    }
-
-    public RequestedLevel(){}
-
     public int level;
     public int levelRangeMin;
     public int levelRangeMax;

@@ -79,15 +79,15 @@ public class RulesSubcommand extends MessagesBase implements Subcommand {
 
             for (final RuleInfo rpi : main.rulesParsingManager.rulePresets.values()) {
                 sb.append("\n--------------------------------- Preset rule ----------------------------------\n");
-                formatRulesVisually(rpi, Collections.singletonList("ruleIsEnabled"), sb);
+                sb.append(rpi.formatRulesVisually(List.of("ruleIsEnabled")));
             }
 
             sb.append("\n--------------------------------- Default values -------------------------------\n");
-            formatRulesVisually(main.rulesParsingManager.defaultRule, null, sb);
+            sb.append(main.rulesParsingManager.defaultRule.formatRulesVisually());
 
             for (final RuleInfo rpi : main.rulesParsingManager.customRules) {
                 sb.append("\n--------------------------------- Custom rule ----------------------------------\n");
-                formatRulesVisually(rpi, null, sb);
+                sb.append(rpi.formatRulesVisually());
             }
             sb.append("\n--------------------------------------------------------------------------------------");
 
@@ -153,8 +153,6 @@ public class RulesSubcommand extends MessagesBase implements Subcommand {
     }
 
     private void resetRules(final CommandSender sender, @NotNull final String @NotNull [] args){
-        final String prefix = main.configUtils.getPrefix();
-
         if (args.length < 3 || args.length > 4){
             showMessage("command.levelledmobs.rules.reset");
             return;
@@ -253,7 +251,6 @@ public class RulesSubcommand extends MessagesBase implements Subcommand {
         for (final RuleInfo ruleInfo : main.rulesParsingManager.getAllRules())
             allRuleNames.put(ruleInfo.getRuleName().replace(" ", "_"), ruleInfo);
 
-        final String lastArg = args[args.length - 1];
         String badRuleName = null;
 
         for (int i = 2; i < args.length; i++){
@@ -282,11 +279,10 @@ public class RulesSubcommand extends MessagesBase implements Subcommand {
         final RuleInfo rule = allRuleNames.get(foundRule);
 
         final StringBuilder sb = new StringBuilder();
-        final String message = getMessage("command.levelledmobs.rules.showing-rules");
         sb.append(getMessage("command.levelledmobs.rules.showing-rules", "%rulename%", rule.getRuleName()));
         sb.append("\n");
 
-        formatRulesVisually(rule, List.of("id"), sb);
+        sb.append(rule.formatRulesVisually(List.of("id")));
         if (showOnConsole)
             Utils.logger.info(sb.toString());
         else
@@ -376,51 +372,6 @@ public class RulesSubcommand extends MessagesBase implements Subcommand {
         };
 
         runnable.runTaskAsynchronously(main);
-    }
-
-
-    private void formatRulesVisually(@NotNull final RuleInfo pi, final List<String> excludedKeys, final StringBuilder sb){
-        final SortedMap<String, String> values = new TreeMap<>();
-
-        if (excludedKeys == null || !excludedKeys.contains("id")) {
-            sb.append("id: ");
-            sb.append(pi.getRuleName());
-            sb.append("\n");
-        }
-
-        try {
-            for(final Field f : pi.getClass().getDeclaredFields()) {
-                if (!Modifier.isPublic(f.getModifiers())) continue;
-                if (f.get(pi) == null) continue;
-                if (f.getName().equals("ruleSourceNames")) continue;
-                if (excludedKeys != null && excludedKeys.contains(f.getName())) continue;
-                final Object value = f.get(pi);
-                if (value.toString().equalsIgnoreCase("NOT_SPECIFIED")) continue;
-                if (value.toString().equalsIgnoreCase("{}")) continue;
-                if (value.toString().equalsIgnoreCase("[]")) continue;
-                if (value.toString().equalsIgnoreCase("0") &&
-                        f.getName().equals("rulePriority")) continue;
-                if (value.toString().equalsIgnoreCase("0.0")) continue;
-                if (value.toString().equalsIgnoreCase("false") &&
-                        !f.getName().equals("ruleIsEnabled")) continue;
-                if (value.toString().equalsIgnoreCase("NONE")) continue;
-                if (value instanceof CachedModalList<?>) {
-                    final CachedModalList<?> cml = (CachedModalList<?>) value;
-                    if (cml.isEmpty() && !cml.allowAll && !cml.excludeAll) continue;
-                }
-                final String showValue = "&b" + f.getName() + "&r, value: &b" + value + "&r";
-                values.put(f.getName(), showValue);
-            }
-        } catch (final Exception e) {
-            e.printStackTrace();
-        }
-
-        for (final String s : values.values()){
-            sb.append(MessageUtils.colorizeAll(s));
-            sb.append("\n");
-        }
-
-        sb.setLength(sb.length() - 1); // remove trailing newline
     }
 
     private void showEffectiveValues(final CommandSender sender, final @NotNull LivingEntityWrapper lmEntity, final boolean showOnConsole, final StringBuilder sb){
@@ -518,8 +469,6 @@ public class RulesSubcommand extends MessagesBase implements Subcommand {
                 final Set<String> allRuleNames = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
                 for (final RuleInfo ruleInfo : main.rulesParsingManager.getAllRules())
                     allRuleNames.add(ruleInfo.getRuleName().replace(" ", "_"));
-
-                final String lastArg = args[args.length - 1];
 
                 for (int i = 2; i < args.length; i++) {
                     final String arg = args[i].toLowerCase();

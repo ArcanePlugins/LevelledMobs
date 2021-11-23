@@ -107,7 +107,7 @@ public class NametagQueueManager {
     private void processItem(final @NotNull QueueItem item){
         final int nametagTimerResetTime = item.lmEntity.getNametagCooldownTime();
 
-        if (nametagTimerResetTime > 0 && !"".equals(item.nametag)) {
+        if (nametagTimerResetTime > 0 && !Utils.isNullOrEmpty(item.nametag)) {
             synchronized (NametagTimerChecker.nametagTimer_Lock) {
                 final Map<Player, WeakHashMap<LivingEntity, Instant>> nametagCooldownQueue = main.nametagTimerChecker.getNametagCooldownQueue();
 

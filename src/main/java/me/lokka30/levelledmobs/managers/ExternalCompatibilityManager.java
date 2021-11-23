@@ -8,7 +8,9 @@ import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.LivingEntityInterface;
 import me.lokka30.levelledmobs.misc.LevellableState;
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
+import me.lokka30.levelledmobs.misc.PlayerHomeCheckResult;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -65,14 +67,6 @@ public class ExternalCompatibilityManager {
     private static NamespacedKey ecoBossesKey = null;
 
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
-    public static boolean isExternalCompatibilityEnabled(final ExternalCompatibility externalCompatibility, @NotNull final LivingEntityWrapper lmEntity) {
-        if (lmEntity.getApplicableRules().isEmpty())
-            return false;
-
-        final Map<ExternalCompatibility, Boolean> list = lmEntity.getMainInstance().rulesManager.getRule_ExternalCompatibility(lmEntity);
-        return isExternalCompatibilityEnabled(externalCompatibility, list);
-    }
-
     private static boolean isExternalCompatibilityEnabled(final ExternalCompatibility externalCompatibility, final @NotNull Map<ExternalCompatibility, Boolean> list) {
         // if not defined default to true
         return  (!list.containsKey(externalCompatibility) || list.get(externalCompatibility) != null && list.get(externalCompatibility));
@@ -84,13 +78,10 @@ public class ExternalCompatibilityManager {
         return Bukkit.getPluginManager().getPlugin("NBTAPI") != null;
     }
 
-    public static boolean hasMCMMO_CoreInsatlled(){
-        return Bukkit.getPluginManager().getPlugin("MMOCore") != null;
-    }
-
     @NotNull
     static String getPAPI_Placeholder(final Player player, final String placeholder){
         return me.clip.placeholderapi.PlaceholderAPI.setPlaceholders(player, placeholder);
+
     }
 
     public static boolean hasProtocolLibInstalled() {
@@ -99,10 +90,6 @@ public class ExternalCompatibilityManager {
 
     public static boolean hasMythicMobsInstalled() {
         return Bukkit.getPluginManager().getPlugin("MythicMobs") != null;
-    }
-
-    public static boolean hasSimplePetsInstalled() {
-        return Bukkit.getPluginManager().getPlugin("SimplePets") != null;
     }
 
     public static boolean hasWorldGuardInstalled() {
@@ -342,5 +329,28 @@ public class ExternalCompatibilityManager {
         if (!ExternalCompatibilityManager.hasWorldGuardInstalled()) return null;
 
         return WorldGuardIntegration.getWorldGuardRegionsForLocation(lmInterface);
+    }
+
+    @NotNull
+    public static PlayerHomeCheckResult getPlayerHomeLocation(final @NotNull Player player, final boolean allowBed){
+        final Plugin plugin = Bukkit.getPluginManager().getPlugin("essentials");
+        if (plugin == null)
+            return new PlayerHomeCheckResult("Unable to get player home, Essentials is not installed", null);
+
+        if (allowBed) {
+            final Location bedLocation = player.getBedSpawnLocation();
+            if (bedLocation != null)
+                return new PlayerHomeCheckResult(null, bedLocation, "bed");
+        }
+
+        final com.earth2me.essentials.Essentials essentials = (com.earth2me.essentials.Essentials) plugin;
+        final com.earth2me.essentials.User user = essentials.getUser(player);
+        if (user == null)
+            return new PlayerHomeCheckResult("Unable to locate player information in essentials");
+
+        if (user.getHomes() == null || user.getHomes().isEmpty())
+            return new PlayerHomeCheckResult("Player has no homes set, using spawn location", player.getWorld().getSpawnLocation());
+
+        return new PlayerHomeCheckResult(null, user.getHome(user.getHomes().get(0)), user.getHomes().get(0));
     }
 }

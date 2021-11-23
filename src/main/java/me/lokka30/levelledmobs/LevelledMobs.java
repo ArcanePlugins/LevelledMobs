@@ -38,7 +38,6 @@ public final class LevelledMobs extends JavaPlugin {
     public LevelInterface levelInterface;
     public LevelManager levelManager;
     public final MobDataManager mobDataManager = new MobDataManager(this);
-    WorldGuardIntegration worldGuardIntegration;
     public CustomDropsHandler customDropsHandler;
     ChunkLoadListener chunkLoadListener;
     BlockPlaceListener blockPlaceListener;
@@ -76,17 +75,8 @@ public final class LevelledMobs extends JavaPlugin {
     public Stack<LivingEntityWrapper> cacheCheck;
 
     @Override
-    public void onLoad() {
-        Utils.logger.info("&f~ Initiating start-up procedure ~");
-        final QuickTimer timer = new QuickTimer(); // Record how long it takes for the plugin to load.
-
-        companion.checkWorldGuard(); // Do not move this from onLoad. It will not work otherwise.
-
-        loadTime = timer.getTimer(); // combine the load time with enable time.
-    }
-
-    @Override
     public void onEnable() {
+        Utils.logger.info("&f~ Initiating start-up procedure ~");
         final QuickTimer timer = new QuickTimer();
 
         this.namespaced_keys = new Namespaced_Keys(this);

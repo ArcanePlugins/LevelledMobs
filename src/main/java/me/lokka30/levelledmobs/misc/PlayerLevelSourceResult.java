@@ -20,4 +20,5 @@ public class PlayerLevelSourceResult {
     public int numericResult;
     public String stringResult;
     public final boolean isNumericResult;
+    public String homeNameUsed;
 }

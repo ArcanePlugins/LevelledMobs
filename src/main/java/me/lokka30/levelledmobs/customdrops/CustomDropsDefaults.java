@@ -6,7 +6,6 @@ package me.lokka30.levelledmobs.customdrops;
 
 import me.lokka30.levelledmobs.misc.CachedModalList;
 import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.inventory.ItemFlag;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.LinkedList;
@@ -76,8 +75,6 @@ class CustomDropsDefaults {
         this.noSpawner = drop.noSpawner;
         this.playerCausedOnly = drop.playerCausedOnly;
         this.groupId = drop.groupId;
-        final String nbtData = drop.nbtData;
-        final List<ItemFlag> itemFlags = drop.itemFlags;
         this.minPlayerLevel = drop.minPlayerLevel;
         this.maxPlayerLevel = drop.maxPlayerLevel;
         this.playerLevelVariable = drop.playerLevelVariable;

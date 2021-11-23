@@ -16,3 +16,4 @@ LevelledMobs.iml
 .project
 /.settings
 /.idea/
+.idea/jarRepositories.xml

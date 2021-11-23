@@ -29,12 +29,10 @@ public class RulesManager {
     public RulesManager(final LevelledMobs main) {
         this.main = main;
         this.rulesInEffect = new TreeMap<>();
-        this.levelNumbersWithBiasMapCache = new TreeMap<>();
         this.biomeGroupMappings = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
     }
 
     private final LevelledMobs main;
-    private final Map<String, LevelNumbersWithBias> levelNumbersWithBiasMapCache;
     @NotNull
     public final SortedMap<Integer, List<RuleInfo>> rulesInEffect;
     @NotNull
@@ -82,25 +80,6 @@ public class RulesManager {
         }
 
         return result;
-    }
-
-    @Nullable
-    public LevelNumbersWithBias getRule_LowerMobLevelBiasFactor(@NotNull final LivingEntityWrapper lmEntity, final int minLevel, final int maxLevel){
-        Integer lowerMobLevelBiasFactor = null;
-
-        for (final RuleInfo ruleInfo : lmEntity.getApplicableRules()){
-            if (ruleInfo.lowerMobLevelBiasFactor != null) lowerMobLevelBiasFactor = ruleInfo.lowerMobLevelBiasFactor;
-        }
-
-        if (lowerMobLevelBiasFactor == null) return null;
-
-        final String checkName = String.format("%s-%s-%s", minLevel, maxLevel, lowerMobLevelBiasFactor);
-        if (this.levelNumbersWithBiasMapCache.containsKey(checkName))
-            return this.levelNumbersWithBiasMapCache.get(checkName);
-
-        final LevelNumbersWithBias levelNumbersWithBias = new LevelNumbersWithBias(minLevel, maxLevel, lowerMobLevelBiasFactor);
-        this.levelNumbersWithBiasMapCache.put(checkName, levelNumbersWithBias);
-        return levelNumbersWithBias;
     }
 
     public int getRule_MaxRandomVariance(@NotNull final LivingEntityWrapper lmEntity){
@@ -201,24 +180,6 @@ public class RulesManager {
         }
 
         return result;
-    }
-
-    public boolean isMythicMobsCompatibilityEnabled(){
-        for (final List<RuleInfo> rules : this.rulesInEffect.values()){
-            if (rules == null) continue;
-
-            for (final RuleInfo ruleInfo : rules){
-                if (ruleInfo.ruleIsEnabled &&
-                        ruleInfo.enabledExtCompats != null &&
-                        ruleInfo.enabledExtCompats.containsKey(ExternalCompatibilityManager.ExternalCompatibility.MYTHIC_MOBS) &&
-                        ruleInfo.enabledExtCompats.get(ExternalCompatibilityManager.ExternalCompatibility.MYTHIC_MOBS)
-                ){
-                    return true;
-                }
-            }
-        }
-
-        return false;
     }
 
     public boolean isPlayerLevellingEnabled(){

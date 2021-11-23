@@ -49,10 +49,8 @@ class CustomDropProcessingInfo {
     boolean doNotMultiplyDrops;
     boolean hasOverride;
     boolean hasCustomDropId;
-    public boolean madeOverallChance;
     boolean hasEquippedItems;
     public String customDropId;
-    public String playerLevelVariable;
     List<ItemStack> newDrops;
     @Nonnull
     final Map<String, Integer> groupIDsDroppedAlready;

@@ -37,6 +37,11 @@
       <option name="url" value="https://maven.enginehub.org/repo/" />
     </remote-repository>
     <remote-repository>
+      <option name="id" value="essentials-releases" />
+      <option name="name" value="essentials-releases" />
+      <option name="url" value="https://repo.essentialsx.net/releases/" />
+    </remote-repository>
+    <remote-repository>
       <option name="id" value="spigotmc-repo" />
       <option name="name" value="spigotmc-repo" />
       <option name="url" value="https://hub.spigotmc.org/nexus/content/groups/public/" />
@@ -45,6 +50,11 @@
       <option name="id" value="bs-repo" />
       <option name="name" value="bs-repo" />
       <option name="url" value="https://ci.pluginwiki.us/plugin/repository/everything/" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="essentialsx" />
+      <option name="name" value="essentialsx" />
+      <option name="url" value="https://repo.essentialsx.net/releases/" />
     </remote-repository>
     <remote-repository>
       <option name="id" value="jboss.community" />

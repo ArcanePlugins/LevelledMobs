@@ -4,6 +4,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
+@SuppressWarnings("unused")
 public class MergeableStringList {
     MergeableStringList() {}
 

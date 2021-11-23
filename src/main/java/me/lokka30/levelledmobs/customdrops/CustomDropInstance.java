@@ -53,10 +53,6 @@ class CustomDropInstance {
     boolean utilizesGroupIds;
     final boolean isBabyMob;
 
-    public boolean getIsGroup() {
-        return this.entityGroup != null;
-    }
-
     void combineDrop(final CustomDropInstance dropInstance){
         if (dropInstance == null) throw new NullPointerException("dropInstance");
 

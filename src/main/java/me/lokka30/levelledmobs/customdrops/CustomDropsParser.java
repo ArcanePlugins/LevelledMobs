@@ -34,6 +34,7 @@ import java.util.*;
  * @author stumper66
  * @since 3.0.0
  */
+@SuppressWarnings("unchecked")
 public class CustomDropsParser {
 
     CustomDropsParser(final LevelledMobs main, final CustomDropsHandler handler){
@@ -96,7 +97,6 @@ public class CustomDropsParser {
         if (config == null) return;
 
         handler.customItemGroups = new TreeMap<>();
-        final String configKey = ymlHelper.getKeyNameFromConfig(config, "defaults");
         processDefaults(objectToConfigurationSection2(config, "defaults"));
 
         final String dropTableKey = ymlHelper.getKeyNameFromConfig(config, "drop-table");
@@ -851,7 +851,6 @@ public class CustomDropsParser {
         final ItemMeta meta = item.getItemStack().getItemMeta();
         final StringBuilder sb2 = new StringBuilder();
         if (meta != null) {
-            final boolean isFirst = true;
             for (final Enchantment enchant : meta.getEnchants().keySet()) {
                 if (sb2.length() > 0) sb.append(", ");
                 sb2.append(String.format("&b%s&r (%s)", enchant.getKey().getKey(), item.getItemStack().getItemMeta().getEnchants().get(enchant)));

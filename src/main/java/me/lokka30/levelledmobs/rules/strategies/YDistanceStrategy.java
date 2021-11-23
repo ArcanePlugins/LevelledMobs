@@ -52,7 +52,6 @@ public class YDistanceStrategy implements LevellingStrategy, Cloneable {
         final double diff = yEnd - yStart;
 
         if (yPeriod > 0) {
-            final double percent = (mobYLocation - yStart) / diff;
             final double lvlPerPeriod = (maxLevel - minLevel) / (diff / yPeriod);
             useLevel = (int) Math.floor(minLevel + (lvlPerPeriod * (mobYLocation - yStart) / yPeriod));
         } else {

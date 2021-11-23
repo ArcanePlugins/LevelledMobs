@@ -19,6 +19,7 @@ import org.jetbrains.annotations.NotNull;
  * @author lokka30
  * @since 2.5.0
  */
+@SuppressWarnings("unused")
 public class SummonedMobPreLevelEvent extends Event implements Cancellable {
 
     private static final HandlerList HANDLERS = new HandlerList();

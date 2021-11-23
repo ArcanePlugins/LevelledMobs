@@ -7,6 +7,7 @@ package me.lokka30.levelledmobs.rules;
 import me.lokka30.levelledmobs.managers.ExternalCompatibilityManager;
 import me.lokka30.levelledmobs.misc.CachedModalList;
 import me.lokka30.levelledmobs.rules.strategies.LevellingStrategy;
+import me.lokka30.microlib.messaging.MessageUtils;
 import org.bukkit.block.Biome;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -15,6 +16,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedMap;
 import java.util.TreeMap;
 
 /**
@@ -105,19 +107,20 @@ public class RuleInfo {
     }
 
     // this is only used for presets
+    @SuppressWarnings("unchecked")
     void mergePresetRules(final RuleInfo preset){
         if (preset == null) return;
 
         try {
             for (final Field f : preset.getClass().getDeclaredFields()) {
-                if (!Modifier.isPublic(f.getModifiers())) continue;
+                if (Modifier.isPrivate(f.getModifiers())) continue;
                 if (f.isAnnotationPresent(DoNotMerge.class)) continue;
                 if (f.get(preset) == null) continue;
 
                 boolean skipSettingValue = false;
                 final Object presetValue = f.get(preset);
 
-                if (f.getName().equals("entityNameOverrides") && this.entityNameOverrides != null) {
+                if (f.getName().equals("entityNameOverrides") && this.entityNameOverrides != null && presetValue instanceof Map) {
                     this.entityNameOverrides.putAll((Map<String, LevelTierMatching>) presetValue);
                     skipSettingValue = true;
                 } else if (f.getName().equals("entityNameOverrides_Level") && this.entityNameOverrides_Level != null) {
@@ -196,6 +199,57 @@ public class RuleInfo {
         } catch (final IllegalAccessException | NoSuchFieldException e) {
             e.printStackTrace();
         }
+    }
+
+    @NotNull
+    public String formatRulesVisually(){
+        return formatRulesVisually(null);
+    }
+    @NotNull
+    public String formatRulesVisually(final List<String> excludedKeys){
+        final SortedMap<String, String> values = new TreeMap<>();
+        final StringBuilder sb = new StringBuilder();
+
+        if (excludedKeys == null || !excludedKeys.contains("id")) {
+            sb.append("id: ");
+            sb.append(getRuleName());
+            sb.append("\n");
+        }
+
+        try {
+            for(final Field f : this.getClass().getDeclaredFields()) {
+                if (Modifier.isPrivate(f.getModifiers())) continue;
+                if (f.get(this) == null) continue;
+                if (f.getName().equals("ruleSourceNames")) continue;
+                if (excludedKeys != null && excludedKeys.contains(f.getName())) continue;
+                final Object value = f.get(this);
+                if (value.toString().equalsIgnoreCase("NOT_SPECIFIED")) continue;
+                if (value.toString().equalsIgnoreCase("{}")) continue;
+                if (value.toString().equalsIgnoreCase("[]")) continue;
+                if (value.toString().equalsIgnoreCase("0") &&
+                        f.getName().equals("rulePriority")) continue;
+                if (value.toString().equalsIgnoreCase("0.0")) continue;
+                if (value.toString().equalsIgnoreCase("false") &&
+                        !f.getName().equals("ruleIsEnabled")) continue;
+                if (value.toString().equalsIgnoreCase("NONE")) continue;
+                if (value instanceof CachedModalList<?>) {
+                    final CachedModalList<?> cml = (CachedModalList<?>) value;
+                    if (cml.isEmpty() && !cml.allowAll && !cml.excludeAll) continue;
+                }
+                final String showValue = "&b" + f.getName() + "&r, value: &b" + value + "&r";
+                values.put(f.getName(), showValue);
+            }
+        } catch (final Exception e) {
+            e.printStackTrace();
+        }
+
+        for (final String s : values.values()){
+            sb.append(MessageUtils.colorizeAll(s));
+            sb.append("\n");
+        }
+
+        sb.setLength(sb.length() - 1); // remove trailing newline
+        return sb.toString();
     }
 }
 

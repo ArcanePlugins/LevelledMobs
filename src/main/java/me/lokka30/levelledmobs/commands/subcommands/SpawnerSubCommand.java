@@ -86,19 +86,19 @@ public class SpawnerSubCommand extends SpawnerBaseClass implements Subcommand{
 
         switch (args[1].toLowerCase()){
             case "create":
-                parseCreateCommand(sender, label, args);
+                parseCreateCommand(args);
                 break;
             case "copy":
-                parseCopyCommand(sender, label, args);
+                parseCopyCommand(args);
                 break;
             case "info":
-                parseInfoCommand(sender, label, args);
+                parseInfoCommand(args);
                 break;
         }
     }
 
-    private void parseInfoCommand(@NotNull final CommandSender sender, final String label, final String @NotNull [] args){
-        final UUID playerId = ((Player) sender).getUniqueId();
+    private void parseInfoCommand(final String @NotNull [] args){
+        final UUID playerId = ((Player) commandSender).getUniqueId();
 
         if (args.length == 2){
             showMessage(main.companion.spawner_InfoIds.contains(playerId) ?
@@ -119,13 +119,13 @@ public class SpawnerSubCommand extends SpawnerBaseClass implements Subcommand{
             infoGotDisabled(playerId);
     }
 
-    private void parseCopyCommand(@NotNull final CommandSender sender, final String label, final String[] args){
-        if (!sender.hasPermission("levelledmobs.command.spawner.copy")) {
-            main.configUtils.sendNoPermissionMsg(sender);
+    private void parseCopyCommand(final String[] args){
+        if (!commandSender.hasPermission("levelledmobs.command.spawner.copy")) {
+            main.configUtils.sendNoPermissionMsg(commandSender);
             return;
         }
 
-        final UUID playerId = ((Player) sender).getUniqueId();
+        final UUID playerId = ((Player) commandSender).getUniqueId();
 
         if (args.length == 2){
             showMessage(main.companion.spawner_CopyIds.contains(playerId) ?
@@ -156,12 +156,12 @@ public class SpawnerSubCommand extends SpawnerBaseClass implements Subcommand{
         showMessage("command.levelledmobs.spawner.info.disabled");
     }
 
-    private void parseCreateCommand(@NotNull final CommandSender sender, final String label, final String[] args){
+    private void parseCreateCommand(final String[] args){
         hadInvalidArg = false;
 
-        final CustomSpawnerInfo info = new CustomSpawnerInfo(main, label);
-        if (sender instanceof Player)
-            info.player = (Player) sender;
+        final CustomSpawnerInfo info = new CustomSpawnerInfo(main, messageLabel);
+        if (commandSender instanceof Player)
+            info.player = (Player) commandSender;
 
         // arguments with no values go here:
         for (int i = 1; i < args.length; i++) {
@@ -188,7 +188,7 @@ public class SpawnerSubCommand extends SpawnerBaseClass implements Subcommand{
                         info.spawnType = EntityType.valueOf(foundValue.toUpperCase());
                     }
                     catch (final Exception ignored){
-                        sender.sendMessage("Invalid spawn type: " + foundValue);
+                        commandSender.sendMessage("Invalid spawn type: " + foundValue);
                         return;
                     }
                     break;

@@ -103,6 +103,7 @@ public class CustomDropBase implements Cloneable {
         try {
             copy = (CustomDropBase) super.clone();
             if (this.causeOfDeathReqs != null)
+                //noinspection unchecked
                 copy.causeOfDeathReqs = (CachedModalList<EntityDamageEvent.DamageCause>) this.causeOfDeathReqs.clone();
         } catch (final Exception e) {
             e.printStackTrace();

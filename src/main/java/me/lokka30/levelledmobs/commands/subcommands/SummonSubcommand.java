@@ -78,10 +78,10 @@ public class SummonSubcommand extends MessagesBase implements Subcommand {
         final String[] useArgs2 = new String[useArgs.size()];
         useArgs.toArray(useArgs2);
 
-        parseSubcommand2(main, useArgs2, useOverride, nbtData);
+        parseSubcommand2(useArgs2, useOverride, nbtData);
     }
 
-    private void parseSubcommand2(final LevelledMobs main, final String @NotNull [] args, final boolean override, final String nbtData) {
+    private void parseSubcommand2(final String @NotNull [] args, final boolean override, final String nbtData) {
         if (args.length < 4) {
             showMessage("command.levelledmobs.summon.usage");
             return;
@@ -428,7 +428,6 @@ public class SummonSubcommand extends MessagesBase implements Subcommand {
             final int distFromPlayer = main.settingsCfg.getInt("summon-command-spawn-distance-from-player", 5);
             if (distFromPlayer > 0 && target != null) {
                 int useDistFromPlayer = distFromPlayer;
-                final double direction = target.getEyeLocation().getYaw();
                 final Location origLocation = location;
                 // try up to 50 times to find a open spot to spawn the mob.  Keep getting closer to the player if needed
                 for (int i = 0; i < 50; i++) {
@@ -441,7 +440,6 @@ public class SummonSubcommand extends MessagesBase implements Subcommand {
                         break; // found an open spot
                 }
             } else if (target == null && sender instanceof BlockCommandSender) {
-                final BlockCommandSender bcs = (BlockCommandSender) sender;
                 // increase the y by one so they don't spawn inside the command block
                 location = new Location(location.getWorld(), location.getBlockX(), location.getBlockY() + 1, location.getBlockZ());
             }

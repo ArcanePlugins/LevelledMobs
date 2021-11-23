@@ -24,8 +24,4 @@ public class ApplicableRulesResult {
     public final List<RuleInfo> allApplicableRules_MadeChance;
     @NotNull
     public final List<RuleInfo> allApplicableRules_DidNotMakeChance;
-
-    public boolean hasChanceRules(){
-        return (!this.allApplicableRules_MadeChance.isEmpty() || this.allApplicableRules_DidNotMakeChance.isEmpty());
-    }
 }

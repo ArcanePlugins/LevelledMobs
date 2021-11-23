@@ -42,7 +42,6 @@ public class VersionInfo implements Comparable<VersionInfo> {
         if (o == this) return true;
         if (!(o instanceof VersionInfo)) return false;
 
-        final VersionInfo otherVersion = (VersionInfo) o;
         return this.versionStr.equals(((VersionInfo) o).getVersion());
     }
 
