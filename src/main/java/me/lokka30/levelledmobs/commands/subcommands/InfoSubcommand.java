@@ -41,7 +41,7 @@ public class InfoSubcommand extends MessagesBase implements Subcommand {
             assert description != null;
             final List<String> supportedVersions = Utils.getSupportedServerVersions();
             final List<String> codeContributors = List.of("stumper66", "Eyrian", "iCodinqs", "deiphiz", "CoolBoy", "Esophose",
-                    "7smile7", "UltimaOath", "konsolas", "Shevchik", "Hugo5551", "limzikiki", "bStats Project", "SpigotMC Project");
+                    "7smile7", "UltimaOath", "konsolas", "Shevchik", "Hugo5551", "limzikiki", "bStats Project", "SpigotMC Project", "ProfliX");
             final String listSeparator = Objects.requireNonNull(main.messagesCfg.getString("command.levelledmobs.info.listSeparator"), "messages.yml: command.levelledmobs.info.listSeparator is undefined");
 
             showMessage("command.levelledmobs.info.about",
