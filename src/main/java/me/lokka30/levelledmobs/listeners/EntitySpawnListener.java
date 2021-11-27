@@ -268,8 +268,12 @@ public class EntitySpawnListener implements Listener {
                 final Object syncObj = new Object();
                 final BukkitRunnable runnable = new BukkitRunnable() {
                     @Override
-                    public void run() { updateMobForPlayerLevelling(lmEntity); }
+                    public void run() {
+                        updateMobForPlayerLevelling(lmEntity);
+                        lmEntity.free();
+                    }
                 };
+                lmEntity.inUseCount.getAndIncrement();
                 runnable.runTask(main);
             }
 

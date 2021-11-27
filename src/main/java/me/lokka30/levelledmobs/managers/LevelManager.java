@@ -196,10 +196,10 @@ public class LevelManager implements LevelInterface {
         String tierMatched = null;
         final String capDisplay = options.levelCap == null ? "" : "cap: " + options.levelCap + ", ";
 
-        if (options.usePlayerMaxLevel) {
+        if (usePlayerMax) {
             results[0] = levelSource;
             results[1] = results[0];
-        } else if (options.matchPlayerLevel) {
+        } else if (matchPlayerLvl) {
             results[1] = levelSource;
         } else {
             boolean foundMatch = false;
