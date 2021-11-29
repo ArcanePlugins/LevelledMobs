@@ -133,5 +133,7 @@ public enum DebugType {
 
     ATTRIBUTE_MULTIPLIERS,
 
-    CUSTOM_DROPS
+    CUSTOM_DROPS,
+
+    THREAD_LOCKS
 }

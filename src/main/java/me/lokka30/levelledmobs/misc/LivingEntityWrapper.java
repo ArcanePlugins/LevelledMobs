@@ -37,9 +37,9 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
         this.applicableGroups = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
         this.applicableRules = new LinkedList<>();
         this.mobExternalTypes = new LinkedList<>();
-        this.spawnReason = LevelledMobSpawnReason.DEFAULT;
         this.deathCause = EntityDamageEvent.DamageCause.CUSTOM;
         this.cacheLock = new ReentrantLock(true);
+        this.pdcLock = new ReentrantLock(true);
     }
 
     @Deprecated(since = "3.2.0")
@@ -52,9 +52,9 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
         this.applicableGroups = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
         this.applicableRules = new LinkedList<>();
         this.mobExternalTypes = new LinkedList<>();
-        this.spawnReason = LevelledMobSpawnReason.DEFAULT;
         this.deathCause = EntityDamageEvent.DamageCause.CUSTOM;
         this.cacheLock = new ReentrantLock(true);
+        this.pdcLock = new ReentrantLock(true);
 
         setLivingEntity(livingEntity);
     }
@@ -79,9 +79,11 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
     private Player playerForLevelling;
     private Map<String, Boolean> prevChanceRuleResults;
     private final ReentrantLock cacheLock;
+    private final ReentrantLock pdcLock;
     private final static Object playerLock = new Object();
     private final static Object cachedLM_Wrappers_Lock = new Object();
     private final static Stack<LivingEntityWrapper> cache = new Stack<>();
+    private final static int lockMaxRetryTimes = 3;
     // publics:
     public boolean reEvaluateLevel;
     public boolean wasPreviouslyLevelled;
@@ -133,7 +135,7 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
         this.applicableGroups.clear();
         this.applicableRules.clear();
         this.mobExternalTypes.clear();
-        this.spawnReason = LevelledMobSpawnReason.DEFAULT;
+        this.spawnReason = null;
         this.deathCause = EntityDamageEvent.DamageCause.CUSTOM;
         this.isBuildingCache = false;
         this.hasCache = false;
@@ -162,7 +164,7 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
         if (isBuildingCache || this.hasCache) return;
 
         try{
-            if (!this.cacheLock.tryLock(1000, TimeUnit.MILLISECONDS)) {
+            if (!this.cacheLock.tryLock(500, TimeUnit.MILLISECONDS)) {
                 Utils.logger.warning("lock timed out building cache");
                 return;
             }
@@ -192,6 +194,37 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
         }
     }
 
+    private boolean getPDCLock(){
+        try{
+            // try up to 3 times to get a lock
+            int retryCount = 0;
+            while (true) {
+                if (this.pdcLock.tryLock(15, TimeUnit.MILLISECONDS))
+                    return true;
+
+                final StackTraceElement callingFunction = Thread.currentThread().getStackTrace()[1];
+                retryCount++;
+                if (retryCount > lockMaxRetryTimes){
+                    Utils.debugLog(main, DebugType.THREAD_LOCKS, String.format("getPDCLock could not lock thread - %s:%s",
+                            callingFunction.getFileName(), callingFunction.getLineNumber()));
+                    return false;
+                }
+
+                Utils.debugLog(main, DebugType.THREAD_LOCKS, String.format("getPDCLock retry %s - %s:%s",
+                        retryCount, callingFunction.getFileName(), callingFunction.getLineNumber()));
+            }
+        }
+        catch (final InterruptedException e){
+            Utils.logger.warning("getPDCLock InterruptedException: " + e.getMessage());
+            return false;
+        }
+    }
+
+    private void releasePDCLock(){
+        if (pdcLock.isHeldByCurrentThread())
+            pdcLock.unlock();
+    }
+
     public void invalidateCache(){
         this.hasCache = false;
         this.groupsAreBuilt = false;
@@ -215,22 +248,27 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
             sbDenied.append(ruleInfo.getRuleName());
         }
 
-        for (int i = 0; i < 2; i++) {
-            try {
-                synchronized (this.livingEntity.getPersistentDataContainer()) {
+        if (!getPDCLock()) return;
+
+        try {
+            for (int i = 0; i < 2; i++) {
+                try {
                     if (sbAllowed.length() > 0)
                         this.livingEntity.getPersistentDataContainer().set(main.namespaced_keys.chanceRule_Allowed, PersistentDataType.STRING, sbAllowed.toString());
                     if (sbDenied.length() > 0)
                         this.livingEntity.getPersistentDataContainer().set(main.namespaced_keys.chanceRule_Denied, PersistentDataType.STRING, sbDenied.toString());
                     break;
-                }
-            } catch (final java.util.ConcurrentModificationException ignored) {
-                try {
-                    Thread.sleep(10);
-                } catch (final InterruptedException ignored2) {
-                    break;
+                } catch (final java.util.ConcurrentModificationException ignored) {
+                    try {
+                        Thread.sleep(10);
+                    } catch (final InterruptedException ignored2) {
+                        break;
+                    }
                 }
             }
+        }
+        finally {
+            releasePDCLock();
         }
     }
 
@@ -240,12 +278,17 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
         String rulesPassed = null;
         String rulesDenied = null;
 
-        synchronized (this.livingEntity.getPersistentDataContainer()){
-            if (this.livingEntity.getPersistentDataContainer().has(main.namespaced_keys.chanceRule_Allowed, PersistentDataType.STRING)){
-                rulesPassed = this.livingEntity.getPersistentDataContainer().get(main.namespaced_keys.chanceRule_Allowed, PersistentDataType.STRING);
+        if (getPDCLock()) {
+            try {
+                if (this.livingEntity.getPersistentDataContainer().has(main.namespaced_keys.chanceRule_Allowed, PersistentDataType.STRING)) {
+                    rulesPassed = this.livingEntity.getPersistentDataContainer().get(main.namespaced_keys.chanceRule_Allowed, PersistentDataType.STRING);
+                }
+                if (this.livingEntity.getPersistentDataContainer().has(main.namespaced_keys.chanceRule_Denied, PersistentDataType.STRING)) {
+                    rulesDenied = this.livingEntity.getPersistentDataContainer().get(main.namespaced_keys.chanceRule_Denied, PersistentDataType.STRING);
+                }
             }
-            if (this.livingEntity.getPersistentDataContainer().has(main.namespaced_keys.chanceRule_Denied, PersistentDataType.STRING)){
-                rulesDenied = this.livingEntity.getPersistentDataContainer().get(main.namespaced_keys.chanceRule_Denied, PersistentDataType.STRING);
+            finally {
+                releasePDCLock();
             }
         }
 
@@ -364,53 +407,74 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
 
     @NotNull
     public LevelledMobSpawnReason getSpawnReason() {
-        synchronized (this.livingEntity.getPersistentDataContainer()) {
+        if (this.spawnReason != null)
+            return this.spawnReason;
+
+        if (!getPDCLock())
+            return LevelledMobSpawnReason.DEFAULT;
+
+        try {
             if (livingEntity.getPersistentDataContainer().has(main.namespaced_keys.spawnReasonKey, PersistentDataType.STRING)) {
-                return LevelledMobSpawnReason.valueOf(
+                this.spawnReason = LevelledMobSpawnReason.valueOf(
                         livingEntity.getPersistentDataContainer().get(main.namespaced_keys.spawnReasonKey, PersistentDataType.STRING)
                 );
             }
         }
+        finally {
+            releasePDCLock();
+        }
 
-        return this.spawnReason;
+        return this.spawnReason != null ?
+                this.spawnReason : LevelledMobSpawnReason.DEFAULT;
     }
 
     public void setSpawnReason(final LevelledMobSpawnReason spawnReason) {
-        synchronized (this.livingEntity.getPersistentDataContainer()) {
+        this.spawnReason = spawnReason;
+
+        if (!getPDCLock()) return;
+
+        try {
             if (!livingEntity.getPersistentDataContainer().has(main.namespaced_keys.spawnReasonKey, PersistentDataType.STRING)) {
                 livingEntity.getPersistentDataContainer().set(main.namespaced_keys.spawnReasonKey, PersistentDataType.STRING, spawnReason.toString());
             }
         }
-
-        this.spawnReason = spawnReason;
+        finally {
+            releasePDCLock();
+        }
     }
 
     public void setSourceSpawnerName(final String name) {
         this.sourceSpawnerName = name;
-        synchronized (this.livingEntity.getPersistentDataContainer()){
+
+        if (!getPDCLock()) return;
+        try {
             if (name == null && getPDC().has(main.namespaced_keys.sourceSpawnerName, PersistentDataType.STRING))
                 getPDC().remove(main.namespaced_keys.sourceSpawnerName);
             else if (name != null)
                 getPDC().set(main.namespaced_keys.sourceSpawnerName, PersistentDataType.STRING, name);
         }
+        finally {
+            releasePDCLock();
+        }
     }
 
     @Nullable
     public String getSourceSpawnerName(){
-        String spawnerName = this.sourceSpawnerName;
+        if (this.sourceSpawnerName != null) return this.sourceSpawnerName;
 
-        if (this.sourceSpawnerName == null){
-            synchronized (livingEntity.getPersistentDataContainer()){
+        if (getPDCLock()) {
+            try {
                 if (getPDC().has(main.namespaced_keys.sourceSpawnerName, PersistentDataType.STRING))
-                    spawnerName = getPDC().get(main.namespaced_keys.sourceSpawnerName, PersistentDataType.STRING);
-            }
-            if (spawnerName == null){
-                this.sourceSpawnerName = "(none)";
-                spawnerName = this.sourceSpawnerName;
+                    this.sourceSpawnerName = getPDC().get(main.namespaced_keys.sourceSpawnerName, PersistentDataType.STRING);
+            } finally {
+                releasePDCLock();
             }
         }
 
-        return spawnerName;
+        if (this.sourceSpawnerName == null)
+            this.sourceSpawnerName = "(none)";
+
+        return this.sourceSpawnerName;
     }
 
     @NotNull
@@ -450,8 +514,13 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
 
     @Nullable
     public String getOverridenEntityName(){
-        synchronized (this.livingEntity.getPersistentDataContainer()) {
+        if (!getPDCLock()) return null;
+
+        try {
             return livingEntity.getPersistentDataContainer().get(main.namespaced_keys.overridenEntityNameKey, PersistentDataType.STRING);
+        }
+        finally {
+            releasePDCLock();
         }
     }
 
@@ -463,42 +532,61 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
     }
 
     public void setOverridenEntityName(final String name){
-        synchronized (this.getLivingEntity().getPersistentDataContainer()) {
+        if (!getPDCLock()) return;
+        try {
             livingEntity.getPersistentDataContainer().set(main.namespaced_keys.overridenEntityNameKey, PersistentDataType.STRING, name);
+        }
+        finally {
+            releasePDCLock();
         }
     }
 
     public void setShouldShowLM_Nametag(final boolean doShow){
-        synchronized (this.livingEntity.getPersistentDataContainer()) {
+        if (!getPDCLock()) return;
+
+        try {
             if (doShow && getPDC().has(main.namespaced_keys.denyLM_Nametag, PersistentDataType.INTEGER))
                 getPDC().remove(main.namespaced_keys.denyLM_Nametag);
             else if (!doShow && !getPDC().has(main.namespaced_keys.denyLM_Nametag, PersistentDataType.INTEGER))
                 getPDC().set(main.namespaced_keys.denyLM_Nametag, PersistentDataType.INTEGER, 1);
         }
+        finally {
+            releasePDCLock();
+        }
     }
 
     public boolean getShouldShowLM_Nametag(){
-        synchronized (this.livingEntity.getPersistentDataContainer()) {
+        if (!getPDCLock()) return true;
+
+        try {
             return !getPDC().has(main.namespaced_keys.denyLM_Nametag, PersistentDataType.INTEGER);
+        }
+        finally {
+            releasePDCLock();
         }
     }
 
     public void setSpawnedTimeOfDay(final int ticks) {
-        for (int i = 0; i < 2; i++) {
-            try {
-                synchronized (livingEntity.getPersistentDataContainer()) {
+        if (!getPDCLock()) return;
+
+        try {
+            for (int i = 0; i < 2; i++) {
+                try {
                     if (getPDC().has(main.namespaced_keys.spawnedTimeOfDay, PersistentDataType.INTEGER))
                         return;
 
                     getPDC().set(main.namespaced_keys.spawnedTimeOfDay, PersistentDataType.INTEGER, ticks);
-                }
-            } catch(final java.util.ConcurrentModificationException ignored){
-                try {
-                    Thread.sleep(10);
-                } catch (final InterruptedException ignored2) {
-                    break;
+                } catch (final java.util.ConcurrentModificationException ignored) {
+                    try {
+                        Thread.sleep(10);
+                    } catch (final InterruptedException ignored2) {
+                        break;
+                    }
                 }
             }
+        }
+        finally {
+            releasePDCLock();
         }
 
         this.spawnedTimeOfDay = ticks;

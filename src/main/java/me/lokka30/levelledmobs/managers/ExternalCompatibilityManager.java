@@ -6,9 +6,7 @@ package me.lokka30.levelledmobs.managers;
 
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.LivingEntityInterface;
-import me.lokka30.levelledmobs.misc.LevellableState;
-import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
-import me.lokka30.levelledmobs.misc.PlayerHomeCheckResult;
+import me.lokka30.levelledmobs.misc.*;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
@@ -332,7 +330,7 @@ public class ExternalCompatibilityManager {
     }
 
     @NotNull
-    public static PlayerHomeCheckResult getPlayerHomeLocation(final @NotNull Player player, final boolean allowBed){
+    public static PlayerHomeCheckResult getPlayerHomeLocation(final @NotNull LevelledMobs main, final @NotNull Player player, final boolean allowBed){
         final Plugin plugin = Bukkit.getPluginManager().getPlugin("essentials");
         if (plugin == null)
             return new PlayerHomeCheckResult("Unable to get player home, Essentials is not installed", null);
@@ -348,8 +346,11 @@ public class ExternalCompatibilityManager {
         if (user == null)
             return new PlayerHomeCheckResult("Unable to locate player information in essentials");
 
-        if (user.getHomes() == null || user.getHomes().isEmpty())
-            return new PlayerHomeCheckResult("Player has no homes set, using spawn location", player.getWorld().getSpawnLocation());
+        if (user.getHomes() == null || user.getHomes().isEmpty()) {
+            PlayerNetherOrWorldSpawnResult result = Utils.getNetherPortalOrWorldSpawn(main, player);
+            final String whichSource = result.isNetherPortalLocation ? "nether portal" : "spawn";
+            return new PlayerHomeCheckResult("Player has no homes set, using " + whichSource + " location", result.location);
+        }
 
         return new PlayerHomeCheckResult(null, user.getHome(user.getHomes().get(0)), user.getHomes().get(0));
     }

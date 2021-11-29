@@ -24,6 +24,7 @@ public class Namespaced_Keys {
         sourceSpawnerName = new NamespacedKey(main, "sourceSpawnerName");
         spawnedTimeOfDay = new NamespacedKey(main, "spawnedTimeOfDay");
         wasSummoned = new NamespacedKey(main, "wasSummoned");
+        playerNetherCoords = new NamespacedKey(main, "playerNetherCoords");
 
         spawnerEgg = new NamespacedKey(main, "spawnerEgg");
         keySpawner = new NamespacedKey(main, "spawner");
@@ -57,6 +58,7 @@ public class Namespaced_Keys {
     public final NamespacedKey sourceSpawnerName;
     public final NamespacedKey spawnedTimeOfDay;
     public final NamespacedKey wasSummoned;
+    public final NamespacedKey playerNetherCoords;
 
     final public NamespacedKey spawnerEgg;
     final public NamespacedKey keySpawner;

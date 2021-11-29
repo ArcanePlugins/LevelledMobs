@@ -21,13 +21,17 @@ import org.bstats.bukkit.Metrics;
 import org.bstats.charts.SimpleBarChart;
 import org.bstats.charts.SimplePie;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 import java.io.*;
+import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -44,6 +48,8 @@ public class Companion {
 
     Companion(final LevelledMobs main) {
         this.main = main;
+        this.recentlyJoinedPlayers = new WeakHashMap<>();
+        this.playerNetherPortals = new HashMap<>();
         this.updateResult = new LinkedList<>();
         buildUniversalGroups();
         this.metricsInfo = new MetricsInfo(main);
@@ -52,15 +58,19 @@ public class Companion {
         this.debugsEnabled = new LinkedList<>();
     }
 
+    final private WeakHashMap<Player, Instant> recentlyJoinedPlayers;
     public HashSet<EntityType> groups_HostileMobs;
     public HashSet<EntityType> groups_AquaticMobs;
     public HashSet<EntityType> groups_PassiveMobs;
     public List<String> updateResult;
+    final public Map<Player, Location> playerNetherPortals;
     final public List<UUID> spawner_CopyIds;
     final public List<UUID> spawner_InfoIds;
     final public List<DebugType> debugsEnabled;
     final private PluginManager pluginManager = Bukkit.getPluginManager();
     final private MetricsInfo metricsInfo;
+    final static private Object playerLogonTimes_Lock = new Object();
+    final static private Object playerNetherPortals_Lock = new Object();
 
     //Checks if the server version is supported
     public void checkCompatibility() {
@@ -221,6 +231,7 @@ public class Companion {
         pluginManager.registerEvents(new PlayerDeathListener(main), main);
         pluginManager.registerEvents(new CombustListener(main), main);
         pluginManager.registerEvents(main.blockPlaceListener, main);
+        pluginManager.registerEvents(new PlayerPortalEventListener(main), main);
         main.chunkLoadListener = new ChunkLoadListener(main);
         main.playerInteractEventListener = new PlayerInteractEventListener(main);
         pluginManager.registerEvents(main.playerInteractEventListener, main);
@@ -390,5 +401,37 @@ public class Companion {
                 EntityType.GUARDIAN,
                 EntityType.TURTLE
         ).collect(Collectors.toCollection(HashSet::new));
+    }
+
+    public void addRecentlyJoinedPlayer(final Player player){
+        synchronized (playerLogonTimes_Lock){
+            recentlyJoinedPlayers.put(player, Instant.now());
+        }
+    }
+
+    @Nullable
+    public Instant getRecentlyJoinedPlayerLogonTime(final Player player){
+        synchronized (playerLogonTimes_Lock){
+            return recentlyJoinedPlayers.get(player);
+        }
+    }
+
+    public void removeRecentlyJoinedPlayer(final Player player){
+        synchronized (playerLogonTimes_Lock){
+            recentlyJoinedPlayers.remove(player);
+        }
+    }
+
+    @Nullable
+    public Location getPlayerNetherPortalLocation(final @NotNull Player player){
+        synchronized (playerNetherPortals_Lock){
+            return playerNetherPortals.get(player);
+        }
+    }
+
+    public void setPlayerNetherPortalLocation(final @NotNull Player player, final @Nullable Location location){
+        synchronized (playerNetherPortals_Lock){
+            playerNetherPortals.put(player, location);
+        }
     }
 }

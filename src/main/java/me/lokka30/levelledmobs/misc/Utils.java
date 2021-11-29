@@ -9,11 +9,16 @@ import me.lokka30.levelledmobs.rules.MinAndMax;
 import me.lokka30.levelledmobs.rules.RulesManager;
 import me.lokka30.microlib.messaging.MessageUtils;
 import me.lokka30.microlib.messaging.MicroLogger;
+import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.block.Biome;
+import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.*;
 
 /**
@@ -273,5 +278,27 @@ public final class Utils {
         if (list.excludedList.contains(cause)) return false;
 
         return list.isBlacklist() || list.allowedList.contains(cause);
+    }
+
+    public static long getMillisecondsFromInstant(final Instant instant){
+        return Duration.between(instant, Instant.now()).toMillis();
+    }
+
+    @NotNull
+    public static PlayerNetherOrWorldSpawnResult getNetherPortalOrWorldSpawn(final @NotNull LevelledMobs main, final @NotNull Player player){
+        Location location = null;
+        boolean isNetherPortalCoord = false;
+
+        if (player.getWorld().getEnvironment() == World.Environment.NETHER){
+            location = main.companion.getPlayerNetherPortalLocation(player);
+            isNetherPortalCoord = true;
+        }
+
+        if (location == null) {
+            location = player.getWorld().getSpawnLocation();
+            isNetherPortalCoord = false;
+        }
+
+        return new PlayerNetherOrWorldSpawnResult(location, isNetherPortalCoord);
     }
 }
