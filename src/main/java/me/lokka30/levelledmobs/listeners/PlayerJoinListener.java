@@ -62,27 +62,23 @@ public class PlayerJoinListener implements Listener {
     private void checkForNetherPortalCoords(final @NotNull Player player){
         Location location = null;
         try{
-            if (player.getPersistentDataContainer().has(main.namespaced_keys.playerNetherCoords, PersistentDataType.STRING)) {
-                final String netherCoords = player.getPersistentDataContainer().get(main.namespaced_keys.playerNetherCoords, PersistentDataType.STRING);
-                if (netherCoords == null) return;
-                final String[] coords = netherCoords.split(",");
-                if (coords.length != 4) return;
-                final World world = Bukkit.getWorld(coords[0]);
-                if (world == null) return;
-                location = new Location(world, Integer.parseInt(coords[1]), Integer.parseInt(coords[2]), Integer.parseInt(coords[3]));
-            }
-            else
-                Utils.logger.info("checkForNetherPortalCoords, player: " + player.getName() + ", PDC key was not present");
+            if (!player.getPersistentDataContainer().has(main.namespaced_keys.playerNetherCoords, PersistentDataType.STRING))
+                return;
+
+            final String netherCoords = player.getPersistentDataContainer().get(main.namespaced_keys.playerNetherCoords, PersistentDataType.STRING);
+            if (netherCoords == null) return;
+            final String[] coords = netherCoords.split(",");
+            if (coords.length != 4) return;
+            final World world = Bukkit.getWorld(coords[0]);
+            if (world == null) return;
+            location = new Location(world, Integer.parseInt(coords[1]), Integer.parseInt(coords[2]), Integer.parseInt(coords[3]));
         }
         catch (Exception e){
             Utils.logger.warning("Unable to get player nether portal coords from " + player.getName() + ", " + e.getMessage());
         }
 
-        if (location == null) {
-            Utils.logger.info("checkForNetherPortalCoords, player: " + player.getName() + ", nether coords was null");
-            return;
-        }
-        Utils.logger.info("checkForNetherPortalCoords, player: " + player.getName() + ", found nether coords: " + location);
+        if (location == null) return;
+
         main.companion.setPlayerNetherPortalLocation(player, location);
     }
 
