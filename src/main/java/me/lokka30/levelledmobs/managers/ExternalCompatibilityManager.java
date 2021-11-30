@@ -19,6 +19,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import simplepets.brainsynder.api.plugin.SimplePets;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -337,9 +338,9 @@ public class ExternalCompatibilityManager {
         return isExternalType;
     }
 
-    @Nullable
+    @NotNull
     public static List<String> getWGRegionsAtLocation(@NotNull final LivingEntityInterface lmInterface){
-        if (!ExternalCompatibilityManager.hasWorldGuardInstalled()) return null;
+        if (!ExternalCompatibilityManager.hasWorldGuardInstalled()) return Collections.emptyList();
 
         return WorldGuardIntegration.getWorldGuardRegionsForLocation(lmInterface);
     }
