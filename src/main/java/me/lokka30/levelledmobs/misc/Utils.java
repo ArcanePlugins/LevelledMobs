@@ -14,6 +14,8 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.*;
 
 /**
@@ -280,5 +282,9 @@ public final class Utils {
         }
 
         return list.isBlacklist() || list.allowedList.contains(biome);
+    }
+
+    public static long getMillisecondsFromInstant(final Instant instant){
+        return Duration.between(instant, Instant.now()).toMillis();
     }
 }

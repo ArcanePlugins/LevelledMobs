@@ -27,10 +27,12 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 
 import javax.annotation.Nullable;
 import java.io.*;
+import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -47,6 +49,7 @@ public class Companion {
 
     Companion(final LevelledMobs main) {
         this.main = main;
+        this.recentlyJoinedPlayers = new WeakHashMap<>();
         this.updateResult = new LinkedList<>();
         buildUniversalGroups();
         this.metricsInfo = new MetricsInfo(main);
@@ -54,6 +57,7 @@ public class Companion {
         this.spawner_InfoIds = new LinkedList<>();
     }
 
+    final private WeakHashMap<Player, Instant> recentlyJoinedPlayers;
     public HashSet<EntityType> groups_HostileMobs;
     public HashSet<EntityType> groups_AquaticMobs;
     public HashSet<EntityType> groups_PassiveMobs;
@@ -64,6 +68,7 @@ public class Companion {
     public boolean playerInteractListenerIsRegistered;
     final private PluginManager pluginManager = Bukkit.getPluginManager();
     final private MetricsInfo metricsInfo;
+    final static private Object playerLogonTimes_Lock = new Object();
 
     void checkWorldGuard() {
         // Hook into WorldGuard
@@ -375,5 +380,24 @@ public class Companion {
                 EntityType.GUARDIAN,
                 EntityType.TURTLE
         ).collect(Collectors.toCollection(HashSet::new));
+    }
+
+    public void addRecentlyJoinedPlayer(final Player player){
+        synchronized (playerLogonTimes_Lock){
+            recentlyJoinedPlayers.put(player, Instant.now());
+        }
+    }
+
+    @Nullable
+    public Instant getRecentlyJoinedPlayerLogonTime(final Player player){
+        synchronized (playerLogonTimes_Lock){
+            return recentlyJoinedPlayers.get(player);
+        }
+    }
+
+    public void removeRecentlyJoinedPlayer(final Player player){
+        synchronized (playerLogonTimes_Lock){
+            recentlyJoinedPlayers.remove(player);
+        }
     }
 }

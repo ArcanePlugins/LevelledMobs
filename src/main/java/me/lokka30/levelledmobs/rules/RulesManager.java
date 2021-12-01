@@ -295,7 +295,7 @@ public class RulesManager {
     }
 
     public int getRule_MobMaxLevel(@NotNull final LivingEntityInterface lmInterface){
-        int maxLevel = 10;
+        int maxLevel = 0;
 
         for (final RuleInfo ruleInfo : lmInterface.getApplicableRules()) {
             if (ruleInfo.restrictions_MaxLevel != null) maxLevel = ruleInfo.restrictions_MaxLevel;
@@ -644,12 +644,12 @@ public class RulesManager {
         if (ri.conditions_WGRegions != null){
             boolean isInList = false;
             final List<String> wgRegions = ExternalCompatibilityManager.getWGRegionsAtLocation(lmInterface);
-            if (wgRegions != null) {
-                for (final String regionName : wgRegions) {
-                    if (ri.conditions_WGRegions.isEnabledInList(regionName, null)) {
-                        isInList = true;
-                        break;
-                    }
+            if (wgRegions.isEmpty()) wgRegions.add("(none)");
+
+            for (final String regionName : wgRegions) {
+                if (ri.conditions_WGRegions.isEnabledInList(regionName, null)) {
+                    isInList = true;
+                    break;
                 }
             }
 

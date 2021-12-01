@@ -14,3 +14,4 @@ LevelledMobs.iml
 .project
 /.settings
 .idea/jarRepositories.xml
+.idea/discord.xml
