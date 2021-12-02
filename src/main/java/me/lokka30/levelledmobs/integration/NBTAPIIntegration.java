@@ -5,26 +5,28 @@
 package me.lokka30.levelledmobs.integration;
 
 import org.bukkit.Bukkit;
+import org.jetbrains.annotations.NotNull;
 
 /**
- * @author lokka30
- * @since v4.0.0
  * A LevelledMobs integration.
  * Plugin:     NBT API
  * Author:     tr7zw
  * Link:       https://www.spigotmc.org/resources/nbt-api.7939/
+ *
+ * @author lokka30
+ * @since v4.0.0
  */
 public class NBTAPIIntegration implements Integration {
 
     @Override
-    public boolean isInstalled() {
-        return Bukkit.getPluginManager().isPluginEnabled("NBTAPI");
+    @NotNull
+    public String getName() {
+        return this.getClass().getName();
     }
 
     @Override
-    public boolean isEnabled() {
-        // TODO
-        return false;
+    public boolean isInstalled() {
+        return Bukkit.getPluginManager().isPluginEnabled("NBTAPI");
     }
 
 }

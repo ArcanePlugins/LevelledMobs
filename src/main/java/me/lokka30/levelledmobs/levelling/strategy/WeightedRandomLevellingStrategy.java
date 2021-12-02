@@ -8,14 +8,15 @@ import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.levelling.LevelledMob;
 
 /**
- * @author lokka30
- * @see LevellingStrategy
- * @since v4.0.0
  * This class generates a random level, although
  * the numbers generated are biased towards the
  * minimum or maximum value, depending on however
  * the administrator has configured this strategy
  * in their Rules configuration.
+ *
+ * @author lokka30
+ * @see LevellingStrategy
+ * @since v4.0.0
  */
 public class WeightedRandomLevellingStrategy implements LevellingStrategy {
 

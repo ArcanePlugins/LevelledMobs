@@ -8,10 +8,11 @@ import me.lokka30.levelledmobs.LevelledMobs;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * @author lokka30
- * @since v4.0.0
  * This class handles the management
  * of mob levels in the plugin.
+ *
+ * @author lokka30
+ * @since v4.0.0
  */
 public class LevelHandler {
 

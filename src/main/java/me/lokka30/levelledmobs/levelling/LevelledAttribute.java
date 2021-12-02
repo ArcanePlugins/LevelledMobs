@@ -5,10 +5,6 @@
 package me.lokka30.levelledmobs.levelling;
 
 /**
- * @author lokka30
- * @see LevelledNamespacedKeys
- * @see org.bukkit.attribute.Attribute
- * @since v4.0.0
  * All Levellable attributes are listed here.
  * Descriptions for 'VANILLA' levellable attributes
  * are copied from the Spigot javadocs here:
@@ -17,111 +13,133 @@ package me.lokka30.levelledmobs.levelling;
  * Only VANILLA Levelled attributes are actually Attributes on mobs,
  * the rest are stored on the mob via NamespacedKeys and analysed in
  * various listeners.
+ *
+ * @author lokka30
+ * @see LevelledNamespacedKeys
+ * @see org.bukkit.attribute.Attribute
+ * @since v4.0.0
  */
 public enum LevelledAttribute {
 
     /**
-     * @since v4.0.0
      * Armor bonus of an Entity.
+     *
+     * @since v4.0.0
      */
     VANILLA_GENERIC_ARMOR,
 
     /**
-     * @since v4.0.0
      * Armor durability bonus of an Entity.
+     *
+     * @since v4.0.0
      */
     VANILLA_GENERIC_ARMOR_TOUGHNESS,
 
     /**
-     * @since v4.0.0
      * Attack damage of an Entity.
+     *
+     * @since v4.0.0
      */
     VANILLA_GENERIC_ATTACK_DAMAGE,
 
     /**
-     * @since v4.0.0
      * Attack knockback of an Entity.
+     *
+     * @since v4.0.0
      */
     VANILLA_GENERIC_ATTACK_KNOCKBACK,
 
     /**
-     * @since v4.0.0
      * Attack speed of an Entity.
+     *
+     * @since v4.0.0
      */
     VANILLA_GENERIC_ATTACK_SPEED,
 
     /**
-     * @since v4.0.0
      * Flying speed of an Entity.
+     *
+     * @since v4.0.0
      */
     VANILLA_GENERIC_FLYING_SPEED,
 
     /**
-     * @since v4.0.0
      * Range at which an Entity will follow others.
+     *
+     * @since v4.0.0
      */
     VANILLA_GENERIC_FOLLOW_RANGE,
 
     /**
-     * @since v4.0.0
      * Resistance of an Entity to knockback.
+     *
+     * @since v4.0.0
      */
     VANILLA_GENERIC_KNOCKBACK_RESISTANCE,
 
     /**
-     * @since v4.0.0
      * Luck bonus of an Entity.
+     *
+     * @since v4.0.0
      */
     VANILLA_GENERIC_LUCK,
 
     /**
-     * @since v4.0.0
      * Maximum health of an Entity.
+     *
+     * @since v4.0.0
      */
     VANILLA_GENERIC_MAX_HEALTH,
 
     /**
-     * @since v4.0.0
      * Movement speed of an Entity.
+     *
+     * @since v4.0.0
      */
     VANILLA_GENERIC_MOVEMENT_SPEED,
 
     /**
-     * @since v4.0.0
      * Strength with which a horse will jump.
+     *
+     * @since v4.0.0
      */
     VANILLA_HORSE_JUMP_STRENGTH,
 
     /**
-     * @since v4.0.0
      * Chance of a zombie to spawn reinforcements.
+     *
+     * @since v4.0.0
      */
     VANILLA_ZOMBIE_SPAWN_REINFORCEMENTS,
 
     /**
-     * @since v4.0.0
      * The ranged attack damage multiplier the Entity has
      * (e.g. Skeleton arrows)
+     *
+     * @since v4.0.0
      */
     CUSTOM_RANGED_ATTACK_DAMAGE,
 
     /**
-     * @since v4.0.0
      * The item drop multiplier the Entity has
      * (The Entity's item drops will be multiplied upon its death)
+     *
+     * @since v4.0.0
      */
     CUSTOM_ITEM_DROP,
 
     /**
-     * @since v4.0.0
      * The experience drop multiplier the Entity has
      * (The Entity's XP drops will be multiplied upon its death)
+     *
+     * @since v4.0.0
      */
     CUSTOM_EXPERIENCE_DROP,
 
     /**
-     * @since v4.0.0
      * The creeper blast damage value the Entity (Creeper) has
+     *
+     * @since v4.0.0
      */
     CUSTOM_CREEPER_BLAST_DAMAGE
 }

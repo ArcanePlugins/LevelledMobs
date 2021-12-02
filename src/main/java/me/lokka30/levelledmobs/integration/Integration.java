@@ -8,28 +8,36 @@ import me.lokka30.levelledmobs.LevelledMobs;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * @author lokka30
- * @since v4.0.0
  * This interface is used by all Integrations,
  * containing common methods used across all of them.
+ *
+ * @author lokka30
+ * @since v4.0.0
  */
 public interface Integration {
 
+    /**
+     * Get the name of the Integration.
+     *
+     * @return the name of the class providing the integration, e.g. {@code CitizensIntegration}.
+     * @since v4.0.0
+     */
     @NotNull
     String getName();
 
     /**
-     * @return if the plugin being integrated with is installed
-     * @author lokka30
+     * Check if the plugin being integrated with is installed.
+     *
+     * @return if the plugin being integrated with is installed.
      * @since v4.0.0
      */
     boolean isInstalled();
 
     /**
-     * @return if the integration is force-disabled in advanced.yml and/or the other plugin is not installed.
-     * @author lokka30
+     * Note: integrations can be user-disabled in advanced.yml - see 'disabled-integrations'.
+     *
+     * @return if the integration is enabled.
      * @since v4.0.0
-     * Note: integrations are disabled in advanced.yml - see 'disabled-integrations'.
      */
     default boolean isEnabled(@NotNull final LevelledMobs main) {
         //noinspection ConstantConditions

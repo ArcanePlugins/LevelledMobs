@@ -6,26 +6,27 @@ package me.lokka30.levelledmobs.integration;
 
 import me.lokka30.levelledmobs.levelling.LevelledMob;
 import org.bukkit.Bukkit;
+import org.jetbrains.annotations.NotNull;
 
 /**
- * @author lokka30
- * @since v4.0.0
  * A LevelledMobs integration.
  * Plugin:     EliteMobs
  * Author:     MagmaGuy
  * Link:       https://www.spigotmc.org/resources/elitemobs.40090/
+ *
+ * @author lokka30
+ * @since v4.0.0
  */
 public class EliteMobsIntegration implements Integration, MobOwner {
 
     @Override
-    public boolean isInstalled() {
-        return Bukkit.getPluginManager().isPluginEnabled("EliteMobs");
+    public @NotNull String getName() {
+        return this.getClass().getName();
     }
 
     @Override
-    public boolean isEnabled() {
-        // TODO
-        return false;
+    public boolean isInstalled() {
+        return Bukkit.getPluginManager().isPluginEnabled("EliteMobs");
     }
 
     @Override

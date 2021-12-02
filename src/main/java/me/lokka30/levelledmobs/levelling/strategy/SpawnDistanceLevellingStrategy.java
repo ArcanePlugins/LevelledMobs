@@ -8,14 +8,15 @@ import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.levelling.LevelledMob;
 
 /**
- * @author lokka30
- * @see LevellingStrategy
- * @since v4.0.0
  * This class generates a level for a mob
  * based upon their location relative to
  * the world's spawnpoint OR a specific set
  * of coordinates provided by the strategy's
  * configuration in the Rules system.
+ *
+ * @author lokka30
+ * @see LevellingStrategy
+ * @since v4.0.0
  */
 public class SpawnDistanceLevellingStrategy implements LevellingStrategy {
 

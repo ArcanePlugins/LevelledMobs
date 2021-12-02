@@ -8,14 +8,15 @@ import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.levelling.LevelledMob;
 
 /**
- * @author lokka30
- * @see LevellingStrategy
- * @since v4.0.0
  * This class generates a level for a mob
  * based upon their Y-coordinate. The administrator
  * can configure it through the Rules system to increase
  * the level as mobs are spawned deeper underground, or
  * vice-versa.
+ *
+ * @author lokka30
+ * @see LevellingStrategy
+ * @since v4.0.0
  */
 public class YAxisLevellingStrategy implements LevellingStrategy {
 

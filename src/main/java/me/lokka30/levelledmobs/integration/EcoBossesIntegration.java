@@ -9,29 +9,30 @@ import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.Plugin;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * @author lokka30
- * @since v4.0.0
  * A LevelledMobs integration.
  * Plugin:     EcoBosses
  * Author:     Auxilor
  * Link:       https://www.spigotmc.org/resources/ecobosses.86576/
+ *
+ * @author lokka30
+ * @since v4.0.0
  */
 public class EcoBossesIntegration implements Integration, MobOwner {
 
     @Nullable private NamespacedKey bossKey = null;
 
     @Override
-    public boolean isInstalled() {
-        return Bukkit.getPluginManager().isPluginEnabled("EcoBosses");
+    public @NotNull String getName() {
+        return this.getClass().getName();
     }
 
     @Override
-    public boolean isEnabled() {
-        // TODO
-        return false;
+    public boolean isInstalled() {
+        return Bukkit.getPluginManager().isPluginEnabled("EcoBosses");
     }
 
     @Override

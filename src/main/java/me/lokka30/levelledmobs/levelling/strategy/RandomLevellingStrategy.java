@@ -9,11 +9,12 @@ import me.lokka30.levelledmobs.levelling.LevelledMob;
 import me.lokka30.microlib.maths.Randoms;
 
 /**
+ * This Levelling Strategy spits out a random number. That's it.
+ * Administrators can set a min & max level of course.
+ *
  * @author lokka30
  * @see LevellingStrategy
  * @since v4.0.0
- * This Levelling Strategy spits out a random number. That's it.
- * Administrators can set a min & max level of course.
  */
 public class RandomLevellingStrategy implements LevellingStrategy {
 

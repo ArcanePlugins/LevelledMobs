@@ -8,11 +8,12 @@ import org.bukkit.entity.LivingEntity;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * @author lokka30
- * @since v4.0.0
  * This class makes it easier to access
  * aspects about a levelled mob, such
  * as what level they are.
+ *
+ * @author lokka30
+ * @since v4.0.0
  */
 public class LevelledMob {
 

@@ -5,26 +5,28 @@
 package me.lokka30.levelledmobs.integration;
 
 import org.bukkit.Bukkit;
+import org.jetbrains.annotations.NotNull;
 
 /**
- * @author lokka30
- * @since v4.0.0
  * A LevelledMobs integration.
  * Plugin:     WorldGuard
  * Author:     sk89q
  * Link:       https://dev.bukkit.org/projects/worldguard
+ *
+ * @author lokka30
+ * @since v4.0.0
  */
 public class WorldGuardIntegration implements Integration {
 
     @Override
-    public boolean isInstalled() {
-        return Bukkit.getPluginManager().isPluginEnabled("WorldGuard") && Bukkit.getPluginManager().isPluginEnabled("WorldEdit");
+    @NotNull
+    public String getName() {
+        return this.getClass().getName();
     }
 
     @Override
-    public boolean isEnabled() {
-        // TODO
-        return false;
+    public boolean isInstalled() {
+        return Bukkit.getPluginManager().isPluginEnabled("WorldGuard") && Bukkit.getPluginManager().isPluginEnabled("WorldEdit");
     }
 
     //TODO lokka30: Complete this class.

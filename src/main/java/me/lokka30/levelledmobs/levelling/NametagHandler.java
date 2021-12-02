@@ -8,11 +8,12 @@ import me.lokka30.levelledmobs.LevelledMobs;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * @author lokka30
- * @since v4.0.0
  * This class handles the management and
  * deployment of nametags on mobs, be it
  * ProtocolLib-based or CustomName-based.
+ *
+ * @author lokka30
+ * @since v4.0.0
  */
 public class NametagHandler {
 

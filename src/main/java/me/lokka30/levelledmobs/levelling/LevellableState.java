@@ -7,12 +7,13 @@ package me.lokka30.levelledmobs.levelling;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * @author lokka30
- * @since v4.0.0
  * This enum contains constants that allow
  * LM code to say 'this mob is levellable/not levellable',
  * and if 'not levellable', there are a bunch of constants
  * in this enum that can explain why a mob is considered such.
+ *
+ * @author lokka30
+ * @since v4.0.0
  */
 public enum LevellableState {
 
@@ -22,8 +23,9 @@ public enum LevellableState {
      */
 
     /**
-     * @since v4.0.0
      * The mob is levellable.
+     *
+     * @since v4.0.0
      */
     LEVELLABLE(LevellableState.defaultInfo);
 
@@ -32,9 +34,8 @@ public enum LevellableState {
     LevellableState(@NotNull final String additionalInfo) { this.additionalInfo = additionalInfo; }
 
     /**
-     * @author lokka30
-     * @since v4.0.0
      * @param additionalInfo what additional info the levellable state should have
+     * @since v4.0.0
      */
     public void setAdditionalInfo(@NotNull final String additionalInfo) { this.additionalInfo = additionalInfo; }
 }

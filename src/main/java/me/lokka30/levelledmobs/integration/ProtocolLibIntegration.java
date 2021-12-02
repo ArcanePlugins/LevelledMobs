@@ -5,25 +5,28 @@
 package me.lokka30.levelledmobs.integration;
 
 import org.bukkit.Bukkit;
+import org.jetbrains.annotations.NotNull;
 
 /**
- * @author lokka30
- * @since v4.0.0
  * A LevelledMobs integration.
  * Plugin:     ProtocolLib
  * Author:     dmulloy2
  * Link:       https://www.spigotmc.org/resources/protocollib.1997/
+ *
+ * @author lokka30
+ * @since v4.0.0
  */
 public class ProtocolLibIntegration implements Integration {
+
+    @Override
+    @NotNull
+    public String getName() {
+        return this.getClass().getName();
+    }
 
     @Override
     public boolean isInstalled() {
         return Bukkit.getPluginManager().isPluginEnabled("ProtocolLib");
     }
 
-    @Override
-    public boolean isEnabled() {
-        // TODO
-        return false;
-    }
 }

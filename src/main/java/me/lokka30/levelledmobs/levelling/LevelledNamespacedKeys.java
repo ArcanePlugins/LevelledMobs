@@ -9,13 +9,14 @@ import org.bukkit.NamespacedKey;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * @author lokka30
- * @see NamespacedKey
- * @since v4.0.0
  * This class contains a bunch of NamespacedKeys
  * that can be accessed by both LevelledMobs and any other
  * plugin that wishes to check &/or manage these Keys.
  * ALL namespaced keys in this class MUST be registered.
+ *
+ * @author lokka30
+ * @since v4.0.0
+ * @see NamespacedKey
  */
 public class LevelledNamespacedKeys {
 
