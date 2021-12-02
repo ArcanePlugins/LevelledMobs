@@ -6,7 +6,7 @@ package me.lokka30.levelledmobs.levelling;
 
 /**
  * @author lokka30
- * @see NamespacedKeys
+ * @see LevelledNamespacedKeys
  * @see org.bukkit.attribute.Attribute
  * @since v4.0.0
  * All Levellable attributes are listed here.

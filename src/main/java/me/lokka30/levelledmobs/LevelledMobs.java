@@ -4,11 +4,11 @@
 
 package me.lokka30.levelledmobs;
 
-import me.lokka30.levelledmobs.files.FileHandler;
-import me.lokka30.levelledmobs.files.StaticMobDataHandler;
-import me.lokka30.levelledmobs.integrations.IntegrationHandler;
+import me.lokka30.levelledmobs.file.FileHandler;
+import me.lokka30.levelledmobs.file.StaticMobDataHandler;
+import me.lokka30.levelledmobs.integration.IntegrationHandler;
 import me.lokka30.levelledmobs.levelling.LevelHandler;
-import me.lokka30.levelledmobs.listeners.*;
+import me.lokka30.levelledmobs.listener.*;
 import me.lokka30.levelledmobs.misc.Utils;
 import me.lokka30.levelledmobs.queue.QueueHandler;
 import me.lokka30.microlib.maths.QuickTimer;
@@ -18,8 +18,7 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Arrays;
-import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author lokka30
@@ -109,14 +108,14 @@ public class LevelledMobs extends JavaPlugin {
      * Registers ALL of LevelledMobs' listener classes through Bukkit's plugin manager.
      * Only to be ran from onEnable, do not use elsewhere.
      * The HashSet of Listeners must be updated manually if a new Listener is added to LM.
-     * @see me.lokka30.levelledmobs.listeners
+     * @see me.lokka30.levelledmobs.listener
      * @see org.bukkit.plugin.PluginManager#registerEvents(Listener, Plugin)
      */
     private void loadListeners() {
         Utils.LOGGER.info("Loading listeners...");
 
         // Retain alphabetical order when modifying this list! :)
-        final HashSet<Listener> listeners = new HashSet<>(Arrays.asList(
+        Set.of(
                 new BlockPlaceListener(this),
                 new ChunkLoadListener(this),
                 new EntityCombustListener(this),
@@ -135,9 +134,7 @@ public class LevelledMobs extends JavaPlugin {
                 new PlayerJoinListener(this),
                 new PlayerQuitListener(this),
                 new PlayerTeleportListener(this)
-        ));
-
-        listeners.forEach(listener -> Bukkit.getPluginManager().registerEvents(listener, this));
+        ).forEach(listener -> Bukkit.getPluginManager().registerEvents(listener, this));
     }
 
     /* Instances of handler classes to be used across the plugin and by other plugins too */

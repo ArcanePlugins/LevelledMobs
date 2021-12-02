@@ -19,10 +19,10 @@ public class LevelHandler {
 
     public LevelHandler(final LevelledMobs main) {
         this.main = main;
-        this.namespacedKeys = new NamespacedKeys(main);
+        this.levelledNamespacedKeys = new LevelledNamespacedKeys(main);
     }
 
-    @NotNull public final NamespacedKeys namespacedKeys;
+    @NotNull public final LevelledNamespacedKeys levelledNamespacedKeys;
 
     /*
     TODO

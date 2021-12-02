@@ -5,7 +5,7 @@
 package me.lokka30.levelledmobs.customdrops;
 
 import me.lokka30.levelledmobs.LevelledMobs;
-import me.lokka30.levelledmobs.files.FileHandler;
+import me.lokka30.levelledmobs.file.FileHandler;
 import org.jetbrains.annotations.NotNull;
 
 /**
