@@ -233,16 +233,6 @@ public class SpawnerSubCommand extends SpawnerBaseClass implements Subcommand{
     }
 
     public void generateSpawner(final @NotNull CustomSpawnerInfo info){
-        if (info.maxSpawnDelay != null && (info.minSpawnDelay == null || info.minSpawnDelay > info.maxSpawnDelay)) {
-            // settting max spawn delay lower than min spawn delay will result in an exception
-            info.minSpawnDelay = info.maxSpawnDelay;
-        }
-
-        if (info.minSpawnDelay != null && (info.maxSpawnDelay == null || info.maxSpawnDelay > info.minSpawnDelay)) {
-            // settting min spawn delay higher than max spawn delay will result in an exception
-            info.maxSpawnDelay = info.minSpawnDelay;
-        }
-
         if (info.customName != null) info.customName = MessageUtils.colorizeAll(info.customName);
 
         final ItemStack item = new ItemStack(Material.SPAWNER);
