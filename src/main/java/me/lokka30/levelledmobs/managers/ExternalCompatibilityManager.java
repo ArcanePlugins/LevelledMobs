@@ -10,6 +10,7 @@ import me.lokka30.levelledmobs.misc.*;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
+import org.bukkit.World;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.MetadataValue;
@@ -336,7 +337,7 @@ public class ExternalCompatibilityManager {
         if (plugin == null)
             return new PlayerHomeCheckResult("Unable to get player home, Essentials is not installed", null);
 
-        if (allowBed) {
+        if (allowBed && player.getWorld().getEnvironment() != World.Environment.NETHER) {
             final Location bedLocation = player.getBedSpawnLocation();
             if (bedLocation != null)
                 return new PlayerHomeCheckResult(null, bedLocation, "bed");

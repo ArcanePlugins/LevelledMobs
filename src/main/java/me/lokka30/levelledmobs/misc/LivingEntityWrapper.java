@@ -13,14 +13,30 @@ import me.lokka30.levelledmobs.rules.LevelledMobSpawnReason;
 import me.lokka30.levelledmobs.rules.RuleInfo;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.*;
+import org.bukkit.entity.Ageable;
+import org.bukkit.entity.Animals;
+import org.bukkit.entity.Boss;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Flying;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Monster;
+import org.bukkit.entity.Player;
+import org.bukkit.entity.Tameable;
+import org.bukkit.entity.WaterMob;
+import org.bukkit.entity.Zombie;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Stack;
+import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -69,6 +85,7 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
     private Integer mobLevel;
     private int nametagCooldownTime;
     private String sourceSpawnerName;
+    private String sourceSpawnEggName;
     @NotNull
     private final List<RuleInfo> applicableRules;
     private List<String> spawnedWGRegions;
@@ -149,6 +166,7 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
         this.playerForLevelling = null;
         this.prevChanceRuleResults = null;
         this.sourceSpawnerName = null;
+        this.sourceSpawnEggName = null;
         this.playerForPermissionsCheck = null;
         this.playersNeedingNametagCooldownUpdate = null;
         this.nametagCooldownTime = 0;
@@ -407,11 +425,9 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
 
     @NotNull
     public LevelledMobSpawnReason getSpawnReason() {
-        if (this.spawnReason != null)
-            return this.spawnReason;
+        if (this.spawnReason != null) return this.spawnReason;
 
-        if (!getPDCLock())
-            return LevelledMobSpawnReason.DEFAULT;
+        if (!getPDCLock()) return LevelledMobSpawnReason.DEFAULT;
 
         try {
             if (livingEntity.getPersistentDataContainer().has(main.namespaced_keys.spawnReasonKey, PersistentDataType.STRING)) {
@@ -475,6 +491,25 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
             this.sourceSpawnerName = "(none)";
 
         return this.sourceSpawnerName;
+    }
+
+    @Nullable
+    public String getSourceSpawnEggName(){
+        if (this.sourceSpawnEggName != null) return this.sourceSpawnEggName;
+
+        if (getPDCLock()) {
+            try {
+                if (getPDC().has(main.namespaced_keys.spawnerEggName, PersistentDataType.STRING))
+                    this.sourceSpawnEggName = getPDC().get(main.namespaced_keys.spawnerEggName, PersistentDataType.STRING);
+            } finally {
+                releasePDCLock();
+            }
+        }
+
+        if (this.sourceSpawnEggName == null)
+            this.sourceSpawnEggName = "(none)";
+
+        return this.sourceSpawnEggName;
     }
 
     @NotNull

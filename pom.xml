@@ -10,7 +10,7 @@
 
     <groupId>me.lokka30</groupId>
     <artifactId>LevelledMobs</artifactId>
-    <version>3.3.0 b578</version>
+    <version>3.3.0 b579</version>
     <packaging>jar</packaging>
 
     <name>LevelledMobs</name>
@@ -197,7 +197,7 @@
         <dependency>
             <groupId>simplepets.brainsynder</groupId>
             <artifactId>API</artifactId>
-            <version>5.0-BUILD-90</version>
+            <version>5.0-BUILD-98</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

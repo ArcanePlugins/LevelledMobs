@@ -578,6 +578,17 @@ public class RulesManager {
             }
         }
 
+        if (ri.conditions_SpawnegEggNames != null) {
+            String checkName = lmEntity.getSourceSpawnEggName();
+            if (checkName == null) checkName = "(none)";
+
+            if (!ri.conditions_SpawnegEggNames.isEnabledInList(checkName, lmEntity)) {
+                Utils.debugLog(main, DebugType.DENIED_RULE_SPAWN_REASON, String.format("&b%s&7, mob: &b%s&7, spawn_egg: &b%s&7",
+                        ri.getRuleName(), lmEntity.getNameIfBaby(), checkName));
+                return false;
+            }
+        }
+
         if (ri.conditions_Permission != null){
             if (lmEntity.playerForPermissionsCheck == null){
                 Utils.debugLog(main, DebugType.DENIED_RULE_PERMISSION, String.format("&b%s&7, mob: &b%s&7, no player was provided",

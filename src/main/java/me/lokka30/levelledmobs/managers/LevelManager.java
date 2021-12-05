@@ -286,6 +286,11 @@ public class LevelManager implements LevelInterface {
             sourceResult.homeNameUsed = result.homeNameUsed;
 
             Location useLocation = result.location;
+            if (useLocation == null && player.getWorld().getEnvironment() == World.Environment.NETHER){
+                netherOrWorldSpawnResult = Utils.getNetherPortalOrWorldSpawn(main, player);
+                useLocation = netherOrWorldSpawnResult.location;
+            }
+
             if (useLocation == null) {
                 if (result.resultMessage != null)
                     Utils.debugLog(main, DebugType.PLAYER_LEVELLING, result.resultMessage);
@@ -309,10 +314,17 @@ public class LevelManager implements LevelInterface {
             origLevelSource = useLocation.distance(player.getLocation());
         }
         else if ("%bed_distance%".equalsIgnoreCase(variableToUse)){
-            final Location bedLocation = player.getBedSpawnLocation();
-            if (bedLocation != null && bedLocation.getWorld() == player.getWorld()) {
-                origLevelSource = bedLocation.distance(player.getLocation());
-                sourceResult.homeNameUsed = "bed";
+            Location useLocation = player.getBedSpawnLocation();
+            sourceResult.homeNameUsed = "bed";
+
+            if (player.getWorld().getEnvironment() == World.Environment.NETHER){
+                final PlayerNetherOrWorldSpawnResult result = Utils.getNetherPortalOrWorldSpawn(main, player);
+                useLocation = result.location;
+                sourceResult.homeNameUsed = "nether_portal";
+            }
+
+            if (useLocation != null && useLocation.getWorld() == player.getWorld()) {
+                origLevelSource = useLocation.distance(player.getLocation());
             }
             else{
                 Utils.debugLog(main, DebugType.PLAYER_LEVELLING, "no bed set for player, using spawn distance");

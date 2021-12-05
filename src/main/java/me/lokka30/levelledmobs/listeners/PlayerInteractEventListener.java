@@ -9,9 +9,14 @@ import me.lokka30.levelledmobs.commands.MessagesBase;
 import me.lokka30.levelledmobs.commands.subcommands.SpawnerBaseClass;
 import me.lokka30.levelledmobs.commands.subcommands.SpawnerSubCommand;
 import me.lokka30.levelledmobs.managers.LevelManager;
-import me.lokka30.levelledmobs.misc.*;
+import me.lokka30.levelledmobs.misc.AdditionalLevelInformation;
+import me.lokka30.levelledmobs.misc.Cooldown;
+import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
+import me.lokka30.levelledmobs.misc.Point;
+import me.lokka30.levelledmobs.misc.Utils;
 import me.lokka30.microlib.messaging.MessageUtils;
 import me.lokka30.microlib.other.VersionUtils;
+
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -33,7 +38,10 @@ import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
 
@@ -127,6 +135,13 @@ public class PlayerInteractEventListener extends MessagesBase implements Listene
             }
         }
 
+        String eggName = null;
+        if (meta.getPersistentDataContainer().has(main.namespaced_keys.keySpawner_CustomName, PersistentDataType.STRING))
+            eggName = meta.getPersistentDataContainer().get(main.namespaced_keys.keySpawner_CustomName, PersistentDataType.STRING);
+
+        if (Utils.isNullOrEmpty(eggName))
+            eggName = "LM Spawn Egg";
+
         if (event.getClickedBlock().getBlockData().getMaterial() == Material.SPAWNER){
             final SpawnerBaseClass.CustomSpawnerInfo info = new SpawnerBaseClass.CustomSpawnerInfo(main, null);
             info.minLevel = minLevel;
@@ -155,12 +170,14 @@ public class PlayerInteractEventListener extends MessagesBase implements Listene
         if (minLevel != maxLevel)
             useLevel = ThreadLocalRandom.current().nextInt(minLevel, maxLevel + 1);
 
-        main.levelInterface.applyLevelToMob(lmEntity, useLevel, true, true, new HashSet<>(Collections.singletonList(AdditionalLevelInformation.NOT_APPLICABLE)));
         synchronized (lmEntity.getLivingEntity().getPersistentDataContainer()){
             lmEntity.getPDC().set(main.namespaced_keys.wasSummoned, PersistentDataType.INTEGER, 1);
             if (!Utils.isNullOrEmpty(customDropId))
                 lmEntity.getPDC().set(main.namespaced_keys.keySpawner_CustomDropId, PersistentDataType.STRING, customDropId);
+            lmEntity.getPDC().set(main.namespaced_keys.spawnerEggName, PersistentDataType.STRING, eggName);
         }
+
+        main.levelInterface.applyLevelToMob(lmEntity, useLevel, true, true, new HashSet<>(Collections.singletonList(AdditionalLevelInformation.NOT_APPLICABLE)));
 
         lmEntity.free();
         return true;
