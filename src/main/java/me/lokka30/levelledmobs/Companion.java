@@ -50,6 +50,7 @@ public class Companion {
         this.main = main;
         this.recentlyJoinedPlayers = new WeakHashMap<>();
         this.playerNetherPortals = new HashMap<>();
+        this.playerWorldPortals = new HashMap<>();
         this.updateResult = new LinkedList<>();
         buildUniversalGroups();
         this.metricsInfo = new MetricsInfo(main);
@@ -64,6 +65,7 @@ public class Companion {
     public HashSet<EntityType> groups_PassiveMobs;
     public List<String> updateResult;
     final public Map<Player, Location> playerNetherPortals;
+    final public Map<Player, Location> playerWorldPortals;
     final public List<UUID> spawner_CopyIds;
     final public List<UUID> spawner_InfoIds;
     final public List<DebugType> debugsEnabled;
@@ -432,6 +434,19 @@ public class Companion {
     public void setPlayerNetherPortalLocation(final @NotNull Player player, final @Nullable Location location){
         synchronized (playerNetherPortals_Lock){
             playerNetherPortals.put(player, location);
+        }
+    }
+
+    @Nullable
+    public Location getPlayerWorldPortalLocation(final @NotNull Player player){
+        synchronized (playerNetherPortals_Lock){
+            return playerWorldPortals.get(player);
+        }
+    }
+
+    public void setPlayerWorldPortalLocation(final @NotNull Player player, final @Nullable Location location){
+        synchronized (playerNetherPortals_Lock){
+            playerWorldPortals.put(player, location);
         }
     }
 }

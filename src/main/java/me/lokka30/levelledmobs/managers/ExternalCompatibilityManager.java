@@ -17,7 +17,6 @@ import org.bukkit.metadata.MetadataValue;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import simplepets.brainsynder.api.plugin.SimplePets;
 
 import java.util.Collections;
@@ -348,11 +347,8 @@ public class ExternalCompatibilityManager {
         if (user == null)
             return new PlayerHomeCheckResult("Unable to locate player information in essentials");
 
-        if (user.getHomes() == null || user.getHomes().isEmpty()) {
-            PlayerNetherOrWorldSpawnResult result = Utils.getNetherPortalOrWorldSpawn(main, player);
-            final String whichSource = result.isNetherPortalLocation ? "nether portal" : "spawn";
-            return new PlayerHomeCheckResult("Player has no homes set, using " + whichSource + " location", result.location);
-        }
+        if (user.getHomes() == null || user.getHomes().isEmpty())
+            return new PlayerHomeCheckResult(null, null);
 
         return new PlayerHomeCheckResult(null, user.getHome(user.getHomes().get(0)), user.getHomes().get(0));
     }

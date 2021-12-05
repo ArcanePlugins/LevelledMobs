@@ -285,20 +285,26 @@ public final class Utils {
     }
 
     @NotNull
-    public static PlayerNetherOrWorldSpawnResult getNetherPortalOrWorldSpawn(final @NotNull LevelledMobs main, final @NotNull Player player){
+    public static PlayerNetherOrWorldSpawnResult getPortalOrWorldSpawn(final @NotNull LevelledMobs main, final @NotNull Player player){
         Location location = null;
         boolean isNetherPortalCoord = false;
+        boolean isWorldPortalCoord = false;
 
         if (player.getWorld().getEnvironment() == World.Environment.NETHER){
             location = main.companion.getPlayerNetherPortalLocation(player);
             isNetherPortalCoord = true;
         }
+        else if (player.getWorld().getEnvironment() == World.Environment.NORMAL){
+            location = main.companion.getPlayerWorldPortalLocation(player);
+            isWorldPortalCoord = true;
+        }
 
         if (location == null) {
             location = player.getWorld().getSpawnLocation();
             isNetherPortalCoord = false;
+            isWorldPortalCoord = false;
         }
 
-        return new PlayerNetherOrWorldSpawnResult(location, isNetherPortalCoord);
+        return new PlayerNetherOrWorldSpawnResult(location, isNetherPortalCoord, isWorldPortalCoord);
     }
 }

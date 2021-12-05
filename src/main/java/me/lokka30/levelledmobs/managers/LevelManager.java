@@ -265,8 +265,9 @@ public class LevelManager implements LevelInterface {
     public PlayerLevelSourceResult getPlayerLevelSourceNumber(final Player player, final String variableToUse){
         if (player == null) return new PlayerLevelSourceResult(1);
 
-        final double origLevelSource;
+        double origLevelSource;
         final PlayerLevelSourceResult sourceResult = new PlayerLevelSourceResult(1);
+        sourceResult.homeNameUsed = "spawn";
 
         if ("%level%".equalsIgnoreCase(variableToUse))
             origLevelSource = player.getLevel();
@@ -280,57 +281,44 @@ public class LevelManager implements LevelInterface {
             origLevelSource = player.getWorld().getTime();
         else if ("%home_distance%".equalsIgnoreCase(variableToUse) || "%home_distance_with_bed%".equalsIgnoreCase(variableToUse)){
             final boolean allowBed = "%home_distance_with_bed%".equalsIgnoreCase(variableToUse);
-            boolean noHomesFound = false;
             PlayerNetherOrWorldSpawnResult netherOrWorldSpawnResult = null;
             final PlayerHomeCheckResult result = ExternalCompatibilityManager.getPlayerHomeLocation(main, player, allowBed);
-            sourceResult.homeNameUsed = result.homeNameUsed;
+            if (result.homeNameUsed != null)
+                sourceResult.homeNameUsed = result.homeNameUsed;
 
             Location useLocation = result.location;
-            if (useLocation == null && player.getWorld().getEnvironment() == World.Environment.NETHER){
-                netherOrWorldSpawnResult = Utils.getNetherPortalOrWorldSpawn(main, player);
+            if (useLocation == null || useLocation.getWorld() != player.getWorld()){
+                netherOrWorldSpawnResult = Utils.getPortalOrWorldSpawn(main, player);
                 useLocation = netherOrWorldSpawnResult.location;
+                if (netherOrWorldSpawnResult.isWorldPortalLocation)
+                    sourceResult.homeNameUsed = "world_portal";
+                else if (netherOrWorldSpawnResult.isNetherPortalLocation)
+                    sourceResult.homeNameUsed = "nether_portal";
+                else
+                    sourceResult.homeNameUsed = "spawn";
             }
 
-            if (useLocation == null) {
-                if (result.resultMessage != null)
-                    Utils.debugLog(main, DebugType.PLAYER_LEVELLING, result.resultMessage);
-            }
-            else if (useLocation.getWorld() != player.getWorld()){
-                useLocation = null;
-                noHomesFound = true;
-            }
-            else if (result.resultMessage != null)
+            if (result.resultMessage != null)
                 Utils.debugLog(main, DebugType.PLAYER_LEVELLING, result.resultMessage);
 
-            if (useLocation == null) {
-                netherOrWorldSpawnResult = Utils.getNetherPortalOrWorldSpawn(main, player);
-                useLocation = netherOrWorldSpawnResult.location;
-            }
-
-            if (noHomesFound) {
-                final String whichSource = netherOrWorldSpawnResult.isNetherPortalLocation ? "nether portal" : "spawn";
-                Utils.debugLog(main, DebugType.PLAYER_LEVELLING, "player is in a different world from home, using " + whichSource + " distance");
-            }
             origLevelSource = useLocation.distance(player.getLocation());
         }
         else if ("%bed_distance%".equalsIgnoreCase(variableToUse)){
             Location useLocation = player.getBedSpawnLocation();
             sourceResult.homeNameUsed = "bed";
 
-            if (player.getWorld().getEnvironment() == World.Environment.NETHER){
-                final PlayerNetherOrWorldSpawnResult result = Utils.getNetherPortalOrWorldSpawn(main, player);
+            if (useLocation == null || useLocation.getWorld() != player.getWorld()){
+                final PlayerNetherOrWorldSpawnResult result = Utils.getPortalOrWorldSpawn(main, player);
                 useLocation = result.location;
-                sourceResult.homeNameUsed = "nether_portal";
+                if (result.isWorldPortalLocation)
+                    sourceResult.homeNameUsed = "world_portal";
+                else if (result.isNetherPortalLocation)
+                    sourceResult.homeNameUsed = "nether_portal";
+                else
+                    sourceResult.homeNameUsed = "spawn";
             }
 
-            if (useLocation != null && useLocation.getWorld() == player.getWorld()) {
-                origLevelSource = useLocation.distance(player.getLocation());
-            }
-            else{
-                Utils.debugLog(main, DebugType.PLAYER_LEVELLING, "no bed set for player, using spawn distance");
-                origLevelSource = player.getWorld().getSpawnLocation().distance(player.getLocation());
-                sourceResult.homeNameUsed = "spawn";
-            }
+            origLevelSource = useLocation.distance(player.getLocation());
         }
         else{
             boolean usePlayerLevel = false;
@@ -344,11 +332,6 @@ public class LevelManager implements LevelInterface {
                             variableToUse, player.getName(), l.getBlockX(), l.getBlockY(), l.getBlockZ(), player.getWorld().getName()));
                     usePlayerLevel = true;
                 }
-                else if (!Utils.isDouble(PAPIResult)) {
-                    final Location l = player.getLocation();
-                    Utils.debugLog(main, DebugType.PLAYER_LEVELLING, String.format("Got invalid number for '%s', result: '%s' from PAPI. Player %s at %s,%s,%s in %s",
-                            variableToUse, PAPIResult, player.getName(), l.getBlockX(), l.getBlockY(), l.getBlockZ(), player.getWorld().getName()));
-                }
             } else {
                 Utils.logger.warning("PlaceHolderAPI is not installed, unable to get variable " + variableToUse);
                 usePlayerLevel = true;
@@ -356,8 +339,23 @@ public class LevelManager implements LevelInterface {
 
             if (usePlayerLevel)
                 origLevelSource = player.getLevel();
-            else
-                origLevelSource = Double.parseDouble(PAPIResult);
+            else {
+                final Location l = player.getLocation();
+                if (Utils.isNullOrEmpty(PAPIResult)){
+                    origLevelSource = player.getLevel();
+                    Utils.debugLog(main, DebugType.PLAYER_LEVELLING, String.format("Got blank result for '%s' from PAPI. Player %s at %s,%s,%s in %s",
+                            variableToUse, player.getName(), l.getBlockX(), l.getBlockY(), l.getBlockZ(), player.getWorld().getName()));
+                }
+                else {
+                    try
+                    { origLevelSource = Double.parseDouble(PAPIResult); }
+                    catch (Exception ignored){
+                        origLevelSource = player.getLevel();
+                        Utils.debugLog(main, DebugType.PLAYER_LEVELLING, String.format("Got invalid number for '%s', result: '%s' from PAPI. Player %s at %s,%s,%s in %s",
+                                variableToUse, PAPIResult, player.getName(), l.getBlockX(), l.getBlockY(), l.getBlockZ(), player.getWorld().getName()));
+                    }
+                }
+            }
         }
 
         sourceResult.numericResult = (int) Math.round(origLevelSource);
@@ -797,10 +795,8 @@ public class LevelManager implements LevelInterface {
                             Utils.debugLog(main, DebugType.ENTITY_MISC, "&b" + lmEntity.getTypeName() + " &7was a baby and is now an adult, applying levelling rules");
 
                             main._mobsQueueManager.addToQueue(new QueueItem(lmEntity, null));
-                        } else if (levellableState == LevellableState.ALLOWED) {
-                            Utils.logger.info("async, levelling mob 2");
+                        } else if (levellableState == LevellableState.ALLOWED)
                             main._mobsQueueManager.addToQueue(new QueueItem(lmEntity, null));
-                        }
                     }
                 }
 
