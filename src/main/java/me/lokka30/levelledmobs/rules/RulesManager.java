@@ -29,12 +29,10 @@ public class RulesManager {
     public RulesManager(final LevelledMobs main) {
         this.main = main;
         this.rulesInEffect = new TreeMap<>();
-        this.levelNumbersWithBiasMapCache = new TreeMap<>();
         this.biomeGroupMappings = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
     }
 
     private final LevelledMobs main;
-    private final Map<String, LevelNumbersWithBias> levelNumbersWithBiasMapCache;
     @NotNull
     public final SortedMap<Integer, List<RuleInfo>> rulesInEffect;
     @NotNull
@@ -56,13 +54,18 @@ public class RulesManager {
         return result;
     }
 
-    @Nullable
-    public String getRule_NBT_Data(final @NotNull LivingEntityWrapper lmEntity){
-        String nbtData = null;
+    @NotNull
+    public List<String> getRule_NBT_Data(final @NotNull LivingEntityWrapper lmEntity){
+        final List<String> nbtData = new LinkedList<>();
 
         for (final RuleInfo ruleInfo : lmEntity.getApplicableRules()){
-            if (ruleInfo.mobNBT_Data != null)
-                nbtData = ruleInfo.mobNBT_Data;
+            if (ruleInfo.mobNBT_Data != null) {
+                final MergeableStringList nbt = ruleInfo.mobNBT_Data;
+                if (!nbt.doMerge)
+                    nbtData.clear();
+
+                nbtData.addAll(nbt.items);
+            }
         }
 
         return nbtData;
@@ -77,25 +80,6 @@ public class RulesManager {
         }
 
         return result;
-    }
-
-    @Nullable
-    public LevelNumbersWithBias getRule_LowerMobLevelBiasFactor(@NotNull final LivingEntityWrapper lmEntity, final int minLevel, final int maxLevel){
-        Integer lowerMobLevelBiasFactor = null;
-
-        for (final RuleInfo ruleInfo : lmEntity.getApplicableRules()){
-            if (ruleInfo.lowerMobLevelBiasFactor != null) lowerMobLevelBiasFactor = ruleInfo.lowerMobLevelBiasFactor;
-        }
-
-        if (lowerMobLevelBiasFactor == null) return null;
-
-        final String checkName = String.format("%s-%s-%s", minLevel, maxLevel, lowerMobLevelBiasFactor);
-        if (this.levelNumbersWithBiasMapCache.containsKey(checkName))
-            return this.levelNumbersWithBiasMapCache.get(checkName);
-
-        LevelNumbersWithBias levelNumbersWithBias = new LevelNumbersWithBias(minLevel, maxLevel, lowerMobLevelBiasFactor);
-        this.levelNumbersWithBiasMapCache.put(checkName, levelNumbersWithBias);
-        return levelNumbersWithBias;
     }
 
     public int getRule_MaxRandomVariance(@NotNull final LivingEntityWrapper lmEntity){
@@ -144,7 +128,7 @@ public class RulesManager {
         }
 
         if (lmInterface instanceof LivingEntityWrapper) {
-            LivingEntityWrapper lmEntity = (LivingEntityWrapper) lmInterface;
+            final LivingEntityWrapper lmEntity = (LivingEntityWrapper) lmInterface;
             return (
                     allowedEntitiesList == null ||
                             !babyMobsInheritAdultSetting && lmEntity.isBabyMob() && Utils.isLivingEntityInModalList(allowedEntitiesList, lmEntity, true)) ||
@@ -187,34 +171,15 @@ public class RulesManager {
 
     @NotNull
     public Map<ExternalCompatibilityManager.ExternalCompatibility, Boolean> getRule_ExternalCompatibility(@NotNull final LivingEntityWrapper lmEntity){
-        final Map<ExternalCompatibilityManager.ExternalCompatibility, Boolean> result = new TreeMap<>();
+        final Map<ExternalCompatibilityManager.ExternalCompatibility, Boolean> result = new EnumMap<>(ExternalCompatibilityManager.ExternalCompatibility.class);
 
         for (final RuleInfo ruleInfo : lmEntity.getApplicableRules()){
             if (ruleInfo.enabledExtCompats != null) {
-                for (final ExternalCompatibilityManager.ExternalCompatibility compatibility : ruleInfo.enabledExtCompats.keySet())
-                    result.put(compatibility, ruleInfo.enabledExtCompats.get(compatibility));
+                result.putAll(ruleInfo.enabledExtCompats);
             }
         }
 
         return result;
-    }
-
-    public boolean isMythicMobsCompatibilityEnabled(){
-        for (final List<RuleInfo> rules : this.rulesInEffect.values()){
-            if (rules == null) continue;
-
-            for (final RuleInfo ruleInfo : rules){
-                if (ruleInfo.ruleIsEnabled &&
-                        ruleInfo.enabledExtCompats != null &&
-                        ruleInfo.enabledExtCompats.containsKey(ExternalCompatibilityManager.ExternalCompatibility.MYTHIC_MOBS) &&
-                        ruleInfo.enabledExtCompats.get(ExternalCompatibilityManager.ExternalCompatibility.MYTHIC_MOBS)
-                ){
-                    return true;
-                }
-            }
-        }
-
-        return false;
     }
 
     public boolean isPlayerLevellingEnabled(){
@@ -304,6 +269,7 @@ public class RulesManager {
         return maxLevel;
     }
 
+    @Nullable
     public PlayerLevellingOptions getRule_PlayerLevellingOptions(@NotNull final LivingEntityWrapper lmEntity){
         PlayerLevellingOptions levellingOptions = null;
 
@@ -322,6 +288,22 @@ public class RulesManager {
                 nametag = "disabled".equalsIgnoreCase(ruleInfo.nametag) ?
                         "" : ruleInfo.nametag;
             }
+        }
+
+        return nametag;
+    }
+
+    @Nullable
+    public String getRule_Nametag_Placeholder(@NotNull final LivingEntityWrapper lmEntity){
+        String nametag = null;
+        final boolean isLevelled = lmEntity.isLevelled();
+
+        for (final RuleInfo ruleInfo : lmEntity.getApplicableRules()) {
+            if (ruleInfo == null) continue;
+            final String nametagRule = isLevelled ?
+                    ruleInfo.nametag_Placeholder_Levelled : ruleInfo.nametag_Placeholder_Unlevelled;
+            if (nametagRule != null)
+                nametag = nametagRule;
         }
 
         return nametag;
@@ -392,7 +374,7 @@ public class RulesManager {
         if (coloringInfo == null) return  null;
 
         final int mobLevel = lmEntity.getMobLevel();
-        for (TieredColoringInfo info : coloringInfo){
+        for (final TieredColoringInfo info : coloringInfo){
             if (info.isDefault) tieredText = info.text;
             if (mobLevel >= info.minLevel && mobLevel <= info.maxLevel){
                 tieredText = info.text;
@@ -423,7 +405,7 @@ public class RulesManager {
             return lmEntity.getOverridenEntityName();
 
         for (final RuleInfo ruleInfo : lmEntity.getApplicableRules()){
-            boolean doMerge = ruleInfo.mergeEntityNameOverrides != null && ruleInfo.mergeEntityNameOverrides;
+            final boolean doMerge = ruleInfo.mergeEntityNameOverrides != null && ruleInfo.mergeEntityNameOverrides;
             if (ruleInfo.entityNameOverrides != null){
                 if (entityNameOverrides != null && doMerge)
                     entityNameOverrides.putAll(ruleInfo.entityNameOverrides);
@@ -471,6 +453,7 @@ public class RulesManager {
         return result;
     }
 
+    @Nullable
     private LevelTierMatching getEntityNameOverrideLevel(final Map<String, List<LevelTierMatching>> entityNameOverrides_Level, final LivingEntityWrapper lmEntity){
         if (entityNameOverrides_Level == null) return null;
 
@@ -498,8 +481,7 @@ public class RulesManager {
     public ApplicableRulesResult getApplicableRules(final LivingEntityInterface lmInterface){
         final ApplicableRulesResult applicableRules = new ApplicableRulesResult();
 
-        for (final int rulePriority : rulesInEffect.keySet()) {
-            final List<RuleInfo> rules = rulesInEffect.get(rulePriority);
+        for (final List<RuleInfo> rules : rulesInEffect.values()) {
             for (final RuleInfo ruleInfo : rules) {
 
                 if (!ruleInfo.ruleIsEnabled) continue;
@@ -576,7 +558,7 @@ public class RulesManager {
 
         if (ri.conditions_MM_Names != null){
             String mm_Name = ExternalCompatibilityManager.getMythicMobInternalName(lmEntity);
-            if ("".equals(mm_Name)) mm_Name = "(none)";
+            if (mm_Name.isEmpty()) mm_Name = "(none)";
 
             if (!ri.conditions_MM_Names.isEnabledInList(mm_Name, lmEntity)) {
                 Utils.debugLog(main, DebugType.DENIED_RULE_MYTHIC_MOBS_INTERNAL_NAME, String.format("&b%s&7, mob: &b%s&7, mm_name: &b%s&7",
@@ -591,6 +573,17 @@ public class RulesManager {
 
             if (!ri.conditions_SpawnerNames.isEnabledInList(checkName, lmEntity)) {
                 Utils.debugLog(main, DebugType.DENIED_RULE_SPAWN_REASON, String.format("&b%s&7, mob: &b%s&7, spawner: &b%s&7",
+                        ri.getRuleName(), lmEntity.getNameIfBaby(), checkName));
+                return false;
+            }
+        }
+
+        if (ri.conditions_SpawnegEggNames != null) {
+            String checkName = lmEntity.getSourceSpawnEggName();
+            if (checkName == null) checkName = "(none)";
+
+            if (!ri.conditions_SpawnegEggNames.isEnabledInList(checkName, lmEntity)) {
+                Utils.debugLog(main, DebugType.DENIED_RULE_SPAWN_REASON, String.format("&b%s&7, mob: &b%s&7, spawn_egg: &b%s&7",
                         ri.getRuleName(), lmEntity.getNameIfBaby(), checkName));
                 return false;
             }
@@ -706,13 +699,13 @@ public class RulesManager {
                 // find out if this entity previously lost or won the chance previously and use that result if present
                 final Map<String, Boolean> prevChanceResults = lmEntity.getPrevChanceRuleResults();
                 if (prevChanceResults != null && prevChanceResults.containsKey(ri.getRuleName())){
-                    boolean prevResult = prevChanceResults.get(ri.getRuleName());
+                    final boolean prevResult = prevChanceResults.get(ri.getRuleName());
                     return new RuleCheckResult(prevResult);
                 }
             }
 
-            final double chanceRole = ThreadLocalRandom.current().nextDouble();
-            if (chanceRole < (1.0 - ri.conditions_Chance)){
+            final float chanceRole = (float) ThreadLocalRandom.current().nextInt(0, 100001) * 0.00001F;
+            if (chanceRole < (1.0F - ri.conditions_Chance)){
                 Utils.debugLog(main, DebugType.DENIED_RULE_CHANCE, String.format("&b%s&7, mob: &b%s&7, chance: &b%s&7, chance role: &b%s&7",
                         ri.getRuleName(), lmInterface.getTypeName(), ri.conditions_Chance, Utils.round(chanceRole, 4)));
                 return new RuleCheckResult(false, false);
@@ -772,11 +765,11 @@ public class RulesManager {
 
         if (customBiomeGroups == null) return;
 
-        for (final String groupName : customBiomeGroups.keySet()){
-            final Set<String> groupMembers = customBiomeGroups.get(groupName);
+        for (final Map.Entry<String, Set<String>> groupName : customBiomeGroups.entrySet()){
+            final Set<String> groupMembers = groupName.getValue();
             final List<String> newList = new ArrayList<>(groupMembers.size());
             newList.addAll(groupMembers);
-            this.biomeGroupMappings.put(groupName, newList);
+            this.biomeGroupMappings.put(groupName.getKey(), newList);
         }
     }
 }

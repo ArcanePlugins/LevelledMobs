@@ -23,7 +23,7 @@ import java.io.FileInputStream;
 public final class FileLoader {
 
     public static final int SETTINGS_FILE_VERSION = 32;    // Last changed: v3.1.5 b503
-    public static final int MESSAGES_FILE_VERSION = 6;     // Last changed: v3.1.2 b485
+    public static final int MESSAGES_FILE_VERSION = 7;     // Last changed: v3.3.0 b567
     public static final int CUSTOMDROPS_FILE_VERSION = 10; // Last changed: v3.1.0 b474
     public static final int RULES_FILE_VERSION = 2;        // Last changed: v3.2.0 b529
 
@@ -40,9 +40,9 @@ public final class FileLoader {
         final File file = new File(plugin.getDataFolder(), cfgName);
 
         saveResourceIfNotExists(plugin, file);
-        try (FileInputStream fs = new FileInputStream(file)) {
+        try (final FileInputStream fs = new FileInputStream(file)) {
             new Yaml().load(fs);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             Utils.logger.error("&4Error reading " + cfgName + ". " + e.getMessage());
             return null;
         }
@@ -73,7 +73,7 @@ public final class FileLoader {
             else if (!isRules)
                 FileMigrator.copyYmlValues(backedupFile, file, fileVersion);
             else
-                FileMigrator.migrateRules(backedupFile, file, fileVersion);
+                FileMigrator.migrateRules(file);
 
             // reload cfg from the updated values
             cfg = YamlConfiguration.loadConfiguration(file);
@@ -88,13 +88,6 @@ public final class FileLoader {
         if (!file.exists()) {
             Utils.logger.info("&fFile Loader: &7File '&b" + file.getName() + "&7' doesn't exist, creating it now...");
             instance.saveResource(file.getName(), false);
-        }
-    }
-
-    public static void saveResourceIfNotExists(final Plugin instance, @NotNull final File file, final String filename) {
-        if (!file.exists()) {
-            Utils.logger.info("&fFile Loader: &7File '&b" + file.getName() + "&7' doesn't exist, creating it now...");
-            instance.saveResource(filename, false);
         }
     }
 

@@ -40,8 +40,8 @@ public class BlockPlaceListener implements Listener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void onBlockPlaceEvent(@NotNull final BlockPlaceEvent event) {
-        if (!event.getBlockPlaced().getType().equals(Material.SPAWNER) ||
-            !event.getItemInHand().getType().equals(Material.SPAWNER))
+        if (event.getBlockPlaced().getType() != Material.SPAWNER ||
+                event.getItemInHand().getType() != Material.SPAWNER)
             return;
 
         processMobSpawner(event.getItemInHand(), event.getBlockPlaced());
@@ -97,8 +97,14 @@ public class BlockPlaceListener implements Listener {
                     switch (i){
                         case 6: cs.setDelay(valueInt); break;
                         case 7: cs.setMaxNearbyEntities(valueInt); break;
-                        case 8: cs.setMinSpawnDelay(valueInt); break;
-                        case 9: cs.setMaxSpawnDelay(valueInt); break;
+                        case 8:
+                            if (cs.getMaxSpawnDelay() < valueInt)
+                                cs.setMaxSpawnDelay(valueInt);
+                            cs.setMinSpawnDelay(valueInt); break;
+                        case 9:
+                            if (cs.getMinSpawnDelay() > valueInt)
+                                cs.setMinSpawnDelay(valueInt);
+                            cs.setMaxSpawnDelay(valueInt); break;
                         case 10: cs.setRequiredPlayerRange(valueInt); break;
                         case 11: cs.setSpawnCount(valueInt); break;
                         case 12: cs.setSpawnRange(valueInt); break;

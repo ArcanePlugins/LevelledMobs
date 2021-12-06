@@ -25,12 +25,13 @@ import java.util.HashSet;
  * @author lokka30
  * @since 2.5.0
  */
+@SuppressWarnings("unused")
 public class MobPreLevelEvent extends Event implements Cancellable {
 
     private static final HandlerList HANDLERS = new HandlerList();
 
     @Override
-    public HandlerList getHandlers() {
+    public @NotNull HandlerList getHandlers() {
         return HANDLERS;
     }
 
@@ -46,7 +47,7 @@ public class MobPreLevelEvent extends Event implements Cancellable {
     }
 
     @Override
-    public void setCancelled(boolean cancelled) {
+    public void setCancelled(final boolean cancelled) {
         this.cancelled = cancelled;
     }
 
@@ -94,7 +95,7 @@ public class MobPreLevelEvent extends Event implements Cancellable {
         return additionalInformation;
     }
 
-    public void setLevel(int level) {
+    public void setLevel(final int level) {
         this.level = level;
     }
 

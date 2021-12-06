@@ -7,8 +7,9 @@ package me.lokka30.levelledmobs.customdrops;
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
 import me.lokka30.levelledmobs.misc.Utils;
 import me.lokka30.levelledmobs.rules.CustomDropsRuleSet;
-import me.lokka30.microlib.MessageUtils;
+import me.lokka30.microlib.messaging.MessageUtils;
 import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -28,40 +29,38 @@ import java.util.TreeMap;
  * @author stumper66
  * @since 2.4.1
  */
-public class CustomDropProcessingInfo {
-    public CustomDropProcessingInfo() {
+class CustomDropProcessingInfo {
+    CustomDropProcessingInfo() {
         this.groupIDsDroppedAlready = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
         this.allDropInstances = new LinkedList<>();
         this.playerLevelVariableCache = new TreeMap<>();
     }
 
     public LivingEntityWrapper lmEntity;
-    public int addition;
-    public Player mobKiller;
+    int addition;
+    Player mobKiller;
     @NotNull
-    final public Map<String, Integer> playerLevelVariableCache;
-    public boolean isSpawner;
-    public boolean equippedOnly;
-    public boolean deathByFire;
-    public boolean wasKilledByPlayer;
-    public boolean doNotMultiplyDrops;
-    public boolean hasOverride;
-    public boolean hasCustomDropId;
-    public boolean madeOverallChance;
-    public boolean hasEquippedItems;
+    final Map<String, Integer> playerLevelVariableCache;
+    boolean isSpawner;
+    boolean equippedOnly;
+    boolean deathByFire;
+    boolean wasKilledByPlayer;
+    EntityDamageEvent.DamageCause deathCause;
+    boolean doNotMultiplyDrops;
+    boolean hasOverride;
+    boolean hasCustomDropId;
+    boolean hasEquippedItems;
     public String customDropId;
-    public String playerLevelVariable;
-    public List<ItemStack> newDrops;
+    List<ItemStack> newDrops;
     @Nonnull
-    final public Map<String, Integer> groupIDsDroppedAlready;
-    public Map<Integer, List<CustomDropBase>> prioritizedDrops;
-    @Nullable
-    public CustomDropsRuleSet dropRules;
+    final Map<String, Integer> groupIDsDroppedAlready;
+    Map<Integer, List<CustomDropBase>> prioritizedDrops;
+    @Nullable CustomDropsRuleSet dropRules;
     @NotNull
-    final public List<CustomDropInstance> allDropInstances;
-    public StringBuilder debugMessages;
+    final List<CustomDropInstance> allDropInstances;
+    private StringBuilder debugMessages;
 
-    public void addDebugMessage(final String message){
+    void addDebugMessage(final String message){
         if (this.debugMessages == null)
             this.debugMessages = new StringBuilder();
 
@@ -71,7 +70,7 @@ public class CustomDropProcessingInfo {
         this.debugMessages.append(message);
     }
 
-    public void writeAnyDebugMessages(){
+    void writeAnyDebugMessages(){
         if (this.debugMessages == null) return;
 
         Utils.logger.info(MessageUtils.colorizeAll(this.debugMessages.toString()));

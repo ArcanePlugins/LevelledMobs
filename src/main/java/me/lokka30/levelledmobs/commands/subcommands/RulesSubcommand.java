@@ -5,17 +5,12 @@
 package me.lokka30.levelledmobs.commands.subcommands;
 
 import me.lokka30.levelledmobs.LevelledMobs;
+import me.lokka30.levelledmobs.commands.MessagesBase;
 import me.lokka30.levelledmobs.managers.ExternalCompatibilityManager;
-import me.lokka30.levelledmobs.misc.CachedModalList;
-import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
-import me.lokka30.levelledmobs.misc.QueueItem;
-import me.lokka30.levelledmobs.misc.Utils;
+import me.lokka30.levelledmobs.misc.*;
 import me.lokka30.levelledmobs.rules.RuleInfo;
-import me.lokka30.microlib.MessageUtils;
-import net.md_5.bungee.api.chat.ClickEvent;
-import net.md_5.bungee.api.chat.HoverEvent;
-import net.md_5.bungee.api.chat.TextComponent;
-import net.md_5.bungee.api.chat.hover.content.Text;
+import me.lokka30.microlib.messaging.MessageUtils;
+import me.lokka30.microlib.other.VersionUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Particle;
@@ -45,23 +40,24 @@ import java.util.*;
  * @author stumper66
  * @since 3.0.0
  */
-public class RulesSubcommand implements Subcommand {
+public class RulesSubcommand extends MessagesBase implements Subcommand {
 
-    public RulesSubcommand(final LevelledMobs main){
-        this.main = main;
+    public RulesSubcommand(final LevelledMobs main) {
+        super(main);
     }
-
-    private final LevelledMobs main;
 
     @Override
     public void parseSubcommand(final LevelledMobs main, @NotNull final CommandSender sender, final String label, final String[] args) {
+        commandSender = sender;
+        messageLabel = label;
+
         if (!sender.hasPermission("levelledmobs.command.rules")){
             main.configUtils.sendNoPermissionMsg(sender);
             return;
         }
 
         if (args.length == 1) {
-            sender.sendMessage(MessageUtils.colorizeAll("&b&lLevelledMobs: &7Incomplete command"));
+            showMessage("command.levelledmobs.rules.incomplete-command");
             return;
         }
 
@@ -77,22 +73,21 @@ public class RulesSubcommand implements Subcommand {
 
         if ("show_all".equalsIgnoreCase(args[1])) {
             if (sender instanceof Player)
-                sender.sendMessage("Rules have been printed on the console");
+                showMessage("command.levelledmobs.rules.console-rules");
 
             final StringBuilder sb = new StringBuilder();
 
-            for (final String key : main.rulesParsingManager.rulePresets.keySet()) {
-                final RuleInfo rpi = main.rulesParsingManager.rulePresets.get(key);
+            for (final RuleInfo rpi : main.rulesParsingManager.rulePresets.values()) {
                 sb.append("\n--------------------------------- Preset rule ----------------------------------\n");
-                formatRulesVisually(rpi, sender, showOnConsole, Collections.singletonList("ruleIsEnabled"), sb);
+                sb.append(rpi.formatRulesVisually(List.of("ruleIsEnabled")));
             }
 
             sb.append("\n--------------------------------- Default values -------------------------------\n");
-            formatRulesVisually(main.rulesParsingManager.defaultRule, sender, showOnConsole, null, sb);
+            sb.append(main.rulesParsingManager.defaultRule.formatRulesVisually());
 
             for (final RuleInfo rpi : main.rulesParsingManager.customRules) {
                 sb.append("\n--------------------------------- Custom rule ----------------------------------\n");
-                formatRulesVisually(rpi, sender, showOnConsole, null, sb);
+                sb.append(rpi.formatRulesVisually());
             }
             sb.append("\n--------------------------------------------------------------------------------------");
 
@@ -102,26 +97,30 @@ public class RulesSubcommand implements Subcommand {
                 sender.sendMessage(sb.toString());
         } else if ("show_effective".equalsIgnoreCase(args[1])) {
             if (!(sender instanceof Player)) {
-                sender.sendMessage("The command must be run by a player");
+                showMessage("common.no-player");
                 return;
             }
 
             getMobBeingLookedAt((Player) sender, showOnConsole, findNearbyEntities);
         } else if ("show_rule".equalsIgnoreCase(args[1]))
             showRule(sender, args);
-        else if ("help_discord".equalsIgnoreCase(args[1]))
-            showHyperlink(sender, "Click for Discord invite", "https://www.discord.io/arcaneplugins");
-        else if ("help_wiki".equalsIgnoreCase(args[1]))
-            showHyperlink(sender, "Click to open the wiki","https://github.com/lokka30/LevelledMobs/wiki");
+        else if ("help_discord".equalsIgnoreCase(args[1])) {
+            final String message = getMessage("command.levelledmobs.rules.discord-invite");
+            showHyperlink(sender, message, "https://www.discord.io/arcaneplugins");
+        }
+        else if ("help_wiki".equalsIgnoreCase(args[1])) {
+            final String message = getMessage("command.levelledmobs.rules.wiki-link");
+            showHyperlink(sender, message, "https://github.com/lokka30/LevelledMobs/wiki");
+        }
         else if ("reset".equalsIgnoreCase(args[1]))
-            resetRules(sender, label, args);
+            resetRules(sender, args);
         else if ("force_all".equalsIgnoreCase(args[1]))
-            forceRelevel(sender, label, args);
+            forceRelevel(sender);
         else
-            sender.sendMessage(MessageUtils.colorizeAll("&b&lLevelledMobs: &7Invalid command"));
+            showMessage("common.invalid-command");
     }
 
-    private void forceRelevel(final CommandSender sender, final String label, @NotNull final String[] args){
+    private void forceRelevel(final CommandSender sender){
         int worldCount = 0;
         int entityCount = 0;
 
@@ -147,18 +146,15 @@ public class RulesSubcommand implements Subcommand {
             }
         }
 
-        sender.sendMessage(MessageUtils.colorizeAll(String.format(
-                "%s Rules Reprocessed for &b%s&7 mobs in &b%s&7 world(s)",
-                label, entityCount, worldCount)));
+        showMessage("command.levelledmobs.rules.rules-reprocessed",
+                new String[]{ "%entitycount%", "%worldcount%" },
+                new String[]{String.valueOf(entityCount), String.valueOf(worldCount)}
+        );
     }
 
-    private void resetRules(final CommandSender sender, final String label, @NotNull final String @NotNull [] args){
-        final String prefix = main.configUtils.getPrefix();
-
+    private void resetRules(final CommandSender sender, @NotNull final String @NotNull [] args){
         if (args.length < 3 || args.length > 4){
-            sender.sendMessage(prefix+  " Running this command will reset your rules to one of 3 defaults.\n" +
-                    "You must select if you want easy/normal/hard difficulty.\n" +
-                    "A backup will be made and your rules.yml reset to default");
+            showMessage("command.levelledmobs.rules.reset");
             return;
         }
 
@@ -172,22 +168,13 @@ public class RulesSubcommand implements Subcommand {
                 break;
         }
 
-        if (difficulty.equals(ResetDifficulty.UNSPECIFIED)){
-            sender.sendMessage(prefix+ " Invalid difficulty: " + args[2]);
+        if (difficulty == ResetDifficulty.UNSPECIFIED){
+            showMessage("command.levelledmobs.rules.invalid-difficulty", "%difficulty%", args[2]);
             return;
         }
 
         if (args.length == 3){
-            final StringBuilder sb = new StringBuilder();
-            if (sender instanceof Player) sb.append("/");
-            sb.append(label);
-            for (final String arg : args) {
-                sb.append(" ");
-                sb.append(arg);
-            }
-
-            sender.sendMessage(prefix +" To reset your rules to " + args[2] + " difficulty, type in the following command:\n" +
-                    sb + " confirm");
+            showMessage("command.levelledmobs.rules.reset-syntax", "%difficulty%", args[2]);
             return;
         }
 
@@ -196,9 +183,9 @@ public class RulesSubcommand implements Subcommand {
 
     private void resetRules(final @NotNull CommandSender sender, final @NotNull ResetDifficulty difficulty){
         final String prefix = main.configUtils.getPrefix();
-        sender.sendMessage(prefix + " Resetting rules to " + difficulty);
+        showMessage("command.levelledmobs.rules.resetting", "%difficulty%", String.valueOf(difficulty));
 
-        String filename;
+        final String filename;
 
         switch (difficulty){
             case EASY: filename = "predefined/rules_easy.yml";
@@ -210,7 +197,7 @@ public class RulesSubcommand implements Subcommand {
         }
 
 
-        try (InputStream stream = main.getResource(filename)) {
+        try (final InputStream stream = main.getResource(filename)) {
             if (stream == null){
                 Utils.logger.error(prefix + " Input stream was null");
                 return;
@@ -226,12 +213,12 @@ public class RulesSubcommand implements Subcommand {
 
             Files.copy(rulesFile.toPath(), rulesBackupFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
             Files.copy(stream, rulesFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-        } catch (IOException ex) {
+        } catch (final IOException ex) {
             ex.printStackTrace();
             return;
         }
 
-        sender.sendMessage(prefix + " rules.yml updated successfully");
+        showMessage("command.levelledmobs.rules.reset-complete");
         main.reloadLM(sender);
     }
 
@@ -240,19 +227,20 @@ public class RulesSubcommand implements Subcommand {
     }
 
     private void showHyperlink(final CommandSender sender, final String message, final String url){
-        if (sender instanceof Player) {
-            final TextComponent component = new TextComponent(message);
-            component.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, url));
-            component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(url)));
-            final Player p = (Player) sender;
-            p.spigot().sendMessage(component);
-        } else
+        if (!(sender instanceof Player)){
             sender.sendMessage(url);
+            return;
+        }
+
+        if (VersionUtils.isRunningPaper())
+            PaperUtils.sendHyperlink(sender, message, url);
+        else
+            SpigotUtils.sendHyperlink(sender, message, url);
     }
 
     private void showRule(final CommandSender sender, @NotNull final String @NotNull [] args){
         if (args.length < 3){
-            sender.sendMessage("Must specify a rule name.");
+            showMessage("command.levelledmobs.rules.rule-name-missing");
             return;
         }
 
@@ -263,7 +251,6 @@ public class RulesSubcommand implements Subcommand {
         for (final RuleInfo ruleInfo : main.rulesParsingManager.getAllRules())
             allRuleNames.put(ruleInfo.getRuleName().replace(" ", "_"), ruleInfo);
 
-        final String lastArg = args[args.length - 1];
         String badRuleName = null;
 
         for (int i = 2; i < args.length; i++){
@@ -281,20 +268,21 @@ public class RulesSubcommand implements Subcommand {
         }
 
         if (badRuleName != null){
-            sender.sendMessage("No rule was found with name " + badRuleName);
+            showMessage("command.levelledmobs.rules.rule-name-invalid", "%rulename%", badRuleName);
             return;
         }
         if (foundRule == null){
-            sender.sendMessage("Must specify a rule name");
+            showMessage("command.levelledmobs.rules.rule-name-missing");
             return;
         }
 
         final RuleInfo rule = allRuleNames.get(foundRule);
 
         final StringBuilder sb = new StringBuilder();
-        sb.append(MessageUtils.colorizeAll("Showing all values for rule: &b" + rule.getRuleName() + "&r\n"));
+        sb.append(getMessage("command.levelledmobs.rules.showing-rules", "%rulename%", rule.getRuleName()));
+        sb.append("\n");
 
-        formatRulesVisually(rule, sender, showOnConsole, Collections.singletonList("id"), sb);
+        sb.append(rule.formatRulesVisually(List.of("id")));
         if (showOnConsole)
             Utils.logger.info(sb.toString());
         else
@@ -309,7 +297,7 @@ public class RulesSubcommand implements Subcommand {
         for(final Entity entity : player.getNearbyEntities(10, 10, 10)){
             if (!(entity instanceof LivingEntity)) continue;
 
-            LivingEntity le = (LivingEntity) entity;
+            final LivingEntity le = (LivingEntity) entity;
             if (findNearbyEntities) {
                 final double distance = le.getLocation().distanceSquared(player.getLocation());
                 entities.put(distance, le);
@@ -324,9 +312,9 @@ public class RulesSubcommand implements Subcommand {
         }
 
         if (!findNearbyEntities && livingEntity == null)
-            player.sendMessage("Must be looking at a nearby entity");
+            showMessage("command.levelledmobs.rules.no-entities-visible");
         else if (findNearbyEntities && entities.isEmpty())
-            player.sendMessage("No entities were found within a 10 block radius");
+            showMessage("command.levelledmobs.rules.no-entities-near");
         else {
             if (findNearbyEntities)
                 livingEntity = entities.get(entities.firstKey());
@@ -337,18 +325,19 @@ public class RulesSubcommand implements Subcommand {
             String entityName = lmEntity.getTypeName();
             if (ExternalCompatibilityManager.hasMythicMobsInstalled() && ExternalCompatibilityManager.isMythicMob(lmEntity))
                 entityName = ExternalCompatibilityManager.getMythicMobInternalName(lmEntity);
-            //                                                                 0 1   2                3   4   5
-            final String message = String.format("showing effective rules for: %s%s (%s) at location: %s, %s, %s",
-                    lmEntity.isLevelled() ? "level " + lmEntity.getMobLevel() + " " : "",   // 0
-                    entityName,                                                             // 1
-                    lmEntity.getLivingEntity().getName(),                                   // 2
-                    lmEntity.getLivingEntity().getLocation().getBlockX(),                   // 3
-                    lmEntity.getLivingEntity().getLocation().getBlockY(),                   // 4
-                    lmEntity.getLivingEntity().getLocation().getBlockZ()                    // 5
+
+            final String locationStr = String.format("%s, %s, %s",
+                    lmEntity.getLivingEntity().getLocation().getBlockX(),
+                    lmEntity.getLivingEntity().getLocation().getBlockY(),
+                    lmEntity.getLivingEntity().getLocation().getBlockZ());
+            final List<String> messages = getMessage("command.levelledmobs.rules.effective-rules",
+                    new String[]{"%mobname%", "%entitytype%", "%location%"},
+                    new String[]{ entityName, lmEntity.getNameIfBaby(), locationStr }
             );
 
+
             final StringBuilder sb = new StringBuilder();
-            sb.append(message);
+            sb.append(String.join("\n", messages).replace(main.configUtils.getPrefix() + " ", ""));
 
             player.sendMessage(sb.toString());
             if (!showOnConsole) sb.setLength(0);
@@ -378,56 +367,11 @@ public class RulesSubcommand implements Subcommand {
                         world.spawnParticle(Particle.SPELL, location, 20, 0, 0, 0, 0.1);
                         Thread.sleep(50);
                     }
-                } catch (InterruptedException ignored) { }
+                } catch (final InterruptedException ignored) { }
             }
         };
 
         runnable.runTaskAsynchronously(main);
-    }
-
-
-    private void formatRulesVisually(@NotNull final RuleInfo pi, final CommandSender sender, final boolean showOnConsole, final List<String> excludedKeys, final StringBuilder sb){
-        final SortedMap<String, String> values = new TreeMap<>();
-
-        if (excludedKeys == null || !excludedKeys.contains("id")) {
-            sb.append("id: ");
-            sb.append(pi.getRuleName());
-            sb.append("\n");
-        }
-
-        try {
-            for(final Field f : pi.getClass().getDeclaredFields()) {
-                if (!Modifier.isPublic(f.getModifiers())) continue;
-                if (f.get(pi) == null) continue;
-                if (f.getName().equals("ruleSourceNames")) continue;
-                if (excludedKeys != null && excludedKeys.contains(f.getName())) continue;
-                final Object value = f.get(pi);
-                if (value.toString().equalsIgnoreCase("NOT_SPECIFIED")) continue;
-                if (value.toString().equalsIgnoreCase("{}")) continue;
-                if (value.toString().equalsIgnoreCase("[]")) continue;
-                if (value.toString().equalsIgnoreCase("0") &&
-                        f.getName().equals("rulePriority")) continue;
-                if (value.toString().equalsIgnoreCase("0.0")) continue;
-                if (value.toString().equalsIgnoreCase("false") &&
-                        !f.getName().equals("ruleIsEnabled")) continue;
-                if (value.toString().equalsIgnoreCase("NONE")) continue;
-                if (value instanceof CachedModalList<?>) {
-                    CachedModalList<?> cml = (CachedModalList<?>) value;
-                    if (cml.isEmpty() && !cml.allowAll && !cml.excludeAll) continue;
-                }
-                final String showValue = "&b" + f.getName() + "&r, value: &b" + value + "&r";
-                values.put(f.getName(), showValue);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        for (final String key : values.keySet()){
-            sb.append(MessageUtils.colorizeAll(values.get(key)));
-            sb.append("\n");
-        }
-
-        sb.setLength(sb.length() - 1); // remove trailing newline
     }
 
     private void showEffectiveValues(final CommandSender sender, final @NotNull LivingEntityWrapper lmEntity, final boolean showOnConsole, final StringBuilder sb){
@@ -437,9 +381,9 @@ public class RulesSubcommand implements Subcommand {
 
         if (effectiveRules.isEmpty()){
             if (showOnConsole)
-                Utils.logger.info(sb + "\nNo effective rules were found");
+                Utils.logger.info(sb + "\n" + getMessage("command.levelledmobs.rules.no-effective-rules").replace(main.configUtils.getPrefix() + " ", ""));
             else
-                sender.sendMessage("No effective rules were found");
+                showMessage("command.levelledmobs.rules.no-effective-rules");
             return;
         }
 
@@ -470,7 +414,7 @@ public class RulesSubcommand implements Subcommand {
                     printedKeys.add(f.getName());
                 }
             }
-        } catch (Exception e) {
+        } catch (final Exception e) {
             e.printStackTrace();
         }
 
@@ -478,8 +422,8 @@ public class RulesSubcommand implements Subcommand {
         sb.append(fineTuning);
         sb.append("&r\n");
 
-        for (final String key : values.keySet()){
-            sb.append(values.get(key));
+        for (final String s : values.values()){
+            sb.append(s);
             sb.append("&r\n");
         }
 
@@ -525,8 +469,6 @@ public class RulesSubcommand implements Subcommand {
                 final Set<String> allRuleNames = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
                 for (final RuleInfo ruleInfo : main.rulesParsingManager.getAllRules())
                     allRuleNames.add(ruleInfo.getRuleName().replace(" ", "_"));
-
-                final String lastArg = args[args.length - 1];
 
                 for (int i = 2; i < args.length; i++) {
                     final String arg = args[i].toLowerCase();

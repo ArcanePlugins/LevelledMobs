@@ -42,8 +42,12 @@ common:
     - '%prefix% You don''t have access to that.'
   players-only:
     - '%prefix% Only players may use that.'
+  no-player:
+    - '%prefix% Command can only be run by a player'
   player-offline:
     - '%prefix% &r%player%&7 is offline or invalid.'
+  invalid-command:
+    - '%prefix% Invalid command'
 
 
 # +-------------------------------------------------------------------------------------------LM3
@@ -166,6 +170,8 @@ command:
         - '&7/%label% spawner create &b/minlevel&7 1 &b/maxlevel&7 10 &b/name&7 "My customized LM spawner" &b/customDropsId&7 Id1'
       no-value:
         - '%prefix% No value was specified for: &b%keyname%&7'
+      no-player:
+        - '%prefix% Command can only be run by a player unless /giveplayer is specified'
       invalid-value:
         - '%prefix% Invalid value for &b%keyname%&7, must be a number'
       no-level-specified:
@@ -176,6 +182,12 @@ command:
         - '%prefix% Gave you a LM spawner'
       spawner-give-message-console:
         - '%prefix% Gave &r%playername%&7 a LM spawner. &8|&7 minLevel: &b%minlevel%&7, maxLevel: &b%maxlevel%&7'
+      permission-denied:
+        - '%prefix% You don''t have permissions to update a spawner or convert a spawner to a LM spawner.'
+      spawner-converted:
+        - '%prefix% Converted vanilla spawner into a LM spawner with name "%spawnername%".'
+      spawner-updated:
+        - '%prefix% Updated LM spawner from spawn egg. Spawner name: "%spawnername%"'
       info:
         status-enabled:
           - '%prefix% Spawner Info is &aenabled&f.'
@@ -201,7 +213,82 @@ command:
 
 # +-------------------------------------------------------------------------------------------LM3
 # +                                                                                          +LM3
-# +   Section 06 - System Command Messages                                                   +LM3
+# +   Section 06 - Spawn Egg Command Messages                                                +LM3
+# +                                                                                          +LM3
+# +-------------------------------------------------------------------------------------------LM3
+    spawn_egg:
+      usage:
+        - '%prefix% egg command syntax:'
+        - '&8 &m->&b /%label% egg /minlevel <level> /maxlevel <level> /entity <entity type>'
+        - '&7&o Sample Spawn Egg'
+        - '&7/%label% egg &b/minlevel&7 1 &b/maxlevel&7 10 &b/name&7 "My customized LM spawn egg" &b/customDropsId&7 Id1'
+      no-paper:
+        - '%prefix% This feature is only available on servers running Paper or forks of Paper'
+      no-value:
+        - '%prefix% No value was specified for: &b%keyname%&7'
+      no-player:
+        - '%prefix% Command can only be run by a player unless /giveplayer is specified'
+      no-player-specified:
+        - '%prefix% No player was specified'
+      invalid-value:
+        - '%prefix% Invalid value for &b%keyname%&7, must be a number'
+      no-level-specified:
+        - '%prefix% You must specify minLevel, maxLevel and entity'
+      inventory-full:
+        - '%prefix% &4Your inventory is full!'
+      give-message:
+        - '%prefix% Gave you a LM spawn egg'
+      give-message-console:
+        - '%prefix% Gave &r%playername%&7 a LM spawn egg. &8|&7 minLevel: &b%minlevel%&7, maxLevel: &b%maxlevel%&7, entity: &b%entitytype%&7'
+
+
+# +-------------------------------------------------------------------------------------------LM3
+# +                                                                                          +LM3
+# +   Section 07 - Rules Command Messages                                                    +LM3
+# +                                                                                          +LM3
+# +-------------------------------------------------------------------------------------------LM3
+    rules:
+      incomplete-command:
+        - '%prefix% Incomplete command'
+      console-rules:
+        - '%prefix% Rules have been printed on the console'
+      discord-invite:
+        - '%prefix% Click for Discord invite'
+      wiki-link:
+        - '%prefix% Click to open the wiki'
+      rules-reprocessed:
+        - '%prefix% Rules Reprocessed for &b%entitycount%&7 mobs in &b%worldcount%&7 world(s)'
+      reset:
+        - '%prefix% Running this command will reset your rules to one of 3 defaults.'
+        - 'You must select if you want easy/normal/hard difficulty.'
+        - 'A backup will be made and your rules.yml reset to default.'
+      resetting:
+        - '%prefix% Resetting rules to %difficulty%'
+      reset-syntax:
+        - '%prefix% To reset your rules to %difficulty% difficulty, type in the following command:'
+        - '%label% rules reset %difficulty% confirm'
+      reset-complete:
+        - '%prefix% rules.yml updated successfully'
+      invalid-difficulty:
+        - '%prefix% Invalid difficulty: %difficulty%'
+      rule-name-missing:
+        - '%prefix% Must specify a rule name.'
+      rule-name-invalid:
+        - '%prefix% No rule was found with name %rulename%'
+      showing-rules:
+        - 'Showing all values for rule: &b%rulename%&r'
+      no-entities-visible:
+        - '%prefix% Must be looking at a nearby entity'
+      no-entities-near:
+        - '%prefix% No entities were found within a 10 block radius'
+      effective-rules:
+        - '%prefix% Showing effective rules for: %entitytype% (%mobname%) at location: %location%'
+      no-effective-rules:
+        - '%prefix% No effective rules were found'
+
+# +-------------------------------------------------------------------------------------------LM3
+# +                                                                                          +LM3
+# +   Section 08 - System Command Messages                                                   +LM3
 # +                                                                                          +LM3
 # +-------------------------------------------------------------------------------------------LM3
     reload:
@@ -232,7 +319,7 @@ command:
 
 # +-------------------------------------------------------------------------------------------LM3
 # +                                                                                          +LM3
-# +   Section 07 - Other Messages                                                            +LM3
+# +   Section 09 - Other Messages                                                            +LM3
 # +                                                                                          +LM3
 # +-------------------------------------------------------------------------------------------LM3
 other:
@@ -251,12 +338,25 @@ other:
     send-on-join: true
 
   mob-head-drop-name: '%mob_name%''s head'
+  create-debug:
+    - '&b&nCreate a Debugging ZIP'
+    - '&7You should only run this command if a LevelledMobs developer has asked you to. It is used to assist users who are experiencing issues with the plugin.'
+    - ''
+    - '&7This command will generate a ZIP file containing the following required data:'
+    - '&8 &m->&b Plugins list'
+    - '&8 &m->&b Server version'
+    - '&8 &m->&b Current and maximum online player count'
+    - '&8 &m->&b The latest.log file&7 &8(/logs/latest.log)'
+    - ''
+    - '&7LevelledMobs developers will not redistribute or retain the data beyond the purpose of resolving any issue you may be experiencing. You may also verify the contents prior to sending the file.'
+    - '&7To proceed in creating the ZIP file, please run:'
+    - '&b/lm debug create confirm&7'
 
 
 # +-------------------------------------------------------------------------------------------LM3
 # +                                                                                          +LM3
-# +   Section 08 - Advanced Message Settings                                                 +LM3
+# +   Section 10 - Advanced Message Settings                                                 +LM3
 # +   DO NOT EDIT BEYOND HERE WITHOUT DEVELOPER APPROVAL                                     +LM3
 # +                                                                                          +LM3
 # +-------------------------------------------------------------------------------------------LM3
-file-version: 6
+file-version: 7

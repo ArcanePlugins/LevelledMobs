@@ -15,7 +15,7 @@ import java.util.List;
  * @author lokka30
  * @since 2.4.0
  */
-public interface Subcommand {
+interface Subcommand {
 
     void parseSubcommand(final LevelledMobs main, final CommandSender sender, final String label, final String[] args);
 

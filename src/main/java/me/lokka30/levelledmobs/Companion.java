@@ -12,23 +12,22 @@ import me.lokka30.levelledmobs.listeners.*;
 import me.lokka30.levelledmobs.managers.ExternalCompatibilityManager;
 import me.lokka30.levelledmobs.managers.LevelManager;
 import me.lokka30.levelledmobs.managers.PlaceholderApiIntegration;
-import me.lokka30.levelledmobs.managers.WorldGuardIntegration;
-import me.lokka30.levelledmobs.misc.FileLoader;
-import me.lokka30.levelledmobs.misc.FileMigrator;
-import me.lokka30.levelledmobs.misc.Utils;
-import me.lokka30.levelledmobs.misc.VersionInfo;
+import me.lokka30.levelledmobs.misc.*;
 import me.lokka30.levelledmobs.rules.MetricsInfo;
-import me.lokka30.microlib.UpdateChecker;
-import me.lokka30.microlib.VersionUtils;
+import me.lokka30.microlib.exceptions.OutdatedServerVersionException;
+import me.lokka30.microlib.other.UpdateChecker;
+import me.lokka30.microlib.other.VersionUtils;
 import org.bstats.bukkit.Metrics;
 import org.bstats.charts.SimpleBarChart;
 import org.bstats.charts.SimplePie;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 import java.io.*;
@@ -50,33 +49,28 @@ public class Companion {
     Companion(final LevelledMobs main) {
         this.main = main;
         this.recentlyJoinedPlayers = new WeakHashMap<>();
+        this.playerNetherPortals = new HashMap<>();
         this.updateResult = new LinkedList<>();
         buildUniversalGroups();
         this.metricsInfo = new MetricsInfo(main);
         this.spawner_CopyIds = new LinkedList<>();
         this.spawner_InfoIds = new LinkedList<>();
+        this.debugsEnabled = new LinkedList<>();
     }
 
     final private WeakHashMap<Player, Instant> recentlyJoinedPlayers;
     public HashSet<EntityType> groups_HostileMobs;
     public HashSet<EntityType> groups_AquaticMobs;
     public HashSet<EntityType> groups_PassiveMobs;
-    public HashSet<EntityType> groups_NetherMobs;
     public List<String> updateResult;
+    final public Map<Player, Location> playerNetherPortals;
     final public List<UUID> spawner_CopyIds;
     final public List<UUID> spawner_InfoIds;
-    public boolean playerInteractListenerIsRegistered;
+    final public List<DebugType> debugsEnabled;
     final private PluginManager pluginManager = Bukkit.getPluginManager();
     final private MetricsInfo metricsInfo;
     final static private Object playerLogonTimes_Lock = new Object();
-
-    void checkWorldGuard() {
-        // Hook into WorldGuard
-        // This cannot be moved to onEnable (stated in WorldGuard's documentation). It MUST be ran in onLoad.
-        if (ExternalCompatibilityManager.hasWorldGuardInstalled()) {
-            main.worldGuardIntegration = new WorldGuardIntegration();
-        }
-    }
+    final static private Object playerNetherPortals_Lock = new Object();
 
     //Checks if the server version is supported
     public void checkCompatibility() {
@@ -113,7 +107,7 @@ public class Companion {
     }
 
     // Note: also called by the reload subcommand.
-    public boolean loadFiles(final boolean isReload) {
+    boolean loadFiles(final boolean isReload) {
         Utils.logger.info("&fFile Loader: &7Loading files...");
 
         // save license.txt
@@ -149,20 +143,19 @@ public class Companion {
 
             // remove legacy files if they exist
             final String[] legacyFile = {"attributes.yml", "drops.yml"};
-            for (String lFile : legacyFile) {
+            for (final String lFile : legacyFile) {
                 final File delFile = new File(main.getDataFolder(), lFile);
                 try {
-                    if (delFile.exists()) delFile.delete();
-                } catch (Exception e) {
+                    if (delFile.exists()) //noinspection ResultOfMethodCallIgnored
+                        delFile.delete();
+                } catch (final Exception e) {
                     Utils.logger.warning("Unable to delete file " + lFile + ", " + e.getMessage());
                 }
             }
 
         }
 
-        final List<String> debugsEnabled = main.settingsCfg.getStringList(main.helperSettings.getKeyNameFromConfig(main.settingsCfg, "debug-misc"));
-        if (!debugsEnabled.isEmpty())
-            Utils.logger.info("misc debugs enabled: &b" + debugsEnabled);
+        parseDebugsEnabled();
 
         main.configUtils.load();
         main.playerLevellingMinRelevelTime = main.helperSettings.getInt(main.settingsCfg, "player-levelling-relevel-min-time", 5000);
@@ -170,18 +163,39 @@ public class Companion {
         return true;
     }
 
+    private void parseDebugsEnabled(){
+        this.debugsEnabled.clear();
+
+        final List<String> debugsEnabled = main.settingsCfg.getStringList(main.helperSettings.getKeyNameFromConfig(main.settingsCfg, "debug-misc"));
+        if (debugsEnabled.isEmpty()) return;
+
+        for (final String debug : debugsEnabled){
+            if (Utils.isNullOrEmpty(debug)) continue;
+
+            try {
+                final DebugType debugType = DebugType.valueOf(debug.toUpperCase());
+                this.debugsEnabled.add(debugType);
+            } catch (final Exception ignored) {
+                Utils.logger.warning("Invalid value for debug-misc: " + debug);
+            }
+        }
+
+        if (!this.debugsEnabled.isEmpty())
+            Utils.logger.info("debug-misc items enabled: &b" + this.debugsEnabled);
+    }
+
     @Nullable
-    YamlConfiguration loadEmbeddedResource(final String filename) {
+    private YamlConfiguration loadEmbeddedResource(final String filename) {
         YamlConfiguration result = null;
         final InputStream inputStream = main.getResource(filename);
         if (inputStream == null) return null;
 
         try {
-            InputStreamReader reader = new InputStreamReader(inputStream);
+            final InputStreamReader reader = new InputStreamReader(inputStream);
             result = YamlConfiguration.loadConfiguration(reader);
             reader.close();
             inputStream.close();
-        } catch (IOException e) {
+        } catch (final IOException e) {
             Utils.logger.error("Error reading embedded file: " + filename + ", " + e.getMessage());
         }
 
@@ -217,8 +231,10 @@ public class Companion {
         pluginManager.registerEvents(new PlayerDeathListener(main), main);
         pluginManager.registerEvents(new CombustListener(main), main);
         pluginManager.registerEvents(main.blockPlaceListener, main);
+        pluginManager.registerEvents(new PlayerPortalEventListener(main), main);
         main.chunkLoadListener = new ChunkLoadListener(main);
         main.playerInteractEventListener = new PlayerInteractEventListener(main);
+        pluginManager.registerEvents(main.playerInteractEventListener, main);
 
         if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
             main.placeholderApiIntegration = new PlaceholderApiIntegration(main);
@@ -232,12 +248,12 @@ public class Companion {
     void registerCommands() {
         Utils.logger.info("&fCommands: &7Registering commands...");
 
+        main.levelledMobsCommand = new LevelledMobsCommand(main);
         final PluginCommand levelledMobsCommand = main.getCommand("levelledmobs");
-        if (levelledMobsCommand == null) {
+        if (levelledMobsCommand == null)
             Utils.logger.error("Command &b/levelledmobs&7 is unavailable, is it not registered in plugin.yml?");
-        } else {
-            levelledMobsCommand.setExecutor(new LevelledMobsCommand(main));
-        }
+        else
+            levelledMobsCommand.setExecutor(main.levelledMobsCommand);
     }
 
     void loadSpigotConfig(){
@@ -245,7 +261,7 @@ public class Companion {
             main.levelManager.attributeMaxHealthMax = Bukkit.getServer().spigot().getConfig().getDouble("settings.attribute.maxHealth.max", 2048.0);
             main.levelManager.attributeMovementSpeedMax = Bukkit.getServer().spigot().getConfig().getDouble("settings.attribute.movementSpeed.max", 2048.0);
             main.levelManager.attributeAttackDamageMax = Bukkit.getServer().spigot().getConfig().getDouble("settings.attribute.attackDamage.max", 2048.0);
-        } catch (NoSuchMethodError ignored) {
+        } catch (final NoSuchMethodError ignored) {
             main.levelManager.attributeMaxHealthMax = Integer.MAX_VALUE;
             main.levelManager.attributeMovementSpeedMax = Integer.MAX_VALUE;
             main.levelManager.attributeAttackDamageMax = Integer.MAX_VALUE;
@@ -274,68 +290,73 @@ public class Companion {
     void checkUpdates() {
         if (main.helperSettings.getBoolean(main.settingsCfg,"use-update-checker", true)) {
             final UpdateChecker updateChecker = new UpdateChecker(main, 74304);
-            updateChecker.getLatestVersion(latestVersion -> {
-                final String currentVersion = updateChecker.getCurrentVersion().split(" ")[0];
+            try {
+                updateChecker.getLatestVersion(latestVersion -> {
+                    final String currentVersion = updateChecker.getCurrentVersion().split(" ")[0];
 
-                VersionInfo thisVersion;
-                VersionInfo spigotVersion;
-                boolean isOutOfDate;
-                boolean isNewerVersion;
+                    final VersionInfo thisVersion;
+                    final VersionInfo spigotVersion;
+                    boolean isOutOfDate;
+                    boolean isNewerVersion;
 
-                try {
-                    thisVersion = new VersionInfo(currentVersion);
-                    spigotVersion = new VersionInfo(latestVersion);
+                    try {
+                        thisVersion = new VersionInfo(currentVersion);
+                        spigotVersion = new VersionInfo(latestVersion);
 
-                    isOutOfDate = (thisVersion.compareTo(spigotVersion) < 0);
-                    isNewerVersion = (thisVersion.compareTo(spigotVersion) > 0);
-                } catch (InvalidObjectException e) {
-                    Utils.logger.warning("Got exception creating version objects: " + e.getMessage());
+                        isOutOfDate = (thisVersion.compareTo(spigotVersion) < 0);
+                        isNewerVersion = (thisVersion.compareTo(spigotVersion) > 0);
+                    } catch (final InvalidObjectException e) {
+                        Utils.logger.warning("Got exception creating version objects: " + e.getMessage());
 
-                    isOutOfDate = !currentVersion.equals(latestVersion);
-                    isNewerVersion = currentVersion.contains("indev");
-                }
-
-                if (isNewerVersion) {
-                    updateResult = Collections.singletonList(
-                            "&7Your &bLevelledMobs&7 version is &ba pre-release&7. Latest release version is &bv%latestVersion%&7. &8(&7You're running &bv%currentVersion%&8)");
-
-                    updateResult = Utils.replaceAllInList(updateResult, "%currentVersion%", currentVersion);
-                    updateResult = Utils.replaceAllInList(updateResult, "%latestVersion%", latestVersion);
-                    updateResult = Utils.colorizeAllInList(updateResult);
-
-                    updateResult.forEach(Utils.logger::warning);
-                } else if (isOutOfDate) {
-
-                    // for some reason config#getStringList doesn't allow defaults??
-                    if (main.messagesCfg.contains("other.update-notice.messages")) {
-                        updateResult = main.messagesCfg.getStringList("other.update-notice.messages");
-                    } else {
-                        updateResult = Arrays.asList(
-                                "&b&nLevelledMobs Update Checker Notice:",
-                                "&7Your &bLevelledMobs&7 version is &boutdated&7! Please update to" +
-                                        "&bv%latestVersion%&7 as soon as possible. &8(&7You''re running &bv%currentVersion%&8)");
+                        isOutOfDate = !currentVersion.equals(latestVersion);
+                        isNewerVersion = currentVersion.contains("indev");
                     }
 
-                    updateResult = Utils.replaceAllInList(updateResult, "%currentVersion%", currentVersion);
-                    updateResult = Utils.replaceAllInList(updateResult, "%latestVersion%", latestVersion);
-                    updateResult = Utils.colorizeAllInList(updateResult);
+                    if (isNewerVersion) {
+                        updateResult = Collections.singletonList(
+                                "&7Your &bLevelledMobs&7 version is &ba pre-release&7. Latest release version is &bv%latestVersion%&7. &8(&7You're running &bv%currentVersion%&8)");
 
-                    if (main.messagesCfg.getBoolean("other.update-notice.send-in-console", true))
+                        updateResult = Utils.replaceAllInList(updateResult, "%currentVersion%", currentVersion);
+                        updateResult = Utils.replaceAllInList(updateResult, "%latestVersion%", latestVersion);
+                        updateResult = Utils.colorizeAllInList(updateResult);
+
                         updateResult.forEach(Utils.logger::warning);
+                    } else if (isOutOfDate) {
 
-                    // notify any players that may be online already
-                    if (main.messagesCfg.getBoolean("other.update-notice.send-on-join", true)) {
-                        Bukkit.getOnlinePlayers().forEach(onlinePlayer -> {
-                            if (onlinePlayer.hasPermission("levelledmobs.receive-update-notifications")) {
-                                for (String msg : updateResult) {
-                                    onlinePlayer.sendMessage(msg);
+                        // for some reason config#getStringList doesn't allow defaults??
+                        if (main.messagesCfg.contains("other.update-notice.messages")) {
+                            updateResult = main.messagesCfg.getStringList("other.update-notice.messages");
+                        } else {
+                            updateResult = Arrays.asList(
+                                    "&b&nLevelledMobs Update Checker Notice:",
+                                    "&7Your &bLevelledMobs&7 version is &boutdated&7! Please update to" +
+                                            "&bv%latestVersion%&7 as soon as possible. &8(&7You''re running &bv%currentVersion%&8)");
+                        }
+
+                        updateResult = Utils.replaceAllInList(updateResult, "%currentVersion%", currentVersion);
+                        updateResult = Utils.replaceAllInList(updateResult, "%latestVersion%", latestVersion);
+                        updateResult = Utils.colorizeAllInList(updateResult);
+
+                        if (main.messagesCfg.getBoolean("other.update-notice.send-in-console", true))
+                            updateResult.forEach(Utils.logger::warning);
+
+                        // notify any players that may be online already
+                        if (main.messagesCfg.getBoolean("other.update-notice.send-on-join", true)) {
+                            Bukkit.getOnlinePlayers().forEach(onlinePlayer -> {
+                                if (onlinePlayer.hasPermission("levelledmobs.receive-update-notifications")) {
+                                    for (final String msg : updateResult) {
+                                        onlinePlayer.sendMessage(msg);
+                                    }
+                                    //updateResult.forEach(onlinePlayer::sendMessage); //compiler didn't like this :(
                                 }
-                                //updateResult.forEach(onlinePlayer::sendMessage); //compiler didn't like this :(
-                            }
-                        });
+                            });
+                        }
                     }
-                }
-            });
+                });
+            }
+            catch (final OutdatedServerVersionException e){
+                e.printStackTrace();
+            }
         }
     }
 
@@ -398,6 +419,19 @@ public class Companion {
     public void removeRecentlyJoinedPlayer(final Player player){
         synchronized (playerLogonTimes_Lock){
             recentlyJoinedPlayers.remove(player);
+        }
+    }
+
+    @Nullable
+    public Location getPlayerNetherPortalLocation(final @NotNull Player player){
+        synchronized (playerNetherPortals_Lock){
+            return playerNetherPortals.get(player);
+        }
+    }
+
+    public void setPlayerNetherPortalLocation(final @NotNull Player player, final @Nullable Location location){
+        synchronized (playerNetherPortals_Lock){
+            playerNetherPortals.put(player, location);
         }
     }
 }

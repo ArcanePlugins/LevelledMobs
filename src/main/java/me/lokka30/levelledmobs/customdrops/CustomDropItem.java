@@ -10,8 +10,6 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
-import java.lang.reflect.Field;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
@@ -23,15 +21,15 @@ import java.util.UUID;
  * @since 2.5.0
  */
 public class CustomDropItem extends CustomDropBase {
-    public int customModelDataId;
-    public double equippedSpawnChance;
-    public boolean noMultiplier;
-    public boolean onlyDropIfEquipped;
+    int customModelDataId;
+    float equippedSpawnChance;
+    boolean noMultiplier;
+    boolean onlyDropIfEquipped;
     public String customName;
     public String mobHeadTexture;
-    public String nbtData;
+    String nbtData;
     public List<String> lore;
-    public List<ItemFlag> itemFlags;
+    List<ItemFlag> itemFlags;
     private boolean hasDamageRange;
     private int damage;
     private int damageRangeMin;
@@ -40,7 +38,7 @@ public class CustomDropItem extends CustomDropBase {
     private Material material;
     private ItemStack itemStack;
 
-    public CustomDropItem(@NotNull final CustomDropsDefaults defaults) {
+    CustomDropItem(@NotNull final CustomDropsDefaults defaults) {
         super(defaults);
         if (!Utils.isNullOrEmpty(defaults.damage)) this.setDamageRangeFromString(defaults.damage);
         this.customModelDataId = defaults.customModelData;
@@ -59,20 +57,14 @@ public class CustomDropItem extends CustomDropBase {
         try {
             copy = (CustomDropItem) super.clone();
             copy.itemStack = this.itemStack.clone();
-        } catch (Exception e) {
+        } catch (final Exception e) {
             e.printStackTrace();
         }
 
         return copy;
     }
 
-    private static String getContent(@NotNull Object aClass, String name) throws NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
-        Field declaredField = aClass.getClass().getDeclaredField(name);
-        declaredField.setAccessible(true);
-        return (String) declaredField.get(aClass);
-    }
-
-    public boolean setDamageRangeFromString(final String numberOrNumberRange){
+    boolean setDamageRangeFromString(final String numberOrNumberRange){
         if (numberOrNumberRange == null || numberOrNumberRange.isEmpty()) return false;
 
         if (!numberOrNumberRange.contains("-")){
@@ -85,7 +77,7 @@ public class CustomDropItem extends CustomDropBase {
             return true;
         }
 
-        String[] nums = numberOrNumberRange.split("-");
+        final String[] nums = numberOrNumberRange.split("-");
         if (nums.length != 2) return false;
 
         if (!Utils.isInteger(nums[0].trim()) || !Utils.isInteger(nums[1].trim())) return false;
@@ -98,20 +90,20 @@ public class CustomDropItem extends CustomDropBase {
 
     public int getDamage() { return this.damage; }
 
-    public void setDamage(int damage){
+    public void setDamage(final int damage){
         this.damage = damage;
         this.hasDamageRange = false;
     }
 
-    public int getDamageRangeMin(){
+    int getDamageRangeMin(){
         return this.damageRangeMin;
     }
 
-    public int getDamageRangeMax(){
+    int getDamageRangeMax(){
         return this.damageRangeMax;
     }
 
-    public boolean getHasDamageRange(){
+    boolean getHasDamageRange(){
         return this.hasDamageRange;
     }
 
@@ -120,7 +112,7 @@ public class CustomDropItem extends CustomDropBase {
         this.itemStack = new ItemStack(this.material, 1);
     }
 
-    public String getDamageAsString(){
+    String getDamageAsString(){
         if (this.hasDamageRange)
             return String.format("%s-%s", this.damageRangeMin, this.damageRangeMax);
         else

@@ -5,23 +5,21 @@
 package me.lokka30.levelledmobs.commands.subcommands;
 
 import me.lokka30.levelledmobs.LevelledMobs;
+import me.lokka30.levelledmobs.misc.PaperUtils;
+import me.lokka30.levelledmobs.misc.SpigotUtils;
 import me.lokka30.levelledmobs.misc.Utils;
-import me.lokka30.levelledmobs.rules.DoNotMerge;
-import me.lokka30.microlib.MessageUtils;
+import me.lokka30.microlib.messaging.MessageUtils;
+import me.lokka30.microlib.other.VersionUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
-import org.bukkit.event.HandlerList;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 import java.util.*;
 
 /**
@@ -31,31 +29,31 @@ import java.util.*;
  * @author stumper66
  * @since 3.0.0
  */
-public class SpawnerSubCommand implements Subcommand{
+public class SpawnerSubCommand extends SpawnerBaseClass implements Subcommand{
 
-    public SpawnerSubCommand(final LevelledMobs main) {this.main = main;}
+    public SpawnerSubCommand(final LevelledMobs main) {
+        super(main);
+        startingArgNum = 2;
+    }
 
-    final private LevelledMobs main;
     final private List<String> allSpawnerOptions = Arrays.asList(
             "/name", "/customdropid", "/spawntype", "/giveplayer", "/lore", "/minlevel", "/maxlevel", "/delay",
             "/maxnearbyentities", "/minspawndelay", "/maxspawndelay", "/requiredplayerrange",
             "/spawncount", "/spawnrange", "/nolore"
     );
-    private boolean hadInvalidArg;
 
     @Override
     public void parseSubcommand(final LevelledMobs main, @NotNull final CommandSender sender, final String label, final String[] args) {
+        commandSender = sender;
+        messageLabel = label;
+
         if (!sender.hasPermission("levelledmobs.command.spawner")) {
             main.configUtils.sendNoPermissionMsg(sender);
             return;
         }
 
         if (args.length < 2){
-            List<String> messages = main.messagesCfg.getStringList("command.levelledmobs.spawner.usage");
-            messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.getPrefix());
-            messages = Utils.replaceAllInList(messages, "%label%", label);
-            messages = Utils.colorizeAllInList(messages);
-            messages.forEach(sender::sendMessage);
+            showMessage("command.levelledmobs.spawner.usage");
             return;
         }
 
@@ -79,141 +77,91 @@ public class SpawnerSubCommand implements Subcommand{
         }
 
         if ((!hasGivePlayer || operationEnum != OperationEnum.CREATE) && !(sender instanceof Player)){
-            if (operationEnum == OperationEnum.CREATE)
-                sender.sendMessage("Command can only be run by a player unless /giveplayer is specified");
-            else
-                sender.sendMessage("Command can only be run by a player");
+            final String messageName = operationEnum != OperationEnum.CREATE ?
+                "common.no-player" : "command.levelledmobs.spawner.no-player";
+
+            showMessage(messageName);
             return;
         }
 
         switch (args[1].toLowerCase()){
             case "create":
-                parseCreateCommand(sender, label, args);
+                parseCreateCommand(args);
                 break;
             case "copy":
-                parseCopyCommand(sender, label, args);
+                parseCopyCommand(args);
                 break;
             case "info":
-                parseInfoCommand(sender, label, args);
+                parseInfoCommand(args);
                 break;
         }
     }
 
-    private void parseInfoCommand(@NotNull final CommandSender sender, final String label, final String @NotNull [] args){
-        final UUID playerId = ((Player) sender).getUniqueId();
+    private void parseInfoCommand(final String @NotNull [] args){
+        final UUID playerId = ((Player) commandSender).getUniqueId();
 
         if (args.length == 2){
-            List<String> messages;
-            if (main.companion.spawner_InfoIds.contains(playerId))
-                messages = main.messagesCfg.getStringList("command.levelledmobs.spawner.info.status-enabled");
-            else
-                messages = main.messagesCfg.getStringList("command.levelledmobs.spawner.info.status-not-enabled");
-
-            messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.getPrefix());
-            messages = Utils.replaceAllInList(messages, "%label%", label);
-            messages = Utils.colorizeAllInList(messages);
-            messages.forEach(sender::sendMessage);
+            showMessage(main.companion.spawner_InfoIds.contains(playerId) ?
+                    "command.levelledmobs.spawner.info.status-enabled" : "command.levelledmobs.spawner.info.status-not-enabled");
             return;
         }
 
         if ("on".equalsIgnoreCase(args[2])){
             if (main.companion.spawner_CopyIds.contains(playerId)) {
                 // can't have both enabled.  We'll disable copy first
-                copyGotDisabled(sender, playerId, label);
+                copyGotDisabled(playerId);
             }
 
             main.companion.spawner_InfoIds.add(playerId);
-            List<String> messages = main.messagesCfg.getStringList("command.levelledmobs.spawner.info.enabled");
-            messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.getPrefix());
-            messages = Utils.replaceAllInList(messages, "%label%", label);
-            messages = Utils.colorizeAllInList(messages);
-            messages.forEach(sender::sendMessage);
+            showMessage("command.levelledmobs.spawner.info.enabled");
         }
         else if ("off".equalsIgnoreCase(args[2]))
-            infoGotDisabled(sender, playerId, label);
-
-        checkListener();
+            infoGotDisabled(playerId);
     }
 
-    private void parseCopyCommand(@NotNull final CommandSender sender, final String label, final String[] args){
-        if (!sender.hasPermission("levelledmobs.command.spawner.copy")) {
-            main.configUtils.sendNoPermissionMsg(sender);
+    private void parseCopyCommand(final String[] args){
+        if (!commandSender.hasPermission("levelledmobs.command.spawner.copy")) {
+            main.configUtils.sendNoPermissionMsg(commandSender);
             return;
         }
 
-        final UUID playerId = ((Player) sender).getUniqueId();
+        final UUID playerId = ((Player) commandSender).getUniqueId();
 
         if (args.length == 2){
-            List<String> messages;
-            if (main.companion.spawner_CopyIds.contains(playerId))
-                messages = main.messagesCfg.getStringList("command.levelledmobs.spawner.copy.status-enabled");
-            else
-                messages = main.messagesCfg.getStringList("command.levelledmobs.spawner.copy.status-not-enabled");
-
-            messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.getPrefix());
-            messages = Utils.replaceAllInList(messages, "%label%", label);
-            messages = Utils.colorizeAllInList(messages);
-            messages.forEach(sender::sendMessage);
-
+            showMessage(main.companion.spawner_CopyIds.contains(playerId) ?
+                    "command.levelledmobs.spawner.copy.status-enabled" : "command.levelledmobs.spawner.copy.status-not-enabled");
             return;
         }
 
         if ("on".equalsIgnoreCase(args[2])){
             if (main.companion.spawner_InfoIds.contains(playerId)) {
                 // can't have both enabled.  We'll disable info first
-                infoGotDisabled(sender, playerId, label);
+                infoGotDisabled(playerId);
             }
 
             main.companion.spawner_CopyIds.add(playerId);
-            List<String> messages = main.messagesCfg.getStringList("command.levelledmobs.spawner.copy.enabled");
-            messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.getPrefix());
-            messages = Utils.replaceAllInList(messages, "%label%", label);
-            messages = Utils.colorizeAllInList(messages);
-            messages.forEach(sender::sendMessage);
+            showMessage("command.levelledmobs.spawner.copy.enabled");
         }
         else if ("off".equalsIgnoreCase(args[2]))
-            copyGotDisabled(sender, playerId, label);
-
-        checkListener();
+            copyGotDisabled(playerId);
     }
 
-    private void copyGotDisabled(final @NotNull CommandSender sender, final UUID playerId, final String label){
+    private void copyGotDisabled(final UUID playerId){
         main.companion.spawner_CopyIds.remove(playerId);
-        List<String> messages = main.messagesCfg.getStringList("command.levelledmobs.spawner.copy.disabled");
-        messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.getPrefix());
-        messages = Utils.replaceAllInList(messages, "%label%", label);
-        messages = Utils.colorizeAllInList(messages);
-        messages.forEach(sender::sendMessage);
+        showMessage("command.levelledmobs.spawner.copy.disabled");
     }
 
-    private void infoGotDisabled(final @NotNull CommandSender sender, final UUID playerId, final String label){
+    private void infoGotDisabled(final UUID playerId){
         main.companion.spawner_InfoIds.remove(playerId);
-        List<String> messages = main.messagesCfg.getStringList("command.levelledmobs.spawner.info.disabled");
-        messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.getPrefix());
-        messages = Utils.replaceAllInList(messages, "%label%", label);
-        messages = Utils.colorizeAllInList(messages);
-        messages.forEach(sender::sendMessage);
+        showMessage("command.levelledmobs.spawner.info.disabled");
     }
 
-
-    private void checkListener(){
-        final boolean needsListener = (!main.companion.spawner_InfoIds.isEmpty() || !main.companion.spawner_CopyIds.isEmpty());
-        if (needsListener && !main.companion.playerInteractListenerIsRegistered){
-            main.companion.playerInteractListenerIsRegistered = true;
-            Bukkit.getPluginManager().registerEvents(main.playerInteractEventListener, main);
-        }
-        else if (!needsListener && main.companion.playerInteractListenerIsRegistered){
-            main.companion.playerInteractListenerIsRegistered = false;
-            HandlerList.unregisterAll(main.playerInteractEventListener);
-        }
-    }
-
-    private void parseCreateCommand(@NotNull final CommandSender sender, final String label, final String[] args){
+    private void parseCreateCommand(final String[] args){
         hadInvalidArg = false;
 
-        final CustomSpawnerInfo info = new CustomSpawnerInfo(main, label);
-        if (sender instanceof Player)
-            info.player = (Player) sender;
+        final CustomSpawnerInfo info = new CustomSpawnerInfo(main, messageLabel);
+        if (commandSender instanceof Player)
+            info.player = (Player) commandSender;
 
         // arguments with no values go here:
         for (int i = 1; i < args.length; i++) {
@@ -227,7 +175,7 @@ public class SpawnerSubCommand implements Subcommand{
         for (int i = 0; i < allSpawnerOptions.size() - 1; i++){
             final boolean mustBeANumber = (i > 4);
             final String command = allSpawnerOptions.get(i);
-            final String foundValue = getArgValue(command, args, sender, label, mustBeANumber);
+            final String foundValue = getArgValue(command, args, mustBeANumber);
             if (hadInvalidArg) return;
             if (Utils.isNullOrEmpty(foundValue)) continue;
 
@@ -239,8 +187,8 @@ public class SpawnerSubCommand implements Subcommand{
                     try{
                         info.spawnType = EntityType.valueOf(foundValue.toUpperCase());
                     }
-                    catch (Exception ignored){
-                        sender.sendMessage("Invalid spawn type: " + foundValue);
+                    catch (final Exception ignored){
+                        commandSender.sendMessage("Invalid spawn type: " + foundValue);
                         return;
                     }
                     break;
@@ -255,16 +203,16 @@ public class SpawnerSubCommand implements Subcommand{
                 case "/spawnrange": info.spawnRange = Integer.parseInt(foundValue); break;
                 case "/giveplayer":
                     if (Utils.isNullOrEmpty(foundValue)){
-                        sender.sendMessage("No player was specified");
+                        showMessage("command.levelledmobs.spawner.no-player-specified");
                         return;
                     }
                     try { info.player = Bukkit.getPlayer(foundValue); }
-                    catch (Exception e){
-                        sender.sendMessage("Invalid or offline player: " + foundValue);
+                    catch (final Exception e){
+                        showMessage("common.player-offline", "%player%", foundValue);
                         return;
                     }
                     if (info.player == null){
-                        sender.sendMessage("Invalid or offline player: " + foundValue);
+                        showMessage("common.player-offline", "%player%", foundValue);
                         return;
                     }
                     break;
@@ -272,159 +220,32 @@ public class SpawnerSubCommand implements Subcommand{
         }
 
         if (info.minLevel == -1 && info.maxLevel == -1) {
-            List<String> messages = main.messagesCfg.getStringList("command.levelledmobs.spawner.no-level-specified");
-            messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.getPrefix());
-            messages = Utils.replaceAllInList(messages, "%label%", label);
-            messages = Utils.colorizeAllInList(messages);
-            messages.forEach(sender::sendMessage);
+            showMessage("command.levelledmobs.spawner.no-level-specified");
             return;
         }
 
         if (info.player == null){
-            sender.sendMessage("No player was specified");
+            showMessage("command.levelledmobs.spawner.no-player-specified");
             return;
         }
 
         generateSpawner(info);
     }
 
-    @Nullable
-    private String getArgValue(final String key, final String @NotNull [] args, final CommandSender sender, final String label, final boolean mustBeNumber){
-        int keyFlag = -1;
-        int nameStartFlag = - 1;
-        int nameEndFlag = - 1;
-
-        for (int i = 2; i < args.length; i++){
-            final String arg = args[i];
-            if (key.equalsIgnoreCase(arg))
-                keyFlag = i;
-            else if (keyFlag == i - 1 && arg.startsWith("\""))
-                nameStartFlag = i;
-            else if (nameStartFlag > -1 && !arg.startsWith("/") && arg.endsWith("\"")) {
-                nameEndFlag = i;
-                break;
-            }
-        }
-
-        if (keyFlag < 0) return null;
-        String keyValue;
-
-        if (nameEndFlag > 0) {
-            final StringBuilder sb = new StringBuilder();
-            for (int i = nameStartFlag; i <= nameEndFlag; i++) {
-                if (i > 0) sb.append(" ");
-                sb.append(args[i].trim());
-            }
-            keyValue = sb.toString().trim();
-            keyValue = keyValue.substring(1, keyValue.length() - 1);
-        }
-        else
-            keyValue = parseFlagValue(sender, key, keyFlag, args, mustBeNumber, label);
-
-        return keyValue;
-    }
-
-    private @Nullable String parseFlagValue(final CommandSender sender, final String keyName, final int argNumber, final String @NotNull [] args, final boolean mustBeNumber, final String label){
-        if (argNumber + 1 >= args.length || args[argNumber + 1].startsWith("/")){
-            List<String> message = main.messagesCfg.getStringList("command.levelledmobs.spawner.no-value");
-            message = Utils.replaceAllInList(message, "%prefix%", main.configUtils.getPrefix());
-            message = Utils.replaceAllInList(message, "%label%", label);
-            message = Utils.replaceAllInList(message, "%keyname%", keyName);
-            message = Utils.colorizeAllInList(message);
-            message.forEach(sender::sendMessage);
-            hadInvalidArg = true;
-            return null;
-        }
-
-        if (mustBeNumber && !Utils.isInteger(args[argNumber + 1])){
-            List<String> message = main.messagesCfg.getStringList("command.levelledmobs.spawner.invalid-value");
-            message = Utils.replaceAllInList(message, "%prefix%", main.configUtils.getPrefix());
-            message = Utils.replaceAllInList(message, "%label%", label);
-            message = Utils.replaceAllInList(message, "%keyname%", keyName);
-            message = Utils.colorizeAllInList(message);
-            message.forEach(sender::sendMessage);
-            hadInvalidArg = true;
-            return null;
-        }
-
-        return args[argNumber + 1];
-    }
-
-    public static void generateSpawner(final @NotNull CustomSpawnerInfo info){
-        if (info.maxSpawnDelay != null && (info.minSpawnDelay == null || info.minSpawnDelay > info.maxSpawnDelay)) {
-            // settting max spawn delay lower than min spawn delay will result in an exception
-            info.minSpawnDelay = info.maxSpawnDelay;
-        }
-
-        if (info.minSpawnDelay != null && (info.maxSpawnDelay == null || info.maxSpawnDelay > info.minSpawnDelay)) {
-            // settting min spawn delay higher than max spawn delay will result in an exception
-            info.maxSpawnDelay = info.minSpawnDelay;
-        }
-
+    public void generateSpawner(final @NotNull CustomSpawnerInfo info){
         if (info.customName != null) info.customName = MessageUtils.colorizeAll(info.customName);
 
         final ItemStack item = new ItemStack(Material.SPAWNER);
         final ItemMeta meta = item.getItemMeta();
         if (meta != null){
-            meta.setDisplayName(info.customName == null ? "LM spawner" : info.customName);
-            List<String> lore = new LinkedList<>();
-
-            try {
-                int itemsCount = 0;
-                final StringBuilder loreLine = new StringBuilder();
-                for (final Field f : info.getClass().getDeclaredFields()) {
-                    if (!Modifier.isPublic(f.getModifiers())) continue;
-                    if (f.get(info) == null) continue;
-                    final String name = f.getName();
-                    if (f.isAnnotationPresent(DoNotMerge.class)) continue;
-
-                    if ("-1".equals(f.get(info).toString()) && (name.equals("minLevel") || name.equals("maxLevel")))
-                        continue;
-
-                    if (itemsCount > 2){
-                        lore.add(loreLine.toString());
-                        loreLine.setLength(0);
-                        itemsCount = 0;
-                    }
-
-                    if (loreLine.length() > 0) loreLine.append(", ");
-                    loreLine.append(String.format("&7%s: &b%s&7", name, f.get(info)));
-                    itemsCount++;
-                }
-                if (itemsCount > 0)
-                    lore.add(loreLine.toString());
-            }
-            catch (Exception e){
-                e.printStackTrace();
-            }
-
-            if (!info.noLore && info.lore == null && info.customLore == null) {
-                lore = Utils.colorizeAllInList(lore);
-                meta.setLore(lore);
-
-                final StringBuilder sbLore = new StringBuilder();
-                for (final String loreLine : lore) {
-                    if (sbLore.length() > 0) sbLore.append("\n");
-                    sbLore.append(loreLine);
-                }
-                meta.getPersistentDataContainer().set(info.main.namespaced_keys.keySpawner_Lore, PersistentDataType.STRING, sbLore.toString());
-            }
-            else if (!info.noLore || info.customLore != null){
-                final String useLore = info.customLore == null ?
-                        info.lore : MessageUtils.colorizeAll(info.customLore).replace("\\n", "\n");
-
-                lore.clear();
-                lore.addAll(List.of(useLore.split("\n")));
-                meta.setLore(lore);
-                meta.getPersistentDataContainer().set(info.main.namespaced_keys.keySpawner_Lore, PersistentDataType.STRING, useLore);
-            }
+            setMetaItems(meta, info);
 
             meta.getPersistentDataContainer().set(info.main.namespaced_keys.keySpawner, PersistentDataType.INTEGER, 1);
             meta.getPersistentDataContainer().set(info.main.namespaced_keys.keySpawner_MinLevel, PersistentDataType.INTEGER, info.minLevel);
             meta.getPersistentDataContainer().set(info.main.namespaced_keys.keySpawner_MaxLevel, PersistentDataType.INTEGER, info.maxLevel);
             if (!Utils.isNullOrEmpty(info.customDropId))
                 meta.getPersistentDataContainer().set(info.main.namespaced_keys.keySpawner_CustomDropId, PersistentDataType.STRING, info.customDropId);
-            if (!info.spawnType.equals(EntityType.UNKNOWN))
+            if (info.spawnType != EntityType.UNKNOWN)
                 meta.getPersistentDataContainer().set(info.main.namespaced_keys.keySpawner_SpawnType, PersistentDataType.STRING, info.spawnType.toString());
             if (info.spawnRange != null)
                 meta.getPersistentDataContainer().set(info.main.namespaced_keys.keySpawner_SpawnRange, PersistentDataType.INTEGER, info.spawnRange);
@@ -460,30 +281,22 @@ public class SpawnerSubCommand implements Subcommand{
         }
 
         if (useInvSlotNum == -1){
-            List<String> message = info.main.messagesCfg.getStringList("command.levelledmobs.spawner.inventory-full");
-            message = Utils.replaceAllInList(message, "%prefix%", info.main.configUtils.getPrefix());
-            message = Utils.replaceAllInList(message, "%label%", info.label);
-            message = Utils.colorizeAllInList(message);
-            message.forEach(info.player::sendMessage);
+            showMessage("command.levelledmobs.spawner.inventory-full", info.player);
             return;
         }
 
         info.player.getInventory().setItem(useInvSlotNum, item);
+        final String playerName = VersionUtils.isRunningPaper() ?
+                PaperUtils.getPlayerDisplayName(info.player) : SpigotUtils.getPlayerDisplayName(info.player);
 
-        List<String> message = info.main.messagesCfg.getStringList("command.levelledmobs.spawner.spawner-give-message");
-        message = Utils.replaceAllInList(message, "%prefix%", info.main.configUtils.getPrefix());
-        message = Utils.replaceAllInList(message, "%label%", info.label);
-        message = Utils.colorizeAllInList(message);
-        message.forEach(info.player::sendMessage);
+        final List<String> message = getMessage("command.levelledmobs.spawner.spawner-give-message-console",
+                new String[]{ "%minlevel%", "%maxlevel%", "%playername%" },
+                new String[]{String.valueOf(info.minLevel), String.valueOf(info.maxLevel), playerName }
+        );
 
-        message = info.main.messagesCfg.getStringList("command.levelledmobs.spawner.spawner-give-message-console");
-        message = Utils.replaceAllInList(message, "%prefix%", info.main.configUtils.getPrefix());
-        message = Utils.replaceAllInList(message, "%label%", info.label);
-        message = Utils.replaceAllInList(message, "%minlevel%", String.valueOf(info.minLevel));
-        message = Utils.replaceAllInList(message, "%maxlevel%", String.valueOf(info.maxLevel));
-        message = Utils.replaceAllInList(message, "%playername%", info.player.getDisplayName());
-        message = Utils.colorizeAllInList(message);
-        if (!message.isEmpty()) Utils.logger.info(message.get(0));
+        if (!message.isEmpty()) Utils.logger.info(message.get(0).replace(main.configUtils.getPrefix() + " ", ""));
+
+        showMessage("command.levelledmobs.spawner.spawner-give-message", info.player);
     }
 
     @Override
@@ -507,7 +320,7 @@ public class SpawnerSubCommand implements Subcommand{
             switch (args[args.length - 2].toLowerCase()){
                 case "/spawntype":
                     final List<String> entityNames = new LinkedList<>();
-                    for (EntityType entityType : EntityType.values())
+                    for (final EntityType entityType : EntityType.values())
                         entityNames.add(entityType.toString().toLowerCase());
 
                     return entityNames;
@@ -532,65 +345,7 @@ public class SpawnerSubCommand implements Subcommand{
             }
         }
 
-        final Set<String> commandsList = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
-        commandsList.addAll(allSpawnerOptions);
-
-        boolean inQuotes = false;
-
-        for (int i = 1; i < args.length; i++) {
-            final String arg = args[i];
-
-            if (arg.startsWith("\"") && !arg.endsWith("\""))
-                inQuotes = true;
-            else if (inQuotes && arg.endsWith("\""))
-                inQuotes = false;
-
-            commandsList.remove(arg);
-        }
-
-        final String lastArg = args[args.length - 1];
-
-        if (inQuotes || lastArg.length() > 0 && lastArg.charAt(lastArg.length() - 1) == '\"')
-            return Collections.emptyList();
-
-        final List<String> result = new ArrayList<>(commandsList.size());
-        result.addAll(commandsList);
-        return result;
-    }
-
-    public static class CustomSpawnerInfo{
-        public CustomSpawnerInfo(final LevelledMobs main, final String label){
-            this.main = main;
-            this.label = label;
-            this.minLevel = -1;
-            this.maxLevel = -1;
-            this.spawnType = EntityType.UNKNOWN;
-        }
-
-        @DoNotMerge
-        final public LevelledMobs main;
-        @DoNotMerge
-        final public String label;
-        @DoNotMerge
-        public Player player;
-        public int minLevel;
-        public int maxLevel;
-        @DoNotMerge
-        public boolean noLore;
-        public Integer delay;
-        public Integer maxNearbyEntities;
-        public Integer minSpawnDelay;
-        public Integer maxSpawnDelay;
-        public Integer requiredPlayerRange;
-        public Integer spawnCount;
-        public Integer spawnRange;
-        public String customDropId;
-        @DoNotMerge
-        public String customName;
-        public EntityType spawnType;
-        @DoNotMerge
-        public String customLore;
-        public String lore;
+        return checkTabCompletion(allSpawnerOptions, args);
     }
 
     private enum OperationEnum{

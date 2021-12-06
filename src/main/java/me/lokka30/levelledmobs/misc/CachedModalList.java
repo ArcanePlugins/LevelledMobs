@@ -17,6 +17,7 @@ import java.util.TreeSet;
  * @author stumper66
  * @since 3.0.0
  */
+@SuppressWarnings("unchecked")
 public class CachedModalList<T extends Comparable<T>> implements Cloneable {
     public CachedModalList(){
         this.allowedList = new TreeSet<>();
@@ -110,6 +111,7 @@ public class CachedModalList<T extends Comparable<T>> implements Cloneable {
         return sb.toString();
     }
 
+    @SuppressWarnings("unused")
     public boolean isWhitelist(){
         return (!this.allowedList.isEmpty() || !this.allowedGroups.isEmpty()) &&
                 (this.excludedList.isEmpty() && this.excludedGroups.isEmpty());
@@ -128,14 +130,14 @@ public class CachedModalList<T extends Comparable<T>> implements Cloneable {
             copy.allowedGroups = (TreeSet<String>) ((TreeSet<String>) (this.allowedGroups)).clone();
             copy.excludedList = (TreeSet<T>) ((TreeSet<T>) (this.excludedList)).clone();
             copy.excludedGroups = (TreeSet<String>) ((TreeSet<String>) (this.excludedGroups)).clone();
-        } catch (CloneNotSupportedException e) {
+        } catch (final CloneNotSupportedException e) {
             e.printStackTrace();
         }
 
         return copy;
     }
 
-    public void mergeCachedModal(@NotNull CachedModalList<?> cachedModalList){
+    public void mergeCachedModal(@NotNull final CachedModalList<?> cachedModalList){
         this.allowedList.addAll((Collection<? extends T>) cachedModalList.allowedList);
         this.excludedList.addAll((Collection<? extends T>) cachedModalList.excludedList);
 

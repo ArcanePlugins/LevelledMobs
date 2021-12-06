@@ -146,6 +146,7 @@ presets:
       player-levelling:
         match-level: true
         use-player-max-level: false
+        decrease-level: true
         player-level-scale: 1.0
         level-cap: 30
         tiers:
@@ -370,7 +371,9 @@ default-rule:
 #      SKELETON: ['Bones', 'Billy Bones', 'Verta Brae']
 #      PILLAGER: ['Raider', 'Barbarian']
 
-    creature-death-nametag: '%tiered%Lvl %mob-lvl%&8 | &f%entity-name%'
+    creature-death-nametag: '%tiered%Lvl %mob-lvl%&8 | &f%displayname%'
+    nametag-placeholder-levelled: ''
+    nametag-placeholder-unlevelled: ''
     nametag-visible-time: 1000
     nametag-visibility-method: ['TARGETED', 'ATTACKED', 'TRACKING']
 

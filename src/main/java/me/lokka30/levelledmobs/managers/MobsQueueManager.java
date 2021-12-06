@@ -8,6 +8,7 @@ import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.misc.QueueItem;
 import me.lokka30.levelledmobs.misc.Utils;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
@@ -40,7 +41,7 @@ public class MobsQueueManager {
             public void run() {
                 try {
                     main();
-                } catch (InterruptedException ignored) {
+                } catch (final InterruptedException ignored) {
                     isRunning = false;
                 }
                 Utils.logger.info("Mob processing queue Manager has exited");
@@ -54,7 +55,7 @@ public class MobsQueueManager {
         doThread = false;
     }
 
-    public void addToQueue(final QueueItem item) {
+    public void addToQueue(final @NotNull QueueItem item) {
         if (item.lmEntity.getLivingEntity() == null) return;
 
         item.lmEntity.inUseCount.getAndIncrement();
@@ -75,8 +76,7 @@ public class MobsQueueManager {
                     lastEntityType = item.lmEntity.getNameIfBaby();
                     main.levelManager.entitySpawnListener.preprocessMob(item.lmEntity, item.event);
                 }
-            }
-            catch (Exception e){
+            } catch (final Exception e){
                 Utils.logger.error("Got exception while processing " + (lastEntityType != null ? lastEntityType : "(unknown)"));
                 e.printStackTrace();
             }

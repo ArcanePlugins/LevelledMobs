@@ -5,6 +5,7 @@
 package me.lokka30.levelledmobs.rules;
 
 import me.lokka30.levelledmobs.misc.Utils;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 import java.util.List;
@@ -16,18 +17,19 @@ import java.util.List;
  * @since 3.1.0
  */
 public class LevelTierMatching {
-    public List<String> names;
+    List<String> names;
     public int[] valueRanges;
+    public String sourceTierName;
     public Integer minLevel;
     public Integer maxLevel;
-    public String mobName;
+    String mobName;
 
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
-    public boolean hasLevelRestriction(){
+    private boolean hasLevelRestriction(){
         return (minLevel != null || maxLevel != null);
     }
 
-    public boolean isApplicableToMobLevel(final int mobLevel){
+    boolean isApplicableToMobLevel(final int mobLevel){
         if (!this.hasLevelRestriction()) return true;
 
         final boolean meetsMin = minLevel == null || mobLevel >= minLevel;
@@ -37,7 +39,7 @@ public class LevelTierMatching {
     }
 
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
-    public boolean setRangeFromString(final String range){
+    boolean setRangeFromString(final String range){
         final int[] result = getRangeFromString(range);
 
         if (result[0] == -1 && result[1] == -1)
@@ -49,8 +51,8 @@ public class LevelTierMatching {
         return true;
     }
 
-    public static int[] getRangeFromString(final String range){
-        final int[] result = new int[]{ -1, -1};
+    static int @NotNull [] getRangeFromString(final String range){
+        final int[] result = { -1, -1};
 
         if (range == null || range.isEmpty()) return result;
 
@@ -73,7 +75,18 @@ public class LevelTierMatching {
     }
 
     public String toString(){
-        if (!hasLevelRestriction()) return names.toString();
+        if (!hasLevelRestriction()) {
+            if (names != null && !names.isEmpty())
+                return names.toString();
+            else if (sourceTierName != null) {
+                if (valueRanges == null)
+                    return sourceTierName;
+                else
+                    return String.format("%s: %s", sourceTierName, Arrays.toString(valueRanges));
+            }
+            else
+                return "(empty)";
+        }
 
         if (minLevel != null && maxLevel != null)
             return String.format("%s-%s %s", minLevel, maxLevel, names == null ? Arrays.toString(valueRanges) : names);

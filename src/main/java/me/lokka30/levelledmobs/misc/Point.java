@@ -5,6 +5,10 @@
 package me.lokka30.levelledmobs.misc;
 
 import org.bukkit.Location;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.Arrays;
 
 /**
  * A smaller version of the Location class only including
@@ -16,10 +20,13 @@ import org.bukkit.Location;
  * @see Location
  * @since 3.1.2
  */
+@SuppressWarnings("unused")
 public class Point {
 
-    public String worldName;
-    public int x, y, z;
+    private final String worldName;
+    private final int x;
+    private final int y;
+    private final int z;
 
     public Point(final String worldName, final int x, final int y, final int z) {
         this.worldName = worldName;
@@ -28,7 +35,8 @@ public class Point {
         this.z = z;
     }
 
-    public Integer[] getCoordinates() {
+    @Contract(value = " -> new", pure = true)
+    private Integer @NotNull [] getCoordinates() {
         return new Integer[]{x, y, z};
     }
 
@@ -36,7 +44,7 @@ public class Point {
         return String.format("%s, %s, %s, %s", worldName, x, y, z);
     }
 
-    public Point(final String str) {
+    public Point(final @NotNull String str) {
         final String[] split = str.split(",");
         this.worldName = split[0];
         this.x = Integer.parseInt(split[1]);
@@ -44,7 +52,7 @@ public class Point {
         this.z = Integer.parseInt(split[3]);
     }
 
-    public Point(final Location location) {
+    public Point(final @NotNull Location location) {
         assert location.getWorld() != null;
         worldName = location.getWorld().getName();
         x = location.getBlockX();
@@ -52,7 +60,7 @@ public class Point {
         z = location.getBlockZ();
     }
 
-    public static boolean matches(final Point point1, final Point point2) {
-        return (point1.worldName.equals(point2.worldName) && point1.getCoordinates() == point2.getCoordinates());
+    public static boolean matches(final @NotNull Point point1, final @NotNull Point point2) {
+        return (point1.worldName.equals(point2.worldName) && Arrays.equals(point1.getCoordinates(), point2.getCoordinates()));
     }
 }

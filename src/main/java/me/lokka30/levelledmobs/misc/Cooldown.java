@@ -4,6 +4,8 @@
 
 package me.lokka30.levelledmobs.misc;
 
+import org.jetbrains.annotations.NotNull;
+
 /**
  * This class is used to put cooldowns on certain actions,
  * on certain in-game objects - e.g. clicking entities or blocks.
@@ -39,7 +41,7 @@ public class Cooldown {
      * @param identifier ID to check if this cooldown has the same ID.
      * @return if the IDs match.
      */
-    public boolean doesCooldownBelongToIdentifier(final String identifier) {
+    public boolean doesCooldownBelongToIdentifier(final @NotNull String identifier) {
         return identifier.equals(this.identifier);
     }
 

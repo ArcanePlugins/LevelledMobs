@@ -5,11 +5,11 @@
 package me.lokka30.levelledmobs.commands.subcommands;
 
 import me.lokka30.levelledmobs.LevelledMobs;
+import me.lokka30.levelledmobs.commands.MessagesBase;
 import me.lokka30.levelledmobs.misc.Utils;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -20,10 +20,16 @@ import java.util.Objects;
  * @author lokka30
  * @since v2.0.0
  */
-public class InfoSubcommand implements Subcommand {
+public class InfoSubcommand extends MessagesBase implements Subcommand {
+    public InfoSubcommand(final LevelledMobs main){
+        super(main);
+    }
 
     @Override
     public void parseSubcommand(final LevelledMobs main, @NotNull final CommandSender sender, final String label, final String[] args) {
+        commandSender = sender;
+        messageLabel = label;
+
         if (!sender.hasPermission("levelledmobs.command.info")) {
             main.configUtils.sendNoPermissionMsg(sender);
             return;
@@ -34,24 +40,17 @@ public class InfoSubcommand implements Subcommand {
             final String description = main.getDescription().getDescription();
             assert description != null;
             final List<String> supportedVersions = Utils.getSupportedServerVersions();
-            final List<String> codeContributors = Arrays.asList("stumper66", "Eyrian", "iCodinqs", "deiphiz", "CoolBoy", "Esophose",
-                    "7smile7", "UltimaOath", "konsolas", "Shevchik", "Hugo5551", "limzikiki", "bStats Project", "SpigotMC Project");
+            final List<String> codeContributors = List.of("stumper66", "Eyrian", "iCodinqs", "deiphiz", "CoolBoy", "Esophose",
+                    "7smile7", "UltimaOath", "konsolas", "Shevchik", "Hugo5551", "limzikiki", "bStats Project", "SpigotMC Project", "ProfliX");
             final String listSeparator = Objects.requireNonNull(main.messagesCfg.getString("command.levelledmobs.info.listSeparator"), "messages.yml: command.levelledmobs.info.listSeparator is undefined");
 
-            List<String> aboutMsg = main.messagesCfg.getStringList("command.levelledmobs.info.about");
-            aboutMsg = Utils.replaceAllInList(aboutMsg, "%version%", version);
-            aboutMsg = Utils.replaceAllInList(aboutMsg, "%description%", description);
-            aboutMsg = Utils.replaceAllInList(aboutMsg, "%supportedVersions%", String.join(listSeparator, supportedVersions));
-            aboutMsg = Utils.replaceAllInList(aboutMsg, "%contributors%", String.join(listSeparator, codeContributors));
-            aboutMsg = Utils.colorizeAllInList(aboutMsg);
-            aboutMsg.forEach(sender::sendMessage);
-        } else {
-            List<String> usageMsg = main.messagesCfg.getStringList("command.levelledmobs.info.usage");
-            usageMsg = Utils.replaceAllInList(usageMsg, "%prefix%", main.configUtils.getPrefix());
-            usageMsg = Utils.replaceAllInList(usageMsg, "%label%", label);
-            usageMsg = Utils.colorizeAllInList(usageMsg);
-            usageMsg.forEach(sender::sendMessage);
+            showMessage("command.levelledmobs.info.about",
+                    new String[]{ "%version%", "%description%", "%supportedVersions%", "%contributors%"},
+                    new String[]{ version, description, String.join(listSeparator, supportedVersions), String.join(listSeparator, codeContributors) }
+            );
         }
+        else
+            showMessage("command.levelledmobs.info.usage");
     }
 
     @Override

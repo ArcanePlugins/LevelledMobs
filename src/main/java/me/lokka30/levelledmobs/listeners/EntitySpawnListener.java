@@ -6,6 +6,7 @@ package me.lokka30.levelledmobs.listeners;
 
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.managers.ExternalCompatibilityManager;
+import me.lokka30.levelledmobs.managers.LevelManager;
 import me.lokka30.levelledmobs.misc.*;
 import me.lokka30.levelledmobs.rules.LevelledMobSpawnReason;
 import me.lokka30.levelledmobs.rules.NametagVisibilityEnum;
@@ -53,16 +54,19 @@ public class EntitySpawnListener implements Listener {
 
         final LivingEntityWrapper lmEntity = LivingEntityWrapper.getInstance((LivingEntity) event.getEntity(), main);
 
-        if (event instanceof CreatureSpawnEvent && ((CreatureSpawnEvent) event).getSpawnReason().equals(CreatureSpawnEvent.SpawnReason.CUSTOM) &&
-                !lmEntity.isLevelled()) {
+        if (event instanceof CreatureSpawnEvent) {
+            final CreatureSpawnEvent.SpawnReason spawnReason = ((CreatureSpawnEvent) event).getSpawnReason();
 
-            lmEntity.setSpawnReason(LevelledMobSpawnReason.CUSTOM);
-            if (main.configUtils.playerLevellingEnabled && lmEntity.getPlayerForLevelling() == null)
-                updateMobForPlayerLevelling(lmEntity);
+            lmEntity.setSpawnReason(adaptVanillaSpawnReason(spawnReason));
+            if ((spawnReason == CreatureSpawnEvent.SpawnReason.CUSTOM || spawnReason == CreatureSpawnEvent.SpawnReason.SPAWNER_EGG) &&
+                    !lmEntity.isLevelled()) {
+                if (main.configUtils.playerLevellingEnabled && lmEntity.getPlayerForLevelling() == null)
+                    updateMobForPlayerLevelling(lmEntity);
 
-            delayedAddToQueue(lmEntity, event, 20);
-            lmEntity.free();
-            return;
+                delayedAddToQueue(lmEntity, event, 20);
+                lmEntity.free();
+                return;
+            }
         }
 
         if (!processMobSpawns) {
@@ -127,7 +131,7 @@ public class EntitySpawnListener implements Listener {
 
         return mob.getWorld().getPlayers().stream()
                 .filter(p -> mob.getWorld().equals(p.getWorld()))
-                .filter(p -> !p.getGameMode().equals(GameMode.SPECTATOR))
+                .filter(p -> p.getGameMode() != GameMode.SPECTATOR)
                 .map(p -> Map.entry(mob.getLocation().distanceSquared(p.getLocation()), p))
                 .filter(e -> e.getKey() <= maxDistanceSquared)
                 .sorted(Comparator.comparingDouble(Map.Entry::getKey))
@@ -139,7 +143,7 @@ public class EntitySpawnListener implements Listener {
     public static List<Player> getPlayersNearMob(final @NotNull LivingEntity mob, final int checkDistance){
         return mob.getNearbyEntities(checkDistance, checkDistance, checkDistance).stream()
                 .filter(e -> e instanceof org.bukkit.entity.Player)
-                .filter(e -> !((org.bukkit.entity.Player) e).getGameMode().equals(GameMode.SPECTATOR))
+                .filter(e -> ((Player) e).getGameMode() != GameMode.SPECTATOR)
                 .map(e -> Map.entry(mob.getLocation().distanceSquared(e.getLocation()), (org.bukkit.entity.Player) e))
                 .sorted(Comparator.comparingDouble(Map.Entry::getKey))
                 .map(Map.Entry::getValue)
@@ -206,7 +210,7 @@ public class EntitySpawnListener implements Listener {
                         world.spawnParticle(Particle.SOUL, location, 20, 0, 0, 0, 0.1);
                         Thread.sleep(50);
                     }
-                } catch (InterruptedException ignored) { }
+                } catch (final InterruptedException ignored) { }
             }
         };
 
@@ -219,7 +223,6 @@ public class EntitySpawnListener implements Listener {
             return;
         if (lmEntity.getLivingEntity() == null) return;
 
-        LevelledMobSpawnReason spawnReason = LevelledMobSpawnReason.DEFAULT;
         AdditionalLevelInformation additionalInfo = AdditionalLevelInformation.NOT_APPLICABLE;
 
         lmEntity.setSpawnedTimeOfDay((int) lmEntity.getWorld().getTime());
@@ -234,22 +237,25 @@ public class EntitySpawnListener implements Listener {
             }
 
             Utils.debugLog(main, DebugType.MOB_SPAWNER, "Spawned mob from vanilla spawner: &b" + spawnEvent.getEntityType());
-            spawnReason = LevelledMobSpawnReason.SPAWNER;
         } else if (event instanceof CreatureSpawnEvent) {
             final CreatureSpawnEvent spawnEvent = (CreatureSpawnEvent) event;
 
-            if (spawnEvent.getSpawnReason().equals(CreatureSpawnEvent.SpawnReason.SPAWNER) ||
-                    spawnEvent.getSpawnReason().equals(CreatureSpawnEvent.SpawnReason.SLIME_SPLIT))
+            if (spawnEvent.getSpawnReason() == CreatureSpawnEvent.SpawnReason.SPAWNER ||
+                    spawnEvent.getSpawnReason() == CreatureSpawnEvent.SpawnReason.SLIME_SPLIT)
                 return;
 
-            if (spawnEvent.getSpawnReason().equals(CreatureSpawnEvent.SpawnReason.CUSTOM) &&
-                    main.levelManager.summonedEntityType.equals(lmEntity.getEntityType()) &&
-                    areLocationsTheSame(main.levelManager.summonedLocation, lmEntity.getLocation())) {
-                // the mob was spawned by the summon command and will get processed directly
-                return;
+            if (spawnEvent.getSpawnReason() == CreatureSpawnEvent.SpawnReason.CUSTOM ||
+                    spawnEvent.getSpawnReason() == CreatureSpawnEvent.SpawnReason.SPAWNER_EGG) {
+                synchronized (LevelManager.summonedOrSpawnEggs_Lock){
+                    if (main.levelManager.summonedOrSpawnEggs.containsKey(lmEntity.getLivingEntity())) {
+                        // the mob was spawned by the summon command and will get processed directly
+                        return;
+                    }
+                }
             }
 
-            spawnReason = adaptVanillaSpawnReason(spawnEvent.getSpawnReason());
+            if (!lmEntity.reEvaluateLevel)
+                lmEntity.setSpawnReason(adaptVanillaSpawnReason(spawnEvent.getSpawnReason()));
         } else if (event instanceof ChunkLoadEvent)
             additionalInfo = AdditionalLevelInformation.FROM_CHUNK_LISTENER;
 
@@ -264,21 +270,28 @@ public class EntitySpawnListener implements Listener {
         final HashSet<AdditionalLevelInformation> additionalLevelInfo = new HashSet<>(Collections.singletonList(additionalInfo));
         final LevellableState levellableState = getLevellableState(lmEntity, event);
         if (levellableState == LevellableState.ALLOWED) {
-            if (lmEntity.reEvaluateLevel && main.configUtils.playerLevellingEnabled) {
-                final Object syncObj = new Object();
-                final BukkitRunnable runnable = new BukkitRunnable() {
-                    @Override
-                    public void run() {
-                        updateMobForPlayerLevelling(lmEntity);
-                        lmEntity.free();
-                    }
-                };
-                lmEntity.inUseCount.getAndIncrement();
-                runnable.runTask(main);
+            final int levelAssignment = main.levelInterface.generateLevel(lmEntity);
+            if (shouldDenyLevel(lmEntity, levelAssignment)){
+                Utils.debugLog(main, DebugType.PLAYER_LEVELLING, String.format(
+                        "Entity &b%s (lvl %s)&r denied relevelling to &b%s&r due to decrease-level disabled",
+                        lmEntity.getNameIfBaby(), lmEntity.getMobLevel(), levelAssignment));
             }
+            else {
+                if (lmEntity.reEvaluateLevel && main.configUtils.playerLevellingEnabled) {
+                    final BukkitRunnable runnable = new BukkitRunnable() {
+                        @Override
+                        public void run() {
+                            updateMobForPlayerLevelling(lmEntity);
+                            lmEntity.free();
+                        }
+                    };
+                    lmEntity.inUseCount.getAndIncrement();
+                    runnable.runTask(main);
+                }
 
-            main.levelInterface.applyLevelToMob(lmEntity, main.levelInterface.generateLevel(lmEntity),
-                    false, false, additionalLevelInfo);
+                main.levelInterface.applyLevelToMob(lmEntity, levelAssignment,
+                        false, false, additionalLevelInfo);
+            }
         } else {
             Utils.debugLog(main, DebugType.APPLY_LEVEL_FAIL, "Entity &b" + lmEntity.getNameIfBaby() + "&7 in wo" +
                     "rld&b " + lmEntity.getWorldName() + "&7 was not levelled -> levellable state: &b" + levellableState);
@@ -298,27 +311,36 @@ public class EntitySpawnListener implements Listener {
         }
     }
 
-    private static boolean areLocationsTheSame(final Location location1, final Location location2){
-        if (location1 == null || location2 == null) return false;
-        if (location1.getWorld() == null || location2.getWorld() == null) return false;
+    private static boolean shouldDenyLevel(final @NotNull LivingEntityWrapper lmEntity, final int levelAssignment){
+        final boolean result =
+            lmEntity.reEvaluateLevel &&
+            !lmEntity.isRulesForceAll &&
+            lmEntity.playerLevellingAllowDecrease != null &&
+            !lmEntity.playerLevellingAllowDecrease &&
+            lmEntity.isLevelled() &&
+            levelAssignment < lmEntity.getMobLevel();
 
-        return  location1.getBlockX() == location2.getBlockX() &&
-                location1.getBlockY() == location2.getBlockY() &&
-                location1.getBlockZ() == location2.getBlockZ();
+        if (!result && lmEntity.pendingPlayerIdToSet != null) {
+            synchronized (lmEntity.getLivingEntity().getPersistentDataContainer()) {
+                lmEntity.getPDC().set(lmEntity.getMainInstance().namespaced_keys.playerLevelling_Id, PersistentDataType.STRING, lmEntity.pendingPlayerIdToSet);
+            }
+        }
+
+        return result;
     }
 
     @NotNull
     private LevellableState getLevellableState(final LivingEntityWrapper lmEntity, @NotNull final Event event) {
-        LevellableState levellableState = main.levelInterface.getLevellableState(lmEntity);
+        final LevellableState levellableState = main.levelInterface.getLevellableState(lmEntity);
 
         if (levellableState != LevellableState.ALLOWED)
             return levellableState;
 
         if (event instanceof CreatureSpawnEvent) {
-            CreatureSpawnEvent creatureSpawnEvent = (CreatureSpawnEvent) event;
+            final CreatureSpawnEvent creatureSpawnEvent = (CreatureSpawnEvent) event;
 
             // the mob gets processed via SpawnerSpawnEvent
-            if (((CreatureSpawnEvent) event).getSpawnReason().equals(CreatureSpawnEvent.SpawnReason.SPAWNER))
+            if (((CreatureSpawnEvent) event).getSpawnReason() == CreatureSpawnEvent.SpawnReason.SPAWNER)
                 return LevellableState.DENIED_OTHER;
 
             Utils.debugLog(main, DebugType.ENTITY_SPAWN, "instanceof CreatureSpawnListener: &b" + creatureSpawnEvent.getEntityType() + "&7, with spawnReason &b" + creatureSpawnEvent.getSpawnReason() + "&7.");

@@ -15,7 +15,7 @@ public class MinAndMax implements Comparable<MinAndMax> {
     }
 
     @Override
-    public int compareTo(@NotNull MinAndMax o) {
+    public int compareTo(@NotNull final MinAndMax o) {
         if (o.min == this.min && o.max == this.max)
             return 0;
         else

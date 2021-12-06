@@ -12,9 +12,7 @@ import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import com.sk89q.worldguard.protection.regions.RegionContainer;
 import me.lokka30.levelledmobs.LivingEntityInterface;
-import org.bukkit.Location;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
@@ -26,82 +24,7 @@ import java.util.*;
  * @since 2.4.0
  */
 public class WorldGuardIntegration {
-
-    public WorldGuardIntegration() {
-
-    }
-
-    //Get all regions at an Entities' location.
-    @NotNull
-    public List<ProtectedRegion> getRegionSet(@NotNull final LivingEntityInterface lmInterface) {
-        final List<ProtectedRegion> results = new LinkedList<>();
-        final Location location = lmInterface.getLocation();
-
-        final RegionContainer regionContainer = WorldGuard.getInstance().getPlatform().getRegionContainer();
-        final RegionManager regionManager = regionContainer.get(BukkitAdapter.adapt(lmInterface.getWorld()));
-
-        if (regionManager == null) return results;
-
-        final ProtectedRegion globalRegion = regionManager.getRegion("__global__");
-        if (location.getWorld() == null) {
-            if (globalRegion != null) results.add(globalRegion);
-            return results;
-        }
-
-        final BlockVector3 blockVector = BlockVector3.at(location.getX(), location.getY(), location.getZ());
-        if (globalRegion != null) results.add(globalRegion);
-        for (final ProtectedRegion region : regionManager.getApplicableRegions(blockVector))
-            results.add(region);
-
-        return results;
-    }
-
-    // Get all regions at a location
-    @NotNull
-    public List<ProtectedRegion> getRegionSet(@NotNull final Location location) {
-        final List<ProtectedRegion> results = new LinkedList<>();
-        if (location.getWorld() == null) return results;
-
-        final RegionContainer regionContainer = WorldGuard.getInstance().getPlatform().getRegionContainer();
-        final RegionManager regionManager = regionContainer.get(BukkitAdapter.adapt(location.getWorld()));
-
-        if (regionManager == null) return results;
-
-        final ProtectedRegion globalRegion = regionManager.getRegion("__global__");
-        if (location.getWorld() == null) {
-            if (globalRegion != null) results.add(globalRegion);
-            return results;
-        }
-
-        final BlockVector3 blockVector = BlockVector3.at(location.getX(), location.getY(), location.getZ());
-        final ApplicableRegionSet regionSet = regionManager.getApplicableRegions(blockVector);
-        if (globalRegion != null) results.add(globalRegion);
-        for (final ProtectedRegion region : regionSet)
-            results.add(region);
-
-        return results;
-    }
-
-
-    //Sorts a RegionSet by priority, lowest to highest.
-    @Nullable
-    public ProtectedRegion[] sortRegionsByPriority(final List<ProtectedRegion> regionSet) {
-        if (regionSet == null) return null;
-
-        ProtectedRegion[] protectedRegions = new ProtectedRegion[0];
-
-        if (regionSet.size() == 0) {
-            return protectedRegions;
-        } else if (regionSet.size() == 1) {
-            protectedRegions = new ProtectedRegion[1];
-            return regionSet.toArray(protectedRegions);
-        }
-
-        final List<ProtectedRegion> protectedRegionList = new ArrayList<>(regionSet);
-        protectedRegionList.sort(Comparator.comparingInt(ProtectedRegion::getPriority));
-
-        return protectedRegionList.toArray(protectedRegions);
-    }
+    private WorldGuardIntegration(){}
 
     @NotNull
     public static List<String> getWorldGuardRegionsForLocation(@NotNull final LivingEntityInterface lmInterface) {

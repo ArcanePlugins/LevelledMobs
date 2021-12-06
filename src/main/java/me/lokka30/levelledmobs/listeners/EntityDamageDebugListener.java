@@ -8,7 +8,7 @@ import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.misc.Cooldown;
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
 import me.lokka30.levelledmobs.misc.Utils;
-import me.lokka30.microlib.MessageUtils;
+import me.lokka30.microlib.messaging.MessageUtils;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.attribute.AttributeModifier;
@@ -65,7 +65,7 @@ public class EntityDamageDebugListener implements Listener {
         // Don't spam the player's chat
         final String entityId = Integer.toString(lmEntity.getLivingEntity().getEntityId());
         if (cooldownMap.containsKey(player.getUniqueId())) {
-            Cooldown cooldown = cooldownMap.get(player.getUniqueId());
+            final Cooldown cooldown = cooldownMap.get(player.getUniqueId());
 
             if (cooldown.doesCooldownBelongToIdentifier(entityId)) {
                 if (!cooldown.hasCooldownExpired(2)) return;
@@ -103,7 +103,7 @@ public class EntityDamageDebugListener implements Listener {
             for (final AttributeModifier mod : attributeInstance.getModifiers()){
                 if (count == 0) sb.append(" (");
                 else sb.append(", ");
-                if (mod.getOperation().equals(AttributeModifier.Operation.MULTIPLY_SCALAR_1))
+                if (mod.getOperation() == AttributeModifier.Operation.MULTIPLY_SCALAR_1)
                     sb.append("* ");
                 else
                     sb.append("+ ");

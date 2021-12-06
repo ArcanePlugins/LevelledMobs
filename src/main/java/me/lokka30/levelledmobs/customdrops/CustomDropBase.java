@@ -4,7 +4,9 @@
 
 package me.lokka30.levelledmobs.customdrops;
 
+import me.lokka30.levelledmobs.misc.CachedModalList;
 import me.lokka30.levelledmobs.misc.Utils;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.LinkedList;
@@ -20,60 +22,61 @@ import java.util.TreeSet;
  */
 public class CustomDropBase implements Cloneable {
 
-    public CustomDropBase(@NotNull final CustomDropsDefaults defaults) {
+    CustomDropBase(@NotNull final CustomDropsDefaults defaults) {
         this.amount = defaults.amount;
         this.permissions = new LinkedList<>();
     }
 
-    int amount;
+    private int amount;
     int amountRangeMin;
-    int amountRangeMax;
-    boolean hasAmountRange;
+    private int amountRangeMax;
+    private boolean hasAmountRange;
     public int minLevel;
     public int maxLevel;
     public int priority;
-    public int maxDropGroup;
-    public int minPlayerLevel;
-    public int maxPlayerLevel;
-    public double chance;
-    public boolean playerCausedOnly;
-    public boolean noSpawner;
-    public String groupId;
-    public String playerLevelVariable;
+    int maxDropGroup;
+    int minPlayerLevel;
+    int maxPlayerLevel;
+    public float chance;
+    boolean playerCausedOnly;
+    boolean noSpawner;
+    String groupId;
+    String playerLevelVariable;
     final public List<String> permissions;
-    public final Set<String> excludedMobs = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+    final Set<String> excludedMobs = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+    CachedModalList<EntityDamageEvent.DamageCause> causeOfDeathReqs;
 
     public int getAmount(){
         return this.amount;
     }
 
-    public void setAmount(int amount){
+    public void setAmount(final int amount){
         this.amount = amount;
         if (this.amount > 64) this.amount = 64;
         if (this.amount < 1) this.amount = 1;
         this.hasAmountRange = false;
     }
 
-    public int getAmountRangeMin(){
+    int getAmountRangeMin(){
         return this.amountRangeMin;
     }
 
-    public int getAmountRangeMax(){
+    int getAmountRangeMax(){
         return this.amountRangeMax;
     }
 
-    public boolean getHasAmountRange(){
+    boolean getHasAmountRange(){
         return this.hasAmountRange;
     }
 
-    public String getAmountAsString(){
+    String getAmountAsString(){
         if (this.hasAmountRange)
             return String.format("%s-%s", this.amountRangeMin, this.amountRangeMax);
         else
             return String.valueOf(this.amount);
     }
 
-    public boolean setAmountRangeFromString(final String numberOrNumberRange){
+    boolean setAmountRangeFromString(final String numberOrNumberRange){
         if (numberOrNumberRange == null || numberOrNumberRange.isEmpty()) return false;
 
         if (!numberOrNumberRange.contains("-")){
@@ -99,7 +102,10 @@ public class CustomDropBase implements Cloneable {
         CustomDropBase copy = null;
         try {
             copy = (CustomDropBase) super.clone();
-        } catch (Exception e) {
+            if (this.causeOfDeathReqs != null)
+                //noinspection unchecked
+                copy.causeOfDeathReqs = (CachedModalList<EntityDamageEvent.DamageCause>) this.causeOfDeathReqs.clone();
+        } catch (final Exception e) {
             e.printStackTrace();
         }
 

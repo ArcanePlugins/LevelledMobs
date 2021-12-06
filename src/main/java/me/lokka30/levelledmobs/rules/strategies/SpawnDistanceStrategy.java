@@ -35,7 +35,7 @@ public class SpawnDistanceStrategy implements LevellingStrategy, Cloneable {
             mergeSpawnDistanceStrategy((SpawnDistanceStrategy) levellingStrategy);
     }
 
-    public void mergeSpawnDistanceStrategy(final SpawnDistanceStrategy sds){
+    private void mergeSpawnDistanceStrategy(final SpawnDistanceStrategy sds){
         if (sds == null) return;
 
         try {
@@ -45,7 +45,7 @@ public class SpawnDistanceStrategy implements LevellingStrategy, Cloneable {
 
                 this.getClass().getDeclaredField(f.getName()).set(this, f.get(sds));
             }
-        } catch (IllegalAccessException | NoSuchFieldException e) {
+        } catch (final IllegalAccessException | NoSuchFieldException e) {
             e.printStackTrace();
         }
     }
@@ -151,7 +151,7 @@ public class SpawnDistanceStrategy implements LevellingStrategy, Cloneable {
         SpawnDistanceStrategy copy = null;
         try {
             copy = (SpawnDistanceStrategy) super.clone();
-        } catch (Exception e) {
+        } catch (final Exception e) {
             e.printStackTrace();
         }
 

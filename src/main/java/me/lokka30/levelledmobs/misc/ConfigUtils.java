@@ -5,7 +5,7 @@
 package me.lokka30.levelledmobs.misc;
 
 import me.lokka30.levelledmobs.LevelledMobs;
-import me.lokka30.microlib.MessageUtils;
+import me.lokka30.microlib.messaging.MessageUtils;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 
@@ -20,8 +20,8 @@ import java.util.Objects;
  */
 public class ConfigUtils {
 
-    public static int SETTINGS_CREEPER_MAX_RADIUS;
-    public static int SETTINGS_SPAWN_DISTANCE_FROM_PLAYER;
+    private static int SETTINGS_CREEPER_MAX_RADIUS;
+    private static int SETTINGS_SPAWN_DISTANCE_FROM_PLAYER;
 
     private final LevelledMobs main;
 
@@ -31,7 +31,6 @@ public class ConfigUtils {
 
     public boolean debugEntityDamageWasEnabled = false;
     public boolean chunkLoadListenerWasEnabled = false;
-    public boolean mythicMobsWasEnabled = false;
     public boolean playerLevellingEnabled = false;
 
     public void load() {

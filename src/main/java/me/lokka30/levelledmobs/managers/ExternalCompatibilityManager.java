@@ -6,10 +6,11 @@ package me.lokka30.levelledmobs.managers;
 
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.LivingEntityInterface;
-import me.lokka30.levelledmobs.misc.LevellableState;
-import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
+import me.lokka30.levelledmobs.misc.*;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
+import org.bukkit.World;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.MetadataValue;
@@ -62,36 +63,25 @@ public class ExternalCompatibilityManager {
     }
 
     /* Store any external namespaced keys with null values by default */
-    public static NamespacedKey dangerousCavesMobTypeKey = null;
-    public static NamespacedKey ecoBossesKey = null;
+    private static NamespacedKey dangerousCavesMobTypeKey = null;
+    private static NamespacedKey ecoBossesKey = null;
 
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
-    public static boolean isExternalCompatibilityEnabled(final ExternalCompatibility externalCompatibility, @NotNull final LivingEntityWrapper lmEntity) {
-        if (lmEntity.getApplicableRules().isEmpty())
-            return false;
-
-        final Map<ExternalCompatibility, Boolean> list = lmEntity.getMainInstance().rulesManager.getRule_ExternalCompatibility(lmEntity);
-        return isExternalCompatibilityEnabled(externalCompatibility, list);
-    }
-
-    public static boolean isExternalCompatibilityEnabled(final ExternalCompatibility externalCompatibility, final Map<ExternalCompatibility, Boolean> list) {
+    private static boolean isExternalCompatibilityEnabled(final ExternalCompatibility externalCompatibility, final @NotNull Map<ExternalCompatibility, Boolean> list) {
         // if not defined default to true
         return  (!list.containsKey(externalCompatibility) || list.get(externalCompatibility) != null && list.get(externalCompatibility));
     }
 
-    public static boolean hasPAPI_Installed(){ return (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null); }
+    static boolean hasPAPI_Installed(){ return (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null); }
 
     public static boolean hasNBTAPI_Installed(){
         return Bukkit.getPluginManager().getPlugin("NBTAPI") != null;
     }
 
-    public static boolean hasMCMMO_CoreInsatlled(){
-        return Bukkit.getPluginManager().getPlugin("MMOCore") != null;
-    }
-
     @NotNull
-    public static String getPAPI_Placeholder(final Player player, final String placeholder){
+    static String getPAPI_Placeholder(final Player player, final String placeholder){
         return me.clip.placeholderapi.PlaceholderAPI.setPlaceholders(player, placeholder);
+
     }
 
     public static boolean hasProtocolLibInstalled() {
@@ -102,15 +92,11 @@ public class ExternalCompatibilityManager {
         return Bukkit.getPluginManager().getPlugin("MythicMobs") != null;
     }
 
-    public static boolean hasSimplePetsInstalled() {
-        return Bukkit.getPluginManager().getPlugin("SimplePets") != null;
-    }
-
     public static boolean hasWorldGuardInstalled() {
         return Bukkit.getPluginManager().getPlugin("WorldGuard") != null;
     }
 
-    public static boolean isMobOfSimplePets(@NotNull final LivingEntityWrapper lmEntity){
+    private static boolean isMobOfSimplePets(@NotNull final LivingEntityWrapper lmEntity){
         final Plugin plugin = Bukkit.getPluginManager().getPlugin("SimplePets");
         if (plugin == null) return false;
 
@@ -180,7 +166,7 @@ public class ExternalCompatibilityManager {
         return "";
     }
 
-    public static LevellableState checkAllExternalCompats(final LivingEntityWrapper lmEntity, final @NotNull LevelledMobs main){
+    static LevellableState checkAllExternalCompats(final LivingEntityWrapper lmEntity, final @NotNull LevelledMobs main){
         final Map<ExternalCompatibilityManager.ExternalCompatibility, Boolean> compatRules = main.rulesManager.getRule_ExternalCompatibility(lmEntity);
 
         LevellableState result = LevellableState.ALLOWED;
@@ -189,31 +175,31 @@ public class ExternalCompatibilityManager {
             result = LevellableState.DENIED_CONFIGURATION_COMPATIBILITY_DANGEROUS_CAVES;
 
         if (isMobOfEcoBosses(lmEntity) && !isExternalCompatibilityEnabled(ExternalCompatibility.ECO_BOSSES, compatRules) &&
-                result.equals(LevellableState.ALLOWED))
+                result == LevellableState.ALLOWED)
             result = LevellableState.DENIED_CONFIGURATION_COMPATIBILITY_ECO_BOSSES;
 
         if (isMobOfMythicMobs(lmEntity) && !isExternalCompatibilityEnabled(ExternalCompatibility.MYTHIC_MOBS, compatRules) &&
-                result.equals(LevellableState.ALLOWED))
+                result == LevellableState.ALLOWED)
             result = LevellableState.DENIED_CONFIGURATION_COMPATIBILITY_MYTHIC_MOBS;
 
         if (isMobOfEliteMobs(lmEntity) && !isExternalCompatibilityEnabled(ExternalCompatibility.ELITE_MOBS, compatRules) &&
-                result.equals(LevellableState.ALLOWED))
+                result == LevellableState.ALLOWED)
             result = LevellableState.DENIED_CONFIGURATION_COMPATIBILITY_ELITE_MOBS;
 
         if (isMobOfInfernalMobs(lmEntity) && !isExternalCompatibilityEnabled(ExternalCompatibility.INFERNAL_MOBS, compatRules) &&
-                result.equals(LevellableState.ALLOWED))
+                result == LevellableState.ALLOWED)
             result = LevellableState.DENIED_CONFIGURATION_COMPATIBILITY_INFERNAL_MOBS;
 
         if (isMobOfCitizens(lmEntity) && !isExternalCompatibilityEnabled(ExternalCompatibility.CITIZENS, compatRules) &&
-                result.equals(LevellableState.ALLOWED))
+                result == LevellableState.ALLOWED)
             result = LevellableState.DENIED_CONFIGURATION_COMPATIBILITY_CITIZENS;
 
         if (isMobOfShopkeepers(lmEntity) && !isExternalCompatibilityEnabled(ExternalCompatibility.SHOPKEEPERS, compatRules) &&
-                result.equals(LevellableState.ALLOWED))
+                result == LevellableState.ALLOWED)
             result = LevellableState.DENIED_CONFIGURATION_COMPATIBILITY_SHOPKEEPERS;
 
         if (isMobOfSimplePets(lmEntity) && !isExternalCompatibilityEnabled(ExternalCompatibility.SIMPLE_PETS, compatRules) &&
-                result.equals(LevellableState.ALLOWED))
+                result == LevellableState.ALLOWED)
             result = LevellableState.DENIED_CONFIGURATION_COMPATIBILITY_SIMPLEPETS;
 
         return result;
@@ -226,7 +212,7 @@ public class ExternalCompatibilityManager {
      * @return if Dangerous Caves compatibility enabled and entity is from DangerousCaves
      * @author lokka30, stumper66, imDaniX (author of DC2 - provided part of this method)
      */
-    public static boolean isMobOfDangerousCaves(final LivingEntityWrapper lmEntity) {
+    private static boolean isMobOfDangerousCaves(final LivingEntityWrapper lmEntity) {
         final Plugin plugin = Bukkit.getPluginManager().getPlugin("DangerousCaves");
         if (plugin == null) return false;
 
@@ -247,7 +233,7 @@ public class ExternalCompatibilityManager {
      * @return if the compat is enabled and if the mob belongs to EcoBosses
      * @author lokka30, Auxilor (author of EcoBosses - provided part of this method)
      */
-    public static boolean isMobOfEcoBosses(final LivingEntityWrapper lmEntity) {
+    private static boolean isMobOfEcoBosses(final LivingEntityWrapper lmEntity) {
         final Plugin plugin = Bukkit.getPluginManager().getPlugin("EcoBosses");
         if (plugin == null) return false;
 
@@ -267,7 +253,7 @@ public class ExternalCompatibilityManager {
      * @param lmEntity mob to check
      * @return if MythicMobs compatibility enabled and entity is from MythicMobs
      */
-    public static boolean isMobOfMythicMobs(final LivingEntityWrapper lmEntity) {
+    private static boolean isMobOfMythicMobs(final LivingEntityWrapper lmEntity) {
         if (!ExternalCompatibilityManager.hasMythicMobsInstalled()) return false;
         if (lmEntity.isMobOfExternalType(ExternalCompatibility.MYTHIC_MOBS)) return true;
 
@@ -281,10 +267,10 @@ public class ExternalCompatibilityManager {
      * @param lmEntity mob to check
      * @return if EliteMobs compatibility enabled and entity is from EliteMobs
      */
-    public static boolean isMobOfEliteMobs(final @NotNull LivingEntityWrapper lmEntity) {
+    private static boolean isMobOfEliteMobs(final LivingEntityWrapper lmEntity) {
         final Plugin p = Bukkit.getPluginManager().getPlugin("EliteMobs");
         if (p != null){
-            boolean isEliteMob;
+            final boolean isEliteMob;
             synchronized (lmEntity.getLivingEntity().getPersistentDataContainer()) {
                 isEliteMob = lmEntity.getPDC().has(new NamespacedKey(p, "EliteMobsCullable"), PersistentDataType.STRING);
             }
@@ -302,7 +288,7 @@ public class ExternalCompatibilityManager {
      * @param lmEntity mob to check
      * @return if InfernalMobs compatibility enabled and entity is from InfernalMobs
      */
-    public static boolean isMobOfInfernalMobs(final @NotNull LivingEntityWrapper lmEntity) {
+    private static boolean isMobOfInfernalMobs(final @NotNull LivingEntityWrapper lmEntity) {
         final boolean isExternalType = lmEntity.getLivingEntity().hasMetadata("infernalMetadata");
 
         if (isExternalType) lmEntity.setMobExternalType(ExternalCompatibility.INFERNAL_MOBS);
@@ -314,7 +300,7 @@ public class ExternalCompatibilityManager {
      * @param lmEntity mob to check
      * @return if Citizens compatibility enabled and entity is from Citizens
      */
-    public static boolean isMobOfCitizens(final @NotNull LivingEntityWrapper lmEntity) {
+    private static boolean isMobOfCitizens(final @NotNull LivingEntityWrapper lmEntity) {
         final boolean isExternalType = isMobOfCitizens(lmEntity.getLivingEntity());
 
         if (isExternalType) lmEntity.setMobExternalType(ExternalCompatibility.CITIZENS);
@@ -330,7 +316,7 @@ public class ExternalCompatibilityManager {
      * @param lmEntity mob to check
      * @return if Shopkeepers compatibility enabled and entity is from Shopkeepers
      */
-    public static boolean isMobOfShopkeepers(final @NotNull LivingEntityWrapper lmEntity) {
+    private static boolean isMobOfShopkeepers(final @NotNull LivingEntityWrapper lmEntity) {
         final boolean isExternalType = lmEntity.getLivingEntity().hasMetadata("shopkeeper");
 
         if (isExternalType) lmEntity.setMobExternalType(ExternalCompatibility.SHOPKEEPERS);
@@ -343,5 +329,31 @@ public class ExternalCompatibilityManager {
         if (!ExternalCompatibilityManager.hasWorldGuardInstalled()) return Collections.emptyList();
 
         return WorldGuardIntegration.getWorldGuardRegionsForLocation(lmInterface);
+    }
+
+    @NotNull
+    public static PlayerHomeCheckResult getPlayerHomeLocation(final @NotNull LevelledMobs main, final @NotNull Player player, final boolean allowBed){
+        final Plugin plugin = Bukkit.getPluginManager().getPlugin("essentials");
+        if (plugin == null)
+            return new PlayerHomeCheckResult("Unable to get player home, Essentials is not installed", null);
+
+        if (allowBed && player.getWorld().getEnvironment() != World.Environment.NETHER) {
+            final Location bedLocation = player.getBedSpawnLocation();
+            if (bedLocation != null)
+                return new PlayerHomeCheckResult(null, bedLocation, "bed");
+        }
+
+        final com.earth2me.essentials.Essentials essentials = (com.earth2me.essentials.Essentials) plugin;
+        final com.earth2me.essentials.User user = essentials.getUser(player);
+        if (user == null)
+            return new PlayerHomeCheckResult("Unable to locate player information in essentials");
+
+        if (user.getHomes() == null || user.getHomes().isEmpty()) {
+            PlayerNetherOrWorldSpawnResult result = Utils.getNetherPortalOrWorldSpawn(main, player);
+            final String whichSource = result.isNetherPortalLocation ? "nether portal" : "spawn";
+            return new PlayerHomeCheckResult("Player has no homes set, using " + whichSource + " location", result.location);
+        }
+
+        return new PlayerHomeCheckResult(null, user.getHome(user.getHomes().get(0)), user.getHomes().get(0));
     }
 }

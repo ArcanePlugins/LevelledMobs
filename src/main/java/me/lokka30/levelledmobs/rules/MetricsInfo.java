@@ -59,16 +59,6 @@ public class MetricsInfo {
     }
 
     @NotNull
-    public String getUsesPlayerLevelling(){
-        final boolean result =
-                (main.rulesParsingManager.defaultRule.playerLevellingOptions != null &&
-                        main.rulesParsingManager.defaultRule.playerLevellingOptions.enabled != null &&
-                        main.rulesParsingManager.defaultRule.playerLevellingOptions.enabled);
-
-        return convertBooleanToString(result);
-    }
-
-    @NotNull
     public String getMaxLevelRange(){
         // 1-10, 11-24, 25-50, 51-100, 101-499, 500+
         final int maxLevel = main.rulesParsingManager.defaultRule.restrictions_MaxLevel == null ?
@@ -194,8 +184,8 @@ public class MetricsInfo {
         final Map<String, Integer> results = new TreeMap<>();
 
         for (final ExternalCompatibilityManager.ExternalCompatibility compat : ExternalCompatibilityManager.ExternalCompatibility.values()) {
-            if (compat.equals(ExternalCompatibilityManager.ExternalCompatibility.NOT_APPLICABLE) ||
-                    compat.equals(ExternalCompatibilityManager.ExternalCompatibility.PLACEHOLDER_API))
+            if (compat == ExternalCompatibilityManager.ExternalCompatibility.NOT_APPLICABLE ||
+                    compat == ExternalCompatibilityManager.ExternalCompatibility.PLACEHOLDER_API)
                 continue;
 
             results.put(compat.toString(), 0);
@@ -205,9 +195,10 @@ public class MetricsInfo {
             if (!ruleInfo.ruleIsEnabled) continue;
 
             if (ruleInfo.enabledExtCompats != null){
-                for (final ExternalCompatibilityManager.ExternalCompatibility compat : ruleInfo.enabledExtCompats.keySet()){
-                    if (compat.equals(ExternalCompatibilityManager.ExternalCompatibility.NOT_APPLICABLE)) continue;
-                    final Boolean enabled = ruleInfo.enabledExtCompats.get(compat);
+                for (final Map.Entry<ExternalCompatibilityManager.ExternalCompatibility, Boolean> extCompat : ruleInfo.enabledExtCompats.entrySet()){
+                    final ExternalCompatibilityManager.ExternalCompatibility compat = extCompat.getKey();
+                    if (compat == ExternalCompatibilityManager.ExternalCompatibility.NOT_APPLICABLE) continue;
+                    final Boolean enabled = extCompat.getValue();
                     if (enabled != null && enabled)
                         results.put(compat.toString(), 1);
                 }

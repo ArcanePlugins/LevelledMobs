@@ -7,10 +7,13 @@ package me.lokka30.levelledmobs.misc;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.rules.MinAndMax;
 import me.lokka30.levelledmobs.rules.RulesManager;
-import me.lokka30.microlib.MessageUtils;
-import me.lokka30.microlib.MicroLogger;
+import me.lokka30.microlib.messaging.MessageUtils;
+import me.lokka30.microlib.messaging.MicroLogger;
+import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.block.Biome;
-import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -74,11 +77,11 @@ public final class Utils {
     public static String replaceEx(@NotNull final String message, @NotNull final String replaceWhat, @NotNull final String replaceTo) {
         int count, position0, position1;
         count = position0 = 0;
-        String upperString = message.toUpperCase();
-        String upperPattern = replaceWhat.toUpperCase();
-        int inc = (message.length() / replaceWhat.length()) *
+        final String upperString = message.toUpperCase();
+        final String upperPattern = replaceWhat.toUpperCase();
+        final int inc = (message.length() / replaceWhat.length()) *
                 (replaceTo.length() - replaceWhat.length());
-        char[] chars = new char[message.length() + Math.max(0, inc)];
+        final char[] chars = new char[message.length() + Math.max(0, inc)];
         while ((position1 = upperString.indexOf(upperPattern, position0)) != -1) {
             for (int i = position0; i < position1; ++i)
                 chars[count++] = message.charAt(i);
@@ -105,7 +108,7 @@ public final class Utils {
         try {
             Integer.parseInt(str);
             return true;
-        } catch (NumberFormatException ex) {
+        } catch (final NumberFormatException ex) {
             return false;
         }
     }
@@ -117,21 +120,13 @@ public final class Utils {
         try {
             Double.parseDouble(str);
             return true;
-        } catch (NumberFormatException ex) {
+        } catch (final NumberFormatException ex) {
             return false;
         }
     }
 
     public static boolean isNullOrEmpty(@Nullable final String str) {
         return (str == null || str.isEmpty());
-    }
-
-    public static int getDefaultIfNull(@NotNull final YamlConfiguration cfg, @NotNull final String path, final int def) {
-        return cfg.contains(path) ? cfg.getInt(path) : def;
-    }
-
-    public static int getDefaultIfNull(@NotNull final TreeMap<String, Integer> map, @NotNull final String item, final int def) {
-        return map.getOrDefault(item, def);
     }
 
     @NotNull
@@ -167,19 +162,8 @@ public final class Utils {
     public static void debugLog(@NotNull final LevelledMobs instance, @NotNull final DebugType debugType, @NotNull final String msg) {
         if (instance.settingsCfg == null) return;
 
-        if (instance.helperSettings.getStringSet(instance.settingsCfg, "debug-misc").contains(debugType.toString()))
+        if (instance.companion.debugsEnabled.contains(debugType))
             logger.info("&8[&bDebug: " + debugType + "&8]&7 " + msg);
-    }
-
-    /**
-     * If object1 is null, return object2
-     *
-     * @param object1 a nullable object
-     * @param object2 a non-nullable object
-     * @return object2 if object1 is null, otherwise, object1
-     */
-    public static Object getNonNull(@Nullable Object object1, @NotNull Object object2) {
-        return object1 == null ? object2 : object1;
     }
 
     /**
@@ -284,7 +268,37 @@ public final class Utils {
         return list.isBlacklist() || list.allowedList.contains(biome);
     }
 
+    public static boolean isDamageCauseInModalList(@NotNull final CachedModalList<EntityDamageEvent.DamageCause> list, final EntityDamageEvent.DamageCause cause) {
+        if (list.allowAll) return true;
+        if (list.excludeAll) return false;
+        if (list.isEmpty()) return true;
+
+        // note: no group support
+
+        if (list.excludedList.contains(cause)) return false;
+
+        return list.isBlacklist() || list.allowedList.contains(cause);
+    }
+
     public static long getMillisecondsFromInstant(final Instant instant){
         return Duration.between(instant, Instant.now()).toMillis();
+    }
+
+    @NotNull
+    public static PlayerNetherOrWorldSpawnResult getNetherPortalOrWorldSpawn(final @NotNull LevelledMobs main, final @NotNull Player player){
+        Location location = null;
+        boolean isNetherPortalCoord = false;
+
+        if (player.getWorld().getEnvironment() == World.Environment.NETHER){
+            location = main.companion.getPlayerNetherPortalLocation(player);
+            isNetherPortalCoord = true;
+        }
+
+        if (location == null) {
+            location = player.getWorld().getSpawnLocation();
+            isNetherPortalCoord = false;
+        }
+
+        return new PlayerNetherOrWorldSpawnResult(location, isNetherPortalCoord);
     }
 }

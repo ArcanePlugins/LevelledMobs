@@ -5,7 +5,10 @@
 package me.lokka30.levelledmobs.commands.subcommands;
 
 import me.lokka30.levelledmobs.LevelledMobs;
+import me.lokka30.levelledmobs.commands.MessagesBase;
+import me.lokka30.levelledmobs.managers.LevelManager;
 import me.lokka30.levelledmobs.misc.*;
+import me.lokka30.microlib.other.VersionUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -29,10 +32,21 @@ import java.util.concurrent.ThreadLocalRandom;
  * @author stumper66
  * @since v2.0.0
  */
-public class SummonSubcommand implements Subcommand {
+public class SummonSubcommand extends MessagesBase implements Subcommand {
+    public SummonSubcommand(final LevelledMobs main){
+        super(main);
+    }
 
     @Override
-    public void parseSubcommand(final LevelledMobs main, final CommandSender sender, final String label, @NotNull final String @NotNull [] args) {
+    public void parseSubcommand(final LevelledMobs main, final @NotNull CommandSender sender, final String label, @NotNull final String @NotNull [] args) {
+        commandSender = sender;
+        messageLabel = label;
+
+        if (!sender.hasPermission("levelledmobs.command.summon")) {
+            main.configUtils.sendNoPermissionMsg(sender);
+            return;
+        }
+
         boolean useOverride = false;
         final List<String> useArgs = new LinkedList<>();
         int startOfNbt = -1;
@@ -64,52 +78,37 @@ public class SummonSubcommand implements Subcommand {
         final String[] useArgs2 = new String[useArgs.size()];
         useArgs.toArray(useArgs2);
 
-        parseSubcommand2(main, sender, label, useArgs2, useOverride, nbtData);
+        parseSubcommand2(useArgs2, useOverride, nbtData);
     }
 
-    private void parseSubcommand2(final LevelledMobs main, @NotNull final CommandSender sender, final String label,
-                                  final String[] args, final boolean override, final String nbtData) {
-        if (!sender.hasPermission("levelledmobs.command.summon")) {
-            main.configUtils.sendNoPermissionMsg(sender);
-            return;
-        }
-
+    private void parseSubcommand2(final String @NotNull [] args, final boolean override, final String nbtData) {
         if (args.length < 4) {
-            sendMainUsage(sender, label, main);
+            showMessage("command.levelledmobs.summon.usage");
             return;
         }
 
-        int amount;
+        final int amount;
         try {
             amount = Integer.parseInt(args[1]);
-        } catch (NumberFormatException ex) {
-            List<String> messages = main.messagesCfg.getStringList("command.levelledmobs.summon.invalid-amount");
-            messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.getPrefix());
-            messages = Utils.colorizeAllInList(messages);
-            messages = Utils.replaceAllInList(messages, "%amount%", args[1]); // This is after colorize so that args[1] is not colorized.
-            messages.forEach(sender::sendMessage);
+        } catch (final NumberFormatException ex) {
+            showMessage("command.levelledmobs.summon.invalid-amount", "%amount%", args[1]);
+            // messages = Utils.replaceAllInList(messages, "%amount%", args[1]); // This is after colorize so that args[1] is not colorized.
             return;
         }
 
-        EntityType entityType;
+        final EntityType entityType;
         try {
             entityType = EntityType.valueOf(args[2].toUpperCase());
-        } catch (IllegalArgumentException ex) {
-            List<String> messages = main.messagesCfg.getStringList("command.levelledmobs.summon.invalid-entity-type");
-            messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.getPrefix());
-            messages = Utils.colorizeAllInList(messages);
-            messages = Utils.replaceAllInList(messages, "%entityType%", args[2]); // This is after colorize so that args[2] is not colorized.
-            messages.forEach(sender::sendMessage);
+        } catch (final IllegalArgumentException ex) {
+            showMessage("command.levelledmobs.summon.invalid-entity-type", "%entityType%", args[2]);
+            // messages = Utils.replaceAllInList(messages, "%entityType%", args[2]); // This is after colorize so that args[2] is not colorized.
             return;
         }
 
         final RequestedLevel requestedLevel = new RequestedLevel();
         if (!requestedLevel.setLevelFromString(args[3])){
-            List<String> messages = main.messagesCfg.getStringList("command.levelledmobs.summon.invalid-level");
-            messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.getPrefix());
-            messages = Utils.colorizeAllInList(messages);
-            messages = Utils.replaceAllInList(messages, "%level%", args[3]); // This is after colorize so that args[3] is not colorized.
-            messages.forEach(sender::sendMessage);
+            showMessage("command.levelledmobs.summon.invalid-level", "%level%", args[3]);
+            //messages = Utils.replaceAllInList(messages, "%level%", args[3]); // This is after colorize so that args[3] is not colorized.
             return;
         }
 
@@ -125,44 +124,35 @@ public class SummonSubcommand implements Subcommand {
                     summonType = SummonType.AT_LOCATION;
                     break;
                 default:
-                    List<String> messages = main.messagesCfg.getStringList("command.levelledmobs.summon.invalid-summon-type");
-                    messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.getPrefix());
-                    messages = Utils.colorizeAllInList(messages);
-                    messages = Utils.replaceAllInList(messages, "%summonType%", args[4]); // This is after colorize so args[4] is not colorized.
-                    messages.forEach(sender::sendMessage);
+                    showMessage("command.levelledmobs.summon.invalid-level", "%summonType%", args[4]);
+                    // messages = Utils.replaceAllInList(messages, "%summonType%", args[4]); // This is after colorize so args[4] is not colorized.
                     return;
             }
         }
 
         if (summonType == SummonType.HERE) {
-            if (!(sender instanceof Player) && !(sender instanceof BlockCommandSender)){
-                List<String> messages = main.messagesCfg.getStringList("command.levelledmobs.summon.invalid-summon-type-console");
-                messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.getPrefix());
-                messages = Utils.colorizeAllInList(messages);
-                messages.forEach(sender::sendMessage);
+            if (!(commandSender instanceof Player) && !(commandSender instanceof BlockCommandSender)){
+                showMessage("command.levelledmobs.summon.invalid-summon-type-console");
                 return;
             }
 
 
             if (args.length == 4 || args.length == 5) {
                 Player player = null;
-                if (sender instanceof Player) player = (Player) sender;
+                if (commandSender instanceof Player) player = (Player) commandSender;
                 final Location location = (player != null) ?
-                        ((Player) sender).getLocation() : ((BlockCommandSender) sender).getBlock().getLocation();
+                        ((Player) commandSender).getLocation() : ((BlockCommandSender) commandSender).getBlock().getLocation();
 
                 if (location.getWorld() == null) {
-                    List<String> messages = main.messagesCfg.getStringList("common.player-offline");
-                    messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.getPrefix());
-                    messages = Utils.colorizeAllInList(messages);
-                    messages = Utils.replaceAllInList(messages, "%player%", (player != null) ?
-                            player.getDisplayName() : "(null)");
-                    messages.forEach(sender::sendMessage);
+                    final String playerName = VersionUtils.isRunningPaper() ?
+                            PaperUtils.getPlayerDisplayName(player) : SpigotUtils.getPlayerDisplayName(player);
+                    showMessage("common.player-offline", "%player%", playerName);
                     return;
                 }
 
                 final LivingEntityPlaceHolder lmPlaceHolder = LivingEntityPlaceHolder.getInstance(entityType, location, main);
 
-                final SummonMobOptions options = new SummonMobOptions(lmPlaceHolder, sender);
+                final SummonMobOptions options = new SummonMobOptions(lmPlaceHolder, commandSender);
                 options.amount = amount;
                 options.requestedLevel = requestedLevel;
                 options.summonType = summonType;
@@ -172,13 +162,9 @@ public class SummonSubcommand implements Subcommand {
 
                 summonMobs(options);
                 lmPlaceHolder.free();
-            } else {
-                List<String> messages = main.messagesCfg.getStringList("command.levelledmobs.summon.here.usage");
-                messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.getPrefix());
-                messages = Utils.replaceAllInList(messages, "%label%", label);
-                messages = Utils.colorizeAllInList(messages);
-                messages.forEach(sender::sendMessage);
             }
+            else
+                showMessage("command.levelledmobs.summon.here.usage");
         } else if (summonType == SummonType.AT_PLAYER) {
             if (args.length == 6) {
 
@@ -189,9 +175,9 @@ public class SummonSubcommand implements Subcommand {
                 final Player target = Bukkit.getPlayer(args[5]);
                 if (target == null) {
                     offline = true;
-                } else if (sender instanceof Player) {
+                } else if (commandSender instanceof Player) {
                     // Vanished player compatibility.
-                    final Player player = (Player) sender;
+                    final Player player = (Player) commandSender;
                     if (!player.canSee(target) && !player.isOp()) {
                         offline = true;
                     }
@@ -200,16 +186,13 @@ public class SummonSubcommand implements Subcommand {
                 }
 
                 if (offline || world == null) {
-                    List<String> messages = main.messagesCfg.getStringList("common.player-offline");
-                    messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.getPrefix());
-                    messages = Utils.colorizeAllInList(messages);
-                    messages = Utils.replaceAllInList(messages, "%player%", args[5]); // This is after colorize so that args[5] is not colorized.
-                    messages.forEach(sender::sendMessage);
+                    showMessage("common.player-offline", "%player%", args[5]);
+                    // messages = Utils.replaceAllInList(messages, "%player%", args[5]); // This is after colorize so that args[5] is not colorized.
                     return;
                 }
 
                 final LivingEntityPlaceHolder lmPlaceHolder = LivingEntityPlaceHolder.getInstance(entityType, location, main);
-                final SummonMobOptions options = new SummonMobOptions(lmPlaceHolder, sender);
+                final SummonMobOptions options = new SummonMobOptions(lmPlaceHolder, commandSender);
                 options.amount = amount;
                 options.requestedLevel = requestedLevel;
                 options.summonType = summonType;
@@ -219,54 +202,39 @@ public class SummonSubcommand implements Subcommand {
 
                 summonMobs(options);
                 lmPlaceHolder.free();
-            } else {
-                List<String> messages = main.messagesCfg.getStringList("command.levelledmobs.summon.atPlayer.usage");
-                messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.getPrefix());
-                messages = Utils.replaceAllInList(messages, "%label%", label);
-                messages = Utils.colorizeAllInList(messages);
-                messages.forEach(sender::sendMessage);
-            }
+            } else
+                showMessage("command.levelledmobs.summon.atPlayer.usage");
         } else { // At Location
             if (args.length == 8 || args.length == 9) {
                 final String worldName;
 
                 if (args.length == 8) {
-                    if (sender instanceof Player)
-                        worldName = ((Player) sender).getWorld().getName();
-                    else if (sender instanceof BlockCommandSender)
-                        worldName = ((BlockCommandSender) sender).getBlock().getWorld().getName();
+                    if (commandSender instanceof Player)
+                        worldName = ((Player) commandSender).getWorld().getName();
+                    else if (commandSender instanceof BlockCommandSender)
+                        worldName = ((BlockCommandSender) commandSender).getBlock().getWorld().getName();
                     else {
-                        List<String> messages = main.messagesCfg.getStringList("command.levelledmobs.summon.atLocation.usage-console");
-                        messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.getPrefix());
-                        messages = Utils.replaceAllInList(messages, "%label%", label);
-                        messages = Utils.colorizeAllInList(messages);
-                        messages.forEach(sender::sendMessage);
+                        showMessage("command.levelledmobs.summon.atLocation.usage-console");
                         return;
                     }
                 } else { //args.length==9
                     final World world = Bukkit.getWorld(args[8]);
 
                     if (world == null) {
-                        List<String> messages = main.messagesCfg.getStringList("command.levelledmobs.summon.atLocation.invalid-world");
-                        messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.getPrefix());
-                        messages = Utils.colorizeAllInList(messages);
-                        messages = Utils.replaceAllInList(messages, "%world%", args[8]); //This is after colorize so that args[8] is not colorized.
-                        messages.forEach(sender::sendMessage);
+                        showMessage("command.levelledmobs.summon.atLocation.usage-console", "%world%", args[8]);
+                        // messages = Utils.replaceAllInList(messages, "%world%", args[8]); //This is after colorize so that args[8] is not colorized.
                         return;
                     } else
                         worldName = world.getName();
                 }
 
-                Location location = getRelativeLocation(sender, args[5], args[6], args[7], worldName);
+                final Location location = getRelativeLocation(commandSender, args[5], args[6], args[7], worldName);
 
-                if (location == null || location.getWorld() == null) {
-                    List<String> messages = main.messagesCfg.getStringList("command.levelledmobs.summon.atLocation.invalid-location");
-                    messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.getPrefix());
-                    messages = Utils.colorizeAllInList(messages);
-                    messages.forEach(sender::sendMessage);
-                } else {
-                    LivingEntityPlaceHolder lmPlaceHolder = LivingEntityPlaceHolder.getInstance(entityType, location, main);
-                    final SummonMobOptions options = new SummonMobOptions(lmPlaceHolder, sender);
+                if (location == null || location.getWorld() == null)
+                    showMessage("command.levelledmobs.summon.atLocation.invalid-location");
+                else {
+                    final LivingEntityPlaceHolder lmPlaceHolder = LivingEntityPlaceHolder.getInstance(entityType, location, main);
+                    final SummonMobOptions options = new SummonMobOptions(lmPlaceHolder, commandSender);
                     options.amount = amount;
                     options.requestedLevel = requestedLevel;
                     options.summonType = summonType;
@@ -275,13 +243,8 @@ public class SummonSubcommand implements Subcommand {
                     summonMobs(options);
                     lmPlaceHolder.free();
                 }
-            } else {
-                List<String> messages = main.messagesCfg.getStringList("command.levelledmobs.summon.atLocation.usage");
-                messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.getPrefix());
-                messages = Utils.replaceAllInList(messages, "%label%", label);
-                messages = Utils.colorizeAllInList(messages);
-                messages.forEach(sender::sendMessage);
-            }
+            } else
+                showMessage("command.levelledmobs.summon.atLocation.usage");
         }
     }
 
@@ -303,8 +266,8 @@ public class SummonSubcommand implements Subcommand {
 
         // <entity>
         if (args.length == 3) {
-            List<String> entityNames = new LinkedList<>();
-            for (EntityType entityType : EntityType.values()) {
+            final List<String> entityNames = new LinkedList<>();
+            for (final EntityType entityType : EntityType.values()) {
                 entityNames.add(entityType.toString().toLowerCase());
             }
             return entityNames;
@@ -337,10 +300,10 @@ public class SummonSubcommand implements Subcommand {
             switch (args[4].toLowerCase()) {
                 case "atplayer":
                     if (args.length == 6) {
-                        List<String> suggestions = new LinkedList<>();
-                        for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
+                        final List<String> suggestions = new LinkedList<>();
+                        for (final Player onlinePlayer : Bukkit.getOnlinePlayers()) {
                             if (sender instanceof Player) {
-                                Player player = (Player) sender;
+                                final Player player = (Player) sender;
                                 if (player.canSee(onlinePlayer) || player.isOp()) {
                                     suggestions.add(onlinePlayer.getName());
                                 }
@@ -361,7 +324,7 @@ public class SummonSubcommand implements Subcommand {
                     if (args.length < 9) { // args 6, 7 and 8 = x, y and z
                         return Collections.singletonList("~");
                     } else if (args.length == 9) {
-                        List<String> worlds = new LinkedList<>();
+                        final List<String> worlds = new LinkedList<>();
                         Bukkit.getWorlds().forEach(world -> worlds.add(world.getName()));
                         return worlds;
                     } else if (args.length == 10){
@@ -389,15 +352,6 @@ public class SummonSubcommand implements Subcommand {
         HERE,
         AT_PLAYER,
         AT_LOCATION
-    }
-
-    private void sendMainUsage(@NotNull final CommandSender sender, final String label, @NotNull final LevelledMobs main) {
-
-        List<String> messages = main.messagesCfg.getStringList("command.levelledmobs.summon.usage");
-        messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.getPrefix());
-        messages = Utils.replaceAllInList(messages, "%label%", label);
-        messages = Utils.colorizeAllInList(messages);
-        messages.forEach(sender::sendMessage);
     }
 
     private void summonMobs(@NotNull final SummonMobOptions options) {
@@ -438,7 +392,7 @@ public class SummonSubcommand implements Subcommand {
 
             List<String> messages = main.messagesCfg.getStringList("command.levelledmobs.summon.amount-limited.max");
             messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.getPrefix());
-            messages = Utils.replaceAllInList(messages, "%maxAmount%", maxAmount + "");
+            messages = Utils.replaceAllInList(messages, "%maxAmount%", String.valueOf(maxAmount));
             messages = Utils.colorizeAllInList(messages);
             messages.forEach(sender::sendMessage);
         }
@@ -452,7 +406,7 @@ public class SummonSubcommand implements Subcommand {
 
             List<String> messages = main.messagesCfg.getStringList("command.levelledmobs.summon.level-limited.min");
             messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.getPrefix());
-            messages = Utils.replaceAllInList(messages, "%minLevel%", minLevel + "");
+            messages = Utils.replaceAllInList(messages, "%minLevel%", String.valueOf(minLevel));
             messages = Utils.colorizeAllInList(messages);
             messages.forEach(sender::sendMessage);
         }
@@ -462,7 +416,7 @@ public class SummonSubcommand implements Subcommand {
 
             List<String> messages = main.messagesCfg.getStringList("command.levelledmobs.summon.level-limited.max");
             messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.getPrefix());
-            messages = Utils.replaceAllInList(messages, "%maxLevel%", maxLevel + "");
+            messages = Utils.replaceAllInList(messages, "%maxLevel%", String.valueOf(maxLevel));
             messages = Utils.colorizeAllInList(messages);
             messages.forEach(sender::sendMessage);
         }
@@ -474,7 +428,6 @@ public class SummonSubcommand implements Subcommand {
             final int distFromPlayer = main.settingsCfg.getInt("summon-command-spawn-distance-from-player", 5);
             if (distFromPlayer > 0 && target != null) {
                 int useDistFromPlayer = distFromPlayer;
-                final double direction = target.getEyeLocation().getYaw();
                 final Location origLocation = location;
                 // try up to 50 times to find a open spot to spawn the mob.  Keep getting closer to the player if needed
                 for (int i = 0; i < 50; i++) {
@@ -487,27 +440,27 @@ public class SummonSubcommand implements Subcommand {
                         break; // found an open spot
                 }
             } else if (target == null && sender instanceof BlockCommandSender) {
-                BlockCommandSender bcs = (BlockCommandSender) sender;
                 // increase the y by one so they don't spawn inside the command block
                 location = new Location(location.getWorld(), location.getBlockX(), location.getBlockY() + 1, location.getBlockZ());
             }
         }
 
-        main.levelManager.summonedEntityType = options.lmPlaceHolder.getEntityType();
-        main.levelManager.summonedLocation = location;
-
         for (int i = 0; i < options.amount; i++) {
             assert location.getWorld() != null;
 
-            final Entity entity = location.getWorld().spawnEntity(location, options.lmPlaceHolder.getEntityType());
-
             final int useLevel = options.requestedLevel.hasLevelRange ?
-                ThreadLocalRandom.current().nextInt(options.requestedLevel.levelRangeMin, options.requestedLevel.levelRangeMax + 1) :
+                    ThreadLocalRandom.current().nextInt(options.requestedLevel.levelRangeMin, options.requestedLevel.levelRangeMax + 1) :
                     options.requestedLevel.level;
+
+            final Entity entity = location.getWorld().spawnEntity(location, options.lmPlaceHolder.getEntityType());
 
             if (entity instanceof LivingEntity) {
                 final LivingEntityWrapper lmEntity = LivingEntityWrapper.getInstance((LivingEntity) entity, main);
-                lmEntity.nbtData = options.nbtData;
+                synchronized (LevelManager.summonedOrSpawnEggs_Lock){
+                    main.levelManager.summonedOrSpawnEggs.put(lmEntity.getLivingEntity(), null);
+                }
+                if (!Utils.isNullOrEmpty(options.nbtData))
+                    lmEntity.nbtData = List.of(options.nbtData);
                 lmEntity.summonedSender = sender;
                 main.levelInterface.applyLevelToMob(lmEntity, useLevel, true, options.override, new HashSet<>(Collections.singletonList(AdditionalLevelInformation.NOT_APPLICABLE)));
                 synchronized (lmEntity.getLivingEntity().getPersistentDataContainer()){
@@ -517,44 +470,33 @@ public class SummonSubcommand implements Subcommand {
             }
         }
 
-        main.levelManager.summonedEntityType = EntityType.UNKNOWN;
-        main.levelManager.summonedLocation = null;
-
         switch (options.summonType) {
             case HERE:
-                List<String> hereSuccessmessages = main.messagesCfg.getStringList("command.levelledmobs.summon.here.success");
-                hereSuccessmessages = Utils.replaceAllInList(hereSuccessmessages, "%prefix%", main.configUtils.getPrefix());
-                hereSuccessmessages = Utils.replaceAllInList(hereSuccessmessages, "%amount%", options.amount + "");
-                hereSuccessmessages = Utils.replaceAllInList(hereSuccessmessages, "%level%", options.requestedLevel.toString());
-                hereSuccessmessages = Utils.replaceAllInList(hereSuccessmessages, "%entity%", options.lmPlaceHolder.getTypeName());
-                hereSuccessmessages = Utils.colorizeAllInList(hereSuccessmessages);
-                hereSuccessmessages.forEach(sender::sendMessage);
+                showMessage("command.levelledmobs.summon.here.success",
+                        new String[]{ "%amount%", "%level%", "%entity%"},
+                        new String[]{String.valueOf(options.amount), options.requestedLevel.toString(), options.lmPlaceHolder.getTypeName() }
+                );
                 break;
 
             case AT_LOCATION:
-                List<String> atLocationSuccessMessages = main.messagesCfg.getStringList("command.levelledmobs.summon.atLocation.success");
-                atLocationSuccessMessages = Utils.replaceAllInList(atLocationSuccessMessages, "%prefix%", main.configUtils.getPrefix());
-                atLocationSuccessMessages = Utils.replaceAllInList(atLocationSuccessMessages, "%amount%", options.amount + "");
-                atLocationSuccessMessages = Utils.replaceAllInList(atLocationSuccessMessages, "%level%", options.requestedLevel.toString());
-                atLocationSuccessMessages = Utils.replaceAllInList(atLocationSuccessMessages, "%entity%", options.lmPlaceHolder.getTypeName());
-                atLocationSuccessMessages = Utils.replaceAllInList(atLocationSuccessMessages, "%x%", location.getBlockX() + "");
-                atLocationSuccessMessages = Utils.replaceAllInList(atLocationSuccessMessages, "%y%", location.getBlockY() + "");
-                atLocationSuccessMessages = Utils.replaceAllInList(atLocationSuccessMessages, "%z%", location.getBlockZ() + "");
-                atLocationSuccessMessages = Utils.replaceAllInList(atLocationSuccessMessages, "%world%", location.getWorld() == null ? "(null)" : location.getWorld().getName());
-                atLocationSuccessMessages = Utils.colorizeAllInList(atLocationSuccessMessages);
-                atLocationSuccessMessages.forEach(sender::sendMessage);
+                showMessage("command.levelledmobs.summon.atLocation.success",
+                        new String[]{ "%amount%", "%level%", "%entity%", "%x%", "%x%", "%x%", "%world%"},
+                        new String[]{String.valueOf(options.amount), options.requestedLevel.toString(), options.lmPlaceHolder.getTypeName(),
+                                String.valueOf(location.getBlockX()), String.valueOf(location.getBlockY()), String.valueOf(location.getBlockX()),
+                                location.getWorld() == null ? "(null)" : location.getWorld().getName() }
+                );
+
                 break;
 
             case AT_PLAYER:
-                List<String> atPlayerSuccessMessages = main.messagesCfg.getStringList("command.levelledmobs.summon.atPlayer.success");
-                atPlayerSuccessMessages = Utils.replaceAllInList(atPlayerSuccessMessages, "%prefix%", main.configUtils.getPrefix());
-                atPlayerSuccessMessages = Utils.replaceAllInList(atPlayerSuccessMessages, "%amount%", options.amount + "");
-                atPlayerSuccessMessages = Utils.replaceAllInList(atPlayerSuccessMessages, "%level%", options.requestedLevel.toString());
-                atPlayerSuccessMessages = Utils.replaceAllInList(atPlayerSuccessMessages, "%entity%", options.lmPlaceHolder.getTypeName());
-                atPlayerSuccessMessages = Utils.replaceAllInList(atPlayerSuccessMessages, "%targetUsername%", target == null ? "(null)" : target.getName());
-                atPlayerSuccessMessages = Utils.replaceAllInList(atPlayerSuccessMessages, "%targetDisplayname%", target == null ? "(null)" : target.getDisplayName());
-                atPlayerSuccessMessages = Utils.colorizeAllInList(atPlayerSuccessMessages);
-                atPlayerSuccessMessages.forEach(sender::sendMessage);
+                final String playerName = VersionUtils.isRunningPaper() ?
+                        PaperUtils.getPlayerDisplayName(target) : SpigotUtils.getPlayerDisplayName(target);
+                showMessage("command.levelledmobs.summon.atPlayer.success",
+                        new String[]{ "%amount%", "%level%", "%entity%", "%targetUsername%", "%targetDisplayname%"},
+                        new String[]{String.valueOf(options.amount), options.requestedLevel.toString(), options.lmPlaceHolder.getTypeName(),
+                                target == null ? "(null)" : target.getName(), target == null ? "(null)" : playerName }
+                );
+
                 break;
             default:
                 throw new IllegalStateException("Unexpected SummonType value of " + options.summonType + "!");
@@ -610,10 +552,10 @@ public class SummonSubcommand implements Subcommand {
                     x = ((BlockCommandSender) sender).getBlock().getX();
 
                 if (xStr.length() > 1) {
-                    double addition;
+                    final double addition;
                     try {
                         addition = Double.parseDouble(xStr.substring(1));
-                    } catch (NumberFormatException ex) {
+                    } catch (final NumberFormatException ex) {
                         return null;
                     }
                     x += addition;
@@ -628,10 +570,10 @@ public class SummonSubcommand implements Subcommand {
                     y = ((BlockCommandSender) sender).getBlock().getY();
 
                 if (yStr.length() > 1) {
-                    double addition;
+                    final double addition;
                     try {
                         addition = Double.parseDouble(yStr.substring(1));
-                    } catch (NumberFormatException ex) {
+                    } catch (final NumberFormatException ex) {
                         return null;
                     }
 
@@ -647,10 +589,10 @@ public class SummonSubcommand implements Subcommand {
                     z = ((BlockCommandSender) sender).getBlock().getZ();
 
                 if (zStr.length() > 1) {
-                    double addition;
+                    final double addition;
                     try {
                         addition = Double.parseDouble(zStr.substring(1));
-                    } catch (NumberFormatException ex) {
+                    } catch (final NumberFormatException ex) {
                         return null;
                     }
                     z += addition;
@@ -663,21 +605,21 @@ public class SummonSubcommand implements Subcommand {
         if (!xRelative) {
             try {
                 x = Double.parseDouble(xStr);
-            } catch (NumberFormatException ex) {
+            } catch (final NumberFormatException ex) {
                 return null;
             }
         }
         if (!yRelative) {
             try {
                 y = Double.parseDouble(yStr);
-            } catch (NumberFormatException ex) {
+            } catch (final NumberFormatException ex) {
                 return null;
             }
         }
         if (!zRelative) {
             try {
                 z = Double.parseDouble(zStr);
-            } catch (NumberFormatException ex) {
+            } catch (final NumberFormatException ex) {
                 return null;
             }
         }

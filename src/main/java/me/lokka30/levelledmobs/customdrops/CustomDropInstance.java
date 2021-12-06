@@ -19,8 +19,8 @@ import java.util.List;
  * @author stumper66
  * @since 2.4.0
  */
-public class CustomDropInstance {
-    public CustomDropInstance(final EntityType associatedMob){
+class CustomDropInstance {
+    CustomDropInstance(final EntityType associatedMob){
         this.associatedMob = associatedMob;
         this.entityGroup = null;
         this.customItems = new LinkedList<>();
@@ -28,7 +28,7 @@ public class CustomDropInstance {
         this.isBabyMob = false;
     }
 
-    public CustomDropInstance(final EntityType associatedMob, final boolean isBabyMob){
+    CustomDropInstance(final EntityType associatedMob, final boolean isBabyMob){
         this.associatedMob = associatedMob;
         this.entityGroup = null;
         this.customItems = new LinkedList<>();
@@ -36,7 +36,7 @@ public class CustomDropInstance {
         this.isBabyMob = isBabyMob;
     }
 
-    public CustomDropInstance(final CustomUniversalGroups entityGroup){
+    CustomDropInstance(final CustomUniversalGroups entityGroup){
         this.associatedMob = null;
         this.entityGroup = entityGroup;
         this.customItems = new LinkedList<>();
@@ -44,20 +44,16 @@ public class CustomDropInstance {
         isBabyMob = false;
     }
 
-    final public EntityType associatedMob;
-    final public CustomUniversalGroups entityGroup;
-    final public List<CustomDropBase> customItems;
-    public Double overallChance;
-    final public List<String> overallPermissions;
-    public boolean overrideStockDrops;
-    public boolean utilizesGroupIds;
-    final public boolean isBabyMob;
+    private final EntityType associatedMob;
+    private final CustomUniversalGroups entityGroup;
+    final List<CustomDropBase> customItems;
+    Float overallChance;
+    final List<String> overallPermissions;
+    boolean overrideStockDrops;
+    boolean utilizesGroupIds;
+    final boolean isBabyMob;
 
-    public boolean getIsGroup() {
-        return this.entityGroup != null;
-    }
-
-    public void combineDrop(CustomDropInstance dropInstance){
+    void combineDrop(final CustomDropInstance dropInstance){
         if (dropInstance == null) throw new NullPointerException("dropInstance");
 
         if (dropInstance.overrideStockDrops) this.overrideStockDrops = true;
@@ -66,8 +62,7 @@ public class CustomDropInstance {
         this.customItems.addAll(dropInstance.customItems);
     }
 
-    @NotNull
-    public String getMobOrGroupName() {
+    @NotNull String getMobOrGroupName() {
         if (this.associatedMob != null)
             return this.associatedMob.name();
         else if (this.entityGroup != null)

@@ -19,23 +19,23 @@ import java.util.TreeMap;
  */
 public class CustomCommand extends CustomDropBase {
 
-    public CustomCommand(@NotNull final CustomDropsDefaults defaults){
+    CustomCommand(@NotNull final CustomDropsDefaults defaults){
         super(defaults);
         this.rangedEntries = new TreeMap<>();
         this.commands = new LinkedList<>();
     }
 
-    public String commandName;
+    String commandName;
     @NotNull
     final public List<String> commands;
     @NotNull
-    final public Map<String, String> rangedEntries;
+    final Map<String, String> rangedEntries;
 
     public CustomCommand cloneItem() {
         CustomCommand copy = null;
         try {
             copy = (CustomCommand) super.clone();
-        } catch (Exception e) {
+        } catch (final Exception e) {
             e.printStackTrace();
         }
 
