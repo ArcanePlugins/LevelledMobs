@@ -5,7 +5,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class PlayerHomeCheckResult {
     public @Nullable Location location;
-    public @Nullable String resultMessage;
+    public @Nullable final String resultMessage;
     public @Nullable String homeNameUsed;
 
     public PlayerHomeCheckResult(final @Nullable String resultMessage){

@@ -10,13 +10,16 @@ import org.bukkit.util.FileUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nonnull;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
-import java.util.*;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -85,7 +88,7 @@ public class FileMigrator {
         }
 
         int lineNumber;
-        @Nonnull
+        @NotNull
         final List<String> lines;
         int sectionNumber;
         int sectionStartingLine;
@@ -112,9 +115,7 @@ public class FileMigrator {
         final int worldListExcludedLine = worldListAllowedLine + 1;
 
         final YamlConfiguration settings = YamlConfiguration.loadConfiguration(fileSettings);
-        final YamlConfiguration rules = YamlConfiguration.loadConfiguration(fileRules);
         try {
-            final List<String> settingsLines = Files.readAllLines(fileSettings.toPath(), StandardCharsets.UTF_8);
             final List<String> rulesLines = Files.readAllLines(fileRules.toPath(), StandardCharsets.UTF_8);
 
             final String worldMode = settings.getString("allowed-worlds-list.mode");
@@ -135,7 +136,7 @@ public class FileMigrator {
 
             Files.write(fileRules.toPath(), rulesLines, StandardCharsets.UTF_8, StandardOpenOption.TRUNCATE_EXISTING);
             Utils.logger.info("&fFile Loader: &8(Migration) &7Migrated &bworld allowed list&7 successfully.");
-            final List<String> msg = Arrays.asList("\n&c[WARNING] LevelledMobs3 Settings have Reset!",
+            final List<String> msg = List.of("\n&c[WARNING] LevelledMobs3 Settings have Reset!",
                     "\n&c[WARNING] Your original LM configuration files have been saved!",
                     "\n&c[WARNING]&r Due to significant changes, most settings WILL NOT MIGRATE from LM2.X to LM3.X.",
                     "\n&c[WARNING]&r You must edit rules.yml to further customize LM!",
@@ -166,8 +167,8 @@ public class FileMigrator {
     }
 
     static void copyCustomDrops(@NotNull final File from, @NotNull final File to, final int fileVersion){
-        final TreeMap<String, KeySectionInfo> keySections_Old;
-        TreeMap<String, KeySectionInfo> keySections_New;
+        final Map<String, KeySectionInfo> keySections_Old;
+        Map<String, KeySectionInfo> keySections_New;
 
         try {
             final List<String> oldConfigLines = Files.readAllLines(from.toPath(), StandardCharsets.UTF_8);
@@ -245,9 +246,9 @@ public class FileMigrator {
     }
 
     @NotNull
-    private static TreeMap<String, KeySectionInfo> buildKeySections(@NotNull final List<String> contents){
+    private static Map<String, KeySectionInfo> buildKeySections(@NotNull final List<String> contents){
 
-        final TreeMap<String, KeySectionInfo> sections = new TreeMap<>();
+        final Map<String, KeySectionInfo> sections = new TreeMap<>();
         KeySectionInfo keySection = null;
         String keyName = null;
         int sectionNumber = 0;
@@ -361,7 +362,7 @@ public class FileMigrator {
         final List<String> processedKeys = new LinkedList<>();
 
         // version 20 = 1.34 - last version before 2.0
-        final List<String> version20KeysToKeep = Arrays.asList(
+        final List<String> version20KeysToKeep = List.of(
                 "level-passive",
                 "fine-tuning.min-level",
                 "fine-tuning.max-level",
@@ -374,7 +375,7 @@ public class FileMigrator {
                 "use-update-checker");
 
         // version 2.1.0 - these fields should be reset to default
-        final List<String> version24Resets = Arrays.asList(
+        final List<String> version24Resets = List.of(
                 "fine-tuning.additions.movement-speed",
                 "fine-tuning.additions.attack-damage",
                 "world-level-override.min-level.example_world_123",
@@ -383,13 +384,13 @@ public class FileMigrator {
         );
 
         // version 2.2.0 - these fields should be reset to default
-        final List<String> version26Resets = Arrays.asList(
+        final List<String> version26Resets = List.of(
                 "world-level-override.min-level.example_world_123",
                 "world-level-override.max-level.example_world_123",
                 "world-level-override.max-level.example_world_456"
         );
 
-        final List<String> messagesExempt_v5 = Arrays.asList(
+        final List<String> messagesExempt_v5 = List.of(
                 "command.levelledmobs.spawner.usage",
                 "command.levelledmobs.spawner.spawner-give-message"
         );
@@ -401,7 +402,7 @@ public class FileMigrator {
             final List<String> oldConfigLines = Files.readAllLines(from.toPath(), StandardCharsets.UTF_8);
             final List<String> newConfigLines = Files.readAllLines(to.toPath(), StandardCharsets.UTF_8);
 
-            final SortedMap<String, FileMigrator.FieldInfo> oldConfigMap = getMapFromConfig(oldConfigLines);
+            final SortedMap<String, FieldInfo> oldConfigMap = getMapFromConfig(oldConfigLines);
             final SortedMap<String, FileMigrator.FieldInfo> newConfigMap = getMapFromConfig(newConfigLines);
             final List<String> currentKey = new LinkedList<>();
             int keysMatched = 0;
@@ -466,7 +467,6 @@ public class FileMigrator {
                                         if (enumeratedKey.startsWith(key) && numOfPeriods_Enumerated == numOfPeriods + 1 && !newConfigMap.containsKey(enumeratedKey)) {
                                             final FileMigrator.FieldInfo fi = entry.getValue();
                                             if (!fi.isList() && fi.simpleValue != null) {
-                                                final String newPadding = getPadding(depth * 2);
                                                 final String newline = padding + getEndingKey(enumeratedKey) + ": " + fi.simpleValue;
                                                 newConfigLines.add(currentLine + 1, newline);
                                                 if (showMessages)
@@ -639,15 +639,13 @@ public class FileMigrator {
         return -1;
     }
 
-    @Nonnull
+    @NotNull
     private static SortedMap<String, FileMigrator.FieldInfo> getMapFromConfig(@NotNull final List<String> input) {
         final SortedMap<String, FileMigrator.FieldInfo> configMap = new TreeMap<>();
         final List<String> currentKey = new LinkedList<>();
         final String regexPattern = "^[^':]*:.*";
 
-        int lineNum = -1;
         for (String line : input) {
-            lineNum++;
 
             final int depth = getFieldDepth(line);
             line = line.replace("\t", "").trim();

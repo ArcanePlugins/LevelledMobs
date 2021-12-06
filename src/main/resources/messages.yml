@@ -282,7 +282,7 @@ command:
       no-entities-near:
         - '%prefix% No entities were found within a 10 block radius'
       effective-rules:
-        - '%prefix% Showing effective rules for: %entitytype% (%mobname%) at location: %location%'
+        - '%prefix% Showing effective rules for: %entitytype% (%mobname%) in %world%, %location%'
       no-effective-rules:
         - '%prefix% No effective rules were found'
 

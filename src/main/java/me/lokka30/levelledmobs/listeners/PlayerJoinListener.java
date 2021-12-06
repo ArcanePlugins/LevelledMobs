@@ -11,6 +11,7 @@ import me.lokka30.levelledmobs.misc.Utils;
 import me.lokka30.microlib.messaging.MessageUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.NamespacedKey;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -60,26 +61,30 @@ public class PlayerJoinListener implements Listener {
     }
 
     private void checkForNetherPortalCoords(final @NotNull Player player){
-        Location location = null;
+        final NamespacedKey[] keys = { main.namespaced_keys.playerNetherCoords, main.namespaced_keys.playerNetherCoords_IntoWorld };
         try{
-            if (!player.getPersistentDataContainer().has(main.namespaced_keys.playerNetherCoords, PersistentDataType.STRING))
-                return;
+            for (int i = 0; i < keys.length; i++) {
+                final NamespacedKey useKey = keys[i];
+                if (!player.getPersistentDataContainer().has(useKey, PersistentDataType.STRING))
+                    continue;
 
-            final String netherCoords = player.getPersistentDataContainer().get(main.namespaced_keys.playerNetherCoords, PersistentDataType.STRING);
-            if (netherCoords == null) return;
-            final String[] coords = netherCoords.split(",");
-            if (coords.length != 4) return;
-            final World world = Bukkit.getWorld(coords[0]);
-            if (world == null) return;
-            location = new Location(world, Integer.parseInt(coords[1]), Integer.parseInt(coords[2]), Integer.parseInt(coords[3]));
+                final String netherCoords = player.getPersistentDataContainer().get(useKey, PersistentDataType.STRING);
+                if (netherCoords == null) continue;
+                final String[] coords = netherCoords.split(",");
+                if (coords.length != 4) continue;
+                final World world = Bukkit.getWorld(coords[0]);
+                if (world == null) continue;
+                final Location location = new Location(world, Integer.parseInt(coords[1]), Integer.parseInt(coords[2]), Integer.parseInt(coords[3]));
+
+                if (i == 0)
+                    main.companion.setPlayerNetherPortalLocation(player, location);
+                else
+                    main.companion.setPlayerWorldPortalLocation(player, location);
+            }
         }
         catch (Exception e){
             Utils.logger.warning("Unable to get player nether portal coords from " + player.getName() + ", " + e.getMessage());
         }
-
-        if (location == null) return;
-
-        main.companion.setPlayerNetherPortalLocation(player, location);
     }
 
     @EventHandler(priority = EventPriority.MONITOR)

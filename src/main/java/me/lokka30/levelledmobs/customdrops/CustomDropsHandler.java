@@ -5,7 +5,14 @@
 package me.lokka30.levelledmobs.customdrops;
 
 import me.lokka30.levelledmobs.LevelledMobs;
-import me.lokka30.levelledmobs.misc.*;
+import me.lokka30.levelledmobs.misc.Addition;
+import me.lokka30.levelledmobs.misc.DebugType;
+import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
+import me.lokka30.levelledmobs.misc.PaperUtils;
+import me.lokka30.levelledmobs.misc.PlayerLevelSourceResult;
+import me.lokka30.levelledmobs.misc.SpigotUtils;
+import me.lokka30.levelledmobs.misc.Utils;
+import me.lokka30.levelledmobs.misc.YmlParsingHelper;
 import me.lokka30.levelledmobs.rules.LevelledMobSpawnReason;
 import me.lokka30.microlib.messaging.MessageUtils;
 import me.lokka30.microlib.other.VersionUtils;
@@ -24,7 +31,15 @@ import org.jetbrains.annotations.Nullable;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.TreeMap;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -37,10 +52,10 @@ import java.util.concurrent.ThreadLocalRandom;
 public class CustomDropsHandler {
     private final LevelledMobs main;
 
-    final TreeMap<EntityType, CustomDropInstance> customDropsitems;
-    final TreeMap<EntityType, CustomDropInstance> customDropsitems_Babies;
-    final TreeMap<String, CustomDropInstance> customDropsitems_groups;
-    final TreeMap<String, CustomDropInstance> customDropIDs;
+    final Map<EntityType, CustomDropInstance> customDropsitems;
+    final Map<EntityType, CustomDropInstance> customDropsitems_Babies;
+    final Map<String, CustomDropInstance> customDropsitems_groups;
+    final Map<String, CustomDropInstance> customDropIDs;
     @Nullable Map<String, CustomDropInstance> customItemGroups;
     public final CustomDropsParser customDropsParser;
     private final YmlParsingHelper ymlHelper;
@@ -186,7 +201,7 @@ public class CustomDropsHandler {
                 if (dropInstance.overrideStockDrops) info.hasOverride = true;
             }
 
-            final TreeMap<EntityType, CustomDropInstance> dropMap =
+            final Map<EntityType, CustomDropInstance> dropMap =
                     info.lmEntity.isBabyMob() && customDropsitems_Babies.containsKey(entityType) ?
                     customDropsitems_Babies : customDropsitems;
 

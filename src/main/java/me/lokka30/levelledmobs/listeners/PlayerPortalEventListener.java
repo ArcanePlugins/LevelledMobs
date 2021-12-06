@@ -2,13 +2,11 @@ package me.lokka30.levelledmobs.listeners;
 
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.misc.Utils;
-import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityPortalExitEvent;
 import org.bukkit.event.player.PlayerPortalEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.persistence.PersistentDataType;
@@ -27,7 +25,8 @@ public class PlayerPortalEventListener implements Listener {
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void onPlayerPortalEvent(final @NotNull PlayerPortalEvent event){
         if (event.getCause() != PlayerTeleportEvent.TeleportCause.NETHER_PORTAL) return;
-        if (event.getTo().getWorld() == null || event.getTo().getWorld().getEnvironment() != World.Environment.NETHER) return;
+        if (event.getTo().getWorld() == null) return;
+        final boolean isToNether = (event.getTo().getWorld().getEnvironment() == World.Environment.NETHER);
 
         final Player player = event.getPlayer();
 
@@ -39,10 +38,16 @@ public class PlayerPortalEventListener implements Listener {
         final BukkitRunnable runnable = new BukkitRunnable() {
             @Override
             public void run() {
-                main.companion.setPlayerNetherPortalLocation(player, player.getLocation());
+                if (isToNether)
+                    main.companion.setPlayerNetherPortalLocation(player, player.getLocation());
+                else
+                    main.companion.setPlayerWorldPortalLocation(player, player.getLocation());
 
                 try{
-                    event.getPlayer().getPersistentDataContainer().set(main.namespaced_keys.playerNetherCoords, PersistentDataType.STRING, locationStr);
+                    if (isToNether)
+                        event.getPlayer().getPersistentDataContainer().set(main.namespaced_keys.playerNetherCoords, PersistentDataType.STRING, locationStr);
+                    else
+                        event.getPlayer().getPersistentDataContainer().set(main.namespaced_keys.playerNetherCoords_IntoWorld, PersistentDataType.STRING, locationStr);
                 }
                 catch (ConcurrentModificationException e){
                     Utils.logger.warning("Error updating PDC on " + player.getName() + ", " + e.getMessage());

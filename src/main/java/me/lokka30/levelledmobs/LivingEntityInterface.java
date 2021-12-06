@@ -34,6 +34,7 @@ public interface LivingEntityInterface {
     @NotNull
     List<RuleInfo> getApplicableRules();
 
+    @SuppressWarnings("unused")
     @NotNull
     LevelledMobs getMainInstance();
 

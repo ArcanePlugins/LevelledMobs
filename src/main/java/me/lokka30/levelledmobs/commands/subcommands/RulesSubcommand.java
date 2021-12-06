@@ -7,7 +7,11 @@ package me.lokka30.levelledmobs.commands.subcommands;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.commands.MessagesBase;
 import me.lokka30.levelledmobs.managers.ExternalCompatibilityManager;
-import me.lokka30.levelledmobs.misc.*;
+import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
+import me.lokka30.levelledmobs.misc.PaperUtils;
+import me.lokka30.levelledmobs.misc.QueueItem;
+import me.lokka30.levelledmobs.misc.SpigotUtils;
+import me.lokka30.levelledmobs.misc.Utils;
 import me.lokka30.levelledmobs.rules.RuleInfo;
 import me.lokka30.microlib.messaging.MessageUtils;
 import me.lokka30.microlib.other.VersionUtils;
@@ -32,7 +36,16 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.SortedMap;
+import java.util.TreeMap;
+import java.util.TreeSet;
+
 
 /**
  * Shows the current rules as parsed from the various config files
@@ -331,8 +344,8 @@ public class RulesSubcommand extends MessagesBase implements Subcommand {
                     lmEntity.getLivingEntity().getLocation().getBlockY(),
                     lmEntity.getLivingEntity().getLocation().getBlockZ());
             final List<String> messages = getMessage("command.levelledmobs.rules.effective-rules",
-                    new String[]{"%mobname%", "%entitytype%", "%location%"},
-                    new String[]{ entityName, lmEntity.getNameIfBaby(), locationStr }
+                    new String[]{"%mobname%", "%entitytype%", "%location%", "%world%"},
+                    new String[]{ entityName, lmEntity.getNameIfBaby(), locationStr, lmEntity.getWorldName() }
             );
 
 
