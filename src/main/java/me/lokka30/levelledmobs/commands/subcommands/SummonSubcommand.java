@@ -7,7 +7,14 @@ package me.lokka30.levelledmobs.commands.subcommands;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.commands.MessagesBase;
 import me.lokka30.levelledmobs.managers.LevelManager;
-import me.lokka30.levelledmobs.misc.*;
+import me.lokka30.levelledmobs.misc.AdditionalLevelInformation;
+import me.lokka30.levelledmobs.misc.LevellableState;
+import me.lokka30.levelledmobs.misc.LivingEntityPlaceHolder;
+import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
+import me.lokka30.levelledmobs.misc.PaperUtils;
+import me.lokka30.levelledmobs.misc.RequestedLevel;
+import me.lokka30.levelledmobs.misc.SpigotUtils;
+import me.lokka30.levelledmobs.misc.Utils;
 import me.lokka30.microlib.other.VersionUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -23,7 +30,12 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**

@@ -7,10 +7,18 @@ package me.lokka30.levelledmobs.listeners;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.managers.ExternalCompatibilityManager;
 import me.lokka30.levelledmobs.managers.LevelManager;
-import me.lokka30.levelledmobs.misc.*;
+import me.lokka30.levelledmobs.misc.AdditionalLevelInformation;
+import me.lokka30.levelledmobs.misc.DebugType;
+import me.lokka30.levelledmobs.misc.LevellableState;
+import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
+import me.lokka30.levelledmobs.misc.QueueItem;
+import me.lokka30.levelledmobs.misc.Utils;
 import me.lokka30.levelledmobs.rules.LevelledMobSpawnReason;
 import me.lokka30.levelledmobs.rules.NametagVisibilityEnum;
-import org.bukkit.*;
+import org.bukkit.GameMode;
+import org.bukkit.Location;
+import org.bukkit.Particle;
+import org.bukkit.World;
 import org.bukkit.block.CreatureSpawner;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -27,7 +35,11 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 
 import java.time.Instant;
-import java.util.*;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -93,7 +105,7 @@ public class EntitySpawnListener implements Listener {
     private void updateMobForPlayerLevelling(final @NotNull LivingEntityWrapper lmEntity){
         final int onlinePlayerCount = lmEntity.getWorld().getPlayers().size();
         final int checkDistance = main.helperSettings.getInt(main.settingsCfg, "async-task-max-blocks-from-player", 100);
-        final List<org.bukkit.entity.Player> playerList = onlinePlayerCount <= 10 ?
+        final List<Player> playerList = onlinePlayerCount <= 10 ?
                 getPlayersOnServerNearMob(lmEntity.getLivingEntity(), checkDistance) :
                 getPlayersNearMob(lmEntity.getLivingEntity(), checkDistance);
 

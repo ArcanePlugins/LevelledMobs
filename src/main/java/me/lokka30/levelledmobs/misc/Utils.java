@@ -19,7 +19,8 @@ import org.jetbrains.annotations.Nullable;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Holds common utilities
@@ -43,7 +44,7 @@ public final class Utils {
      */
     @NotNull
     public static List<String> getSupportedServerVersions() {
-        return Arrays.asList("1.16", "1.17");
+        return List.of("1.16", "1.17", "1.18");
     }
 
     @NotNull
@@ -130,11 +131,11 @@ public final class Utils {
     }
 
     @NotNull
-    public static final List<String> oneToNine = Arrays.asList("1", "2", "3", "4", "5", "6", "7", "8", "9");
+    public static final List<String> oneToNine = List.of("1", "2", "3", "4", "5", "6", "7", "8", "9");
 
     @NotNull
     public static List<String> replaceAllInList(@NotNull final List<String> oldList, @NotNull final String replaceWhat, @NotNull final String replaceTo) {
-        final List<String> newList = new ArrayList<>();
+        final List<String> newList = new ArrayList<>(oldList.size());
         for (final String string : oldList) {
             newList.add(string.replace(replaceWhat, replaceTo));
         }
@@ -180,7 +181,7 @@ public final class Utils {
     @NotNull
     public static String capitalize(@NotNull final String str) {
         final StringBuilder builder = new StringBuilder();
-        final String[] words = str.toLowerCase(Locale.ROOT).split(" "); // each word separated from str
+        final String[] words = str.toLowerCase().split(" "); // each word separated from str
         for (int i = 0; i < words.length; i++) {
             final String word = words[i];
             if (word.isEmpty()) continue;

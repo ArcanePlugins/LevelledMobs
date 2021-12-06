@@ -9,7 +9,12 @@ import org.jetbrains.annotations.NotNull;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.util.*;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Queue;
+import java.util.WeakHashMap;
 
 /**
  * Used to mobs have a nametag cooldown timer where the nametag stays

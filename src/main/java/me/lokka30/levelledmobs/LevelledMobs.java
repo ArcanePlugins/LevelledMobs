@@ -10,8 +10,19 @@ import me.lokka30.levelledmobs.listeners.BlockPlaceListener;
 import me.lokka30.levelledmobs.listeners.ChunkLoadListener;
 import me.lokka30.levelledmobs.listeners.EntityDamageDebugListener;
 import me.lokka30.levelledmobs.listeners.PlayerInteractEventListener;
-import me.lokka30.levelledmobs.managers.*;
-import me.lokka30.levelledmobs.misc.*;
+import me.lokka30.levelledmobs.managers.ExternalCompatibilityManager;
+import me.lokka30.levelledmobs.managers.LevelManager;
+import me.lokka30.levelledmobs.managers.MobDataManager;
+import me.lokka30.levelledmobs.managers.MobHeadManager;
+import me.lokka30.levelledmobs.managers.MobsQueueManager;
+import me.lokka30.levelledmobs.managers.NametagQueueManager;
+import me.lokka30.levelledmobs.managers.PlaceholderApiIntegration;
+import me.lokka30.levelledmobs.misc.ConfigUtils;
+import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
+import me.lokka30.levelledmobs.misc.Namespaced_Keys;
+import me.lokka30.levelledmobs.misc.NametagTimerChecker;
+import me.lokka30.levelledmobs.misc.Utils;
+import me.lokka30.levelledmobs.misc.YmlParsingHelper;
 import me.lokka30.levelledmobs.rules.RulesManager;
 import me.lokka30.levelledmobs.rules.RulesParsingManager;
 import me.lokka30.microlib.maths.QuickTimer;
@@ -24,7 +35,13 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
 import java.time.Instant;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.Set;
+import java.util.Stack;
+import java.util.TreeMap;
+import java.util.WeakHashMap;
 
 /**
  * This is the main class of the plugin. Bukkit will call onLoad and onEnable on startup, and onDisable on shutdown.

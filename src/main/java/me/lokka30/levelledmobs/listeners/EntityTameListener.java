@@ -5,7 +5,11 @@
 package me.lokka30.levelledmobs.listeners;
 
 import me.lokka30.levelledmobs.LevelledMobs;
-import me.lokka30.levelledmobs.misc.*;
+import me.lokka30.levelledmobs.misc.AdditionalLevelInformation;
+import me.lokka30.levelledmobs.misc.DebugType;
+import me.lokka30.levelledmobs.misc.LevellableState;
+import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
+import me.lokka30.levelledmobs.misc.Utils;
 import me.lokka30.levelledmobs.rules.MobTamedStatus;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;

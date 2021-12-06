@@ -6,7 +6,9 @@ package me.lokka30.levelledmobs.managers;
 
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.LivingEntityInterface;
-import me.lokka30.levelledmobs.misc.*;
+import me.lokka30.levelledmobs.misc.LevellableState;
+import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
+import me.lokka30.levelledmobs.misc.PlayerHomeCheckResult;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
@@ -331,7 +333,7 @@ public class ExternalCompatibilityManager {
     }
 
     @NotNull
-    public static PlayerHomeCheckResult getPlayerHomeLocation(final @NotNull LevelledMobs main, final @NotNull Player player, final boolean allowBed){
+    public static PlayerHomeCheckResult getPlayerHomeLocation(final @NotNull Player player, final boolean allowBed){
         final Plugin plugin = Bukkit.getPluginManager().getPlugin("essentials");
         if (plugin == null)
             return new PlayerHomeCheckResult("Unable to get player home, Essentials is not installed", null);

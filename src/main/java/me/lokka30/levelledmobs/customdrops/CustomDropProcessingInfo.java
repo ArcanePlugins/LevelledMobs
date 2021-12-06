@@ -14,7 +14,6 @@ import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nonnull;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -52,7 +51,7 @@ class CustomDropProcessingInfo {
     boolean hasEquippedItems;
     public String customDropId;
     List<ItemStack> newDrops;
-    @Nonnull
+    @NotNull
     final Map<String, Integer> groupIDsDroppedAlready;
     Map<Integer, List<CustomDropBase>> prioritizedDrops;
     @Nullable CustomDropsRuleSet dropRules;
