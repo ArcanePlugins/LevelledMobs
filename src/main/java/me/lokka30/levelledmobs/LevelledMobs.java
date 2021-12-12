@@ -26,22 +26,21 @@ import me.lokka30.levelledmobs.misc.YmlParsingHelper;
 import me.lokka30.levelledmobs.rules.RulesManager;
 import me.lokka30.levelledmobs.rules.RulesParsingManager;
 import me.lokka30.microlib.maths.QuickTimer;
+import org.apache.commons.lang3.tuple.Pair;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 
+import java.sql.Timestamp;
 import java.time.Instant;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.Set;
-import java.util.Stack;
-import java.util.TreeMap;
-import java.util.WeakHashMap;
+import java.util.*;
 
 /**
  * This is the main class of the plugin. Bukkit will call onLoad and onEnable on startup, and onDisable on shutdown.
@@ -90,6 +89,9 @@ public final class LevelledMobs extends JavaPlugin {
     private long loadTime;
     public WeakHashMap<LivingEntity, Instant> playerLevellingEntities;
     public Stack<LivingEntityWrapper> cacheCheck;
+    public HashMap<Long, ArrayList<Pair<Timestamp, LivingEntityWrapper>>> entityDeathInChunkCounter;
+    public BukkitTask hashMapCleanUp;
+    public float maximumCoolDownTime=0.0F;
 
     @Override
     public void onEnable() {
@@ -98,6 +100,7 @@ public final class LevelledMobs extends JavaPlugin {
 
         this.namespaced_keys = new Namespaced_Keys(this);
         this.playerLevellingEntities = new WeakHashMap<>();
+        this.entityDeathInChunkCounter=new HashMap<>();
         this.helperSettings = new YmlParsingHelper();
         this.random = new Random();
         this.customMobGroups = new TreeMap<>();
@@ -117,6 +120,19 @@ public final class LevelledMobs extends JavaPlugin {
             levelManager.startNametagAutoUpdateTask();
             levelManager.startNametagTimer();
         }
+        // Clean up HashMap every 5 minutes
+        hashMapCleanUp=new BukkitRunnable(){
+            @Override
+            public void run() {
+                for(var i:entityDeathInChunkCounter.entrySet()){
+                    var pairList=i.getValue();
+                    while(pairList!=null && !pairList.isEmpty() && Math.abs(pairList.get(0).getKey().getTime()-
+                            System.currentTimeMillis())<=maximumCoolDownTime*1000.0F){
+                        pairList.remove(0);
+                    }
+                }
+            }
+        }.runTaskTimer(this,0,300000);
         companion.setupMetrics();
         companion.checkUpdates();
 
@@ -175,6 +191,7 @@ public final class LevelledMobs extends JavaPlugin {
         disableTimer.start();
 
         levelManager.stopNametagAutoUpdateTask();
+        hashMapCleanUp.cancel();
         companion.shutDownAsyncTasks();
 
         Utils.logger.info("&f~ Shut-down complete, took &b" + disableTimer.getTimer() + "ms&f ~");

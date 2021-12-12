@@ -16,6 +16,7 @@ import me.lokka30.levelledmobs.misc.YmlParsingHelper;
 import me.lokka30.levelledmobs.rules.LevelledMobSpawnReason;
 import me.lokka30.microlib.messaging.MessageUtils;
 import me.lokka30.microlib.other.VersionUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
@@ -31,6 +32,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -381,9 +383,32 @@ public class CustomDropsHandler {
         boolean didNotMakeChance = false;
         float chanceRole = 0.0F;
 
+        //ChunkKey copied from Paper source code
+        int _X=(int)(info.lmEntity.getLivingEntity().getChunk().getX()>>4),_Z=(int)(info.lmEntity.getLivingEntity().getChunk().getZ()>>4);
+        long chunkKey=(long) _X & 0xffffffffL | ((long) _Z & 0xffffffffL) << 32;
+        ArrayList<Pair<Timestamp, LivingEntityWrapper>> pairList = main.entityDeathInChunkCounter.get(chunkKey);
+        //Binary search
+        int furthestInCooldownTime,numberOfEntityDeathInChunk;
+        if(pairList!=null){
+            furthestInCooldownTime=pairList.size();
+            for(int j=18;j>=0;j--){
+                if((furthestInCooldownTime-(1<<j))>=0 && (furthestInCooldownTime-(1<<j))<pairList.size() &&
+                        Math.abs(pairList.get(furthestInCooldownTime-(1<<j)).getKey().getTime()-
+                                System.currentTimeMillis())<=dropBase.coolDownTime*1000.0F){
+                    furthestInCooldownTime=furthestInCooldownTime-(1<<j);
+                }
+            }
+            numberOfEntityDeathInChunk=pairList.size()-furthestInCooldownTime;
+        }else{
+            numberOfEntityDeathInChunk=0;
+        }
+        if(numberOfEntityDeathInChunk>dropBase.deathInChunkThreshold)didNotMakeChance=true;
+
         if (!info.equippedOnly && dropBase.chance < 1.0){
             chanceRole = (float) ThreadLocalRandom.current().nextInt(0, 100001) * 0.00001F;
-            if (1.0F - chanceRole >= dropBase.chance) didNotMakeChance = true;
+            if (1.0F - chanceRole >= dropBase.chance){
+                didNotMakeChance = true;
+            }
         }
 
         if (didNotMakeChance && !info.equippedOnly && isCustomDropsDebuggingEnabled()) {

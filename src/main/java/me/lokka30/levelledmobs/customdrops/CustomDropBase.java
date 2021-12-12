@@ -38,6 +38,8 @@ public class CustomDropBase implements Cloneable {
     int minPlayerLevel;
     int maxPlayerLevel;
     public float chance;
+    public int deathInChunkThreshold;
+    public float coolDownTime;
     boolean playerCausedOnly;
     boolean noSpawner;
     String groupId;

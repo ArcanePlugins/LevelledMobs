@@ -341,6 +341,9 @@ public class CustomDropsParser {
 
     private void parseCustomDropsAttributes(@NotNull final CustomDropBase dropBase, @NotNull final ConfigurationSection cs, final @NotNull CustomDropInstance dropInstance){
         dropBase.chance = ymlHelper.getFloat(cs, "chance", this.defaults.chance);
+        dropBase.deathInChunkThreshold=ymlHelper.getInt(cs,"deathInChunkThreshold",this.defaults.deathInChunkThreshold);
+        dropBase.coolDownTime=ymlHelper.getFloat(cs,"coolDownTime",this.defaults.coolDownTime);
+        main.maximumCoolDownTime=Math.max(main.maximumCoolDownTime,dropBase.coolDownTime);
         dropBase.permissions.addAll(this.defaults.permissions);
         dropBase.permissions.addAll(ymlHelper.getStringSet(cs, "permission"));
         dropBase.minLevel = ymlHelper.getInt(cs,"minlevel", this.defaults.minLevel);
