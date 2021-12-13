@@ -4,6 +4,9 @@
 
 package me.lokka30.levelledmobs;
 
+import io.github.geniot.indexedtreemap.IndexedNavigableMap;
+import io.github.geniot.indexedtreemap.IndexedNavigableSet;
+import io.github.geniot.indexedtreemap.IndexedTreeSet;
 import me.lokka30.levelledmobs.commands.LevelledMobsCommand;
 import me.lokka30.levelledmobs.customdrops.CustomDropsHandler;
 import me.lokka30.levelledmobs.listeners.BlockPlaceListener;
@@ -89,9 +92,10 @@ public final class LevelledMobs extends JavaPlugin {
     private long loadTime;
     public WeakHashMap<LivingEntity, Instant> playerLevellingEntities;
     public Stack<LivingEntityWrapper> cacheCheck;
-    public HashMap<Long, ArrayList<Pair<Timestamp, LivingEntityWrapper>>> entityDeathInChunkCounter;
+    public HashMap<Long, IndexedTreeSet<Pair<Timestamp, LivingEntityWrapper>>> entityDeathInChunkCounter;
     public BukkitTask hashMapCleanUp;
     public float maximumCoolDownTime=0.0F;
+    public int maximumDeathInChunkThreshold=0;
 
     @Override
     public void onEnable() {
@@ -125,14 +129,14 @@ public final class LevelledMobs extends JavaPlugin {
             @Override
             public void run() {
                 for(var i:entityDeathInChunkCounter.entrySet()){
-                    var pairList=i.getValue();
-                    while(pairList!=null && !pairList.isEmpty() && Math.abs(pairList.get(0).getKey().getTime()-
+                    IndexedTreeSet<Pair<Timestamp,LivingEntityWrapper>> pairList=i.getValue();
+                    while(pairList!=null && !pairList.isEmpty() && Math.abs(pairList.first().getKey().getTime()-
                             System.currentTimeMillis())<=maximumCoolDownTime*1000.0F){
                         pairList.remove(0);
                     }
                 }
             }
-        }.runTaskTimer(this,0,300000);
+        }.runTaskTimer(this,0,6000);
         companion.setupMetrics();
         companion.checkUpdates();
 

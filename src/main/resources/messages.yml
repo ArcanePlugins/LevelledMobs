@@ -338,6 +338,7 @@ other:
     send-on-join: true
 
   mob-head-drop-name: '%mob_name%''s head'
+  no-drop-in-chunk: '&6You have reached &amaximum&6 kill count in this chunk. &4Please come back after a while.'
   create-debug:
     - '&b&nCreate a Debugging ZIP'
     - '&7You should only run this command if a LevelledMobs developer has asked you to. It is used to assist users who are experiencing issues with the plugin.'
@@ -359,4 +360,4 @@ other:
 # +   DO NOT EDIT BEYOND HERE WITHOUT DEVELOPER APPROVAL                                     +LM3
 # +                                                                                          +LM3
 # +-------------------------------------------------------------------------------------------LM3
-file-version: 7
+file-version: 8

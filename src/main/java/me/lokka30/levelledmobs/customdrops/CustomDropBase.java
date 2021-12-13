@@ -40,6 +40,7 @@ public class CustomDropBase implements Cloneable {
     public float chance;
     public int deathInChunkThreshold;
     public float coolDownTime;
+    public boolean chanceDecreaseAsEntityDeathInChunk;
     boolean playerCausedOnly;
     boolean noSpawner;
     String groupId;

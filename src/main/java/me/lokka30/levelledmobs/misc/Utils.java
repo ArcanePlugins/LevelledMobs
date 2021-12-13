@@ -4,11 +4,14 @@
 
 package me.lokka30.levelledmobs.misc;
 
+import io.github.geniot.indexedtreemap.IndexedTreeSet;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.rules.MinAndMax;
 import me.lokka30.levelledmobs.rules.RulesManager;
 import me.lokka30.microlib.messaging.MessageUtils;
 import me.lokka30.microlib.messaging.MicroLogger;
+import org.apache.commons.lang3.tuple.MutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Biome;
@@ -17,6 +20,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.sql.Timestamp;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -307,5 +311,32 @@ public final class Utils {
         }
 
         return new PlayerNetherOrWorldSpawnResult(location, isNetherPortalCoord, isWorldPortalCoord);
+    }
+
+    // Copied from PaperMC
+    public static long getChunkKey(LivingEntityWrapper lmEntity){
+        int _X = (int)(lmEntity.getLivingEntity().getChunk().getX()>>4), _Z = (int)(lmEntity.getLivingEntity().getChunk().getZ()>>4);
+        return (long) _X & 0xffffffffL | ((long) _Z & 0xffffffffL) << 32;
+    }
+
+    public static int getNumberOfEntityDeathInChunk(LivingEntityWrapper lmEntity, LevelledMobs main, float coolDownTime){
+        long chunkKey = Utils.getChunkKey(lmEntity);
+        IndexedTreeSet<Pair<Timestamp, LivingEntityWrapper>> pairList = main.entityDeathInChunkCounter.get(chunkKey);
+
+        int furthestInCooldownTime;
+        int numberOfEntityDeathInChunk;
+        if(pairList!=null){
+            Pair<Timestamp,LivingEntityWrapper> ceilElement =
+                    pairList.ceiling(new MutablePair<>(new Timestamp(System.currentTimeMillis()-(long)(coolDownTime*1000)),null));
+            if (ceilElement == null) {
+                furthestInCooldownTime = pairList.size();
+            }else{
+                furthestInCooldownTime = pairList.entryIndex(ceilElement);
+            }
+            numberOfEntityDeathInChunk = pairList.size()-furthestInCooldownTime;
+        }else{
+            numberOfEntityDeathInChunk = 0;
+        }
+        return numberOfEntityDeathInChunk;
     }
 }

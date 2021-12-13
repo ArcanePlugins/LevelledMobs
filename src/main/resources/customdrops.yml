@@ -38,6 +38,9 @@
 # +-------------------------------------------------------------------------------------------LM3
 defaults:
   chance: 0.2
+  deathInChunkThreshold: 1000000
+  coolDownTime: 300.0
+  chanceDecreaseAsEntityDeathInChunk: false
   amount: 1
   minLevel: -1
   maxLevel: -1

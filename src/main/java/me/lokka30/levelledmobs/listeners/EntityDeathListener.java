@@ -4,12 +4,17 @@
 
 package me.lokka30.levelledmobs.listeners;
 
+import io.github.geniot.indexedtreemap.IndexedNavigableSet;
+import io.github.geniot.indexedtreemap.IndexedTreeSet;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.customdrops.CustomDropResult;
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
 import me.lokka30.levelledmobs.misc.NametagTimerChecker;
+import me.lokka30.levelledmobs.misc.Utils;
+import me.lokka30.microlib.messaging.MessageUtils;
 import org.apache.commons.lang3.tuple.MutablePair;
 import org.apache.commons.lang3.tuple.Pair;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -60,12 +65,20 @@ public class EntityDeathListener implements Listener {
 
         if(lmEntity.isLevelled() || main.rulesManager.getRule_UseCustomDropsForMob(lmEntity).useDrops){
             //ChunkKey copied from Paper source code
-            int _X=(int)(lmEntity.getLivingEntity().getChunk().getX()>>4),_Z=(int)(lmEntity.getLivingEntity().getChunk().getZ()>>4);
-            long chunkKey=(long) _X & 0xffffffffL | ((long) _Z & 0xffffffffL) << 32;
+            int _X = (int)(lmEntity.getLivingEntity().getChunk().getX()>>4), _Z = (int)(lmEntity.getLivingEntity().getChunk().getZ()>>4);
+            long chunkKey = (long) _X & 0xffffffffL | ((long) _Z & 0xffffffffL) << 32;
             if(!main.entityDeathInChunkCounter.containsKey(chunkKey)){
-                main.entityDeathInChunkCounter.put(chunkKey,new ArrayList<>());
+                main.entityDeathInChunkCounter.put(chunkKey,new IndexedTreeSet<>());
             }
             main.entityDeathInChunkCounter.get(chunkKey).add(new MutablePair<>(new Timestamp(System.currentTimeMillis()),lmEntity));
+        }
+
+        int numberOfEntityDeathInChunk=Utils.getNumberOfEntityDeathInChunk(lmEntity,main,main.maximumCoolDownTime);
+        // Only send message for maximum threshold and cool down time
+        if(numberOfEntityDeathInChunk>main.maximumDeathInChunkThreshold) {
+            if(lmEntity.getLivingEntity().getKiller() != null && lmEntity.getLivingEntity().getKiller() instanceof Player)
+                lmEntity.getLivingEntity().getKiller().
+                    sendMessage(MessageUtils.colorizeAll(main.messagesCfg.getString("other.no-drop-in-chunk"))); // Might be spamming
         }
 
         if (lmEntity.isLevelled()) {
