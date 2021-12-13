@@ -1,0 +1,37 @@
+# LevelledMobs | The Ultimate RPG Mob Levelling Plugin
+
+# Translate any number here. These translations will be used
+# in LevelledMobs' commands and nametags.
+#
+# Note: If a number above 9 isn't available then it will combine existing ones.
+# For example, if 10 wasn't set, then it would put '1' and '0' together.
+# If a number from 0 to 9 isn't set then it will use the English default.
+levels:
+  0: '0'
+  1: '1'
+  2: '2'
+  3: '3'
+  4: '4'
+  5: '5'
+  6: '6'
+  7: '7'
+  8: '8'
+  9: '9'
+  10: '10'
+  11: '11'
+  12: '12'
+  100: '100'
+  1000: '1000'
+  123456: '123456'
+
+# Translate the name of each Minecraft entity. These translations will
+# be used in LevelledMobs' commands and nametags.
+entity-names:
+  CREEPER: 'Creeper'
+  ZOMBIE: 'Zombie'
+
+# Don't touch any of this unless you know what you're doing,
+# or, unless a LevelledMobs maintainer suggested you do so.
+file:
+  version: '??' #TODO
+  generated-with: '${project.version}'

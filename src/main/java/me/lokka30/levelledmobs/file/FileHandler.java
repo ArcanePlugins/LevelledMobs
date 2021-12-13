@@ -4,14 +4,8 @@
 
 package me.lokka30.levelledmobs.file;
 
-import de.leonhard.storage.Config;
-import de.leonhard.storage.LightningBuilder;
-import de.leonhard.storage.internal.settings.ConfigSettings;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.misc.Utils;
-import org.jetbrains.annotations.Nullable;
-
-import java.io.File;
 
 /**
  * @author lokka30
@@ -30,43 +24,7 @@ public class FileHandler {
     //TODO
 
     /* External Files */
-
-    // advanced.yml
-    @Nullable
-    private Config advancedCfg = null;
-
-    @Nullable
-    public Config getAdvancedCfg() {
-        return advancedCfg;
-    }
-
-
-    // customdrops.yml
-    @Nullable
-    private Config customDropsCfg = null;
-
-    @Nullable
-    public Config getCustomDropsCfg() {
-        return customDropsCfg;
-    }
-
-    // rules.yml
-    @Nullable
-    private Config rulesCfg = null;
-
-    @Nullable
-    public Config getRulesCfg() {
-        return rulesCfg;
-    }
-
-    // translations.yml
-    @Nullable
-    private Config translationsCfg = null;
-
-    @Nullable
-    public Config getTranslationsCfg() {
-        return translationsCfg;
-    }
+    //TODO add external files.
 
     /* Internal Files */
     //TODO add internal files.
@@ -100,30 +58,6 @@ public class FileHandler {
      */
     public void loadExternalFiles() {
         Utils.LOGGER.info("Started loading external files...");
-
-        Utils.LOGGER.info("Loading external file '&badvanced.yml&7'...");
-        advancedCfg = LightningBuilder
-                .fromFile(new File(main.getDataFolder(), "advanced.yml"))
-                .setConfigSettings(ConfigSettings.PRESERVE_COMMENTS)
-                .createConfig();
-
-        Utils.LOGGER.info("Loading external file '&bcustomdrops.yml&7'...");
-        customDropsCfg = LightningBuilder
-                .fromFile(new File(main.getDataFolder(), "customdrops.yml"))
-                .setConfigSettings(ConfigSettings.PRESERVE_COMMENTS)
-                .createConfig();
-
-        Utils.LOGGER.info("Loading external file '&brules.yml&7'...");
-        rulesCfg = LightningBuilder
-                .fromFile(new File(main.getDataFolder(), "rules.yml"))
-                .setConfigSettings(ConfigSettings.PRESERVE_COMMENTS)
-                .createConfig();
-
-        Utils.LOGGER.info("Loading external file '&btranslations.yml&7'...");
-        translationsCfg = LightningBuilder
-                .fromFile(new File(main.getDataFolder(), "translations.yml"))
-                .setConfigSettings(ConfigSettings.PRESERVE_COMMENTS)
-                .createConfig();
 
         Utils.LOGGER.info("Loading external file '&blicense.txt&7'...");
         main.saveResource("license.txt", true);

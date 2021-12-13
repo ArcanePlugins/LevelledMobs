@@ -34,13 +34,15 @@ public interface Integration {
     boolean isInstalled();
 
     /**
-     * Note: integrations can be user-disabled in advanced.yml - see 'disabled-integrations'.
+     * Note: integrations can be user-disabled in advanced-settings.yml - see 'disabled-integrations'.
      *
      * @return if the integration is enabled.
      * @since v4.0.0
      */
     default boolean isEnabled(@NotNull final LevelledMobs main) {
         //noinspection ConstantConditions
-        return !main.fileHandler.getAdvancedCfg().getStringList("disabled-integrations").contains(getName()) && isInstalled();
+        //return !main.fileHandler.getAdvancedCfg().getStringList("disabled-integrations").contains(getName()) && isInstalled();
+        //TODO
+        return false;
     }
 }

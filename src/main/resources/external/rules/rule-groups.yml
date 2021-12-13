@@ -1,0 +1,14 @@
+# LM 3's rules file is available at: https://github.com/lokka30/LevelledMobs/blob/master/src/main/resources/rules.yml
+
+mob-groups:
+# This section has no changes from LM3.
+
+
+biome-groups:
+# This section has no changes from LM3.
+
+# Don't touch any of this unless you know what you're doing,
+# or, unless a LevelledMobs maintainer suggested you do so.
+file:
+  version: '??' #TODO
+  generated-with: '${project.version}'

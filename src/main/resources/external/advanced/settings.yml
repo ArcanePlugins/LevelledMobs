@@ -10,7 +10,8 @@ debug: []
 # This list is empty by default.
 disabled-integrations: []
 
-# Do not touch any of this, it's used by the auto-migrator.
+# Don't touch any of this unless you know what you're doing,
+# or, unless a LevelledMobs maintainer suggested you do so.
 file:
-  version: -1 #TODO
+  version: '??' #TODO
   generated-with: '${project.version}'

@@ -31,7 +31,7 @@ public class DebugHandler {
     /**
      * @param category category that is being checked
      * @return if the category is enabled or not
-     * Checks the advanced.yml file to see if a debug category is enabled or not.
+     * Checks the advanced-settings.yml file to see if a debug category is enabled or not.
      * @author lokka30
      * @since v4.0.0
      */
