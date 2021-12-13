@@ -328,7 +328,7 @@ default-rule:
     #    - nametag_using_indicator
     #    - hard_difficulty
     #    - normal_difficulty
-   - easy_difficulty
+    - easy_difficulty
     #    - apply_LevellingVariance
     #    - weighted_random_hard
     #   - weighted_random_normal

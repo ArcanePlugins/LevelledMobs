@@ -242,7 +242,7 @@ public class SpawnerSubCommand extends SpawnerBaseClass implements Subcommand{
         final ItemStack item = new ItemStack(Material.SPAWNER);
         final ItemMeta meta = item.getItemMeta();
         if (meta != null){
-            setMetaItems(meta, info);
+            setMetaItems(meta, info, "LM Spawner");
 
             meta.getPersistentDataContainer().set(info.main.namespaced_keys.keySpawner, PersistentDataType.INTEGER, 1);
             meta.getPersistentDataContainer().set(info.main.namespaced_keys.keySpawner_MinLevel, PersistentDataType.INTEGER, info.minLevel);

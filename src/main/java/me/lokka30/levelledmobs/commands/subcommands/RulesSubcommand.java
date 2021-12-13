@@ -343,9 +343,10 @@ public class RulesSubcommand extends MessagesBase implements Subcommand {
                     lmEntity.getLivingEntity().getLocation().getBlockX(),
                     lmEntity.getLivingEntity().getLocation().getBlockY(),
                     lmEntity.getLivingEntity().getLocation().getBlockZ());
+            final String mobLevel = lmEntity.isLevelled() ? lmEntity.getMobLevel() + "" : "0";
             final List<String> messages = getMessage("command.levelledmobs.rules.effective-rules",
-                    new String[]{"%mobname%", "%entitytype%", "%location%", "%world%"},
-                    new String[]{ entityName, lmEntity.getNameIfBaby(), locationStr, lmEntity.getWorldName() }
+                    new String[]{"%mobname%", "%entitytype%", "%location%", "%world%", "%level%"},
+                    new String[]{ entityName, lmEntity.getNameIfBaby(), locationStr, lmEntity.getWorldName(), mobLevel }
             );
 
 

@@ -166,14 +166,16 @@ public class EntitySpawnListener implements Listener {
         return LevelledMobSpawnReason.valueOf(spawnReason.toString());
     }
 
-    private void delayedAddToQueue(final LivingEntityWrapper lmEntity, final Event event, final int delay){
+    private void delayedAddToQueue(final @NotNull LivingEntityWrapper lmEntity, final Event event, final int delay){
         final BukkitRunnable runnable = new BukkitRunnable() {
             @Override
             public void run() {
                 main._mobsQueueManager.addToQueue(new QueueItem(lmEntity, event));
+                lmEntity.free();
             }
         };
 
+        lmEntity.inUseCount.getAndIncrement();
         runnable.runTaskLater(main, delay);
     }
 

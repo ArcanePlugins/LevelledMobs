@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -1052,7 +1053,14 @@ public class RulesParsingManager {
             return (ConfigurationSection) object;
         } else if (object instanceof Map) {
             final MemoryConfiguration result = new MemoryConfiguration();
-            result.addDefaults((Map<String, Object>) object);
+
+            // this is to convert any non-string objects
+            final Map<Object, Object> temp = (Map<Object, Object>) object;
+            final Map<String, Object> temp2 = new HashMap<>(temp.size());
+            for (final Object obj : temp.keySet())
+                temp2.put(obj.toString(), temp.get(obj));
+
+            result.addDefaults(temp2);
             return result.getDefaultSection();
         } else {
             final String currentPath = Utils.isNullOrEmpty(cs.getCurrentPath()) ?
