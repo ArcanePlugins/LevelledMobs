@@ -10,7 +10,6 @@ listeners:
 # random event, only the ones LM has been programmed to
 # be able to use.
   - id: 'level-mobs-on-spawn'
-    
 
     # Change options of the listener here.
     options:
