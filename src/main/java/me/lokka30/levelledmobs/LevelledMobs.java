@@ -132,7 +132,7 @@ public final class LevelledMobs extends JavaPlugin {
                     IndexedTreeSet<Pair<Timestamp,LivingEntityWrapper>> pairList=i.getValue();
                     while(pairList!=null && !pairList.isEmpty() && Math.abs(pairList.first().getKey().getTime()-
                             System.currentTimeMillis())<=maximumCoolDownTime*1000.0F){
-                        pairList.remove(0);
+                        pairList.pollFirst();
                     }
                 }
             }
