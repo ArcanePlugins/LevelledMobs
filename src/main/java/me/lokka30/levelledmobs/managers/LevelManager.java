@@ -790,6 +790,8 @@ public class LevelManager implements LevelInterface {
 
                 // Mob must be a livingentity that is ...living.
                 if (!(entity instanceof LivingEntity) || entity instanceof Player || !entity.isValid()) continue;
+                // this is mostly so for spawner mobs and spawner egg mobs as they have a 20 tick delay in before proessing
+                if (entity.getTicksLived() < 30) continue;
 
                 boolean wrapperHasReference = false;
                 final LivingEntityWrapper lmEntity = LivingEntityWrapper.getInstance((LivingEntity) entity, main);
