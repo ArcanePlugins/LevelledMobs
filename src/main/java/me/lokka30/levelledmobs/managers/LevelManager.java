@@ -213,7 +213,7 @@ public class LevelManager implements LevelInterface {
         int levelSource;
         final String variableToUse = Utils.isNullOrEmpty(options.variable) ? "%level%" : options.variable;
         final double scale = options.playerLevelScale != null ? options.playerLevelScale : 1.0;
-        final boolean usePlayerMax = options.usePlayerMaxLevel != null && options.matchPlayerLevel;
+        final boolean usePlayerMax = options.usePlayerMaxLevel != null && options.usePlayerMaxLevel;
         final boolean matchPlayerLvl = options.matchPlayerLevel != null && options.matchPlayerLevel;
         final PlayerLevelSourceResult playerLevelSourceResult = getPlayerLevelSourceNumber(lmEntity.getPlayerForLevelling(), variableToUse);
         final double origLevelSource = playerLevelSourceResult.isNumericResult ? playerLevelSourceResult.numericResult : 1;
