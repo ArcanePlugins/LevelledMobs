@@ -9,13 +9,15 @@ listeners:
 # it allows to be listened to. So we can't just use any
 # random event, only the ones LM has been programmed to
 # be able to use.
-  - id: 'level-mobs-on-spawn'
+  - listener-id: 'level-mobs-on-spawn'
+
+    description: 'Level mobs when they spawn in'
 
     # Change options of the listener here.
     options:
 
 #     What event should this listener be listening to?
-      event: 'entity-spawn'
+      listen-for: ['entity-spawn']
 
 #     If another plugin cancels the event,
 #     should LM not process any rules for this listener?
@@ -33,99 +35,67 @@ listeners:
 #     Each rule within groups can still be enabled
 #     or disabled but if the group is disabled then
 #     that takes priority.
-      - id: 'generic-levelled-mob-conditions'
+      - group-id: 'generic-levelling-conditions'
         enabled: true
+        description: 'Conditions that mobs have to satisfy in order to be levelled'
         rules:
-          - id: 'no-levels-from-spawners'
+          - rule-id: 'no-levels-from-spawners'
             enabled: true
+            description: 'Mobs spawned by spawner blocks will not be levelled'
             conditions:
               spawn-reason:
                 inclusive-list: ['SPAWNER']
-            use-preset: 'no-level'
+            use-presets: ['no-level']
 
-          - id: 'no-levels-from-certain-worlds'
+          - rule-id: 'no-levels-from-certain-worlds'
             enabled: true
+            description: 'Mobs spawned in specific world(s) will not be levelled'
             conditions:
               world:
                 inclusive-list: ['world_the_end']
-            use-preset: 'no-level'
+            use-presets: ['no-level']
 
-      - id: 'generic-levelled-mob-actions'
+      - group-id: 'generic-levelled-mob-actions'
         enabled: true
+        description: 'Apply various levelling actions to mobs that should be levelled.'
         rules:
-          - id: 'apply-level-and-attributes-and-nametag'
+          - rule-id: 'apply-level-and-attributes-and-nametag'
             enabled: true
+            description: 'Apply a level (from difficulty preset), a nametag, and attributes to levelled mobs'
             actions:     
               name-overrides:
-#               '*': '%biome% %name%' # e.g. this will show 'Jungle Creeper'.
+#               '*': '%biome% %name%'
               nametags:
-                format: '&8[%tiered%Lvl. %level%&r &8| &r%name%&r &8| %tiered%%current-health%&8/%tiered%%max-health% ♥&8]' # This format is only used for showcase purposes. It's just easier to type
-                visibility-duration: 1000
-                visibility-method: ['TARGETED', 'ATTACKED'] # Removed 'TRACKING' by default.
+                format: '[Example Nametag Lvl. %entity-level% %entity-name% %current-health%/%max-health%]'
+                visibility-duration: 1 # seconds instead of milliseconds
+                visibility-method: ['TARGETED', 'ATTACKED']
               matched-settings:
                 babies: true
                 passengers: false
-              execute: ['update-nametag'] # will explain this executable below.
-            use-presets: ['normal-difficulty'] # change the difficulty here
+              execute: ['update-nametag']
+            use-presets: ['normal-difficulty']
 
 # When an entity takes damage, update their nametag.
 # The 'update-nametag' executable, when called on an entity,
 # scans for nearby players and sends them an updated packet
 # of the mob's nametag.
-  - id: 'update-nametag-on-health-decrease'
-    options:
-      event: 'entity-damage'
-    rules:
-      - id: 'update-individual-entity-nametag'
-        enabled: true
-        actions:
-          execute: ['update-nametag']
-  
-# Same as the above listener except runs on health increase / regeneration.
-  - id: 'update-nametag-on-health-increase'
-    options:
-      event: 'entity-regain-health'
-    rules:
-      - id: 'update-individual-entity-nametag'
-        enabled: true
-        actions:
-          execute: ['update-nametag']
-
 # When a player joins the server, mobs nearby them have
 # their nametags updated. This means that the packet is
 # sent to the player.
 # When the executable 'update-nametag' is called on a player
 # instead of an entity, it scans for nearby entities and
 # updates all of their nametags.
-  - id: 'update-nametag-on-join'
+  - listener-id: 'update-nametag'
     options:
-      event: 'player-join'
+      listen-for: ['entity-damage', 'entity-regain-health', 'player-join', 'player-teleport', 'player-change-world']
     rules:
-      - id: 'update-nearby-mob-nametags'
+      - rule-id: 'update-entity-nametag'
         enabled: true
         actions:
-          execute: ['update-nametag']
-
-  - id: 'update-nametag-on-teleport'
-    options:
-      event: 'player-teleport'
-    rules:
-      - id: 'update-nearby-mob-nametags'
-        enabled: true
-        actions:
-          execute: ['update-nametag']
-
-  - id: 'update-nametag-on-world-change'
-    options:
-      event: 'player-change-world'
-    rules:
-      - id: 'update-nearby-mob-nametags'
-        enabled: true
-        actions:
-          execute: ['update-nametag']
+          tasks: ['update-nametag']
       
 # Don't touch any of this unless you know what you're doing,
 # or, unless a LevelledMobs maintainer suggested you do so.
-file:
+file-data-do-not-edit:
   version: '??' #TODO
   generated-with: '${project.version}'

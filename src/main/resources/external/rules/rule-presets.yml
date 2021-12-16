@@ -6,10 +6,7 @@ presets:
   'no-level':
     actions:
       levelling:
-        formula: 'none'
-        # It is now impossible for mobs to be 'level 0', if a mob's level is calculated to be below 1, then LM will automatically
-        # set the level to 1.
-        # To make a mob 'not levelled', the levelling formula needs to be set to 'none'. See the 'no-level' preset for example usage.
+        formula: '0' # If the formula returns '0' (which is guaranteed here), LM will not level the mob.
       matched-actions: # Matched actions makes the rule also apply to babies/passengers regardless of any conditions they have.
         babies: true
         passengers: false
@@ -20,130 +17,130 @@ presets:
 #   I won't include easy/hard difficulties in this example file, doing so will just create clutter.
     actions:
       levelling:
-        formula: '%weighted-random%'
+        formula: '%weighted-random-level%'
 #       Levelling variance has been removed as this can be achieved in the new 'levelling formula' system - just use a placeholder
 #       that generates random numbers.  
         strategies:
           weighted-random:
-            weightings:
+            tiers:
               1-20: 5
               21-40: 4
               41-60: 3
               61-80: 2
-              81-100: 1 # changing max level to 100. can't remember why we chose 25 but I don't really like that number
-                        # for being a max level. More numbers also means smoother attribute transitions between each level.
+              81-100: 1
 
       attribute-formulas:
-        - id: 'adjust-max-health-multiplier'
+        - formula-id: 'adjust-max-health-multiplier'
+          description: 'Changes the max health of levelled mobs'
           entities:
             exclusive-list: ['ENDERMAN', 'WITHER_SKELETON']
           attributes:
             inclusive-list: ['GENERIC_MAX_HEALTH']
-          set-multiplier-formula: '((%currentLevel% / %maxLevel%) * 5.0)'
+          multiplier-formula: '((%currentLevel% / %maxLevel%) * 5.0)'
           boundary:
             min: 1.0
 
-        - id: 'adjust-movement-speed-multiplier'
+        - formula-id: 'adjust-movement-speed-multiplier'
           entities:
             exclusive-list: ['ENDERMAN', 'CREEPER']
           attributes:
             inclusive-list: ['GENERIC_MOVEMENT_SPEED']
-          set-multiplier-formula: '((%currentLevel% / %maxLevel%) * 0.15)'
+          multiplier-formula: '((%currentLevel% / %maxLevel%) * 0.15)'
           boundary:
             min: 1.0
 
-        - id: 'adjust-armor-toughness-multiplier'
+        - formula-id: 'adjust-armor-toughness-multiplier'
           entities:
             exclusive-list: []
           attributes:
             inclusive-list: ['GENERIC_ARMOR_TOUGHNESS']
-          set-multiplier-formula: '((%currentLevel% / %maxLevel%) * 0.15)'
+          multiplier-formula: '((%currentLevel% / %maxLevel%) * 0.15)'
           boundary:
             min: 1.0
 
-        - id: 'adjust-attack-damage-multiplier'
+        - formula-id: 'adjust-attack-damage-multiplier'
           entities:
             exclusive-list: []
           attributes:
             inclusive-list: ['GENERIC_ATTACK_DAMAGE']
-          set-multiplier-formula: '((%currentLevel% / %maxLevel%) * 2.25)'
+          multiplier-formula: '((%currentLevel% / %maxLevel%) * 2.25)'
           boundary:
             min: 1.0
 
-        - id: 'adjust-ranged-attack-damage-multiplier'
+        - formula-id: 'adjust-ranged-attack-damage-multiplier'
           entities:
             exclusive-list: []
           attributes:
             inclusive-list: ['CUSTOM_RANGED_ATTACK_DAMAGE']
-          set-multiplier-formula: '((%currentLevel% / %maxLevel%) * 2.0)'
+          multiplier-formula: '((%currentLevel% / %maxLevel%) * 2.0)'
           boundary:
             min: 1.0
 
-        - id: 'adjust-creeper-blast-damage-multiplier'
+        - formula-id: 'adjust-creeper-blast-damage-multiplier'
           entities:
             inclusive-list: ['CREEPER']
           attributes:
             inclusive-list: ['CUSTOM_CREEPER_BLAST_DAMAGE']
-          set-multiplier-formula: '((%currentLevel% / %maxLevel%) * 1.0)'
+          multiplier-formula: '((%currentLevel% / %maxLevel%) * 1.0)'
           boundary:
             min: 1.0
 
-        - id: 'adjust-item-drop-multiplier'
+        - formula-id: 'adjust-item-drop-multiplier'
           entities:
             exclusive-list: ['ENDER_DRAGON', 'WITHER']
           attributes:
             inclusive-list: ['CUSTOM_ITEM_DROP']
-          set-multiplier-formula: '((%currentLevel% / %maxLevel%) * 3)'
+          multiplier-formula: '((%currentLevel% / %maxLevel%) * 3)'
           boundary:
             min: 1.0
 
-        - id: 'adjust-xp-drop-multiplier'
+        - formula-id: 'adjust-xp-drop-multiplier'
           entities:
             exclusive-list: ['ENDER_DRAGON', 'WITHER']
           attributes:
             inclusive-list: ['CUSTOM_XP_DROP']
-          set-multiplier-formula: '((%currentLevel% / %maxLevel%) * 5)'
+          multiplier-formula: '((%currentLevel% / %maxLevel%) * 5)'
           boundary:
             min: 1.0
 
-        - id: 'adjust-armor-bonus-multiplier'
+        - formula-id: 'adjust-armor-bonus-multiplier'
           entities:
             exclusive-list: []
           attributes:
             inclusive-list: ['GENERIC_ARMOR_BONUS']
-          set-multiplier-formula: '((%currentLevel% / %maxLevel%) * 0.2)'
+          multiplier-formula: '((%currentLevel% / %maxLevel%) * 0.2)'
           boundary:
             min: 1.0
 
-        - id: 'adjust-knockback-resistance-multiplier'
+        - formula-id: 'adjust-knockback-resistance-multiplier'
           entities:
             exclusive-list: []
           attributes:
             inclusive-list: ['GENERIC_KNOCKBACK_RESISTANCE']
-          set-multiplier-formula: '((%currentLevel% / %maxLevel%) * 0.2)'
+          multiplier-formula: '((%currentLevel% / %maxLevel%) * 0.2)'
           boundary:
             min: 1.0
 
-        - id: 'adjust-attack-knockback-multiplier'
+        - formula-id: 'adjust-attack-knockback-multiplier'
           entities:
             exclusive-list: []
           attributes:
             inclusive-list: ['GENERIC_ATTACK_KNOCKBACK']
-          set-multiplier-formula: '((%currentLevel% / %maxLevel%) * 0.25)'
+          multiplier-formula: '((%currentLevel% / %maxLevel%) * 0.25)'
           boundary:
             min: 1.0
 
-        - id: 'adjust-zombie-spawn-reinforcements-multiplier'
+        - formula-id: 'adjust-zombie-spawn-reinforcements-multiplier'
           entities:
             inclusive-list: ['ZOMBIE', 'HUSK', 'DROWNED']
           attributes:
             inclusive-list: ['GENERIC_ZOMBIE_SPAWN_REINFORCEMENTS']
-          set-multiplier-formula: '((%currentLevel% / %maxLevel%) * 0.25)'
+          multiplier-formula: '((%currentLevel% / %maxLevel%) * 0.25)'
           boundary:
             min: 1.0
       
 # Don't touch any of this unless you know what you're doing,
 # or, unless a LevelledMobs maintainer suggested you do so.
-file:
+file-data-do-not-edit:
   version: '??' #TODO
   generated-with: '${project.version}'
