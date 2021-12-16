@@ -408,7 +408,8 @@ public class RulesSubcommand extends MessagesBase implements Subcommand {
                 final RuleInfo pi = effectiveRules.get(i);
 
                 for (final Field f : pi.getClass().getDeclaredFields()) {
-                    if (!Modifier.isPublic(f.getModifiers())) continue;
+                    if (Modifier.isPrivate(f.getModifiers())) continue;
+                    f.setAccessible(true);
                     if (f.get(pi) == null) continue;
                     if (printedKeys.contains(f.getName())) continue;
                     if (f.getName().equals("ruleSourceNames")) continue;

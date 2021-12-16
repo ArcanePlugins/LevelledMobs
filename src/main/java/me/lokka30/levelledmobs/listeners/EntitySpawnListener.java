@@ -325,13 +325,19 @@ public class EntitySpawnListener implements Listener {
     }
 
     private static boolean shouldDenyLevel(final @NotNull LivingEntityWrapper lmEntity, final int levelAssignment){
-        final boolean result =
+        boolean result =
             lmEntity.reEvaluateLevel &&
             !lmEntity.isRulesForceAll &&
             lmEntity.playerLevellingAllowDecrease != null &&
             !lmEntity.playerLevellingAllowDecrease &&
             lmEntity.isLevelled() &&
             levelAssignment < lmEntity.getMobLevel();
+
+        if (result){
+            synchronized (lmEntity.getLivingEntity().getPersistentDataContainer()) {
+                result = lmEntity.getPDC().has(lmEntity.getMainInstance().namespaced_keys.playerLevelling_Id, PersistentDataType.STRING);
+            }
+        }
 
         if (!result && lmEntity.pendingPlayerIdToSet != null) {
             synchronized (lmEntity.getLivingEntity().getPersistentDataContainer()) {
