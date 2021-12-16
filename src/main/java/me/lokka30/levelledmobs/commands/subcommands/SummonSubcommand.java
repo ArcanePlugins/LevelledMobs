@@ -373,7 +373,7 @@ public class SummonSubcommand extends MessagesBase implements Subcommand {
         final Player target = options.player;
         Location location = options.lmPlaceHolder.getLocation();
 
-        if (main.levelManager.FORCED_BLOCKED_ENTITY_TYPES.contains(options.lmPlaceHolder.getTypeName())) {
+        if (main.levelManager.FORCED_BLOCKED_ENTITY_TYPES.contains(options.lmPlaceHolder.getEntityType())) {
             List<String> messages = main.messagesCfg.getStringList("command.levelledmobs.summon.not-levellable");
             messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.getPrefix());
             messages = Utils.replaceAllInList(messages, "%entity%", options.lmPlaceHolder.getTypeName());

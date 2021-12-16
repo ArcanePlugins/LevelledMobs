@@ -6,7 +6,9 @@ package me.lokka30.levelledmobs.compatibility;
 
 import org.bukkit.entity.EntityType;
 
+import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -25,5 +27,9 @@ public class Compat1_17 {
                 EntityType.GLOW_SQUID,
                 EntityType.GOAT
         ).collect(Collectors.toCollection(HashSet::new));
+    }
+
+    public static Collection<EntityType> getForceBlockedEntityType(){
+        return List.of(EntityType.GLOW_ITEM_FRAME, EntityType.MARKER);
     }
 }

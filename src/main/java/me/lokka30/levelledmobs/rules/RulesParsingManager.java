@@ -1004,7 +1004,6 @@ public class RulesParsingManager {
             final FineTuningAttributes attribs = parseFineTuningValues(objTo_CS(cs_Custom, mobName));
             if (attribs == null) continue;
 
-            attribs.applicableEntity = entityType;
             fineTuning.put(mobName, attribs);
         }
 

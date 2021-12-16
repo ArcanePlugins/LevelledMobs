@@ -27,7 +27,6 @@ public class CustomDropItem extends CustomDropBase {
     boolean onlyDropIfEquipped;
     public String customName;
     public String mobHeadTexture;
-    String nbtData;
     public List<String> lore;
     List<ItemFlag> itemFlags;
     private boolean hasDamageRange;
@@ -40,7 +39,7 @@ public class CustomDropItem extends CustomDropBase {
 
     CustomDropItem(@NotNull final CustomDropsDefaults defaults) {
         super(defaults);
-        if (!Utils.isNullOrEmpty(defaults.damage)) this.setDamageRangeFromString(defaults.damage);
+
         this.customModelDataId = defaults.customModelData;
         this.chance = defaults.chance;
         this.maxLevel = defaults.maxLevel;

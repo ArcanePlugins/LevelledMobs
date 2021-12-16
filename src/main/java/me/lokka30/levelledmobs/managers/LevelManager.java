@@ -7,6 +7,7 @@ package me.lokka30.levelledmobs.managers;
 import me.lokka30.levelledmobs.LevelInterface;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.LivingEntityInterface;
+import me.lokka30.levelledmobs.compatibility.Compat1_17;
 import me.lokka30.levelledmobs.customdrops.CustomDropResult;
 import me.lokka30.levelledmobs.events.MobPostLevelEvent;
 import me.lokka30.levelledmobs.events.MobPreLevelEvent;
@@ -35,6 +36,7 @@ import me.lokka30.levelledmobs.rules.strategies.RandomLevellingStrategy;
 import me.lokka30.levelledmobs.rules.strategies.SpawnDistanceStrategy;
 import me.lokka30.levelledmobs.rules.strategies.YDistanceStrategy;
 import me.lokka30.microlib.messaging.MessageUtils;
+import me.lokka30.microlib.other.VersionUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -45,6 +47,7 @@ import org.bukkit.enchantments.EnchantmentTarget;
 import org.bukkit.entity.ChestedHorse;
 import org.bukkit.entity.Creeper;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Horse;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -97,13 +100,26 @@ public class LevelManager implements LevelInterface {
                 Material.GOLDEN_HORSE_ARMOR,
                 Material.DIAMOND_HORSE_ARMOR
         );
+
+        this.FORCED_BLOCKED_ENTITY_TYPES = new HashSet<>(Arrays.asList(
+                EntityType.AREA_EFFECT_CLOUD, EntityType.ARMOR_STAND, EntityType.ARROW, EntityType.BOAT,
+                EntityType.DRAGON_FIREBALL, EntityType.DROPPED_ITEM, EntityType.EGG, EntityType.ENDER_CRYSTAL,
+                EntityType.ENDER_PEARL, EntityType.ENDER_SIGNAL, EntityType.EXPERIENCE_ORB, EntityType.FALLING_BLOCK,
+                EntityType.FIREBALL, EntityType.FIREWORK, EntityType.FISHING_HOOK,
+                EntityType.ITEM_FRAME, EntityType.LEASH_HITCH, EntityType.LIGHTNING, EntityType.LLAMA_SPIT,
+                EntityType.MINECART, EntityType.MINECART_CHEST, EntityType.MINECART_COMMAND, EntityType.MINECART_FURNACE,
+                EntityType.MINECART_HOPPER, EntityType.MINECART_MOB_SPAWNER, EntityType.MINECART_TNT, EntityType.PAINTING,
+                EntityType.PRIMED_TNT, EntityType.SMALL_FIREBALL, EntityType.SNOWBALL, EntityType.SPECTRAL_ARROW,
+                EntityType.SPLASH_POTION, EntityType.THROWN_EXP_BOTTLE,EntityType.TRIDENT, EntityType.UNKNOWN,
+                EntityType.WITHER_SKULL, EntityType.SHULKER_BULLET, EntityType.PLAYER
+        ));
+        if (VersionUtils.isOneSeventeen())
+            this.FORCED_BLOCKED_ENTITY_TYPES.addAll(Compat1_17.getForceBlockedEntityType());
+
     }
 
     private final LevelledMobs main;
     private final List<Material> vehicleNoMultiplierItems;
-    public double attributeMaxHealthMax = 2048.0;
-    public double attributeMovementSpeedMax = 2048.0;
-    public double attributeAttackDamageMax = 2048.0;
     public final Map<LivingEntity, Object> summonedOrSpawnEggs;
     public static final Object summonedOrSpawnEggs_Lock = new Object();
     private boolean hasMentionedNBTAPI_Missing;
@@ -112,18 +128,8 @@ public class LevelManager implements LevelInterface {
 
     /**
      * The following entity types *MUST NOT* be levellable.
-     * Stored as Strings since older versions may not contain certain entity type constants
      */
-    public final HashSet<String> FORCED_BLOCKED_ENTITY_TYPES = new HashSet<>(Arrays.asList(
-            "AREA_EFFECT_CLOUD", "ARMOR_STAND", "ARROW", "BOAT", "DRAGON_FIREBALL", "DROPPED_ITEM",
-            "EGG", "ENDER_CRYSTAL", "ENDER_PEARL", "ENDER_SIGNAL", "EXPERIENCE_ORB",
-            "FALLING_BLOCK", "FIREBALL", "FIREWORK", "FISHING_HOOK", "GLOW_ITEM_FRAME",
-            "ITEM_FRAME", "LEASH_HITCH", "LIGHTNING", "LLAMA_SPIT", "MARKER", "MINECART",
-            "MINECART_CHEST", "MINECART_COMMAND", "MINECART_FURNACE", "MINECART_HOPPER",
-            "MINECART_MOB_SPAWNER", "MINECART_TNT", "NPC", "PAINTING", "PLAYER", "PRIMED_TNT",
-            "SMALL_FIREBALL", "SNOWBALL", "SPECTRAL_ARROW", "SPLASH_POTION", "THROWN_EXP_BOTTLE",
-            "TRIDENT", "UNKNOWN", "WITHER_SKULL"
-    ));
+    public final HashSet<EntityType> FORCED_BLOCKED_ENTITY_TYPES;
 
     public void clearRandomLevellingCache(){
         this.randomLevellingCache.clear();
@@ -1096,7 +1102,7 @@ public class LevelManager implements LevelInterface {
         This is also ran in getLevellableState(EntityType), however it is important that this is ensured
         before all other checks are made.
          */
-        if (FORCED_BLOCKED_ENTITY_TYPES.contains(lmInterface.getTypeName()))
+        if (FORCED_BLOCKED_ENTITY_TYPES.contains(lmInterface.getEntityType()))
             return LevellableState.DENIED_FORCE_BLOCKED_ENTITY_TYPE;
 
         if (lmInterface.getApplicableRules().isEmpty())
