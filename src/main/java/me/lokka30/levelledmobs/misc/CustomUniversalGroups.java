@@ -12,7 +12,6 @@ package me.lokka30.levelledmobs.misc;
  * @since 2.6.0
  */
 public enum CustomUniversalGroups {
-    NOT_APPLICABLE,
     ALL_MOBS,
     ALL_LEVELLABLE_MOBS,
     ALL_HOSTILE_MOBS,

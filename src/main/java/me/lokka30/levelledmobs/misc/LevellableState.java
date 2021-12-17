@@ -29,22 +29,9 @@ public enum LevellableState {
 
     /**
      * settings.yml has been configured to block mobs
-     * spawning in entity's world from being levelled
-     */
-    DENIED_CONFIGURATION_BLOCKED_WORLD,
-
-    /**
-     * settings.yml has been configured to block mobs
      * of such entity type from being levelled
      */
     DENIED_CONFIGURATION_BLOCKED_ENTITY_TYPE,
-
-    /**
-     * settings.yml has been configured to block mobs
-     * that spawn with a specific SpawnReason through
-     * CreatureSpawnEvent.
-     */
-    DENIED_CONFIGURATION_BLOCKED_SPAWN_REASON,
 
     /**
      * settings.yml has been configured to block
@@ -93,12 +80,6 @@ public enum LevellableState {
      * Simple Pets from being levelled
      */
     DENIED_CONFIGURATION_COMPATIBILITY_SIMPLEPETS,
-
-    /**
-     * WorldGuard region flag states that
-     * mobs are not levellable in its region
-     */
-    DENIED_CONFIGURATION_COMPATIBILITY_WORLD_GUARD,
 
     /**
      * A rule has been configured to block

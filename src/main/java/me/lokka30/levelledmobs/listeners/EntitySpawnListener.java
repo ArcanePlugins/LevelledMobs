@@ -166,14 +166,16 @@ public class EntitySpawnListener implements Listener {
         return LevelledMobSpawnReason.valueOf(spawnReason.toString());
     }
 
-    private void delayedAddToQueue(final LivingEntityWrapper lmEntity, final Event event, final int delay){
+    private void delayedAddToQueue(final @NotNull LivingEntityWrapper lmEntity, final Event event, final int delay){
         final BukkitRunnable runnable = new BukkitRunnable() {
             @Override
             public void run() {
                 main._mobsQueueManager.addToQueue(new QueueItem(lmEntity, event));
+                lmEntity.free();
             }
         };
 
+        lmEntity.inUseCount.getAndIncrement();
         runnable.runTaskLater(main, delay);
     }
 
@@ -324,13 +326,19 @@ public class EntitySpawnListener implements Listener {
     }
 
     private static boolean shouldDenyLevel(final @NotNull LivingEntityWrapper lmEntity, final int levelAssignment){
-        final boolean result =
+        boolean result =
             lmEntity.reEvaluateLevel &&
             !lmEntity.isRulesForceAll &&
             lmEntity.playerLevellingAllowDecrease != null &&
             !lmEntity.playerLevellingAllowDecrease &&
             lmEntity.isLevelled() &&
             levelAssignment < lmEntity.getMobLevel();
+
+        if (result){
+            synchronized (lmEntity.getLivingEntity().getPersistentDataContainer()) {
+                result = lmEntity.getPDC().has(lmEntity.getMainInstance().namespaced_keys.playerLevelling_Id, PersistentDataType.STRING);
+            }
+        }
 
         if (!result && lmEntity.pendingPlayerIdToSet != null) {
             synchronized (lmEntity.getLivingEntity().getPersistentDataContainer()) {

@@ -91,13 +91,13 @@ public class SpawnerBaseClass extends MessagesBase {
         return args[argNumber + 1];
     }
 
-    static void setMetaItems(final @Nullable ItemMeta meta, final @NotNull CustomSpawnerInfo info){
+    static void setMetaItems(final @Nullable ItemMeta meta, final @NotNull CustomSpawnerInfo info, final @NotNull String defaultName){
         if (meta == null) return;
 
         if (VersionUtils.isRunningPaper())
-            PaperUtils.updateItemDisplayName(meta, info.customName == null ? "LM Spawn Egg" : info.customName);
+            PaperUtils.updateItemDisplayName(meta, info.customName == null ? defaultName : info.customName);
         else
-            SpigotUtils.updateItemDisplayName(meta, info.customName == null ? "LM Spawn Egg" : info.customName);
+            SpigotUtils.updateItemDisplayName(meta, info.customName == null ? defaultName : info.customName);
 
         List<String> lore = new LinkedList<>();
 

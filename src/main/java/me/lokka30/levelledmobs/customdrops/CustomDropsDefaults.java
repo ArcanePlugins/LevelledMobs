@@ -36,7 +36,6 @@ class CustomDropsDefaults {
     float equippedSpawnChance;
     Float overallChance;
     String groupId;
-    public String damage;
     String playerLevelVariable;
     public final List<String> permissions;
     final List<String> overallPermissions;

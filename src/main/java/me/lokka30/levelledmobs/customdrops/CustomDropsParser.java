@@ -434,7 +434,6 @@ public class CustomDropsParser {
                     Utils.logger.warning("custom drop " + item.getMaterial().toString() + " for " + dropInstance.getMobOrGroupName() + " has invalid NBT data: " + result.exceptionMessage);
                 else {
                     item.setItemStack(result.itemStack);
-                    item.nbtData = nbtStuff;
                     this.dropsUtilizeNBTAPI = true;
                 }
             } else if (!hasMentionedNBTAPI_Missing) {

@@ -148,7 +148,7 @@ public class SpawnerEggCommand extends SpawnerBaseClass implements Subcommand {
         final ItemStack item = new ItemStack(material);
         final ItemMeta meta = item.getItemMeta();
         if (meta != null){
-            setMetaItems(meta, info);
+            setMetaItems(meta, info, "LM Spawn Egg");
 
             meta.getPersistentDataContainer().set(info.main.namespaced_keys.spawnerEgg, PersistentDataType.INTEGER, 1);
             meta.getPersistentDataContainer().set(info.main.namespaced_keys.keySpawner_MinLevel, PersistentDataType.INTEGER, info.minLevel);

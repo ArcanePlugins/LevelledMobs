@@ -289,18 +289,6 @@ public class Companion {
             levelledMobsCommand.setExecutor(main.levelledMobsCommand);
     }
 
-    void loadSpigotConfig(){
-        try {
-            main.levelManager.attributeMaxHealthMax = Bukkit.getServer().spigot().getConfig().getDouble("settings.attribute.maxHealth.max", 2048.0);
-            main.levelManager.attributeMovementSpeedMax = Bukkit.getServer().spigot().getConfig().getDouble("settings.attribute.movementSpeed.max", 2048.0);
-            main.levelManager.attributeAttackDamageMax = Bukkit.getServer().spigot().getConfig().getDouble("settings.attribute.attackDamage.max", 2048.0);
-        } catch (final NoSuchMethodError ignored) {
-            main.levelManager.attributeMaxHealthMax = Integer.MAX_VALUE;
-            main.levelManager.attributeMovementSpeedMax = Integer.MAX_VALUE;
-            main.levelManager.attributeAttackDamageMax = Integer.MAX_VALUE;
-        }
-    }
-
     void setupMetrics() {
         final Metrics metrics = new Metrics(main, 6269);
 
