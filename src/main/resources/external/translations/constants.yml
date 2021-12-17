@@ -32,6 +32,6 @@ entity-names:
 
 # Don't touch any of this unless you know what you're doing,
 # or, unless a LevelledMobs maintainer suggested you do so.
-file:
+file-data-do-not-edit:
   version: '??' #TODO
   generated-with: '${project.version}'
