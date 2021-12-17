@@ -13,24 +13,8 @@ import me.lokka30.levelledmobs.events.MobPostLevelEvent;
 import me.lokka30.levelledmobs.events.MobPreLevelEvent;
 import me.lokka30.levelledmobs.events.SummonedMobPreLevelEvent;
 import me.lokka30.levelledmobs.listeners.EntitySpawnListener;
-import me.lokka30.levelledmobs.misc.Addition;
-import me.lokka30.levelledmobs.misc.AdditionalLevelInformation;
-import me.lokka30.levelledmobs.misc.DebugType;
-import me.lokka30.levelledmobs.misc.LevellableState;
-import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
-import me.lokka30.levelledmobs.misc.NBTApplyResult;
-import me.lokka30.levelledmobs.misc.PlayerHomeCheckResult;
-import me.lokka30.levelledmobs.misc.PlayerLevelSourceResult;
-import me.lokka30.levelledmobs.misc.PlayerNetherOrWorldSpawnResult;
-import me.lokka30.levelledmobs.misc.QueueItem;
-import me.lokka30.levelledmobs.misc.Utils;
-import me.lokka30.levelledmobs.rules.FineTuningAttributes;
-import me.lokka30.levelledmobs.rules.HealthIndicator;
-import me.lokka30.levelledmobs.rules.LevelTierMatching;
-import me.lokka30.levelledmobs.rules.MobCustomNameStatus;
-import me.lokka30.levelledmobs.rules.MobTamedStatus;
-import me.lokka30.levelledmobs.rules.NametagVisibilityEnum;
-import me.lokka30.levelledmobs.rules.PlayerLevellingOptions;
+import me.lokka30.levelledmobs.misc.*;
+import me.lokka30.levelledmobs.rules.*;
 import me.lokka30.levelledmobs.rules.strategies.LevellingStrategy;
 import me.lokka30.levelledmobs.rules.strategies.RandomLevellingStrategy;
 import me.lokka30.levelledmobs.rules.strategies.SpawnDistanceStrategy;
@@ -66,18 +50,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.TreeMap;
-import java.util.WeakHashMap;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -1244,6 +1217,7 @@ public class LevelManager implements LevelInterface {
                     main.levelManager.applyLevelledAttributes(lmEntity, Addition.ATTRIBUTE_ATTACK_KNOCKBACK);
                     main.levelManager.applyLevelledAttributes(lmEntity, Addition.ATTRIBUTE_FLYING_SPEED);
                     main.levelManager.applyLevelledAttributes(lmEntity, Addition.ATTRIBUTE_KNOCKBACK_RESISTANCE);
+                    main.levelManager.applyLevelledAttributes(lmEntity, Addition.ATTRIBUTE_FOLLOW_RANGE);
 
                     if (lmEntity.getLivingEntity() instanceof Zombie)
                         main.levelManager.applyLevelledAttributes(lmEntity, Addition.ATTRIBUTE_ZOMBIE_SPAWN_REINFORCEMENTS);
@@ -1362,9 +1336,34 @@ public class LevelManager implements LevelInterface {
      * @return if the mob is levelled or not
      */
     public boolean isLevelled(@NotNull final LivingEntity livingEntity) {
-        synchronized (livingEntity.getPersistentDataContainer()) {
-            return livingEntity.getPersistentDataContainer().has(main.namespaced_keys.levelKey, PersistentDataType.INTEGER);
+        boolean hadError = false;
+        boolean succeeded = false;
+        boolean isLevelled = false;
+
+        for (int i = 0; i < 2; i++) {
+            try {
+                synchronized (livingEntity.getPersistentDataContainer()) {
+                    isLevelled = livingEntity.getPersistentDataContainer().has(main.namespaced_keys.levelKey, PersistentDataType.INTEGER);
+                }
+                succeeded = true;
+                break;
+            }
+            catch (ConcurrentModificationException ignored) {
+                hadError = true;
+                try
+                { Thread.sleep(10); }
+                catch (InterruptedException ignored2) { return false; }
+            }
         }
+
+        if (hadError) {
+            if (succeeded)
+                Utils.logger.warning("Got ConcurrentModificationException in LevelManager checking entity isLevelled, succeeded on retry");
+            else
+                Utils.logger.warning("Got ConcurrentModificationException (2x) in LevelManager checking entity isLevelled");
+        }
+
+        return isLevelled;
     }
 
     /**
