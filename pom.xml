@@ -10,7 +10,7 @@
 
     <groupId>me.lokka30</groupId>
     <artifactId>LevelledMobs</artifactId>
-    <version>4.0.0 b000</version>
+    <version>4.0.0-b000-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>LevelledMobs</name>
@@ -46,10 +46,6 @@
                         <relocation>
                             <pattern>me.lokka30.microlib</pattern>
                             <shadedPattern>${project.groupId}.${project.artifactId}.microlib</shadedPattern>
-                        </relocation>
-                        <relocation>
-                            <pattern>de.leonhard.storage</pattern>
-                            <shadedPattern>${project.groupId}.${project.artifactId}.simplixstorage</shadedPattern>
                         </relocation>
                     </relocations>
                     <filters>
