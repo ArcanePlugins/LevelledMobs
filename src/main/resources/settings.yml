@@ -123,6 +123,11 @@ kill-skip-conditions:
 # ||  by default as to not harm their economies.
 mobs-multiply-head-drops: false
 
+# || When player kill exceed amount of levelled mobs in
+# || a chunk(within given period). Should we send message
+# || to player to inform him?
+exceed-kill-in-chunk-message: true
+
 # ||  ADVANCED USERS ONLY
 # ||  Do not touch this unless a LM developer tells you to.
 # ||  These settings pertian to Player Levelling, obviously
@@ -139,4 +144,4 @@ nametag-placeholder-maxblocks: 30
 # ||  may be corrupted by the migrator, since the migrator uses
 # ||  this value to check what changes the file requires to
 # ||  become updated to the latest file version.
-file-version: 32
+file-version: 33

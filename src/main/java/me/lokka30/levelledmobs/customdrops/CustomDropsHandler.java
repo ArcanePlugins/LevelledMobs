@@ -4,7 +4,6 @@
 
 package me.lokka30.levelledmobs.customdrops;
 
-import io.github.geniot.indexedtreemap.IndexedNavigableSet;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.misc.Addition;
 import me.lokka30.levelledmobs.misc.DebugType;
@@ -17,8 +16,6 @@ import me.lokka30.levelledmobs.misc.YmlParsingHelper;
 import me.lokka30.levelledmobs.rules.LevelledMobSpawnReason;
 import me.lokka30.microlib.messaging.MessageUtils;
 import me.lokka30.microlib.other.VersionUtils;
-import org.apache.commons.lang3.tuple.MutablePair;
-import org.apache.commons.lang3.tuple.Pair;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
@@ -34,8 +31,15 @@ import org.jetbrains.annotations.Nullable;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.sql.Timestamp;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.TreeMap;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**

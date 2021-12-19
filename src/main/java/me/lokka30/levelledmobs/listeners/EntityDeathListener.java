@@ -64,9 +64,7 @@ public class EntityDeathListener implements Listener {
             main.placeholderApiIntegration.putPlayerOrMobDeath(lmEntity.getLivingEntity().getKiller(), lmEntity);
 
         if(lmEntity.isLevelled() || main.rulesManager.getRule_UseCustomDropsForMob(lmEntity).useDrops){
-            //ChunkKey copied from Paper source code
-            int _X = (int)(lmEntity.getLivingEntity().getChunk().getX()>>4), _Z = (int)(lmEntity.getLivingEntity().getChunk().getZ()>>4);
-            long chunkKey = (long) _X & 0xffffffffL | ((long) _Z & 0xffffffffL) << 32;
+            long chunkKey = Utils.getChunkKey(lmEntity);
             if(!main.entityDeathInChunkCounter.containsKey(chunkKey)){
                 main.entityDeathInChunkCounter.put(chunkKey,new IndexedTreeSet<>());
             }
@@ -75,8 +73,10 @@ public class EntityDeathListener implements Listener {
 
         int numberOfEntityDeathInChunk=Utils.getNumberOfEntityDeathInChunk(lmEntity,main,main.maximumCoolDownTime);
         // Only send message for maximum threshold and cool down time
+        // This is enabled by default
         if(numberOfEntityDeathInChunk>main.maximumDeathInChunkThreshold) {
-            if(lmEntity.getLivingEntity().getKiller() != null && lmEntity.getLivingEntity().getKiller() instanceof Player)
+            if(lmEntity.getLivingEntity().getKiller() != null && lmEntity.getLivingEntity().getKiller() instanceof Player &&
+                main.settingsCfg.getBoolean("exceed-kill-in-chunk-message",true))
                 lmEntity.getLivingEntity().getKiller().
                     sendMessage(MessageUtils.colorizeAll(main.messagesCfg.getString("other.no-drop-in-chunk"))); // Might be spamming
         }

@@ -313,10 +313,14 @@ public final class Utils {
         return new PlayerNetherOrWorldSpawnResult(location, isNetherPortalCoord, isWorldPortalCoord);
     }
 
-    // Copied from PaperMC
+    /*
+    Copied from PaperMC
+    convert chunk x,z coordinates to one long number
+    Is used in main.entityDeathInChunkCounter
+    * */
     public static long getChunkKey(LivingEntityWrapper lmEntity){
-        int _X = (int)(lmEntity.getLivingEntity().getChunk().getX()>>4), _Z = (int)(lmEntity.getLivingEntity().getChunk().getZ()>>4);
-        return (long) _X & 0xffffffffL | ((long) _Z & 0xffffffffL) << 32;
+        int x = (int)(lmEntity.getLivingEntity().getChunk().getX()>>4), z = (int)(lmEntity.getLivingEntity().getChunk().getZ()>>4);
+        return (long) x & 0xffffffffL | ((long) z & 0xffffffffL) << 32;
     }
 
     public static int getNumberOfEntityDeathInChunk(LivingEntityWrapper lmEntity, LevelledMobs main, float coolDownTime){
