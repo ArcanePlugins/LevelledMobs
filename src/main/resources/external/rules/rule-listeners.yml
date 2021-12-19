@@ -2,7 +2,7 @@
   
 # Major change to the rules system. Everything is now processed based
 # upon an event that happened on the server.
-listeners:
+event-listeners:
 
 # Adds a new listener for the event 'EntitySpawnEvent'
 # Note - LM needs to add its own support for each event
