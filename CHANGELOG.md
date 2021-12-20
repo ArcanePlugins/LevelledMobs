@@ -7,12 +7,7 @@ list of changelogs.
 
 ## v4.0.0 b???
 
-* Re-programmed the entire plugin from the ground up. ALL of the old code was deleted (with few exceptions).
-* Added **AureliumMobs** compatibility
-* Added **Boss** compatibility
-* Added **LorinthsRPGMobs** compatibility
-* ... more stuff arising out of the re-code, especially the tremendously improved capability for other resources to
-  integrate with LevelledMobs.
+TO-DO.
 
 ***
 

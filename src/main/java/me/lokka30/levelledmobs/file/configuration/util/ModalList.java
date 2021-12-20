@@ -18,11 +18,6 @@ public record ModalList<T>(
         EXCLUSIVE
     }
 
-    public ModalList(@NotNull final ListMode listMode, @NotNull final Collection<T> contents) {
-        this.listMode = listMode;
-        this.contents = contents;
-    }
-
     public boolean contains(@NotNull final T item) {
         return switch (listMode) {
             case INCLUSIVE -> contents.contains(item);
