@@ -17,5 +17,6 @@ public record Rule(
         @NotNull Optional<String> description,
         @NotNull HashSet<RuleCondition> conditions,
         @NotNull HashSet<RuleAction> actions,
-        @NotNull HashSet<RulePreset> presets
+        @NotNull HashSet<RulePreset> presets,
+        boolean onceProcessedStopProcessing
 ) implements RuleEntry {}

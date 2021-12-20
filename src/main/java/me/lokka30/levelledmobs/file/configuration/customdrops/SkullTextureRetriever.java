@@ -14,10 +14,10 @@ import org.jetbrains.annotations.NotNull;
  * @since v4.0.0
  * TODO Describe
  */
-public class MobSkullGetter {
+public class SkullTextureRetriever {
 
     @NotNull private final LevelledMobs main;
-    public MobSkullGetter(@NotNull final LevelledMobs main) {
+    public SkullTextureRetriever(@NotNull final LevelledMobs main) {
         this.main = main;
     }
 

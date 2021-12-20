@@ -4,5 +4,4 @@
 
 package me.lokka30.levelledmobs.file.configuration.rules.entry;
 
-public interface RuleEntry {
-}
+public interface RuleEntry { }
