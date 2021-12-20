@@ -4,8 +4,10 @@
 
 package me.lokka30.levelledmobs.file.configuration.rules;
 
+import me.lokka30.levelledmobs.file.configuration.rules.entry.RuleEntry;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Optional;
 
@@ -13,5 +15,6 @@ public record RuleListener(
         @NotNull String listenerId,
         @NotNull Optional<String> description,
         @NotNull HashSet<String> listenFor,
-        boolean ignoreCancelled
+        boolean ignoreCancelled,
+        @NotNull ArrayList<RuleEntry> entries
 ) {}

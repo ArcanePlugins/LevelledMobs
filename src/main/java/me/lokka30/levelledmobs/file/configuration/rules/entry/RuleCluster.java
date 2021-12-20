@@ -6,11 +6,12 @@ package me.lokka30.levelledmobs.file.configuration.rules.entry;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.Optional;
 
 public record RuleCluster(
         @NotNull String identifier,
         boolean enabled,
         @NotNull Optional<String> description,
-        @NotNull RuleEntry[] entries
+        @NotNull ArrayList<RuleEntry> entries
 ) implements RuleEntry {}
