@@ -13,7 +13,7 @@ event-listeners:
 
     description: 'Level mobs when they spawn in'
 
-    # Change options of the listener here.
+#   Change options of the listener here.
     options:
 
 #     What event should this listener be listening to?
@@ -24,8 +24,8 @@ event-listeners:
 #     Enabled by default but included for showcase purposes.
       ignore-cancelled: true
     
-    # Rules are processed from top to bottom
-    # If a rule below another rule both modify the same value then the lower rule will override the upper one
+#   Rules are processed from top to bottom
+#   If a rule below another rule both modify the same value then the lower rule will override the upper one
     rules:
 
 #     Rules can be put under groups.

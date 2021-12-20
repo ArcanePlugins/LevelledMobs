@@ -14,7 +14,6 @@ presets:
       stop-processing: true # This makes the rules interpreter no longer check further rules once this has been reached and the conditions are true of course.
   
   'normal-difficulty':
-#   I won't include easy/hard difficulties in this example file, doing so will just create clutter.
     actions:
       levelling:
         formula: '%weighted-random-level%'
