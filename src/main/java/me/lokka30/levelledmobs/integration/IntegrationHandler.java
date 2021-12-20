@@ -5,6 +5,17 @@
 package me.lokka30.levelledmobs.integration;
 
 import me.lokka30.levelledmobs.LevelledMobs;
+import me.lokka30.levelledmobs.integration.plugin.BossIntegration;
+import me.lokka30.levelledmobs.integration.plugin.CitizensIntegration;
+import me.lokka30.levelledmobs.integration.plugin.DangerousCavesIntegration;
+import me.lokka30.levelledmobs.integration.plugin.EcoBossesIntegration;
+import me.lokka30.levelledmobs.integration.plugin.EliteMobsIntegration;
+import me.lokka30.levelledmobs.integration.plugin.InfernalMobsIntegration;
+import me.lokka30.levelledmobs.integration.plugin.MythicMobsIntegration;
+import me.lokka30.levelledmobs.integration.plugin.NBTAPIIntegration;
+import me.lokka30.levelledmobs.integration.plugin.PlaceholderAPIIntegration;
+import me.lokka30.levelledmobs.integration.plugin.ShopkeepersIntegration;
+import me.lokka30.levelledmobs.integration.plugin.WorldGuardIntegration;
 import me.lokka30.levelledmobs.misc.Utils;
 import org.jetbrains.annotations.NotNull;
 
@@ -66,12 +77,9 @@ public class IntegrationHandler {
         addIntegration(new EcoBossesIntegration());
         addIntegration(new EliteMobsIntegration());
         addIntegration(new InfernalMobsIntegration());
-        addIntegration(new ItemsAdderIntegration());
-        addIntegration(new LorinthsRPGMobsIntegration());
         addIntegration(new MythicMobsIntegration());
         addIntegration(new NBTAPIIntegration());
         addIntegration(new PlaceholderAPIIntegration());
-        addIntegration(new ProtocolLibIntegration());
         addIntegration(new ShopkeepersIntegration());
         addIntegration(new WorldGuardIntegration());
     }
