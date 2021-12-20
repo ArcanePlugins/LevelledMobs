@@ -28,14 +28,14 @@ event-listeners:
 #   If a rule below another rule both modify the same value then the lower rule will override the upper one
     rules:
 
-#     Rules can be put under groups.
-#     Groups can also be nested inside each other.
-#     Groups allow for rules to be organised
+#     Rules can be put inside clusters.
+#     Clusters can also be nested inside each other.
+#     Clusters allow for rules to be organised
 #     and disabled all in one switch if required
 #     Each rule within groups can still be enabled
-#     or disabled but if the group is disabled then
+#     or disabled but if the cluster is disabled then
 #     that takes priority.
-      - group-id: 'generic-levelling-conditions'
+      - cluster-id: 'generic-levelling-conditions'
         enabled: true
         description: 'Conditions that mobs have to satisfy in order to be levelled'
         rules:
@@ -59,10 +59,11 @@ event-listeners:
             enabled: true
             description: 'Certain mobs and groups of mobs will not be levelled'
             conditions:
-              in-mob-group: ['animals', 'bosses']
+              mob-groups:
+                inclusive-list: ['animals', 'bosses']
             use-presets: ['no-level']
 
-      - group-id: 'generic-levelled-mob-actions'
+      - cluster-id: 'generic-levelled-mob-actions'
         enabled: true
         description: 'Apply various levelling actions to mobs that should be levelled.'
         rules:
@@ -99,7 +100,7 @@ event-listeners:
         conditions:
           is-levelled: true
         actions:
-          tasks: ['update-nametag']
+          execute: ['update-nametag']
       
 # Don't touch any of this unless you know what you're doing,
 # or, unless a LevelledMobs maintainer suggested you do so.
