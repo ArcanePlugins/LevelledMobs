@@ -55,6 +55,13 @@ event-listeners:
                 inclusive-list: ['world_the_end']
             use-presets: ['no-level']
 
+          - rule-id: 'no-levels-for-certain-mobs'
+            enabled: true
+            description: 'Certain mobs and groups of mobs will not be levelled'
+            conditions:
+              in-mob-group: ['animals', 'bosses']
+            use-presets: ['no-level']
+
       - group-id: 'generic-levelled-mob-actions'
         enabled: true
         description: 'Apply various levelling actions to mobs that should be levelled.'
@@ -62,9 +69,7 @@ event-listeners:
           - rule-id: 'apply-level-and-attributes-and-nametag'
             enabled: true
             description: 'Apply a level (from difficulty preset), a nametag, and attributes to levelled mobs'
-            actions:     
-              name-overrides:
-#               '*': '%biome% %name%'
+            actions:
               nametags:
                 format: '[Example Nametag Lvl. %entity-level% %entity-name% %current-health%/%max-health%]'
                 visibility-duration: 1 # seconds instead of milliseconds
