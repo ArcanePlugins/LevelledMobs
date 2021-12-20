@@ -89,8 +89,10 @@ event-listeners:
     options:
       listen-for: ['entity-damage', 'entity-regain-health', 'player-join', 'player-teleport', 'player-change-world']
     rules:
-      - rule-id: 'update-entity-nametag'
+      - rule-id: 'update-nametag'
         enabled: true
+        conditions:
+          is-levelled: true
         actions:
           tasks: ['update-nametag']
       
