@@ -1,9 +1,79 @@
 # LevelledMobs | The Ultimate RPG Mob Levelling Plugin
 
-# TODO
+# +-------------------------------------------------------------------------------------------LM3
+# +                                                                                          +LM3
+# +   Section 01 - Defaults                                                                  +LM3
+# +                                                                                          +LM3
+# +-------------------------------------------------------------------------------------------LM3
+defaults:
+  chance: 0.2
+  amount: 1
+  min-level: -1 #edited
+  max-level: -1 #edited
+  custom-model-data: -1 #edited
+  no-multiplier: false #edited
+  exclude-spawner-mobs: false #edited
+  equipped-chance: 1.0 #edited
+  remove-vanilla-drops: false #edited
+  max-drop-group: 1 #edited
+  priority: 0
+  player-caused-death: true #edited
+  item-flags: [] #edited
+  group-id: '' #edited
+  overall-chance: 0.0
+  nbt-data: ''
+  only-drop-items-if-equipped: false
+
+# === Customdrops and Rules now share the same groups. ===
+
+# +-------------------------------------------------------------------------------------------LM3
+# +                                                                                          +LM3
+# +   Section 02 - EntityType Drops                                                          +LM3
+# +                                                                                          +LM3
+# +-------------------------------------------------------------------------------------------LM3
+entities: #edited
+  BAT:
+  CAVE_SPIDER:
+  CHICKEN:
+  DROWNED:
+  ZOMBIE:
+
+
+# +-------------------------------------------------------------------------------------------LM3
+# +                                                                                          +LM3
+# +   Section 03 - Drop Tables                                                               +LM3
+# +                                                                                          +LM3
+# +-------------------------------------------------------------------------------------------LM3
+drop-tables: #edited
+  'example_overworld':
+    - STICK:
+        amount: 1
+        chance: 1
+        nomultiplier: true
+        nospawner: true
+        groupid: 1
+    - COBBLESTONE:
+        amount: 1
+        chance: 1
+        nomultiplier: true
+        nospawner: true
+        groupid: 1
+  'example_nether':
+    - NETHERRACK:
+        amount: 1
+        chance: 1
+        nomultiplier: true
+        nospawner: true
+        groupid: 2
+    - SOUL_SAND:
+        amount: 1
+        chance: 1
+        nomultiplier: true
+        nospawner: true
+        groupid: 2
 
 # Don't touch any of this unless you know what you're doing,
 # or, unless a LevelledMobs maintainer suggested you do so.
 file-data-do-not-edit:
-  version: 999999999
+  version: 11
   generated-with: '${project.version}'
