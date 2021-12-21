@@ -4,7 +4,6 @@
 
 package me.lokka30.levelledmobs.file.external.rules;
 
-import me.lokka30.levelledmobs.file.external.rules.entry.RuleEntry;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;

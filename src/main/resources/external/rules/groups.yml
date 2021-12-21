@@ -9,7 +9,6 @@ mob-groups:
   'bosses':
     - 'WITHER'
     - 'ENDER_DRAGON'
-# This section has no changes from LM3.
 
 
 biome-groups:
