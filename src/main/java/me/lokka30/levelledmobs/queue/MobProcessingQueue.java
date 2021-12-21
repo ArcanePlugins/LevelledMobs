@@ -32,7 +32,7 @@ public class MobProcessingQueue implements Queue {
 
     @Override
     public void start() {
-        Utils.LOGGER.info("Starting queue '&b" + getName() + "&7'...");
+        Utils.logger.info("Starting queue '&b" + getName() + "&7'...");
 
         if(isRunning) throw new UnsupportedOperationException("Queue is already running");
 
@@ -59,7 +59,7 @@ public class MobProcessingQueue implements Queue {
 
     @Override
     public void stop() {
-        Utils.LOGGER.info("Stopping queue '&b" + getName() + "&7'...");
+        Utils.logger.info("Stopping queue '&b" + getName() + "&7'...");
 
         if(!isRunning) throw new UnsupportedOperationException("Queue is not running");
 
