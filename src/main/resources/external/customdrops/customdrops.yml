@@ -6,23 +6,28 @@
 # +                                                                                          +LM3
 # +-------------------------------------------------------------------------------------------LM3
 defaults:
-  chance: 0.2
+  requirements:
+    chance: 0.2
+    overall-chance: 0.0
+    min-level: -1
+    max-level: -1
+    exclude-spawner-mobs: false
+    player-caused-death: true
+
   amount: 1
-  min-level: -1 #edited
-  max-level: -1 #edited
-  custom-model-data: -1 #edited
-  no-multiplier: false #edited
-  exclude-spawner-mobs: false #edited
-  equipped-chance: 1.0 #edited
-  remove-vanilla-drops: false #edited
-  max-drop-group: 1 #edited
-  priority: 0
-  player-caused-death: true #edited
-  item-flags: [] #edited
-  group-id: '' #edited
-  overall-chance: 0.0
+  equipped-chance: 1.0
+  custom-model-data: -1
+  item-flags: []
   nbt-data: ''
-  only-drop-items-if-equipped: false
+
+  options:
+    remove-vanilla-drops: false
+    no-multiplier: false
+    only-drop-items-if-equipped: false
+
+  group-id: ''
+  max-drop-group: 1
+  priority: 0
 
 # === Customdrops and Rules now share the same groups. ===
 
@@ -47,30 +52,38 @@ entities: #edited
 drop-tables: #edited
   'example_overworld':
     - STICK:
+        requirements:
+          chance: 1.0
+          no-multiplier: true
+          exclude-spawner-mobs: true
+
         amount: 1
-        chance: 1
-        nomultiplier: true
-        nospawner: true
         groupid: 1
     - COBBLESTONE:
+        requirements:
+          chance: 1.0
+          no-multiplier: true
+          exclude-spawner-mobs: true
+
         amount: 1
-        chance: 1
-        nomultiplier: true
-        nospawner: true
-        groupid: 1
+        group-id: 1
   'example_nether':
     - NETHERRACK:
+        requirements:
+          chance: 1.0
+          no-multiplier: true
+          exclude-spawner-mobs: true
+
         amount: 1
-        chance: 1
-        nomultiplier: true
-        nospawner: true
         groupid: 2
     - SOUL_SAND:
+        requirements:
+          chance: 1.0
+          no-multiplier: true
+          exclude-spawner-mobs: true
+
         amount: 1
-        chance: 1
-        nomultiplier: true
-        nospawner: true
-        groupid: 2
+        group-id: 2
 
 # Don't touch any of this unless you know what you're doing,
 # or, unless a LevelledMobs maintainer suggested you do so.
