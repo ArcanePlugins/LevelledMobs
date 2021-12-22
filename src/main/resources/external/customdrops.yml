@@ -13,7 +13,6 @@ defaults:
     max-level: -1
     exclude-spawner-mobs: false
     player-caused-death: true
-
   amount: 1
   equipped-chance: 1.0
   custom-model-data: -1
