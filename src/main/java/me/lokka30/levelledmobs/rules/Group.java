@@ -8,4 +8,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.HashSet;
 
-public record Group<T>(@NotNull String identifier, @NotNull HashSet<T> data) {}
+public record Group<T>(
+        @NotNull String     identifier,
+        @NotNull HashSet<T> data
+) {}

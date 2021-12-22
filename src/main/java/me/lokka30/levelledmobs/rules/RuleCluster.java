@@ -10,8 +10,8 @@ import java.util.ArrayList;
 import java.util.Optional;
 
 public record RuleCluster(
-        @NotNull String identifier,
-        boolean enabled,
-        @NotNull Optional<String> description,
-        @NotNull ArrayList<RuleEntry> entries
+        @NotNull String                 identifier,
+        boolean                         enabled,
+        @NotNull Optional<String>       description,
+        @NotNull ArrayList<RuleEntry>   entries
 ) implements RuleEntry {}

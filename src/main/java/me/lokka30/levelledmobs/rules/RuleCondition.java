@@ -12,9 +12,9 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Optional;
 
 public record RuleCondition(
-        @NotNull Optional<Boolean> isLevelled,
-        @NotNull Optional<ModalList<CreatureSpawnEvent.SpawnReason>> spawnReasons,
-        @NotNull Optional<ModalList<String>> worldNames
+        @NotNull Optional<Boolean>                                      isLevelled,
+        @NotNull Optional<ModalList<CreatureSpawnEvent.SpawnReason>>    spawnReasons,
+        @NotNull Optional<ModalList<String>>                            worldNames
 ) {
 
     public boolean appliesTo(@NotNull final LivingEntity livingEntity) {

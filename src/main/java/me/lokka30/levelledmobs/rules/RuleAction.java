@@ -11,10 +11,10 @@ import java.util.HashSet;
 import java.util.Optional;
 
 public record RuleAction(
-        @NotNull Optional<String> nametagFormat,
-        @NotNull Optional<Float> nametagVisibilityDuration,
-        @NotNull Optional<HashSet<NametagHandler.NametagVisibilityMethod>> nametagVisibilityMethods,
-        @NotNull Optional<Boolean> matchedSettingsBabies,
-        @NotNull Optional<Boolean> matchedSettingsPassengers,
-        @NotNull Optional<HashSet<Executable>> executables
+        @NotNull Optional<String>                                           nametagFormat,
+        @NotNull Optional<Float>                                            nametagVisibilityDuration,
+        @NotNull Optional<HashSet<NametagHandler.NametagVisibilityMethod>>  nametagVisibilityMethods,
+        @NotNull Optional<Boolean>                                          matchedSettingsBabies,
+        @NotNull Optional<Boolean>                                          matchedSettingsPassengers,
+        @NotNull Optional<HashSet<Executable>>                              executables
 ) {}

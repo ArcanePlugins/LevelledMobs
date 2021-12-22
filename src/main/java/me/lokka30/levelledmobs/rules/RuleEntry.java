@@ -4,4 +4,5 @@
 
 package me.lokka30.levelledmobs.rules;
 
-public interface RuleEntry { }
+public interface RuleEntry {}
+// This interface is intentionally blank.

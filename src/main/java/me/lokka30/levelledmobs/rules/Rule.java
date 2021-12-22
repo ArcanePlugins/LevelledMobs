@@ -10,10 +10,10 @@ import java.util.HashSet;
 import java.util.Optional;
 
 public record Rule(
-        @NotNull String identifier,
-        @NotNull Optional<String> description,
+        @NotNull String                 identifier,
+        @NotNull Optional<String>       description,
         @NotNull HashSet<RuleCondition> conditions,
-        @NotNull HashSet<RuleAction> actions,
-        @NotNull HashSet<RulePreset> presets,
-        boolean onceProcessedStopProcessing
+        @NotNull HashSet<RuleAction>    actions,
+        @NotNull HashSet<RulePreset>    presets,
+        boolean                         onceProcessedStopProcessing
 ) implements RuleEntry {}
