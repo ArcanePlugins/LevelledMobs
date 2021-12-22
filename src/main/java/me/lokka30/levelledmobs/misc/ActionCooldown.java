@@ -14,24 +14,10 @@ package me.lokka30.levelledmobs.misc;
  * clicking the same entity over and over. It is also used in the
  * Spawner Info for the same reason: blocks unnecessary chat spam.
  */
-public class ActionCooldown {
-
-    /**
-     * @since v3.1.2
-     * The starting point of the cooldown - just run System#currentTimeMillis()
-     */
-    private final long startingTime;
-
-    /**
-     * @since v3.1.2
-     * What this cooldown should be identifiable by - e.g. entity ID, location
-     */
-    private final String identifier;
-
-    public ActionCooldown(final long startingTime, final String identifier) {
-        this.startingTime = startingTime;
-        this.identifier = identifier;
-    }
+public record ActionCooldown(
+        long    startingTime,
+        String  identifier
+) {
 
     /**
      * @param identifier ID to check if this cooldown has the same ID.
