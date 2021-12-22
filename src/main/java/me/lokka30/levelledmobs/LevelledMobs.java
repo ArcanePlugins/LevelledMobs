@@ -4,8 +4,8 @@
 
 package me.lokka30.levelledmobs;
 
+import me.lokka30.levelledmobs.file.DataHandler;
 import me.lokka30.levelledmobs.file.FileHandler;
-import me.lokka30.levelledmobs.file.internal.mobData.StaticMobDataHandler;
 import me.lokka30.levelledmobs.integration.IntegrationHandler;
 import me.lokka30.levelledmobs.levelling.LevelHandler;
 import me.lokka30.levelledmobs.listener.BlockPlaceListener;
@@ -159,5 +159,5 @@ public class LevelledMobs extends JavaPlugin {
     @NotNull public final LevelHandler levelHandler = new LevelHandler(this);
     @NotNull public final QueueHandler queueHandler = new QueueHandler(this);
     @NotNull public final IntegrationHandler integrationHandler = new IntegrationHandler(this);
-    @NotNull public final StaticMobDataHandler staticMobDataHandler = new StaticMobDataHandler(this);
+    @NotNull public final DataHandler dataHandler = new DataHandler(this);
 }

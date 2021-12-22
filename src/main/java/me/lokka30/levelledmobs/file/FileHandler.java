@@ -43,7 +43,7 @@ public class FileHandler {
         Utils.logger.info("Started loading internal files...");
 
         //TODO load static mob data file
-        main.staticMobDataHandler.loadMobData();
+        main.dataHandler.loadMobData();
 
         //TODO add the other internal files to here.
 
