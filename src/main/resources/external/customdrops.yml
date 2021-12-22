@@ -19,12 +19,9 @@ defaults:
   custom-model-data: -1
   item-flags: []
   nbt-data: ''
-
-  options:
-    remove-vanilla-drops: false
-    no-multiplier: false
-    only-drop-items-if-equipped: false
-
+  remove-vanilla-drops: false
+  no-multiplier: false
+  only-drop-items-if-equipped: false
   group-id: 0
   max-drop-group: 1
   priority: 0
@@ -53,8 +50,7 @@ drop-tables:
         requirements:
           chance: 1.0
           exclude-spawner-mobs: true
-        options:
-          no-multiplier: true
+        no-multiplier: true
         amount: 1
         group-id: 1
 
@@ -62,8 +58,7 @@ drop-tables:
         requirements:
           chance: 1.0
           exclude-spawner-mobs: true
-        options:
-          no-multiplier: true
+        no-multiplier: true
         amount: 1
         group-id: 1
 
@@ -72,8 +67,7 @@ drop-tables:
         requirements:
           chance: 1.0
           exclude-spawner-mobs: true
-        options:
-          no-multiplier: true
+        no-multiplier: true
         amount: 1
         group-id: 2
 
@@ -81,8 +75,7 @@ drop-tables:
         requirements:
           chance: 1.0
           exclude-spawner-mobs: true
-        options:
-          no-multiplier: true
+        no-multiplier: true
         amount: 1
         group-id: 2
 
