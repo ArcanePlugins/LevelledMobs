@@ -12,4 +12,5 @@ import java.util.HashMap;
 public class CustomDropHandler {
 
     private final HashMap<EntityType, Material[]> defaultDropsMap = new HashMap<>();
+
 }
