@@ -4,7 +4,7 @@
 
 Only the latest release version of the resource will be supported by the LevelledMobs team.
 
-Older versions will not receive updates or support .
+Older versions will not receive updates or support.
 
 ## Reporting a Vulnerability
 
