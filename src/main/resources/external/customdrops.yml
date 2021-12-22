@@ -25,18 +25,16 @@ defaults:
     no-multiplier: false
     only-drop-items-if-equipped: false
 
-  group-id: ''
+  group-id: 0
   max-drop-group: 1
   priority: 0
-
-# === Customdrops and Rules now share the same groups. ===
 
 # +-------------------------------------------------------------------------------------------LM3
 # +                                                                                          +LM3
 # +   Section 02 - EntityType Drops                                                          +LM3
 # +                                                                                          +LM3
 # +-------------------------------------------------------------------------------------------LM3
-entities: #edited
+entities:
   BAT:
   CAVE_SPIDER:
   CHICKEN:
@@ -49,39 +47,42 @@ entities: #edited
 # +   Section 03 - Drop Tables                                                               +LM3
 # +                                                                                          +LM3
 # +-------------------------------------------------------------------------------------------LM3
-drop-tables: #edited
+drop-tables:
   'example_overworld':
     - STICK:
         requirements:
           chance: 1.0
-          no-multiplier: true
           exclude-spawner-mobs: true
-
+        options:
+          no-multiplier: true
         amount: 1
-        groupid: 1
+        group-id: 1
+
     - COBBLESTONE:
         requirements:
           chance: 1.0
-          no-multiplier: true
           exclude-spawner-mobs: true
-
+        options:
+          no-multiplier: true
         amount: 1
         group-id: 1
+
   'example_nether':
     - NETHERRACK:
         requirements:
           chance: 1.0
-          no-multiplier: true
           exclude-spawner-mobs: true
-
+        options:
+          no-multiplier: true
         amount: 1
-        groupid: 2
+        group-id: 2
+
     - SOUL_SAND:
         requirements:
           chance: 1.0
-          no-multiplier: true
           exclude-spawner-mobs: true
-
+        options:
+          no-multiplier: true
         amount: 1
         group-id: 2
 
