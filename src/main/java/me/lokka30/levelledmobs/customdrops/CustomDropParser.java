@@ -13,10 +13,10 @@ import org.jetbrains.annotations.NotNull;
  * @since v4.0.0
  * TODO Description
  */
-public class CustomDropsParser {
+public class CustomDropParser {
 
     @NotNull private final LevelledMobs main;
-    public CustomDropsParser(@NotNull final LevelledMobs main) {
+    public CustomDropParser(@NotNull final LevelledMobs main) {
         this.main = main;
     }
 
