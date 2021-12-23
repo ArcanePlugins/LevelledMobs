@@ -5,7 +5,7 @@
 package me.lokka30.levelledmobs.file;
 
 import me.lokka30.levelledmobs.LevelledMobs;
-import me.lokka30.levelledmobs.misc.Utils;
+import me.lokka30.levelledmobs.util.Utils;
 
 /**
  * @author lokka30

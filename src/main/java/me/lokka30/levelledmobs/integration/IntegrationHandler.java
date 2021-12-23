@@ -16,7 +16,7 @@ import me.lokka30.levelledmobs.integration.plugin.NBTAPIIntegration;
 import me.lokka30.levelledmobs.integration.plugin.PlaceholderAPIIntegration;
 import me.lokka30.levelledmobs.integration.plugin.ShopkeepersIntegration;
 import me.lokka30.levelledmobs.integration.plugin.WorldGuardIntegration;
-import me.lokka30.levelledmobs.misc.Utils;
+import me.lokka30.levelledmobs.util.Utils;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashSet;

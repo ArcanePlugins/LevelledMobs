@@ -4,7 +4,7 @@
 
 package me.lokka30.levelledmobs.rules;
 
-import me.lokka30.levelledmobs.misc.ModalList;
+import me.lokka30.levelledmobs.util.ModalList;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.jetbrains.annotations.NotNull;

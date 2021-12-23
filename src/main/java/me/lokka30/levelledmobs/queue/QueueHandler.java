@@ -5,7 +5,7 @@
 package me.lokka30.levelledmobs.queue;
 
 import me.lokka30.levelledmobs.LevelledMobs;
-import me.lokka30.levelledmobs.misc.Utils;
+import me.lokka30.levelledmobs.util.Utils;
 
 import java.util.Arrays;
 import java.util.HashSet;
