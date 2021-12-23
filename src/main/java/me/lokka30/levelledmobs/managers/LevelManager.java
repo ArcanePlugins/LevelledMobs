@@ -1111,11 +1111,6 @@ public class LevelManager implements LevelInterface {
                 main.rulesManager.getRule_MobCustomNameStatus(lmEntity) == MobCustomNameStatus.NOT_NAMETAGGED)
             return LevellableState.DENIED_CONFIGURATION_CONDITION_NAMETAGGED;
 
-        // Tamed mobs.
-        if (lmEntity.isMobTamed() &&
-                main.rulesManager.getRule_MobTamedStatus(lmEntity) == MobTamedStatus.NOT_TAMED)
-            return LevellableState.DENIED_CONFIGURATION_CONDITION_TAMED;
-
         return LevellableState.ALLOWED;
     }
 
