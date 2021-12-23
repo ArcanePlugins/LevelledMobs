@@ -6,6 +6,9 @@ package me.lokka30.levelledmobs.levelling.strategy;
 
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.levelling.LevelledMob;
+import me.lokka30.levelledmobs.util.math.RangedInt;
+import me.lokka30.levelledmobs.util.math.WeightedRandomContainer;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * This class generates a random level, although
@@ -18,11 +21,14 @@ import me.lokka30.levelledmobs.levelling.LevelledMob;
  * @see LevellingStrategy
  * @since v4.0.0
  */
-public class WeightedRandomLevellingStrategy implements LevellingStrategy {
+public record WeightedRandomLevellingStrategy(
+        @NotNull WeightedRandomContainer<RangedInt> weightedRandomContainer
+) implements LevellingStrategy {
 
     @Override
     public int calculateLevel(LevelledMobs main, LevelledMob mob) {
-        //TODO
-        return -1;
+        return weightedRandomContainer
+                .getRandom() // get a random element from the container
+                .generateRandom(); // get a random level from the RangedInt
     }
 }

@@ -3,6 +3,7 @@
  * Author:      <https://gamedev.stackexchange.com/users/21890/philipp>
  * License:     Attribution-ShareAlike 4.0 International (CC BY-SA 4.0) license: <https://creativecommons.org/licenses/by-sa/4.0/legalcode>
  * Alterations:
+ *  - The class name was changed from `WeightedRandomBag` to `WeightedRandomContainer` (by: lokka30)
  *  - A constructor to the Entry sub-class was added. (by: lokka30)
  */
 
@@ -12,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
-public class WeightedRandom<T> {
+public class WeightedRandomContainer<T> {
 
     private class Entry {
         double accumulatedWeight;
