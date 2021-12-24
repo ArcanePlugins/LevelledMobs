@@ -625,6 +625,22 @@ public class RulesManager {
             }
         }
 
+        if (ri.conditions_ScoreboardTags != null){
+            final Set<String> tags = lmEntity.getLivingEntity().getScoreboardTags();
+            if (tags.isEmpty()) tags.add("(none)");
+
+            boolean madeCriteria = false;
+            for (final String tag : tags){
+                if (ri.conditions_ScoreboardTags.isEnabledInList(tag, lmEntity))
+                    madeCriteria = true;
+            }
+            if (!madeCriteria){
+                Utils.debugLog(main, DebugType.SCOREBOARD_TAGS, String.format("&b%s&7, mob: &b%s&7",
+                        ri.getRuleName(), lmEntity.getNameIfBaby()));
+                return false;
+            }
+        }
+
         return true;
     }
 

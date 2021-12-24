@@ -739,6 +739,7 @@ public class RulesParsingManager {
         parsingInfo.conditions_SpawnegEggNames = buildCachedModalListOfString(cs,"spawner-egg-names", parsingInfo.conditions_SpawnegEggNames);
         parsingInfo.conditions_WorldTickTime = parseWorldTimeTicks(cs, parsingInfo.conditions_WorldTickTime);
         parsingInfo.conditions_Permission = buildCachedModalListOfString(cs, "permission", parsingInfo.conditions_Permission);
+        parsingInfo.conditions_ScoreboardTags = buildCachedModalListOfString(cs, "scoreboard-tags", parsingInfo.conditions_ScoreboardTags);
     }
 
     private void parseStrategies(final ConfigurationSection cs){
