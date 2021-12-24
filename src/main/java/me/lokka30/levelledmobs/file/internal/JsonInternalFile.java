@@ -5,10 +5,12 @@
 package me.lokka30.levelledmobs.file.internal;
 
 import de.leonhard.storage.Json;
+import org.jetbrains.annotations.NotNull;
 
 public interface JsonInternalFile extends InternalFile {
 
     void load();
 
+    @NotNull
     Json getData();
 }
