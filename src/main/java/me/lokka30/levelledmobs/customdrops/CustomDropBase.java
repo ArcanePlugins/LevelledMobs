@@ -44,7 +44,7 @@ public class CustomDropBase implements Cloneable {
     String playerLevelVariable;
     final public List<String> permissions;
     final Set<String> excludedMobs = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
-    CachedModalList<EntityDamageEvent.DamageCause> causeOfDeathReqs;
+    CachedModalList<CauseOfDeathEnum> causeOfDeathReqs;
 
     public int getAmount(){
         return this.amount;
@@ -104,7 +104,7 @@ public class CustomDropBase implements Cloneable {
             copy = (CustomDropBase) super.clone();
             if (this.causeOfDeathReqs != null)
                 //noinspection unchecked
-                copy.causeOfDeathReqs = (CachedModalList<EntityDamageEvent.DamageCause>) this.causeOfDeathReqs.clone();
+                copy.causeOfDeathReqs = (CachedModalList<CauseOfDeathEnum>) this.causeOfDeathReqs.clone();
         } catch (final Exception e) {
             e.printStackTrace();
         }

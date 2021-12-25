@@ -44,7 +44,7 @@ class CustomDropProcessingInfo {
     boolean equippedOnly;
     boolean deathByFire;
     boolean wasKilledByPlayer;
-    EntityDamageEvent.DamageCause deathCause;
+    CauseOfDeathEnum deathCause;
     boolean doNotMultiplyDrops;
     boolean hasOverride;
     boolean hasCustomDropId;
