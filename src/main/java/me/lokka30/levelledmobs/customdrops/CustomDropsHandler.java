@@ -26,6 +26,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -680,9 +681,25 @@ public class CustomDropsHandler {
 
             Utils.debugLog(main, DebugType.CUSTOM_COMMANDS, debugCommand + command);
 
-            for (int i = 0; i < timesToRun; i++)
-                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
+            if (customCommand.delay > 0) {
+                final String commandToRun = command;
+                final int finalTimesToRun = timesToRun;
+                final BukkitRunnable runnable = new BukkitRunnable() {
+                    @Override
+                    public void run() {
+                        executeTheCommand(commandToRun, finalTimesToRun);
+                    }
+                };
+                runnable.runTaskLater(main, customCommand.delay);
+            }
+            else
+                executeTheCommand(command, timesToRun);
         }
+    }
+
+    private void executeTheCommand(final String command, final int timesToRun){
+        for (int i = 0; i < timesToRun; i++)
+            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
     }
 
     @NotNull

@@ -378,6 +378,7 @@ public class CustomDropsParser {
                 customCommand.commands.add(singleCommand);
 
             customCommand.commandName = ymlHelper.getString(cs,"name");
+            customCommand.delay = ymlHelper.getInt(cs, "delay", 0);
             parseRangedVariables(customCommand, cs);
 
             if (customCommand.commands.isEmpty())
