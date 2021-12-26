@@ -50,13 +50,14 @@ public class PlayerDeathListener {
             return null;
 
         final Entity damager = ((EntityDamageByEntityEvent) entityDamageEvent).getDamager();
-        final LivingEntity killer;
+        LivingEntity killer = null;
 
-        if (damager instanceof Projectile)
-            killer = (LivingEntity) ((Projectile) damager).getShooter();
-        else if (!(damager instanceof LivingEntity))
-            return null;
-        else
+        if (damager instanceof Projectile) {
+            final Projectile projectile = (Projectile) damager;
+            if (projectile.getShooter() instanceof LivingEntity)
+                killer = (LivingEntity) projectile.getShooter();
+        }
+        else if (damager instanceof LivingEntity)
             killer = (LivingEntity) damager;
 
         if (killer == null || Utils.isNullOrEmpty(killer.getName()) || killer instanceof Player) return null;
