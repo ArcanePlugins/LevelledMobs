@@ -74,6 +74,8 @@ public class CustomDrops implements YamlExternalFile, VersionedFile {
                             Utils.LOGGER.error("Migration logic not complete for LM 3's customdrops yet.");
                             break;
                         default:
+                            // this is reached if there is no migration logic for a specific version.
+
                             if(i < 10) {
                                 // Latest version of LM 3 used file version 10.
                                 // if it's earlier than this then just don't bother migrating,
@@ -82,7 +84,9 @@ public class CustomDrops implements YamlExternalFile, VersionedFile {
                                 replace(main);
                                 Utils.LOGGER.warning("Your customdrops file was too old to be migrated! " +
                                         "We have replaced your custom drops file with a default, brand new one. " +
-                                        "Your previous customdrops file was backed up.");
+                                        "This means that the default custom drops are being used, until you edit the file. " +
+                                        "Your previous customdrops file was backed up, please update the new file if you wish. "
+                                );
                             } else {
                                 Utils.LOGGER.warning("Migration logic was not programmed for the file version '&b" + i + "&7' of the file '&b" + getName() + "&7'! Please inform the LevelledMobs team.");
                             }
