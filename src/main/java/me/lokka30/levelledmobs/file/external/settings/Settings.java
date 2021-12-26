@@ -5,10 +5,11 @@
 package me.lokka30.levelledmobs.file.external.settings;
 
 import de.leonhard.storage.Yaml;
+import me.lokka30.levelledmobs.file.external.VersionedFile;
 import me.lokka30.levelledmobs.file.external.YamlExternalFile;
 import org.jetbrains.annotations.NotNull;
 
-public class Settings implements YamlExternalFile {
+public class Settings implements YamlExternalFile, VersionedFile {
 
     private Yaml data;
 
@@ -24,7 +25,7 @@ public class Settings implements YamlExternalFile {
 
     @Override
     public int getLatestFileVersion() {
-        return -1; //TODO
+        return 33;
     }
 
     @Override

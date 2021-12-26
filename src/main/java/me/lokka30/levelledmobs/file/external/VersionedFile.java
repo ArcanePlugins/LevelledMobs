@@ -4,14 +4,10 @@
 
 package me.lokka30.levelledmobs.file.external;
 
-import de.leonhard.storage.Yaml;
-import org.jetbrains.annotations.NotNull;
+public interface VersionedFile {
 
-public interface YamlExternalFile extends ExternalFile {
+    int getInstalledFileVersion();
 
-    void migrate();
-
-    @NotNull
-    Yaml getData();
+    int getLatestFileVersion();
 
 }
