@@ -4,10 +4,28 @@
 
 package me.lokka30.levelledmobs.file.external;
 
+import org.jetbrains.annotations.NotNull;
+
 public interface VersionedFile {
 
     int getInstalledFileVersion();
 
     int getLatestFileVersion();
+
+    @NotNull default Result compareFileVersion() {
+        if(getInstalledFileVersion() > getLatestFileVersion()) {
+            return Result.FUTURE;
+        } else if(getInstalledFileVersion() < getLatestFileVersion()) {
+            return Result.OUTDATED;
+        } else {
+            return Result.CURRENT;
+        }
+    }
+
+    enum Result {
+        FUTURE,
+        CURRENT,
+        OUTDATED
+    }
 
 }
