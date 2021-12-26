@@ -45,10 +45,10 @@ public class CommandHandler {
         final PluginCommand pluginCmd = main.getCommand(baseCommandLabel);
 
         if (pluginCmd == null) {
-            Utils.logger.error("Unable to register command '&b/" + baseCommandLabel + "&7', as &bPluginCommand=null&7. Did you modify &bplugin.yml&7 incorrectly?");
+            Utils.LOGGER.error("Unable to register command '&b/" + baseCommandLabel + "&7', as &bPluginCommand=null&7. Did you modify &bplugin.yml&7 incorrectly?");
         } else {
             pluginCmd.setExecutor(clazz);
-            Utils.logger.info("Registered command '&b/" + baseCommandLabel + "&7'.");
+            Utils.LOGGER.info("Registered command '&b/" + baseCommandLabel + "&7'.");
         }
     }
 

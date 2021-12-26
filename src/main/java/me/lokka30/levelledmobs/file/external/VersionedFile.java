@@ -10,19 +10,19 @@ public interface VersionedFile {
 
     int getInstalledFileVersion();
 
-    int getLatestFileVersion();
+    int getSupportedFileVersion();
 
-    @NotNull default Result compareFileVersion() {
-        if(getInstalledFileVersion() > getLatestFileVersion()) {
-            return Result.FUTURE;
-        } else if(getInstalledFileVersion() < getLatestFileVersion()) {
-            return Result.OUTDATED;
+    @NotNull default VersionedFile.FileVersionComparisonResult compareFileVersion() {
+        if(getInstalledFileVersion() > getSupportedFileVersion()) {
+            return FileVersionComparisonResult.FUTURE;
+        } else if(getInstalledFileVersion() < getSupportedFileVersion()) {
+            return FileVersionComparisonResult.OUTDATED;
         } else {
-            return Result.CURRENT;
+            return FileVersionComparisonResult.CURRENT;
         }
     }
 
-    enum Result {
+    enum FileVersionComparisonResult {
         FUTURE,
         CURRENT,
         OUTDATED

@@ -40,14 +40,14 @@ public class FileHandler {
      * be ran on start-up (onEnable).
      */
     public void loadInternalFiles() {
-        Utils.logger.info("Started loading internal files...");
+        Utils.LOGGER.info("Started loading internal files...");
 
         //TODO load static mob data file
         main.dataHandler.loadMobData();
 
         //TODO add the other internal files to here.
 
-        Utils.logger.info("All external files have been loaded.");
+        Utils.LOGGER.info("All external files have been loaded.");
     }
 
     /**
@@ -57,12 +57,12 @@ public class FileHandler {
      * This must be called on start-up and also on reload.
      */
     public void loadExternalFiles() {
-        Utils.logger.info("Started loading external files...");
+        Utils.LOGGER.info("Started loading external files...");
 
-        Utils.logger.info("Loading external file '&blicense.txt&7'...");
+        Utils.LOGGER.info("Loading external file '&blicense.txt&7'...");
         main.saveResource("license.txt", true);
 
-        Utils.logger.info("All external files have been loaded.");
+        Utils.LOGGER.info("All external files have been loaded.");
     }
 
 }

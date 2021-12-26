@@ -24,7 +24,7 @@ public class Messages implements YamlExternalFile, VersionedFile {
     }
 
     @Override
-    public int getLatestFileVersion() {
+    public int getSupportedFileVersion() {
         return 8;
     }
 

@@ -24,7 +24,7 @@ public class Listeners implements YamlExternalFile, VersionedFile {
     }
 
     @Override
-    public int getLatestFileVersion() {
+    public int getSupportedFileVersion() {
         return 1;
     }
 

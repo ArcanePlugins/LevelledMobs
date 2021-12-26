@@ -33,7 +33,7 @@ public class NametagProcessingQueue implements Queue {
 
     @Override
     public void start() {
-        Utils.logger.info("Starting queue '&b" + getName() + "&7'...");
+        Utils.LOGGER.info("Starting queue '&b" + getName() + "&7'...");
 
         if(isRunning) throw new UnsupportedOperationException("Queue is already running.");
 
@@ -59,7 +59,7 @@ public class NametagProcessingQueue implements Queue {
 
     @Override
     public void stop() {
-        Utils.logger.info("Stopping queue '&b" + getName() + "&7'...");
+        Utils.LOGGER.info("Stopping queue '&b" + getName() + "&7'...");
 
         if(!isRunning) throw new UnsupportedOperationException("Queue is not running");
 

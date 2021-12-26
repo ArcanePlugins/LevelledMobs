@@ -22,5 +22,5 @@ public class Utils {
      * This contains an instance of MicroLogger, used
      * across the plugin to log things to the console.
      */
-    public static final MicroLogger logger = new MicroLogger("&b&lLevelledMobs: &7");
+    public static final MicroLogger LOGGER = new MicroLogger("&b&lLevelledMobs: &7");
 }

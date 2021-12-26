@@ -55,7 +55,7 @@ public class IntegrationHandler {
     public void addIntegration(final Integration integration) {
         // Make sure there are no duplicate entries
         if (getAvailableIntegrations().contains(integration)) {
-            Utils.logger.warning("&3IntegrationHandler:&7 An attempt was made to make the integration '&b" + integration + "&7' available, although it is already available.");
+            Utils.LOGGER.warning("&3IntegrationHandler:&7 An attempt was made to make the integration '&b" + integration + "&7' available, although it is already available.");
             return;
         }
 

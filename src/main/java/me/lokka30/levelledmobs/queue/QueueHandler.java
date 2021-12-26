@@ -40,7 +40,7 @@ public class QueueHandler {
      * Start all queues.
      */
     public void startQueues() {
-        Utils.logger.info("Starting all queues...");
+        Utils.LOGGER.info("Starting all queues...");
         queues.forEach(Queue::start);
     }
 
@@ -50,7 +50,7 @@ public class QueueHandler {
      * Stop all queues.
      */
     public void stopQueues() {
-        Utils.logger.info("Stopping all queues...");
+        Utils.LOGGER.info("Stopping all queues...");
         queues.forEach(Queue::stop);
     }
 }
