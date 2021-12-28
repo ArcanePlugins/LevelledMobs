@@ -99,7 +99,7 @@ public class CustomDropsHandler {
         if (lmEntity.getLivingEntity().getLastDamageCause() != null)
             processingInfo.deathCause = CauseOfDeathEnum.valueOf(lmEntity.getLivingEntity().getLastDamageCause().getCause().toString().toUpperCase());
 
-        processingInfo.addition = BigDecimal.valueOf(main.mobDataManager.getAdditionsForLevel(lmEntity, Addition.CUSTOM_ITEM_DROP, 0.0))
+        processingInfo.addition = BigDecimal.valueOf(main.mobDataManager.getAdditionsForLevel(lmEntity, Addition.CUSTOM_ITEM_DROP, 2))
                 .setScale(0, RoundingMode.HALF_DOWN).intValueExact(); // truncate double to int
 
         processingInfo.doNotMultiplyDrops = main.rulesManager.getRule_CheckIfNoDropMultiplierEntitiy(lmEntity);
@@ -112,7 +112,6 @@ public class CustomDropsHandler {
         }
 
         if (!equippedOnly && isCustomDropsDebuggingEnabled()) {
-
             final String mobLevel = lmEntity.getMobLevel() > 0 ? "&r (level " + lmEntity.getMobLevel() + ")" : "";
             processingInfo.addDebugMessage("&7Custom drops for &b" + lmEntity.getNameIfBaby() + mobLevel);
             processingInfo.addDebugMessage("&8- &7Groups: &b" + String.join("&7, &b", lmEntity.getApplicableGroups()) + "&7.");
