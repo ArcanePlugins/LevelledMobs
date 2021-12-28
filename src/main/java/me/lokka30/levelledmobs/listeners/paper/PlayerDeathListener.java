@@ -6,6 +6,7 @@ import me.lokka30.levelledmobs.misc.Utils;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.TranslatableComponent;
+import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -50,13 +51,14 @@ public class PlayerDeathListener {
             return null;
 
         final Entity damager = ((EntityDamageByEntityEvent) entityDamageEvent).getDamager();
-        final LivingEntity killer;
+        LivingEntity killer = null;
 
-        if (damager instanceof Projectile)
-            killer = (LivingEntity) ((Projectile) damager).getShooter();
-        else if (!(damager instanceof LivingEntity))
-            return null;
-        else
+        if (damager instanceof Projectile) {
+            final Projectile projectile = (Projectile) damager;
+            if (projectile.getShooter() instanceof LivingEntity)
+                killer = (LivingEntity) projectile.getShooter();
+        }
+        else if (damager instanceof LivingEntity)
             killer = (LivingEntity) damager;
 
         if (killer == null || Utils.isNullOrEmpty(killer.getName()) || killer instanceof Player) return null;
@@ -77,13 +79,8 @@ public class PlayerDeathListener {
     private void updateDeathMessage(@NotNull final PlayerDeathEvent event, final String mobName){
         final TranslatableComponent tc = (TranslatableComponent) event.deathMessage();
         if (tc == null) return;
-        String playerKilled = null;
 
-        for (final net.kyori.adventure.text.Component com : tc.args()){
-            if (com instanceof TextComponent)
-                playerKilled = ((TextComponent) com).content();
-        }
-
+        final String playerKilled = extractPlayerName(tc);
         if (playerKilled == null) return;
 
         final TextComponent tcMobName = LegacyComponentSerializer.legacySection().deserialize(mobName);
@@ -92,5 +89,34 @@ public class PlayerDeathListener {
                 .append(tcMobName);
 
         event.deathMessage(newCom);
+    }
+
+    @Nullable
+    private String extractPlayerName(final @NotNull TranslatableComponent tc){
+        String playerKilled = null;
+
+        for (final net.kyori.adventure.text.Component com : tc.args()){
+            if (com instanceof TextComponent) {
+                final TextComponent tc2 = (TextComponent) com;
+                playerKilled = tc2.content();
+
+                if (playerKilled.isEmpty() && tc2.hoverEvent() != null) {
+                    // in rare cases the above method returns a empty string
+                    // we'll extract the player name from the hover event
+                    final HoverEvent<?> he = tc2.hoverEvent();
+                    if (he == null || !(he.value() instanceof HoverEvent.ShowEntity)) return null;
+
+                    final HoverEvent.ShowEntity se = (HoverEvent.ShowEntity) he.value();
+
+                    if (se.name() instanceof TextComponent){
+                        final TextComponent tc3 = (TextComponent) se.name();
+                        playerKilled = tc3.content();
+                    }
+                }
+            }
+        }
+
+        return playerKilled != null && playerKilled.isEmpty() ?
+                null : playerKilled;
     }
 }

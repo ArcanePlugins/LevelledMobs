@@ -378,6 +378,7 @@ public class CustomDropsParser {
                 customCommand.commands.add(singleCommand);
 
             customCommand.commandName = ymlHelper.getString(cs,"name");
+            customCommand.delay = ymlHelper.getInt(cs, "delay", 0);
             parseRangedVariables(customCommand, cs);
 
             if (customCommand.commands.isEmpty())
@@ -446,11 +447,11 @@ public class CustomDropsParser {
     }
 
     @NotNull
-    private CachedModalList<EntityDamageEvent.DamageCause> buildCachedModalListOfDamageCause(final ConfigurationSection cs,
-                                                                                             final CachedModalList<EntityDamageEvent.DamageCause> defaultValue) {
+    private CachedModalList<CauseOfDeathEnum> buildCachedModalListOfDamageCause(final ConfigurationSection cs,
+                                                                                             final CachedModalList<CauseOfDeathEnum> defaultValue) {
         if (cs == null) return defaultValue;
 
-        final CachedModalList<EntityDamageEvent.DamageCause> cachedModalList = new CachedModalList<>();
+        final CachedModalList<CauseOfDeathEnum> cachedModalList = new CachedModalList<>();
         final Object simpleStringOrArray = cs.get(ymlHelper.getKeyNameFromConfig(cs, "cause-of-death"));
         ConfigurationSection cs2 = null;
         List<String> useList = null;
@@ -480,7 +481,7 @@ public class CustomDropsParser {
                 continue;
             }
             try {
-                final EntityDamageEvent.DamageCause cause = EntityDamageEvent.DamageCause.valueOf(item.trim().toUpperCase());
+                final CauseOfDeathEnum cause = CauseOfDeathEnum.valueOf(item.trim().toUpperCase());
                 cachedModalList.allowedList.add(cause);
             } catch (final IllegalArgumentException ignored) {
                 Utils.logger.warning("Invalid damage cause: " + item);
@@ -497,7 +498,7 @@ public class CustomDropsParser {
                 continue;
             }
             try {
-                final EntityDamageEvent.DamageCause cause = EntityDamageEvent.DamageCause.valueOf(item.trim().toUpperCase());
+                final CauseOfDeathEnum cause = CauseOfDeathEnum.valueOf(item.trim().toUpperCase());
                 cachedModalList.excludedList.add(cause);
             } catch (final IllegalArgumentException ignored) {
                 Utils.logger.warning("Invalid damage cause: " + item);

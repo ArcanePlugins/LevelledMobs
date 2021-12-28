@@ -83,6 +83,12 @@ public enum LevellableState {
 
     /**
      * A rule has been configured to block
+     * Elite Bosses from being levelled
+     */
+    DENIED_CONFIGURATION_COMPATIBILITY_ELITE_BOSSES,
+
+    /**
+     * A rule has been configured to block
      * nametagged mobs from being levelled.
      */
     DENIED_CONFIGURATION_CONDITION_NAMETAGGED,

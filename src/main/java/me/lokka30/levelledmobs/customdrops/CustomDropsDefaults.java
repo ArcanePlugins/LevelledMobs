@@ -39,7 +39,7 @@ class CustomDropsDefaults {
     String playerLevelVariable;
     public final List<String> permissions;
     final List<String> overallPermissions;
-    CachedModalList<EntityDamageEvent.DamageCause> causeOfDeathReqs;
+    CachedModalList<CauseOfDeathEnum> causeOfDeathReqs;
 
     CustomDropsDefaults() {
         // these are the defaults of the defaults

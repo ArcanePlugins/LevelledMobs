@@ -93,6 +93,7 @@ public class RuleInfo {
     CachedModalList<String> conditions_MM_Names;
     CachedModalList<String> conditions_SpawnerNames;
     CachedModalList<String> conditions_SpawnegEggNames;
+    CachedModalList<String> conditions_ScoreboardTags;
     CachedModalList<MinAndMax> conditions_WorldTickTime;
     CachedModalList<LevelledMobSpawnReason> conditions_SpawnReasons;
     CachedModalList<String> conditions_Permission;

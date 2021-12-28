@@ -135,5 +135,7 @@ public enum DebugType {
 
     CUSTOM_DROPS,
 
-    THREAD_LOCKS
+    THREAD_LOCKS,
+
+    SCOREBOARD_TAGS
 }

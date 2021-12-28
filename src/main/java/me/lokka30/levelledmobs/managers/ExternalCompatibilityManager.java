@@ -60,7 +60,9 @@ public class ExternalCompatibilityManager {
         // PlaceholderAPI plugin
         PLACEHOLDER_API,
 
-        SIMPLE_PETS
+        SIMPLE_PETS,
+
+        ELITE_BOSSES
     }
 
     /* Store any external namespaced keys with null values by default */
@@ -111,6 +113,17 @@ public class ExternalCompatibilityManager {
         }
         else
             return SimplePets.isPetEntity(lmEntity.getLivingEntity());
+    }
+
+    private static boolean isMobOfEliteBosses(@NotNull final LivingEntityWrapper lmEntity){
+        final Plugin plugin = Bukkit.getPluginManager().getPlugin("EliteBosses");
+        if (plugin == null) return false;
+
+        for (final MetadataValue meta : lmEntity.getLivingEntity().getMetadata("EliteBosses")) {
+            if (meta.asInt() > 0) return true;
+        }
+
+        return false;
     }
 
     public static boolean isMythicMob(@NotNull final LivingEntityWrapper lmEntity) {
@@ -202,6 +215,10 @@ public class ExternalCompatibilityManager {
         if (isMobOfSimplePets(lmEntity) && !isExternalCompatibilityEnabled(ExternalCompatibility.SIMPLE_PETS, compatRules) &&
                 result == LevellableState.ALLOWED)
             result = LevellableState.DENIED_CONFIGURATION_COMPATIBILITY_SIMPLEPETS;
+
+        if (isMobOfEliteBosses(lmEntity) && !isExternalCompatibilityEnabled(ExternalCompatibility.ELITE_BOSSES, compatRules) &&
+                result == LevellableState.ALLOWED)
+            result = LevellableState.DENIED_CONFIGURATION_COMPATIBILITY_ELITE_BOSSES;
 
         return result;
     }

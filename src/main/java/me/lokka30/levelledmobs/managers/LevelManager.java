@@ -404,56 +404,64 @@ public class LevelManager implements LevelInterface {
     }
 
     // This sets the levelled currentDrops on a levelled mob that just died.
-    public void setLevelledItemDrops(final LivingEntityWrapper lmEntity, final List<ItemStack> currentDrops) {
+    public void setLevelledItemDrops(final LivingEntityWrapper lmEntity, final @NotNull List<ItemStack> currentDrops) {
 
+        final int vanillaDrops = currentDrops.size();
         // this accomodates chested animals, saddles and armor on ridable creatures
         final List<ItemStack> dropsToMultiply = getDropsToMultiply(lmEntity, currentDrops);
         final List<ItemStack> customDrops = new LinkedList<>();
         currentDrops.clear();
 
-        Utils.debugLog(main, DebugType.SET_LEVELLED_ITEM_DROPS, "&81:&7 Method called. &b" + dropsToMultiply.size() + "&7 drops will be analysed.");
-
-        Utils.debugLog(main, DebugType.SET_LEVELLED_ITEM_DROPS, "&82:&7 Level of the &b" + lmEntity.getTypeName() + "&7 entity is &b" + lmEntity.getMobLevel() + "&7.");
-
         final boolean doNotMultiplyDrops = main.rulesManager.getRule_CheckIfNoDropMultiplierEntitiy(lmEntity);
+        boolean hasOverride = false;
 
         if (main.rulesManager.getRule_UseCustomDropsForMob(lmEntity).useDrops) {
             // custom drops also get multiplied in the custom drops handler
             final CustomDropResult dropResult = main.customDropsHandler.getCustomItemDrops(lmEntity, customDrops, false);
 
             if (dropResult == CustomDropResult.HAS_OVERRIDE) {
-                Utils.debugLog(main, DebugType.SET_LEVELLED_ITEM_DROPS, "&83:&7 Custom drop has override.");
+                hasOverride = true;
                 removeVanillaDrops(lmEntity, dropsToMultiply);
             }
         }
+
+        int additionUsed = 0;
+        int dropsChecked = 0;
 
         if (!doNotMultiplyDrops && !dropsToMultiply.isEmpty()) {
             // Get currentDrops added per level value
             final int addition = BigDecimal.valueOf(main.mobDataManager.getAdditionsForLevel(lmEntity, Addition.CUSTOM_ITEM_DROP, 2.0))
                     .setScale(0, RoundingMode.HALF_DOWN).intValueExact(); // truncate double to int
-            Utils.debugLog(main, DebugType.SET_LEVELLED_ITEM_DROPS, "&84:&7 Item drop addition is &b+" + addition + "&7.");
+            additionUsed = addition;
 
             // Modify current drops
-            Utils.debugLog(main, DebugType.SET_LEVELLED_ITEM_DROPS, "&85:&7 Scanning &b" + dropsToMultiply.size() + "&7 items...");
+            dropsChecked = dropsToMultiply.size();
             for (final ItemStack currentDrop : dropsToMultiply)
                 multiplyDrop(lmEntity, currentDrop, addition, false);
         }
 
         if (!customDrops.isEmpty()) currentDrops.addAll(customDrops);
         if (!dropsToMultiply.isEmpty()) currentDrops.addAll(dropsToMultiply);
+        final String nameWithOverride = hasOverride ?
+                lmEntity.getNameIfBaby() + " (override)" : lmEntity.getNameIfBaby();
+        Utils.debugLog(main, DebugType.SET_LEVELLED_ITEM_DROPS, String.format(
+                "&7Mob: &b%s&7, mob-lvl: &b%s&7, vanilla drops: &b%s&7, all drops: &b%s&7, addition: &b%s&7.",
+                nameWithOverride, lmEntity.getMobLevel(), vanillaDrops, currentDrops.size(), additionUsed));
     }
 
     public void multiplyDrop(final LivingEntityWrapper lmEntity, @NotNull final ItemStack currentDrop, final int addition, final boolean isCustomDrop){
-        Utils.debugLog(main, DebugType.SET_LEVELLED_ITEM_DROPS, "&86:&7 Scanning drop &b" + currentDrop.getType() + "&7 with current amount &b" + currentDrop.getAmount() + "&7...");
+        final int oldAmount = currentDrop.getAmount();
 
         if (isCustomDrop || main.mobDataManager.isLevelledDropManaged(lmEntity.getLivingEntity().getType(), currentDrop.getType())) {
             int useAmount = currentDrop.getAmount() + (currentDrop.getAmount() * addition);
             if (useAmount > currentDrop.getMaxStackSize()) useAmount = currentDrop.getMaxStackSize();
             currentDrop.setAmount(useAmount);
-            Utils.debugLog(main, DebugType.SET_LEVELLED_ITEM_DROPS, "&87:&7 Item was managed. New amount: &b" + currentDrop.getAmount() + "&7.");
-        } else {
-            Utils.debugLog(main, DebugType.SET_LEVELLED_ITEM_DROPS, "&87:&7 Item was unmanaged.");
+            Utils.debugLog(main, DebugType.SET_LEVELLED_ITEM_DROPS, String.format(
+                    "&7Drop: &b%s&7, old amount: &b%s&7, addition value: &b%s&7, new amount: &b%s&7.",
+                    currentDrop.getType(), oldAmount, addition, currentDrop.getAmount()));
         }
+        else
+            Utils.debugLog(main, DebugType.SET_LEVELLED_ITEM_DROPS, "&7Item was unmanaged.");
     }
 
     @NotNull
@@ -517,7 +525,7 @@ public class LevelManager implements LevelInterface {
     public int getLevelledExpDrops(@NotNull final LivingEntityWrapper lmEntity, final int xp) {
         if (lmEntity.isLevelled()) {
             final int newXp = (int) Math.round(xp + (xp * main.mobDataManager.getAdditionsForLevel(lmEntity, Addition.CUSTOM_XP_DROP, 3.0)));
-            Utils.debugLog(main, DebugType.SET_LEVELLED_XP_DROPS, String.format("%s: lvl: %s, xp-vanilla: %s, new-xp: %s",
+            Utils.debugLog(main, DebugType.SET_LEVELLED_XP_DROPS, String.format("&7Mob: &b%s&7: lvl: &b%s&7, xp-vanilla: &b%s&7, new-xp: &b%s&7",
                     lmEntity.getNameIfBaby(), lmEntity.getMobLevel(), xp, newXp));
             return newXp;
         } else
@@ -1110,11 +1118,6 @@ public class LevelManager implements LevelInterface {
         if (lmEntity.getLivingEntity().getCustomName() != null &&
                 main.rulesManager.getRule_MobCustomNameStatus(lmEntity) == MobCustomNameStatus.NOT_NAMETAGGED)
             return LevellableState.DENIED_CONFIGURATION_CONDITION_NAMETAGGED;
-
-        // Tamed mobs.
-        if (lmEntity.isMobTamed() &&
-                main.rulesManager.getRule_MobTamedStatus(lmEntity) == MobTamedStatus.NOT_TAMED)
-            return LevellableState.DENIED_CONFIGURATION_CONDITION_TAMED;
 
         return LevellableState.ALLOWED;
     }

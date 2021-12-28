@@ -26,6 +26,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -96,9 +97,9 @@ public class CustomDropsHandler {
             processingInfo.wasKilledByPlayer = false;
 
         if (lmEntity.getLivingEntity().getLastDamageCause() != null)
-            processingInfo.deathCause = lmEntity.getLivingEntity().getLastDamageCause().getCause();
+            processingInfo.deathCause = CauseOfDeathEnum.valueOf(lmEntity.getLivingEntity().getLastDamageCause().getCause().toString().toUpperCase());
 
-        processingInfo.addition = BigDecimal.valueOf(main.mobDataManager.getAdditionsForLevel(lmEntity, Addition.CUSTOM_ITEM_DROP, 0.0))
+        processingInfo.addition = BigDecimal.valueOf(main.mobDataManager.getAdditionsForLevel(lmEntity, Addition.CUSTOM_ITEM_DROP, 2))
                 .setScale(0, RoundingMode.HALF_DOWN).intValueExact(); // truncate double to int
 
         processingInfo.doNotMultiplyDrops = main.rulesManager.getRule_CheckIfNoDropMultiplierEntitiy(lmEntity);
@@ -111,7 +112,6 @@ public class CustomDropsHandler {
         }
 
         if (!equippedOnly && isCustomDropsDebuggingEnabled()) {
-
             final String mobLevel = lmEntity.getMobLevel() > 0 ? "&r (level " + lmEntity.getMobLevel() + ")" : "";
             processingInfo.addDebugMessage("&7Custom drops for &b" + lmEntity.getNameIfBaby() + mobLevel);
             processingInfo.addDebugMessage("&8- &7Groups: &b" + String.join("&7, &b", lmEntity.getApplicableGroups()) + "&7.");
@@ -317,17 +317,7 @@ public class CustomDropsHandler {
         if (!info.equippedOnly && dropBase.playerCausedOnly && (dropBase.causeOfDeathReqs == null || dropBase.causeOfDeathReqs.isEmpty()) && !info.wasKilledByPlayer) return;
         if (dropBase.noSpawner && info.isSpawner) return;
 
-        if (dropBase.causeOfDeathReqs != null && (info.deathCause == null || !Utils.isDamageCauseInModalList(dropBase.causeOfDeathReqs, info.deathCause))){
-            if (isCustomDropsDebuggingEnabled()) {
-                final String itemName = dropBase instanceof CustomDropItem ?
-                        ((CustomDropItem) dropBase).getMaterial().name() : "(command)";
-                info.addDebugMessage(String.format(
-                        "&8 - &7item: &b%s&7, death-cause: &b%s&7, death-cause-req: &b%s&7, dropped: &bfalse&7.",
-                        itemName, info.deathCause, dropBase.causeOfDeathReqs)
-                );
-            }
-            return;
-        }
+        if (shouldDenyDeathCause(dropBase, info)) return;
 
         if (!madePlayerLevelRequirement(info, dropBase)) return;
 
@@ -542,6 +532,28 @@ public class CustomDropsHandler {
         info.newDrops.add(newItem);
     }
 
+    private boolean shouldDenyDeathCause(final @NotNull CustomDropBase dropBase, final @NotNull CustomDropProcessingInfo info){
+        if (dropBase.causeOfDeathReqs == null || info.deathCause == null) return false;
+
+        if (info.wasKilledByPlayer && Utils.isDamageCauseInModalList(dropBase.causeOfDeathReqs, CauseOfDeathEnum.PLAYER_CAUSED))
+            return false;
+
+        if (!Utils.isDamageCauseInModalList(dropBase.causeOfDeathReqs, info.deathCause)){
+            if (isCustomDropsDebuggingEnabled()) {
+                final String itemName = dropBase instanceof CustomDropItem ?
+                        ((CustomDropItem) dropBase).getMaterial().name() : "(command)";
+                info.addDebugMessage(String.format(
+                        "&8 - &7item: &b%s&7, death-cause: &b%s&7, death-cause-req: &b%s&7, dropped: &bfalse&7.",
+                        itemName, info.deathCause, dropBase.causeOfDeathReqs)
+                );
+            }
+
+            return true;
+        }
+
+        return false;
+    }
+
     private boolean checkDropPermissions(final @NotNull CustomDropProcessingInfo info, final @NotNull CustomDropBase dropBase){
         if (info.equippedOnly || dropBase.permissions.isEmpty()) return true;
 
@@ -680,9 +692,25 @@ public class CustomDropsHandler {
 
             Utils.debugLog(main, DebugType.CUSTOM_COMMANDS, debugCommand + command);
 
-            for (int i = 0; i < timesToRun; i++)
-                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
+            if (customCommand.delay > 0) {
+                final String commandToRun = command;
+                final int finalTimesToRun = timesToRun;
+                final BukkitRunnable runnable = new BukkitRunnable() {
+                    @Override
+                    public void run() {
+                        executeTheCommand(commandToRun, finalTimesToRun);
+                    }
+                };
+                runnable.runTaskLater(main, customCommand.delay);
+            }
+            else
+                executeTheCommand(command, timesToRun);
         }
+    }
+
+    private void executeTheCommand(final String command, final int timesToRun){
+        for (int i = 0; i < timesToRun; i++)
+            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
     }
 
     @NotNull

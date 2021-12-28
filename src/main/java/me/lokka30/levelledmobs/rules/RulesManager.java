@@ -14,6 +14,7 @@ import me.lokka30.levelledmobs.misc.Utils;
 import me.lokka30.levelledmobs.rules.strategies.LevellingStrategy;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Tameable;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -610,6 +611,32 @@ public class RulesManager {
             if (!doesPlayerPassPermissionChecks(ri.conditions_Permission, lmEntity.playerForPermissionsCheck)){
                 Utils.debugLog(main, DebugType.DENIED_RULE_PERMISSION, String.format("&b%s&7, mob: &b%s&7, player: &b%s&7, permission denied",
                         ri.getRuleName(), lmEntity.getNameIfBaby(), lmEntity.playerForPermissionsCheck.getName()));
+                return false;
+            }
+        }
+
+        if (ri.conditions_MobTamedStatus != MobTamedStatus.NOT_SPECIFIED && ri.conditions_MobTamedStatus != MobTamedStatus.EITHER &&
+            lmEntity.getLivingEntity() instanceof Tameable){
+            if (lmEntity.isMobTamed() && ri.conditions_MobTamedStatus == MobTamedStatus.NOT_TAMED ||
+                !lmEntity.isMobTamed() && ri.conditions_MobTamedStatus == MobTamedStatus.TAMED){
+                Utils.debugLog(main, DebugType.ENTITY_TAME, String.format("&b%s&7, mob: &b%s&7, tamed: %s, rule: %s",
+                        ri.getRuleName(), lmEntity.getNameIfBaby(), lmEntity.isMobTamed(), ri.conditions_MobTamedStatus));
+                return false;
+            }
+        }
+
+        if (ri.conditions_ScoreboardTags != null){
+            final Set<String> tags = lmEntity.getLivingEntity().getScoreboardTags();
+            if (tags.isEmpty()) tags.add("(none)");
+
+            boolean madeCriteria = false;
+            for (final String tag : tags){
+                if (ri.conditions_ScoreboardTags.isEnabledInList(tag, lmEntity))
+                    madeCriteria = true;
+            }
+            if (!madeCriteria){
+                Utils.debugLog(main, DebugType.SCOREBOARD_TAGS, String.format("&b%s&7, mob: &b%s&7",
+                        ri.getRuleName(), lmEntity.getNameIfBaby()));
                 return false;
             }
         }

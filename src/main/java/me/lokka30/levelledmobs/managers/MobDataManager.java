@@ -73,6 +73,9 @@ public class MobDataManager {
 
         if (attrib == null) return;
 
+        // if zombified piglins get this attribute applied, they will spawn in zombies in the nether
+        if (attribute == Attribute.ZOMBIE_SPAWN_REINFORCEMENTS && lmEntity.getEntityType() == EntityType.ZOMBIFIED_PIGLIN) return;
+
         double existingDamage = 0;
         if (attribute == Attribute.GENERIC_MAX_HEALTH && lmEntity.getLivingEntity().getAttribute(attribute) != null)
             existingDamage = Objects.requireNonNull(lmEntity.getLivingEntity().getAttribute(attribute)).getValue() - lmEntity.getLivingEntity().getHealth();

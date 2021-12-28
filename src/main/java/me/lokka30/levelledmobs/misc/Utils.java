@@ -5,6 +5,7 @@
 package me.lokka30.levelledmobs.misc;
 
 import me.lokka30.levelledmobs.LevelledMobs;
+import me.lokka30.levelledmobs.customdrops.CauseOfDeathEnum;
 import me.lokka30.levelledmobs.rules.MinAndMax;
 import me.lokka30.levelledmobs.rules.RulesManager;
 import me.lokka30.microlib.messaging.MessageUtils;
@@ -269,7 +270,7 @@ public final class Utils {
         return list.isBlacklist() || list.allowedList.contains(biome);
     }
 
-    public static boolean isDamageCauseInModalList(@NotNull final CachedModalList<EntityDamageEvent.DamageCause> list, final EntityDamageEvent.DamageCause cause) {
+    public static boolean isDamageCauseInModalList(@NotNull final CachedModalList<CauseOfDeathEnum> list, final CauseOfDeathEnum cause) {
         if (list.allowAll) return true;
         if (list.excludeAll) return false;
         if (list.isEmpty()) return true;
