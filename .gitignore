@@ -1,7 +1,3 @@
-# Non-redistributables
-#   Why? We respect other developer's work.
-/libs
-
 # IntelliJ IDE
 #   Why? Different developers use different IDE settings.
 /target/
@@ -13,3 +9,6 @@ LevelledMobs.iml
 .classpath
 .project
 /.settings
+
+# Mac OS X
+._.git
