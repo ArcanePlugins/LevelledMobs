@@ -6,43 +6,41 @@ package me.lokka30.levelledmobs.file.external.customdrops;
 
 import de.leonhard.storage.Yaml;
 import me.lokka30.levelledmobs.LevelledMobs;
-import me.lokka30.levelledmobs.file.external.VersionedFile;
-import me.lokka30.levelledmobs.file.external.YamlExternalFile;
+import me.lokka30.levelledmobs.file.external.YamlExternalVersionedFile;
 import me.lokka30.levelledmobs.util.Utils;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.File;
+public class CustomDropsFile implements YamlExternalVersionedFile {
 
-public class CustomDrops implements YamlExternalFile, VersionedFile {
-
+    private Yaml data;
     private final @NotNull LevelledMobs main;
-    public CustomDrops(final @NotNull LevelledMobs main) {
-        this.main = main;
-        this.data = new Yaml("customdrops", main.getDataFolder() + File.separator + "customdrops.yml");
-    }
-
-    private final Yaml data;
+    public CustomDropsFile(final @NotNull LevelledMobs main) { this.main = main; }
 
     @Override
-    public void load(boolean isReload) {
-        if(isReload) {
+    public void load(boolean fromReload) {
+        // replace if not exists
+        if(!exists(main)) { replace(main); }
+
+        // reload data if method was called from a reload function
+        // if not reload, then instantiate the yaml data object
+        if(fromReload) {
             data.forceReload();
+        } else {
+            data = new Yaml(getNameWithoutExtension(), getFullPath(main));
         }
+
+        // run the migrator
+        migrate();
     }
 
     @Override
-    public String getName() {
-        return "customdrops.yml";
+    public String getNameWithoutExtension() {
+        return "customdrops";
     }
 
     @Override
     public String getRelativePath() {
         return getName();
-    }
-
-    @Override
-    public int getInstalledFileVersion() {
-        return getData().getOrDefault("file-data-do-not-edit.version", -1);
     }
 
     @Override
@@ -87,10 +85,12 @@ public class CustomDrops implements YamlExternalFile, VersionedFile {
                                         "This means that the default custom drops are being used, until you edit the file. " +
                                         "Your previous customdrops file was backed up, please update the new file if you wish. "
                                 );
+                                data.forceReload();
                             } else {
                                 Utils.LOGGER.warning("Migration logic was not programmed for the file version '&b" + i + "&7' of the file '&b" + getName() + "&7'! Please inform the LevelledMobs team.");
                             }
                     }
+
                 }
                 Utils.LOGGER.info("Migration complete for file '&b" + getName() + "&7'.");
                 return;

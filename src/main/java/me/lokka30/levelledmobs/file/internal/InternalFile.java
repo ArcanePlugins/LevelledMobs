@@ -4,5 +4,21 @@
 
 package me.lokka30.levelledmobs.file.internal;
 
-public interface InternalFile { }
-// This interface is intentionally empty.
+import me.lokka30.levelledmobs.LevelledMobs;
+import org.jetbrains.annotations.NotNull;
+
+import java.io.InputStream;
+
+public interface InternalFile {
+
+    default InputStream getInputStream(final @NotNull LevelledMobs main) {
+        return main.getResource(getRelativePath());
+    }
+
+    String getName();
+
+    String getNameWithoutExtension();
+
+    String getRelativePath() ;
+
+}

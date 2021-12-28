@@ -5,22 +5,46 @@
 package me.lokka30.levelledmobs.file.external.translations.constants;
 
 import de.leonhard.storage.Yaml;
-import me.lokka30.levelledmobs.file.external.VersionedFile;
-import me.lokka30.levelledmobs.file.external.YamlExternalFile;
+import me.lokka30.levelledmobs.LevelledMobs;
+import me.lokka30.levelledmobs.file.external.YamlExternalVersionedFile;
+import me.lokka30.levelledmobs.util.Utils;
 import org.jetbrains.annotations.NotNull;
 
-public class Constants implements YamlExternalFile, VersionedFile {
+import java.io.File;
 
+public class Constants implements YamlExternalVersionedFile {
+
+    private final LevelledMobs main;
     private Yaml data;
-
-    @Override
-    public void load() {
-
+    public Constants(final @NotNull LevelledMobs main) {
+        this.main = main;
     }
 
     @Override
-    public int getInstalledFileVersion() {
-        return getData().getOrDefault("file-data-do-not-edit.version", -1);
+    public void load(boolean fromReload) {
+        // replace if not exists
+        if(!exists(main)) { replace(main); }
+
+        // reload data if method was called from a reload function
+        // if not reload, then instantiate the yaml data object
+        if(fromReload) {
+            data.forceReload();
+        } else {
+            data = new Yaml(getNameWithoutExtension(), getFullPath(main));
+        }
+
+        // run the migrator
+        migrate();
+    }
+
+    @Override
+    public String getNameWithoutExtension() {
+        return "constants";
+    }
+
+    @Override
+    public String getRelativePath() {
+        return "translations" + File.separator + getName();
     }
 
     @Override
@@ -30,12 +54,35 @@ public class Constants implements YamlExternalFile, VersionedFile {
 
     @Override
     public void migrate() {
+        switch(compareFileVersion()) {
+            case CURRENT:
+                return;
+            case FUTURE:
+                sendFutureFileVersionWarning(main);
+                return;
+            case OUTDATED:
+                for(int i = getInstalledFileVersion(); i < getSupportedFileVersion(); i++) {
+                    Utils.LOGGER.info("Attempting to migrate file '&b" + getName() + "&7' to version '&b" + i + "&7'...");
 
+                    switch(i) {
+                        case 1:
+                            return;
+                        default:
+                            // this is reached if there is no migration logic for a specific version.
+                            Utils.LOGGER.warning("Migration logic was not programmed for the file version '&b" + i + "&7' " +
+                                    "of the file '&b" + getName() + "&7'! Please inform the LevelledMobs developers.");
+                    }
+                }
+                Utils.LOGGER.info("Migration complete for file '&b" + getName() + "&7'.");
+                return;
+            default:
+                throw new IllegalStateException(compareFileVersion().toString());
+        }
     }
 
     @NotNull
     @Override
     public Yaml getData() {
-        return null;
+        return data;
     }
 }

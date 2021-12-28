@@ -2,7 +2,7 @@
  * Copyright (c) 2020-2021  lokka30. Use of this source code is governed by the GNU AGPL v3.0 license that can be found in the LICENSE.md file.
  */
 
-package me.lokka30.levelledmobs.file.external.translations.messages;
+package me.lokka30.levelledmobs.file.external.settings;
 
 import de.leonhard.storage.Yaml;
 import me.lokka30.levelledmobs.LevelledMobs;
@@ -10,13 +10,13 @@ import me.lokka30.levelledmobs.file.external.YamlExternalVersionedFile;
 import me.lokka30.levelledmobs.util.Utils;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.File;
-
-public class Messages implements YamlExternalVersionedFile {
+public class SettingsFile implements YamlExternalVersionedFile {
 
     private final @NotNull LevelledMobs main;
     private Yaml data;
-    public Messages(final @NotNull LevelledMobs main) { this.main = main; }
+    public SettingsFile(final @NotNull LevelledMobs main) {
+        this.main = main;
+    }
 
     @Override
     public void load(boolean fromReload) {
@@ -37,17 +37,17 @@ public class Messages implements YamlExternalVersionedFile {
 
     @Override
     public String getNameWithoutExtension() {
-        return "messages";
+        return "settings";
     }
 
     @Override
     public String getRelativePath() {
-        return "translations" + File.separator + getName();
+        return getName();
     }
 
     @Override
     public int getSupportedFileVersion() {
-        return 8;
+        return 33;
     }
 
     @Override
@@ -64,7 +64,7 @@ public class Messages implements YamlExternalVersionedFile {
 
                     switch(i) {
                         case 1:
-                            //TODO migrate
+                            //TODO migrate from old version to new.
                             return;
                         default:
                             // this is reached if there is no migration logic for a specific version.

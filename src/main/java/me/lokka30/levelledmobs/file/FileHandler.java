@@ -42,12 +42,7 @@ public class FileHandler {
     public void loadInternalFiles() {
         Utils.LOGGER.info("Started loading internal files...");
 
-        //TODO load static mob data file
-        main.dataHandler.loadMobData();
-
-        //TODO add the other internal files to here.
-
-        Utils.LOGGER.info("All external files have been loaded.");
+        Utils.LOGGER.info("All internal files have been loaded.");
     }
 
     /**
@@ -58,9 +53,6 @@ public class FileHandler {
      */
     public void loadExternalFiles() {
         Utils.LOGGER.info("Started loading external files...");
-
-        Utils.LOGGER.info("Loading external file '&blicense.txt&7'...");
-        main.saveResource("license.txt", true);
 
         Utils.LOGGER.info("All external files have been loaded.");
     }

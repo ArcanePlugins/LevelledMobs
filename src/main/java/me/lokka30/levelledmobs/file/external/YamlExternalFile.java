@@ -19,6 +19,11 @@ public interface YamlExternalFile extends ExternalFile {
 
     void migrate();
 
+    @Override
+    default String getName() {
+        return getNameWithoutExtension() + ".yml";
+    }
+
     default void backup(final @NotNull LevelledMobs main) {
         final File from = new File(getFullPath(main));
         final File backupDirectory = new File(main.getDataFolder() + File.separator + "backups");
@@ -32,7 +37,7 @@ public interface YamlExternalFile extends ExternalFile {
         try {
             Files.copy(from.toPath(), to.toPath());
         } catch (IOException ex) {
-            Utils.LOGGER.error("Unable to back up file '&b" + getName() + "&7': &f" + ex.getMessage());
+            Utils.LOGGER.error("Unable to copy file '&b" + getName() + "&7': &f" + ex.getMessage());
         }
     }
 

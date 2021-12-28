@@ -10,16 +10,30 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 
-public class License implements ExternalFile {
+public class LicenseFile implements ExternalFile {
 
     private @NotNull final LevelledMobs main;
-    public License(@NotNull final LevelledMobs main) {
+    public LicenseFile(@NotNull final LevelledMobs main) {
         this.main = main;
     }
 
     @Override
-    public void load() {
-        main.saveResource("external" + File.separator + "license.txt", true);
+    public void load(boolean fromReload) {
+        replace(main);
     }
 
+    @Override
+    public String getName() {
+        return getNameWithoutExtension() + ".txt";
+    }
+
+    @Override
+    public String getNameWithoutExtension() {
+        return "license";
+    }
+
+    @Override
+    public String getRelativePath() {
+        return "misc" + File.separator + getName();
+    }
 }

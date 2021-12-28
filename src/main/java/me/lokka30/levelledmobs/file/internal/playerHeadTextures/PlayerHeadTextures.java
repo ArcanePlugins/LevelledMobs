@@ -5,19 +5,34 @@
 package me.lokka30.levelledmobs.file.internal.playerHeadTextures;
 
 import de.leonhard.storage.Json;
+import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.file.internal.JsonInternalFile;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.File;
+
 public class PlayerHeadTextures implements JsonInternalFile {
 
-    @Override
-    public void load() {
-
+    private final @NotNull LevelledMobs main;
+    private final @NotNull Json data;
+    public PlayerHeadTextures(final @NotNull LevelledMobs main) {
+        this.main = main;
+        this.data = new Json(getNameWithoutExtension(), getRelativePath(), getInputStream(main));
     }
 
     @NotNull
     @Override
     public Json getData() {
-        return null;
+        return data;
+    }
+
+    @Override
+    public String getNameWithoutExtension() {
+        return "player-head-textures";
+    }
+
+    @Override
+    public String getRelativePath() {
+        return "internal" + File.separator + getName();
     }
 }

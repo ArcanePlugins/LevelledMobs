@@ -2,7 +2,7 @@
  * Copyright (c) 2020-2021  lokka30. Use of this source code is governed by the GNU AGPL v3.0 license that can be found in the LICENSE.md file.
  */
 
-package me.lokka30.levelledmobs.file.external.translations.messages;
+package me.lokka30.levelledmobs.file.external.groups;
 
 import de.leonhard.storage.Yaml;
 import me.lokka30.levelledmobs.LevelledMobs;
@@ -10,13 +10,13 @@ import me.lokka30.levelledmobs.file.external.YamlExternalVersionedFile;
 import me.lokka30.levelledmobs.util.Utils;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.File;
+public class GroupsFile implements YamlExternalVersionedFile {
 
-public class Messages implements YamlExternalVersionedFile {
-
-    private final @NotNull LevelledMobs main;
     private Yaml data;
-    public Messages(final @NotNull LevelledMobs main) { this.main = main; }
+    private final @NotNull LevelledMobs main;
+    public GroupsFile(final @NotNull LevelledMobs main) {
+        this.main = main;
+    }
 
     @Override
     public void load(boolean fromReload) {
@@ -36,18 +36,14 @@ public class Messages implements YamlExternalVersionedFile {
     }
 
     @Override
-    public String getNameWithoutExtension() {
-        return "messages";
-    }
+    public String getNameWithoutExtension() { return "groups"; }
 
     @Override
-    public String getRelativePath() {
-        return "translations" + File.separator + getName();
-    }
+    public String getRelativePath() { return getName(); }
 
     @Override
     public int getSupportedFileVersion() {
-        return 8;
+        return 1;
     }
 
     @Override
@@ -64,7 +60,6 @@ public class Messages implements YamlExternalVersionedFile {
 
                     switch(i) {
                         case 1:
-                            //TODO migrate
                             return;
                         default:
                             // this is reached if there is no migration logic for a specific version.
