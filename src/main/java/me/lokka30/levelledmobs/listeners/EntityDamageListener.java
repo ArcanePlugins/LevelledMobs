@@ -125,6 +125,7 @@ public class EntityDamageListener implements Listener {
             if (!(aec.getSource() instanceof EnderDragon)) return;
             final LivingEntityWrapper lmEntity = LivingEntityWrapper.getInstance((LivingEntity) aec.getSource(), main);
             processRangedDamage2(lmEntity, event);
+            lmEntity.free();
             return;
         }
 
