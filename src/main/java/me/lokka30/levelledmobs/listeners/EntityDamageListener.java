@@ -11,6 +11,9 @@ import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
 import me.lokka30.levelledmobs.misc.QueueItem;
 import me.lokka30.levelledmobs.misc.Utils;
 import me.lokka30.levelledmobs.rules.NametagVisibilityEnum;
+import org.bukkit.entity.AreaEffectCloud;
+import org.bukkit.entity.EnderDragon;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Ghast;
 import org.bukkit.entity.Guardian;
 import org.bukkit.entity.LivingEntity;
@@ -116,6 +119,15 @@ public class EntityDamageListener implements Listener {
     }
 
     private void processRangedDamage(@NotNull final EntityDamageByEntityEvent event) {
+        if (event.getDamager().getType() == EntityType.AREA_EFFECT_CLOUD) {
+            // ender dragon breath
+            final AreaEffectCloud aec = (AreaEffectCloud) event.getDamager();
+            if (!(aec.getSource() instanceof EnderDragon)) return;
+            final LivingEntityWrapper lmEntity = LivingEntityWrapper.getInstance((LivingEntity) aec.getSource(), main);
+            processRangedDamage2(lmEntity, event);
+            return;
+        }
+
         if (!(event.getDamager() instanceof Projectile)) return;
         final Projectile projectile = (Projectile) event.getDamager();
 
@@ -150,12 +162,11 @@ public class EntityDamageListener implements Listener {
             main._mobsQueueManager.addToQueue(new QueueItem(shooter, event));
         }
 
-        Utils.debugLog(main, DebugType.RANGED_DAMAGE_MODIFICATION, "Range attack damage modified for &b" + shooter.getLivingEntity().getName() + "&7:");
-        Utils.debugLog(main, DebugType.RANGED_DAMAGE_MODIFICATION, "Previous rangedDamage: &b" + event.getDamage());
-
         final double newDamage = event.getDamage() + main.mobDataManager.getAdditionsForLevel(shooter, Addition.CUSTOM_RANGED_ATTACK_DAMAGE, event.getDamage());
+        Utils.debugLog(main, DebugType.RANGED_DAMAGE_MODIFICATION, String.format(
+                "&7Source: &b%s&7 (lvl &b%s&7), damage: &b%s&7, new damage: &b%s&7",
+                shooter.getNameIfBaby(), shooter.getMobLevel(), event.getDamage(), newDamage));
         event.setDamage(newDamage);
-        Utils.debugLog(main, DebugType.RANGED_DAMAGE_MODIFICATION, "New rangedDamage: &b" + newDamage);
     }
 
     private void processOtherRangedDamage(@NotNull final EntityDamageByEntityEvent event) {
