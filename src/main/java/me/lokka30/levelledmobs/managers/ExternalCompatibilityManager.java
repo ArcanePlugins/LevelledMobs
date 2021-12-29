@@ -4,7 +4,6 @@
 
 package me.lokka30.levelledmobs.managers;
 
-import jdk.jshell.execution.Util;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.LivingEntityInterface;
 import me.lokka30.levelledmobs.misc.LevellableState;
