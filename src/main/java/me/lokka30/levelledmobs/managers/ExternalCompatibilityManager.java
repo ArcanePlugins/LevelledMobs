@@ -4,11 +4,14 @@
 
 package me.lokka30.levelledmobs.managers;
 
+import jdk.jshell.execution.Util;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.LivingEntityInterface;
 import me.lokka30.levelledmobs.misc.LevellableState;
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
 import me.lokka30.levelledmobs.misc.PlayerHomeCheckResult;
+import me.lokka30.levelledmobs.misc.Utils;
+import me.lokka30.levelledmobs.misc.VersionInfo;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
@@ -21,6 +24,7 @@ import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import simplepets.brainsynder.api.plugin.SimplePets;
 
+import java.io.InvalidObjectException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -32,6 +36,7 @@ import java.util.Map;
  * @since 2.4.0
  */
 public class ExternalCompatibilityManager {
+    private static Boolean useNewerEliteMobsKey = null;
 
     public enum ExternalCompatibility {
         NOT_APPLICABLE,
@@ -288,9 +293,28 @@ public class ExternalCompatibilityManager {
     private static boolean isMobOfEliteMobs(final LivingEntityWrapper lmEntity) {
         final Plugin p = Bukkit.getPluginManager().getPlugin("EliteMobs");
         if (p != null){
+            // 7.3.12 and newer uses a different namespaced key
+            if (useNewerEliteMobsKey == null){
+                final int theDash = p.getDescription().getVersion().indexOf('-');
+                final String version = theDash > 3 ?
+                        p.getDescription().getVersion().substring(0, theDash) : p.getDescription().getVersion();
+                try {
+                    VersionInfo pluginVer = new VersionInfo(version);
+                    VersionInfo cutoverVersion = new VersionInfo("7.3.12");
+                    useNewerEliteMobsKey = pluginVer.compareTo(cutoverVersion) >= 0;
+                }
+                catch (InvalidObjectException e){
+                    Utils.logger.warning("Got error comparing EliteMob versions: " + e.getMessage());
+                    // default to newer version on error
+                    useNewerEliteMobsKey = true;
+                }
+            }
+
+            final String checkKey = useNewerEliteMobsKey ?
+                    "eliteentity" : "EliteMobsCullable";
             final boolean isEliteMob;
             synchronized (lmEntity.getLivingEntity().getPersistentDataContainer()) {
-                isEliteMob = lmEntity.getPDC().has(new NamespacedKey(p, "EliteMobsCullable"), PersistentDataType.STRING);
+                isEliteMob = lmEntity.getPDC().has(new NamespacedKey(p, checkKey), PersistentDataType.STRING);
             }
 
             if (isEliteMob){
