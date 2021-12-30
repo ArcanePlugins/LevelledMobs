@@ -122,9 +122,11 @@ public class MobDataManager {
             switch (addition){
                 case CUSTOM_XP_DROP:
                     if (lmEntity.getFineTuningAttributes().xpDrop != null) attributeValue = lmEntity.getFineTuningAttributes().xpDrop;
+                    if (attributeValue == -1.0) return -1;
                     break;
                 case CUSTOM_ITEM_DROP:
                     if (lmEntity.getFineTuningAttributes().itemDrop != null) attributeValue = lmEntity.getFineTuningAttributes().itemDrop;
+                    if (attributeValue == -1.0) return -1;
                     break;
                 case ATTRIBUTE_MAX_HEALTH:
                     if (lmEntity.getFineTuningAttributes().maxHealth != null) attributeValue = lmEntity.getFineTuningAttributes().maxHealth;

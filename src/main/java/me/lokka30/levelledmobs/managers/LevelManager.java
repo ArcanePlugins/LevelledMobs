@@ -429,9 +429,17 @@ public class LevelManager implements LevelInterface {
         int dropsChecked = 0;
 
         if (!doNotMultiplyDrops && !dropsToMultiply.isEmpty()) {
-            // Get currentDrops added per level value
-            final int addition = BigDecimal.valueOf(main.mobDataManager.getAdditionsForLevel(lmEntity, Addition.CUSTOM_ITEM_DROP, 2.0))
-                    .setScale(0, RoundingMode.HALF_DOWN).intValueExact(); // truncate double to int
+            // Get currentDrops added per level valu
+            final double additionValue = main.mobDataManager.getAdditionsForLevel(lmEntity, Addition.CUSTOM_ITEM_DROP, 2.0);
+            if (additionValue == -1){
+                Utils.debugLog(main, DebugType.SET_LEVELLED_ITEM_DROPS, String.format(
+                        "&7Mob: &b%s&7, mob-lvl: &b%s&7, removing any drops present",
+                        lmEntity.getNameIfBaby(), lmEntity.getMobLevel()));
+                currentDrops.clear();
+                return;
+            }
+
+            final int addition = BigDecimal.valueOf(additionValue).setScale(0, RoundingMode.HALF_DOWN).intValueExact(); // truncate double to int
             additionUsed = addition;
 
             // Modify current drops
@@ -524,7 +532,11 @@ public class LevelManager implements LevelInterface {
     //Calculates the XP dropped when a levellable creature dies.
     public int getLevelledExpDrops(@NotNull final LivingEntityWrapper lmEntity, final int xp) {
         if (lmEntity.isLevelled()) {
-            final int newXp = (int) Math.round(xp + (xp * main.mobDataManager.getAdditionsForLevel(lmEntity, Addition.CUSTOM_XP_DROP, 3.0)));
+            final double dropAddition = main.mobDataManager.getAdditionsForLevel(lmEntity, Addition.CUSTOM_XP_DROP, 3.0);
+            int newXp = 0;
+            if (dropAddition > -1)
+                newXp = (int) Math.round(xp + (xp * dropAddition));
+
             Utils.debugLog(main, DebugType.SET_LEVELLED_XP_DROPS, String.format("&7Mob: &b%s&7: lvl: &b%s&7, xp-vanilla: &b%s&7, new-xp: &b%s&7",
                     lmEntity.getNameIfBaby(), lmEntity.getMobLevel(), xp, newXp));
             return newXp;
