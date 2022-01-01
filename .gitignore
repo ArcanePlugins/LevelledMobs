@@ -1,14 +1,12 @@
 # IntelliJ IDE
-#   Why? Different developers use different IDE settings.
-/target/
-/.idea
+target
+.idea
 LevelledMobs.iml
 
 # Eclipse IDE
-#   Why? Different developers use different IDE settings.
 .classpath
 .project
-/.settings
+.settings
 
 # Mac OS X
 ._.git

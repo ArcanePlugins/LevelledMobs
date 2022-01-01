@@ -35,7 +35,7 @@ public interface VersionedFile extends ExternalFile {
         Utils.LOGGER.warning(
                 "Your '&b" + getName() + "&7' file is running a version &onewer&7 " +
                         "than what is supported by this version of LevelledMobs. " +
-                        "Please update LevelledMobs, unless this is a development error.");
+                        "Please ensure LevelledMobs is fully up-to-date.");
         Utils.LOGGER.warning("&8 -> &7Installed file version: &b" + getInstalledFileVersion());
         Utils.LOGGER.warning("&8 -> &7Supported file version: &b" + getSupportedFileVersion());
         Utils.LOGGER.warning("&8 -> &7Plugin version: &b" + main.getDescription().getVersion());

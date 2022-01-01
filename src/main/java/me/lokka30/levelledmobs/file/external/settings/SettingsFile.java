@@ -62,9 +62,22 @@ public class SettingsFile implements YamlExternalVersionedFile {
                 for(int i = getInstalledFileVersion(); i < getSupportedFileVersion(); i++) {
                     Utils.LOGGER.info("Attempting to migrate file '&b" + getName() + "&7' to version '&b" + i + "&7'...");
 
+                    if(i < 32) {
+                        // This file was present prior to LM 4 so we can't feasibly
+                        // migrate versions other than the previous file version only.
+                        Utils.LOGGER.error("Your '&b" + getName() + "&7' file is too old to be migrated. " +
+                                "LevelledMobs will back this file up and instead load the default contents " +
+                                "of the latest version one for you. You will need to manually modify the new file.");
+                        backup(main);
+                        replace(main);
+                        break;
+                    }
+
                     switch(i) {
-                        case 1:
+                        case 32:
                             //TODO migrate from old version to new.
+                            return;
+                        case 33:
                             return;
                         default:
                             // this is reached if there is no migration logic for a specific version.
