@@ -1,5 +1,9 @@
 /*
- * Copyright (c) 2020-2021  lokka30. Use of this source code is governed by the GNU AGPL v3.0 license that can be found in the LICENSE.md file.
+ * This file is Copyright (c) 2020-2022 lokka30.
+ * This file is/was present in the LevelledMobs resource.
+ * Repository: <https://github.com/lokka30/LevelledMobs>
+ * Use of this source code is governed by the GNU GPL v3.0
+ * license that can be found in the LICENSE.md file.
  */
 
 package me.lokka30.levelledmobs;
@@ -8,24 +12,7 @@ import me.lokka30.levelledmobs.file.DataHandler;
 import me.lokka30.levelledmobs.file.FileHandler;
 import me.lokka30.levelledmobs.integration.IntegrationHandler;
 import me.lokka30.levelledmobs.levelling.LevelHandler;
-import me.lokka30.levelledmobs.listener.BlockPlaceListener;
-import me.lokka30.levelledmobs.listener.ChunkLoadListener;
-import me.lokka30.levelledmobs.listener.EntityCombustListener;
-import me.lokka30.levelledmobs.listener.EntityDamageByEntityListener;
-import me.lokka30.levelledmobs.listener.EntityDamageListener;
-import me.lokka30.levelledmobs.listener.EntityDeathListener;
-import me.lokka30.levelledmobs.listener.EntityRegainHealthListener;
-import me.lokka30.levelledmobs.listener.EntitySpawnListener;
-import me.lokka30.levelledmobs.listener.EntityTameListener;
-import me.lokka30.levelledmobs.listener.EntityTargetListener;
-import me.lokka30.levelledmobs.listener.EntityTransformListener;
-import me.lokka30.levelledmobs.listener.PlayerChangedWorldListener;
-import me.lokka30.levelledmobs.listener.PlayerDeathListener;
-import me.lokka30.levelledmobs.listener.PlayerInteractEntityListener;
-import me.lokka30.levelledmobs.listener.PlayerInteractListener;
-import me.lokka30.levelledmobs.listener.PlayerJoinListener;
-import me.lokka30.levelledmobs.listener.PlayerQuitListener;
-import me.lokka30.levelledmobs.listener.PlayerTeleportListener;
+import me.lokka30.levelledmobs.listener.*;
 import me.lokka30.levelledmobs.queue.QueueHandler;
 import me.lokka30.levelledmobs.util.Utils;
 import me.lokka30.microlib.maths.QuickTimer;

@@ -1,7 +1,5 @@
-LevelledMobs is a plugin for Bukkit-based servers designed to make
-the game's mob combat both more difficult and more rewarding.
-
-Copyright (C) 2020-2021 lokka30
+All files within this resource, unless otherwise noted, use the following license:
+Copyright (c) 2020-2022 lokka30
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

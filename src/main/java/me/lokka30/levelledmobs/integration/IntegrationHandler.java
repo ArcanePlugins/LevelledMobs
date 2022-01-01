@@ -1,21 +1,15 @@
 /*
- * Copyright (c) 2020-2021  lokka30. Use of this source code is governed by the GNU AGPL v3.0 license that can be found in the LICENSE.md file.
+ * This file is Copyright (c) 2020-2022 lokka30.
+ * This file is/was present in the LevelledMobs resource.
+ * Repository: <https://github.com/lokka30/LevelledMobs>
+ * Use of this source code is governed by the GNU GPL v3.0
+ * license that can be found in the LICENSE.md file.
  */
 
 package me.lokka30.levelledmobs.integration;
 
 import me.lokka30.levelledmobs.LevelledMobs;
-import me.lokka30.levelledmobs.integration.plugin.BossIntegration;
-import me.lokka30.levelledmobs.integration.plugin.CitizensIntegration;
-import me.lokka30.levelledmobs.integration.plugin.DangerousCavesIntegration;
-import me.lokka30.levelledmobs.integration.plugin.EcoBossesIntegration;
-import me.lokka30.levelledmobs.integration.plugin.EliteMobsIntegration;
-import me.lokka30.levelledmobs.integration.plugin.InfernalMobsIntegration;
-import me.lokka30.levelledmobs.integration.plugin.MythicMobsIntegration;
-import me.lokka30.levelledmobs.integration.plugin.NBTAPIIntegration;
-import me.lokka30.levelledmobs.integration.plugin.PlaceholderAPIIntegration;
-import me.lokka30.levelledmobs.integration.plugin.ShopkeepersIntegration;
-import me.lokka30.levelledmobs.integration.plugin.WorldGuardIntegration;
+import me.lokka30.levelledmobs.integration.plugin.*;
 import me.lokka30.levelledmobs.util.Utils;
 import org.jetbrains.annotations.NotNull;
 
