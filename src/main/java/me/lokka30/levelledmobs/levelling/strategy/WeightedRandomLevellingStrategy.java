@@ -30,7 +30,7 @@ public record WeightedRandomLevellingStrategy(
 ) implements LevellingStrategy {
 
     @Override
-    public int calculateLevel(LevelledMobs main, LevelledMob mob) {
+    public int calculateLevel(@NotNull LevelledMobs main, @NotNull LevelledMob mob) {
         return weightedRandomContainer
                 .getRandom() // get a random element from the container
                 .generateRandom(); // get a random level from the RangedInt

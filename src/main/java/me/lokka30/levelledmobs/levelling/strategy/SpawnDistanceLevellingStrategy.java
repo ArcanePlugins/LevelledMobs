@@ -10,6 +10,10 @@ package me.lokka30.levelledmobs.levelling.strategy;
 
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.levelling.LevelledMob;
+import me.lokka30.levelledmobs.util.Point;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.HashSet;
 
 /**
  * This class generates a level for a mob
@@ -22,10 +26,16 @@ import me.lokka30.levelledmobs.levelling.LevelledMob;
  * @see LevellingStrategy
  * @since v4.0.0
  */
-public class SpawnDistanceLevellingStrategy implements LevellingStrategy {
+public record SpawnDistanceLevellingStrategy(
+        int minLevel,
+        int maxLevel,
+        int startingDistance,
+        int increaseLevelDistance,
+        @NotNull HashSet<Point> spawnLocations
+) implements LevellingStrategy {
 
     @Override
-    public int calculateLevel(LevelledMobs main, LevelledMob mob) {
+    public int calculateLevel(@NotNull LevelledMobs main, @NotNull LevelledMob mob) {
         //TODO
         return -1;
     }

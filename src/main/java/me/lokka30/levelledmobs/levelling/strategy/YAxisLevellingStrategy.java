@@ -10,6 +10,7 @@ package me.lokka30.levelledmobs.levelling.strategy;
 
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.levelling.LevelledMob;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * This class generates a level for a mob
@@ -22,10 +23,15 @@ import me.lokka30.levelledmobs.levelling.LevelledMob;
  * @see LevellingStrategy
  * @since v4.0.0
  */
-public class YAxisLevellingStrategy implements LevellingStrategy {
+public record YAxisLevellingStrategy(
+        int start,
+        int end,
+        int period,
+        boolean inverse
+) implements LevellingStrategy {
 
     @Override
-    public int calculateLevel(LevelledMobs main, LevelledMob mob) {
+    public int calculateLevel(@NotNull LevelledMobs main, @NotNull LevelledMob mob) {
         //TODO
         return -1;
     }

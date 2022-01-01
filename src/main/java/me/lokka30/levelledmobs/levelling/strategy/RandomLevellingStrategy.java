@@ -11,6 +11,7 @@ package me.lokka30.levelledmobs.levelling.strategy;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.levelling.LevelledMob;
 import me.lokka30.microlib.maths.Randoms;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * This Levelling Strategy spits out a random number. That's it.
@@ -20,14 +21,13 @@ import me.lokka30.microlib.maths.Randoms;
  * @see LevellingStrategy
  * @since v4.0.0
  */
-public class RandomLevellingStrategy implements LevellingStrategy {
+public record RandomLevellingStrategy(
+        int minLevel,
+        int maxLevel
+) implements LevellingStrategy {
 
     @Override
-    public int calculateLevel(LevelledMobs main, LevelledMob mob) {
-
-        int min = 1; //TODO Configurable
-        int max = 100; //TODO Configurable
-
-        return Randoms.generateRandomInt(min, max);
+    public int calculateLevel(@NotNull LevelledMobs main, @NotNull LevelledMob mob) {
+        return Randoms.generateRandomInt(minLevel, maxLevel);
     }
 }

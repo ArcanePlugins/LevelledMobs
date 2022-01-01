@@ -15,7 +15,9 @@ import org.jetbrains.annotations.NotNull;
 /**
  * TODO document this class.
  */
-public class PlayerLevellingStrategy implements LevellingStrategy {
+public record PlayerLevellingStrategy(
+        int test //TODO
+) implements LevellingStrategy {
 
     @Override
     public int calculateLevel(@NotNull LevelledMobs main, @NotNull LevelledMob mob) {
