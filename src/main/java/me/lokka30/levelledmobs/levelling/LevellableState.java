@@ -31,9 +31,9 @@ public enum LevellableState {
      *
      * @since v4.0.0
      */
-    LEVELLABLE(LevellableState.defaultInfo);
+    LEVELLABLE(LevellableState.DEFAULT_INFO);
 
-    @NotNull public static final String defaultInfo = "N/A";
+    @NotNull public static final String DEFAULT_INFO = "N/A";
     @NotNull public String additionalInfo;
     LevellableState(@NotNull final String additionalInfo) { this.additionalInfo = additionalInfo; }
 

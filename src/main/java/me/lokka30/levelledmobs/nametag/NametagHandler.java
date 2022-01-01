@@ -21,7 +21,8 @@ public class NametagHandler {
     public enum NametagVisibilityMethod {
         TARGETED,
         ATTACKED,
-        TRACKING
+        TRACKING,
+        ALWAYS
     }
 
 }
