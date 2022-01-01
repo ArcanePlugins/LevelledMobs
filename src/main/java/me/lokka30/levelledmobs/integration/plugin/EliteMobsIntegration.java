@@ -8,6 +8,7 @@
 
 package me.lokka30.levelledmobs.integration.plugin;
 
+import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.integration.Integration;
 import me.lokka30.levelledmobs.integration.MobOwner;
 import me.lokka30.levelledmobs.levelling.LevelledMob;
@@ -25,6 +26,9 @@ import org.jetbrains.annotations.NotNull;
  */
 public class EliteMobsIntegration implements Integration, MobOwner {
 
+    private @NotNull final LevelledMobs main;
+    public EliteMobsIntegration(final @NotNull LevelledMobs main) { this.main = main; }
+
     @Override
     public @NotNull String getName() {
         return this.getClass().getName();
@@ -37,6 +41,8 @@ public class EliteMobsIntegration implements Integration, MobOwner {
 
     @Override
     public boolean isMobOwner(LevelledMob mob) {
+        assert isInstalled();
+        assert isEnabled(main);
         // TODO
         return false;
     }

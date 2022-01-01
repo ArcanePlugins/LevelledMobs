@@ -38,7 +38,8 @@ public interface Integration {
     boolean isInstalled();
 
     /**
-     * Note: integrations can be user-disabled in advanced-settings.yml - see 'disabled-integrations'.
+     * Integrations can be disabled by the user through the settings.yml file.
+     * Ensure the integration is enabled prior to using it.
      *
      * @return if the integration is enabled.
      * @since v4.0.0

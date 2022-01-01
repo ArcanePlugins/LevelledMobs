@@ -6,48 +6,64 @@
  * license that can be found in the LICENSE.md file.
  */
 
-package me.lokka30.levelledmobs.command.levelledmobs.subcommand;
+package me.lokka30.levelledmobs.command.levelledmobs.subcommand.summon;
 
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.command.CommandHandler;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
  * @author lokka30
  * @since v4.0.0
  * This is a subcommand of the '/levelledmobs' command.
- * This subcommand reloads various internal LM things, especially the configurations.
+ * This subcommand allows users to summon levelled mobs with specific levels, etc.
  * @see me.lokka30.levelledmobs.command.levelledmobs.LevelledMobsCommand
  * @see CommandHandler
  */
-public class ReloadSubcommand implements CommandHandler.Subcommand {
+public class SummonSubcommand implements CommandHandler.Subcommand {
 
     /*
     TODO LIST:
+        - complete the getUsage method body.
         - Complete the run method body.
+        - Complete the getSuggestions method body.
         - Test if the run method works properly.
+        - Test if the getSuggestions method works properly.
         - Add customisable messages to the run method.
         - Test if the customisable messages work properly.
      */
 
     @Override
     public @NotNull String getMainLabel() {
-        return "reload";
+        return "summon";
     }
 
-    final HashSet<String> labels = new HashSet<>(Set.of("RELOAD"));
+    final HashSet<String> labels = new HashSet<>(Set.of("SUMMON", "SPAWN"));
     @Override
     public @NotNull HashSet<String> getLabels() {
         return labels;
     }
 
     @Override
+    public @NotNull String getUsage() {
+        return ""; //TODO
+    }
+
+    @Override
     public void run(@NotNull LevelledMobs main, @NotNull CommandSender sender, @NotNull String baseCommandLabel, @NotNull String subCommandLabel, @NotNull String[] args) {
         //TODO
-        sender.sendMessage("Reload.work in progress");
+        sender.sendMessage("The summon subcommand is work-in-progress.");
+    }
+
+    @Override
+    public @NotNull List<String> getSuggestions(@NotNull LevelledMobs main, @NotNull CommandSender sender, @NotNull String baseCommandLabel, @NotNull String subCommandLabel, @NotNull String[] args) {
+        //TODO
+        return Collections.emptyList();
     }
 }

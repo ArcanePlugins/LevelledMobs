@@ -6,7 +6,7 @@
  * license that can be found in the LICENSE.md file.
  */
 
-package me.lokka30.levelledmobs.command.levelledmobs.subcommand;
+package me.lokka30.levelledmobs.command.levelledmobs.subcommand.spawner;
 
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.command.CommandHandler;
@@ -22,14 +22,15 @@ import java.util.Set;
  * @author lokka30
  * @since v4.0.0
  * This is a subcommand of the '/levelledmobs' command.
- * This subcommand kills levelled mobs in chosen world(s) as specified by the user.
+ * This subcommand allows users to manage LevelledMobs' spawners.
  * @see me.lokka30.levelledmobs.command.levelledmobs.LevelledMobsCommand
  * @see CommandHandler
  */
-public class KillSubcommand implements CommandHandler.Subcommand {
+public class SpawnerSubcommand implements CommandHandler.Subcommand {
 
     /*
     TODO LIST:
+        - complete the getUsage method body.
         - Complete the run method body.
         - Complete the getSuggestions method body.
         - Test if the run method works properly.
@@ -40,10 +41,10 @@ public class KillSubcommand implements CommandHandler.Subcommand {
 
     @Override
     public @NotNull String getMainLabel() {
-        return "kill";
+        return "spawner";
     }
 
-    final HashSet<String> labels = new HashSet<>(Set.of("KILL", "BUTCHER"));
+    final HashSet<String> labels = new HashSet<>(Set.of("SPAWNER", "SPAWNERS"));
     @Override
     public @NotNull HashSet<String> getLabels() {
         return labels;
@@ -51,13 +52,13 @@ public class KillSubcommand implements CommandHandler.Subcommand {
 
     @Override
     public @NotNull String getUsage() {
-        return ""; //TODO update this.
+        return ""; //TODO
     }
 
     @Override
     public void run(@NotNull LevelledMobs main, @NotNull CommandSender sender, @NotNull String baseCommandLabel, @NotNull String subCommandLabel, @NotNull String[] args) {
         //TODO
-        sender.sendMessage("The kill subcommand is work-in-progress.");
+        sender.sendMessage("The spawner subcommand is work-in-progress.");
     }
 
     @Override

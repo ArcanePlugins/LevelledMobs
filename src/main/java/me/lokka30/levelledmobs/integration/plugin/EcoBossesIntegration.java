@@ -8,13 +8,13 @@
 
 package me.lokka30.levelledmobs.integration.plugin;
 
+import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.integration.Integration;
 import me.lokka30.levelledmobs.integration.MobOwner;
 import me.lokka30.levelledmobs.levelling.LevelledMob;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.persistence.PersistentDataType;
-import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -28,6 +28,9 @@ import org.jetbrains.annotations.Nullable;
  * @since v4.0.0
  */
 public class EcoBossesIntegration implements Integration, MobOwner {
+
+    private @NotNull final LevelledMobs main;
+    public EcoBossesIntegration(final @NotNull LevelledMobs main) { this.main = main; }
 
     @Nullable private NamespacedKey bossKey = null;
 
@@ -43,14 +46,16 @@ public class EcoBossesIntegration implements Integration, MobOwner {
 
     @Override
     public boolean isMobOwner(LevelledMob mob) {
-        // get the other plugin's main class
-        final Plugin ecoBossesPlugin = Bukkit.getPluginManager().getPlugin("EcoBosses");
-
-        // make sure it is installed
-        if(ecoBossesPlugin == null) return false;
+        assert isInstalled();
+        assert isEnabled(main);
 
         // if the key is not set, set it
-        if(bossKey == null) bossKey = new NamespacedKey(ecoBossesPlugin, "boss");
+        if(bossKey == null) {
+            bossKey = new NamespacedKey(
+                    Bukkit.getPluginManager().getPlugin("EcoBosses"),
+                    "boss"
+            );
+        }
 
         // check if the entity belongs to the other plugin
         return mob.livingEntity.getPersistentDataContainer().has(bossKey, PersistentDataType.STRING);

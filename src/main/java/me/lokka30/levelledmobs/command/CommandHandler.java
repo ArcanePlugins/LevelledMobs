@@ -9,6 +9,7 @@
 package me.lokka30.levelledmobs.command;
 
 import me.lokka30.levelledmobs.LevelledMobs;
+import me.lokka30.levelledmobs.command.levelledmobs.subcommand.info.InfoSubcommand;
 import me.lokka30.levelledmobs.util.Utils;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginCommand;
@@ -111,7 +112,7 @@ public class CommandHandler {
         /**
          * A label is the name or any alias that can be used to
          * identify the subcommand. For example, 'info' is a label of
-         * {@link me.lokka30.levelledmobs.command.levelledmobs.subcommand.InfoSubcommand}.
+         * {@link InfoSubcommand}.
          * @author lokka30
          * @since v4.0.0
          * @return a list containing the subcommand's available labels

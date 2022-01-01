@@ -6,7 +6,7 @@
  * license that can be found in the LICENSE.md file.
  */
 
-package me.lokka30.levelledmobs.command.levelledmobs.subcommand;
+package me.lokka30.levelledmobs.command.levelledmobs.subcommand.rules;
 
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.command.CommandHandler;
@@ -22,15 +22,15 @@ import java.util.Set;
  * @author lokka30
  * @since v4.0.0
  * This is a subcommand of the '/levelledmobs' command.
- * This subcommand allows users to manage LevelledMobs' spawners.
+ * This subcommand allows users to manage LevelledMobs' rules configuration.
  * @see me.lokka30.levelledmobs.command.levelledmobs.LevelledMobsCommand
  * @see CommandHandler
  */
-public class SpawnerSubcommand implements CommandHandler.Subcommand {
+public class RulesSubcommand implements CommandHandler.Subcommand {
 
     /*
     TODO LIST:
-        - complete the getUsage method body.
+        - Update the getUsage method body.
         - Complete the run method body.
         - Complete the getSuggestions method body.
         - Test if the run method works properly.
@@ -41,10 +41,10 @@ public class SpawnerSubcommand implements CommandHandler.Subcommand {
 
     @Override
     public @NotNull String getMainLabel() {
-        return "spawner";
+        return "rules";
     }
 
-    final HashSet<String> labels = new HashSet<>(Set.of("SPAWNER", "SPAWNERS"));
+    final HashSet<String> labels = new HashSet<>(Set.of("RULES", "RULE"));
     @Override
     public @NotNull HashSet<String> getLabels() {
         return labels;
@@ -58,7 +58,7 @@ public class SpawnerSubcommand implements CommandHandler.Subcommand {
     @Override
     public void run(@NotNull LevelledMobs main, @NotNull CommandSender sender, @NotNull String baseCommandLabel, @NotNull String subCommandLabel, @NotNull String[] args) {
         //TODO
-        sender.sendMessage("The spawner subcommand is work-in-progress.");
+        sender.sendMessage("The rules subcommand is work-in-progress.");
     }
 
     @Override

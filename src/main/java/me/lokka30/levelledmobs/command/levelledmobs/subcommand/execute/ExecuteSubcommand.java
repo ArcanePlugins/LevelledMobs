@@ -6,7 +6,7 @@
  * license that can be found in the LICENSE.md file.
  */
 
-package me.lokka30.levelledmobs.command.levelledmobs.subcommand;
+package me.lokka30.levelledmobs.command.levelledmobs.subcommand.execute;
 
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.command.CommandHandler;

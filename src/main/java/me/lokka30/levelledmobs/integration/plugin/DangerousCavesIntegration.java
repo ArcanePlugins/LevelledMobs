@@ -8,13 +8,13 @@
 
 package me.lokka30.levelledmobs.integration.plugin;
 
+import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.integration.Integration;
 import me.lokka30.levelledmobs.integration.MobOwner;
 import me.lokka30.levelledmobs.levelling.LevelledMob;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.persistence.PersistentDataType;
-import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -28,6 +28,9 @@ import org.jetbrains.annotations.Nullable;
  * @since v4.0.0
  */
 public class DangerousCavesIntegration implements Integration, MobOwner {
+
+    private @NotNull final LevelledMobs main;
+    public DangerousCavesIntegration(final @NotNull LevelledMobs main) { this.main = main; }
 
     @Nullable private NamespacedKey mobTypeKey = null;
 
@@ -43,15 +46,15 @@ public class DangerousCavesIntegration implements Integration, MobOwner {
 
     @Override
     public boolean isMobOwner(LevelledMob mob) {
-
-        // get the other plugin's main class
-        final Plugin dangerousCavesPlugin = Bukkit.getPluginManager().getPlugin("DangerousCaves");
-
-        // make sure it is installed
-        if(dangerousCavesPlugin == null) return false;
+        assert isInstalled();
 
         // if the key is not set, set it
-        if(mobTypeKey == null) mobTypeKey = new NamespacedKey(dangerousCavesPlugin, "mob-type");
+        if(mobTypeKey == null) {
+            mobTypeKey = new NamespacedKey(
+                    Bukkit.getPluginManager().getPlugin("DangerousCaves"),
+                    "mob-type"
+            );
+        }
 
         // check if the entity belongs to the other plugin
         return mob.livingEntity.getPersistentDataContainer().has(mobTypeKey, PersistentDataType.STRING);

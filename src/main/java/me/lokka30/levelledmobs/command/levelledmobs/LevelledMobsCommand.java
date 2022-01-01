@@ -10,7 +10,15 @@ package me.lokka30.levelledmobs.command.levelledmobs;
 
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.command.CommandHandler;
-import me.lokka30.levelledmobs.command.levelledmobs.subcommand.*;
+import me.lokka30.levelledmobs.command.levelledmobs.subcommand.compatibility.CompatibilitySubcommand;
+import me.lokka30.levelledmobs.command.levelledmobs.subcommand.execute.ExecuteSubcommand;
+import me.lokka30.levelledmobs.command.levelledmobs.subcommand.help.HelpSubcommand;
+import me.lokka30.levelledmobs.command.levelledmobs.subcommand.info.InfoSubcommand;
+import me.lokka30.levelledmobs.command.levelledmobs.subcommand.kill.KillSubcommand;
+import me.lokka30.levelledmobs.command.levelledmobs.subcommand.reload.ReloadSubcommand;
+import me.lokka30.levelledmobs.command.levelledmobs.subcommand.rules.RulesSubcommand;
+import me.lokka30.levelledmobs.command.levelledmobs.subcommand.spawner.SpawnerSubcommand;
+import me.lokka30.levelledmobs.command.levelledmobs.subcommand.summon.SummonSubcommand;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;

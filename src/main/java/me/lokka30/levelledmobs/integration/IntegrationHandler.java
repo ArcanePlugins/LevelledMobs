@@ -65,16 +65,16 @@ public class IntegrationHandler {
      * @since v4.0.0
      */
     public void loadDefaultIntegrations() {
-        addIntegration(new BossIntegration());
-        addIntegration(new CitizensIntegration());
-        addIntegration(new DangerousCavesIntegration());
-        addIntegration(new EcoBossesIntegration());
-        addIntegration(new EliteMobsIntegration());
-        addIntegration(new InfernalMobsIntegration());
-        addIntegration(new MythicMobsIntegration());
-        addIntegration(new NBTAPIIntegration());
-        addIntegration(new PlaceholderAPIIntegration());
-        addIntegration(new ShopkeepersIntegration());
-        addIntegration(new WorldGuardIntegration());
+        addIntegration(new BossIntegration(main));
+        addIntegration(new CitizensIntegration(main));
+        addIntegration(new DangerousCavesIntegration(main));
+        addIntegration(new EcoBossesIntegration(main));
+        addIntegration(new EliteMobsIntegration(main));
+        addIntegration(new InfernalMobsIntegration(main));
+        addIntegration(new MythicMobsIntegration(main));
+        addIntegration(new NBTAPIIntegration(main));
+        addIntegration(new PlaceholderAPIIntegration(main));
+        addIntegration(new ShopkeepersIntegration(main));
+        addIntegration(new WorldGuardIntegration(main));
     }
 }

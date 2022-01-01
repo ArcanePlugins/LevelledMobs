@@ -8,6 +8,7 @@
 
 package me.lokka30.levelledmobs.integration.plugin;
 
+import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.integration.Integration;
 import org.bukkit.Bukkit;
 import org.jetbrains.annotations.NotNull;
@@ -23,6 +24,9 @@ import org.jetbrains.annotations.NotNull;
  */
 public class NBTAPIIntegration implements Integration {
 
+    private @NotNull final LevelledMobs main;
+    public NBTAPIIntegration(final @NotNull LevelledMobs main) { this.main = main; }
+
     @Override
     @NotNull
     public String getName() {
@@ -31,6 +35,7 @@ public class NBTAPIIntegration implements Integration {
 
     @Override
     public boolean isInstalled() {
+        assert isInstalled();
         return Bukkit.getPluginManager().isPluginEnabled("NBTAPI");
     }
 
