@@ -5,8 +5,8 @@
 # license that can be found in the LICENSE.md file.
 
 # IntelliJ IDE
-target/
-.idea/
+/target/
+/.idea/
 LevelledMobs.iml
 
 # Eclipse IDE
@@ -15,4 +15,4 @@ LevelledMobs.iml
 .settings
 
 # Mac OS X
-._.git!/pom.xml
+._.git
