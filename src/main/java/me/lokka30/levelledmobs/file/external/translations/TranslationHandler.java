@@ -6,7 +6,7 @@
  * license that can be found in the LICENSE.md file.
  */
 
-package me.lokka30.levelledmobs.translations;
+package me.lokka30.levelledmobs.file.external.translations;
 
 /**
  * @author lokka30

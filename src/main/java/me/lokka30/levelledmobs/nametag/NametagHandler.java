@@ -18,11 +18,4 @@ public class NametagHandler {
         //TODO
     }
 
-    public enum NametagVisibilityMethod {
-        TARGETED,
-        ATTACKED,
-        TRACKING,
-        ALWAYS
-    }
-
 }

@@ -8,7 +8,16 @@
 
 package me.lokka30.levelledmobs;
 
+import me.lokka30.levelledmobs.command.CommandHandler;
+import me.lokka30.levelledmobs.customdrops.CustomDropHandler;
+import me.lokka30.levelledmobs.debug.DebugHandler;
+import me.lokka30.levelledmobs.file.FileHandler;
+import me.lokka30.levelledmobs.integration.IntegrationHandler;
+import me.lokka30.levelledmobs.levelling.LevelHandler;
 import me.lokka30.levelledmobs.listener.*;
+import me.lokka30.levelledmobs.metrics.MetricsHandler;
+import me.lokka30.levelledmobs.nametag.NametagHandler;
+import me.lokka30.levelledmobs.queue.QueueHandler;
 import me.lokka30.levelledmobs.util.Utils;
 import me.lokka30.microlib.maths.QuickTimer;
 import org.bukkit.Bukkit;
@@ -24,6 +33,16 @@ import java.util.Set;
  * Main class of the plugin. Acts as a 'hub' of sorts in the plugin's code.
  */
 public class LevelledMobs extends JavaPlugin {
+
+    private final QueueHandler queueHandler = new QueueHandler(this);
+    private final NametagHandler nametagHandler = new NametagHandler();
+    private final MetricsHandler metricsHandler = new MetricsHandler(this);
+    private final LevelHandler levelHandler = new LevelHandler(this);
+    private final IntegrationHandler integrationHandler = new IntegrationHandler(this);
+    private final DebugHandler debugHandler = new DebugHandler();
+    private final CustomDropHandler customDropHandler = new CustomDropHandler();
+    private final CommandHandler commandHandler = new CommandHandler(this);
+    private final FileHandler fileHandler = new FileHandler(this);
 
     /* Start-up & shut-down methods */
 
@@ -133,6 +152,4 @@ public class LevelledMobs extends JavaPlugin {
                 new PlayerTeleportListener(this)
         ).forEach(listener -> Bukkit.getPluginManager().registerEvents(listener, this));
     }
-
-    /* Instances of handler classes to be used across the plugin and by other plugins too */
 }
