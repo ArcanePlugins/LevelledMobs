@@ -8,19 +8,13 @@
 
 package me.lokka30.levelledmobs;
 
-import me.lokka30.levelledmobs.file.DataHandler;
-import me.lokka30.levelledmobs.file.FileHandler;
-import me.lokka30.levelledmobs.integration.IntegrationHandler;
-import me.lokka30.levelledmobs.levelling.LevelHandler;
 import me.lokka30.levelledmobs.listener.*;
-import me.lokka30.levelledmobs.queue.QueueHandler;
 import me.lokka30.levelledmobs.util.Utils;
 import me.lokka30.microlib.maths.QuickTimer;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
 
@@ -45,11 +39,11 @@ public class LevelledMobs extends JavaPlugin {
     @Override
     public void onLoad() {
         final QuickTimer timer = new QuickTimer();
-        Utils.LOGGER.info("&f~ Initiating pre-start-up sequence ~");
+        Utils.LOGGER.info("&f~ Beginning initialization sequence ~");
 
         //TODO lokka30: Complete this method's body.
 
-        Utils.LOGGER.info("&f~ Pre-start-up complete, took &b" + timer.getTimer() + "ms&f ~");
+        Utils.LOGGER.info("&f~ Initialization sequence complete, took &b" + timer.getTimer() + "ms&f ~");
     }
 
     /**
@@ -67,19 +61,18 @@ public class LevelledMobs extends JavaPlugin {
     @Override
     public void onEnable() {
         final QuickTimer timer = new QuickTimer();
-        Utils.LOGGER.info("&f~ Initiating start-up sequence ~");
+        Utils.LOGGER.info("&f~ Beginning start-up sequence ~");
 
         // IMPORTANT: Do not mess with the order of these methods being ran!
 
         //TODO lokka30: Complete this method's body.
-        fileHandler.loadInternalFiles();
-        fileHandler.loadExternalFiles();
+        fileHandler.loadAll(false);
 
         queueHandler.startQueues();
 
         loadListeners();
 
-        Utils.LOGGER.info("&f~ Start-up complete, took &b" + timer.getTimer() + "ms&f ~");
+        Utils.LOGGER.info("&f~ Start-up sequence complete, took &b" + timer.getTimer() + "ms&f ~");
     }
 
     /**
@@ -93,7 +86,7 @@ public class LevelledMobs extends JavaPlugin {
     @Override
     public void onDisable() {
         final QuickTimer timer = new QuickTimer();
-        Utils.LOGGER.info("&f~ Initiating shut-down sequence ~");
+        Utils.LOGGER.info("&f~ Beginning shut-down sequence ~");
 
         // IMPORTANT: Do not mess with the order of these methods being ran!
 
@@ -101,7 +94,7 @@ public class LevelledMobs extends JavaPlugin {
 
         queueHandler.stopQueues();
 
-        Utils.LOGGER.info("&f~ Shut-down complete, took &b" + timer.getTimer() + "ms&f ~");
+        Utils.LOGGER.info("&f~ Shut-down sequence complete, took &b" + timer.getTimer() + "ms&f ~");
     }
 
     /* Methods ran by onLoad, onEnable and onDisable */
@@ -142,9 +135,4 @@ public class LevelledMobs extends JavaPlugin {
     }
 
     /* Instances of handler classes to be used across the plugin and by other plugins too */
-    @NotNull public final FileHandler fileHandler = new FileHandler(this);
-    @NotNull public final LevelHandler levelHandler = new LevelHandler(this);
-    @NotNull public final QueueHandler queueHandler = new QueueHandler(this);
-    @NotNull public final IntegrationHandler integrationHandler = new IntegrationHandler(this);
-    @NotNull public final DataHandler dataHandler = new DataHandler(this);
 }

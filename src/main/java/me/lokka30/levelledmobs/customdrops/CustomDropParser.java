@@ -24,8 +24,7 @@ public class CustomDropParser {
         this.main = main;
     }
 
-    /*
-    TODO:
-        - complete class.
-     */
+    public void parse() {
+        //TODO
+    }
 }

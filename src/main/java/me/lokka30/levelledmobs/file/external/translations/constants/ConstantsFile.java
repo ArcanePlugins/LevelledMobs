@@ -16,11 +16,11 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 
-public class Constants implements YamlExternalVersionedFile {
+public class ConstantsFile implements YamlExternalVersionedFile {
 
     private final LevelledMobs main;
     private Yaml data;
-    public Constants(final @NotNull LevelledMobs main) {
+    public ConstantsFile(final @NotNull LevelledMobs main) {
         this.main = main;
     }
 

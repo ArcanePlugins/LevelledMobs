@@ -9,7 +9,21 @@
 package me.lokka30.levelledmobs.file;
 
 import me.lokka30.levelledmobs.LevelledMobs;
+import me.lokka30.levelledmobs.customdrops.CustomDropParser;
+import me.lokka30.levelledmobs.file.external.customdrops.CustomDropsFile;
+import me.lokka30.levelledmobs.file.external.groups.GroupsFile;
+import me.lokka30.levelledmobs.file.external.listeners.ListenersFile;
+import me.lokka30.levelledmobs.file.external.misc.license.LicenseFile;
+import me.lokka30.levelledmobs.file.external.presets.PresetsFile;
+import me.lokka30.levelledmobs.file.external.readme.ReadmeFile;
+import me.lokka30.levelledmobs.file.external.settings.SettingsFile;
+import me.lokka30.levelledmobs.file.external.translations.constants.ConstantsFile;
+import me.lokka30.levelledmobs.file.external.translations.messages.MessagesFile;
+import me.lokka30.levelledmobs.file.internal.playerHeadTextures.PlayerHeadTexturesFile;
+import me.lokka30.levelledmobs.file.internal.unlevellables.UnlevellablesFile;
+import me.lokka30.levelledmobs.rules.parsing.RuleParser;
 import me.lokka30.levelledmobs.util.Utils;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author lokka30
@@ -19,21 +33,79 @@ import me.lokka30.levelledmobs.util.Utils;
  */
 public class FileHandler {
 
-    private final LevelledMobs main;
-
-    public FileHandler(final LevelledMobs main) {
+    private final @NotNull LevelledMobs main;
+    public FileHandler(final @NotNull LevelledMobs main) {
         this.main = main;
+
+        this.customDropsFile = new CustomDropsFile(main);
+        this.groupsFile = new GroupsFile(main);
+        this.listenersFile = new ListenersFile(main);
+        this.licenseFile = new LicenseFile(main);
+        this.presetsFile = new PresetsFile(main);
+        this.readmeFile = new ReadmeFile(main);
+        this.settingsFile = new SettingsFile(main);
+        this.constantsFile = new ConstantsFile(main);
+        this.messagesFile = new MessagesFile(main);
+
+        this.playerHeadTexturesFile = new PlayerHeadTexturesFile(main);
+        this.unlevellablesFile = new UnlevellablesFile(main);
+
+        this.ruleParser = new RuleParser(main);
+        this.customDropParser = new CustomDropParser(main);
     }
 
-    //TODO
-
     /* External Files */
-    //TODO add external files.
+
+    private final @NotNull CustomDropsFile customDropsFile;
+    public @NotNull CustomDropsFile getCustomDropsFile() { return customDropsFile; }
+
+    private final @NotNull GroupsFile groupsFile;
+    public @NotNull GroupsFile getGroupsFile() { return groupsFile; }
+
+    private final @NotNull ListenersFile listenersFile;
+    public @NotNull ListenersFile getListenersFile() { return listenersFile; }
+
+    private final @NotNull LicenseFile licenseFile;
+    public @NotNull LicenseFile getLicenseFile() { return licenseFile; }
+
+    private final @NotNull PresetsFile presetsFile;
+    public @NotNull PresetsFile getPresetsFile() { return presetsFile; }
+
+    private final @NotNull ReadmeFile readmeFile;
+    public @NotNull ReadmeFile getReadmeFile() { return readmeFile; }
+
+    private final @NotNull SettingsFile settingsFile;
+    public @NotNull SettingsFile getSettingsFile() { return settingsFile; }
+
+    private final @NotNull ConstantsFile constantsFile;
+    public @NotNull ConstantsFile getConstantsFile() { return constantsFile; }
+
+    private final @NotNull MessagesFile messagesFile;
+    public @NotNull MessagesFile getMessagesFile() { return messagesFile; }
 
     /* Internal Files */
-    //TODO add internal files.
+
+    private final @NotNull PlayerHeadTexturesFile playerHeadTexturesFile;
+    public @NotNull PlayerHeadTexturesFile getPlayerHeadTexturesFile() { return playerHeadTexturesFile; }
+
+    private final @NotNull UnlevellablesFile unlevellablesFile;
+    public @NotNull UnlevellablesFile getUnlevellablesFile() { return unlevellablesFile; }
+
+    /* Parsers */
+
+    private final @NotNull RuleParser ruleParser;
+    public @NotNull RuleParser getRuleParser() { return ruleParser; }
+
+    private final @NotNull CustomDropParser customDropParser;
+    public @NotNull CustomDropParser getCustomDropParser() { return customDropParser; }
 
     /* Methods */
+
+    public void loadAll(final boolean fromReload) {
+        loadInternalFiles();
+        loadExternalFiles(fromReload);
+        loadParsers();
+    }
 
     /**
      * @author lokka30
@@ -46,6 +118,9 @@ public class FileHandler {
     public void loadInternalFiles() {
         Utils.LOGGER.info("Started loading internal files...");
 
+        playerHeadTexturesFile.load();
+        unlevellablesFile.load();
+
         Utils.LOGGER.info("All internal files have been loaded.");
     }
 
@@ -55,10 +130,25 @@ public class FileHandler {
      * (Re)load all external files.
      * This must be called on start-up and also on reload.
      */
-    public void loadExternalFiles() {
+    public void loadExternalFiles(final boolean fromReload) {
         Utils.LOGGER.info("Started loading external files...");
 
+        customDropsFile.load(fromReload);
+        groupsFile.load(fromReload);
+        listenersFile.load(fromReload);
+        licenseFile.load(fromReload);
+        presetsFile.load(fromReload);
+        readmeFile.load(fromReload);
+        settingsFile.load(fromReload);
+        constantsFile.load(fromReload);
+        messagesFile.load(fromReload);
+
         Utils.LOGGER.info("All external files have been loaded.");
+    }
+
+    public void loadParsers() {
+        ruleParser.parse();
+        customDropParser.parse();
     }
 
 }

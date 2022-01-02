@@ -16,11 +16,11 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 
-public class Messages implements YamlExternalVersionedFile {
+public class MessagesFile implements YamlExternalVersionedFile {
 
     private final @NotNull LevelledMobs main;
     private Yaml data;
-    public Messages(final @NotNull LevelledMobs main) { this.main = main; }
+    public MessagesFile(final @NotNull LevelledMobs main) { this.main = main; }
 
     @Override
     public void load(boolean fromReload) {

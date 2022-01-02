@@ -6,7 +6,7 @@
  * license that can be found in the LICENSE.md file.
  */
 
-package me.lokka30.levelledmobs.file.internal.unlevellables;
+package me.lokka30.levelledmobs.file.internal.playerHeadTextures;
 
 import de.leonhard.storage.Json;
 import me.lokka30.levelledmobs.LevelledMobs;
@@ -15,13 +15,18 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 
-public class Unlevellables implements JsonInternalFile {
+public class PlayerHeadTexturesFile implements JsonInternalFile {
 
     private final @NotNull LevelledMobs main;
     private final @NotNull Json data;
-    public Unlevellables(final @NotNull LevelledMobs main) {
+    public PlayerHeadTexturesFile(final @NotNull LevelledMobs main) {
         this.main = main;
         this.data = new Json(getNameWithoutExtension(), getRelativePath(), getInputStream(main));
+    }
+
+    @Override
+    public void load() {
+        //TODO
     }
 
     @NotNull
@@ -32,7 +37,7 @@ public class Unlevellables implements JsonInternalFile {
 
     @Override
     public String getNameWithoutExtension() {
-        return "unlevellables";
+        return "player-head-textures";
     }
 
     @Override
