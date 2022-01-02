@@ -18,7 +18,7 @@
     <packaging>jar</packaging>
 
     <name>LevelledMobs</name>
-    <description>The Ultimate RPG Mob Levelling Plugin</description>
+    <description>The Ultimate RPG Mob Levelling Plugin - make your server's mobs stronger!</description>
 
     <properties>
         <java.version>1.8</java.version>
@@ -105,6 +105,10 @@
             <id>CodeMC</id>
             <url>https://repo.codemc.org/repository/maven-public</url>
         </repository>
+        <repository>
+            <id>Redempt</id>
+            <url>https://redempt.dev</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -129,6 +133,11 @@
             <groupId>com.github.simplix-softworks</groupId>
             <artifactId>simplixstorage</artifactId>
             <version>3.2.3</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.Redempt</groupId>
+            <artifactId>Crunch</artifactId>
+            <version>1.0</version>
         </dependency>
     </dependencies>
 </project>

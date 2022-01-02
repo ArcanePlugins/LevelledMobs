@@ -42,6 +42,11 @@
       <option name="url" value="https://repo.essentialsx.net/releases/" />
     </remote-repository>
     <remote-repository>
+      <option name="id" value="Redempt" />
+      <option name="name" value="Redempt" />
+      <option name="url" value="https://redempt.dev" />
+    </remote-repository>
+    <remote-repository>
       <option name="id" value="spigotmc-repo" />
       <option name="name" value="spigotmc-repo" />
       <option name="url" value="https://hub.spigotmc.org/nexus/content/groups/public/" />
