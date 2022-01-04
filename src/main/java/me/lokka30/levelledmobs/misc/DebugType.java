@@ -137,5 +137,7 @@ public enum DebugType {
 
     THREAD_LOCKS,
 
-    SCOREBOARD_TAGS
+    SCOREBOARD_TAGS,
+
+    SKYLIGHT_LEVEL
 }

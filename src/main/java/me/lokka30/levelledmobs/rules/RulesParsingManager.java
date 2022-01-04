@@ -740,6 +740,7 @@ public class RulesParsingManager {
         parsingInfo.conditions_WorldTickTime = parseWorldTimeTicks(cs, parsingInfo.conditions_WorldTickTime);
         parsingInfo.conditions_Permission = buildCachedModalListOfString(cs, "permission", parsingInfo.conditions_Permission);
         parsingInfo.conditions_ScoreboardTags = buildCachedModalListOfString(cs, "scoreboard-tags", parsingInfo.conditions_ScoreboardTags);
+        parsingInfo.conditions_SkyLightLevel = parseMinMaxValue(ymlHelper.getString(cs, "skylight-level"), "skylight-level");
     }
 
     private void parseStrategies(final ConfigurationSection cs){
@@ -813,19 +814,32 @@ public class RulesParsingManager {
     private CachedModalList<MinAndMax> parseWorldTimeTicks(final ConfigurationSection cs, final CachedModalList<MinAndMax> existingList){
         if (cs == null) return existingList;
 
-        final CachedModalList<String> temp = buildCachedModalListOfString(cs, "world-time-tick", null);
+        final String configName = "world-time-tick";
+        final CachedModalList<String> temp = buildCachedModalListOfString(cs, configName, null);
         if (temp == null) return existingList;
         final CachedModalList<MinAndMax> result = new CachedModalList<>();
         result.allowAll = temp.allowAll;
         result.excludeAll = temp.excludeAll;
-        result.excludedList.addAll(parseMinMaxValue(temp.excludedList));
-        result.allowedList.addAll(parseMinMaxValue(temp.allowedList));
+        result.excludedList.addAll(parseMinMaxValue(temp.excludedList, configName));
+        result.allowedList.addAll(parseMinMaxValue(temp.allowedList, configName));
 
         return result;
     }
 
+    @Nullable
+    private MinAndMax parseMinMaxValue(@Nullable final String numberPair, @SuppressWarnings("SameParameterValue") final @NotNull String configName){
+        if (numberPair == null) return null;
+
+        final Set<MinAndMax> result = parseMinMaxValue(Set.of(numberPair), configName);
+
+        if (result.isEmpty())
+            return null;
+        else
+            return result.iterator().next();
+    }
+
     @NotNull
-    private Set<MinAndMax> parseMinMaxValue(@NotNull final Set<String> numberPairs){
+    private Set<MinAndMax> parseMinMaxValue(@NotNull final Set<String> numberPairs, final @NotNull String configName){
         final Set<MinAndMax> result = new TreeSet<>();
 
         for (final String numberPair : numberPairs) {
@@ -834,7 +848,7 @@ public class RulesParsingManager {
             boolean hadInvalidValue = false;
             for (int i = 0; i <= 1; i++) {
                 if (!Utils.isInteger(split[i])) {
-                    Utils.logger.warning("Invalid world-time-tick value: '" + split[i] + "' in rule " + parsingInfo.getRuleName());
+                    Utils.logger.info(String.format("Invalid value for %s: '%s' in rule %s", configName, split[i], parsingInfo.getRuleName()));
                     hadInvalidValue = true;
                     break;
                 }
@@ -994,9 +1008,8 @@ public class RulesParsingManager {
             if (checkName.toLowerCase().startsWith("baby_"))
                 checkName = checkName.substring(5);
 
-            final EntityType entityType;
             try {
-                entityType = EntityType.valueOf(checkName.toUpperCase());
+                EntityType.valueOf(checkName.toUpperCase());
             } catch (final IllegalArgumentException e) {
                 Utils.logger.warning("Invalid entity type: " + mobName + " for fine-tuning in rule: " + parsingInfo.getRuleName());
                 continue;

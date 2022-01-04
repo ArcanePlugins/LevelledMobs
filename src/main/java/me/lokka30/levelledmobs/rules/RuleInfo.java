@@ -83,6 +83,7 @@ public class RuleInfo {
     Map<ExternalCompatibilityManager.ExternalCompatibility, Boolean> enabledExtCompats;
     MergeableStringList mobNBT_Data;
     CachedModalList<String> allowedEntities;
+    MinAndMax conditions_SkyLightLevel;
     CachedModalList<String> conditions_Worlds;
     CachedModalList<String> conditions_Entities;
     CachedModalList<Biome> conditions_Biomes;

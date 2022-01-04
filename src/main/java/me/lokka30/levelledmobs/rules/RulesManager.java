@@ -641,6 +641,16 @@ public class RulesManager {
             }
         }
 
+        if (ri.conditions_SkyLightLevel != null){
+            final int lightLevel = lmEntity.getSkylightLevel();
+            if (lightLevel < ri.conditions_SkyLightLevel.min || lightLevel > ri.conditions_SkyLightLevel.max){
+                Utils.debugLog(main, DebugType.SKYLIGHT_LEVEL, String.format(
+                        "&b%s&7, mob: &b%s&7, skylight: %s, criteria: %s",
+                        ri.getRuleName(), lmEntity.getNameIfBaby(), lightLevel, ri.conditions_SkyLightLevel));
+                return false;
+            }
+        }
+
         return true;
     }
 
