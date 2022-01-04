@@ -14,10 +14,12 @@ import me.lokka30.levelledmobs.util.Utils;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashSet;
+import java.util.List;
 
 /**
- * This class handles all of the Integrations
- * that LevelledMobs has.
+ * This class handles all internal
+ * and external integrations utilized
+ * in LevelledMobs.
  *
  * @author lokka30
  * @since v4.0.0
@@ -25,16 +27,12 @@ import java.util.HashSet;
 public class IntegrationHandler {
 
     private final LevelledMobs main;
-
-    public IntegrationHandler(final LevelledMobs main) {
+    public IntegrationHandler(final @NotNull LevelledMobs main) {
         this.main = main;
     }
 
-    @NotNull
     private final HashSet<Integration> availableIntegrations = new HashSet<>();
-
-    @NotNull
-    public HashSet<Integration> getAvailableIntegrations() {
+    @NotNull public HashSet<Integration> getAvailableIntegrations() {
         return availableIntegrations;
     }
 
@@ -49,7 +47,9 @@ public class IntegrationHandler {
     public void addIntegration(final Integration integration) {
         // Make sure there are no duplicate entries
         if (getAvailableIntegrations().contains(integration)) {
-            Utils.LOGGER.warning("&3IntegrationHandler:&7 An attempt was made to make the integration '&b" + integration + "&7' available, although it is already available.");
+            Utils.LOGGER.warning("An attempt was made to add the integration '&b" + integration + "&7', but it is " +
+                    "already added. This may be an error with an external integration or an internal error. Please " +
+                    "inform the LevelledMobs team.");
             return;
         }
 
@@ -65,16 +65,18 @@ public class IntegrationHandler {
      * @since v4.0.0
      */
     public void loadDefaultIntegrations() {
-        addIntegration(new BossIntegration(main));
-        addIntegration(new CitizensIntegration(main));
-        addIntegration(new DangerousCavesIntegration(main));
-        addIntegration(new EcoBossesIntegration(main));
-        addIntegration(new EliteMobsIntegration(main));
-        addIntegration(new InfernalMobsIntegration(main));
-        addIntegration(new MythicMobsIntegration(main));
-        addIntegration(new NBTAPIIntegration(main));
-        addIntegration(new PlaceholderAPIIntegration(main));
-        addIntegration(new ShopkeepersIntegration(main));
-        addIntegration(new WorldGuardIntegration(main));
+        List.of(
+                new BossIntegration(main),
+                new CitizensIntegration(main),
+                new DangerousCavesIntegration(main),
+                new EcoBossesIntegration(main),
+                new EliteMobsIntegration(main),
+                new InfernalMobsIntegration(main),
+                new MythicMobsIntegration(main),
+                new NBTAPIIntegration(main),
+                new PlaceholderAPIIntegration(main),
+                new ShopkeepersIntegration(main),
+                new WorldGuardIntegration(main)
+        ).forEach(this::addIntegration);
     }
 }
