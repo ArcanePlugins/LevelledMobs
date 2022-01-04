@@ -19,11 +19,14 @@ import me.lokka30.levelledmobs.file.external.readme.ReadmeFile;
 import me.lokka30.levelledmobs.file.external.settings.SettingsFile;
 import me.lokka30.levelledmobs.file.external.translations.constants.ConstantsFile;
 import me.lokka30.levelledmobs.file.external.translations.messages.MessagesFile;
+import me.lokka30.levelledmobs.file.internal.JsonInternalFile;
 import me.lokka30.levelledmobs.file.internal.playerHeadTextures.PlayerHeadTexturesFile;
 import me.lokka30.levelledmobs.file.internal.unlevellables.UnlevellablesFile;
 import me.lokka30.levelledmobs.rules.parsing.RuleParser;
 import me.lokka30.levelledmobs.util.Utils;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.List;
 
 /**
  * @author lokka30
@@ -33,10 +36,8 @@ import org.jetbrains.annotations.NotNull;
  */
 public class FileHandler {
 
-    private final @NotNull LevelledMobs main;
     public FileHandler(final @NotNull LevelledMobs main) {
-        this.main = main;
-
+        /* external files */
         this.customDropsFile = new CustomDropsFile(main);
         this.groupsFile = new GroupsFile(main);
         this.listenersFile = new ListenersFile(main);
@@ -47,9 +48,11 @@ public class FileHandler {
         this.constantsFile = new ConstantsFile(main);
         this.messagesFile = new MessagesFile(main);
 
+        /* internal files */
         this.playerHeadTexturesFile = new PlayerHeadTexturesFile(main);
         this.unlevellablesFile = new UnlevellablesFile(main);
 
+        /* parsers */
         this.ruleParser = new RuleParser(main);
         this.customDropParser = new CustomDropParser(main);
     }
@@ -118,8 +121,11 @@ public class FileHandler {
     public void loadInternalFiles() {
         Utils.LOGGER.info("Started loading internal files...");
 
-        playerHeadTexturesFile.load();
-        unlevellablesFile.load();
+        Utils.LOGGER.info("Loading JSON internal files...");
+        List.of(
+                playerHeadTexturesFile,
+                unlevellablesFile
+        ).forEach(JsonInternalFile::load);
 
         Utils.LOGGER.info("All internal files have been loaded.");
     }
@@ -133,15 +139,17 @@ public class FileHandler {
     public void loadExternalFiles(final boolean fromReload) {
         Utils.LOGGER.info("Started loading external files...");
 
-        customDropsFile.load(fromReload);
-        groupsFile.load(fromReload);
-        listenersFile.load(fromReload);
-        licenseFile.load(fromReload);
-        presetsFile.load(fromReload);
-        readmeFile.load(fromReload);
-        settingsFile.load(fromReload);
-        constantsFile.load(fromReload);
-        messagesFile.load(fromReload);
+        List.of(
+                customDropsFile,
+                groupsFile,
+                listenersFile,
+                licenseFile,
+                presetsFile,
+                readmeFile,
+                settingsFile,
+                constantsFile,
+                messagesFile
+        ).forEach(file -> file.load(fromReload));
 
         Utils.LOGGER.info("All external files have been loaded.");
     }
