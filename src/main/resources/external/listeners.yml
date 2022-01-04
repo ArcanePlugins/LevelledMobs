@@ -55,12 +55,21 @@ event-listeners:
                 inclusive-list: ['world_the_end']
             use-presets: ['no-level']
 
-          - rule-id: 'no-levels-for-certain-mobs'
+          - rule-id: 'no-levels-for-passives-or-bosses'
             enabled: true
-            description: 'Certain mobs and groups of mobs will not be levelled'
+            description: 'Passive and boss mobs will not be levelled'
             conditions:
               mob-groups:
-                inclusive-list: ['animals', 'bosses']
+                inclusive-list: ['passives', 'bosses']
+            use-presets: ['no-level']
+
+          - rule-id: 'no-levels-for-baby-hostile-mobs'
+            enabled: true
+            description: 'Baby hostile mobs will not be levelled'
+            conditions:
+              mob-groups:
+                inclusive-list: ['hostiles']
+              is-baby: true
             use-presets: ['no-level']
 
       - cluster-id: 'generic-levelled-mob-actions'

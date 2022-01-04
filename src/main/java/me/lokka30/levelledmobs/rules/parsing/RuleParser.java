@@ -9,8 +9,11 @@
 package me.lokka30.levelledmobs.rules.parsing;
 
 import me.lokka30.levelledmobs.LevelledMobs;
+import me.lokka30.levelledmobs.rules.Group;
 import me.lokka30.levelledmobs.rules.Rule;
 import me.lokka30.levelledmobs.rules.RuleListener;
+import org.bukkit.block.Biome;
+import org.bukkit.entity.EntityType;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashSet;
@@ -23,24 +26,54 @@ import java.util.HashSet;
  */
 public class RuleParser {
 
-    private final @NotNull LevelledMobs main;
+    private final LevelledMobs main;
     public RuleParser(final @NotNull LevelledMobs main) {
         this.main = main;
     }
 
-    private final @NotNull HashSet<RuleListener> ruleListeners = new HashSet<>();
+    private final HashSet<Group<EntityType>> mobGroups = new HashSet<>();
+    public @NotNull HashSet<Group<EntityType>> getMobGroups() { return mobGroups; }
+
+    private final HashSet<Group<Biome>> biomeGroups = new HashSet<>();
+    public @NotNull HashSet<Group<Biome>> getBiomeGroups() { return biomeGroups; }
+
+    private final HashSet<RuleListener> ruleListeners = new HashSet<>();
     public @NotNull HashSet<RuleListener> getRuleListeners() { return ruleListeners; }
 
-    private final @NotNull HashSet<Rule> presets = new HashSet<>();
+    private final HashSet<Rule> presets = new HashSet<>();
     public @NotNull HashSet<Rule> getPresets() { return presets; }
 
     public void parse() {
         clearCache();
+
+        addRuleGroups();
+        addRulePresets();
+        addRuleListeners();
     }
 
-    public void clearCache() {
+    void clearCache() {
         getRuleListeners().clear();
         getPresets().clear();
+    }
+
+    void addRuleGroups() {
+        //
+    }
+
+    void addMobRuleGroups() {
+        //
+    }
+
+    void addBiomeRuleGroups() {
+        //
+    }
+
+    void addRulePresets() {
+        //
+    }
+
+    void addRuleListeners() {
+        //
     }
 
     //TODO

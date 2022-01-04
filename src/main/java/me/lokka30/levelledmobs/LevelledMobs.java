@@ -24,6 +24,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
 
@@ -32,17 +33,34 @@ import java.util.Set;
  * @since v4.0.0
  * Main class of the plugin. Acts as a 'hub' of sorts in the plugin's code.
  */
-public class LevelledMobs extends JavaPlugin {
+public final class LevelledMobs extends JavaPlugin {
 
     private final QueueHandler queueHandler = new QueueHandler(this);
+    public @NotNull QueueHandler getQueueHandler() { return queueHandler; }
+
     private final NametagHandler nametagHandler = new NametagHandler();
+    public @NotNull NametagHandler getNametagHandler() { return nametagHandler; }
+
     private final MetricsHandler metricsHandler = new MetricsHandler(this);
+    public @NotNull MetricsHandler getMetricsHandler() { return metricsHandler; }
+
     private final LevelHandler levelHandler = new LevelHandler(this);
+    public @NotNull LevelHandler getLevelHandler() { return levelHandler; }
+
     private final IntegrationHandler integrationHandler = new IntegrationHandler(this);
+    public @NotNull IntegrationHandler getIntegrationHandler() { return integrationHandler; }
+
     private final DebugHandler debugHandler = new DebugHandler();
+    public @NotNull DebugHandler getDebugHandler() { return debugHandler; }
+
     private final CustomDropHandler customDropHandler = new CustomDropHandler();
+    public @NotNull CustomDropHandler getCustomDropHandler() { return customDropHandler; }
+
     private final CommandHandler commandHandler = new CommandHandler(this);
+    public @NotNull CommandHandler getCommandHandler() { return commandHandler; }
+
     private final FileHandler fileHandler = new FileHandler(this);
+    public @NotNull FileHandler getFileHandler() { return fileHandler; }
 
     /* Start-up & shut-down methods */
 

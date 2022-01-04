@@ -9,6 +9,7 @@
 package me.lokka30.levelledmobs.file.external.groups;
 
 import de.leonhard.storage.Yaml;
+import de.leonhard.storage.internal.settings.ReloadSettings;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.file.external.YamlExternalVersionedFile;
 import me.lokka30.levelledmobs.util.Utils;
@@ -33,6 +34,7 @@ public class GroupsFile implements YamlExternalVersionedFile {
             data.forceReload();
         } else {
             data = new Yaml(getNameWithoutExtension(), getFullPath(main));
+            data.setReloadSettings(ReloadSettings.MANUALLY);
         }
 
         // run the migrator
