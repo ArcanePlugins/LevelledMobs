@@ -9,7 +9,8 @@
 package me.lokka30.levelledmobs.levelling;
 
 /**
- * All utilized non-vanilla attributes are listed here.
+ * All utilized non-vanilla 'attribute-like' multipliables
+ * are listed here.
  * Note that these are not actually 'attributes'
  * applied to mobs, these are instead stored as NBT
  * data on the mob and utilized whenever they are
@@ -20,10 +21,10 @@ package me.lokka30.levelledmobs.levelling;
  * @see org.bukkit.attribute.Attribute
  * @since v4.0.0
  */
-public enum CustomAttribute {
+public enum CustomMultiplier {
 
     /**
-     * The ranged attack damage multiplier the Entity has
+     * The ranged attack damage multiplier the Entity has.
      * (e.g. Skeleton arrows)
      *
      * @since v4.0.0
@@ -31,7 +32,7 @@ public enum CustomAttribute {
     RANGED_ATTACK_DAMAGE,
 
     /**
-     * The item drop multiplier the Entity has
+     * The item drop multiplier the Entity has.
      * (The Entity's item drops will be multiplied upon its death)
      *
      * @since v4.0.0
@@ -39,7 +40,7 @@ public enum CustomAttribute {
     ITEM_DROP,
 
     /**
-     * The experience drop multiplier the Entity has
+     * The experience drop multiplier the Entity has.
      * (The Entity's XP drops will be multiplied upon its death)
      *
      * @since v4.0.0
@@ -47,7 +48,7 @@ public enum CustomAttribute {
     EXPERIENCE_DROP,
 
     /**
-     * The creeper blast damage value the Entity (Creeper) has
+     * The creeper blast damage value the Entity (Creeper) has.
      *
      * @since v4.0.0
      */

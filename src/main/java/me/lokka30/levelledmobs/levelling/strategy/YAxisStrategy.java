@@ -10,29 +10,31 @@ package me.lokka30.levelledmobs.levelling.strategy;
 
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.levelling.LevelledMob;
-import me.lokka30.levelledmobs.util.Point;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.HashSet;
 
 /**
  * This class generates a level for a mob
- * based upon their location relative to
- * the world's spawnpoint OR a specific set
- * of coordinates provided by the strategy's
- * configuration in the Rules system.
+ * based upon their Y-coordinate. The administrator
+ * can configure it through the Rules system to increase
+ * the level as mobs are spawned deeper underground, or
+ * vice-versa.
  *
  * @author lokka30
  * @see LevellingStrategy
  * @since v4.0.0
  */
-public record SpawnDistanceLevellingStrategy(
-        int minLevel,
-        int maxLevel,
-        int startingDistance,
-        int increaseLevelDistance,
-        @NotNull HashSet<Point> spawnLocations
+public record YAxisStrategy(
+        int start,
+        int end,
+        int period,
+        boolean inverse
 ) implements LevellingStrategy {
+
+    @Override
+    @NotNull
+    public String getName() {
+        return "YAxis";
+    }
 
     @Override
     public int calculateLevel(@NotNull LevelledMobs main, @NotNull LevelledMob mob) {

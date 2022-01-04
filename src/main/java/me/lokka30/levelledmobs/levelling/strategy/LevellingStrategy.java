@@ -26,6 +26,9 @@ import org.jetbrains.annotations.NotNull;
  */
 public interface LevellingStrategy {
 
+    @NotNull
+    String getName();
+
     /**
      * Requests the LevellingStrategy to calculate a mob's level
      *

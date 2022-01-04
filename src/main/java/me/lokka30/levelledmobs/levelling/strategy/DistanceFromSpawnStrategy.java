@@ -10,24 +10,39 @@ package me.lokka30.levelledmobs.levelling.strategy;
 
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.levelling.LevelledMob;
-import me.lokka30.microlib.maths.Randoms;
+import me.lokka30.levelledmobs.util.Point;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.HashSet;
+
 /**
- * This Levelling Strategy spits out a random number. That's it.
- * Administrators can set a min & max level of course.
+ * This class generates a level for a mob
+ * based upon their location relative to
+ * the world's spawnpoint OR a specific set
+ * of coordinates provided by the strategy's
+ * configuration in the Rules system.
  *
  * @author lokka30
  * @see LevellingStrategy
  * @since v4.0.0
  */
-public record RandomLevellingStrategy(
+public record DistanceFromSpawnStrategy(
         int minLevel,
-        int maxLevel
+        int maxLevel,
+        int startingDistance,
+        int increaseLevelDistance,
+        @NotNull HashSet<Point> spawnLocations
 ) implements LevellingStrategy {
 
     @Override
+    @NotNull
+    public String getName() {
+        return "DistanceFromSpawn";
+    }
+
+    @Override
     public int calculateLevel(@NotNull LevelledMobs main, @NotNull LevelledMob mob) {
-        return Randoms.generateRandomInt(minLevel, maxLevel);
+        //TODO
+        return -1;
     }
 }

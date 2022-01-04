@@ -10,29 +10,30 @@ package me.lokka30.levelledmobs.levelling.strategy;
 
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.levelling.LevelledMob;
-import me.lokka30.levelledmobs.util.math.RangedInt;
-import me.lokka30.levelledmobs.util.math.WeightedRandomContainer;
+import me.lokka30.microlib.maths.Randoms;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * This class generates a random level, although
- * the numbers generated are biased towards the
- * minimum or maximum value, depending on however
- * the administrator has configured this strategy
- * in their Rules configuration.
+ * This Levelling Strategy spits out a random number. That's it.
+ * Administrators can set a min & max level of course.
  *
  * @author lokka30
  * @see LevellingStrategy
  * @since v4.0.0
  */
-public record WeightedRandomLevellingStrategy(
-        @NotNull WeightedRandomContainer<RangedInt> weightedRandomContainer
+public record RandomStrategy(
+        int minLevel,
+        int maxLevel
 ) implements LevellingStrategy {
 
     @Override
+    @NotNull
+    public String getName() {
+        return "RandomStrategy";
+    }
+
+    @Override
     public int calculateLevel(@NotNull LevelledMobs main, @NotNull LevelledMob mob) {
-        return weightedRandomContainer
-                .getRandom() // get a random element from the container
-                .generateRandom(); // get a random level from the RangedInt
+        return Randoms.generateRandomInt(minLevel, maxLevel);
     }
 }
