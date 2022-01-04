@@ -6,9 +6,10 @@
  * license that can be found in the LICENSE.md file.
  */
 
-package me.lokka30.levelledmobs.rules;
+package me.lokka30.levelledmobs.rules.action;
 
 import me.lokka30.levelledmobs.nametag.NametagVisibilityMethod;
+import me.lokka30.levelledmobs.rules.Executable;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashSet;

@@ -6,7 +6,7 @@
  * license that can be found in the LICENSE.md file.
  */
 
-package me.lokka30.levelledmobs.rules;
+package me.lokka30.levelledmobs.rules.condition;
 
 import me.lokka30.levelledmobs.util.ModalList;
 import org.bukkit.entity.LivingEntity;
@@ -15,7 +15,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
 
-public record RuleCondition(
+public record RuleConditionHandler(
         @NotNull Optional<Boolean>                                      isLevelled,
         @NotNull Optional<ModalList<CreatureSpawnEvent.SpawnReason>>    spawnReasons,
         @NotNull Optional<ModalList<String>>                            worldNames

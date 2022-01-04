@@ -8,6 +8,8 @@
 
 package me.lokka30.levelledmobs.rules;
 
+import me.lokka30.levelledmobs.rules.action.RuleAction;
+import me.lokka30.levelledmobs.rules.condition.RuleConditionHandler;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashSet;
@@ -16,7 +18,7 @@ import java.util.Optional;
 public record Rule(
         @NotNull String                 identifier,
         @NotNull Optional<String>       description,
-        @NotNull HashSet<RuleCondition> conditions,
+        @NotNull HashSet<RuleConditionHandler> conditions,
         @NotNull HashSet<RuleAction>    actions,
         @NotNull HashSet<Rule>          presets,
         boolean                         onceProcessedStopProcessing

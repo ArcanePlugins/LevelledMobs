@@ -23,7 +23,8 @@ public class LevelledMob {
 
     public LevelledMob(@NotNull final LivingEntity livingEntity) { this.livingEntity = livingEntity; }
 
-    @NotNull public final LivingEntity livingEntity;
+    private final LivingEntity livingEntity;
+    public final @NotNull LivingEntity getLivingEntity() { return livingEntity; }
 
     /*
     TODO
