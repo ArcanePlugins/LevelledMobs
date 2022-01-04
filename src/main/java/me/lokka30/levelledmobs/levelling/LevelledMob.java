@@ -8,7 +8,9 @@
 
 package me.lokka30.levelledmobs.levelling;
 
+import me.lokka30.levelledmobs.LevelledMobs;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -30,4 +32,11 @@ public class LevelledMob {
     TODO
         lokka30: Complete class with methods of course.
      */
+
+    public synchronized static boolean isLevelled(final @NotNull LivingEntity livingEntity, final @NotNull LevelledMobs main) {
+        return livingEntity.getPersistentDataContainer().has(
+                main.getLevelHandler().getLevelledNamespacedKeys().levelKey,
+                PersistentDataType.INTEGER
+        );
+    }
 }

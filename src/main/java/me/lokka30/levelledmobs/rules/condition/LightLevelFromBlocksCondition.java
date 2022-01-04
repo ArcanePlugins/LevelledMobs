@@ -1,6 +1,7 @@
 package me.lokka30.levelledmobs.rules.condition;
 
-import me.lokka30.levelledmobs.levelling.LevelledMob;
+import me.lokka30.levelledmobs.LevelledMobs;
+import org.bukkit.entity.LivingEntity;
 import org.jetbrains.annotations.NotNull;
 
 /*
@@ -13,8 +14,8 @@ public record LightLevelFromBlocksCondition(
 ) implements RuleCondition {
 
     @Override
-    public boolean appliesTo(@NotNull LevelledMob levelledMob) {
-        final byte lightLevel = levelledMob.getLivingEntity().getLocation().getBlock().getLightFromBlocks();
+    public boolean appliesTo(@NotNull LivingEntity livingEntity, @NotNull LevelledMobs main) {
+        final byte lightLevel = livingEntity.getLocation().getBlock().getLightFromBlocks();
         return lightLevel >= min && lightLevel <= max;
     }
 }

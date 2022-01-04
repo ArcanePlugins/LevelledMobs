@@ -18,16 +18,16 @@ import org.jetbrains.annotations.NotNull;
  * @author lokka30
  * @since v4.0.0
  */
-public class LevelHandler {
+public final class LevelHandler {
 
     private final LevelledMobs main;
-
-    public LevelHandler(final LevelledMobs main) {
+    public LevelHandler(final @NotNull LevelledMobs main) {
         this.main = main;
         this.levelledNamespacedKeys = new LevelledNamespacedKeys(main);
     }
 
-    @NotNull public final LevelledNamespacedKeys levelledNamespacedKeys;
+    private final LevelledNamespacedKeys levelledNamespacedKeys;
+    public @NotNull LevelledNamespacedKeys getLevelledNamespacedKeys() { return levelledNamespacedKeys; }
 
     /*
     TODO

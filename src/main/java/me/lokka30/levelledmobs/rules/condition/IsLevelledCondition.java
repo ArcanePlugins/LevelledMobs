@@ -1,6 +1,7 @@
 package me.lokka30.levelledmobs.rules.condition;
 
 import me.lokka30.levelledmobs.LevelledMobs;
+import me.lokka30.levelledmobs.levelling.LevelledMob;
 import org.bukkit.entity.LivingEntity;
 import org.jetbrains.annotations.NotNull;
 
@@ -8,14 +9,12 @@ import org.jetbrains.annotations.NotNull;
 TODO:
     - Add javadoc comment.
  */
-public record LightLevelFromSkyCondition(
-        int min,
-        int max
+public record IsLevelledCondition(
+        boolean isLevelled
 ) implements RuleCondition {
 
     @Override
     public boolean appliesTo(@NotNull LivingEntity livingEntity, @NotNull LevelledMobs main) {
-        final byte lightLevel = livingEntity.getLocation().getBlock().getLightFromSky();
-        return lightLevel >= min && lightLevel <= max;
+        return LevelledMob.isLevelled(livingEntity, main) == isLevelled;
     }
 }

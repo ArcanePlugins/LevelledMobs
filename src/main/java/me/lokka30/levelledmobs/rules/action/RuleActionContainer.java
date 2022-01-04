@@ -15,7 +15,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.HashSet;
 import java.util.Optional;
 
-public record RuleAction(
+public record RuleActionContainer(
         @NotNull Optional<String>                                           nametagFormat,
         @NotNull Optional<Float>                                            nametagVisibilityDuration,
         @NotNull Optional<HashSet<NametagVisibilityMethod>>                 nametagVisibilityMethods,
