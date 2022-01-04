@@ -8,33 +8,66 @@
 
 package me.lokka30.levelledmobs.debug;
 
+import me.lokka30.levelledmobs.LevelledMobs;
+import me.lokka30.levelledmobs.util.Utils;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.ArrayList;
+import java.util.EnumSet;
+
 /**
  * @author lokka30
  * @since v4.0.0
  * This class handles all debug-logging in the plugin.
  */
-public class DebugHandler {
+public final class DebugHandler {
+
+    private final LevelledMobs main;
+    public DebugHandler(final @NotNull LevelledMobs main) {
+        this.main = main;
+    }
+
+    public void load() {
+        /*
+        TODO:
+            - Add javadoc comment.
+            - Test.
+         */
+        for (
+                String debugCategoryStr : main.getFileHandler().getSettingsFile().getData()
+                .getOrDefault("debug-categories", new ArrayList<String>())
+        ) {
+            final DebugCategory debugCategory;
+            try {
+                debugCategory = DebugCategory.valueOf(debugCategoryStr);
+            } catch(IllegalArgumentException ex) {
+                Utils.LOGGER.error("An invalid debug category was speciied in settings.yml - '&b" + debugCategoryStr + "&7' - please fix this.");
+                continue;
+            }
+
+            getEnabledDebugCategories().add(debugCategory);
+        }
+    }
+
+    private final EnumSet<DebugCategory> enabledDebugCategories = EnumSet.noneOf(DebugCategory.class);
+    public @NotNull EnumSet<DebugCategory> getEnabledDebugCategories() { return enabledDebugCategories; }
 
     /**
      * @param category category that is being checked
      * @return if the category is enabled or not
-     * Checks the advanced-settings.yml file to see if a debug category is enabled or not.
+     * Check if a debug category is enabled or not by the configuration.
      * @author lokka30
      * @since v4.0.0
      */
     public boolean isDebugCategoryEnabled(final DebugCategory category) {
-        /*
-        TODO
-            lokka30: Complete method body.
-         */
-        return false;
+        return getEnabledDebugCategories().contains(category);
     }
 
     public void sendDebugLog(final DebugCategory category, final String msg) {
         /*
         TODO
-            lokka30: Complete method body.
-            lokka30: Add javadoc.
+            - add javadoc comment
          */
+        Utils.LOGGER.info("&8[&3Debugging&8 - &3" + category + "&8]: &7" + msg);
     }
 }

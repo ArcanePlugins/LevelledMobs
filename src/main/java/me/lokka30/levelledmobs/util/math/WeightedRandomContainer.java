@@ -16,8 +16,8 @@ import java.util.concurrent.ThreadLocalRandom;
 public class WeightedRandomContainer<T> {
 
     private class Entry {
-        double accumulatedWeight;
-        T object;
+        final double accumulatedWeight;
+        final T object;
 
         public Entry(double accumulatedWeight, T object) {
             this.accumulatedWeight = accumulatedWeight;

@@ -6,7 +6,7 @@ level-1-mobs-receive-attribute-multipliers: false
 
 # What debugging systems are enabled in the plugin?
 # This list is empty by default.
-debug: []
+debug-categories: []
 
 # What integrations are force-disabled in the plugin?
 # This list is empty by default.

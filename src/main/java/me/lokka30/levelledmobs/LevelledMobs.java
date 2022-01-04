@@ -50,7 +50,7 @@ public final class LevelledMobs extends JavaPlugin {
     private final IntegrationHandler integrationHandler = new IntegrationHandler(this);
     public @NotNull IntegrationHandler getIntegrationHandler() { return integrationHandler; }
 
-    private final DebugHandler debugHandler = new DebugHandler();
+    private final DebugHandler debugHandler = new DebugHandler(this);
     public @NotNull DebugHandler getDebugHandler() { return debugHandler; }
 
     private final CustomDropHandler customDropHandler = new CustomDropHandler();
@@ -104,6 +104,8 @@ public final class LevelledMobs extends JavaPlugin {
 
         //TODO lokka30: Complete this method's body.
         fileHandler.loadAll(false);
+
+        debugHandler.load();
 
         queueHandler.startQueues();
 

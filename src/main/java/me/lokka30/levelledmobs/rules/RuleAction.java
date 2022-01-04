@@ -8,7 +8,7 @@
 
 package me.lokka30.levelledmobs.rules;
 
-import me.lokka30.levelledmobs.nametag.NametagHandler;
+import me.lokka30.levelledmobs.nametag.NametagVisibilityMethod;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashSet;
@@ -17,7 +17,7 @@ import java.util.Optional;
 public record RuleAction(
         @NotNull Optional<String>                                           nametagFormat,
         @NotNull Optional<Float>                                            nametagVisibilityDuration,
-        @NotNull Optional<HashSet<NametagHandler.NametagVisibilityMethod>>  nametagVisibilityMethods,
+        @NotNull Optional<HashSet<NametagVisibilityMethod>>                 nametagVisibilityMethods,
         @NotNull Optional<Boolean>                                          matchedSettingsBabies,
         @NotNull Optional<Boolean>                                          matchedSettingsPassengers,
         @NotNull Optional<HashSet<Executable>>                              executables
