@@ -4,7 +4,7 @@
 # in LevelledMobs' commands and nametags, e.g. `Lvl. XYZ`.
 # If a number translation is not specified then an English
 # number will be used as a fallback/default.
-levels:
+integers:
   0: '0'
   1: '1'
   2: '2'
