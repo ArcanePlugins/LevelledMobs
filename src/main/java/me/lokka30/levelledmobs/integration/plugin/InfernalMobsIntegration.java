@@ -40,8 +40,7 @@ public class InfernalMobsIntegration implements Integration, MobOwner {
     }
 
     @Override
-    public boolean isMobOwner(LevelledMob mob) {
-        assert isInstalled();
+    public boolean isMobOwner(@NotNull LevelledMob mob) {
         assert isEnabled(main);
         // TODO
         return false;

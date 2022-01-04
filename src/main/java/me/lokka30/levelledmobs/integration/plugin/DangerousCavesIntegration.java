@@ -45,8 +45,8 @@ public class DangerousCavesIntegration implements Integration, MobOwner {
     }
 
     @Override
-    public boolean isMobOwner(LevelledMob mob) {
-        assert isInstalled();
+    public boolean isMobOwner(@NotNull LevelledMob mob) {
+        assert isEnabled(main);
 
         // if the key is not set, set it
         if(mobTypeKey == null) {

@@ -9,6 +9,7 @@
 package me.lokka30.levelledmobs.integration;
 
 import me.lokka30.levelledmobs.levelling.LevelledMob;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * A 'mob owner' is any plugin that manages mobs,
@@ -29,6 +30,6 @@ public interface MobOwner {
      * @return if the mob belongs to the Mob-Owner or not
      * @since v4.0.0
      */
-    boolean isMobOwner(LevelledMob mob);
+    boolean isMobOwner(@NotNull final LevelledMob mob);
 
 }
