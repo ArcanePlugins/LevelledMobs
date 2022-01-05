@@ -12,11 +12,14 @@ import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.rules.Group;
 import me.lokka30.levelledmobs.rules.Rule;
 import me.lokka30.levelledmobs.rules.RuleListener;
+import me.lokka30.levelledmobs.util.Utils;
 import org.bukkit.block.Biome;
 import org.bukkit.entity.EntityType;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Locale;
 
 /**
  * @author lokka30
@@ -57,23 +60,57 @@ public class RuleParser {
     }
 
     void addRuleGroups() {
-        //
+        addMobRuleGroups();
+        addBiomeRuleGroups();
     }
 
     void addMobRuleGroups() {
-        //
+        for(
+                String mobGroupName : main.getFileHandler().getGroupsFile().getData()
+                .getSection("mob-groups").singleLayerKeySet()
+        ) {
+            HashSet<EntityType> entityTypes = new HashSet<>();
+
+            for(
+                    String entityTypeStr : main.getFileHandler().getGroupsFile().getData()
+                    .getOrDefault("mob-groups." + mobGroupName, new ArrayList<String>())
+            ) {
+                EntityType entityType;
+                try {
+                    entityType = EntityType.valueOf(entityTypeStr.toUpperCase(Locale.ROOT));
+                } catch(IllegalArgumentException ex) {
+                    Utils.LOGGER.error("Invalid entity type '&b" + entityTypeStr + "&7' in the mob " +
+                            "group '&b" + mobGroupName + "&7'! Please fix this ASAP.");
+                    continue;
+                }
+
+                if(entityTypes.contains(entityType)) {
+                    Utils.LOGGER.error("Entity type '&b" + entityTypeStr + "&7' has been listed " +
+                            "listed more than once in the mob group '&b" + mobGroupName + "&7'! " +
+                            "Please fix this ASAP.");
+                    continue;
+                }
+
+                entityTypes.add(entityType);
+            }
+
+            getMobGroups().add(new Group<>(
+                    mobGroupName,
+                    entityTypes
+            ));
+        }
     }
 
     void addBiomeRuleGroups() {
-        //
+        //TODO
     }
 
     void addRulePresets() {
-        //
+        //TODO
     }
 
     void addRuleListeners() {
-        //
+        //TODO
     }
 
     //TODO
