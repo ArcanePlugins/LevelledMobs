@@ -18,15 +18,16 @@ import java.io.File;
 public class UnlevellablesFile implements JsonInternalFile {
 
     private final @NotNull LevelledMobs main;
-    private final @NotNull Json data;
+    private Json data;
     public UnlevellablesFile(final @NotNull LevelledMobs main) {
         this.main = main;
-        this.data = new Json(getNameWithoutExtension(), getRelativePath(), getInputStream(main));
     }
 
     @Override
-    public void load() {
-        //TODO
+    public void load(final boolean fromReload) {
+        if(fromReload) return;
+
+        data = new Json(getNameWithoutExtension(), getRelativePath(), getInputStream(main));
     }
 
     @NotNull

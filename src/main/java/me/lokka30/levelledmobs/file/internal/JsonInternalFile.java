@@ -13,8 +13,6 @@ import org.jetbrains.annotations.NotNull;
 
 public interface JsonInternalFile extends InternalFile {
 
-    void load();
-
     @NotNull
     Json getData();
 

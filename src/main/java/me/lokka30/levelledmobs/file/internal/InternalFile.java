@@ -15,6 +15,8 @@ import java.io.InputStream;
 
 public interface InternalFile {
 
+    void load(final boolean fromReload);
+
     default InputStream getInputStream(final @NotNull LevelledMobs main) {
         return main.getResource(getRelativePath());
     }
