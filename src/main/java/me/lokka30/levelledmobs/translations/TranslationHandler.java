@@ -9,7 +9,7 @@
 package me.lokka30.levelledmobs.translations;
 
 import me.lokka30.levelledmobs.LevelledMobs;
-import org.apache.commons.lang.WordUtils;
+import me.lokka30.levelledmobs.util.Utils;
 import org.bukkit.entity.EntityType;
 import org.jetbrains.annotations.NotNull;
 
@@ -43,10 +43,7 @@ public class TranslationHandler {
         - Add javadoc comment.
      */
     public String getDefaultEntityName(final @NotNull EntityType entityType) {
-        return WordUtils.capitalizeFully(
-                entityType.toString()
-                        .replace("_", " ")
-        );
+        return Utils.formatEnumConstant(entityType.toString());
     }
 
     /*

@@ -88,7 +88,7 @@ public class RuleParser {
                 }
 
                 if(entityTypes.contains(entityType)) {
-                    Utils.LOGGER.error("Entity type '&b" + entityTypeStr + "&7' has been listed " +
+                    Utils.LOGGER.error("Entity type '&b" + entityTypeStr.toUpperCase(Locale.ROOT) + "&7' has been listed " +
                             "listed more than once in the mob group named '&b" + mobGroupName + "&7'! " +
                             "Please fix this ASAP.");
                     continue;
@@ -125,7 +125,7 @@ public class RuleParser {
                 }
 
                 if(biomes.contains(biome)) {
-                    Utils.LOGGER.error("Biome '&b" + biomeStr + "&7' has been listed " +
+                    Utils.LOGGER.error("Biome '&b" + biomeStr.toUpperCase(Locale.ROOT) + "&7' has been listed " +
                             "listed more than once in the biome group named '&b" + biomeGroupName + "&7'! " +
                             "Please fix this ASAP.");
                     continue;
@@ -148,7 +148,4 @@ public class RuleParser {
     void addRuleListeners() {
         //TODO
     }
-
-    //TODO
-
 }

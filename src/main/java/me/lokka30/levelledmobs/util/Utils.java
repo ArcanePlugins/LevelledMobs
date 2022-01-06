@@ -8,8 +8,8 @@
 
 package me.lokka30.levelledmobs.util;
 
-
 import me.lokka30.microlib.messaging.MicroLogger;
+import org.apache.commons.lang.WordUtils;
 
 /**
  * @author lokka30
@@ -19,7 +19,7 @@ import me.lokka30.microlib.messaging.MicroLogger;
  * it so it doesn't have to be repeated, making it easier to
  * update the methods since they are in one location.
  */
-public class Utils {
+public final class Utils {
 
     /**
      * @since v2.0.0
@@ -27,4 +27,12 @@ public class Utils {
      * across the plugin to log things to the console.
      */
     public static final MicroLogger LOGGER = new MicroLogger("&b&lLevelledMobs: &7");
+
+    /*
+    TODO
+        - Add javadoc.
+     */
+    public static String formatEnumConstant(String constant) {
+        return WordUtils.capitalizeFully(constant.replace("_", ""));
+    }
 }
