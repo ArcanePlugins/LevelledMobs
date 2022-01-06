@@ -31,10 +31,7 @@ defaults:
 # +                                                                                          +LM3
 # +-------------------------------------------------------------------------------------------LM3
 entities:
-  BAT:
-  CAVE_SPIDER:
   CHICKEN:
-  DROWNED:
   ZOMBIE:
 
 
@@ -44,7 +41,7 @@ entities:
 # +                                                                                          +LM3
 # +-------------------------------------------------------------------------------------------LM3
 drop-tables:
-  'example_overworld':
+  example_overworld:
     - STICK:
         requirements:
           chance: 1.0
@@ -61,7 +58,7 @@ drop-tables:
         amount: 1
         group-id: 1
 
-  'example_nether':
+  example_nether:
     - NETHERRACK:
         requirements:
           chance: 1.0
