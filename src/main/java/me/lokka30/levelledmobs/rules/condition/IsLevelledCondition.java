@@ -15,6 +15,6 @@ public record IsLevelledCondition(
 
     @Override
     public boolean appliesTo(@NotNull LivingEntity livingEntity, @NotNull LevelledMobs main) {
-        return LevelledMob.isLevelled(livingEntity, main) == isLevelled;
+        return LevelledMob.isEntityLevelled(main, livingEntity) == isLevelled;
     }
 }

@@ -17,7 +17,9 @@ import me.lokka30.levelledmobs.levelling.LevelHandler;
 import me.lokka30.levelledmobs.listener.*;
 import me.lokka30.levelledmobs.metrics.MetricsHandler;
 import me.lokka30.levelledmobs.nametag.NametagHandler;
+import me.lokka30.levelledmobs.nms.NMSHandler;
 import me.lokka30.levelledmobs.queue.QueueHandler;
+import me.lokka30.levelledmobs.translations.TranslationHandler;
 import me.lokka30.levelledmobs.util.Utils;
 import me.lokka30.microlib.maths.QuickTimer;
 import org.bukkit.Bukkit;
@@ -38,7 +40,10 @@ public final class LevelledMobs extends JavaPlugin {
     private final QueueHandler queueHandler = new QueueHandler(this);
     public @NotNull QueueHandler getQueueHandler() { return queueHandler; }
 
-    private final NametagHandler nametagHandler = new NametagHandler();
+    private final TranslationHandler translationHandler = new TranslationHandler(this);
+    public @NotNull TranslationHandler getTranslationHandler() { return translationHandler; }
+
+    private final NametagHandler nametagHandler = new NametagHandler(this);
     public @NotNull NametagHandler getNametagHandler() { return nametagHandler; }
 
     private final MetricsHandler metricsHandler = new MetricsHandler(this);
@@ -61,6 +66,9 @@ public final class LevelledMobs extends JavaPlugin {
 
     private final FileHandler fileHandler = new FileHandler(this);
     public @NotNull FileHandler getFileHandler() { return fileHandler; }
+
+    private final NMSHandler nmsHandler = new NMSHandler();
+    public @NotNull NMSHandler getNMSHandler() { return nmsHandler; }
 
     /* Start-up & shut-down methods */
 

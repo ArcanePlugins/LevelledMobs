@@ -12,6 +12,8 @@ import me.lokka30.levelledmobs.LevelledMobs;
 import org.bukkit.NamespacedKey;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Set;
+
 /**
  * This class contains a bunch of NamespacedKeys
  * that can be accessed by both LevelledMobs and any other
@@ -22,7 +24,7 @@ import org.jetbrains.annotations.NotNull;
  * @since v4.0.0
  * @see NamespacedKey
  */
-public class LevelledNamespacedKeys {
+public final class LevelledNamespacedKeys {
 
     public LevelledNamespacedKeys(@NotNull final LevelledMobs main) {
         /* Register the namespaced keys */
@@ -30,31 +32,50 @@ public class LevelledNamespacedKeys {
         spawnReasonKey = new NamespacedKey(main, "spawnReason");
         wasBabyMobKey = new NamespacedKey(main, "wasBabyMob");
         overridenEntityNameKey = new NamespacedKey(main, "overridenEntityName");
-        playerLevellingClosestPlayerUUID = new NamespacedKey(main, "playerLevelling_Id");
-        chanceRuleAllowed = new NamespacedKey(main, "chanceRule_Allowed");
-        chanceRuleDenied = new NamespacedKey(main, "chanceRule_Denied");
+        playerLevellingClosestPlayerUUIDKey = new NamespacedKey(main, "playerLevelling_Id");
+        chanceRuleAllowedKey = new NamespacedKey(main, "chanceRule_Allowed");
+        chanceRuleDeniedKey = new NamespacedKey(main, "chanceRule_Denied");
+        nametagFormatKey = new NamespacedKey(main, "nametag-format");
+        /*
+        TODO Convert underscore IDs to non-underscore IDs
+         */
+
+        allKeys = Set.of(
+                levelKey, spawnReasonKey, wasBabyMobKey, overridenEntityNameKey,
+                playerLevellingClosestPlayerUUIDKey, chanceRuleAllowedKey, chanceRuleDeniedKey,
+                nametagFormatKey
+        );
     }
+
+    /*
+    TODO Javadoc.
+     */
+    private final Set<NamespacedKey> allKeys;
+    public @NotNull Set<NamespacedKey> getAllKeys() { return allKeys; }
 
     /**
      * @since v4.0.0
      * What level a levelled mob is (e.g., `52`)
      * Type: Integer
      */
-    @NotNull public final NamespacedKey levelKey;
+    private final NamespacedKey levelKey;
+    public @NotNull NamespacedKey getLevelKey() { return levelKey; }
 
     /**
      * @since v4.0.0
      * Says how a mob was spawned
      * Type: String
      */
-    @NotNull public final NamespacedKey spawnReasonKey;
+    private final NamespacedKey spawnReasonKey;
+    public @NotNull NamespacedKey getSpawnReasonKey() { return spawnReasonKey; }
 
     /**
      * @since v4.0.0
      * States if the mob was a baby mob or not.
      * Type: Boolean
      */
-    @NotNull public final NamespacedKey wasBabyMobKey;
+    private final NamespacedKey wasBabyMobKey;
+    public @NotNull NamespacedKey getWasBabyMobKey() { return wasBabyMobKey; }
 
     /**
      * @since v4.0.0
@@ -62,7 +83,8 @@ public class LevelledNamespacedKeys {
      * then the entity name they were given is set here.
      * Type: String
      */
-    @NotNull public final NamespacedKey overridenEntityNameKey;
+    private final NamespacedKey overridenEntityNameKey;
+    public @NotNull NamespacedKey getOverridenEntityNameKey() { return overridenEntityNameKey; }
 
     /**
      * @since v4.0.0
@@ -70,7 +92,8 @@ public class LevelledNamespacedKeys {
      * is stored in the mob
      * Type: String
      */
-    @NotNull public final NamespacedKey playerLevellingClosestPlayerUUID;
+    private final NamespacedKey playerLevellingClosestPlayerUUIDKey;
+    public @NotNull NamespacedKey getPlayerLevellingClosestPlayerUUIDKey() { return playerLevellingClosestPlayerUUIDKey; }
 
     /**
      * @since v4.0.0
@@ -82,7 +105,8 @@ public class LevelledNamespacedKeys {
      * applied wins this key.
      * Type: String
      */
-    @NotNull public final NamespacedKey chanceRuleAllowed;
+    private final NamespacedKey chanceRuleAllowedKey;
+    public @NotNull NamespacedKey getChanceRuleAllowedKey() { return chanceRuleAllowedKey; }
 
     /**
      * @since v4.0.0
@@ -90,5 +114,10 @@ public class LevelledNamespacedKeys {
      * chance rules that were denied upon a mob, instead of allowed.
      * Type: String
      */
-    @NotNull public final NamespacedKey chanceRuleDenied;
+    private final NamespacedKey chanceRuleDeniedKey;
+    public @NotNull NamespacedKey getChanceRuleDeniedKey() { return chanceRuleDeniedKey; }
+
+    /* TODO Javadoc */
+    private final NamespacedKey nametagFormatKey;
+    public @NotNull NamespacedKey getNametagFormatKey() { return nametagFormatKey; }
 }

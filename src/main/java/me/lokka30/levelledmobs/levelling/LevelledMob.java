@@ -23,19 +23,67 @@ import org.jetbrains.annotations.NotNull;
  */
 public class LevelledMob {
 
-    public LevelledMob(@NotNull final LivingEntity livingEntity) { this.livingEntity = livingEntity; }
-
+    private final LevelledMobs main;
     private final LivingEntity livingEntity;
-    public final @NotNull LivingEntity getLivingEntity() { return livingEntity; }
+    public LevelledMob(
+            final @NotNull LevelledMobs main,
+            final @NotNull LivingEntity livingEntity
+    ) {
+        this.main = main;
+        this.livingEntity = livingEntity;
+
+        assert isEntityLevelled(main, livingEntity);
+    }
+
+    @NotNull
+    public LivingEntity getLivingEntity() { return livingEntity; }
 
     /*
     TODO
         lokka30: Complete class with methods of course.
      */
 
-    public synchronized static boolean isLevelled(final @NotNull LivingEntity livingEntity, final @NotNull LevelledMobs main) {
+    public synchronized int getLevel() {
+        return livingEntity.getPersistentDataContainer().get(
+                main.getLevelHandler().getLevelledNamespacedKeys().getLevelKey(),
+                PersistentDataType.INTEGER
+        );
+    }
+
+    public synchronized void setLevel(final int newLevel) {
+        if(newLevel < 1) { removeLevel(); return; }
+
+        livingEntity.getPersistentDataContainer().set(
+                main.getLevelHandler().getLevelledNamespacedKeys().getLevelKey(),
+                PersistentDataType.INTEGER,
+                newLevel
+        );
+
+        /*
+        TODO
+        attributes
+        nametags
+        javadoc
+         */
+
+    }
+
+    public synchronized void removeLevel() {
+        main.getLevelHandler().getLevelledNamespacedKeys().getAllKeys()
+                .forEach(livingEntity.getPersistentDataContainer()::remove);
+    }
+
+    @NotNull
+    public synchronized String getNametagFormat() {
+        return livingEntity.getPersistentDataContainer().get(
+                main.getLevelHandler().getLevelledNamespacedKeys().getNametagFormatKey(),
+                PersistentDataType.STRING
+        );
+    }
+
+    public synchronized static boolean isEntityLevelled(final @NotNull LevelledMobs main, final @NotNull LivingEntity livingEntity) {
         return livingEntity.getPersistentDataContainer().has(
-                main.getLevelHandler().getLevelledNamespacedKeys().levelKey,
+                main.getLevelHandler().getLevelledNamespacedKeys().getLevelKey(),
                 PersistentDataType.INTEGER
         );
     }
