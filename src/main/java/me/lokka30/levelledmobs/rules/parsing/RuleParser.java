@@ -18,6 +18,7 @@ import org.bukkit.entity.EntityType;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Locale;
 
@@ -26,6 +27,8 @@ import java.util.Locale;
  * @since v4.0.0
  * This class parses rules from the Rules configuration
  * into Rule objects that are accessed by the plugin.
+ * It also parses other components of the Rules system,
+ * such as groups and presets.
  */
 public class RuleParser {
 
@@ -69,7 +72,7 @@ public class RuleParser {
                 String mobGroupName : main.getFileHandler().getGroupsFile().getData()
                 .getSection("mob-groups").singleLayerKeySet()
         ) {
-            HashSet<EntityType> entityTypes = new HashSet<>();
+            EnumSet<EntityType> entityTypes = EnumSet.noneOf(EntityType.class);
 
             for(
                     String entityTypeStr : main.getFileHandler().getGroupsFile().getData()
@@ -79,14 +82,14 @@ public class RuleParser {
                 try {
                     entityType = EntityType.valueOf(entityTypeStr.toUpperCase(Locale.ROOT));
                 } catch(IllegalArgumentException ex) {
-                    Utils.LOGGER.error("Invalid entity type '&b" + entityTypeStr + "&7' in the mob " +
-                            "group '&b" + mobGroupName + "&7'! Please fix this ASAP.");
+                    Utils.LOGGER.error("Invalid entity type specified '&b" + entityTypeStr + "&7' in the mob " +
+                            "group named '&b" + mobGroupName + "&7'! Please fix this ASAP.");
                     continue;
                 }
 
                 if(entityTypes.contains(entityType)) {
                     Utils.LOGGER.error("Entity type '&b" + entityTypeStr + "&7' has been listed " +
-                            "listed more than once in the mob group '&b" + mobGroupName + "&7'! " +
+                            "listed more than once in the mob group named '&b" + mobGroupName + "&7'! " +
                             "Please fix this ASAP.");
                     continue;
                 }
@@ -102,7 +105,40 @@ public class RuleParser {
     }
 
     void addBiomeRuleGroups() {
-        //TODO
+        for(
+                String biomeGroupName : main.getFileHandler().getGroupsFile().getData()
+                .getSection("biome-groups").singleLayerKeySet()
+        ) {
+            EnumSet<Biome> biomes = EnumSet.noneOf(Biome.class);
+
+            for(
+                    String biomeStr : main.getFileHandler().getGroupsFile().getData()
+                    .getOrDefault("biome-groups." + biomeGroupName, new ArrayList<String>())
+            ) {
+                Biome biome;
+                try {
+                    biome = Biome.valueOf(biomeStr.toUpperCase(Locale.ROOT));
+                } catch(IllegalArgumentException ex) {
+                    Utils.LOGGER.error("Invalid biome specified '&b" + biomeStr + "&7' in the biome " +
+                            "group named '&b" + biomeGroupName + "&7'! Please fix this ASAP.");
+                    continue;
+                }
+
+                if(biomes.contains(biome)) {
+                    Utils.LOGGER.error("Biome '&b" + biomeStr + "&7' has been listed " +
+                            "listed more than once in the biome group named '&b" + biomeGroupName + "&7'! " +
+                            "Please fix this ASAP.");
+                    continue;
+                }
+
+                biomes.add(biome);
+            }
+
+            getBiomeGroups().add(new Group<>(
+                    biomeGroupName,
+                    biomes
+            ));
+        }
     }
 
     void addRulePresets() {

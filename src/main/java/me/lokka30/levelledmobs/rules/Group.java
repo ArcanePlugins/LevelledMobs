@@ -10,9 +10,9 @@ package me.lokka30.levelledmobs.rules;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.util.HashSet;
+import java.util.Set;
 
 public record Group<T>(
         @NotNull String     identifier,
-        @NotNull HashSet<T> data
+        @NotNull Set<T> data
 ) {}
