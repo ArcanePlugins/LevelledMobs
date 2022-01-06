@@ -9,6 +9,9 @@
 package me.lokka30.levelledmobs.util;
 
 import org.bukkit.Location;
+import org.jetbrains.annotations.NotNull;
+
+import java.io.Serializable;
 
 /**
  * @author lokka30
@@ -17,19 +20,14 @@ import org.bukkit.Location;
  * A smaller version of the Location class only including
  * a world name, and three integers for the x, y and z.
  * Finds uses where the extra data and precision of the
- * Location class is completely unnecessary.
+ * Location class is unnecessary.
  */
-public class Point {
-
-    public String worldName;
-    public int x, y, z;
-
-    public Point(final String worldName, final int x, final int y, final int z) {
-        this.worldName = worldName;
-        this.x = x;
-        this.y = y;
-        this.z = z;
-    }
+public record Point(
+        @NotNull String worldName,
+        int             x,
+        int             y,
+        int             z
+) implements Serializable {
 
     /**
      * @return array of X, Y and Z coordinates
@@ -41,27 +39,24 @@ public class Point {
     }
 
     /**
-     * @return a String format of the Point
+     * @return a String format of the Point but more human-readable.
      * @author lokka30
-     * @since v3.1.2
+     * @since v4.0.0
      */
-    public String toString() {
-        return String.format("%s, %s, %s, %s", worldName, x, y, z);
+    public String toFormattedString() {
+        return "[" + worldName + "] @ x=" + x + ", y=" + y + ", z=" + z;
     }
 
-    public Point(final String str) {
-        final String[] split = str.split(",");
-        this.worldName = split[0];
-        this.x = Integer.parseInt(split[1]);
-        this.y = Integer.parseInt(split[2]);
-        this.z = Integer.parseInt(split[3]);
-    }
-
-    public Point(final Location location) {
-        assert location.getWorld() != null;
-        worldName = location.getWorld().getName();
-        x = location.getBlockX();
-        y = location.getBlockY();
-        z = location.getBlockZ();
+    /*
+    TODO
+        - Javadoc.
+     */
+    public static Point fromLocation(final @NotNull Location location) {
+        return new Point(
+                location.getWorld().getName(),
+                location.getBlockX(),
+                location.getBlockY(),
+                location.getBlockZ()
+        );
     }
 }

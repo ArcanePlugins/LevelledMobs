@@ -13,8 +13,8 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Collection;
 
 public record ModalList<T>(
-        @NotNull ListMode listMode,
-        @NotNull Collection<T> contents
+        @NotNull ListMode       listMode,
+        @NotNull Collection<T>  contents
 ) {
 
     public enum ListMode {
