@@ -19,7 +19,6 @@ import me.lokka30.levelledmobs.file.external.readme.ReadmeFile;
 import me.lokka30.levelledmobs.file.external.settings.SettingsFile;
 import me.lokka30.levelledmobs.file.external.translations.constants.ConstantsFile;
 import me.lokka30.levelledmobs.file.external.translations.messages.MessagesFile;
-import me.lokka30.levelledmobs.file.internal.JsonInternalFile;
 import me.lokka30.levelledmobs.file.internal.playerHeadTextures.PlayerHeadTexturesFile;
 import me.lokka30.levelledmobs.file.internal.unlevellables.UnlevellablesFile;
 import me.lokka30.levelledmobs.rules.parsing.RuleParser;
@@ -105,7 +104,7 @@ public class FileHandler {
     /* Methods */
 
     public void loadAll(final boolean fromReload) {
-        loadInternalFiles();
+        loadInternalFiles(fromReload);
         loadExternalFiles(fromReload);
         loadParsers();
     }
@@ -118,14 +117,13 @@ public class FileHandler {
      * not running this method on reload. Thus it should only
      * be ran on start-up (onEnable).
      */
-    public void loadInternalFiles() {
+    public void loadInternalFiles(final boolean fromReload) {
         Utils.LOGGER.info("Started loading internal files...");
 
-        Utils.LOGGER.info("Loading JSON internal files...");
         List.of(
                 playerHeadTexturesFile,
                 unlevellablesFile
-        ).forEach(JsonInternalFile::load);
+        ).forEach(file -> file.load(fromReload));
 
         Utils.LOGGER.info("All internal files have been loaded.");
     }
