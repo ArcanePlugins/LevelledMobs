@@ -8,10 +8,15 @@
 
 package me.lokka30.levelledmobs.events;
 
+import com.google.common.collect.ImmutableList;
+import me.lokka30.levelledmobs.levelling.LevelledMob;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
+import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.List;
 
 /**
  * @author lokka30
@@ -22,8 +27,10 @@ import org.jetbrains.annotations.NotNull;
  * This event is fired by LevelledMobs when a
  * levelled mob dies and LevelledMobs wants to
  * change the drops of the entity.
+ * <p>
+ * Note: The previousDrops are unmodifiable.
  */
-public class MobDropModificationEvent extends Event {
+public class MobDropModificationEvent extends Event implements Cancellable {
 
     private static final HandlerList HANDLERS = new HandlerList();
 
@@ -36,9 +43,33 @@ public class MobDropModificationEvent extends Event {
     @NotNull
     public static HandlerList getHandlerList() { return HANDLERS; }
 
-    /*
-    TODO:
-        - Complete class.
-     */
+    private boolean isCancelled = false;
 
+    @Override
+    public boolean isCancelled() {
+        return isCancelled;
+    }
+
+    @Override
+    public void setCancelled(boolean isCancelled) {
+        this.isCancelled = isCancelled;
+    }
+
+    private final LevelledMob levelledMob;
+    private final ImmutableList<ItemStack> previousDrops;
+    private final List<ItemStack> newDrops;
+
+    public MobDropModificationEvent(
+            final @NotNull LevelledMob levelledMob,
+            final @NotNull ImmutableList<ItemStack> previousDrops,
+            final @NotNull List<ItemStack> newDrops
+    ) {
+        this.levelledMob = levelledMob;
+        this.previousDrops = previousDrops;
+        this.newDrops = newDrops;
+    }
+
+    public LevelledMob getLevelledMob() { return levelledMob; }
+    public ImmutableList<ItemStack> getPreviousDrops() { return previousDrops; }
+    public List<ItemStack> getNewDrops() { return newDrops; }
 }
