@@ -8,11 +8,5 @@ package me.lokka30.levelledmobs.debug;
  * could be 'DebugCategory.UPDATE_CHECKER'.
  */
 public enum DebugCategory {
-        /*
-        TODO
-            lokka30: This enum serves the exact same purpose as LM3's
-                     'DebugType' enum, although it starts over with
-                     none of the old constants being carried over.
-                     Add new constants as they are required.
-         */
+    //TODO add constants.
 }

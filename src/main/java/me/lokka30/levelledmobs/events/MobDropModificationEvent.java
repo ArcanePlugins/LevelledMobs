@@ -25,14 +25,20 @@ import org.jetbrains.annotations.NotNull;
  */
 public class MobDropModificationEvent extends Event {
 
-    /*
-    TODO
-        lokka30: Complete event class.
-     */
+    private static final HandlerList HANDLERS = new HandlerList();
 
     @NotNull
     @Override
     public HandlerList getHandlers() {
-        return null;
+        return HANDLERS;
     }
+
+    @NotNull
+    public static HandlerList getHandlerList() { return HANDLERS; }
+
+    /*
+    TODO:
+        - Complete class.
+     */
+
 }

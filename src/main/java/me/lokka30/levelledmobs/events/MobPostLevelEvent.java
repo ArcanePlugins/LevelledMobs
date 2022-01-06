@@ -8,10 +8,14 @@
 
 package me.lokka30.levelledmobs.events;
 
+import me.lokka30.levelledmobs.levelling.AdditionalLevelInformation;
+import me.lokka30.levelledmobs.levelling.LevelledMob;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.EnumSet;
 
 /**
  * @author lokka30
@@ -25,14 +29,32 @@ import org.jetbrains.annotations.NotNull;
  */
 public class MobPostLevelEvent extends Event {
 
-    /*
-    TODO
-        lokka30: Complete event class.
-     */
+    private static final HandlerList HANDLERS = new HandlerList();
 
     @NotNull
     @Override
     public HandlerList getHandlers() {
-        return null;
+        return HANDLERS;
     }
+
+    @NotNull
+    public static HandlerList getHandlerList() { return HANDLERS; }
+
+    private final LevelledMob levelledMob;
+    private final int level;
+    private final EnumSet<AdditionalLevelInformation> additionalLevelInformation;
+
+    public MobPostLevelEvent(
+            final @NotNull LevelledMob levelledMob,
+            final int level,
+            final @NotNull EnumSet<AdditionalLevelInformation> additionalLevelInformation
+    ) {
+        this.levelledMob = levelledMob;
+        this.level = level;
+        this.additionalLevelInformation = additionalLevelInformation;
+    }
+
+    public @NotNull LevelledMob getLevelledMob() { return levelledMob; }
+    public int getLevel() { return level; }
+    public @NotNull EnumSet<AdditionalLevelInformation> getAdditionalLevelInformation() { return additionalLevelInformation; }
 }
