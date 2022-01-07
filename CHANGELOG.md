@@ -310,7 +310,7 @@ A *lot* of code cleanup was done for this release. Helps us and other developers
 ### Changelog:
 
 - Huge amount of code improvements. Significant things to note is the package has changed from '
-  io.github.lokka30.levelledmobs' to 'me.lokka30.levelledmobs' to suit my other new plugins. (lokka30)
+  io.github.lokka30.levelledmobs' to 'levelledmobs' to suit my other new plugins. (lokka30)
 - Renamed default inbuilt data files (lokka30)
 - Removed isLevelledKey, instead use LevelInterface#isLevelled(LivingEntity) (lokka30)
 - Improved Utils#isBabyMob and the methods which use it. Should allow for more 'BABY' variants of entities to be
