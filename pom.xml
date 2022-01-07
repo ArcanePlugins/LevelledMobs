@@ -24,7 +24,6 @@
     <packaging>pom</packaging>
 
     <name>LevelledMobs-Parent</name>
-    <description>The Ultimate RPG Mob Levelling Plugin - make your server's mobs stronger!</description>
 
     <properties>
         <java.version>16</java.version>

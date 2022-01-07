@@ -12,6 +12,7 @@
     <packaging>jar</packaging>
     <artifactId>core-bukkit</artifactId>
     <name>LevelledMobs</name>
+    <description>The Ultimate RPG Mob Levelling Plugin - make your server's mobs stronger!</description>
     <version>4.0.0-b000-SNAPSHOT</version>
 
     <properties>

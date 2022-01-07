@@ -7,6 +7,10 @@
 # IntelliJ IDE
 /target/
 /.idea/
+/common/target/
+/core-bukkit/target/
+/v1_17_r1/target/
+/v1_18_r1/target/
 LevelledMobs.iml
 
 # Eclipse IDE
