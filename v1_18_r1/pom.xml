@@ -11,7 +11,7 @@
 
     <artifactId>v1_18_r1</artifactId>
     <version>1</version>
-    <name>v_1_18_r1-module</name>
+    <name>v1.18-R1 NMS</name>
     <packaging>jar</packaging>
 
     <properties>

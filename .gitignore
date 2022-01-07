@@ -5,12 +5,8 @@
 # license that can be found in the LICENSE.md file.
 
 # IntelliJ IDE
-/target/
-/.idea/
-/common/target/
-/core-bukkit/target/
-/v1_17_r1/target/
-/v1_18_r1/target/
+target/
+.idea/
 LevelledMobs.iml
 
 # Eclipse IDE

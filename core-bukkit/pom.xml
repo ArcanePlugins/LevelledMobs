@@ -11,7 +11,7 @@
 
     <packaging>jar</packaging>
     <artifactId>core-bukkit</artifactId>
-    <name>LevelledMobs</name>
+    <name>Core (Bukkit)</name>
     <description>The Ultimate RPG Mob Levelling Plugin - make your server's mobs stronger!</description>
     <version>4.0.0-b000-SNAPSHOT</version>
 
@@ -36,7 +36,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>3.3.0-SNAPSHOT</version>
+                <version>3.2.4</version>
                 <configuration>
                     <relocations>
                         <relocation>
