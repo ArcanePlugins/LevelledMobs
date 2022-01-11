@@ -1,7 +1,7 @@
-package me.lokka30.levelledmobs.levelling;
+package me.lokka30.levelledmobs.level;
 
-import me.lokka30.levelledmobs.events.MobPostLevelEvent;
-import me.lokka30.levelledmobs.events.MobPreLevelEvent;
+import me.lokka30.levelledmobs.event.MobPostLevelEvent;
+import me.lokka30.levelledmobs.event.MobPreLevelEvent;
 
 /**
  * When a mob is levelled, a set of these constants

@@ -6,34 +6,39 @@
  * license that can be found in the LICENSE.md file.
  */
 
-package me.lokka30.levelledmobs.levelling.strategy;
+package me.lokka30.levelledmobs.level.strategy;
 
 import me.lokka30.levelledmobs.LevelledMobs;
-import me.lokka30.levelledmobs.levelling.LevelledMob;
-import me.lokka30.microlib.maths.Randoms;
+import me.lokka30.levelledmobs.level.LevelledMob;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * This Levelling Strategy spits out a random number. That's it.
- * Administrators can set a min & max level of course.
+ * This class generates a level for a mob
+ * based upon their Y-coordinate. The administrator
+ * can configure it through the Rules system to increase
+ * the level as mobs are spawned deeper underground, or
+ * vice-versa.
  *
  * @author lokka30
  * @see LevellingStrategy
  * @since v4.0.0
  */
-public record RandomStrategy(
-        int minLevel,
-        int maxLevel
+public record YAxisStrategy(
+        int start,
+        int end,
+        int period,
+        boolean inverse
 ) implements LevellingStrategy {
 
     @Override
     @NotNull
     public String getName() {
-        return "RandomStrategy";
+        return "YAxis";
     }
 
     @Override
     public int calculateLevel(@NotNull LevelledMobs main, @NotNull LevelledMob mob) {
-        return Randoms.generateRandomInt(minLevel, maxLevel);
+        //TODO
+        return -1;
     }
 }

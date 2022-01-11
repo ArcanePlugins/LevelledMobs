@@ -6,7 +6,7 @@
  * license that can be found in the LICENSE.md file.
  */
 
-package me.lokka30.levelledmobs.customdrops;
+package me.lokka30.levelledmobs.customdrop;
 
 import me.lokka30.levelledmobs.LevelledMobs;
 import org.jetbrains.annotations.NotNull;

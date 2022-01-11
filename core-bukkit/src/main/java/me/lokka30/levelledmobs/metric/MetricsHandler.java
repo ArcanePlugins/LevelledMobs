@@ -6,12 +6,10 @@
  * license that can be found in the LICENSE.md file.
  */
 
-package me.lokka30.levelledmobs.metrics;
+package me.lokka30.levelledmobs.metric;
 
 import me.lokka30.levelledmobs.LevelledMobs;
 import org.bstats.bukkit.Metrics;
-import org.bstats.charts.SimpleBarChart;
-import org.bstats.charts.SimplePie;
 
 /**
  * @author lokka30

@@ -8,7 +8,7 @@
 
 package me.lokka30.levelledmobs.integration;
 
-import me.lokka30.levelledmobs.levelling.LevelledMob;
+import me.lokka30.levelledmobs.level.LevelledMob;
 import org.jetbrains.annotations.NotNull;
 
 /**

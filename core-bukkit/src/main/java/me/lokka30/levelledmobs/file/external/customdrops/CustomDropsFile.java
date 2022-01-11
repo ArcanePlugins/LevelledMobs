@@ -8,32 +8,32 @@
 
 package me.lokka30.levelledmobs.file.external.customdrops;
 
-import de.leonhard.storage.Yaml;
-import de.leonhard.storage.internal.settings.ReloadSettings;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.file.external.YamlExternalVersionedFile;
 import me.lokka30.levelledmobs.util.Utils;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.jetbrains.annotations.NotNull;
+
+import java.io.File;
 
 public class CustomDropsFile implements YamlExternalVersionedFile {
 
-    private Yaml data;
-    private final @NotNull LevelledMobs main;
-    public CustomDropsFile(final @NotNull LevelledMobs main) { this.main = main; }
+    private YamlConfiguration data;
+    private final LevelledMobs main;
+    private final File file;
+
+    public CustomDropsFile(final @NotNull LevelledMobs main) {
+        this.main = main;
+        this.file = new File(getFullPath(main));
+    }
 
     @Override
     public void load(boolean fromReload) {
         // replace if not exists
         if(!exists(main)) { replace(main); }
 
-        // reload data if method was called from a reload function
-        // if not reload, then instantiate the yaml data object
-        if(fromReload) {
-            data.forceReload();
-        } else {
-            data = new Yaml(getNameWithoutExtension(), getFullPath(main));
-            data.setReloadSettings(ReloadSettings.MANUALLY);
-        }
+        /// load the data
+        data = YamlConfiguration.loadConfiguration(file);
 
         // run the migrator
         migrate();
@@ -99,7 +99,7 @@ public class CustomDropsFile implements YamlExternalVersionedFile {
 
     @NotNull
     @Override
-    public Yaml getData() {
+    public YamlConfiguration getData() {
         return data;
     }
 }

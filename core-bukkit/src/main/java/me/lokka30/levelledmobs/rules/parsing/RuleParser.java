@@ -17,7 +17,6 @@ import org.bukkit.block.Biome;
 import org.bukkit.entity.EntityType;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Locale;
@@ -70,13 +69,13 @@ public class RuleParser {
     void addMobRuleGroups() {
         for(
                 String mobGroupName : main.getFileHandler().getGroupsFile().getData()
-                .getSection("mob-groups").singleLayerKeySet()
+                .getConfigurationSection("mob-groups").getKeys(false)
         ) {
             EnumSet<EntityType> entityTypes = EnumSet.noneOf(EntityType.class);
 
             for(
                     String entityTypeStr : main.getFileHandler().getGroupsFile().getData()
-                    .getOrDefault("mob-groups." + mobGroupName, new ArrayList<String>())
+                    .getStringList("mob-groups." + mobGroupName)
             ) {
                 EntityType entityType;
                 try {
@@ -107,13 +106,13 @@ public class RuleParser {
     void addBiomeRuleGroups() {
         for(
                 String biomeGroupName : main.getFileHandler().getGroupsFile().getData()
-                .getSection("biome-groups").singleLayerKeySet()
+                .getConfigurationSection("biome-groups").getKeys(false)
         ) {
             EnumSet<Biome> biomes = EnumSet.noneOf(Biome.class);
 
             for(
                     String biomeStr : main.getFileHandler().getGroupsFile().getData()
-                    .getOrDefault("biome-groups." + biomeGroupName, new ArrayList<String>())
+                    .getStringList("biome-groups." + biomeGroupName)
             ) {
                 Biome biome;
                 try {

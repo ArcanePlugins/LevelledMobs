@@ -9,7 +9,7 @@
 package me.lokka30.levelledmobs.queue;
 
 import me.lokka30.levelledmobs.LevelledMobs;
-import me.lokka30.levelledmobs.levelling.LevelledMob;
+import me.lokka30.levelledmobs.level.LevelledMob;
 import me.lokka30.levelledmobs.util.Utils;
 import org.bukkit.scheduler.BukkitRunnable;
 

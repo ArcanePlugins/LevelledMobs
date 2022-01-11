@@ -12,7 +12,7 @@ public interface YamlExternalVersionedFile extends YamlExternalFile, VersionedFi
 
     @Override
     default int getInstalledFileVersion() {
-        return getData().getOrDefault("file-data-do-not-edit.version", -1);
+        return getData().getInt("file-data-do-not-edit.version", -1);
     }
 
 }

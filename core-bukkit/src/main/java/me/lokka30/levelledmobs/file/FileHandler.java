@@ -9,7 +9,7 @@
 package me.lokka30.levelledmobs.file;
 
 import me.lokka30.levelledmobs.LevelledMobs;
-import me.lokka30.levelledmobs.customdrops.CustomDropParser;
+import me.lokka30.levelledmobs.customdrop.CustomDropParser;
 import me.lokka30.levelledmobs.file.external.customdrops.CustomDropsFile;
 import me.lokka30.levelledmobs.file.external.groups.GroupsFile;
 import me.lokka30.levelledmobs.file.external.listeners.ListenersFile;

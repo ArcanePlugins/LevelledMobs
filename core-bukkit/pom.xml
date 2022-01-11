@@ -61,10 +61,6 @@
                             <pattern>me.lokka30.microlib</pattern>
                             <shadedPattern>${project.groupId}.${project.artifactId}.microlib</shadedPattern>
                         </relocation>
-                        <relocation>
-                            <pattern>de.leonhard.storage</pattern>
-                            <shadedPattern>${project.groupId}.${project.artifactId}.simplixstorage</shadedPattern>
-                        </relocation>
                     </relocations>
                     <filters>
                         <filter>
@@ -154,11 +150,6 @@
             <groupId>com.github.lokka30</groupId>
             <artifactId>MicroLib</artifactId>
             <version>3.2.0</version>
-        </dependency>
-        <dependency>
-            <groupId>com.github.simplix-softworks</groupId>
-            <artifactId>simplixstorage</artifactId>
-            <version>3.2.3</version>
         </dependency>
         <dependency>
             <groupId>com.github.Redempt</groupId>

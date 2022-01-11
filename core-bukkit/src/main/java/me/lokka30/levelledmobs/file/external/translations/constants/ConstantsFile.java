@@ -8,11 +8,10 @@
 
 package me.lokka30.levelledmobs.file.external.translations.constants;
 
-import de.leonhard.storage.Yaml;
-import de.leonhard.storage.internal.settings.ReloadSettings;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.file.external.YamlExternalVersionedFile;
 import me.lokka30.levelledmobs.util.Utils;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -20,9 +19,11 @@ import java.io.File;
 public class ConstantsFile implements YamlExternalVersionedFile {
 
     private final LevelledMobs main;
-    private Yaml data;
+    private YamlConfiguration data;
+    private final File file;
     public ConstantsFile(final @NotNull LevelledMobs main) {
         this.main = main;
+        this.file = new File(getFullPath(main));
     }
 
     @Override
@@ -30,14 +31,8 @@ public class ConstantsFile implements YamlExternalVersionedFile {
         // replace if not exists
         if(!exists(main)) { replace(main); }
 
-        // reload data if method was called from a reload function
-        // if not reload, then instantiate the yaml data object
-        if(fromReload) {
-            data.forceReload();
-        } else {
-            data = new Yaml(getNameWithoutExtension(), getFullPath(main));
-            data.setReloadSettings(ReloadSettings.MANUALLY);
-        }
+        // load data
+        data = YamlConfiguration.loadConfiguration(file);
 
         // run the migrator
         migrate();
@@ -88,7 +83,7 @@ public class ConstantsFile implements YamlExternalVersionedFile {
 
     @NotNull
     @Override
-    public Yaml getData() {
+    public YamlConfiguration getData() {
         return data;
     }
 }

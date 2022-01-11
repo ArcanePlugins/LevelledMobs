@@ -6,10 +6,10 @@
  * license that can be found in the LICENSE.md file.
  */
 
-package me.lokka30.levelledmobs.levelling.strategy;
+package me.lokka30.levelledmobs.level.strategy;
 
 import me.lokka30.levelledmobs.LevelledMobs;
-import me.lokka30.levelledmobs.levelling.LevelledMob;
+import me.lokka30.levelledmobs.level.LevelledMob;
 import org.jetbrains.annotations.NotNull;
 
 /**

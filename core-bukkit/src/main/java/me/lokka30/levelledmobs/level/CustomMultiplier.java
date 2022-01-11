@@ -6,7 +6,7 @@
  * license that can be found in the LICENSE.md file.
  */
 
-package me.lokka30.levelledmobs.levelling;
+package me.lokka30.levelledmobs.level;
 
 /**
  * All utilized non-vanilla 'attribute-like' multipliables

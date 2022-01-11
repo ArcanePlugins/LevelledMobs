@@ -6,10 +6,10 @@
  * license that can be found in the LICENSE.md file.
  */
 
-package me.lokka30.levelledmobs.events;
+package me.lokka30.levelledmobs.event;
 
 import com.google.common.collect.ImmutableList;
-import me.lokka30.levelledmobs.levelling.LevelledMob;
+import me.lokka30.levelledmobs.level.LevelledMob;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;

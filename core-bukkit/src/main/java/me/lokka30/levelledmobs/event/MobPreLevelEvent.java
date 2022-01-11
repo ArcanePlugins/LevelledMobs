@@ -6,9 +6,9 @@
  * license that can be found in the LICENSE.md file.
  */
 
-package me.lokka30.levelledmobs.events;
+package me.lokka30.levelledmobs.event;
 
-import me.lokka30.levelledmobs.levelling.AdditionalLevelInformation;
+import me.lokka30.levelledmobs.level.AdditionalLevelInformation;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;

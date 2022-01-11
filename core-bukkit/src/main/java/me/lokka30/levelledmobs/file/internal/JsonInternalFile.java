@@ -8,16 +8,11 @@
 
 package me.lokka30.levelledmobs.file.internal;
 
-import de.leonhard.storage.Json;
-import org.jetbrains.annotations.NotNull;
-
 public interface JsonInternalFile extends InternalFile {
-
-    @NotNull
-    Json getData();
 
     @Override
     default String getName() {
         return getNameWithoutExtension() + ".json";
     }
+
 }

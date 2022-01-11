@@ -16,10 +16,10 @@ import java.util.HashSet;
 import java.util.Optional;
 
 public record RuleActionContainer(
-        @NotNull Optional<String>                                           nametagFormat,
-        @NotNull Optional<Float>                                            nametagVisibilityDuration,
-        @NotNull Optional<HashSet<NametagVisibilityMethod>>                 nametagVisibilityMethods,
-        @NotNull Optional<Boolean>                                          matchedSettingsBabies,
-        @NotNull Optional<Boolean>                                          matchedSettingsPassengers,
-        @NotNull Optional<HashSet<Executable>>                              executables
+        @NotNull Optional<String>                               nametagFormat,
+        @NotNull Optional<Float>                                nametagVisibilityDuration,
+        @NotNull Optional<HashSet<NametagVisibilityMethod>>     nametagVisibilityMethods,
+        @NotNull Optional<Boolean>                              matchedSettingsBabies,
+        @NotNull Optional<Boolean>                              matchedSettingsPassengers,
+        @NotNull Optional<HashSet<Executable>>                  executables
 ) {}

@@ -8,9 +8,9 @@
 
 package me.lokka30.levelledmobs.file.external;
 
-import de.leonhard.storage.Yaml;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.util.Utils;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -19,7 +19,7 @@ import java.nio.file.Files;
 
 public interface YamlExternalFile extends ExternalFile {
 
-    @NotNull Yaml getData();
+    @NotNull YamlConfiguration getData();
 
     void migrate();
 
