@@ -6,9 +6,9 @@ import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.world.entity.Entity;
-import org.bukkit.craftbukkit.v1_17_R1.util.CraftChatMessage;
 import org.bukkit.craftbukkit.v1_17_R1.entity.CraftLivingEntity;
 import org.bukkit.craftbukkit.v1_17_R1.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_17_R1.util.CraftChatMessage;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -17,7 +17,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Optional;
 
 public class Nametags_17_R1 implements NMSUtil {
-    public void sendNametag(final @NotNull LivingEntity livingEntity, @Nullable String nametag, @NotNull Player player, final boolean doAlwaysVisible) {
+    public void sendNametag(final @NotNull LivingEntity livingEntity, @Nullable String nametag, @NotNull Player player, final boolean alwaysVisible) {
         final CraftLivingEntity cle = (CraftLivingEntity) livingEntity;
         final net.minecraft.world.entity.LivingEntity internalLivingEntity = cle.getHandle();
 
@@ -34,7 +34,7 @@ public class Nametags_17_R1 implements NMSUtil {
         final EntityDataAccessor<Boolean> customNameVisibleAccessor =
                 new EntityDataAccessor<>(3, EntityDataSerializers.BOOLEAN);
 
-        entityData.set(customNameVisibleAccessor, nametag != null && doAlwaysVisible);
+        entityData.set(customNameVisibleAccessor, nametag != null && alwaysVisible);
 
         final ClientboundSetEntityDataPacket packet = new ClientboundSetEntityDataPacket(
                 internalLivingEntity.getId(), entityData, true

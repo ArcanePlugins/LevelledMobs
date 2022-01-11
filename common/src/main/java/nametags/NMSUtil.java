@@ -10,6 +10,6 @@ public interface NMSUtil {
             final @NotNull LivingEntity livingEntity,
             @Nullable String nametag,
             @NotNull Player player,
-            final boolean doAlwaysVisible
+            final boolean alwaysVisible
     );
 }
