@@ -1,3 +1,4 @@
+# This is LM 4's listeners file. The contents of this file are not final - just brainstorming.
 # LM 3's rules file is available at: https://github.com/lokka30/LevelledMobs/blob/master/src/main/resources/rules.yml
   
 # Major change to the rules system. Everything is now processed based
