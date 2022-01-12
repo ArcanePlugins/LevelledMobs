@@ -1,33 +1,17 @@
 # This is LM 4's listeners file. The contents of this file are not final - just brainstorming.
 # LM 3's rules file is available at: https://github.com/lokka30/LevelledMobs/blob/master/src/main/resources/rules.yml
-  
+
 # Major change to the rules system. Everything is now processed based
 # upon an event that happened on the server.
-event-listeners:
 
 # Adds a new listener for the event 'EntitySpawnEvent'
 # Note - LM needs to add its own support for each event
 # it allows to be listened to. So we can't just use any
 # random event, only the ones LM has been programmed to
 # be able to use.
-  - listener-id: 'level-mobs-on-spawn'
-
-    description: 'Level mobs when they spawn in'
-
-#   Change options of the listener here.
-    options:
-
-#     What event should this listener be listening to?
-      listen-for: ['entity-spawn']
-
-#     If another plugin cancels the event,
-#     should LM not process any rules for this listener?
-#     Enabled by default but included for showcase purposes.
-      ignore-cancelled: true
     
 #   Rules are processed from top to bottom
 #   If a rule below another rule both modify the same value then the lower rule will override the upper one
-    rules:
 
 #     Rules can be put inside clusters.
 #     Clusters can also be nested inside each other.
@@ -36,11 +20,20 @@ event-listeners:
 #     Each rule within groups can still be enabled
 #     or disabled but if the cluster is disabled then
 #     that takes priority.
-      - cluster-id: 'generic-levelling-conditions'
+
+event-listeners:
+
+  level-mobs-on-spawn-listener:
+    description: 'Level mobs when they spawn in'
+    options:
+      listen-for: ['entity-spawn']
+
+    rules:
+      generic-levelling-conditions: # This is a cluster of rules!
         enabled: true
         description: 'Conditions that mobs have to satisfy in order to be levelled'
         rules:
-          - rule-id: 'no-levels-from-spawners'
+          no-levels-from-spawners:
             enabled: true
             description: 'Mobs spawned by spawner blocks will not be levelled'
             conditions:
@@ -48,7 +41,7 @@ event-listeners:
                 inclusive-list: ['SPAWNER']
             use-presets: ['no-level']
 
-          - rule-id: 'no-levels-from-certain-worlds'
+          no-levels-from-certain-worlds:
             enabled: true
             description: 'Mobs spawned in specific world(s) will not be levelled'
             conditions:
@@ -56,7 +49,7 @@ event-listeners:
                 inclusive-list: ['world_the_end']
             use-presets: ['no-level']
 
-          - rule-id: 'no-levels-for-passives-or-bosses'
+          no-levels-for-passives-or-bosses:
             enabled: true
             description: 'Passive and boss mobs will not be levelled'
             conditions:
@@ -64,7 +57,7 @@ event-listeners:
                 inclusive-list: ['passives', 'bosses']
             use-presets: ['no-level']
 
-          - rule-id: 'no-levels-for-baby-hostile-mobs'
+          no-levels-for-baby-hostile-mobs:
             enabled: true
             description: 'Baby hostile mobs will not be levelled'
             conditions:
@@ -73,23 +66,34 @@ event-listeners:
               is-baby: true
             use-presets: ['no-level']
 
-      - cluster-id: 'generic-levelled-mob-actions'
+      generic-levelled-mob-actions:
         enabled: true
         description: 'Apply various levelling actions to mobs that should be levelled.'
         rules:
-          - rule-id: 'apply-level-and-attributes-and-nametag'
+          apply-level-and-attributes-and-nametag:
             enabled: true
             description: 'Apply a level (from difficulty preset), a nametag, and attributes to levelled mobs'
             actions:
               nametags:
                 format: '[Example Nametag Lvl. %entity-level% %entity-name% %current-health%/%max-health%]'
-                visibility-duration: 1 # seconds instead of milliseconds
+                visibility-duration: 1
                 visibility-method: ['TARGETED', 'ATTACKED']
               matched-settings:
                 babies: true
                 passengers: false
               execute: ['update-nametag']
             use-presets: ['normal-difficulty']
+
+  update-nametag-listener:
+    options:
+      listen-for: ['entity-damage', 'entity-regain-health', 'player-join', 'player-teleport', 'player-change-world']
+    rules:
+      update-nametag:
+        enabled: true
+        conditions:
+          is-levelled: true
+        actions:
+          execute: ['update-nametag']
 
 # When an entity takes damage, update their nametag.
 # The 'update-nametag' executable, when called on an entity,
@@ -101,16 +105,6 @@ event-listeners:
 # When the executable 'update-nametag' is called on a player
 # instead of an entity, it scans for nearby entities and
 # updates all of their nametags.
-  - listener-id: 'update-nametag'
-    options:
-      listen-for: ['entity-damage', 'entity-regain-health', 'player-join', 'player-teleport', 'player-change-world']
-    rules:
-      - rule-id: 'update-nametag'
-        enabled: true
-        conditions:
-          is-levelled: true
-        actions:
-          execute: ['update-nametag']
       
 # Don't touch any of this unless you know what you're doing,
 # or, unless a LevelledMobs maintainer suggested you do so.
