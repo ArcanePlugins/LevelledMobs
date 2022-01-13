@@ -32,7 +32,7 @@ public class NMSHandler {
     }
 
     @NotNull
-    public NametagNMSHandler getCurrentUtil() {
+    public NametagNMSHandler getNametagNMSHandler() {
         switch(nmsVersionString.toUpperCase(Locale.ROOT)) {
             case "V1_18_R1":
                 return new NametagNMSHandler_1_18_R1();

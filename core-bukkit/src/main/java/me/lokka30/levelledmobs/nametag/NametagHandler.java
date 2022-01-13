@@ -37,7 +37,7 @@ public class NametagHandler {
     }
 
     public void sendNametag(@NotNull LevelledMob levelledMob, @NotNull Player target, @NotNull String nametag) {
-        main.getNMSHandler().getCurrentUtil().sendNametag(levelledMob.getLivingEntity(), nametag, target,false);
+        main.getNMSHandler().getNametagNMSHandler().sendNametag(levelledMob.getLivingEntity(), nametag, target,false);
     }
 
     public void sendNametag(@NotNull LevelledMob levelledMob, @NotNull Player target) {
