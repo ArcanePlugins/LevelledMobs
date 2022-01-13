@@ -7,6 +7,7 @@ import me.lokka30.levelledmobs.util.Utils;
 import org.bukkit.Bukkit;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -32,11 +33,14 @@ public class NMSHandler {
 
     @NotNull
     public NametagNMSHandler getCurrentUtil() {
-        if ("v1_18_R1".equalsIgnoreCase(nmsVersionString)) {
-            return new NametagNMSHandler_1_18_R1();
-        } else if ("v1_17_R1".equalsIgnoreCase(nmsVersionString)) {
-            return new NametagNMSHandler_1_17_R1();
+        switch(nmsVersionString.toUpperCase(Locale.ROOT)) {
+            case "V1_18_R1":
+                return new NametagNMSHandler_1_18_R1();
+            case "V1_17_R1":
+                return new NametagNMSHandler_1_17_R1();
+            default:
+                throw new UnsupportedOperationException("Unsupported Bukkit version: " + nmsVersionString);
+
         }
-        throw new UnsupportedOperationException("Unsupported Bukkit version: " + nmsVersionString);
     }
 }
