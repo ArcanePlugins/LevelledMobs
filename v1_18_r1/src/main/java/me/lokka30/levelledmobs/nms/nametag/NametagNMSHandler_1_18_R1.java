@@ -1,4 +1,4 @@
-package nametags;
+package me.lokka30.levelledmobs.nms.nametag;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundSetEntityDataPacket;
@@ -16,7 +16,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 
-public class Nametags_18_R1 implements NMSUtil {
+public class NametagNMSHandler_1_18_R1 implements NametagNMSHandler {
     public void sendNametag(final @NotNull LivingEntity livingEntity, @Nullable String nametag, @NotNull Player player, final boolean alwaysVisible) {
         final CraftLivingEntity cle = (CraftLivingEntity) livingEntity;
         final net.minecraft.world.entity.LivingEntity internalLivingEntity = cle.getHandle();
@@ -49,9 +49,10 @@ public class Nametags_18_R1 implements NMSUtil {
         if (other.getAll() == null) return entityData;
 
         //noinspection rawtypes
-        for (SynchedEntityData.DataItem dataItem : other.getAll())
+        for (SynchedEntityData.DataItem dataItem : other.getAll()) {
             //noinspection unchecked
             entityData.define(dataItem.getAccessor(), dataItem.getValue());
+        }
 
         return entityData;
     }
