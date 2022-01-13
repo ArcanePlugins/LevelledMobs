@@ -9,7 +9,7 @@
 package me.lokka30.levelledmobs;
 
 import me.lokka30.levelledmobs.command.CommandHandler;
-import me.lokka30.levelledmobs.customdrop.CustomDropHandler;
+import me.lokka30.levelledmobs.customdrops.CustomDropHandler;
 import me.lokka30.levelledmobs.debug.DebugHandler;
 import me.lokka30.levelledmobs.file.FileHandler;
 import me.lokka30.levelledmobs.integration.IntegrationHandler;

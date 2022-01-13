@@ -6,7 +6,7 @@
  * license that can be found in the LICENSE.md file.
  */
 
-package me.lokka30.levelledmobs.customdrop;
+package me.lokka30.levelledmobs.customdrops;
 
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
