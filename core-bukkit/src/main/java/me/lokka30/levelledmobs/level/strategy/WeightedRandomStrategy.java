@@ -10,8 +10,8 @@ package me.lokka30.levelledmobs.level.strategy;
 
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.level.LevelledMob;
-import me.lokka30.levelledmobs.util.math.RangedInt;
 import me.lokka30.levelledmobs.util.math.WeightedRandomContainer;
+import me.lokka30.levelledmobs.util.math.ranged.RangedInt;
 import org.jetbrains.annotations.NotNull;
 
 /**

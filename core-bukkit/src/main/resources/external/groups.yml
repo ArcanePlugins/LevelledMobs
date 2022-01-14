@@ -1,22 +1,22 @@
 # LM 3's rules file is available at: https://github.com/lokka30/LevelledMobs/blob/master/src/main/resources/rules.yml
 
 mob-groups:
-  'hostiles':
+  hostiles:
     - 'ZOMBIE'
     # TODO
 
-  'passives':
+  passives:
     - 'PIG'
     - 'COW'
     #TODO Add more
 
-  'bosses':
+  bosses:
     - 'WITHER'
     - 'ENDER_DRAGON'
 
 
 biome-groups:
-  'oceans':
+  oceans:
     - ''
     #TODO add more.
 

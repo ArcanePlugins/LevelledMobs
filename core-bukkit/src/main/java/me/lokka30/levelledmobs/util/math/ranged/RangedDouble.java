@@ -6,21 +6,21 @@
  * license that can be found in the LICENSE.md file.
  */
 
-package me.lokka30.levelledmobs.util.math;
+package me.lokka30.levelledmobs.util.math.ranged;
 
 import me.lokka30.microlib.maths.Randoms;
 
-public record RangedDouble(double min, double max) {
+public record RangedDouble(double min, double max) implements RangedValue<Double> {
 
     public static RangedDouble parse(String val) {
         String[] split = val.split("-");
 
         if(split.length == 1) {
-            // not a *ranged* int - only a single int is specified
+            // not ranged, only a single val is specified
             final double d = Double.parseDouble(split[0]);
             return new RangedDouble(d, d);
         } else if(split.length == 2) {
-            // ranged int, as two are specified
+            // ranged, as two vals are specified
             return new RangedDouble(
                     Double.parseDouble(split[0]),
                     Double.parseDouble(split[1])
@@ -30,7 +30,8 @@ public record RangedDouble(double min, double max) {
         }
     }
 
-    public double generateRandom() {
+    @Override
+    public Double generateRandom() {
         return Randoms.generateRandomDouble(min, max);
     }
 

@@ -6,21 +6,21 @@
  * license that can be found in the LICENSE.md file.
  */
 
-package me.lokka30.levelledmobs.util.math;
+package me.lokka30.levelledmobs.util.math.ranged;
 
 import me.lokka30.microlib.maths.Randoms;
 
-public record RangedInt(int min, int max) {
+public record RangedInt(int min, int max) implements RangedValue<Integer> {
 
     public static RangedInt parse(String val) {
         String[] split = val.split("-");
 
         if(split.length == 1) {
-            // not a *ranged* int - only a single int is specified
+            // not ranged, only a single val is specified
             final int i = Integer.parseInt(split[0]);
             return new RangedInt(i, i);
         } else if(split.length == 2) {
-            // ranged int, as two are specified
+            // ranged, as two vals are specified
             return new RangedInt(
                     Integer.parseInt(split[0]),
                     Integer.parseInt(split[1])
@@ -30,7 +30,8 @@ public record RangedInt(int min, int max) {
         }
     }
 
-    public int generateRandom() {
+    @Override
+    public Integer generateRandom() {
         return Randoms.generateRandomInt(min, max);
     }
 
