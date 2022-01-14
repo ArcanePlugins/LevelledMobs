@@ -1,10 +1,10 @@
 # LevelledMobs | The Ultimate RPG Mob Levelling Plugin
 
 # Translate any number here. These translations will be used
-# in LevelledMobs' commands and nametags, e.g. `Lvl. XYZ`.
+# in LevelledMobs' commands and nametags for levels, e.g. `Lvl. XYZ`.
 # If a number translation is not specified then an English
 # number will be used as a fallback/default.
-integers:
+levels:
   0: '0'
   1: '1'
   2: '2'
