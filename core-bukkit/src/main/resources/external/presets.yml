@@ -140,6 +140,5 @@ presets:
       
 # Don't touch any of this unless you know what you're doing,
 # or, unless a LevelledMobs maintainer suggested you do so.
-file-data-do-not-edit:
+file-metadata:
   version: 1
-  generated-with: '${project.version}'

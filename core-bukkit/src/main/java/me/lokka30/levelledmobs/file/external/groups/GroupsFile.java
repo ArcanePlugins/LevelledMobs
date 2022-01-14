@@ -8,22 +8,24 @@
 
 package me.lokka30.levelledmobs.file.external.groups;
 
+import de.leonhard.storage.LightningBuilder;
+import de.leonhard.storage.Yaml;
+import de.leonhard.storage.internal.settings.ConfigSettings;
+import de.leonhard.storage.internal.settings.DataType;
+import de.leonhard.storage.internal.settings.ReloadSettings;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.file.external.YamlExternalVersionedFile;
 import me.lokka30.levelledmobs.util.Utils;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 
 public class GroupsFile implements YamlExternalVersionedFile {
 
-    private YamlConfiguration data;
+    private Yaml data;
     private final LevelledMobs main;
-    private final File file;
     public GroupsFile(final @NotNull LevelledMobs main) {
         this.main = main;
-        this.file = new File(getFullPath(main));
     }
 
     @Override
@@ -32,7 +34,16 @@ public class GroupsFile implements YamlExternalVersionedFile {
         if(!exists(main)) { replace(main); }
 
         // load the data
-        data = YamlConfiguration.loadConfiguration(file);
+        if(fromReload) {
+            getData().forceReload();
+        } else {
+            data = LightningBuilder
+                    .fromFile(new File(getFullPath(main)))
+                    .setReloadSettings(ReloadSettings.MANUALLY)
+                    .setConfigSettings(ConfigSettings.PRESERVE_COMMENTS)
+                    .setDataType(DataType.SORTED)
+                    .createYaml();
+        }
 
         // run the migrator
         migrate();
@@ -81,7 +92,7 @@ public class GroupsFile implements YamlExternalVersionedFile {
 
     @NotNull
     @Override
-    public YamlConfiguration getData() {
+    public Yaml getData() {
         return data;
     }
 }
