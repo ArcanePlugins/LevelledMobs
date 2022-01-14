@@ -8,7 +8,6 @@
 
 package me.lokka30.levelledmobs.file;
 
-import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.customdrops.CustomDropParser;
 import me.lokka30.levelledmobs.file.external.customdrops.CustomDropsFile;
 import me.lokka30.levelledmobs.file.external.groups.GroupsFile;
@@ -35,25 +34,25 @@ import java.util.List;
  */
 public class FileHandler {
 
-    public FileHandler(final @NotNull LevelledMobs main) {
+    public FileHandler() {
         /* external files */
-        this.customDropsFile = new CustomDropsFile(main);
-        this.groupsFile = new GroupsFile(main);
-        this.listenersFile = new ListenersFile(main);
-        this.licenseFile = new LicenseFile(main);
-        this.presetsFile = new PresetsFile(main);
-        this.readmeFile = new ReadmeFile(main);
-        this.settingsFile = new SettingsFile(main);
-        this.constantsFile = new ConstantsFile(main);
-        this.messagesFile = new MessagesFile(main);
+        this.customDropsFile = new CustomDropsFile();
+        this.groupsFile = new GroupsFile();
+        this.listenersFile = new ListenersFile();
+        this.licenseFile = new LicenseFile();
+        this.presetsFile = new PresetsFile();
+        this.readmeFile = new ReadmeFile();
+        this.settingsFile = new SettingsFile();
+        this.constantsFile = new ConstantsFile();
+        this.messagesFile = new MessagesFile();
 
         /* internal files */
-        this.playerHeadTexturesFile = new PlayerHeadTexturesFile(main);
-        this.unlevellablesFile = new UnlevellablesFile(main);
+        this.playerHeadTexturesFile = new PlayerHeadTexturesFile();
+        this.unlevellablesFile = new UnlevellablesFile();
 
         /* parsers */
-        this.ruleParser = new RuleParser(main);
-        this.customDropParser = new CustomDropParser(main);
+        this.ruleParser = new RuleParser();
+        this.customDropParser = new CustomDropParser();
     }
 
     /* External Files */
