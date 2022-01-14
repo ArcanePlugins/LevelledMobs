@@ -4,6 +4,9 @@ The Ultimate RPG Mob Levelling Solution
 This README is work-in-progress.
 
 # License
+
+GNU GPL v3.0
+
 <a href="https://www.gnu.org/licenses/gpl-3.0.en.html">
   <img src="https://www.gnu.org/graphics/gplv3-or-later.png" alt="GPL v3 License"/>
 </a>
@@ -25,6 +28,8 @@ This README is work-in-progress.
 
     A copy of the GNU General Public License is supplied in the program's
     source code. Alternatively, see <https://www.gnu.org/licenses>.
+    
+    ***
 
     The following open source libraries are used in LevelledMobs:
      * Spigot API by md_5
@@ -39,6 +44,8 @@ This README is work-in-progress.
          in LevelledMobs v2 and v3.
     Thanks to the developers behind these libraries for making
     LevelledMobs possible!
+    
+    ***
 
     The following parts of LevelledMobs are credited towards their
     respective authors, and therefore, these files do not fall under
@@ -49,6 +56,10 @@ This README is work-in-progress.
          which was created by the user `Zombie_Striker` on SpigotMC.org.
     If an author has specified that their code utilizes a specific
     license, then it will be included at the top of their file(s).
+    
+    ***
+    
+    See Copyright Act 1968 (Australia) for more information.
 
 An offline copy of this license notice is saved when LevelledMobs
 is ran on the server, located at `/plugins/LevelledMobs/misc/license.txt`.

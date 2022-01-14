@@ -21,6 +21,8 @@ Offline Version:
     A copy of the GNU General Public License is supplied in the program's
     source code. Alternatively, see <https://www.gnu.org/licenses>.
 
+    ***
+
     The following open source libraries are used in LevelledMobs:
      * Spigot API by md_5
      * SimplixStorage by KotlinFactory
@@ -35,6 +37,8 @@ Offline Version:
     Thanks to the developers behind these libraries for making
     LevelledMobs possible!
 
+    ***
+
     The following parts of LevelledMobs are credited towards their
     respective authors, and therefore, these files do not fall under
     LevelledMobs' license:
@@ -44,6 +48,10 @@ Offline Version:
          which was created by the user `Zombie_Striker` on SpigotMC.org.
     If an author has specified that their code utilizes a specific
     license, then it will be included at the top of their file(s).
+
+    ***
+
+    See Copyright Act 1968 (Australia) for more information.
 
 Online Version:
     Please visit the following webpage:
