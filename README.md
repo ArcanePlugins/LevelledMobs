@@ -26,11 +26,27 @@ This README is work-in-progress.
     A copy of the GNU General Public License is supplied in the program's
     source code. Alternatively, see <https://www.gnu.org/licenses>.
 
+    The following open source libraries are used in LevelledMobs:
+     * Spigot API by md_5
+     * SimplixStorage by KotlinFactory
+     * Crunch by Redempt
+     * bStats by BtoBastian
+     * NBT API by tr7zw
+     * MicroLib by lokka30
+     * PaperMC API by the Paper team
+     * ProtocolLib by dmulloy2
+       * No longer in use, but has served LevelledMobs very well
+         in LevelledMobs v2 and v3.
+    Thanks to the developers behind these libraries for making
+    LevelledMobs possible!
+
     The following parts of LevelledMobs are credited towards their
     respective authors, and therefore, these files do not fall under
     LevelledMobs' license:
-     * `WeightedRandomContainer.java`, by `Philipp` on StackExchange
-     * `player-head-textures.json`, by `Zombie_Striker` on SpigotMC
+     * `WeightedRandomContainer.java`, by `Philipp` on StackExchange.com.
+     * `player-head-textures.json`
+       * Contains textures from the `Ultimate Mob Heads Fork` resource,
+         which was created by the user `Zombie_Striker` on SpigotMC.org.
     If an author has specified that their code utilizes a specific
     license, then it will be included at the top of their file(s).
 
