@@ -42,38 +42,51 @@ entities:
 # +-------------------------------------------------------------------------------------------LM3
 drop-tables:
   example_overworld:
-    - STICK:
-        requirements:
-          chance: 1.0
-          exclude-spawner-mobs: true
-        no-multiplier: true
-        amount: 1
-        group-id: 1
+    stick:
+      material: 'STICK'
+      requirements:
+        chance: 1.0
+        exclude-spawner-mobs: true
+      no-multiplier: true
+      amount: 1
+      group-id: 1
 
-    - COBBLESTONE:
-        requirements:
-          chance: 1.0
-          exclude-spawner-mobs: true
-        no-multiplier: true
-        amount: 1
-        group-id: 1
+    rocks:
+      material: 'COBBLESTONE'
+      requirements:
+        chance: 1.0
+        exclude-spawner-mobs: true
+      no-multiplier: true
+      amount: 1
+      group-id: 1
 
   example_nether:
-    - NETHERRACK:
-        requirements:
-          chance: 1.0
-          exclude-spawner-mobs: true
-        no-multiplier: true
-        amount: 1
-        group-id: 2
+    nether-rocks:
+      material: 'NETHERRACK'
+       requirements:
+        chance: 1.0
+        exclude-spawner-mobs: true
+      no-multiplier: true
+      amount: 1
+      group-id: 2
 
-    - SOUL_SAND:
-        requirements:
-          chance: 1.0
-          exclude-spawner-mobs: true
-        no-multiplier: true
-        amount: 1
-        group-id: 2
+    soul-sand:
+      material: 'SOUL_SAND'
+      requirements:
+        chance: 1.0
+        exclude-spawner-mobs: true
+      no-multiplier: true
+      amount: 1
+      group-id: 2
+
+# Section 04 - per-group drop limits
+group-drop-limits:
+  '1': 3
+  # Only 3 items out of all that can drop for a mob that are in
+  # group '1' can be dropped. Higher priority items have a higher
+  # chance of being selected.
+  '2': 5
+  '3': 1
 
 # Don't touch any of this unless you know what you're doing,
 # or, unless a LevelledMobs maintainer suggested you do so.

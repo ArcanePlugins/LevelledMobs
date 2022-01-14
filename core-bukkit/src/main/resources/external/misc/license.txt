@@ -1,15 +1,37 @@
-All files within this resource, unless otherwise noted, use the following license:
-Copyright (c) 2020-2022 lokka30
+#########################################################################
+                     LevelledMobs License Notice
+#########################################################################
 
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
+Offline Version:
+    All files within this resource, unless otherwise noted, use the
+    following license:
 
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+    Copyright (c) 2020-2022 lokka30
 
-A copy of the GNU General Public License is supplied in the program's
-source code. Alternatively, see <https://www.gnu.org/licenses/>.
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    A copy of the GNU General Public License is supplied in the program's
+    source code. Alternatively, see <https://www.gnu.org/licenses>.
+
+    Additional credits - see their credited files for more info:
+     * Philipp on StackExchange (WeightedRandomContainer.java)
+     * Zombie_Striker on SpigotMC (player-head-textures.json)
+
+Online Version:
+    Please visit the following webpage:
+    <https://github.com/lokka30/LevelledMobs/blob/master/README.md>
+
+Online/Offline Synchronization:
+    This file may be updated in future versions of the program. The
+    offline copy is only synchronised with the online copy upon
+    the version's release. The license notice (supplied in the
+    Online Version webpage above) applies to the latest release
+    of LevelledMobs.
