@@ -10,7 +10,6 @@ presets:
       matched-actions: # Matched actions makes the rule also apply to babies/passengers regardless of any conditions they have.
         babies: true
         passengers: false
-    options:
       stop-processing: true # This makes the rules interpreter no longer check further rules once this has been reached and the conditions are true of course.
   
   normal-difficulty:

@@ -1,6 +1,7 @@
-package me.lokka30.levelledmobs.rules.condition;
+package me.lokka30.levelledmobs.rules.condition.type;
 
-import me.lokka30.levelledmobs.LevelledMobs;
+import me.lokka30.levelledmobs.rules.condition.RuleCondition;
+import me.lokka30.levelledmobs.rules.condition.RuleConditionType;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.jetbrains.annotations.NotNull;
@@ -16,7 +17,12 @@ public record EntityTypeCondition(
 ) implements RuleCondition {
 
     @Override
-    public boolean appliesTo(@NotNull LivingEntity livingEntity, @NotNull LevelledMobs main) {
+    public @NotNull RuleConditionType getType() {
+        return RuleConditionType.ENTITY_TYPE;
+    }
+
+    @Override
+    public boolean appliesTo(@NotNull LivingEntity livingEntity) {
         return allowedTypes.contains(livingEntity.getType());
     }
 }

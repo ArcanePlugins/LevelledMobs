@@ -15,10 +15,12 @@ import me.lokka30.levelledmobs.file.FileHandler;
 import me.lokka30.levelledmobs.rules.Group;
 import me.lokka30.levelledmobs.rules.Rule;
 import me.lokka30.levelledmobs.rules.RuleListener;
-import me.lokka30.levelledmobs.rules.action.RuleActionContainer;
+import me.lokka30.levelledmobs.rules.action.RuleAction;
+import me.lokka30.levelledmobs.rules.action.RuleActionType;
 import me.lokka30.levelledmobs.rules.condition.RuleCondition;
 import me.lokka30.levelledmobs.rules.condition.RuleConditionType;
 import me.lokka30.levelledmobs.rules.option.RuleOption;
+import me.lokka30.levelledmobs.rules.option.RuleOptionType;
 import me.lokka30.levelledmobs.util.Utils;
 import org.bukkit.block.Biome;
 import org.bukkit.entity.EntityType;
@@ -174,10 +176,9 @@ public class RuleParser {
             @NotNull final String identifier,
             @NotNull final String path
     ) {
-        //TODO
         final FileHandler fh = main.getFileHandler();
         final Yaml data = isPreset ? fh.getPresetsFile().getData() : fh.getListenersFile().getData();
-        final String ruleOrPresetStr = isPreset ? "preset" : "rule";
+        final String ruleOrPreset = isPreset ? "preset" : "rule";
 
         final Optional<String> description = Optional.ofNullable(data.getString(path + ".description"));
 
@@ -200,7 +201,7 @@ public class RuleParser {
             final Optional<RuleConditionType> ruleConditionType = RuleConditionType.fromId(ruleConditionTypeStr);
 
             if(ruleConditionType.isPresent()) {
-                Utils.LOGGER.error("The " + ruleOrPresetStr + " '&b" + identifier + "&7' has an invalid condition" +
+                Utils.LOGGER.error("The " + ruleOrPreset + " '&b" + identifier + "&7' has an invalid condition" +
                         " specified, named '&b" + ruleConditionTypeStr + "&7'. Fix this ASAP.");
             } else {
                 final Optional<RuleCondition> condition = processRuleCondition(
@@ -211,16 +212,52 @@ public class RuleParser {
                 if(condition.isPresent()) {
                     conditions.add(condition.get());
                 } else {
-                    Utils.LOGGER.error("Unable to parse condition '&b" + ruleConditionTypeStr + "&7' in the " + ruleOrPresetStr + " '&b" + identifier + "&7'. Fix this ASAP.");
+                    Utils.LOGGER.error("Unable to parse condition '&b" + ruleConditionTypeStr + "&7' in the " + ruleOrPreset + " '&b" + identifier + "&7'. Fix this ASAP.");
                 }
             }
         }
 
-        final HashSet<RuleActionContainer> actions = new HashSet<>();
-        //TODO
+        final HashSet<RuleAction> actions = new HashSet<>();
+        for(String ruleActionTypeStr : data.getSection(path + ".actions").singleLayerKeySet()) {
+            final Optional<RuleActionType> ruleActionType = RuleActionType.fromId(ruleActionTypeStr);
+
+            if(ruleActionType.isPresent()) {
+                Utils.LOGGER.error("The " + ruleOrPreset + " '&b" + identifier + "&7' has an invalid action" +
+                        " specified, named '&b" + ruleActionTypeStr + "&7'. Fix this ASAP.");
+            } else {
+                final Optional<RuleAction> action = processRuleAction(
+                        ruleActionType.get(),
+                        data.getSection(path + ".actions." + ruleActionTypeStr)
+                );
+
+                if(action.isPresent()) {
+                    actions.add(action.get());
+                } else {
+                    Utils.LOGGER.error("Unable to parse action '&b" + ruleActionTypeStr + "&7' in the " + ruleOrPreset + " '&b" + identifier + "&7'. Fix this ASAP.");
+                }
+            }
+        }
 
         final HashSet<RuleOption> options = new HashSet<>();
-        //TODO
+        for(String ruleOptionTypeStr : data.getSection(path + ".options").singleLayerKeySet()) {
+            final Optional<RuleOptionType> ruleOptionType = RuleOptionType.fromId(ruleOptionTypeStr);
+
+            if(ruleOptionType.isPresent()) {
+                Utils.LOGGER.error("The " + ruleOrPreset + " '&b" + identifier + "&7' has an invalid option" +
+                        " specified, named '&b" + ruleOptionTypeStr + "&7'. Fix this ASAP.");
+            } else {
+                final Optional<RuleOption> option = processRuleOption(
+                        ruleOptionType.get(),
+                        data.getSection(path + ".options." + ruleOptionTypeStr)
+                );
+
+                if(option.isPresent()) {
+                    options.add(option.get());
+                } else {
+                    Utils.LOGGER.error("Unable to parse option '&b" + ruleOptionTypeStr + "&7' in the " + ruleOrPreset + " '&b" + identifier + "&7'. Fix this ASAP.");
+                }
+            }
+        }
 
         return Optional.of(new Rule(
                 isPreset,
@@ -240,6 +277,24 @@ public class RuleParser {
     @NotNull
     Optional<RuleCondition> processRuleCondition(
             final @NotNull RuleConditionType type,
+            final @NotNull FlatFileSection section
+    ) {
+        //TODO
+        return Optional.empty();
+    }
+
+    @NotNull
+    Optional<RuleAction> processRuleAction(
+            final @NotNull RuleActionType type,
+            final @NotNull FlatFileSection section
+    ) {
+        //TODO
+        return Optional.empty();
+    }
+
+    @NotNull
+    Optional<RuleOption> processRuleOption(
+            final @NotNull RuleOptionType type,
             final @NotNull FlatFileSection section
     ) {
         //TODO

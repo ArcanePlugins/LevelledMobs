@@ -9,7 +9,7 @@ public enum RuleConditionType {
     // Retain alphabetical order please!
     ENTITY_TYPE("entity-type"),
     IS_LEVELLED("is-levelled"),
-    LIGHT_LEVEL_FROM_BLOCKS("light-level-from-blocks"),
+    LIGHT_LEVEL_FROM_BLOCK("light-level-from-blocks"),
     LIGHT_LEVEL_FROM_SKY("light-level-from-sky");
 
     private final String conditionId;

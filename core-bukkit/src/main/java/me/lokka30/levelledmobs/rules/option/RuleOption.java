@@ -2,8 +2,11 @@ package me.lokka30.levelledmobs.rules.option;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Optional;
+public interface RuleOption {
 
-public record RuleOption(
-        @NotNull Optional<Boolean> onceProcessedStopProcessing
-) {}
+    @NotNull
+    RuleOptionType getType();
+
+    @NotNull
+    RuleOption merge(final @NotNull RuleOption other);
+}
