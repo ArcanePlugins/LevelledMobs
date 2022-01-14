@@ -22,17 +22,12 @@ import org.jetbrains.annotations.NotNull;
  */
 public class TranslationHandler {
 
-    private final LevelledMobs main;
-    public TranslationHandler(final @NotNull LevelledMobs main) {
-        this.main = main;
-    }
-
     /*
     TODO
         - Add javadoc comment.
      */
     public String getTranslatedEntityName(final @NotNull EntityType entityType) {
-        return main.getFileHandler().getConstantsFile().getData().getOrDefault(
+        return LevelledMobs.getInstance().getFileHandler().getConstantsFile().getData().getOrDefault(
                 "entity-names." + entityType,
                 getDefaultEntityName(entityType)
         );
@@ -51,7 +46,7 @@ public class TranslationHandler {
         - Add javadoc comment.
      */
     public String getTranslatedInteger(final int i) {
-        return main.getFileHandler().getConstantsFile().getData().getOrDefault(
+        return LevelledMobs.getInstance().getFileHandler().getConstantsFile().getData().getOrDefault(
                 "integers." + i,
                 Integer.toString(i)
         );

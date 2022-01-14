@@ -13,7 +13,6 @@ import de.leonhard.storage.Yaml;
 import de.leonhard.storage.internal.settings.ConfigSettings;
 import de.leonhard.storage.internal.settings.DataType;
 import de.leonhard.storage.internal.settings.ReloadSettings;
-import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.file.external.YamlExternalVersionedFile;
 import me.lokka30.levelledmobs.util.Utils;
 import org.jetbrains.annotations.NotNull;
@@ -23,22 +22,18 @@ import java.io.File;
 public class GroupsFile implements YamlExternalVersionedFile {
 
     private Yaml data;
-    private final LevelledMobs main;
-    public GroupsFile(final @NotNull LevelledMobs main) {
-        this.main = main;
-    }
 
     @Override
     public void load(boolean fromReload) {
         // replace if not exists
-        if(!exists(main)) { replace(main); }
+        if(!exists()) { replace(); }
 
         // load the data
         if(fromReload) {
             getData().forceReload();
         } else {
             data = LightningBuilder
-                    .fromFile(new File(getFullPath(main)))
+                    .fromFile(new File(getFullPath()))
                     .setReloadSettings(ReloadSettings.MANUALLY)
                     .setConfigSettings(ConfigSettings.PRESERVE_COMMENTS)
                     .setDataType(DataType.SORTED)
@@ -66,7 +61,7 @@ public class GroupsFile implements YamlExternalVersionedFile {
             case CURRENT:
                 return;
             case FUTURE:
-                sendFutureFileVersionWarning(main);
+                sendFutureFileVersionWarning();
                 return;
             case OUTDATED:
                 boolean shouldBreak = false;

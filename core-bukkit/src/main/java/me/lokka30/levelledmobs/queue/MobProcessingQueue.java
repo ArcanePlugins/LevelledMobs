@@ -23,9 +23,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  */
 public class MobProcessingQueue implements Queue {
 
-    private final LevelledMobs main;
-    public MobProcessingQueue(final LevelledMobs main) { this.main = main; }
-
     private boolean isRunning = false;
     private boolean isCancelled = false;
 
@@ -58,7 +55,7 @@ public class MobProcessingQueue implements Queue {
                 this.cancel();
                 isRunning = false;
             }
-        }.runTaskAsynchronously(main);
+        }.runTaskAsynchronously(LevelledMobs.getInstance());
     }
 
     @Override

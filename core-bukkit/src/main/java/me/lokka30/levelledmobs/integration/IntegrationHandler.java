@@ -8,18 +8,7 @@
 
 package me.lokka30.levelledmobs.integration;
 
-import me.lokka30.levelledmobs.LevelledMobs;
-import me.lokka30.levelledmobs.integration.plugin.BossIntegration;
-import me.lokka30.levelledmobs.integration.plugin.CitizensIntegration;
-import me.lokka30.levelledmobs.integration.plugin.DangerousCavesIntegration;
-import me.lokka30.levelledmobs.integration.plugin.EcoBossesIntegration;
-import me.lokka30.levelledmobs.integration.plugin.EliteMobsIntegration;
-import me.lokka30.levelledmobs.integration.plugin.InfernalMobsIntegration;
-import me.lokka30.levelledmobs.integration.plugin.MythicMobsIntegration;
-import me.lokka30.levelledmobs.integration.plugin.NBTAPIIntegration;
-import me.lokka30.levelledmobs.integration.plugin.PlaceholderAPIIntegration;
-import me.lokka30.levelledmobs.integration.plugin.ShopkeepersIntegration;
-import me.lokka30.levelledmobs.integration.plugin.WorldGuardIntegration;
+import me.lokka30.levelledmobs.integration.plugin.*;
 import me.lokka30.levelledmobs.util.Utils;
 import org.jetbrains.annotations.NotNull;
 
@@ -35,11 +24,6 @@ import java.util.List;
  * @since v4.0.0
  */
 public class IntegrationHandler {
-
-    private final LevelledMobs main;
-    public IntegrationHandler(final @NotNull LevelledMobs main) {
-        this.main = main;
-    }
 
     private final HashSet<Integration> availableIntegrations = new HashSet<>();
     @NotNull public HashSet<Integration> getAvailableIntegrations() {
@@ -76,17 +60,17 @@ public class IntegrationHandler {
      */
     public void loadDefaultIntegrations() {
         List.of(
-                new BossIntegration(main),
-                new CitizensIntegration(main),
-                new DangerousCavesIntegration(main),
-                new EcoBossesIntegration(main),
-                new EliteMobsIntegration(main),
-                new InfernalMobsIntegration(main),
-                new MythicMobsIntegration(main),
-                new NBTAPIIntegration(main),
-                new PlaceholderAPIIntegration(main),
-                new ShopkeepersIntegration(main),
-                new WorldGuardIntegration(main)
+                new BossIntegration(),
+                new CitizensIntegration(),
+                new DangerousCavesIntegration(),
+                new EcoBossesIntegration(),
+                new EliteMobsIntegration(),
+                new InfernalMobsIntegration(),
+                new MythicMobsIntegration(),
+                new NBTAPIIntegration(),
+                new PlaceholderAPIIntegration(),
+                new ShopkeepersIntegration(),
+                new WorldGuardIntegration()
         ).forEach(this::addIntegration);
     }
 }

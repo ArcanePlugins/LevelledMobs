@@ -8,20 +8,13 @@
 
 package me.lokka30.levelledmobs.file.external.readme;
 
-import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.file.external.ExternalFile;
-import org.jetbrains.annotations.NotNull;
 
 public class ReadmeFile implements ExternalFile {
 
-    private @NotNull final LevelledMobs main;
-    public ReadmeFile(@NotNull final LevelledMobs main) {
-        this.main = main;
-    }
-
     @Override
     public void load(final boolean fromReload) {
-        replace(main);
+        replace();
     }
 
     @Override

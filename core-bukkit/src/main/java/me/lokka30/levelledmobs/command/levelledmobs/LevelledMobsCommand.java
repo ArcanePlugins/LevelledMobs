@@ -8,7 +8,6 @@
 
 package me.lokka30.levelledmobs.command.levelledmobs;
 
-import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.command.CommandHandler;
 import me.lokka30.levelledmobs.command.levelledmobs.subcommand.compatibility.CompatibilitySubcommand;
 import me.lokka30.levelledmobs.command.levelledmobs.subcommand.execute.ExecuteSubcommand;
@@ -25,12 +24,7 @@ import org.bukkit.command.TabExecutor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 
 /**
  * @author lokka30
@@ -41,9 +35,7 @@ import java.util.Locale;
  */
 public class LevelledMobsCommand implements TabExecutor {
 
-    private final LevelledMobs main;
-    public LevelledMobsCommand(@NotNull final LevelledMobs main) {
-        this.main = main;
+    public LevelledMobsCommand() {
 
         // create subcommands set
         subcommands.addAll(
@@ -80,7 +72,7 @@ public class LevelledMobsCommand implements TabExecutor {
 
     @Override
     public boolean onCommand(@NotNull final CommandSender sender, @NotNull final Command cmd, @NotNull final String baseCommandLabel, @NotNull final String[] args) {
-        if(CommandHandler.CommandUtils.senderDoesNotHaveRequiredPermission(main, sender, "levelledmobs.command.levelledmobs")) return true;
+        if(CommandHandler.CommandUtils.senderDoesNotHaveRequiredPermission(sender, "levelledmobs.command.levelledmobs")) return true;
 
         if(args.length == 0) {
             sender.sendMessage("Invalid usage - please specify a subcommand. For a list of available subcommands, try '/" + baseCommandLabel + " help'.");
@@ -91,7 +83,7 @@ public class LevelledMobsCommand implements TabExecutor {
         if(subcommand == null) {
             sender.sendMessage("Invalid usage - the subcommand '" + args[0] + "' does not exist. For a list of available subcommands, try '/" + baseCommandLabel + " help'.");
         } else {
-            subcommand.run(main, sender, baseCommandLabel, args[0].toLowerCase(Locale.ROOT), args);
+            subcommand.run(sender, baseCommandLabel, args[0].toLowerCase(Locale.ROOT), args);
         }
 
         return true;
@@ -107,7 +99,7 @@ public class LevelledMobsCommand implements TabExecutor {
         } else {
             final CommandHandler.Subcommand subcommand = getSubcommand(args[0]);
             if(subcommand != null) {
-                return subcommand.getSuggestions(main, sender, baseCommandLabel, args[0].toLowerCase(Locale.ROOT), args);
+                return subcommand.getSuggestions(sender, baseCommandLabel, args[0].toLowerCase(Locale.ROOT), args);
             }
         }
 

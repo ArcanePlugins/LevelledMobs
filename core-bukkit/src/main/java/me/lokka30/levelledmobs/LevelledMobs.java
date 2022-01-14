@@ -37,34 +37,37 @@ import java.util.Set;
  */
 public final class LevelledMobs extends JavaPlugin {
 
-    private final QueueHandler queueHandler = new QueueHandler(this);
+    private static LevelledMobs instance;
+    public static LevelledMobs getInstance() { return instance; }
+
+    private final QueueHandler queueHandler = new QueueHandler();
     public @NotNull QueueHandler getQueueHandler() { return queueHandler; }
 
-    private final TranslationHandler translationHandler = new TranslationHandler(this);
+    private final TranslationHandler translationHandler = new TranslationHandler();
     public @NotNull TranslationHandler getTranslationHandler() { return translationHandler; }
 
-    private final NametagHandler nametagHandler = new NametagHandler(this);
+    private final NametagHandler nametagHandler = new NametagHandler();
     public @NotNull NametagHandler getNametagHandler() { return nametagHandler; }
 
-    private final MetricsHandler metricsHandler = new MetricsHandler(this);
+    private final MetricsHandler metricsHandler = new MetricsHandler();
     public @NotNull MetricsHandler getMetricsHandler() { return metricsHandler; }
 
-    private final LevelHandler levelHandler = new LevelHandler(this);
+    private final LevelHandler levelHandler = new LevelHandler();
     public @NotNull LevelHandler getLevelHandler() { return levelHandler; }
 
-    private final IntegrationHandler integrationHandler = new IntegrationHandler(this);
+    private final IntegrationHandler integrationHandler = new IntegrationHandler();
     public @NotNull IntegrationHandler getIntegrationHandler() { return integrationHandler; }
 
-    private final DebugHandler debugHandler = new DebugHandler(this);
+    private final DebugHandler debugHandler = new DebugHandler();
     public @NotNull DebugHandler getDebugHandler() { return debugHandler; }
 
     private final CustomDropHandler customDropHandler = new CustomDropHandler();
     public @NotNull CustomDropHandler getCustomDropHandler() { return customDropHandler; }
 
-    private final CommandHandler commandHandler = new CommandHandler(this);
+    private final CommandHandler commandHandler = new CommandHandler();
     public @NotNull CommandHandler getCommandHandler() { return commandHandler; }
 
-    private final FileHandler fileHandler = new FileHandler(this);
+    private final FileHandler fileHandler = new FileHandler();
     public @NotNull FileHandler getFileHandler() { return fileHandler; }
 
     private final NMSHandler nmsHandler = new NMSHandler();
@@ -83,6 +86,8 @@ public final class LevelledMobs extends JavaPlugin {
      */
     @Override
     public void onLoad() {
+        instance = this;
+
         final QuickTimer timer = new QuickTimer();
         Utils.LOGGER.info("&f~ Beginning initialization sequence ~");
 
@@ -152,7 +157,7 @@ public final class LevelledMobs extends JavaPlugin {
      * Registers ALL of LevelledMobs' listener classes through Bukkit's plugin manager.
      * Only to be ran from onEnable, do not use elsewhere.
      * The HashSet of Listeners must be updated manually if a new Listener is added to LM.
-     * @see levelledmobs.listener
+     * @see me.lokka30.levelledmobs.listener
      * @see org.bukkit.plugin.PluginManager#registerEvents(Listener, Plugin)
      */
     private void loadListeners() {
@@ -160,24 +165,24 @@ public final class LevelledMobs extends JavaPlugin {
 
         // Retain alphabetical order when modifying this list! :)
         Set.of(
-                new BlockPlaceListener(this),
-                new ChunkLoadListener(this),
-                new EntityCombustListener(this),
-                new EntityDamageByEntityListener(this),
-                new EntityDamageListener(this),
-                new EntityDeathListener(this),
-                new EntityRegainHealthListener(this),
-                new EntitySpawnListener(this),
-                new EntityTameListener(this),
-                new EntityTargetListener(this),
-                new EntityTransformListener(this),
-                new PlayerChangedWorldListener(this),
-                new PlayerDeathListener(this),
-                new PlayerInteractEntityListener(this),
-                new PlayerInteractListener(this),
-                new PlayerJoinListener(this),
-                new PlayerQuitListener(this),
-                new PlayerTeleportListener(this)
+                new BlockPlaceListener(),
+                new ChunkLoadListener(),
+                new EntityCombustListener(),
+                new EntityDamageByEntityListener(),
+                new EntityDamageListener(),
+                new EntityDeathListener(),
+                new EntityRegainHealthListener(),
+                new EntitySpawnListener(),
+                new EntityTameListener(),
+                new EntityTargetListener(),
+                new EntityTransformListener(),
+                new PlayerChangedWorldListener(),
+                new PlayerDeathListener(),
+                new PlayerInteractEntityListener(),
+                new PlayerInteractListener(),
+                new PlayerJoinListener(),
+                new PlayerQuitListener(),
+                new PlayerTeleportListener()
         ).forEach(listener -> Bukkit.getPluginManager().registerEvents(listener, this));
     }
 }

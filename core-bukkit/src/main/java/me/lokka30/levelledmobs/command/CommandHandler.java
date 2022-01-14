@@ -30,13 +30,8 @@ import java.util.List;
  * and command registration for
  * all LevelledMobs commands.
  */
+@Deprecated //TODO need to update this entire system.
 public class CommandHandler {
-
-    private final LevelledMobs main;
-
-    public CommandHandler(@NotNull final LevelledMobs main) {
-        this.main = main;
-    }
 
     /**
      * @param baseCommandLabel the main base label of the command, the one specified in plugin.yml
@@ -47,7 +42,7 @@ public class CommandHandler {
      * the specifies base-label and TabExecutor class.
      */
     public void register(@NotNull final String baseCommandLabel, @NotNull final TabExecutor clazz) {
-        final PluginCommand pluginCmd = main.getCommand(baseCommandLabel);
+        final PluginCommand pluginCmd = LevelledMobs.getInstance().getCommand(baseCommandLabel);
 
         if (pluginCmd == null) {
             Utils.LOGGER.error("Unable to register command '&b/" + baseCommandLabel + "&7', as &bPluginCommand=null&7. Did you modify &bplugin.yml&7 incorrectly?");
@@ -74,13 +69,12 @@ public class CommandHandler {
          * and inform the Command that called this method whether the
          * CommandSender has the required permission or not.
          *
-         * @param main       LevelledMobs main class
          * @param sender     CommandSender that executed the command
          * @param permission Permission the CommandSender requires to run the command
          * @return whether the CommandSender has the required permission or not
          * @see CommandSender#hasPermission(String)
          */
-        public static boolean senderDoesNotHaveRequiredPermission(@NotNull final LevelledMobs main, @NotNull final CommandSender sender, @NotNull final String permission) {
+        public static boolean senderDoesNotHaveRequiredPermission(@NotNull final CommandSender sender, @NotNull final String permission) {
             if (sender.hasPermission(permission)) return false;
 
             //TODO send no permission message.
@@ -132,7 +126,6 @@ public class CommandHandler {
         @NotNull default String getUsage() { return ""; }
 
         /**
-         * @param main   main class of LevelledMobs
          * @param sender who executed the command
          * @param baseCommandLabel  what alias the sender used to run the base command
          * @param subCommandLabel what alias the sender used to run the subcommand
@@ -141,10 +134,9 @@ public class CommandHandler {
          * @since v4.0.0
          * Make the Subcommand run with the specified information.
          */
-        void run(@NotNull final LevelledMobs main, @NotNull final CommandSender sender, @NotNull final String baseCommandLabel, @NotNull final String subCommandLabel, @NotNull final String[] args);
+        void run(@NotNull final CommandSender sender, @NotNull final String baseCommandLabel, @NotNull final String subCommandLabel, @NotNull final String[] args);
 
         /**
-         * @param main   main class of LevelledMobs
          * @param sender who executed the command
          * @param baseCommandLabel  what alias the sender used to run the base command
          * @param subCommandLabel what alias the sender used to run the subcommand
@@ -156,7 +148,7 @@ public class CommandHandler {
          * If no tab completions should be sent, return
          * {@link Collections#emptyList()}.
          */
-        @NotNull default List<String> getSuggestions(@NotNull final LevelledMobs main, @NotNull final CommandSender sender, @NotNull final String baseCommandLabel, @NotNull final String subCommandLabel, @NotNull final String[] args) {
+        @NotNull default List<String> getSuggestions(@NotNull final CommandSender sender, @NotNull final String baseCommandLabel, @NotNull final String subCommandLabel, @NotNull final String[] args) {
             return Collections.emptyList();
         }
     }

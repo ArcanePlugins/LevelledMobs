@@ -19,10 +19,12 @@ public enum NametagPlaceholder {
 
     public String getId() { return "%" + id + "%"; }
 
-    public String getValue(final @NotNull LevelledMobs main, final @NotNull LevelledMob levelledMob) {
+    public String getValue(final @NotNull LevelledMob levelledMob) {
         switch(this) {
             case ENTITY_NAME:
-                return main.getTranslationHandler().getTranslatedEntityName(levelledMob.getLivingEntity().getType());
+                return LevelledMobs.getInstance()
+                        .getTranslationHandler()
+                        .getTranslatedEntityName(levelledMob.getLivingEntity().getType());
             case ENTITY_TYPE:
                 return levelledMob.getLivingEntity().getType().toString();
             default:

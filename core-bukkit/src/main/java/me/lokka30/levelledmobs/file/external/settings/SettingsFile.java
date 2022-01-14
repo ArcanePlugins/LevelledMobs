@@ -13,7 +13,6 @@ import de.leonhard.storage.Yaml;
 import de.leonhard.storage.internal.settings.ConfigSettings;
 import de.leonhard.storage.internal.settings.DataType;
 import de.leonhard.storage.internal.settings.ReloadSettings;
-import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.file.external.YamlExternalVersionedFile;
 import me.lokka30.levelledmobs.util.Utils;
 import org.jetbrains.annotations.NotNull;
@@ -22,23 +21,19 @@ import java.io.File;
 
 public class SettingsFile implements YamlExternalVersionedFile {
 
-    private final @NotNull LevelledMobs main;
     private Yaml data;
-    public SettingsFile(final @NotNull LevelledMobs main) {
-        this.main = main;
-    }
 
     @Override
     public void load(boolean fromReload) {
         // replace if not exists
-        if(!exists(main)) { replace(main); }
+        if(!exists()) { replace(); }
 
         // load the data
         if(fromReload) {
             getData().forceReload();
         } else {
             data = LightningBuilder
-                    .fromFile(new File(getFullPath(main)))
+                    .fromFile(new File(getFullPath()))
                     .setReloadSettings(ReloadSettings.MANUALLY)
                     .setConfigSettings(ConfigSettings.PRESERVE_COMMENTS)
                     .setDataType(DataType.SORTED)
@@ -70,7 +65,7 @@ public class SettingsFile implements YamlExternalVersionedFile {
             case CURRENT:
                 return;
             case FUTURE:
-                sendFutureFileVersionWarning(main);
+                sendFutureFileVersionWarning();
                 return;
             case OUTDATED:
                 for(int i = getInstalledFileVersion(); i < getSupportedFileVersion(); i++) {
@@ -82,8 +77,8 @@ public class SettingsFile implements YamlExternalVersionedFile {
                         Utils.LOGGER.error("Your '&b" + getName() + "&7' file is too old to be migrated. " +
                                 "LevelledMobs will back this file up and instead load the default contents " +
                                 "of the latest version one for you. You will need to manually modify the new file.");
-                        backup(main);
-                        replace(main);
+                        backup();
+                        replace();
                         break;
                     }
 

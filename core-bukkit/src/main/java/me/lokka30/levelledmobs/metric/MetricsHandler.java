@@ -19,15 +19,9 @@ import org.bstats.bukkit.Metrics;
  */
 public class MetricsHandler {
 
-    private final LevelledMobs main;
-
-    public MetricsHandler(final LevelledMobs main) {
-        this.main = main;
-    }
-
     //TODO: make metrics work again
     public void startMetrics() {
-        final Metrics metrics = new Metrics(main, 6269);
+        final Metrics metrics = new Metrics(LevelledMobs.getInstance(), 6269);
 //        metrics.addCustomChart(new SimplePie("maxlevel_used", metricsInfo::getMaxLevelRange));
 //        metrics.addCustomChart(new SimplePie("custom_rules_used", metricsInfo::getCustomRulesUsed));
 //        metrics.addCustomChart(new SimplePie("custom_drops_enabled", metricsInfo::getUsesCustomDrops));

@@ -8,7 +8,6 @@
 
 package me.lokka30.levelledmobs.command.levelledmobs.subcommand.compatibility;
 
-import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.command.CommandHandler;
 import me.lokka30.levelledmobs.command.levelledmobs.LevelledMobsCommand;
 import org.bukkit.command.CommandSender;
@@ -48,7 +47,7 @@ public class CompatibilitySubcommand implements CommandHandler.Subcommand {
     }
 
     @Override
-    public void run(@NotNull LevelledMobs main, @NotNull CommandSender sender, @NotNull String baseCommandLabel, @NotNull String subCommandLabel, @NotNull String[] args) {
+    public void run(@NotNull CommandSender sender, @NotNull String baseCommandLabel, @NotNull String subCommandLabel, @NotNull String[] args) {
         // TODO complete method body.
         sender.sendMessage("The compatibility subcommand is work-in-progress.");
     }

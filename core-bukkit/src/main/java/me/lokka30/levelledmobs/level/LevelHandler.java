@@ -8,7 +8,6 @@
 
 package me.lokka30.levelledmobs.level;
 
-import me.lokka30.levelledmobs.LevelledMobs;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -20,13 +19,7 @@ import org.jetbrains.annotations.NotNull;
  */
 public final class LevelHandler {
 
-    private final LevelledMobs main;
-    public LevelHandler(final @NotNull LevelledMobs main) {
-        this.main = main;
-        this.levelledNamespacedKeys = new LevelledNamespacedKeys(main);
-    }
-
-    private final LevelledNamespacedKeys levelledNamespacedKeys;
+    private final LevelledNamespacedKeys levelledNamespacedKeys = new LevelledNamespacedKeys();
     public @NotNull LevelledNamespacedKeys getLevelledNamespacedKeys() { return levelledNamespacedKeys; }
 
     /*

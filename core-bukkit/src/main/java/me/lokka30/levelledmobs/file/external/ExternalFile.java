@@ -10,7 +10,6 @@ package me.lokka30.levelledmobs.file.external;
 
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.util.Utils;
-import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
@@ -32,13 +31,13 @@ public interface ExternalFile {
     String getRelativePath();
 
     // Full path of the file
-    default String getFullPath(final @NotNull LevelledMobs main) {
-        return main.getDataFolder() + File.separator + getRelativePath();
+    default String getFullPath() {
+        return LevelledMobs.getInstance().getDataFolder() + File.separator + getRelativePath();
     }
 
     // replace the existing file or create a new file, contents transferred from the default file in the jar
-    default void replace(final @NotNull LevelledMobs main) {
-        main.saveResource(getRelativePath(), true);
+    default void replace() {
+        LevelledMobs.getInstance().saveResource(getRelativePath(), true);
         if(getRelativePath().contains(File.separator)) {
             try {
                 Files.copy(
@@ -52,8 +51,8 @@ public interface ExternalFile {
     }
 
     // whether the file exists or not in the data folder.
-    default boolean exists(final @NotNull LevelledMobs main) {
-        return new File(getFullPath(main)).exists();
+    default boolean exists() {
+        return new File(getFullPath()).exists();
     }
 
 }

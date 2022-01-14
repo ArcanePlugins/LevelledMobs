@@ -11,8 +11,6 @@ package me.lokka30.levelledmobs.integration;
 import me.lokka30.levelledmobs.LevelledMobs;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Collections;
-
 /**
  * This interface is used by all Integrations,
  * containing common methods used across all of them.
@@ -46,10 +44,11 @@ public interface Integration {
      * @return if the integration is enabled.
      * @since v4.0.0
      */
-    default boolean isEnabled(@NotNull final LevelledMobs main) {
-        return !main.getFileHandler().getSettingsFile().getData()
-                .getOrDefault("disabled-integrations", Collections.emptyList())
-                .contains(getName())
-                && isInstalled();
+    default boolean isEnabled() {
+        return
+                !(LevelledMobs.getInstance()
+                        .getFileHandler().getSettingsFile().getData()
+                        .getStringList("disabled-integrations")
+                        .contains(getName())) && isInstalled();
     }
 }

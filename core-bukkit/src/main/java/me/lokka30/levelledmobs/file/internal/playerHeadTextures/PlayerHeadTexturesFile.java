@@ -8,18 +8,11 @@
 
 package me.lokka30.levelledmobs.file.internal.playerHeadTextures;
 
-import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.file.internal.JsonInternalFile;
-import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 
 public class PlayerHeadTexturesFile implements JsonInternalFile {
-
-    private final @NotNull LevelledMobs main;
-    public PlayerHeadTexturesFile(final @NotNull LevelledMobs main) {
-        this.main = main;
-    }
 
     @Override
     public void load(final boolean fromReload) {

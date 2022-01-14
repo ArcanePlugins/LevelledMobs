@@ -10,6 +10,7 @@ package me.lokka30.levelledmobs.nametag;
 
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.level.LevelledMob;
+import me.lokka30.levelledmobs.translations.TranslationHandler;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
@@ -18,18 +19,16 @@ TODO Javadocs
  */
 public class NametagHandler {
 
-    private final LevelledMobs main;
-    public NametagHandler(final @NotNull LevelledMobs main) { this.main = main; }
-
     public String generateNametag(@NotNull LevelledMob levelledMob) {
-        final String nameTranslated = main.getTranslationHandler().getTranslatedEntityName(levelledMob.getLivingEntity().getType());
-        final String levelTranslated = main.getTranslationHandler().getTranslatedInteger(levelledMob.getLevel());
+        final TranslationHandler translationHandler = LevelledMobs.getInstance().getTranslationHandler();
+        final String nameTranslated = translationHandler.getTranslatedEntityName(levelledMob.getLivingEntity().getType());
+        final String levelTranslated = translationHandler.getTranslatedInteger(levelledMob.getLevel());
         final String nametagFormat = levelledMob.getNametagFormat();
         @NotNull String finalNametag = nametagFormat;
 
         for(NametagPlaceholder placeholder : NametagPlaceholder.values()) {
             if(nametagFormat.contains(placeholder.getId())) {
-                finalNametag = finalNametag.replace(placeholder.getId(), placeholder.getValue(main, levelledMob));
+                finalNametag = finalNametag.replace(placeholder.getId(), placeholder.getValue(LevelledMobs.getInstance(), levelledMob));
             }
         }
 
@@ -37,10 +36,11 @@ public class NametagHandler {
     }
 
     public void sendNametag(@NotNull LevelledMob levelledMob, @NotNull Player target, @NotNull String nametag) {
-        main.getNMSHandler().getNametagNMSHandler().sendNametag(levelledMob.getLivingEntity(), nametag, target,false);
+        LevelledMobs.getInstance().getNMSHandler().getNametagNMSHandler()
+                .sendNametag(levelledMob.getLivingEntity(), nametag, target,false);
     }
 
-    public void sendNametag(@NotNull LevelledMob levelledMob, @NotNull Player target) {
+    public void generateAndSendNametag(@NotNull LevelledMob levelledMob, @NotNull Player target) {
         sendNametag(levelledMob, target, generateNametag(levelledMob));
     }
 

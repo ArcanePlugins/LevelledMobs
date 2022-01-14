@@ -22,19 +22,9 @@ import java.util.EnumSet;
  */
 public final class DebugHandler {
 
-    private final LevelledMobs main;
-    public DebugHandler(final @NotNull LevelledMobs main) {
-        this.main = main;
-    }
-
     public void load() {
-        /*
-        TODO:
-            - Add javadoc comment.
-            - Test.
-         */
         for (
-                String debugCategoryStr : main.getFileHandler().getSettingsFile().getData()
+                String debugCategoryStr : LevelledMobs.getInstance().getFileHandler().getSettingsFile().getData()
                 .getOrDefault("debug-categories", new ArrayList<String>())
         ) {
             final DebugCategory debugCategory;
@@ -64,10 +54,6 @@ public final class DebugHandler {
     }
 
     public void sendDebugLog(final DebugCategory category, final String msg) {
-        /*
-        TODO
-            - add javadoc comment
-         */
         Utils.LOGGER.info("&8[&3Debugging&8 - &3" + category + "&8]: &7" + msg);
     }
 }

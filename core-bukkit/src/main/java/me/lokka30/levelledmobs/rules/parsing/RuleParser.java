@@ -41,11 +41,6 @@ import java.util.Optional;
  */
 public class RuleParser {
 
-    private final LevelledMobs main;
-    public RuleParser(final @NotNull LevelledMobs main) {
-        this.main = main;
-    }
-
     private final HashSet<Group<EntityType>> mobGroups = new HashSet<>();
     public @NotNull HashSet<Group<EntityType>> getMobGroups() { return mobGroups; }
 
@@ -84,15 +79,14 @@ public class RuleParser {
     }
 
     void addMobRuleGroups() {
+        final Yaml data = LevelledMobs.getInstance().getFileHandler().getGroupsFile().getData();
         for(
-                String mobGroupName : main.getFileHandler().getGroupsFile().getData()
-                .getSection("mob-groups").singleLayerKeySet()
+                String mobGroupName : data.getSection("mob-groups").singleLayerKeySet()
         ) {
             EnumSet<EntityType> entityTypes = EnumSet.noneOf(EntityType.class);
 
             for(
-                    String entityTypeStr : main.getFileHandler().getGroupsFile().getData()
-                    .getStringList("mob-groups." + mobGroupName)
+                    String entityTypeStr : data.getStringList("mob-groups." + mobGroupName)
             ) {
                 EntityType entityType;
                 try {
@@ -121,15 +115,14 @@ public class RuleParser {
     }
 
     void addBiomeRuleGroups() {
+        final Yaml data = LevelledMobs.getInstance().getFileHandler().getGroupsFile().getData();
         for(
-                String biomeGroupName : main.getFileHandler().getGroupsFile().getData()
-                .getSection("biome-groups").singleLayerKeySet()
+                String biomeGroupName : data.getSection("biome-groups").singleLayerKeySet()
         ) {
             EnumSet<Biome> biomes = EnumSet.noneOf(Biome.class);
 
             for(
-                    String biomeStr : main.getFileHandler().getGroupsFile().getData()
-                    .getStringList("biome-groups." + biomeGroupName)
+                    String biomeStr : data.getStringList("biome-groups." + biomeGroupName)
             ) {
                 Biome biome;
                 try {
@@ -158,7 +151,7 @@ public class RuleParser {
     }
 
     void addRulePresets() {
-        main.getFileHandler().getPresetsFile().getData()
+        LevelledMobs.getInstance().getFileHandler().getPresetsFile().getData()
                 .getSection("presets").singleLayerKeySet()
                 .forEach(presetId -> {
                     Optional<Rule> preset = parseRule(true, presetId, "presets." + presetId);
@@ -176,7 +169,7 @@ public class RuleParser {
             @NotNull final String identifier,
             @NotNull final String path
     ) {
-        final FileHandler fh = main.getFileHandler();
+        final FileHandler fh = LevelledMobs.getInstance().getFileHandler();
         final Yaml data = isPreset ? fh.getPresetsFile().getData() : fh.getListenersFile().getData();
         final String ruleOrPreset = isPreset ? "preset" : "rule";
 
@@ -270,7 +263,7 @@ public class RuleParser {
         ));
     }
 
-    boolean hasPreset(String presetId) {
+    public boolean hasPreset(String presetId) {
         return presets.stream().anyMatch(preset -> preset.identifier().equals(presetId));
     }
 

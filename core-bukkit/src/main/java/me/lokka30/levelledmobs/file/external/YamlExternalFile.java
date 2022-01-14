@@ -28,9 +28,9 @@ public interface YamlExternalFile extends ExternalFile {
         return getNameWithoutExtension() + ".yml";
     }
 
-    default void backup(final @NotNull LevelledMobs main) {
-        final File from = new File(getFullPath(main));
-        final File backupDirectory = new File(main.getDataFolder() + File.separator + "backups");
+    default void backup() {
+        final File from = new File(getFullPath());
+        final File backupDirectory = new File(LevelledMobs.getInstance().getDataFolder() + File.separator + "backups");
         final File to = new File(
                 backupDirectory.getPath()
                         + File.separator

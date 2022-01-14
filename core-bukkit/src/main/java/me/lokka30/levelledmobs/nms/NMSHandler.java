@@ -13,10 +13,6 @@ import java.util.regex.Pattern;
 
 public class NMSHandler {
 
-    public NMSHandler() {
-
-    }
-
     private static final Pattern versionPattern = Pattern.compile(".*\\.(v\\d+_\\d+_R\\d+)(?:.+)?");
     private @NotNull String nmsVersionString = "unknown";
 

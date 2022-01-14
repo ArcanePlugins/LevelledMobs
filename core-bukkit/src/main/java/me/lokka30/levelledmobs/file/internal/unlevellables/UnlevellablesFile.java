@@ -8,18 +8,11 @@
 
 package me.lokka30.levelledmobs.file.internal.unlevellables;
 
-import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.file.internal.JsonInternalFile;
-import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 
 public class UnlevellablesFile implements JsonInternalFile {
-
-    private final @NotNull LevelledMobs main;
-    public UnlevellablesFile(final @NotNull LevelledMobs main) {
-        this.main = main;
-    }
 
     @Override
     public void load(final boolean fromReload) {

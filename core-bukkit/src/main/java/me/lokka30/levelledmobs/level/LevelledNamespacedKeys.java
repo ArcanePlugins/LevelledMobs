@@ -26,7 +26,9 @@ import java.util.Set;
  */
 public final class LevelledNamespacedKeys {
 
-    public LevelledNamespacedKeys(@NotNull final LevelledMobs main) {
+    public LevelledNamespacedKeys() {
+        final LevelledMobs main = LevelledMobs.getInstance();
+
         /* Register the namespaced keys */
         levelKey = new NamespacedKey(main, "level");
         spawnReasonKey = new NamespacedKey(main, "spawnReason");

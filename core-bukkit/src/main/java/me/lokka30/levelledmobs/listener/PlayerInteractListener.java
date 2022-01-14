@@ -8,7 +8,6 @@
 
 package me.lokka30.levelledmobs.listener;
 
-import me.lokka30.levelledmobs.LevelledMobs;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -20,12 +19,6 @@ import org.bukkit.event.player.PlayerInteractEvent;
  * TODO Edit Description Here
  */
 public class PlayerInteractListener implements Listener {
-
-    private final LevelledMobs main;
-
-    public PlayerInteractListener(final LevelledMobs main) {
-        this.main = main;
-    }
 
     /*
     TODO

@@ -8,7 +8,6 @@
 
 package me.lokka30.levelledmobs.command.levelledmobs.subcommand.info;
 
-import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.command.CommandHandler;
 import me.lokka30.levelledmobs.command.levelledmobs.LevelledMobsCommand;
 import org.bukkit.command.CommandSender;
@@ -47,7 +46,7 @@ public class InfoSubcommand implements CommandHandler.Subcommand {
     }
 
     @Override
-    public void run(@NotNull LevelledMobs main, @NotNull CommandSender sender, @NotNull String baseCommandLabel, @NotNull String subCommandLabel, @NotNull String[] args) {
+    public void run(@NotNull CommandSender sender, @NotNull String baseCommandLabel, @NotNull String subCommandLabel, @NotNull String[] args) {
         //TODO
         sender.sendMessage("The info subcommand is work-in-progress.");
     }

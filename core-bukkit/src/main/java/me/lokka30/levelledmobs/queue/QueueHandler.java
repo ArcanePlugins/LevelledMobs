@@ -8,7 +8,6 @@
 
 package me.lokka30.levelledmobs.queue;
 
-import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.util.Utils;
 
 import java.util.Arrays;
@@ -22,13 +21,10 @@ import java.util.HashSet;
  */
 public class QueueHandler {
 
-    private final LevelledMobs main;
-    public QueueHandler(final LevelledMobs main) {
-        this.main = main;
-
+    public QueueHandler() {
         this.queues = new HashSet<>(Arrays.asList(
-                new MobProcessingQueue(main),
-                new NametagProcessingQueue(main)
+                new MobProcessingQueue(),
+                new NametagProcessingQueue()
         ));
     }
 

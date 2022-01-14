@@ -8,23 +8,10 @@
 
 package me.lokka30.levelledmobs.customdrops;
 
-import me.lokka30.levelledmobs.LevelledMobs;
-import org.jetbrains.annotations.NotNull;
-
-/**
- * @author TODO change author
- * @see CustomDrop
- * @since v4.0.0
- * TODO Description
- */
 public class CustomDropParser {
-
-    @NotNull private final LevelledMobs main;
-    public CustomDropParser(@NotNull final LevelledMobs main) {
-        this.main = main;
-    }
 
     public void parse() {
         //TODO
     }
+
 }

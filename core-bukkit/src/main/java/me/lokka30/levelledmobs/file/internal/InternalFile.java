@@ -9,7 +9,6 @@
 package me.lokka30.levelledmobs.file.internal;
 
 import me.lokka30.levelledmobs.LevelledMobs;
-import org.jetbrains.annotations.NotNull;
 
 import java.io.InputStream;
 
@@ -17,8 +16,8 @@ public interface InternalFile {
 
     void load(final boolean fromReload);
 
-    default InputStream getInputStream(final @NotNull LevelledMobs main) {
-        return main.getResource(getRelativePath());
+    default InputStream getInputStream() {
+        return LevelledMobs.getInstance().getResource(getRelativePath());
     }
 
     String getName();
