@@ -57,8 +57,15 @@ public class RuleParser {
     }
 
     void clearCache() {
+        // listeners
         getRuleListeners().clear();
+
+        // presets
         getPresets().clear();
+
+        // groups
+        getMobGroups().clear();
+        getBiomeGroups().clear();
     }
 
     void addRuleGroups() {

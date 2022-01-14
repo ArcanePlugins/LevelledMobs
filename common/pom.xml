@@ -26,6 +26,17 @@
         <maven.compiler.target>16</maven.compiler.target>
     </properties>
 
+    <repositories>
+        <repository>
+            <id>spigot-repo</id>
+            <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
+        </repository>
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
+    </repositories>
+
     <dependencies>
         <dependency>
             <groupId>org.jetbrains</groupId>
@@ -38,6 +49,11 @@
             <artifactId>spigot-api</artifactId>
             <version>1.18.1-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.github.simplix-softworks</groupId>
+            <artifactId>simplixstorage</artifactId>
+            <version>3.2.3</version>
         </dependency>
     </dependencies>
 </project>
