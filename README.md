@@ -26,9 +26,13 @@ This README is work-in-progress.
     A copy of the GNU General Public License is supplied in the program's
     source code. Alternatively, see <https://www.gnu.org/licenses>.
 
-    Additional credits - see their credited files for more info:
-    * Philipp on StackExchange (WeightedRandomContainer.java)
-    * Zombie_Striker on SpigotMC (player-head-textures.json)
+    The following parts of LevelledMobs are credited towards their
+    respective authors, and therefore, these files do not fall under
+    LevelledMobs' license:
+     * `WeightedRandomContainer.java`, by `Philipp` on StackExchange
+     * `player-head-textures.json`, by `Zombie_Striker` on SpigotMC
+    If an author has specified that their code utilizes a specific
+    license, then it will be included at the top of their file(s).
 
 An offline copy of this license notice is saved when LevelledMobs
 is ran on the server, located at `/plugins/LevelledMobs/misc/license.txt`.
