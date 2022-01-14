@@ -8,10 +8,15 @@
 
 package me.lokka30.levelledmobs.rules.parsing;
 
+import de.leonhard.storage.Yaml;
 import me.lokka30.levelledmobs.LevelledMobs;
+import me.lokka30.levelledmobs.file.FileHandler;
 import me.lokka30.levelledmobs.rules.Group;
 import me.lokka30.levelledmobs.rules.Rule;
 import me.lokka30.levelledmobs.rules.RuleListener;
+import me.lokka30.levelledmobs.rules.action.RuleActionContainer;
+import me.lokka30.levelledmobs.rules.condition.RuleConditionContainer;
+import me.lokka30.levelledmobs.rules.option.RuleOption;
 import me.lokka30.levelledmobs.util.Utils;
 import org.bukkit.block.Biome;
 import org.bukkit.entity.EntityType;
@@ -20,6 +25,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Locale;
+import java.util.Optional;
 
 /**
  * @author lokka30
@@ -76,7 +82,7 @@ public class RuleParser {
     void addMobRuleGroups() {
         for(
                 String mobGroupName : main.getFileHandler().getGroupsFile().getData()
-                .getConfigurationSection("mob-groups").getKeys(false)
+                .getSection("mob-groups").singleLayerKeySet()
         ) {
             EnumSet<EntityType> entityTypes = EnumSet.noneOf(EntityType.class);
 
@@ -113,7 +119,7 @@ public class RuleParser {
     void addBiomeRuleGroups() {
         for(
                 String biomeGroupName : main.getFileHandler().getGroupsFile().getData()
-                .getConfigurationSection("biome-groups").getKeys(false)
+                .getSection("biome-groups").singleLayerKeySet()
         ) {
             EnumSet<Biome> biomes = EnumSet.noneOf(Biome.class);
 
@@ -148,7 +154,66 @@ public class RuleParser {
     }
 
     void addRulePresets() {
+        main.getFileHandler().getPresetsFile().getData()
+                .getSection("presets").singleLayerKeySet()
+                .forEach(presetId -> {
+                    Optional<Rule> preset = parseRule(true, presetId, "presets." + presetId);
+                    if(preset.isEmpty()) {
+                        Utils.LOGGER.error("Unable to register preset '&b" + presetId + "&7' due to a parsing error.");
+                    } else {
+                        presets.add(preset.get());
+                    }
+                });
+    }
+
+    @NotNull
+    Optional<Rule> parseRule(
+            boolean isPreset,
+            @NotNull final String identifier,
+            @NotNull final String path
+    ) {
         //TODO
+        final FileHandler fh = main.getFileHandler();
+        final Yaml data = isPreset ? fh.getPresetsFile().getData() : fh.getListenersFile().getData();
+
+        final Optional<String> description = Optional.ofNullable(data.getString(path + ".description"));
+
+        final HashSet<Rule> presetsInRule = new HashSet<>();
+        if(!isPreset) {
+            data.getStringList(path + ".use-presets").forEach(presetId -> {
+                final Optional<Rule> presetInRule = presets.stream()
+                        .filter(preset -> preset.identifier().equals(presetId))
+                        .findFirst();
+                if(presetInRule.isEmpty()) {
+                    Utils.LOGGER.error("Rule '&b" + identifier + "&7' wants to use preset '&b" + presetId + "&7', but that exact preset is not configured.");
+                } else {
+                    presetsInRule.add(presetInRule.get());
+                }
+            });
+        }
+
+        final HashSet<RuleConditionContainer> conditions = new HashSet<>();
+        //TODO
+
+        final HashSet<RuleActionContainer> actions = new HashSet<>();
+        //TODO
+
+        final HashSet<RuleOption> options = new HashSet<>();
+        //TODO
+
+        return Optional.of(new Rule(
+                isPreset,
+                identifier,
+                description,
+                conditions,
+                actions,
+                options,
+                presets
+        ));
+    }
+
+    boolean hasPreset(String presetId) {
+        return presets.stream().anyMatch(preset -> preset.identifier().equals(presetId));
     }
 
     void addRuleListeners() {

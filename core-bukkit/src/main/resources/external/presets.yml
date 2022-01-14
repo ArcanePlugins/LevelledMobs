@@ -3,17 +3,17 @@
 # Presets act as 'copy and pastes' for the rules file.
 # Presets can only be specified at the base of the rule, i.e., not under an action or condition etc.
 presets:    
-  'no-level':
+  no-level:
     actions:
       levelling:
         formula: '0' # If the formula returns '0' (which is guaranteed here), LM will not level the mob.
       matched-actions: # Matched actions makes the rule also apply to babies/passengers regardless of any conditions they have.
         babies: true
         passengers: false
-    once-processed:
+    options:
       stop-processing: true # This makes the rules interpreter no longer check further rules once this has been reached and the conditions are true of course.
   
-  'normal-difficulty':
+  normal-difficulty:
     actions:
       levelling:
         formula: '%weighted-random-level%'
@@ -22,14 +22,14 @@ presets:
         strategies:
           weighted-random:
             tiers:
-              1-20: 5
-              21-40: 4
-              41-60: 3
+              1-20: 8
+              21-40: 6
+              41-60: 4
               61-80: 2
               81-100: 1
 
       attribute-formulas:
-        - formula-id: 'adjust-max-health-multiplier'
+        adjust-max-health-multiplier:
           description: 'Changes the max health of levelled mobs'
           entities:
             exclusive-list: ['ENDERMAN', 'WITHER_SKELETON']
@@ -39,7 +39,7 @@ presets:
           limits:
             min: 1.0
 
-        - formula-id: 'adjust-movement-speed-multiplier'
+        adjust-movement-speed-multiplier:
           entities:
             exclusive-list: ['ENDERMAN', 'CREEPER']
           attributes:
@@ -48,7 +48,7 @@ presets:
           limits:
             min: 1.0
 
-        - formula-id: 'adjust-armor-toughness-multiplier'
+        adjust-armor-toughness-multiplier:
           entities:
             exclusive-list: []
           attributes:
@@ -57,7 +57,7 @@ presets:
           limits:
             min: 1.0
 
-        - formula-id: 'adjust-attack-damage-multiplier'
+        adjust-attack-damage-multiplier:
           entities:
             exclusive-list: []
           attributes:
@@ -66,7 +66,7 @@ presets:
           limits:
             min: 1.0
 
-        - formula-id: 'adjust-ranged-attack-damage-multiplier'
+        adjust-ranged-attack-damage-multiplier:
           entities:
             exclusive-list: []
           attributes:
@@ -75,7 +75,7 @@ presets:
           limits:
             min: 1.0
 
-        - formula-id: 'adjust-creeper-blast-damage-multiplier'
+        adjust-creeper-blast-damage-multiplier:
           entities:
             inclusive-list: ['CREEPER']
           attributes:
@@ -84,7 +84,7 @@ presets:
           limits:
             min: 1.0
 
-        - formula-id: 'adjust-item-drop-multiplier'
+        adjust-item-drop-multiplier:
           entities:
             exclusive-list: ['ENDER_DRAGON', 'WITHER']
           attributes:
@@ -93,7 +93,7 @@ presets:
           limits:
             min: 1.0
 
-        - formula-id: 'adjust-xp-drop-multiplier'
+        adjust-xp-drop-multiplier:
           entities:
             exclusive-list: ['ENDER_DRAGON', 'WITHER']
           attributes:
@@ -102,7 +102,7 @@ presets:
           limits:
             min: 1.0
 
-        - formula-id: 'adjust-armor-bonus-multiplier'
+        adjust-armor-bonus-multiplier:
           entities:
             exclusive-list: []
           attributes:
@@ -111,7 +111,7 @@ presets:
           limits:
             min: 1.0
 
-        - formula-id: 'adjust-knockback-resistance-multiplier'
+        adjust-knockback-resistance-multiplier:
           entities:
             exclusive-list: []
           attributes:
@@ -120,7 +120,7 @@ presets:
           limits:
             min: 1.0
 
-        - formula-id: 'adjust-attack-knockback-multiplier'
+        adjust-attack-knockback-multiplier:
           entities:
             exclusive-list: []
           attributes:
@@ -129,7 +129,7 @@ presets:
           limits:
             min: 1.0
 
-        - formula-id: 'adjust-zombie-spawn-reinforcements-multiplier'
+        adjust-zombie-spawn-reinforcements-multiplier:
           entities:
             inclusive-list: ['ZOMBIE', 'HUSK', 'DROWNED']
           attributes:

@@ -10,16 +10,18 @@ package me.lokka30.levelledmobs.rules;
 
 import me.lokka30.levelledmobs.rules.action.RuleActionContainer;
 import me.lokka30.levelledmobs.rules.condition.RuleConditionContainer;
+import me.lokka30.levelledmobs.rules.option.RuleOption;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashSet;
 import java.util.Optional;
 
 public record Rule(
+        boolean                                  isPreset,
         @NotNull String                          identifier,
         @NotNull Optional<String>                description,
         @NotNull HashSet<RuleConditionContainer> conditions,
         @NotNull HashSet<RuleActionContainer>    actions,
-        @NotNull HashSet<Rule>                   presets,
-        boolean                                  onceProcessedStopProcessing
+        @NotNull HashSet<RuleOption>             options,
+        @NotNull HashSet<Rule>                   presets // Note: Preset rules can't have sub-presets!
 ) implements RuleEntry {}
