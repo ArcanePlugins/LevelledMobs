@@ -8,7 +8,6 @@
 
 package me.lokka30.levelledmobs;
 
-import me.lokka30.levelledmobs.command.CommandHandler;
 import me.lokka30.levelledmobs.customdrops.CustomDropHandler;
 import me.lokka30.levelledmobs.debug.DebugHandler;
 import me.lokka30.levelledmobs.file.FileHandler;
@@ -63,9 +62,6 @@ public final class LevelledMobs extends JavaPlugin {
 
     private final CustomDropHandler customDropHandler = new CustomDropHandler();
     public @NotNull CustomDropHandler getCustomDropHandler() { return customDropHandler; }
-
-    private final CommandHandler commandHandler = new CommandHandler();
-    public @NotNull CommandHandler getCommandHandler() { return commandHandler; }
 
     private final FileHandler fileHandler = new FileHandler();
     public @NotNull FileHandler getFileHandler() { return fileHandler; }
