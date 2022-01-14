@@ -6,13 +6,15 @@ import org.jetbrains.annotations.NotNull;
 
 /*
 TODO:
-    - Add javadoc comment.
+    - Add javadoc comments.
  */
 public interface RuleCondition {
 
-    /*
-    TODO:
-        - Add javadoc comment.
-     */
+    @NotNull
+    RuleConditionType getType();
+
     boolean appliesTo(final @NotNull LivingEntity livingEntity, final @NotNull LevelledMobs main);
+
+    @NotNull
+    RuleCondition merge(final @NotNull RuleCondition other);
 }

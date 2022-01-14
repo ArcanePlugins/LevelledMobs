@@ -9,13 +9,15 @@
 package me.lokka30.levelledmobs.rules.parsing;
 
 import de.leonhard.storage.Yaml;
+import de.leonhard.storage.sections.FlatFileSection;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.file.FileHandler;
 import me.lokka30.levelledmobs.rules.Group;
 import me.lokka30.levelledmobs.rules.Rule;
 import me.lokka30.levelledmobs.rules.RuleListener;
 import me.lokka30.levelledmobs.rules.action.RuleActionContainer;
-import me.lokka30.levelledmobs.rules.condition.RuleConditionContainer;
+import me.lokka30.levelledmobs.rules.condition.RuleCondition;
+import me.lokka30.levelledmobs.rules.condition.RuleConditionType;
 import me.lokka30.levelledmobs.rules.option.RuleOption;
 import me.lokka30.levelledmobs.util.Utils;
 import org.bukkit.block.Biome;
@@ -95,14 +97,14 @@ public class RuleParser {
                     entityType = EntityType.valueOf(entityTypeStr.toUpperCase(Locale.ROOT));
                 } catch(IllegalArgumentException ex) {
                     Utils.LOGGER.error("Invalid entity type specified '&b" + entityTypeStr + "&7' in the mob " +
-                            "group named '&b" + mobGroupName + "&7'! Please fix this ASAP.");
+                            "group named '&b" + mobGroupName + "&7'! Fix this ASAP.");
                     continue;
                 }
 
                 if(entityTypes.contains(entityType)) {
                     Utils.LOGGER.error("Entity type '&b" + entityTypeStr.toUpperCase(Locale.ROOT) + "&7' has been listed " +
                             "listed more than once in the mob group named '&b" + mobGroupName + "&7'! " +
-                            "Please fix this ASAP.");
+                            "Fix this ASAP.");
                     continue;
                 }
 
@@ -132,14 +134,14 @@ public class RuleParser {
                     biome = Biome.valueOf(biomeStr.toUpperCase(Locale.ROOT));
                 } catch(IllegalArgumentException ex) {
                     Utils.LOGGER.error("Invalid biome specified '&b" + biomeStr + "&7' in the biome " +
-                            "group named '&b" + biomeGroupName + "&7'! Please fix this ASAP.");
+                            "group named '&b" + biomeGroupName + "&7'! Fix this ASAP.");
                     continue;
                 }
 
                 if(biomes.contains(biome)) {
                     Utils.LOGGER.error("Biome '&b" + biomeStr.toUpperCase(Locale.ROOT) + "&7' has been listed " +
                             "listed more than once in the biome group named '&b" + biomeGroupName + "&7'! " +
-                            "Please fix this ASAP.");
+                            "Fix this ASAP.");
                     continue;
                 }
 
@@ -158,8 +160,8 @@ public class RuleParser {
                 .getSection("presets").singleLayerKeySet()
                 .forEach(presetId -> {
                     Optional<Rule> preset = parseRule(true, presetId, "presets." + presetId);
-                    if(preset.isEmpty()) {
-                        Utils.LOGGER.error("Unable to register preset '&b" + presetId + "&7' due to a parsing error.");
+                    if(preset.isPresent()) {
+                        Utils.LOGGER.error("Unable to register preset '&b" + presetId + "&7' due to a parsing error. Fix this ASAP.");
                     } else {
                         presets.add(preset.get());
                     }
@@ -175,6 +177,7 @@ public class RuleParser {
         //TODO
         final FileHandler fh = main.getFileHandler();
         final Yaml data = isPreset ? fh.getPresetsFile().getData() : fh.getListenersFile().getData();
+        final String ruleOrPresetStr = isPreset ? "preset" : "rule";
 
         final Optional<String> description = Optional.ofNullable(data.getString(path + ".description"));
 
@@ -184,16 +187,34 @@ public class RuleParser {
                 final Optional<Rule> presetInRule = presets.stream()
                         .filter(preset -> preset.identifier().equals(presetId))
                         .findFirst();
-                if(presetInRule.isEmpty()) {
-                    Utils.LOGGER.error("Rule '&b" + identifier + "&7' wants to use preset '&b" + presetId + "&7', but that exact preset is not configured.");
+                if(presetInRule.isPresent()) {
+                    Utils.LOGGER.error("Rule '&b" + identifier + "&7' wants to use preset '&b" + presetId + "&7', but that exact preset is not configured. Fix this ASAP.");
                 } else {
                     presetsInRule.add(presetInRule.get());
                 }
             });
         }
 
-        final HashSet<RuleConditionContainer> conditions = new HashSet<>();
-        //TODO
+        final HashSet<RuleCondition> conditions = new HashSet<>();
+        for(String ruleConditionTypeStr : data.getSection(path + ".conditions").singleLayerKeySet()) {
+            final Optional<RuleConditionType> ruleConditionType = RuleConditionType.fromId(ruleConditionTypeStr);
+
+            if(ruleConditionType.isPresent()) {
+                Utils.LOGGER.error("The " + ruleOrPresetStr + " '&b" + identifier + "&7' has an invalid condition" +
+                        " specified, named '&b" + ruleConditionTypeStr + "&7'. Fix this ASAP.");
+            } else {
+                final Optional<RuleCondition> condition = processRuleCondition(
+                        ruleConditionType.get(),
+                        data.getSection(path + ".conditions." + ruleConditionTypeStr)
+                );
+
+                if(condition.isPresent()) {
+                    conditions.add(condition.get());
+                } else {
+                    Utils.LOGGER.error("Unable to parse condition '&b" + ruleConditionTypeStr + "&7' in the " + ruleOrPresetStr + " '&b" + identifier + "&7'. Fix this ASAP.");
+                }
+            }
+        }
 
         final HashSet<RuleActionContainer> actions = new HashSet<>();
         //TODO
@@ -208,12 +229,21 @@ public class RuleParser {
                 conditions,
                 actions,
                 options,
-                presets
+                presetsInRule
         ));
     }
 
     boolean hasPreset(String presetId) {
         return presets.stream().anyMatch(preset -> preset.identifier().equals(presetId));
+    }
+
+    @NotNull
+    Optional<RuleCondition> processRuleCondition(
+            final @NotNull RuleConditionType type,
+            final @NotNull FlatFileSection section
+    ) {
+        //TODO
+        return Optional.empty();
     }
 
     void addRuleListeners() {
