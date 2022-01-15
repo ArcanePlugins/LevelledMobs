@@ -28,5 +28,4 @@ public record ModalList<T>(
             case EXCLUSIVE -> !contents.contains(item);
         };
     }
-
 }

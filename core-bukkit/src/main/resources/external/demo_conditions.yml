@@ -1,0 +1,19 @@
+conditions:
+  # Which entity types are valid for the rule to run
+  entity-type:
+    inclusive-list: ['CREEPER']
+    # OR
+    exclusive-list: ['CREEPER']
+
+    inverse: false
+    # EVERY condition has an inverse switch
+    # funnily enough this can be combined to make inclusive lists actually exclusive
+    # unsure if we should remove modal lists because of this? users tend to get confused
+    # about them as well.
+
+  # If the rule cares about the mob being levelled
+  is-levelled:
+    state: 'ANY'
+    # 'ANY' = the mob can be levelled or not levelled (default)
+    # 'YES' = the mob requires a level for the rule to run
+    # 'NO' = vice versa of 'YES'

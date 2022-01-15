@@ -18,7 +18,7 @@ import me.lokka30.levelledmobs.metric.MetricsHandler;
 import me.lokka30.levelledmobs.nametag.NametagHandler;
 import me.lokka30.levelledmobs.nms.NMSHandler;
 import me.lokka30.levelledmobs.queue.QueueHandler;
-import me.lokka30.levelledmobs.translations.TranslationHandler;
+import me.lokka30.levelledmobs.translation.TranslationHandler;
 import me.lokka30.levelledmobs.util.Utils;
 import me.lokka30.microlib.maths.QuickTimer;
 import org.bukkit.Bukkit;

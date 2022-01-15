@@ -17,8 +17,13 @@ import me.lokka30.levelledmobs.rules.Rule;
 import me.lokka30.levelledmobs.rules.RuleListener;
 import me.lokka30.levelledmobs.rules.action.RuleAction;
 import me.lokka30.levelledmobs.rules.action.RuleActionType;
+import me.lokka30.levelledmobs.rules.action.type.ExecuteAction;
 import me.lokka30.levelledmobs.rules.condition.RuleCondition;
 import me.lokka30.levelledmobs.rules.condition.RuleConditionType;
+import me.lokka30.levelledmobs.rules.condition.type.EntityTypeCondition;
+import me.lokka30.levelledmobs.rules.condition.type.IsLevelledCondition;
+import me.lokka30.levelledmobs.rules.condition.type.LightLevelFromBlockCondition;
+import me.lokka30.levelledmobs.rules.condition.type.LightLevelFromSkyCondition;
 import me.lokka30.levelledmobs.rules.option.RuleOption;
 import me.lokka30.levelledmobs.rules.option.RuleOptionType;
 import me.lokka30.levelledmobs.util.Utils;
@@ -197,16 +202,10 @@ public class RuleParser {
                 Utils.LOGGER.error("The " + ruleOrPreset + " '&b" + identifier + "&7' has an invalid condition" +
                         " specified, named '&b" + ruleConditionTypeStr + "&7'. Fix this ASAP.");
             } else {
-                final Optional<RuleCondition> condition = processRuleCondition(
+                conditions.add(processRuleCondition(
                         ruleConditionType.get(),
                         data.getSection(path + ".conditions." + ruleConditionTypeStr)
-                );
-
-                if(condition.isPresent()) {
-                    conditions.add(condition.get());
-                } else {
-                    Utils.LOGGER.error("Unable to parse condition '&b" + ruleConditionTypeStr + "&7' in the " + ruleOrPreset + " '&b" + identifier + "&7'. Fix this ASAP.");
-                }
+                ));
             }
         }
 
@@ -218,16 +217,10 @@ public class RuleParser {
                 Utils.LOGGER.error("The " + ruleOrPreset + " '&b" + identifier + "&7' has an invalid action" +
                         " specified, named '&b" + ruleActionTypeStr + "&7'. Fix this ASAP.");
             } else {
-                final Optional<RuleAction> action = processRuleAction(
+                actions.add(processRuleAction(
                         ruleActionType.get(),
                         data.getSection(path + ".actions." + ruleActionTypeStr)
-                );
-
-                if(action.isPresent()) {
-                    actions.add(action.get());
-                } else {
-                    Utils.LOGGER.error("Unable to parse action '&b" + ruleActionTypeStr + "&7' in the " + ruleOrPreset + " '&b" + identifier + "&7'. Fix this ASAP.");
-                }
+                ));
             }
         }
 
@@ -239,16 +232,10 @@ public class RuleParser {
                 Utils.LOGGER.error("The " + ruleOrPreset + " '&b" + identifier + "&7' has an invalid option" +
                         " specified, named '&b" + ruleOptionTypeStr + "&7'. Fix this ASAP.");
             } else {
-                final Optional<RuleOption> option = processRuleOption(
+                options.add(processRuleOption(
                         ruleOptionType.get(),
                         data.getSection(path + ".options." + ruleOptionTypeStr)
-                );
-
-                if(option.isPresent()) {
-                    options.add(option.get());
-                } else {
-                    Utils.LOGGER.error("Unable to parse option '&b" + ruleOptionTypeStr + "&7' in the " + ruleOrPreset + " '&b" + identifier + "&7'. Fix this ASAP.");
-                }
+                ));
             }
         }
 
@@ -268,30 +255,51 @@ public class RuleParser {
     }
 
     @NotNull
-    Optional<RuleCondition> processRuleCondition(
+    RuleCondition processRuleCondition(
             final @NotNull RuleConditionType type,
             final @NotNull FlatFileSection section
     ) {
-        //TODO
-        return Optional.empty();
+        switch(type) {
+            case ENTITY_TYPE: return EntityTypeCondition.of(section);
+            case IS_LEVELLED: return IsLevelledCondition.of(section);
+            case LIGHT_LEVEL_FROM_BLOCK: return LightLevelFromBlockCondition.of(section);
+            case LIGHT_LEVEL_FROM_SKY: return LightLevelFromSkyCondition.of(section);
+            default: throw new IllegalStateException(
+                    "Rule condition '&b" + type + "&7' does not have in-built processing logic!" +
+                            " If this is meant to be a valid rule condition, and it is not a typo, please inform LevelledMobs" +
+                            " developers. Otherwise, fix this ASAP."
+            );
+        }
     }
 
     @NotNull
-    Optional<RuleAction> processRuleAction(
+    RuleAction processRuleAction(
             final @NotNull RuleActionType type,
             final @NotNull FlatFileSection section
     ) {
-        //TODO
-        return Optional.empty();
+        switch(type) {
+            case EXECUTE: return new ExecuteAction(); //TODO
+            default: throw new IllegalStateException(
+                    "Rule action '&b" + type + "&7' does not have in-built processing logic!" +
+                            " If this is meant to be a valid rule action, and it is not a typo, please inform LevelledMobs" +
+                            " developers. Otherwise, fix this ASAP."
+            );
+        }
     }
 
     @NotNull
-    Optional<RuleOption> processRuleOption(
+    RuleOption processRuleOption(
             final @NotNull RuleOptionType type,
             final @NotNull FlatFileSection section
     ) {
-        //TODO
-        return Optional.empty();
+        switch(type) {
+            case TO_DO: throw new UnsupportedOperationException("Options not yet implemented!"); //TODO
+            default: throw new IllegalStateException(
+                    "Rule option '&b" + type + "&7' does not have in-built processing logic!" +
+                            " If this is meant to be a valid rule option, and it is not a typo, please inform LevelledMobs" +
+                            " developers. Otherwise, fix this ASAP."
+                );
+        }
     }
 
     void addRuleListeners() {
