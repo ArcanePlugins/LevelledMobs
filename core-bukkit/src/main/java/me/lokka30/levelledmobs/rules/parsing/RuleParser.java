@@ -26,6 +26,7 @@ import me.lokka30.levelledmobs.rules.condition.type.LightLevelFromBlockCondition
 import me.lokka30.levelledmobs.rules.condition.type.LightLevelFromSkyCondition;
 import me.lokka30.levelledmobs.rules.option.RuleOption;
 import me.lokka30.levelledmobs.rules.option.RuleOptionType;
+import me.lokka30.levelledmobs.rules.option.type.TemporaryDoNotUseOption;
 import me.lokka30.levelledmobs.util.Utils;
 import org.bukkit.block.Biome;
 import org.bukkit.entity.EntityType;
@@ -278,7 +279,7 @@ public class RuleParser {
             final @NotNull FlatFileSection section
     ) {
         switch(type) {
-            case EXECUTE: return new ExecuteAction(); //TODO
+            case EXECUTE: return ExecuteAction.of(section);
             default: throw new IllegalStateException(
                     "Rule action '&b" + type + "&7' does not have in-built processing logic!" +
                             " If this is meant to be a valid rule action, and it is not a typo, please inform LevelledMobs" +
@@ -293,7 +294,7 @@ public class RuleParser {
             final @NotNull FlatFileSection section
     ) {
         switch(type) {
-            case TO_DO: throw new UnsupportedOperationException("Options not yet implemented!"); //TODO
+            case TEMPORARY_DO_NOT_USE: return new TemporaryDoNotUseOption();
             default: throw new IllegalStateException(
                     "Rule option '&b" + type + "&7' does not have in-built processing logic!" +
                             " If this is meant to be a valid rule option, and it is not a typo, please inform LevelledMobs" +

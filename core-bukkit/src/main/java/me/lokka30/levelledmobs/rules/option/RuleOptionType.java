@@ -7,7 +7,7 @@ import java.util.Optional;
 
 public enum RuleOptionType {
 
-    TO_DO("to-do"); //TODO
+    TEMPORARY_DO_NOT_USE("temporary-do-not-use");
 
     private final String id;
     RuleOptionType(String id) {
