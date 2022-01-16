@@ -1,12 +1,18 @@
 package me.lokka30.levelledmobs.rules.condition;
 
+import me.lokka30.levelledmobs.rules.Rule;
 import org.bukkit.entity.LivingEntity;
 import org.jetbrains.annotations.NotNull;
 
 public interface RuleCondition {
 
     @NotNull
-    RuleConditionType getType();
+    RuleConditionType type();
+
+    @NotNull
+    Rule parentRule();
+
+    boolean inverse();
 
     boolean appliesTo(final @NotNull LivingEntity livingEntity);
 
@@ -15,6 +21,4 @@ public interface RuleCondition {
         //TODO
         return this;
     }
-
-    boolean inverse();
 }

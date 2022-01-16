@@ -1,6 +1,7 @@
 package me.lokka30.levelledmobs.rules.action.type;
 
 import de.leonhard.storage.sections.FlatFileSection;
+import me.lokka30.levelledmobs.rules.Rule;
 import me.lokka30.levelledmobs.rules.action.RuleAction;
 import me.lokka30.levelledmobs.rules.action.RuleActionType;
 import me.lokka30.levelledmobs.rules.action.type.executable.UpdateNametagExecutable;
@@ -14,11 +15,12 @@ import java.util.LinkedList;
 import java.util.Optional;
 
 public record ExecuteAction(
+        @NotNull Rule parentRule,
         @NotNull HashSet<Executable> executables
 ) implements RuleAction {
 
-    @Override
-    public @NotNull RuleActionType getType() {
+    @Override @NotNull
+    public RuleActionType type() {
         return RuleActionType.EXECUTE;
     }
 
@@ -28,7 +30,7 @@ public record ExecuteAction(
     }
 
     @NotNull
-    public static ExecuteAction of(final @NotNull FlatFileSection section) {
+    public static ExecuteAction of(final @NotNull Rule parentRule, final @NotNull FlatFileSection section) {
         final HashSet<Executable> executables = new HashSet<>();
 
         for(String executableStr : section.getStringList(".execute")) {
@@ -59,7 +61,7 @@ public record ExecuteAction(
             }
         }
 
-        return new ExecuteAction(executables);
+        return new ExecuteAction(parentRule, executables);
     }
 
     public enum ExecutableType {

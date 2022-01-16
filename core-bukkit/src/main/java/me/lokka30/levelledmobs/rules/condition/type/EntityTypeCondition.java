@@ -1,6 +1,7 @@
 package me.lokka30.levelledmobs.rules.condition.type;
 
 import de.leonhard.storage.sections.FlatFileSection;
+import me.lokka30.levelledmobs.rules.Rule;
 import me.lokka30.levelledmobs.rules.condition.RuleCondition;
 import me.lokka30.levelledmobs.rules.condition.RuleConditionType;
 import me.lokka30.levelledmobs.util.ModalList;
@@ -12,12 +13,13 @@ import org.jetbrains.annotations.NotNull;
 import java.util.EnumSet;
 
 public record EntityTypeCondition(
+        @NotNull Rule                   parentRule,
         @NotNull ModalList<EntityType>  types,
         boolean                         inverse
 ) implements RuleCondition {
 
-    @Override
-    public @NotNull RuleConditionType getType() {
+    @Override @NotNull
+    public RuleConditionType type() {
         return RuleConditionType.ENTITY_TYPE;
     }
 
@@ -27,7 +29,7 @@ public record EntityTypeCondition(
     }
 
     @NotNull
-    public static EntityTypeCondition of(final @NotNull FlatFileSection section) {
+    public static EntityTypeCondition of(final @NotNull Rule parentRule, final @NotNull FlatFileSection section) {
         final ModalList.ListMode listMode;
         final EnumSet<EntityType> contents;
 
@@ -65,6 +67,7 @@ public record EntityTypeCondition(
         }
 
         return new EntityTypeCondition(
+                parentRule,
                 new ModalList<>(listMode, contents),
                 section.get(".inverse", false)
         );

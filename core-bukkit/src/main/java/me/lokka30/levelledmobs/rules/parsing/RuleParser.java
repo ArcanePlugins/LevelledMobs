@@ -159,18 +159,11 @@ public class RuleParser {
     void addRulePresets() {
         LevelledMobs.getInstance().getFileHandler().getPresetsFile().getData()
                 .getSection("presets").singleLayerKeySet()
-                .forEach(presetId -> {
-                    Optional<Rule> preset = parseRule(true, presetId, "presets." + presetId);
-                    if(preset.isPresent()) {
-                        Utils.LOGGER.error("Unable to register preset '&b" + presetId + "&7' due to a parsing error. Fix this ASAP.");
-                    } else {
-                        presets.add(preset.get());
-                    }
-                });
+                .forEach(presetId -> presets.add(parseRule(true, presetId, "presets." + presetId)));
     }
 
     @NotNull
-    Optional<Rule> parseRule(
+    Rule parseRule(
             boolean isPreset,
             @NotNull final String identifier,
             @NotNull final String path
@@ -179,9 +172,16 @@ public class RuleParser {
         final Yaml data = isPreset ? fh.getPresetsFile().getData() : fh.getListenersFile().getData();
         final String ruleOrPreset = isPreset ? "preset" : "rule";
 
-        final Optional<String> description = Optional.ofNullable(data.getString(path + ".description"));
+        final Rule rule = new Rule(
+                isPreset,
+                identifier,
+                Optional.ofNullable(data.getString(path + ".description")),
+                new HashSet<>(),
+                new HashSet<>(),
+                new HashSet<>(),
+                new HashSet<>()
+        );
 
-        final HashSet<Rule> presetsInRule = new HashSet<>();
         if(!isPreset) {
             data.getStringList(path + ".use-presets").forEach(presetId -> {
                 final Optional<Rule> presetInRule = presets.stream()
@@ -190,12 +190,11 @@ public class RuleParser {
                 if(presetInRule.isPresent()) {
                     Utils.LOGGER.error("Rule '&b" + identifier + "&7' wants to use preset '&b" + presetId + "&7', but that exact preset is not configured. Fix this ASAP.");
                 } else {
-                    presetsInRule.add(presetInRule.get());
+                    rule.presets().add(presetInRule.get());
                 }
             });
         }
 
-        final HashSet<RuleCondition> conditions = new HashSet<>();
         for(String ruleConditionTypeStr : data.getSection(path + ".conditions").singleLayerKeySet()) {
             final Optional<RuleConditionType> ruleConditionType = RuleConditionType.fromId(ruleConditionTypeStr);
 
@@ -203,14 +202,14 @@ public class RuleParser {
                 Utils.LOGGER.error("The " + ruleOrPreset + " '&b" + identifier + "&7' has an invalid condition" +
                         " specified, named '&b" + ruleConditionTypeStr + "&7'. Fix this ASAP.");
             } else {
-                conditions.add(processRuleCondition(
+                rule.conditions().add(processRuleCondition(
+                        rule,
                         ruleConditionType.get(),
                         data.getSection(path + ".conditions." + ruleConditionTypeStr)
                 ));
             }
         }
 
-        final HashSet<RuleAction> actions = new HashSet<>();
         for(String ruleActionTypeStr : data.getSection(path + ".actions").singleLayerKeySet()) {
             final Optional<RuleActionType> ruleActionType = RuleActionType.fromId(ruleActionTypeStr);
 
@@ -218,14 +217,14 @@ public class RuleParser {
                 Utils.LOGGER.error("The " + ruleOrPreset + " '&b" + identifier + "&7' has an invalid action" +
                         " specified, named '&b" + ruleActionTypeStr + "&7'. Fix this ASAP.");
             } else {
-                actions.add(processRuleAction(
+                rule.actions().add(processRuleAction(
+                        rule,
                         ruleActionType.get(),
                         data.getSection(path + ".actions." + ruleActionTypeStr)
                 ));
             }
         }
 
-        final HashSet<RuleOption> options = new HashSet<>();
         for(String ruleOptionTypeStr : data.getSection(path + ".options").singleLayerKeySet()) {
             final Optional<RuleOptionType> ruleOptionType = RuleOptionType.fromId(ruleOptionTypeStr);
 
@@ -233,22 +232,15 @@ public class RuleParser {
                 Utils.LOGGER.error("The " + ruleOrPreset + " '&b" + identifier + "&7' has an invalid option" +
                         " specified, named '&b" + ruleOptionTypeStr + "&7'. Fix this ASAP.");
             } else {
-                options.add(processRuleOption(
+                rule.options().add(processRuleOption(
+                        rule,
                         ruleOptionType.get(),
                         data.getSection(path + ".options." + ruleOptionTypeStr)
                 ));
             }
         }
 
-        return Optional.of(new Rule(
-                isPreset,
-                identifier,
-                description,
-                conditions,
-                actions,
-                options,
-                presetsInRule
-        ));
+        return rule;
     }
 
     public boolean hasPreset(String presetId) {
@@ -257,14 +249,15 @@ public class RuleParser {
 
     @NotNull
     RuleCondition processRuleCondition(
+            final @NotNull Rule parentRule,
             final @NotNull RuleConditionType type,
             final @NotNull FlatFileSection section
     ) {
         switch(type) {
-            case ENTITY_TYPE: return EntityTypeCondition.of(section);
-            case IS_LEVELLED: return IsLevelledCondition.of(section);
-            case LIGHT_LEVEL_FROM_BLOCK: return LightLevelFromBlockCondition.of(section);
-            case LIGHT_LEVEL_FROM_SKY: return LightLevelFromSkyCondition.of(section);
+            case ENTITY_TYPE: return EntityTypeCondition.of(parentRule, section);
+            case IS_LEVELLED: return IsLevelledCondition.of(parentRule, section);
+            case LIGHT_LEVEL_FROM_BLOCK: return LightLevelFromBlockCondition.of(parentRule, section);
+            case LIGHT_LEVEL_FROM_SKY: return LightLevelFromSkyCondition.of(parentRule, section);
             default: throw new IllegalStateException(
                     "Rule condition '&b" + type + "&7' does not have in-built processing logic!" +
                             " If this is meant to be a valid rule condition, and it is not a typo, please inform LevelledMobs" +
@@ -275,11 +268,12 @@ public class RuleParser {
 
     @NotNull
     RuleAction processRuleAction(
+            final @NotNull Rule parentRule,
             final @NotNull RuleActionType type,
             final @NotNull FlatFileSection section
     ) {
         switch(type) {
-            case EXECUTE: return ExecuteAction.of(section);
+            case EXECUTE: return ExecuteAction.of(parentRule, section);
             default: throw new IllegalStateException(
                     "Rule action '&b" + type + "&7' does not have in-built processing logic!" +
                             " If this is meant to be a valid rule action, and it is not a typo, please inform LevelledMobs" +
@@ -290,11 +284,12 @@ public class RuleParser {
 
     @NotNull
     RuleOption processRuleOption(
+            final @NotNull Rule parentRule,
             final @NotNull RuleOptionType type,
             final @NotNull FlatFileSection section
     ) {
         switch(type) {
-            case TEMPORARY_DO_NOT_USE: return new TemporaryDoNotUseOption();
+            case TEMPORARY_DO_NOT_USE: return new TemporaryDoNotUseOption(parentRule);
             default: throw new IllegalStateException(
                     "Rule option '&b" + type + "&7' does not have in-built processing logic!" +
                             " If this is meant to be a valid rule option, and it is not a typo, please inform LevelledMobs" +
