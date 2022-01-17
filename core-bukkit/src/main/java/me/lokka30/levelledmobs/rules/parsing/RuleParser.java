@@ -14,7 +14,6 @@ import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.file.FileHandler;
 import me.lokka30.levelledmobs.rules.Group;
 import me.lokka30.levelledmobs.rules.Rule;
-import me.lokka30.levelledmobs.rules.RuleListener;
 import me.lokka30.levelledmobs.rules.action.DefaultRuleActionType;
 import me.lokka30.levelledmobs.rules.action.RuleAction;
 import me.lokka30.levelledmobs.rules.action.type.ExecuteAction;
@@ -24,6 +23,7 @@ import me.lokka30.levelledmobs.rules.condition.type.EntityTypeCondition;
 import me.lokka30.levelledmobs.rules.condition.type.IsLevelledCondition;
 import me.lokka30.levelledmobs.rules.condition.type.LightLevelFromBlockCondition;
 import me.lokka30.levelledmobs.rules.condition.type.LightLevelFromSkyCondition;
+import me.lokka30.levelledmobs.rules.listener.RuleListener;
 import me.lokka30.levelledmobs.rules.option.DefaultRuleOptionType;
 import me.lokka30.levelledmobs.rules.option.RuleOption;
 import me.lokka30.levelledmobs.rules.option.type.TemporaryDoNotUseOption;
@@ -262,7 +262,7 @@ public class RuleParser {
                 }
             }));
 
-            // FYI: options are not inherited from presets
+            // FYI: RuleOptions are not inherited from presets
         });
 
         return rule;

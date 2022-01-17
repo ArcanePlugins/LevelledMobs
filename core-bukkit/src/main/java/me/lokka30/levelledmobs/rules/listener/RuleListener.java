@@ -6,8 +6,9 @@
  * license that can be found in the LICENSE.md file.
  */
 
-package me.lokka30.levelledmobs.rules;
+package me.lokka30.levelledmobs.rules.listener;
 
+import me.lokka30.levelledmobs.rules.RuleEntry;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;

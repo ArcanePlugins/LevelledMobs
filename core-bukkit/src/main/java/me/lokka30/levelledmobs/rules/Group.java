@@ -13,6 +13,6 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Set;
 
 public record Group<T>(
-        @NotNull String     identifier,
+        @NotNull String identifier,
         @NotNull Set<T> data
 ) {}
