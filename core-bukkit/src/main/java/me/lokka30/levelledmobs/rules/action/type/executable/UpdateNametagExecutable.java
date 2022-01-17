@@ -11,9 +11,9 @@ public record UpdateNametagExecutable(
         @NotNull LinkedList<String> args // ignored on this Executable.
 ) implements ExecuteAction.Executable {
 
-    @Override
-    public ExecuteAction.@NotNull ExecutableType type() {
-        return ExecuteAction.ExecutableType.UPDATE_NAMETAG;
+    @Override @NotNull
+    public String id() {
+        return ExecuteAction.DefaultExecutableType.UPDATE_NAMETAG.id();
     }
 
     @Override

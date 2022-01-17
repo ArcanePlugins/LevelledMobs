@@ -7,7 +7,7 @@ import org.jetbrains.annotations.NotNull;
 public interface RuleCondition {
 
     @NotNull
-    RuleConditionType type();
+    String id();
 
     @NotNull
     Rule parentRule();
@@ -17,8 +17,5 @@ public interface RuleCondition {
     boolean appliesTo(final @NotNull LivingEntity livingEntity);
 
     @NotNull
-    default RuleCondition merge(final @NotNull RuleCondition other) {
-        //TODO
-        return this;
-    }
+    RuleCondition merge(final @NotNull RuleCondition other);
 }

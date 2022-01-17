@@ -2,8 +2,8 @@ package me.lokka30.levelledmobs.rules.condition.type;
 
 import de.leonhard.storage.sections.FlatFileSection;
 import me.lokka30.levelledmobs.rules.Rule;
+import me.lokka30.levelledmobs.rules.condition.DefaultRuleConditionType;
 import me.lokka30.levelledmobs.rules.condition.RuleCondition;
-import me.lokka30.levelledmobs.rules.condition.RuleConditionType;
 import org.bukkit.entity.LivingEntity;
 import org.jetbrains.annotations.NotNull;
 
@@ -15,14 +15,19 @@ public record LightLevelFromBlockCondition(
 ) implements RuleCondition {
 
     @Override @NotNull
-    public RuleConditionType type() {
-        return RuleConditionType.LIGHT_LEVEL_FROM_BLOCK;
+    public String id() {
+        return DefaultRuleConditionType.LIGHT_LEVEL_FROM_BLOCK.id();
     }
 
     @Override
     public boolean appliesTo(@NotNull LivingEntity livingEntity) {
         final byte lightLevel = livingEntity.getLocation().getBlock().getLightFromBlocks();
         return inverse() != (lightLevel >= min && lightLevel <= max);
+    }
+
+    @Override @NotNull
+    public RuleCondition merge(@NotNull RuleCondition other) {
+        return this; //TODO
     }
 
     @NotNull

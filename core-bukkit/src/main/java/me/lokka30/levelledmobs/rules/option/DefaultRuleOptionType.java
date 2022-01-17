@@ -1,16 +1,16 @@
-package me.lokka30.levelledmobs.rules.action;
+package me.lokka30.levelledmobs.rules.option;
 
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 import java.util.Optional;
 
-public enum RuleActionType {
+public enum DefaultRuleOptionType {
 
-    EXECUTE("execute");
+    TEMPORARY_DO_NOT_USE("temporary-do-not-use");
 
     private final String id;
-    RuleActionType(String id) {
+    DefaultRuleOptionType(String id) {
         this.id = id;
     }
 
@@ -18,7 +18,7 @@ public enum RuleActionType {
     public String getId() { return id; }
 
     @NotNull
-    public static Optional<RuleActionType> fromId(final @NotNull String id) {
+    public static Optional<DefaultRuleOptionType> fromId(final @NotNull String id) {
         return Arrays.stream(values())
                 .filter(type -> type.getId().equals(id))
                 .findFirst();

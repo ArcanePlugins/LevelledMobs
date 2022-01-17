@@ -2,8 +2,8 @@ package me.lokka30.levelledmobs.rules.condition.type;
 
 import de.leonhard.storage.sections.FlatFileSection;
 import me.lokka30.levelledmobs.rules.Rule;
+import me.lokka30.levelledmobs.rules.condition.DefaultRuleConditionType;
 import me.lokka30.levelledmobs.rules.condition.RuleCondition;
-import me.lokka30.levelledmobs.rules.condition.RuleConditionType;
 import me.lokka30.levelledmobs.util.ModalList;
 import me.lokka30.levelledmobs.util.Utils;
 import org.bukkit.entity.EntityType;
@@ -19,13 +19,18 @@ public record EntityTypeCondition(
 ) implements RuleCondition {
 
     @Override @NotNull
-    public RuleConditionType type() {
-        return RuleConditionType.ENTITY_TYPE;
+    public String id() {
+        return DefaultRuleConditionType.ENTITY_TYPE.id();
     }
 
     @Override
     public boolean appliesTo(@NotNull LivingEntity livingEntity) {
         return inverse() != types.contains(livingEntity.getType());
+    }
+
+    @Override @NotNull
+    public RuleCondition merge(@NotNull RuleCondition other) {
+        return this; //TODO
     }
 
     @NotNull

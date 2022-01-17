@@ -2,8 +2,8 @@ package me.lokka30.levelledmobs.rules.action.type;
 
 import de.leonhard.storage.sections.FlatFileSection;
 import me.lokka30.levelledmobs.rules.Rule;
+import me.lokka30.levelledmobs.rules.action.DefaultRuleActionType;
 import me.lokka30.levelledmobs.rules.action.RuleAction;
-import me.lokka30.levelledmobs.rules.action.RuleActionType;
 import me.lokka30.levelledmobs.rules.action.type.executable.UpdateNametagExecutable;
 import me.lokka30.levelledmobs.util.Utils;
 import org.bukkit.entity.LivingEntity;
@@ -20,8 +20,8 @@ public record ExecuteAction(
 ) implements RuleAction {
 
     @Override @NotNull
-    public RuleActionType type() {
-        return RuleActionType.EXECUTE;
+    public String id() {
+        return DefaultRuleActionType.EXECUTE.id();
     }
 
     @Override
@@ -29,18 +29,31 @@ public record ExecuteAction(
         executables().forEach(executable -> executable.run(livingEntity));
     }
 
+    @Override
+    public void merge(@NotNull RuleAction other) {
+        final ExecuteAction otherAction = (ExecuteAction) other;
+        HashSet<Executable> toAdd = new HashSet<>();
+        otherAction.executables().forEach(otherExecutable -> {
+            if(executables().stream().noneMatch(executable -> executable.id().equals(otherExecutable.id()))) {
+                toAdd.add(otherExecutable);
+            }
+        });
+
+        executables().addAll(toAdd);
+    }
+
     @NotNull
     public static ExecuteAction of(final @NotNull Rule parentRule, final @NotNull FlatFileSection section) {
         final HashSet<Executable> executables = new HashSet<>();
 
         for(String executableStr : section.getStringList(".execute")) {
-            ExecutableType executableType;
+            DefaultExecutableType defaultExecutableType;
 
             final LinkedList<String> args = new LinkedList<>(Arrays.asList(executableStr.split(":")));
 
-            final Optional<ExecutableType> executableTypeOptional = ExecutableType.of(args.get(0));
+            final Optional<DefaultExecutableType> executableTypeOptional = DefaultExecutableType.of(args.get(0));
             if(executableTypeOptional.isPresent()) {
-                executableType = executableTypeOptional.get();
+                defaultExecutableType = executableTypeOptional.get();
             } else {
                 Utils.LOGGER.error("The execute list at path '&b" + section.getPathPrefix() + "&7' has an invalid executable" +
                         " type specified: '&b" + args.get(0) + "&7'. Fix this ASAP.");
@@ -48,35 +61,35 @@ public record ExecuteAction(
             }
             args.remove(0);
 
-            if(executables.stream().anyMatch(other -> other.type() == executableType)) {
+            if(executables.stream().anyMatch(other -> other.id().equals(defaultExecutableType.id()))) {
                 Utils.LOGGER.error("The execute list at path '&b" + section.getPathPrefix() + "&7' has the executable type " +
-                        "'&b" + executableType + "&7' specified more than once. This will harm the intended behaviour of your" +
+                        "'&b" + defaultExecutableType + "&7' specified more than once. This will harm the intended behaviour of your" +
                         " configuration. Fix this ASAP.");
                 continue;
             }
 
-            switch(executableType) {
+            switch(defaultExecutableType) {
                 case UPDATE_NAMETAG: executables.add(new UpdateNametagExecutable(args)); break;
-                default: throw new IllegalStateException("Unexpected executable type: " + executableType);
+                default: throw new IllegalStateException("Unexpected executable type: " + defaultExecutableType);
             }
         }
 
         return new ExecuteAction(parentRule, executables);
     }
 
-    public enum ExecutableType {
+    public enum DefaultExecutableType {
         UPDATE_NAMETAG("update-nametag");
 
         private final String id;
-        ExecutableType(final @NotNull String id) {
+        DefaultExecutableType(final @NotNull String id) {
             this.id = id;
         }
 
         @NotNull
         public String id() { return id; }
 
-        public static Optional<ExecutableType> of(final @NotNull String id) {
-            for(ExecutableType type : values()) {
+        public static Optional<DefaultExecutableType> of(final @NotNull String id) {
+            for(DefaultExecutableType type : values()) {
                 if(type.id().equalsIgnoreCase(id)) {
                     return Optional.of(type);
                 }
@@ -88,7 +101,7 @@ public record ExecuteAction(
     public interface Executable {
 
         @NotNull
-        ExecutableType type();
+        String id();
 
         @NotNull
         LinkedList<String> args();

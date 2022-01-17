@@ -6,7 +6,7 @@ import org.jetbrains.annotations.NotNull;
 public interface RuleOption {
 
     @NotNull
-    RuleOptionType type();
+    DefaultRuleOptionType type();
 
     @NotNull
     Rule parentRule();

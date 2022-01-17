@@ -15,17 +15,17 @@ import me.lokka30.levelledmobs.file.FileHandler;
 import me.lokka30.levelledmobs.rules.Group;
 import me.lokka30.levelledmobs.rules.Rule;
 import me.lokka30.levelledmobs.rules.RuleListener;
+import me.lokka30.levelledmobs.rules.action.DefaultRuleActionType;
 import me.lokka30.levelledmobs.rules.action.RuleAction;
-import me.lokka30.levelledmobs.rules.action.RuleActionType;
 import me.lokka30.levelledmobs.rules.action.type.ExecuteAction;
+import me.lokka30.levelledmobs.rules.condition.DefaultRuleConditionType;
 import me.lokka30.levelledmobs.rules.condition.RuleCondition;
-import me.lokka30.levelledmobs.rules.condition.RuleConditionType;
 import me.lokka30.levelledmobs.rules.condition.type.EntityTypeCondition;
 import me.lokka30.levelledmobs.rules.condition.type.IsLevelledCondition;
 import me.lokka30.levelledmobs.rules.condition.type.LightLevelFromBlockCondition;
 import me.lokka30.levelledmobs.rules.condition.type.LightLevelFromSkyCondition;
+import me.lokka30.levelledmobs.rules.option.DefaultRuleOptionType;
 import me.lokka30.levelledmobs.rules.option.RuleOption;
-import me.lokka30.levelledmobs.rules.option.RuleOptionType;
 import me.lokka30.levelledmobs.rules.option.type.TemporaryDoNotUseOption;
 import me.lokka30.levelledmobs.util.Utils;
 import org.bukkit.block.Biome;
@@ -172,6 +172,7 @@ public class RuleParser {
         final Yaml data = isPreset ? fh.getPresetsFile().getData() : fh.getListenersFile().getData();
         final String ruleOrPreset = isPreset ? "preset" : "rule";
 
+        // create base rule with no functionality
         final Rule rule = new Rule(
                 isPreset,
                 identifier,
@@ -182,6 +183,7 @@ public class RuleParser {
                 new HashSet<>()
         );
 
+        // parse presets
         if(!isPreset) {
             data.getStringList(path + ".use-presets").forEach(presetId -> {
                 final Optional<Rule> presetInRule = presets.stream()
@@ -195,8 +197,9 @@ public class RuleParser {
             });
         }
 
-        for(String ruleConditionTypeStr : data.getSection(path + ".conditions").singleLayerKeySet()) {
-            final Optional<RuleConditionType> ruleConditionType = RuleConditionType.fromId(ruleConditionTypeStr);
+        // parse conditions
+        data.getSection(path + ".conditions").singleLayerKeySet().forEach(ruleConditionTypeStr -> {
+            final Optional<DefaultRuleConditionType> ruleConditionType = DefaultRuleConditionType.fromId(ruleConditionTypeStr);
 
             if(ruleConditionType.isPresent()) {
                 Utils.LOGGER.error("The " + ruleOrPreset + " '&b" + identifier + "&7' has an invalid condition" +
@@ -208,10 +211,11 @@ public class RuleParser {
                         data.getSection(path + ".conditions." + ruleConditionTypeStr)
                 ));
             }
-        }
+        });
 
-        for(String ruleActionTypeStr : data.getSection(path + ".actions").singleLayerKeySet()) {
-            final Optional<RuleActionType> ruleActionType = RuleActionType.fromId(ruleActionTypeStr);
+        // parse actions
+        data.getSection(path + ".actions").singleLayerKeySet().forEach(ruleActionTypeStr -> {
+            final Optional<DefaultRuleActionType> ruleActionType = DefaultRuleActionType.fromId(ruleActionTypeStr);
 
             if(ruleActionType.isPresent()) {
                 Utils.LOGGER.error("The " + ruleOrPreset + " '&b" + identifier + "&7' has an invalid action" +
@@ -223,10 +227,11 @@ public class RuleParser {
                         data.getSection(path + ".actions." + ruleActionTypeStr)
                 ));
             }
-        }
+        });
 
-        for(String ruleOptionTypeStr : data.getSection(path + ".options").singleLayerKeySet()) {
-            final Optional<RuleOptionType> ruleOptionType = RuleOptionType.fromId(ruleOptionTypeStr);
+        // parse options
+        data.getSection(path + ".options").singleLayerKeySet().forEach(ruleOptionTypeStr -> {
+            final Optional<DefaultRuleOptionType> ruleOptionType = DefaultRuleOptionType.fromId(ruleOptionTypeStr);
 
             if(ruleOptionType.isPresent()) {
                 Utils.LOGGER.error("The " + ruleOrPreset + " '&b" + identifier + "&7' has an invalid option" +
@@ -238,7 +243,27 @@ public class RuleParser {
                         data.getSection(path + ".options." + ruleOptionTypeStr)
                 ));
             }
-        }
+        });
+
+        // inherit missing actions & conditions from presets
+        rule.presets().forEach(preset -> {
+
+            // loop through conditions in preset
+            preset.conditions().forEach(presetCondition -> rule.conditions().forEach(ruleCondition -> {
+                if(presetCondition.id().equals(ruleCondition.id())) {
+                    ruleCondition.merge(presetCondition);
+                }
+            }));
+
+            // loop through actions in preset
+            preset.actions().forEach(presetAction -> rule.actions().forEach(ruleAction -> {
+                if(presetAction.id().equals(ruleAction.id())) {
+                    ruleAction.merge(presetAction);
+                }
+            }));
+
+            // FYI: options are not inherited from presets
+        });
 
         return rule;
     }
@@ -250,7 +275,7 @@ public class RuleParser {
     @NotNull
     RuleCondition processRuleCondition(
             final @NotNull Rule parentRule,
-            final @NotNull RuleConditionType type,
+            final @NotNull DefaultRuleConditionType type,
             final @NotNull FlatFileSection section
     ) {
         switch(type) {
@@ -269,7 +294,7 @@ public class RuleParser {
     @NotNull
     RuleAction processRuleAction(
             final @NotNull Rule parentRule,
-            final @NotNull RuleActionType type,
+            final @NotNull DefaultRuleActionType type,
             final @NotNull FlatFileSection section
     ) {
         switch(type) {
@@ -285,7 +310,7 @@ public class RuleParser {
     @NotNull
     RuleOption processRuleOption(
             final @NotNull Rule parentRule,
-            final @NotNull RuleOptionType type,
+            final @NotNull DefaultRuleOptionType type,
             final @NotNull FlatFileSection section
     ) {
         switch(type) {
