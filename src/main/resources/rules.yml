@@ -355,6 +355,7 @@ default-rule:
       SHOPKEEPERS: false
       SIMPLE_PETS: false
       ELITE_BOSSES: false
+      BLOOD_NIGHT: false
 
 #    apply-above-y: 64
 #    apply-below-y: 59
