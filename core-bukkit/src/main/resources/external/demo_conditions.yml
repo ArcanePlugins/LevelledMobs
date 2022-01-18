@@ -13,9 +13,9 @@ conditions:
   # - SHORT/LONG VERSIONS OF CONDITIONS
   #   Each condition, wherever feasible, will have a short version
   #   of the normal (long) version. This helps simplify longer files
-  #   and remove repetitive boilerplate. However, it is recommended
-  #   to use the long (normal) version wherever feasible as there is
-  #   less room for error and it is easier to configure to a degree.
+  #   and remove repetitive boilerplate. The longer versions are
+  #   arguably more readable, so it is recommended to use the long
+  #   version wherever it is feasible for the user.
   #
   # - GRAVE SYMBOL (`) IN KEYS, IN THE BRAINSTORMING FILE
   #   To prevent errors in the editor from duplicate YAML
