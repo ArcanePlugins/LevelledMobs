@@ -1,0 +1,35 @@
+# Brainstorming Rule Actions for LM 4.
+actions:
+
+  #########
+  # EXECUTE
+  #########
+  #
+  ### ABOUT THE 'EXECUTABLES' SYSTEM:
+  # This is an action which makes a lot of cool things possible!
+  # In LevelledMobs 4, there is a hidden system called Executables.
+  # This allows developers, even through other plugins, to create
+  # code that can run when told to by the rules system (just in
+  # the action below!). By default there is 'update-nametags', which
+  # will be explained below. However, developers can add things like
+  # 'cast-spell' or 'cast-fireball', whatever they want!
+  #
+  ## EXECUTABLE 'ARGUMENTS' SYSTEM:
+  # Executables can also be paired with 'arguments', to specify some
+  # more information to run the executable with. The update-nametag
+  # executable does not have any arguments available although an example
+  # would be: 'update-nametag:firstarg:second arg:third argument 123:hello there!'
+  # So the update-nametag executable will be ran with the arguments:
+  # 'firstarg', 'second arg', 'third argument 123', and 'hello there!'.
+  # Just like commands, but instead of spaces, they are separated using colons. :)
+  #
+  ### EXECUTABLES LIST (by default):
+  #
+  ## 'update-nametag':
+  # When ran on a player-based event, it will update the nametag of each
+  # entity around them. This radius is configured in the settings.yml file,
+  # same as in LevelledMobs 3.
+  # When ran on an entity-based event, it will update the nametag of the
+  # entity involved in the event. This nametag packet will be sent to all
+  # players around the mob, in the same radius which was elaborated on above.
+  execute: ['update-nametag'] # LinkedList<String>

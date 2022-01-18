@@ -30,6 +30,10 @@ public record EntityTypeCondition(
 
     @Override @NotNull
     public RuleCondition merge(@NotNull RuleCondition other) {
+        /*
+        if current condition's types list is empty
+
+         */
         return this; //TODO
     }
 
