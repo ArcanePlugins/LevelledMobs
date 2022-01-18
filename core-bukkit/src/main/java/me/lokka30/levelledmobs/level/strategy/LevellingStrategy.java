@@ -22,7 +22,7 @@ import org.jetbrains.annotations.NotNull;
  * random numbers, and so on.
  *
  * @author lokka30
- * @since v4.0.0
+ * @since 4.0.0
  */
 public interface LevellingStrategy {
 
@@ -34,7 +34,7 @@ public interface LevellingStrategy {
      *
      * @param mob the mob that is having their level calculated
      * @return the level calculated for specified mob
-     * @since v4.0.0
+     * @since 4.0.0
      */
     int calculateLevel(@NotNull LevelledMobs main, @NotNull LevelledMob mob);
 }

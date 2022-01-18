@@ -17,7 +17,7 @@ import java.util.EnumSet;
 
 /**
  * @author lokka30
- * @since v4.0.0
+ * @since 4.0.0
  * This class handles all debug-logging in the plugin.
  */
 public final class DebugHandler {
@@ -47,7 +47,7 @@ public final class DebugHandler {
      * @return if the category is enabled or not
      * Check if a debug category is enabled or not by the configuration.
      * @author lokka30
-     * @since v4.0.0
+     * @since 4.0.0
      */
     public boolean isDebugCategoryEnabled(final DebugCategory category) {
         return getEnabledDebugCategories().contains(category);

@@ -31,7 +31,7 @@ import java.util.Set;
 
 /**
  * @author lokka30
- * @since v4.0.0
+ * @since 4.0.0
  * Main class of the plugin. Acts as a 'hub' of sorts in the plugin's code.
  */
 public final class LevelledMobs extends JavaPlugin {
@@ -73,7 +73,7 @@ public final class LevelledMobs extends JavaPlugin {
 
     /**
      * @author lokka30
-     * @since v4.0.0
+     * @since 4.0.0
      * Called by Bukkit's plugin manager
      * in the 'loading' stage of the server.
      * This runs before 'onEnable', so any
@@ -94,7 +94,7 @@ public final class LevelledMobs extends JavaPlugin {
 
     /**
      * @author lokka30
-     * @since v4.0.0
+     * @since 4.0.0
      * Called by Bukkit's plugin manager
      * when it enables the plugin.
      * Ensure reloads are factored in to
@@ -125,7 +125,7 @@ public final class LevelledMobs extends JavaPlugin {
 
     /**
      * @author lokka30
-     * @since v4.0.0
+     * @since 4.0.0
      * Called by Bukkit's plugin manager
      * when it enables the plugin.
      * Ensure reloads are factored in to
@@ -149,7 +149,7 @@ public final class LevelledMobs extends JavaPlugin {
 
     /**
      * @author lokka30
-     * @since v4.0.0
+     * @since 4.0.0
      * Registers ALL of LevelledMobs' listener classes through Bukkit's plugin manager.
      * Only to be ran from onEnable, do not use elsewhere.
      * The HashSet of Listeners must be updated manually if a new Listener is added to LM.

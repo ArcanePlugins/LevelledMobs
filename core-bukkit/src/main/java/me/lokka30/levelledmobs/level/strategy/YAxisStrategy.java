@@ -21,7 +21,7 @@ import org.jetbrains.annotations.NotNull;
  *
  * @author lokka30
  * @see LevellingStrategy
- * @since v4.0.0
+ * @since 4.0.0
  */
 public record YAxisStrategy(
         int start,

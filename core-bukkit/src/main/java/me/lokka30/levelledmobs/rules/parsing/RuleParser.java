@@ -39,7 +39,7 @@ import java.util.Optional;
 
 /**
  * @author lokka30
- * @since v4.0.0
+ * @since 4.0.0
  * This class parses rules from the Rules configuration
  * into Rule objects that are accessed by the plugin.
  * It also parses other components of the Rules system,

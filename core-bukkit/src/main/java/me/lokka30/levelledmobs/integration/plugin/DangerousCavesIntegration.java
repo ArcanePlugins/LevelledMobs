@@ -24,7 +24,7 @@ import org.jetbrains.annotations.Nullable;
  * Link:       https://www.spigotmc.org/resources/dangerous-caves-2.76212/
  *
  * @author lokka30
- * @since v4.0.0
+ * @since 4.0.0
  */
 public class DangerousCavesIntegration implements Integration, MobOwner {
 

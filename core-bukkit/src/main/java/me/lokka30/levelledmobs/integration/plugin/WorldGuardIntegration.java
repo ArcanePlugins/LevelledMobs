@@ -19,7 +19,7 @@ import org.jetbrains.annotations.NotNull;
  * Link:       https://dev.bukkit.org/projects/worldguard
  *
  * @author lokka30
- * @since v4.0.0
+ * @since 4.0.0
  */
 public class WorldGuardIntegration implements Integration {
 

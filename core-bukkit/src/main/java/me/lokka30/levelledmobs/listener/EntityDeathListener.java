@@ -15,7 +15,7 @@ import org.bukkit.event.entity.EntityDeathEvent;
 
 /**
  * @author lokka30
- * @since v4.0.0
+ * @since 4.0.0
  * TODO Edit Description Here
  */
 public class EntityDeathListener implements Listener {

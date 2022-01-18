@@ -19,7 +19,7 @@ package me.lokka30.levelledmobs.level;
  * @author lokka30
  * @see LevelledNamespacedKeys
  * @see org.bukkit.attribute.Attribute
- * @since v4.0.0
+ * @since 4.0.0
  */
 public enum CustomMultiplier {
 
@@ -27,7 +27,7 @@ public enum CustomMultiplier {
      * The ranged attack damage multiplier the Entity has.
      * (e.g. Skeleton arrows)
      *
-     * @since v4.0.0
+     * @since 4.0.0
      */
     RANGED_ATTACK_DAMAGE,
 
@@ -35,7 +35,7 @@ public enum CustomMultiplier {
      * The item drop multiplier the Entity has.
      * (The Entity's item drops will be multiplied upon its death)
      *
-     * @since v4.0.0
+     * @since 4.0.0
      */
     ITEM_DROP,
 
@@ -43,14 +43,14 @@ public enum CustomMultiplier {
      * The experience drop multiplier the Entity has.
      * (The Entity's XP drops will be multiplied upon its death)
      *
-     * @since v4.0.0
+     * @since 4.0.0
      */
     EXPERIENCE_DROP,
 
     /**
      * The creeper blast damage value the Entity (Creeper) has.
      *
-     * @since v4.0.0
+     * @since 4.0.0
      */
     CREEPER_BLAST_DAMAGE
 }

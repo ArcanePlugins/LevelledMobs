@@ -15,7 +15,7 @@ import java.util.HashSet;
 
 /**
  * @author lokka30
- * @since v4.0.0
+ * @since 4.0.0
  * This class handles all the Queues used in LevelledMobs.
  * @see Queue
  */
@@ -29,14 +29,14 @@ public class QueueHandler {
     }
 
     /**
-     * @since v4.0.0
+     * @since 4.0.0
      * ALL queues must be included here. See the constructor, each Queue is added there.
      */
     public final HashSet<Queue> queues;
 
     /**
      * @author lokka30
-     * @since v4.0.0
+     * @since 4.0.0
      * Start all queues.
      */
     public void startQueues() {
@@ -46,7 +46,7 @@ public class QueueHandler {
 
     /**
      * @author lokka30
-     * @since v4.0.0
+     * @since 4.0.0
      * Stop all queues.
      */
     public void stopQueues() {

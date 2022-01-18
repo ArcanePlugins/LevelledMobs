@@ -28,7 +28,7 @@ import java.util.List;
 
 /**
  * @author lokka30
- * @since v4.0.0
+ * @since 4.0.0
  * This class handles the management
  * of the LM files, internal and external.
  */
@@ -110,7 +110,7 @@ public class FileHandler {
 
     /**
      * @author lokka30
-     * @since v4.0.0
+     * @since 4.0.0
      * Load all internal files.
      * Unnecessary to run on reload - improve performance by
      * not running this method on reload. Thus it should only
@@ -129,7 +129,7 @@ public class FileHandler {
 
     /**
      * @author lokka30
-     * @since v4.0.0
+     * @since 4.0.0
      * (Re)load all external files.
      * This must be called on start-up and also on reload.
      */

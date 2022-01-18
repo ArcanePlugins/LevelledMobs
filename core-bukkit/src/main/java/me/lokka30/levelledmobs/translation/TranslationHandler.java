@@ -15,7 +15,7 @@ import org.jetbrains.annotations.NotNull;
 
 /**
  * @author lokka30
- * @since v4.0.0
+ * @since 4.0.0
  * This class handles the text that LevelledMobs
  * allows administrators to translate through the
  * <code>constants.yml</code> and <code>messages.yml</code> files.

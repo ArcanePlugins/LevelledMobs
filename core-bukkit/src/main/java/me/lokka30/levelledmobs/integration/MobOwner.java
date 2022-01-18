@@ -19,16 +19,18 @@ import org.jetbrains.annotations.NotNull;
  * and so on.
  *
  * @author lokka30
- * @since v4.0.0
+ * @version 1
+ * @since 4.0.0
  */
 public interface MobOwner {
 
     /**
      * Check if a mob belongs to the MobOwner.
      *
+     * @author lokka30
      * @param mob the mob in question
      * @return if the mob belongs to the Mob-Owner or not
-     * @since v4.0.0
+     * @since 4.0.0
      */
     boolean isMobOwner(@NotNull final LevelledMob mob);
 

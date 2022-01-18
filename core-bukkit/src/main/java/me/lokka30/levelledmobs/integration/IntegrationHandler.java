@@ -21,7 +21,7 @@ import java.util.List;
  * in LevelledMobs.
  *
  * @author lokka30
- * @since v4.0.0
+ * @since 4.0.0
  */
 public class IntegrationHandler {
 
@@ -36,7 +36,7 @@ public class IntegrationHandler {
      * doesn't need to be enabled to exist in the set, it just needs to exist.
      *
      * @param integration what integration to add to the list
-     * @since v4.0.0
+     * @since 4.0.0
      */
     public void addIntegration(final Integration integration) {
         // Make sure there are no duplicate entries
@@ -56,7 +56,7 @@ public class IntegrationHandler {
      * exist in LevelledMobs, not ones added by other plugins)
      * to the Available Integrations set.
      *
-     * @since v4.0.0
+     * @since 4.0.0
      */
     public void loadDefaultIntegrations() {
         List.of(

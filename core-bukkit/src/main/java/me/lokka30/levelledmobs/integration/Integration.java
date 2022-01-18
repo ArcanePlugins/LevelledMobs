@@ -16,7 +16,7 @@ import org.jetbrains.annotations.NotNull;
  * containing common methods used across all of them.
  *
  * @author lokka30
- * @since v4.0.0
+ * @since 4.0.0
  */
 public interface Integration {
 
@@ -24,7 +24,7 @@ public interface Integration {
      * Get the name of the Integration.
      *
      * @return the name of the class providing the integration, e.g. {@code CitizensIntegration}.
-     * @since v4.0.0
+     * @since 4.0.0
      */
     @NotNull
     String getName();
@@ -33,7 +33,7 @@ public interface Integration {
      * Check if the plugin being integrated with is installed.
      *
      * @return if the plugin being integrated with is installed.
-     * @since v4.0.0
+     * @since 4.0.0
      */
     boolean isInstalled();
 
@@ -42,7 +42,7 @@ public interface Integration {
      * Ensure the integration is enabled prior to using it.
      *
      * @return if the integration is enabled.
-     * @since v4.0.0
+     * @since 4.0.0
      */
     default boolean isEnabled() {
         return

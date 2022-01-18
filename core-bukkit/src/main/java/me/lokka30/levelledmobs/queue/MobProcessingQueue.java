@@ -17,7 +17,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * @author lokka30, stumper66
- * @since v4.0.0
+ * @since 4.0.0
  * This Queue handles mob processing (after they spawn in, they get levelled).
  * @see Queue
  */

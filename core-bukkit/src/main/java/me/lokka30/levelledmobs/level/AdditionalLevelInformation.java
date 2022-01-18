@@ -10,7 +10,7 @@ import me.lokka30.levelledmobs.event.MobPreLevelEvent;
  * TODO add description.
  *
  * @author stumper66, lokka30
- * @since v3.1.0
+ * @since 3.1.0
  * @see MobPreLevelEvent
  * @see MobPostLevelEvent
  */
@@ -19,7 +19,7 @@ public enum AdditionalLevelInformation {
     /**
      * The mob was spawned in via LM's summon subcommand.
      *
-     * @since v4.0.0
+     * @since 4.0.0
      */
     SUMMONED
 }

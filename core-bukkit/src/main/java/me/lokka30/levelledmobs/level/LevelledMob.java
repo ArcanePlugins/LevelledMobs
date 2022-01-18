@@ -20,7 +20,7 @@ import org.jetbrains.annotations.NotNull;
  * as what level they are.
  *
  * @author lokka30
- * @since v4.0.0
+ * @since 4.0.0
  */
 public class LevelledMob {
 

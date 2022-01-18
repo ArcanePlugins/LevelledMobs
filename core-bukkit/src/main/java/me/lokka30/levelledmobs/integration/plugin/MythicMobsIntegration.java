@@ -21,7 +21,7 @@ import org.jetbrains.annotations.NotNull;
  * Link:       https://www.spigotmc.org/resources/mythicmobs.5702
  *
  * @author lokka30
- * @since v4.0.0
+ * @since 4.0.0
  */
 public class MythicMobsIntegration implements Integration, MobOwner {
 

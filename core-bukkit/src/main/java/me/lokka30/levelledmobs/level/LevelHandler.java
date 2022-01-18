@@ -15,7 +15,7 @@ import org.jetbrains.annotations.NotNull;
  * of mob levels in the plugin.
  *
  * @author lokka30
- * @since v4.0.0
+ * @since 4.0.0
  */
 public final class LevelHandler {
 

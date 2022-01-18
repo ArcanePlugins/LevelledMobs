@@ -21,7 +21,7 @@ import java.util.Set;
  * ALL namespaced keys in this class MUST be registered.
  *
  * @author lokka30
- * @since v4.0.0
+ * @since 4.0.0
  * @see NamespacedKey
  */
 public final class LevelledNamespacedKeys {
@@ -56,7 +56,7 @@ public final class LevelledNamespacedKeys {
     public @NotNull Set<NamespacedKey> getAllKeys() { return allKeys; }
 
     /**
-     * @since v4.0.0
+     * @since 4.0.0
      * What level a levelled mob is (e.g., `52`)
      * Type: Integer
      */
@@ -64,7 +64,7 @@ public final class LevelledNamespacedKeys {
     public @NotNull NamespacedKey getLevelKey() { return levelKey; }
 
     /**
-     * @since v4.0.0
+     * @since 4.0.0
      * Says how a mob was spawned
      * Type: String
      */
@@ -72,7 +72,7 @@ public final class LevelledNamespacedKeys {
     public @NotNull NamespacedKey getSpawnReasonKey() { return spawnReasonKey; }
 
     /**
-     * @since v4.0.0
+     * @since 4.0.0
      * States if the mob was a baby mob or not.
      * Type: Boolean
      */
@@ -80,7 +80,7 @@ public final class LevelledNamespacedKeys {
     public @NotNull NamespacedKey getWasBabyMobKey() { return wasBabyMobKey; }
 
     /**
-     * @since v4.0.0
+     * @since 4.0.0
      * Set if a mob has an overriden entity name. If they do
      * then the entity name they were given is set here.
      * Type: String
@@ -89,7 +89,7 @@ public final class LevelledNamespacedKeys {
     public @NotNull NamespacedKey getOverridenEntityNameKey() { return overridenEntityNameKey; }
 
     /**
-     * @since v4.0.0
+     * @since 4.0.0
      * For player levelling, the UUID of the closest mob to a player
      * is stored in the mob
      * Type: String
@@ -98,7 +98,7 @@ public final class LevelledNamespacedKeys {
     public @NotNull NamespacedKey getPlayerLevellingClosestPlayerUUIDKey() { return playerLevellingClosestPlayerUUIDKey; }
 
     /**
-     * @since v4.0.0
+     * @since 4.0.0
      * If a mob was processed through a rule that has a chance
      * and initially allowed the chance to happen (so the rule
      * became in effect), then the mob will have this key applied
@@ -111,7 +111,7 @@ public final class LevelledNamespacedKeys {
     public @NotNull NamespacedKey getChanceRuleAllowedKey() { return chanceRuleAllowedKey; }
 
     /**
-     * @since v4.0.0
+     * @since 4.0.0
      * Same as chanceRuleAllowed except that this key stores
      * chance rules that were denied upon a mob, instead of allowed.
      * Type: String

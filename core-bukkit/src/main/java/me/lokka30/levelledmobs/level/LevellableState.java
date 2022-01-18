@@ -17,7 +17,7 @@ import org.jetbrains.annotations.NotNull;
  * in this enum that can explain why a mob is considered such.
  *
  * @author lokka30
- * @since v4.0.0
+ * @since 4.0.0
  */
 public enum LevellableState {
 
@@ -29,7 +29,7 @@ public enum LevellableState {
     /**
      * The mob is levellable.
      *
-     * @since v4.0.0
+     * @since 4.0.0
      */
     LEVELLABLE(LevellableState.DEFAULT_INFO);
 
@@ -39,7 +39,7 @@ public enum LevellableState {
 
     /**
      * @param additionalInfo what additional info the levellable state should have
-     * @since v4.0.0
+     * @since 4.0.0
      */
     public void setAdditionalInfo(@NotNull final String additionalInfo) { this.additionalInfo = additionalInfo; }
 }

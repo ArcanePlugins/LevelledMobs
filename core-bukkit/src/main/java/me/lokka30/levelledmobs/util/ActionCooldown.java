@@ -11,7 +11,7 @@ package me.lokka30.levelledmobs.util;
 /**
  * @author lokka30
  * @see System#currentTimeMillis()
- * @since v3.1.2
+ * @since 3.1.2
  * This class is used to put cooldowns on certain actions,
  * on certain in-game objects - e.g. clicking entities or blocks.
  * For example, this is used in Debug Entity Damage to stop spam from
@@ -27,7 +27,7 @@ public record ActionCooldown(
      * @param identifier ID to check if this cooldown has the same ID.
      * @return if the IDs match.
      * @author lokka30
-     * @since v3.1.2
+     * @since 3.1.2
      * Checks if this cooldown belongs to something with a certain ID.
      */
     public boolean doesCooldownBelongToIdentifier(final String identifier) {
@@ -38,7 +38,7 @@ public record ActionCooldown(
      * @param requiredTimeInSeconds how many seconds should the cooldown have lasted?
      * @return if the cooldown has expired.
      * @author lokka30
-     * @since v3.1.2
+     * @since 3.1.2
      * Check if the cooldown's required time (seconds!) has surpassed since
      * the starting point.
      */

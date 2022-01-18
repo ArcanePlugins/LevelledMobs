@@ -22,7 +22,7 @@ import java.util.EnumSet;
  * @see Event
  * @see Cancellable
  * @see MobPreLevelEvent
- * @since v4.0.0
+ * @since 4.0.0
  * This event is fired by LevelledMobs when a
  * mob has become Levelled. It is not Cancellable
  * since MobPreLevelEvent allows plugins to do such.

@@ -19,7 +19,7 @@ import org.jetbrains.annotations.NotNull;
  * Link:       https://www.spigotmc.org/resources/nbt-api.7939/
  *
  * @author lokka30
- * @since v4.0.0
+ * @since 4.0.0
  */
 public class NBTAPIIntegration implements Integration {
 

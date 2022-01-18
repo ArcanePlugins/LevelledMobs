@@ -16,7 +16,7 @@ import java.io.Serializable;
 /**
  * @author lokka30
  * @see Location
- * @since v3.1.2
+ * @since 3.1.2
  * A smaller version of the Location class only including
  * a world name, and three integers for the x, y and z.
  * Finds uses where the extra data and precision of the
@@ -32,7 +32,7 @@ public record Point(
     /**
      * @return array of X, Y and Z coordinates
      * @author lokka30
-     * @since v3.1.2
+     * @since 3.1.2
      */
     public Integer[] getCoordinates() {
         return new Integer[]{x, y, z};
@@ -41,7 +41,7 @@ public record Point(
     /**
      * @return a String format of the Point but more human-readable.
      * @author lokka30
-     * @since v4.0.0
+     * @since 4.0.0
      */
     public String toFormattedString() {
         return "[" + worldName + "] @ x=" + x + ", y=" + y + ", z=" + z;

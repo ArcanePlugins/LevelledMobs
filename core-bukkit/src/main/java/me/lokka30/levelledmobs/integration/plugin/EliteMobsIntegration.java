@@ -21,7 +21,7 @@ import org.jetbrains.annotations.NotNull;
  * Link:       https://www.spigotmc.org/resources/elitemobs.40090/
  *
  * @author lokka30
- * @since v4.0.0
+ * @since 4.0.0
  */
 public class EliteMobsIntegration implements Integration, MobOwner {
 

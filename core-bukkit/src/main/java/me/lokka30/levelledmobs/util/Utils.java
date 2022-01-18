@@ -13,7 +13,7 @@ import org.apache.commons.lang.WordUtils;
 
 /**
  * @author lokka30
- * @since v4.0.0
+ * @since 4.0.0
  * This class contains a bunch of public static methods
  * used across multiple LevelledMobs classes, centralising
  * it so it doesn't have to be repeated, making it easier to
@@ -22,7 +22,7 @@ import org.apache.commons.lang.WordUtils;
 public final class Utils {
 
     /**
-     * @since v2.0.0
+     * @since 2.0.0
      * This contains an instance of MicroLogger, used
      * across the plugin to log things to the console.
      */

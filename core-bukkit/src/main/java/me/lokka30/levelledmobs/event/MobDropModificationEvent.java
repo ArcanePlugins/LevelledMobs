@@ -23,7 +23,7 @@ import java.util.List;
  * @see Event
  * @see Cancellable
  * @see MobPreLevelEvent
- * @since v4.0.0
+ * @since 4.0.0
  * This event is fired by LevelledMobs when a
  * levelled mob dies and LevelledMobs wants to
  * change the drops of the entity.

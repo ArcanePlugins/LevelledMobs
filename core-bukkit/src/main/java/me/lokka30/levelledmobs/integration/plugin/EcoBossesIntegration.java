@@ -24,7 +24,7 @@ import org.jetbrains.annotations.Nullable;
  * Link:       https://www.spigotmc.org/resources/ecobosses.86576/
  *
  * @author lokka30
- * @since v4.0.0
+ * @since 4.0.0
  */
 public class EcoBossesIntegration implements Integration, MobOwner {
 

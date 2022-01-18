@@ -17,7 +17,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * @author lokka30, stumper66
- * @since v4.0.0
+ * @since 4.0.0
  * This Queue contains nametags that will be sent
  * to various players.
  * @see Queue
@@ -75,7 +75,7 @@ public class NametagProcessingQueue implements Queue {
 
     /**
      * @author lokka30
-     * @since v4.0.0
+     * @since 4.0.0
      * Used to create objects contained within the queue,
      * encompassing the entity that will present the nametag,
      * and the text content of the nametag. The recipients of
