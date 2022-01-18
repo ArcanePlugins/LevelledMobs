@@ -102,6 +102,7 @@ actions:
   #########################
   # ACTIONS TO WORK ON LIST
   #########################
+  #
   # - Damage modifiers by DamageCause <https://github.com/lokka30/LevelledMobs/issues/302>, also with SUNLIGHT damage support
   # - Attributes
   #   - Armor/Shield Breaker Custom Attributes

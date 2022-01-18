@@ -42,30 +42,50 @@ conditions:
   ##############
   #
   # Available Events:
-  #  All entity-based (not player-based) events.
+  #  All mob-based events.
   #
   # Description:
   #  Specify a list of Entity Types which are required
   #  for the rule to be processed.
 
-  # short, inclusive
-  entity-types-incl: ['CREEPER'] # only creepers
-
-  # short, exclusive
-  entity-types-excl: ['CREEPER'] # all except creepers
+  # short
+  entity-types-incl: ['CREEPER'] # Set<String>
+  entity-types-excl: ['CREEPER'] # Set<String>
 
   # long
   entity-types:
-    inclusive-list: ['CREEPER'] # Set<String> - only creepers
+    inclusive-list: ['CREEPER'] # Set<String>
     # OR
-    exclusive-list: ['CREEPER'] # Set<String> - all except creepers
+    exclusive-list: ['CREEPER'] # Set<String>
+
+  ####################
+  # MOB GROUP PRESENCE
+  ####################
+  #
+  # Available Events:
+  #  All mob-based events.
+  #
+  # Description:
+  #  This condition allows you to factor in the presence
+  #  of the mob's entity type in any of the specified mob
+  #  groups.
+
+  # short
+  mob-groups-incl: ['passives'] # Set<String>
+  mob-groups-excl: ['hostiles'] # Set<String>
+
+  # long
+  mob-groups:
+    inclusive-list: ['passives'] # Set<String>
+    # OR
+    exclusive-list: ['hostiles'] # Set<String>
 
   ####################
   # MOB LEVELLED STATE
   ####################
   #
   # Available Events:
-  #  All entity-based (not player-based) events.
+  #  All mob-based events.
   #
   # Description:
   #  Specify whether the mob should be levelled/not levelled
@@ -74,19 +94,15 @@ conditions:
   #  'YES' = the mob must be levelled
   #  'NO'  = the mob must not be levelled
 
-  # short
-  levelled-state: 'ANY' # String (LevelledState)
-
-  # long
-  levelled-state`:
-    type: 'ANY' # String (LevelledState)
+  # short (no long version)
+  levelled-state: 'ANY' # LevelledState
 
   ########################
   # LIGHT LEVEL FROM BLOCK
   ########################
   #
   # Available Events:
-  #  All of them!
+  #  All player-based or mob-based events.
   #
   # Description:
   #  Specify a min-to-max requirement of what the mob's
@@ -99,19 +115,19 @@ conditions:
   #  Just use the short-ranged or long verison.
 
   # short
-  light-level-from-block: '3-5' # RangedInt - requires block light level min=3 to max=5.
+  light-level-from-block: '3-5' # RangedInt
 
   # long
   light-level-from-block`:
-    min: 3
-    max: 5
+    min: 3 # int
+    max: 5 # int
 
   ######################
   # LIGHT LEVEL FROM SKY
   ######################
   #
   # Available Events:
-  #  All of them!
+  #  All player-based or mob-based events.
   #
   # Description:
   #  Specify a min-max requirement of what the mob's
@@ -123,12 +139,12 @@ conditions:
   #  brainstorming comments for more information.
 
   # short
-  light-level-from-sky: '3-5' # RangedInt - requires sky light level min=3 to max=5.
+  light-level-from-sky: '3-5' # RangedInt
 
   # long
   light-level-from-sky`:
-    min: 3
-    max: 5
+    min: 3 # int
+    max: 5 # int
 
   ####################
   # MODIFIED BY PLUGIN
@@ -189,8 +205,6 @@ conditions:
   ############################
   # CONDITIONS TO WORK ON LIST
   ############################
-  # - Entity Type
-  #   - Mob Group
   # - Spawn Reason
   # - WorldGuard Region
   # - Coordinate
