@@ -66,7 +66,9 @@ public class ExternalCompatibilityManager {
 
         SIMPLE_PETS,
 
-        ELITE_BOSSES
+        ELITE_BOSSES,
+
+        BLOOD_NIGHT
     }
 
     /* Store any external namespaced keys with null values by default */
@@ -128,6 +130,13 @@ public class ExternalCompatibilityManager {
         }
 
         return false;
+    }
+
+    private static boolean isMobOfBloodNight(@NotNull final LivingEntityWrapper lmEntity){
+        final Plugin plugin = Bukkit.getPluginManager().getPlugin("BloodNight");
+        if (plugin == null) return false;
+
+        return lmEntity.getPDC().has(new NamespacedKey(plugin, "mobtype"), PersistentDataType.STRING);
     }
 
     public static boolean isMythicMob(@NotNull final LivingEntityWrapper lmEntity) {
@@ -223,6 +232,10 @@ public class ExternalCompatibilityManager {
         if (isMobOfEliteBosses(lmEntity) && !isExternalCompatibilityEnabled(ExternalCompatibility.ELITE_BOSSES, compatRules) &&
                 result == LevellableState.ALLOWED)
             result = LevellableState.DENIED_CONFIGURATION_COMPATIBILITY_ELITE_BOSSES;
+
+        if (isMobOfBloodNight(lmEntity) && !isExternalCompatibilityEnabled(ExternalCompatibility.BLOOD_NIGHT, compatRules) &&
+                result == LevellableState.ALLOWED)
+            result = LevellableState.DENIED_CONFIGURATION_COMPATIBILITY_BLOOD_NIGHT;
 
         return result;
     }
