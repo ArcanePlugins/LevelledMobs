@@ -56,7 +56,7 @@ event-listeners:
         enabled: true
         description: 'Passive and boss mobs will not be levelled'
         conditions:
-          mob-groups:
+          mob-group:
             inclusive-list: ['passives', 'bosses']
         use-presets: ['no-level']
 
@@ -64,10 +64,17 @@ event-listeners:
         enabled: true
         description: 'Baby hostile mobs will not be levelled'
         conditions:
-          mob-groups:
+          mob-group:
             inclusive-list: ['hostiles']
-          is-baby: true
+          baby-mob: true
         use-presets: ['no-level']
+
+      no-levels-for-mobs-belonging-to-other-plugins:
+        enabled: true
+        description: 'Prevents LM from making mobs levelled if they belong to other plugins e.g. Citizens or MythicMobs'
+        conditions:
+          mob-owner:
+            inclusive-list: []
 
       apply-level-and-attributes-and-nametag:
         enabled: true

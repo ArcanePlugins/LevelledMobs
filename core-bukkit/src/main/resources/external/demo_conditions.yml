@@ -5,6 +5,11 @@ conditions:
   ### NOTES
   #########
   #
+  # - AVAILABLE EVENTS LIST
+  #   Not every condition is applicable to every event (e.g. EntitySpawn).
+  #   A list of available events is supplied with each Condition so you
+  #   know which events you can use this Condition for! :D
+  #
   # - SHORT/LONG VERSIONS OF CONDITIONS
   #   Each condition, wherever feasible, will have a short version
   #   of the normal (long) version. This helps simplify longer files
@@ -35,6 +40,9 @@ conditions:
   ##############
   # ENTITY TYPES
   ##############
+  #
+  # Available Events: All entity-based (not player-based) events.
+  #
   # Specify a list of Entity Types which are required
   # for the rule to be processed.
 
@@ -53,6 +61,9 @@ conditions:
   ####################
   # MOB LEVELLED STATE
   ####################
+  #
+  # Available Events: All entity-based (not player-based) events.
+  #
   # Specify whether the mob should be levelled/not levelled
   # or if this should be ignored.
   # 'ANY' = the mob can be levelled or not levelled (default)
@@ -69,6 +80,9 @@ conditions:
   ########################
   # LIGHT LEVEL FROM BLOCK
   ########################
+  #
+  # Available Events: All of them!
+  #
   # Specify a min-to-max requirement of what the mob's
   # current location's block's light level is for the rule.
   #
@@ -89,6 +103,9 @@ conditions:
   ######################
   # LIGHT LEVEL FROM SKY
   ######################
+  #
+  # Available Events: All of them!
+  #
   # Specify a min-max requirement of what the mob's
   # current location's sky light level is for that rule.
   #
@@ -104,3 +121,56 @@ conditions:
   light-level-from-sky`:
     min: 3
     max: 5
+
+  ############
+  # MOB OWNERS
+  ############
+  #
+  # Available Events: All entity-based (not player-based) events.
+  #
+  # LevelledMobs defines a Mob Owner as a plugin which modifies mobs.
+  # LevelledMobs itself is a Mob Owner.
+  # Mob Owners are usually understood through an integration from
+  # LevelledMobs itself, e.g. for MythicMobs and EliteMobs. However,
+  # it is possible for plugins to register themselves as mob owners too!
+  # This can also allow them to bring greater degrees of integration with
+  # their plugin, if they desire.
+  # It's possible for a mob to have multiple Mob Owners, but it's rare since
+  # plugins usually want sole control over certain mobs.
+  #
+  # This condition checks if a mob belongs to a Mob Owner as specified
+  # by the configurator.
+  #
+  # Default: [] (exclusive list) = ignore mob owner condition
+
+  # short
+  mob-owner-incl: ['MYTHIC_MOBS', 'ELITE_MOBS', 'INFERNAL_MOBS'] # Set<String>
+  mob-owner-excl: ['CITIZENS', 'SHOPKEEPERS', 'VANILLA_BOSSES'] # Set<String>
+
+  # long
+  mob-owner:
+    inclusive-list: [] # Set<String>
+    # OR
+    exclusive-list: [] # Set<String>
+
+  ##########################
+  # MYTHICMOBS INTERNAL NAME
+  ##########################
+  #
+  # Available Events: All entity-based (not player-based) events.
+  #
+  # If MythicMobs is installed, the user can make a condition that
+  # requires a name from the list (inclusive/exclusive) to be met.
+  # The name is from MythicMobs, e.g. 'Skeleton King'.
+  #
+  # Default: [] (exclusive list) = ignore mythicmobs internal name
+
+  # short
+  mythicmobs-internal-name-incl: ['Skeleton King'] # Set<String>
+  mythicmobs-internal-name-excl: ['Skeletal Minion'] # Set<String>
+
+  # long
+  mythicmobs-internal-name:
+    inclusive-list: [] # Set<String>
+    # OR
+    exclusive-list: [] # Set<String>
