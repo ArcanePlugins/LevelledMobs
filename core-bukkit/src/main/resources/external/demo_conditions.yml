@@ -178,6 +178,22 @@ conditions:
   ############################
   # CONDITIONS TO WORK ON LIST
   ############################
-  # - Player permissions <https://github.com/lokka30/LevelledMobs/issues/285>
+  # - Entity Type
+  #   - Mob Group
+  # - Spawn Reason
+  # - WorldGuard Region
+  # - Coordinate
+  # - Biome
+  #   - Biome Group
+  # - Nametag (CustomName)
+  # - Chance
+  # - Current Level
+  # - Distance from Spawn
+  # - Tamed
+  # - Levelled Spawner Name
+  # - Scoreboard Tags
+  # - World Name
+  # - World Time
+  # - Permission <https://github.com/lokka30/LevelledMobs/issues/285>
   # - Slime size <https://github.com/lokka30/LevelledMobs/issues/279>
   # - Phase of the Moon <https://github.com/lokka30/LevelledMobs/issues/332>
