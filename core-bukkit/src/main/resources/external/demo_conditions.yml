@@ -97,10 +97,10 @@ conditions:
   # Same layout as the light level from block condition. See that condition's
   # brainstorming comments for more information.
 
-    # short
-    light-level-from-sky: '3-5' # RangedInt - requires sky light level min=3 to max=5.
+  # short
+  light-level-from-sky: '3-5' # RangedInt - requires sky light level min=3 to max=5.
 
-    # long
-    light-level-from-sky`:
-      min: 3
-      max: 5
+  # long
+  light-level-from-sky`:
+    min: 3
+    max: 5
