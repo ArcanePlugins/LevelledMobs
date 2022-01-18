@@ -68,16 +68,19 @@ public class ConstantsFile implements YamlExternalVersionedFile {
                 sendFutureFileVersionWarning();
                 return;
             case OUTDATED:
+                boolean stop = false;
                 for(int i = getInstalledFileVersion(); i < getSupportedFileVersion(); i++) {
+                    if(stop) break;
                     Utils.LOGGER.info("Attempting to migrate file '&b" + getName() + "&7' to version '&b" + i + "&7'...");
-
                     switch(i) {
                         case 1:
-                            return;
+                            break;
                         default:
                             // this is reached if there is no migration logic for a specific version.
                             Utils.LOGGER.warning("Migration logic was not programmed for the file version '&b" + i + "&7' " +
                                     "of the file '&b" + getName() + "&7'! Please inform the LevelledMobs developers.");
+                            stop = true;
+                            break;
                     }
                 }
                 Utils.LOGGER.info("Migration complete for file '&b" + getName() + "&7'.");

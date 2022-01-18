@@ -68,10 +68,11 @@ public class SettingsFile implements YamlExternalVersionedFile {
                 sendFutureFileVersionWarning();
                 return;
             case OUTDATED:
+                boolean stop = false;
                 for(int i = getInstalledFileVersion(); i < getSupportedFileVersion(); i++) {
+                    if(stop) break;
                     Utils.LOGGER.info("Attempting to migrate file '&b" + getName() + "&7' to version '&b" + i + "&7'...");
-
-                    if(i < 32) {
+                    if(i < 33) {
                         // This file was present prior to LM 4 so we can't feasibly
                         // migrate versions other than the previous file version only.
                         Utils.LOGGER.error("Your '&b" + getName() + "&7' file is too old to be migrated. " +
@@ -79,19 +80,19 @@ public class SettingsFile implements YamlExternalVersionedFile {
                                 "of the latest version one for you. You will need to manually modify the new file.");
                         backup();
                         replace();
+                        stop = true;
                         break;
                     }
 
                     switch(i) {
-                        case 32:
-                            //TODO migrate from old version to new.
-                            return;
                         case 33:
-                            return;
+                            break;
                         default:
                             // this is reached if there is no migration logic for a specific version.
                             Utils.LOGGER.warning("Migration logic was not programmed for the file version '&b" + i + "&7' " +
                                     "of the file '&b" + getName() + "&7'! Please inform the LevelledMobs developers.");
+                            stop = true;
+                            break;
                     }
                 }
                 Utils.LOGGER.info("Migration complete for file '&b" + getName() + "&7'.");

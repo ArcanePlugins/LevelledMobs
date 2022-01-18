@@ -68,10 +68,11 @@ public class CustomDropsFile implements YamlExternalVersionedFile {
                 sendFutureFileVersionWarning();
                 return;
             case OUTDATED:
+                boolean stop = false;
                 for(int i = getInstalledFileVersion(); i < getSupportedFileVersion(); i++) {
+                    if(stop) break;
                     Utils.LOGGER.info("Attempting to migrate file '&b" + getName() + "&7' to version '&b" + i + "&7'...");
-
-                    if(i < 10) {
+                    if(i < 11) {
                         // This file was present prior to LM 4 so we can't feasibly
                         // migrate versions other than the previous file version only.
                         Utils.LOGGER.error("Your '&b" + getName() + "&7' file is too old to be migrated. " +
@@ -79,12 +80,11 @@ public class CustomDropsFile implements YamlExternalVersionedFile {
                                 "of the latest version one for you. You will need to manually modify the new file.");
                         backup();
                         replace();
+                        stop = true;
                         break;
                     }
-
                     switch(i) {
-                        case 10:
-                            //TODO migrate from LM3 to LM4 customdrops.
+                        case 11:
                             break;
                         default:
                             // this is reached if there is no migration logic for a specific version.
@@ -92,6 +92,8 @@ public class CustomDropsFile implements YamlExternalVersionedFile {
                             Utils.LOGGER.warning("Migration logic was not programmed for the file version " +
                                     "'&b" + i + "&7' of the file '&b" + getName() + "&7'! Please inform the " +
                                     "LevelledMobs team.");
+                            stop = true;
+                            break;
                     }
 
                 }

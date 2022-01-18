@@ -104,6 +104,7 @@ actions:
   #########################
   # - Damage modifiers by DamageCause <https://github.com/lokka30/LevelledMobs/issues/302>, also with SUNLIGHT damage support
   # - Attributes
+  #   - Armor/Shield Breaker Custom Attributes
   # - Nametags
   #   - Name Override
   #   - Health Indicator

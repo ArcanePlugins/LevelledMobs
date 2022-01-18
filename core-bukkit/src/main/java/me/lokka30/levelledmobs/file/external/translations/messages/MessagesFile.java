@@ -68,9 +68,10 @@ public class MessagesFile implements YamlExternalVersionedFile {
                 sendFutureFileVersionWarning();
                 return;
             case OUTDATED:
+                boolean stop = false;
                 for(int i = getInstalledFileVersion(); i < getSupportedFileVersion(); i++) {
+                    if(stop) break;
                     Utils.LOGGER.info("Attempting to migrate file '&b" + getName() + "&7' to version '&b" + i + "&7'...");
-
                     if(i < 7) {
                         // This file was present prior to LM 4 so we can't feasibly
                         // migrate versions other than the previous file version only.
@@ -81,17 +82,15 @@ public class MessagesFile implements YamlExternalVersionedFile {
                         replace();
                         break;
                     }
-
                     switch(i) {
-                        case 7:
-                            //TODO migrate
-                            return;
                         case 8:
-                            return;
+                            break;
                         default:
                             // this is reached if there is no migration logic for a specific version.
                             Utils.LOGGER.warning("Migration logic was not programmed for the file version '&b" + i + "&7' " +
                                     "of the file '&b" + getName() + "&7'! Please inform the LevelledMobs developers.");
+                            stop = true;
+                            break;
                     }
                 }
                 Utils.LOGGER.info("Migration complete for file '&b" + getName() + "&7'.");

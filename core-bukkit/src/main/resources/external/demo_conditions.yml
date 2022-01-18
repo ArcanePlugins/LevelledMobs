@@ -130,14 +130,15 @@ conditions:
     min: 3
     max: 5
 
-  ############
-  # MOB OWNERS
-  ############
+  ####################
+  # MODIFIED BY PLUGIN
+  ####################
   #
   # Available Events:
   #  All mob-based events.
   #
   # Description:
+  #  Checks if the mob is modified/managed by a compatible Mob Owner plugin.
   #  What's a Mob Owner?
   #   LevelledMobs defines a Mob Owner as a plugin which modifies mobs.
   #   LevelledMobs itself is a Mob Owner.
@@ -154,11 +155,11 @@ conditions:
   #  by the configurator.
 
   # short
-  mob-owner-incl: ['MYTHIC_MOBS', 'ELITE_MOBS', 'INFERNAL_MOBS'] # Set<String>
-  mob-owner-excl: ['CITIZENS', 'SHOPKEEPERS', 'VANILLA_BOSSES'] # Set<String>
+  modified-by-plugin-incl: ['MYTHIC_MOBS', 'ELITE_MOBS', 'INFERNAL_MOBS'] # Set<String>
+  modified-by-plugin-excl: ['CITIZENS', 'SHOPKEEPERS', 'VANILLA_BOSSES'] # Set<String>
 
   # long
-  mob-owner:
+  modified-by-plugin:
     inclusive-list: [] # Set<String>
     # OR
     exclusive-list: [] # Set<String>

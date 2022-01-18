@@ -64,17 +64,18 @@ public class GroupsFile implements YamlExternalVersionedFile {
                 sendFutureFileVersionWarning();
                 return;
             case OUTDATED:
-                boolean shouldBreak = false;
+                boolean stop = false;
                 for(int i = getInstalledFileVersion(); i < getSupportedFileVersion(); i++) {
-                    if(shouldBreak) break;
-
+                    if(stop) break;
                     Utils.LOGGER.info("Attempting to migrate file '&b" + getName() + "&7' to version '&b" + i + "&7'...");
                     switch(i) {
+                        case 1:
+                            break;
                         default:
                             // this is reached if there is no migration logic for a specific version.
                             Utils.LOGGER.warning("Migration logic was not programmed for the file version '&b" + i + "&7' " +
                                     "of the file '&b" + getName() + "&7'! Please inform the LevelledMobs developers.");
-                            shouldBreak = true;
+                            stop = true;
                             break;
                     }
                 }
