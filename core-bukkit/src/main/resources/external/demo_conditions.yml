@@ -174,3 +174,10 @@ conditions:
     inclusive-list: [] # Set<String>
     # OR
     exclusive-list: [] # Set<String>
+
+  ############################
+  # CONDITIONS TO WORK ON LIST
+  ############################
+  # - Player permissions <https://github.com/lokka30/LevelledMobs/issues/285>
+  # - Slime size <https://github.com/lokka30/LevelledMobs/issues/279>
+  # - Phase of the Moon <https://github.com/lokka30/LevelledMobs/issues/332>

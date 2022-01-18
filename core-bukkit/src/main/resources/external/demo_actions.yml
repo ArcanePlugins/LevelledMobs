@@ -33,3 +33,17 @@ actions:
   # entity involved in the event. This nametag packet will be sent to all
   # players around the mob, in the same radius which was elaborated on above.
   execute: ['update-nametag'] # LinkedList<String>
+
+  #########################
+  # ACTIONS TO WORK ON LIST
+  #########################
+  # - Set custom persistent value <https://github.com/lokka30/LevelledMobs/issues/283>
+  # - Set custom non-persistent value - same as above but stored in memory instead of disk. doesn't save upon restart. faster than using PDC.
+  # - Use custom drop table ID
+  # - Damage modifiers by DamageCause <https://github.com/lokka30/LevelledMobs/issues/302>, also with SUNLIGHT damage support
+  # - Nametags
+  #   - MARKED mode <https://github.com/lokka30/LevelledMobs/issues/301>
+  #   - 'Can't view nametags' distance <https://github.com/lokka30/LevelledMobs/issues/327>
+  # - Levelling Strategies
+  #   - Player Levelling
+  #     - Default strategy configuration <https://github.com/lokka30/LevelledMobs/issues/346>
