@@ -41,9 +41,13 @@ actions:
   # - Set custom non-persistent value - same as above but stored in memory instead of disk. doesn't save upon restart. faster than using PDC.
   # - Use custom drop table ID
   # - Damage modifiers by DamageCause <https://github.com/lokka30/LevelledMobs/issues/302>, also with SUNLIGHT damage support
+  # - Attributes
   # - Nametags
   #   - MARKED mode <https://github.com/lokka30/LevelledMobs/issues/301>
   #   - 'Can't view nametags' distance <https://github.com/lokka30/LevelledMobs/issues/327>
+  #   - Health-dependent color variable <https://github.com/lokka30/LevelledMobs/issues/278>
   # - Levelling Strategies
   #   - Player Levelling
   #     - Default strategy configuration <https://github.com/lokka30/LevelledMobs/issues/346>
+  #   - Ender Dragon Kill Count <https://github.com/lokka30/LevelledMobs/issues/145>
+  # - Hardcore Featureset <https://github.com/lokka30/LevelledMobs/issues/324>
