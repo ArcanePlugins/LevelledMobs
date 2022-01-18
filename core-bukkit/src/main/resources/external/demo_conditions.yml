@@ -37,9 +37,9 @@ conditions:
   #   incl/excl functionality.
   #   This is per-condition! Not per-rule.
 
-  ##############
-  # ENTITY TYPES
-  ##############
+  #############
+  # ENTITY TYPE
+  #############
   #
   # Available Events:
   #  All mob-based events.
@@ -49,18 +49,18 @@ conditions:
   #  for the rule to be processed.
 
   # short
-  entity-types-incl: ['CREEPER'] # Set<String>
-  entity-types-excl: ['CREEPER'] # Set<String>
+  entity-type-incl: ['CREEPER'] # Set<String>
+  entity-type-excl: ['CREEPER'] # Set<String>
 
   # long
-  entity-types:
+  entity-type:
     inclusive-list: ['CREEPER'] # Set<String>
     # OR
     exclusive-list: ['CREEPER'] # Set<String>
 
-  ####################
-  # MOB GROUP PRESENCE
-  ####################
+  ###########
+  # MOB GROUP
+  ###########
   #
   # Available Events:
   #  All mob-based events.
@@ -69,13 +69,14 @@ conditions:
   #  This condition allows you to factor in the presence
   #  of the mob's entity type in any of the specified mob
   #  groups.
+  #  (Groups are those defined in groups.yml)
 
   # short
-  mob-groups-incl: ['passives'] # Set<String>
-  mob-groups-excl: ['hostiles'] # Set<String>
+  mob-group-incl: ['passives'] # Set<String>
+  mob-group-excl: ['hostiles'] # Set<String>
 
   # long
-  mob-groups:
+  mob-group:
     inclusive-list: ['passives'] # Set<String>
     # OR
     exclusive-list: ['hostiles'] # Set<String>
@@ -202,10 +203,30 @@ conditions:
     # OR
     exclusive-list: [] # Set<String>
 
+  ##############
+  # SPAWN REASON
+  ##############
+  #
+  # Available Events:
+  #  All mob-based events.
+  #
+  # Description:
+  #  The spawn reason of the mob is fetched via the Bukkit API.
+  #  For example: 'SPAWNER'
+
+  # short
+  spawn-reason-incl: ['SPAWNER'] # Set<String>
+  spawn-reason-excl: ['SPAWNER'] # Set<String
+
+  # long
+  spawn-reason:
+    inclusive-list: [] # Set<String>
+    # OR
+    exclusive-list: [] # Set<String>
+
   ############################
   # CONDITIONS TO WORK ON LIST
   ############################
-  # - Spawn Reason
   # - WorldGuard Region
   # - Coordinate
   # - Biome
