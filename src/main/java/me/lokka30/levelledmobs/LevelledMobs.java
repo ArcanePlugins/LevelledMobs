@@ -94,8 +94,8 @@ public final class LevelledMobs extends JavaPlugin {
     public Stack<LivingEntityWrapper> cacheCheck;
     public HashMap<Long, IndexedTreeSet<Pair<Timestamp, LivingEntityWrapper>>> entityDeathInChunkCounter;
     public BukkitTask hashMapCleanUp;
-    public float maximumCoolDownTime=0.0F;
-    public int maximumDeathInChunkThreshold=0;
+    public float maximumCoolDownTime = 0.0F;
+    public int maximumDeathInChunkThreshold = 0;
 
     @Override
     public void onEnable() {
@@ -104,7 +104,7 @@ public final class LevelledMobs extends JavaPlugin {
 
         this.namespaced_keys = new Namespaced_Keys(this);
         this.playerLevellingEntities = new WeakHashMap<>();
-        this.entityDeathInChunkCounter=new HashMap<>();
+        this.entityDeathInChunkCounter = new HashMap<>();
         this.helperSettings = new YmlParsingHelper();
         this.random = new Random();
         this.customMobGroups = new TreeMap<>();
@@ -124,19 +124,28 @@ public final class LevelledMobs extends JavaPlugin {
             levelManager.startNametagAutoUpdateTask();
             levelManager.startNametagTimer();
         }
-        // Clean up HashMap every 5 minutes
-        hashMapCleanUp=new BukkitRunnable(){
+        /*
+         Clean up HashMap(entityDeathInChunkCounter) every 5 minutes
+         We need to do this to prevent too many killing record in the memory
+         Assume there's 50 players killing mobs intensely in game, 1 mob/ 5 sec
+         i.e. 60 mobs * 50 players = 3000 records maximum every five minutes
+         Shouldn't freeze the server
+         */
+        hashMapCleanUp = new BukkitRunnable() {
             @Override
             public void run() {
-                for(var i:entityDeathInChunkCounter.entrySet()){
-                    IndexedTreeSet<Pair<Timestamp,LivingEntityWrapper>> pairList=i.getValue();
-                    while(pairList!=null && !pairList.isEmpty() && Math.abs(pairList.first().getKey().getTime()-
-                            System.currentTimeMillis())<=maximumCoolDownTime*1000.0F){
+                for(Map.Entry<Long, IndexedTreeSet<Pair<Timestamp, LivingEntityWrapper>>> i : entityDeathInChunkCounter.entrySet()){
+                    IndexedTreeSet<Pair<Timestamp,LivingEntityWrapper>> pairList = i.getValue();
+                    while(pairList != null && !pairList.isEmpty() && Math.abs(pairList.first().getKey().getTime()-
+                            System.currentTimeMillis()) <= maximumCoolDownTime * 1000.0F) {
                         pairList.pollFirst();
+                    }
+                    if(pairList.isEmpty()){
+                        pairList = null; // Remove the object to prevent iterate over exceed amount of empty pairList
                     }
                 }
             }
-        }.runTaskTimer(this,0,6000);
+        }.runTaskTimer(this, 0, 6000);
         companion.setupMetrics();
         companion.checkUpdates();
 

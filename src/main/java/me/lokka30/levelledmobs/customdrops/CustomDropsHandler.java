@@ -381,17 +381,17 @@ public class CustomDropsHandler {
         boolean didNotMakeChance = false;
         float chanceRole = 0.0F;
 
-        int numberOfEntityDeathInChunk=Utils.getNumberOfEntityDeathInChunk(info.lmEntity,main,dropBase.coolDownTime);
-        if(numberOfEntityDeathInChunk>dropBase.deathInChunkThreshold) {
+        int numberOfEntityDeathInChunk = Utils.getNumberOfEntityDeathInChunk(info.lmEntity, main, dropBase.coolDownTime);
+        if (numberOfEntityDeathInChunk > dropBase.deathInChunkThreshold) {
             didNotMakeChance = true;
         }
-        if(dropBase.chanceDecreaseAsEntityDeathInChunk && !didNotMakeChance){
-            dropBase.chance *= 1.0F-(1.0F * numberOfEntityDeathInChunk / dropBase.deathInChunkThreshold);
+        if (dropBase.chanceDecreaseAsEntityDeathInChunk && !didNotMakeChance) {
+            dropBase.chance *= 1.0F - (1.0F * numberOfEntityDeathInChunk / dropBase.deathInChunkThreshold);
         }
 
-        if (!info.equippedOnly && dropBase.chance < 1.0){
+        if (!info.equippedOnly && dropBase.chance < 1.0) {
             chanceRole = (float) ThreadLocalRandom.current().nextInt(0, 100001) * 0.00001F;
-            if (1.0F - chanceRole >= dropBase.chance){
+            if (1.0F - chanceRole >= dropBase.chance) {
                 didNotMakeChance = true;
             }
         }

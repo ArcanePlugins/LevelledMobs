@@ -63,22 +63,37 @@ public class EntityDeathListener implements Listener {
         if (lmEntity.getLivingEntity().getKiller() != null && main.placeholderApiIntegration != null)
             main.placeholderApiIntegration.putPlayerOrMobDeath(lmEntity.getLivingEntity().getKiller(), lmEntity);
 
-        if(lmEntity.isLevelled() || main.rulesManager.getRule_UseCustomDropsForMob(lmEntity).useDrops){
+        if (lmEntity.isLevelled() || main.rulesManager.getRule_UseCustomDropsForMob(lmEntity).useDrops) {
             long chunkKey = Utils.getChunkKey(lmEntity);
-            if(!main.entityDeathInChunkCounter.containsKey(chunkKey)){
-                main.entityDeathInChunkCounter.put(chunkKey,new IndexedTreeSet<>());
+            if (!main.entityDeathInChunkCounter.containsKey(chunkKey)) {
+                main.entityDeathInChunkCounter.put(chunkKey, new IndexedTreeSet<>());
             }
-            main.entityDeathInChunkCounter.get(chunkKey).add(new MutablePair<>(new Timestamp(System.currentTimeMillis()),lmEntity));
-        }
 
-        int numberOfEntityDeathInChunk=Utils.getNumberOfEntityDeathInChunk(lmEntity,main,main.maximumCoolDownTime);
-        // Only send message for maximum threshold and cool down time
-        // This is enabled by default
-        if(numberOfEntityDeathInChunk>main.maximumDeathInChunkThreshold) {
-            if(lmEntity.getLivingEntity().getKiller() != null && lmEntity.getLivingEntity().getKiller() instanceof Player &&
-                main.settingsCfg.getBoolean("exceed-kill-in-chunk-message",true))
-                lmEntity.getLivingEntity().getKiller().
-                    sendMessage(MessageUtils.colorizeAll(main.messagesCfg.getString("other.no-drop-in-chunk"))); // Might be spamming
+            int numberOfEntityDeathInChunk = Utils.getNumberOfEntityDeathInChunk(lmEntity,main,main.maximumCoolDownTime);
+            /*
+             Only send message for maximum threshold and cool down time
+             Only message once
+             This is enabled by default
+             */
+            if (numberOfEntityDeathInChunk == main.maximumDeathInChunkThreshold) {
+                /*
+                 I'll add "maximumDeathCount much" of record in the counter
+                 And prohibite new record into counter
+                 Then, after cooldowntime, there's no record in the counter
+                 And player can normally kill new mob
+                 */
+                for(int i = 0; i < main.maximumDeathInChunkThreshold; i++){
+                    main.entityDeathInChunkCounter.get(chunkKey).add(new MutablePair<>(new Timestamp(System.currentTimeMillis()), lmEntity));
+                }
+
+                if (lmEntity.getLivingEntity().getKiller() != null && lmEntity.getLivingEntity().getKiller() instanceof Player &&
+                        main.settingsCfg.getBoolean("exceed-kill-in-chunk-message", true)) {
+                    lmEntity.getLivingEntity().getKiller().
+                            sendMessage(MessageUtils.colorizeAll(main.messagesCfg.getString("other.no-drop-in-chunk")));
+                }
+            } else if (numberOfEntityDeathInChunk < main.maximumDeathInChunkThreshold) {
+                main.entityDeathInChunkCounter.get(chunkKey).add(new MutablePair<>(new Timestamp(System.currentTimeMillis()), lmEntity));
+            }
         }
 
         if (lmEntity.isLevelled()) {
