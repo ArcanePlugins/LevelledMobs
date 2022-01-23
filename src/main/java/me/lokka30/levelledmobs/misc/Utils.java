@@ -318,8 +318,8 @@ public final class Utils {
      convert chunk x,z coordinates to one long number
      Is used in main.entityDeathInChunkCounter
      */
-    public static long getChunkKey(LivingEntityWrapper lmEntity){
-        int x = (int)(lmEntity.getLivingEntity().getChunk().getX()>>4), z = (int)(lmEntity.getLivingEntity().getChunk().getZ()>>4);
+    public static long getChunkKey(LivingEntityWrapper lmEntity) {
+        int x = (int)(lmEntity.getLivingEntity().getChunk().getX() >> 4), z = (int)(lmEntity.getLivingEntity().getChunk().getZ() >> 4);
         return (long) x & 0xffffffffL | ((long) z & 0xffffffffL) << 32;
     }
 
