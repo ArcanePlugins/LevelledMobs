@@ -41,9 +41,9 @@ defaults:
   #deathInChunkThreshold controls: In the given time period decided by coolDownTime,
   #If the entity death number in the given chunk exceed the Threshold, the player can't
   #get special loot from it. This can prevent mob farm from farming precious loots without risk.
-  deathInChunkThreshold: 1000000
-  coolDownTime: 300.0
-  chanceDecreaseAsEntityDeathInChunk: false
+  death-in-chunk-threshold: 1000000
+  cooldown-time: 300.0
+  chance-decrease-as-entity-death-in-chunk: false
   amount: 1
   minLevel: -1
   maxLevel: -1

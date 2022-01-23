@@ -63,7 +63,8 @@ public class EntityDeathListener implements Listener {
         if (lmEntity.getLivingEntity().getKiller() != null && main.placeholderApiIntegration != null)
             main.placeholderApiIntegration.putPlayerOrMobDeath(lmEntity.getLivingEntity().getKiller(), lmEntity);
 
-        if (lmEntity.isLevelled() || main.rulesManager.getRule_UseCustomDropsForMob(lmEntity).useDrops) {
+        if ((lmEntity.isLevelled() || main.rulesManager.getRule_UseCustomDropsForMob(lmEntity).useDrops) &&
+                lmEntity.getLivingEntity().getKiller() != null) { // Only counts if mob is killed by player
             long chunkKey = Utils.getChunkKey(lmEntity);
             if (!main.entityDeathInChunkCounter.containsKey(chunkKey)) {
                 main.entityDeathInChunkCounter.put(chunkKey, new IndexedTreeSet<>());
@@ -86,8 +87,7 @@ public class EntityDeathListener implements Listener {
                     main.entityDeathInChunkCounter.get(chunkKey).add(new MutablePair<>(new Timestamp(System.currentTimeMillis()), lmEntity));
                 }
 
-                if (lmEntity.getLivingEntity().getKiller() != null && lmEntity.getLivingEntity().getKiller() instanceof Player &&
-                        main.settingsCfg.getBoolean("exceed-kill-in-chunk-message", true)) {
+                if (lmEntity.getLivingEntity().getKiller() != null && main.settingsCfg.getBoolean("exceed-kill-in-chunk-message", true)) {
                     lmEntity.getLivingEntity().getKiller().
                             sendMessage(MessageUtils.colorizeAll(main.messagesCfg.getString("other.no-drop-in-chunk")));
                 }
