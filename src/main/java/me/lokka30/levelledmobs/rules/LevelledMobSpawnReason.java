@@ -51,5 +51,6 @@ public enum LevelledMobSpawnReason {
     FROZEN,
     COMMAND,
     CUSTOM,
+    SPELL,
     DEFAULT
 }
