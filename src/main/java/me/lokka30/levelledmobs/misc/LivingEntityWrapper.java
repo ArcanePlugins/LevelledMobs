@@ -30,6 +30,7 @@ import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ConcurrentModificationException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -83,6 +84,7 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
     private boolean isBuildingCache;
     private boolean groupsAreBuilt;
     private Integer mobLevel;
+    private Integer skylightLevelAtSpawn;
     private int nametagCooldownTime;
     private String sourceSpawnerName;
     private String sourceSpawnEggName;
@@ -174,6 +176,7 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
         this.summonedSender = null;
         this.playerLevellingAllowDecrease = null;
         this.pendingPlayerIdToSet = null;
+        this.skylightLevelAtSpawn = null;
 
         super.clearEntityData();
     }
@@ -428,20 +431,103 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
         if (this.spawnReason != null) return this.spawnReason;
 
         if (!getPDCLock()) return LevelledMobSpawnReason.DEFAULT;
+        boolean hadError = false;
+        boolean succeeded = false;
 
         try {
-            if (livingEntity.getPersistentDataContainer().has(main.namespaced_keys.spawnReasonKey, PersistentDataType.STRING)) {
-                this.spawnReason = LevelledMobSpawnReason.valueOf(
-                        livingEntity.getPersistentDataContainer().get(main.namespaced_keys.spawnReasonKey, PersistentDataType.STRING)
-                );
+            for (int i = 0; i < 2; i++) {
+                try {
+                    if (livingEntity.getPersistentDataContainer().has(main.namespaced_keys.spawnReasonKey, PersistentDataType.STRING)) {
+                        this.spawnReason = LevelledMobSpawnReason.valueOf(
+                                livingEntity.getPersistentDataContainer().get(main.namespaced_keys.spawnReasonKey, PersistentDataType.STRING)
+                        );
+                    }
+                    succeeded = true;
+                    break;
+                } catch (ConcurrentModificationException ignored) {
+                    hadError = true;
+                    try
+                    { Thread.sleep(5); }
+                    catch (InterruptedException ignored2) { return LevelledMobSpawnReason.DEFAULT; }
+                }
+                finally {
+                    releasePDCLock();
+                }
             }
         }
         finally {
             releasePDCLock();
         }
 
+        if (hadError) {
+            if (succeeded)
+                Utils.logger.warning("Got ConcurrentModificationException in LivingEntityWrapper getting spawn reason, succeeded on retry");
+            else
+                Utils.logger.warning("Got ConcurrentModificationException (2x) in LivingEntityWrapper getting spawn reason");
+        }
+
         return this.spawnReason != null ?
                 this.spawnReason : LevelledMobSpawnReason.DEFAULT;
+    }
+
+    public int getSkylightLevel() {
+        if (this.skylightLevelAtSpawn != null) return this.skylightLevelAtSpawn;
+
+        if (!getPDCLock()) return getCurrentSkyLightLevel();
+        boolean hadError = false;
+        boolean succeeded = false;
+
+        try {
+            for (int i = 0; i < 2; i++) {
+                try {
+                    if (livingEntity.getPersistentDataContainer().has(main.namespaced_keys.skyLightLevel, PersistentDataType.INTEGER)) {
+                        this.skylightLevelAtSpawn = livingEntity.getPersistentDataContainer().get(main.namespaced_keys.skyLightLevel, PersistentDataType.INTEGER);
+                    }
+                    succeeded = true;
+                    break;
+                } catch (ConcurrentModificationException ignored) {
+                    hadError = true;
+                    try
+                    { Thread.sleep(5); }
+                    catch (InterruptedException ignored2) { return 0; }
+                }
+                finally {
+                    releasePDCLock();
+                }
+            }
+        }
+        finally {
+            releasePDCLock();
+        }
+
+        if (hadError) {
+            if (succeeded)
+                Utils.logger.warning("Got ConcurrentModificationException in LivingEntityWrapper getting skyLightLevel, succeeded on retry");
+            else
+                Utils.logger.warning("Got ConcurrentModificationException (2x) in LivingEntityWrapper getting skyLightLevel");
+        }
+
+        return this.skylightLevelAtSpawn != null ?
+                this.skylightLevelAtSpawn: getCurrentSkyLightLevel();
+    }
+
+    public void setSkylightLevelAtSpawn(){
+        this.skylightLevelAtSpawn = getCurrentSkyLightLevel();
+
+        if (!getPDCLock()) return;
+
+        try {
+            if (!livingEntity.getPersistentDataContainer().has(main.namespaced_keys.skyLightLevel, PersistentDataType.INTEGER)) {
+                livingEntity.getPersistentDataContainer().set(main.namespaced_keys.skyLightLevel, PersistentDataType.INTEGER, this.skylightLevelAtSpawn);
+            }
+        }
+        finally {
+            releasePDCLock();
+        }
+    }
+
+    private int getCurrentSkyLightLevel(){
+        return this.getLocation().getBlock().getLightFromSky();
     }
 
     public void setSpawnReason(final LevelledMobSpawnReason spawnReason) {

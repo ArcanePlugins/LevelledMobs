@@ -4,6 +4,11 @@
 
 package me.lokka30.levelledmobs.customdrops;
 
+import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.Map;
+
 /**
  * Used internally to determine if the mob's
  * vanilla items should be removed or not
@@ -11,7 +16,11 @@ package me.lokka30.levelledmobs.customdrops;
  * @author stumper66
  * @since 2.6.0
  */
-public enum CustomDropResult {
-    HAS_OVERRIDE,
-    NO_OVERRIDE
+public class CustomDropResult {
+    public CustomDropResult(final @NotNull Map<ItemStack, CustomDropItem> stackToItem, final boolean hasOverride){
+        this.stackToItem = stackToItem;
+        this.hasOverride = hasOverride;
+    }
+    public final boolean hasOverride;
+    public final Map<ItemStack, CustomDropItem> stackToItem;
 }

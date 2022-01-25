@@ -9,6 +9,7 @@ import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.LivingEntityInterface;
 import me.lokka30.levelledmobs.compatibility.Compat1_17;
 import me.lokka30.levelledmobs.customdrops.CustomDropResult;
+import me.lokka30.levelledmobs.customdrops.EquippedItemsInfo;
 import me.lokka30.levelledmobs.events.MobPostLevelEvent;
 import me.lokka30.levelledmobs.events.MobPreLevelEvent;
 import me.lokka30.levelledmobs.events.SummonedMobPreLevelEvent;
@@ -419,23 +420,29 @@ public class LevelManager implements LevelInterface {
             // custom drops also get multiplied in the custom drops handler
             final CustomDropResult dropResult = main.customDropsHandler.getCustomItemDrops(lmEntity, customDrops, false);
 
-            if (dropResult == CustomDropResult.HAS_OVERRIDE) {
+            if (dropResult.hasOverride) {
                 hasOverride = true;
                 removeVanillaDrops(lmEntity, dropsToMultiply);
             }
         }
 
         int additionUsed = 0;
-        int dropsChecked = 0;
 
         if (!doNotMultiplyDrops && !dropsToMultiply.isEmpty()) {
-            // Get currentDrops added per level value
-            final int addition = BigDecimal.valueOf(main.mobDataManager.getAdditionsForLevel(lmEntity, Addition.CUSTOM_ITEM_DROP, 2.0))
-                    .setScale(0, RoundingMode.HALF_DOWN).intValueExact(); // truncate double to int
+            // Get currentDrops added per level valu
+            final double additionValue = main.mobDataManager.getAdditionsForLevel(lmEntity, Addition.CUSTOM_ITEM_DROP, 2.0);
+            if (additionValue == -1){
+                Utils.debugLog(main, DebugType.SET_LEVELLED_ITEM_DROPS, String.format(
+                        "&7Mob: &b%s&7, mob-lvl: &b%s&7, removing any drops present",
+                        lmEntity.getNameIfBaby(), lmEntity.getMobLevel()));
+                currentDrops.clear();
+                return;
+            }
+
+            final int addition = BigDecimal.valueOf(additionValue).setScale(0, RoundingMode.HALF_DOWN).intValueExact(); // truncate double to int
             additionUsed = addition;
 
             // Modify current drops
-            dropsChecked = dropsToMultiply.size();
             for (final ItemStack currentDrop : dropsToMultiply)
                 multiplyDrop(lmEntity, currentDrop, addition, false);
         }
@@ -524,7 +531,11 @@ public class LevelManager implements LevelInterface {
     //Calculates the XP dropped when a levellable creature dies.
     public int getLevelledExpDrops(@NotNull final LivingEntityWrapper lmEntity, final int xp) {
         if (lmEntity.isLevelled()) {
-            final int newXp = (int) Math.round(xp + (xp * main.mobDataManager.getAdditionsForLevel(lmEntity, Addition.CUSTOM_XP_DROP, 3.0)));
+            final double dropAddition = main.mobDataManager.getAdditionsForLevel(lmEntity, Addition.CUSTOM_XP_DROP, 3.0);
+            int newXp = 0;
+            if (dropAddition > -1)
+                newXp = (int) Math.round(xp + (xp * dropAddition));
+
             Utils.debugLog(main, DebugType.SET_LEVELLED_XP_DROPS, String.format("&7Mob: &b%s&7: lvl: &b%s&7, xp-vanilla: &b%s&7, new-xp: &b%s&7",
                     lmEntity.getNameIfBaby(), lmEntity.getMobLevel(), xp, newXp));
             return newXp;
@@ -1018,7 +1029,7 @@ public class LevelManager implements LevelInterface {
         if (!main.rulesManager.getRule_UseCustomDropsForMob(lmEntity).useDrops) return;
 
         final List<ItemStack> items = new LinkedList<>();
-        main.customDropsHandler.getCustomItemDrops(lmEntity, items, true);
+        final CustomDropResult dropResult = main.customDropsHandler.getCustomItemDrops(lmEntity, items, true);
         if (items.isEmpty()) return;
 
         final EntityEquipment equipment = lmEntity.getLivingEntity().getEquipment();
@@ -1026,34 +1037,42 @@ public class LevelManager implements LevelInterface {
 
         boolean hadMainItem = false;
         boolean hadPlayerHead = false;
+        final EquippedItemsInfo equippedItemsInfo = new EquippedItemsInfo();
 
-
-        for (final ItemStack itemStack : items) {
+        for (final ItemStack itemStack : dropResult.stackToItem.keySet()) {
             final Material material = itemStack.getType();
             if (EnchantmentTarget.ARMOR_FEET.includes(material)) {
                 equipment.setBoots(itemStack, true);
                 equipment.setBootsDropChance(0);
+                equippedItemsInfo.boots = dropResult.stackToItem.get(itemStack);
             } else if (EnchantmentTarget.ARMOR_LEGS.includes(material)) {
                 equipment.setLeggings(itemStack, true);
                 equipment.setLeggingsDropChance(0);
+                equippedItemsInfo.leggings = dropResult.stackToItem.get(itemStack);
             } else if (EnchantmentTarget.ARMOR_TORSO.includes(material)) {
                 equipment.setChestplate(itemStack, true);
                 equipment.setChestplateDropChance(0);
+                equippedItemsInfo.chestplate = dropResult.stackToItem.get(itemStack);
             } else if (EnchantmentTarget.ARMOR_HEAD.includes(material) || material.name().endsWith("_HEAD") && !hadPlayerHead) {
                 equipment.setHelmet(itemStack, true);
                 equipment.setHelmetDropChance(0);
+                equippedItemsInfo.helmet = dropResult.stackToItem.get(itemStack);
                 if (material == Material.PLAYER_HEAD) hadPlayerHead = true;
             } else {
                 if (!hadMainItem) {
                     equipment.setItemInMainHand(itemStack);
                     equipment.setItemInMainHandDropChance(0);
+                    equippedItemsInfo.mainHand = dropResult.stackToItem.get(itemStack);
                     hadMainItem = true;
                 } else {
                     equipment.setItemInOffHand(itemStack);
                     equipment.setItemInOffHandDropChance(0);
+                    equippedItemsInfo.offhand = dropResult.stackToItem.get(itemStack);
                 }
             }
         }
+
+        main.customDropsHandler.addEntityEquippedItems(lmEntity.getLivingEntity(), equippedItemsInfo);
     }
 
     private double getMobAttributeValue(@NotNull final LivingEntityWrapper lmEntity){

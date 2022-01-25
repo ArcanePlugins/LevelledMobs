@@ -65,6 +65,7 @@ public class EntitySpawnListener implements Listener {
         if (!(event.getEntity() instanceof LivingEntity)) return;
 
         final LivingEntityWrapper lmEntity = LivingEntityWrapper.getInstance((LivingEntity) event.getEntity(), main);
+        lmEntity.setSkylightLevelAtSpawn();
 
         if (event instanceof CreatureSpawnEvent) {
             final CreatureSpawnEvent.SpawnReason spawnReason = ((CreatureSpawnEvent) event).getSpawnReason();
@@ -80,14 +81,13 @@ public class EntitySpawnListener implements Listener {
                 return;
             }
         }
+        else if (event instanceof SpawnerSpawnEvent)
+            lmEntity.setSpawnReason(LevelledMobSpawnReason.SPAWNER);
 
         if (!processMobSpawns) {
             lmEntity.free();
             return;
         }
-
-        if (event instanceof CreatureSpawnEvent)
-            lmEntity.setSpawnReason(adaptVanillaSpawnReason(((CreatureSpawnEvent) event).getSpawnReason()));
 
         if (main.configUtils.playerLevellingEnabled && lmEntity.getPlayerForLevelling() == null)
             updateMobForPlayerLevelling(lmEntity);

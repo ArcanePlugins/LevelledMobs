@@ -9,11 +9,11 @@ import me.lokka30.levelledmobs.misc.Utils;
 import me.lokka30.levelledmobs.rules.CustomDropsRuleSet;
 import me.lokka30.microlib.messaging.MessageUtils;
 import org.bukkit.entity.Player;
-import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -33,6 +33,7 @@ class CustomDropProcessingInfo {
         this.groupIDsDroppedAlready = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
         this.allDropInstances = new LinkedList<>();
         this.playerLevelVariableCache = new TreeMap<>();
+        this.stackToItem = new HashMap<>();
     }
 
     public LivingEntityWrapper lmEntity;
@@ -58,6 +59,7 @@ class CustomDropProcessingInfo {
     @NotNull
     final List<CustomDropInstance> allDropInstances;
     private StringBuilder debugMessages;
+    public final Map<ItemStack, CustomDropItem> stackToItem;
 
     void addDebugMessage(final String message){
         if (this.debugMessages == null)

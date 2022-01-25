@@ -89,6 +89,12 @@ public enum LevellableState {
 
     /**
      * A rule has been configured to block
+     * Blood Night from being levelled
+     */
+    DENIED_CONFIGURATION_COMPATIBILITY_BLOOD_NIGHT,
+
+    /**
+     * A rule has been configured to block
      * nametagged mobs from being levelled.
      */
     DENIED_CONFIGURATION_CONDITION_NAMETAGGED,

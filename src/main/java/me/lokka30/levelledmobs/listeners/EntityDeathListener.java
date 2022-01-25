@@ -70,7 +70,7 @@ public class EntityDeathListener implements Listener {
         } else if (main.rulesManager.getRule_UseCustomDropsForMob(lmEntity).useDrops) {
             final List<ItemStack> drops = new LinkedList<>();
             final CustomDropResult result = main.customDropsHandler.getCustomItemDrops(lmEntity, drops, false);
-            if (result == CustomDropResult.HAS_OVERRIDE)
+            if (result.hasOverride)
                 main.levelManager.removeVanillaDrops(lmEntity, event.getDrops());
 
             event.getDrops().addAll(drops);

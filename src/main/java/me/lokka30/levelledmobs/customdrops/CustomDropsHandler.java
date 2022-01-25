@@ -41,6 +41,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.TreeMap;
+import java.util.WeakHashMap;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -51,16 +52,6 @@ import java.util.concurrent.ThreadLocalRandom;
  * @since 2.4.0
  */
 public class CustomDropsHandler {
-    private final LevelledMobs main;
-
-    final Map<EntityType, CustomDropInstance> customDropsitems;
-    final Map<EntityType, CustomDropInstance> customDropsitems_Babies;
-    final Map<String, CustomDropInstance> customDropsitems_groups;
-    final Map<String, CustomDropInstance> customDropIDs;
-    @Nullable Map<String, CustomDropInstance> customItemGroups;
-    public final CustomDropsParser customDropsParser;
-    private final YmlParsingHelper ymlHelper;
-
     public CustomDropsHandler(final LevelledMobs main) {
         this.main = main;
         this.customDropsitems = new TreeMap<>();
@@ -69,7 +60,18 @@ public class CustomDropsHandler {
         this.customDropIDs = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
         customDropsParser = new CustomDropsParser(main, this);
         this.ymlHelper = customDropsParser.ymlHelper;
+        this.customEquippedItems = new WeakHashMap<>();
     }
+
+    private final LevelledMobs main;
+    final Map<EntityType, CustomDropInstance> customDropsitems;
+    final Map<EntityType, CustomDropInstance> customDropsitems_Babies;
+    final Map<String, CustomDropInstance> customDropsitems_groups;
+    final Map<String, CustomDropInstance> customDropIDs;
+    @Nullable Map<String, CustomDropInstance> customItemGroups;
+    public final CustomDropsParser customDropsParser;
+    private final YmlParsingHelper ymlHelper;
+    private final WeakHashMap<LivingEntity, EquippedItemsInfo> customEquippedItems;
 
     public CustomDropResult getCustomItemDrops(final LivingEntityWrapper lmEntity, final List<ItemStack> drops, final boolean equippedOnly) {
         final CustomDropProcessingInfo processingInfo = new CustomDropProcessingInfo();
@@ -135,8 +137,7 @@ public class CustomDropsHandler {
                             lmEntity.getTypeName(), lmEntity.getMobLevel(),  processingInfo.mobKiller == null ? "(null)" : processingInfo.mobKiller.getName()));
                 processingInfo.writeAnyDebugMessages();
             }
-            return processingInfo.hasOverride ?
-                    CustomDropResult.HAS_OVERRIDE : CustomDropResult.NO_OVERRIDE;
+            return new CustomDropResult(processingInfo.stackToItem, processingInfo.hasOverride);
         }
 
         getCustomItemsFromDropInstance(processingInfo); // payload
@@ -161,8 +162,7 @@ public class CustomDropsHandler {
             processingInfo.writeAnyDebugMessages();
         }
 
-        return processingInfo.hasOverride ?
-                CustomDropResult.HAS_OVERRIDE : CustomDropResult.NO_OVERRIDE;
+        return new CustomDropResult(processingInfo.stackToItem, processingInfo.hasOverride);
     }
 
     private DropInstanceBuildResult buildDropsListFromGroupsAndEntity(final List<String> groups, final EntityType entityType, @NotNull final CustomDropProcessingInfo info){
@@ -530,6 +530,7 @@ public class CustomDropsHandler {
             newItem = main.mobHeadManager.getMobHeadFromPlayerHead(newItem, info.lmEntity, dropItem);
 
         info.newDrops.add(newItem);
+        info.stackToItem.put(newItem, dropItem);
     }
 
     private boolean shouldDenyDeathCause(final @NotNull CustomDropBase dropBase, final @NotNull CustomDropProcessingInfo info){
@@ -594,41 +595,52 @@ public class CustomDropsHandler {
         if (item.equippedSpawnChance >= 1.0F || !item.onlyDropIfEquipped) return true;
         if (item.equippedSpawnChance <= 0.0F) return false;
 
-        return isMobWearingItem(item.getItemStack(), info.lmEntity.getLivingEntity());
+
+        return isMobWearingItem(item.getItemStack(), info.lmEntity.getLivingEntity(), item);
     }
 
-    private boolean isMobWearingItem(final ItemStack item, final @NotNull LivingEntity mob){
+    private boolean isMobWearingItem(final ItemStack item, final @NotNull LivingEntity mob, final CustomDropItem customDropItem){
         final EntityEquipment equipment = mob.getEquipment();
         if (equipment == null) return false;
 
+        final EquippedItemsInfo equippedItemsInfo = this.customEquippedItems.get(mob);
+        if (equippedItemsInfo == null) return false;
+
         switch (item.getType()){
+            case LEATHER_HELMET:
+            case CHAINMAIL_HELMET:
+            case IRON_HELMET:
+            case DIAMOND_HELMET:
+            case NETHERITE_HELMET:
+                if (equippedItemsInfo.helmet != null && customDropItem == equippedItemsInfo.helmet)
+                    return true;
             case LEATHER_CHESTPLATE:
             case CHAINMAIL_CHESTPLATE:
             case IRON_CHESTPLATE:
             case DIAMOND_CHESTPLATE:
             case NETHERITE_CHESTPLATE:
-                return item.isSimilar(equipment.getChestplate());
+                if (equippedItemsInfo.chestplate != null && customDropItem == equippedItemsInfo.chestplate)
+                    return true;
             case LEATHER_LEGGINGS:
             case CHAINMAIL_LEGGINGS:
             case IRON_LEGGINGS:
             case DIAMOND_LEGGINGS:
             case NETHERITE_LEGGINGS:
-                return item.isSimilar(equipment.getLeggings());
+                if (equippedItemsInfo.leggings != null && customDropItem == equippedItemsInfo.leggings)
+                    return true;
             case LEATHER_BOOTS:
             case CHAINMAIL_BOOTS:
             case IRON_BOOTS:
             case DIAMOND_BOOTS:
             case NETHERITE_BOOTS:
-                return item.isSimilar(equipment.getBoots());
+                if (equippedItemsInfo.boots != null && customDropItem == equippedItemsInfo.boots)
+                    return true;
         }
 
-        if (item.isSimilar(equipment.getItemInMainHand()))
+        if (equippedItemsInfo.mainHand != null && customDropItem == equippedItemsInfo.mainHand)
             return true;
 
-        if (item.isSimilar(equipment.getItemInOffHand()))
-            return true;
-
-        return item.isSimilar(equipment.getHelmet());
+        return equippedItemsInfo.offhand != null && customDropItem == equippedItemsInfo.offhand;
     }
 
     private boolean madePlayerLevelRequirement(final @NotNull CustomDropProcessingInfo info, final CustomDropBase dropBase){
@@ -757,6 +769,10 @@ public class CustomDropsHandler {
             default:
                 return itemStack;
         }
+    }
+
+    public void addEntityEquippedItems(final @NotNull LivingEntity livingEntity, final @NotNull EquippedItemsInfo equippedItemsInfo){
+        this.customEquippedItems.put(livingEntity, equippedItemsInfo);
     }
 
     private boolean isCustomDropsDebuggingEnabled() {

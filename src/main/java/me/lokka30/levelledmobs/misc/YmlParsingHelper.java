@@ -60,7 +60,10 @@ public class YmlParsingHelper {
         final String useName = getKeyNameFromConfig(cs, name);
 
         final Set<String> results = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
-        results.addAll(cs.getStringList(useName));
+        // rather than use addAll we'll make sure there no empty strings
+        for (final String item : cs.getStringList(useName))
+            if (!item.isEmpty()) results.add(item);
+
         return results;
     }
 

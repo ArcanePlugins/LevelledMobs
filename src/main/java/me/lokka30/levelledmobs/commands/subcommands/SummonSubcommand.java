@@ -196,6 +196,11 @@ public class SummonSubcommand extends MessagesBase implements Subcommand {
                     location = (target.getLocation());
                     world = location.getWorld();
                 }
+                else {
+                    location = target.getLocation();
+                    world = target.getWorld();
+                }
+
 
                 if (offline || world == null) {
                     showMessage("common.player-offline", "%player%", args[5]);

@@ -26,6 +26,7 @@ public class Namespaced_Keys {
         wasSummoned = new NamespacedKey(main, "wasSummoned");
         playerNetherCoords = new NamespacedKey(main, "playerNetherCoords");
         playerNetherCoords_IntoWorld = new NamespacedKey(main, "playerNetherCoords_IntoWorld");
+        skyLightLevel = new NamespacedKey(main, "skyLightLevel");
 
         spawnerEgg = new NamespacedKey(main, "spawnerEgg");
         spawnerEggName = new NamespacedKey(main, "spawnerEggName");
@@ -62,6 +63,7 @@ public class Namespaced_Keys {
     public final NamespacedKey wasSummoned;
     public final NamespacedKey playerNetherCoords;
     public final NamespacedKey playerNetherCoords_IntoWorld;
+    public final NamespacedKey skyLightLevel;
 
     final public NamespacedKey spawnerEgg;
     final public NamespacedKey spawnerEggName;
