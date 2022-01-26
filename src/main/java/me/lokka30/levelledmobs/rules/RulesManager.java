@@ -12,6 +12,7 @@ import me.lokka30.levelledmobs.misc.DebugType;
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
 import me.lokka30.levelledmobs.misc.Utils;
 import me.lokka30.levelledmobs.rules.strategies.LevellingStrategy;
+import me.lokka30.levelledmobs.rules.strategies.RandomLevellingStrategy;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Tameable;
@@ -221,7 +222,9 @@ public class RulesManager {
         LevellingStrategy levellingStrategy = null;
 
         for (final RuleInfo ruleInfo : lmEntity.getApplicableRules()){
-            if (ruleInfo.levellingStrategy != null) {
+            if (ruleInfo.useRandomLevelling != null && ruleInfo.useRandomLevelling)
+                levellingStrategy = new RandomLevellingStrategy();
+            else if (ruleInfo.levellingStrategy != null) {
                 if (levellingStrategy != null && levellingStrategy.getClass().equals(ruleInfo.levellingStrategy.getClass()))
                     levellingStrategy.mergeRule(ruleInfo.levellingStrategy);
                 else
