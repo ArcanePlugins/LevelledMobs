@@ -199,6 +199,7 @@ presets:
         attack-knockback: 0.5
         knockback-resistance: 0.5
         zombie-spawn-reinforcements: 0.45
+        horse-jump-strength: 0.0
 
       creeper-max-damage-radius: 5
       tiered-coloring:
@@ -235,6 +236,7 @@ presets:
         attack-knockback: 0.25
         knockback-resistance: 0.2
         zombie-spawn-reinforcements: 0.25
+        horse-jump-strength: 0.0
 
       creeper-max-damage-radius: 3
       tiered-coloring:
@@ -270,6 +272,7 @@ presets:
         attack-knockback: 0.1
         knockback-resistance: 0.15
         zombie-spawn-reinforcements: 0.1
+        horse-jump-strength: 0.0
 
       creeper-max-damage-radius: 1
       tiered-coloring:

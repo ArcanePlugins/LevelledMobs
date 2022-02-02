@@ -4,6 +4,7 @@
 
 package me.lokka30.levelledmobs.misc;
 
+import me.lokka30.microlib.messaging.MessageUtils;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.util.FileUtil;
@@ -43,7 +44,14 @@ public final class FileLoader {
         try (final FileInputStream fs = new FileInputStream(file)) {
             new Yaml().load(fs);
         } catch (final Exception e) {
-            Utils.logger.error("&4Error reading " + cfgName + ". " + e.getMessage());
+            final String parseErrorMessage = "Unable to parse file &b%s&r due to a user-caused YAML syntax error. Please copy the contents of this file into a Yaml Parser website (https://tinyurl.com/yamlp) to help diagnose which line you caused the error on. The parsing error is available below. It indicates line numbers around where the error occurred.\n" +
+                    "&b---- START ERROR ----&r\n" +
+                    "&4%s&r\n" +
+                    "&b---- END ERROR ----&r\n" +
+                    "If you have gone through unsuccessful efforts to fix this issue, you may contact our support team: &bhttps://discord.io/arcaneplugins";
+
+            // "&4Error reading " + cfgName + ". " + e.getMessage()
+            Utils.logger.error(String.format(parseErrorMessage, cfgName, e.getMessage()));
             return null;
         }
 
@@ -82,6 +90,12 @@ public final class FileLoader {
             checkFileVersion(file, compatibleVersion, ymlHelper.getInt(cfg, "file-version"));
 
         return cfg;
+    }
+
+    public static @NotNull String getFileLoadErrorMessage(){
+        return MessageUtils.colorizeStandardCodes(
+                "&4An error occured&r whilst attempting to parse the file &brules.yml&r due to a user-caused YAML syntax error. Please see the console logs for more details."
+        );
     }
 
     public static void saveResourceIfNotExists(final Plugin instance, @NotNull final File file) {

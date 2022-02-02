@@ -5,6 +5,7 @@
 package me.lokka30.levelledmobs.listeners;
 
 import me.lokka30.levelledmobs.LevelledMobs;
+import me.lokka30.levelledmobs.misc.FileLoader;
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
 import me.lokka30.levelledmobs.misc.PlayerQueueItem;
 import me.lokka30.levelledmobs.misc.Utils;
@@ -55,8 +56,12 @@ public class PlayerJoinListener implements Listener {
 
         updateNametagsInWorldAsync(event.getPlayer(), event.getPlayer().getWorld().getEntities());
 
-        if (main.migratedFromPre30 && event.getPlayer().isOp()){
-            event.getPlayer().sendMessage(MessageUtils.colorizeStandardCodes("&b&lLevelledMobs: &cWARNING &7You have migrated from an older version.  All settings have been reverted.  Please edit rules.yml"));
+        if (event.getPlayer().isOp()){
+            if (main.companion.getHadRulesLoadError())
+                event.getPlayer().sendMessage(FileLoader.getFileLoadErrorMessage());
+
+            if (main.migratedFromPre30)
+                event.getPlayer().sendMessage(MessageUtils.colorizeStandardCodes("&b&lLevelledMobs: &cWARNING &7You have migrated from an older version.  All settings have been reverted.  Please edit rules.yml"));
         }
     }
 

@@ -104,6 +104,7 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
     private final static Stack<LivingEntityWrapper> cache = new Stack<>();
     private final static int lockMaxRetryTimes = 3;
     // publics:
+    public Integer summonedLevel;
     public boolean reEvaluateLevel;
     public boolean wasPreviouslyLevelled;
     public boolean isRulesForceAll;
@@ -154,6 +155,7 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
         this.applicableGroups.clear();
         this.applicableRules.clear();
         this.mobExternalTypes.clear();
+        this.summonedLevel = null;
         this.spawnReason = null;
         this.deathCause = EntityDamageEvent.DamageCause.CUSTOM;
         this.isBuildingCache = false;

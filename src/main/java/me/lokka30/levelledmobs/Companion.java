@@ -34,6 +34,7 @@ import me.lokka30.levelledmobs.misc.Utils;
 import me.lokka30.levelledmobs.misc.VersionInfo;
 import me.lokka30.levelledmobs.rules.MetricsInfo;
 import me.lokka30.microlib.exceptions.OutdatedServerVersionException;
+import me.lokka30.microlib.files.YamlConfigFile;
 import me.lokka30.microlib.other.UpdateChecker;
 import me.lokka30.microlib.other.VersionUtils;
 import org.bstats.bukkit.Metrics;
@@ -95,6 +96,7 @@ public class Companion {
     public HashSet<EntityType> groups_AquaticMobs;
     public HashSet<EntityType> groups_PassiveMobs;
     public List<String> updateResult;
+    private boolean hadRulesLoadError;
     final public Map<Player, Location> playerNetherPortals;
     final public Map<Player, Location> playerWorldPortals;
     final public List<UUID> spawner_CopyIds;
@@ -131,6 +133,10 @@ public class Companion {
         }
     }
 
+    public boolean getHadRulesLoadError(){
+        return this.hadRulesLoadError;
+    }
+
     private int getSettingsVersion(){
         final File file = new File(main.getDataFolder(), "settings.yml");
         if (!file.exists()) return 0;
@@ -146,7 +152,9 @@ public class Companion {
         // save license.txt
         FileLoader.saveResourceIfNotExists(main, new File(main.getDataFolder(), "license.txt"));
 
-        main.rulesParsingManager.parseRulesMain(FileLoader.loadFile(main, "rules", FileLoader.RULES_FILE_VERSION));
+        final YamlConfiguration rulesFile = FileLoader.loadFile(main, "rules", FileLoader.RULES_FILE_VERSION);
+        this.hadRulesLoadError = rulesFile == null;
+        main.rulesParsingManager.parseRulesMain(rulesFile);
 
         main.configUtils.playerLevellingEnabled = main.rulesManager.isPlayerLevellingEnabled();
 

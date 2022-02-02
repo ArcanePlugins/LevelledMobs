@@ -265,6 +265,10 @@ public class RulesManager {
     }
 
     public int getRule_MobMinLevel(@NotNull final LivingEntityInterface lmInterface) {
+        if (lmInterface instanceof LivingEntityWrapper && ((LivingEntityWrapper) lmInterface).summonedLevel != null){
+            return ((LivingEntityWrapper) lmInterface).summonedLevel;
+        }
+
         int minLevel = 1;
 
         for (final RuleInfo ruleInfo : lmInterface.getApplicableRules()) {
@@ -275,6 +279,10 @@ public class RulesManager {
     }
 
     public int getRule_MobMaxLevel(@NotNull final LivingEntityInterface lmInterface){
+        if (lmInterface instanceof LivingEntityWrapper && ((LivingEntityWrapper) lmInterface).summonedLevel != null){
+            return ((LivingEntityWrapper) lmInterface).summonedLevel;
+        }
+
         int maxLevel = 0;
 
         for (final RuleInfo ruleInfo : lmInterface.getApplicableRules()) {
