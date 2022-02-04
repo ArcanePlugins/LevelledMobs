@@ -279,14 +279,15 @@ public class RulesManager {
     }
 
     public int getRule_MobMaxLevel(@NotNull final LivingEntityInterface lmInterface){
-        if (lmInterface instanceof LivingEntityWrapper && ((LivingEntityWrapper) lmInterface).summonedLevel != null){
-            return ((LivingEntityWrapper) lmInterface).summonedLevel;
-        }
-
         int maxLevel = 0;
 
         for (final RuleInfo ruleInfo : lmInterface.getApplicableRules()) {
             if (ruleInfo.restrictions_MaxLevel != null) maxLevel = ruleInfo.restrictions_MaxLevel;
+        }
+
+        if (lmInterface instanceof LivingEntityWrapper && ((LivingEntityWrapper) lmInterface).summonedLevel != null){
+            int summonedLevel = ((LivingEntityWrapper) lmInterface).summonedLevel;
+            if (summonedLevel > maxLevel) maxLevel = summonedLevel;
         }
 
         return maxLevel;
@@ -606,7 +607,7 @@ public class RulesManager {
             if (checkName == null) checkName = "(none)";
 
             if (!ri.conditions_SpawnegEggNames.isEnabledInList(checkName, lmEntity)) {
-                Utils.debugLog(main, DebugType.DENIED_RULE_SPAWN_REASON, String.format("&b%s&7, mob: &b%s&7, spawn_egg: &b%s&7",
+                Utils.debugLog(main, DebugType.DENIED_RULE_SPAWNER_NAME, String.format("&b%s&7, mob: &b%s&7, spawn_egg: &b%s&7",
                         ri.getRuleName(), lmEntity.getNameIfBaby(), checkName));
                 return false;
             }
