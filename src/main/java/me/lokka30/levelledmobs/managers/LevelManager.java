@@ -564,17 +564,23 @@ public class LevelManager implements LevelInterface {
 
     @NotNull
     public String updateNametag(final LivingEntityWrapper lmEntity, @NotNull String nametag, final boolean useCustomNameForNametags) {
+        return updateNametag(lmEntity, nametag, useCustomNameForNametags, true);
+    }
+
+    @NotNull
+    public String updateNametag(final LivingEntityWrapper lmEntity, @NotNull String nametag, final boolean useCustomNameForNametags, final boolean colorize) {
         if (nametag.isEmpty()) return nametag;
         final String overridenName = main.rulesManager.getRule_EntityOverriddenName(lmEntity, useCustomNameForNametags);
 
+
         String displayName = overridenName == null ?
-                Utils.capitalize(lmEntity.getTypeName().replaceAll("_", " ")) :
-                MessageUtils.colorizeAll(overridenName);
+            Utils.capitalize(lmEntity.getTypeName().replaceAll("_", " ")) :
+            overridenName;
 
         if (lmEntity.getLivingEntity().getCustomName() != null && !useCustomNameForNametags)
             displayName = lmEntity.getLivingEntity().getCustomName();
 
-        nametag = replaceStringPlaceholders(nametag, lmEntity);
+        nametag = replaceStringPlaceholders(nametag, lmEntity, colorize);
 
         // This is after colorize so that color codes in nametags dont get translated
         nametag = nametag.replace("%displayname%", displayName);
@@ -645,6 +651,10 @@ public class LevelManager implements LevelInterface {
     }
 
     public String replaceStringPlaceholders(final String nametag, @NotNull final LivingEntityWrapper lmEntity){
+        return replaceStringPlaceholders(nametag, lmEntity, true);
+    }
+
+    public String replaceStringPlaceholders(final String nametag, @NotNull final LivingEntityWrapper lmEntity, final boolean colorize){
         String result = nametag;
 
         final double maxHealth = getMobAttributeValue(lmEntity);
@@ -684,7 +694,8 @@ public class LevelManager implements LevelInterface {
         if (result.contains("%") && ExternalCompatibilityManager.hasPAPI_Installed())
             result = ExternalCompatibilityManager.getPAPI_Placeholder(null, result);
 
-        result = MessageUtils.colorizeAll(result);
+        if (colorize)
+            result = MessageUtils.colorizeAll(result);
 
         return result;
     }

@@ -498,7 +498,7 @@ public class CustomDropsHandler {
             if (meta != null && dropItem.lore != null && !dropItem.lore.isEmpty()){
                 final List<String> newLore = new ArrayList<>(dropItem.lore.size());
                 for (final String lore : dropItem.lore){
-                    newLore.add(main.levelManager.updateNametag(info.lmEntity, lore, false));
+                    newLore.add(main.levelManager.updateNametag(info.lmEntity, lore, false, false));
 
                     if (VersionUtils.isRunningPaper())
                         PaperUtils.updateItemMetaLore(meta, newLore);
@@ -508,11 +508,12 @@ public class CustomDropsHandler {
             }
 
             if (meta != null && dropItem.customName != null && !dropItem.customName.isEmpty()) {
-                final String displayName = MessageUtils.colorizeAll(main.levelManager.updateNametag(info.lmEntity, dropItem.customName, false));
+                final String displayName = main.levelManager.updateNametag(info.lmEntity, dropItem.customName, false, false);
+
                 if (VersionUtils.isRunningPaper())
                     PaperUtils.updateItemDisplayName(meta, displayName);
                 else
-                    SpigotUtils.updateItemDisplayName(meta, displayName);
+                    SpigotUtils.updateItemDisplayName(meta, MessageUtils.colorizeAll(displayName));
             }
 
             newItem.setItemMeta(meta);
