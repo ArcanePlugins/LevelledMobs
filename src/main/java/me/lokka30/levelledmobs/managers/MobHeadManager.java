@@ -177,7 +177,7 @@ public class MobHeadManager {
         } else
             useName = "Mob Head";
 
-        if (VersionUtils.isRunningPaper())
+        if (VersionUtils.isRunningPaper() && main.companion.useAdventure)
             PaperUtils.updateItemDisplayName(meta, useName);
         else
             SpigotUtils.updateItemDisplayName(meta, useName);

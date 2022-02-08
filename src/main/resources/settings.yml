@@ -133,6 +133,15 @@ player-levelling-relevel-min-time: 5000
 # ||  for it to register under `%levelledmobs_mob-target%`.
 nametag-placeholder-maxblocks: 30
 
+# If your server software (e.g. Spigot/Paper) has
+# the Adventure library in it, then LevelledMobs
+# will use it, so long this setting is enabled.
+# CraftBukkit and Spigot servers do not have
+# this library, although PaperMC servers and
+# all PaperMC forks (Airplane, etc) do.
+# It is recommended that you keep this enabled.
+use-adventure: true
+
 # ||  ADVANCED USERS ONLY
 # ||  Do not touch this unless a LM developer tells you to.
 # ||  This value must not be modified, else your configuration

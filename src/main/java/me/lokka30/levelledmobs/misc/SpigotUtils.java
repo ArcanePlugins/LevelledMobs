@@ -37,7 +37,10 @@ public class SpigotUtils {
     }
 
     public static void updateItemMetaLore(final @NotNull ItemMeta meta, final @Nullable List<String> lore){
-        meta.setLore(lore);
+        if (lore == null)
+            meta.setLore(null);
+        else
+            meta.setLore(Utils.colorizeAllInList(lore));
     }
 
     public static void updateItemDisplayName(final @NotNull ItemMeta meta, final @Nullable String displayName){

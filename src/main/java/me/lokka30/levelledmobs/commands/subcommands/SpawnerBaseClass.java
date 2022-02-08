@@ -94,7 +94,7 @@ public class SpawnerBaseClass extends MessagesBase {
     static void setMetaItems(final @Nullable ItemMeta meta, final @NotNull CustomSpawnerInfo info, final @NotNull String defaultName){
         if (meta == null) return;
 
-        if (VersionUtils.isRunningPaper())
+        if (VersionUtils.isRunningPaper() && info.main.companion.useAdventure)
             PaperUtils.updateItemDisplayName(meta, info.customName == null ? defaultName : info.customName);
         else
             SpigotUtils.updateItemDisplayName(meta, info.customName == null ? defaultName : info.customName);
@@ -132,7 +132,7 @@ public class SpawnerBaseClass extends MessagesBase {
 
         if (!info.noLore && info.lore == null && info.customLore == null) {
             lore = Utils.colorizeAllInList(lore);
-            if (VersionUtils.isRunningPaper())
+            if (VersionUtils.isRunningPaper() && info.main.companion.useAdventure)
                 PaperUtils.updateItemMetaLore(meta, lore);
             else
                 SpigotUtils.updateItemMetaLore(meta, lore);
@@ -150,7 +150,7 @@ public class SpawnerBaseClass extends MessagesBase {
 
             lore.clear();
             lore.addAll(List.of(useLore.split("\n")));
-            if (VersionUtils.isRunningPaper())
+            if (VersionUtils.isRunningPaper() && info.main.companion.useAdventure)
                 PaperUtils.updateItemMetaLore(meta, lore);
             else
                 SpigotUtils.updateItemMetaLore(meta, lore);

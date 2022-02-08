@@ -500,7 +500,7 @@ public class CustomDropsHandler {
                 for (final String lore : dropItem.lore){
                     newLore.add(main.levelManager.updateNametag(info.lmEntity, lore, false, false));
 
-                    if (VersionUtils.isRunningPaper())
+                    if (VersionUtils.isRunningPaper() && main.companion.useAdventure)
                         PaperUtils.updateItemMetaLore(meta, newLore);
                     else
                         SpigotUtils.updateItemMetaLore(meta, newLore);
@@ -510,7 +510,7 @@ public class CustomDropsHandler {
             if (meta != null && dropItem.customName != null && !dropItem.customName.isEmpty()) {
                 final String displayName = main.levelManager.updateNametag(info.lmEntity, dropItem.customName, false, false);
 
-                if (VersionUtils.isRunningPaper())
+                if (VersionUtils.isRunningPaper() && main.companion.useAdventure)
                     PaperUtils.updateItemDisplayName(meta, displayName);
                 else
                     SpigotUtils.updateItemDisplayName(meta, MessageUtils.colorizeAll(displayName));

@@ -97,6 +97,7 @@ public class Companion {
     public HashSet<EntityType> groups_PassiveMobs;
     public List<String> updateResult;
     private boolean hadRulesLoadError;
+    public boolean useAdventure;
     final public Map<Player, Location> playerNetherPortals;
     final public Map<Player, Location> playerWorldPortals;
     final public List<UUID> spawner_CopyIds;
@@ -200,6 +201,7 @@ public class Companion {
 
         main.configUtils.load();
         main.playerLevellingMinRelevelTime = main.helperSettings.getInt(main.settingsCfg, "player-levelling-relevel-min-time", 5000);
+        this.useAdventure = main.helperSettings.getBoolean(main.settingsCfg, "use-adventure", true);
 
         return true;
     }
