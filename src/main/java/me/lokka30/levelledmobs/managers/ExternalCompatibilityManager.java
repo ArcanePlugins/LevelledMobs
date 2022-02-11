@@ -81,16 +81,15 @@ public class ExternalCompatibilityManager {
         return  (!list.containsKey(externalCompatibility) || list.get(externalCompatibility) != null && list.get(externalCompatibility));
     }
 
-    static boolean hasPAPI_Installed(){ return (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null); }
+    public static boolean hasPAPI_Installed(){ return (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null); }
 
     public static boolean hasNBTAPI_Installed(){
         return Bukkit.getPluginManager().getPlugin("NBTAPI") != null;
     }
 
     @NotNull
-    static String getPAPI_Placeholder(final Player player, final String placeholder){
+    public static String getPAPI_Placeholder(final Player player, final String placeholder){
         return me.clip.placeholderapi.PlaceholderAPI.setPlaceholders(player, placeholder);
-
     }
 
     public static boolean hasProtocolLibInstalled() {

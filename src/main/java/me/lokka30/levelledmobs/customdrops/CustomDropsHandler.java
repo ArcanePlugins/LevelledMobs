@@ -5,6 +5,7 @@
 package me.lokka30.levelledmobs.customdrops;
 
 import me.lokka30.levelledmobs.LevelledMobs;
+import me.lokka30.levelledmobs.managers.ExternalCompatibilityManager;
 import me.lokka30.levelledmobs.misc.Addition;
 import me.lokka30.levelledmobs.misc.DebugType;
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
@@ -689,7 +690,9 @@ public class CustomDropsHandler {
 
             command = Utils.replaceEx(command, "%player%", playerName);
             command = processRangedCommand(command, customCommand);
-            command = main.levelManager.updateNametag(info.lmEntity, command,false);
+            command = main.levelManager.replaceStringPlaceholders(command, info.lmEntity, true, false);
+            if (command.contains("%") && ExternalCompatibilityManager.hasPAPI_Installed())
+                command = ExternalCompatibilityManager.getPAPI_Placeholder(info.mobKiller, command);
 
             final int maxAllowedTimesToRun = ymlHelper.getInt(main.settingsCfg, "customcommand-amount-limit", 10);
             int timesToRun = customCommand.getAmount();
@@ -727,14 +730,16 @@ public class CustomDropsHandler {
     }
 
     @NotNull
-    private String processRangedCommand(@NotNull String command, final @NotNull CustomCommand cc){
+    private String processRangedCommand(final @NotNull String command, final @NotNull CustomCommand cc){
         if (cc.rangedEntries.isEmpty()) return command;
+
+        String newCommand = command;
 
         for (final Map.Entry<String, String> rangeds : cc.rangedEntries.entrySet()) {
             final String rangedKey = rangeds.getKey();
             final String rangedValue = rangeds.getValue();
             if (!rangedValue.contains("-")) {
-                command = command.replace("%" + rangedKey + "%", rangedValue);
+                newCommand = newCommand.replace("%" + rangedKey + "%", rangedValue);
                 continue;
             }
 
@@ -747,10 +752,10 @@ public class CustomDropsHandler {
             if (max < min) min = max;
 
             final int rangedNum = main.random.nextInt(max - min + 1) + min;
-            command = command.replace("%" + rangedKey + "%", String.valueOf(rangedNum));
+            newCommand = newCommand.replace("%" + rangedKey + "%", String.valueOf(rangedNum));
         }
 
-        return command;
+        return newCommand;
     }
 
     private ItemStack getCookedVariantOfMeat(@NotNull final ItemStack itemStack){
