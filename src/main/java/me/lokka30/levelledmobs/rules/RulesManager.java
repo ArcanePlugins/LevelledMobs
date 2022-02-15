@@ -265,9 +265,8 @@ public class RulesManager {
     }
 
     public int getRule_MobMinLevel(@NotNull final LivingEntityInterface lmInterface) {
-        if (lmInterface instanceof LivingEntityWrapper && ((LivingEntityWrapper) lmInterface).summonedLevel != null){
-            return ((LivingEntityWrapper) lmInterface).summonedLevel;
-        }
+        if (lmInterface.getSummonedLevel() != null)
+            return lmInterface.getSummonedLevel();
 
         int minLevel = 1;
 
@@ -285,8 +284,8 @@ public class RulesManager {
             if (ruleInfo.restrictions_MaxLevel != null) maxLevel = ruleInfo.restrictions_MaxLevel;
         }
 
-        if (lmInterface instanceof LivingEntityWrapper && ((LivingEntityWrapper) lmInterface).summonedLevel != null){
-            int summonedLevel = ((LivingEntityWrapper) lmInterface).summonedLevel;
+        if (lmInterface.getSummonedLevel() != null){
+            int summonedLevel = lmInterface.getSummonedLevel();
             if (summonedLevel > maxLevel) maxLevel = summonedLevel;
         }
 
@@ -682,7 +681,7 @@ public class RulesManager {
             }
         }
 
-        if (ri.conditions_Worlds != null && !ri.conditions_Worlds.isEnabledInList(lmInterface.getWorld().getName(), null)) {
+        if (!(lmInterface.isWasSummoned()) && ri.conditions_Worlds != null && !ri.conditions_Worlds.isEnabledInList(lmInterface.getWorld().getName(), null)) {
             Utils.debugLog(main, DebugType.DENIED_RULE_WORLD_LIST, String.format("&b%s&7, mob: &b%s&7, mob world: &b%s&7",
                     ri.getRuleName(), lmInterface.getTypeName(), lmInterface.getWorld().getName()));
             return new RuleCheckResult(false);

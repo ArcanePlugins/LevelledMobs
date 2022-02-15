@@ -83,6 +83,7 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
     private boolean hasCache;
     private boolean isBuildingCache;
     private boolean groupsAreBuilt;
+    private boolean wasSummoned;
     private Integer mobLevel;
     private Integer skylightLevelAtSpawn;
     private int nametagCooldownTime;
@@ -104,7 +105,6 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
     private final static Stack<LivingEntityWrapper> cache = new Stack<>();
     private final static int lockMaxRetryTimes = 3;
     // publics:
-    public Integer summonedLevel;
     public boolean reEvaluateLevel;
     public boolean wasPreviouslyLevelled;
     public boolean isRulesForceAll;
@@ -155,7 +155,6 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
         this.applicableGroups.clear();
         this.applicableRules.clear();
         this.mobExternalTypes.clear();
-        this.summonedLevel = null;
         this.spawnReason = null;
         this.deathCause = EntityDamageEvent.DamageCause.CUSTOM;
         this.isBuildingCache = false;
@@ -179,6 +178,7 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
         this.playerLevellingAllowDecrease = null;
         this.pendingPlayerIdToSet = null;
         this.skylightLevelAtSpawn = null;
+        this.wasSummoned = false;
 
         super.clearEntityData();
     }
@@ -196,6 +196,11 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
             isBuildingCache = true;
             this.mobLevel = main.levelInterface.isLevelled(livingEntity) ?
                     main.levelInterface.getLevelOfMob(livingEntity) : null;
+
+            try{
+                this.wasSummoned = getPDC().has(main.namespaced_keys.wasSummoned, PersistentDataType.INTEGER);
+            }
+            catch (Exception ignored){ }
 
             this.spawnedWGRegions = ExternalCompatibilityManager.getWGRegionsAtLocation(this);
 
@@ -730,6 +735,16 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
         setSpawnedTimeOfDay(result);
 
         return result;
+    }
+
+    public Integer getSummonedLevel() {
+        return summonedLevel;
+    }
+
+    public boolean isWasSummoned(){
+        if (!hasCache) buildCache();
+
+        return this.wasSummoned;
     }
 
     @NotNull

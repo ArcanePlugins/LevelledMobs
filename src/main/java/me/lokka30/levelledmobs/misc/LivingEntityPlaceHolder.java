@@ -6,7 +6,6 @@ package me.lokka30.levelledmobs.misc;
 
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.LivingEntityInterface;
-import me.lokka30.levelledmobs.rules.ApplicableRulesResult;
 import me.lokka30.levelledmobs.rules.RuleInfo;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -112,5 +111,13 @@ public class LivingEntityPlaceHolder extends LivingEntityWrapperBase implements 
         setSpawnedTimeOfDay(result);
 
         return result;
+    }
+
+    public Integer getSummonedLevel() {
+        return summonedLevel;
+    }
+
+    public boolean isWasSummoned(){
+        return summonedLevel != null;
     }
 }

@@ -34,7 +34,6 @@ import me.lokka30.levelledmobs.misc.Utils;
 import me.lokka30.levelledmobs.misc.VersionInfo;
 import me.lokka30.levelledmobs.rules.MetricsInfo;
 import me.lokka30.microlib.exceptions.OutdatedServerVersionException;
-import me.lokka30.microlib.files.YamlConfigFile;
 import me.lokka30.microlib.other.UpdateChecker;
 import me.lokka30.microlib.other.VersionUtils;
 import org.bstats.bukkit.Metrics;

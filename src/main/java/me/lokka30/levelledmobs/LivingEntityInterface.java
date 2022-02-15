@@ -44,6 +44,10 @@ public interface LivingEntityInterface {
 
     void setSpawnedTimeOfDay(final int ticks);
 
+    Integer getSummonedLevel();
+
+    boolean isWasSummoned();
+
     void clearEntityData();
 
     void free();

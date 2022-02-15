@@ -4,7 +4,6 @@
 
 package me.lokka30.levelledmobs.rules;
 
-import org.bukkit.entity.EntityType;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.LinkedList;

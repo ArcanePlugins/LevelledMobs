@@ -5,7 +5,6 @@
 package me.lokka30.levelledmobs.customdrops;
 
 import me.lokka30.levelledmobs.misc.CachedModalList;
-import org.bukkit.event.entity.EntityDamageEvent;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.LinkedList;
