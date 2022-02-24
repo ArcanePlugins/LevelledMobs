@@ -203,6 +203,7 @@ public class EntitySpawnListener implements Listener {
         }
 
         lmEntity.setSourceSpawnerName(spawnerName);
+        lmEntity.setSpawnReason(LevelledMobSpawnReason.LM_SPAWNER, true);
 
         Utils.debugLog(main, DebugType.MOB_SPAWNER, String.format(
                 "Spawned mob from LM spawner: &b%s&7, minLevel:&b %s&7, maxLevel: &b%s&7, generatedLevel: &b%s&b%s",

@@ -538,12 +538,16 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
     }
 
     public void setSpawnReason(final LevelledMobSpawnReason spawnReason) {
+        setSpawnReason(spawnReason, false);
+    }
+
+    public void setSpawnReason(final LevelledMobSpawnReason spawnReason, final boolean doForce) {
         this.spawnReason = spawnReason;
 
         if (!getPDCLock()) return;
 
         try {
-            if (!livingEntity.getPersistentDataContainer().has(main.namespaced_keys.spawnReasonKey, PersistentDataType.STRING)) {
+            if (doForce || !livingEntity.getPersistentDataContainer().has(main.namespaced_keys.spawnReasonKey, PersistentDataType.STRING)) {
                 livingEntity.getPersistentDataContainer().set(main.namespaced_keys.spawnReasonKey, PersistentDataType.STRING, spawnReason.toString());
             }
         }
