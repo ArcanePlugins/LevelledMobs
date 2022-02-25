@@ -50,8 +50,7 @@ public final class FileLoader {
                     "&b---- END ERROR ----&r\n" +
                     "If you have gone through unsuccessful efforts to fix this issue, you may contact our support team: &bhttps://discord.io/arcaneplugins";
 
-            // "&4Error reading " + cfgName + ". " + e.getMessage()
-            Utils.logger.error(String.format(parseErrorMessage, cfgName, e.getMessage()));
+            Utils.logger.error(String.format(parseErrorMessage, cfgName, e));
             return null;
         }
 

@@ -721,7 +721,7 @@ public class LevelManager implements LevelInterface {
     public void updateNametag(final LivingEntityWrapper lmEntity){
         final QueueItem queueItem = new QueueItem(
                 lmEntity,
-                getNametag(lmEntity, false),
+                MessageUtils.colorizeAll(getNametag(lmEntity, false)),
                 lmEntity.getLivingEntity().getWorld().getPlayers()
         );
 
@@ -920,7 +920,8 @@ public class LevelManager implements LevelInterface {
                 location.getWorld().equals(lmEntity.getWorld()) &&
                 lmEntity.getLocation().distanceSquared(location) <= maxDistance) {
             //if within distance, update nametag.
-            main.nametagQueueManager_.addToQueue(new QueueItem(lmEntity, main.levelManager.getNametag(lmEntity, false), Collections.singletonList(player)));
+            final String nametag = MessageUtils.colorizeAll(main.levelManager.getNametag(lmEntity, false));
+            main.nametagQueueManager_.addToQueue(new QueueItem(lmEntity, nametag, Collections.singletonList(player)));
         }
     }
 
