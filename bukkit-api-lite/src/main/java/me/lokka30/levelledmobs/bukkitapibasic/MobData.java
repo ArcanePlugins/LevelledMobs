@@ -9,7 +9,7 @@ import java.util.Optional;
 
 public final class MobData {
 
-    private MobData() { throw new IllegalStateException("Instantiaton of utility class"); }
+    private MobData() { throw new IllegalStateException("Instantiaton of utility-type class"); }
 
     public static Optional<Integer> getLevel(final LivingEntity entity) {
         return Optional.ofNullable(getPDC(entity).get(NamespacedKeys.LEVEL_KEY, PersistentDataType.INTEGER));

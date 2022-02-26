@@ -8,9 +8,7 @@ import java.util.Objects;
 
 public class NamespacedKeys {
 
-    private NamespacedKeys() {
-        throw new IllegalStateException("Instantiation of utility-type class");
-    }
+    private NamespacedKeys() { throw new IllegalStateException("Instantiation of utility-type class"); }
 
     private static final Plugin MAIN = Objects.requireNonNull(
             Bukkit.getPluginManager().getPlugin("LevelledMobs"),
