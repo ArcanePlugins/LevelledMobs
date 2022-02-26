@@ -6,7 +6,7 @@
  * license that can be found in the LICENSE.md file.
  */
 
-package me.lokka30.levelledmobs.integration.plugin;
+package me.lokka30.levelledmobs.integration.internal;
 
 import me.lokka30.levelledmobs.integration.Integration;
 import me.lokka30.levelledmobs.integration.MobOwner;
@@ -16,23 +16,24 @@ import org.jetbrains.annotations.NotNull;
 
 /**
  * A LevelledMobs integration.
- * Plugin:     Infernal Mobs
- * Author:     Eliminator
- * Link:       https://www.spigotmc.org/resources/infernal-mobs.2156/
+ * Plugin:     MythicMobs
+ * Author:     Xikage
+ * Link:       https://www.spigotmc.org/resources/mythicmobs.5702
  *
  * @author lokka30
  * @since 4.0.0
  */
-public class InfernalMobsIntegration implements Integration, MobOwner {
+public class MythicMobsIntegration implements Integration, MobOwner {
 
     @Override
-    public @NotNull String getName() {
+    @NotNull
+    public String getName() {
         return this.getClass().getName();
     }
 
     @Override
     public boolean isInstalled() {
-        return Bukkit.getPluginManager().isPluginEnabled("InfernalMobs");
+        return Bukkit.getPluginManager().isPluginEnabled("MythicMobs");
     }
 
     @Override

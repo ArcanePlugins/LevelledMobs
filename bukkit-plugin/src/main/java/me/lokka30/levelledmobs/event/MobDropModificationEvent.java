@@ -18,18 +18,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-/**
- * @author lokka30
- * @see Event
- * @see Cancellable
- * @see MobPreLevelEvent
- * @since 4.0.0
- * This event is fired by LevelledMobs when a
- * levelled mob dies and LevelledMobs wants to
- * change the drops of the entity.
- * <p>
- * Note: The previousDrops are unmodifiable.
- */
 public class MobDropModificationEvent extends Event implements Cancellable {
 
     private static final HandlerList HANDLERS = new HandlerList();

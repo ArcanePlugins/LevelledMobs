@@ -6,7 +6,7 @@
  * license that can be found in the LICENSE.md file.
  */
 
-package me.lokka30.levelledmobs.integration.plugin;
+package me.lokka30.levelledmobs.integration.internal;
 
 import me.lokka30.levelledmobs.integration.Integration;
 import me.lokka30.levelledmobs.integration.MobOwner;
@@ -16,31 +16,29 @@ import org.jetbrains.annotations.NotNull;
 
 /**
  * A LevelledMobs integration.
- * Plugin:     MythicMobs
- * Author:     Xikage
- * Link:       https://www.spigotmc.org/resources/mythicmobs.5702
+ * Plugin:     Citizens
+ * Author:     fullwall
+ * Link:       https://www.spigotmc.org/resources/citizens.13811/
  *
  * @author lokka30
  * @since 4.0.0
  */
-public class MythicMobsIntegration implements Integration, MobOwner {
+public class CitizensIntegration implements Integration, MobOwner {
 
     @Override
-    @NotNull
-    public String getName() {
+    public @NotNull String getName() {
         return this.getClass().getName();
     }
 
     @Override
     public boolean isInstalled() {
-        return Bukkit.getPluginManager().isPluginEnabled("MythicMobs");
+        return Bukkit.getPluginManager().isPluginEnabled("Citizens");
     }
 
     @Override
     public boolean isMobOwner(@NotNull LevelledMob mob) {
         assert isEnabled();
-        // TODO
-        return false;
+        return mob.getLivingEntity().hasMetadata("NPC");
     }
 
 }

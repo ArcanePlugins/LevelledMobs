@@ -21,8 +21,7 @@ public class CustomDropHandler {
     private final HashMap<EntityType, Material[]> defaultDropsMap = new HashMap<>();
 
     /*
-    TODO: code for determining what drops will be dropped
-    a good mix of English, Java and kind-of-Java ;)
+    TODO: pseudocode for determining what drops will be dropped
 
     when levelled mob dies:
       HashMap<String groupId, Set<CustomDrop> dropsInGroup> groupDropsMap = new HashMap<>();

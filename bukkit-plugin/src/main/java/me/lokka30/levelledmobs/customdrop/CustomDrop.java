@@ -15,6 +15,7 @@ import java.util.EnumSet;
 import java.util.Optional;
 
 public record CustomDrop(
+        // TODO unsure about having optionals here, need to re-think this out.
         Optional<Material>          material, // Material can only be optional for the 'default' section's drop object.
         Optional<Float>             chanceRequirement,
         Optional<Float>             overallChanceRequirement,

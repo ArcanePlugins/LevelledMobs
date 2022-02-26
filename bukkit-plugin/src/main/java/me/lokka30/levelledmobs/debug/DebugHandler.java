@@ -15,11 +15,6 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.EnumSet;
 
-/**
- * @author lokka30
- * @since 4.0.0
- * This class handles all debug-logging in the plugin.
- */
 public final class DebugHandler {
 
     public void load() {

@@ -19,6 +19,7 @@
         <module>bukkit-plugin</module>
         <module>nms-v1_17_R1</module>
         <module>nms-v1_18_R1</module>
+        <module>bukkit-api-lite</module>
     </modules>
     <packaging>pom</packaging>
 

@@ -17,28 +17,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.EnumSet;
 
-/**
- * @author lokka30
- * @since 4.0.0
- * This event is fired by LevelledMobs when it
- * is about to level a mob.
- * <p>
- * It can be cancelled as this event implements Cancellable.
- * <p>
- * There is a one-tick delay between when an entity spawns
- * and when this event is processed, since this allows all
- * of our integrations to add mob metadata and so on
- * before LevelledMobs processes the mob, which ensures
- * greater compatibility with other plugins.
- * <p>
- * If the event is called for a mob that is already levelled,
- * but their level is being changed, then the previousLevel
- * will be their previous level. Otherwise, it will be zero
- * (not levelled).
- * @see Event
- * @see Cancellable
- * @see MobPostLevelEvent
- */
 public class MobPreLevelEvent extends Event implements Cancellable {
 
     private static final HandlerList HANDLERS = new HandlerList();

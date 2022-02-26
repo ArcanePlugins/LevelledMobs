@@ -26,12 +26,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-/**
- * @author lokka30
- * @since 4.0.0
- * This class handles the management
- * of the LM files, internal and external.
- */
 public class FileHandler {
 
     public FileHandler() {
