@@ -1,0 +1,30 @@
+# Brainstorming Rule Options for LM 4.
+options:
+
+  # If the rule is ran (conditions are valid),
+  # and once its actions are ran, should no further
+  # rules be processed for the mob?
+  #
+  # Default: false = continue processing
+  #
+  # Has priority over 'skip-to'.
+  stop-processing: true
+
+  # If the rule is ran, when complete,
+  # skip to another rule rather than
+  # go to the next rule in order.
+  #
+  # You can only skip to rules that are
+  # specified in the configuration *after*
+  # this one. This prevents circular loops
+  # from forming by using the skip-to feature.
+  # This is up for change, I can instead just
+  # add circular rule detection and make
+  # this protection/limitation no longer exist.
+  # Or, we can just have a setting that
+  # disables the circular loop protection.
+  #
+  # Default: '' (empty string) = don't skip to any rules
+  #
+  # 'stop-processing' has priority over this.
+  skip-to: 'rule-name-here'

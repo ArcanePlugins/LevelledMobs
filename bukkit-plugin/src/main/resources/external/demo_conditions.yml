@@ -1,0 +1,245 @@
+# Brainstorming Rule Conditions for LM 4.
+conditions:
+
+  #########
+  ### NOTES
+  #########
+  #
+  # - AVAILABLE EVENTS LIST
+  #   Not every condition is applicable to every event (e.g. EntitySpawn).
+  #   A list of available events is supplied with each Condition so you
+  #   know which events you can use this Condition for! :D
+  #
+  # - SHORT/LONG VERSIONS OF CONDITIONS
+  #   Each condition, wherever feasible, will have a short version
+  #   of the normal (long) version. This helps simplify longer files
+  #   and remove repetitive boilerplate. The longer versions are
+  #   arguably more readable, so it is recommended to use the long
+  #   version wherever it is feasible for the user.
+  #
+  # - GRAVE SYMBOL (`) IN KEYS, IN THE BRAINSTORMING FILE
+  #   To prevent errors in the editor from duplicate YAML
+  #   keys, the grave symbol (`) is added to prevent duplicate
+  #   keys from existing. Of course these duplicate keys will
+  #   not happen in the actual file, and these symbols are not
+  #   used in the real file.
+  #
+  # - INCLUSIVE/EXCLUSIVE PRIORITY
+  #   Inclusive lists have priority over exclusive lists.
+  #
+  # - INVERSING CONDITIONS
+  #   All block-conditions (not short hand versions!) have
+  #   a boolean called 'inverse'. This inverts the boolean
+  #   output of the condition. This can be used in funky ways
+  #   e.g. using an inclusive list but inverting it so it is
+  #   actually exclusive ;) of course this is not intended,
+  #   it is meant to be used for conditions that don't have
+  #   incl/excl functionality.
+  #   This is per-condition! Not per-rule.
+
+  #############
+  # ENTITY TYPE
+  #############
+  #
+  # Available Events:
+  #  All mob-based events.
+  #
+  # Description:
+  #  Specify a list of Entity Types which are required
+  #  for the rule to be processed.
+
+  # short
+  entity-type-incl: ['CREEPER'] # Set<String>
+  entity-type-excl: ['CREEPER'] # Set<String>
+
+  # long
+  entity-type:
+    inclusive-list: ['CREEPER'] # Set<String>
+    # OR
+    exclusive-list: ['CREEPER'] # Set<String>
+
+  ###########
+  # MOB GROUP
+  ###########
+  #
+  # Available Events:
+  #  All mob-based events.
+  #
+  # Description:
+  #  This condition allows you to factor in the presence
+  #  of the mob's entity type in any of the specified mob
+  #  groups.
+  #  (Groups are those defined in groups.yml)
+
+  # short
+  mob-group-incl: ['passives'] # Set<String>
+  mob-group-excl: ['hostiles'] # Set<String>
+
+  # long
+  mob-group:
+    inclusive-list: ['passives'] # Set<String>
+    # OR
+    exclusive-list: ['hostiles'] # Set<String>
+
+  ####################
+  # MOB LEVELLED STATE
+  ####################
+  #
+  # Available Events:
+  #  All mob-based events.
+  #
+  # Description:
+  #  Specify whether the mob should be levelled/not levelled
+  #  or if this should be ignored.
+  #  'ANY' = the mob can be levelled or not levelled (default)
+  #  'YES' = the mob must be levelled
+  #  'NO'  = the mob must not be levelled
+
+  # short (no long version)
+  levelled-state: 'ANY' # LevelledState
+
+  ########################
+  # LIGHT LEVEL FROM BLOCK
+  ########################
+  #
+  # Available Events:
+  #  All player-based or mob-based events.
+  #
+  # Description:
+  #  Specify a min-to-max requirement of what the mob's
+  #  current location's block's light level is for the rule.
+  #
+  #  Light level from blocks is not the same as light level from the sky!
+  #
+  #  A short, non-ranged version will not be added. it'll
+  #  just bloat the parser and be harder to use anyways.
+  #  Just use the short-ranged or long verison.
+
+  # short
+  light-level-from-block: '3-5' # RangedInt
+
+  # long
+  light-level-from-block`:
+    min: 3 # int
+    max: 5 # int
+
+  ######################
+  # LIGHT LEVEL FROM SKY
+  ######################
+  #
+  # Available Events:
+  #  All player-based or mob-based events.
+  #
+  # Description:
+  #  Specify a min-max requirement of what the mob's
+  #  current location's sky light level is for that rule.
+  #
+  #  Light level from the sky is not the same as light level from blocks!
+  #
+  #  Same layout as the light level from block condition. See that condition's
+  #  brainstorming comments for more information.
+
+  # short
+  light-level-from-sky: '3-5' # RangedInt
+
+  # long
+  light-level-from-sky`:
+    min: 3 # int
+    max: 5 # int
+
+  ####################
+  # MODIFIED BY PLUGIN
+  ####################
+  #
+  # Available Events:
+  #  All mob-based events.
+  #
+  # Description:
+  #  Checks if the mob is modified/managed by a compatible Mob Owner plugin.
+  #  What's a Mob Owner?
+  #   LevelledMobs defines a Mob Owner as a plugin which modifies mobs.
+  #   LevelledMobs itself is a Mob Owner.
+  #   Mob Owners are usually understood through an integration from
+  #   LevelledMobs itself, e.g. for MythicMobs and EliteMobs. However,
+  #   it is possible for plugins to register themselves as mob owners too!
+  #   This can also allow them to bring greater degrees of integration with
+  #   their plugin, if they desire.
+  #   It's possible for a mob to have multiple Mob Owners, but it's rare since
+  #   plugins usually want sole control over certain mobs.
+  #
+  # What's this condition?
+  #  This condition checks if a mob belongs to a Mob Owner as specified
+  #  by the configurator.
+
+  # short
+  modified-by-plugin-incl: ['MYTHIC_MOBS', 'ELITE_MOBS', 'INFERNAL_MOBS'] # Set<String>
+  modified-by-plugin-excl: ['CITIZENS', 'SHOPKEEPERS', 'VANILLA_BOSSES'] # Set<String>
+
+  # long
+  modified-by-plugin:
+    inclusive-list: [] # Set<String>
+    # OR
+    exclusive-list: [] # Set<String>
+
+  ##########################
+  # MYTHICMOBS INTERNAL NAME
+  ##########################
+  #
+  # Available Events:
+  #  All mob-based events,
+  #
+  # Description:
+  #  If MythicMobs is installed, the user can make a condition that
+  #  requires a name from the list (inclusive/exclusive) to be met.
+  #  The name is from MythicMobs, e.g. 'Skeleton King'.
+
+  # short
+  mythicmobs-internal-name-incl: ['Skeleton King'] # Set<String>
+  mythicmobs-internal-name-excl: ['Skeletal Minion'] # Set<String>
+
+  # long
+  mythicmobs-internal-name:
+    inclusive-list: [] # Set<String>
+    # OR
+    exclusive-list: [] # Set<String>
+
+  ##############
+  # SPAWN REASON
+  ##############
+  #
+  # Available Events:
+  #  All mob-based events.
+  #
+  # Description:
+  #  The spawn reason of the mob is fetched via the Bukkit API.
+  #  For example: 'SPAWNER'
+
+  # short
+  spawn-reason-incl: ['SPAWNER'] # Set<String>
+  spawn-reason-excl: ['SPAWNER'] # Set<String
+
+  # long
+  spawn-reason:
+    inclusive-list: [] # Set<String>
+    # OR
+    exclusive-list: [] # Set<String>
+
+  ############################
+  # CONDITIONS TO WORK ON LIST
+  ############################
+  # - WorldGuard Region
+  # - Coordinate
+  # - Biome
+  #   - Biome Group
+  # - Nametag (CustomName)
+  # - Chance
+  # - Current Level
+  # - Distance from Spawn
+  # - Tamed
+  # - Levelled Spawner Name
+  # - Scoreboard Tags
+  # - World Name
+  # - World Time
+  # - Permission <https://github.com/lokka30/LevelledMobs/issues/285>
+  # - Slime size <https://github.com/lokka30/LevelledMobs/issues/279>
+  # - Phase of the Moon <https://github.com/lokka30/LevelledMobs/issues/332>

@@ -1,0 +1,14 @@
+{
+  "comment": [
+    "This file contains a mapping of entity types to a texture string.",
+    "Many of these textures were sourced from the Ultimate Mob Heads Fork",
+    "resource's config file. That resource is maintained by Zombie_Striker.",
+    "The mentioned file is available at",
+    "<https://github.com/ZombieStriker/MobHeads/blob/788ab1e6274f748190ef6e1fa34f4c168cb6b4ec/resources/config.yml>."
+  ],
+  "textures": {
+    "AXOLOTL": "to-do",
+    "BAT": "to-do",
+    "BEE": "to-do"
+  }
+}

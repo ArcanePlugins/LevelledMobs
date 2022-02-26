@@ -1,0 +1,126 @@
+# Brainstorming Rule Actions for LM 4.
+actions:
+
+  #########
+  # EXECUTE
+  #########
+  #
+  # Available Events
+  #  All events involving a player or mob. :)
+  #
+  # ABOUT THE 'EXECUTABLES' SYSTEM:
+  #  This is an action which makes a lot of cool things possible!
+  #  In LevelledMobs 4, there is a hidden system called Executables.
+  #  This allows developers, even through other plugins, to create
+  #  code that can run when told to by the rules system (just in
+  #  the action below!). By default there is 'update-nametags', which
+  #  will be explained below. However, developers can add things like
+  #  'cast-spell' or 'cast-fireball', whatever they want!
+  #
+  # EXECUTABLE 'ARGUMENTS' SYSTEM:
+  #  Executables can also be paired with 'arguments', to specify some
+  #  more information to run the executable with. The update-nametag
+  #  executable does not have any arguments available although an example
+  #  would be: 'update-nametag:firstarg:second arg:third argument 123:hello there!'
+  #  So the update-nametag executable will be ran with the arguments:
+  #  'firstarg', 'second arg', 'third argument 123', and 'hello there!'.
+  #  Just like commands, but instead of spaces, they are separated using colons. :)
+  #
+  # EXECUTABLES LIST (by default):
+  #  'update-nametag':
+  #   When ran on a player-based event, it will update the nametag of each
+  #   entity around them. This radius is configured in the settings.yml file,
+  #   same as in LevelledMobs 3.
+  #   When ran on an entity-based event, it will update the nametag of the
+  #   entity involved in the event. This nametag packet will be sent to all
+  #   players around the mob, in the same radius which was elaborated on above.
+  execute: ['update-nametag'] # LinkedList<String>
+
+  ##############################
+  # SET/REMOVE PERSISTENT VALUES
+  ##############################
+  #
+  # Available Events:
+  #  All mob-based events.
+  #
+  # Description:
+  #  This uses the Persistent Data Container (PDC) to store data on the mob. Since it
+  #  is persistent, it is stored on the hard drive, remaining between restarts too.
+  #  LevelledMobs has a single PDC key that stores a List<String> inside of a String.
+  #  By using set-persistent-value, it adds a value to the List. If the action will
+  #  result in the list not being changed (already added/removed), it will be ignored.
+  #  Do not use the semicolon character in the list! This is used internally to split
+  #  and join the list from/to string form.
+  #  Do not set too many permanent values on a mob as this can be costly in CPU performance.
+  set-persistent-values: ['awesome mob']
+  remove-peristent-values: ['not awesome mob']
+
+  #############################
+  # SET/REMOVE TEMPORARY VALUES
+  #############################
+  #
+  # Available Events:
+  #  All mob-based events.
+  #
+  # Description:
+  #  This uses the Metadata system to store data on the mob. Since it is temporary,
+  #  it is stored in memory but not the hard drive, so it does not remain between restarts.
+  #  LevelledMobs uses a similar system to the 'set-persistent-value' actions, storing a
+  #  List<String> in a String metadata value which can have its contents changed through
+  #  this action.
+  #  Do not use the semicolon character in the list! This is used internally to split
+  #  and join the list from/to string form.
+  #  Do not set too many temporary values on a mob as this can be costly in CPU performance.
+  set-temporary-values: ['awesome mob']
+  remove-temporary-values: ['not awesome mob']
+
+  ########################
+  # USE CUSTOM DROP TABLES
+  ########################
+  #
+  # Available events:
+  #  All mob-based events.
+  #
+  # Description:
+  #  Overrides/sets the list of custom drops tables that the levelled mob should use.
+  #  This is stored as a Persistent Data Container (PDC) value on the mob.
+  #  When the mob dies, they will include these drop tables for its custom drops.
+  use-custom-drop-tables: ['zombies', 'cool beans']
+
+  ##############
+  # SET NBT DATA
+  ##############
+  #
+  # Available events:
+  #  All mob-based events.
+  #
+  # Description:
+  #  Uses NBT API to set NBT on a mob. This obviously requires NBT API to be installed.
+  #  Trying to use it without the plugin installed makes LM send a warning in the console.
+  set-nbt-data: 'example nbt data here'
+
+  #########################
+  # ACTIONS TO WORK ON LIST
+  #########################
+  #
+  # - Damage modifiers by DamageCause <https://github.com/lokka30/LevelledMobs/issues/302>, also with SUNLIGHT damage support
+  # - Attributes
+  #   - Armor/Shield Breaker Custom Attributes
+  # - Nametags
+  #   - Name Override
+  #   - Health Indicator
+  #   - Tiered Coloring
+  #   - Always visible time
+  #   - Visibility method
+  #   - Death Nametag
+  #   - MARKED mode <https://github.com/lokka30/LevelledMobs/issues/301>
+  #   - 'Can't view nametags' distance <https://github.com/lokka30/LevelledMobs/issues/327>
+  #   - Health-dependent color variable <https://github.com/lokka30/LevelledMobs/issues/278>
+  # - Levelling
+  #   - Level Inheritance
+  #   - Passenger match level
+  #   - Strategies
+  #     - Player Levelling
+  #       - Default strategy configuration <https://github.com/lokka30/LevelledMobs/issues/346>
+  #     - Ender Dragon Kill Count <https://github.com/lokka30/LevelledMobs/issues/145>
+  # - Hardcore Featureset <https://github.com/lokka30/LevelledMobs/issues/324>
