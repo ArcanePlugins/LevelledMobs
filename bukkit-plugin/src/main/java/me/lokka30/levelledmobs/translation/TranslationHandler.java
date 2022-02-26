@@ -26,7 +26,7 @@ public class TranslationHandler {
         - Add javadoc comment.
      */
     public String getTranslatedEntityName(final @NotNull EntityType entityType) {
-        return LevelledMobs.getInstance().getFileHandler().getConstantsFile().getData()
+        return LevelledMobs.getInstance().fileHandler.getConstantsFile().getData()
             .getOrDefault(
                 "entity-names." + entityType,
                 getDefaultEntityName(entityType)
@@ -45,10 +45,10 @@ public class TranslationHandler {
     TODO
         - Add javadoc comment.
      */
-    public String getTranslatedInteger(final int i) {
-        return LevelledMobs.getInstance().getFileHandler().getConstantsFile().getData()
+    public String getTranslatedLevel(final int i) {
+        return LevelledMobs.getInstance().fileHandler.getConstantsFile().getData()
             .getOrDefault(
-                "integers." + i,
+                "levels." + i,
                 Integer.toString(i)
             );
     }

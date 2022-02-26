@@ -8,17 +8,20 @@
 
 package me.lokka30.levelledmobs.util;
 
+import java.util.Objects;
 import org.bukkit.Location;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.Serializable;
 
 /**
- * @author lokka30
- * @see Location
- * @since 3.1.2 A smaller version of the Location class only including a world name, and three
+ * A smaller version of the Location class only including a world name, and three
  * integers for the x, y and z. Finds uses where the extra data and precision of the Location class
  * is unnecessary.
+ *
+ * @author lokka30
+ * @see Location
+ * @since 3.1.2
  */
 public record Point(
     @NotNull String worldName,
@@ -42,14 +45,11 @@ public record Point(
      * @since 4.0.0
      */
     public String toFormattedString() {
-        return "[" + worldName + "] @ x=" + x + ", y=" + y + ", z=" + z;
+        return "{world='" + worldName + "',x='" + x + "',y='" + y + "',z='" + z + "'}";
     }
 
-    /*
-    TODO
-        - Javadoc.
-     */
     public static Point fromLocation(final @NotNull Location location) {
+        Objects.requireNonNull(location.getWorld(), "world");
         return new Point(
             location.getWorld().getName(),
             location.getBlockX(),

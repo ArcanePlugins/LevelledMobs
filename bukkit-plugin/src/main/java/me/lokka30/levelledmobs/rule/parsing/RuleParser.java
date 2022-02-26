@@ -99,7 +99,7 @@ public class RuleParser {
     }
 
     void addMobRuleGroups() {
-        final Yaml data = LevelledMobs.getInstance().getFileHandler().getGroupsFile().getData();
+        final Yaml data = LevelledMobs.getInstance().fileHandler.groupsFile.getData();
         for (
             String mobGroupName : data.getSection("mob-groups").singleLayerKeySet()
         ) {
@@ -138,7 +138,7 @@ public class RuleParser {
     }
 
     void addBiomeRuleGroups() {
-        final Yaml data = LevelledMobs.getInstance().getFileHandler().getGroupsFile().getData();
+        final Yaml data = LevelledMobs.getInstance().fileHandler.groupsFile.getData();
         for (
             String biomeGroupName : data.getSection("biome-groups").singleLayerKeySet()
         ) {
@@ -177,7 +177,7 @@ public class RuleParser {
     }
 
     void addRulePresets() {
-        LevelledMobs.getInstance().getFileHandler().getPresetsFile().getData()
+        LevelledMobs.getInstance().fileHandler.presetsFile.getData()
             .getSection("presets").singleLayerKeySet()
             .forEach(presetId -> presets.add(parseRule(true, presetId, "presets." + presetId)));
     }
@@ -188,9 +188,9 @@ public class RuleParser {
         @NotNull final String identifier,
         @NotNull final String path
     ) {
-        final FileHandler fh = LevelledMobs.getInstance().getFileHandler();
+        final FileHandler fh = LevelledMobs.getInstance().fileHandler;
         final Yaml data =
-            isPreset ? fh.getPresetsFile().getData() : fh.getListenersFile().getData();
+            isPreset ? fh.presetsFile.getData() : fh.listenersFile.getData();
         final String ruleOrPreset = isPreset ? "preset" : "rule";
 
         // create base rule with no functionality

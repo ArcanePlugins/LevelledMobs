@@ -17,15 +17,13 @@ import org.jetbrains.annotations.NotNull;
 public class NametagHandler {
 
     public String generateNametag(@NotNull LevelledMob levelledMob) {
-        final TranslationHandler translationHandler = LevelledMobs.getInstance()
-            .getTranslationHandler();
+        final TranslationHandler translationHandler = LevelledMobs.getInstance().translationHandler;
         final String nameTranslated = translationHandler.getTranslatedEntityName(
             levelledMob.getLivingEntity().getType());
-        final String levelTranslated = translationHandler.getTranslatedInteger(
+        final String levelTranslated = translationHandler.getTranslatedLevel(
             levelledMob.getLevel());
         final String nametagFormat = levelledMob.getNametagFormat();
-        @NotNull String finalNametag = nametagFormat;
-
+        String finalNametag = nametagFormat;
         for (NametagPlaceholder placeholder : NametagPlaceholder.values()) {
             if (nametagFormat.contains(placeholder.getId())) {
                 finalNametag = finalNametag.replace(placeholder.getId(),
@@ -38,7 +36,7 @@ public class NametagHandler {
 
     public void sendNametag(@NotNull LevelledMob levelledMob, @NotNull Player target,
         @NotNull String nametag) {
-        LevelledMobs.getInstance().getNMSHandler().getNametagNMSHandler()
+        LevelledMobs.getInstance().nmsHandler.getNametagNMSHandler()
             .sendNametag(levelledMob.getLivingEntity(), nametag, target, false);
     }
 

@@ -8,8 +8,8 @@
 
 package me.lokka30.levelledmobs.util;
 
+import java.util.Locale;
 import me.lokka30.microlib.messaging.MicroLogger;
-import org.apache.commons.lang.WordUtils;
 
 /**
  * @author lokka30
@@ -25,11 +25,12 @@ public final class Utils {
      */
     public static final MicroLogger LOGGER = new MicroLogger("&b&lLevelledMobs: &7");
 
-    /*
-    TODO
-        - Add javadoc.
-     */
     public static String formatEnumConstant(String constant) {
-        return WordUtils.capitalizeFully(constant.replace("_", ""));
+        final String[] words = constant.split("_");;
+        for(int i = 0; i < words.length; i++) {
+            words[i] = words[i].substring(0, 1).toUpperCase(Locale.ROOT) +
+                    words[i].substring(1).toLowerCase(Locale.ROOT);
+        }
+        return String.join(" ", words);
     }
 }

@@ -8,12 +8,30 @@
 
 package me.lokka30.levelledmobs;
 
+import java.util.Set;
 import me.lokka30.levelledmobs.customdrop.CustomDropHandler;
 import me.lokka30.levelledmobs.debug.DebugHandler;
 import me.lokka30.levelledmobs.file.FileHandler;
 import me.lokka30.levelledmobs.integration.IntegrationHandler;
 import me.lokka30.levelledmobs.level.LevelHandler;
-import me.lokka30.levelledmobs.listener.*;
+import me.lokka30.levelledmobs.listener.BlockPlaceListener;
+import me.lokka30.levelledmobs.listener.ChunkLoadListener;
+import me.lokka30.levelledmobs.listener.EntityCombustListener;
+import me.lokka30.levelledmobs.listener.EntityDamageByEntityListener;
+import me.lokka30.levelledmobs.listener.EntityDamageListener;
+import me.lokka30.levelledmobs.listener.EntityDeathListener;
+import me.lokka30.levelledmobs.listener.EntityRegainHealthListener;
+import me.lokka30.levelledmobs.listener.EntitySpawnListener;
+import me.lokka30.levelledmobs.listener.EntityTameListener;
+import me.lokka30.levelledmobs.listener.EntityTargetListener;
+import me.lokka30.levelledmobs.listener.EntityTransformListener;
+import me.lokka30.levelledmobs.listener.PlayerChangedWorldListener;
+import me.lokka30.levelledmobs.listener.PlayerDeathListener;
+import me.lokka30.levelledmobs.listener.PlayerInteractEntityListener;
+import me.lokka30.levelledmobs.listener.PlayerInteractListener;
+import me.lokka30.levelledmobs.listener.PlayerJoinListener;
+import me.lokka30.levelledmobs.listener.PlayerQuitListener;
+import me.lokka30.levelledmobs.listener.PlayerTeleportListener;
 import me.lokka30.levelledmobs.metric.MetricsHandler;
 import me.lokka30.levelledmobs.nametag.NametagHandler;
 import me.lokka30.levelledmobs.nms.NMSHandler;
@@ -21,13 +39,9 @@ import me.lokka30.levelledmobs.queue.QueueHandler;
 import me.lokka30.levelledmobs.translation.TranslationHandler;
 import me.lokka30.levelledmobs.util.Utils;
 import me.lokka30.microlib.maths.QuickTimer;
-import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.jetbrains.annotations.NotNull;
-
-import java.util.Set;
 
 /**
  * @author lokka30
@@ -36,80 +50,20 @@ import java.util.Set;
 public final class LevelledMobs extends JavaPlugin {
 
     private static LevelledMobs instance;
-
     public static LevelledMobs getInstance() {
         return instance;
     }
 
-    private final QueueHandler queueHandler = new QueueHandler();
-
-    public @NotNull
-    QueueHandler getQueueHandler() {
-        return queueHandler;
-    }
-
-    private final TranslationHandler translationHandler = new TranslationHandler();
-
-    public @NotNull
-    TranslationHandler getTranslationHandler() {
-        return translationHandler;
-    }
-
-    private final NametagHandler nametagHandler = new NametagHandler();
-
-    public @NotNull
-    NametagHandler getNametagHandler() {
-        return nametagHandler;
-    }
-
-    private final MetricsHandler metricsHandler = new MetricsHandler();
-
-    public @NotNull
-    MetricsHandler getMetricsHandler() {
-        return metricsHandler;
-    }
-
-    private final LevelHandler levelHandler = new LevelHandler();
-
-    public @NotNull
-    LevelHandler getLevelHandler() {
-        return levelHandler;
-    }
-
-    private final IntegrationHandler integrationHandler = new IntegrationHandler();
-
-    public @NotNull
-    IntegrationHandler getIntegrationHandler() {
-        return integrationHandler;
-    }
-
-    private final DebugHandler debugHandler = new DebugHandler();
-
-    public @NotNull
-    DebugHandler getDebugHandler() {
-        return debugHandler;
-    }
-
-    private final CustomDropHandler customDropHandler = new CustomDropHandler();
-
-    public @NotNull
-    CustomDropHandler getCustomDropHandler() {
-        return customDropHandler;
-    }
-
-    private final FileHandler fileHandler = new FileHandler();
-
-    public @NotNull
-    FileHandler getFileHandler() {
-        return fileHandler;
-    }
-
-    private final NMSHandler nmsHandler = new NMSHandler();
-
-    public @NotNull
-    NMSHandler getNMSHandler() {
-        return nmsHandler;
-    }
+    public final QueueHandler queueHandler = new QueueHandler();
+    public final TranslationHandler translationHandler = new TranslationHandler();
+    public final NametagHandler nametagHandler = new NametagHandler();
+    public final MetricsHandler metricsHandler = new MetricsHandler();
+    public final LevelHandler levelHandler = new LevelHandler();
+    public final IntegrationHandler integrationHandler = new IntegrationHandler();
+    public final DebugHandler debugHandler = new DebugHandler();
+    public final CustomDropHandler customDropHandler = new CustomDropHandler();
+    public final FileHandler fileHandler = new FileHandler();
+    public final NMSHandler nmsHandler = new NMSHandler();
 
     /* Start-up & shut-down methods */
 
@@ -153,7 +107,7 @@ public final class LevelledMobs extends JavaPlugin {
 
         queueHandler.startQueues();
 
-        loadListeners();
+        loadEventListeners();
 
         Utils.LOGGER.info("&f~ Start-up sequence complete, took &b" + timer.getTimer() + "ms&f ~");
     }
@@ -187,8 +141,8 @@ public final class LevelledMobs extends JavaPlugin {
      * Only to be ran from onEnable, do not use elsewhere. The HashSet of Listeners must be updated
      * manually if a new Listener is added to LM.
      */
-    private void loadListeners() {
-        Utils.LOGGER.info("Loading listeners...");
+    private void loadEventListeners() {
+        Utils.LOGGER.info("Loading event listeners...");
 
         // Retain alphabetical order when modifying this list! :)
         Set.of(
@@ -210,6 +164,6 @@ public final class LevelledMobs extends JavaPlugin {
             new PlayerJoinListener(),
             new PlayerQuitListener(),
             new PlayerTeleportListener()
-        ).forEach(listener -> Bukkit.getPluginManager().registerEvents(listener, this));
+        ).forEach(listener -> getServer().getPluginManager().registerEvents(listener, this));
     }
 }

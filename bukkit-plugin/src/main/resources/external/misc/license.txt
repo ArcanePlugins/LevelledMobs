@@ -31,9 +31,6 @@ Offline Version:
      * NBT API by tr7zw
      * MicroLib by lokka30
      * PaperMC API by the Paper team
-     * ProtocolLib by dmulloy2
-       * No longer in use, but has served LevelledMobs very well
-         in LevelledMobs v2 and v3.
     Thanks to the developers behind these libraries for making
     LevelledMobs possible!
 

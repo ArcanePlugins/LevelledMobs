@@ -8,6 +8,7 @@
 
 package me.lokka30.levelledmobs.file;
 
+import java.util.List;
 import me.lokka30.levelledmobs.customdrop.CustomDropParser;
 import me.lokka30.levelledmobs.file.external.customdrops.CustomDropsFile;
 import me.lokka30.levelledmobs.file.external.groups.GroupsFile;
@@ -22,142 +23,30 @@ import me.lokka30.levelledmobs.file.internal.playerHeadTextures.PlayerHeadTextur
 import me.lokka30.levelledmobs.file.internal.unlevellables.UnlevellablesFile;
 import me.lokka30.levelledmobs.rule.parsing.RuleParser;
 import me.lokka30.levelledmobs.util.Utils;
-import org.jetbrains.annotations.NotNull;
-
-import java.util.List;
 
 public class FileHandler {
 
-    public FileHandler() {
-        /* external files */
-        this.customDropsFile = new CustomDropsFile();
-        this.groupsFile = new GroupsFile();
-        this.listenersFile = new ListenersFile();
-        this.licenseFile = new LicenseFile();
-        this.presetsFile = new PresetsFile();
-        this.readmeFile = new ReadmeFile();
-        this.settingsFile = new SettingsFile();
-        this.constantsFile = new ConstantsFile();
-        this.messagesFile = new MessagesFile();
-
-        /* internal files */
-        this.playerHeadTexturesFile = new PlayerHeadTexturesFile();
-        this.unlevellablesFile = new UnlevellablesFile();
-
-        /* parsers */
-        this.ruleParser = new RuleParser();
-        this.customDropParser = new CustomDropParser();
-    }
-
     /* External Files */
 
-    private final @NotNull
-    CustomDropsFile customDropsFile;
-
-    public @NotNull
-    CustomDropsFile getCustomDropsFile() {
-        return customDropsFile;
-    }
-
-    private final @NotNull
-    GroupsFile groupsFile;
-
-    public @NotNull
-    GroupsFile getGroupsFile() {
-        return groupsFile;
-    }
-
-    private final @NotNull
-    ListenersFile listenersFile;
-
-    public @NotNull
-    ListenersFile getListenersFile() {
-        return listenersFile;
-    }
-
-    private final @NotNull
-    LicenseFile licenseFile;
-
-    public @NotNull
-    LicenseFile getLicenseFile() {
-        return licenseFile;
-    }
-
-    private final @NotNull
-    PresetsFile presetsFile;
-
-    public @NotNull
-    PresetsFile getPresetsFile() {
-        return presetsFile;
-    }
-
-    private final @NotNull
-    ReadmeFile readmeFile;
-
-    public @NotNull
-    ReadmeFile getReadmeFile() {
-        return readmeFile;
-    }
-
-    private final @NotNull
-    SettingsFile settingsFile;
-
-    public @NotNull
-    SettingsFile getSettingsFile() {
-        return settingsFile;
-    }
-
-    private final @NotNull
-    ConstantsFile constantsFile;
-
-    public @NotNull
-    ConstantsFile getConstantsFile() {
-        return constantsFile;
-    }
-
-    private final @NotNull
-    MessagesFile messagesFile;
-
-    public @NotNull
-    MessagesFile getMessagesFile() {
-        return messagesFile;
-    }
+    public final CustomDropsFile customDropsFile = new CustomDropsFile();
+    public final GroupsFile groupsFile = new GroupsFile();
+    public final ListenersFile listenersFile = new ListenersFile();
+    public final LicenseFile licenseFile = new LicenseFile();
+    public final PresetsFile presetsFile = new PresetsFile();
+    public final ReadmeFile readmeFile = new ReadmeFile();
+    public final SettingsFile settingsFile = new SettingsFile();
+    public final ConstantsFile constantsFile = new ConstantsFile();
+    public final MessagesFile messagesFile = new MessagesFile();
 
     /* Internal Files */
 
-    private final @NotNull
-    PlayerHeadTexturesFile playerHeadTexturesFile;
-
-    public @NotNull
-    PlayerHeadTexturesFile getPlayerHeadTexturesFile() {
-        return playerHeadTexturesFile;
-    }
-
-    private final @NotNull
-    UnlevellablesFile unlevellablesFile;
-
-    public @NotNull
-    UnlevellablesFile getUnlevellablesFile() {
-        return unlevellablesFile;
-    }
+    public final PlayerHeadTexturesFile playerHeadTexturesFile = new PlayerHeadTexturesFile();
+    public final UnlevellablesFile unlevellablesFile = new UnlevellablesFile();
 
     /* Parsers */
 
-    private final @NotNull
-    RuleParser ruleParser;
-
-    public @NotNull
-    RuleParser getRuleParser() {
-        return ruleParser;
-    }
-
-    private final @NotNull
-    CustomDropParser customDropParser;
-
-    public @NotNull
-    CustomDropParser getCustomDropParser() {
-        return customDropParser;
-    }
+    public final RuleParser ruleParser = new RuleParser();
+    public final CustomDropParser customDropParser = new CustomDropParser();
 
     /* Methods */
 
