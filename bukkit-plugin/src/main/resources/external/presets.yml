@@ -2,7 +2,7 @@
 
 # Presets act as 'copy and pastes' for the rules file.
 # Presets can only be specified at the base of the rule, i.e., not under an action or condition etc.
-presets:    
+presets:
   no-level:
     actions:
       levelling:
@@ -16,8 +16,8 @@ presets:
     actions:
       levelling:
         formula: '%weighted-random-level%'
-#       Levelling variance has been removed as this can be achieved in the new 'levelling formula' system - just use a placeholder
-#       that generates random numbers.  
+        #       Levelling variance has been removed as this can be achieved in the new 'levelling formula' system - just use a placeholder
+        #       that generates random numbers.
         strategies:
           weighted-random:
             tiers:
@@ -31,112 +31,112 @@ presets:
         adjust-max-health-multiplier:
           description: 'Changes the max health of levelled mobs'
           entities:
-            exclusive-list: ['ENDERMAN', 'WITHER_SKELETON']
+            exclusive-list: [ 'ENDERMAN', 'WITHER_SKELETON' ]
           attributes:
-            inclusive-list: ['GENERIC_MAX_HEALTH']
+            inclusive-list: [ 'GENERIC_MAX_HEALTH' ]
           multiplier-formula: '((%currentLevel% / %maxLevel%) * 5.0)'
           limits:
             min: 1.0
 
         adjust-movement-speed-multiplier:
           entities:
-            exclusive-list: ['ENDERMAN', 'CREEPER']
+            exclusive-list: [ 'ENDERMAN', 'CREEPER' ]
           attributes:
-            inclusive-list: ['GENERIC_MOVEMENT_SPEED']
+            inclusive-list: [ 'GENERIC_MOVEMENT_SPEED' ]
           multiplier-formula: '((%currentLevel% / %maxLevel%) * 0.15)'
           limits:
             min: 1.0
 
         adjust-armor-toughness-multiplier:
           entities:
-            exclusive-list: []
+            exclusive-list: [ ]
           attributes:
-            inclusive-list: ['GENERIC_ARMOR_TOUGHNESS']
+            inclusive-list: [ 'GENERIC_ARMOR_TOUGHNESS' ]
           multiplier-formula: '((%currentLevel% / %maxLevel%) * 0.15)'
           limits:
             min: 1.0
 
         adjust-attack-damage-multiplier:
           entities:
-            exclusive-list: []
+            exclusive-list: [ ]
           attributes:
-            inclusive-list: ['GENERIC_ATTACK_DAMAGE']
+            inclusive-list: [ 'GENERIC_ATTACK_DAMAGE' ]
           multiplier-formula: '((%currentLevel% / %maxLevel%) * 2.25)'
           limits:
             min: 1.0
 
         adjust-ranged-attack-damage-multiplier:
           entities:
-            exclusive-list: []
+            exclusive-list: [ ]
           attributes:
-            inclusive-list: ['CUSTOM_RANGED_ATTACK_DAMAGE']
+            inclusive-list: [ 'CUSTOM_RANGED_ATTACK_DAMAGE' ]
           multiplier-formula: '((%currentLevel% / %maxLevel%) * 2.0)'
           limits:
             min: 1.0
 
         adjust-creeper-blast-damage-multiplier:
           entities:
-            inclusive-list: ['CREEPER']
+            inclusive-list: [ 'CREEPER' ]
           attributes:
-            inclusive-list: ['CUSTOM_CREEPER_BLAST_DAMAGE']
+            inclusive-list: [ 'CUSTOM_CREEPER_BLAST_DAMAGE' ]
           multiplier-formula: '((%currentLevel% / %maxLevel%) * 1.0)'
           limits:
             min: 1.0
 
         adjust-item-drop-multiplier:
           entities:
-            exclusive-list: ['ENDER_DRAGON', 'WITHER']
+            exclusive-list: [ 'ENDER_DRAGON', 'WITHER' ]
           attributes:
-            inclusive-list: ['CUSTOM_ITEM_DROP']
+            inclusive-list: [ 'CUSTOM_ITEM_DROP' ]
           multiplier-formula: '((%currentLevel% / %maxLevel%) * 3)'
           limits:
             min: 1.0
 
         adjust-xp-drop-multiplier:
           entities:
-            exclusive-list: ['ENDER_DRAGON', 'WITHER']
+            exclusive-list: [ 'ENDER_DRAGON', 'WITHER' ]
           attributes:
-            inclusive-list: ['CUSTOM_XP_DROP']
+            inclusive-list: [ 'CUSTOM_XP_DROP' ]
           multiplier-formula: '((%currentLevel% / %maxLevel%) * 5)'
           limits:
             min: 1.0
 
         adjust-armor-bonus-multiplier:
           entities:
-            exclusive-list: []
+            exclusive-list: [ ]
           attributes:
-            inclusive-list: ['GENERIC_ARMOR_BONUS']
+            inclusive-list: [ 'GENERIC_ARMOR_BONUS' ]
           multiplier-formula: '((%currentLevel% / %maxLevel%) * 0.2)'
           limits:
             min: 1.0
 
         adjust-knockback-resistance-multiplier:
           entities:
-            exclusive-list: []
+            exclusive-list: [ ]
           attributes:
-            inclusive-list: ['GENERIC_KNOCKBACK_RESISTANCE']
+            inclusive-list: [ 'GENERIC_KNOCKBACK_RESISTANCE' ]
           multiplier-formula: '((%currentLevel% / %maxLevel%) * 0.2)'
           limits:
             min: 1.0
 
         adjust-attack-knockback-multiplier:
           entities:
-            exclusive-list: []
+            exclusive-list: [ ]
           attributes:
-            inclusive-list: ['GENERIC_ATTACK_KNOCKBACK']
+            inclusive-list: [ 'GENERIC_ATTACK_KNOCKBACK' ]
           multiplier-formula: '((%currentLevel% / %maxLevel%) * 0.25)'
           limits:
             min: 1.0
 
         adjust-zombie-spawn-reinforcements-multiplier:
           entities:
-            inclusive-list: ['ZOMBIE', 'HUSK', 'DROWNED']
+            inclusive-list: [ 'ZOMBIE', 'HUSK', 'DROWNED' ]
           attributes:
-            inclusive-list: ['GENERIC_ZOMBIE_SPAWN_REINFORCEMENTS']
+            inclusive-list: [ 'GENERIC_ZOMBIE_SPAWN_REINFORCEMENTS' ]
           multiplier-formula: '((%currentLevel% / %maxLevel%) * 0.25)'
           limits:
             min: 1.0
-      
+
 # Don't touch any of this unless you know what you're doing,
 # or, unless a LevelledMobs maintainer suggested you do so.
 file-metadata:

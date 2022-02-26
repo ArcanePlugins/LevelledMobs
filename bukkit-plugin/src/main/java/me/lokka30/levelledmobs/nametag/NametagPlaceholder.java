@@ -13,18 +13,21 @@ public enum NametagPlaceholder {
     ENTITY_TYPE("entity-type");
 
     private final String id;
+
     NametagPlaceholder(final String id) {
         this.id = id;
     }
 
-    public String getId() { return "%" + id + "%"; }
+    public String getId() {
+        return "%" + id + "%";
+    }
 
     public String getValue(final @NotNull LevelledMob levelledMob) {
-        switch(this) {
+        switch (this) {
             case ENTITY_NAME:
                 return LevelledMobs.getInstance()
-                        .getTranslationHandler()
-                        .getTranslatedEntityName(levelledMob.getLivingEntity().getType());
+                    .getTranslationHandler()
+                    .getTranslatedEntityName(levelledMob.getLivingEntity().getType());
             case ENTITY_TYPE:
                 return levelledMob.getLivingEntity().getType().toString();
             default:

@@ -10,17 +10,20 @@ public enum DefaultRuleOptionType {
     TEMPORARY_DO_NOT_USE("temporary-do-not-use");
 
     private final String id;
+
     DefaultRuleOptionType(String id) {
         this.id = id;
     }
 
     @NotNull
-    public String getId() { return id; }
+    public String getId() {
+        return id;
+    }
 
     @NotNull
     public static Optional<DefaultRuleOptionType> fromId(final @NotNull String id) {
         return Arrays.stream(values())
-                .filter(type -> type.getId().equals(id))
-                .findFirst();
+            .filter(type -> type.getId().equals(id))
+            .findFirst();
     }
 }

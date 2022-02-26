@@ -14,16 +14,16 @@ import me.lokka30.microlib.maths.Randoms;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * This Levelling Strategy spits out a random number. That's it.
- * Administrators can set a min & max level of course.
+ * This Levelling Strategy spits out a random number. That's it. Administrators can set a min & max
+ * level of course.
  *
  * @author lokka30
  * @see LevellingStrategy
  * @since 4.0.0
  */
 public record RandomStrategy(
-        int minLevel,
-        int maxLevel
+    int minLevel,
+    int maxLevel
 ) implements LevellingStrategy {
 
     @Override

@@ -9,12 +9,13 @@ import org.bukkit.entity.LivingEntity;
 import org.jetbrains.annotations.NotNull;
 
 public record IsLevelledCondition(
-        @NotNull Rule   parentRule,
-        @NotNull State  state,
-        boolean         inverse
+    @NotNull Rule parentRule,
+    @NotNull State state,
+    boolean inverse
 ) implements RuleCondition {
 
-    @Override @NotNull
+    @Override
+    @NotNull
     public String id() {
         return DefaultRuleConditionType.IS_LEVELLED.id();
     }
@@ -23,7 +24,7 @@ public record IsLevelledCondition(
     public boolean appliesTo(@NotNull LivingEntity livingEntity) {
         boolean isLevelled = LevelledMob.isEntityLevelled(livingEntity);
         boolean applies;
-        switch(state) {
+        switch (state) {
             case ANY:
                 return !inverse();
             case YES:
@@ -35,18 +36,20 @@ public record IsLevelledCondition(
         }
     }
 
-    @Override @NotNull
+    @Override
+    @NotNull
     public RuleCondition merge(@NotNull RuleCondition other) {
         return this; //TODO
     }
 
     @NotNull
-    public static IsLevelledCondition of(final @NotNull Rule parentRule, final @NotNull FlatFileSection section) {
+    public static IsLevelledCondition of(final @NotNull Rule parentRule,
+        final @NotNull FlatFileSection section) {
         //TODO
         return new IsLevelledCondition(
-                parentRule,
-                null,
-                section.get(".inverse", false)
+            parentRule,
+            null,
+            section.get(".inverse", false)
         );
     }
 

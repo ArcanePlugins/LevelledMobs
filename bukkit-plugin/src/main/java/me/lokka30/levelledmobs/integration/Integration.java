@@ -12,8 +12,7 @@ import me.lokka30.levelledmobs.LevelledMobs;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * This interface is used by all Integrations,
- * containing common methods used across all of them.
+ * This interface is used by all Integrations, containing common methods used across all of them.
  *
  * @author lokka30
  * @since 4.0.0
@@ -38,17 +37,17 @@ public interface Integration {
     boolean isInstalled();
 
     /**
-     * Integrations can be disabled by the user through the settings.yml file.
-     * Ensure the integration is enabled prior to using it.
+     * Integrations can be disabled by the user through the settings.yml file. Ensure the
+     * integration is enabled prior to using it.
      *
      * @return if the integration is enabled.
      * @since 4.0.0
      */
     default boolean isEnabled() {
         return
-                !(LevelledMobs.getInstance()
-                        .getFileHandler().getSettingsFile().getData()
-                        .getStringList("disabled-integrations")
-                        .contains(getName())) && isInstalled();
+            !(LevelledMobs.getInstance()
+                .getFileHandler().getSettingsFile().getData()
+                .getStringList("disabled-integrations")
+                .contains(getName())) && isInstalled();
     }
 }

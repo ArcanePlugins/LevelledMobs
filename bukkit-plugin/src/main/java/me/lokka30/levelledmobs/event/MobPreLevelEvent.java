@@ -28,7 +28,9 @@ public class MobPreLevelEvent extends Event implements Cancellable {
     }
 
     @NotNull
-    public static HandlerList getHandlerList() { return HANDLERS; }
+    public static HandlerList getHandlerList() {
+        return HANDLERS;
+    }
 
     private boolean isCancelled = false;
 
@@ -48,10 +50,10 @@ public class MobPreLevelEvent extends Event implements Cancellable {
     private final EnumSet<AdditionalLevelInformation> additionalLevelInformation;
 
     public MobPreLevelEvent(
-            final @NotNull LivingEntity livingEntity,
-            final int previousLevel,
-            final int newLevel,
-            final @NotNull EnumSet<AdditionalLevelInformation> additionalLevelInformation
+        final @NotNull LivingEntity livingEntity,
+        final int previousLevel,
+        final int newLevel,
+        final @NotNull EnumSet<AdditionalLevelInformation> additionalLevelInformation
     ) {
         this.livingEntity = livingEntity;
         this.previousLevel = previousLevel;
@@ -59,11 +61,30 @@ public class MobPreLevelEvent extends Event implements Cancellable {
         this.additionalLevelInformation = additionalLevelInformation;
     }
 
-    public @NotNull LivingEntity getLivingEntity() { return livingEntity; }
-    public int getPreviousLevel() { return previousLevel; }
-    public boolean wasLevelled() { return previousLevel != 0; }
-    public int getNewLevel() { return newLevel; }
-    public void setNewLevel(final int newLevel) { this.newLevel = newLevel; }
-    public @NotNull EnumSet<AdditionalLevelInformation> getAdditionalLevelInformation() { return additionalLevelInformation; }
+    public @NotNull
+    LivingEntity getLivingEntity() {
+        return livingEntity;
+    }
+
+    public int getPreviousLevel() {
+        return previousLevel;
+    }
+
+    public boolean wasLevelled() {
+        return previousLevel != 0;
+    }
+
+    public int getNewLevel() {
+        return newLevel;
+    }
+
+    public void setNewLevel(final int newLevel) {
+        this.newLevel = newLevel;
+    }
+
+    public @NotNull
+    EnumSet<AdditionalLevelInformation> getAdditionalLevelInformation() {
+        return additionalLevelInformation;
+    }
 
 }

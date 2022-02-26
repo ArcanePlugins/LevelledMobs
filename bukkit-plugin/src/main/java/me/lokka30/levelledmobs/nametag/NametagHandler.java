@@ -17,24 +17,29 @@ import org.jetbrains.annotations.NotNull;
 public class NametagHandler {
 
     public String generateNametag(@NotNull LevelledMob levelledMob) {
-        final TranslationHandler translationHandler = LevelledMobs.getInstance().getTranslationHandler();
-        final String nameTranslated = translationHandler.getTranslatedEntityName(levelledMob.getLivingEntity().getType());
-        final String levelTranslated = translationHandler.getTranslatedInteger(levelledMob.getLevel());
+        final TranslationHandler translationHandler = LevelledMobs.getInstance()
+            .getTranslationHandler();
+        final String nameTranslated = translationHandler.getTranslatedEntityName(
+            levelledMob.getLivingEntity().getType());
+        final String levelTranslated = translationHandler.getTranslatedInteger(
+            levelledMob.getLevel());
         final String nametagFormat = levelledMob.getNametagFormat();
         @NotNull String finalNametag = nametagFormat;
 
-        for(NametagPlaceholder placeholder : NametagPlaceholder.values()) {
-            if(nametagFormat.contains(placeholder.getId())) {
-                finalNametag = finalNametag.replace(placeholder.getId(), placeholder.getValue(levelledMob));
+        for (NametagPlaceholder placeholder : NametagPlaceholder.values()) {
+            if (nametagFormat.contains(placeholder.getId())) {
+                finalNametag = finalNametag.replace(placeholder.getId(),
+                    placeholder.getValue(levelledMob));
             }
         }
 
         return finalNametag;
     }
 
-    public void sendNametag(@NotNull LevelledMob levelledMob, @NotNull Player target, @NotNull String nametag) {
+    public void sendNametag(@NotNull LevelledMob levelledMob, @NotNull Player target,
+        @NotNull String nametag) {
         LevelledMobs.getInstance().getNMSHandler().getNametagNMSHandler()
-                .sendNametag(levelledMob.getLivingEntity(), nametag, target,false);
+            .sendNametag(levelledMob.getLivingEntity(), nametag, target, false);
     }
 
     public void generateAndSendNametag(@NotNull LevelledMob levelledMob, @NotNull Player target) {

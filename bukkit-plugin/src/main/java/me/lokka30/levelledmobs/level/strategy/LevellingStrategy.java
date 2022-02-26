@@ -13,13 +13,10 @@ import me.lokka30.levelledmobs.level.LevelledMob;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * This interface is used by internal (and even
- * external) Levelling Strategies that can be used
- * in LevelledMobs' Rules System. A Levelling Strategy
- * is code that determines what level a mob should be,
- * it can calculate numbers based off of conditions such
- * as the mob's location, it could be just a static number,
- * random numbers, and so on.
+ * This interface is used by internal (and even external) Levelling Strategies that can be used in
+ * LevelledMobs' Rules System. A Levelling Strategy is code that determines what level a mob should
+ * be, it can calculate numbers based off of conditions such as the mob's location, it could be just
+ * a static number, random numbers, and so on.
  *
  * @author lokka30
  * @since 4.0.0

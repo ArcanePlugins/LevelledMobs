@@ -26,7 +26,8 @@ public class EntityDamageByEntityListener implements Listener {
         lokka30: complete event handler
      */
 
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.NORMAL) // TODO Adjust event priority (if required)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.NORMAL)
+    // TODO Adjust event priority (if required)
     public void onEntityDamageByEntity(final EntityDamageByEntityEvent event) {
         //TODO
     }

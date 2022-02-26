@@ -16,9 +16,11 @@ import java.util.LinkedList;
 import java.util.Optional;
 
 public record RuleListener(
-        @NotNull String                   listenerId,
-        @NotNull Optional<String>         description,
-        @NotNull EnumSet<ListenableEvent> listenFor,
-        boolean                           ignoreCancelled,
-        @NotNull LinkedList<RuleEntry>    entries
-) {}
+    @NotNull String listenerId,
+    @NotNull Optional<String> description,
+    @NotNull EnumSet<ListenableEvent> listenFor,
+    boolean ignoreCancelled,
+    @NotNull LinkedList<RuleEntry> entries
+) {
+
+}

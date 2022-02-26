@@ -16,7 +16,7 @@ import org.jetbrains.annotations.NotNull;
  * TODO document this class.
  */
 public record PlayerStrategy(
-        int test //TODO
+    int test //TODO
 ) implements LevellingStrategy {
 
     @Override

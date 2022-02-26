@@ -16,22 +16,20 @@ import org.jetbrains.annotations.NotNull;
 import java.util.HashSet;
 
 /**
- * This class generates a level for a mob
- * based upon their location relative to
- * the world's spawnpoint OR a specific set
- * of coordinates provided by the strategy's
- * configuration in the Rules system.
+ * This class generates a level for a mob based upon their location relative to the world's
+ * spawnpoint OR a specific set of coordinates provided by the strategy's configuration in the Rules
+ * system.
  *
  * @author lokka30
  * @see LevellingStrategy
  * @since 4.0.0
  */
 public record DistanceFromSpawnStrategy(
-        int minLevel,
-        int maxLevel,
-        int startingDistance,
-        int increaseLevelDistance,
-        @NotNull HashSet<Point> spawnLocations
+    int minLevel,
+    int maxLevel,
+    int startingDistance,
+    int increaseLevelDistance,
+    @NotNull HashSet<Point> spawnLocations
 ) implements LevellingStrategy {
 
     @Override

@@ -16,6 +16,7 @@ import java.util.concurrent.ThreadLocalRandom;
 public class WeightedRandomContainer<T> {
 
     private class Entry {
+
         final double accumulatedWeight;
         final T object;
 
@@ -37,7 +38,7 @@ public class WeightedRandomContainer<T> {
     public T getRandom() {
         final double r = ThreadLocalRandom.current().nextDouble() * accumulatedWeight;
 
-        for (Entry entry: entries) {
+        for (Entry entry : entries) {
             if (entry.accumulatedWeight >= r) {
                 return entry.object;
             }

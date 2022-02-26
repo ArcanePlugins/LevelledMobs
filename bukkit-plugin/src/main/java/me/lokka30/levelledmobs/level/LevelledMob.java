@@ -15,9 +15,7 @@ import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * This class makes it easier to access
- * aspects about a levelled mob, such
- * as what level they are.
+ * This class makes it easier to access aspects about a levelled mob, such as what level they are.
  *
  * @author lokka30
  * @since 4.0.0
@@ -25,8 +23,9 @@ import org.jetbrains.annotations.NotNull;
 public class LevelledMob {
 
     private final LivingEntity livingEntity;
+
     public LevelledMob(
-            final @NotNull LivingEntity livingEntity
+        final @NotNull LivingEntity livingEntity
     ) {
         this.livingEntity = livingEntity;
 
@@ -34,7 +33,9 @@ public class LevelledMob {
     }
 
     @NotNull
-    public LivingEntity getLivingEntity() { return livingEntity; }
+    public LivingEntity getLivingEntity() {
+        return livingEntity;
+    }
 
     /*
     TODO
@@ -43,18 +44,21 @@ public class LevelledMob {
 
     public synchronized int getLevel() {
         return livingEntity.getPersistentDataContainer().get(
-                LevelledMobs.getInstance().getLevelHandler().getLevelledNamespacedKeys().getLevelKey(),
-                PersistentDataType.INTEGER
+            LevelledMobs.getInstance().getLevelHandler().getLevelledNamespacedKeys().getLevelKey(),
+            PersistentDataType.INTEGER
         );
     }
 
     public synchronized void setLevel(final int newLevel) {
-        if(newLevel < 1) { removeLevel(); return; }
+        if (newLevel < 1) {
+            removeLevel();
+            return;
+        }
 
         getPDC().set(
-                LevelledMobs.getInstance().getLevelHandler().getLevelledNamespacedKeys().getLevelKey(),
-                PersistentDataType.INTEGER,
-                newLevel
+            LevelledMobs.getInstance().getLevelHandler().getLevelledNamespacedKeys().getLevelKey(),
+            PersistentDataType.INTEGER,
+            newLevel
         );
 
         /*
@@ -67,26 +71,28 @@ public class LevelledMob {
     }
 
     public synchronized void removeLevel() {
-        LevelledMobs.getInstance().getLevelHandler().getLevelledNamespacedKeys().getAllKeys().forEach(getPDC()::remove);
+        LevelledMobs.getInstance().getLevelHandler().getLevelledNamespacedKeys().getAllKeys()
+            .forEach(getPDC()::remove);
     }
 
     @NotNull
     public synchronized String getNametagFormat() {
         return getPDC().get(
-                LevelledMobs.getInstance().getLevelHandler().getLevelledNamespacedKeys().getNametagFormatKey(),
-                PersistentDataType.STRING
+            LevelledMobs.getInstance().getLevelHandler().getLevelledNamespacedKeys()
+                .getNametagFormatKey(),
+            PersistentDataType.STRING
         );
     }
 
     public synchronized static boolean isEntityLevelled(final @NotNull LivingEntity livingEntity) {
         return livingEntity.getPersistentDataContainer().has(
-                LevelledMobs.getInstance().getLevelHandler().getLevelledNamespacedKeys().getLevelKey(),
-                PersistentDataType.INTEGER
+            LevelledMobs.getInstance().getLevelHandler().getLevelledNamespacedKeys().getLevelKey(),
+            PersistentDataType.INTEGER
         );
     }
 
     @NotNull
-    public PersistentDataContainer getPDC(){
+    public PersistentDataContainer getPDC() {
         return this.livingEntity.getPersistentDataContainer();
     }
 }

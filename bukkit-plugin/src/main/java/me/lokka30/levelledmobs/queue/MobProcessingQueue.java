@@ -17,9 +17,8 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * @author lokka30, stumper66
- * @since 4.0.0
- * This Queue handles mob processing (after they spawn in, they get levelled).
  * @see Queue
+ * @since 4.0.0 This Queue handles mob processing (after they spawn in, they get levelled).
  */
 public class MobProcessingQueue implements Queue {
 
@@ -29,13 +28,17 @@ public class MobProcessingQueue implements Queue {
     public final ConcurrentLinkedQueue<EntitySpawnEvent> queue = new ConcurrentLinkedQueue<>();
 
     @Override
-    public String getName() { return getClass().getName(); }
+    public String getName() {
+        return getClass().getName();
+    }
 
     @Override
     public void start() {
         Utils.LOGGER.info("Starting queue '&b" + getName() + "&7'...");
 
-        if(isRunning) throw new UnsupportedOperationException("Queue is already running");
+        if (isRunning) {
+            throw new UnsupportedOperationException("Queue is already running");
+        }
 
         isRunning = true;
         isCancelled = false;
@@ -43,10 +46,12 @@ public class MobProcessingQueue implements Queue {
         new BukkitRunnable() {
             @Override
             public void run() {
-                while(!isCancelled) {
+                while (!isCancelled) {
                     final EntitySpawnEvent item = queue.poll();
 
-                    if(item == null) continue;
+                    if (item == null) {
+                        continue;
+                    }
 
                     //TODO process mob. old code:
                     // main.levelManager.entitySpawnListener.preprocessMob(item.lmEntity, item.event);
@@ -62,7 +67,9 @@ public class MobProcessingQueue implements Queue {
     public void stop() {
         Utils.LOGGER.info("Stopping queue '&b" + getName() + "&7'...");
 
-        if(!isRunning) throw new UnsupportedOperationException("Queue is not running");
+        if (!isRunning) {
+            throw new UnsupportedOperationException("Queue is not running");
+        }
 
         isCancelled = true;
         queue.clear();

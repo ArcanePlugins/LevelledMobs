@@ -13,10 +13,8 @@ import org.bukkit.Bukkit;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * A LevelledMobs integration.
- * Plugin:     WorldGuard
- * Author:     sk89q
- * Link:       https://dev.bukkit.org/projects/worldguard
+ * A LevelledMobs integration. Plugin:     WorldGuard Author:     sk89q Link:
+ * https://dev.bukkit.org/projects/worldguard
  *
  * @author lokka30
  * @since 4.0.0
@@ -31,7 +29,8 @@ public class WorldGuardIntegration implements Integration {
 
     @Override
     public boolean isInstalled() {
-        return Bukkit.getPluginManager().isPluginEnabled("WorldGuard") && Bukkit.getPluginManager().isPluginEnabled("WorldEdit");
+        return Bukkit.getPluginManager().isPluginEnabled("WorldGuard") && Bukkit.getPluginManager()
+            .isPluginEnabled("WorldEdit");
     }
 
     //TODO lokka30: Complete this class.

@@ -15,10 +15,8 @@ import org.bukkit.Bukkit;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * A LevelledMobs integration.
- * Plugin:     Infernal Mobs
- * Author:     Eliminator
- * Link:       https://www.spigotmc.org/resources/infernal-mobs.2156/
+ * A LevelledMobs integration. Plugin:     Infernal Mobs Author:     Eliminator Link:
+ * https://www.spigotmc.org/resources/infernal-mobs.2156/
  *
  * @author lokka30
  * @since 4.0.0
@@ -26,7 +24,8 @@ import org.jetbrains.annotations.NotNull;
 public class InfernalMobsIntegration implements Integration, MobOwner {
 
     @Override
-    public @NotNull String getName() {
+    public @NotNull
+    String getName() {
         return this.getClass().getName();
     }
 

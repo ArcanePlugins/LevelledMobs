@@ -18,20 +18,20 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * A LevelledMobs integration.
- * Plugin:     Dangerous Caves 2
- * Author:     imDaniX (v2 maintainer), OkDexter12 (v1 maintainer)
- * Link:       https://www.spigotmc.org/resources/dangerous-caves-2.76212/
+ * A LevelledMobs integration. Plugin:     Dangerous Caves 2 Author:     imDaniX (v2 maintainer),
+ * OkDexter12 (v1 maintainer) Link:       https://www.spigotmc.org/resources/dangerous-caves-2.76212/
  *
  * @author lokka30
  * @since 4.0.0
  */
 public class DangerousCavesIntegration implements Integration, MobOwner {
 
-    @Nullable private NamespacedKey mobTypeKey = null;
+    @Nullable
+    private NamespacedKey mobTypeKey = null;
 
     @Override
-    public @NotNull String getName() {
+    public @NotNull
+    String getName() {
         return this.getClass().getName();
     }
 
@@ -45,10 +45,10 @@ public class DangerousCavesIntegration implements Integration, MobOwner {
         assert isEnabled();
 
         // if the key is not set, set it
-        if(mobTypeKey == null) {
+        if (mobTypeKey == null) {
             mobTypeKey = new NamespacedKey(
-                    Bukkit.getPluginManager().getPlugin("DangerousCaves"),
-                    "mob-type"
+                Bukkit.getPluginManager().getPlugin("DangerousCaves"),
+                "mob-type"
             );
         }
 

@@ -17,10 +17,8 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * @author lokka30, stumper66
- * @since 4.0.0
- * This Queue contains nametags that will be sent
- * to various players.
  * @see Queue
+ * @since 4.0.0 This Queue contains nametags that will be sent to various players.
  */
 public class NametagProcessingQueue implements Queue {
 
@@ -30,13 +28,17 @@ public class NametagProcessingQueue implements Queue {
     public final ConcurrentLinkedQueue<NametagUpdateQueueItem> queue = new ConcurrentLinkedQueue<>();
 
     @Override
-    public String getName() { return getClass().getName(); }
+    public String getName() {
+        return getClass().getName();
+    }
 
     @Override
     public void start() {
         Utils.LOGGER.info("Starting queue '&b" + getName() + "&7'...");
 
-        if(isRunning) throw new UnsupportedOperationException("Queue is already running.");
+        if (isRunning) {
+            throw new UnsupportedOperationException("Queue is already running.");
+        }
 
         isRunning = true;
         isCancelled = false;
@@ -44,10 +46,12 @@ public class NametagProcessingQueue implements Queue {
         new BukkitRunnable() {
             @Override
             public void run() {
-                while(!isCancelled) {
+                while (!isCancelled) {
                     final NametagUpdateQueueItem item = queue.poll();
 
-                    if(item == null) continue;
+                    if (item == null) {
+                        continue;
+                    }
 
                     //TODO process nametag.
                 }
@@ -62,7 +66,9 @@ public class NametagProcessingQueue implements Queue {
     public void stop() {
         Utils.LOGGER.info("Stopping queue '&b" + getName() + "&7'...");
 
-        if(!isRunning) throw new UnsupportedOperationException("Queue is not running");
+        if (!isRunning) {
+            throw new UnsupportedOperationException("Queue is not running");
+        }
 
         isCancelled = true;
         queue.clear();
@@ -75,12 +81,10 @@ public class NametagProcessingQueue implements Queue {
 
     /**
      * @author lokka30
-     * @since 4.0.0
-     * Used to create objects contained within the queue,
-     * encompassing the entity that will present the nametag,
-     * and the text content of the nametag. The recipients of
-     * the nametag packet will be determined as the item is processed.
      * @see NametagProcessingQueue
+     * @since 4.0.0 Used to create objects contained within the queue, encompassing the entity that
+     * will present the nametag, and the text content of the nametag. The recipients of the nametag
+     * packet will be determined as the item is processed.
      */
     public static class NametagUpdateQueueItem {
 

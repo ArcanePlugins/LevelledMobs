@@ -24,6 +24,6 @@ public interface InternalFile {
 
     String getNameWithoutExtension();
 
-    String getRelativePath() ;
+    String getRelativePath();
 
 }

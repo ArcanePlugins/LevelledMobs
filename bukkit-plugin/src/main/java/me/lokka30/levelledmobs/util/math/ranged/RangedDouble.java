@@ -15,18 +15,19 @@ public record RangedDouble(double min, double max) implements RangedValue<Double
     public static RangedDouble parse(String val) {
         String[] split = val.split("-");
 
-        if(split.length == 1) {
+        if (split.length == 1) {
             // not ranged, only a single val is specified
             final double d = Double.parseDouble(split[0]);
             return new RangedDouble(d, d);
-        } else if(split.length == 2) {
+        } else if (split.length == 2) {
             // ranged, as two vals are specified
             return new RangedDouble(
-                    Double.parseDouble(split[0]),
-                    Double.parseDouble(split[1])
+                Double.parseDouble(split[0]),
+                Double.parseDouble(split[1])
             );
         } else {
-            throw new IllegalArgumentException("Incorrect RangedInt formatting for value '" + val + "'.");
+            throw new IllegalArgumentException(
+                "Incorrect RangedInt formatting for value '" + val + "'.");
         }
     }
 

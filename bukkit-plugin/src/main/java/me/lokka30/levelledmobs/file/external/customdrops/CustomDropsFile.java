@@ -26,18 +26,20 @@ public class CustomDropsFile implements YamlExternalVersionedFile {
     @Override
     public void load(boolean fromReload) {
         // replace if not exists
-        if(!exists()) { replace(); }
+        if (!exists()) {
+            replace();
+        }
 
         // load the data
-        if(fromReload) {
+        if (fromReload) {
             getData().forceReload();
         } else {
             data = LightningBuilder
-                    .fromFile(new File(getFullPath()))
-                    .setReloadSettings(ReloadSettings.MANUALLY)
-                    .setConfigSettings(ConfigSettings.PRESERVE_COMMENTS)
-                    .setDataType(DataType.SORTED)
-                    .createYaml();
+                .fromFile(new File(getFullPath()))
+                .setReloadSettings(ReloadSettings.MANUALLY)
+                .setConfigSettings(ConfigSettings.PRESERVE_COMMENTS)
+                .setDataType(DataType.SORTED)
+                .createYaml();
         }
 
         // run the migrator
@@ -61,7 +63,7 @@ public class CustomDropsFile implements YamlExternalVersionedFile {
 
     @Override
     public void migrate() {
-        switch(compareFileVersion()) {
+        switch (compareFileVersion()) {
             case CURRENT:
                 return;
             case FUTURE:
@@ -69,28 +71,36 @@ public class CustomDropsFile implements YamlExternalVersionedFile {
                 return;
             case OUTDATED:
                 boolean stop = false;
-                for(int i = getInstalledFileVersion(); i < getSupportedFileVersion(); i++) {
-                    if(stop) break;
-                    Utils.LOGGER.info("Attempting to migrate file '&b" + getName() + "&7' to version '&b" + i + "&7'...");
-                    if(i < 11) {
+                for (int i = getInstalledFileVersion(); i < getSupportedFileVersion(); i++) {
+                    if (stop) {
+                        break;
+                    }
+                    Utils.LOGGER.info(
+                        "Attempting to migrate file '&b" + getName() + "&7' to version '&b" + i
+                            + "&7'...");
+                    if (i < 11) {
                         // This file was present prior to LM 4 so we can't feasibly
                         // migrate versions other than the previous file version only.
-                        Utils.LOGGER.error("Your '&b" + getName() + "&7' file is too old to be migrated. " +
-                                "LevelledMobs will back this file up and instead load the default contents " +
+                        Utils.LOGGER.error(
+                            "Your '&b" + getName() + "&7' file is too old to be migrated. " +
+                                "LevelledMobs will back this file up and instead load the default contents "
+                                +
                                 "of the latest version one for you. You will need to manually modify the new file.");
                         backup();
                         replace();
                         stop = true;
                         break;
                     }
-                    switch(i) {
+                    switch (i) {
                         case 11:
                             break;
                         default:
                             // this is reached if there is no migration logic for a specific version.
 
-                            Utils.LOGGER.warning("Migration logic was not programmed for the file version " +
-                                    "'&b" + i + "&7' of the file '&b" + getName() + "&7'! Please inform the " +
+                            Utils.LOGGER.warning(
+                                "Migration logic was not programmed for the file version " +
+                                    "'&b" + i + "&7' of the file '&b" + getName()
+                                    + "&7'! Please inform the " +
                                     "LevelledMobs team.");
                             stop = true;
                             break;

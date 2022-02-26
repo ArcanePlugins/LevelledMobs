@@ -13,10 +13,8 @@ import org.bukkit.Bukkit;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * A LevelledMobs integration.
- * Plugin:     NBT API
- * Author:     tr7zw
- * Link:       https://www.spigotmc.org/resources/nbt-api.7939/
+ * A LevelledMobs integration. Plugin:     NBT API Author:     tr7zw Link:
+ * https://www.spigotmc.org/resources/nbt-api.7939/
  *
  * @author lokka30
  * @since 4.0.0

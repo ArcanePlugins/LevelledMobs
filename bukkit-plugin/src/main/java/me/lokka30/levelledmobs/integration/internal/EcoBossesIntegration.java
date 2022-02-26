@@ -18,20 +18,20 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * A LevelledMobs integration.
- * Plugin:     EcoBosses
- * Author:     Auxilor
- * Link:       https://www.spigotmc.org/resources/ecobosses.86576/
+ * A LevelledMobs integration. Plugin:     EcoBosses Author:     Auxilor Link:
+ * https://www.spigotmc.org/resources/ecobosses.86576/
  *
  * @author lokka30
  * @since 4.0.0
  */
 public class EcoBossesIntegration implements Integration, MobOwner {
 
-    @Nullable private NamespacedKey bossKey = null;
+    @Nullable
+    private NamespacedKey bossKey = null;
 
     @Override
-    public @NotNull String getName() {
+    public @NotNull
+    String getName() {
         return this.getClass().getName();
     }
 
@@ -45,10 +45,10 @@ public class EcoBossesIntegration implements Integration, MobOwner {
         assert isEnabled();
 
         // if the key is not set, set it
-        if(bossKey == null) {
+        if (bossKey == null) {
             bossKey = new NamespacedKey(
-                    Bukkit.getPluginManager().getPlugin("EcoBosses"),
-                    "boss"
+                Bukkit.getPluginManager().getPlugin("EcoBosses"),
+                "boss"
             );
         }
 

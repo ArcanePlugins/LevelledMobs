@@ -1,5 +1,6 @@
 ---
-name: Question about: If you have a general question, feel free to ask it using this template. title: 'Untitled' labels:
+name: Question about: If you have a general question, feel free to ask it using this template.
+title: 'Untitled' labels:
 question assignees: ''
 
 ---

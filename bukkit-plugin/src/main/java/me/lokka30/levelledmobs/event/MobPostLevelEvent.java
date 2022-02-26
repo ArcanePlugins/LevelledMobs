@@ -28,23 +28,35 @@ public class MobPostLevelEvent extends Event {
     }
 
     @NotNull
-    public static HandlerList getHandlerList() { return HANDLERS; }
+    public static HandlerList getHandlerList() {
+        return HANDLERS;
+    }
 
     private final LevelledMob levelledMob;
     private final int level;
     private final EnumSet<AdditionalLevelInformation> additionalLevelInformation;
 
     public MobPostLevelEvent(
-            final @NotNull LevelledMob levelledMob,
-            final int level,
-            final @NotNull EnumSet<AdditionalLevelInformation> additionalLevelInformation
+        final @NotNull LevelledMob levelledMob,
+        final int level,
+        final @NotNull EnumSet<AdditionalLevelInformation> additionalLevelInformation
     ) {
         this.levelledMob = levelledMob;
         this.level = level;
         this.additionalLevelInformation = additionalLevelInformation;
     }
 
-    public @NotNull LevelledMob getLevelledMob() { return levelledMob; }
-    public int getLevel() { return level; }
-    public @NotNull EnumSet<AdditionalLevelInformation> getAdditionalLevelInformation() { return additionalLevelInformation; }
+    public @NotNull
+    LevelledMob getLevelledMob() {
+        return levelledMob;
+    }
+
+    public int getLevel() {
+        return level;
+    }
+
+    public @NotNull
+    EnumSet<AdditionalLevelInformation> getAdditionalLevelInformation() {
+        return additionalLevelInformation;
+    }
 }

@@ -1,4 +1,5 @@
 # LevelledMobs
+
 The Ultimate RPG Mob Levelling Solution
 
 This README is work-in-progress.
@@ -61,5 +62,5 @@ GNU GPL v3.0
     
     See Copyright Act 1968 (Australia) for more information.
 
-An offline copy of this license notice is saved when LevelledMobs
-is ran on the server, located at `/plugins/LevelledMobs/misc/license.txt`.
+An offline copy of this license notice is saved when LevelledMobs is ran on the server, located
+at `/plugins/LevelledMobs/misc/license.txt`.

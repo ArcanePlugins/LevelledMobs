@@ -34,7 +34,7 @@ actions:
   #   When ran on an entity-based event, it will update the nametag of the
   #   entity involved in the event. This nametag packet will be sent to all
   #   players around the mob, in the same radius which was elaborated on above.
-  execute: ['update-nametag'] # LinkedList<String>
+  execute: [ 'update-nametag' ] # LinkedList<String>
 
   ##############################
   # SET/REMOVE PERSISTENT VALUES
@@ -52,8 +52,8 @@ actions:
   #  Do not use the semicolon character in the list! This is used internally to split
   #  and join the list from/to string form.
   #  Do not set too many permanent values on a mob as this can be costly in CPU performance.
-  set-persistent-values: ['awesome mob']
-  remove-peristent-values: ['not awesome mob']
+  set-persistent-values: [ 'awesome mob' ]
+  remove-peristent-values: [ 'not awesome mob' ]
 
   #############################
   # SET/REMOVE TEMPORARY VALUES
@@ -71,8 +71,8 @@ actions:
   #  Do not use the semicolon character in the list! This is used internally to split
   #  and join the list from/to string form.
   #  Do not set too many temporary values on a mob as this can be costly in CPU performance.
-  set-temporary-values: ['awesome mob']
-  remove-temporary-values: ['not awesome mob']
+  set-temporary-values: [ 'awesome mob' ]
+  remove-temporary-values: [ 'not awesome mob' ]
 
   ########################
   # USE CUSTOM DROP TABLES
@@ -85,7 +85,7 @@ actions:
   #  Overrides/sets the list of custom drops tables that the levelled mob should use.
   #  This is stored as a Persistent Data Container (PDC) value on the mob.
   #  When the mob dies, they will include these drop tables for its custom drops.
-  use-custom-drop-tables: ['zombies', 'cool beans']
+  use-custom-drop-tables: [ 'zombies', 'cool beans' ]
 
   ##############
   # SET NBT DATA

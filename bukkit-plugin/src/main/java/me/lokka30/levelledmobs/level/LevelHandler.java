@@ -11,8 +11,7 @@ package me.lokka30.levelledmobs.level;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * This class handles the management
- * of mob levels in the plugin.
+ * This class handles the management of mob levels in the plugin.
  *
  * @author lokka30
  * @since 4.0.0
@@ -20,7 +19,11 @@ import org.jetbrains.annotations.NotNull;
 public final class LevelHandler {
 
     private final LevelledNamespacedKeys levelledNamespacedKeys = new LevelledNamespacedKeys();
-    public @NotNull LevelledNamespacedKeys getLevelledNamespacedKeys() { return levelledNamespacedKeys; }
+
+    public @NotNull
+    LevelledNamespacedKeys getLevelledNamespacedKeys() {
+        return levelledNamespacedKeys;
+    }
 
     /*
     TODO

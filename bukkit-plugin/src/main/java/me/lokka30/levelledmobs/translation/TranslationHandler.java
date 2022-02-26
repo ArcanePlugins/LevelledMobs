@@ -15,9 +15,8 @@ import org.jetbrains.annotations.NotNull;
 
 /**
  * @author lokka30
- * @since 4.0.0
- * This class handles the text that LevelledMobs
- * allows administrators to translate through the
+ * @since 4.0.0 This class handles the text that LevelledMobs allows administrators to translate
+ * through the
  * <code>constants.yml</code> and <code>messages.yml</code> files.
  */
 public class TranslationHandler {
@@ -27,10 +26,11 @@ public class TranslationHandler {
         - Add javadoc comment.
      */
     public String getTranslatedEntityName(final @NotNull EntityType entityType) {
-        return LevelledMobs.getInstance().getFileHandler().getConstantsFile().getData().getOrDefault(
+        return LevelledMobs.getInstance().getFileHandler().getConstantsFile().getData()
+            .getOrDefault(
                 "entity-names." + entityType,
                 getDefaultEntityName(entityType)
-        );
+            );
     }
 
     /*
@@ -46,9 +46,10 @@ public class TranslationHandler {
         - Add javadoc comment.
      */
     public String getTranslatedInteger(final int i) {
-        return LevelledMobs.getInstance().getFileHandler().getConstantsFile().getData().getOrDefault(
+        return LevelledMobs.getInstance().getFileHandler().getConstantsFile().getData()
+            .getOrDefault(
                 "integers." + i,
                 Integer.toString(i)
-        );
+            );
     }
 }

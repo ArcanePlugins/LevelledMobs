@@ -17,36 +17,42 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Optional;
 
 public class NametagNMSHandler_1_17_R1 implements NametagNMSHandler {
-    public void sendNametag(final @NotNull LivingEntity livingEntity, @Nullable String nametag, @NotNull Player player, final boolean alwaysVisible) {
+
+    public void sendNametag(final @NotNull LivingEntity livingEntity, @Nullable String nametag,
+        @NotNull Player player, final boolean alwaysVisible) {
         final CraftLivingEntity cle = (CraftLivingEntity) livingEntity;
         final net.minecraft.world.entity.LivingEntity internalLivingEntity = cle.getHandle();
 
-        final SynchedEntityData entityData = cloneEntityData(internalLivingEntity.getEntityData(), internalLivingEntity);
+        final SynchedEntityData entityData = cloneEntityData(internalLivingEntity.getEntityData(),
+            internalLivingEntity);
         final EntityDataAccessor<Optional<Component>> customNameAccessor =
-                new EntityDataAccessor<>(2, EntityDataSerializers.OPTIONAL_COMPONENT);
+            new EntityDataAccessor<>(2, EntityDataSerializers.OPTIONAL_COMPONENT);
 
         final Optional<Component> customName = nametag == null || nametag.isEmpty()
-                ? Optional.empty()
-                : Optional.ofNullable(CraftChatMessage.fromString(nametag)[0]);
+            ? Optional.empty()
+            : Optional.ofNullable(CraftChatMessage.fromString(nametag)[0]);
 
         entityData.set(customNameAccessor, customName);
 
         final EntityDataAccessor<Boolean> customNameVisibleAccessor =
-                new EntityDataAccessor<>(3, EntityDataSerializers.BOOLEAN);
+            new EntityDataAccessor<>(3, EntityDataSerializers.BOOLEAN);
 
         entityData.set(customNameVisibleAccessor, nametag != null && alwaysVisible);
 
         final ClientboundSetEntityDataPacket packet = new ClientboundSetEntityDataPacket(
-                internalLivingEntity.getId(), entityData, true
+            internalLivingEntity.getId(), entityData, true
         );
 
         ((CraftPlayer) player).getHandle().connection.send(packet);
     }
 
     @NotNull
-    private static SynchedEntityData cloneEntityData(@NotNull final SynchedEntityData other, final Entity nmsEntity) {
+    private static SynchedEntityData cloneEntityData(@NotNull final SynchedEntityData other,
+        final Entity nmsEntity) {
         final SynchedEntityData entityData = new SynchedEntityData(nmsEntity);
-        if (other.getAll() == null) return entityData;
+        if (other.getAll() == null) {
+            return entityData;
+        }
 
         //noinspection rawtypes
         for (SynchedEntityData.DataItem dataItem : other.getAll()) {

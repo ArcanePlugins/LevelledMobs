@@ -7,41 +7,41 @@
   ~ license that can be found in the LICENSE.md file.
   -->
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xmlns="http://maven.apache.org/POM/4.0.0"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+  xmlns="http://maven.apache.org/POM/4.0.0"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
 
-    <groupId>me.lokka30</groupId>
-    <artifactId>LevelledMobs-Parent</artifactId>
-    <version>1</version>
-    <modules>
-        <module>core</module>
-        <module>bukkit-plugin</module>
-        <module>nms-v1_17_R1</module>
-        <module>nms-v1_18_R1</module>
-        <module>bukkit-api-lite</module>
-    </modules>
-    <packaging>pom</packaging>
+  <groupId>me.lokka30</groupId>
+  <artifactId>LevelledMobs-Parent</artifactId>
+  <version>1</version>
+  <modules>
+    <module>core</module>
+    <module>bukkit-plugin</module>
+    <module>nms-v1_17_R1</module>
+    <module>nms-v1_18_R1</module>
+    <module>bukkit-api-lite</module>
+  </modules>
+  <packaging>pom</packaging>
 
-    <name>LevelledMobs Parent</name>
+  <name>LevelledMobs Parent</name>
 
-    <properties>
-        <java.version>17</java.version>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
+  <properties>
+    <java.version>17</java.version>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
 
-    <build>
-        <defaultGoal>clean package</defaultGoal>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
-                <configuration>
-                    <source>17</source>
-                    <target>17</target>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
+  <build>
+    <defaultGoal>clean package</defaultGoal>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.8.1</version>
+        <configuration>
+          <source>17</source>
+          <target>17</target>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 </project>

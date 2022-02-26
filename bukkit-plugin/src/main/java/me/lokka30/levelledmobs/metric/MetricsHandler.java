@@ -13,9 +13,7 @@ import org.bstats.bukkit.Metrics;
 
 /**
  * @author lokka30
- * @since 4.0.0
- * This class handles the submission
- * of custom bStats metrics data.
+ * @since 4.0.0 This class handles the submission of custom bStats metrics data.
  */
 public class MetricsHandler {
 

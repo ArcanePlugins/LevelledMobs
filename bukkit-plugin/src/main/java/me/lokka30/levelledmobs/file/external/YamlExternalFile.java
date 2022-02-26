@@ -19,7 +19,8 @@ import java.nio.file.Files;
 
 public interface YamlExternalFile extends ExternalFile {
 
-    @NotNull Yaml getData();
+    @NotNull
+    Yaml getData();
 
     void migrate();
 
@@ -30,12 +31,13 @@ public interface YamlExternalFile extends ExternalFile {
 
     default void backup() {
         final File from = new File(getFullPath());
-        final File backupDirectory = new File(LevelledMobs.getInstance().getDataFolder() + File.separator + "backups");
+        final File backupDirectory = new File(
+            LevelledMobs.getInstance().getDataFolder() + File.separator + "backups");
         final File to = new File(
-                backupDirectory.getPath()
-                        + File.separator
-                        + System.nanoTime()
-                        + File.separator + getName()
+            backupDirectory.getPath()
+                + File.separator
+                + System.nanoTime()
+                + File.separator + getName()
         );
 
         try {

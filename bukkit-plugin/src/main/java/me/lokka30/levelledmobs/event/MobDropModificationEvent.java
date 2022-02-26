@@ -29,7 +29,9 @@ public class MobDropModificationEvent extends Event implements Cancellable {
     }
 
     @NotNull
-    public static HandlerList getHandlerList() { return HANDLERS; }
+    public static HandlerList getHandlerList() {
+        return HANDLERS;
+    }
 
     private boolean isCancelled = false;
 
@@ -48,16 +50,24 @@ public class MobDropModificationEvent extends Event implements Cancellable {
     private final List<ItemStack> newDrops;
 
     public MobDropModificationEvent(
-            final @NotNull LevelledMob levelledMob,
-            final @NotNull ImmutableList<ItemStack> previousDrops,
-            final @NotNull List<ItemStack> newDrops
+        final @NotNull LevelledMob levelledMob,
+        final @NotNull ImmutableList<ItemStack> previousDrops,
+        final @NotNull List<ItemStack> newDrops
     ) {
         this.levelledMob = levelledMob;
         this.previousDrops = previousDrops;
         this.newDrops = newDrops;
     }
 
-    public LevelledMob getLevelledMob() { return levelledMob; }
-    public ImmutableList<ItemStack> getPreviousDrops() { return previousDrops; }
-    public List<ItemStack> getNewDrops() { return newDrops; }
+    public LevelledMob getLevelledMob() {
+        return levelledMob;
+    }
+
+    public ImmutableList<ItemStack> getPreviousDrops() {
+        return previousDrops;
+    }
+
+    public List<ItemStack> getNewDrops() {
+        return newDrops;
+    }
 }

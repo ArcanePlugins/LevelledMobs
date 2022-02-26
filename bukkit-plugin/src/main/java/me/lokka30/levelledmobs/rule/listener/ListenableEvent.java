@@ -1,9 +1,8 @@
 package me.lokka30.levelledmobs.rule.listener;
 
 /**
- * This enum lists all of the 'listenable' events that LevelledMobs has.
- * A Listenable Event is a Bukkit event that LevelledMobs allows use of
- * in the Listeners part of the Rules System.
+ * This enum lists all of the 'listenable' events that LevelledMobs has. A Listenable Event is a
+ * Bukkit event that LevelledMobs allows use of in the Listeners part of the Rules System.
  *
  * @author lokka30
  * @version 1

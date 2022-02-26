@@ -51,48 +51,113 @@ public class FileHandler {
 
     /* External Files */
 
-    private final @NotNull CustomDropsFile customDropsFile;
-    public @NotNull CustomDropsFile getCustomDropsFile() { return customDropsFile; }
+    private final @NotNull
+    CustomDropsFile customDropsFile;
 
-    private final @NotNull GroupsFile groupsFile;
-    public @NotNull GroupsFile getGroupsFile() { return groupsFile; }
+    public @NotNull
+    CustomDropsFile getCustomDropsFile() {
+        return customDropsFile;
+    }
 
-    private final @NotNull ListenersFile listenersFile;
-    public @NotNull ListenersFile getListenersFile() { return listenersFile; }
+    private final @NotNull
+    GroupsFile groupsFile;
 
-    private final @NotNull LicenseFile licenseFile;
-    public @NotNull LicenseFile getLicenseFile() { return licenseFile; }
+    public @NotNull
+    GroupsFile getGroupsFile() {
+        return groupsFile;
+    }
 
-    private final @NotNull PresetsFile presetsFile;
-    public @NotNull PresetsFile getPresetsFile() { return presetsFile; }
+    private final @NotNull
+    ListenersFile listenersFile;
 
-    private final @NotNull ReadmeFile readmeFile;
-    public @NotNull ReadmeFile getReadmeFile() { return readmeFile; }
+    public @NotNull
+    ListenersFile getListenersFile() {
+        return listenersFile;
+    }
 
-    private final @NotNull SettingsFile settingsFile;
-    public @NotNull SettingsFile getSettingsFile() { return settingsFile; }
+    private final @NotNull
+    LicenseFile licenseFile;
 
-    private final @NotNull ConstantsFile constantsFile;
-    public @NotNull ConstantsFile getConstantsFile() { return constantsFile; }
+    public @NotNull
+    LicenseFile getLicenseFile() {
+        return licenseFile;
+    }
 
-    private final @NotNull MessagesFile messagesFile;
-    public @NotNull MessagesFile getMessagesFile() { return messagesFile; }
+    private final @NotNull
+    PresetsFile presetsFile;
+
+    public @NotNull
+    PresetsFile getPresetsFile() {
+        return presetsFile;
+    }
+
+    private final @NotNull
+    ReadmeFile readmeFile;
+
+    public @NotNull
+    ReadmeFile getReadmeFile() {
+        return readmeFile;
+    }
+
+    private final @NotNull
+    SettingsFile settingsFile;
+
+    public @NotNull
+    SettingsFile getSettingsFile() {
+        return settingsFile;
+    }
+
+    private final @NotNull
+    ConstantsFile constantsFile;
+
+    public @NotNull
+    ConstantsFile getConstantsFile() {
+        return constantsFile;
+    }
+
+    private final @NotNull
+    MessagesFile messagesFile;
+
+    public @NotNull
+    MessagesFile getMessagesFile() {
+        return messagesFile;
+    }
 
     /* Internal Files */
 
-    private final @NotNull PlayerHeadTexturesFile playerHeadTexturesFile;
-    public @NotNull PlayerHeadTexturesFile getPlayerHeadTexturesFile() { return playerHeadTexturesFile; }
+    private final @NotNull
+    PlayerHeadTexturesFile playerHeadTexturesFile;
 
-    private final @NotNull UnlevellablesFile unlevellablesFile;
-    public @NotNull UnlevellablesFile getUnlevellablesFile() { return unlevellablesFile; }
+    public @NotNull
+    PlayerHeadTexturesFile getPlayerHeadTexturesFile() {
+        return playerHeadTexturesFile;
+    }
+
+    private final @NotNull
+    UnlevellablesFile unlevellablesFile;
+
+    public @NotNull
+    UnlevellablesFile getUnlevellablesFile() {
+        return unlevellablesFile;
+    }
 
     /* Parsers */
 
-    private final @NotNull RuleParser ruleParser;
-    public @NotNull RuleParser getRuleParser() { return ruleParser; }
+    private final @NotNull
+    RuleParser ruleParser;
 
-    private final @NotNull CustomDropParser customDropParser;
-    public @NotNull CustomDropParser getCustomDropParser() { return customDropParser; }
+    public @NotNull
+    RuleParser getRuleParser() {
+        return ruleParser;
+    }
+
+    private final @NotNull
+    CustomDropParser customDropParser;
+
+    public @NotNull
+    CustomDropParser getCustomDropParser() {
+        return customDropParser;
+    }
 
     /* Methods */
 
@@ -104,18 +169,15 @@ public class FileHandler {
 
     /**
      * @author lokka30
-     * @since 4.0.0
-     * Load all internal files.
-     * Unnecessary to run on reload - improve performance by
-     * not running this method on reload. Thus it should only
-     * be ran on start-up (onEnable).
+     * @since 4.0.0 Load all internal files. Unnecessary to run on reload - improve performance by
+     * not running this method on reload. Thus it should only be ran on start-up (onEnable).
      */
     public void loadInternalFiles(final boolean fromReload) {
         Utils.LOGGER.info("Started loading internal files...");
 
         List.of(
-                playerHeadTexturesFile,
-                unlevellablesFile
+            playerHeadTexturesFile,
+            unlevellablesFile
         ).forEach(file -> file.load(fromReload));
 
         Utils.LOGGER.info("All internal files have been loaded.");
@@ -123,23 +185,21 @@ public class FileHandler {
 
     /**
      * @author lokka30
-     * @since 4.0.0
-     * (Re)load all external files.
-     * This must be called on start-up and also on reload.
+     * @since 4.0.0 (Re)load all external files. This must be called on start-up and also on reload.
      */
     public void loadExternalFiles(final boolean fromReload) {
         Utils.LOGGER.info("Started loading external files...");
 
         List.of(
-                customDropsFile,
-                groupsFile,
-                listenersFile,
-                licenseFile,
-                presetsFile,
-                readmeFile,
-                settingsFile,
-                constantsFile,
-                messagesFile
+            customDropsFile,
+            groupsFile,
+            listenersFile,
+            licenseFile,
+            presetsFile,
+            readmeFile,
+            settingsFile,
+            constantsFile,
+            messagesFile
         ).forEach(file -> file.load(fromReload));
 
         Utils.LOGGER.info("All external files have been loaded.");

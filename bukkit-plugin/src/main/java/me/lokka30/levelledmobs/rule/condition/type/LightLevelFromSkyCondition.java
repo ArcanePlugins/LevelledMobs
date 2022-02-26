@@ -8,13 +8,14 @@ import org.bukkit.entity.LivingEntity;
 import org.jetbrains.annotations.NotNull;
 
 public record LightLevelFromSkyCondition(
-        @NotNull Rule   parentRule,
-        int             min,
-        int             max,
-        boolean         inverse
+    @NotNull Rule parentRule,
+    int min,
+    int max,
+    boolean inverse
 ) implements RuleCondition {
 
-    @Override @NotNull
+    @Override
+    @NotNull
     public String id() {
         return DefaultRuleConditionType.LIGHT_LEVEL_FROM_SKY.id();
     }
@@ -25,19 +26,21 @@ public record LightLevelFromSkyCondition(
         return inverse != (lightLevel >= min && lightLevel <= max);
     }
 
-    @Override @NotNull
+    @Override
+    @NotNull
     public RuleCondition merge(@NotNull RuleCondition other) {
         return this; //TODO
     }
 
     @NotNull
-    public static LightLevelFromSkyCondition of(final @NotNull Rule parentRule, final @NotNull FlatFileSection section) {
+    public static LightLevelFromSkyCondition of(final @NotNull Rule parentRule,
+        final @NotNull FlatFileSection section) {
         //TODO
         return new LightLevelFromSkyCondition(
-                parentRule,
-                Integer.MIN_VALUE, //TODO
-                Integer.MAX_VALUE, //TODO
-                section.get(".inverse", false)
+            parentRule,
+            Integer.MIN_VALUE, //TODO
+            Integer.MAX_VALUE, //TODO
+            section.get(".inverse", false)
         );
     }
 }

@@ -1,6 +1,6 @@
 ---
-name: Bug report about: Let us know about any unintentional flaws in the resource title: 'Untitled' labels: bug,
-unconfirmed assignees: ''
+name: Bug report about: Let us know about any unintentional flaws in the resource title: 'Untitled'
+labels: bug, unconfirmed assignees: ''
 
 ---
 
@@ -8,6 +8,7 @@ unconfirmed assignees: ''
 A clear and concise description of what the bug is.
 
 **Steps to Reproduce**
+
 1. ...
 2. ...
 
@@ -27,7 +28,8 @@ e.g. Minecraft 1.16.5
 Please copy and paste the output of `/version LevelledMobs`.
 
 **Config files, if applicable**
-Please insert a link of each configuration file that may be applicable to the issue. Use [paste.gg](https://paste.gg/) please.
+Please insert a link of each configuration file that may be applicable to the issue.
+Use [paste.gg](https://paste.gg/) please.
 
 **Additional context**
 Add any other context about the problem here.

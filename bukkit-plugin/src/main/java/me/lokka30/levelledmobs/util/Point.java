@@ -16,17 +16,15 @@ import java.io.Serializable;
 /**
  * @author lokka30
  * @see Location
- * @since 3.1.2
- * A smaller version of the Location class only including
- * a world name, and three integers for the x, y and z.
- * Finds uses where the extra data and precision of the
- * Location class is unnecessary.
+ * @since 3.1.2 A smaller version of the Location class only including a world name, and three
+ * integers for the x, y and z. Finds uses where the extra data and precision of the Location class
+ * is unnecessary.
  */
 public record Point(
-        @NotNull String worldName,
-        int             x,
-        int             y,
-        int             z
+    @NotNull String worldName,
+    int x,
+    int y,
+    int z
 ) implements Serializable {
 
     /**
@@ -53,10 +51,10 @@ public record Point(
      */
     public static Point fromLocation(final @NotNull Location location) {
         return new Point(
-                location.getWorld().getName(),
-                location.getBlockX(),
-                location.getBlockY(),
-                location.getBlockZ()
+            location.getWorld().getName(),
+            location.getBlockX(),
+            location.getBlockY(),
+            location.getBlockZ()
         );
     }
 }

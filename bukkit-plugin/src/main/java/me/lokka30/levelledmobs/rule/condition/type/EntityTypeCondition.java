@@ -13,12 +13,13 @@ import org.jetbrains.annotations.NotNull;
 import java.util.EnumSet;
 
 public record EntityTypeCondition(
-        @NotNull Rule                   parentRule,
-        @NotNull ModalList<EntityType>  types,
-        boolean                         inverse
+    @NotNull Rule parentRule,
+    @NotNull ModalList<EntityType> types,
+    boolean inverse
 ) implements RuleCondition {
 
-    @Override @NotNull
+    @Override
+    @NotNull
     public String id() {
         return DefaultRuleConditionType.ENTITY_TYPE.id();
     }
@@ -28,7 +29,8 @@ public record EntityTypeCondition(
         return inverse() != types.contains(livingEntity.getType());
     }
 
-    @Override @NotNull
+    @Override
+    @NotNull
     public RuleCondition merge(@NotNull RuleCondition other) {
         /*
         if current condition's types list is empty
@@ -38,47 +40,53 @@ public record EntityTypeCondition(
     }
 
     @NotNull
-    public static EntityTypeCondition of(final @NotNull Rule parentRule, final @NotNull FlatFileSection section) {
+    public static EntityTypeCondition of(final @NotNull Rule parentRule,
+        final @NotNull FlatFileSection section) {
         final ModalList.ListMode listMode;
         final EnumSet<EntityType> contents;
 
-        if(section.contains(".inclusive-list")) {
+        if (section.contains(".inclusive-list")) {
             listMode = ModalList.ListMode.INCLUSIVE;
             contents = EnumSet.noneOf(EntityType.class);
-            for(String entityTypeStr : section.getStringList(".inclusive-list")) {
+            for (String entityTypeStr : section.getStringList(".inclusive-list")) {
                 final EntityType entityType;
                 try {
                     entityType = EntityType.valueOf(entityTypeStr);
-                } catch(IllegalArgumentException ex) {
-                    Utils.LOGGER.error("Invalid EntityType '&b" + entityTypeStr + "&7' specified in" +
-                            " condition located at '&b" + section.getPathPrefix() + "&7'! Fix this ASAP.");
+                } catch (IllegalArgumentException ex) {
+                    Utils.LOGGER.error(
+                        "Invalid EntityType '&b" + entityTypeStr + "&7' specified in" +
+                            " condition located at '&b" + section.getPathPrefix()
+                            + "&7'! Fix this ASAP.");
                     continue;
                 }
                 contents.add(entityType);
             }
-        } else if(section.contains(".exclusive-list")) {
+        } else if (section.contains(".exclusive-list")) {
             listMode = ModalList.ListMode.EXCLUSIVE;
             contents = EnumSet.noneOf(EntityType.class);
-            for(String entityTypeStr : section.getStringList(".exclusive-list")) {
+            for (String entityTypeStr : section.getStringList(".exclusive-list")) {
                 final EntityType entityType;
                 try {
                     entityType = EntityType.valueOf(entityTypeStr);
-                } catch(IllegalArgumentException ex) {
-                    Utils.LOGGER.error("Invalid EntityType '&b" + entityTypeStr + "&7' specified in" +
-                            " condition located at '&b" + section.getPathPrefix() + "&7'! Fix this ASAP.");
+                } catch (IllegalArgumentException ex) {
+                    Utils.LOGGER.error(
+                        "Invalid EntityType '&b" + entityTypeStr + "&7' specified in" +
+                            " condition located at '&b" + section.getPathPrefix()
+                            + "&7'! Fix this ASAP.");
                     continue;
                 }
                 contents.remove(entityType);
             }
         } else {
-            throw new IllegalArgumentException("EntityType condition does not have a valid modal list present at path" +
+            throw new IllegalArgumentException(
+                "EntityType condition does not have a valid modal list present at path" +
                     " '&b" + section.getPathPrefix() + "&7'! Fix this ASAP.");
         }
 
         return new EntityTypeCondition(
-                parentRule,
-                new ModalList<>(listMode, contents),
-                section.get(".inverse", false)
+            parentRule,
+            new ModalList<>(listMode, contents),
+            section.get(".inverse", false)
         );
     }
 }

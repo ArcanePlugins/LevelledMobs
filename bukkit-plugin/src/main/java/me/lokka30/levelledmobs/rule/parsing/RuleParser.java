@@ -39,25 +39,39 @@ import java.util.Optional;
 
 /**
  * @author lokka30
- * @since 4.0.0
- * This class parses rules from the Rules configuration
- * into Rule objects that are accessed by the plugin.
- * It also parses other components of the Rules system,
- * such as groups and presets.
+ * @since 4.0.0 This class parses rules from the Rules configuration into Rule objects that are
+ * accessed by the plugin. It also parses other components of the Rules system, such as groups and
+ * presets.
  */
 public class RuleParser {
 
     private final HashSet<Group<EntityType>> mobGroups = new HashSet<>();
-    public @NotNull HashSet<Group<EntityType>> getMobGroups() { return mobGroups; }
+
+    public @NotNull
+    HashSet<Group<EntityType>> getMobGroups() {
+        return mobGroups;
+    }
 
     private final HashSet<Group<Biome>> biomeGroups = new HashSet<>();
-    public @NotNull HashSet<Group<Biome>> getBiomeGroups() { return biomeGroups; }
+
+    public @NotNull
+    HashSet<Group<Biome>> getBiomeGroups() {
+        return biomeGroups;
+    }
 
     private final HashSet<RuleListener> ruleListeners = new HashSet<>();
-    public @NotNull HashSet<RuleListener> getRuleListeners() { return ruleListeners; }
+
+    public @NotNull
+    HashSet<RuleListener> getRuleListeners() {
+        return ruleListeners;
+    }
 
     private final HashSet<Rule> presets = new HashSet<>();
-    public @NotNull HashSet<Rule> getPresets() { return presets; }
+
+    public @NotNull
+    HashSet<Rule> getPresets() {
+        return presets;
+    }
 
     public void parse() {
         clearCache();
@@ -86,27 +100,30 @@ public class RuleParser {
 
     void addMobRuleGroups() {
         final Yaml data = LevelledMobs.getInstance().getFileHandler().getGroupsFile().getData();
-        for(
-                String mobGroupName : data.getSection("mob-groups").singleLayerKeySet()
+        for (
+            String mobGroupName : data.getSection("mob-groups").singleLayerKeySet()
         ) {
             EnumSet<EntityType> entityTypes = EnumSet.noneOf(EntityType.class);
 
-            for(
-                    String entityTypeStr : data.getStringList("mob-groups." + mobGroupName)
+            for (
+                String entityTypeStr : data.getStringList("mob-groups." + mobGroupName)
             ) {
                 EntityType entityType;
                 try {
                     entityType = EntityType.valueOf(entityTypeStr.toUpperCase(Locale.ROOT));
-                } catch(IllegalArgumentException ex) {
-                    Utils.LOGGER.error("Invalid entity type specified '&b" + entityTypeStr + "&7' in the mob " +
+                } catch (IllegalArgumentException ex) {
+                    Utils.LOGGER.error(
+                        "Invalid entity type specified '&b" + entityTypeStr + "&7' in the mob " +
                             "group named '&b" + mobGroupName + "&7'! Fix this ASAP.");
                     continue;
                 }
 
-                if(entityTypes.contains(entityType)) {
-                    Utils.LOGGER.error("Entity type '&b" + entityTypeStr.toUpperCase(Locale.ROOT) + "&7' has been listed " +
-                            "listed more than once in the mob group named '&b" + mobGroupName + "&7'! " +
-                            "Fix this ASAP.");
+                if (entityTypes.contains(entityType)) {
+                    Utils.LOGGER.error("Entity type '&b" + entityTypeStr.toUpperCase(Locale.ROOT)
+                        + "&7' has been listed " +
+                        "listed more than once in the mob group named '&b" + mobGroupName + "&7'! "
+                        +
+                        "Fix this ASAP.");
                     continue;
                 }
 
@@ -114,34 +131,37 @@ public class RuleParser {
             }
 
             getMobGroups().add(new Group<>(
-                    mobGroupName,
-                    entityTypes
+                mobGroupName,
+                entityTypes
             ));
         }
     }
 
     void addBiomeRuleGroups() {
         final Yaml data = LevelledMobs.getInstance().getFileHandler().getGroupsFile().getData();
-        for(
-                String biomeGroupName : data.getSection("biome-groups").singleLayerKeySet()
+        for (
+            String biomeGroupName : data.getSection("biome-groups").singleLayerKeySet()
         ) {
             EnumSet<Biome> biomes = EnumSet.noneOf(Biome.class);
 
-            for(
-                    String biomeStr : data.getStringList("biome-groups." + biomeGroupName)
+            for (
+                String biomeStr : data.getStringList("biome-groups." + biomeGroupName)
             ) {
                 Biome biome;
                 try {
                     biome = Biome.valueOf(biomeStr.toUpperCase(Locale.ROOT));
-                } catch(IllegalArgumentException ex) {
-                    Utils.LOGGER.error("Invalid biome specified '&b" + biomeStr + "&7' in the biome " +
+                } catch (IllegalArgumentException ex) {
+                    Utils.LOGGER.error(
+                        "Invalid biome specified '&b" + biomeStr + "&7' in the biome " +
                             "group named '&b" + biomeGroupName + "&7'! Fix this ASAP.");
                     continue;
                 }
 
-                if(biomes.contains(biome)) {
-                    Utils.LOGGER.error("Biome '&b" + biomeStr.toUpperCase(Locale.ROOT) + "&7' has been listed " +
-                            "listed more than once in the biome group named '&b" + biomeGroupName + "&7'! " +
+                if (biomes.contains(biome)) {
+                    Utils.LOGGER.error(
+                        "Biome '&b" + biomeStr.toUpperCase(Locale.ROOT) + "&7' has been listed " +
+                            "listed more than once in the biome group named '&b" + biomeGroupName
+                            + "&7'! " +
                             "Fix this ASAP.");
                     continue;
                 }
@@ -150,47 +170,50 @@ public class RuleParser {
             }
 
             getBiomeGroups().add(new Group<>(
-                    biomeGroupName,
-                    biomes
+                biomeGroupName,
+                biomes
             ));
         }
     }
 
     void addRulePresets() {
         LevelledMobs.getInstance().getFileHandler().getPresetsFile().getData()
-                .getSection("presets").singleLayerKeySet()
-                .forEach(presetId -> presets.add(parseRule(true, presetId, "presets." + presetId)));
+            .getSection("presets").singleLayerKeySet()
+            .forEach(presetId -> presets.add(parseRule(true, presetId, "presets." + presetId)));
     }
 
     @NotNull
     Rule parseRule(
-            boolean isPreset,
-            @NotNull final String identifier,
-            @NotNull final String path
+        boolean isPreset,
+        @NotNull final String identifier,
+        @NotNull final String path
     ) {
         final FileHandler fh = LevelledMobs.getInstance().getFileHandler();
-        final Yaml data = isPreset ? fh.getPresetsFile().getData() : fh.getListenersFile().getData();
+        final Yaml data =
+            isPreset ? fh.getPresetsFile().getData() : fh.getListenersFile().getData();
         final String ruleOrPreset = isPreset ? "preset" : "rule";
 
         // create base rule with no functionality
         final Rule rule = new Rule(
-                isPreset,
-                identifier,
-                Optional.ofNullable(data.getString(path + ".description")),
-                new HashSet<>(),
-                new HashSet<>(),
-                new HashSet<>(),
-                new HashSet<>()
+            isPreset,
+            identifier,
+            Optional.ofNullable(data.getString(path + ".description")),
+            new HashSet<>(),
+            new HashSet<>(),
+            new HashSet<>(),
+            new HashSet<>()
         );
 
         // parse presets
-        if(!isPreset) {
+        if (!isPreset) {
             data.getStringList(path + ".use-presets").forEach(presetId -> {
                 final Optional<Rule> presetInRule = presets.stream()
-                        .filter(preset -> preset.identifier().equals(presetId))
-                        .findFirst();
-                if(presetInRule.isPresent()) {
-                    Utils.LOGGER.error("Rule '&b" + identifier + "&7' wants to use preset '&b" + presetId + "&7', but that exact preset is not configured. Fix this ASAP.");
+                    .filter(preset -> preset.identifier().equals(presetId))
+                    .findFirst();
+                if (presetInRule.isPresent()) {
+                    Utils.LOGGER.error(
+                        "Rule '&b" + identifier + "&7' wants to use preset '&b" + presetId
+                            + "&7', but that exact preset is not configured. Fix this ASAP.");
                 } else {
                     rule.presets().add(presetInRule.get());
                 }
@@ -199,48 +222,54 @@ public class RuleParser {
 
         // parse conditions
         data.getSection(path + ".conditions").singleLayerKeySet().forEach(ruleConditionTypeStr -> {
-            final Optional<DefaultRuleConditionType> ruleConditionType = DefaultRuleConditionType.fromId(ruleConditionTypeStr);
+            final Optional<DefaultRuleConditionType> ruleConditionType = DefaultRuleConditionType.fromId(
+                ruleConditionTypeStr);
 
-            if(ruleConditionType.isPresent()) {
-                Utils.LOGGER.error("The " + ruleOrPreset + " '&b" + identifier + "&7' has an invalid condition" +
+            if (ruleConditionType.isPresent()) {
+                Utils.LOGGER.error(
+                    "The " + ruleOrPreset + " '&b" + identifier + "&7' has an invalid condition" +
                         " specified, named '&b" + ruleConditionTypeStr + "&7'. Fix this ASAP.");
             } else {
                 rule.conditions().add(processRuleCondition(
-                        rule,
-                        ruleConditionType.get(),
-                        data.getSection(path + ".conditions." + ruleConditionTypeStr)
+                    rule,
+                    ruleConditionType.get(),
+                    data.getSection(path + ".conditions." + ruleConditionTypeStr)
                 ));
             }
         });
 
         // parse actions
         data.getSection(path + ".actions").singleLayerKeySet().forEach(ruleActionTypeStr -> {
-            final Optional<DefaultRuleActionType> ruleActionType = DefaultRuleActionType.fromId(ruleActionTypeStr);
+            final Optional<DefaultRuleActionType> ruleActionType = DefaultRuleActionType.fromId(
+                ruleActionTypeStr);
 
-            if(ruleActionType.isPresent()) {
-                Utils.LOGGER.error("The " + ruleOrPreset + " '&b" + identifier + "&7' has an invalid action" +
+            if (ruleActionType.isPresent()) {
+                Utils.LOGGER.error(
+                    "The " + ruleOrPreset + " '&b" + identifier + "&7' has an invalid action" +
                         " specified, named '&b" + ruleActionTypeStr + "&7'. Fix this ASAP.");
             } else {
                 rule.actions().add(processRuleAction(
-                        rule,
-                        ruleActionType.get(),
-                        data.getSection(path + ".actions." + ruleActionTypeStr)
+                    rule,
+                    ruleActionType.get(),
+                    data.getSection(path + ".actions." + ruleActionTypeStr)
                 ));
             }
         });
 
         // parse options
         data.getSection(path + ".options").singleLayerKeySet().forEach(ruleOptionTypeStr -> {
-            final Optional<DefaultRuleOptionType> ruleOptionType = DefaultRuleOptionType.fromId(ruleOptionTypeStr);
+            final Optional<DefaultRuleOptionType> ruleOptionType = DefaultRuleOptionType.fromId(
+                ruleOptionTypeStr);
 
-            if(ruleOptionType.isPresent()) {
-                Utils.LOGGER.error("The " + ruleOrPreset + " '&b" + identifier + "&7' has an invalid option" +
+            if (ruleOptionType.isPresent()) {
+                Utils.LOGGER.error(
+                    "The " + ruleOrPreset + " '&b" + identifier + "&7' has an invalid option" +
                         " specified, named '&b" + ruleOptionTypeStr + "&7'. Fix this ASAP.");
             } else {
                 rule.options().add(processRuleOption(
-                        rule,
-                        ruleOptionType.get(),
-                        data.getSection(path + ".options." + ruleOptionTypeStr)
+                    rule,
+                    ruleOptionType.get(),
+                    data.getSection(path + ".options." + ruleOptionTypeStr)
                 ));
             }
         });
@@ -249,15 +278,16 @@ public class RuleParser {
         rule.presets().forEach(preset -> {
 
             // loop through conditions in preset
-            preset.conditions().forEach(presetCondition -> rule.conditions().forEach(ruleCondition -> {
-                if(presetCondition.id().equals(ruleCondition.id())) {
-                    ruleCondition.merge(presetCondition);
-                }
-            }));
+            preset.conditions()
+                .forEach(presetCondition -> rule.conditions().forEach(ruleCondition -> {
+                    if (presetCondition.id().equals(ruleCondition.id())) {
+                        ruleCondition.merge(presetCondition);
+                    }
+                }));
 
             // loop through actions in preset
             preset.actions().forEach(presetAction -> rule.actions().forEach(ruleAction -> {
-                if(presetAction.id().equals(ruleAction.id())) {
+                if (presetAction.id().equals(ruleAction.id())) {
                     ruleAction.merge(presetAction);
                 }
             }));
@@ -274,51 +304,63 @@ public class RuleParser {
 
     @NotNull
     RuleCondition processRuleCondition(
-            final @NotNull Rule parentRule,
-            final @NotNull DefaultRuleConditionType type,
-            final @NotNull FlatFileSection section
+        final @NotNull Rule parentRule,
+        final @NotNull DefaultRuleConditionType type,
+        final @NotNull FlatFileSection section
     ) {
-        switch(type) {
-            case ENTITY_TYPE: return EntityTypeCondition.of(parentRule, section);
-            case IS_LEVELLED: return IsLevelledCondition.of(parentRule, section);
-            case LIGHT_LEVEL_FROM_BLOCK: return LightLevelFromBlockCondition.of(parentRule, section);
-            case LIGHT_LEVEL_FROM_SKY: return LightLevelFromSkyCondition.of(parentRule, section);
-            default: throw new IllegalStateException(
+        switch (type) {
+            case ENTITY_TYPE:
+                return EntityTypeCondition.of(parentRule, section);
+            case IS_LEVELLED:
+                return IsLevelledCondition.of(parentRule, section);
+            case LIGHT_LEVEL_FROM_BLOCK:
+                return LightLevelFromBlockCondition.of(parentRule, section);
+            case LIGHT_LEVEL_FROM_SKY:
+                return LightLevelFromSkyCondition.of(parentRule, section);
+            default:
+                throw new IllegalStateException(
                     "Rule condition '&b" + type + "&7' does not have in-built processing logic!" +
-                            " If this is meant to be a valid rule condition, and it is not a typo, please inform LevelledMobs" +
-                            " developers. Otherwise, fix this ASAP."
-            );
+                        " If this is meant to be a valid rule condition, and it is not a typo, please inform LevelledMobs"
+                        +
+                        " developers. Otherwise, fix this ASAP."
+                );
         }
     }
 
     @NotNull
     RuleAction processRuleAction(
-            final @NotNull Rule parentRule,
-            final @NotNull DefaultRuleActionType type,
-            final @NotNull FlatFileSection section
+        final @NotNull Rule parentRule,
+        final @NotNull DefaultRuleActionType type,
+        final @NotNull FlatFileSection section
     ) {
-        switch(type) {
-            case EXECUTE: return ExecuteAction.of(parentRule, section);
-            default: throw new IllegalStateException(
+        switch (type) {
+            case EXECUTE:
+                return ExecuteAction.of(parentRule, section);
+            default:
+                throw new IllegalStateException(
                     "Rule action '&b" + type + "&7' does not have in-built processing logic!" +
-                            " If this is meant to be a valid rule action, and it is not a typo, please inform LevelledMobs" +
-                            " developers. Otherwise, fix this ASAP."
-            );
+                        " If this is meant to be a valid rule action, and it is not a typo, please inform LevelledMobs"
+                        +
+                        " developers. Otherwise, fix this ASAP."
+                );
         }
     }
 
     @NotNull
     RuleOption processRuleOption(
-            final @NotNull Rule parentRule,
-            final @NotNull DefaultRuleOptionType type,
-            final @NotNull FlatFileSection section
+        final @NotNull Rule parentRule,
+        final @NotNull DefaultRuleOptionType type,
+        final @NotNull FlatFileSection section
     ) {
-        switch(type) {
-            case TEMPORARY_DO_NOT_USE: return new TemporaryDoNotUseOption(parentRule);
-            default: throw new IllegalStateException(
+        switch (type) {
+            case TEMPORARY_DO_NOT_USE:
+                return new TemporaryDoNotUseOption(parentRule);
+            default:
+                throw new IllegalStateException(
                     "Rule option '&b" + type + "&7' does not have in-built processing logic!" +
-                            " If this is meant to be a valid rule option, and it is not a typo, please inform LevelledMobs" +
-                            " developers. Otherwise, fix this ASAP."
+                        " If this is meant to be a valid rule option, and it is not a typo, please inform LevelledMobs"
+                        +
+                        " developers. Otherwise, fix this ASAP."
                 );
         }
     }

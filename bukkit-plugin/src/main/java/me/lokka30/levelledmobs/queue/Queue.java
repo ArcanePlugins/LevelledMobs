@@ -10,41 +10,37 @@ package me.lokka30.levelledmobs.queue;
 
 /**
  * @author lokka30
- * @since 4.0.0
- * This interface acts as a template for all Queues
- * the plugin has. For example, MobProcessingQueue,
- * being one of the most important.
  * @see MobProcessingQueue
+ * @since 4.0.0 This interface acts as a template for all Queues the plugin has. For example,
+ * MobProcessingQueue, being one of the most important.
  */
 public interface Queue {
 
     /**
+     * @return the name of the Queue class (e.g. 'MobProcessingQueue')
      * @author lokka30
      * @since 4.0.0
-     * @return the name of the Queue class (e.g. 'MobProcessingQueue')
      */
     String getName();
 
     /**
-     * @author stumper66, lokka30
-     * @since 4.0.0
-     * Start the Queue.
      * @throws UnsupportedOperationException if it is already running.
+     * @author stumper66, lokka30
+     * @since 4.0.0 Start the Queue.
      */
     void start();
 
     /**
-     * @author stumper66, lokka30
-     * @since 4.0.0
-     * Stops the Queue.
      * @throws UnsupportedOperationException if it is already not running.
+     * @author stumper66, lokka30
+     * @since 4.0.0 Stops the Queue.
      */
     void stop();
 
     /**
+     * @param item adds this item to the Queue for processing.
      * @author stumper66, lokka30
      * @since 4.0.0
-     * @param item adds this item to the Queue for processing.
      */
     void addItem(Object item);
 

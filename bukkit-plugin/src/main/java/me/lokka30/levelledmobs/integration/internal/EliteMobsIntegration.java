@@ -15,10 +15,8 @@ import org.bukkit.Bukkit;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * A LevelledMobs integration.
- * Plugin:     EliteMobs
- * Author:     MagmaGuy
- * Link:       https://www.spigotmc.org/resources/elitemobs.40090/
+ * A LevelledMobs integration. Plugin:     EliteMobs Author:     MagmaGuy Link:
+ * https://www.spigotmc.org/resources/elitemobs.40090/
  *
  * @author lokka30
  * @since 4.0.0
@@ -26,7 +24,8 @@ import org.jetbrains.annotations.NotNull;
 public class EliteMobsIntegration implements Integration, MobOwner {
 
     @Override
-    public @NotNull String getName() {
+    public @NotNull
+    String getName() {
         return this.getClass().getName();
     }
 

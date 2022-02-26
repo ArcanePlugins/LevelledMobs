@@ -26,18 +26,20 @@ public class ConstantsFile implements YamlExternalVersionedFile {
     @Override
     public void load(boolean fromReload) {
         // replace if not exists
-        if(!exists()) { replace(); }
+        if (!exists()) {
+            replace();
+        }
 
         // load the data
-        if(fromReload) {
+        if (fromReload) {
             getData().forceReload();
         } else {
             data = LightningBuilder
-                    .fromFile(new File(getFullPath()))
-                    .setReloadSettings(ReloadSettings.MANUALLY)
-                    .setConfigSettings(ConfigSettings.PRESERVE_COMMENTS)
-                    .setDataType(DataType.SORTED)
-                    .createYaml();
+                .fromFile(new File(getFullPath()))
+                .setReloadSettings(ReloadSettings.MANUALLY)
+                .setConfigSettings(ConfigSettings.PRESERVE_COMMENTS)
+                .setDataType(DataType.SORTED)
+                .createYaml();
         }
 
         // run the migrator
@@ -61,7 +63,7 @@ public class ConstantsFile implements YamlExternalVersionedFile {
 
     @Override
     public void migrate() {
-        switch(compareFileVersion()) {
+        switch (compareFileVersion()) {
             case CURRENT:
                 return;
             case FUTURE:
@@ -69,16 +71,23 @@ public class ConstantsFile implements YamlExternalVersionedFile {
                 return;
             case OUTDATED:
                 boolean stop = false;
-                for(int i = getInstalledFileVersion(); i < getSupportedFileVersion(); i++) {
-                    if(stop) break;
-                    Utils.LOGGER.info("Attempting to migrate file '&b" + getName() + "&7' to version '&b" + i + "&7'...");
-                    switch(i) {
+                for (int i = getInstalledFileVersion(); i < getSupportedFileVersion(); i++) {
+                    if (stop) {
+                        break;
+                    }
+                    Utils.LOGGER.info(
+                        "Attempting to migrate file '&b" + getName() + "&7' to version '&b" + i
+                            + "&7'...");
+                    switch (i) {
                         case 1:
                             break;
                         default:
                             // this is reached if there is no migration logic for a specific version.
-                            Utils.LOGGER.warning("Migration logic was not programmed for the file version '&b" + i + "&7' " +
-                                    "of the file '&b" + getName() + "&7'! Please inform the LevelledMobs developers.");
+                            Utils.LOGGER.warning(
+                                "Migration logic was not programmed for the file version '&b" + i
+                                    + "&7' " +
+                                    "of the file '&b" + getName()
+                                    + "&7'! Please inform the LevelledMobs developers.");
                             stop = true;
                             break;
                     }

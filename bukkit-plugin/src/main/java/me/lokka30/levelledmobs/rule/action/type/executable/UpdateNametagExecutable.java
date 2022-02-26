@@ -8,17 +8,18 @@ import org.jetbrains.annotations.NotNull;
 import java.util.LinkedList;
 
 public record UpdateNametagExecutable(
-        @NotNull LinkedList<String> args // ignored on this Executable.
+    @NotNull LinkedList<String> args // ignored on this Executable.
 ) implements ExecuteAction.Executable {
 
-    @Override @NotNull
+    @Override
+    @NotNull
     public String id() {
         return ExecuteAction.DefaultExecutableType.UPDATE_NAMETAG.id();
     }
 
     @Override
     public void run(@NotNull LivingEntity livingEntity) {
-        if(livingEntity instanceof Player) {
+        if (livingEntity instanceof Player) {
             updateNametagsAroundPlayer((Player) livingEntity);
         } else {
             updateNametagForMob(livingEntity);

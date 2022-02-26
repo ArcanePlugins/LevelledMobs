@@ -15,21 +15,24 @@ import java.util.EnumSet;
 import java.util.Optional;
 
 public record CustomDrop(
-        // TODO unsure about having optionals here, need to re-think this out.
-        Optional<Material>          material, // Material can only be optional for the 'default' section's drop object.
-        Optional<Float>             chanceRequirement,
-        Optional<Float>             overallChanceRequirement,
-        Optional<Integer>           minLevelRequirement,
-        Optional<Integer>           maxLevelRequirement,
-        Optional<Integer>           amount,
-        Optional<Float>             equippedChance,
-        Optional<Integer>           customModelData,
-        Optional<EnumSet<ItemFlag>> itemFlags,
-        Optional<String>            nbtData,
-        Optional<Boolean>           removeVanillaDrops,
-        Optional<Boolean>           noMultiplier,
-        Optional<Boolean>           onlyDropItemsIfEquipped,
-        Optional<Integer>           groupId,
-        Optional<Integer>           maxDropGroup,
-        Optional<Integer>           priority
-) {}
+    // TODO unsure about having optionals here, need to re-think this out.
+    Optional<Material> material,
+    // Material can only be optional for the 'default' section's drop object.
+    Optional<Float> chanceRequirement,
+    Optional<Float> overallChanceRequirement,
+    Optional<Integer> minLevelRequirement,
+    Optional<Integer> maxLevelRequirement,
+    Optional<Integer> amount,
+    Optional<Float> equippedChance,
+    Optional<Integer> customModelData,
+    Optional<EnumSet<ItemFlag>> itemFlags,
+    Optional<String> nbtData,
+    Optional<Boolean> removeVanillaDrops,
+    Optional<Boolean> noMultiplier,
+    Optional<Boolean> onlyDropItemsIfEquipped,
+    Optional<Integer> groupId,
+    Optional<Integer> maxDropGroup,
+    Optional<Integer> priority
+) {
+
+}

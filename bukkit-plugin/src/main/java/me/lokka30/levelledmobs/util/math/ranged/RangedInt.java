@@ -15,18 +15,19 @@ public record RangedInt(int min, int max) implements RangedValue<Integer> {
     public static RangedInt parse(String val) {
         String[] split = val.split("-");
 
-        if(split.length == 1) {
+        if (split.length == 1) {
             // not ranged, only a single val is specified
             final int i = Integer.parseInt(split[0]);
             return new RangedInt(i, i);
-        } else if(split.length == 2) {
+        } else if (split.length == 2) {
             // ranged, as two vals are specified
             return new RangedInt(
-                    Integer.parseInt(split[0]),
-                    Integer.parseInt(split[1])
+                Integer.parseInt(split[0]),
+                Integer.parseInt(split[1])
             );
         } else {
-            throw new IllegalArgumentException("Incorrect RangedInt formatting for value '" + val + "'.");
+            throw new IllegalArgumentException(
+                "Incorrect RangedInt formatting for value '" + val + "'.");
         }
     }
 

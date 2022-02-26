@@ -15,10 +15,8 @@ import org.bukkit.Bukkit;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * A LevelledMobs integration.
- * Plugin:     MythicMobs
- * Author:     Xikage
- * Link:       https://www.spigotmc.org/resources/mythicmobs.5702
+ * A LevelledMobs integration. Plugin:     MythicMobs Author:     Xikage Link:
+ * https://www.spigotmc.org/resources/mythicmobs.5702
  *
  * @author lokka30
  * @since 4.0.0

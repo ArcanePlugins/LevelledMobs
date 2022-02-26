@@ -6,10 +6,11 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public interface NametagNMSHandler {
+
     void sendNametag(
-            final @NotNull LivingEntity livingEntity,
-            @Nullable String nametag,
-            @NotNull Player player,
-            final boolean alwaysVisible
+        final @NotNull LivingEntity livingEntity,
+        @Nullable String nametag,
+        @NotNull Player player,
+        final boolean alwaysVisible
     );
 }

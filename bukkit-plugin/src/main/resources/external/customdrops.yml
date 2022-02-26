@@ -16,7 +16,7 @@ defaults:
   amount: 1
   equipped-chance: 1.0
   custom-model-data: -1
-  item-flags: []
+  item-flags: [ ]
   nbt-data: ''
   remove-vanilla-drops: false
   no-multiplier: false
@@ -63,9 +63,9 @@ drop-tables:
   example_nether:
     nether-rocks:
       material: 'NETHERRACK'
-       requirements:
-        chance: 1.0
-        exclude-spawner-mobs: true
+        requirements:
+          chance: 1.0
+          exclude-spawner-mobs: true
       no-multiplier: true
       amount: 1
       group-id: 2

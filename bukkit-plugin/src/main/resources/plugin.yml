@@ -16,7 +16,7 @@ website: 'https://github.com/lokka30/LevelledMobs/'
 
 # Other info for plugin loader
 main: 'me.lokka30.levelledmobs.LevelledMobs'
-softdepend: [] #TODO
+softdepend: [ ] #TODO
 api-version: '1.17'
 load: 'STARTUP' # We want it to load before the worlds so all mobs are detected.
 

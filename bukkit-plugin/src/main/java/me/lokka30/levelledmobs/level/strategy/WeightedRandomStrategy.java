@@ -15,18 +15,16 @@ import me.lokka30.levelledmobs.util.math.ranged.RangedInt;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * This class generates a random level, although
- * the numbers generated are biased towards the
- * minimum or maximum value, depending on however
- * the administrator has configured this strategy
- * in their Rules configuration.
+ * This class generates a random level, although the numbers generated are biased towards the
+ * minimum or maximum value, depending on however the administrator has configured this strategy in
+ * their Rules configuration.
  *
  * @author lokka30
  * @see LevellingStrategy
  * @since 4.0.0
  */
 public record WeightedRandomStrategy(
-        @NotNull WeightedRandomContainer<RangedInt> weightedRandomContainer
+    @NotNull WeightedRandomContainer<RangedInt> weightedRandomContainer
 ) implements LevellingStrategy {
 
     @Override
@@ -38,7 +36,7 @@ public record WeightedRandomStrategy(
     @Override
     public int calculateLevel(@NotNull LevelledMobs main, @NotNull LevelledMob mob) {
         return weightedRandomContainer
-                .getRandom() // get a random element from the container
-                .generateRandom(); // get a random level from the RangedInt
+            .getRandom() // get a random element from the container
+            .generateRandom(); // get a random level from the RangedInt
     }
 }

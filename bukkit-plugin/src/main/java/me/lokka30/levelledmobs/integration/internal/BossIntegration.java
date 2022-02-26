@@ -15,10 +15,8 @@ import org.bukkit.Bukkit;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * A LevelledMobs integration.
- * Plugin:     Boss
- * Author:     kangarko
- * Link:       https://www.spigotmc.org/threads/boss.271104/
+ * A LevelledMobs integration. Plugin:     Boss Author:     kangarko Link:
+ * https://www.spigotmc.org/threads/boss.271104/
  *
  * @author lokka30
  * @since 4.0.0
@@ -26,7 +24,8 @@ import org.jetbrains.annotations.NotNull;
 public class BossIntegration implements Integration, MobOwner {
 
     @Override
-    public @NotNull String getName() {
+    public @NotNull
+    String getName() {
         return this.getClass().getName();
     }
 

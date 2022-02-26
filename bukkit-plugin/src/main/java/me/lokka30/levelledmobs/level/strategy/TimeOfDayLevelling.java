@@ -6,10 +6,12 @@ import me.lokka30.levelledmobs.util.math.ranged.RangedInt;
 import org.jetbrains.annotations.NotNull;
 
 public record TimeOfDayLevelling(
-        @NotNull RangedInt timeOfDay
-) implements LevellingStrategy{
+    @NotNull RangedInt timeOfDay
+) implements LevellingStrategy {
+
     @Override
-    public @NotNull String getName() {
+    public @NotNull
+    String getName() {
         return "TimeOfDay";
     }
 

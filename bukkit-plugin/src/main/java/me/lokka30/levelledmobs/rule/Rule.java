@@ -17,22 +17,23 @@ import java.util.HashSet;
 import java.util.Optional;
 
 public record Rule(
-        boolean                         isPreset,
-        @NotNull String                 identifier,
-        @NotNull Optional<String>       description,
-        @NotNull HashSet<RuleCondition> conditions,
-        @NotNull HashSet<RuleAction>    actions,
-        @NotNull HashSet<RuleOption>    options,
-        @NotNull HashSet<Rule>          presets // Note: Preset rules can't have sub-presets!
+    boolean isPreset,
+    @NotNull String identifier,
+    @NotNull Optional<String> description,
+    @NotNull HashSet<RuleCondition> conditions,
+    @NotNull HashSet<RuleAction> actions,
+    @NotNull HashSet<RuleOption> options,
+    @NotNull HashSet<Rule> presets // Note: Preset rules can't have sub-presets!
 ) implements RuleEntry {
 
     // The otherRule has lower priority.
     @NotNull
     public Rule merge(final @NotNull Rule otherRule) {
         // merge conditions
-        for(RuleCondition otherCondition : otherRule.conditions()) {
-            final Optional<RuleCondition> existingCondition = conditions().stream().filter(val -> val.id() == otherCondition.id()).findFirst();
-            if(existingCondition.isPresent()) {
+        for (RuleCondition otherCondition : otherRule.conditions()) {
+            final Optional<RuleCondition> existingCondition = conditions().stream()
+                .filter(val -> val.id() == otherCondition.id()).findFirst();
+            if (existingCondition.isPresent()) {
                 existingCondition.get().merge(otherCondition);
             } else {
                 conditions().add(otherCondition);
@@ -40,9 +41,10 @@ public record Rule(
         }
 
         // merge actions
-        for(RuleAction otherAction : otherRule.actions()) {
-            final Optional<RuleAction> existingAction = actions().stream().filter(val -> val.id() == otherAction.id()).findFirst();
-            if(existingAction.isPresent()) {
+        for (RuleAction otherAction : otherRule.actions()) {
+            final Optional<RuleAction> existingAction = actions().stream()
+                .filter(val -> val.id() == otherAction.id()).findFirst();
+            if (existingAction.isPresent()) {
                 existingAction.get().merge(otherAction);
             } else {
                 actions().add(otherAction);
@@ -50,9 +52,10 @@ public record Rule(
         }
 
         // merge options
-        for(RuleOption otherOption : otherRule.options()) {
-            final Optional<RuleOption> existingOption = options().stream().filter(val -> val.type() == otherOption.type()).findFirst();
-            if(existingOption.isPresent()) {
+        for (RuleOption otherOption : otherRule.options()) {
+            final Optional<RuleOption> existingOption = options().stream()
+                .filter(val -> val.type() == otherOption.type()).findFirst();
+            if (existingOption.isPresent()) {
                 existingOption.get().merge(otherOption);
             } else {
                 options().add(otherOption);
@@ -60,10 +63,11 @@ public record Rule(
         }
 
         // merge presets
-        if(!isPreset()) {
-            for(Rule otherPreset : otherRule.presets()) {
-                final Optional<Rule> existingPreset = presets().stream().filter(val -> val.identifier().equals(otherPreset.identifier())).findFirst();
-                if(existingPreset.isEmpty()) {
+        if (!isPreset()) {
+            for (Rule otherPreset : otherRule.presets()) {
+                final Optional<Rule> existingPreset = presets().stream()
+                    .filter(val -> val.identifier().equals(otherPreset.identifier())).findFirst();
+                if (existingPreset.isEmpty()) {
                     presets().add(otherPreset);
                 }
             }

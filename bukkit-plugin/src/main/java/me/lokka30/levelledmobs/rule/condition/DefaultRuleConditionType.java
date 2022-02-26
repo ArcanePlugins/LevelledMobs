@@ -13,17 +13,20 @@ public enum DefaultRuleConditionType {
     LIGHT_LEVEL_FROM_SKY("light-level-from-sky");
 
     private final String id;
+
     DefaultRuleConditionType(final @NotNull String id) {
         this.id = id;
     }
 
     @NotNull
-    public String id() { return id; }
+    public String id() {
+        return id;
+    }
 
     @NotNull
     public static Optional<DefaultRuleConditionType> fromId(final @NotNull String id) {
         return Arrays.stream(values())
-                .filter(type -> type.id().equals(id))
-                .findFirst();
+            .filter(type -> type.id().equals(id))
+            .findFirst();
     }
 }

@@ -13,10 +13,8 @@ import org.bukkit.Bukkit;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * A LevelledMobs integration.
- * Plugin:     PlaceholderAPI
- * Author:     clip
- * Link:       https://www.spigotmc.org/resources/placeholderapi.6245/
+ * A LevelledMobs integration. Plugin:     PlaceholderAPI Author:     clip Link:
+ * https://www.spigotmc.org/resources/placeholderapi.6245/
  *
  * @author lokka30
  * @since 4.0.0

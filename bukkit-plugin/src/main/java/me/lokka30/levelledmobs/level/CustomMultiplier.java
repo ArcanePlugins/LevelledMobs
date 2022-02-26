@@ -9,12 +9,9 @@
 package me.lokka30.levelledmobs.level;
 
 /**
- * All utilized non-vanilla 'attribute-like' multipliables
- * are listed here.
- * Note that these are not actually 'attributes'
- * applied to mobs, these are instead stored as NBT
- * data on the mob and utilized whenever they are
- * required e.g. on the entity's death.
+ * All utilized non-vanilla 'attribute-like' multipliables are listed here. Note that these are not
+ * actually 'attributes' applied to mobs, these are instead stored as NBT data on the mob and
+ * utilized whenever they are required e.g. on the entity's death.
  *
  * @author lokka30
  * @see LevelledNamespacedKeys
@@ -24,24 +21,23 @@ package me.lokka30.levelledmobs.level;
 public enum CustomMultiplier {
 
     /**
-     * The ranged attack damage multiplier the Entity has.
-     * (e.g. Skeleton arrows)
+     * The ranged attack damage multiplier the Entity has. (e.g. Skeleton arrows)
      *
      * @since 4.0.0
      */
     RANGED_ATTACK_DAMAGE,
 
     /**
-     * The item drop multiplier the Entity has.
-     * (The Entity's item drops will be multiplied upon its death)
+     * The item drop multiplier the Entity has. (The Entity's item drops will be multiplied upon its
+     * death)
      *
      * @since 4.0.0
      */
     ITEM_DROP,
 
     /**
-     * The experience drop multiplier the Entity has.
-     * (The Entity's XP drops will be multiplied upon its death)
+     * The experience drop multiplier the Entity has. (The Entity's XP drops will be multiplied upon
+     * its death)
      *
      * @since 4.0.0
      */

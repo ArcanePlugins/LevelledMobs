@@ -31,54 +31,93 @@ import java.util.Set;
 
 /**
  * @author lokka30
- * @since 4.0.0
- * Main class of the plugin. Acts as a 'hub' of sorts in the plugin's code.
+ * @since 4.0.0 Main class of the plugin. Acts as a 'hub' of sorts in the plugin's code.
  */
 public final class LevelledMobs extends JavaPlugin {
 
     private static LevelledMobs instance;
-    public static LevelledMobs getInstance() { return instance; }
+
+    public static LevelledMobs getInstance() {
+        return instance;
+    }
 
     private final QueueHandler queueHandler = new QueueHandler();
-    public @NotNull QueueHandler getQueueHandler() { return queueHandler; }
+
+    public @NotNull
+    QueueHandler getQueueHandler() {
+        return queueHandler;
+    }
 
     private final TranslationHandler translationHandler = new TranslationHandler();
-    public @NotNull TranslationHandler getTranslationHandler() { return translationHandler; }
+
+    public @NotNull
+    TranslationHandler getTranslationHandler() {
+        return translationHandler;
+    }
 
     private final NametagHandler nametagHandler = new NametagHandler();
-    public @NotNull NametagHandler getNametagHandler() { return nametagHandler; }
+
+    public @NotNull
+    NametagHandler getNametagHandler() {
+        return nametagHandler;
+    }
 
     private final MetricsHandler metricsHandler = new MetricsHandler();
-    public @NotNull MetricsHandler getMetricsHandler() { return metricsHandler; }
+
+    public @NotNull
+    MetricsHandler getMetricsHandler() {
+        return metricsHandler;
+    }
 
     private final LevelHandler levelHandler = new LevelHandler();
-    public @NotNull LevelHandler getLevelHandler() { return levelHandler; }
+
+    public @NotNull
+    LevelHandler getLevelHandler() {
+        return levelHandler;
+    }
 
     private final IntegrationHandler integrationHandler = new IntegrationHandler();
-    public @NotNull IntegrationHandler getIntegrationHandler() { return integrationHandler; }
+
+    public @NotNull
+    IntegrationHandler getIntegrationHandler() {
+        return integrationHandler;
+    }
 
     private final DebugHandler debugHandler = new DebugHandler();
-    public @NotNull DebugHandler getDebugHandler() { return debugHandler; }
+
+    public @NotNull
+    DebugHandler getDebugHandler() {
+        return debugHandler;
+    }
 
     private final CustomDropHandler customDropHandler = new CustomDropHandler();
-    public @NotNull CustomDropHandler getCustomDropHandler() { return customDropHandler; }
+
+    public @NotNull
+    CustomDropHandler getCustomDropHandler() {
+        return customDropHandler;
+    }
 
     private final FileHandler fileHandler = new FileHandler();
-    public @NotNull FileHandler getFileHandler() { return fileHandler; }
+
+    public @NotNull
+    FileHandler getFileHandler() {
+        return fileHandler;
+    }
 
     private final NMSHandler nmsHandler = new NMSHandler();
-    public @NotNull NMSHandler getNMSHandler() { return nmsHandler; }
+
+    public @NotNull
+    NMSHandler getNMSHandler() {
+        return nmsHandler;
+    }
 
     /* Start-up & shut-down methods */
 
     /**
      * @author lokka30
-     * @since 4.0.0
-     * Called by Bukkit's plugin manager
-     * in the 'loading' stage of the server.
-     * This runs before 'onEnable', so any
-     * important things to get done before
-     * 'onEnable' must be added here.
+     * @since 4.0.0 Called by Bukkit's plugin manager in the 'loading' stage of the server. This
+     * runs before 'onEnable', so any important things to get done before 'onEnable' must be added
+     * here.
      */
     @Override
     public void onLoad() {
@@ -89,20 +128,16 @@ public final class LevelledMobs extends JavaPlugin {
 
         //TODO lokka30: Complete this method's body.
 
-        Utils.LOGGER.info("&f~ Initialization sequence complete, took &b" + timer.getTimer() + "ms&f ~");
+        Utils.LOGGER.info(
+            "&f~ Initialization sequence complete, took &b" + timer.getTimer() + "ms&f ~");
     }
 
     /**
      * @author lokka30
-     * @since 4.0.0
-     * Called by Bukkit's plugin manager
-     * when it enables the plugin.
-     * Ensure reloads are factored in to
-     * any code ran inside this method.
-     * Warning: Methods are ordered on purpose,
-     * as some code requires other code to be
-     * ran first (e.g. listeners require configs
-     * to be loaded first).
+     * @since 4.0.0 Called by Bukkit's plugin manager when it enables the plugin. Ensure reloads are
+     * factored in to any code ran inside this method. Warning: Methods are ordered on purpose, as
+     * some code requires other code to be ran first (e.g. listeners require configs to be loaded
+     * first).
      */
     @Override
     public void onEnable() {
@@ -125,11 +160,8 @@ public final class LevelledMobs extends JavaPlugin {
 
     /**
      * @author lokka30
-     * @since 4.0.0
-     * Called by Bukkit's plugin manager
-     * when it enables the plugin.
-     * Ensure reloads are factored in to
-     * any code ran inside this method.
+     * @since 4.0.0 Called by Bukkit's plugin manager when it enables the plugin. Ensure reloads are
+     * factored in to any code ran inside this method.
      */
     @Override
     public void onDisable() {
@@ -149,36 +181,35 @@ public final class LevelledMobs extends JavaPlugin {
 
     /**
      * @author lokka30
-     * @since 4.0.0
-     * Registers ALL of LevelledMobs' listener classes through Bukkit's plugin manager.
-     * Only to be ran from onEnable, do not use elsewhere.
-     * The HashSet of Listeners must be updated manually if a new Listener is added to LM.
      * @see me.lokka30.levelledmobs.listener
      * @see org.bukkit.plugin.PluginManager#registerEvents(Listener, Plugin)
+     * @since 4.0.0 Registers ALL of LevelledMobs' listener classes through Bukkit's plugin manager.
+     * Only to be ran from onEnable, do not use elsewhere. The HashSet of Listeners must be updated
+     * manually if a new Listener is added to LM.
      */
     private void loadListeners() {
         Utils.LOGGER.info("Loading listeners...");
 
         // Retain alphabetical order when modifying this list! :)
         Set.of(
-                new BlockPlaceListener(),
-                new ChunkLoadListener(),
-                new EntityCombustListener(),
-                new EntityDamageByEntityListener(),
-                new EntityDamageListener(),
-                new EntityDeathListener(),
-                new EntityRegainHealthListener(),
-                new EntitySpawnListener(),
-                new EntityTameListener(),
-                new EntityTargetListener(),
-                new EntityTransformListener(),
-                new PlayerChangedWorldListener(),
-                new PlayerDeathListener(),
-                new PlayerInteractEntityListener(),
-                new PlayerInteractListener(),
-                new PlayerJoinListener(),
-                new PlayerQuitListener(),
-                new PlayerTeleportListener()
+            new BlockPlaceListener(),
+            new ChunkLoadListener(),
+            new EntityCombustListener(),
+            new EntityDamageByEntityListener(),
+            new EntityDamageListener(),
+            new EntityDeathListener(),
+            new EntityRegainHealthListener(),
+            new EntitySpawnListener(),
+            new EntityTameListener(),
+            new EntityTargetListener(),
+            new EntityTransformListener(),
+            new PlayerChangedWorldListener(),
+            new PlayerDeathListener(),
+            new PlayerInteractEntityListener(),
+            new PlayerInteractListener(),
+            new PlayerJoinListener(),
+            new PlayerQuitListener(),
+            new PlayerTeleportListener()
         ).forEach(listener -> Bukkit.getPluginManager().registerEvents(listener, this));
     }
 }

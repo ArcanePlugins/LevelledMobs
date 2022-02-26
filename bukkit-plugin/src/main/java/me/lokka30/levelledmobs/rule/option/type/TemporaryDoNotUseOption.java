@@ -6,15 +6,17 @@ import me.lokka30.levelledmobs.rule.option.RuleOption;
 import org.jetbrains.annotations.NotNull;
 
 public record TemporaryDoNotUseOption(
-        @NotNull Rule parentRule
+    @NotNull Rule parentRule
 ) implements RuleOption {
 
-    @Override @NotNull
+    @Override
+    @NotNull
     public DefaultRuleOptionType type() {
         return DefaultRuleOptionType.TEMPORARY_DO_NOT_USE;
     }
 
-    @Override @NotNull
+    @Override
+    @NotNull
     public RuleOption merge(@NotNull RuleOption other) {
         return other;
     }

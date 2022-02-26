@@ -15,10 +15,8 @@ import org.bukkit.Bukkit;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * A LevelledMobs integration.
- * Plugin:     Shopkeepers
- * Author:     blablubbabc
- * Link:       https://www.spigotmc.org/resources/shopkeepers.80756/
+ * A LevelledMobs integration. Plugin:     Shopkeepers Author:     blablubbabc Link:
+ * https://www.spigotmc.org/resources/shopkeepers.80756/
  *
  * @author lokka30
  * @since 4.0.0

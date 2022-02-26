@@ -19,14 +19,16 @@ public final class DebugHandler {
 
     public void load() {
         for (
-                String debugCategoryStr : LevelledMobs.getInstance().getFileHandler().getSettingsFile().getData()
-                .getOrDefault("debug-categories", new ArrayList<String>())
+            String debugCategoryStr : LevelledMobs.getInstance().getFileHandler().getSettingsFile()
+            .getData()
+            .getOrDefault("debug-categories", new ArrayList<String>())
         ) {
             final DebugCategory debugCategory;
             try {
                 debugCategory = DebugCategory.valueOf(debugCategoryStr);
-            } catch(IllegalArgumentException ex) {
-                Utils.LOGGER.error("An invalid debug category was speciied in settings.yml - '&b" + debugCategoryStr + "&7' - please fix this.");
+            } catch (IllegalArgumentException ex) {
+                Utils.LOGGER.error("An invalid debug category was speciied in settings.yml - '&b"
+                    + debugCategoryStr + "&7' - please fix this.");
                 continue;
             }
 
@@ -34,13 +36,18 @@ public final class DebugHandler {
         }
     }
 
-    private final EnumSet<DebugCategory> enabledDebugCategories = EnumSet.noneOf(DebugCategory.class);
-    public @NotNull EnumSet<DebugCategory> getEnabledDebugCategories() { return enabledDebugCategories; }
+    private final EnumSet<DebugCategory> enabledDebugCategories = EnumSet.noneOf(
+        DebugCategory.class);
+
+    public @NotNull
+    EnumSet<DebugCategory> getEnabledDebugCategories() {
+        return enabledDebugCategories;
+    }
 
     /**
      * @param category category that is being checked
-     * @return if the category is enabled or not
-     * Check if a debug category is enabled or not by the configuration.
+     * @return if the category is enabled or not Check if a debug category is enabled or not by the
+     * configuration.
      * @author lokka30
      * @since 4.0.0
      */

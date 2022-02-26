@@ -13,18 +13,15 @@ import org.apache.commons.lang.WordUtils;
 
 /**
  * @author lokka30
- * @since 4.0.0
- * This class contains a bunch of public static methods
- * used across multiple LevelledMobs classes, centralising
- * it so it doesn't have to be repeated, making it easier to
+ * @since 4.0.0 This class contains a bunch of public static methods used across multiple
+ * LevelledMobs classes, centralising it so it doesn't have to be repeated, making it easier to
  * update the methods since they are in one location.
  */
 public final class Utils {
 
     /**
-     * @since 2.0.0
-     * This contains an instance of MicroLogger, used
-     * across the plugin to log things to the console.
+     * @since 2.0.0 This contains an instance of MicroLogger, used across the plugin to log things
+     * to the console.
      */
     public static final MicroLogger LOGGER = new MicroLogger("&b&lLevelledMobs: &7");
 
