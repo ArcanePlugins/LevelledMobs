@@ -26,10 +26,10 @@ public enum NametagPlaceholder {
         switch (this) {
             case ENTITY_NAME:
                 return LevelledMobs.getInstance()
-                    .getTranslationHandler()
-                    .getTranslatedEntityName(levelledMob.getLivingEntity().getType());
+                    .translationHandler
+                    .getTranslatedEntityName(levelledMob.livingEntity.getType());
             case ENTITY_TYPE:
-                return levelledMob.getLivingEntity().getType().toString();
+                return levelledMob.livingEntity.getType().toString();
             default:
                 throw new IllegalStateException();
         }

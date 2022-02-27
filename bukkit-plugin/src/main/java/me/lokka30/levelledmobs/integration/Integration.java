@@ -44,9 +44,7 @@ public interface Integration {
      * @since 4.0.0
      */
     default boolean isEnabled() {
-        return
-            !(LevelledMobs.getInstance()
-                .getFileHandler().getSettingsFile().getData()
+        return !(LevelledMobs.getInstance().fileHandler.settingsFile.getData()
                 .getStringList("disabled-integrations")
                 .contains(getName())) && isInstalled();
     }
