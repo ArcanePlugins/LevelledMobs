@@ -6,6 +6,18 @@ import org.bukkit.plugin.Plugin;
 
 import java.util.Objects;
 
+/*
+OLD:
+levelKey = new NamespacedKey(main, "level");
+spawnReasonKey = new NamespacedKey(main, "spawnReason");
+wasBabyMobKey = new NamespacedKey(main, "wasBabyMob");
+overridenEntityNameKey = new NamespacedKey(main, "overridenEntityName");
+playerLevellingClosestPlayerUUIDKey = new NamespacedKey(main, "playerLevelling_Id");
+chanceRuleAllowedKey = new NamespacedKey(main, "chanceRule_Allowed");
+chanceRuleDeniedKey = new NamespacedKey(main, "chanceRule_Denied");
+nametagFormatKey = new NamespacedKey(main, "nametag-format");
+ */
+
 public class NamespacedKeys {
 
     private NamespacedKeys() {
@@ -34,5 +46,13 @@ public class NamespacedKeys {
         "nametag-format");
     public static final NamespacedKey MAJOR_PLUGIN_VERSION_KEY = new NamespacedKey(MAIN,
         "major-plugin-version");
+    public static final NamespacedKey FROZEN_LEVEL_STATE = new NamespacedKey(MAIN,
+        "frozen-level-stage");
+    public static final NamespacedKey[] ALL_KEYS = new NamespacedKey[]{
+        LEVEL_KEY, MIN_LEVEL_KEY, MAX_LEVEL_KEY, SPAWN_REASON_KEY, WAS_BABY_MOB_KEY,
+        OVERRIDDEN_ENTITY_NAME_KEY, PLAYER_LEVELLING_ID_KEY, CHANCE_RULE_ALLOWED_KEY,
+        CHANCE_RULE_DENIED_KEY, NAMETAG_FORMAT_KEY, MAJOR_PLUGIN_VERSION_KEY,
+        FROZEN_LEVEL_STATE
+    };
 
 }

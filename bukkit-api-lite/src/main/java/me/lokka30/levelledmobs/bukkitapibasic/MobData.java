@@ -13,17 +13,17 @@ public final class MobData {
         throw new IllegalStateException("Instantiaton of utility-type class");
     }
 
-    public static Optional<Integer> getLevel(final LivingEntity entity) {
+    public synchronized static Optional<Integer> getLevel(final LivingEntity entity) {
         return Optional.ofNullable(
             getPDC(entity).get(NamespacedKeys.LEVEL_KEY, PersistentDataType.INTEGER));
     }
 
-    public static Optional<Integer> getMinLevel(final LivingEntity entity) {
+    public synchronized static Optional<Integer> getMinLevel(final LivingEntity entity) {
         return Optional.ofNullable(
             getPDC(entity).get(NamespacedKeys.MIN_LEVEL_KEY, PersistentDataType.INTEGER));
     }
 
-    public static Optional<Integer> getMaxLevel(final LivingEntity entity) {
+    public synchronized static Optional<Integer> getMaxLevel(final LivingEntity entity) {
         return Optional.ofNullable(
             getPDC(entity).get(NamespacedKeys.MAX_LEVEL_KEY, PersistentDataType.INTEGER));
     }
@@ -74,6 +74,11 @@ public final class MobData {
     public static Optional<String> getMajorPluginVersionKey(final LivingEntity entity) {
         return Optional.ofNullable(
             getPDC(entity).get(NamespacedKeys.MAJOR_PLUGIN_VERSION_KEY, PersistentDataType.STRING));
+    }
+
+    public static Optional<String> getFrozenLevelState(final LivingEntity entity) {
+        return Optional.ofNullable(
+            getPDC(entity).get(NamespacedKeys.FROZEN_LEVEL_STATE, PersistentDataType.STRING));
     }
 
     private static PersistentDataContainer getPDC(final LivingEntity entity) {

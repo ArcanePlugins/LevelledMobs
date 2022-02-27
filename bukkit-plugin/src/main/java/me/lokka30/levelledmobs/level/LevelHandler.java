@@ -17,14 +17,6 @@ import org.jetbrains.annotations.NotNull;
  * @since 4.0.0
  */
 public final class LevelHandler {
-
-    private final LevelledNamespacedKeys levelledNamespacedKeys = new LevelledNamespacedKeys();
-
-    public @NotNull
-    LevelledNamespacedKeys getLevelledNamespacedKeys() {
-        return levelledNamespacedKeys;
-    }
-
     /*
     TODO
         lokka30: Complete class body.

@@ -14,7 +14,6 @@ package me.lokka30.levelledmobs.level;
  * utilized whenever they are required e.g. on the entity's death.
  *
  * @author lokka30
- * @see LevelledNamespacedKeys
  * @see org.bukkit.attribute.Attribute
  * @since 4.0.0
  */
