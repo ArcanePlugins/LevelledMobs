@@ -116,7 +116,7 @@ public class PlayerDeathListener {
             }
         }
 
-        return playerKilled != null && playerKilled.isEmpty() ?
+        return playerKilled == null || playerKilled.isEmpty() ?
                 null : playerKilled;
     }
 }

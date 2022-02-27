@@ -8,6 +8,7 @@ import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.customdrops.CustomDropResult;
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
 import me.lokka30.levelledmobs.misc.NametagTimerChecker;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -40,6 +41,8 @@ public class EntityDeathListener implements Listener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.NORMAL)
     public void onDeath(@NotNull final EntityDeathEvent event) {
+        if (event.getEntity() instanceof Player) return;
+
         synchronized (NametagTimerChecker.entityTarget_Lock){
             main.nametagTimerChecker.entityTargetMap.remove(event.getEntity());
         }
