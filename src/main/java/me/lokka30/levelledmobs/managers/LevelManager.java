@@ -1216,9 +1216,11 @@ public class LevelManager implements LevelInterface {
             }
         }
 
-        final boolean hasNoLevelKey;
-        synchronized (lmEntity.getLivingEntity().getPersistentDataContainer()) {
-            hasNoLevelKey = lmEntity.getPDC().has(main.namespaced_keys.noLevelKey, PersistentDataType.STRING);
+        boolean hasNoLevelKey = false;
+        if (!isSummoned) {
+            synchronized (lmEntity.getLivingEntity().getPersistentDataContainer()) {
+                hasNoLevelKey = lmEntity.getPDC().has(main.namespaced_keys.noLevelKey, PersistentDataType.STRING);
+            }
         }
 
         if (hasNoLevelKey) {

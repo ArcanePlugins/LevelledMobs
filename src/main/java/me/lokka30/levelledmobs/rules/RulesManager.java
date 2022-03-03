@@ -284,7 +284,7 @@ public class RulesManager {
             if (ruleInfo.restrictions_MaxLevel != null) maxLevel = ruleInfo.restrictions_MaxLevel;
         }
 
-        if (lmInterface.getSummonedLevel() != null){
+        if (maxLevel <= 0 && lmInterface.getSummonedLevel() != null){
             int summonedLevel = lmInterface.getSummonedLevel();
             if (summonedLevel > maxLevel) maxLevel = summonedLevel;
         }
