@@ -1199,6 +1199,7 @@ public class LevelManager implements LevelInterface {
         }
 
         if (isSummoned) {
+            lmEntity.setSpawnReason(LevelledMobSpawnReason.LM_SUMMON, true);
             final SummonedMobPreLevelEvent summonedMobPreLevelEvent = new SummonedMobPreLevelEvent(lmEntity.getLivingEntity(), level);
             Bukkit.getPluginManager().callEvent(summonedMobPreLevelEvent);
 
