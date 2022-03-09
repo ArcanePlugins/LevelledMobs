@@ -198,7 +198,7 @@ presets:
         armor-toughness: 0.3
         attack-knockback: 0.5
         knockback-resistance: 0.5
-        zombie-spawn-reinforcements: 0.45
+        zombie-spawn-reinforcements: 0.0
         horse-jump-strength: 0.0
 
       creeper-max-damage-radius: 5
@@ -235,7 +235,7 @@ presets:
         armor-toughness: 0.15
         attack-knockback: 0.25
         knockback-resistance: 0.2
-        zombie-spawn-reinforcements: 0.25
+        zombie-spawn-reinforcements: 0.0
         horse-jump-strength: 0.0
 
       creeper-max-damage-radius: 3
@@ -271,7 +271,7 @@ presets:
         armor-toughness: 0.0
         attack-knockback: 0.1
         knockback-resistance: 0.15
-        zombie-spawn-reinforcements: 0.1
+        zombie-spawn-reinforcements: 0.0
         horse-jump-strength: 0.0
 
       creeper-max-damage-radius: 1

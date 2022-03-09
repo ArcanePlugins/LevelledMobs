@@ -979,8 +979,11 @@ public class LevelManager implements LevelInterface {
             case ATTRIBUTE_KNOCKBACK_RESISTANCE:        attribute = Attribute.GENERIC_KNOCKBACK_RESISTANCE; break;
             case ATTRIBUTE_FLYING_SPEED:                attribute = Attribute.GENERIC_FLYING_SPEED; break;
             case ATTRIBUTE_ATTACK_KNOCKBACK:            attribute = Attribute.GENERIC_ATTACK_KNOCKBACK; break;
-            case ATTRIBUTE_ZOMBIE_SPAWN_REINFORCEMENTS: attribute = Attribute.ZOMBIE_SPAWN_REINFORCEMENTS; break;
             case ATTRIBUTE_FOLLOW_RANGE:                attribute = Attribute.GENERIC_FOLLOW_RANGE; break;
+            case ATTRIBUTE_ZOMBIE_SPAWN_REINFORCEMENTS:
+                if (lmEntity.getSpawnReason() == LevelledMobSpawnReason.REINFORCEMENTS) return;
+                attribute = Attribute.ZOMBIE_SPAWN_REINFORCEMENTS;
+                break;
 
             default:
                 throw new IllegalStateException("Addition must be an Attribute, if so, it has not been considered in this method");
