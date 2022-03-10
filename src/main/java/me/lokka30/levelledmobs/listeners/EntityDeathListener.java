@@ -4,10 +4,14 @@
 
 package me.lokka30.levelledmobs.listeners;
 
+import io.github.geniot.indexedtreemap.IndexedNavigableSet;
+import io.github.geniot.indexedtreemap.IndexedTreeSet;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.customdrops.CustomDropResult;
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
 import me.lokka30.levelledmobs.misc.NametagTimerChecker;
+import me.lokka30.levelledmobs.misc.Utils;
+import me.lokka30.microlib.messaging.MessageUtils;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -17,10 +21,8 @@ import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
+import java.sql.Timestamp;
+import java.util.*;
 
 /**
  * Listens for when an entity dies so it's drops can be multiplied, manipulated, etc
@@ -60,6 +62,39 @@ public class EntityDeathListener implements Listener {
 
         if (lmEntity.getLivingEntity().getKiller() != null && main.placeholderApiIntegration != null)
             main.placeholderApiIntegration.putPlayerOrMobDeath(lmEntity.getLivingEntity().getKiller(), lmEntity);
+
+        if ((lmEntity.isLevelled() || main.rulesManager.getRule_UseCustomDropsForMob(lmEntity).useDrops) &&
+                lmEntity.getLivingEntity().getKiller() != null) { // Only counts if mob is killed by player
+            long chunkKey = Utils.getChunkKey(lmEntity);
+            if (!main.entityDeathInChunkCounter.containsKey(chunkKey)) {
+                main.entityDeathInChunkCounter.put(chunkKey, new IndexedTreeSet<>());
+            }
+
+            int numberOfEntityDeathInChunk = Utils.getNumberOfEntityDeathInChunk(lmEntity,main,main.maximumCoolDownTime);
+            /*
+             Only send message for maximum threshold and cool down time
+             Only message once
+             This is enabled by default
+             */
+            if (numberOfEntityDeathInChunk == main.maximumDeathInChunkThreshold) {
+                /*
+                 I'll add "maximumDeathCount much" of record in the counter
+                 And prohibite new record into counter
+                 Then, after cooldowntime, there's no record in the counter
+                 And player can normally kill new mob
+                 */
+                for(int i = 0; i < main.maximumDeathInChunkThreshold; i++){
+                    main.entityDeathInChunkCounter.get(chunkKey).add(new MutablePair<>(new Timestamp(System.currentTimeMillis()), lmEntity));
+                }
+
+                if (lmEntity.getLivingEntity().getKiller() != null && main.settingsCfg.getBoolean("exceed-kill-in-chunk-message", true)) {
+                    lmEntity.getLivingEntity().getKiller().
+                            sendMessage(MessageUtils.colorizeAll(main.messagesCfg.getString("other.no-drop-in-chunk")));
+                }
+            } else if (numberOfEntityDeathInChunk < main.maximumDeathInChunkThreshold) {
+                main.entityDeathInChunkCounter.get(chunkKey).add(new MutablePair<>(new Timestamp(System.currentTimeMillis()), lmEntity));
+            }
+        }
 
         if (lmEntity.isLevelled()) {
 

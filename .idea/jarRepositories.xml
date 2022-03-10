@@ -32,6 +32,16 @@
       <option name="url" value="https://repo.extendedclip.com/content/repositories/placeholderapi/" />
     </remote-repository>
     <remote-repository>
+      <option name="id" value="github" />
+      <option name="name" value="github" />
+      <option name="url" value="https://maven.pkg.github.com/Schottky-spi/Zener" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="central" />
+      <option name="name" value="central" />
+      <option name="url" value="https://repo1.maven.org/maven2" />
+    </remote-repository>
+    <remote-repository>
       <option name="id" value="sk89q-repo" />
       <option name="name" value="sk89q-repo" />
       <option name="url" value="https://maven.enginehub.org/repo/" />
