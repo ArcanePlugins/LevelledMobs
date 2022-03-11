@@ -32,9 +32,6 @@ class CustomDropsDefaults {
     int minPlayerLevel;
     int maxPlayerLevel;
     public float chance;
-    public int deathInChunkThreshold;
-    public float coolDownTime;
-    public boolean chanceDecreaseAsEntityDeathInChunk;
     float equippedSpawnChance;
     Float overallChance;
     String groupId;
@@ -46,9 +43,6 @@ class CustomDropsDefaults {
     CustomDropsDefaults() {
         // these are the defaults of the defaults
         this.chance = 0.2F;
-        this.deathInChunkThreshold = 1000000; // This will not be enabled by default
-        this.coolDownTime = 300.0F;
-        this.chanceDecreaseAsEntityDeathInChunk = false; // This will not be enabled by default
         this.amount = 1;
         this.minLevel = -1;
         this.maxLevel = -1;
@@ -68,9 +62,6 @@ class CustomDropsDefaults {
 
     void setDefaultsFromDropItem(@NotNull final CustomDropItem drop) {
         this.chance = drop.chance;
-        this.deathInChunkThreshold = drop.deathInChunkThreshold;
-        this.coolDownTime = drop.coolDownTime;
-        this.chanceDecreaseAsEntityDeathInChunk = drop.chanceDecreaseAsEntityDeathInChunk;
         this.amount = drop.getAmount();
         this.minLevel = drop.minLevel;
         this.maxLevel = drop.maxLevel;

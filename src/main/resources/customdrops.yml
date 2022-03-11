@@ -38,20 +38,6 @@
 # +-------------------------------------------------------------------------------------------LM3
 defaults:
   chance: 0.2
-  #death-in-chunk-threshold controls: In the given time period decided by cooldown-time,
-  #If the entity death number in the given chunk exceed the Threshold, the player can't
-  #get special loot from it. This can prevent mob farm from farming precious loots without risk.
-  death-in-chunk-threshold: 1000000
-  #cooldown-time controls: how long should we record the kill count in the chunk.
-  #For example, I killed 10 mobs in the past 10 minutes(600.0 seconds), 1 mobs per minute.
-  #Only 5 mobs is take into account
-  cooldown-time: 300.0
-  #If chance-decrease-as-entity-death-in-chunk is true. Say, death-in-chunk-threshold=10
-  #And during the cooldown-time, I killed n mobs. Then the special loot drop probability
-  #is multiplied by
-  #min(1.0-(kill count during the cooldown-time in the given chunk)/(death-in-chunk-threshold),0)
-  #i.e. linear decrease of probability
-  chance-decrease-as-entity-death-in-chunk: false
   amount: 1
   minLevel: -1
   maxLevel: -1
