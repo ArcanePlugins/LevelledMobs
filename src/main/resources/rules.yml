@@ -386,7 +386,7 @@ default-rule:
     level-inheritance: true
     passenger-match-level: false
 
-    use-custom-item-drops-for-mobs: false
+    use-custom-item-drops-for-mobs: true
 
 
 # +-------------------------------------------------------------------------------------------LM3

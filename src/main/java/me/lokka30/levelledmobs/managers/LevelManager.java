@@ -719,9 +719,13 @@ public class LevelManager implements LevelInterface {
     }
 
     public void updateNametag(final LivingEntityWrapper lmEntity){
+        String nametag = getNametag(lmEntity, false);
+        if (nametag != null)
+            nametag = MessageUtils.colorizeAll(nametag);
+
         final QueueItem queueItem = new QueueItem(
                 lmEntity,
-                MessageUtils.colorizeAll(getNametag(lmEntity, false)),
+                nametag,
                 lmEntity.getLivingEntity().getWorld().getPlayers()
         );
 
