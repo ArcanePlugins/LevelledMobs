@@ -924,7 +924,8 @@ public class LevelManager implements LevelInterface {
                 location.getWorld().equals(lmEntity.getWorld()) &&
                 lmEntity.getLocation().distanceSquared(location) <= maxDistance) {
             //if within distance, update nametag.
-            final String nametag = MessageUtils.colorizeAll(main.levelManager.getNametag(lmEntity, false));
+            String nametag = main.levelManager.getNametag(lmEntity, false);
+            if (nametag != null) nametag = MessageUtils.colorizeAll(nametag);
             main.nametagQueueManager_.addToQueue(new QueueItem(lmEntity, nametag, Collections.singletonList(player)));
         }
     }

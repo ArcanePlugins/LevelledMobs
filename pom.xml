@@ -10,7 +10,7 @@
 
     <groupId>me.lokka30</groupId>
     <artifactId>LevelledMobs</artifactId>
-    <version>3.4.0 b618</version>
+    <version>3.4.0 b619</version>
     <packaging>jar</packaging>
 
     <name>LevelledMobs</name>
