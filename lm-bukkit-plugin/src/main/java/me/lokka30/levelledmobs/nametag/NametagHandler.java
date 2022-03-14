@@ -19,7 +19,7 @@ public class NametagHandler {
     public String generateNametag(@NotNull LevelledMob levelledMob) {
         final TranslationHandler translationHandler = LevelledMobs.getInstance().translationHandler;
         final String nameTranslated = translationHandler.getTranslatedEntityName(
-            levelledMob.getLivingEntity().getType());
+            levelledMob.livingEntity.getType());
         final String levelTranslated = translationHandler.getTranslatedLevel(
             levelledMob.getLevel());
         final String nametagFormat = levelledMob.getNametagFormat();
@@ -37,7 +37,7 @@ public class NametagHandler {
     public void sendNametag(@NotNull LevelledMob levelledMob, @NotNull Player target,
         @NotNull String nametag) {
         LevelledMobs.getInstance().nmsHandler.getNametagNMSHandler()
-            .sendNametag(levelledMob.getLivingEntity(), nametag, target, false);
+            .sendNametag(levelledMob.livingEntity, nametag, target, false);
     }
 
     public void generateAndSendNametag(@NotNull LevelledMob levelledMob, @NotNull Player target) {

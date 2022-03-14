@@ -19,7 +19,7 @@ public final class DebugHandler {
 
     public void load() {
         for (
-            String debugCategoryStr : LevelledMobs.getInstance().getFileHandler().getSettingsFile()
+            String debugCategoryStr : LevelledMobs.getInstance().fileHandler.settingsFile
             .getData()
             .getOrDefault("debug-categories", new ArrayList<String>())
         ) {
