@@ -8,30 +8,10 @@ import me.lokka30.levelledmobs.commands.LevelledMobsCommand;
 import me.lokka30.levelledmobs.compatibility.Compat1_16;
 import me.lokka30.levelledmobs.compatibility.Compat1_17;
 import me.lokka30.levelledmobs.customdrops.CustomDropsHandler;
-import me.lokka30.levelledmobs.listeners.BlockPlaceListener;
-import me.lokka30.levelledmobs.listeners.ChunkLoadListener;
-import me.lokka30.levelledmobs.listeners.CombustListener;
-import me.lokka30.levelledmobs.listeners.EntityDamageDebugListener;
-import me.lokka30.levelledmobs.listeners.EntityDamageListener;
-import me.lokka30.levelledmobs.listeners.EntityDeathListener;
-import me.lokka30.levelledmobs.listeners.EntityNametagListener;
-import me.lokka30.levelledmobs.listeners.EntityRegainHealthListener;
-import me.lokka30.levelledmobs.listeners.EntitySpawnListener;
-import me.lokka30.levelledmobs.listeners.EntityTameListener;
-import me.lokka30.levelledmobs.listeners.EntityTargetListener;
-import me.lokka30.levelledmobs.listeners.EntityTransformListener;
-import me.lokka30.levelledmobs.listeners.PlayerDeathListener;
-import me.lokka30.levelledmobs.listeners.PlayerInteractEventListener;
-import me.lokka30.levelledmobs.listeners.PlayerJoinListener;
-import me.lokka30.levelledmobs.listeners.PlayerPortalEventListener;
-import me.lokka30.levelledmobs.managers.ExternalCompatibilityManager;
+import me.lokka30.levelledmobs.listeners.*;
 import me.lokka30.levelledmobs.managers.LevelManager;
 import me.lokka30.levelledmobs.managers.PlaceholderApiIntegration;
-import me.lokka30.levelledmobs.misc.DebugType;
-import me.lokka30.levelledmobs.misc.FileLoader;
-import me.lokka30.levelledmobs.misc.FileMigrator;
-import me.lokka30.levelledmobs.misc.Utils;
-import me.lokka30.levelledmobs.misc.VersionInfo;
+import me.lokka30.levelledmobs.misc.*;
 import me.lokka30.levelledmobs.rules.MetricsInfo;
 import me.lokka30.microlib.exceptions.OutdatedServerVersionException;
 import me.lokka30.microlib.other.UpdateChecker;
@@ -45,25 +25,14 @@ import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.InvalidObjectException;
+import java.io.*;
 import java.time.Instant;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.UUID;
-import java.util.WeakHashMap;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -120,8 +89,18 @@ public class Companion {
                     "Compatible MC versions: &b" + String.join("&7,&b ", Utils.getSupportedServerVersions()) + "&7.");
         }
 
-        if (!ExternalCompatibilityManager.hasProtocolLibInstalled()) {
-            incompatibilities.add("Your server does not have &bProtocolLib&7 installed! This means that no levelled nametags will appear on the mobs. If you wish to see custom nametags above levelled mobs, then you must install ProtocolLib.");
+        final Plugin protocolLibPlugin = Bukkit.getPluginManager().getPlugin("ProtocolLib");
+
+        if (protocolLibPlugin == null) {
+            incompatibilities.add("Your server does not have ProtocolLib installed! This means that you will" +
+                    "not be able to see any custom nametags/labels above any levelled mobs' heads. To fix this, " +
+                    "install the latest compatible version of ProtocolLib for your server.");
+        } else {
+            if(VersionUtils.isOneEighteen() && protocolLibPlugin.getDescription().getVersion().equals("4.7.0")) {
+                incompatibilities.add("You are running an outdated version of ProtocolLib! This version of " +
+                        "ProtocolLib does not support 1.18+ servers, so you will receive lots of errors if " +
+                        "you try to use it. Update to the latest ProtocolLib version as soon as possible.");
+            }
         }
 
         main.incompatibilitiesAmount = incompatibilities.size();
