@@ -7,4 +7,4 @@
  * @author lokka30
  * @since 4.0.0
  */
-package me.lokka30.levelledmobs.bukkitapibasic;
+package me.lokka30.levelledmobs.bukkit.api;

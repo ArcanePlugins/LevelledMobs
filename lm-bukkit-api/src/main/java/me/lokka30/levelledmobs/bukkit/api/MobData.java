@@ -1,6 +1,6 @@
-package me.lokka30.levelledmobs.bukkitapibasic;
+package me.lokka30.levelledmobs.bukkit.api;
 
-import me.lokka30.levelledmobs.bukkitapibasic.util.NamespacedKeys;
+import me.lokka30.levelledmobs.bukkit.api.util.NamespacedKeys;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;

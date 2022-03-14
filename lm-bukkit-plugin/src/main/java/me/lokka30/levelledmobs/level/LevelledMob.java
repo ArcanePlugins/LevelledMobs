@@ -8,9 +8,8 @@
 
 package me.lokka30.levelledmobs.level;
 
-import me.lokka30.levelledmobs.LevelledMobs;
-import me.lokka30.levelledmobs.bukkitapibasic.MobData;
-import me.lokka30.levelledmobs.bukkitapibasic.util.NamespacedKeys;
+import me.lokka30.levelledmobs.bukkit.api.MobData;
+import me.lokka30.levelledmobs.bukkit.api.util.NamespacedKeys;
 import me.lokka30.levelledmobs.util.Default;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.LivingEntity;

@@ -1,4 +1,4 @@
-package me.lokka30.levelledmobs.bukkitapibasic.util;
+package me.lokka30.levelledmobs.bukkit.api.util;
 
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;

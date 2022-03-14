@@ -17,15 +17,15 @@
   <modelVersion>4.0.0</modelVersion>
 
   <packaging>jar</packaging>
-  <artifactId>core-bukkit</artifactId>
+  <artifactId>levelledmobs-bukkit-plugin</artifactId>
   <name>Core (Bukkit)</name>
   <description>The Ultimate RPG Mob Levelling Plugin - make your server's mobs stronger!
   </description>
   <version>4.0.0-b000-SNAPSHOT</version>
 
   <properties>
-    <maven.compiler.source>16</maven.compiler.source>
-    <maven.compiler.target>16</maven.compiler.target>
+    <maven.compiler.source>17</maven.compiler.source>
+    <maven.compiler.target>17</maven.compiler.target>
   </properties>
 
   <pluginRepositories>
@@ -74,8 +74,7 @@
               <artifact>*:*</artifact>
               <excludes>
                 <exclude>META-INF/MANIFEST.MF</exclude>
-                <exclude>META-INF/maven/com.esotericsoftware.yamlbeans/yamlbeans/pom.properties
-                </exclude>
+                <exclude>META-INF/maven/com.esotericsoftware.yamlbeans/yamlbeans/pom.properties</exclude>
                 <exclude>META-INF/maven/com.esotericsoftware.yamlbeans/yamlbeans/pom.xml</exclude>
                 <exclude>META-INF/maven/org.json/json/pom.properties</exclude>
                 <exclude>META-INF/maven/org.json/json/pom.xml</exclude>
@@ -126,20 +125,20 @@
   <dependencies>
     <dependency>
       <groupId>me.lokka30</groupId>
-      <artifactId>nms-v1_18_R1</artifactId>
-      <version>1</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>me.lokka30</groupId>
-      <artifactId>nms-v1_17_R1</artifactId>
-      <version>1</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>me.lokka30</groupId>
-      <artifactId>bukkit-api-basic</artifactId>
+      <artifactId>levelledmobs-bukkit-api</artifactId>
       <version>4.0</version>
+    </dependency>
+    <dependency>
+      <groupId>me.lokka30</groupId>
+      <artifactId>levelledmobs-nms-v1_18_R1</artifactId>
+      <version>1</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>me.lokka30</groupId>
+      <artifactId>levelledmobs-nms-v1_17_R1</artifactId>
+      <version>1</version>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.spigotmc</groupId>

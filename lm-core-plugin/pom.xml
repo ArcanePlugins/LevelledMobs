@@ -16,7 +16,7 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
-  <artifactId>core</artifactId>
+  <artifactId>levelledmobs-core-plugin</artifactId>
   <version>1</version>
   <name>LevelledMobs-Core</name>
   <packaging>jar</packaging>

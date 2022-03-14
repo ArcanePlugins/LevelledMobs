@@ -9,7 +9,7 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
-  <artifactId>bukkit-api-basic</artifactId>
+  <artifactId>levelledmobs-bukkit-api</artifactId>
   <version>4.0</version>
 
   <properties>

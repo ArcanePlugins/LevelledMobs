@@ -15,11 +15,11 @@
   <artifactId>LevelledMobs-Parent</artifactId>
   <version>1</version>
   <modules>
-    <module>core</module>
-    <module>bukkit-plugin</module>
-    <module>nms-v1_17_R1</module>
-    <module>nms-v1_18_R1</module>
-    <module>bukkit-api-lite</module>
+    <module>lm-core-plugin</module>
+    <module>lm-bukkit-plugin</module>
+    <module>lm-nms-v1_17_R1</module>
+    <module>lm-nms-v1_18_R1</module>
+    <module>lm-bukkit-api</module>
   </modules>
   <packaging>pom</packaging>
 
