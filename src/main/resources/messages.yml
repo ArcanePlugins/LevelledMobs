@@ -33,66 +33,66 @@
 #
 # +-------------------------------------------------------------------------------------------LM3
 # +                                                                                          +LM3
-# +   Section 01 - Common Messages                                                           +LM3
+# +   Section 01 - 기본 메세지                                                           +LM3
 # +                                                                                          +LM3
 # +-------------------------------------------------------------------------------------------LM3
 common:
   prefix: '&b&lLevelledMobs:&7'
   no-permission:
-    - '%prefix% You don''t have access to that.'
+    - '%prefix% 권한이 없습니다.'
   players-only:
-    - '%prefix% Only players may use that.'
+    - '%prefix% 플레이어만 사용 가능합니다.'
   no-player:
-    - '%prefix% Command can only be run by a player'
+    - '%prefix% 명령어는 플레이어만 사용 가능합니다.'
   player-offline:
-    - '%prefix% &r%player%&7 is offline or invalid.'
+    - '%prefix% &r%player%&7 오프라인이거나 없습니다.'
   invalid-command:
-    - '%prefix% Invalid command'
+    - '%prefix% 잘못된 명령어입니다.'
 
 
 # +-------------------------------------------------------------------------------------------LM3
 # +                                                                                          +LM3
-# +   Section 02 - Default Command Messages                                                  +LM3
+# +   Section 02 - 기본 명령어 메세지                                                          +LM3
 # +                                                                                          +LM3
 # +-------------------------------------------------------------------------------------------LM3
 command:
   levelledmobs:
     main-usage:
-      - '%prefix% Available commands:'
-      - '&8 &m->&b /%label% summon &8- &7summon specific levelled mobs'
-      - '&8 &m->&b /%label% rules &8- &7printout of the rules system'
-      - '&8 &m->&b /%label% kill &8- &7mass kill levelled mobs'
-      - '&8 &m->&b /%label% reload &8- &7reload the configuration files'
-      - '&8 &m->&b /%label% info &8- &7view info about the plugin'
-      - '&8 &m->&b /%label% compatibility &8- &7check plugin''s compatibility with the server'
+      - '%prefix% 사용 가능한 명령어 목록:'
+      - '&8 &m->&b /%label% summon &8- &7특정 LM 몹을 소환합니다.'
+      - '&8 &m->&b /%label% rules &8- &7규칙을 출력합니다.'
+      - '&8 &m->&b /%label% kill &8- &7LM 몹을 죽입니다.'
+      - '&8 &m->&b /%label% reload &8- &7구성 파일들을 다시 읽어들입니다.'
+      - '&8 &m->&b /%label% info &8- &7이 플러그인 정보를 확인합니다.'
+      - '&8 &m->&b /%label% compatibility &8- &7서버가 이 플러그인과 호환되는지 확인합니다.'
 
 
 # +-------------------------------------------------------------------------------------------LM3
 # +                                                                                          +LM3
-# +   Section 03 - Summon Command Messages                                                   +LM3
+# +   Section 03 - 소환 명령어 메세지                                                         +LM3
 # +                                                                                          +LM3
 # +-------------------------------------------------------------------------------------------LM3
     summon:
       invalid-amount:
-        - '%prefix% Invalid amount ''&b%amount%&7''.'
+        - '%prefix% 잘못된 수 ''&b%amount%&7''.'
       invalid-entity-type:
-        - '%prefix% Invalid entity type ''&b%entityType%&7''.'
+        - '%prefix% 잘못된 엔티티 타입 ''&b%entityType%&7''.'
       invalid-level:
-        - '%prefix% Invalid level ''&b%level%&7''.'
+        - '%prefix% 잘못된 레벨 ''&b%level%&7''.'
       invalid-summon-type:
-        - '%prefix% Invalid summon type ''&b%summonType%&7''.'
+        - '%prefix% 잘못된 소환 타입 ''&b%summonType%&7''.'
       invalid-summon-type-console:
-        - '%prefix% Only players may use summon type ''&bhere''&7, you must use ''&batPlayer&7'' or ''&batLocation&7'' instead.'
+        - '%prefix% 플레이어만 소환 타입 지정을 사용할 수 있습니다 ''&bhere''&7, 대신, ''&batPlayer&7'' 또는 ''&batLocation&7'' 을 사용해야합니다.'
       invalid-location:
-        - '%prefix% Invalid location.'
+        - '%prefix% 잘못된 위치'
       here:
         usage:
-          - '%prefix% Usage: &b/%label% summon <amount> <entity> <level> here'
+          - '%prefix% 사용 방법: &b/%label% summon <수> <엔티티> <레벨> here'
         success:
-          - '%prefix% Spawned &b%amount%&7 of &fLvl.%level% &b%entity%(s)&7 at your location.'
+          - '%prefix% &7&fLvl.%level% &b%entity% &7를 당신의 위치에 &b%amount% &7마리를 소환하였습니다.'
       atLocation:
         usage:
-          - '%prefix% Usage: &b/%label% summon <amount> <entity> <level> atLocation <x> <y> <z> [world]'
+          - '%prefix% 사용 방법: &b/%label% summon <수> <엔티티> <레벨> atLocation <x> <y> <z> [월드]'
         success:
           - '%prefix% Spawned &b%amount%&7 of &fLvl.%level% &b%entity%(s)&7 at &8(&b%x%&7, &b%y%&7, &b%z%&7 in world ''&b%world%&7''&8)&7.'
         usage-console:
