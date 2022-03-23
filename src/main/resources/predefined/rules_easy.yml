@@ -388,6 +388,8 @@ default-rule:
 
     use-custom-item-drops-for-mobs: true
 
+    spawner-particles: 'SOUL'
+    spawner-particles-count: 10
 
 # +-------------------------------------------------------------------------------------------LM3
 # +                                                                                          +LM3

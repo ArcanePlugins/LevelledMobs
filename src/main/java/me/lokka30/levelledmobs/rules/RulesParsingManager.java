@@ -13,6 +13,7 @@ import me.lokka30.levelledmobs.misc.YmlParsingHelper;
 import me.lokka30.levelledmobs.rules.strategies.RandomLevellingStrategy;
 import me.lokka30.levelledmobs.rules.strategies.SpawnDistanceStrategy;
 import me.lokka30.levelledmobs.rules.strategies.YDistanceStrategy;
+import org.bukkit.Particle;
 import org.bukkit.block.Biome;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.MemoryConfiguration;
@@ -632,6 +633,8 @@ public class RulesParsingManager {
         parseNBT_Data(cs);
         parsingInfo.passengerMatchLevel = ymlHelper.getBoolean2(cs, "passenger-match-level", parsingInfo.passengerMatchLevel);
         parsingInfo.nametagVisibleTime = ymlHelper.getInt2(cs, "nametag-visible-time", parsingInfo.nametagVisibleTime);
+        parsingInfo.spawnerParticlesCount = ymlHelper.getInt2(cs, "spawner-particles-count", parsingInfo.spawnerParticlesCount);
+        parseSpawnerPartile(ymlHelper.getString(cs, "spawner-particles"));
 
         final Set<String> nametagVisibility = ymlHelper.getStringSet(cs, "nametag-visibility-method");
         final List<NametagVisibilityEnum> nametagVisibilityEnums = new LinkedList<>();
@@ -657,6 +660,23 @@ public class RulesParsingManager {
             }
             else
                 parsingInfo.nametagVisibilityEnum = List.of(NametagVisibilityEnum.MELEE);
+        }
+    }
+
+    private void parseSpawnerPartile(final @Nullable String particle){
+        if (particle == null) return;
+
+        if ("none".equalsIgnoreCase(particle)) {
+            parsingInfo.spawnerParticle = null;
+            parsingInfo.useNoSpawnerParticles = true;
+            return;
+        }
+
+        try{
+            parsingInfo.spawnerParticle = Particle.valueOf(particle.toUpperCase());
+        }
+        catch (Exception ignored){
+            Utils.logger.warning("Invalid value in spawner-particles: " + particle + ", in rule: " + parsingInfo.getRuleName());
         }
     }
 

@@ -8,10 +8,30 @@ import me.lokka30.levelledmobs.commands.LevelledMobsCommand;
 import me.lokka30.levelledmobs.compatibility.Compat1_16;
 import me.lokka30.levelledmobs.compatibility.Compat1_17;
 import me.lokka30.levelledmobs.customdrops.CustomDropsHandler;
-import me.lokka30.levelledmobs.listeners.*;
+import me.lokka30.levelledmobs.listeners.BlockPlaceListener;
+import me.lokka30.levelledmobs.listeners.ChunkLoadListener;
+import me.lokka30.levelledmobs.listeners.CombustListener;
+import me.lokka30.levelledmobs.listeners.EntityDamageDebugListener;
+import me.lokka30.levelledmobs.listeners.EntityDamageListener;
+import me.lokka30.levelledmobs.listeners.EntityDeathListener;
+import me.lokka30.levelledmobs.listeners.EntityNametagListener;
+import me.lokka30.levelledmobs.listeners.EntityRegainHealthListener;
+import me.lokka30.levelledmobs.listeners.EntitySpawnListener;
+import me.lokka30.levelledmobs.listeners.EntityTameListener;
+import me.lokka30.levelledmobs.listeners.EntityTargetListener;
+import me.lokka30.levelledmobs.listeners.EntityTransformListener;
+import me.lokka30.levelledmobs.listeners.PlayerDeathListener;
+import me.lokka30.levelledmobs.listeners.PlayerInteractEventListener;
+import me.lokka30.levelledmobs.listeners.PlayerJoinListener;
+import me.lokka30.levelledmobs.listeners.PlayerPortalEventListener;
 import me.lokka30.levelledmobs.managers.LevelManager;
 import me.lokka30.levelledmobs.managers.PlaceholderApiIntegration;
-import me.lokka30.levelledmobs.misc.*;
+
+import me.lokka30.levelledmobs.misc.DebugType;
+import me.lokka30.levelledmobs.misc.FileLoader;
+import me.lokka30.levelledmobs.misc.FileMigrator;
+import me.lokka30.levelledmobs.misc.Utils;
+import me.lokka30.levelledmobs.misc.VersionInfo;
 import me.lokka30.levelledmobs.rules.MetricsInfo;
 import me.lokka30.microlib.exceptions.OutdatedServerVersionException;
 import me.lokka30.microlib.other.UpdateChecker;
@@ -30,9 +50,21 @@ import org.bukkit.plugin.PluginManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.InvalidObjectException;
 import java.time.Instant;
-import java.util.*;
+
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.UUID;
+import java.util.WeakHashMap;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -322,7 +354,7 @@ public class Companion {
                     }
 
                     if (isNewerVersion) {
-                        updateResult = Collections.singletonList(
+                        updateResult = List.of(
                                 "&7Your &bLevelledMobs&7 version is &ba pre-release&7. Latest release version is &bv%latestVersion%&7. &8(&7You're running &bv%currentVersion%&8)");
 
                         updateResult = Utils.replaceAllInList(updateResult, "%currentVersion%", currentVersion);

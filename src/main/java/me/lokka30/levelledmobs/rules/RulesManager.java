@@ -13,6 +13,7 @@ import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
 import me.lokka30.levelledmobs.misc.Utils;
 import me.lokka30.levelledmobs.rules.strategies.LevellingStrategy;
 import me.lokka30.levelledmobs.rules.strategies.RandomLevellingStrategy;
+import org.bukkit.Particle;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Tameable;
@@ -22,6 +23,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.ConcurrentModificationException;
 import java.util.EnumMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -362,10 +364,15 @@ public class RulesManager {
     public List<NametagVisibilityEnum> getRule_CreatureNametagVisbility(@NotNull final LivingEntityWrapper lmEntity){
         List<NametagVisibilityEnum> result = null;
 
-        for (final RuleInfo ruleInfo : lmEntity.getApplicableRules()){
-            if (ruleInfo == null) continue;
-            if (ruleInfo.nametagVisibilityEnum != null)
-                result = ruleInfo.nametagVisibilityEnum;
+        try {
+            for (final RuleInfo ruleInfo : lmEntity.getApplicableRules()) {
+                if (ruleInfo == null) continue;
+                if (ruleInfo.nametagVisibilityEnum != null)
+                    result = ruleInfo.nametagVisibilityEnum;
+            }
+        }
+        catch (ConcurrentModificationException e){
+            Utils.logger.info("Got ConcurrentModificationException in getRule_CreatureNametagVisbility");
         }
 
         if (result == null || result.isEmpty())
@@ -498,6 +505,34 @@ public class RulesManager {
             return thisMob;
         else
             return allEntities;
+    }
+
+    @Nullable
+    public Particle getSpawnerParticle(final @NotNull LivingEntityWrapper lmEntity){
+        Particle result = Particle.SOUL;
+
+        for (final RuleInfo ruleInfo : lmEntity.getApplicableRules()){
+            if (ruleInfo.spawnerParticle != null)
+                result = ruleInfo.spawnerParticle;
+            else if (ruleInfo.useNoSpawnerParticles)
+                result = null;
+        }
+
+        return result;
+    }
+
+    public int getSpawnerParticleCount(final @NotNull LivingEntityWrapper lmEntity){
+        int result = 10;
+
+        for (final RuleInfo ruleInfo : lmEntity.getApplicableRules()){
+            if (ruleInfo.spawnerParticlesCount != null)
+                result = ruleInfo.spawnerParticlesCount;
+        }
+
+        // max limit of 100 counts which would take 5 seconds to show
+        if (result > 100) result = 100;
+
+        return result;
     }
 
     @NotNull
