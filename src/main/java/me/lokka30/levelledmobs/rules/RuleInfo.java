@@ -40,6 +40,7 @@ public class RuleInfo {
     private String ruleName;
     @DoNotMerge
     boolean ruleIsEnabled;
+    Boolean disableVanillaDropsOnChunkMax;
     boolean useNoSpawnerParticles;
     Boolean babyMobsInheritAdultSetting;
     Boolean mobLevelInheritance;
@@ -64,6 +65,8 @@ public class RuleInfo {
     Integer conditions_MinDistanceFromSpawn;
     Integer conditions_MaxDistanceFromSpawn;
     Integer nametagVisibleTime;
+    Integer maximumDeathInChunkThreshold;
+    Integer chunkMaxCoolDownTime;
     Float conditions_Chance;
     Double sunlightBurnAmount;
     public String nametag;

@@ -32,6 +32,7 @@ class CustomDropsDefaults {
     int minPlayerLevel;
     int maxPlayerLevel;
     public float chance;
+    public boolean useChunkKillMax;
     float equippedSpawnChance;
     Float overallChance;
     String groupId;
@@ -62,6 +63,7 @@ class CustomDropsDefaults {
 
     void setDefaultsFromDropItem(@NotNull final CustomDropItem drop) {
         this.chance = drop.chance;
+        this.useChunkKillMax = drop.useChunkKillMax;
         this.amount = drop.getAmount();
         this.minLevel = drop.minLevel;
         this.maxLevel = drop.maxLevel;

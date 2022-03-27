@@ -535,6 +535,36 @@ public class RulesManager {
         return result;
     }
 
+    public int getMaximumDeathInChunkThreshold(final @NotNull LivingEntityWrapper lmEntity){
+        int result = 0;
+
+        for (final RuleInfo ruleInfo : lmEntity.getApplicableRules()) {
+            if (ruleInfo.maximumDeathInChunkThreshold != null) result = ruleInfo.maximumDeathInChunkThreshold;
+        }
+
+        return result;
+    }
+
+    public int getMaxChunkCooldownTime(final @NotNull LivingEntityWrapper lmEntity){
+        int result = 0;
+
+        for (final RuleInfo ruleInfo : lmEntity.getApplicableRules()) {
+            if (ruleInfo.chunkMaxCoolDownTime != null) result = ruleInfo.chunkMaxCoolDownTime;
+        }
+
+        return result;
+    }
+
+    public boolean disableVanillaDropsOnChunkMax(final @NotNull LivingEntityWrapper lmEntity){
+        boolean result = false;
+
+        for (final RuleInfo ruleInfo : lmEntity.getApplicableRules()) {
+            if (ruleInfo.disableVanillaDropsOnChunkMax != null) result = ruleInfo.disableVanillaDropsOnChunkMax;
+        }
+
+        return result;
+    }
+
     @NotNull
     public ApplicableRulesResult getApplicableRules(final LivingEntityInterface lmInterface){
         final ApplicableRulesResult applicableRules = new ApplicableRulesResult();

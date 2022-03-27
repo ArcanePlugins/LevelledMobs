@@ -27,6 +27,7 @@ import me.lokka30.levelledmobs.listeners.PlayerPortalEventListener;
 import me.lokka30.levelledmobs.managers.LevelManager;
 import me.lokka30.levelledmobs.managers.PlaceholderApiIntegration;
 
+import me.lokka30.levelledmobs.misc.ChunkKillInfo;
 import me.lokka30.levelledmobs.misc.DebugType;
 import me.lokka30.levelledmobs.misc.FileLoader;
 import me.lokka30.levelledmobs.misc.FileMigrator;
@@ -47,6 +48,8 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -89,6 +92,7 @@ public class Companion {
         this.spawner_CopyIds = new LinkedList<>();
         this.spawner_InfoIds = new LinkedList<>();
         this.debugsEnabled = new LinkedList<>();
+        this.entityDeathInChunkCounter = new HashMap<>();
     }
 
     final private WeakHashMap<Player, Instant> recentlyJoinedPlayers;
@@ -98,6 +102,7 @@ public class Companion {
     public List<String> updateResult;
     private boolean hadRulesLoadError;
     public boolean useAdventure;
+    final private HashMap<Long, Map<EntityType, ChunkKillInfo>> entityDeathInChunkCounter;
     final public Map<Player, Location> playerNetherPortals;
     final public Map<Player, Location> playerWorldPortals;
     final public List<UUID> spawner_CopyIds;
@@ -105,6 +110,7 @@ public class Companion {
     final public List<DebugType> debugsEnabled;
     final private PluginManager pluginManager = Bukkit.getPluginManager();
     final private MetricsInfo metricsInfo;
+    private BukkitTask hashMapCleanUp;
     final static private Object playerLogonTimes_Lock = new Object();
     final static private Object playerNetherPortals_Lock = new Object();
 
@@ -327,6 +333,58 @@ public class Companion {
         metrics.addCustomChart(new SimpleBarChart("enabled-compatibility", metricsInfo::enabledCompats));
     }
 
+    void startCleanupTask(){
+        this.hashMapCleanUp = new BukkitRunnable() {
+            @Override
+            public void run() {
+                synchronized (entityDeathInChunkCounter) {
+                    chunkKillLimitCleanup();
+                }
+            }
+        }.runTaskTimerAsynchronously(main, 100, 40);
+    }
+
+    private void chunkKillLimitCleanup(){
+        final List<Long> chunkKeysToRemove = new LinkedList<>();
+
+        for (final long chunkKey : entityDeathInChunkCounter.keySet()){
+            //                                 Cooldown time, entity counts
+            final Map<EntityType, ChunkKillInfo> pairList = entityDeathInChunkCounter.get(chunkKey);
+
+            if (pairList == null) continue;
+            final Instant now = Instant.now();
+
+            for (final EntityType entityType : pairList.keySet()) {
+                final ChunkKillInfo chunkKillInfo = pairList.get(entityType);
+
+                chunkKillInfo.getEntrySet().removeIf(
+                        e -> e.getKey().compareTo(now.minusSeconds(e.getValue())) < 0
+                );
+            }
+
+            pairList.entrySet().removeIf(e -> e.getValue().isEmpty());
+
+            if(pairList.isEmpty()){
+                // Remove the object to prevent iterate over exceed amount of empty pairList
+                chunkKeysToRemove.add(chunkKey);
+            }
+        }
+
+        for (final long chunkKey : chunkKeysToRemove)
+            entityDeathInChunkCounter.remove(chunkKey);
+    }
+
+    @NotNull
+    public Map<EntityType, ChunkKillInfo> getorAddPairForSpecifiedChunk(final long chunkKey){
+        synchronized (this.entityDeathInChunkCounter){
+            return this.entityDeathInChunkCounter.computeIfAbsent(chunkKey, k -> new HashMap<>());
+        }
+    }
+
+    public @NotNull HashMap<Long, Map<EntityType, ChunkKillInfo>> getEntityDeathInChunkCounter(){
+        return this.entityDeathInChunkCounter;
+    }
+
     //Check for updates on the Spigot page.
     void checkUpdates() {
         if (main.helperSettings.getBoolean(main.settingsCfg,"use-update-checker", true)) {
@@ -405,6 +463,7 @@ public class Companion {
         Utils.logger.info("&fTasks: &7Shutting down other async tasks...");
         main._mobsQueueManager.stop();
         main.nametagQueueManager_.stop();
+        if (hashMapCleanUp != null) hashMapCleanUp.cancel();
         Bukkit.getScheduler().cancelTasks(main);
     }
 

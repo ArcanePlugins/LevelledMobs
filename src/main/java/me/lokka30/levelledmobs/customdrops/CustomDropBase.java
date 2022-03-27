@@ -36,6 +36,7 @@ public class CustomDropBase implements Cloneable {
     int maxDropGroup;
     int minPlayerLevel;
     int maxPlayerLevel;
+    public boolean useChunkKillMax;
     public float chance;
     boolean playerCausedOnly;
     boolean noSpawner;

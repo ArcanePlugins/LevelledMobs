@@ -388,6 +388,10 @@ default-rule:
 
     use-custom-item-drops-for-mobs: true
 
+    maximum-death-in-chunk-threshold: 0
+    chunk-max-cooldown-seconds: 300
+    disable-vanilla-drops-on-chunk-max: false
+
     spawner-particles: 'SOUL'
     spawner-particles-count: 10
 
@@ -475,4 +479,4 @@ custom-rules:
 # +   DO NOT EDIT BEYOND HERE WITHOUT DEVELOPER APPROVAL                                     +LM3
 # +                                                                                          +LM3
 # +-------------------------------------------------------------------------------------------LM3
-file-version: 2
+file-version: 3

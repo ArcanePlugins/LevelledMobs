@@ -633,6 +633,9 @@ public class RulesParsingManager {
         parseNBT_Data(cs);
         parsingInfo.passengerMatchLevel = ymlHelper.getBoolean2(cs, "passenger-match-level", parsingInfo.passengerMatchLevel);
         parsingInfo.nametagVisibleTime = ymlHelper.getInt2(cs, "nametag-visible-time", parsingInfo.nametagVisibleTime);
+        parsingInfo.maximumDeathInChunkThreshold = ymlHelper.getInt2(cs, "maximum-death-in-chunk-threshold", parsingInfo.maximumDeathInChunkThreshold);
+        parsingInfo.chunkMaxCoolDownTime = ymlHelper.getInt2(cs, "chunk-max-cooldown-seconds", parsingInfo.chunkMaxCoolDownTime);
+        parsingInfo.disableVanillaDropsOnChunkMax = ymlHelper.getBoolean2(cs, "disable-vanilla-drops-on-chunk-max", parsingInfo.disableVanillaDropsOnChunkMax);
         parsingInfo.spawnerParticlesCount = ymlHelper.getInt2(cs, "spawner-particles-count", parsingInfo.spawnerParticlesCount);
         parseSpawnerPartile(ymlHelper.getString(cs, "spawner-particles"));
 

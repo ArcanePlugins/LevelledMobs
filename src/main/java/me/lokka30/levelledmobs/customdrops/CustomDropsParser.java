@@ -337,6 +337,7 @@ public class CustomDropsParser {
 
     private void parseCustomDropsAttributes(@NotNull final CustomDropBase dropBase, @NotNull final ConfigurationSection cs, final @NotNull CustomDropInstance dropInstance){
         dropBase.chance = ymlHelper.getFloat(cs, "chance", this.defaults.chance);
+        dropBase.useChunkKillMax = ymlHelper.getBoolean(cs, "use-chunk-kill-max", this.defaults.useChunkKillMax);
         dropBase.permissions.addAll(this.defaults.permissions);
         dropBase.permissions.addAll(ymlHelper.getStringSet(cs, "permission"));
         dropBase.minLevel = ymlHelper.getInt(cs,"minlevel", this.defaults.minLevel);
