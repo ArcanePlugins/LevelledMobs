@@ -27,20 +27,24 @@ import me.lokka30.levelledmobs.listeners.PlayerPortalEventListener;
 import me.lokka30.levelledmobs.managers.LevelManager;
 import me.lokka30.levelledmobs.managers.PlaceholderApiIntegration;
 
+import me.lokka30.levelledmobs.misc.AdjacentChunksResult;
 import me.lokka30.levelledmobs.misc.ChunkKillInfo;
 import me.lokka30.levelledmobs.misc.DebugType;
 import me.lokka30.levelledmobs.misc.FileLoader;
 import me.lokka30.levelledmobs.misc.FileMigrator;
+import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
 import me.lokka30.levelledmobs.misc.Utils;
 import me.lokka30.levelledmobs.misc.VersionInfo;
 import me.lokka30.levelledmobs.rules.MetricsInfo;
 import me.lokka30.microlib.exceptions.OutdatedServerVersionException;
+import me.lokka30.microlib.messaging.MessageUtils;
 import me.lokka30.microlib.other.UpdateChecker;
 import me.lokka30.microlib.other.VersionUtils;
 import org.bstats.bukkit.Metrics;
 import org.bstats.charts.SimpleBarChart;
 import org.bstats.charts.SimplePie;
 import org.bukkit.Bukkit;
+import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -58,10 +62,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.InvalidObjectException;
+import java.time.Duration;
 import java.time.Instant;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -93,6 +100,7 @@ public class Companion {
         this.spawner_InfoIds = new LinkedList<>();
         this.debugsEnabled = new LinkedList<>();
         this.entityDeathInChunkCounter = new HashMap<>();
+        this.chunkKillNoticationTracker = new HashMap<>();
     }
 
     final private WeakHashMap<Player, Instant> recentlyJoinedPlayers;
@@ -103,6 +111,7 @@ public class Companion {
     private boolean hadRulesLoadError;
     public boolean useAdventure;
     final private HashMap<Long, Map<EntityType, ChunkKillInfo>> entityDeathInChunkCounter;
+    final private HashMap<Long, Map<UUID, Instant>> chunkKillNoticationTracker;
     final public Map<Player, Location> playerNetherPortals;
     final public Map<Player, Location> playerWorldPortals;
     final public List<UUID> spawner_CopyIds;
@@ -113,6 +122,8 @@ public class Companion {
     private BukkitTask hashMapCleanUp;
     final static private Object playerLogonTimes_Lock = new Object();
     final static private Object playerNetherPortals_Lock = new Object();
+    final static private Object entityDeathInChunkCounter_Lock = new Object();
+    final static private Object entityDeathInChunkNotifier_Lock = new Object();
 
     //Checks if the server version is supported
     public void checkCompatibility() {
@@ -337,8 +348,11 @@ public class Companion {
         this.hashMapCleanUp = new BukkitRunnable() {
             @Override
             public void run() {
-                synchronized (entityDeathInChunkCounter) {
+                synchronized (entityDeathInChunkCounter_Lock) {
                     chunkKillLimitCleanup();
+                }
+                synchronized (entityDeathInChunkNotifier_Lock){
+                    chunkKillNoticationCleanup();
                 }
             }
         }.runTaskTimerAsynchronously(main, 100, 40);
@@ -374,10 +388,65 @@ public class Companion {
             entityDeathInChunkCounter.remove(chunkKey);
     }
 
+    private void chunkKillNoticationCleanup(){
+        final Iterator<Long> iterator = this.chunkKillNoticationTracker.keySet().iterator();
+
+        while (iterator.hasNext()){
+            final long chunkKey = iterator.next();
+            final Map<UUID, Instant> playerTimestamps = this.chunkKillNoticationTracker.get(chunkKey);
+            playerTimestamps.entrySet().removeIf(e -> Duration.between(e.getValue(), Instant.now()).toSeconds() > 30L);
+
+            if (playerTimestamps.isEmpty()) iterator.remove();
+        }
+    }
+
     @NotNull
     public Map<EntityType, ChunkKillInfo> getorAddPairForSpecifiedChunk(final long chunkKey){
-        synchronized (this.entityDeathInChunkCounter){
+        synchronized (entityDeathInChunkCounter_Lock){
             return this.entityDeathInChunkCounter.computeIfAbsent(chunkKey, k -> new HashMap<>());
+        }
+    }
+
+    @NotNull
+    public List<Map<EntityType, ChunkKillInfo>> getorAddPairForSpecifiedChunks(final @NotNull List<Long> chunkKeys){
+        final List<Map<EntityType, ChunkKillInfo>> results = new ArrayList<>(chunkKeys.size());
+
+        synchronized (entityDeathInChunkCounter_Lock){
+            for (final long chunkKey : chunkKeys)
+                results.add(this.entityDeathInChunkCounter.computeIfAbsent(chunkKey, k -> new HashMap<>()));
+        }
+
+        return results;
+    }
+
+    public boolean doesUserHaveCooldown(final @NotNull List<Long> chunkKeys, final @NotNull UUID userId){
+        final List<Map<UUID, Instant>> chunkInfos = new LinkedList<>();
+
+        synchronized (entityDeathInChunkNotifier_Lock){
+            for (final long chunkKey : chunkKeys) {
+                if (this.chunkKillNoticationTracker.containsKey(chunkKey))
+                    chunkInfos.add(this.chunkKillNoticationTracker.get(chunkKey));
+            }
+        }
+
+        if (chunkInfos.isEmpty()) return false;
+
+        for (final Map<UUID, Instant> chunkInfo : chunkInfos){
+            if (chunkInfo == null || !chunkInfo.containsKey(userId)) continue;
+            final Instant instant = chunkInfo.get(userId);
+            if (Duration.between(instant, Instant.now()).toSeconds() <= 30L)
+                return true;
+        }
+
+        return false;
+    }
+
+    public void addUserCooldown(final @NotNull List<Long> chunkKeys, final @NotNull UUID userId){
+        synchronized (entityDeathInChunkNotifier_Lock){
+            for (final long chunkKey : chunkKeys){
+                final Map<UUID, Instant> entry = this.chunkKillNoticationTracker.computeIfAbsent(chunkKey, k -> new HashMap<>());
+                entry.put(userId, Instant.now());
+            }
         }
     }
 

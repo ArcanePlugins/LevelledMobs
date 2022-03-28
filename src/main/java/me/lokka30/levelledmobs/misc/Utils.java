@@ -11,6 +11,7 @@ import me.lokka30.levelledmobs.rules.RulesManager;
 import me.lokka30.microlib.messaging.MessageUtils;
 import me.lokka30.microlib.messaging.MicroLogger;
 import me.lokka30.microlib.other.VersionUtils;
+import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Biome;
@@ -310,11 +311,11 @@ public final class Utils {
         return new PlayerNetherOrWorldSpawnResult(location, isNetherPortalCoord, isWorldPortalCoord);
     }
 
-    public static long getChunkKey(final @NotNull LivingEntityWrapper lmEntity) {
+    public static long getChunkKey(final @NotNull Chunk chunk) {
         if (VersionUtils.isRunningPaper())
-            return lmEntity.getLivingEntity().getChunk().getChunkKey();
+            return chunk.getChunkKey();
 
-        final int x = lmEntity.getLocation().getChunk().getX() >> 4, z = lmEntity.getLocation().getChunk().getZ() >> 4;
+        final int x = chunk.getX() >> 4, z = chunk.getZ() >> 4;
         return (long) x & 0xffffffffL | ((long) z & 0xffffffffL) << 32;
     }
 

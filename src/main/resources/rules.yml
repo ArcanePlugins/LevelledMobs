@@ -389,6 +389,7 @@ default-rule:
     use-custom-item-drops-for-mobs: true
 
     maximum-death-in-chunk-threshold: 0
+    max-adjacent-chunks: 3
     chunk-max-cooldown-seconds: 300
     disable-vanilla-drops-on-chunk-max: false
 

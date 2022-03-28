@@ -6,12 +6,14 @@ package me.lokka30.levelledmobs.listeners;
 
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.customdrops.CustomDropResult;
+import me.lokka30.levelledmobs.misc.AdjacentChunksResult;
 import me.lokka30.levelledmobs.misc.ChunkKillInfo;
 import me.lokka30.levelledmobs.misc.DebugType;
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
 import me.lokka30.levelledmobs.misc.NametagTimerChecker;
 import me.lokka30.levelledmobs.misc.Utils;
 import me.lokka30.microlib.messaging.MessageUtils;
+import org.bukkit.Chunk;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -21,6 +23,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.time.Instant;
 import java.util.LinkedList;
@@ -50,7 +53,7 @@ public class EntityDeathListener implements Listener {
         if (event.getEntity() instanceof Player) return;
         if (bypassEntity.contains(event.getEntityType())) return;
 
-        synchronized (NametagTimerChecker.entityTarget_Lock){
+        synchronized (NametagTimerChecker.entityTarget_Lock) {
             main.nametagTimerChecker.entityTargetMap.remove(event.getEntity());
         }
 
@@ -68,7 +71,7 @@ public class EntityDeathListener implements Listener {
         if (lmEntity.isLevelled() && lmEntity.getLivingEntity().getKiller() != null) {
 
             // Only counts if mob is killed by player
-            if (hasReachedEntityDeathChunkMax(lmEntity) && main.rulesManager.disableVanillaDropsOnChunkMax(lmEntity))
+            if (hasReachedEntityDeathChunkMax(lmEntity, lmEntity.getLivingEntity().getKiller()) && main.rulesManager.disableVanillaDropsOnChunkMax(lmEntity))
                 event.getDrops().clear();
         }
 
@@ -93,39 +96,72 @@ public class EntityDeathListener implements Listener {
         lmEntity.free();
     }
 
-    private boolean hasReachedEntityDeathChunkMax(final LivingEntityWrapper lmEntity){
-        final long chunkKey = Utils.getChunkKey(lmEntity);
+    private boolean hasReachedEntityDeathChunkMax(final @NotNull LivingEntityWrapper lmEntity, final @NotNull Player player) {
+        final long chunkKey = Utils.getChunkKey(lmEntity.getLocation().getChunk());
         final Map<EntityType, ChunkKillInfo> pairList = main.companion.getorAddPairForSpecifiedChunk(chunkKey);
         int numberOfEntityDeathInChunk = pairList.containsKey(lmEntity.getEntityType()) ?
                 pairList.get(lmEntity.getEntityType()).getCount() : 0;
 
-        /*
-         Only send message for maximum threshold and cool down time
-         Only message once
-         This is enabled by default
-         */
+        final AdjacentChunksResult adjacentChunksResult = getNumberOfEntityDeathsInAdjacentChunks(lmEntity);
+        if (adjacentChunksResult != null) {
+            numberOfEntityDeathInChunk += adjacentChunksResult.entities;
+            adjacentChunksResult.chunkKeys.add(chunkKey);
+        }
 
+        lmEntity.chunkKillcount = numberOfEntityDeathInChunk;
         final int maximumDeathInChunkThreshold = main.rulesManager.getMaximumDeathInChunkThreshold(lmEntity);
         final int maxCooldownTime = main.rulesManager.getMaxChunkCooldownTime(lmEntity);
 
-        if (numberOfEntityDeathInChunk < maximumDeathInChunkThreshold){
+        if (numberOfEntityDeathInChunk < maximumDeathInChunkThreshold) {
             final ChunkKillInfo chunkKillInfo = pairList.computeIfAbsent(lmEntity.getEntityType(), k -> new ChunkKillInfo());
             chunkKillInfo.entityCounts.put(Instant.now(), maxCooldownTime);
             return false;
         }
 
-        if (numberOfEntityDeathInChunk != maximumDeathInChunkThreshold) return true;
+        if (main.helperSettings.getBoolean(main.settingsCfg, "exceed-kill-in-chunk-message", true)) {
+            final List<Long> chunkKeys = adjacentChunksResult != null ?
+                    adjacentChunksResult.chunkKeys : List.of(chunkKey);
+            if (main.companion.doesUserHaveCooldown(chunkKeys, player.getUniqueId()))
+                return true;
 
-        Utils.debugLog(main, DebugType.CHUNK_KILL_COUNT, String.format("%s: %s, reached limit, entities recorded: %s, max: %s",
-                Utils.displayChunkLocation(lmEntity.getLocation()), lmEntity.getTypeName(), numberOfEntityDeathInChunk, maximumDeathInChunkThreshold));
+            Utils.debugLog(main, DebugType.CHUNK_KILL_COUNT, String.format("%s: %s, reached limit, entities recorded: %s, max: %s",
+                    Utils.displayChunkLocation(lmEntity.getLocation()), lmEntity.getTypeName(), numberOfEntityDeathInChunk, maximumDeathInChunkThreshold));
 
-        final Player murderPlayer = lmEntity.getLivingEntity().getKiller();
-        if (murderPlayer != null && main.helperSettings.getBoolean(main.settingsCfg, "exceed-kill-in-chunk-message", true))
-            murderPlayer.sendMessage(MessageUtils.colorizeAll(main.messagesCfg.getString("other.no-drop-in-chunk")));
+            final String prefix = main.configUtils.getPrefix();
+            final String msg = main.messagesCfg.getString("other.no-drop-in-chunk");
 
-        final ChunkKillInfo chunkKillInfo = pairList.computeIfAbsent(lmEntity.getEntityType(), k -> new ChunkKillInfo());
-        chunkKillInfo.entityCounts.put(Instant.now(), maxCooldownTime);
+            if (msg != null)
+                player.sendMessage(MessageUtils.colorizeAll(msg.replace("%prefix%", prefix)));
+
+            main.companion.addUserCooldown(chunkKeys, player.getUniqueId());
+        }
 
         return true;
+    }
+
+    @Nullable
+    private AdjacentChunksResult getNumberOfEntityDeathsInAdjacentChunks(final @NotNull LivingEntityWrapper lmEntity) {
+        final int adjacentChunksToCheck = main.rulesManager.getAdjacentChunksToCheck(lmEntity);
+        if (adjacentChunksToCheck <= 0) return null;
+
+        final Chunk startingChunk = lmEntity.getLocation().getChunk();
+        final AdjacentChunksResult result = new AdjacentChunksResult();
+
+        for (int x = -adjacentChunksToCheck; x < adjacentChunksToCheck; x++){
+            for (int z = -adjacentChunksToCheck; z < adjacentChunksToCheck; z++){
+                if (x == 0 && z == 0) continue;
+
+                final Chunk chunk = lmEntity.getWorld().getChunkAt(startingChunk.getX() + x, startingChunk.getZ() + z);
+                if (!chunk.isLoaded()) continue;
+
+                result.chunkKeys.add(Utils.getChunkKey(chunk));
+            }
+        }
+
+        final List<Map<EntityType, ChunkKillInfo>> pairLists = main.companion.getorAddPairForSpecifiedChunks(result.chunkKeys);
+        for (final Map<EntityType, ChunkKillInfo> pairList : pairLists)
+            result.entities += pairList.containsKey(lmEntity.getEntityType()) ? pairList.get(lmEntity.getEntityType()).getCount() : 0;
+
+        return result;
     }
 }

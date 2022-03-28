@@ -84,6 +84,7 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
     private boolean isBuildingCache;
     private boolean groupsAreBuilt;
     private boolean wasSummoned;
+    public int chunkKillcount;
     private Integer mobLevel;
     private Integer skylightLevelAtSpawn;
     private int nametagCooldownTime;
@@ -152,6 +153,7 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
 
     public void clearEntityData(){
         this.livingEntity = null;
+        this.chunkKillcount = 0;
         this.applicableGroups.clear();
         this.applicableRules.clear();
         this.mobExternalTypes.clear();

@@ -565,6 +565,16 @@ public class RulesManager {
         return result;
     }
 
+    public int getAdjacentChunksToCheck(final @NotNull LivingEntityWrapper lmEntity){
+        int result = 0;
+
+        for (final RuleInfo ruleInfo : lmEntity.getApplicableRules()) {
+            if (ruleInfo.maxAdjacentChunks != null) result = ruleInfo.maxAdjacentChunks;
+        }
+
+        return result;
+    }
+
     @NotNull
     public ApplicableRulesResult getApplicableRules(final LivingEntityInterface lmInterface){
         final ApplicableRulesResult applicableRules = new ApplicableRulesResult();

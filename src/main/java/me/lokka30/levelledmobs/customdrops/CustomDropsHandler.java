@@ -7,7 +7,6 @@ package me.lokka30.levelledmobs.customdrops;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.managers.ExternalCompatibilityManager;
 import me.lokka30.levelledmobs.misc.Addition;
-import me.lokka30.levelledmobs.misc.ChunkKillInfo;
 import me.lokka30.levelledmobs.misc.DebugType;
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
 import me.lokka30.levelledmobs.misc.PaperUtils;
@@ -373,13 +372,7 @@ public class CustomDropsHandler {
         boolean didNotMakeChance = false;
         float chanceRole = 0.0F;
 
-        int numberOfEntityDeathInChunk = 0;
-        final int maxEntities = main.rulesManager.getMaximumDeathInChunkThreshold(info.lmEntity);
-
-        if (!info.equippedOnly && dropBase.useChunkKillMax)
-            numberOfEntityDeathInChunk = getNumberOfEntityDeathInChunk(info.lmEntity);
-
-        if (!info.equippedOnly && maxEntities > 0 && numberOfEntityDeathInChunk > maxEntities) {
+        if (!info.equippedOnly && dropBase.useChunkKillMax && info.wasKilledByPlayer && hasReachedChunkKillLimit(info.lmEntity)) {
             if (isCustomDropsDebuggingEnabled()) {
                 if (dropBase instanceof CustomDropItem) {
                     info.addDebugMessage(String.format("&8- &7level: &b%s&7, item: &b%s&7, gId: &b%s&7, chunk kill count reached",
@@ -556,12 +549,9 @@ public class CustomDropsHandler {
         info.stackToItem.put(newItem, dropItem);
     }
 
-    private int getNumberOfEntityDeathInChunk(final @NotNull LivingEntityWrapper lmEntity) {
-        final long chunkKey = Utils.getChunkKey(lmEntity);
-        final Map<EntityType, ChunkKillInfo> pairList = main.companion.getorAddPairForSpecifiedChunk(chunkKey);
-
-        return pairList.containsKey(lmEntity.getEntityType()) ?
-                pairList.get(lmEntity.getEntityType()).getCount() : 0;
+    private boolean hasReachedChunkKillLimit(final @NotNull LivingEntityWrapper lmEntity){
+        final int maximumDeathInChunkThreshold = main.rulesManager.getMaximumDeathInChunkThreshold(lmEntity);
+        return lmEntity.chunkKillcount >= maximumDeathInChunkThreshold;
     }
 
     private boolean shouldDenyDeathCause(final @NotNull CustomDropBase dropBase, final @NotNull CustomDropProcessingInfo info){

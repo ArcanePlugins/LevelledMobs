@@ -67,6 +67,7 @@ public class RuleInfo {
     Integer nametagVisibleTime;
     Integer maximumDeathInChunkThreshold;
     Integer chunkMaxCoolDownTime;
+    Integer maxAdjacentChunks;
     Float conditions_Chance;
     Double sunlightBurnAmount;
     public String nametag;
