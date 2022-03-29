@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ This file is Copyright (c) 2020-2022 lokka30.
+  ~ This file is/was present in the LevelledMobs resource.
+  ~ Repository: <https://github.com/lokka30/LevelledMobs>
+  ~ Use of this source code is governed by the GNU GPL v3.0
+  ~ license that can be found in the LICENSE.md file.
+  -->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <parent>
+    <artifactId>levelledmobs-parent</artifactId>
+    <groupId>me.lokka30</groupId>
+    <version>4</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+
+  <artifactId>plugin-bukkit-v1_18_R1</artifactId>
+  <version>1</version>
+  <name>LevelledMobs Plugin (Bukkit) - 1.18 NMS</name>
+
+  <packaging>jar</packaging>
+  <properties>
+    <maven.compiler.source>17</maven.compiler.source>
+    <maven.compiler.target>17</maven.compiler.target>
+  </properties>
+
+  <build>
+    <defaultGoal>clean package</defaultGoal>
+    <finalName>levelledmobs-${project.artifactId}-v${project.version}</finalName>
+    <plugins>
+      <plugin>
+        <groupId>net.md-5</groupId>
+        <artifactId>specialsource-maven-plugin</artifactId>
+        <version>1.2.2</version>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>remap</goal>
+            </goals>
+            <id>remap-obf</id>
+            <configuration>
+              <srgIn>org.spigotmc:minecraft-server:1.18.1-R0.1-SNAPSHOT:txt:maps-mojang</srgIn>
+              <reverse>true</reverse>
+              <remappedDependencies>org.spigotmc:spigot:1.18.1-R0.1-SNAPSHOT:jar:remapped-mojang
+              </remappedDependencies>
+              <remappedArtifactAttached>true</remappedArtifactAttached>
+              <remappedClassifierName>remapped-obf</remappedClassifierName>
+            </configuration>
+          </execution>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>remap</goal>
+            </goals>
+            <id>remap-spigot</id>
+            <configuration>
+              <inputFile>
+                ${project.build.directory}/${project.artifactId}-${project.version}-remapped-obf.jar
+              </inputFile>
+              <srgIn>org.spigotmc:minecraft-server:1.18.1-R0.1-SNAPSHOT:csrg:maps-spigot</srgIn>
+              <remappedDependencies>org.spigotmc:spigot:1.18.1-R0.1-SNAPSHOT:jar:remapped-obf
+              </remappedDependencies>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
+  <dependencies>
+    <dependency>
+      <groupId>me.lokka30</groupId>
+      <artifactId>plugin-bukkit-nms</artifactId>
+      <version>4.0</version>
+    </dependency>
+    <dependency>
+      <groupId>org.spigotmc</groupId>
+      <artifactId>spigot-api</artifactId>
+      <version>1.18.1-R0.1-SNAPSHOT</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.spigotmc</groupId>
+      <artifactId>spigot</artifactId>
+      <version>1.18.1-R0.1-SNAPSHOT</version>
+      <classifier>remapped-mojang</classifier>
+      <scope>provided</scope>
+    </dependency>
+  </dependencies>
+
+</project>

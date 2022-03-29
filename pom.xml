@@ -12,26 +12,30 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>me.lokka30</groupId>
-  <artifactId>LevelledMobs-Parent</artifactId>
-  <version>1</version>
+  <artifactId>levelledmobs-parent</artifactId>
+  <version>4</version>
   <modules>
-    <module>lm-core-plugin</module>
-    <module>lm-bukkit-plugin</module>
-    <module>lm-nms-v1_17_R1</module>
-    <module>lm-nms-v1_18_R1</module>
-    <module>lm-bukkit-api</module>
+    <module>plugin-bukkit</module>
+    <module>plugin-bukkit-nms</module>
+    <module>plugin-bukkit-v1_17_R1</module>
+    <module>plugin-bukkit-v1_18_R1</module>
+    <module>api-bukkit</module>
   </modules>
   <packaging>pom</packaging>
 
   <name>LevelledMobs Parent</name>
 
   <properties>
+    <!--
     <java.version>17</java.version>
+    -->
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
 
   <build>
     <defaultGoal>clean package</defaultGoal>
+    <finalName>levelledmobs-${project.artifactId}-v${project.version}</finalName>
+    <!--
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -43,5 +47,6 @@
         </configuration>
       </plugin>
     </plugins>
+    -->
   </build>
 </project>
