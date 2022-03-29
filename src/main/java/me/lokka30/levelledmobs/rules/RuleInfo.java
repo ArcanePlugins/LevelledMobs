@@ -12,7 +12,6 @@ import org.bukkit.Particle;
 import org.bukkit.block.Biome;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import scala.Int;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
