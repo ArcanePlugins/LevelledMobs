@@ -638,6 +638,8 @@ public class RulesParsingManager {
         parsingInfo.disableVanillaDropsOnChunkMax = ymlHelper.getBoolean2(cs, "disable-vanilla-drops-on-chunk-max", parsingInfo.disableVanillaDropsOnChunkMax);
         parsingInfo.spawnerParticlesCount = ymlHelper.getInt2(cs, "spawner-particles-count", parsingInfo.spawnerParticlesCount);
         parsingInfo.maxAdjacentChunks = ymlHelper.getInt2(cs, "max-adjacent-chunks", parsingInfo.maxAdjacentChunks);
+        if (parsingInfo.maxAdjacentChunks != null && parsingInfo.maxAdjacentChunks > 10)
+            parsingInfo.maxAdjacentChunks = 10;
         parseSpawnerPartile(ymlHelper.getString(cs, "spawner-particles"));
 
         final Set<String> nametagVisibility = ymlHelper.getStringSet(cs, "nametag-visibility-method");

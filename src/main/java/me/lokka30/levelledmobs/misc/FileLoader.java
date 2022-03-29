@@ -44,11 +44,15 @@ public final class FileLoader {
         try (final FileInputStream fs = new FileInputStream(file)) {
             new Yaml().load(fs);
         } catch (final Exception e) {
-            final String parseErrorMessage = "Unable to parse file &b%s&r due to a user-caused YAML syntax error. Please copy the contents of this file into a Yaml Parser website (https://tinyurl.com/yamlp) to help diagnose which line you caused the error on. The parsing error is available below. It indicates line numbers around where the error occurred.\n" +
+            final String parseErrorMessage = "LevelledMobs was unable to read file &b%s&r due to a user-caused YAML syntax error.\n" +
+                    "Please copy the contents of your file into a YAML Parser website, such as &b(https://tinyurl.com/yamlp)&r  to help locate the line of the mistake.\n" +
+                    "Failure to resolve this issue will cause LevelledMobs to function improperly, or likely not at all.\n" +
+                    "Below represents where LevelledMobs became confused while attempting to read your file:\n" +
                     "&b---- START ERROR ----&r\n" +
                     "&4%s&r\n" +
                     "&b---- END ERROR ----&r\n" +
-                    "If you have gone through unsuccessful efforts to fix this issue, you may contact our support team: &bhttps://discord.io/arcaneplugins";
+                    "If you have attempted to resolve this issue yourself, and are unable to, then please &b#create-a-ticket&r in the Official Arcane Plugins Support Discord:\n" +
+                    "&bhttps://discord.io/arcaneplugins";
 
             Utils.logger.error(String.format(parseErrorMessage, cfgName, e));
             return null;

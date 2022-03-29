@@ -68,7 +68,7 @@ public class EntityDeathListener implements Listener {
         if (lmEntity.getLivingEntity().getKiller() != null && main.placeholderApiIntegration != null)
             main.placeholderApiIntegration.putPlayerOrMobDeath(lmEntity.getLivingEntity().getKiller(), lmEntity);
 
-        if (lmEntity.isLevelled() && lmEntity.getLivingEntity().getKiller() != null) {
+        if (lmEntity.isLevelled() && lmEntity.getLivingEntity().getKiller() != null && main.rulesManager.getMaximumDeathInChunkThreshold(lmEntity) > 0) {
 
             // Only counts if mob is killed by player
             if (hasReachedEntityDeathChunkMax(lmEntity, lmEntity.getLivingEntity().getKiller()) && main.rulesManager.disableVanillaDropsOnChunkMax(lmEntity))

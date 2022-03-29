@@ -106,9 +106,9 @@ presets:
       random: true
       lower-mob-level-bias-factor: 5
 
-  weighted_random_basic_difficulty:
+  weighted_random_basic:
     #   This Strategy Preset controls Weighted Random Bias.
-    name: 'LVLling Strategy - Weighted Random Bias BASIC CHALLENGE'
+    name: 'LVLling Strategy - Weighted Random Bias BASIC Challenge'
     strategies:
       weighted-random:
         1-2: 5
@@ -117,9 +117,9 @@ presets:
         7-8: 2
         9-10: 1
 
-  weighted_random_average_difficulty:
+  weighted_random_average:
     #   This Strategy Preset controls Weighted Random Bias.
-    name: 'LVLling Strategy - Weighted Random Bias AVERAGE CHALLENGE'
+    name: 'LVLling Strategy - Weighted Random Bias AVERAGE Challenge'
     strategies:
       weighted-random:
         1-5: 5
@@ -128,16 +128,27 @@ presets:
         16-20: 2
         21-25: 1
 
-  weighted_random_advanced_difficulty:
+  weighted_random_advanced:
 #   This Strategy Preset controls Weighted Random Bias.
-    name: 'LVLling Strategy - Weighted Random Bias ADVANCED CHALLENGE'
+    name: 'LVLling Strategy - Weighted Random Bias ADVANCED Challenge'
     strategies:
       weighted-random:
-        1-10: 5
-        11-20: 4
-        21-30: 3
-        31-40: 2
-        41-50: 1
+        1-9: 5
+        10-19: 4
+        20-29: 3
+        30-39: 2
+        40-50: 1
+        
+  weighted_random_extreme:
+#   This Strategy Preset controls Weighted Random Bias.
+    name: 'LVLling Strategy - Weighted Random Bias EXTREME Challenge'
+    strategies:
+      weighted-random:
+        1-19: 5
+        20-39: 4
+        40-59: 3
+        60-79: 2
+        80-100: 1
 
   player_Levelling:
 #   This Strategy Preset controls the player-stat based levelling system.
@@ -189,19 +200,18 @@ presets:
         ranged-attack-damage: 1.0
         item-drop: 3
         xp-drop: 5
-        horse-jump-strength: 0.0
 
-        tiered-coloring:
-          1-2: '&#22E76B' #Green
-          3-4: '&#528CFF' #Blue
-          5-6: '&#FFCD56' #Yellow
-          7-8: '&#F2003D' #Red
-          9-10: '&#B447FF' #Purple
-          default: '&#FFFFFF' #White
-        health-indicator:
-          scale: 2
-          max: 5
-          merge: true
+      tiered-coloring:
+        1-2: '&#22E76B' #Green
+        3-4: '&#528CFF' #Blue
+        5-6: '&#FFCD56' #Yellow
+        7-8: '&#F2003D' #Red
+        9-10: '&#B447FF' #Purple
+        default: '&#FFFFFF' #White
+      health-indicator:
+        scale: 2
+        max: 5
+        merge: true
 
   average_challenge:
     name: 'Average-Challenge Multipliers'
@@ -219,19 +229,18 @@ presets:
 #       Special Multipliers (0.0 Min - 1.0 Max)
         armor-bonus: 0.2
         armor-toughness: 0.15
-        horse-jump-strength: 0.0
 
-        tiered-coloring:
-          1-5: '&#22E76B' #Green
-          6-10: '&#528CFF' #Blue
-          11-15: '&#FFCD56' #Yellow
-          16-20: '&#F2003D' #Red
-          21-25: '&#B447FF' #Purple
-          default: '&#FFFFFF' #White
-        health-indicator:
-          scale: 4
-          max: 5
-          merge: true
+      tiered-coloring:
+        1-5: '&#22E76B' #Green
+        6-10: '&#528CFF' #Blue
+        11-15: '&#FFCD56' #Yellow
+        16-20: '&#F2003D' #Red
+        21-25: '&#B447FF' #Purple
+        default: '&#FFFFFF' #White
+      health-indicator:
+        scale: 4
+        max: 5
+        merge: true
 
   advanced_challenge:
     name: 'Advanced-Challenge Multipliers'
@@ -252,19 +261,18 @@ presets:
         armor-toughness: 0.3
         attack-knockback: 0.5
         knockback-resistance: 0.5
-        horse-jump-strength: 0.0
 
-        tiered-coloring:
-          1-9: '&#22E76B' #Green
-          10-19: '&#528CFF' #Blue
-          20-29: '&#FFCD56' #Yellow
-          30-39: '&#F2003D' #Red
-          40-50: '&#B447FF' #Purple
-          default: '&#FFFFFF' #White
-        health-indicator:
-          scale: 8
-          max: 5
-          merge: true
+      tiered-coloring:
+        1-9: '&#22E76B' #Green
+        10-19: '&#528CFF' #Blue
+        20-29: '&#FFCD56' #Yellow
+        30-39: '&#F2003D' #Red
+        40-50: '&#B447FF' #Purple
+        default: '&#FFFFFF' #White
+      health-indicator:
+        scale: 8
+        max: 5
+        merge: true
 
   extreme_challenge:
     name: 'Extreme-Challenge Multipliers'
@@ -286,19 +294,18 @@ presets:
         attack-knockback: 0.5
         knockback-resistance: 0.5
         zombie-spawn-reinforcements: 0.15
-        horse-jump-strength: 0.0
 
-        tiered-coloring:
-          1-9: '&#22E76B' #Green
-          10-19: '&#528CFF' #Blue
-          20-29: '&#FFCD56' #Yellow
-          30-39: '&#F2003D' #Red
-          40-50: '&#B447FF' #Purple
-          default: '&#FFFFFF' #White
-        health-indicator:
-          scale: 8
-          max: 5
-          merge: true
+      tiered-coloring:
+        1-19: '&#22E76B' #Green
+        20-39: '&#528CFF' #Blue
+        40-59: '&#FFCD56' #Yellow
+        60-79: '&#F2003D' #Red
+        80-100: '&#B447FF' #Purple
+        default: '&#FFFFFF' #White
+      health-indicator:
+        scale: 16
+        max: 5
+        merge: true
 
   nametag_using_indicator:
 #   This controls the nametag, where the health is displayed using %health-indicator%
@@ -347,9 +354,10 @@ default-rule:
 #    - advanced_challenge
 #    - extreme_challenge
 #    - apply_LevellingVariance
-#    - weighted_random_basic_difficulty
-    - weighted_random_average_difficulty
-#    - weighted_random_advanced_difficulty
+#    - weighted_random_basic
+    - weighted_random_average
+#    - weighted_random_advanced
+#    - weighted_random_extreme
 #    - spawn_Levelling
 #    - blended_Levelling
 #    - ycoord_Levelling

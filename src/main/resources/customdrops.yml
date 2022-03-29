@@ -38,7 +38,7 @@
 # +-------------------------------------------------------------------------------------------LM3
 defaults:
   chance: 0.2
-  use-chunk-kill-max: false
+  use-chunk-kill-max: true
   amount: 1
   minLevel: -1
   maxLevel: -1
