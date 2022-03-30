@@ -281,12 +281,19 @@ public class RulesManager {
 
     public int getRule_MobMaxLevel(@NotNull final LivingEntityInterface lmInterface){
         int maxLevel = 0;
+        int firstMaxLevel = -1;
 
         for (final RuleInfo ruleInfo : lmInterface.getApplicableRules()) {
-            if (ruleInfo.restrictions_MaxLevel != null) maxLevel = ruleInfo.restrictions_MaxLevel;
+            if (ruleInfo.restrictions_MaxLevel != null) {
+                maxLevel = ruleInfo.restrictions_MaxLevel;
+                if (firstMaxLevel < 0 && maxLevel > 0) firstMaxLevel = maxLevel;
+            }
         }
 
         if (maxLevel <= 0 && lmInterface.getSummonedLevel() != null){
+            if (maxLevel == 0 && firstMaxLevel > 0)
+                maxLevel = firstMaxLevel;
+
             int summonedLevel = lmInterface.getSummonedLevel();
             if (summonedLevel > maxLevel) maxLevel = summonedLevel;
         }
