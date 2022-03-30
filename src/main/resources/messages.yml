@@ -259,8 +259,8 @@ command:
       rules-reprocessed:
         - '%prefix% Rules Reprocessed for &b%entitycount%&7 mobs in &b%worldcount%&7 world(s)'
       reset:
-        - '%prefix% Running this command will reset your rules to one of 3 defaults.'
-        - 'You must select if you want easy/normal/hard difficulty.'
+        - '%prefix% Running this command will reset your rules to one of 4 defaults.'
+        - 'You must select if you want basic/average/advanced/extreme difficulty.'
         - 'A backup will be made and your rules.yml reset to default.'
       resetting:
         - '%prefix% Resetting rules to %difficulty%'

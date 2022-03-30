@@ -124,8 +124,8 @@ public class EntityDeathListener implements Listener {
             if (main.companion.doesUserHaveCooldown(chunkKeys, player.getUniqueId()))
                 return true;
 
-            Utils.debugLog(main, DebugType.CHUNK_KILL_COUNT, String.format("%s: %s, reached limit, entities recorded: %s, max: %s",
-                    Utils.displayChunkLocation(lmEntity.getLocation()), lmEntity.getTypeName(), numberOfEntityDeathInChunk, maximumDeathInChunkThreshold));
+            Utils.debugLog(main, DebugType.CHUNK_KILL_COUNT, String.format("%s: player: %s, entity: %s, reached chunk kill limit, max: %s",
+                    Utils.displayChunkLocation(lmEntity.getLocation()), player.getName(), lmEntity.getTypeName(), maximumDeathInChunkThreshold));
 
             final String prefix = main.configUtils.getPrefix();
             final String msg = main.messagesCfg.getString("other.no-drop-in-chunk");

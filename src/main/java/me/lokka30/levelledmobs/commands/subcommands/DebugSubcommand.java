@@ -3,6 +3,7 @@ package me.lokka30.levelledmobs.commands.subcommands;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.commands.MessagesBase;
 import me.lokka30.levelledmobs.misc.DebugCreator;
+import me.lokka30.levelledmobs.misc.Utils;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 
@@ -15,7 +16,7 @@ public class DebugSubcommand extends MessagesBase implements Subcommand {
     }
 
     @Override
-    public void parseSubcommand(final LevelledMobs main, final @NotNull CommandSender sender, final String label, final String[] args) {
+    public void parseSubcommand(final LevelledMobs main, final @NotNull CommandSender sender, final String label, final String @NotNull [] args) {
         commandSender = sender;
         messageLabel = label;
 
@@ -24,15 +25,46 @@ public class DebugSubcommand extends MessagesBase implements Subcommand {
             return;
         }
 
-        if (args.length == 3 && "create".equalsIgnoreCase(args[1]) && "confirm".equalsIgnoreCase(args[2]))
-            DebugCreator.createDebug(main, sender);
+        if (args.length <= 1){
+            sender.sendMessage("Options: create / chunk_kill_count");
+            return;
+        }
+
+        if ("create".equalsIgnoreCase(args[1])) {
+            if (args.length >= 3 && "confirm".equalsIgnoreCase(args[2]))
+                DebugCreator.createDebug(main, sender);
+            else
+                showMessage("other.create-debug");
+        }
+        else if ("chunk_kill_count".equalsIgnoreCase(args[1])) {
+            chunkKillCount(sender, args);
+        }
         else
             showMessage("other.create-debug");
     }
 
+    private void chunkKillCount(final CommandSender sender, final String @NotNull [] args){
+        if (args.length >= 3 && "reset".equalsIgnoreCase(args[2])){
+            main.companion.clearChunkKillCache();
+            sender.sendMessage("cache has been cleared");
+            return;
+        }
+
+        showChunkKillCountSyntax(sender);
+    }
+
+    private void showChunkKillCountSyntax(final @NotNull CommandSender sender){
+        sender.sendMessage("Options: reset");
+    }
+
     @Override
-    public List<String> parseTabCompletions(final LevelledMobs main, final CommandSender sender, final String[] args) {
-        // This subcommand has no tab completions.
+    public List<String> parseTabCompletions(final LevelledMobs main, final CommandSender sender, final String @NotNull [] args) {
+        Utils.logger.info(String.format("%s", args.length));
+        if (args.length <= 2)
+            return List.of("create", "chunk_kill_count");
+        if ("chunk_kill_count".equalsIgnoreCase(args[1]))
+            return List.of("reset");
+
         return Collections.emptyList();
     }
 }

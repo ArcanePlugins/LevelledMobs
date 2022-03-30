@@ -202,20 +202,21 @@ public class RulesSubcommand extends MessagesBase implements Subcommand {
         showMessage("command.levelledmobs.rules.resetting", "%difficulty%", String.valueOf(difficulty));
 
         final String filename = "rules.yml";
-        final String[] replaceWhat = new String[] {"    - average_challenge",  "    - weighted_random_average_difficulty",  "", ""};
-        final String[] replaceWith = new String[] {"#    - average_challenge", "#    - weighted_random_average_difficulty", "", ""};
+        final String[] replaceWhat = new String[] {"    - average_challenge",  "    - weighted_random_average",  "", ""};
+        final String[] replaceWith = new String[] {"#    - average_challenge", "#    - weighted_random_average", "", ""};
 
         switch (difficulty){
             case BASIC:
-                replaceWhat[2] = "#    - basic_challenge";                  replaceWith[2] = "    - basic_challenge";
-                replaceWhat[3] = "#    - weighted_random_basic_difficulty"; replaceWith[3] = "    - weighted_random_basic_difficulty";
+                replaceWhat[2] = "#    - basic_challenge";       replaceWith[2] = "    - basic_challenge";
+                replaceWhat[3] = "#    - weighted_random_basic"; replaceWith[3] = "    - weighted_random_basic";
                 break;
             case ADVANCED:
-                replaceWhat[2] = "#    - advanced_challenge";                  replaceWith[2] = "    - advanced_challenge";
-                replaceWhat[3] = "#    - weighted_random_advanced_difficulty"; replaceWith[3] = "    - weighted_random_advanced_difficulty";
+                replaceWhat[2] = "#    - advanced_challenge";       replaceWith[2] = "    - advanced_challenge";
+                replaceWhat[3] = "#    - weighted_random_advanced"; replaceWith[3] = "    - weighted_random_advanced_difficulty";
                 break;
             case EXTREME:
-                replaceWhat[2] = "#    - extreme_challenge"; replaceWith[2] = "    - extreme_challenge";
+                replaceWhat[2] = "#    - extreme_challenge";       replaceWith[2] = "    - extreme_challenge";
+                replaceWhat[3] = "#    - weighted_random_extreme"; replaceWith[3] = "    - weighted_random_extreme";
                 break;
         }
 
@@ -229,10 +230,8 @@ public class RulesSubcommand extends MessagesBase implements Subcommand {
             if (difficulty != ResetDifficulty.AVERAGE) {
                 rulesText = rulesText.replace(replaceWhat[0], replaceWith[0])
                 .replace(replaceWhat[1], replaceWith[1])
-                .replace(replaceWhat[2], replaceWith[2]);
-
-                if (difficulty != ResetDifficulty.EXTREME)
-                    rulesText = rulesText.replace(replaceWhat[3], replaceWith[3]);
+                .replace(replaceWhat[2], replaceWith[2])
+                .replace(replaceWhat[3], replaceWith[3]);
             }
 
             final File rulesFile = new File(main.getDataFolder(), filename);

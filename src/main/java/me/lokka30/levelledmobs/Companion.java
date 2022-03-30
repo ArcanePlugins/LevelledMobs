@@ -446,8 +446,13 @@ public class Companion {
         }
     }
 
-    public @NotNull HashMap<Long, Map<EntityType, ChunkKillInfo>> getEntityDeathInChunkCounter(){
-        return this.entityDeathInChunkCounter;
+    public void clearChunkKillCache(){
+        synchronized (entityDeathInChunkCounter_Lock){
+            this.entityDeathInChunkCounter.clear();
+        }
+        synchronized (entityDeathInChunkNotifier_Lock){
+            this.chunkKillNoticationTracker.clear();
+        }
     }
 
     //Check for updates on the Spigot page.
