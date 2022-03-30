@@ -10,6 +10,13 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * Parses commands for various debug stuff
+ *
+ * @author stumper66
+ * @since 3.2.0
+ */
+
 public class DebugSubcommand extends MessagesBase implements Subcommand {
     public DebugSubcommand(final LevelledMobs main) {
         super(main);

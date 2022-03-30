@@ -19,6 +19,13 @@ import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+/**
+ * Creates debug.zip for troubleshooting purposes
+ *
+ * @author stumper66
+ * @since 3.2.0
+ */
+
 public class DebugCreator {
     public static void createDebug(final @NotNull LevelledMobs main, final CommandSender sender){
         final String pluginDir = main.getDataFolder().getAbsolutePath();
