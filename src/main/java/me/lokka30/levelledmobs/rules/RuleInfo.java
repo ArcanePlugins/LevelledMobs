@@ -8,6 +8,7 @@ import me.lokka30.levelledmobs.managers.ExternalCompatibilityManager;
 import me.lokka30.levelledmobs.misc.CachedModalList;
 import me.lokka30.levelledmobs.rules.strategies.LevellingStrategy;
 import me.lokka30.microlib.messaging.MessageUtils;
+import org.bukkit.Particle;
 import org.bukkit.block.Biome;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -38,6 +39,8 @@ public class RuleInfo {
     private String ruleName;
     @DoNotMerge
     boolean ruleIsEnabled;
+    Boolean disableVanillaDropsOnChunkMax;
+    boolean useNoSpawnerParticles;
     Boolean babyMobsInheritAdultSetting;
     Boolean mobLevelInheritance;
     public Boolean customDrops_UseForMobs;
@@ -48,6 +51,7 @@ public class RuleInfo {
     Boolean passengerMatchLevel;
     @DoNotMerge
     int rulePriority;
+    Integer spawnerParticlesCount;
     Integer maxRandomVariance;
     Integer creeperMaxDamageRadius;
     Integer conditions_MinLevel;
@@ -60,6 +64,9 @@ public class RuleInfo {
     Integer conditions_MinDistanceFromSpawn;
     Integer conditions_MaxDistanceFromSpawn;
     Integer nametagVisibleTime;
+    Integer maximumDeathInChunkThreshold;
+    Integer chunkMaxCoolDownTime;
+    Integer maxAdjacentChunks;
     Float conditions_Chance;
     Double sunlightBurnAmount;
     public String nametag;
@@ -79,6 +86,7 @@ public class RuleInfo {
     public List<NametagVisibilityEnum> nametagVisibilityEnum;
     @NotNull @DoNotMerge
     public final Map<String, String> ruleSourceNames;
+    public Particle spawnerParticle;
     List<TieredColoringInfo> tieredColoringInfos;
     Map<ExternalCompatibilityManager.ExternalCompatibility, Boolean> enabledExtCompats;
     MergeableStringList mobNBT_Data;

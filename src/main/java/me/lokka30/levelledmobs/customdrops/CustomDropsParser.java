@@ -11,12 +11,9 @@ import me.lokka30.levelledmobs.misc.CachedModalList;
 import me.lokka30.levelledmobs.misc.CustomUniversalGroups;
 import me.lokka30.levelledmobs.misc.DebugType;
 import me.lokka30.levelledmobs.misc.NBTApplyResult;
-import me.lokka30.levelledmobs.misc.PaperUtils;
-import me.lokka30.levelledmobs.misc.SpigotUtils;
 import me.lokka30.levelledmobs.misc.Utils;
 import me.lokka30.levelledmobs.misc.YmlParsingHelper;
 import me.lokka30.levelledmobs.rules.RuleInfo;
-import me.lokka30.microlib.other.VersionUtils;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.configuration.ConfigurationSection;
@@ -340,6 +337,7 @@ public class CustomDropsParser {
 
     private void parseCustomDropsAttributes(@NotNull final CustomDropBase dropBase, @NotNull final ConfigurationSection cs, final @NotNull CustomDropInstance dropInstance){
         dropBase.chance = ymlHelper.getFloat(cs, "chance", this.defaults.chance);
+        dropBase.useChunkKillMax = ymlHelper.getBoolean(cs, "use-chunk-kill-max", this.defaults.useChunkKillMax);
         dropBase.permissions.addAll(this.defaults.permissions);
         dropBase.permissions.addAll(ymlHelper.getStringSet(cs, "permission"));
         dropBase.minLevel = ymlHelper.getInt(cs,"minlevel", this.defaults.minLevel);
@@ -554,26 +552,6 @@ public class CustomDropsParser {
         if (meta == null) return;
 
         boolean madeChanges = false;
-
-        if (item.lore != null && !item.lore.isEmpty()){
-            if (VersionUtils.isRunningPaper())
-                PaperUtils.updateItemMetaLore(meta, item.lore);
-            else
-                SpigotUtils.updateItemMetaLore(meta, item.lore);
-
-            item.getItemStack().setItemMeta(meta);
-            madeChanges = true;
-        }
-
-        if (item.customName != null && !item.customName.isEmpty()){
-            if (VersionUtils.isRunningPaper())
-                PaperUtils.updateItemDisplayName(meta, item.customName);
-            else
-                SpigotUtils.updateItemDisplayName(meta, item.customName);
-
-            item.getItemStack().setItemMeta(meta);
-            madeChanges = true;
-        }
 
         if (item.customModelDataId != this.defaults.customModelData){
             meta.setCustomModelData(item.customModelDataId);

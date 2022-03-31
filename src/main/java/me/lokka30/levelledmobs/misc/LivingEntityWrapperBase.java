@@ -30,6 +30,7 @@ public class LivingEntityWrapperBase {
     private Location location;
     @NotNull
     final LevelledMobs main;
+    Integer summonedLevel;
     Integer spawnedTimeOfDay;
     private boolean isPopulated;
     public final AtomicInteger inUseCount;
@@ -47,6 +48,7 @@ public class LivingEntityWrapperBase {
         this.spawnedTimeOfDay = null;
         this.inUseCount.set(0);
         this.isPopulated = false;
+        this.summonedLevel = null;
     }
 
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
@@ -88,5 +90,9 @@ public class LivingEntityWrapperBase {
             throw new NullPointerException("World was null");
 
         return this.world.getName();
+    }
+
+    public void setSummonedLevel(final Integer summonedLevel){
+        this.summonedLevel = summonedLevel;
     }
 }

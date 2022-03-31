@@ -6,7 +6,6 @@ package me.lokka30.levelledmobs.customdrops;
 
 import me.lokka30.levelledmobs.misc.CachedModalList;
 import me.lokka30.levelledmobs.misc.Utils;
-import org.bukkit.event.entity.EntityDamageEvent;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.LinkedList;
@@ -37,6 +36,7 @@ public class CustomDropBase implements Cloneable {
     int maxDropGroup;
     int minPlayerLevel;
     int maxPlayerLevel;
+    public boolean useChunkKillMax;
     public float chance;
     boolean playerCausedOnly;
     boolean noSpawner;

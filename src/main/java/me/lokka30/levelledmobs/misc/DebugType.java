@@ -139,5 +139,7 @@ public enum DebugType {
 
     SCOREBOARD_TAGS,
 
-    SKYLIGHT_LEVEL
+    SKYLIGHT_LEVEL,
+
+    CHUNK_KILL_COUNT
 }

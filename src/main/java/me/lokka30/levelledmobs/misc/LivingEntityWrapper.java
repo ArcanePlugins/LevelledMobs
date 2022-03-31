@@ -83,6 +83,8 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
     private boolean hasCache;
     private boolean isBuildingCache;
     private boolean groupsAreBuilt;
+    private boolean wasSummoned;
+    public int chunkKillcount;
     private Integer mobLevel;
     private Integer skylightLevelAtSpawn;
     private int nametagCooldownTime;
@@ -151,6 +153,7 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
 
     public void clearEntityData(){
         this.livingEntity = null;
+        this.chunkKillcount = 0;
         this.applicableGroups.clear();
         this.applicableRules.clear();
         this.mobExternalTypes.clear();
@@ -177,6 +180,7 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
         this.playerLevellingAllowDecrease = null;
         this.pendingPlayerIdToSet = null;
         this.skylightLevelAtSpawn = null;
+        this.wasSummoned = false;
 
         super.clearEntityData();
     }
@@ -194,6 +198,11 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
             isBuildingCache = true;
             this.mobLevel = main.levelInterface.isLevelled(livingEntity) ?
                     main.levelInterface.getLevelOfMob(livingEntity) : null;
+
+            try{
+                this.wasSummoned = getPDC().has(main.namespaced_keys.wasSummoned, PersistentDataType.INTEGER);
+            }
+            catch (Exception ignored){ }
 
             this.spawnedWGRegions = ExternalCompatibilityManager.getWGRegionsAtLocation(this);
 
@@ -531,12 +540,16 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
     }
 
     public void setSpawnReason(final LevelledMobSpawnReason spawnReason) {
+        setSpawnReason(spawnReason, false);
+    }
+
+    public void setSpawnReason(final LevelledMobSpawnReason spawnReason, final boolean doForce) {
         this.spawnReason = spawnReason;
 
         if (!getPDCLock()) return;
 
         try {
-            if (!livingEntity.getPersistentDataContainer().has(main.namespaced_keys.spawnReasonKey, PersistentDataType.STRING)) {
+            if (doForce || !livingEntity.getPersistentDataContainer().has(main.namespaced_keys.spawnReasonKey, PersistentDataType.STRING)) {
                 livingEntity.getPersistentDataContainer().set(main.namespaced_keys.spawnReasonKey, PersistentDataType.STRING, spawnReason.toString());
             }
         }
@@ -728,6 +741,16 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
         setSpawnedTimeOfDay(result);
 
         return result;
+    }
+
+    public Integer getSummonedLevel() {
+        return summonedLevel;
+    }
+
+    public boolean isWasSummoned(){
+        if (!hasCache) buildCache();
+
+        return this.wasSummoned;
     }
 
     @NotNull

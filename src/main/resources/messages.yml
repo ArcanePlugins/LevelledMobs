@@ -259,8 +259,8 @@ command:
       rules-reprocessed:
         - '%prefix% Rules Reprocessed for &b%entitycount%&7 mobs in &b%worldcount%&7 world(s)'
       reset:
-        - '%prefix% Running this command will reset your rules to one of 3 defaults.'
-        - 'You must select if you want easy/normal/hard difficulty.'
+        - '%prefix% Running this command will reset your rules to one of 4 defaults.'
+        - 'You must select if you want basic/average/advanced/extreme difficulty.'
         - 'A backup will be made and your rules.yml reset to default.'
       resetting:
         - '%prefix% Resetting rules to %difficulty%'
@@ -338,6 +338,7 @@ other:
     send-on-join: true
 
   mob-head-drop-name: '%mob_name%''s head'
+  no-drop-in-chunk: '%prefix% &7Your levelled mob kill count has reached the maximum for this chunk. You will no longer receive levelled drops from these mobs. Please come back after a while.'
   create-debug:
     - '&b&nCreate a Debugging ZIP'
     - '&7You should only run this command if a LevelledMobs developer has asked you to. It is used to assist users who are experiencing issues with the plugin.'
@@ -359,4 +360,4 @@ other:
 # +   DO NOT EDIT BEYOND HERE WITHOUT DEVELOPER APPROVAL                                     +LM3
 # +                                                                                          +LM3
 # +-------------------------------------------------------------------------------------------LM3
-file-version: 7
+file-version: 8

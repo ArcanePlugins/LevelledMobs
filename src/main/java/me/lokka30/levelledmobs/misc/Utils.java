@@ -10,11 +10,12 @@ import me.lokka30.levelledmobs.rules.MinAndMax;
 import me.lokka30.levelledmobs.rules.RulesManager;
 import me.lokka30.microlib.messaging.MessageUtils;
 import me.lokka30.microlib.messaging.MicroLogger;
+import me.lokka30.microlib.other.VersionUtils;
+import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Biome;
 import org.bukkit.entity.Player;
-import org.bukkit.event.entity.EntityDamageEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -308,5 +309,17 @@ public final class Utils {
         }
 
         return new PlayerNetherOrWorldSpawnResult(location, isNetherPortalCoord, isWorldPortalCoord);
+    }
+
+    public static long getChunkKey(final @NotNull Chunk chunk) {
+        if (VersionUtils.isRunningPaper())
+            return chunk.getChunkKey();
+
+        final int x = chunk.getX() >> 4, z = chunk.getZ() >> 4;
+        return (long) x & 0xffffffffL | ((long) z & 0xffffffffL) << 32;
+    }
+
+    public static String displayChunkLocation(final @NotNull Location location){
+        return String.format("%s,%s", location.getChunk().getX(), location.getChunk().getZ());
     }
 }

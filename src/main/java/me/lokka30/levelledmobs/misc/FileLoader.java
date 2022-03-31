@@ -4,6 +4,7 @@
 
 package me.lokka30.levelledmobs.misc;
 
+import me.lokka30.microlib.messaging.MessageUtils;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.util.FileUtil;
@@ -22,10 +23,10 @@ import java.io.FileInputStream;
  */
 public final class FileLoader {
 
-    public static final int SETTINGS_FILE_VERSION = 32;    // Last changed: v3.1.5 b503
-    public static final int MESSAGES_FILE_VERSION = 7;     // Last changed: v3.3.0 b567
+    public static final int SETTINGS_FILE_VERSION = 33;    // Last changed: v3.4.0 b621
+    public static final int MESSAGES_FILE_VERSION = 8;     // Last changed: v3.4.0 b621
     public static final int CUSTOMDROPS_FILE_VERSION = 10; // Last changed: v3.1.0 b474
-    public static final int RULES_FILE_VERSION = 2;        // Last changed: v3.2.0 b529
+    public static final int RULES_FILE_VERSION = 3;        // Last changed: v3.4.0 b621
 
     private FileLoader() {
         throw new UnsupportedOperationException();
@@ -43,7 +44,17 @@ public final class FileLoader {
         try (final FileInputStream fs = new FileInputStream(file)) {
             new Yaml().load(fs);
         } catch (final Exception e) {
-            Utils.logger.error("&4Error reading " + cfgName + ". " + e.getMessage());
+            final String parseErrorMessage = "LevelledMobs was unable to read file &b%s&r due to a user-caused YAML syntax error.\n" +
+                    "Please copy the contents of your file into a YAML Parser website, such as &b(https://tinyurl.com/yamlp)&r  to help locate the line of the mistake.\n" +
+                    "Failure to resolve this issue will cause LevelledMobs to function improperly, or likely not at all.\n" +
+                    "Below represents where LevelledMobs became confused while attempting to read your file:\n" +
+                    "&b---- START ERROR ----&r\n" +
+                    "&4%s&r\n" +
+                    "&b---- END ERROR ----&r\n" +
+                    "If you have attempted to resolve this issue yourself, and are unable to, then please &b#create-a-ticket&r in the Official Arcane Plugins Support Discord:\n" +
+                    "&bhttps://discord.io/arcaneplugins";
+
+            Utils.logger.error(String.format(parseErrorMessage, cfgName, e));
             return null;
         }
 
@@ -55,7 +66,8 @@ public final class FileLoader {
         final boolean isCustomDrops = cfgName.equals("customdrops.yml");
         final boolean isRules = cfgName.equals("rules.yml");
 
-        if (fileVersion < compatibleVersion) {
+        // not migrating rules version 2 or newer
+        if ((!isRules || fileVersion < 2) && fileVersion < compatibleVersion) {
             final File backedupFile = new File(plugin.getDataFolder(), cfgName + ".v" + fileVersion + ".old");
 
             // copy to old file
@@ -82,6 +94,12 @@ public final class FileLoader {
             checkFileVersion(file, compatibleVersion, ymlHelper.getInt(cfg, "file-version"));
 
         return cfg;
+    }
+
+    public static @NotNull String getFileLoadErrorMessage(){
+        return MessageUtils.colorizeStandardCodes(
+                "&4An error occured&r whilst attempting to parse the file &brules.yml&r due to a user-caused YAML syntax error. Please see the console logs for more details."
+        );
     }
 
     public static void saveResourceIfNotExists(final Plugin instance, @NotNull final File file) {

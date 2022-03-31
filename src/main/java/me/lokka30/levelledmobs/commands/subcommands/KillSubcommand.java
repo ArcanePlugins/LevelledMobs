@@ -23,7 +23,10 @@ import org.bukkit.metadata.FixedMetadataValue;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Allows you to kill LevelledMobs with various options including all levelled mobs, specific worlds
@@ -77,7 +80,7 @@ public class KillSubcommand extends MessagesBase implements Subcommand {
                 if (checkArgs == 2) {
                     if (sender instanceof Player) {
                         final Player player = (Player) sender;
-                        parseKillAll(Collections.singletonList(player.getWorld()), main, useNoDrops, rl);
+                        parseKillAll(List.of(player.getWorld()), main, useNoDrops, rl);
                     }
                     else
                         showMessage("command.levelledmobs.kill.all.usage-console");
@@ -98,7 +101,7 @@ public class KillSubcommand extends MessagesBase implements Subcommand {
                             //messages = Utils.replaceAllInList(messages, "%world%", args[2]); //This is after the list is colourised to ensure that an input of a world name '&aGreen' will not be colourised.
                             return;
                         }
-                        parseKillAll(Collections.singletonList(world), main, useNoDrops, rl);
+                        parseKillAll(List.of(world), main, useNoDrops, rl);
                     }
                 }
                 else
@@ -224,7 +227,7 @@ public class KillSubcommand extends MessagesBase implements Subcommand {
         }
 
         if (args.length == 2) {
-            return Arrays.asList("all", "near");
+            return List.of("all", "near");
         }
 
         if (args[1].equalsIgnoreCase("all") && (args.length == 3 || args.length == 4)) {
@@ -253,7 +256,7 @@ public class KillSubcommand extends MessagesBase implements Subcommand {
             }
         }
 
-        final List<String> result = new ArrayList<>();
+        final List<String> result = new LinkedList<>();
         if (!containsNoDrops)
             result.add("/nodrops");
         if (!containsLevels)

@@ -116,6 +116,7 @@ public final class LevelledMobs extends JavaPlugin {
             levelManager.startNametagAutoUpdateTask();
             levelManager.startNametagTimer();
         }
+        companion.startCleanupTask();
         companion.setupMetrics();
         companion.checkUpdates();
 

@@ -12,6 +12,8 @@ import me.lokka30.levelledmobs.misc.DebugType;
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
 import me.lokka30.levelledmobs.misc.Utils;
 import me.lokka30.levelledmobs.rules.strategies.LevellingStrategy;
+import me.lokka30.levelledmobs.rules.strategies.RandomLevellingStrategy;
+import org.bukkit.Particle;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Tameable;
@@ -21,6 +23,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.ConcurrentModificationException;
 import java.util.EnumMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -221,7 +224,9 @@ public class RulesManager {
         LevellingStrategy levellingStrategy = null;
 
         for (final RuleInfo ruleInfo : lmEntity.getApplicableRules()){
-            if (ruleInfo.levellingStrategy != null) {
+            if (ruleInfo.useRandomLevelling != null && ruleInfo.useRandomLevelling)
+                levellingStrategy = new RandomLevellingStrategy();
+            else if (ruleInfo.levellingStrategy != null) {
                 if (levellingStrategy != null && levellingStrategy.getClass().equals(ruleInfo.levellingStrategy.getClass()))
                     levellingStrategy.mergeRule(ruleInfo.levellingStrategy);
                 else
@@ -262,6 +267,9 @@ public class RulesManager {
     }
 
     public int getRule_MobMinLevel(@NotNull final LivingEntityInterface lmInterface) {
+        if (lmInterface.getSummonedLevel() != null)
+            return lmInterface.getSummonedLevel();
+
         int minLevel = 1;
 
         for (final RuleInfo ruleInfo : lmInterface.getApplicableRules()) {
@@ -273,9 +281,21 @@ public class RulesManager {
 
     public int getRule_MobMaxLevel(@NotNull final LivingEntityInterface lmInterface){
         int maxLevel = 0;
+        int firstMaxLevel = -1;
 
         for (final RuleInfo ruleInfo : lmInterface.getApplicableRules()) {
-            if (ruleInfo.restrictions_MaxLevel != null) maxLevel = ruleInfo.restrictions_MaxLevel;
+            if (ruleInfo.restrictions_MaxLevel != null) {
+                maxLevel = ruleInfo.restrictions_MaxLevel;
+                if (firstMaxLevel < 0 && maxLevel > 0) firstMaxLevel = maxLevel;
+            }
+        }
+
+        if (maxLevel <= 0 && lmInterface.getSummonedLevel() != null){
+            if (maxLevel == 0 && firstMaxLevel > 0)
+                maxLevel = firstMaxLevel;
+
+            int summonedLevel = lmInterface.getSummonedLevel();
+            if (summonedLevel > maxLevel) maxLevel = summonedLevel;
         }
 
         return maxLevel;
@@ -351,10 +371,15 @@ public class RulesManager {
     public List<NametagVisibilityEnum> getRule_CreatureNametagVisbility(@NotNull final LivingEntityWrapper lmEntity){
         List<NametagVisibilityEnum> result = null;
 
-        for (final RuleInfo ruleInfo : lmEntity.getApplicableRules()){
-            if (ruleInfo == null) continue;
-            if (ruleInfo.nametagVisibilityEnum != null)
-                result = ruleInfo.nametagVisibilityEnum;
+        try {
+            for (final RuleInfo ruleInfo : lmEntity.getApplicableRules()) {
+                if (ruleInfo == null) continue;
+                if (ruleInfo.nametagVisibilityEnum != null)
+                    result = ruleInfo.nametagVisibilityEnum;
+            }
+        }
+        catch (ConcurrentModificationException e){
+            Utils.logger.info("Got ConcurrentModificationException in getRule_CreatureNametagVisbility");
         }
 
         if (result == null || result.isEmpty())
@@ -489,6 +514,74 @@ public class RulesManager {
             return allEntities;
     }
 
+    @Nullable
+    public Particle getSpawnerParticle(final @NotNull LivingEntityWrapper lmEntity){
+        Particle result = Particle.SOUL;
+
+        for (final RuleInfo ruleInfo : lmEntity.getApplicableRules()){
+            if (ruleInfo.spawnerParticle != null)
+                result = ruleInfo.spawnerParticle;
+            else if (ruleInfo.useNoSpawnerParticles)
+                result = null;
+        }
+
+        return result;
+    }
+
+    public int getSpawnerParticleCount(final @NotNull LivingEntityWrapper lmEntity){
+        int result = 10;
+
+        for (final RuleInfo ruleInfo : lmEntity.getApplicableRules()){
+            if (ruleInfo.spawnerParticlesCount != null)
+                result = ruleInfo.spawnerParticlesCount;
+        }
+
+        // max limit of 100 counts which would take 5 seconds to show
+        if (result > 100) result = 100;
+
+        return result;
+    }
+
+    public int getMaximumDeathInChunkThreshold(final @NotNull LivingEntityWrapper lmEntity){
+        int result = 0;
+
+        for (final RuleInfo ruleInfo : lmEntity.getApplicableRules()) {
+            if (ruleInfo.maximumDeathInChunkThreshold != null) result = ruleInfo.maximumDeathInChunkThreshold;
+        }
+
+        return result;
+    }
+
+    public int getMaxChunkCooldownTime(final @NotNull LivingEntityWrapper lmEntity){
+        int result = 0;
+
+        for (final RuleInfo ruleInfo : lmEntity.getApplicableRules()) {
+            if (ruleInfo.chunkMaxCoolDownTime != null) result = ruleInfo.chunkMaxCoolDownTime;
+        }
+
+        return result;
+    }
+
+    public boolean disableVanillaDropsOnChunkMax(final @NotNull LivingEntityWrapper lmEntity){
+        boolean result = false;
+
+        for (final RuleInfo ruleInfo : lmEntity.getApplicableRules()) {
+            if (ruleInfo.disableVanillaDropsOnChunkMax != null) result = ruleInfo.disableVanillaDropsOnChunkMax;
+        }
+
+        return result;
+    }
+
+    public int getAdjacentChunksToCheck(final @NotNull LivingEntityWrapper lmEntity){
+        int result = 0;
+
+        for (final RuleInfo ruleInfo : lmEntity.getApplicableRules()) {
+            if (ruleInfo.maxAdjacentChunks != null) result = ruleInfo.maxAdjacentChunks;
+        }
+
+        return result;
+    }
+
     @NotNull
     public ApplicableRulesResult getApplicableRules(final LivingEntityInterface lmInterface){
         final ApplicableRulesResult applicableRules = new ApplicableRulesResult();
@@ -595,7 +688,7 @@ public class RulesManager {
             if (checkName == null) checkName = "(none)";
 
             if (!ri.conditions_SpawnegEggNames.isEnabledInList(checkName, lmEntity)) {
-                Utils.debugLog(main, DebugType.DENIED_RULE_SPAWN_REASON, String.format("&b%s&7, mob: &b%s&7, spawn_egg: &b%s&7",
+                Utils.debugLog(main, DebugType.DENIED_RULE_SPAWNER_NAME, String.format("&b%s&7, mob: &b%s&7, spawn_egg: &b%s&7",
                         ri.getRuleName(), lmEntity.getNameIfBaby(), checkName));
                 return false;
             }
@@ -670,7 +763,7 @@ public class RulesManager {
             }
         }
 
-        if (ri.conditions_Worlds != null && !ri.conditions_Worlds.isEnabledInList(lmInterface.getWorld().getName(), null)) {
+        if (!(lmInterface.isWasSummoned()) && ri.conditions_Worlds != null && !ri.conditions_Worlds.isEnabledInList(lmInterface.getWorld().getName(), null)) {
             Utils.debugLog(main, DebugType.DENIED_RULE_WORLD_LIST, String.format("&b%s&7, mob: &b%s&7, mob world: &b%s&7",
                     ri.getRuleName(), lmInterface.getTypeName(), lmInterface.getWorld().getName()));
             return new RuleCheckResult(false);

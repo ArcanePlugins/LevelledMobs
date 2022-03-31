@@ -34,6 +34,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
@@ -173,11 +174,13 @@ public class RulesSubcommand extends MessagesBase implements Subcommand {
 
         ResetDifficulty difficulty = ResetDifficulty.UNSPECIFIED;
         switch (args[2].toLowerCase()){
-            case "easy": difficulty = ResetDifficulty.EASY;
+            case "basic": difficulty = ResetDifficulty.BASIC;
                 break;
-            case "normal": difficulty = ResetDifficulty.NORMAL;
+            case "average": difficulty = ResetDifficulty.AVERAGE;
                 break;
-            case "hard": difficulty = ResetDifficulty.HARD;
+            case "advanced": difficulty = ResetDifficulty.ADVANCED;
+                break;
+            case "extreme": difficulty = ResetDifficulty.EXTREME;
                 break;
         }
 
@@ -198,17 +201,24 @@ public class RulesSubcommand extends MessagesBase implements Subcommand {
         final String prefix = main.configUtils.getPrefix();
         showMessage("command.levelledmobs.rules.resetting", "%difficulty%", String.valueOf(difficulty));
 
-        final String filename;
+        final String filename = "rules.yml";
+        final String[] replaceWhat = new String[] {"    - average_challenge",  "    - weighted_random_average",  "", ""};
+        final String[] replaceWith = new String[] {"#    - average_challenge", "#    - weighted_random_average", "", ""};
 
         switch (difficulty){
-            case EASY: filename = "predefined/rules_easy.yml";
+            case BASIC:
+                replaceWhat[2] = "#    - basic_challenge";       replaceWith[2] = "    - basic_challenge";
+                replaceWhat[3] = "#    - weighted_random_basic"; replaceWith[3] = "    - weighted_random_basic";
                 break;
-            case HARD: filename = "predefined/rules_hard.yml";
+            case ADVANCED:
+                replaceWhat[2] = "#    - advanced_challenge";       replaceWith[2] = "    - advanced_challenge";
+                replaceWhat[3] = "#    - weighted_random_advanced"; replaceWith[3] = "    - weighted_random_advanced_difficulty";
                 break;
-            default: filename = "rules.yml";
+            case EXTREME:
+                replaceWhat[2] = "#    - extreme_challenge";       replaceWith[2] = "    - extreme_challenge";
+                replaceWhat[3] = "#    - weighted_random_extreme"; replaceWith[3] = "    - weighted_random_extreme";
                 break;
         }
-
 
         try (final InputStream stream = main.getResource(filename)) {
             if (stream == null){
@@ -216,7 +226,15 @@ public class RulesSubcommand extends MessagesBase implements Subcommand {
                 return;
             }
 
-            final File rulesFile = new File(main.getDataFolder(), "rules.yml");
+            String rulesText = new String(stream.readAllBytes(), StandardCharsets.UTF_8);
+            if (difficulty != ResetDifficulty.AVERAGE) {
+                rulesText = rulesText.replace(replaceWhat[0], replaceWith[0])
+                .replace(replaceWhat[1], replaceWith[1])
+                .replace(replaceWhat[2], replaceWith[2])
+                .replace(replaceWhat[3], replaceWith[3]);
+            }
+
+            final File rulesFile = new File(main.getDataFolder(), filename);
             File rulesBackupFile = new File(main.getDataFolder(), "rules.yml.backup");
 
             for (int i = 0; i < 10; i++){
@@ -225,7 +243,7 @@ public class RulesSubcommand extends MessagesBase implements Subcommand {
             }
 
             Files.copy(rulesFile.toPath(), rulesBackupFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-            Files.copy(stream, rulesFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+            Files.writeString(rulesFile.toPath(), rulesText, StandardCharsets.UTF_8);
         } catch (final IOException ex) {
             ex.printStackTrace();
             return;
@@ -236,7 +254,7 @@ public class RulesSubcommand extends MessagesBase implements Subcommand {
     }
 
     private enum ResetDifficulty{
-        EASY, NORMAL, HARD, UNSPECIFIED
+        BASIC, AVERAGE, ADVANCED, EXTREME, UNSPECIFIED
     }
 
     private void showHyperlink(final CommandSender sender, final String message, final String url){
@@ -460,11 +478,9 @@ public class RulesSubcommand extends MessagesBase implements Subcommand {
         if (args.length == 2)
             return Arrays.asList("force_all", "help_discord", "help_wiki", "reset", "show_all", "show_effective", "show_rule");
         else if (args.length >= 3) {
-            if ("reset".equalsIgnoreCase(args[1]) && args.length == 3) {
-                suggestions.add("easy");
-                suggestions.add("normal");
-                suggestions.add("hard");
-            } else if ("show_all".equalsIgnoreCase(args[1])) {
+            if ("reset".equalsIgnoreCase(args[1]) && args.length == 3)
+                suggestions.addAll(List.of("basic", "average", "enhanced", "extreme"));
+            else if ("show_all".equalsIgnoreCase(args[1])) {
                 boolean showOnConsole = false;
                 for (int i = 2; i < args.length; i++) {
                     final String arg = args[i].toLowerCase();

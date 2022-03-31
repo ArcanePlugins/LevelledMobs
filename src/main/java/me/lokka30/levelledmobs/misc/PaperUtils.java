@@ -4,6 +4,8 @@ import me.lokka30.microlib.other.VersionUtils;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.format.TextDecoration;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -31,7 +33,8 @@ public class PaperUtils {
         final List<Component> newLore = new ArrayList<>(lore.size());
 
         for (final String loreLine : lore)
-            newLore.add(Component.text().content(loreLine).build());
+            newLore.add(Component.text().decoration(TextDecoration.ITALIC, false).append(
+                    LegacyComponentSerializer.legacyAmpersand().deserialize(loreLine)).build());
 
         meta.lore(newLore);
     }
@@ -39,7 +42,8 @@ public class PaperUtils {
     public static void updateItemDisplayName(final @NotNull ItemMeta meta, final @Nullable String displayName){
         if (displayName == null) return;
 
-        meta.displayName(Component.text().content(displayName).build());
+        meta.displayName(Component.text().decoration(TextDecoration.ITALIC, false).append(
+                LegacyComponentSerializer.legacyAmpersand().deserialize(displayName)).build());
     }
 
     @NotNull

@@ -564,17 +564,23 @@ public class LevelManager implements LevelInterface {
 
     @NotNull
     public String updateNametag(final LivingEntityWrapper lmEntity, @NotNull String nametag, final boolean useCustomNameForNametags) {
+        return updateNametag(lmEntity, nametag, useCustomNameForNametags, true);
+    }
+
+    @NotNull
+    public String updateNametag(final LivingEntityWrapper lmEntity, @NotNull String nametag, final boolean useCustomNameForNametags, final boolean colorize) {
         if (nametag.isEmpty()) return nametag;
         final String overridenName = main.rulesManager.getRule_EntityOverriddenName(lmEntity, useCustomNameForNametags);
 
+
         String displayName = overridenName == null ?
-                Utils.capitalize(lmEntity.getTypeName().replaceAll("_", " ")) :
-                MessageUtils.colorizeAll(overridenName);
+            Utils.capitalize(lmEntity.getTypeName().replaceAll("_", " ")) :
+            overridenName;
 
         if (lmEntity.getLivingEntity().getCustomName() != null && !useCustomNameForNametags)
             displayName = lmEntity.getLivingEntity().getCustomName();
 
-        nametag = replaceStringPlaceholders(nametag, lmEntity);
+        nametag = replaceStringPlaceholders(nametag, lmEntity, colorize);
 
         // This is after colorize so that color codes in nametags dont get translated
         nametag = nametag.replace("%displayname%", displayName);
@@ -645,6 +651,14 @@ public class LevelManager implements LevelInterface {
     }
 
     public String replaceStringPlaceholders(final String nametag, @NotNull final LivingEntityWrapper lmEntity){
+        return replaceStringPlaceholders(nametag, lmEntity, true);
+    }
+
+    public String replaceStringPlaceholders(final String nametag, @NotNull final LivingEntityWrapper lmEntity, final boolean colorize){
+        return replaceStringPlaceholders(nametag, lmEntity, colorize, true);
+    }
+
+    public String replaceStringPlaceholders(final String nametag, @NotNull final LivingEntityWrapper lmEntity, final boolean colorize, final boolean usePAPI){
         String result = nametag;
 
         final double maxHealth = getMobAttributeValue(lmEntity);
@@ -681,10 +695,11 @@ public class LevelManager implements LevelInterface {
         result = result.replace("%y%", String.valueOf(lmEntity.getLivingEntity().getLocation().getBlockY()));
         result = result.replace("%z%", String.valueOf(lmEntity.getLivingEntity().getLocation().getBlockZ()));
 
-        if (result.contains("%") && ExternalCompatibilityManager.hasPAPI_Installed())
+        if (usePAPI && result.contains("%") && ExternalCompatibilityManager.hasPAPI_Installed())
             result = ExternalCompatibilityManager.getPAPI_Placeholder(null, result);
 
-        result = MessageUtils.colorizeAll(result);
+        if (colorize)
+            result = MessageUtils.colorizeAll(result);
 
         return result;
     }
@@ -704,9 +719,13 @@ public class LevelManager implements LevelInterface {
     }
 
     public void updateNametag(final LivingEntityWrapper lmEntity){
+        String nametag = getNametag(lmEntity, false);
+        if (nametag != null)
+            nametag = MessageUtils.colorizeAll(nametag);
+
         final QueueItem queueItem = new QueueItem(
                 lmEntity,
-                getNametag(lmEntity, false),
+                nametag,
                 lmEntity.getLivingEntity().getWorld().getPlayers()
         );
 
@@ -905,7 +924,9 @@ public class LevelManager implements LevelInterface {
                 location.getWorld().equals(lmEntity.getWorld()) &&
                 lmEntity.getLocation().distanceSquared(location) <= maxDistance) {
             //if within distance, update nametag.
-            main.nametagQueueManager_.addToQueue(new QueueItem(lmEntity, main.levelManager.getNametag(lmEntity, false), Collections.singletonList(player)));
+            String nametag = main.levelManager.getNametag(lmEntity, false);
+            if (nametag != null) nametag = MessageUtils.colorizeAll(nametag);
+            main.nametagQueueManager_.addToQueue(new QueueItem(lmEntity, nametag, Collections.singletonList(player)));
         }
     }
 
@@ -963,8 +984,11 @@ public class LevelManager implements LevelInterface {
             case ATTRIBUTE_KNOCKBACK_RESISTANCE:        attribute = Attribute.GENERIC_KNOCKBACK_RESISTANCE; break;
             case ATTRIBUTE_FLYING_SPEED:                attribute = Attribute.GENERIC_FLYING_SPEED; break;
             case ATTRIBUTE_ATTACK_KNOCKBACK:            attribute = Attribute.GENERIC_ATTACK_KNOCKBACK; break;
-            case ATTRIBUTE_ZOMBIE_SPAWN_REINFORCEMENTS: attribute = Attribute.ZOMBIE_SPAWN_REINFORCEMENTS; break;
             case ATTRIBUTE_FOLLOW_RANGE:                attribute = Attribute.GENERIC_FOLLOW_RANGE; break;
+            case ATTRIBUTE_ZOMBIE_SPAWN_REINFORCEMENTS:
+                if (lmEntity.getSpawnReason() == LevelledMobSpawnReason.REINFORCEMENTS) return;
+                attribute = Attribute.ZOMBIE_SPAWN_REINFORCEMENTS;
+                break;
 
             default:
                 throw new IllegalStateException("Addition must be an Attribute, if so, it has not been considered in this method");
@@ -1183,6 +1207,7 @@ public class LevelManager implements LevelInterface {
         }
 
         if (isSummoned) {
+            lmEntity.setSpawnReason(LevelledMobSpawnReason.LM_SUMMON, true);
             final SummonedMobPreLevelEvent summonedMobPreLevelEvent = new SummonedMobPreLevelEvent(lmEntity.getLivingEntity(), level);
             Bukkit.getPluginManager().callEvent(summonedMobPreLevelEvent);
 
@@ -1200,9 +1225,11 @@ public class LevelManager implements LevelInterface {
             }
         }
 
-        final boolean hasNoLevelKey;
-        synchronized (lmEntity.getLivingEntity().getPersistentDataContainer()) {
-            hasNoLevelKey = lmEntity.getPDC().has(main.namespaced_keys.noLevelKey, PersistentDataType.STRING);
+        boolean hasNoLevelKey = false;
+        if (!isSummoned) {
+            synchronized (lmEntity.getLivingEntity().getPersistentDataContainer()) {
+                hasNoLevelKey = lmEntity.getPDC().has(main.namespaced_keys.noLevelKey, PersistentDataType.STRING);
+            }
         }
 
         if (hasNoLevelKey) {

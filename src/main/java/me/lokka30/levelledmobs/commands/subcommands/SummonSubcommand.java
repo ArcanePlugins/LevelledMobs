@@ -452,7 +452,7 @@ public class SummonSubcommand extends MessagesBase implements Subcommand {
                     if (useDistFromPlayer <= 0) break;
 
                     location = getLocationNearPlayer(target, origLocation, useDistFromPlayer);
-                    final Location location_YMinus1 = new Location(location.getWorld(), location.getBlockX(), location.getBlockY() - 1, location.getBlockZ());
+                    final Location location_YMinus1 = location.add(0.0, -1.0, 0.0);
                     if (location.getBlock().isPassable() && location_YMinus1.getBlock().isPassable())
                         break; // found an open spot
                 }
@@ -473,6 +473,7 @@ public class SummonSubcommand extends MessagesBase implements Subcommand {
 
             if (entity instanceof LivingEntity) {
                 final LivingEntityWrapper lmEntity = LivingEntityWrapper.getInstance((LivingEntity) entity, main);
+                lmEntity.setSummonedLevel(useLevel);
                 synchronized (LevelManager.summonedOrSpawnEggs_Lock){
                     main.levelManager.summonedOrSpawnEggs.put(lmEntity.getLivingEntity(), null);
                 }
@@ -652,13 +653,15 @@ public class SummonSubcommand extends MessagesBase implements Subcommand {
         final double min = 0.5;
         final double max = 2.5;
 
-        for (int i = 0; i < 20; i++) {
-            //Creates 3x new Random()s for a different seed each time
-            final double x = min + (max - min) * new Random().nextDouble();
-            final double y = min + (max - min) * new Random().nextDouble();
-            final double z = min + (max - min) * new Random().nextDouble();
+        //Creates 3x new Random()s for a different seed each time
+        final Random random1 = new Random();
+        final Random random2 = new Random();
 
-            final Location newLocation = new Location(oldLocation.getWorld(), x, y, z);
+        for (int i = 0; i < 20; i++) {
+            final double x = oldLocation.getX() + min + (max - min) * random1.nextDouble();
+            final double z = oldLocation.getZ() + min + (max - min) * random2.nextDouble();
+
+            final Location newLocation = new Location(oldLocation.getWorld(), x, oldLocation.getY(), z);
             if (newLocation.getBlock().isPassable() && newLocation.add(0, 1, 0).getBlock().isPassable())
                 return newLocation;
         }

@@ -24,9 +24,10 @@ import me.lokka30.levelledmobs.listeners.PlayerDeathListener;
 import me.lokka30.levelledmobs.listeners.PlayerInteractEventListener;
 import me.lokka30.levelledmobs.listeners.PlayerJoinListener;
 import me.lokka30.levelledmobs.listeners.PlayerPortalEventListener;
-import me.lokka30.levelledmobs.managers.ExternalCompatibilityManager;
 import me.lokka30.levelledmobs.managers.LevelManager;
 import me.lokka30.levelledmobs.managers.PlaceholderApiIntegration;
+
+import me.lokka30.levelledmobs.misc.ChunkKillInfo;
 import me.lokka30.levelledmobs.misc.DebugType;
 import me.lokka30.levelledmobs.misc.FileLoader;
 import me.lokka30.levelledmobs.misc.FileMigrator;
@@ -45,7 +46,10 @@ import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -54,10 +58,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.InvalidObjectException;
+import java.time.Duration;
 import java.time.Instant;
-import java.util.Collections;
+
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -88,6 +95,8 @@ public class Companion {
         this.spawner_CopyIds = new LinkedList<>();
         this.spawner_InfoIds = new LinkedList<>();
         this.debugsEnabled = new LinkedList<>();
+        this.entityDeathInChunkCounter = new HashMap<>();
+        this.chunkKillNoticationTracker = new HashMap<>();
     }
 
     final private WeakHashMap<Player, Instant> recentlyJoinedPlayers;
@@ -95,6 +104,10 @@ public class Companion {
     public HashSet<EntityType> groups_AquaticMobs;
     public HashSet<EntityType> groups_PassiveMobs;
     public List<String> updateResult;
+    private boolean hadRulesLoadError;
+    public boolean useAdventure;
+    final private HashMap<Long, Map<EntityType, ChunkKillInfo>> entityDeathInChunkCounter;
+    final private HashMap<Long, Map<UUID, Instant>> chunkKillNoticationTracker;
     final public Map<Player, Location> playerNetherPortals;
     final public Map<Player, Location> playerWorldPortals;
     final public List<UUID> spawner_CopyIds;
@@ -102,8 +115,11 @@ public class Companion {
     final public List<DebugType> debugsEnabled;
     final private PluginManager pluginManager = Bukkit.getPluginManager();
     final private MetricsInfo metricsInfo;
+    private BukkitTask hashMapCleanUp;
     final static private Object playerLogonTimes_Lock = new Object();
     final static private Object playerNetherPortals_Lock = new Object();
+    final static private Object entityDeathInChunkCounter_Lock = new Object();
+    final static private Object entityDeathInChunkNotifier_Lock = new Object();
 
     //Checks if the server version is supported
     public void checkCompatibility() {
@@ -118,8 +134,18 @@ public class Companion {
                     "Compatible MC versions: &b" + String.join("&7,&b ", Utils.getSupportedServerVersions()) + "&7.");
         }
 
-        if (!ExternalCompatibilityManager.hasProtocolLibInstalled()) {
-            incompatibilities.add("Your server does not have &bProtocolLib&7 installed! This means that no levelled nametags will appear on the mobs. If you wish to see custom nametags above levelled mobs, then you must install ProtocolLib.");
+        final Plugin protocolLibPlugin = Bukkit.getPluginManager().getPlugin("ProtocolLib");
+
+        if (protocolLibPlugin == null) {
+            incompatibilities.add("Your server does not have ProtocolLib installed! This means that you will" +
+                    "not be able to see any custom nametags/labels above any levelled mobs' heads. To fix this, " +
+                    "install the latest compatible version of ProtocolLib for your server.");
+        } else {
+            if(VersionUtils.isOneEighteen() && protocolLibPlugin.getDescription().getVersion().equals("4.7.0")) {
+                incompatibilities.add("You are running an outdated version of ProtocolLib! This version of " +
+                        "ProtocolLib does not support 1.18+ servers, so you will receive lots of errors if " +
+                        "you try to use it. Update to the latest ProtocolLib version as soon as possible.");
+            }
         }
 
         main.incompatibilitiesAmount = incompatibilities.size();
@@ -129,6 +155,10 @@ public class Companion {
             Utils.logger.warning("&fCompatibility Checker: &7Found the following possible incompatibilities:");
             incompatibilities.forEach(incompatibility -> Utils.logger.info("&8 - &7" + incompatibility));
         }
+    }
+
+    public boolean getHadRulesLoadError(){
+        return this.hadRulesLoadError;
     }
 
     private int getSettingsVersion(){
@@ -146,7 +176,9 @@ public class Companion {
         // save license.txt
         FileLoader.saveResourceIfNotExists(main, new File(main.getDataFolder(), "license.txt"));
 
-        main.rulesParsingManager.parseRulesMain(FileLoader.loadFile(main, "rules", FileLoader.RULES_FILE_VERSION));
+        final YamlConfiguration rulesFile = FileLoader.loadFile(main, "rules", FileLoader.RULES_FILE_VERSION);
+        this.hadRulesLoadError = rulesFile == null;
+        main.rulesParsingManager.parseRulesMain(rulesFile);
 
         main.configUtils.playerLevellingEnabled = main.rulesManager.isPlayerLevellingEnabled();
 
@@ -192,6 +224,7 @@ public class Companion {
 
         main.configUtils.load();
         main.playerLevellingMinRelevelTime = main.helperSettings.getInt(main.settingsCfg, "player-levelling-relevel-min-time", 5000);
+        this.useAdventure = main.helperSettings.getBoolean(main.settingsCfg, "use-adventure", true);
 
         return true;
     }
@@ -307,6 +340,121 @@ public class Companion {
         metrics.addCustomChart(new SimpleBarChart("enabled-compatibility", metricsInfo::enabledCompats));
     }
 
+    void startCleanupTask(){
+        this.hashMapCleanUp = new BukkitRunnable() {
+            @Override
+            public void run() {
+                synchronized (entityDeathInChunkCounter_Lock) {
+                    chunkKillLimitCleanup();
+                }
+                synchronized (entityDeathInChunkNotifier_Lock){
+                    chunkKillNoticationCleanup();
+                }
+            }
+        }.runTaskTimerAsynchronously(main, 100, 40);
+    }
+
+    private void chunkKillLimitCleanup(){
+        final List<Long> chunkKeysToRemove = new LinkedList<>();
+
+        for (final long chunkKey : entityDeathInChunkCounter.keySet()){
+            //                                 Cooldown time, entity counts
+            final Map<EntityType, ChunkKillInfo> pairList = entityDeathInChunkCounter.get(chunkKey);
+
+            if (pairList == null) continue;
+            final Instant now = Instant.now();
+
+            for (final EntityType entityType : pairList.keySet()) {
+                final ChunkKillInfo chunkKillInfo = pairList.get(entityType);
+
+                chunkKillInfo.getEntrySet().removeIf(
+                        e -> e.getKey().compareTo(now.minusSeconds(e.getValue())) < 0
+                );
+            }
+
+            pairList.entrySet().removeIf(e -> e.getValue().isEmpty());
+
+            if(pairList.isEmpty()){
+                // Remove the object to prevent iterate over exceed amount of empty pairList
+                chunkKeysToRemove.add(chunkKey);
+            }
+        }
+
+        for (final long chunkKey : chunkKeysToRemove)
+            entityDeathInChunkCounter.remove(chunkKey);
+    }
+
+    private void chunkKillNoticationCleanup(){
+        final Iterator<Long> iterator = this.chunkKillNoticationTracker.keySet().iterator();
+
+        while (iterator.hasNext()){
+            final long chunkKey = iterator.next();
+            final Map<UUID, Instant> playerTimestamps = this.chunkKillNoticationTracker.get(chunkKey);
+            playerTimestamps.entrySet().removeIf(e -> Duration.between(e.getValue(), Instant.now()).toSeconds() > 30L);
+
+            if (playerTimestamps.isEmpty()) iterator.remove();
+        }
+    }
+
+    @NotNull
+    public Map<EntityType, ChunkKillInfo> getorAddPairForSpecifiedChunk(final long chunkKey){
+        synchronized (entityDeathInChunkCounter_Lock){
+            return this.entityDeathInChunkCounter.computeIfAbsent(chunkKey, k -> new HashMap<>());
+        }
+    }
+
+    @NotNull
+    public List<Map<EntityType, ChunkKillInfo>> getorAddPairForSpecifiedChunks(final @NotNull List<Long> chunkKeys){
+        final List<Map<EntityType, ChunkKillInfo>> results = new ArrayList<>(chunkKeys.size());
+
+        synchronized (entityDeathInChunkCounter_Lock){
+            for (final long chunkKey : chunkKeys)
+                results.add(this.entityDeathInChunkCounter.computeIfAbsent(chunkKey, k -> new HashMap<>()));
+        }
+
+        return results;
+    }
+
+    public boolean doesUserHaveCooldown(final @NotNull List<Long> chunkKeys, final @NotNull UUID userId){
+        final List<Map<UUID, Instant>> chunkInfos = new LinkedList<>();
+
+        synchronized (entityDeathInChunkNotifier_Lock){
+            for (final long chunkKey : chunkKeys) {
+                if (this.chunkKillNoticationTracker.containsKey(chunkKey))
+                    chunkInfos.add(this.chunkKillNoticationTracker.get(chunkKey));
+            }
+        }
+
+        if (chunkInfos.isEmpty()) return false;
+
+        for (final Map<UUID, Instant> chunkInfo : chunkInfos){
+            if (chunkInfo == null || !chunkInfo.containsKey(userId)) continue;
+            final Instant instant = chunkInfo.get(userId);
+            if (Duration.between(instant, Instant.now()).toSeconds() <= 30L)
+                return true;
+        }
+
+        return false;
+    }
+
+    public void addUserCooldown(final @NotNull List<Long> chunkKeys, final @NotNull UUID userId){
+        synchronized (entityDeathInChunkNotifier_Lock){
+            for (final long chunkKey : chunkKeys){
+                final Map<UUID, Instant> entry = this.chunkKillNoticationTracker.computeIfAbsent(chunkKey, k -> new HashMap<>());
+                entry.put(userId, Instant.now());
+            }
+        }
+    }
+
+    public void clearChunkKillCache(){
+        synchronized (entityDeathInChunkCounter_Lock){
+            this.entityDeathInChunkCounter.clear();
+        }
+        synchronized (entityDeathInChunkNotifier_Lock){
+            this.chunkKillNoticationTracker.clear();
+        }
+    }
+
     //Check for updates on the Spigot page.
     void checkUpdates() {
         if (main.helperSettings.getBoolean(main.settingsCfg,"use-update-checker", true)) {
@@ -334,7 +482,7 @@ public class Companion {
                     }
 
                     if (isNewerVersion) {
-                        updateResult = Collections.singletonList(
+                        updateResult = List.of(
                                 "&7Your &bLevelledMobs&7 version is &ba pre-release&7. Latest release version is &bv%latestVersion%&7. &8(&7You're running &bv%currentVersion%&8)");
 
                         updateResult = Utils.replaceAllInList(updateResult, "%currentVersion%", currentVersion);
@@ -385,6 +533,7 @@ public class Companion {
         Utils.logger.info("&fTasks: &7Shutting down other async tasks...");
         main._mobsQueueManager.stop();
         main.nametagQueueManager_.stop();
+        if (hashMapCleanUp != null) hashMapCleanUp.cancel();
         Bukkit.getScheduler().cancelTasks(main);
     }
 

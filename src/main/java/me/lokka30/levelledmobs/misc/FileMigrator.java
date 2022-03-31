@@ -395,6 +395,10 @@ public class FileMigrator {
                 "command.levelledmobs.spawner.spawner-give-message"
         );
 
+        final List<String> messagesExempt_v7 = List.of(
+                "command.levelledmobs.rules.reset"
+        );
+
 
         final String useCustomDrops = "use-custom-item-drops-for-mobs";
 
@@ -437,6 +441,7 @@ public class FileMigrator {
 
                             if (isSettings && oldVersion <= 20 && !version20KeysToKeep.contains(key)) continue;
                             if (isMessages && oldVersion <= 5 && messagesExempt_v5.contains(key)) continue;
+                            if (isMessages && oldVersion <= 7 && messagesExempt_v7.contains(key)) continue;
 
                             if (oldConfigMap.containsKey(oldKey) && newConfigMap.containsKey(key)) {
                                 final FileMigrator.FieldInfo fiOld = oldConfigMap.get(oldKey);
@@ -489,6 +494,7 @@ public class FileMigrator {
                             if (isSettings && oldVersion > 24 && oldVersion <= 26 && version26Resets.contains(key))
                                 continue;
                             if (isMessages && oldVersion <= 5 && messagesExempt_v5.contains(key)) continue;
+                            if (isMessages && oldVersion <= 7 && messagesExempt_v7.contains(key)) continue;
                             if (key.toLowerCase().startsWith("file-version")) continue;
                             if (isSettings && key.equalsIgnoreCase("creature-nametag") && oldVersion > 20 && oldVersion < 26
                                     && migratedValue.equals("'&8[&7Level %level%&8 | &f%displayname%&8 | &c%health%&8/&c%max_health% %heart_symbol%&8]'")) {
@@ -517,6 +523,7 @@ public class FileMigrator {
                                     if (isSettings && oldVersion > 20 && oldVersion <= 24 && version24Resets.contains(oldValue)) continue;
                                     if (isSettings && oldVersion > 24 && oldVersion <= 26 && version26Resets.contains(oldValue)) continue;
                                     if (isMessages && oldVersion <= 5 && messagesExempt_v5.contains(key)) continue;
+                                    if (isMessages && oldVersion <= 7 && messagesExempt_v7.contains(key)) continue;
 
                                     final FileMigrator.FieldInfo fiOld = entry.getValue();
                                     if (fiOld.isList()) continue;
@@ -544,6 +551,7 @@ public class FileMigrator {
                         final String value = line.trim().substring(1).trim();
 
                         if (isMessages && oldVersion <= 5 && messagesExempt_v5.contains(key)) continue;
+                        if (isMessages && oldVersion <= 7 && messagesExempt_v7.contains(key)) continue;
 
                         // we have an array value present in the new config but not the old, so it must've been removed
                         if (oldConfigMap.containsKey(key) && oldConfigMap.get(key).isList() && !oldConfigMap.get(key).valueList.contains(value)) {

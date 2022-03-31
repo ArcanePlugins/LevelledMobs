@@ -179,11 +179,15 @@ public class EntitySpawnListener implements Listener {
         runnable.runTaskLater(main, delay);
     }
 
-    private void lmSpawnerSpawn(final LivingEntityWrapper lmEntity, @NotNull final SpawnerSpawnEvent event) {
+    private void lmSpawnerSpawn(final @NotNull LivingEntityWrapper lmEntity, @NotNull final SpawnerSpawnEvent event) {
         final CreatureSpawner cs = event.getSpawner();
 
         // mob was spawned from a custom LM spawner
-        createParticleEffect(cs.getLocation().add(0, 1, 0));
+        final Particle useParticle = main.rulesManager.getSpawnerParticle(lmEntity);
+        final int particleCount = main.rulesManager.getSpawnerParticleCount(lmEntity);
+
+        if (useParticle != null && particleCount > 0)
+            createParticleEffect(cs.getLocation().add(0.5, 1.0, 0.5), useParticle, particleCount);
 
         final Integer minLevel = cs.getPersistentDataContainer().get(main.namespaced_keys.keySpawner_MinLevel, PersistentDataType.INTEGER);
         final Integer maxLevel = cs.getPersistentDataContainer().get(main.namespaced_keys.keySpawner_MaxLevel, PersistentDataType.INTEGER);
@@ -203,6 +207,7 @@ public class EntitySpawnListener implements Listener {
         }
 
         lmEntity.setSourceSpawnerName(spawnerName);
+        lmEntity.setSpawnReason(LevelledMobSpawnReason.LM_SPAWNER, true);
 
         Utils.debugLog(main, DebugType.MOB_SPAWNER, String.format(
                 "Spawned mob from LM spawner: &b%s&7, minLevel:&b %s&7, maxLevel: &b%s&7, generatedLevel: &b%s&b%s",
@@ -212,7 +217,7 @@ public class EntitySpawnListener implements Listener {
                 false, true, new HashSet<>(Collections.singletonList(AdditionalLevelInformation.NOT_APPLICABLE)));
     }
 
-    private void createParticleEffect(@NotNull final Location location){
+    private void createParticleEffect(@NotNull final Location location, @NotNull final Particle particle, final int count){
         final World world = location.getWorld();
         if (world == null) return;
 
@@ -220,8 +225,8 @@ public class EntitySpawnListener implements Listener {
             @Override
             public void run() {
                 try {
-                    for (int i = 0; i < 10; i++) {
-                        world.spawnParticle(Particle.SOUL, location, 20, 0, 0, 0, 0.1);
+                    for (int i = 0; i < count; i++) {
+                        world.spawnParticle(particle, location, 20, 0, 0, 0, 0.1);
                         Thread.sleep(50);
                     }
                 } catch (final InterruptedException ignored) { }

@@ -5,6 +5,7 @@
 package me.lokka30.levelledmobs.customdrops;
 
 import me.lokka30.levelledmobs.LevelledMobs;
+import me.lokka30.levelledmobs.managers.ExternalCompatibilityManager;
 import me.lokka30.levelledmobs.misc.Addition;
 import me.lokka30.levelledmobs.misc.DebugType;
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
@@ -371,9 +372,23 @@ public class CustomDropsHandler {
         boolean didNotMakeChance = false;
         float chanceRole = 0.0F;
 
+        if (!info.equippedOnly && dropBase.useChunkKillMax && info.wasKilledByPlayer && hasReachedChunkKillLimit(info.lmEntity)) {
+            if (isCustomDropsDebuggingEnabled()) {
+                if (dropBase instanceof CustomDropItem) {
+                    info.addDebugMessage(String.format("&8- &7level: &b%s&7, item: &b%s&7, gId: &b%s&7, chunk kill count reached",
+                            info.lmEntity.getMobLevel(), ((CustomDropItem) dropBase).getMaterial().name(), dropBase.groupId));
+                } else {
+                    info.addDebugMessage(String.format("&8- &7level: &b%s&7, item: custom command, gId: &b%s&7, chunk kill count reached",
+                            info.lmEntity.getMobLevel(), dropBase.groupId));
+                }
+            }
+            return;
+        }
+
         if (!info.equippedOnly && dropBase.chance < 1.0){
             chanceRole = (float) ThreadLocalRandom.current().nextInt(0, 100001) * 0.00001F;
-            if (1.0F - chanceRole >= dropBase.chance) didNotMakeChance = true;
+            if (1.0F - chanceRole >= dropBase.chance)
+                didNotMakeChance = true;
         }
 
         if (didNotMakeChance && !info.equippedOnly && isCustomDropsDebuggingEnabled()) {
@@ -498,9 +513,9 @@ public class CustomDropsHandler {
             if (meta != null && dropItem.lore != null && !dropItem.lore.isEmpty()){
                 final List<String> newLore = new ArrayList<>(dropItem.lore.size());
                 for (final String lore : dropItem.lore){
-                    newLore.add(main.levelManager.updateNametag(info.lmEntity, lore, false));
+                    newLore.add(main.levelManager.updateNametag(info.lmEntity, lore, false, false));
 
-                    if (VersionUtils.isRunningPaper())
+                    if (VersionUtils.isRunningPaper() && main.companion.useAdventure)
                         PaperUtils.updateItemMetaLore(meta, newLore);
                     else
                         SpigotUtils.updateItemMetaLore(meta, newLore);
@@ -508,11 +523,12 @@ public class CustomDropsHandler {
             }
 
             if (meta != null && dropItem.customName != null && !dropItem.customName.isEmpty()) {
-                final String displayName = MessageUtils.colorizeAll(main.levelManager.updateNametag(info.lmEntity, dropItem.customName, false));
-                if (VersionUtils.isRunningPaper())
+                final String displayName = main.levelManager.updateNametag(info.lmEntity, dropItem.customName, false, false);
+
+                if (VersionUtils.isRunningPaper() && main.companion.useAdventure)
                     PaperUtils.updateItemDisplayName(meta, displayName);
                 else
-                    SpigotUtils.updateItemDisplayName(meta, displayName);
+                    SpigotUtils.updateItemDisplayName(meta, MessageUtils.colorizeAll(displayName));
             }
 
             newItem.setItemMeta(meta);
@@ -531,6 +547,11 @@ public class CustomDropsHandler {
 
         info.newDrops.add(newItem);
         info.stackToItem.put(newItem, dropItem);
+    }
+
+    private boolean hasReachedChunkKillLimit(final @NotNull LivingEntityWrapper lmEntity){
+        final int maximumDeathInChunkThreshold = main.rulesManager.getMaximumDeathInChunkThreshold(lmEntity);
+        return lmEntity.chunkKillcount >= maximumDeathInChunkThreshold;
     }
 
     private boolean shouldDenyDeathCause(final @NotNull CustomDropBase dropBase, final @NotNull CustomDropProcessingInfo info){
@@ -595,7 +616,6 @@ public class CustomDropsHandler {
         if (item.equippedSpawnChance >= 1.0F || !item.onlyDropIfEquipped) return true;
         if (item.equippedSpawnChance <= 0.0F) return false;
 
-
         return isMobWearingItem(item.getItemStack(), info.lmEntity.getLivingEntity(), item);
     }
 
@@ -658,8 +678,8 @@ public class CustomDropsHandler {
                 info.playerLevelVariableCache.put(variableToUse, levelToUse);
             }
 
-            if (dropBase.minPlayerLevel > -1 && levelToUse < dropBase.minPlayerLevel ||
-                    dropBase.maxPlayerLevel > -1 && levelToUse > dropBase.maxPlayerLevel){
+            if (dropBase.minPlayerLevel > 0 && levelToUse < dropBase.minPlayerLevel ||
+                    dropBase.maxPlayerLevel > 0 && levelToUse > dropBase.maxPlayerLevel){
                 if (isCustomDropsDebuggingEnabled()){
                     if (dropBase instanceof CustomDropItem) {
                         info.addDebugMessage(String.format(
@@ -688,7 +708,9 @@ public class CustomDropsHandler {
 
             command = Utils.replaceEx(command, "%player%", playerName);
             command = processRangedCommand(command, customCommand);
-            command = main.levelManager.updateNametag(info.lmEntity, command,false);
+            command = main.levelManager.replaceStringPlaceholders(command, info.lmEntity, true, false);
+            if (command.contains("%") && ExternalCompatibilityManager.hasPAPI_Installed())
+                command = ExternalCompatibilityManager.getPAPI_Placeholder(info.mobKiller, command);
 
             final int maxAllowedTimesToRun = ymlHelper.getInt(main.settingsCfg, "customcommand-amount-limit", 10);
             int timesToRun = customCommand.getAmount();
@@ -726,14 +748,16 @@ public class CustomDropsHandler {
     }
 
     @NotNull
-    private String processRangedCommand(@NotNull String command, final @NotNull CustomCommand cc){
+    private String processRangedCommand(final @NotNull String command, final @NotNull CustomCommand cc){
         if (cc.rangedEntries.isEmpty()) return command;
+
+        String newCommand = command;
 
         for (final Map.Entry<String, String> rangeds : cc.rangedEntries.entrySet()) {
             final String rangedKey = rangeds.getKey();
             final String rangedValue = rangeds.getValue();
             if (!rangedValue.contains("-")) {
-                command = command.replace("%" + rangedKey + "%", rangedValue);
+                newCommand = newCommand.replace("%" + rangedKey + "%", rangedValue);
                 continue;
             }
 
@@ -746,10 +770,10 @@ public class CustomDropsHandler {
             if (max < min) min = max;
 
             final int rangedNum = main.random.nextInt(max - min + 1) + min;
-            command = command.replace("%" + rangedKey + "%", String.valueOf(rangedNum));
+            newCommand = newCommand.replace("%" + rangedKey + "%", String.valueOf(rangedNum));
         }
 
-        return command;
+        return newCommand;
     }
 
     private ItemStack getCookedVariantOfMeat(@NotNull final ItemStack itemStack){

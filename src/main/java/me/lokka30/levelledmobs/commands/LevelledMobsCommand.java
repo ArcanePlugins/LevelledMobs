@@ -141,6 +141,8 @@ public class LevelledMobsCommand implements CommandExecutor, TabCompleter {
                     return summonSubcommand.parseTabCompletions(main, sender, args);
                 case "egg":
                     return spawnerEggCommand.parseTabCompletions(main, sender, args);
+                case "debug":
+                    return debugSubcommand.parseTabCompletions(main, sender, args);
                 // the missing subcommands don't have tab completions, don't bother including them.
                 default:
                     return Collections.emptyList();

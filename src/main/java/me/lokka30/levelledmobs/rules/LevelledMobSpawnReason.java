@@ -52,5 +52,6 @@ public enum LevelledMobSpawnReason {
     COMMAND,
     CUSTOM,
     SPELL,
+    LM_SUMMON,
     DEFAULT
 }

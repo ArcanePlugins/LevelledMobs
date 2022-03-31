@@ -81,16 +81,15 @@ public class ExternalCompatibilityManager {
         return  (!list.containsKey(externalCompatibility) || list.get(externalCompatibility) != null && list.get(externalCompatibility));
     }
 
-    static boolean hasPAPI_Installed(){ return (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null); }
+    public static boolean hasPAPI_Installed(){ return (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null); }
 
     public static boolean hasNBTAPI_Installed(){
         return Bukkit.getPluginManager().getPlugin("NBTAPI") != null;
     }
 
     @NotNull
-    static String getPAPI_Placeholder(final Player player, final String placeholder){
+    public static String getPAPI_Placeholder(final Player player, final String placeholder){
         return me.clip.placeholderapi.PlaceholderAPI.setPlaceholders(player, placeholder);
-
     }
 
     public static boolean hasProtocolLibInstalled() {
@@ -167,8 +166,12 @@ public class ExternalCompatibilityManager {
         final Plugin p = Bukkit.getPluginManager().getPlugin("MythicMobs");
         if (p == null) return "";
 
-        if (!p.getDescription().getVersion().startsWith("4.12") && !p.getDescription().getVersion().startsWith("5.")) {
-            // MM version 5 must use this method for internal name detection
+        final boolean useNamespaceKey =
+                p.getDescription().getVersion().startsWith("5.") &&
+                !p.getDescription().getVersion().startsWith("5.01") &&
+                !p.getDescription().getVersion().startsWith("5.00");
+
+        if (useNamespaceKey) {
             final NamespacedKey mmKey = new NamespacedKey(p, "type");
             synchronized (lmEntity.getLivingEntity().getPersistentDataContainer()) {
                 if (lmEntity.getPDC().has(mmKey, PersistentDataType.STRING)) {
@@ -179,7 +182,7 @@ public class ExternalCompatibilityManager {
             }
         }
 
-        // MM version 4 detection below:
+        // MM version 4, 5.00 and 5.01 detection below:
 
         if (!lmEntity.getLivingEntity().hasMetadata("mobname"))
             return "";

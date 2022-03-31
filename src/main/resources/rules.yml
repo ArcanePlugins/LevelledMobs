@@ -106,31 +106,9 @@ presets:
       random: true
       lower-mob-level-bias-factor: 5
 
-  weighted_random_hard:
-#   This Strategy Preset controls Weighted Random Bias.
-    name: 'LVLling Strategy - Weighted Random Bias HARD DIFFICULTY'
-    strategies:
-      weighted-random:
-        1-10: 5
-        11-20: 4
-        21-30: 3
-        31-40: 2
-        41-50: 1
-
-  weighted_random_normal:
-#   This Strategy Preset controls Weighted Random Bias.
-    name: 'LVLling Strategy - Weighted Random Bias NORMAL DIFFICULTY'
-    strategies:
-      weighted-random:
-        1-5: 5
-        6-10: 4
-        11-15: 3
-        16-20: 2
-        21-25: 1
-
-  weighted_random_easy:
-#   This Strategy Preset controls Weighted Random Bias.
-    name: 'LVLling Strategy - Weighted Random Bias EASY DIFFICULTY'
+  weighted_random_basic:
+    #   This Strategy Preset controls Weighted Random Bias.
+    name: 'LVLling Strategy - Weighted Random Bias BASIC Challenge'
     strategies:
       weighted-random:
         1-2: 5
@@ -139,9 +117,42 @@ presets:
         7-8: 2
         9-10: 1
 
+  weighted_random_average:
+    #   This Strategy Preset controls Weighted Random Bias.
+    name: 'LVLling Strategy - Weighted Random Bias AVERAGE Challenge'
+    strategies:
+      weighted-random:
+        1-5: 5
+        6-10: 4
+        11-15: 3
+        16-20: 2
+        21-25: 1
+
+  weighted_random_advanced:
+#   This Strategy Preset controls Weighted Random Bias.
+    name: 'LVLling Strategy - Weighted Random Bias ADVANCED Challenge'
+    strategies:
+      weighted-random:
+        1-9: 5
+        10-19: 4
+        20-29: 3
+        30-39: 2
+        40-50: 1
+        
+  weighted_random_extreme:
+#   This Strategy Preset controls Weighted Random Bias.
+    name: 'LVLling Strategy - Weighted Random Bias EXTREME Challenge'
+    strategies:
+      weighted-random:
+        1-19: 5
+        20-39: 4
+        40-59: 3
+        60-79: 2
+        80-100: 1
+
   player_Levelling:
 #   This Strategy Preset controls the player-stat based levelling system.
-    name: 'LVLling Strategy - Player Based NORMAL DIFFIULTY'
+    name: 'LVLling Strategy - Player Based AVERAGE CHALLENGE'
     strategies:
       player-levelling:
         match-level: true
@@ -178,65 +189,47 @@ presets:
 #        allowed-list: ['*']
         excluded-list: ['world_the_end']
 
-  hard_difficulty:
-#   This establishes the minimum and maximum levels, and the multipliers, for HARD.
-    name: 'HARD Difficulty Multipliers'
+  basic_challenge:
+    name: 'Basic-Challenge Multipliers'
     apply-settings:
       minLevel: 1
-      maxLevel: 50
+      maxLevel: 10
       multipliers:
-        max-health: 8.0
-        movement-speed: 0.25
-        attack-damage: 3.5
-        ranged-attack-damage: 2.75
-        creeper-blast-damage: 1.25
-        follow-range: 0.25
+        max-health: 2.5
+        attack-damage: 1.0
+        ranged-attack-damage: 1.0
         item-drop: 3
         xp-drop: 5
-#       Special Multipliers (0.0 Min - 1.0 Max)
-        armor-bonus: 0.3
-        armor-toughness: 0.3
-        attack-knockback: 0.5
-        knockback-resistance: 0.5
-        zombie-spawn-reinforcements: 0.45
 
-      creeper-max-damage-radius: 5
       tiered-coloring:
-        1-9: '&#22E76B' #Green
-        10-19: '&#528CFF' #Blue
-        20-29: '&#FFCD56' #Yellow
-        30-39: '&#F2003D' #Red
-        40-50: '&#B447FF' #Purple
+        1-2: '&#22E76B' #Green
+        3-4: '&#528CFF' #Blue
+        5-6: '&#FFCD56' #Yellow
+        7-8: '&#F2003D' #Red
+        9-10: '&#B447FF' #Purple
         default: '&#FFFFFF' #White
       health-indicator:
-        scale: 8
+        scale: 2
         max: 5
         merge: true
 
-  normal_difficulty:
-#   This establishes the minimum and maximum levels, and the multipliers, for NORMAL.
-    name: 'NORMAL Difficulty Multipliers'
+  average_challenge:
+    name: 'Average-Challenge Multipliers'
     apply-settings:
       minLevel: 1
       maxLevel: 25
       multipliers:
-#       All Entities/Default Attributes
         max-health: 5.0
         movement-speed: 0.15
         attack-damage: 2.25
-        ranged-attack-damage: 2.0
-        creeper-blast-damage: 1.0
-        follow-range: 0
+        ranged-attack-damage: 2.25
+        creeper-blast-damage: 0.75
         item-drop: 3
         xp-drop: 5
 #       Special Multipliers (0.0 Min - 1.0 Max)
         armor-bonus: 0.2
         armor-toughness: 0.15
-        attack-knockback: 0.25
-        knockback-resistance: 0.2
-        zombie-spawn-reinforcements: 0.25
 
-      creeper-max-damage-radius: 3
       tiered-coloring:
         1-5: '&#22E76B' #Green
         6-10: '&#528CFF' #Blue
@@ -249,38 +242,68 @@ presets:
         max: 5
         merge: true
 
-  easy_difficulty:
-#   This establishes the minimum and maximum levels, and the multipliers, for EASY.
-    name: 'EASY Difficulty Multipliers'
+  advanced_challenge:
+    name: 'Advanced-Challenge Multipliers'
     apply-settings:
       minLevel: 1
-      maxLevel: 10
+      maxLevel: 50
       multipliers:
-        max-health: 2.5
-        movement-speed: 0.05
-        attack-damage: 1.0
-        ranged-attack-damage: 1.0
-        creeper-blast-damage: 0.5
-        follow-range: 0
+        max-health: 8.0
+        movement-speed: 0.35
+        attack-damage: 3.5
+        ranged-attack-damage: 2.75
+        creeper-blast-damage: 1.75
+        follow-range: 0.25
         item-drop: 3
         xp-drop: 5
 #       Special Multipliers (0.0 Min - 1.0 Max)
-        armor-bonus: 0.1
-        armor-toughness: 0.0
-        attack-knockback: 0.1
-        knockback-resistance: 0.15
-        zombie-spawn-reinforcements: 0.1
+        armor-bonus: 0.3
+        armor-toughness: 0.3
+        attack-knockback: 0.5
+        knockback-resistance: 0.5
 
-      creeper-max-damage-radius: 1
       tiered-coloring:
-        1-2: '&#22E76B' #Green
-        3-4: '&#528CFF' #Blue
-        5-6: '&#FFCD56' #Yellow
-        7-8: '&#F2003D' #Red
-        9-10: '&#B447FF' #Purple
+        1-9: '&#22E76B' #Green
+        10-19: '&#528CFF' #Blue
+        20-29: '&#FFCD56' #Yellow
+        30-39: '&#F2003D' #Red
+        40-50: '&#B447FF' #Purple
         default: '&#FFFFFF' #White
       health-indicator:
-        scale: 2
+        scale: 8
+        max: 5
+        merge: true
+
+  extreme_challenge:
+    name: 'Extreme-Challenge Multipliers'
+    apply-settings:
+      minLevel: 1
+      maxLevel: 100
+      multipliers:
+        max-health: 15.0
+        movement-speed: 1.0
+        attack-damage: 5.0
+        ranged-attack-damage: 4.0
+        creeper-blast-damage: 2.5
+        follow-range: 0.5
+        item-drop: 3
+        xp-drop: 5
+#       Special Multipliers (0.0 Min - 1.0 Max)
+        armor-bonus: 0.5
+        armor-toughness: 0.5
+        attack-knockback: 0.5
+        knockback-resistance: 0.5
+        zombie-spawn-reinforcements: 0.15
+
+      tiered-coloring:
+        1-19: '&#22E76B' #Green
+        20-39: '&#528CFF' #Blue
+        40-59: '&#FFCD56' #Yellow
+        60-79: '&#F2003D' #Red
+        80-100: '&#B447FF' #Purple
+        default: '&#FFFFFF' #White
+      health-indicator:
+        scale: 16
         max: 5
         merge: true
 
@@ -326,13 +349,15 @@ default-rule:
     - allowed_worlds
     - nametag_using_numbers
 #    - nametag_using_indicator
-#    - hard_difficulty
-    - normal_difficulty
-#    - easy_difficulty
+#    - basic_challenge
+    - average_challenge
+#    - advanced_challenge
+#    - extreme_challenge
 #    - apply_LevellingVariance
-#    - weighted_random_hard
-    - weighted_random_normal
-#    - weighted_random_easy
+#    - weighted_random_basic
+    - weighted_random_average
+#    - weighted_random_advanced
+#    - weighted_random_extreme
 #    - spawn_Levelling
 #    - blended_Levelling
 #    - ycoord_Levelling
@@ -383,8 +408,15 @@ default-rule:
     level-inheritance: true
     passenger-match-level: false
 
-    use-custom-item-drops-for-mobs: false
+    use-custom-item-drops-for-mobs: true
 
+    maximum-death-in-chunk-threshold: 0
+    max-adjacent-chunks: 3
+    chunk-max-cooldown-seconds: 300
+    disable-vanilla-drops-on-chunk-max: false
+
+    spawner-particles: 'SOUL'
+    spawner-particles-count: 10
 
 # +-------------------------------------------------------------------------------------------LM3
 # +                                                                                          +LM3
@@ -400,7 +432,6 @@ default-rule:
 # +-------------------------------------------------------------------------------------------LM3
 custom-rules:
   - enabled: true
-    priority: 1
     name: 'CR - NoLevel All Passive + EntityTypes'
     use-preset: allowed_worlds
     conditions:
@@ -412,7 +443,7 @@ custom-rules:
 
   - enabled: true
     name: 'CR - Custom Nether Levelling'
-    use-preset: normal_difficulty, apply_LevellingVariance
+    use-preset: apply_LevellingVariance
     conditions:
       worlds:
         allowed-list: ['world_nether']
@@ -470,4 +501,4 @@ custom-rules:
 # +   DO NOT EDIT BEYOND HERE WITHOUT DEVELOPER APPROVAL                                     +LM3
 # +                                                                                          +LM3
 # +-------------------------------------------------------------------------------------------LM3
-file-version: 2
+file-version: 3
