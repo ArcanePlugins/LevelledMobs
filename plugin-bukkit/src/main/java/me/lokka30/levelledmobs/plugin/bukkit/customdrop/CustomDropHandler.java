@@ -8,10 +8,9 @@
 
 package me.lokka30.levelledmobs.plugin.bukkit.customdrop;
 
+import java.util.HashMap;
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
-
-import java.util.HashMap;
 
 public class CustomDropHandler {
 

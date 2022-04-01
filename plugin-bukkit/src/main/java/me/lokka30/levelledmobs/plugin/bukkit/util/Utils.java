@@ -13,13 +13,16 @@ import java.util.logging.Logger;
 import org.bukkit.Bukkit;
 
 /**
- * @author lokka30
- * @since 4.0.0 This class contains a bunch of public static methods used across multiple
+ * This class contains a bunch of public static methods used across multiple
  * LevelledMobs classes, centralising it so it doesn't have to be repeated, making it easier to
  * update the methods since they are in one location.
+ *
+ * @author lokka30
+ * @since 4.0.0
  */
 public final class Utils {
 
+    @Deprecated
     public static Logger LOGGER = Bukkit.getLogger();
 
     public static String formatEnumConstant(String constant) {

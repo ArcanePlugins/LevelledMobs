@@ -9,6 +9,7 @@
 package me.lokka30.levelledmobs.plugin.bukkit.file;
 
 import java.util.List;
+import me.lokka30.levelledmobs.plugin.bukkit.LevelledMobs;
 import me.lokka30.levelledmobs.plugin.bukkit.customdrop.CustomDropParser;
 import me.lokka30.levelledmobs.plugin.bukkit.file.external.customdrops.CustomDropsFile;
 import me.lokka30.levelledmobs.plugin.bukkit.file.external.groups.GroupsFile;
@@ -22,7 +23,6 @@ import me.lokka30.levelledmobs.plugin.bukkit.file.external.translations.messages
 import me.lokka30.levelledmobs.plugin.bukkit.file.internal.playerHeadTextures.PlayerHeadTexturesFile;
 import me.lokka30.levelledmobs.plugin.bukkit.file.internal.unlevellables.UnlevellablesFile;
 import me.lokka30.levelledmobs.plugin.bukkit.rule.parsing.RuleParser;
-import me.lokka30.levelledmobs.plugin.bukkit.util.Utils;
 
 public class FileHandler {
 
@@ -62,14 +62,14 @@ public class FileHandler {
      * not running this method on reload. Thus it should only be ran on start-up (onEnable).
      */
     public void loadInternalFiles(final boolean fromReload) {
-        Utils.LOGGER.info("Started loading internal files...");
+        LevelledMobs.logger().info("Started loading internal files...");
 
         List.of(
             playerHeadTexturesFile,
             unlevellablesFile
         ).forEach(file -> file.load(fromReload));
 
-        Utils.LOGGER.info("All internal files have been loaded.");
+        LevelledMobs.logger().info("All internal files have been loaded.");
     }
 
     /**
@@ -77,7 +77,7 @@ public class FileHandler {
      * @since 4.0.0 (Re)load all external files. This must be called on start-up and also on reload.
      */
     public void loadExternalFiles(final boolean fromReload) {
-        Utils.LOGGER.info("Started loading external files...");
+        LevelledMobs.logger().info("Started loading external files...");
 
         List.of(
             customDropsFile,
@@ -91,7 +91,7 @@ public class FileHandler {
             messagesFile
         ).forEach(file -> file.load(fromReload));
 
-        Utils.LOGGER.info("All external files have been loaded.");
+        LevelledMobs.logger().info("All external files have been loaded.");
     }
 
     public void loadParsers() {

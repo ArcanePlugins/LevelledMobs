@@ -13,11 +13,10 @@ import de.leonhard.storage.Yaml;
 import de.leonhard.storage.internal.settings.ConfigSettings;
 import de.leonhard.storage.internal.settings.DataType;
 import de.leonhard.storage.internal.settings.ReloadSettings;
-import me.lokka30.levelledmobs.plugin.bukkit.file.external.YamlExternalVersionedFile;
-import me.lokka30.levelledmobs.plugin.bukkit.util.Utils;
-import org.jetbrains.annotations.NotNull;
-
 import java.io.File;
+import me.lokka30.levelledmobs.plugin.bukkit.LevelledMobs;
+import me.lokka30.levelledmobs.plugin.bukkit.file.external.YamlExternalVersionedFile;
+import org.jetbrains.annotations.NotNull;
 
 public class CustomDropsFile implements YamlExternalVersionedFile {
 
@@ -75,13 +74,13 @@ public class CustomDropsFile implements YamlExternalVersionedFile {
                     if (stop) {
                         break;
                     }
-                    Utils.LOGGER.info(
+                    LevelledMobs.logger().info(
                         "Attempting to migrate file '&b" + getName() + "&7' to version '&b" + i
                             + "&7'...");
                     if (i < 11) {
                         // This file was present prior to LM 4 so we can't feasibly
                         // migrate versions other than the previous file version only.
-                        Utils.LOGGER.severe(
+                        LevelledMobs.logger().severe(
                             "Your '&b" + getName() + "&7' file is too old to be migrated. " +
                                 "LevelledMobs will back this file up and instead load the default contents "
                                 +
@@ -97,7 +96,7 @@ public class CustomDropsFile implements YamlExternalVersionedFile {
                         default:
                             // this is reached if there is no migration logic for a specific version.
 
-                            Utils.LOGGER.warning(
+                            LevelledMobs.logger().warning(
                                 "Migration logic was not programmed for the file version " +
                                     "'&b" + i + "&7' of the file '&b" + getName()
                                     + "&7'! Please inform the " +
@@ -107,7 +106,7 @@ public class CustomDropsFile implements YamlExternalVersionedFile {
                     }
 
                 }
-                Utils.LOGGER.info("Migration complete for file '&b" + getName() + "&7'.");
+                LevelledMobs.logger().info("Migration complete for file '&b" + getName() + "&7'.");
                 return;
             default:
                 throw new IllegalStateException(compareFileVersion().toString());

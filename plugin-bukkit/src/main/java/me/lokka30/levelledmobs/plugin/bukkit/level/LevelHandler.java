@@ -8,8 +8,6 @@
 
 package me.lokka30.levelledmobs.plugin.bukkit.level;
 
-import org.jetbrains.annotations.NotNull;
-
 /**
  * This class handles the management of mob levels in the plugin.
  *

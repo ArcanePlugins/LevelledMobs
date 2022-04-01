@@ -8,9 +8,8 @@
 
 package me.lokka30.levelledmobs.plugin.bukkit.util;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.util.Collection;
+import org.jetbrains.annotations.NotNull;
 
 public record ModalList<T>(
     @NotNull ListMode listMode,

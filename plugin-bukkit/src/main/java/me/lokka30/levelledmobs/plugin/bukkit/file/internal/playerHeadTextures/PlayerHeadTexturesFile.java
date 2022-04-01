@@ -8,9 +8,8 @@
 
 package me.lokka30.levelledmobs.plugin.bukkit.file.internal.playerHeadTextures;
 
-import me.lokka30.levelledmobs.plugin.bukkit.file.internal.JsonInternalFile;
-
 import java.io.File;
+import me.lokka30.levelledmobs.plugin.bukkit.file.internal.JsonInternalFile;
 
 public class PlayerHeadTexturesFile implements JsonInternalFile {
 

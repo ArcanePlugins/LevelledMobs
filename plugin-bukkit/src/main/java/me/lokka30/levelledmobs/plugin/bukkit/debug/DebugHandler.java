@@ -8,12 +8,10 @@
 
 package me.lokka30.levelledmobs.plugin.bukkit.debug;
 
-import me.lokka30.levelledmobs.plugin.bukkit.LevelledMobs;
-import me.lokka30.levelledmobs.plugin.bukkit.util.Utils;
-import org.jetbrains.annotations.NotNull;
-
 import java.util.ArrayList;
 import java.util.EnumSet;
+import me.lokka30.levelledmobs.plugin.bukkit.LevelledMobs;
+import org.jetbrains.annotations.NotNull;
 
 public final class DebugHandler {
 
@@ -27,7 +25,7 @@ public final class DebugHandler {
             try {
                 debugCategory = DebugCategory.valueOf(debugCategoryStr);
             } catch (IllegalArgumentException ex) {
-                Utils.LOGGER.severe("An invalid debug category was speciied in settings.yml - '&b"
+                LevelledMobs.logger().severe("An invalid debug category was speciied in settings.yml - '&b"
                     + debugCategoryStr + "&7' - please fix this.");
                 continue;
             }
@@ -56,6 +54,6 @@ public final class DebugHandler {
     }
 
     public void sendDebugLog(final DebugCategory category, final String msg) {
-        Utils.LOGGER.info("&8[&3Debugging&8 - &3" + category + "&8]: &7" + msg);
+        LevelledMobs.logger().info("&8[&3Debugging&8 - &3" + category + "&8]: &7" + msg);
     }
 }

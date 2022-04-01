@@ -8,12 +8,10 @@
 
 package me.lokka30.levelledmobs.plugin.bukkit.queue;
 
+import java.util.concurrent.ConcurrentLinkedQueue;
 import me.lokka30.levelledmobs.plugin.bukkit.LevelledMobs;
-import me.lokka30.levelledmobs.plugin.bukkit.util.Utils;
 import org.bukkit.event.entity.EntitySpawnEvent;
 import org.bukkit.scheduler.BukkitRunnable;
-
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * @author lokka30, stumper66
@@ -34,7 +32,7 @@ public class MobProcessingQueue implements Queue {
 
     @Override
     public void start() {
-        Utils.LOGGER.info("Starting queue '&b" + getName() + "&7'...");
+        LevelledMobs.logger().info("Starting queue '&b" + getName() + "&7'...");
 
         if (isRunning) {
             throw new UnsupportedOperationException("Queue is already running");
@@ -65,7 +63,7 @@ public class MobProcessingQueue implements Queue {
 
     @Override
     public void stop() {
-        Utils.LOGGER.info("Stopping queue '&b" + getName() + "&7'...");
+        LevelledMobs.logger().info("Stopping queue '&b" + getName() + "&7'...");
 
         if (!isRunning) {
             throw new UnsupportedOperationException("Queue is not running");

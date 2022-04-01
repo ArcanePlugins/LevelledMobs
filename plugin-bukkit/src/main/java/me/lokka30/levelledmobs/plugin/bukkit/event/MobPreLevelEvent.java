@@ -8,14 +8,13 @@
 
 package me.lokka30.levelledmobs.plugin.bukkit.event;
 
+import java.util.EnumSet;
 import me.lokka30.levelledmobs.plugin.bukkit.level.AdditionalLevelInformation;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.EnumSet;
 
 public class MobPreLevelEvent extends Event implements Cancellable {
 

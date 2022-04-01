@@ -8,9 +8,8 @@
 
 package me.lokka30.levelledmobs.plugin.bukkit.file.external.misc.license;
 
-import me.lokka30.levelledmobs.plugin.bukkit.file.external.ExternalFile;
-
 import java.io.File;
+import me.lokka30.levelledmobs.plugin.bukkit.file.external.ExternalFile;
 
 public class LicenseFile implements ExternalFile {
 

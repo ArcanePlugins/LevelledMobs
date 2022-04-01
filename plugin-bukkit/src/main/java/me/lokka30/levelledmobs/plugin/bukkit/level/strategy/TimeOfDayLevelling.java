@@ -1,8 +1,8 @@
 package me.lokka30.levelledmobs.plugin.bukkit.level.strategy;
 
-import me.lokka30.levelledmobs.plugin.bukkit.util.math.ranged.RangedInt;
 import me.lokka30.levelledmobs.plugin.bukkit.LevelledMobs;
 import me.lokka30.levelledmobs.plugin.bukkit.level.LevelledMob;
+import me.lokka30.levelledmobs.plugin.bukkit.util.math.ranged.RangedInt;
 import org.jetbrains.annotations.NotNull;
 
 public record TimeOfDayLevelling(

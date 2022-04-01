@@ -9,13 +9,11 @@
 package me.lokka30.levelledmobs.plugin.bukkit.file.external;
 
 import de.leonhard.storage.Yaml;
-import me.lokka30.levelledmobs.plugin.bukkit.LevelledMobs;
-import me.lokka30.levelledmobs.plugin.bukkit.util.Utils;
-import org.jetbrains.annotations.NotNull;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import me.lokka30.levelledmobs.plugin.bukkit.LevelledMobs;
+import org.jetbrains.annotations.NotNull;
 
 public interface YamlExternalFile extends ExternalFile {
 
@@ -43,7 +41,7 @@ public interface YamlExternalFile extends ExternalFile {
         try {
             Files.copy(from.toPath(), to.toPath());
         } catch (IOException ex) {
-            Utils.LOGGER.severe("Unable to copy file '&b" + getName() + "&7': &f" + ex.getMessage());
+            LevelledMobs.logger().severe("Unable to copy file '&b" + getName() + "&7': &f" + ex.getMessage());
         }
     }
 

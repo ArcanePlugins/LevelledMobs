@@ -1,10 +1,9 @@
 package me.lokka30.levelledmobs.api.bukkit.util;
 
+import java.util.Objects;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.plugin.Plugin;
-
-import java.util.Objects;
 
 /*
 TODO

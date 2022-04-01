@@ -8,12 +8,11 @@
 
 package me.lokka30.levelledmobs.plugin.bukkit.level.strategy;
 
+import java.util.HashSet;
 import me.lokka30.levelledmobs.plugin.bukkit.LevelledMobs;
 import me.lokka30.levelledmobs.plugin.bukkit.level.LevelledMob;
 import me.lokka30.levelledmobs.plugin.bukkit.util.Point;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.HashSet;
 
 /**
  * This class generates a level for a mob based upon their location relative to the world's

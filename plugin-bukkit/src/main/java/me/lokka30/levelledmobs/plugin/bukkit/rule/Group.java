@@ -8,9 +8,8 @@
 
 package me.lokka30.levelledmobs.plugin.bukkit.rule;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.util.Set;
+import org.jetbrains.annotations.NotNull;
 
 public record Group<T>(
     @NotNull String identifier,

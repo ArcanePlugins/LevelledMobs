@@ -8,6 +8,9 @@
 
 package me.lokka30.levelledmobs.plugin.bukkit.integration;
 
+import java.util.HashSet;
+import java.util.List;
+import me.lokka30.levelledmobs.plugin.bukkit.LevelledMobs;
 import me.lokka30.levelledmobs.plugin.bukkit.integration.internal.BossIntegration;
 import me.lokka30.levelledmobs.plugin.bukkit.integration.internal.CitizensIntegration;
 import me.lokka30.levelledmobs.plugin.bukkit.integration.internal.DangerousCavesIntegration;
@@ -19,11 +22,7 @@ import me.lokka30.levelledmobs.plugin.bukkit.integration.internal.NBTAPIIntegrat
 import me.lokka30.levelledmobs.plugin.bukkit.integration.internal.PlaceholderAPIIntegration;
 import me.lokka30.levelledmobs.plugin.bukkit.integration.internal.ShopkeepersIntegration;
 import me.lokka30.levelledmobs.plugin.bukkit.integration.internal.WorldGuardIntegration;
-import me.lokka30.levelledmobs.plugin.bukkit.util.Utils;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.HashSet;
-import java.util.List;
 
 /**
  * This class handles all internal and external integrations utilized in LevelledMobs.
@@ -51,7 +50,7 @@ public class IntegrationHandler {
     public void addIntegration(final Integration integration) {
         // Make sure there are no duplicate entries
         if (getAvailableIntegrations().contains(integration)) {
-            Utils.LOGGER.warning(
+            LevelledMobs.logger().warning(
                 "An attempt was made to add the integration '&b" + integration + "&7', but it is " +
                     "already added. This may be an error with an external integration or an internal error. Please "
                     +

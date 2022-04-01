@@ -10,6 +10,14 @@ package me.lokka30.levelledmobs.plugin.bukkit.rule.parsing;
 
 import de.leonhard.storage.Yaml;
 import de.leonhard.storage.sections.FlatFileSection;
+import java.util.EnumSet;
+import java.util.HashSet;
+import java.util.Locale;
+import java.util.Optional;
+import me.lokka30.levelledmobs.plugin.bukkit.LevelledMobs;
+import me.lokka30.levelledmobs.plugin.bukkit.file.FileHandler;
+import me.lokka30.levelledmobs.plugin.bukkit.rule.Group;
+import me.lokka30.levelledmobs.plugin.bukkit.rule.Rule;
 import me.lokka30.levelledmobs.plugin.bukkit.rule.action.DefaultRuleActionType;
 import me.lokka30.levelledmobs.plugin.bukkit.rule.action.RuleAction;
 import me.lokka30.levelledmobs.plugin.bukkit.rule.action.type.ExecuteAction;
@@ -20,22 +28,12 @@ import me.lokka30.levelledmobs.plugin.bukkit.rule.condition.type.IsLevelledCondi
 import me.lokka30.levelledmobs.plugin.bukkit.rule.condition.type.LightLevelFromBlockCondition;
 import me.lokka30.levelledmobs.plugin.bukkit.rule.condition.type.LightLevelFromSkyCondition;
 import me.lokka30.levelledmobs.plugin.bukkit.rule.listener.RuleListener;
+import me.lokka30.levelledmobs.plugin.bukkit.rule.option.DefaultRuleOptionType;
 import me.lokka30.levelledmobs.plugin.bukkit.rule.option.RuleOption;
 import me.lokka30.levelledmobs.plugin.bukkit.rule.option.type.TemporaryDoNotUseOption;
-import me.lokka30.levelledmobs.plugin.bukkit.LevelledMobs;
-import me.lokka30.levelledmobs.plugin.bukkit.file.FileHandler;
-import me.lokka30.levelledmobs.plugin.bukkit.rule.Group;
-import me.lokka30.levelledmobs.plugin.bukkit.rule.Rule;
-import me.lokka30.levelledmobs.plugin.bukkit.rule.option.DefaultRuleOptionType;
-import me.lokka30.levelledmobs.plugin.bukkit.util.Utils;
 import org.bukkit.block.Biome;
 import org.bukkit.entity.EntityType;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.EnumSet;
-import java.util.HashSet;
-import java.util.Locale;
-import java.util.Optional;
 
 /**
  * @author lokka30
@@ -112,14 +110,14 @@ public class RuleParser {
                 try {
                     entityType = EntityType.valueOf(entityTypeStr.toUpperCase(Locale.ROOT));
                 } catch (IllegalArgumentException ex) {
-                    Utils.LOGGER.severe(
+                    LevelledMobs.logger().severe(
                         "Invalid entity type specified '&b" + entityTypeStr + "&7' in the mob " +
                             "group named '&b" + mobGroupName + "&7'! Fix this ASAP.");
                     continue;
                 }
 
                 if (entityTypes.contains(entityType)) {
-                    Utils.LOGGER.severe("Entity type '&b" + entityTypeStr.toUpperCase(Locale.ROOT)
+                    LevelledMobs.logger().severe("Entity type '&b" + entityTypeStr.toUpperCase(Locale.ROOT)
                         + "&7' has been listed " +
                         "listed more than once in the mob group named '&b" + mobGroupName + "&7'! "
                         +
@@ -151,14 +149,14 @@ public class RuleParser {
                 try {
                     biome = Biome.valueOf(biomeStr.toUpperCase(Locale.ROOT));
                 } catch (IllegalArgumentException ex) {
-                    Utils.LOGGER.severe(
+                    LevelledMobs.logger().severe(
                         "Invalid biome specified '&b" + biomeStr + "&7' in the biome " +
                             "group named '&b" + biomeGroupName + "&7'! Fix this ASAP.");
                     continue;
                 }
 
                 if (biomes.contains(biome)) {
-                    Utils.LOGGER.severe(
+                    LevelledMobs.logger().severe(
                         "Biome '&b" + biomeStr.toUpperCase(Locale.ROOT) + "&7' has been listed " +
                             "listed more than once in the biome group named '&b" + biomeGroupName
                             + "&7'! " +
@@ -211,7 +209,7 @@ public class RuleParser {
                     .filter(preset -> preset.identifier().equals(presetId))
                     .findFirst();
                 if (presetInRule.isPresent()) {
-                    Utils.LOGGER.severe(
+                    LevelledMobs.logger().severe(
                         "Rule '&b" + identifier + "&7' wants to use preset '&b" + presetId
                             + "&7', but that exact preset is not configured. Fix this ASAP.");
                 } else {
@@ -226,7 +224,7 @@ public class RuleParser {
                 ruleConditionTypeStr);
 
             if (ruleConditionType.isPresent()) {
-                Utils.LOGGER.severe(
+                LevelledMobs.logger().severe(
                     "The " + ruleOrPreset + " '&b" + identifier + "&7' has an invalid condition" +
                         " specified, named '&b" + ruleConditionTypeStr + "&7'. Fix this ASAP.");
             } else {
@@ -244,7 +242,7 @@ public class RuleParser {
                 ruleActionTypeStr);
 
             if (ruleActionType.isPresent()) {
-                Utils.LOGGER.severe(
+                LevelledMobs.logger().severe(
                     "The " + ruleOrPreset + " '&b" + identifier + "&7' has an invalid action" +
                         " specified, named '&b" + ruleActionTypeStr + "&7'. Fix this ASAP.");
             } else {
@@ -262,7 +260,7 @@ public class RuleParser {
                 ruleOptionTypeStr);
 
             if (ruleOptionType.isPresent()) {
-                Utils.LOGGER.severe(
+                LevelledMobs.logger().severe(
                     "The " + ruleOrPreset + " '&b" + identifier + "&7' has an invalid option" +
                         " specified, named '&b" + ruleOptionTypeStr + "&7'. Fix this ASAP.");
             } else {

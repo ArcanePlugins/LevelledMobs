@@ -8,13 +8,11 @@
 
 package me.lokka30.levelledmobs.plugin.bukkit.file.external;
 
-import me.lokka30.levelledmobs.plugin.bukkit.LevelledMobs;
-import me.lokka30.levelledmobs.plugin.bukkit.util.Utils;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import me.lokka30.levelledmobs.plugin.bukkit.LevelledMobs;
 
 public interface ExternalFile {
 
@@ -45,7 +43,7 @@ public interface ExternalFile {
                     Path.of(getRelativePath())
                 );
             } catch (IOException ex) {
-                Utils.LOGGER.severe(
+                LevelledMobs.logger().severe(
                     "Unable to move file '&b" + getName() + "&7': &f" + ex.getMessage());
             }
         }

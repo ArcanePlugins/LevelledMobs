@@ -1,5 +1,6 @@
 package me.lokka30.levelledmobs.plugin.bukkit.nms.nametag;
 
+import java.util.Optional;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundSetEntityDataPacket;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -13,8 +14,6 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.Optional;
 
 public class NametagNMSHandler_1_17_R1 implements NametagNMSHandler {
 

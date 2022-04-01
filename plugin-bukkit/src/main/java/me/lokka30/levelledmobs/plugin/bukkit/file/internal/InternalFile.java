@@ -8,9 +8,8 @@
 
 package me.lokka30.levelledmobs.plugin.bukkit.file.internal;
 
-import me.lokka30.levelledmobs.plugin.bukkit.LevelledMobs;
-
 import java.io.InputStream;
+import me.lokka30.levelledmobs.plugin.bukkit.LevelledMobs;
 
 public interface InternalFile {
 

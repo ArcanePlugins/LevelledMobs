@@ -1,18 +1,17 @@
 package me.lokka30.levelledmobs.plugin.bukkit.rule.action.type;
 
 import de.leonhard.storage.sections.FlatFileSection;
-import me.lokka30.levelledmobs.plugin.bukkit.rule.action.type.executable.UpdateNametagExecutable;
-import me.lokka30.levelledmobs.plugin.bukkit.rule.Rule;
-import me.lokka30.levelledmobs.plugin.bukkit.rule.action.DefaultRuleActionType;
-import me.lokka30.levelledmobs.plugin.bukkit.rule.action.RuleAction;
-import me.lokka30.levelledmobs.plugin.bukkit.util.Utils;
-import org.bukkit.entity.LivingEntity;
-import org.jetbrains.annotations.NotNull;
-
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Optional;
+import me.lokka30.levelledmobs.plugin.bukkit.LevelledMobs;
+import me.lokka30.levelledmobs.plugin.bukkit.rule.Rule;
+import me.lokka30.levelledmobs.plugin.bukkit.rule.action.DefaultRuleActionType;
+import me.lokka30.levelledmobs.plugin.bukkit.rule.action.RuleAction;
+import me.lokka30.levelledmobs.plugin.bukkit.rule.action.type.executable.UpdateNametagExecutable;
+import org.bukkit.entity.LivingEntity;
+import org.jetbrains.annotations.NotNull;
 
 public record ExecuteAction(
     @NotNull Rule parentRule,
@@ -60,7 +59,7 @@ public record ExecuteAction(
             if (executableTypeOptional.isPresent()) {
                 defaultExecutableType = executableTypeOptional.get();
             } else {
-                Utils.LOGGER.severe("The execute list at path '&b" + section.getPathPrefix()
+                LevelledMobs.logger().severe("The execute list at path '&b" + section.getPathPrefix()
                     + "&7' has an invalid executable" +
                     " type specified: '&b" + args.get(0) + "&7'. Fix this ASAP.");
                 continue;
@@ -69,7 +68,7 @@ public record ExecuteAction(
 
             if (executables.stream()
                 .anyMatch(other -> other.id().equals(defaultExecutableType.id()))) {
-                Utils.LOGGER.severe("The execute list at path '&b" + section.getPathPrefix()
+                LevelledMobs.logger().severe("The execute list at path '&b" + section.getPathPrefix()
                     + "&7' has the executable type " +
                     "'&b" + defaultExecutableType
                     + "&7' specified more than once. This will harm the intended behaviour of your"

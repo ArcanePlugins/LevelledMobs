@@ -1,16 +1,15 @@
 package me.lokka30.levelledmobs.plugin.bukkit.rule.condition.type;
 
 import de.leonhard.storage.sections.FlatFileSection;
+import java.util.EnumSet;
+import me.lokka30.levelledmobs.plugin.bukkit.LevelledMobs;
 import me.lokka30.levelledmobs.plugin.bukkit.rule.Rule;
 import me.lokka30.levelledmobs.plugin.bukkit.rule.condition.DefaultRuleConditionType;
 import me.lokka30.levelledmobs.plugin.bukkit.rule.condition.RuleCondition;
 import me.lokka30.levelledmobs.plugin.bukkit.util.ModalList;
-import me.lokka30.levelledmobs.plugin.bukkit.util.Utils;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.EnumSet;
 
 public record EntityTypeCondition(
     @NotNull Rule parentRule,
@@ -53,7 +52,7 @@ public record EntityTypeCondition(
                 try {
                     entityType = EntityType.valueOf(entityTypeStr);
                 } catch (IllegalArgumentException ex) {
-                    Utils.LOGGER.severe(
+                    LevelledMobs.logger().severe(
                         "Invalid EntityType '&b" + entityTypeStr + "&7' specified in" +
                             " condition located at '&b" + section.getPathPrefix()
                             + "&7'! Fix this ASAP.");
@@ -69,7 +68,7 @@ public record EntityTypeCondition(
                 try {
                     entityType = EntityType.valueOf(entityTypeStr);
                 } catch (IllegalArgumentException ex) {
-                    Utils.LOGGER.severe(
+                    LevelledMobs.logger().severe(
                         "Invalid EntityType '&b" + entityTypeStr + "&7' specified in" +
                             " condition located at '&b" + section.getPathPrefix()
                             + "&7'! Fix this ASAP.");

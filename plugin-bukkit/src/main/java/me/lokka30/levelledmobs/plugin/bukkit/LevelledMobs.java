@@ -9,6 +9,7 @@
 package me.lokka30.levelledmobs.plugin.bukkit;
 
 import java.util.Set;
+import java.util.logging.Logger;
 import me.lokka30.levelledmobs.plugin.bukkit.customdrop.CustomDropHandler;
 import me.lokka30.levelledmobs.plugin.bukkit.debug.DebugHandler;
 import me.lokka30.levelledmobs.plugin.bukkit.file.FileHandler;
@@ -52,6 +53,10 @@ public final class LevelledMobs extends JavaPlugin {
     private static LevelledMobs instance;
     public static LevelledMobs getInstance() {
         return instance;
+    }
+
+    public static Logger logger() {
+        return instance.getLogger();
     }
 
     public final QueueHandler queueHandler = new QueueHandler();

@@ -8,9 +8,9 @@
 
 package me.lokka30.levelledmobs.plugin.bukkit.nametag;
 
-import me.lokka30.levelledmobs.plugin.bukkit.translation.TranslationHandler;
 import me.lokka30.levelledmobs.plugin.bukkit.LevelledMobs;
 import me.lokka30.levelledmobs.plugin.bukkit.level.LevelledMob;
+import me.lokka30.levelledmobs.plugin.bukkit.translation.TranslationHandler;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 

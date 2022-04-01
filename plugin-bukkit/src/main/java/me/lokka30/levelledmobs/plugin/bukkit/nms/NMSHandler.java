@@ -1,15 +1,14 @@
 package me.lokka30.levelledmobs.plugin.bukkit.nms;
 
-import me.lokka30.levelledmobs.plugin.bukkit.nms.nametag.NametagNMSHandler;
-import me.lokka30.levelledmobs.plugin.bukkit.nms.nametag.NametagNMSHandler_1_17_R1;
-import me.lokka30.levelledmobs.plugin.bukkit.nms.nametag.NametagNMSHandler_1_18_R1;
-import me.lokka30.levelledmobs.plugin.bukkit.util.Utils;
-import org.bukkit.Bukkit;
-import org.jetbrains.annotations.NotNull;
-
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import me.lokka30.levelledmobs.plugin.bukkit.LevelledMobs;
+import me.lokka30.levelledmobs.plugin.bukkit.nms.nametag.NametagNMSHandler;
+import me.lokka30.levelledmobs.plugin.bukkit.nms.nametag.NametagNMSHandler_1_17_R1;
+import me.lokka30.levelledmobs.plugin.bukkit.nms.nametag.NametagNMSHandler_1_18_R1;
+import org.bukkit.Bukkit;
+import org.jetbrains.annotations.NotNull;
 
 public class NMSHandler {
 
@@ -25,7 +24,7 @@ public class NMSHandler {
         if (nmsRegex.find()) {
             nmsVersionString = nmsRegex.group(1);
         } else {
-            Utils.LOGGER.warning(
+            LevelledMobs.logger().warning(
                 "Could not match regex for bukkit version: " + Bukkit.getServer().getClass()
                     .getCanonicalName());
         }

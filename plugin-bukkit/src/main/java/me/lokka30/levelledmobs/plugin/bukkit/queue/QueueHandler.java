@@ -9,7 +9,7 @@
 package me.lokka30.levelledmobs.plugin.bukkit.queue;
 
 import java.util.Set;
-import me.lokka30.levelledmobs.plugin.bukkit.util.Utils;
+import me.lokka30.levelledmobs.plugin.bukkit.LevelledMobs;
 
 /**
  * @author lokka30
@@ -36,7 +36,7 @@ public class QueueHandler {
      * @since 4.0.0 Start all queues.
      */
     public void startQueues() {
-        Utils.LOGGER.info("Starting all queues...");
+        LevelledMobs.logger().info("Starting all queues...");
         queues.forEach(Queue::start);
     }
 
@@ -45,7 +45,7 @@ public class QueueHandler {
      * @since 4.0.0 Stop all queues.
      */
     public void stopQueues() {
-        Utils.LOGGER.info("Stopping all queues...");
+        LevelledMobs.logger().info("Stopping all queues...");
         queues.forEach(Queue::stop);
     }
 }

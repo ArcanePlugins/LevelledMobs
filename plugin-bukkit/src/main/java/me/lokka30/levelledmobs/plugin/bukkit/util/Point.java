@@ -8,11 +8,10 @@
 
 package me.lokka30.levelledmobs.plugin.bukkit.util;
 
+import java.io.Serializable;
 import java.util.Objects;
 import org.bukkit.Location;
 import org.jetbrains.annotations.NotNull;
-
-import java.io.Serializable;
 
 /**
  * A smaller version of the Location class only including a world name, and three

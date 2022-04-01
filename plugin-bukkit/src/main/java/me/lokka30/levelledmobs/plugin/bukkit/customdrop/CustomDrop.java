@@ -8,11 +8,10 @@
 
 package me.lokka30.levelledmobs.plugin.bukkit.customdrop;
 
-import org.bukkit.Material;
-import org.bukkit.inventory.ItemFlag;
-
 import java.util.EnumSet;
 import java.util.Optional;
+import org.bukkit.Material;
+import org.bukkit.inventory.ItemFlag;
 
 public record CustomDrop(
     // TODO unsure about having optionals here, need to re-think this out.

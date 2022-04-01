@@ -8,12 +8,11 @@
 
 package me.lokka30.levelledmobs.plugin.bukkit.rule.listener;
 
-import me.lokka30.levelledmobs.plugin.bukkit.rule.RuleEntry;
-import org.jetbrains.annotations.NotNull;
-
 import java.util.EnumSet;
 import java.util.LinkedList;
 import java.util.Optional;
+import me.lokka30.levelledmobs.plugin.bukkit.rule.RuleEntry;
+import org.jetbrains.annotations.NotNull;
 
 public record RuleListener(
     @NotNull String listenerId,

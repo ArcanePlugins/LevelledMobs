@@ -1,9 +1,8 @@
 package me.lokka30.levelledmobs.plugin.bukkit.rule.action;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.util.Arrays;
 import java.util.Optional;
+import org.jetbrains.annotations.NotNull;
 
 public enum DefaultRuleActionType {
 

@@ -9,7 +9,6 @@
 package me.lokka30.levelledmobs.plugin.bukkit.file.external;
 
 import me.lokka30.levelledmobs.plugin.bukkit.LevelledMobs;
-import me.lokka30.levelledmobs.plugin.bukkit.util.Utils;
 import org.jetbrains.annotations.NotNull;
 
 public interface VersionedFile extends ExternalFile {
@@ -36,13 +35,13 @@ public interface VersionedFile extends ExternalFile {
     }
 
     default void sendFutureFileVersionWarning() {
-        Utils.LOGGER.warning(
+        LevelledMobs.logger().warning(
             "Your '&b" + getName() + "&7' file is running a version &onewer&7 " +
                 "than what is supported by this version of LevelledMobs. " +
                 "Please ensure LevelledMobs is fully up-to-date.");
-        Utils.LOGGER.warning("&8 -> &7Installed file version: &b" + getInstalledFileVersion());
-        Utils.LOGGER.warning("&8 -> &7Supported file version: &b" + getSupportedFileVersion());
-        Utils.LOGGER.warning(
+        LevelledMobs.logger().warning("&8 -> &7Installed file version: &b" + getInstalledFileVersion());
+        LevelledMobs.logger().warning("&8 -> &7Supported file version: &b" + getSupportedFileVersion());
+        LevelledMobs.logger().warning(
             "&8 -> &7Plugin version: &b" + LevelledMobs.getInstance().getDescription()
                 .getVersion());
     }

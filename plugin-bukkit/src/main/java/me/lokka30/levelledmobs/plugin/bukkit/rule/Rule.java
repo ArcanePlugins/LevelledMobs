@@ -8,13 +8,12 @@
 
 package me.lokka30.levelledmobs.plugin.bukkit.rule;
 
+import java.util.HashSet;
+import java.util.Optional;
 import me.lokka30.levelledmobs.plugin.bukkit.rule.action.RuleAction;
 import me.lokka30.levelledmobs.plugin.bukkit.rule.condition.RuleCondition;
 import me.lokka30.levelledmobs.plugin.bukkit.rule.option.RuleOption;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.HashSet;
-import java.util.Optional;
 
 public record Rule(
     boolean isPreset,
@@ -32,7 +31,7 @@ public record Rule(
         // merge conditions
         for (RuleCondition otherCondition : otherRule.conditions()) {
             final Optional<RuleCondition> existingCondition = conditions().stream()
-                .filter(val -> val.id() == otherCondition.id()).findFirst();
+                .filter(val -> val.id().equals(otherCondition.id())).findFirst();
             if (existingCondition.isPresent()) {
                 existingCondition.get().merge(otherCondition);
             } else {
@@ -43,7 +42,7 @@ public record Rule(
         // merge actions
         for (RuleAction otherAction : otherRule.actions()) {
             final Optional<RuleAction> existingAction = actions().stream()
-                .filter(val -> val.id() == otherAction.id()).findFirst();
+                .filter(val -> val.id().equals(otherAction.id())).findFirst();
             if (existingAction.isPresent()) {
                 existingAction.get().merge(otherAction);
             } else {
@@ -72,6 +71,8 @@ public record Rule(
                 }
             }
         }
+
+        //TODO
         return null;
     }
 }
