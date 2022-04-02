@@ -551,6 +551,8 @@ public class CustomDropsHandler {
 
     private boolean hasReachedChunkKillLimit(final @NotNull LivingEntityWrapper lmEntity){
         final int maximumDeathInChunkThreshold = main.rulesManager.getMaximumDeathInChunkThreshold(lmEntity);
+        if (maximumDeathInChunkThreshold <= 0) return false;
+
         return lmEntity.chunkKillcount >= maximumDeathInChunkThreshold;
     }
 
