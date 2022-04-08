@@ -1076,6 +1076,7 @@ public class RulesParsingManager {
         attribs.horseJumpStrength = ymlHelper.getDouble2(cs, "horse-jump-strength", attribs.horseJumpStrength);
         attribs.zombieReinforcements = ymlHelper.getDouble2(cs, "zombie-spawn-reinforcements", attribs.zombieReinforcements);
         attribs.followRange = ymlHelper.getDouble2(cs, "follow-range", attribs.followRange);
+        attribs.doNotMerge = ymlHelper.getBoolean(cs, "do-not-merge", false);
 
         return attribs;
     }

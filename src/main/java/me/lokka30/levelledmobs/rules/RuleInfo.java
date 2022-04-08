@@ -262,5 +262,12 @@ public class RuleInfo {
         sb.setLength(sb.length() - 1); // remove trailing newline
         return sb.toString();
     }
+
+    public String toString(){
+        if (this.ruleName == null || this.ruleName.isEmpty())
+            return super.toString();
+
+        return this.ruleName;
+    }
 }
 

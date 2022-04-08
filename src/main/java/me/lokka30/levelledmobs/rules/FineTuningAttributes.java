@@ -33,6 +33,7 @@ public class FineTuningAttributes implements Cloneable {
     public Double zombieReinforcements;
     public Double followRange;
     public Integer xpDrop;
+    public boolean doNotMerge;
 
     void mergeAttributes(final @Nullable FineTuningAttributes attributes){
         if (attributes == null) return;

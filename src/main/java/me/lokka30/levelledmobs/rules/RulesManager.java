@@ -162,16 +162,22 @@ public class RulesManager {
 
         for (final RuleInfo ruleInfo : lmEntity.getApplicableRules()){
             if (ruleInfo.allMobMultipliers != null) {
-                if (allMobAttribs == null)
+                if (allMobAttribs == null || ruleInfo.allMobMultipliers.doNotMerge) {
                     allMobAttribs = ruleInfo.allMobMultipliers.cloneItem();
+                    if (ruleInfo.allMobMultipliers.doNotMerge)
+                        thisMobAttribs = null;
+                }
                 else
                     allMobAttribs.mergeAttributes(ruleInfo.allMobMultipliers);
             }
 
             if (ruleInfo.specificMobMultipliers != null && ruleInfo.specificMobMultipliers.containsKey(lmEntity.getNameIfBaby())){
                 final FineTuningAttributes tempAttribs = ruleInfo.specificMobMultipliers.get(lmEntity.getNameIfBaby());
-                if (thisMobAttribs == null)
+                if (thisMobAttribs == null || tempAttribs.doNotMerge) {
                     thisMobAttribs = tempAttribs.cloneItem();
+                    if (tempAttribs.doNotMerge)
+                        allMobAttribs = null;
+                }
                 else
                     thisMobAttribs.mergeAttributes(tempAttribs);
             }
