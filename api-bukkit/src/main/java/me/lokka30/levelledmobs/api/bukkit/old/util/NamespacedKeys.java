@@ -1,4 +1,4 @@
-package me.lokka30.levelledmobs.api.bukkit.util;
+package me.lokka30.levelledmobs.api.bukkit.old.util;
 
 import java.util.Objects;
 import org.bukkit.Bukkit;
