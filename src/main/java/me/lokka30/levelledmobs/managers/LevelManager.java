@@ -341,8 +341,8 @@ public class LevelManager implements LevelInterface {
             boolean usePlayerLevel = false;
             String PAPIResult = null;
 
-            if (ExternalCompatibilityManager.hasPAPI_Installed()) {
-                PAPIResult = ExternalCompatibilityManager.getPAPI_Placeholder(player, variableToUse);
+            if (ExternalCompatibilityManager.hasPapiInstalled()) {
+                PAPIResult = ExternalCompatibilityManager.getPapiPlaceholder(player, variableToUse);
                 if (Utils.isNullOrEmpty(PAPIResult)) {
                     final Location l = player.getLocation();
                     Utils.debugLog(main, DebugType.PLAYER_LEVELLING, String.format("Got blank result for '%s' from PAPI. Player %s at %s,%s,%s in %s",
@@ -588,8 +588,8 @@ public class LevelManager implements LevelInterface {
         if (nametag.toLowerCase().contains("%health-indicator%"))
             nametag = nametag.replace("%health-indicator%", formatHealthIndicator(lmEntity));
 
-        if (nametag.contains("%") && ExternalCompatibilityManager.hasPAPI_Installed())
-            nametag = ExternalCompatibilityManager.getPAPI_Placeholder(null, nametag);
+        if (nametag.contains("%") && ExternalCompatibilityManager.hasPapiInstalled())
+            nametag = ExternalCompatibilityManager.getPapiPlaceholder(null, nametag);
 
         return nametag;
     }
@@ -695,8 +695,8 @@ public class LevelManager implements LevelInterface {
         result = result.replace("%y%", String.valueOf(lmEntity.getLivingEntity().getLocation().getBlockY()));
         result = result.replace("%z%", String.valueOf(lmEntity.getLivingEntity().getLocation().getBlockZ()));
 
-        if (usePAPI && result.contains("%") && ExternalCompatibilityManager.hasPAPI_Installed())
-            result = ExternalCompatibilityManager.getPAPI_Placeholder(null, result);
+        if (usePAPI && result.contains("%") && ExternalCompatibilityManager.hasPapiInstalled())
+            result = ExternalCompatibilityManager.getPapiPlaceholder(null, result);
 
         if (colorize)
             result = MessageUtils.colorizeAll(result);
@@ -1245,7 +1245,7 @@ public class LevelManager implements LevelInterface {
         final List<String> nbtDatas = lmEntity.nbtData != null && !lmEntity.nbtData.isEmpty() ?
                 lmEntity.nbtData : main.rulesManager.getRule_NBT_Data(lmEntity);
 
-        if (!nbtDatas.isEmpty() && !ExternalCompatibilityManager.hasNBTAPI_Installed()){
+        if (!nbtDatas.isEmpty() && !ExternalCompatibilityManager.hasNbtApiInstalled()){
             if (!hasMentionedNBTAPI_Missing) {
                 Utils.logger.warning("NBT Data has been specified in customdrops.yml but required plugin NBTAPI is not installed!");
                 hasMentionedNBTAPI_Missing = true;

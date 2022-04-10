@@ -711,8 +711,8 @@ public class CustomDropsHandler {
             command = Utils.replaceEx(command, "%player%", playerName);
             command = processRangedCommand(command, customCommand);
             command = main.levelManager.replaceStringPlaceholders(command, info.lmEntity, true, false);
-            if (command.contains("%") && ExternalCompatibilityManager.hasPAPI_Installed())
-                command = ExternalCompatibilityManager.getPAPI_Placeholder(info.mobKiller, command);
+            if (command.contains("%") && ExternalCompatibilityManager.hasPapiInstalled())
+                command = ExternalCompatibilityManager.getPapiPlaceholder(info.mobKiller, command);
 
             final int maxAllowedTimesToRun = ymlHelper.getInt(main.settingsCfg, "customcommand-amount-limit", 10);
             int timesToRun = customCommand.getAmount();

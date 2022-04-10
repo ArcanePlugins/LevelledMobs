@@ -64,11 +64,11 @@ public class ExternalCompatibilityManager {
         // PlaceholderAPI plugin
         PLACEHOLDER_API,
 
-        SIMPLE_PETS,
+        SIMPLE_PETS, //SimplePets plugin
 
-        ELITE_BOSSES,
+        ELITE_BOSSES, //EliteBosses plugin
 
-        BLOOD_NIGHT
+        BLOOD_NIGHT // Blood Night plugin
     }
 
     /* Store any external namespaced keys with null values by default */
@@ -76,19 +76,24 @@ public class ExternalCompatibilityManager {
     private static NamespacedKey ecoBossesKey = null;
 
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
-    private static boolean isExternalCompatibilityEnabled(final ExternalCompatibility externalCompatibility, final @NotNull Map<ExternalCompatibility, Boolean> list) {
+    private static boolean isExternalCompatibilityEnabled(
+        final ExternalCompatibility externalCompatibility,
+        final @NotNull Map<ExternalCompatibility, Boolean> list
+    ) {
         // if not defined default to true
         return  (!list.containsKey(externalCompatibility) || list.get(externalCompatibility) != null && list.get(externalCompatibility));
     }
 
-    public static boolean hasPAPI_Installed(){ return (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null); }
+    public static boolean hasPapiInstalled() {
+        return Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI");
+    }
 
-    public static boolean hasNBTAPI_Installed(){
-        return Bukkit.getPluginManager().getPlugin("NBTAPI") != null;
+    public static boolean hasNbtApiInstalled(){
+        return Bukkit.getPluginManager().isPluginEnabled("NBTAPI");
     }
 
     @NotNull
-    public static String getPAPI_Placeholder(final Player player, final String placeholder){
+    public static String getPapiPlaceholder(final Player player, final String placeholder){
         return me.clip.placeholderapi.PlaceholderAPI.setPlaceholders(player, placeholder);
     }
 
@@ -199,53 +204,70 @@ public class ExternalCompatibilityManager {
     static LevellableState checkAllExternalCompats(final LivingEntityWrapper lmEntity, final @NotNull LevelledMobs main){
         final Map<ExternalCompatibilityManager.ExternalCompatibility, Boolean> compatRules = main.rulesManager.getRule_ExternalCompatibility(lmEntity);
 
-        LevellableState result = LevellableState.ALLOWED;
+        if(!isExternalCompatibilityEnabled(ExternalCompatibility.DANGEROUS_CAVES, compatRules)) {
+            if(isMobOfDangerousCaves(lmEntity)) {
+                return LevellableState.DENIED_CONFIGURATION_COMPATIBILITY_DANGEROUS_CAVES;
+            }
+        }
 
-        if (isMobOfDangerousCaves(lmEntity) && !isExternalCompatibilityEnabled(ExternalCompatibility.DANGEROUS_CAVES, compatRules))
-            result = LevellableState.DENIED_CONFIGURATION_COMPATIBILITY_DANGEROUS_CAVES;
+        if(!isExternalCompatibilityEnabled(ExternalCompatibility.ECO_BOSSES, compatRules)) {
+            if(isMobOfEcoBosses(lmEntity)) {
+                return LevellableState.DENIED_CONFIGURATION_COMPATIBILITY_ECO_BOSSES;
+            }
+        }
 
-        if (isMobOfEcoBosses(lmEntity) && !isExternalCompatibilityEnabled(ExternalCompatibility.ECO_BOSSES, compatRules) &&
-                result == LevellableState.ALLOWED)
-            result = LevellableState.DENIED_CONFIGURATION_COMPATIBILITY_ECO_BOSSES;
+        if(!isExternalCompatibilityEnabled(ExternalCompatibility.MYTHIC_MOBS, compatRules)) {
+            if(isMobOfMythicMobs(lmEntity)) {
+                return LevellableState.DENIED_CONFIGURATION_COMPATIBILITY_MYTHIC_MOBS;
+            }
+        }
 
-        if (isMobOfMythicMobs(lmEntity) && !isExternalCompatibilityEnabled(ExternalCompatibility.MYTHIC_MOBS, compatRules) &&
-                result == LevellableState.ALLOWED)
-            result = LevellableState.DENIED_CONFIGURATION_COMPATIBILITY_MYTHIC_MOBS;
+        if(!isExternalCompatibilityEnabled(ExternalCompatibility.ELITE_MOBS, compatRules)) {
+            if(isMobOfEliteMobs(lmEntity)) {
+                return LevellableState.DENIED_CONFIGURATION_COMPATIBILITY_ELITE_MOBS;
+            }
+        }
 
-        if (isMobOfEliteMobs(lmEntity) && !isExternalCompatibilityEnabled(ExternalCompatibility.ELITE_MOBS, compatRules) &&
-                result == LevellableState.ALLOWED)
-            result = LevellableState.DENIED_CONFIGURATION_COMPATIBILITY_ELITE_MOBS;
+        if(!isExternalCompatibilityEnabled(ExternalCompatibility.INFERNAL_MOBS, compatRules)) {
+            if(isMobOfInfernalMobs(lmEntity)) {
+                return LevellableState.DENIED_CONFIGURATION_COMPATIBILITY_INFERNAL_MOBS;
+            }
+        }
 
-        if (isMobOfInfernalMobs(lmEntity) && !isExternalCompatibilityEnabled(ExternalCompatibility.INFERNAL_MOBS, compatRules) &&
-                result == LevellableState.ALLOWED)
-            result = LevellableState.DENIED_CONFIGURATION_COMPATIBILITY_INFERNAL_MOBS;
+        if(!isExternalCompatibilityEnabled(ExternalCompatibility.CITIZENS, compatRules)) {
+            if(isMobOfCitizens(lmEntity)) {
+                return LevellableState.DENIED_CONFIGURATION_COMPATIBILITY_CITIZENS;
+            }
+        }
 
-        if (isMobOfCitizens(lmEntity) && !isExternalCompatibilityEnabled(ExternalCompatibility.CITIZENS, compatRules) &&
-                result == LevellableState.ALLOWED)
-            result = LevellableState.DENIED_CONFIGURATION_COMPATIBILITY_CITIZENS;
+        if(!isExternalCompatibilityEnabled(ExternalCompatibility.SHOPKEEPERS, compatRules)) {
+            if(isMobOfShopkeepers(lmEntity)) {
+                return LevellableState.DENIED_CONFIGURATION_COMPATIBILITY_SHOPKEEPERS;
+            }
+        }
 
-        if (isMobOfShopkeepers(lmEntity) && !isExternalCompatibilityEnabled(ExternalCompatibility.SHOPKEEPERS, compatRules) &&
-                result == LevellableState.ALLOWED)
-            result = LevellableState.DENIED_CONFIGURATION_COMPATIBILITY_SHOPKEEPERS;
+        if(!isExternalCompatibilityEnabled(ExternalCompatibility.SIMPLE_PETS, compatRules)) {
+            if(isMobOfSimplePets(lmEntity)) {
+                return LevellableState.DENIED_CONFIGURATION_COMPATIBILITY_SIMPLEPETS;
+            }
+        }
 
-        if (isMobOfSimplePets(lmEntity) && !isExternalCompatibilityEnabled(ExternalCompatibility.SIMPLE_PETS, compatRules) &&
-                result == LevellableState.ALLOWED)
-            result = LevellableState.DENIED_CONFIGURATION_COMPATIBILITY_SIMPLEPETS;
+        if(!isExternalCompatibilityEnabled(ExternalCompatibility.ELITE_BOSSES, compatRules)) {
+            if(isMobOfEliteBosses(lmEntity)) {
+                return LevellableState.DENIED_CONFIGURATION_COMPATIBILITY_ELITE_BOSSES;
+            }
+        }
 
-        if (isMobOfEliteBosses(lmEntity) && !isExternalCompatibilityEnabled(ExternalCompatibility.ELITE_BOSSES, compatRules) &&
-                result == LevellableState.ALLOWED)
-            result = LevellableState.DENIED_CONFIGURATION_COMPATIBILITY_ELITE_BOSSES;
+        if(!isExternalCompatibilityEnabled(ExternalCompatibility.BLOOD_NIGHT, compatRules)) {
+            if(isMobOfBloodNight(lmEntity)) {
+                return LevellableState.DENIED_CONFIGURATION_COMPATIBILITY_BLOOD_NIGHT;
+            }
+        }
 
-        if (isMobOfBloodNight(lmEntity) && !isExternalCompatibilityEnabled(ExternalCompatibility.BLOOD_NIGHT, compatRules) &&
-                result == LevellableState.ALLOWED)
-            result = LevellableState.DENIED_CONFIGURATION_COMPATIBILITY_BLOOD_NIGHT;
-
-        return result;
+        return LevellableState.ALLOWED;
     }
 
     /**
-     * NOTE: Works on DC2 but not DC1.
-     *
      * @param lmEntity mob to check
      * @return if Dangerous Caves compatibility enabled and entity is from DangerousCaves
      * @author lokka30, stumper66, imDaniX (author of DC2 - provided part of this method)

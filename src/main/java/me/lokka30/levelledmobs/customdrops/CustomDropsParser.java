@@ -426,7 +426,7 @@ public class CustomDropsParser {
 
         final String nbtStuff = ymlHelper.getString(cs,"nbt-data");
         if (!Utils.isNullOrEmpty(nbtStuff)){
-            if (ExternalCompatibilityManager.hasNBTAPI_Installed()) {
+            if (ExternalCompatibilityManager.hasNbtApiInstalled()) {
                 final NBTApplyResult result = NBTManager.applyNBT_Data_Item(item, nbtStuff);
                 if (result.hadException())
                     Utils.logger.warning("custom drop " + item.getMaterial().toString() + " for " + dropInstance.getMobOrGroupName() + " has invalid NBT data: " + result.exceptionMessage);
