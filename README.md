@@ -1,66 +1,69 @@
-# LevelledMobs
+# LevelledMobs 4
 
-The Ultimate RPG Mob Levelling Solution
+> 🧟 **The Ultimate RPG Mob Levelling Solution**
+>
+> LevelledMobs is a drop-in plugin for your Minecraft server which instantly upgrades your server's PvE experience.
+>
+> [🔗 Read more about LM on SpigotMC.org](https://www.spigotmc.org/resources/levelledmobs.74304/)
 
-This README is work-in-progress.
+## Useful Links
 
-# License
+* [📜 Description & Download](https://www.spigotmc.org/resources/levelledmobs.74304/)
+* [📚 Wiki](https://www.github.com/lokka30/LevelledMobs/wiki/)
 
-GNU GPL v3.0
+## Contributors
 
-<a href="https://www.gnu.org/licenses/gpl-3.0.en.html">
-  <img src="https://www.gnu.org/graphics/gplv3-or-later.png" alt="GPL v3 License"/>
-</a>
+Please see [CONTRIBUTORS.md](CONTRIBUTORS.md) to see the list of wonderful people who made LevelledMobs possible.
 
-    All files within this resource, unless otherwise noted, use the
-    following license:
+## License
 
-    Copyright (c) 2020-2022 lokka30
+[![GPLv3 or Later](https://www.gnu.org/graphics/gplv3-or-later.png)](https://www.gnu.org/licenses/gpl-3.0.en.html)
 
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+> Copyright (c) 2020-2022 lokka30
+>
+> This program is free software: you can redistribute it and/or modify
+> it under the terms of the GNU General Public License as published by
+> the Free Software Foundation, either version 3 of the License, or
+> (at your option) any later version.
+>
+> This program is distributed in the hope that it will be useful,
+> but without any warranty; without even the implied warranty of
+> merchantability or fitness for a particular purpose.  See the
+> GNU General Public License for more details.
+>
+> You have been supplied a copy of the GNU General Public License,
+> though you may alternatively view it at <https://www.gnu.org/licenses>.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+## Other Credits
 
-    A copy of the GNU General Public License is supplied in the program's
-    source code. Alternatively, see <https://www.gnu.org/licenses>.
-    
-    ***
+> Note: the following lists exclude Maven dependencies specifically used for integration purposes.
 
-    The following open source libraries are used in LevelledMobs:
-     * Spigot API by md_5
-     * SimplixStorage by KotlinFactory
-     * Crunch by Redempt
-     * bStats by BtoBastian
-     * NBT API by tr7zw
-     * MicroLib by lokka30
-     * PaperMC API by the Paper team
-     * ProtocolLib by dmulloy2
-       * No longer in use, but has served LevelledMobs very well
-         in LevelledMobs v2 and v3.
-    Thanks to the developers behind these libraries for making
-    LevelledMobs possible!
-    
-    ***
+### Current Libraries
 
-    The following parts of LevelledMobs are credited towards their
-    respective authors, and therefore, these files do not fall under
-    LevelledMobs' license:
-     * `WeightedRandomContainer.java`, by `Philipp` on StackExchange.com.
-     * `player-head-textures.json`
-       * Contains textures from the `Ultimate Mob Heads Fork` resource,
-         which was created by the user `Zombie_Striker` on SpigotMC.org.
-    If an author has specified that their code utilizes a specific
-    license, then it will be included at the top of their file(s).
-    
-    ***
-    
-    See Copyright Act 1968 (Australia) for more information.
+Below is a list of the libraries currently used in LevelledMobs.
 
-An offline copy of this license notice is saved when LevelledMobs is ran on the server, located
-at `/plugins/LevelledMobs/misc/license.txt`.
+* [PaperMC API](https://papermc.io/)
+* [SpigotMC API](https://www.spigotmc.org/)
+* [SimplixStorage](https://www.spigotmc.org/resources/simplixstorage-awesome-library-to-store-data-in-a-better-way.67286/)
+* [Crunch](https://github.com/Redempt/Crunch)
+* [NBT API](https://www.spigotmc.org/resources/nbt-api.7939/)
+* [bStats](https://bstats.org/)
+* [ProtocolLib](https://www.spigotmc.org/resources/protocollib.1997/)
+
+### Previous Libraries
+
+The following libraries were once used in LevelledMobs, though are no longer adopted.
+We still wish to credit them for their part in supporting LevelledMobs to be where it is today.
+
+* MicroLib by lokka30
+
+### Non-LM Files
+
+The following files do not fall under LevelledMobs' license.
+
+Please view the license stated at the top of the listed files below for more information.
+
+* `WeightedRandomContainer.java`
+  * Created by `Philipp` on StackExchange.
+* `player-head-textures.json`
+  * Contains texture IDs sourced from `Zombie_Striker`'s `Ultimate Mob Heads Fork` resource on SpigotMC.org.
