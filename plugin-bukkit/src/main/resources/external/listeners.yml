@@ -33,7 +33,7 @@ event-listeners:
   level-mobs-on-spawn-listener:
     description: 'Level mobs when they spawn in'
     options:
-      listen-for: [ 'entity-spawn' ]
+      listen-for: ['entity-spawn']
 
     rules:
       no-levels-from-spawners:
@@ -41,40 +41,40 @@ event-listeners:
         description: 'Mobs spawned by spawner blocks will not be levelled'
         conditions:
           spawn-reason:
-            inclusive-list: [ 'SPAWNER' ]
-        use-presets: [ 'no-level' ]
+            inclusive-list: ['SPAWNER']
+        use-presets: ['no-level']
 
       no-levels-from-certain-worlds:
         enabled: true
         description: 'Mobs spawned in specific world(s) will not be levelled'
         conditions:
           world:
-            inclusive-list: [ 'world_the_end' ]
-        use-presets: [ 'no-level' ]
+            inclusive-list: ['world_the_end']
+        use-presets: ['no-level']
 
       no-levels-for-passives-or-bosses:
         enabled: true
         description: 'Passive and boss mobs will not be levelled'
         conditions:
           mob-group:
-            inclusive-list: [ 'passives', 'bosses' ]
-        use-presets: [ 'no-level' ]
+            inclusive-list: ['passives', 'bosses']
+        use-presets: ['no-level']
 
       no-levels-for-baby-hostile-mobs:
         enabled: true
         description: 'Baby hostile mobs will not be levelled'
         conditions:
           mob-group:
-            inclusive-list: [ 'hostiles' ]
+            inclusive-list: ['hostiles']
           baby-mob: true
-        use-presets: [ 'no-level' ]
+        use-presets: ['no-level']
 
       no-levels-for-mobs-belonging-to-other-plugins:
         enabled: true
         description: 'Prevents LM from making mobs levelled if they belong to other plugins e.g. Citizens or MythicMobs'
         conditions:
           mob-owner:
-            inclusive-list: [ ]
+            inclusive-list: []
 
       apply-level-and-attributes-and-nametag:
         enabled: true
@@ -83,12 +83,12 @@ event-listeners:
           nametags:
             format: '[Example Nametag Lvl. %entity-level% %entity-name% %current-health%/%max-health%]'
             visibility-duration: 1
-            visibility-method: [ 'TARGETED', 'ATTACKED' ]
+            visibility-method: ['TARGETED', 'ATTACKED']
           matched-settings:
             babies: true
             passengers: false
-          execute: [ 'update-nametag' ]
-        use-presets: [ 'normal-difficulty' ]
+          execute: ['update-nametag']
+        use-presets: ['normal-difficulty']
 
   # When an entity takes damage, update their nametag.
   # The 'update-nametag' executable, when called on an entity,
@@ -102,14 +102,14 @@ event-listeners:
   # updates all of their nametags.
   update-nametag-listener:
     options:
-      listen-for: [ 'entity-damage', 'entity-regain-health', 'player-join', 'player-teleport', 'player-change-world' ]
+      listen-for: ['entity-damage', 'entity-regain-health', 'player-join', 'player-teleport', 'player-change-world']
     rules:
       update-nametag:
         enabled: true
         conditions:
           is-levelled: true
         actions:
-          execute: [ 'update-nametag' ]
+          execute: ['update-nametag']
 
 # Don't touch any of this unless you know what you're doing,
 # or, unless a LevelledMobs maintainer suggested you do so.

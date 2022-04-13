@@ -29,10 +29,10 @@ public record Rule(
     @NotNull
     public Rule merge(final @NotNull Rule otherRule) {
         // merge conditions
-        for (RuleCondition otherCondition : otherRule.conditions()) {
+        for(RuleCondition otherCondition : otherRule.conditions()) {
             final Optional<RuleCondition> existingCondition = conditions().stream()
                 .filter(val -> val.id().equals(otherCondition.id())).findFirst();
-            if (existingCondition.isPresent()) {
+            if(existingCondition.isPresent()) {
                 existingCondition.get().merge(otherCondition);
             } else {
                 conditions().add(otherCondition);
@@ -40,10 +40,10 @@ public record Rule(
         }
 
         // merge actions
-        for (RuleAction otherAction : otherRule.actions()) {
+        for(RuleAction otherAction : otherRule.actions()) {
             final Optional<RuleAction> existingAction = actions().stream()
                 .filter(val -> val.id().equals(otherAction.id())).findFirst();
-            if (existingAction.isPresent()) {
+            if(existingAction.isPresent()) {
                 existingAction.get().merge(otherAction);
             } else {
                 actions().add(otherAction);
@@ -51,10 +51,10 @@ public record Rule(
         }
 
         // merge options
-        for (RuleOption otherOption : otherRule.options()) {
+        for(RuleOption otherOption : otherRule.options()) {
             final Optional<RuleOption> existingOption = options().stream()
                 .filter(val -> val.type() == otherOption.type()).findFirst();
-            if (existingOption.isPresent()) {
+            if(existingOption.isPresent()) {
                 existingOption.get().merge(otherOption);
             } else {
                 options().add(otherOption);
@@ -62,11 +62,11 @@ public record Rule(
         }
 
         // merge presets
-        if (!isPreset()) {
-            for (Rule otherPreset : otherRule.presets()) {
+        if(!isPreset()) {
+            for(Rule otherPreset : otherRule.presets()) {
                 final Optional<Rule> existingPreset = presets().stream()
                     .filter(val -> val.identifier().equals(otherPreset.identifier())).findFirst();
-                if (existingPreset.isEmpty()) {
+                if(existingPreset.isEmpty()) {
                     presets().add(otherPreset);
                 }
             }

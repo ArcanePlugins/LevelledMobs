@@ -34,7 +34,7 @@ public record ExecuteAction(
         final ExecuteAction otherAction = (ExecuteAction) other;
         HashSet<Executable> toAdd = new HashSet<>();
         otherAction.executables().forEach(otherExecutable -> {
-            if (executables().stream()
+            if(executables().stream()
                 .noneMatch(executable -> executable.id().equals(otherExecutable.id()))) {
                 toAdd.add(otherExecutable);
             }
@@ -48,7 +48,7 @@ public record ExecuteAction(
         final @NotNull FlatFileSection section) {
         final HashSet<Executable> executables = new HashSet<>();
 
-        for (String executableStr : section.getStringList(".execute")) {
+        for(String executableStr : section.getStringList(".execute")) {
             DefaultExecutableType defaultExecutableType;
 
             final LinkedList<String> args = new LinkedList<>(
@@ -56,28 +56,30 @@ public record ExecuteAction(
 
             final Optional<DefaultExecutableType> executableTypeOptional = DefaultExecutableType.of(
                 args.get(0));
-            if (executableTypeOptional.isPresent()) {
+            if(executableTypeOptional.isPresent()) {
                 defaultExecutableType = executableTypeOptional.get();
             } else {
-                LevelledMobs.logger().severe("The execute list at path '&b" + section.getPathPrefix()
-                    + "&7' has an invalid executable" +
-                    " type specified: '&b" + args.get(0) + "&7'. Fix this ASAP.");
+                LevelledMobs.logger()
+                    .severe("The execute list at path '&b" + section.getPathPrefix()
+                        + "&7' has an invalid executable" +
+                        " type specified: '&b" + args.get(0) + "&7'. Fix this ASAP.");
                 continue;
             }
             args.remove(0);
 
-            if (executables.stream()
+            if(executables.stream()
                 .anyMatch(other -> other.id().equals(defaultExecutableType.id()))) {
-                LevelledMobs.logger().severe("The execute list at path '&b" + section.getPathPrefix()
-                    + "&7' has the executable type " +
-                    "'&b" + defaultExecutableType
-                    + "&7' specified more than once. This will harm the intended behaviour of your"
-                    +
-                    " configuration. Fix this ASAP.");
+                LevelledMobs.logger()
+                    .severe("The execute list at path '&b" + section.getPathPrefix()
+                        + "&7' has the executable type " +
+                        "'&b" + defaultExecutableType
+                        + "&7' specified more than once. This will harm the intended behaviour of your"
+                        +
+                        " configuration. Fix this ASAP.");
                 continue;
             }
 
-            switch (defaultExecutableType) {
+            switch(defaultExecutableType) {
                 case UPDATE_NAMETAG:
                     executables.add(new UpdateNametagExecutable(args));
                     break;
@@ -105,8 +107,8 @@ public record ExecuteAction(
         }
 
         public static Optional<DefaultExecutableType> of(final @NotNull String id) {
-            for (DefaultExecutableType type : values()) {
-                if (type.id().equalsIgnoreCase(id)) {
+            for(DefaultExecutableType type : values()) {
+                if(type.id().equalsIgnoreCase(id)) {
                     return Optional.of(type);
                 }
             }

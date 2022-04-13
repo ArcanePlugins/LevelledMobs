@@ -45,7 +45,7 @@ public class DangerousCavesIntegration implements Integration, MobOwner {
         assert isEnabled();
 
         // if the key is not set, set it
-        if (mobTypeKey == null) {
+        if(mobTypeKey == null) {
             mobTypeKey = new NamespacedKey(
                 Bukkit.getPluginManager().getPlugin("DangerousCaves"),
                 "mob-type"

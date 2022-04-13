@@ -6,11 +6,11 @@ level-1-mobs-receive-attribute-multipliers: false
 
 # What debugging systems are enabled in the plugin?
 # This list is empty by default.
-debug-categories: [ ]
+debug-categories: []
 
 # What integrations are force-disabled in the plugin?
 # This list is empty by default.
-disabled-integrations: [ ]
+disabled-integrations: []
 
 # Don't touch any of this unless you know what you're doing,
 # or, unless a LevelledMobs maintainer suggested you do so.

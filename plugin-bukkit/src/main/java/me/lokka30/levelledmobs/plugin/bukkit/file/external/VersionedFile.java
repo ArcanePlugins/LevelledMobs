@@ -19,9 +19,9 @@ public interface VersionedFile extends ExternalFile {
 
     @NotNull
     default VersionedFile.FileVersionComparisonResult compareFileVersion() {
-        if (getInstalledFileVersion() > getSupportedFileVersion()) {
+        if(getInstalledFileVersion() > getSupportedFileVersion()) {
             return FileVersionComparisonResult.FUTURE;
-        } else if (getInstalledFileVersion() < getSupportedFileVersion()) {
+        } else if(getInstalledFileVersion() < getSupportedFileVersion()) {
             return FileVersionComparisonResult.OUTDATED;
         } else {
             return FileVersionComparisonResult.CURRENT;
@@ -39,8 +39,10 @@ public interface VersionedFile extends ExternalFile {
             "Your '&b" + getName() + "&7' file is running a version &onewer&7 " +
                 "than what is supported by this version of LevelledMobs. " +
                 "Please ensure LevelledMobs is fully up-to-date.");
-        LevelledMobs.logger().warning("&8 -> &7Installed file version: &b" + getInstalledFileVersion());
-        LevelledMobs.logger().warning("&8 -> &7Supported file version: &b" + getSupportedFileVersion());
+        LevelledMobs.logger()
+            .warning("&8 -> &7Installed file version: &b" + getInstalledFileVersion());
+        LevelledMobs.logger()
+            .warning("&8 -> &7Supported file version: &b" + getSupportedFileVersion());
         LevelledMobs.logger().warning(
             "&8 -> &7Plugin version: &b" + LevelledMobs.getInstance().getDescription()
                 .getVersion());

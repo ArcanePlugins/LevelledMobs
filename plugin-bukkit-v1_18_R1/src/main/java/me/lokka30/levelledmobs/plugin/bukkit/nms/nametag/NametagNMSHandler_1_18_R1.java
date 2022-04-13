@@ -49,12 +49,12 @@ public class NametagNMSHandler_1_18_R1 implements NametagNMSHandler {
     private static SynchedEntityData cloneEntityData(@NotNull final SynchedEntityData other,
         final Entity nmsEntity) {
         final SynchedEntityData entityData = new SynchedEntityData(nmsEntity);
-        if (other.getAll() == null) {
+        if(other.getAll() == null) {
             return entityData;
         }
 
         //noinspection rawtypes
-        for (SynchedEntityData.DataItem dataItem : other.getAll()) {
+        for(SynchedEntityData.DataItem dataItem : other.getAll()) {
             //noinspection unchecked
             entityData.define(dataItem.getAccessor(), dataItem.getValue());
         }

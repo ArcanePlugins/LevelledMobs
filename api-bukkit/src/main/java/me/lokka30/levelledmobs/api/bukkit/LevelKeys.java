@@ -20,13 +20,17 @@ public class LevelKeys {
         Type(final String key) {
             this.key = key;
             this.nsKey = new NamespacedKey(
-                Objects.requireNonNull(Bukkit.getPluginManager().getPlugin("LevelledMobs"), "plugin"),
+                Objects.requireNonNull(Bukkit.getPluginManager().getPlugin("LevelledMobs"),
+                    "plugin"),
                 key
             );
         }
 
         private final String key;
-        public String getKey() { return key; }
+
+        public String getKey() {
+            return key;
+        }
 
         private final NamespacedKey nsKey;
     }

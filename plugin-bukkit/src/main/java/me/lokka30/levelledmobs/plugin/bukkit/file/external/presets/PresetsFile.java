@@ -25,12 +25,12 @@ public class PresetsFile implements YamlExternalVersionedFile {
     @Override
     public void load(boolean fromReload) {
         // replace if not exists
-        if (!exists()) {
+        if(!exists()) {
             replace();
         }
 
         // load the data
-        if (fromReload) {
+        if(fromReload) {
             getData().forceReload();
         } else {
             data = LightningBuilder
@@ -62,7 +62,7 @@ public class PresetsFile implements YamlExternalVersionedFile {
 
     @Override
     public void migrate() {
-        switch (compareFileVersion()) {
+        switch(compareFileVersion()) {
             case CURRENT:
                 return;
             case FUTURE:
@@ -70,14 +70,14 @@ public class PresetsFile implements YamlExternalVersionedFile {
                 return;
             case OUTDATED:
                 boolean stop = false;
-                for (int i = getInstalledFileVersion(); i < getSupportedFileVersion(); i++) {
-                    if (stop) {
+                for(int i = getInstalledFileVersion(); i < getSupportedFileVersion(); i++) {
+                    if(stop) {
                         break;
                     }
                     LevelledMobs.logger().info(
                         "Attempting to migrate file '&b" + getName() + "&7' to version '&b" + i
                             + "&7'...");
-                    switch (i) {
+                    switch(i) {
                         case 1:
                             return;
                         default:

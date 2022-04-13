@@ -24,8 +24,8 @@ public class NametagHandler {
             levelledMob.getLevel());
         final String nametagFormat = levelledMob.getNametagFormat();
         String finalNametag = nametagFormat;
-        for (NametagPlaceholder placeholder : NametagPlaceholder.values()) {
-            if (nametagFormat.contains(placeholder.getId())) {
+        for(NametagPlaceholder placeholder : NametagPlaceholder.values()) {
+            if(nametagFormat.contains(placeholder.getId())) {
                 finalNametag = finalNametag.replace(placeholder.getId(),
                     placeholder.getValue(levelledMob));
             }

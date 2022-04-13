@@ -49,7 +49,7 @@ public class IntegrationHandler {
      */
     public void addIntegration(final Integration integration) {
         // Make sure there are no duplicate entries
-        if (getAvailableIntegrations().contains(integration)) {
+        if(getAvailableIntegrations().contains(integration)) {
             LevelledMobs.logger().warning(
                 "An attempt was made to add the integration '&b" + integration + "&7', but it is " +
                     "already added. This may be an error with an external integration or an internal error. Please "

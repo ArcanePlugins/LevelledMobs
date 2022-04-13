@@ -22,7 +22,7 @@ public record ModalList<T>(
     }
 
     public boolean contains(@NotNull final T item) {
-        return switch (listMode) {
+        return switch(listMode) {
             case INCLUSIVE -> contents.contains(item);
             case EXCLUSIVE -> !contents.contains(item);
         };

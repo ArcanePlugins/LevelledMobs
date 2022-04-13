@@ -18,7 +18,7 @@ public record UpdateNametagExecutable(
 
     @Override
     public void run(@NotNull LivingEntity livingEntity) {
-        if (livingEntity instanceof Player) {
+        if(livingEntity instanceof Player) {
             updateNametagsAroundPlayer((Player) livingEntity);
         } else {
             updateNametagForMob(livingEntity);

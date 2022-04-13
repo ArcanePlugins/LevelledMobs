@@ -15,7 +15,7 @@ public class UnlevellablesFile implements JsonInternalFile {
 
     @Override
     public void load(final boolean fromReload) {
-        if (fromReload) {
+        if(fromReload) {
             return;
         }
         //TODO Gson

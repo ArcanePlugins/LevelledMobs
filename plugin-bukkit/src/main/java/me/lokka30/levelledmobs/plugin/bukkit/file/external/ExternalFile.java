@@ -36,13 +36,13 @@ public interface ExternalFile {
     // replace the existing file or create a new file, contents transferred from the default file in the jar
     default void replace() {
         LevelledMobs.getInstance().saveResource(getRelativePath(), true);
-        if (getRelativePath().contains(File.separator)) {
+        if(getRelativePath().contains(File.separator)) {
             try {
                 Files.copy(
                     Path.of(getName()),
                     Path.of(getRelativePath())
                 );
-            } catch (IOException ex) {
+            } catch(IOException ex) {
                 LevelledMobs.logger().severe(
                     "Unable to move file '&b" + getName() + "&7': &f" + ex.getMessage());
             }

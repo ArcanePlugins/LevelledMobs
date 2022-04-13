@@ -98,30 +98,32 @@ public class RuleParser {
 
     void addMobRuleGroups() {
         final Yaml data = LevelledMobs.getInstance().fileHandler.groupsFile.getData();
-        for (
+        for(
             String mobGroupName : data.getSection("mob-groups").singleLayerKeySet()
         ) {
             EnumSet<EntityType> entityTypes = EnumSet.noneOf(EntityType.class);
 
-            for (
+            for(
                 String entityTypeStr : data.getStringList("mob-groups." + mobGroupName)
             ) {
                 EntityType entityType;
                 try {
                     entityType = EntityType.valueOf(entityTypeStr.toUpperCase(Locale.ROOT));
-                } catch (IllegalArgumentException ex) {
+                } catch(IllegalArgumentException ex) {
                     LevelledMobs.logger().severe(
                         "Invalid entity type specified '&b" + entityTypeStr + "&7' in the mob " +
                             "group named '&b" + mobGroupName + "&7'! Fix this ASAP.");
                     continue;
                 }
 
-                if (entityTypes.contains(entityType)) {
-                    LevelledMobs.logger().severe("Entity type '&b" + entityTypeStr.toUpperCase(Locale.ROOT)
-                        + "&7' has been listed " +
-                        "listed more than once in the mob group named '&b" + mobGroupName + "&7'! "
-                        +
-                        "Fix this ASAP.");
+                if(entityTypes.contains(entityType)) {
+                    LevelledMobs.logger()
+                        .severe("Entity type '&b" + entityTypeStr.toUpperCase(Locale.ROOT)
+                            + "&7' has been listed " +
+                            "listed more than once in the mob group named '&b" + mobGroupName
+                            + "&7'! "
+                            +
+                            "Fix this ASAP.");
                     continue;
                 }
 
@@ -137,25 +139,25 @@ public class RuleParser {
 
     void addBiomeRuleGroups() {
         final Yaml data = LevelledMobs.getInstance().fileHandler.groupsFile.getData();
-        for (
+        for(
             String biomeGroupName : data.getSection("biome-groups").singleLayerKeySet()
         ) {
             EnumSet<Biome> biomes = EnumSet.noneOf(Biome.class);
 
-            for (
+            for(
                 String biomeStr : data.getStringList("biome-groups." + biomeGroupName)
             ) {
                 Biome biome;
                 try {
                     biome = Biome.valueOf(biomeStr.toUpperCase(Locale.ROOT));
-                } catch (IllegalArgumentException ex) {
+                } catch(IllegalArgumentException ex) {
                     LevelledMobs.logger().severe(
                         "Invalid biome specified '&b" + biomeStr + "&7' in the biome " +
                             "group named '&b" + biomeGroupName + "&7'! Fix this ASAP.");
                     continue;
                 }
 
-                if (biomes.contains(biome)) {
+                if(biomes.contains(biome)) {
                     LevelledMobs.logger().severe(
                         "Biome '&b" + biomeStr.toUpperCase(Locale.ROOT) + "&7' has been listed " +
                             "listed more than once in the biome group named '&b" + biomeGroupName
@@ -203,12 +205,12 @@ public class RuleParser {
         );
 
         // parse presets
-        if (!isPreset) {
+        if(!isPreset) {
             data.getStringList(path + ".use-presets").forEach(presetId -> {
                 final Optional<Rule> presetInRule = presets.stream()
                     .filter(preset -> preset.identifier().equals(presetId))
                     .findFirst();
-                if (presetInRule.isPresent()) {
+                if(presetInRule.isPresent()) {
                     LevelledMobs.logger().severe(
                         "Rule '&b" + identifier + "&7' wants to use preset '&b" + presetId
                             + "&7', but that exact preset is not configured. Fix this ASAP.");
@@ -223,7 +225,7 @@ public class RuleParser {
             final Optional<DefaultRuleConditionType> ruleConditionType = DefaultRuleConditionType.fromId(
                 ruleConditionTypeStr);
 
-            if (ruleConditionType.isPresent()) {
+            if(ruleConditionType.isPresent()) {
                 LevelledMobs.logger().severe(
                     "The " + ruleOrPreset + " '&b" + identifier + "&7' has an invalid condition" +
                         " specified, named '&b" + ruleConditionTypeStr + "&7'. Fix this ASAP.");
@@ -241,7 +243,7 @@ public class RuleParser {
             final Optional<DefaultRuleActionType> ruleActionType = DefaultRuleActionType.fromId(
                 ruleActionTypeStr);
 
-            if (ruleActionType.isPresent()) {
+            if(ruleActionType.isPresent()) {
                 LevelledMobs.logger().severe(
                     "The " + ruleOrPreset + " '&b" + identifier + "&7' has an invalid action" +
                         " specified, named '&b" + ruleActionTypeStr + "&7'. Fix this ASAP.");
@@ -259,7 +261,7 @@ public class RuleParser {
             final Optional<DefaultRuleOptionType> ruleOptionType = DefaultRuleOptionType.fromId(
                 ruleOptionTypeStr);
 
-            if (ruleOptionType.isPresent()) {
+            if(ruleOptionType.isPresent()) {
                 LevelledMobs.logger().severe(
                     "The " + ruleOrPreset + " '&b" + identifier + "&7' has an invalid option" +
                         " specified, named '&b" + ruleOptionTypeStr + "&7'. Fix this ASAP.");
@@ -278,14 +280,14 @@ public class RuleParser {
             // loop through conditions in preset
             preset.conditions()
                 .forEach(presetCondition -> rule.conditions().forEach(ruleCondition -> {
-                    if (presetCondition.id().equals(ruleCondition.id())) {
+                    if(presetCondition.id().equals(ruleCondition.id())) {
                         ruleCondition.merge(presetCondition);
                     }
                 }));
 
             // loop through actions in preset
             preset.actions().forEach(presetAction -> rule.actions().forEach(ruleAction -> {
-                if (presetAction.id().equals(ruleAction.id())) {
+                if(presetAction.id().equals(ruleAction.id())) {
                     ruleAction.merge(presetAction);
                 }
             }));
@@ -306,7 +308,7 @@ public class RuleParser {
         final @NotNull DefaultRuleConditionType type,
         final @NotNull FlatFileSection section
     ) {
-        switch (type) {
+        switch(type) {
             case ENTITY_TYPE:
                 return EntityTypeCondition.of(parentRule, section);
             case IS_LEVELLED:
@@ -331,7 +333,7 @@ public class RuleParser {
         final @NotNull DefaultRuleActionType type,
         final @NotNull FlatFileSection section
     ) {
-        switch (type) {
+        switch(type) {
             case EXECUTE:
                 return ExecuteAction.of(parentRule, section);
             default:
@@ -350,7 +352,7 @@ public class RuleParser {
         final @NotNull DefaultRuleOptionType type,
         final @NotNull FlatFileSection section
     ) {
-        switch (type) {
+        switch(type) {
             case TEMPORARY_DO_NOT_USE:
                 return new TemporaryDoNotUseOption(parentRule);
             default:

@@ -45,7 +45,7 @@ public class EcoBossesIntegration implements Integration, MobOwner {
         assert isEnabled();
 
         // if the key is not set, set it
-        if (bossKey == null) {
+        if(bossKey == null) {
             bossKey = new NamespacedKey(
                 Bukkit.getPluginManager().getPlugin("EcoBosses"),
                 "boss"

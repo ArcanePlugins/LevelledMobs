@@ -40,8 +40,9 @@ public interface YamlExternalFile extends ExternalFile {
 
         try {
             Files.copy(from.toPath(), to.toPath());
-        } catch (IOException ex) {
-            LevelledMobs.logger().severe("Unable to copy file '&b" + getName() + "&7': &f" + ex.getMessage());
+        } catch(IOException ex) {
+            LevelledMobs.logger()
+                .severe("Unable to copy file '&b" + getName() + "&7': &f" + ex.getMessage());
         }
     }
 

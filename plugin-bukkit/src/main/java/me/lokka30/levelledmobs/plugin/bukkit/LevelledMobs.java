@@ -44,13 +44,14 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 /**
  * Main class of the plugin. Acts as a 'hub' of sorts in the plugin's code.
- * 
+ *
  * @author lokka30
  * @since 4.0.0
  */
 public final class LevelledMobs extends JavaPlugin {
 
     private static LevelledMobs instance;
+
     public static LevelledMobs getInstance() {
         return instance;
     }
@@ -73,30 +74,29 @@ public final class LevelledMobs extends JavaPlugin {
     /* Start-up & shut-down methods */
 
     /**
-     * Called by Bukkit's plugin manager in the 'loading' stage of the server. This
-     * runs before 'onEnable', so any important things to get done before 'onEnable' must be added
-     * here.
-     * 
+     * Called by Bukkit's plugin manager in the 'loading' stage of the server. This runs before
+     * 'onEnable', so any important things to get done before 'onEnable' must be added here.
+     *
      * @author lokka30
      * @since 4.0.0
      */
     @Override
     public void onLoad() {
         final var startTime = System.currentTimeMillis();
-        
+
         instance = this;
         //TODO lokka30: Complete this method's body.
-        
 
-        getLogger().info("Plugin initialized (took " + (System.currentTimeMillis() - startTime) + "ms).");
+
+        getLogger().info(
+            "Plugin initialized (took " + (System.currentTimeMillis() - startTime) + "ms).");
     }
 
     /**
-     * Called by Bukkit's plugin manager when it enables the plugin. Ensure reloads are
-     * factored in to any code ran inside this method. Warning: Methods are ordered on purpose, as
-     * some code requires other code to be ran first (e.g. listeners require configs to be loaded
-     * first).
-     * 
+     * Called by Bukkit's plugin manager when it enables the plugin. Ensure reloads are factored in
+     * to any code ran inside this method. Warning: Methods are ordered on purpose, as some code
+     * requires other code to be ran first (e.g. listeners require configs to be loaded first).
+     *
      * @author lokka30
      * @since 4.0.0
      */
@@ -115,7 +115,8 @@ public final class LevelledMobs extends JavaPlugin {
 
         loadEventListeners();
 
-        getLogger().info("Plugin enabled (took " + (System.currentTimeMillis() - startTime) + "ms).");
+        getLogger().info(
+            "Plugin enabled (took " + (System.currentTimeMillis() - startTime) + "ms).");
     }
 
     /**
@@ -133,7 +134,8 @@ public final class LevelledMobs extends JavaPlugin {
 
         queueHandler.stopQueues();
 
-        getLogger().info("Plugin disabled (took " + (System.currentTimeMillis() - startTime) + "ms).");
+        getLogger().info(
+            "Plugin disabled (took " + (System.currentTimeMillis() - startTime) + "ms).");
     }
 
     /* Methods ran by onLoad, onEnable and onDisable */

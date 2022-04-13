@@ -16,7 +16,7 @@ import org.jetbrains.annotations.NotNull;
 public final class DebugHandler {
 
     public void load() {
-        for (
+        for(
             String debugCategoryStr : LevelledMobs.getInstance().fileHandler.settingsFile
             .getData()
             .getOrDefault("debug-categories", new ArrayList<String>())
@@ -24,9 +24,10 @@ public final class DebugHandler {
             final DebugCategory debugCategory;
             try {
                 debugCategory = DebugCategory.valueOf(debugCategoryStr);
-            } catch (IllegalArgumentException ex) {
-                LevelledMobs.logger().severe("An invalid debug category was speciied in settings.yml - '&b"
-                    + debugCategoryStr + "&7' - please fix this.");
+            } catch(IllegalArgumentException ex) {
+                LevelledMobs.logger()
+                    .severe("An invalid debug category was speciied in settings.yml - '&b"
+                        + debugCategoryStr + "&7' - please fix this.");
                 continue;
             }
 

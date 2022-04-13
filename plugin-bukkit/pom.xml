@@ -63,7 +63,8 @@
               <artifact>*:*</artifact>
               <excludes>
                 <exclude>META-INF/MANIFEST.MF</exclude>
-                <exclude>META-INF/maven/com.esotericsoftware.yamlbeans/yamlbeans/pom.properties</exclude>
+                <exclude>META-INF/maven/com.esotericsoftware.yamlbeans/yamlbeans/pom.properties
+                </exclude>
                 <exclude>META-INF/maven/com.esotericsoftware.yamlbeans/yamlbeans/pom.xml</exclude>
                 <exclude>META-INF/maven/org.json/json/pom.properties</exclude>
                 <exclude>META-INF/maven/org.json/json/pom.xml</exclude>

@@ -45,7 +45,7 @@ public class LevelledMob {
     }
 
     public synchronized void setLevel(final int newLevel) {
-        if (newLevel < 1) {
+        if(newLevel < 1) {
             removeLevel();
             return;
         }
@@ -62,30 +62,37 @@ public class LevelledMob {
     }
 
     public synchronized void removeLevel() {
-        for(NamespacedKey key : NamespacedKeys.ALL_KEYS) { getPDC().remove(key); }
+        for(NamespacedKey key : NamespacedKeys.ALL_KEYS) {
+            getPDC().remove(key);
+        }
     }
 
     public synchronized void freezeLevelState() {
-        getPDC().set(NamespacedKeys.FROZEN_LEVEL_STATE, PersistentDataType.STRING, Boolean.toString(true));
+        getPDC().set(NamespacedKeys.FROZEN_LEVEL_STATE, PersistentDataType.STRING,
+            Boolean.toString(true));
     }
 
     public synchronized void unfreezeLevelState() {
-        getPDC().set(NamespacedKeys.FROZEN_LEVEL_STATE, PersistentDataType.STRING, Boolean.toString(false));
+        getPDC().set(NamespacedKeys.FROZEN_LEVEL_STATE, PersistentDataType.STRING,
+            Boolean.toString(false));
     }
 
     public synchronized boolean getLevelFrozenStatus() {
         return Boolean.parseBoolean(
-            (String) Default.of(MobData.getFrozenLevelState(livingEntity).get(), Boolean.toString(false))
+            (String) Default.of(MobData.getFrozenLevelState(livingEntity).get(),
+                Boolean.toString(false))
         );
     }
 
     @NotNull
     public synchronized String getNametagFormat() {
-        return (String) Default.of(getPDC().get(NamespacedKeys.NAMETAG_FORMAT_KEY, PersistentDataType.STRING), "");
+        return (String) Default.of(
+            getPDC().get(NamespacedKeys.NAMETAG_FORMAT_KEY, PersistentDataType.STRING), "");
     }
 
     public synchronized static boolean isEntityLevelled(final @NotNull LivingEntity livingEntity) {
-        return livingEntity.getPersistentDataContainer().has(NamespacedKeys.LEVEL_KEY, PersistentDataType.INTEGER);
+        return livingEntity.getPersistentDataContainer()
+            .has(NamespacedKeys.LEVEL_KEY, PersistentDataType.INTEGER);
     }
 
     @NotNull

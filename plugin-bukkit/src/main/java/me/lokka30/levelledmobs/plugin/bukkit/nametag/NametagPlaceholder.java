@@ -23,7 +23,7 @@ public enum NametagPlaceholder {
     }
 
     public String getValue(final @NotNull LevelledMob levelledMob) {
-        switch (this) {
+        switch(this) {
             case ENTITY_NAME:
                 return LevelledMobs.getInstance()
                     .translationHandler

@@ -13,7 +13,8 @@
 
 ## Contributors
 
-Please see [CONTRIBUTORS.md](CONTRIBUTORS.md) to see the list of wonderful people who made LevelledMobs possible.
+Please see [CONTRIBUTORS.md](CONTRIBUTORS.md) to see the list of wonderful people who made
+LevelledMobs possible.
 
 ## License
 
@@ -28,7 +29,7 @@ Please see [CONTRIBUTORS.md](CONTRIBUTORS.md) to see the list of wonderful peopl
 >
 > This program is distributed in the hope that it will be useful,
 > but without any warranty; without even the implied warranty of
-> merchantability or fitness for a particular purpose.  See the
+> merchantability or fitness for a particular purpose. See the
 > GNU General Public License for more details.
 >
 > You have been supplied a copy of the GNU General Public License,
@@ -52,8 +53,8 @@ Below is a list of the libraries currently used in LevelledMobs.
 
 ### Previous Libraries
 
-The following libraries were once used in LevelledMobs, though are no longer adopted.
-We still wish to credit them for their part in supporting LevelledMobs to be where it is today.
+The following libraries were once used in LevelledMobs, though are no longer adopted. We still wish
+to credit them for their part in supporting LevelledMobs to be where it is today.
 
 * MicroLib by lokka30
 
@@ -64,6 +65,7 @@ The following files do not fall under LevelledMobs' license.
 Please view the license stated at the top of the listed files below for more information.
 
 * `WeightedRandomContainer.java`
-  * Created by `Philipp` on StackExchange.
+    * Created by `Philipp` on StackExchange.
 * `player-head-textures.json`
-  * Contains texture IDs sourced from `Zombie_Striker`'s `Ultimate Mob Heads Fork` resource on SpigotMC.org.
+    * Contains texture IDs sourced from `Zombie_Striker`'s `Ultimate Mob Heads Fork` resource on
+      SpigotMC.org.

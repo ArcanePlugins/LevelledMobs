@@ -14,9 +14,8 @@ import org.bukkit.Location;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * A smaller version of the Location class only including a world name, and three
- * integers for the x, y and z. Finds uses where the extra data and precision of the Location class
- * is unnecessary.
+ * A smaller version of the Location class only including a world name, and three integers for the
+ * x, y and z. Finds uses where the extra data and precision of the Location class is unnecessary.
  *
  * @author lokka30
  * @see Location

@@ -21,7 +21,7 @@ public class NMSHandler {
             Bukkit.getServer().getClass().getCanonicalName());
 
         // v1_18_R1
-        if (nmsRegex.find()) {
+        if(nmsRegex.find()) {
             nmsVersionString = nmsRegex.group(1);
         } else {
             LevelledMobs.logger().warning(
@@ -32,7 +32,7 @@ public class NMSHandler {
 
     @NotNull
     public NametagNMSHandler getNametagNMSHandler() {
-        switch (nmsVersionString.toUpperCase(Locale.ROOT)) {
+        switch(nmsVersionString.toUpperCase(Locale.ROOT)) {
             case "V1_18_R1":
                 return new NametagNMSHandler_1_18_R1();
             case "V1_17_R1":

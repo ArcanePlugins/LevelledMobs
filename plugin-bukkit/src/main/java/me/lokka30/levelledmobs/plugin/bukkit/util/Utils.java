@@ -13,9 +13,9 @@ import java.util.logging.Logger;
 import org.bukkit.Bukkit;
 
 /**
- * This class contains a bunch of public static methods used across multiple
- * LevelledMobs classes, centralising it so it doesn't have to be repeated, making it easier to
- * update the methods since they are in one location.
+ * This class contains a bunch of public static methods used across multiple LevelledMobs classes,
+ * centralising it so it doesn't have to be repeated, making it easier to update the methods since
+ * they are in one location.
  *
  * @author lokka30
  * @since 4.0.0
@@ -29,7 +29,7 @@ public final class Utils {
         final String[] words = constant.split("_");
         for(int i = 0; i < words.length; i++) {
             words[i] = words[i].substring(0, 1).toUpperCase(Locale.ROOT) +
-                    words[i].substring(1).toLowerCase(Locale.ROOT);
+                words[i].substring(1).toLowerCase(Locale.ROOT);
         }
         return String.join(" ", words);
     }

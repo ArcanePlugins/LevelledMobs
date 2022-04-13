@@ -38,8 +38,8 @@ public class WeightedRandomContainer<T> {
     public T getRandom() {
         final double r = ThreadLocalRandom.current().nextDouble() * accumulatedWeight;
 
-        for (Entry entry : entries) {
-            if (entry.accumulatedWeight >= r) {
+        for(Entry entry : entries) {
+            if(entry.accumulatedWeight >= r) {
                 return entry.object;
             }
         }

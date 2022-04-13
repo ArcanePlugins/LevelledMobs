@@ -45,7 +45,7 @@ public interface Integration {
      */
     default boolean isEnabled() {
         return !(LevelledMobs.getInstance().fileHandler.settingsFile.getData()
-                .getStringList("disabled-integrations")
-                .contains(getName())) && isInstalled();
+            .getStringList("disabled-integrations")
+            .contains(getName())) && isInstalled();
     }
 }

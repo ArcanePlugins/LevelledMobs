@@ -44,14 +44,14 @@ public record EntityTypeCondition(
         final ModalList.ListMode listMode;
         final EnumSet<EntityType> contents;
 
-        if (section.contains(".inclusive-list")) {
+        if(section.contains(".inclusive-list")) {
             listMode = ModalList.ListMode.INCLUSIVE;
             contents = EnumSet.noneOf(EntityType.class);
-            for (String entityTypeStr : section.getStringList(".inclusive-list")) {
+            for(String entityTypeStr : section.getStringList(".inclusive-list")) {
                 final EntityType entityType;
                 try {
                     entityType = EntityType.valueOf(entityTypeStr);
-                } catch (IllegalArgumentException ex) {
+                } catch(IllegalArgumentException ex) {
                     LevelledMobs.logger().severe(
                         "Invalid EntityType '&b" + entityTypeStr + "&7' specified in" +
                             " condition located at '&b" + section.getPathPrefix()
@@ -60,14 +60,14 @@ public record EntityTypeCondition(
                 }
                 contents.add(entityType);
             }
-        } else if (section.contains(".exclusive-list")) {
+        } else if(section.contains(".exclusive-list")) {
             listMode = ModalList.ListMode.EXCLUSIVE;
             contents = EnumSet.noneOf(EntityType.class);
-            for (String entityTypeStr : section.getStringList(".exclusive-list")) {
+            for(String entityTypeStr : section.getStringList(".exclusive-list")) {
                 final EntityType entityType;
                 try {
                     entityType = EntityType.valueOf(entityTypeStr);
-                } catch (IllegalArgumentException ex) {
+                } catch(IllegalArgumentException ex) {
                     LevelledMobs.logger().severe(
                         "Invalid EntityType '&b" + entityTypeStr + "&7' specified in" +
                             " condition located at '&b" + section.getPathPrefix()

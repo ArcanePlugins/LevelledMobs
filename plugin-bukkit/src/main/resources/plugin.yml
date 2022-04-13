@@ -10,13 +10,13 @@
 # General plugin information
 name: 'LevelledMobs'
 version: '${project.version}'
-authors: [ 'lokka30', 'stumper66 (aka. PenalBuffalo)', 'UltimaOath (aka. Oathkeeper)' ] # The LevelledMobs team
+authors: ['lokka30', 'stumper66 (aka. PenalBuffalo)', 'UltimaOath (aka. Oathkeeper)'] # The LevelledMobs team
 description: '${project.description}'
 website: 'https://github.com/lokka30/LevelledMobs/'
 
 # Other info for plugin loader
 main: 'me.lokka30.levelledmobs.plugin.bukkit.LevelledMobs'
-softdepend: [ ] #TODO
+softdepend: [] #TODO
 api-version: '1.13'
 load: 'STARTUP' # We want it to load before the worlds so all mobs are detected.
 
@@ -24,7 +24,7 @@ load: 'STARTUP' # We want it to load before the worlds so all mobs are detected.
 commands:
   levelledmobs:
     description: 'Run various LevelledMobs management/info commands.'
-    aliases: [ 'leveledmobs', 'lm', 'lvlmobs' ]
+    aliases: ['leveledmobs', 'lm', 'lvlmobs']
     usage: '/<command>'
 
 # All static permissions registered by the plugin

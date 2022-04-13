@@ -25,12 +25,12 @@ public class MessagesFile implements YamlExternalVersionedFile {
     @Override
     public void load(boolean fromReload) {
         // replace if not exists
-        if (!exists()) {
+        if(!exists()) {
             replace();
         }
 
         // load the data
-        if (fromReload) {
+        if(fromReload) {
             getData().forceReload();
         } else {
             data = LightningBuilder
@@ -62,7 +62,7 @@ public class MessagesFile implements YamlExternalVersionedFile {
 
     @Override
     public void migrate() {
-        switch (compareFileVersion()) {
+        switch(compareFileVersion()) {
             case CURRENT:
                 return;
             case FUTURE:
@@ -70,14 +70,14 @@ public class MessagesFile implements YamlExternalVersionedFile {
                 return;
             case OUTDATED:
                 boolean stop = false;
-                for (int i = getInstalledFileVersion(); i < getSupportedFileVersion(); i++) {
-                    if (stop) {
+                for(int i = getInstalledFileVersion(); i < getSupportedFileVersion(); i++) {
+                    if(stop) {
                         break;
                     }
                     LevelledMobs.logger().info(
                         "Attempting to migrate file '&b" + getName() + "&7' to version '&b" + i
                             + "&7'...");
-                    if (i < 7) {
+                    if(i < 7) {
                         // This file was present prior to LM 4 so we can't feasibly
                         // migrate versions other than the previous file version only.
                         LevelledMobs.logger().severe(
@@ -89,7 +89,7 @@ public class MessagesFile implements YamlExternalVersionedFile {
                         replace();
                         break;
                     }
-                    switch (i) {
+                    switch(i) {
                         case 8:
                             break;
                         default:

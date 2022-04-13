@@ -16,7 +16,7 @@ defaults:
   amount: 1
   equipped-chance: 1.0
   custom-model-data: -1
-  item-flags: [ ]
+  item-flags: []
   nbt-data: ''
   remove-vanilla-drops: false
   no-multiplier: false

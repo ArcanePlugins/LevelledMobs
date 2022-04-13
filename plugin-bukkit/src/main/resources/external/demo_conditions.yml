@@ -49,14 +49,14 @@ conditions:
   #  for the rule to be processed.
 
   # short
-  entity-type-incl: [ 'CREEPER' ] # Set<String>
-  entity-type-excl: [ 'CREEPER' ] # Set<String>
+  entity-type-incl: ['CREEPER'] # Set<String>
+  entity-type-excl: ['CREEPER'] # Set<String>
 
   # long
   entity-type:
-    inclusive-list: [ 'CREEPER' ] # Set<String>
+    inclusive-list: ['CREEPER'] # Set<String>
     # OR
-    exclusive-list: [ 'CREEPER' ] # Set<String>
+    exclusive-list: ['CREEPER'] # Set<String>
 
   ###########
   # MOB GROUP
@@ -72,14 +72,14 @@ conditions:
   #  (Groups are those defined in groups.yml)
 
   # short
-  mob-group-incl: [ 'passives' ] # Set<String>
-  mob-group-excl: [ 'hostiles' ] # Set<String>
+  mob-group-incl: ['passives'] # Set<String>
+  mob-group-excl: ['hostiles'] # Set<String>
 
   # long
   mob-group:
-    inclusive-list: [ 'passives' ] # Set<String>
+    inclusive-list: ['passives'] # Set<String>
     # OR
-    exclusive-list: [ 'hostiles' ] # Set<String>
+    exclusive-list: ['hostiles'] # Set<String>
 
   ####################
   # MOB LEVELLED STATE
@@ -172,14 +172,14 @@ conditions:
   #  by the configurator.
 
   # short
-  modified-by-plugin-incl: [ 'MYTHIC_MOBS', 'ELITE_MOBS', 'INFERNAL_MOBS' ] # Set<String>
-  modified-by-plugin-excl: [ 'CITIZENS', 'SHOPKEEPERS', 'VANILLA_BOSSES' ] # Set<String>
+  modified-by-plugin-incl: ['MYTHIC_MOBS', 'ELITE_MOBS', 'INFERNAL_MOBS'] # Set<String>
+  modified-by-plugin-excl: ['CITIZENS', 'SHOPKEEPERS', 'VANILLA_BOSSES'] # Set<String>
 
   # long
   modified-by-plugin:
-    inclusive-list: [ ] # Set<String>
+    inclusive-list: [] # Set<String>
     # OR
-    exclusive-list: [ ] # Set<String>
+    exclusive-list: [] # Set<String>
 
   ##########################
   # MYTHICMOBS INTERNAL NAME
@@ -194,14 +194,14 @@ conditions:
   #  The name is from MythicMobs, e.g. 'Skeleton King'.
 
   # short
-  mythicmobs-internal-name-incl: [ 'Skeleton King' ] # Set<String>
-  mythicmobs-internal-name-excl: [ 'Skeletal Minion' ] # Set<String>
+  mythicmobs-internal-name-incl: ['Skeleton King'] # Set<String>
+  mythicmobs-internal-name-excl: ['Skeletal Minion'] # Set<String>
 
   # long
   mythicmobs-internal-name:
-    inclusive-list: [ ] # Set<String>
+    inclusive-list: [] # Set<String>
     # OR
-    exclusive-list: [ ] # Set<String>
+    exclusive-list: [] # Set<String>
 
   ##############
   # SPAWN REASON
@@ -215,14 +215,14 @@ conditions:
   #  For example: 'SPAWNER'
 
   # short
-  spawn-reason-incl: [ 'SPAWNER' ] # Set<String>
-  spawn-reason-excl: [ 'SPAWNER' ] # Set<String
+  spawn-reason-incl: ['SPAWNER'] # Set<String>
+  spawn-reason-excl: ['SPAWNER'] # Set<String
 
   # long
   spawn-reason:
-    inclusive-list: [ ] # Set<String>
+    inclusive-list: [] # Set<String>
     # OR
-    exclusive-list: [ ] # Set<String>
+    exclusive-list: [] # Set<String>
 
   ############################
   # CONDITIONS TO WORK ON LIST

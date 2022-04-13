@@ -24,7 +24,7 @@ public record IsLevelledCondition(
     public boolean appliesTo(@NotNull LivingEntity livingEntity) {
         boolean isLevelled = LevelledMob.isEntityLevelled(livingEntity);
         boolean applies;
-        switch (state) {
+        switch(state) {
             case ANY:
                 return !inverse();
             case YES:

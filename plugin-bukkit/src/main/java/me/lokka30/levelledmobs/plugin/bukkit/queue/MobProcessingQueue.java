@@ -34,7 +34,7 @@ public class MobProcessingQueue implements Queue {
     public void start() {
         LevelledMobs.logger().info("Starting queue '&b" + getName() + "&7'...");
 
-        if (isRunning) {
+        if(isRunning) {
             throw new UnsupportedOperationException("Queue is already running");
         }
 
@@ -44,10 +44,10 @@ public class MobProcessingQueue implements Queue {
         new BukkitRunnable() {
             @Override
             public void run() {
-                while (!isCancelled) {
+                while(!isCancelled) {
                     final EntitySpawnEvent item = queue.poll();
 
-                    if (item == null) {
+                    if(item == null) {
                         continue;
                     }
 
@@ -65,7 +65,7 @@ public class MobProcessingQueue implements Queue {
     public void stop() {
         LevelledMobs.logger().info("Stopping queue '&b" + getName() + "&7'...");
 
-        if (!isRunning) {
+        if(!isRunning) {
             throw new UnsupportedOperationException("Queue is not running");
         }
 

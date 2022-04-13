@@ -9,10 +9,10 @@
 package me.lokka30.levelledmobs.plugin.bukkit.util;
 
 /**
- * This class is used to put cooldowns on certain actions, on certain in-game objects -
- * e.g. clicking entities or blocks. For example, this is used in Debug Entity Damage to stop spam
- * from clicking the same entity over and over. It is also used in the Spawner Info for the same
- * reason: blocks unnecessary chat spam.
+ * This class is used to put cooldowns on certain actions, on certain in-game objects - e.g.
+ * clicking entities or blocks. For example, this is used in Debug Entity Damage to stop spam from
+ * clicking the same entity over and over. It is also used in the Spawner Info for the same reason:
+ * blocks unnecessary chat spam.
  *
  * @author lokka30
  * @since 3.1.2
