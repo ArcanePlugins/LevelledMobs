@@ -1,13 +1,9 @@
-# IntelliJ IDE
-#   Why? Different developers use different IDE settings.
-/target/
-/.idea
-.idea
+# JetBrains IntelliJ
+target/
 .idea/
 LevelledMobs.iml
 
-# Eclipse IDE
-#   Why? Different developers use different IDE settings.
+# Eclipse
 .classpath
 .project
 /.settings
@@ -15,5 +11,6 @@ LevelledMobs.iml
 .idea/jarRepositories.xml
 .idea/discord.xml
 
-# Mac OS X
+# macOS
 ._.git
+.DS_Store
