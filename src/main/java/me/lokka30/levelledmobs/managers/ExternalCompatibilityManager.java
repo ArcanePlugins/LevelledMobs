@@ -84,12 +84,17 @@ public class ExternalCompatibilityManager {
         return  (!list.containsKey(externalCompatibility) || list.get(externalCompatibility) != null && list.get(externalCompatibility));
     }
 
+    private static boolean checkIfPluginIsInstalledAndEnabled(final @NotNull String pluginName){
+        final Plugin plugin = Bukkit.getPluginManager().getPlugin(pluginName);
+        return plugin != null && plugin.isEnabled();
+    }
+
     public static boolean hasPapiInstalled() {
-        return Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI");
+        return checkIfPluginIsInstalledAndEnabled("PlaceholderAPI");
     }
 
     public static boolean hasNbtApiInstalled(){
-        return Bukkit.getPluginManager().isPluginEnabled("NBTAPI");
+        return checkIfPluginIsInstalledAndEnabled("NBTAPI");
     }
 
     @NotNull
@@ -98,20 +103,18 @@ public class ExternalCompatibilityManager {
     }
 
     public static boolean hasProtocolLibInstalled() {
-        return Bukkit.getPluginManager().getPlugin("ProtocolLib") != null;
+        return checkIfPluginIsInstalledAndEnabled("ProtocolLib");
     }
 
     public static boolean hasMythicMobsInstalled() {
-        return Bukkit.getPluginManager().getPlugin("MythicMobs") != null;
+        return checkIfPluginIsInstalledAndEnabled("MythicMobs");
     }
 
-    public static boolean hasWorldGuardInstalled() {
-        return Bukkit.getPluginManager().getPlugin("WorldGuard") != null;
-    }
+    public static boolean hasWorldGuardInstalled() { return checkIfPluginIsInstalledAndEnabled("WorldGuard"); }
 
     private static boolean isMobOfSimplePets(@NotNull final LivingEntityWrapper lmEntity){
         final Plugin plugin = Bukkit.getPluginManager().getPlugin("SimplePets");
-        if (plugin == null) return false;
+        if (plugin == null || !plugin.isEnabled()) return false;
 
         // version 5 uses the API, older versions we'll check for metadata
         if (plugin.getDescription().getVersion().startsWith("4")) {
@@ -127,7 +130,7 @@ public class ExternalCompatibilityManager {
 
     private static boolean isMobOfEliteBosses(@NotNull final LivingEntityWrapper lmEntity){
         final Plugin plugin = Bukkit.getPluginManager().getPlugin("EliteBosses");
-        if (plugin == null) return false;
+        if (plugin == null || !plugin.isEnabled()) return false;
 
         for (final MetadataValue meta : lmEntity.getLivingEntity().getMetadata("EliteBosses")) {
             if (meta.asInt() > 0) return true;
@@ -138,14 +141,14 @@ public class ExternalCompatibilityManager {
 
     private static boolean isMobOfBloodNight(@NotNull final LivingEntityWrapper lmEntity){
         final Plugin plugin = Bukkit.getPluginManager().getPlugin("BloodNight");
-        if (plugin == null) return false;
+        if (plugin == null || !plugin.isEnabled()) return false;
 
         return lmEntity.getPDC().has(new NamespacedKey(plugin, "mobtype"), PersistentDataType.STRING);
     }
 
     public static boolean isMythicMob(@NotNull final LivingEntityWrapper lmEntity) {
         final Plugin p = Bukkit.getPluginManager().getPlugin("MythicMobs");
-        if (p == null) return false;
+        if (p == null || !p.isEnabled()) return false;
 
         if (!p.getDescription().getVersion().startsWith("4.12") && !p.getDescription().getVersion().startsWith("5.")) {
             final NamespacedKey mmKey = new NamespacedKey(p, "type");
@@ -169,7 +172,7 @@ public class ExternalCompatibilityManager {
         if (!isMythicMob(lmEntity)) return "";
 
         final Plugin p = Bukkit.getPluginManager().getPlugin("MythicMobs");
-        if (p == null) return "";
+        if (p == null || !p.isEnabled()) return "";
 
         final boolean useNamespaceKey =
                 p.getDescription().getVersion().startsWith("5.") &&

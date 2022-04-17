@@ -60,12 +60,6 @@ customize-summon-command-limit: 10
 # ||  This setting controls the Custom Commands ratelimiter.
 customcommand-amount-limit: 100
 
-# ||  ADVANCED USERS ONLY | IRREVERSIBLE
-# ||  Do not touch this unless a LM developer tells you to.
-# ||  This setting applies an **irreversible** change to
-# ||  levelled mobs on your server!
-use-customname-for-mob-nametags: false
-
 # ||  ADVANCED USERS ONLY
 # ||  Do not touch this unless a LM developer tells you to.
 # ||  Should nametag packets be ignored if the mob has died?
@@ -87,11 +81,6 @@ ensure-mobs-are-levelled-on-chunk-load: true
 # ||  Do not touch this unless a LM developer tells you to.
 # ||  Should mob attributes be based upon preset base-values?
 attributes-use-preset-base-values: false
-
-# ||  ADVANCED USERS ONLY
-# ||  Do not touch this unless a LM developer tells you to.
-# ||  Level entities on spawn?
-level-mobs-upon-spawn: true
 
 # ||  ADVANCED USERS ONLY
 # ||  What is the max distance the summon command will

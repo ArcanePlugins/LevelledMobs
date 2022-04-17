@@ -36,6 +36,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.regex.Pattern;
 
 /**
  * Contains the logic that parses rules.yml and reads them into the
@@ -51,6 +52,7 @@ public class RulesParsingManager {
         this.rulePresets = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
         this.customRules = new LinkedList<>();
         this.ymlHelper = new YmlParsingHelper();
+        this.emptyArrayPattern = Pattern.compile("\\[\\s+?]|\\[]");
     }
 
     final private LevelledMobs main;
@@ -62,6 +64,7 @@ public class RulesParsingManager {
     public List<RuleInfo> customRules;
     public RuleInfo defaultRule;
     private Map<String, Set<String>> customBiomeGroups;
+    private final Pattern emptyArrayPattern;
     private final static String ml_AllowedItems = "allowed-list";
     private final static String ml_AllowedGroups = "allowed-groups";
     private final static String ml_ExcludedItems = "excluded-list";
@@ -228,6 +231,7 @@ public class RulesParsingManager {
                 cachedModalList.excludeAll = true;
                 continue;
             }
+            if (emptyArrayPattern.matcher(item).matches()) continue;
             try {
                 final LevelledMobSpawnReason reason = LevelledMobSpawnReason.valueOf(item.trim().toUpperCase());
                 cachedModalList.excludedList.add(reason);
@@ -296,6 +300,7 @@ public class RulesParsingManager {
                 cachedModalList.allowAll = true;
                 continue;
             }
+            if (emptyArrayPattern.matcher(item).matches()) continue;
             try {
                 final Biome biome = Biome.valueOf(item.trim().toUpperCase());
                 cachedModalList.allowedList.add(biome);
@@ -357,6 +362,7 @@ public class RulesParsingManager {
                 cachedModalList.allowAll = true;
                 continue;
             }
+            if (emptyArrayPattern.matcher(item).matches()) continue;
             cachedModalList.allowedList.add(item);
         }
         if (cs2 == null) return cachedModalList;

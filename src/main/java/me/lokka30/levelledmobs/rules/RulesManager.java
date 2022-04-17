@@ -781,7 +781,7 @@ public class RulesManager {
             return new RuleCheckResult(false);
         }
 
-        if (ri.conditions_WGRegions != null){
+        if (ri.conditions_WGRegions != null && ExternalCompatibilityManager.hasWorldGuardInstalled()){
             boolean isInList = false;
             final List<String> wgRegions = ExternalCompatibilityManager.getWGRegionsAtLocation(lmInterface);
             if (wgRegions.isEmpty()) wgRegions.add("(none)");
