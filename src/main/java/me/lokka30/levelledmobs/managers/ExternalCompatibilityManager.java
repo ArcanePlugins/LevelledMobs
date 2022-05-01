@@ -89,6 +89,8 @@ public class ExternalCompatibilityManager {
         return plugin != null && plugin.isEnabled();
     }
 
+    public static boolean hasLMItemsInstalled(){ return checkIfPluginIsInstalledAndEnabled("LM_Items"); }
+
     public static boolean hasPapiInstalled() {
         return checkIfPluginIsInstalledAndEnabled("PlaceholderAPI");
     }

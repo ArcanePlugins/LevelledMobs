@@ -327,6 +327,12 @@ public class CustomDropsParser {
                 else {
                     final CustomDropItem item = new CustomDropItem(this.defaults);
                     if (!addMaterialToDrop(materialName, dropInstance, item)) continue;
+
+                    if (item.isExternalItem && ExternalCompatibilityManager.hasLMItemsInstalled()){
+                        item.externalType = ymlHelper.getString(itemInfoConfiguration, "type");
+                        if (!LMItemsParser.getExternalItem(item, main)) continue;
+                    }
+
                     dropBase = item;
                 }
 
@@ -429,8 +435,8 @@ public class CustomDropsParser {
             if (ExternalCompatibilityManager.hasNbtApiInstalled()) {
                 final NBTApplyResult result = NBTManager.applyNBT_Data_Item(item, nbtStuff);
                 if (result.hadException())
-                    Utils.logger.warning("custom drop " + item.getMaterial().toString() + " for " + dropInstance.getMobOrGroupName() + " has invalid NBT data: " + result.exceptionMessage);
-                else {
+                    Utils.logger.warning(String.format("custom drop %s for %s has invalid NBT data: %s", item.getMaterial(), dropInstance.getMobOrGroupName(), result.exceptionMessage));
+                else if (result.itemStack != null) {
                     item.setItemStack(result.itemStack);
                     this.dropsUtilizeNBTAPI = true;
                 }
@@ -653,20 +659,27 @@ public class CustomDropsParser {
         }
     }
 
-    private boolean addMaterialToDrop(String materialName, final CustomDropInstance dropInstance, final CustomDropItem item){
-
+    private boolean addMaterialToDrop(@NotNull String materialName, final CustomDropInstance dropInstance, final CustomDropItem item){
         materialName = Utils.replaceEx(materialName, "mob_head", "player_head");
         materialName = Utils.replaceEx(materialName, "mobhead", "player_head");
 
-        final Material material;
-        try {
-            material = Material.valueOf(materialName.toUpperCase());
-        } catch (final Exception e) {
-            Utils.logger.warning(String.format("Invalid material type specified in customdrops.yml for: %s, %s", dropInstance.getMobOrGroupName(), materialName));
-            return false;
+        if (materialName.contains(":")){
+            // this item is referencing a custom item from an external plugin, we will call LM_Items to get it
+            if (!LMItemsParser.parseExternalItem(materialName, item)) return false;
+        }
+        else {
+            final Material material;
+            try {
+                material = Material.valueOf(materialName.toUpperCase());
+            } catch (final Exception e) {
+                Utils.logger.warning(String.format("Invalid material type specified in customdrops.yml for: %s, %s",
+                        dropInstance.getMobOrGroupName(), materialName));
+                return false;
+            }
+
+            item.setMaterial(material);
         }
 
-        item.setMaterial(material);
         dropInstance.customItems.add(item);
 
         return true;

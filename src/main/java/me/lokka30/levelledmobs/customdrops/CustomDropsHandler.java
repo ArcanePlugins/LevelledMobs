@@ -474,9 +474,16 @@ public class CustomDropsHandler {
 
         // if we made it this far then the item will be dropped
 
-        ItemStack newItem = info.deathByFire ?
-                getCookedVariantOfMeat(dropItem.getItemStack().clone()) :
-                dropItem.getItemStack().clone();
+        if (dropItem.isExternalItem && isCustomDropsDebuggingEnabled() && !ExternalCompatibilityManager.hasLMItemsInstalled())
+            Utils.debugLog(main, DebugType.CUSTOM_DROPS, "Could not get external custom item - LM_Items is not installed");
+
+        ItemStack newItem;
+        if (dropItem.isExternalItem && ExternalCompatibilityManager.hasLMItemsInstalled() && LMItemsParser.getExternalItem(dropItem, main))
+            newItem = dropItem.getItemStack();
+        else if (info.deathByFire)
+            newItem = getCookedVariantOfMeat(dropItem.getItemStack().clone());
+        else
+            newItem = dropItem.getItemStack().clone();
 
         newItem.setAmount(newDropAmount);
 

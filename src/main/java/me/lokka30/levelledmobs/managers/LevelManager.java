@@ -14,8 +14,25 @@ import me.lokka30.levelledmobs.events.MobPostLevelEvent;
 import me.lokka30.levelledmobs.events.MobPreLevelEvent;
 import me.lokka30.levelledmobs.events.SummonedMobPreLevelEvent;
 import me.lokka30.levelledmobs.listeners.EntitySpawnListener;
-import me.lokka30.levelledmobs.misc.*;
-import me.lokka30.levelledmobs.rules.*;
+import me.lokka30.levelledmobs.misc.Addition;
+import me.lokka30.levelledmobs.misc.DebugType;
+import me.lokka30.levelledmobs.misc.LevellableState;
+import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
+import me.lokka30.levelledmobs.misc.NBTApplyResult;
+import me.lokka30.levelledmobs.misc.PlayerHomeCheckResult;
+import me.lokka30.levelledmobs.misc.PlayerLevelSourceResult;
+import me.lokka30.levelledmobs.misc.PlayerNetherOrWorldSpawnResult;
+import me.lokka30.levelledmobs.misc.QueueItem;
+import me.lokka30.levelledmobs.misc.Utils;
+import me.lokka30.levelledmobs.misc.AdditionalLevelInformation;
+import me.lokka30.levelledmobs.rules.FineTuningAttributes;
+import me.lokka30.levelledmobs.rules.HealthIndicator;
+import me.lokka30.levelledmobs.rules.LevelTierMatching;
+import me.lokka30.levelledmobs.rules.LevelledMobSpawnReason;
+import me.lokka30.levelledmobs.rules.MobCustomNameStatus;
+import me.lokka30.levelledmobs.rules.MobTamedStatus;
+import me.lokka30.levelledmobs.rules.NametagVisibilityEnum;
+import me.lokka30.levelledmobs.rules.PlayerLevellingOptions;
 import me.lokka30.levelledmobs.rules.strategies.LevellingStrategy;
 import me.lokka30.levelledmobs.rules.strategies.RandomLevellingStrategy;
 import me.lokka30.levelledmobs.rules.strategies.SpawnDistanceStrategy;
@@ -51,7 +68,19 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.ConcurrentModificationException;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.TreeMap;
+import java.util.WeakHashMap;
 import java.util.stream.Collectors;
 
 /**
@@ -67,7 +96,7 @@ public class LevelManager implements LevelInterface {
         this.randomLevellingCache = new TreeMap<>();
         this.summonedOrSpawnEggs = new WeakHashMap<>();
 
-        this.vehicleNoMultiplierItems = Arrays.asList(
+        this.vehicleNoMultiplierItems = List.of(
                 Material.SADDLE,
                 Material.LEATHER_HORSE_ARMOR,
                 Material.IRON_HORSE_ARMOR,
@@ -75,7 +104,7 @@ public class LevelManager implements LevelInterface {
                 Material.DIAMOND_HORSE_ARMOR
         );
 
-        this.FORCED_BLOCKED_ENTITY_TYPES = new HashSet<>(Arrays.asList(
+        this.FORCED_BLOCKED_ENTITY_TYPES = new HashSet<>(List.of(
                 EntityType.AREA_EFFECT_CLOUD, EntityType.ARMOR_STAND, EntityType.ARROW, EntityType.BOAT,
                 EntityType.DRAGON_FIREBALL, EntityType.DROPPED_ITEM, EntityType.EGG, EntityType.ENDER_CRYSTAL,
                 EntityType.ENDER_PEARL, EntityType.ENDER_SIGNAL, EntityType.EXPERIENCE_ORB, EntityType.FALLING_BLOCK,
@@ -1052,6 +1081,17 @@ public class LevelManager implements LevelInterface {
         // Custom Drops must be enabled.
         if (!main.rulesManager.getRule_UseCustomDropsForMob(lmEntity).useDrops) return;
 
+        final BukkitRunnable runnable = new BukkitRunnable() {
+            @Override
+            public void run() {
+                applyLevelledEquipment_NonAsync(lmEntity);
+            }
+        };
+
+        runnable.runTask(main);
+    }
+
+    private void applyLevelledEquipment_NonAsync(@NotNull final LivingEntityWrapper lmEntity) {
         final List<ItemStack> items = new LinkedList<>();
         final CustomDropResult dropResult = main.customDropsHandler.getCustomItemDrops(lmEntity, items, true);
         if (items.isEmpty()) return;

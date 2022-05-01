@@ -1,8 +1,8 @@
 name: LevelledMobs
 version: ${project.version}
 main: me.lokka30.levelledmobs.LevelledMobs
-softdepend: [ WorldEdit, WorldGuard, ProtocolLib, MythicMobs, PlaceholderAPI, NBTAPI, SimplePets, Essentials ]
-api-version: '1.13'
+softdepend: [ WorldEdit, WorldGuard, ProtocolLib, MythicMobs, PlaceholderAPI, NBTAPI, SimplePets, Essentials, LM_Items ]
+api-version: '1.16'
 load: POSTWORLD
 author: lokka30
 description: ${project.description}

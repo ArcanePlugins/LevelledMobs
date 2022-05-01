@@ -10,7 +10,7 @@
 
     <groupId>me.lokka30</groupId>
     <artifactId>LevelledMobs</artifactId>
-    <version>3.4.2 b628</version>
+    <version>3.5.0 b629</version>
     <packaging>jar</packaging>
 
     <name>LevelledMobs</name>
@@ -104,10 +104,6 @@
             <url>https://repo.extendedclip.com/content/repositories/placeholderapi/</url>
         </repository>
         <repository>
-            <id>minecraft-repo</id>
-            <url>https://libraries.minecraft.net/</url>
-        </repository>
-        <repository>
             <id>spigotmc-repo</id>
             <url>https://hub.spigotmc.org/nexus/content/groups/public/</url>
         </repository>
@@ -155,7 +151,7 @@
         <dependency>
             <groupId>com.mojang</groupId>
             <artifactId>authlib</artifactId>
-            <version>1.5.25</version>
+            <version>3.3.39</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -204,6 +200,12 @@
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
             <version>2.9.0</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.github.stumper66</groupId>
+            <artifactId>LM_Items</artifactId>
+            <version>0.9</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
