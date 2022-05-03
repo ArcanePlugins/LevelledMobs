@@ -269,10 +269,16 @@ public class CustomDropsParser {
             if (ItemsToCheck.isEmpty() && itemObject.getClass().equals(LinkedHashMap.class)){
                 // empty list means a material name was provided with no attributes
                 final LinkedHashMap<String, Object> materials = (LinkedHashMap<String, Object>) itemObject;
+                boolean needsContinue = false;
                 for (final String materialName :  materials.keySet()){
                     final CustomDropItem item = new CustomDropItem(this.defaults);
-                    addMaterialToDrop(materialName, dropInstance, item);
+
+                    if (addMaterialToDrop(materialName, dropInstance, item)) {
+                        needsContinue = true;
+                        break;
+                    }
                 }
+                if (needsContinue) continue;
             }
 
             for (final Map.Entry<String,Object> itemEntry : ItemsToCheck) {
@@ -328,9 +334,12 @@ public class CustomDropsParser {
                     final CustomDropItem item = new CustomDropItem(this.defaults);
                     if (!addMaterialToDrop(materialName, dropInstance, item)) continue;
 
+                    item.externalType = ymlHelper.getString(itemInfoConfiguration, "type", this.defaults.externalType);
+                    item.externalAmount = ymlHelper.getDouble2(itemInfoConfiguration, "external-amount", this.defaults.externalAmount);
+
                     if (item.isExternalItem && ExternalCompatibilityManager.hasLMItemsInstalled()){
-                        item.externalType = ymlHelper.getString(itemInfoConfiguration, "type");
-                        if (!LMItemsParser.getExternalItem(item, main)) continue;
+
+                        if (!handler.lmItemsParser.getExternalItem(item)) continue;
                     }
 
                     dropBase = item;
@@ -401,6 +410,8 @@ public class CustomDropsParser {
         item.noMultiplier = ymlHelper.getBoolean(cs,"nomultiplier", this.defaults.noMultiplier);
         item.noSpawner = ymlHelper.getBoolean(cs,"nospawner", this.defaults.noSpawner);
         item.customModelDataId = ymlHelper.getInt(cs,"custommodeldata", this.defaults.customModelData);
+        item.externalType = ymlHelper.getString(cs, "type", this.defaults.externalType);
+        item.externalAmount = ymlHelper.getDouble2(cs, "external-amount", this.defaults.externalAmount);
         item.mobHeadTexture = ymlHelper.getString(cs,"mobhead-texture");
         final String mobHeadIdStr = ymlHelper.getString(cs,"mobhead-id");
         if (mobHeadIdStr != null){
@@ -665,7 +676,13 @@ public class CustomDropsParser {
 
         if (materialName.contains(":")){
             // this item is referencing a custom item from an external plugin, we will call LM_Items to get it
-            if (!LMItemsParser.parseExternalItem(materialName, item)) return false;
+            if (ExternalCompatibilityManager.hasLMItemsInstalled()) {
+                if (!handler.lmItemsParser.parseExternalItemAttributes(materialName, item)) return false;
+            }
+            else {
+                Utils.logger.warning(String.format("Custom drop '%s' requires plugin LM_Items but it is not installed", materialName));
+                return false;
+            }
         }
         else {
             final Material material;
@@ -765,8 +782,10 @@ public class CustomDropsParser {
                 (CustomDropItem) baseItem : null;
 
         final StringBuilder sb = new StringBuilder();
-        if (item != null)
-            sb.append(String.format("    &b%s&r, amount: &b%s&r, chance: &b%s&r", item.getMaterial(), item.getAmountAsString(), baseItem.chance));
+        if (item != null) {
+            final String itemMaterial = item.getMaterial() != null ? item.getMaterial().toString() : "(unknown)";
+            sb.append(String.format("    &b%s&r, amount: &b%s&r, chance: &b%s&r", itemMaterial, item.getAmountAsString(), baseItem.chance));
+        }
         else
             sb.append(String.format("    COMMAND, chance: &b%s&r", baseItem.chance));
 
@@ -855,19 +874,39 @@ public class CustomDropsParser {
             sb.append("&r");
         }
 
-        final ItemMeta meta = item.getItemStack().getItemMeta();
-        final StringBuilder sb2 = new StringBuilder();
-        if (meta != null) {
-            for (final Enchantment enchant : meta.getEnchants().keySet()) {
-                if (sb2.length() > 0) sb.append(", ");
-                sb2.append(String.format("&b%s&r (%s)", enchant.getKey().getKey(), item.getItemStack().getItemMeta().getEnchants().get(enchant)));
+        if (item.isExternalItem){
+            sb.append(", ext: ");
+            sb.append(item.externalPluginName);
+
+            if (item.externalType != null) {
+                sb.append(", ex-type: ");
+                sb.append(item.externalType);
+            }
+            if (item.externalItemId != null){
+                sb.append(", ex-id: ");
+                sb.append(item.externalItemId);
+            }
+            if (item.externalAmount != null){
+                sb.append(", ex-amt: ");
+                sb.append(item.externalAmount);
             }
         }
 
-        if (sb2.length() > 0) {
-            sb.append(System.lineSeparator());
-            sb.append("         ");
-            sb.append(sb2);
+        if (item.getItemStack() != null) {
+            final ItemMeta meta = item.getItemStack().getItemMeta();
+            final StringBuilder sb2 = new StringBuilder();
+            if (meta != null) {
+                for (final Enchantment enchant : meta.getEnchants().keySet()) {
+                    if (sb2.length() > 0) sb.append(", ");
+                    sb2.append(String.format("&b%s&r (%s)", enchant.getKey().getKey(), item.getItemStack().getItemMeta().getEnchants().get(enchant)));
+                }
+            }
+
+            if (sb2.length() > 0) {
+                sb.append(System.lineSeparator());
+                sb.append("         ");
+                sb.append(sb2);
+            }
         }
 
         return sb.toString();

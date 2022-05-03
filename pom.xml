@@ -10,7 +10,7 @@
 
     <groupId>me.lokka30</groupId>
     <artifactId>LevelledMobs</artifactId>
-    <version>3.5.0 b629</version>
+    <version>3.5.0 b630</version>
     <packaging>jar</packaging>
 
     <name>LevelledMobs</name>
@@ -205,7 +205,7 @@
         <dependency>
             <groupId>io.github.stumper66</groupId>
             <artifactId>LM_Items</artifactId>
-            <version>0.9</version>
+            <version>0.91</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>

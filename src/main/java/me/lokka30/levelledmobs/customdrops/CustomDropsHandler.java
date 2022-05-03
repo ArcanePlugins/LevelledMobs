@@ -62,6 +62,8 @@ public class CustomDropsHandler {
         customDropsParser = new CustomDropsParser(main, this);
         this.ymlHelper = customDropsParser.ymlHelper;
         this.customEquippedItems = new WeakHashMap<>();
+        if (ExternalCompatibilityManager.hasLMItemsInstalled())
+            this.lmItemsParser = new LMItemsParser(main);
     }
 
     private final LevelledMobs main;
@@ -71,6 +73,7 @@ public class CustomDropsHandler {
     final Map<String, CustomDropInstance> customDropIDs;
     @Nullable Map<String, CustomDropInstance> customItemGroups;
     public final CustomDropsParser customDropsParser;
+    LMItemsParser lmItemsParser;
     private final YmlParsingHelper ymlHelper;
     private final WeakHashMap<LivingEntity, EquippedItemsInfo> customEquippedItems;
 
@@ -478,7 +481,7 @@ public class CustomDropsHandler {
             Utils.debugLog(main, DebugType.CUSTOM_DROPS, "Could not get external custom item - LM_Items is not installed");
 
         ItemStack newItem;
-        if (dropItem.isExternalItem && ExternalCompatibilityManager.hasLMItemsInstalled() && LMItemsParser.getExternalItem(dropItem, main))
+        if (dropItem.isExternalItem && ExternalCompatibilityManager.hasLMItemsInstalled() && lmItemsParser.getExternalItem(dropItem))
             newItem = dropItem.getItemStack();
         else if (info.deathByFire)
             newItem = getCookedVariantOfMeat(dropItem.getItemStack().clone());

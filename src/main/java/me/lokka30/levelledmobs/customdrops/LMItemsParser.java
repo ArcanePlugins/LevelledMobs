@@ -4,9 +4,9 @@ import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.managers.ExternalCompatibilityManager;
 import me.lokka30.levelledmobs.misc.DebugType;
 import me.lokka30.levelledmobs.misc.Utils;
-import me.stumper66.lm_items.GetItemResult;
-import me.stumper66.lm_items.ItemsAPI;
-import me.stumper66.lm_items.LM_Items;
+import io.github.stumper66.lm_items.GetItemResult;
+import io.github.stumper66.lm_items.ItemsAPI;
+import io.github.stumper66.lm_items.LM_Items;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
@@ -18,7 +18,13 @@ import org.jetbrains.annotations.NotNull;
  * @since 3.5.0
  */
 public class LMItemsParser {
-    public static boolean parseExternalItem(@NotNull String materialName, final CustomDropItem item){
+    public LMItemsParser(final @NotNull LevelledMobs main){
+        this.main = main;
+    }
+
+    private final LevelledMobs main;
+
+    public boolean parseExternalItemAttributes(@NotNull String materialName, final CustomDropItem item){
         if (!ExternalCompatibilityManager.hasLMItemsInstalled()){
             Utils.logger.warning(String.format(
                     "customdrops.yml references external item '%s' but LM_Items is not installed",
@@ -41,10 +47,10 @@ public class LMItemsParser {
         }
 
         item.isExternalItem = true;
-        return true;
+        return getExternalItem(item);
     }
 
-    public static boolean getExternalItem(final @NotNull CustomDropItem item, final @NotNull LevelledMobs main){
+    public boolean getExternalItem(final @NotNull CustomDropItem item){
         final ItemsAPI itemsAPI = LM_Items.plugin.getItemAPIForPlugin(item.externalPluginName);
 
         if (itemsAPI == null){
@@ -52,7 +58,9 @@ public class LMItemsParser {
             return false;
         }
 
-        final GetItemResult result = itemsAPI.getItem(item.externalType, item.externalItemId);
+        final GetItemResult result = item.externalAmount == null ?
+                itemsAPI.getItem(item.externalType, item.externalItemId) :
+                itemsAPI.getItem(item.externalType, item.externalItemId, item.externalAmount);
         if (!result.pluginIsInstalled){
             Utils.logger.warning(String.format("custom item references plugin '%s' but that plugin is not installed", item.externalPluginName));
             return false;
@@ -60,6 +68,15 @@ public class LMItemsParser {
 
         final ItemStack itemStack = result.itemStack;
         if (itemStack == null){
+            if (result.typeIsNotSupported){
+                if (item.externalType == null)
+                    Utils.logger.warning(String.format("custom item '%s:%s' doesn't support type (null)", item.externalPluginName, item.externalItemId));
+                else
+                    Utils.logger.warning(String.format("custom item '%s:%s' doesn't support type %s", item.externalPluginName, item.externalItemId, item.externalType));
+
+                return false;
+            }
+
             if (main.companion.debugsEnabled.contains(DebugType.CUSTOM_DROPS)) {
                 if (item.externalType == null)
                     Utils.logger.warning(String.format("custom item '%s:%s' returned a null item", item.externalPluginName, item.externalItemId));

@@ -40,6 +40,7 @@ public class CustomDropItem extends CustomDropBase {
     public String externalPluginName;
     public String externalType;
     public String externalItemId;
+    public Double externalAmount;
 
     CustomDropItem(@NotNull final CustomDropsDefaults defaults) {
         super(defaults);
