@@ -629,7 +629,7 @@ public class RulesParsingManager {
         parsingInfo.creeperMaxDamageRadius = ymlHelper.getInt2(cs,"creeper-max-damage-radius", parsingInfo.creeperMaxDamageRadius);
         parsingInfo.customDrops_UseForMobs = ymlHelper.getBoolean2(cs,"use-custom-item-drops-for-mobs", parsingInfo.customDrops_UseForMobs);
         parsingInfo.customDrops_UseOverride = ymlHelper.getBoolean2(cs,"custom-drops-override", parsingInfo.customDrops_UseOverride);
-        parsingInfo.customDrop_DropTableId = ymlHelper.getString(cs,"use-droptable-id", parsingInfo.customDrop_DropTableId);
+        parsingInfo.customDrop_DropTableIds.addAll(YmlParsingHelper.getListFromConfigItem(cs,"use-droptable-id"));
         parsingInfo.nametag = ymlHelper.getString(cs,"nametag", parsingInfo.nametag);
         parsingInfo.nametag_CreatureDeath = ymlHelper.getString(cs,"creature-death-nametag", parsingInfo.nametag_CreatureDeath);
         parsingInfo.nametag_Placeholder_Levelled = ymlHelper.getString(cs, "nametag-placeholder-levelled", parsingInfo.nametag_Placeholder_Levelled);

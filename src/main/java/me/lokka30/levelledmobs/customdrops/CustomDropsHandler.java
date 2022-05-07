@@ -34,7 +34,6 @@ import org.jetbrains.annotations.Nullable;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -175,9 +174,8 @@ public class CustomDropsHandler {
         boolean usesGroupIds = false;
 
         final boolean overrideNonDropTableDrops = info.dropRules != null && info.dropRules.override;
-        final String[] useIds = getDropIds(info);
 
-        for (final String id : useIds){
+        for (final String id : getDropIds(info)){
             if (this.customItemGroups == null || !this.customItemGroups.containsKey(id.trim())){
                 Utils.logger.warning("rule specified an invalid value for use-droptable-id: " + id);
                 continue;
@@ -254,14 +252,17 @@ public class CustomDropsHandler {
     }
 
     @NotNull
-    private String[] getDropIds(@NotNull final CustomDropProcessingInfo processingInfo){
-        final List<String> dropIds = (processingInfo.dropRules != null && processingInfo.dropRules.useDropTableId != null) ?
-                Arrays.asList(processingInfo.dropRules.useDropTableId.split(",")) : new LinkedList<>();
+    private List<String> getDropIds(@NotNull final CustomDropProcessingInfo processingInfo){
+        final List<String> dropIds = new LinkedList<>();
+        if (processingInfo.dropRules != null){
+            for (final String id : processingInfo.dropRules.useDropTableIds)
+                dropIds.addAll(List.of(id.split(",")));
+        }
 
         if (processingInfo.hasCustomDropId && !dropIds.contains(processingInfo.customDropId))
             dropIds.add(processingInfo.customDropId);
 
-        return dropIds.toArray(new String[0]);
+        return dropIds;
     }
 
     private void processDropPriorities(@NotNull final CustomDropBase baseItem, @NotNull final CustomDropProcessingInfo processingInfo){

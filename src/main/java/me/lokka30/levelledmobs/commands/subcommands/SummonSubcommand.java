@@ -31,7 +31,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -331,38 +330,38 @@ public class SummonSubcommand extends MessagesBase implements Subcommand {
                         return suggestions;
                     } else if (args.length == 7){
                         if (!skipOverride)
-                            return Collections.singletonList("/override");
+                            return List.of("/override");
                         else
-                            return Collections.emptyList();
+                            return List.of();
                     }
                     break;
 
                 case "atlocation":
                     if (args.length < 9) { // args 6, 7 and 8 = x, y and z
-                        return Collections.singletonList("~");
+                        return List.of("~");
                     } else if (args.length == 9) {
                         final List<String> worlds = new LinkedList<>();
                         Bukkit.getWorlds().forEach(world -> worlds.add(world.getName()));
                         return worlds;
                     } else if (args.length == 10){
                         if (!skipOverride)
-                            return Collections.singletonList("/override");
+                            return List.of("/override");
                         else
-                            return Collections.emptyList();
+                            return List.of();
                     }
 
                     break;
                 case "here":
                     if (!skipOverride)
-                        return Collections.singletonList("/override");
+                        return List.of("/override");
                     else
-                        return Collections.emptyList();
+                        return List.of();
                 default:
-                    return Collections.emptyList();
+                    return List.of();
             }
         }
 
-        return Collections.emptyList();
+        return List.of();
     }
 
     enum SummonType {
@@ -458,7 +457,7 @@ public class SummonSubcommand extends MessagesBase implements Subcommand {
                 }
             } else if (target == null && sender instanceof BlockCommandSender) {
                 // increase the y by one so they don't spawn inside the command block
-                location = new Location(location.getWorld(), location.getBlockX(), location.getBlockY() + 1, location.getBlockZ());
+                location = new Location(location.getWorld(), location.getBlockX(), location.getBlockY() + 2, location.getBlockZ());
             }
         }
 
@@ -480,7 +479,7 @@ public class SummonSubcommand extends MessagesBase implements Subcommand {
                 if (!Utils.isNullOrEmpty(options.nbtData))
                     lmEntity.nbtData = List.of(options.nbtData);
                 lmEntity.summonedSender = sender;
-                main.levelInterface.applyLevelToMob(lmEntity, useLevel, true, options.override, new HashSet<>(Collections.singletonList(AdditionalLevelInformation.NOT_APPLICABLE)));
+                main.levelInterface.applyLevelToMob(lmEntity, useLevel, true, options.override, new HashSet<>(List.of(AdditionalLevelInformation.NOT_APPLICABLE)));
                 synchronized (lmEntity.getLivingEntity().getPersistentDataContainer()){
                     lmEntity.getPDC().set(main.namespaced_keys.wasSummoned, PersistentDataType.INTEGER, 1);
                 }

@@ -121,10 +121,11 @@ public class RulesManager {
     @NotNull
     public CustomDropsRuleSet getRule_UseCustomDropsForMob(@NotNull final LivingEntityWrapper lmEntity){
         final CustomDropsRuleSet dropRules = new CustomDropsRuleSet();
+
         for (final RuleInfo ruleInfo : lmEntity.getApplicableRules()){
             if (ruleInfo.customDrops_UseForMobs != null) dropRules.useDrops = ruleInfo.customDrops_UseForMobs;
             if (ruleInfo.customDrops_UseOverride != null) dropRules.override = ruleInfo.customDrops_UseOverride;
-            if (ruleInfo.customDrop_DropTableId != null) dropRules.useDropTableId = ruleInfo.customDrop_DropTableId;
+            dropRules.useDropTableIds.addAll(ruleInfo.customDrop_DropTableIds);
         }
 
         return dropRules;
