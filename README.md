@@ -37,15 +37,12 @@ LevelledMobs possible.
 
 ## Other Credits
 
-> Note: the following lists exclude Maven dependencies specifically used for integration purposes.
-
 ### Current Libraries
 
 Below is a list of the libraries currently used in LevelledMobs.
 
 * [PaperMC API](https://papermc.io/)
 * [SpigotMC API](https://www.spigotmc.org/)
-* [SimplixStorage](https://www.spigotmc.org/resources/simplixstorage-awesome-library-to-store-data-in-a-better-way.67286/)
 * [Crunch](https://github.com/Redempt/Crunch)
 * [NBT API](https://www.spigotmc.org/resources/nbt-api.7939/)
 * [bStats](https://bstats.org/)

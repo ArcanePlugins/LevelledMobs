@@ -5,7 +5,6 @@
 # license that can be found in the LICENSE.md file.
 
 # IntelliJ IDE
-target/
 .idea/
 LevelledMobs.iml
 
@@ -16,3 +15,11 @@ LevelledMobs.iml
 
 # Mac OS X
 ._.git
+.DS_Store
+
+# Gradle
+.gradle/
+build/
+
+# Maven
+target/
