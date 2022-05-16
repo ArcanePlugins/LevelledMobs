@@ -53,14 +53,11 @@ class AboutSubcommand : CommandWrapper() {
         val pdf = LevelledMobs.instance!!.description
         sender.sendMessage(
             """
-                
             ${AQUA}${BOLD}LevelledMobs${AQUA} v${pdf.version}
-            
-            ${GRAY}Spigot: ${DARK_GRAY}https://spigotmc.org/resources/74304
-            ${GRAY}Wiki: ${DARK_GRAY}https://github.com/lokka30/LevelledMobs/Wiki
-            ${GRAY}Source: ${DARK_GRAY}https://github.com/lokka30/LevelledMobs
-            ${GRAY}Credits: ${DARK_GRAY}https://github.com/lokka30/LevelledMobs/wiki/Credits
-            
+            $DARK_GRAY • ${GRAY}Spigot: ${DARK_GRAY}https://spigotmc.org/resources/74304
+            $DARK_GRAY • ${GRAY}Wiki: ${DARK_GRAY}https://github.com/lokka30/LevelledMobs/Wiki
+            $DARK_GRAY • ${GRAY}Source: ${DARK_GRAY}https://github.com/lokka30/LevelledMobs
+            $DARK_GRAY • ${GRAY}Credits: ${DARK_GRAY}https://github.com/lokka30/LevelledMobs/wiki/Credits
             """.trimIndent()
         )
     }

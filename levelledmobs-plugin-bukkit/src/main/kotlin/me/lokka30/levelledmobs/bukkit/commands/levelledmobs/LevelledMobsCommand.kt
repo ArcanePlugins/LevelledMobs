@@ -65,7 +65,6 @@ class LevelledMobsCommand : BaseCommandWrapper() {
             sender.sendMessage(
                 """
                 ${AQUA}${BOLD}LevelledMobs 4${DARK_GRAY} | ${GRAY}The Ultimate RPG Mob Levelling Solution
-                
                 $DARK_GRAY • ${GRAY}For a list of available commands, run '${AQUA}/lm help${GRAY}'.
                 $DARK_GRAY • ${GRAY}To learn more about LevelledMobs, run '${AQUA}/lm about${GRAY}'.
                 """.trimIndent()

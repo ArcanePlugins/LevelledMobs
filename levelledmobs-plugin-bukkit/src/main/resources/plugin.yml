@@ -24,6 +24,7 @@ commands:
       - 'lvlmobs'
       - 'lm'
     description: 'Manage the LevelledMobs plugin on your server.'
+    usage: '/<command> help'
 
 permissions:
   'levelledmobs.*':
