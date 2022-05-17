@@ -1,6 +1,6 @@
 package me.lokka30.levelledmobs.bukkit.commands.levelledmobs.subcommands
 
-import me.lokka30.levelledmobs.bukkit.api.keys.MobKeyStore
+import me.lokka30.levelledmobs.bukkit.api.data.keys.MobKeyStore
 import me.lokka30.levelledmobs.bukkit.commands.CommandWrapper
 import org.bukkit.ChatColor.RED
 import org.bukkit.command.CommandSender
