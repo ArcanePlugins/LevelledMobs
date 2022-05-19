@@ -574,7 +574,17 @@ public class LevelManager implements LevelInterface {
 
     @Nullable
     public String getNametag(final LivingEntityWrapper lmEntity, final boolean isDeathNametag) {
-        String nametag = isDeathNametag ? main.rulesManager.getRule_Nametag_CreatureDeath(lmEntity) : main.rulesManager.getRule_Nametag(lmEntity);
+        String nametag;
+        if (isDeathNametag)
+            nametag = main.rulesManager.getRule_Nametag_CreatureDeath(lmEntity);
+        else {
+            checkLockedNametag(lmEntity);
+
+            nametag = lmEntity.lockedNametag == null ?
+                    main.rulesManager.getRule_Nametag(lmEntity) :
+                    lmEntity.lockedNametag;
+        }
+
         if ("disabled".equalsIgnoreCase(nametag) || "none".equalsIgnoreCase(nametag)) return null;
 
         final boolean useCustomNameForNametags = main.helperSettings.getBoolean(main.settingsCfg, "use-customname-for-mob-nametags");
@@ -591,6 +601,23 @@ public class LevelManager implements LevelInterface {
         return updateNametag(lmEntity, nametag, useCustomNameForNametags);
     }
 
+    private void checkLockedNametag(final @NotNull LivingEntityWrapper lmEntity){
+        synchronized (lmEntity.getPDC()){
+            Integer doLockSettings;
+            if (lmEntity.getPDC().has(main.namespaced_keys.lockSettings, PersistentDataType.INTEGER)) {
+                doLockSettings = lmEntity.getPDC().get(main.namespaced_keys.lockSettings, PersistentDataType.INTEGER);
+                if (doLockSettings == null || doLockSettings != 1) return;
+            }
+            else
+                return;
+
+            if (lmEntity.getPDC().has(main.namespaced_keys.lockedNametag, PersistentDataType.STRING))
+                lmEntity.lockedNametag = lmEntity.getPDC().get(main.namespaced_keys.lockedNametag, PersistentDataType.STRING);
+            if (lmEntity.getPDC().has(main.namespaced_keys.lockedNameOverride, PersistentDataType.STRING))
+                lmEntity.lockedOverrideName = lmEntity.getPDC().get(main.namespaced_keys.lockedNameOverride, PersistentDataType.STRING);
+        }
+    }
+
     @NotNull
     public String updateNametag(final LivingEntityWrapper lmEntity, @NotNull String nametag, final boolean useCustomNameForNametags) {
         return updateNametag(lmEntity, nametag, useCustomNameForNametags, true);
@@ -599,8 +626,11 @@ public class LevelManager implements LevelInterface {
     @NotNull
     public String updateNametag(final LivingEntityWrapper lmEntity, @NotNull String nametag, final boolean useCustomNameForNametags, final boolean colorize) {
         if (nametag.isEmpty()) return nametag;
-        final String overridenName = main.rulesManager.getRule_EntityOverriddenName(lmEntity, useCustomNameForNametags);
 
+        checkLockedNametag(lmEntity);
+        final String overridenName = lmEntity.lockedOverrideName == null ?
+                main.rulesManager.getRule_EntityOverriddenName(lmEntity, useCustomNameForNametags) :
+                lmEntity.lockedOverrideName;
 
         String displayName = overridenName == null ?
             Utils.capitalize(lmEntity.getTypeName().replaceAll("_", " ")) :
@@ -1293,6 +1323,12 @@ public class LevelManager implements LevelInterface {
             nbtDatas.clear();
         }
 
+        final boolean lockEntity = main.rulesManager.getRule_DoLockEntity(lmEntity);
+        if (lockEntity && lmEntity.isNewlySpawned){
+            lmEntity.lockedNametag = main.rulesManager.getRule_Nametag(lmEntity);
+            lmEntity.lockedOverrideName = main.rulesManager.getRule_EntityOverriddenName(lmEntity, true);
+        }
+
         // setting attributes should be only done in the main thread.
         final BukkitRunnable applyAttribs = new BukkitRunnable() {
             @Override
@@ -1312,6 +1348,13 @@ public class LevelManager implements LevelInterface {
                         main.levelManager.applyLevelledAttributes(lmEntity, Addition.ATTRIBUTE_ZOMBIE_SPAWN_REINFORCEMENTS);
                     else if (lmEntity.getLivingEntity() instanceof Horse)
                         main.levelManager.applyLevelledAttributes(lmEntity, Addition.ATTRIBUTE_HORSE_JUMP_STRENGTH);
+                }
+
+                if (lockEntity) {
+                    lmEntity.getPDC().set(main.namespaced_keys.lockSettings, PersistentDataType.INTEGER, 1);
+                    lmEntity.getPDC().set(main.namespaced_keys.lockedNametag, PersistentDataType.STRING, lmEntity.lockedNametag);
+                    if (lmEntity.lockedOverrideName != null)
+                        lmEntity.getPDC().set(main.namespaced_keys.lockedNameOverride, PersistentDataType.STRING, lmEntity.lockedOverrideName);
                 }
 
                 if (!nbtDatas.isEmpty()) {

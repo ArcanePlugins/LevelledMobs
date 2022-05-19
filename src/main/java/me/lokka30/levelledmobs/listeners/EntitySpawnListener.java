@@ -66,6 +66,7 @@ public class EntitySpawnListener implements Listener {
 
         final LivingEntityWrapper lmEntity = LivingEntityWrapper.getInstance((LivingEntity) event.getEntity(), main);
         lmEntity.setSkylightLevelAtSpawn();
+        lmEntity.isNewlySpawned = true;
 
         if (event instanceof CreatureSpawnEvent) {
             final CreatureSpawnEvent.SpawnReason spawnReason = ((CreatureSpawnEvent) event).getSpawnReason();

@@ -131,6 +131,17 @@ public class RulesManager {
         return dropRules;
     }
 
+    public boolean getRule_DoLockEntity(@NotNull final LivingEntityWrapper lmEntity){
+        boolean result = false;
+
+        for (final RuleInfo ruleInfo : lmEntity.getApplicableRules()){
+            if (ruleInfo.lockEntity != null)
+                result = ruleInfo.lockEntity;
+        }
+
+        return result;
+    }
+
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public boolean getRule_IsMobAllowedInEntityOverride(@NotNull final LivingEntityInterface lmInterface){
         // check if it should be denied thru the entity override list
@@ -797,8 +808,10 @@ public class RulesManager {
             if (!isInList){
                 Utils.debugLog(main, DebugType.DENIED_RULE_WG_REGION, String.format("&b%s&7, mob: &b%s&7, wg_regions: &b%s&7",
                         ri.getRuleName(), lmInterface.getTypeName(), wgRegions));
+                Utils.logger.info(String.format("DID not meet WG criteria, %s, %s", lmInterface.getTypeName(), wgRegions));
                 return new RuleCheckResult(false);
             }
+            Utils.logger.info(String.format("met WG criteria, %s, %s", lmInterface.getTypeName(), wgRegions));
         }
 
         if (ri.conditions_ApplyAboveY != null && lmInterface.getLocation().getBlockY() < ri.conditions_ApplyAboveY){

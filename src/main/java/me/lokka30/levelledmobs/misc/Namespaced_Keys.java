@@ -27,6 +27,9 @@ public class Namespaced_Keys {
         playerNetherCoords = new NamespacedKey(main, "playerNetherCoords");
         playerNetherCoords_IntoWorld = new NamespacedKey(main, "playerNetherCoords_IntoWorld");
         skyLightLevel = new NamespacedKey(main, "skyLightLevel");
+        lockSettings = new NamespacedKey(main, "lockSettings");
+        lockedNametag = new NamespacedKey(main, "lockedNametag");
+        lockedNameOverride = new NamespacedKey(main, "lockedNameOverride");
 
         spawnerEgg = new NamespacedKey(main, "spawnerEgg");
         spawnerEggName = new NamespacedKey(main, "spawnerEggName");
@@ -64,6 +67,10 @@ public class Namespaced_Keys {
     public final NamespacedKey playerNetherCoords;
     public final NamespacedKey playerNetherCoords_IntoWorld;
     public final NamespacedKey skyLightLevel;
+
+    public final NamespacedKey lockSettings;
+    public final NamespacedKey lockedNametag;
+    public final NamespacedKey lockedNameOverride;
 
     final public NamespacedKey spawnerEgg;
     final public NamespacedKey spawnerEggName;

@@ -51,6 +51,7 @@ public class RuleInfo {
     Boolean useRandomLevelling;
     Boolean mergeEntityNameOverrides;
     Boolean passengerMatchLevel;
+    Boolean lockEntity;
     @DoNotMerge
     int rulePriority;
     Integer spawnerParticlesCount;

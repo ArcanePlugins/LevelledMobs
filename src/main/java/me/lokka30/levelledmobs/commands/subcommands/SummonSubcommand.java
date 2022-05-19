@@ -473,6 +473,7 @@ public class SummonSubcommand extends MessagesBase implements Subcommand {
             if (entity instanceof LivingEntity) {
                 final LivingEntityWrapper lmEntity = LivingEntityWrapper.getInstance((LivingEntity) entity, main);
                 lmEntity.setSummonedLevel(useLevel);
+                lmEntity.isNewlySpawned = true;
                 synchronized (LevelManager.summonedOrSpawnEggs_Lock){
                     main.levelManager.summonedOrSpawnEggs.put(lmEntity.getLivingEntity(), null);
                 }
