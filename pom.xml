@@ -10,7 +10,7 @@
 
     <groupId>me.lokka30</groupId>
     <artifactId>LevelledMobs</artifactId>
-    <version>3.5.0 b633</version>
+    <version>3.5.0 b634</version>
     <packaging>jar</packaging>
 
     <name>LevelledMobs</name>
@@ -169,7 +169,7 @@
         <dependency>
             <groupId>com.sk89q.worldguard</groupId>
             <artifactId>worldguard-bukkit</artifactId>
-            <version>7.0.5</version>
+            <version>7.0.7</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

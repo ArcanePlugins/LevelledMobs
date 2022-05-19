@@ -762,6 +762,7 @@ public class RulesParsingManager {
         parsingInfo.conditions_MaxDistanceFromSpawn = ymlHelper.getInt2(cs, "max-distance-from-spawn", parsingInfo.conditions_MaxDistanceFromSpawn);
 
         parsingInfo.conditions_WGRegions = buildCachedModalListOfString(cs, "allowed-worldguard-regions", parsingInfo.conditions_WGRegions);
+        parsingInfo.conditions_WGRegionOwners = buildCachedModalListOfString(cs, "allowed-worldguard-region-owners", parsingInfo.conditions_WGRegionOwners);
         parsingInfo.conditions_SpawnReasons = buildCachedModalListOfSpawnReason(cs, parsingInfo.conditions_SpawnReasons);
         parsingInfo.conditions_CustomNames = buildCachedModalListOfString(cs,"custom-names", parsingInfo.conditions_CustomNames);
         parsingInfo.conditions_Entities = buildCachedModalListOfString(cs, "entities", parsingInfo.conditions_Entities);

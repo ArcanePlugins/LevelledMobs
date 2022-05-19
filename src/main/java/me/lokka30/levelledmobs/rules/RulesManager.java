@@ -7,6 +7,7 @@ package me.lokka30.levelledmobs.rules;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.LivingEntityInterface;
 import me.lokka30.levelledmobs.managers.ExternalCompatibilityManager;
+import me.lokka30.levelledmobs.managers.WorldGuardIntegration;
 import me.lokka30.levelledmobs.misc.CachedModalList;
 import me.lokka30.levelledmobs.misc.DebugType;
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
@@ -808,10 +809,27 @@ public class RulesManager {
             if (!isInList){
                 Utils.debugLog(main, DebugType.DENIED_RULE_WG_REGION, String.format("&b%s&7, mob: &b%s&7, wg_regions: &b%s&7",
                         ri.getRuleName(), lmInterface.getTypeName(), wgRegions));
-                Utils.logger.info(String.format("DID not meet WG criteria, %s, %s", lmInterface.getTypeName(), wgRegions));
                 return new RuleCheckResult(false);
             }
-            Utils.logger.info(String.format("met WG criteria, %s, %s", lmInterface.getTypeName(), wgRegions));
+        }
+
+        if (ri.conditions_WGRegionOwners != null && ExternalCompatibilityManager.hasWorldGuardInstalled()){
+            boolean isInList = false;
+            final List<String> wgRegionOwners = WorldGuardIntegration.getWorldGuardRegionOwnersForLocation(lmInterface);
+            if (wgRegionOwners.isEmpty()) wgRegionOwners.add("(none)");
+
+            for (final String ownerName : wgRegionOwners) {
+                if (ri.conditions_WGRegionOwners.isEnabledInList(ownerName, null)) {
+                    isInList = true;
+                    break;
+                }
+            }
+
+            if (!isInList){
+                Utils.debugLog(main, DebugType.DENIED_RULE_WG_REGION_OWNER, String.format("&b%s&7, mob: &b%s&7, wg_owners: &b%s&7",
+                        ri.getRuleName(), lmInterface.getTypeName(), wgRegionOwners));
+                return new RuleCheckResult(false);
+            }
         }
 
         if (ri.conditions_ApplyAboveY != null && lmInterface.getLocation().getBlockY() < ri.conditions_ApplyAboveY){
