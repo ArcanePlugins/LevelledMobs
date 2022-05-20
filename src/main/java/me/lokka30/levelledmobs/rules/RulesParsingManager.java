@@ -89,6 +89,7 @@ public class RulesParsingManager {
         this.main.rulesManager.rulesInEffect.get(Integer.MIN_VALUE).add(defaultRule);
         this.main.rulesManager.anyRuleHasChance = this.defaultRule.conditions_Chance != null;
 
+        this.main.rulesManager.buildBiomeGroupMappings(customBiomeGroups);
         this.customRules = parseCustomRules(config.get(ymlHelper.getKeyNameFromConfig(config, "custom-rules")));
         for (final RuleInfo ruleInfo : customRules) {
             if (!this.main.rulesManager.rulesInEffect.containsKey(ruleInfo.rulePriority))
@@ -97,8 +98,6 @@ public class RulesParsingManager {
             this.main.rulesManager.rulesInEffect.get(ruleInfo.rulePriority).add(ruleInfo);
             if (ruleInfo.conditions_Chance != null) this.main.rulesManager.anyRuleHasChance = true;
         }
-
-        this.main.rulesManager.buildBiomeGroupMappings(customBiomeGroups);
     }
 
     @NotNull

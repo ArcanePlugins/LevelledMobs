@@ -1115,9 +1115,12 @@ public class LevelManager implements LevelInterface {
             @Override
             public void run() {
                 applyLevelledEquipment_NonAsync(lmEntity);
+                if (lmEntity.inUseCount.getAndDecrement() <= 0)
+                    lmEntity.free();
             }
         };
 
+        lmEntity.inUseCount.getAndIncrement();
         runnable.runTask(main);
     }
 
