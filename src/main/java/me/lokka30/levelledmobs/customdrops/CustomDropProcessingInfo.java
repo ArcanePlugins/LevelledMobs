@@ -13,7 +13,6 @@ import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -33,7 +32,7 @@ class CustomDropProcessingInfo {
         this.groupIDsDroppedAlready = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
         this.allDropInstances = new LinkedList<>();
         this.playerLevelVariableCache = new TreeMap<>();
-        this.stackToItem = new HashMap<>();
+        this.stackToItem = new LinkedList<>();
     }
 
     public LivingEntityWrapper lmEntity;
@@ -59,7 +58,7 @@ class CustomDropProcessingInfo {
     @NotNull
     final List<CustomDropInstance> allDropInstances;
     private StringBuilder debugMessages;
-    public final Map<ItemStack, CustomDropItem> stackToItem;
+    public final List<Map.Entry<ItemStack, CustomDropItem>> stackToItem;
 
     void addDebugMessage(final String message){
         if (this.debugMessages == null)

@@ -8,6 +8,7 @@ import me.lokka30.levelledmobs.LevelInterface;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.LivingEntityInterface;
 import me.lokka30.levelledmobs.compatibility.Compat1_17;
+import me.lokka30.levelledmobs.customdrops.CustomDropItem;
 import me.lokka30.levelledmobs.customdrops.CustomDropResult;
 import me.lokka30.levelledmobs.customdrops.EquippedItemsInfo;
 import me.lokka30.levelledmobs.events.MobPostLevelEvent;
@@ -1136,35 +1137,37 @@ public class LevelManager implements LevelInterface {
         boolean hadPlayerHead = false;
         final EquippedItemsInfo equippedItemsInfo = new EquippedItemsInfo();
 
-        for (final ItemStack itemStack : dropResult.stackToItem.keySet()) {
+        for (final Map.Entry<ItemStack, CustomDropItem> pair : dropResult.stackToItem) {
+            final ItemStack itemStack = pair.getKey();
             final Material material = itemStack.getType();
+
             if (EnchantmentTarget.ARMOR_FEET.includes(material)) {
                 equipment.setBoots(itemStack, true);
                 equipment.setBootsDropChance(0);
-                equippedItemsInfo.boots = dropResult.stackToItem.get(itemStack);
+                equippedItemsInfo.boots = pair.getValue();
             } else if (EnchantmentTarget.ARMOR_LEGS.includes(material)) {
                 equipment.setLeggings(itemStack, true);
                 equipment.setLeggingsDropChance(0);
-                equippedItemsInfo.leggings = dropResult.stackToItem.get(itemStack);
+                equippedItemsInfo.leggings = pair.getValue();
             } else if (EnchantmentTarget.ARMOR_TORSO.includes(material)) {
                 equipment.setChestplate(itemStack, true);
                 equipment.setChestplateDropChance(0);
-                equippedItemsInfo.chestplate = dropResult.stackToItem.get(itemStack);
+                equippedItemsInfo.chestplate = pair.getValue();
             } else if (EnchantmentTarget.ARMOR_HEAD.includes(material) || material.name().endsWith("_HEAD") && !hadPlayerHead) {
                 equipment.setHelmet(itemStack, true);
                 equipment.setHelmetDropChance(0);
-                equippedItemsInfo.helmet = dropResult.stackToItem.get(itemStack);
+                equippedItemsInfo.helmet = pair.getValue();
                 if (material == Material.PLAYER_HEAD) hadPlayerHead = true;
             } else {
                 if (!hadMainItem) {
                     equipment.setItemInMainHand(itemStack);
                     equipment.setItemInMainHandDropChance(0);
-                    equippedItemsInfo.mainHand = dropResult.stackToItem.get(itemStack);
+                    equippedItemsInfo.mainHand = pair.getValue();
                     hadMainItem = true;
                 } else {
                     equipment.setItemInOffHand(itemStack);
                     equipment.setItemInOffHandDropChance(0);
-                    equippedItemsInfo.offhand = dropResult.stackToItem.get(itemStack);
+                    equippedItemsInfo.offhand = pair.getValue();
                 }
             }
         }

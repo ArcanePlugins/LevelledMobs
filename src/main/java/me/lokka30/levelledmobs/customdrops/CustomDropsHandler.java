@@ -554,10 +554,10 @@ public class CustomDropsHandler {
         }
 
         if (newItem.getType() == Material.PLAYER_HEAD)
-            newItem = main.mobHeadManager.getMobHeadFromPlayerHead(newItem, info.lmEntity, dropItem);
+            main.mobHeadManager.updateMobHeadFromPlayerHead(newItem, info.lmEntity, dropItem);
 
         info.newDrops.add(newItem);
-        info.stackToItem.put(newItem, dropItem);
+        info.stackToItem.add(Utils.getPair(newItem, dropItem));
     }
 
     private boolean hasReachedChunkKillLimit(final @NotNull LivingEntityWrapper lmEntity){
