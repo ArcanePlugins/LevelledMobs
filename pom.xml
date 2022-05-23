@@ -10,7 +10,7 @@
 
     <groupId>me.lokka30</groupId>
     <artifactId>LevelledMobs</artifactId>
-    <version>3.4.1 b625</version>
+    <version>3.5.0 b636</version>
     <packaging>jar</packaging>
 
     <name>LevelledMobs</name>
@@ -104,10 +104,6 @@
             <url>https://repo.extendedclip.com/content/repositories/placeholderapi/</url>
         </repository>
         <repository>
-            <id>minecraft-repo</id>
-            <url>https://libraries.minecraft.net/</url>
-        </repository>
-        <repository>
             <id>spigotmc-repo</id>
             <url>https://hub.spigotmc.org/nexus/content/groups/public/</url>
         </repository>
@@ -137,13 +133,13 @@
         <dependency>
             <groupId>net.essentialsx</groupId>
             <artifactId>EssentialsX</artifactId>
-            <version>2.19.0</version>
+            <version>2.19.4</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>io.papermc.paper</groupId>
             <artifactId>paper-api</artifactId>
-            <version>1.18.1-R0.1-SNAPSHOT</version>
+            <version>1.18.2-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -155,13 +151,13 @@
         <dependency>
             <groupId>com.mojang</groupId>
             <artifactId>authlib</artifactId>
-            <version>1.5.25</version>
+            <version>3.3.39</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
-            <version>1.18.1-R0.1-SNAPSHOT</version>
+            <version>1.18.2-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -173,7 +169,7 @@
         <dependency>
             <groupId>com.sk89q.worldguard</groupId>
             <artifactId>worldguard-bukkit</artifactId>
-            <version>7.0.5</version>
+            <version>7.0.7</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -197,13 +193,19 @@
         <dependency>
             <groupId>simplepets.brainsynder</groupId>
             <artifactId>API</artifactId>
-            <version>5.0-BUILD-146</version>
+            <version>5.0-BUILD-156</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
             <version>2.9.0</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.github.stumper66</groupId>
+            <artifactId>LM_Items</artifactId>
+            <version>0.91</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>

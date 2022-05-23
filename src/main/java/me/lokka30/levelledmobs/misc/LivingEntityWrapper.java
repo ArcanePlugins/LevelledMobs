@@ -109,11 +109,14 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
     public boolean reEvaluateLevel;
     public boolean wasPreviouslyLevelled;
     public boolean isRulesForceAll;
+    public boolean isNewlySpawned;
     public Boolean playerLevellingAllowDecrease;
     public Set<Player> playersNeedingNametagCooldownUpdate;
     public EntityDamageEvent.DamageCause deathCause;
     public List<String> nbtData;
     public String pendingPlayerIdToSet;
+    public String lockedNametag;
+    public String lockedOverrideName;
     public Player playerForPermissionsCheck;
     public CommandSender summonedSender;
 
@@ -181,6 +184,9 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
         this.pendingPlayerIdToSet = null;
         this.skylightLevelAtSpawn = null;
         this.wasSummoned = false;
+        this.lockedNametag = null;
+        this.lockedOverrideName = null;
+        this.isNewlySpawned = false;
 
         super.clearEntityData();
     }

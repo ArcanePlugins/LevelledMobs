@@ -40,6 +40,9 @@ class CustomDropsDefaults {
     public final List<String> permissions;
     final List<String> overallPermissions;
     CachedModalList<CauseOfDeathEnum> causeOfDeathReqs;
+    public String externalType;
+    public String externalItemId;
+    public Double externalAmount;
 
     CustomDropsDefaults() {
         // these are the defaults of the defaults
@@ -81,5 +84,8 @@ class CustomDropsDefaults {
         this.onlyDropIfEquipped = drop.onlyDropIfEquipped;
         this.permissions.addAll(drop.permissions);
         this.causeOfDeathReqs = drop.causeOfDeathReqs;
+        this.externalType = drop.externalType;
+        this.externalItemId = drop.externalItemId;
+        this.externalAmount = drop.externalAmount;
     }
 }

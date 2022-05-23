@@ -36,6 +36,11 @@ public class CustomDropItem extends CustomDropBase {
     public UUID customPlayerHeadId;
     private Material material;
     private ItemStack itemStack;
+    public boolean isExternalItem;
+    public String externalPluginName;
+    public String externalType;
+    public String externalItemId;
+    public Double externalAmount;
 
     CustomDropItem(@NotNull final CustomDropsDefaults defaults) {
         super(defaults);
@@ -126,8 +131,9 @@ public class CustomDropItem extends CustomDropBase {
         return itemStack;
     }
 
-    public void setItemStack(final ItemStack itemStack){
+    public void setItemStack(final @NotNull ItemStack itemStack){
         this.itemStack = itemStack;
+        this.material = itemStack.getType();
     }
 
     public String toString(){

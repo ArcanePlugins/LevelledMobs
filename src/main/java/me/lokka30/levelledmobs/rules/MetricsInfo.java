@@ -166,7 +166,7 @@ public class MetricsInfo {
 
     @NotNull
     public String usesNbtData(){
-        if (!ExternalCompatibilityManager.hasNBTAPI_Installed())
+        if (!ExternalCompatibilityManager.hasNbtApiInstalled())
             return "No";
 
         for (final RuleInfo ruleInfo : main.rulesParsingManager.getAllRules()){

@@ -88,7 +88,7 @@ public class MobHeadManager {
         }
     }
 
-    public ItemStack getMobHeadFromPlayerHead(final ItemStack playerHead, final LivingEntityWrapper lmEntity, @NotNull final CustomDropItem dropItem){
+    public void updateMobHeadFromPlayerHead(final @NotNull ItemStack playerHead, final LivingEntityWrapper lmEntity, @NotNull final CustomDropItem dropItem){
 
         final String textureCode;
         final UUID id;
@@ -102,12 +102,12 @@ public class MobHeadManager {
                 if (meta != null)
                     newItem.setItemMeta(meta.clone());
 
-                return newItem;
+                return;
             }
 
             if (!this.mobMap.containsKey(lmEntity.getLivingEntity().getType())){
                 Utils.logger.warning("Unable to get mob head for " + lmEntity.getTypeName() + ", no texture data");
-                return playerHead;
+                return;
             }
 
             final Map<String, MobDataInfo> mobDatas = this.mobMap.get(lmEntity.getEntityType());
@@ -125,7 +125,7 @@ public class MobHeadManager {
                 }
             }
 
-            if (mobData == null) return playerHead;
+            if (mobData == null) return;
 
             textureCode = mobData.textureCode;
 
@@ -133,7 +133,7 @@ public class MobHeadManager {
                 id = UUID.fromString(mobData.id);
             } catch (final IllegalArgumentException e) {
                 Utils.logger.warning("mob: " + lmEntity.getTypeName() + ", exception getting UUID for mob head. " + e.getMessage());
-                return playerHead;
+                return;
             }
         } else {
             id = dropItem.customPlayerHeadId;
@@ -145,7 +145,7 @@ public class MobHeadManager {
             profile.getProperties().put("textures", new Property("textures", textureCode));
 
         final SkullMeta meta = (SkullMeta) playerHead.getItemMeta();
-        if (meta == null) return playerHead;
+        if (meta == null) return;
 
         final Field profileField;
         try {
@@ -184,7 +184,7 @@ public class MobHeadManager {
 
         playerHead.setItemMeta(meta);
 
-        return playerHead;
+        return;
     }
 
     @NotNull

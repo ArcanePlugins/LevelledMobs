@@ -34,7 +34,6 @@ import org.jetbrains.annotations.Nullable;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -62,6 +61,8 @@ public class CustomDropsHandler {
         customDropsParser = new CustomDropsParser(main, this);
         this.ymlHelper = customDropsParser.ymlHelper;
         this.customEquippedItems = new WeakHashMap<>();
+        if (ExternalCompatibilityManager.hasLMItemsInstalled())
+            this.lmItemsParser = new LMItemsParser(main);
     }
 
     private final LevelledMobs main;
@@ -71,6 +72,7 @@ public class CustomDropsHandler {
     final Map<String, CustomDropInstance> customDropIDs;
     @Nullable Map<String, CustomDropInstance> customItemGroups;
     public final CustomDropsParser customDropsParser;
+    LMItemsParser lmItemsParser;
     private final YmlParsingHelper ymlHelper;
     private final WeakHashMap<LivingEntity, EquippedItemsInfo> customEquippedItems;
 
@@ -172,9 +174,8 @@ public class CustomDropsHandler {
         boolean usesGroupIds = false;
 
         final boolean overrideNonDropTableDrops = info.dropRules != null && info.dropRules.override;
-        final String[] useIds = getDropIds(info);
 
-        for (final String id : useIds){
+        for (final String id : getDropIds(info)){
             if (this.customItemGroups == null || !this.customItemGroups.containsKey(id.trim())){
                 Utils.logger.warning("rule specified an invalid value for use-droptable-id: " + id);
                 continue;
@@ -251,14 +252,17 @@ public class CustomDropsHandler {
     }
 
     @NotNull
-    private String[] getDropIds(@NotNull final CustomDropProcessingInfo processingInfo){
-        final List<String> dropIds = (processingInfo.dropRules != null && processingInfo.dropRules.useDropTableId != null) ?
-                Arrays.asList(processingInfo.dropRules.useDropTableId.split(",")) : new LinkedList<>();
+    private List<String> getDropIds(@NotNull final CustomDropProcessingInfo processingInfo){
+        final List<String> dropIds = new LinkedList<>();
+        if (processingInfo.dropRules != null){
+            for (final String id : processingInfo.dropRules.useDropTableIds)
+                dropIds.addAll(List.of(id.split(",")));
+        }
 
         if (processingInfo.hasCustomDropId && !dropIds.contains(processingInfo.customDropId))
             dropIds.add(processingInfo.customDropId);
 
-        return dropIds.toArray(new String[0]);
+        return dropIds;
     }
 
     private void processDropPriorities(@NotNull final CustomDropBase baseItem, @NotNull final CustomDropProcessingInfo processingInfo){
@@ -474,9 +478,16 @@ public class CustomDropsHandler {
 
         // if we made it this far then the item will be dropped
 
-        ItemStack newItem = info.deathByFire ?
-                getCookedVariantOfMeat(dropItem.getItemStack().clone()) :
-                dropItem.getItemStack().clone();
+        if (dropItem.isExternalItem && isCustomDropsDebuggingEnabled() && !ExternalCompatibilityManager.hasLMItemsInstalled())
+            Utils.debugLog(main, DebugType.CUSTOM_DROPS, "Could not get external custom item - LM_Items is not installed");
+
+        ItemStack newItem;
+        if (dropItem.isExternalItem && ExternalCompatibilityManager.hasLMItemsInstalled() && lmItemsParser.getExternalItem(dropItem))
+            newItem = dropItem.getItemStack();
+        else if (info.deathByFire)
+            newItem = getCookedVariantOfMeat(dropItem.getItemStack().clone());
+        else
+            newItem = dropItem.getItemStack().clone();
 
         newItem.setAmount(newDropAmount);
 
@@ -543,10 +554,10 @@ public class CustomDropsHandler {
         }
 
         if (newItem.getType() == Material.PLAYER_HEAD)
-            newItem = main.mobHeadManager.getMobHeadFromPlayerHead(newItem, info.lmEntity, dropItem);
+            main.mobHeadManager.updateMobHeadFromPlayerHead(newItem, info.lmEntity, dropItem);
 
         info.newDrops.add(newItem);
-        info.stackToItem.put(newItem, dropItem);
+        info.stackToItem.add(Utils.getPair(newItem, dropItem));
     }
 
     private boolean hasReachedChunkKillLimit(final @NotNull LivingEntityWrapper lmEntity){
@@ -711,8 +722,8 @@ public class CustomDropsHandler {
             command = Utils.replaceEx(command, "%player%", playerName);
             command = processRangedCommand(command, customCommand);
             command = main.levelManager.replaceStringPlaceholders(command, info.lmEntity, true, false);
-            if (command.contains("%") && ExternalCompatibilityManager.hasPAPI_Installed())
-                command = ExternalCompatibilityManager.getPAPI_Placeholder(info.mobKiller, command);
+            if (command.contains("%") && ExternalCompatibilityManager.hasPapiInstalled())
+                command = ExternalCompatibilityManager.getPapiPlaceholder(info.mobKiller, command);
 
             final int maxAllowedTimesToRun = ymlHelper.getInt(main.settingsCfg, "customcommand-amount-limit", 10);
             int timesToRun = customCommand.getAmount();

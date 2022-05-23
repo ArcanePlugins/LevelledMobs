@@ -269,10 +269,16 @@ public class CustomDropsParser {
             if (ItemsToCheck.isEmpty() && itemObject.getClass().equals(LinkedHashMap.class)){
                 // empty list means a material name was provided with no attributes
                 final LinkedHashMap<String, Object> materials = (LinkedHashMap<String, Object>) itemObject;
+                boolean needsContinue = false;
                 for (final String materialName :  materials.keySet()){
                     final CustomDropItem item = new CustomDropItem(this.defaults);
-                    addMaterialToDrop(materialName, dropInstance, item);
+
+                    if (addMaterialToDrop(materialName, dropInstance, item)) {
+                        needsContinue = true;
+                        break;
+                    }
                 }
+                if (needsContinue) continue;
             }
 
             for (final Map.Entry<String,Object> itemEntry : ItemsToCheck) {
@@ -327,6 +333,15 @@ public class CustomDropsParser {
                 else {
                     final CustomDropItem item = new CustomDropItem(this.defaults);
                     if (!addMaterialToDrop(materialName, dropInstance, item)) continue;
+
+                    item.externalType = ymlHelper.getString(itemInfoConfiguration, "type", this.defaults.externalType);
+                    item.externalAmount = ymlHelper.getDouble2(itemInfoConfiguration, "external-amount", this.defaults.externalAmount);
+
+                    if (item.isExternalItem && ExternalCompatibilityManager.hasLMItemsInstalled()){
+
+                        if (!handler.lmItemsParser.getExternalItem(item)) continue;
+                    }
+
                     dropBase = item;
                 }
 
@@ -395,6 +410,8 @@ public class CustomDropsParser {
         item.noMultiplier = ymlHelper.getBoolean(cs,"nomultiplier", this.defaults.noMultiplier);
         item.noSpawner = ymlHelper.getBoolean(cs,"nospawner", this.defaults.noSpawner);
         item.customModelDataId = ymlHelper.getInt(cs,"custommodeldata", this.defaults.customModelData);
+        item.externalType = ymlHelper.getString(cs, "type", this.defaults.externalType);
+        item.externalAmount = ymlHelper.getDouble2(cs, "external-amount", this.defaults.externalAmount);
         item.mobHeadTexture = ymlHelper.getString(cs,"mobhead-texture");
         final String mobHeadIdStr = ymlHelper.getString(cs,"mobhead-id");
         if (mobHeadIdStr != null){
@@ -426,11 +443,11 @@ public class CustomDropsParser {
 
         final String nbtStuff = ymlHelper.getString(cs,"nbt-data");
         if (!Utils.isNullOrEmpty(nbtStuff)){
-            if (ExternalCompatibilityManager.hasNBTAPI_Installed()) {
+            if (ExternalCompatibilityManager.hasNbtApiInstalled()) {
                 final NBTApplyResult result = NBTManager.applyNBT_Data_Item(item, nbtStuff);
                 if (result.hadException())
-                    Utils.logger.warning("custom drop " + item.getMaterial().toString() + " for " + dropInstance.getMobOrGroupName() + " has invalid NBT data: " + result.exceptionMessage);
-                else {
+                    Utils.logger.warning(String.format("custom drop %s for %s has invalid NBT data: %s", item.getMaterial(), dropInstance.getMobOrGroupName(), result.exceptionMessage));
+                else if (result.itemStack != null) {
                     item.setItemStack(result.itemStack);
                     this.dropsUtilizeNBTAPI = true;
                 }
@@ -653,20 +670,33 @@ public class CustomDropsParser {
         }
     }
 
-    private boolean addMaterialToDrop(String materialName, final CustomDropInstance dropInstance, final CustomDropItem item){
-
+    private boolean addMaterialToDrop(@NotNull String materialName, final CustomDropInstance dropInstance, final CustomDropItem item){
         materialName = Utils.replaceEx(materialName, "mob_head", "player_head");
         materialName = Utils.replaceEx(materialName, "mobhead", "player_head");
 
-        final Material material;
-        try {
-            material = Material.valueOf(materialName.toUpperCase());
-        } catch (final Exception e) {
-            Utils.logger.warning(String.format("Invalid material type specified in customdrops.yml for: %s, %s", dropInstance.getMobOrGroupName(), materialName));
-            return false;
+        if (materialName.contains(":")){
+            // this item is referencing a custom item from an external plugin, we will call LM_Items to get it
+            if (ExternalCompatibilityManager.hasLMItemsInstalled()) {
+                if (!handler.lmItemsParser.parseExternalItemAttributes(materialName, item)) return false;
+            }
+            else {
+                Utils.logger.warning(String.format("Custom drop '%s' requires plugin LM_Items but it is not installed", materialName));
+                return false;
+            }
+        }
+        else {
+            final Material material;
+            try {
+                material = Material.valueOf(materialName.toUpperCase());
+            } catch (final Exception e) {
+                Utils.logger.warning(String.format("Invalid material type specified in customdrops.yml for: %s, %s",
+                        dropInstance.getMobOrGroupName(), materialName));
+                return false;
+            }
+
+            item.setMaterial(material);
         }
 
-        item.setMaterial(material);
         dropInstance.customItems.add(item);
 
         return true;
@@ -752,8 +782,10 @@ public class CustomDropsParser {
                 (CustomDropItem) baseItem : null;
 
         final StringBuilder sb = new StringBuilder();
-        if (item != null)
-            sb.append(String.format("    &b%s&r, amount: &b%s&r, chance: &b%s&r", item.getMaterial(), item.getAmountAsString(), baseItem.chance));
+        if (item != null) {
+            final String itemMaterial = item.getMaterial() != null ? item.getMaterial().toString() : "(unknown)";
+            sb.append(String.format("    &b%s&r, amount: &b%s&r, chance: &b%s&r", itemMaterial, item.getAmountAsString(), baseItem.chance));
+        }
         else
             sb.append(String.format("    COMMAND, chance: &b%s&r", baseItem.chance));
 
@@ -842,19 +874,39 @@ public class CustomDropsParser {
             sb.append("&r");
         }
 
-        final ItemMeta meta = item.getItemStack().getItemMeta();
-        final StringBuilder sb2 = new StringBuilder();
-        if (meta != null) {
-            for (final Enchantment enchant : meta.getEnchants().keySet()) {
-                if (sb2.length() > 0) sb.append(", ");
-                sb2.append(String.format("&b%s&r (%s)", enchant.getKey().getKey(), item.getItemStack().getItemMeta().getEnchants().get(enchant)));
+        if (item.isExternalItem){
+            sb.append(", ext: ");
+            sb.append(item.externalPluginName);
+
+            if (item.externalType != null) {
+                sb.append(", ex-type: ");
+                sb.append(item.externalType);
+            }
+            if (item.externalItemId != null){
+                sb.append(", ex-id: ");
+                sb.append(item.externalItemId);
+            }
+            if (item.externalAmount != null){
+                sb.append(", ex-amt: ");
+                sb.append(item.externalAmount);
             }
         }
 
-        if (sb2.length() > 0) {
-            sb.append(System.lineSeparator());
-            sb.append("         ");
-            sb.append(sb2);
+        if (item.getItemStack() != null) {
+            final ItemMeta meta = item.getItemStack().getItemMeta();
+            final StringBuilder sb2 = new StringBuilder();
+            if (meta != null) {
+                for (final Enchantment enchant : meta.getEnchants().keySet()) {
+                    if (sb2.length() > 0) sb.append(", ");
+                    sb2.append(String.format("&b%s&r (%s)", enchant.getKey().getKey(), item.getItemStack().getItemMeta().getEnchants().get(enchant)));
+                }
+            }
+
+            if (sb2.length() > 0) {
+                sb.append(System.lineSeparator());
+                sb.append("         ");
+                sb.append(sb2);
+            }
         }
 
         return sb.toString();

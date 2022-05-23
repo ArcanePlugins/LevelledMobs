@@ -16,13 +16,16 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Biome;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Holds common utilities
@@ -321,5 +324,11 @@ public final class Utils {
 
     public static String displayChunkLocation(final @NotNull Location location){
         return String.format("%s,%s", location.getChunk().getX(), location.getChunk().getZ());
+    }
+
+    // take from https://www.techiedelight.com/five-alternatives-pair-class-java/
+    @Contract(value = "_, _ -> new", pure = true)
+    public static <T, U> Map.@NotNull Entry<T, U> getPair(T first, U second) {
+        return new AbstractMap.SimpleEntry<>(first, second);
     }
 }

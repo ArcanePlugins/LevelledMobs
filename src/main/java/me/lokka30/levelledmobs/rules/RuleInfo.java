@@ -15,6 +15,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
@@ -34,6 +35,7 @@ public class RuleInfo {
         this.ruleSourceNames = new TreeMap<>();
         this.conditions_MobCustomnameStatus = MobCustomNameStatus.NOT_SPECIFIED;
         this.conditions_MobTamedStatus = MobTamedStatus.NOT_SPECIFIED;
+        this.customDrop_DropTableIds = new LinkedList<>();
     }
 
     private String ruleName;
@@ -49,6 +51,7 @@ public class RuleInfo {
     Boolean useRandomLevelling;
     Boolean mergeEntityNameOverrides;
     Boolean passengerMatchLevel;
+    Boolean lockEntity;
     @DoNotMerge
     int rulePriority;
     Integer spawnerParticlesCount;
@@ -75,7 +78,7 @@ public class RuleInfo {
     String nametag_Placeholder_Unlevelled;
     @DoNotMerge
     String presetName;
-    String customDrop_DropTableId;
+    final @NotNull List<String> customDrop_DropTableIds;
     HealthIndicator healthIndicator;
     MobCustomNameStatus conditions_MobCustomnameStatus;
     MobTamedStatus conditions_MobTamedStatus;
@@ -99,6 +102,8 @@ public class RuleInfo {
     CachedModalList<String> conditions_CustomNames;
     CachedModalList<String> conditions_NoDropEntities;
     CachedModalList<String> conditions_WGRegions;
+
+    CachedModalList<String> conditions_WGRegionOwners;
     CachedModalList<String> conditions_MM_Names;
     CachedModalList<String> conditions_SpawnerNames;
     CachedModalList<String> conditions_SpawnegEggNames;
@@ -159,6 +164,11 @@ public class RuleInfo {
 
                     for (final Map.Entry<String, FineTuningAttributes> entityType : mergingPreset.entrySet())
                         this.specificMobMultipliers.put(entityType.getKey(), entityType.getValue().cloneItem());
+
+                    skipSettingValue = true;
+                } else if (f.getName().equals("customDrop_DropTableIds")){
+                    final List<String> mergingPreset = (List<String>) presetValue;
+                    this.customDrop_DropTableIds.addAll(mergingPreset);
 
                     skipSettingValue = true;
                 }
@@ -261,6 +271,13 @@ public class RuleInfo {
 
         sb.setLength(sb.length() - 1); // remove trailing newline
         return sb.toString();
+    }
+
+    public String toString(){
+        if (this.ruleName == null || this.ruleName.isEmpty())
+            return super.toString();
+
+        return this.ruleName;
     }
 }
 

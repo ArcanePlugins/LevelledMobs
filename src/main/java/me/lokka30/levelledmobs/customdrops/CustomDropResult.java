@@ -7,6 +7,7 @@ package me.lokka30.levelledmobs.customdrops;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -17,10 +18,10 @@ import java.util.Map;
  * @since 2.6.0
  */
 public class CustomDropResult {
-    public CustomDropResult(final @NotNull Map<ItemStack, CustomDropItem> stackToItem, final boolean hasOverride){
+    public CustomDropResult(final @NotNull List<Map.Entry<ItemStack, CustomDropItem>> stackToItem, final boolean hasOverride){
         this.stackToItem = stackToItem;
         this.hasOverride = hasOverride;
     }
     public final boolean hasOverride;
-    public final Map<ItemStack, CustomDropItem> stackToItem;
+    public final List<Map.Entry<ItemStack, CustomDropItem>> stackToItem;
 }

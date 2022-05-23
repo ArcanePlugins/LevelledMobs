@@ -36,6 +36,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.regex.Pattern;
 
 /**
  * Contains the logic that parses rules.yml and reads them into the
@@ -51,6 +52,7 @@ public class RulesParsingManager {
         this.rulePresets = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
         this.customRules = new LinkedList<>();
         this.ymlHelper = new YmlParsingHelper();
+        this.emptyArrayPattern = Pattern.compile("\\[\\s+?]|\\[]");
     }
 
     final private LevelledMobs main;
@@ -62,6 +64,7 @@ public class RulesParsingManager {
     public List<RuleInfo> customRules;
     public RuleInfo defaultRule;
     private Map<String, Set<String>> customBiomeGroups;
+    private final Pattern emptyArrayPattern;
     private final static String ml_AllowedItems = "allowed-list";
     private final static String ml_AllowedGroups = "allowed-groups";
     private final static String ml_ExcludedItems = "excluded-list";
@@ -86,6 +89,7 @@ public class RulesParsingManager {
         this.main.rulesManager.rulesInEffect.get(Integer.MIN_VALUE).add(defaultRule);
         this.main.rulesManager.anyRuleHasChance = this.defaultRule.conditions_Chance != null;
 
+        this.main.rulesManager.buildBiomeGroupMappings(customBiomeGroups);
         this.customRules = parseCustomRules(config.get(ymlHelper.getKeyNameFromConfig(config, "custom-rules")));
         for (final RuleInfo ruleInfo : customRules) {
             if (!this.main.rulesManager.rulesInEffect.containsKey(ruleInfo.rulePriority))
@@ -94,8 +98,6 @@ public class RulesParsingManager {
             this.main.rulesManager.rulesInEffect.get(ruleInfo.rulePriority).add(ruleInfo);
             if (ruleInfo.conditions_Chance != null) this.main.rulesManager.anyRuleHasChance = true;
         }
-
-        this.main.rulesManager.buildBiomeGroupMappings(customBiomeGroups);
     }
 
     @NotNull
@@ -228,6 +230,7 @@ public class RulesParsingManager {
                 cachedModalList.excludeAll = true;
                 continue;
             }
+            if (emptyArrayPattern.matcher(item).matches()) continue;
             try {
                 final LevelledMobSpawnReason reason = LevelledMobSpawnReason.valueOf(item.trim().toUpperCase());
                 cachedModalList.excludedList.add(reason);
@@ -296,6 +299,7 @@ public class RulesParsingManager {
                 cachedModalList.allowAll = true;
                 continue;
             }
+            if (emptyArrayPattern.matcher(item).matches()) continue;
             try {
                 final Biome biome = Biome.valueOf(item.trim().toUpperCase());
                 cachedModalList.allowedList.add(biome);
@@ -357,6 +361,7 @@ public class RulesParsingManager {
                 cachedModalList.allowAll = true;
                 continue;
             }
+            if (emptyArrayPattern.matcher(item).matches()) continue;
             cachedModalList.allowedList.add(item);
         }
         if (cs2 == null) return cachedModalList;
@@ -623,13 +628,14 @@ public class RulesParsingManager {
         parsingInfo.creeperMaxDamageRadius = ymlHelper.getInt2(cs,"creeper-max-damage-radius", parsingInfo.creeperMaxDamageRadius);
         parsingInfo.customDrops_UseForMobs = ymlHelper.getBoolean2(cs,"use-custom-item-drops-for-mobs", parsingInfo.customDrops_UseForMobs);
         parsingInfo.customDrops_UseOverride = ymlHelper.getBoolean2(cs,"custom-drops-override", parsingInfo.customDrops_UseOverride);
-        parsingInfo.customDrop_DropTableId = ymlHelper.getString(cs,"use-droptable-id", parsingInfo.customDrop_DropTableId);
+        parsingInfo.customDrop_DropTableIds.addAll(YmlParsingHelper.getListFromConfigItem(cs,"use-droptable-id"));
         parsingInfo.nametag = ymlHelper.getString(cs,"nametag", parsingInfo.nametag);
         parsingInfo.nametag_CreatureDeath = ymlHelper.getString(cs,"creature-death-nametag", parsingInfo.nametag_CreatureDeath);
         parsingInfo.nametag_Placeholder_Levelled = ymlHelper.getString(cs, "nametag-placeholder-levelled", parsingInfo.nametag_Placeholder_Levelled);
         parsingInfo.nametag_Placeholder_Unlevelled = ymlHelper.getString(cs, "nametag-placeholder-unlevelled", parsingInfo.nametag_Placeholder_Unlevelled);
         parsingInfo.sunlightBurnAmount = ymlHelper.getDouble2(cs, "sunlight-intensity", parsingInfo.sunlightBurnAmount);
         parsingInfo.lowerMobLevelBiasFactor = ymlHelper.getInt2(cs, "lower-mob-level-bias-factor", parsingInfo.lowerMobLevelBiasFactor);
+        parsingInfo.lockEntity = ymlHelper.getBoolean2(cs, "lock-entity", parsingInfo.lockEntity);
         parseNBT_Data(cs);
         parsingInfo.passengerMatchLevel = ymlHelper.getBoolean2(cs, "passenger-match-level", parsingInfo.passengerMatchLevel);
         parsingInfo.nametagVisibleTime = ymlHelper.getInt2(cs, "nametag-visible-time", parsingInfo.nametagVisibleTime);
@@ -755,6 +761,7 @@ public class RulesParsingManager {
         parsingInfo.conditions_MaxDistanceFromSpawn = ymlHelper.getInt2(cs, "max-distance-from-spawn", parsingInfo.conditions_MaxDistanceFromSpawn);
 
         parsingInfo.conditions_WGRegions = buildCachedModalListOfString(cs, "allowed-worldguard-regions", parsingInfo.conditions_WGRegions);
+        parsingInfo.conditions_WGRegionOwners = buildCachedModalListOfString(cs, "allowed-worldguard-region-owners", parsingInfo.conditions_WGRegionOwners);
         parsingInfo.conditions_SpawnReasons = buildCachedModalListOfSpawnReason(cs, parsingInfo.conditions_SpawnReasons);
         parsingInfo.conditions_CustomNames = buildCachedModalListOfString(cs,"custom-names", parsingInfo.conditions_CustomNames);
         parsingInfo.conditions_Entities = buildCachedModalListOfString(cs, "entities", parsingInfo.conditions_Entities);
@@ -1076,6 +1083,7 @@ public class RulesParsingManager {
         attribs.horseJumpStrength = ymlHelper.getDouble2(cs, "horse-jump-strength", attribs.horseJumpStrength);
         attribs.zombieReinforcements = ymlHelper.getDouble2(cs, "zombie-spawn-reinforcements", attribs.zombieReinforcements);
         attribs.followRange = ymlHelper.getDouble2(cs, "follow-range", attribs.followRange);
+        attribs.doNotMerge = ymlHelper.getBoolean(cs, "do-not-merge", false);
 
         return attribs;
     }

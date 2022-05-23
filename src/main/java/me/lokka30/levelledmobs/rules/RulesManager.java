@@ -7,6 +7,7 @@ package me.lokka30.levelledmobs.rules;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.LivingEntityInterface;
 import me.lokka30.levelledmobs.managers.ExternalCompatibilityManager;
+import me.lokka30.levelledmobs.managers.WorldGuardIntegration;
 import me.lokka30.levelledmobs.misc.CachedModalList;
 import me.lokka30.levelledmobs.misc.DebugType;
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
@@ -121,13 +122,25 @@ public class RulesManager {
     @NotNull
     public CustomDropsRuleSet getRule_UseCustomDropsForMob(@NotNull final LivingEntityWrapper lmEntity){
         final CustomDropsRuleSet dropRules = new CustomDropsRuleSet();
+
         for (final RuleInfo ruleInfo : lmEntity.getApplicableRules()){
             if (ruleInfo.customDrops_UseForMobs != null) dropRules.useDrops = ruleInfo.customDrops_UseForMobs;
             if (ruleInfo.customDrops_UseOverride != null) dropRules.override = ruleInfo.customDrops_UseOverride;
-            if (ruleInfo.customDrop_DropTableId != null) dropRules.useDropTableId = ruleInfo.customDrop_DropTableId;
+            dropRules.useDropTableIds.addAll(ruleInfo.customDrop_DropTableIds);
         }
 
         return dropRules;
+    }
+
+    public boolean getRule_DoLockEntity(@NotNull final LivingEntityWrapper lmEntity){
+        boolean result = false;
+
+        for (final RuleInfo ruleInfo : lmEntity.getApplicableRules()){
+            if (ruleInfo.lockEntity != null)
+                result = ruleInfo.lockEntity;
+        }
+
+        return result;
     }
 
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
@@ -162,16 +175,22 @@ public class RulesManager {
 
         for (final RuleInfo ruleInfo : lmEntity.getApplicableRules()){
             if (ruleInfo.allMobMultipliers != null) {
-                if (allMobAttribs == null)
+                if (allMobAttribs == null || ruleInfo.allMobMultipliers.doNotMerge) {
                     allMobAttribs = ruleInfo.allMobMultipliers.cloneItem();
+                    if (ruleInfo.allMobMultipliers.doNotMerge)
+                        thisMobAttribs = null;
+                }
                 else
                     allMobAttribs.mergeAttributes(ruleInfo.allMobMultipliers);
             }
 
             if (ruleInfo.specificMobMultipliers != null && ruleInfo.specificMobMultipliers.containsKey(lmEntity.getNameIfBaby())){
                 final FineTuningAttributes tempAttribs = ruleInfo.specificMobMultipliers.get(lmEntity.getNameIfBaby());
-                if (thisMobAttribs == null)
+                if (thisMobAttribs == null || tempAttribs.doNotMerge) {
                     thisMobAttribs = tempAttribs.cloneItem();
+                    if (tempAttribs.doNotMerge)
+                        allMobAttribs = null;
+                }
                 else
                     thisMobAttribs.mergeAttributes(tempAttribs);
             }
@@ -775,7 +794,7 @@ public class RulesManager {
             return new RuleCheckResult(false);
         }
 
-        if (ri.conditions_WGRegions != null){
+        if (ri.conditions_WGRegions != null && ExternalCompatibilityManager.hasWorldGuardInstalled()){
             boolean isInList = false;
             final List<String> wgRegions = ExternalCompatibilityManager.getWGRegionsAtLocation(lmInterface);
             if (wgRegions.isEmpty()) wgRegions.add("(none)");
@@ -790,6 +809,25 @@ public class RulesManager {
             if (!isInList){
                 Utils.debugLog(main, DebugType.DENIED_RULE_WG_REGION, String.format("&b%s&7, mob: &b%s&7, wg_regions: &b%s&7",
                         ri.getRuleName(), lmInterface.getTypeName(), wgRegions));
+                return new RuleCheckResult(false);
+            }
+        }
+
+        if (ri.conditions_WGRegionOwners != null && ExternalCompatibilityManager.hasWorldGuardInstalled()){
+            boolean isInList = false;
+            final List<String> wgRegionOwners = WorldGuardIntegration.getWorldGuardRegionOwnersForLocation(lmInterface);
+            if (wgRegionOwners.isEmpty()) wgRegionOwners.add("(none)");
+
+            for (final String ownerName : wgRegionOwners) {
+                if (ri.conditions_WGRegionOwners.isEnabledInList(ownerName, null)) {
+                    isInList = true;
+                    break;
+                }
+            }
+
+            if (!isInList){
+                Utils.debugLog(main, DebugType.DENIED_RULE_WG_REGION_OWNER, String.format("&b%s&7, mob: &b%s&7, wg_owners: &b%s&7",
+                        ri.getRuleName(), lmInterface.getTypeName(), wgRegionOwners));
                 return new RuleCheckResult(false);
             }
         }

@@ -24,6 +24,7 @@ import me.lokka30.levelledmobs.listeners.PlayerDeathListener;
 import me.lokka30.levelledmobs.listeners.PlayerInteractEventListener;
 import me.lokka30.levelledmobs.listeners.PlayerJoinListener;
 import me.lokka30.levelledmobs.listeners.PlayerPortalEventListener;
+import me.lokka30.levelledmobs.listeners.ServerStartListener;
 import me.lokka30.levelledmobs.managers.LevelManager;
 import me.lokka30.levelledmobs.managers.PlaceholderApiIntegration;
 
@@ -197,9 +198,6 @@ public class Companion {
         }
 
         main.customDropsHandler = new CustomDropsHandler(main);
-        main.customDropsHandler.customDropsParser.loadDrops(
-                FileLoader.loadFile(main, "customdrops", FileLoader.CUSTOMDROPS_FILE_VERSION)
-        );
 
         if (!isReload) {
             main.attributesCfg = loadEmbeddedResource("defaultAttributes.yml");
@@ -218,6 +216,13 @@ public class Companion {
                 }
             }
 
+        }
+        else {
+            // if not reloading then it is called from the server load event to make sure any dependent
+            // plugins are already loaded
+            main.customDropsHandler.customDropsParser.loadDrops(
+                    FileLoader.loadFile(main, "customdrops", FileLoader.CUSTOMDROPS_FILE_VERSION)
+            );
         }
 
         parseDebugsEnabled();
@@ -298,6 +303,7 @@ public class Companion {
         pluginManager.registerEvents(new CombustListener(main), main);
         pluginManager.registerEvents(main.blockPlaceListener, main);
         pluginManager.registerEvents(new PlayerPortalEventListener(main), main);
+        pluginManager.registerEvents(new ServerStartListener(main), main);
         main.chunkLoadListener = new ChunkLoadListener(main);
         main.playerInteractEventListener = new PlayerInteractEventListener(main);
         pluginManager.registerEvents(main.playerInteractEventListener, main);
