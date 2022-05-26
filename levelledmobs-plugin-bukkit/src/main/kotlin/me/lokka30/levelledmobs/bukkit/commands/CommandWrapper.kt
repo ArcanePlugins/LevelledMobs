@@ -1,7 +1,10 @@
 package me.lokka30.levelledmobs.bukkit.commands
 
-import org.bukkit.ChatColor
+import me.lokka30.levelledmobs.bukkit.LevelledMobs.Companion.prefixSev
+import org.bukkit.ChatColor.AQUA
+import org.bukkit.ChatColor.GRAY
 import org.bukkit.command.CommandSender
+import org.bukkit.entity.Player
 
 /*
 This abstract class is a wrapper for Bukkit's TabExecutor, which makes writing commands easier,
@@ -60,12 +63,24 @@ abstract class CommandWrapper {
             return true
 
         if (warn) {
-            // FIXME Make this message customisable.
-            sender.sendMessage("${ChatColor.RED}You don't have access to that. [Permission " +
-                    "required: '${permission}']")
+            sender.sendMessage("${prefixSev}You don't have access to that; it requires the " +
+                    "permission '${AQUA}${permission}${GRAY}'."
+            )
         }
 
         return false
+    }
+
+    fun senderIsPlayer(
+        sender: CommandSender,
+        warn: Boolean
+    ): Boolean {
+        return if (sender is Player) {
+            true
+        } else {
+            if(warn) { sender.sendMessage("${prefixSev}Only players may access this command.") }
+            false
+        }
     }
 
 }

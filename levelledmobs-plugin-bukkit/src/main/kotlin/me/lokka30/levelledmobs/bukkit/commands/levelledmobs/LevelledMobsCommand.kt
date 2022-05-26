@@ -1,14 +1,14 @@
 package me.lokka30.levelledmobs.bukkit.commands.levelledmobs
 
+import me.lokka30.levelledmobs.bukkit.LevelledMobs.Companion.prefixSev
+import me.lokka30.levelledmobs.bukkit.LevelledMobs.Companion.prefixInf
 import me.lokka30.levelledmobs.bukkit.commands.BaseCommandWrapper
 import me.lokka30.levelledmobs.bukkit.commands.levelledmobs.subcommands.AboutSubcommand
 import me.lokka30.levelledmobs.bukkit.commands.levelledmobs.subcommands.SummonSubcommand
 import org.bukkit.ChatColor.AQUA
-import org.bukkit.ChatColor.BLUE
 import org.bukkit.ChatColor.BOLD
 import org.bukkit.ChatColor.DARK_GRAY
 import org.bukkit.ChatColor.GRAY
-import org.bukkit.ChatColor.RED
 import org.bukkit.command.CommandSender
 
 /*
@@ -85,8 +85,8 @@ class LevelledMobsCommand : BaseCommandWrapper() {
 
         sender.sendMessage(
             """
-            ${RED}Error:${GRAY} Invalid subcommand '${AQUA}${args[1]}${GRAY}'.
-            ${BLUE}Tip:${GRAY} Run '${AQUA}/lm help${GRAY}' for a list of available commands.
+            ${prefixSev}Invalid subcommand '${AQUA}${args[1]}${GRAY}'.
+            ${prefixInf}Run '${AQUA}/lm help${GRAY}' for a list of available commands.
             """.trimIndent()
         )
     }
@@ -110,14 +110,15 @@ class LevelledMobsCommand : BaseCommandWrapper() {
             val label = args[1].lowercase()
 
             subcommands.forEach {
-                if (it.labels().contains(label))
-                /*
-                Note: LevelledMobs does not care if the sender is able to access the suggested
-                subcommands or not. We don't want to make excess calls to the permission plugin
-                since these calls are ran on the main thread. This can be changed once Treasury
-                offers a permissions API, which will allow asynchronous permission checking.
-                 */
+                if (it.labels().contains(label)) {
+                    /*
+                    Note: LevelledMobs does not care if the sender is able to access the suggested
+                    subcommands or not. We don't want to make excess calls to the permission plugin
+                    since these calls are ran on the main thread. This can be changed once Treasury
+                    offers a permissions API, which will allow asynchronous permission checking.
+                     */
                     return it.suggest(sender, args)
+                }
             }
 
             return mutableListOf()

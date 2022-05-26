@@ -1,12 +1,12 @@
 package me.lokka30.levelledmobs.bukkit.commands.levelledmobs.subcommands
 
 import me.lokka30.levelledmobs.bukkit.LevelledMobs
+import me.lokka30.levelledmobs.bukkit.LevelledMobs.Companion.prefixSev
 import me.lokka30.levelledmobs.bukkit.commands.CommandWrapper
 import org.bukkit.ChatColor.AQUA
 import org.bukkit.ChatColor.BOLD
 import org.bukkit.ChatColor.DARK_GRAY
 import org.bukkit.ChatColor.GRAY
-import org.bukkit.ChatColor.RED
 import org.bukkit.command.CommandSender
 
 /*
@@ -44,12 +44,10 @@ class AboutSubcommand : CommandWrapper() {
         if (!hasPerm(sender, "levelledmobs.command.levelledmobs.about", true)) return
 
         if (args.size != 2) {
-            // FIXME Make this message customizable.
-            sender.sendMessage("${RED}Error: ${GRAY}Invalid usage; try '${AQUA}${usage}${GRAY}'.")
+            sender.sendMessage("${prefixSev}Invalid usage; try '${AQUA}${usage}${GRAY}'.")
             return
         }
 
-        // FIXME Make this message customizable.
         val pdf = LevelledMobs.instance!!.description
         sender.sendMessage(
             """

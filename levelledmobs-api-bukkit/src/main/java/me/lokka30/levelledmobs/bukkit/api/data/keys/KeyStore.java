@@ -4,14 +4,19 @@ import java.util.Locale;
 import java.util.Objects;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
-import org.bukkit.plugin.Plugin;
 
+/*
+FIXME Comment
+ */
 abstract class KeyStore {
 
-    private static final Plugin plugin = Bukkit.getPluginManager().getPlugin("LevelledMobs");
-
+    /*
+    FIXME Comment
+     */
     static NamespacedKey getKey(final String key) {
-        return new NamespacedKey(Objects.requireNonNull(plugin), key.toLowerCase(Locale.ROOT));
+        return new NamespacedKey(Objects.requireNonNull(
+            Bukkit.getPluginManager().getPlugin("LevelledMobs")
+        ), key.toLowerCase(Locale.ROOT));
     }
 
 }
