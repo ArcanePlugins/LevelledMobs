@@ -11,6 +11,20 @@ FIXME comment
 public class MobKeyStore extends KeyStore {
 
     /*
+    Represents that a mob should not receive any updates from LM's label system.
+
+    Type: INTEGER
+    From: LM3, LM4
+
+    Value | Representation | Notes
+    ------+----------------+-----------
+    null  | false          | Deprecated
+    0     | false          | N/A
+    1     | true           | N/A
+     */
+    public static final NamespacedKey deniesLabel = getKey("DenyLM_Nametag");
+
+    /*
     Represents the current level of the mob.
 
     Type: INTEGER (level)
@@ -50,36 +64,38 @@ public class MobKeyStore extends KeyStore {
     public static final NamespacedKey minLevel = getKey("MinLevel");
 
     /*
+    Represents whether the mob 'made the chance' to have any custom drops at all.
+
+    Type: INTEGER
+    From: LM3, LM4
+
+    Value | Representation | Notes
+    ------+----------------+-----------
+    null  | false          | Deprecated
+    0     | false          | N/A
+    1     | true           | N/A
+     */
+    public static final NamespacedKey madeOverallChance = getKey("OverallChance");
+
+    /*
     If an entity was given an overridden name in a LM function then their overridden name will be
     stored using this key in their PersistentDataContainer.
 
     Type: STRING (overriding entity name)
-    From: LM4
+    From: LM3
 
     Value      | Representation
     -----------+----------------
     null       | not overridden
     non-null   | overriding name
      */
-    public static final NamespacedKey overriddenEntityName = getKey("OverriddenEntityName");
+    public static final NamespacedKey overriddenName = getKey("OverridenEntityName");
 
     /*
     TODO make PDC keys for each player levelling variable.
+    TODO add those keys to the mob data utils
      */
     public static final NamespacedKey playerLevellingId = getKey("PlayerLevellingId");
-
-    /*
-    Represents the sky light level in the location of the mob when they spawned in.
-
-    Type: INTEGER (light level)
-    From: LM3, LM4
-
-    Value      | Representation   | Notes
-    -----------+------------------+-------------
-    null       | N/A              | Not Possible
-    non-null   | sky light level  | N/A
-     */
-    public static final NamespacedKey spawnSkyLightLevel = getKey("SkyLightLevel");
 
     /*
     If the mob was spawned by a LM spawner, then the name of the LM spawner will be stored using
@@ -106,7 +122,20 @@ public class MobKeyStore extends KeyStore {
     null       | N/A                 | Not Possible
     non-null   | time of day (ticks) | N/A
      */
-    public static final NamespacedKey spawnedTimeOfDay = getKey("SpawnedTimeOfDay");
+    public static final NamespacedKey spawnTimeOfDay = getKey("SpawnedTimeOfDay");
+
+    /*
+    Represents the sky light level in the location of the mob when they spawned in.
+
+    Type: INTEGER (light level)
+    From: LM3, LM4
+
+    Value      | Representation   | Notes
+    -----------+------------------+-------------
+    null       | N/A              | Not Possible
+    non-null   | sky light level  | N/A
+     */
+    public static final NamespacedKey spawnSkyLightLevel = getKey("SkyLightLevel");
 
     /*
     Represents if a mob was a baby mob or not when they spawned in.
@@ -135,33 +164,5 @@ public class MobKeyStore extends KeyStore {
     1     | true           | N/A
      */
     public static final NamespacedKey wasSummoned = getKey("WasSummoned");
-
-    /*
-    Represents that a mob should not receive any updates from LM's label system.
-
-    Type: INTEGER
-    From: LM3, LM4
-
-    Value | Representation | Notes
-    ------+----------------+-----------
-    null  | false          | Deprecated
-    0     | false          | N/A
-    1     | true           | N/A
-     */
-    public static final NamespacedKey denyLMNametag = getKey("DenyLM_Nametag");
-
-    /*
-    Represents whether the mob 'made the chance' to have any custom drops at all.
-
-    Type: INTEGER
-    From: LM3, LM4
-
-    Value | Representation | Notes
-    ------+----------------+-----------
-    null  | false          | Deprecated
-    0     | false          | N/A
-    1     | true           | N/A
-     */
-    public static final NamespacedKey overallChance = getKey("OverallChance");
 
 }

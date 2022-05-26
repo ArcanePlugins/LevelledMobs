@@ -11,6 +11,7 @@ class ListenerHandler {
     FIXME comment
      */
     val listeners = setOf(
+        EntitySpawnListener(),
         PlayerJoinListener()
     )
 

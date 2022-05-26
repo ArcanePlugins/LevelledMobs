@@ -2,6 +2,7 @@ package me.lokka30.levelledmobs.bukkit.commands.levelledmobs
 
 import me.lokka30.levelledmobs.bukkit.commands.BaseCommandWrapper
 import me.lokka30.levelledmobs.bukkit.commands.levelledmobs.subcommands.AboutSubcommand
+import me.lokka30.levelledmobs.bukkit.commands.levelledmobs.subcommands.SummonSubcommand
 import org.bukkit.ChatColor.AQUA
 import org.bukkit.ChatColor.BLUE
 import org.bukkit.ChatColor.BOLD
@@ -28,7 +29,8 @@ class LevelledMobsCommand : BaseCommandWrapper() {
 
     companion object {
         val subcommands = mutableSetOf(
-            AboutSubcommand()
+            AboutSubcommand(),
+            SummonSubcommand()
         )
 
         val labels = mutableSetOf(
