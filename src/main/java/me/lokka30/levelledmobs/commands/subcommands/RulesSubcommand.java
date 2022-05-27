@@ -28,6 +28,7 @@ import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.IOException;
@@ -115,7 +116,7 @@ public class RulesSubcommand extends MessagesBase implements Subcommand {
                 return;
             }
 
-            getMobBeingLookedAt((Player) sender, showOnConsole, findNearbyEntities);
+            showEffectiveRules((Player) sender, showOnConsole, findNearbyEntities);
         } else if ("show_rule".equalsIgnoreCase(args[1]))
             showRule(sender, args);
         else if ("help_discord".equalsIgnoreCase(args[1])) {
@@ -320,8 +321,46 @@ public class RulesSubcommand extends MessagesBase implements Subcommand {
             sender.sendMessage(sb.toString());
     }
 
-    private void getMobBeingLookedAt(@NotNull final Player player, final boolean showOnConsole, final boolean findNearbyEntities){
+    private void showEffectiveRules(@NotNull final Player player, final boolean showOnConsole, final boolean findNearbyEntities){
+        final LivingEntityWrapper lmEntity = getMobBeingLookedAt(player, findNearbyEntities);
+        if (lmEntity == null) return;
+
+        String entityName = lmEntity.getTypeName();
+        if (ExternalCompatibilityManager.hasMythicMobsInstalled() && ExternalCompatibilityManager.isMythicMob(lmEntity))
+            entityName = ExternalCompatibilityManager.getMythicMobInternalName(lmEntity);
+
+        final String locationStr = String.format("%s, %s, %s",
+                lmEntity.getLivingEntity().getLocation().getBlockX(),
+                lmEntity.getLivingEntity().getLocation().getBlockY(),
+                lmEntity.getLivingEntity().getLocation().getBlockZ());
+        final String mobLevel = lmEntity.isLevelled() ? lmEntity.getMobLevel() + "" : "0";
+        final List<String> messages = getMessage("command.levelledmobs.rules.effective-rules",
+                new String[]{"%mobname%", "%entitytype%", "%location%", "%world%", "%level%"},
+                new String[]{ entityName, lmEntity.getNameIfBaby(), locationStr, lmEntity.getWorldName(), mobLevel }
+        );
+
+        final StringBuilder sb = new StringBuilder();
+        sb.append(String.join("\n", messages).replace(main.configUtils.getPrefix() + " ", ""));
+
+        player.sendMessage(sb.toString());
+        if (!showOnConsole) sb.setLength(0);
+
+        final BukkitRunnable runnable = new BukkitRunnable() {
+            @Override
+            public void run() {
+                showEffectiveValues(player, lmEntity, showOnConsole, sb);
+                lmEntity.free();
+            }
+        };
+
+        lmEntity.inUseCount.getAndIncrement();
+        runnable.runTaskLater(main, 25);
+    }
+
+    @Nullable
+    public LivingEntityWrapper getMobBeingLookedAt(@NotNull final Player player, final boolean findNearbyEntities){
         LivingEntity livingEntity = null;
+        LivingEntityWrapper lmEntity = null;
         final Location eye = player.getEyeLocation();
         final SortedMap<Double, LivingEntity> entities = new TreeMap<>();
 
@@ -351,40 +390,10 @@ public class RulesSubcommand extends MessagesBase implements Subcommand {
                 livingEntity = entities.get(entities.firstKey());
 
             createParticleEffect(livingEntity.getLocation());
-            final LivingEntityWrapper lmEntity = LivingEntityWrapper.getInstance(livingEntity, main);
-
-            String entityName = lmEntity.getTypeName();
-            if (ExternalCompatibilityManager.hasMythicMobsInstalled() && ExternalCompatibilityManager.isMythicMob(lmEntity))
-                entityName = ExternalCompatibilityManager.getMythicMobInternalName(lmEntity);
-
-            final String locationStr = String.format("%s, %s, %s",
-                    lmEntity.getLivingEntity().getLocation().getBlockX(),
-                    lmEntity.getLivingEntity().getLocation().getBlockY(),
-                    lmEntity.getLivingEntity().getLocation().getBlockZ());
-            final String mobLevel = lmEntity.isLevelled() ? lmEntity.getMobLevel() + "" : "0";
-            final List<String> messages = getMessage("command.levelledmobs.rules.effective-rules",
-                    new String[]{"%mobname%", "%entitytype%", "%location%", "%world%", "%level%"},
-                    new String[]{ entityName, lmEntity.getNameIfBaby(), locationStr, lmEntity.getWorldName(), mobLevel }
-            );
-
-
-            final StringBuilder sb = new StringBuilder();
-            sb.append(String.join("\n", messages).replace(main.configUtils.getPrefix() + " ", ""));
-
-            player.sendMessage(sb.toString());
-            if (!showOnConsole) sb.setLength(0);
-
-            final BukkitRunnable runnable = new BukkitRunnable() {
-                @Override
-                public void run() {
-                    showEffectiveValues(player, lmEntity, showOnConsole, sb);
-                }
-            };
-
-            lmEntity.inUseCount.getAndIncrement();
-            runnable.runTaskLater(main, 25);
-            lmEntity.free();
+            lmEntity = LivingEntityWrapper.getInstance(livingEntity, main);
         }
+
+        return lmEntity;
     }
 
     private void createParticleEffect(@NotNull final Location location){

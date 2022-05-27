@@ -183,8 +183,6 @@ public class MobHeadManager {
             SpigotUtils.updateItemDisplayName(meta, useName);
 
         playerHead.setItemMeta(meta);
-
-        return;
     }
 
     @NotNull

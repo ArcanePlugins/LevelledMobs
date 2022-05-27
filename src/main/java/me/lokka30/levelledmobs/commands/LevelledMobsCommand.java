@@ -55,7 +55,7 @@ public class LevelledMobsCommand implements CommandExecutor, TabCompleter {
     private final InfoSubcommand infoSubcommand;
     private final KillSubcommand killSubcommand;
     private final ReloadSubcommand reloadSubcommand;
-    private final RulesSubcommand rulesSubcommand;
+    public final RulesSubcommand rulesSubcommand;
     private final SpawnerEggCommand spawnerEggCommand;
     public final SpawnerSubCommand spawnerSubCommand;
     private final SummonSubcommand summonSubcommand;

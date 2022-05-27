@@ -581,7 +581,7 @@ public class LevelManager implements LevelInterface {
         else {
             checkLockedNametag(lmEntity);
 
-            nametag = lmEntity.lockedNametag == null ?
+            nametag = lmEntity.lockedNametag == null || lmEntity.lockedNametag.isEmpty() ?
                     main.rulesManager.getRule_Nametag(lmEntity) :
                     lmEntity.lockedNametag;
         }
@@ -1358,7 +1358,8 @@ public class LevelManager implements LevelInterface {
 
                 if (lockEntity) {
                     lmEntity.getPDC().set(main.namespaced_keys.lockSettings, PersistentDataType.INTEGER, 1);
-                    lmEntity.getPDC().set(main.namespaced_keys.lockedNametag, PersistentDataType.STRING, lmEntity.lockedNametag);
+                    if (lmEntity.lockedNametag != null)
+                        lmEntity.getPDC().set(main.namespaced_keys.lockedNametag, PersistentDataType.STRING, lmEntity.lockedNametag);
                     if (lmEntity.lockedOverrideName != null)
                         lmEntity.getPDC().set(main.namespaced_keys.lockedNameOverride, PersistentDataType.STRING, lmEntity.lockedOverrideName);
                 }
