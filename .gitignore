@@ -1,7 +1,8 @@
 # JetBrains IntelliJ
 target/
 .idea/
-LevelledMobs.iml
+#LevelledMobs.iml
+*.iml
 
 # Eclipse
 .classpath
