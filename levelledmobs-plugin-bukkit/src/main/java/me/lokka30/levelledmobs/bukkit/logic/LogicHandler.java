@@ -8,7 +8,7 @@ public final class LogicHandler {
     Initialisation - parse functions, presets, groups, etc.
      */
     public boolean load() {
-        Log.inf("Loading logic system...");
+        Log.inf("Loading logic system.");
         //TODO
         return true;
     }

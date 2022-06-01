@@ -32,7 +32,7 @@ public abstract class Config {
     /* methods */
 
     public boolean load() {
-        Log.inf("Loading file '" + getFileName() + "'...");
+        Log.inf("Loading file '" + getFileName() + "'.");
 
         saveDefaultFile(false);
 
@@ -84,7 +84,7 @@ public abstract class Config {
                 "compatible file version. Was it modified by the user?");
             return true;
         } else if(currentFileVersion < latestFileVersion) {
-            Log.inf("Update detected for configuration '" + getFileName() + "'; updating...");
+            Log.inf("Update detected for configuration '" + getFileName() + "'; updating.");
             if(updateLogic(currentFileVersion)) {
                 Log.inf("Configuration '" + getFileName() + "' has been updated.");
                 return true;
@@ -137,7 +137,7 @@ public abstract class Config {
         if(!replaceExistingFile && getAbsolutePath().toFile().exists())
             return;
 
-        Log.inf("Saving default file of configuration '" + getFileName() + "'...");
+        Log.inf("Saving default file of configuration '" + getFileName() + "'.");
         LevelledMobs.getInstance().saveResource(getFileName(), replaceExistingFile);
     }
 

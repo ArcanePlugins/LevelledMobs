@@ -39,7 +39,7 @@ public class SummonSubcommand extends CommandWrapper {
 
         final Player player = (Player) sender;
 
-        player.sendMessage(PREFIX_INF + "Summoning entity...");
+        player.sendMessage(PREFIX_INF + "Summoning entity.");
 
         final var entity = player.getWorld().spawn(player.getLocation(), Zombie.class, preSpawnEntity -> {
             /*

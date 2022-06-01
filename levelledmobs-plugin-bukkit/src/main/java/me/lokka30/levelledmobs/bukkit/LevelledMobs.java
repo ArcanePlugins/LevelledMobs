@@ -30,18 +30,25 @@ public final class LevelledMobs extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        if(
+        if(!(
             getConfigHandler().load() &&
             getLogicHandler().load() &&
             getListenerHandler().load() &&
             getCommandHandler().load()
-        ) {
-            Log.inf("Plugin enabled.");
-        } else {
+        )) {
             Log.sev("LevelledMobs encountered a fatal error during the startup process. " +
                 "It will disable itself to prevent possible issues resulting from malfunction.");
             setEnabled(false);
+            return;
         }
+
+        final var version = getDescription().getVersion();
+        if(version.contains("alpha") || version.contains("beta")) {
+            Log.war("You are running an alpha/beta version of LevelledMobs. Please take care, "
+            + "and beware that this version is unlikely to be tested.");
+        }
+
+        Log.inf("Plugin enabled.");
     }
 
     @Override
