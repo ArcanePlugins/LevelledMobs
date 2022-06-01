@@ -1,17 +1,15 @@
 package me.lokka30.levelledmobs.bukkit.commands.levelledmobs.subcommands;
 
-import static me.lokka30.levelledmobs.bukkit.utils.TempConst.PREFIX_INF;
-import static org.bukkit.ChatColor.AQUA;
-import static org.bukkit.ChatColor.GRAY;
-
 import java.util.Collections;
 import java.util.List;
 import me.lokka30.levelledmobs.bukkit.LevelledMobs;
 import me.lokka30.levelledmobs.bukkit.api.data.keys.EntityKeyStore;
 import me.lokka30.levelledmobs.bukkit.commands.CommandWrapper;
+import me.lokka30.levelledmobs.bukkit.configs.translations.Message;
+import me.lokka30.levelledmobs.bukkit.utils.EnumUtils;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.Zombie;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.jetbrains.annotations.NotNull;
 
@@ -30,7 +28,10 @@ public class SummonSubcommand extends CommandWrapper {
     }
 
     @Override
-    public void run(@NotNull CommandSender sender, @NotNull String[] args) {
+    public void run(
+        @NotNull CommandSender sender,
+        @NotNull String[] args
+    ) {
         if(!hasPerm(sender, "levelledmobs.command.levelledmobs.summon", true))
             return;
 
@@ -39,9 +40,22 @@ public class SummonSubcommand extends CommandWrapper {
 
         final Player player = (Player) sender;
 
-        player.sendMessage(PREFIX_INF + "Summoning entity.");
+        final var entityType = EntityType.ZOMBIE;
 
-        final var entity = player.getWorld().spawn(player.getLocation(), Zombie.class, preSpawnEntity -> {
+        final var entityClass = entityType.getEntityClass();
+
+        if(entityClass == null) {
+            Message.COMMAND_LEVELLEDMOBS_SUBCOMMAND_SUMMON_NOT_SUMMONABLE.sendTo(sender,
+                "%entity-type%", EnumUtils.formatEnumConstant(entityType));
+            //TODO use translated entity name instead
+            return;
+        }
+
+        Message.COMMAND_LEVELLEDMOBS_SUBCOMMAND_SUMMON_SUMMONING.sendTo(sender,
+            "%entity-name%", entityClass.getName());
+        //TODO use translated entity name instead
+
+        player.getWorld().spawn(player.getLocation(), entityClass, preSpawnEntity -> {
             /*
             this code block runs *before* entity spawn event is fired!
             */
@@ -53,15 +67,13 @@ public class SummonSubcommand extends CommandWrapper {
                 new FixedMetadataValue(LevelledMobs.getInstance(), 1)
             );
         });
-
-        player.sendMessage(PREFIX_INF + "Successfully summoned a levelled '" + AQUA +
-            entity.getName() + GRAY + "' mob.");
     }
 
     @Override
-    public @NotNull List<String> suggest(@NotNull CommandSender sender,
-        @NotNull String[] args) {
-        //FIXME
+    public @NotNull List<String> suggest(
+        @NotNull CommandSender sender,
+        @NotNull String[] args
+    ) {
         return Collections.emptyList();
     }
 }

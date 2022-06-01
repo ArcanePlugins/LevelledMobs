@@ -19,9 +19,16 @@
 
   <dependencies>
     <dependency>
+      <groupId>de.themoep</groupId>
+      <artifactId>minedown</artifactId>
+      <version>1.7.1-SNAPSHOT</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
       <groupId>me.lokka30</groupId>
       <artifactId>levelledmobs-api-bukkit</artifactId>
       <version>4.0.0</version>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.spigotmc</groupId>
@@ -33,10 +40,15 @@
       <groupId>org.spongepowered</groupId>
       <artifactId>configurate-yaml</artifactId>
       <version>4.1.2</version>
+      <scope>compile</scope>
     </dependency>
   </dependencies>
 
   <repositories>
+    <repository>
+      <id>minebench-repo</id>
+      <url>https://repo.minebench.de/</url>
+    </repository>
     <repository>
       <id>spigot-repo</id>
       <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
@@ -77,6 +89,16 @@
               </excludes>
             </filter>
           </filters>
+          <relocations>
+            <relocation>
+              <pattern>de.themoep.minedown</pattern>
+              <shadedPattern>me.lokka30.levelledmobs.libs.minedown</shadedPattern>
+            </relocation>
+            <relocation>
+              <pattern>org.spongepowered.configurate</pattern>
+              <shadedPattern>me.lokka30.levelledmobs.libs.configurate</shadedPattern>
+            </relocation>
+          </relocations>
         </configuration>
       </plugin>
     </plugins>

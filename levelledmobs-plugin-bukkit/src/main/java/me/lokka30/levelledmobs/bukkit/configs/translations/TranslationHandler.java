@@ -2,6 +2,7 @@ package me.lokka30.levelledmobs.bukkit.configs.translations;
 
 import java.io.File;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.function.Function;
 import me.lokka30.levelledmobs.bukkit.LevelledMobs;
 import me.lokka30.levelledmobs.bukkit.utils.Log;
@@ -16,18 +17,29 @@ public final class TranslationHandler {
     /* vars */
 
     private final int latestFileVersion = 1;
-
     private final int updaterCutoffFileVersion = 1;
 
+    private final InbuiltLang defaultLang = InbuiltLang.getDefault();
+    private final String defaultLangStr = defaultLang.toString();
+
     @SuppressWarnings("FieldMayBeFinal")
-    private String lang = InbuiltLang.EN_US.toString();
+    private String lang = defaultLangStr;
 
     private YamlConfigurationLoader loader = null;
-
     private CommentedConfigurationNode root = null;
 
     /* methods */
 
+    /**
+     * Attempts to load user's chosen translation.
+     *
+     * This will always return true. This is just to make it cleaner to keep the order of onEnable's
+     * load calls.
+     *
+     * If all fails with this method, then LM will just use the defaults from {@link Message}.
+     *
+     * @return {@link Boolean#TRUE}
+     */
     public boolean load() {
         /*
         [pseudocode]
@@ -62,7 +74,7 @@ public final class TranslationHandler {
             .getSettingsCfg()
             .getRoot()
             .node("lang")
-            .getString(InbuiltLang.EN_US.toString());
+            .getString(defaultLangStr);
 
         final Function<String, Path> langToPathFun = (langInput) -> Path.of(
             LevelledMobs.getInstance().getDataFolder() + File.separator + "translations" +
@@ -74,16 +86,17 @@ public final class TranslationHandler {
 
             if(inbuilt == null) {
                 // avoiding a possible stack overflow in this loop if the file doesnt save for some reason
-                if(!lang.equalsIgnoreCase(InbuiltLang.EN_US.toString())) {
-                    return false;
+                if(!lang.equalsIgnoreCase(defaultLangStr)) {
+                    return true;
                 }
 
                 // the user specified a language without providing a translation for it
                 Log.sev("Lang '" + lang + "' is not an inbuilt lang, and no custom translation"
-                    + " file was found for it. Falling back to 'en_US' until you fix it.");
+                    + " file was found for it. Falling back to '" + defaultLangStr + "' until you "
+                    + "fix it.");
 
                 // let's just default to en_us
-                lang = InbuiltLang.EN_US.toString();
+                lang = defaultLangStr;
 
                 // we continue the loop so that it can generate the file again but this time for en_us
                 // noinspection UnnecessaryContinue
@@ -122,25 +135,57 @@ public final class TranslationHandler {
                     "trace will be printed below for debugging purposes."
             );
             ex.printStackTrace();
-            return false;
+            return true;
         }
 
-        return update();
+        /*
+        update translations
+         */
+        update();
+
+        /*
+        load messages
+         */
+        for(var message : Message.values()) {
+            final var node = getRoot().node((Object) message.getKeyPath());
+
+            if(node.empty())
+                continue;
+
+            try {
+                if(message.isListType() && node.isList()) {
+                    final var list = node.getList(String.class);
+                    if(list == null) {
+                        message.setDeclared(new String[]{});
+                    } else {
+                        message.setDeclared(list.toArray(new String[0]));
+                    }
+                } else {
+                    message.setDeclared(new String[]{node.getString("")});
+                }
+            } catch(ConfigurateException ex) {
+                Log.war("Unable to parse translation at path '" +
+                    Arrays.toString(message.getKeyPath()) + "'. This is usually caused by the " +
+                    "user accidentally creating a syntax error whilst editing the file.");
+            }
+        }
+
+        return true;
     }
 
-    private boolean update() {
+    private void update() {
         var currentFileVersion = getCurrentFileVersion();
 
         if(currentFileVersion == 0) {
-            Log.sev("Unable to detect file version of translation '" + getLang() + "'. "
-                + "Was it modified by the user?");
-            return false;
+            Log.sev("Unable to detect file version of translation '" + getLang() + "'. Was " +
+                "it modified by the user?");
+            return;
         }
 
         if(currentFileVersion > getLatestFileVersion()) {
-            Log.war("Translation '" + getLang() + "' is somehow newer than the latest compatible "
-                + "file version. How did we get here?");
-            return true;
+            Log.war("Translation '" + getLang() + "' is somehow newer than the latest "
+                + "compatible file version. How did we get here?");
+            return;
         }
 
         if(currentFileVersion < getUpdaterCutoffFileVersion()) {
@@ -162,7 +207,7 @@ public final class TranslationHandler {
                     "for you automatically. If you have made any edits to this translation file, " +
                     "remember to back it up and transfer the edits to the newly generated file.");
             }
-            return false;
+            return;
         }
 
         //noinspection ConstantConditions
@@ -179,19 +224,17 @@ public final class TranslationHandler {
                         getLoader().save(getRoot());
                     } catch(ConfigurateException ex) {
                         Log.sev("Unable to write updates to file of lang '" + getLang() + "'.");
-                        return false;
+                        return;
                     }
                 }
                 default -> {
                     Log.sev("Attempted to update from file version '" + currentFileVersion +
                         "' of translation '" + getLang() + "', but no updater logic is present " +
                         "for that file version. Please inform LevelledMobs maintainers.");
-                    return false;
+                    return;
                 }
             }
         }
-
-        return true;
     }
 
     public int getCurrentFileVersion() {

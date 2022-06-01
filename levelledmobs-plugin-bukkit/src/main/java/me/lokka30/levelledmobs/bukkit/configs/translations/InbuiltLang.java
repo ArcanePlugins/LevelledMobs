@@ -34,4 +34,9 @@ public enum InbuiltLang {
             return null;
         }
     }
+
+    @NotNull
+    public static InbuiltLang getDefault() {
+        return EN_US;
+    }
 }

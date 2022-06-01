@@ -1,13 +1,10 @@
 package me.lokka30.levelledmobs.bukkit.commands;
 
-import static org.bukkit.ChatColor.AQUA;
-import static org.bukkit.ChatColor.GRAY;
-
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-import me.lokka30.levelledmobs.bukkit.utils.TempConst;
+import me.lokka30.levelledmobs.bukkit.configs.translations.Message;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -61,9 +58,10 @@ public abstract class CommandWrapper {
         if(sender.hasPermission(permission))
             return true;
 
-        if(warn)
-            sender.sendMessage(TempConst.PREFIX_SEV + "You don't have access to that; it " +
-                "requires the permission '" + AQUA + permission + GRAY + "'.");
+        if(warn) {
+            Message.COMMAND_COMMON_NO_ACCESS_MISSING_PERMISSION.sendTo(sender,
+                "%permission%", permission);
+        }
 
         return false;
     }
@@ -81,8 +79,7 @@ public abstract class CommandWrapper {
             return true;
 
         if(warn)
-            sender.sendMessage(TempConst.PREFIX_SEV + "You don't have access to that; it is " +
-                "only accessible to players.");
+            Message.COMMAND_COMMON_ACCESS_NOT_PLAYER.sendTo(sender);
 
         return false;
     }

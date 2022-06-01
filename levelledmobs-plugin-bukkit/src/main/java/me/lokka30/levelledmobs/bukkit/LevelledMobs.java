@@ -6,6 +6,7 @@ import me.lokka30.levelledmobs.bukkit.configs.ConfigHandler;
 import me.lokka30.levelledmobs.bukkit.integrations.IntegrationHandler;
 import me.lokka30.levelledmobs.bukkit.listeners.ListenerHandler;
 import me.lokka30.levelledmobs.bukkit.logic.LogicHandler;
+import me.lokka30.levelledmobs.bukkit.utils.ClassUtils;
 import me.lokka30.levelledmobs.bukkit.utils.Log;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
@@ -31,6 +32,7 @@ public final class LevelledMobs extends JavaPlugin {
     @Override
     public void onEnable() {
         if(!(
+            assertRunningSpigot() &&
             getConfigHandler().load() &&
             getLogicHandler().load() &&
             getListenerHandler().load() &&
@@ -54,6 +56,26 @@ public final class LevelledMobs extends JavaPlugin {
     @Override
     public void onDisable() {
         Log.inf("Plugin disabled.");
+    }
+
+    /*
+    Check if the server is running SpigotMC, or any derivative software.
+     */
+    private boolean isRunningSpigot() {
+        return ClassUtils.classExists("net.md_5.bungee.api.chat.TextComponent");
+    }
+
+    /*
+    Ensure the server is running SpigotMC, or any derivative software.
+     */
+    private boolean assertRunningSpigot() {
+        if(isRunningSpigot()) return true;
+
+        Log.sev("LevelledMobs does not run on CraftBukkit or other software which is not " +
+            "based upon the SpigotMC software. Please switch to PaperMC or SpigotMC. There is " +
+            "no reason to run CraftBukkit.");
+
+        return false;
     }
 
     /* getters and setters */

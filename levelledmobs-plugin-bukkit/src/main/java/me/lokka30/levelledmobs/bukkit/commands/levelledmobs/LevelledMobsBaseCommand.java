@@ -1,12 +1,5 @@
 package me.lokka30.levelledmobs.bukkit.commands.levelledmobs;
 
-import static me.lokka30.levelledmobs.bukkit.utils.TempConst.PREFIX_INF;
-import static me.lokka30.levelledmobs.bukkit.utils.TempConst.PREFIX_SEV;
-import static org.bukkit.ChatColor.AQUA;
-import static org.bukkit.ChatColor.BOLD;
-import static org.bukkit.ChatColor.DARK_GRAY;
-import static org.bukkit.ChatColor.GRAY;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashSet;
@@ -17,6 +10,7 @@ import me.lokka30.levelledmobs.bukkit.commands.BaseCommandWrapper;
 import me.lokka30.levelledmobs.bukkit.commands.CommandWrapper;
 import me.lokka30.levelledmobs.bukkit.commands.levelledmobs.subcommands.AboutSubcommand;
 import me.lokka30.levelledmobs.bukkit.commands.levelledmobs.subcommands.SummonSubcommand;
+import me.lokka30.levelledmobs.bukkit.configs.translations.Message;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 
@@ -60,16 +54,7 @@ public class LevelledMobsBaseCommand extends BaseCommandWrapper {
 
         // make sure the user specified a command
         if (args.length <= 1) {
-            sender.sendMessage(
-                "" + AQUA + BOLD + "LevelledMobs 4" + DARK_GRAY + " | " + GRAY +
-                "The Ultimate RPG Mob Levelling Solution",
-
-                "" + DARK_GRAY + " • " + GRAY + "For a list of available " +
-                "commands, run '" + AQUA + "/lm help" + GRAY + "'.",
-
-                "" + DARK_GRAY + " • " + GRAY + "To learn more about " +
-                "LevelledMobs, run '" + AQUA + "/lm about" + GRAY + "'."
-            );
+            Message.COMMAND_LEVELLEDMOBS_MAIN.sendTo(sender);
             return;
         }
 
@@ -82,11 +67,9 @@ public class LevelledMobsBaseCommand extends BaseCommandWrapper {
             }
         }
 
-        sender.sendMessage(
-            PREFIX_SEV + "Invalid subcommand '" + AQUA + args[1] + GRAY + "'.",
-
-            PREFIX_INF + "Run '" + AQUA + "/lm help" + GRAY + "' for a list "
-            + "of available commands.");
+        // user entered an invalid subcommand
+        Message.COMMAND_LEVELLEDMOBS_INVALID_SUBCOMMAND.sendTo(sender,
+            "%subcommand%", args[1]);
     }
 
     @Override
