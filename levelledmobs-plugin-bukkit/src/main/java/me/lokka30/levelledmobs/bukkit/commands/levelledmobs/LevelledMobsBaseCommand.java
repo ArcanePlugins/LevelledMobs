@@ -6,9 +6,9 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import me.lokka30.levelledmobs.bukkit.LevelledMobs;
 import me.lokka30.levelledmobs.bukkit.commands.BaseCommandWrapper;
 import me.lokka30.levelledmobs.bukkit.commands.CommandWrapper;
-import me.lokka30.levelledmobs.bukkit.commands.levelledmobs.subcommands.AboutSubcommand;
 import me.lokka30.levelledmobs.bukkit.commands.levelledmobs.subcommands.SummonSubcommand;
 import me.lokka30.levelledmobs.bukkit.configs.translations.Message;
 import org.bukkit.command.CommandSender;
@@ -32,7 +32,6 @@ public class LevelledMobsBaseCommand extends BaseCommandWrapper {
 
     /* vars */
     private final LinkedHashSet<CommandWrapper> subcommands = new LinkedHashSet<>(Set.of(
-        new AboutSubcommand(),
         new SummonSubcommand()
     ));
 
@@ -54,7 +53,12 @@ public class LevelledMobsBaseCommand extends BaseCommandWrapper {
 
         // make sure the user specified a command
         if (args.length <= 1) {
-            Message.COMMAND_LEVELLEDMOBS_MAIN.sendTo(sender);
+            final var pdf = LevelledMobs.getInstance().getDescription();
+
+            Message.COMMAND_LEVELLEDMOBS_MAIN.sendTo(sender,
+                "%version%", pdf.getVersion(),
+                "%maintainers%", Message.joinDelimited(pdf.getAuthors())
+            );
             return;
         }
 

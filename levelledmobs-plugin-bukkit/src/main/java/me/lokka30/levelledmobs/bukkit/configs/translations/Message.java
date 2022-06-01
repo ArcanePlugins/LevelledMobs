@@ -1,8 +1,9 @@
 package me.lokka30.levelledmobs.bukkit.configs.translations;
 
 import de.themoep.minedown.MineDown;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
+import me.lokka30.levelledmobs.bukkit.utils.Log;
 import net.md_5.bungee.api.chat.BaseComponent;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
@@ -39,33 +40,19 @@ public enum Message {
 
         new String[]{"command", "levelledmobs", "main"},
 
-        "[LevelledMobs 4](color=#00ffff-#a9ffff,format=bold) &8| &7The &fUltimate&7 RPG Mob "
-            + "Levelling Solution",
-        "&8 • &7For a list of available commands, run '&b&n[/lm help](run_command=/lm help)&7'.",
-        "&8 • &7To learn more about the plugin, run '&b&n[/lm about](run_command=/lm about)&7'."
-    ),
-    COMMAND_LEVELLEDMOBS_SUBCOMMAND_ABOUT_INVALID_USAGE(
-        true,
-
-        new String[]{"command", "levelledmobs", "subcommand", "about", "invalid-usage"},
-
-        "%prefix-severe% Invalid usage; try '&b/lm about&7'."
-    ),
-    COMMAND_LEVELLEDMOBS_SUBCOMMAND_ABOUT_SUCCESS(
-        true,
-
-        new String[]{"command", "levelledmobs", "subcommand", "about", "success"},
-
-        "&8&m+-------------»",
-        "&7Running [LevelledMobs](color=#00ffff-#a9ffff,format=bold) &bv%version%&7,",
-        "&7maintained by &b%maintainers%&7.",
         " ",
-        "&7Links: &b&n[Resource Page](open_url=https://spigotmc.org/resources/74304)&r   " +
-            "&3&n[Wiki](open_url=https://github.com/lokka30/LevelledMobs/Wiki)&r   " +
-            "&9&n[Credits](open_url=https://github.com/lokka30/LevelledMobs/wiki/Credits)&r   " +
-            "&1&n[Source](open_url=https://github.com/lokka30/LevelledMobs)",
-        " ",
-        "&8&m+-------------»"
+        "&8┌ [LevelledMobs](color=aqua-blue format=bold) &8v%version%",
+        "&8│",
+        "&8│ &7The &oUltimate&7 RPG Mob Levelling Solution",
+        "&8│ &7Maintained by &b%maintainers%",
+        "&8│",
+        "&8│ &7Quick Links: &8«&9&n[Resource Page](open_url=https://spigotmc.org/resources/74304)&8» " +
+            "«&9&n[Wiki](open_url=https://github.com/lokka30/LevelledMobs/Wiki)&8» " +
+            "«&9&n[Credits](open_url=https://github.com/lokka30/LevelledMobs/wiki/Credits)&8» " +
+            "«&9&n[Source](open_url=https://github.com/lokka30/LevelledMobs)&8»",
+        "&8│",
+        "&8└ &7Run &b[/lm help](run_command=/lm help) &7to list available commands.",
+        " "
     ),
     COMMAND_LEVELLEDMOBS_SUBCOMMAND_SUMMON_NOT_SUMMONABLE(
         true,
@@ -164,62 +151,49 @@ public enum Message {
     public BaseComponent[][] formatMd(final String... replacements) {
         final var length = getDeclared().length;
         final var to = new BaseComponent[length][];
-        for(int i = 0; i < length; i++)
-            to[i] = MineDown.parse(getDeclared()[i], replacements);
+        for(int i = 0; i < length; i++) {
+            var toParse = getDeclared()[i];
+
+            if(toParse.isBlank()) {
+                to[i] = null;
+                continue;
+            }
+
+            if(replacements.length % 2 == 0) {
+                for(int j = 0; j < replacements.length; j += 2)
+                    toParse = toParse.replace(replacements[j], replacements[j + 1]);
+            } else {
+                Log.sev("Skipping placeholder replacement in message '" + this + "' as an odd "
+                    + "num of placeholder parameters were entered. Please inform LM maintainers.");
+            }
+
+            to[i] = MineDown.parse(toParse);
+        }
         return to;
     }
-
-    /*
-    public void sendTo_v1(final CommandSender sender, final String... replacements) {
-        final var modifiedReplacements = new String[replacements.length + 6];
-
-        modifiedReplacements[0] = "%prefix-info%";
-        modifiedReplacements[1] = Message.GENERIC_PREFIX_INFO.getDeclared()[0];
-        modifiedReplacements[2] = "%prefix-warning%";
-        modifiedReplacements[3] = Message.GENERIC_PREFIX_WARNING.getDeclared()[0];
-        modifiedReplacements[4] = "%prefix-severe%";
-        modifiedReplacements[5] = Message.GENERIC_PREFIX_SEVERE.getDeclared()[0];
-        System.arraycopy(replacements, 0, modifiedReplacements, 3, replacements.length);
-
-        for(var components : formatMd(modifiedReplacements))
-            sender.spigot().sendMessage(components);
-    }
-
-    @SuppressWarnings("unused")
-    public void sendToVersion_v2(final CommandSender sender, final String... replacements) {
-        final var newReplacements = new ArrayList<String>();
-
-        newReplacements.add("%prefix-info%");
-        newReplacements.add(Message.GENERIC_PREFIX_INFO.getDeclared()[0]);
-        newReplacements.add("%prefix-warning%");
-        newReplacements.add(Message.GENERIC_PREFIX_WARNING.getDeclared()[0]);
-        newReplacements.add("%prefix-severe%");
-        newReplacements.add(Message.GENERIC_PREFIX_SEVERE.getDeclared()[0]);
-        Collections.addAll(newReplacements, replacements);
-
-        for(var components : formatMd(newReplacements.toArray(new String[0])))
-            sender.spigot().sendMessage(components);
-    }
-    TODO delete these if sendTo works
-     */
 
     public void sendTo(final CommandSender sender, final String... replacements) {
         // ... firstly, let's add the prefix placeholders in the replacements array ...
 
         // let's start out with a list of the prefix placeholder replacement pairs [6 list items]
-        final var newReplacements = Arrays.asList(
+        final var newReplacements = new ArrayList<>(Arrays.asList(
             "%prefix-info%", Message.GENERIC_PREFIX_INFO.getDeclared()[0],
             "%prefix-warning%", Message.GENERIC_PREFIX_WARNING.getDeclared()[0],
             "%prefix-severe%", Message.GENERIC_PREFIX_SEVERE.getDeclared()[0]
-        );
+        ));
 
         // now let's merge the replacements into the newReplacements list so they're combined
-        Collections.addAll(newReplacements, replacements);
+        newReplacements.addAll(Arrays.asList(replacements));
 
         // ... cool, now let's send these beautiful messages ...
 
-        for(var components : formatMd(newReplacements.toArray(new String[0])))
-            sender.spigot().sendMessage(components);
+        for(var components : formatMd(newReplacements.toArray(new String[0]))) {
+            if(components == null) {
+                sender.sendMessage(" ");
+            } else {
+                sender.spigot().sendMessage(components);
+            }
+        }
     }
 
     public static String joinDelimited(final Iterable<? extends String> args) {
