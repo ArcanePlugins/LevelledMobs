@@ -13,7 +13,7 @@
     <artifactId>core</artifactId>
     <name>LevelledMobs</name>
     <description>The Ultimate RPG Mob Levelling Plugin</description>
-    <version>3.6.0 b638</version>
+    <version>3.6.0 b639</version>
 
     <properties>
         <java.version>11</java.version>

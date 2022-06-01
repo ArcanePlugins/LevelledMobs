@@ -337,6 +337,7 @@ public class CustomDropsParser {
                     item.externalType = ymlHelper.getString(itemInfoConfiguration, "type", this.defaults.externalType);
                     item.externalAmount = ymlHelper.getDouble2(itemInfoConfiguration, "external-amount", this.defaults.externalAmount);
 
+
                     if (item.isExternalItem && ExternalCompatibilityManager.hasLMItemsInstalled()){
 
                         if (!handler.lmItemsParser.getExternalItem(item)) continue;
@@ -391,6 +392,8 @@ public class CustomDropsParser {
 
             customCommand.commandName = ymlHelper.getString(cs,"name");
             customCommand.delay = ymlHelper.getInt(cs, "delay", 0);
+            customCommand.runOnSpawn = ymlHelper.getBoolean(cs, "run-on-spawn", false);
+            customCommand.runOnDeath = ymlHelper.getBoolean(cs, "run-on-death", true);
             parseRangedVariables(customCommand, cs);
 
             if (customCommand.commands.isEmpty())

@@ -12,6 +12,12 @@ import org.jetbrains.annotations.Nullable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * Gets the correct NMS version for sending nametag packets
+ *
+ * @author stumper66
+ * @since 3.6.0
+ */
 public class NMSHandler {
     public NMSHandler(final @NotNull LevelledMobs main){
         this.main = main;

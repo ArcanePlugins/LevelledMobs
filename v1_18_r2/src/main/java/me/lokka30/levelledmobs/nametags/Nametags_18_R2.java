@@ -16,6 +16,12 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 
+/**
+ * Sends NMS verison specific nametag packets to players
+ *
+ * @author stumper66
+ * @since 3.6.0
+ */
 public class Nametags_18_R2 implements NMSUtil {
     public void sendNametag(final @NotNull LivingEntity livingEntity, @Nullable String nametag, @NotNull Player player, final boolean doAlwaysVisible) {
         final CraftLivingEntity cle = (CraftLivingEntity) livingEntity;

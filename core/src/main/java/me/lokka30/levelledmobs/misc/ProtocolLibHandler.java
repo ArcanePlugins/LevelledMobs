@@ -15,6 +15,12 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ConcurrentModificationException;
 import java.util.Optional;
 
+/**
+ * Handles sending nametag packets to player via ProtocolLib
+ *
+ * @author stumper66
+ * @since 3.6.0
+ */
 public class ProtocolLibHandler implements NMSUtil {
     public ProtocolLibHandler(final @NotNull LevelledMobs main){
         this.main = main;

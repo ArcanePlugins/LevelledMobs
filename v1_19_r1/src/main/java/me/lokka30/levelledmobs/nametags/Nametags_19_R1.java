@@ -18,6 +18,12 @@ import java.util.Optional;
 
 // TODO: update this to 1.19 once available
 
+/**
+ * Sends NMS verison specific nametag packets to players
+ *
+ * @author stumper66
+ * @since 3.6.0
+ */
 public class Nametags_19_R1 implements NMSUtil {
     public void sendNametag(final @NotNull LivingEntity livingEntity, @Nullable String nametag, @NotNull Player player, final boolean doAlwaysVisible) {
         final CraftLivingEntity cle = (CraftLivingEntity) livingEntity;

@@ -55,6 +55,9 @@ defaults:
   overall_chance: 0.0
   nbt-data: ''
   only-drop-if-equipped: false
+  # the following defaults are for custom commands only:
+  run-on-spawn: false
+  run-on-death: true
 
 
 # +-------------------------------------------------------------------------------------------LM3
