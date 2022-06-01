@@ -23,7 +23,7 @@ public enum Message {
     COMMAND_COMMON_ACCESS_NOT_PLAYER(
         true,
 
-        new String[]{"command", "common", "access-not-player"},
+        new String[]{"command", "common", "no-access-not-player"},
 
         "%prefix-severe% You don't have access to that; it is only accessible to players."
     ),
@@ -57,7 +57,7 @@ public enum Message {
     COMMAND_LEVELLEDMOBS_SUBCOMMAND_SUMMON_NOT_SUMMONABLE(
         true,
 
-        new String[]{"command", "levelledmobs", "subcommand", "summon", "summoning"},
+        new String[]{"command", "levelledmobs", "subcommand", "summon", "not-summonable"},
 
         "%prefix-severe% The entity type '&b%entity-type%&7' is not summonable."
     ),

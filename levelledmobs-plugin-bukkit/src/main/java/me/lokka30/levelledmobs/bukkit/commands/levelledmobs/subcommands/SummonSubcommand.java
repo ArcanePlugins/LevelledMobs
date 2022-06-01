@@ -52,7 +52,7 @@ public class SummonSubcommand extends CommandWrapper {
         }
 
         Message.COMMAND_LEVELLEDMOBS_SUBCOMMAND_SUMMON_SUMMONING.sendTo(sender,
-            "%entity-name%", entityClass.getName());
+            "%entity-name%", EnumUtils.formatEnumConstant(entityType));
         //TODO use translated entity name instead
 
         player.getWorld().spawn(player.getLocation(), entityClass, preSpawnEntity -> {

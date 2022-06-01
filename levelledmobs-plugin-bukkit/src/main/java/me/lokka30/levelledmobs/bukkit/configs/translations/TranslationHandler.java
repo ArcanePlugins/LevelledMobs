@@ -147,10 +147,13 @@ public final class TranslationHandler {
         load messages
          */
         for(var message : Message.values()) {
-            final var node = getRoot().node((Object) message.getKeyPath());
+            Log.war("[DEBUG] processing message " + message);
+            final var node = getRoot().node((Object[]) message.getKeyPath());
 
-            if(node.empty())
+            if(node.empty()) {
+                Log.war("[DEBUG] node empty");
                 continue;
+            }
 
             try {
                 if(message.isListType() && node.isList()) {
