@@ -7,13 +7,53 @@ import org.jetbrains.annotations.Nullable;
 
 @SuppressWarnings("unused")
 public enum InbuiltLang {
+
+    /**
+     * German
+     *
+     * @since 4.0.0
+     */
     DE_DE,
+
+    /**
+     * English (Australia)
+     * Joke translation, not intended for actual use.
+     *
+     * @since 4.0.0
+     */
     EN_AU,
+
+    /**
+     * English (Great Britain)
+     *
+     * @since 4.0.0
+     */
     EN_GB,
+
+    /**
+     * English (United States of America)
+     *
+     * @since 4.0.0
+     */
     EN_US,
+
+    /**
+     * Spanish
+     *
+     * @since 4.0.0
+     */
     ES_ES,
+
+    /**
+     * French
+     *
+     * @since 4.0.0
+     */
     FR_FR;
 
+    /**
+     * @return language code, formatted in the IEEE-standard manner (e.g. 'en_GB', 'fr_FR').
+     */
     @Override
     @NotNull
     public String toString() {
@@ -26,6 +66,13 @@ public enum InbuiltLang {
         return split[0].toLowerCase(Locale.ROOT) + "_" + split[1].toUpperCase(Locale.ROOT);
     }
 
+    /**
+     * A variant of {@link InbuiltLang#valueOf(String)} which returns a nullable result, rather than
+     * throwing an exception. Makes for cleaner code since exception handling gets messy.
+     *
+     * @param languageCode language code to try retrieve
+     * @return inbuilt language constant if matched, otherwise, null
+     */
     @Nullable
     public static InbuiltLang of(final String languageCode) {
         try {
@@ -35,6 +82,9 @@ public enum InbuiltLang {
         }
     }
 
+    /**
+     * @return the default lang, 'en_US'.
+     */
     @NotNull
     public static InbuiltLang getDefault() {
         return EN_US;

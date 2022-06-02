@@ -1,48 +1,55 @@
 package me.lokka30.levelledmobs.bukkit.listeners;
 
-import java.util.Objects;
 import me.lokka30.levelledmobs.bukkit.LevelledMobs;
-import me.lokka30.levelledmobs.bukkit.utils.ClassUtils;
+import me.lokka30.levelledmobs.bukkit.utils.Log;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
-import org.jetbrains.annotations.NotNull;
 
 public abstract class ListenerWrapper implements Listener {
 
     /* vars */
 
-    private final String eventClasspath;
     private final boolean imperative;
 
     /* constructors */
 
-    public ListenerWrapper(
-        final @NotNull String eventClasspath,
-        final boolean imperative
-    ) {
-        this.eventClasspath = Objects.requireNonNull(eventClasspath, "eventClasspath");
+    /**
+     * Create a new listener.
+     *
+     * 'Imperative' listeners are required by LevelledMobs in order for the plugin to operate
+     * correctly, OR, they are considered very stable events which should not see breaking
+     * changes (that affect LevelledMobs).
+     * Imperative listeners must also be operational on all
+     * versions of Minecraft which LevelledMobs is considered 'compatible'.
+     * Almost every possible listener usable by LevelledMobs would be considered imperative due to
+     * the brilliant (sometimes, frustrating) stability of the Bukkit API.
+     *
+     * @param imperative whether the listener is imperative
+     */
+    public ListenerWrapper(final boolean imperative) {
         this.imperative = imperative;
     }
 
     /* methods */
 
-    protected boolean canRegister() {
-        return ClassUtils.classExists(getEventClasspath());
-    }
-
+    /**
+     * Attempt to register this listener
+     *
+     * @return {@code false} if registration failed, AND the listener is considered 'imperative'.
+     */
     public boolean register() {
-        if(!canRegister())
-            return false;
-
-        Bukkit.getPluginManager().registerEvents(this, LevelledMobs.getInstance());
+        try {
+            Bukkit.getPluginManager().registerEvents(this, LevelledMobs.getInstance());
+        } catch(Exception ex) {
+            if(isImperative()) {
+                Log.sev("Unable to register listener '" + getClass().getSimpleName() + "'.");
+                return false;
+            }
+        }
         return true;
     }
 
     /* getters and setters */
-
-    protected @NotNull String getEventClasspath() {
-        return eventClasspath;
-    }
 
     public boolean isImperative() { return imperative; }
 
