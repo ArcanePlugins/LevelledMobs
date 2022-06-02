@@ -82,11 +82,15 @@ public final class TranslationHandler {
         );
 
         while(!langToPathFun.apply(lang).toFile().exists()) {
+            Log.inf("Translation not immediately available - checking.");
+
             final @Nullable var inbuilt = InbuiltLang.of(lang);
 
             if(inbuilt == null) {
                 // avoiding a possible stack overflow in this loop if the file doesnt save for some reason
                 if(!lang.equalsIgnoreCase(defaultLangStr)) {
+                    Log.sev("Countered a possible loop issue for translation selection, " +
+                        "please inform LM maintainers.");
                     return true;
                 }
 
@@ -114,6 +118,9 @@ public final class TranslationHandler {
                 break;
             }
         }
+
+        this.lang = lang;
+        Log.inf("Using translation '" + getLang() + "'.");
 
         // note: should not need to check if loader is already set, as the file name is dynamic.
         // this is unlike other config files (see: Config#load())
@@ -147,11 +154,12 @@ public final class TranslationHandler {
         load messages
          */
         for(var message : Message.values()) {
-            Log.war("[DEBUG] processing message " + message);
             final var node = getRoot().node((Object[]) message.getKeyPath());
 
             if(node.empty()) {
-                Log.war("[DEBUG] node empty");
+                Log.war("A message is missing its translation at path " +
+                    Arrays.toString(message.getKeyPath()) +
+                    ". Using a default value until you fix it.");
                 continue;
             }
 
