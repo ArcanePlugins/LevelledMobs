@@ -13,12 +13,17 @@ public final class Log {
         LevelledMobs.getInstance().getLogger().info(msg);
     }
 
-    public static void war(final String msg) {
-        LevelledMobs.getInstance().getLogger().warning(msg);
+    public static void war(final String msg, final boolean suggestSupport) {
+        LevelledMobs.getInstance().getLogger().warning(msg + (!suggestSupport ? "" :
+            " If (despite multiple attempts) you are unable to fix this issue, feel free to " +
+                "contact our support team for assistance."
+        ));
     }
 
-    public static void sev(final String msg) {
-        LevelledMobs.getInstance().getLogger().severe(msg);
+    public static void sev(final String msg, final boolean suggestSupport) {
+        LevelledMobs.getInstance().getLogger().severe(msg + (!suggestSupport ? "" :
+            " Feel free to contact our support team if assistance is required."
+        ));
     }
 
 }

@@ -33,6 +33,10 @@ command:
         summoning:
           - "%prefix-info% Summoning a levelled '&b%entity-name%&7'."
 
+entity-name:
+  CREEPER: "Creeper"
+  WITHER_SKELETON: "Wither Skeleton"
+
 generic:
   list-delimiter: "&7, &b"
 
@@ -40,6 +44,11 @@ generic:
     info: "&f&lLM:&7"
     warning: "&e&lLM:&7"
     severe: "&c&lLM:&7"
+
+number:
+  1: "1"
+  2: "2"
+  3: "3"
 
 metadata:
   version:

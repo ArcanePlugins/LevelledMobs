@@ -49,7 +49,7 @@ public abstract class Config {
                     "incorrect indent or stray symbol. We recommend that you use a YAML parser " +
                     "website - such as the one linked here - to help locate where these errors " +
                     "are appearing. --> https://www.yaml-online-parser.appspot.com/ <-- A stack " +
-                    "trace will be printed below for debugging purposes."
+                    "trace will be printed below for debugging purposes.", true
             );
             ex.printStackTrace();
             return false;
@@ -64,9 +64,8 @@ public abstract class Config {
             return true;
         } catch(ConfigurateException ex) {
             Log.sev("LevelledMobs was unable to save data to the configuration '" +
-                getFileName() + "'. Please contact the LM support team regarding this rare issue " +
-                "via the methods described on the resource page (i.e., Discord, PMs, etc). A " +
-                "stack trace will be printed below for debugging purposes.");
+                getFileName() + "'. A stack trace will be printed below for debugging purposes.",
+                true);
             ex.printStackTrace();
             return false;
         }
@@ -77,11 +76,11 @@ public abstract class Config {
 
         if(currentFileVersion == 0) {
             Log.sev("Unable to detect the file version of configuration '" + getFileName() +
-                "'. Was the file metadata modified?");
+                "'. Was the file metadata modified?", true);
             return false;
         } else if(currentFileVersion > latestFileVersion) {
             Log.war("Configuration '" + getFileName() + "' is somehow newer than the latest " +
-                "compatible file version. Was it modified by the user?");
+                "compatible file version. Was it modified by the user?", false);
             return true;
         } else if(currentFileVersion < latestFileVersion) {
             Log.inf("Update detected for configuration '" + getFileName() + "'; updating.");
@@ -89,7 +88,8 @@ public abstract class Config {
                 Log.inf("Configuration '" + getFileName() + "' has been updated.");
                 return true;
             } else {
-                Log.sev("Update for configuration '" + getFileName() + "' failed.");
+                Log.sev("Update for configuration '" + getFileName() + "' failed.",
+                    true);
                 return false;
             }
         } else {
@@ -121,7 +121,7 @@ public abstract class Config {
              */
             if(fileVersionLm3 == 0) {
                 Log.sev("Unable to retrieve current file version of config '" + getFileName() +
-                    "'. Was it removed or modified by the user?");
+                    "'. Was it removed or modified by the user?", true);
                 return 0;
             } else {
                 Log.inf("LM4-style file version not found for config '" + getFileName() +

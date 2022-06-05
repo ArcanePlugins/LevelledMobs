@@ -1,4 +1,32 @@
+##########################################
+#           ~ LevelledMobs v4 ~          #
+# The Ultimate RPG Mob Levelling Plugin  #
+##########################################
+
+# Create your own Groups which you can use in functions :)
+# Feel free to remove the example groups. They are present to
+# show you how to define them. It's super easy!
+groups:
+  'example-ocean-biomes':
+    - 'A_BIOME_NAME'
+  
+  'example-zombie-mobs':
+    - 'ZOMBIE'
+    - 'ZOMBIE_VILLAGER'
+    - 'DROWNED'
+    - 'HUSK'
+
+  'example-top-5-awesome-plugins-list':
+    - '#1 - LevelledMobs'
+    - '#2 - LevelledMobs'
+    - '#3 - LevelledMobs'
+    - '#4 - LevelledMobs'
+    - '#5 - LevelledMobs'
+    - 'Honorable mention: LevelledMobs'
+
+#### File Metadata
+# Do not edit this section!
 metadata:
   version:
-    current: 1
     original: 1
+    current: 1

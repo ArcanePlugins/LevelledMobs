@@ -89,15 +89,15 @@ public final class TranslationHandler {
             if(inbuilt == null) {
                 // avoiding a possible stack overflow in this loop if the file doesnt save for some reason
                 if(!lang.equalsIgnoreCase(defaultLangStr)) {
-                    Log.sev("Countered a possible loop issue for translation selection, " +
-                        "please inform LM maintainers.");
+                    Log.sev("Countered a possible loop issue for translation selection.",
+                        true);
                     return true;
                 }
 
                 // the user specified a language without providing a translation for it
                 Log.sev("Lang '" + lang + "' is not an inbuilt lang, and no custom translation"
                     + " file was found for it. Falling back to '" + defaultLangStr + "' until you "
-                    + "fix it.");
+                    + "fix it.", true);
 
                 // let's just default to en_us
                 lang = defaultLangStr;
@@ -139,7 +139,7 @@ public final class TranslationHandler {
                     "incorrect indent or stray symbol. We recommend that you use a YAML parser " +
                     "website - such as the one linked here - to help locate where these errors " +
                     "are appearing. --> https://www.yaml-online-parser.appspot.com/ <-- A stack " +
-                    "trace will be printed below for debugging purposes."
+                    "trace will be printed below for debugging purposes.", true
             );
             ex.printStackTrace();
             return true;
@@ -159,7 +159,7 @@ public final class TranslationHandler {
             if(node.empty()) {
                 Log.war("A message is missing its translation at path " +
                     Arrays.toString(message.getKeyPath()) +
-                    ". Using a default value until you fix it.");
+                    ". Using a default value until you fix it.", true);
                 continue;
             }
 
@@ -177,7 +177,7 @@ public final class TranslationHandler {
             } catch(ConfigurateException ex) {
                 Log.war("Unable to parse translation at path '" +
                     Arrays.toString(message.getKeyPath()) + "'. This is usually caused by the " +
-                    "user accidentally creating a syntax error whilst editing the file.");
+                    "user accidentally creating a syntax error whilst editing the file.", true);
             }
         }
 
@@ -189,13 +189,13 @@ public final class TranslationHandler {
 
         if(currentFileVersion == 0) {
             Log.sev("Unable to detect file version of translation '" + getLang() + "'. Was " +
-                "it modified by the user?");
+                "it modified by the user?", true);
             return;
         }
 
         if(currentFileVersion > getLatestFileVersion()) {
             Log.war("Translation '" + getLang() + "' is somehow newer than the latest "
-                + "compatible file version. How did we get here?");
+                + "compatible file version. How did we get here?", false);
             return;
         }
 
@@ -210,13 +210,14 @@ public final class TranslationHandler {
                     "you to store a backup of the translation file in a separate location, then " +
                     "remove the file from the 'plugins/LevelledMobs/translations' directory, and " +
                     "switch to an inbuilt translation such as 'en_US' for the time being. Then, " +
-                    "customize the new translation file as you wish.");
+                    "customize the new translation file as you wish.", true);
             } else {
                 // an inbuilt translation
                 Log.sev(heading + "As this translation is an 'inbuilt' translation, you can " +
                     "simply remove the file and allow LevelledMobs to generate the latest one " +
                     "for you automatically. If you have made any edits to this translation file, " +
-                    "remember to back it up and transfer the edits to the newly generated file.");
+                    "remember to back it up and transfer the edits to the newly generated file.",
+                    true);
             }
             return;
         }
@@ -234,14 +235,15 @@ public final class TranslationHandler {
                         getRoot().node("metadata", "version", "current").set(currentFileVersion);
                         getLoader().save(getRoot());
                     } catch(ConfigurateException ex) {
-                        Log.sev("Unable to write updates to file of lang '" + getLang() + "'.");
+                        Log.sev("Unable to write updates to file of lang '" + getLang() + "'.",
+                            true);
                         return;
                     }
                 }
                 default -> {
                     Log.sev("Attempted to update from file version '" + currentFileVersion +
                         "' of translation '" + getLang() + "', but no updater logic is present " +
-                        "for that file version. Please inform LevelledMobs maintainers.");
+                        "for that file version.", true);
                     return;
                 }
             }

@@ -1,4 +1,88 @@
+##########################################
+#           ~ LevelledMobs v4 ~          #
+# The Ultimate RPG Mob Levelling Plugin  #
+##########################################
+
+# Almost identical to LM 3's custom drops system (as of current thought at least).
+# What's definite is that some keys need to be renamed for consistency purposes.
+# Will work on some actual content or this file later on.
+
+# Section 1 - Default CustomDrop Options
+defaults:
+  requirements:
+    chance: 0.2
+    overall-chance: -1
+    min-level: -1
+    max-level: -1
+    exclude-spawner-mobs: false
+    player-caused-death: true
+  amount: 1
+  equipped-chance: -1
+  custom-model-data: -1
+  item-flags: []
+  nbt-data: ''
+  remove-vanilla-drops: false
+  no-multiplier: false
+  only-drop-items-if-equipped: false
+  group-id: '0'
+  max-drops-in-group: 1
+  priority: 0
+
+# Section 2 - Entity-Specific Drops
+entities:
+  CHICKEN:
+  ZOMBIE:
+
+
+# Section 3 - Drop Tables
+drop-tables:
+  example_overworld:
+    - material: 'STICK'
+      requirements:
+        chance: 1.0
+        exclude-spawner-mobs: true
+      no-multiplier: true
+      amount: 1
+      group-id: '1'
+
+    - material: 'COBBLESTONE'
+      requirements:
+        chance: 1.0
+        exclude-spawner-mobs: true
+      no-multiplier: true
+      amount: 1
+      group-id: '1'
+
+  example_nether:
+    - material: 'NETHERRACK'
+      requirements:
+        chance: 1.0
+        exclude-spawner-mobs: true
+      no-multiplier: true
+      amount: 1
+      group-id: '2'
+
+    - material: 'SOUL_SAND'
+      requirements:
+        chance: 1.0
+        exclude-spawner-mobs: true
+      no-multiplier: true
+      amount: 1
+      group-id: '2'
+
+# Section 4 - per-group drop limits
+group-drop-limits:
+  '1': 3
+  # Only 3 items out of all that can drop for a mob that are in
+  # group '1' can be dropped. Higher priority items have a higher
+  # chance of being selected.
+  '2': 5
+  '3': 1
+  'example': 7
+
+#### File Metadata
+# Do not edit this section!
 metadata:
   version:
-    current: 11
     original: 11
+    current: 11

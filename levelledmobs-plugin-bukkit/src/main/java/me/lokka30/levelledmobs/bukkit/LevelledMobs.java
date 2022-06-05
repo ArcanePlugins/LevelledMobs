@@ -39,7 +39,8 @@ public final class LevelledMobs extends JavaPlugin {
             getCommandHandler().load()
         )) {
             Log.sev("LevelledMobs encountered a fatal error during the startup process. " +
-                "It will disable itself to prevent possible issues resulting from malfunction.");
+                "It will disable itself to prevent possible issues resulting from malfunction.",
+                true);
             setEnabled(false);
             return;
         }
@@ -47,8 +48,10 @@ public final class LevelledMobs extends JavaPlugin {
         final var version = getDescription().getVersion();
         if(version.contains("alpha") || version.contains("beta")) {
             Log.war("You are running an alpha/beta version of LevelledMobs. Please take care, "
-            + "and beware that this version is unlikely to be tested.");
+            + "and beware that this version is unlikely to be tested.", false);
         }
+
+        runTestingProcedures();
 
         Log.inf("Plugin enabled.");
     }
@@ -72,10 +75,14 @@ public final class LevelledMobs extends JavaPlugin {
         if(isRunningSpigot()) return true;
 
         Log.sev("LevelledMobs does not run on CraftBukkit or other software which is not " +
-            "based upon the SpigotMC software. Please switch to PaperMC or SpigotMC. There is " +
-            "no reason to run CraftBukkit.");
+            "based upon the SpigotMC software. Switch to PaperMC or SpigotMC software - there " +
+            "is no reason to run CraftBukkit.", false);
 
         return false;
+    }
+
+    private void runTestingProcedures() {
+        Log.war("Running testing procedures.", false);
     }
 
     /* getters and setters */

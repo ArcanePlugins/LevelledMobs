@@ -1,4 +1,154 @@
+##########################################
+#           ~ LevelledMobs v4 ~          #
+# The Ultimate RPG Mob Levelling Plugin  #
+##########################################
+
+# TODO
+# - Check if the default multiplier values are alright
+# - Write buffs list for other presets
+
+# Welcome to the presets file! Here you can reduce the amount of boilerplate
+# you need to write in the functions system as presets essentially act as
+# 'copy and paste' bits for your functions. It can also be used to tidy up
+# some large ugly parts from your functions configuration so that your
+# settings file is easier to edit and understand. Define as many presets
+# as you need to.
+presets:
+  # ... (recommendation) add your own presets above the existing ones ...
+  - preset: 'basic-challenge'
+    description: 'Apply level and buffs to mobs, tuned to an basic-level challenge.'
+    do:
+      - action: 'set-buffs'
+        buffs:
+        #TODO
+
+  - preset: 'average-challenge'
+    description: 'Apply level and buffs to mobs, tuned to an average-level challenge.'
+    do:
+      - action: 'set-buffs'
+        buffs:
+          - buff: 'health-boost'
+            enabled: true
+            description: 'Boost the health of levelled mobs'
+            affected-entities:
+              not-in-list: ['ENDERMAN', 'WITHER_SKELETON']
+            attributes: ['GENERIC_MAX_HEALTH']
+            multiplier-formula: '1 + (%mob-level-percent% * 4)'
+
+            # Should LevelledMobs adjust the mob's current health
+            # to match the previous health percentage they had,
+            # in accordance with their newfound max health value?
+            # This does not plainly reset their health, it tries to
+            # match the health ratio that the mob previously had.
+            #
+            # e.g. if a zombie spawns with 20/20HP, and its max health
+            # is set to 40HP, as the health percentage is 100% (20/20=100),
+            # then the zombie's current health will also be 40hp.
+            # Say that the zombie was damaged in a fight, it is now 10/40HP,
+            # and then its max health gets changed back to 20HP, so
+            # 10/40 is 25%, so the zombie's current health will be set to
+            # 5HP (now totalling 5HP out of 20HP).
+            #
+            # Defaults to: `true`
+            adjust-current-health: true
+
+          - buff: 'movement-speed-boost'
+            enabled: true
+            description: 'Boost the speed of levelled mobs'
+            affected-entities:
+              not-in-list: ['ENDERMAN', 'CREEPER']
+            attributes: ['GENERIC_MOVEMENT_SPEED']
+            multiplier-formula: '1 + (%mob-level-percent% * 0.15)'
+
+          - buff: 'armor-toughness-boost'
+            enabled: true
+            description: 'Boost the armor toughness of levelled mobs'
+            affected-entities:
+              in-list: ['*']
+            attributes: ['GENERIC_ARMOR_TOUGHNESS']
+            multiplier-formula: '1 + (%mob-level-percent% * 0.15)'
+
+          - buff: 'attack-damage-boost'
+            enabled: true
+            description: 'Boost the attack damage of levelled mobs'
+            affected-entities:
+              in-list: ['*']
+            attributes: ['GENERIC_ATTACK_DAMAGE']
+            multiplier-formula: '1 + (%mob-level-percent% * 1.25)'
+
+          - buff: 'ranged-attack-damage-boost'
+            enabled: true
+            description: 'Boost the ranged attack damage of levelled mobs'
+            affected-entities:
+              in-list: ['*']
+            attributes: ['CUSTOM_RANGED_ATTACK_DAMAGE']
+            multiplier-formula: '1 + %mob-level-percent%'
+
+          - buff: 'creeper-blast-damage-boost'
+            enabled: true
+            description: 'Boost the blast damage of levelled creepers'
+            affected-entities:
+              in-list: ['CREEPER']
+            attributes: ['CUSTOM_CREEPER_BLAST_DAMAGE']
+            multiplier-formula: '1 + %mob-level-percent%'
+
+          - buff: 'item-drop-boost'
+            enabled: true
+            description: 'Boosts the item drops of levelled mobs'
+            affected-entities:
+              not-in-list: ['ENDERMAN']
+            attributes: ['CUSTOM_ITEM_DROP']
+            multiplier-formula: '1 + (%mob-level-percent% * 3)'
+
+          - buff: 'xp-drop-boost'
+            enabled: true
+            description: 'Boost the experience drops of levelled mobs'
+            affected-entities:
+              not-in-list: ['ENDERMAN']
+            attributes: ['CUSTOM_XP_DROP']
+            multiplier-formula: '1 + (%mob-level-percent% * 5)'
+
+          - buff: 'armor-bonus-boost'
+            enabled: true
+            description: 'Boost the armor bonus of levelled mobs'
+            affected-entities:
+              in-list: ['*']
+            attributes: ['GENERIC_ARMOR_BONUS']
+            multiplier-formula: '1 + (%mob-level-percent% * 0.2)'
+
+          - buff: 'knockback-resistance-boost'
+            enabled: true
+            description: 'Boost the knockback resistance of levelled mobs'
+            affected-entities:
+              not-in-list: ['CREEPER']
+            attributes: ['GENERIC_KNOCKBACK_RESISTANCE']
+            multiplier-formula: '1 + (%mob-level-percent% * 0.25)'
+
+          - buff: 'zombie-spawn-reinforcements-boost'
+            enabled: true
+            description: 'Boost the spawn reinforcements chance of levelled zombies'
+            affected-entities:
+              in-list: ['*']
+            attributes: ['GENERIC_ZOMBIE_SPAWN_REINFORCEMENTS']
+            multiplier-formula: '1 + (%mob-level-percent% * 0.15)'
+
+  - preset: 'advanced-challenge'
+    description: 'Apply level and buffs to mobs, tuned to an advanced-level challenge.'
+    do:
+      - action: 'set-buffs'
+        buffs:
+        #TODO
+
+  - preset: 'extreme-challenge'
+    description: 'Apply buffs to mobs, tuned to an extreme-level challenge.'
+    do:
+      - action: 'set-buffs'
+        buffs:
+        #TODO
+
+#### File Metadata
+# Do not edit this section!
 metadata:
   version:
-    current: 1
     original: 1
+    current: 1

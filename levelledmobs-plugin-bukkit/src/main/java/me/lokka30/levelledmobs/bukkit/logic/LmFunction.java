@@ -1,7 +1,7 @@
-package me.lokka30.levelledmobs.bukkit.logic.functions;
+package me.lokka30.levelledmobs.bukkit.logic;
 
 import java.util.LinkedHashSet;
-import me.lokka30.levelledmobs.bukkit.logic.functions.processes.Process;
+import java.util.Set;
 import org.jetbrains.annotations.NotNull;
 
 /*
@@ -22,8 +22,8 @@ public class LmFunction {
     public LmFunction(
         @NotNull final String id,
         @NotNull final String description,
-        @NotNull final LinkedHashSet<String> triggers,
-        @NotNull final LinkedHashSet<Process> processes
+        @NotNull final Set<String> triggers,
+        @NotNull final Set<Process> processes
     ) {
         this.id = id;
         this.description = description;
@@ -34,7 +34,7 @@ public class LmFunction {
     /* methods */
 
     public void run(final @NotNull RunContext context) {
-        //TODO
+        //todo
     }
 
     public boolean hasAnyTriggers(final @NotNull String... triggersToCheck) {
