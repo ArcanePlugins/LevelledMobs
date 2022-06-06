@@ -1,8 +1,10 @@
 package me.lokka30.levelledmobs.bukkit.logic;
 
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import org.jetbrains.annotations.NotNull;
+import org.spongepowered.configurate.CommentedConfigurationNode;
 
 /*
 Note: To avoid a naming conflict with Java's 'Function' class, this is named 'LmFunction' (meaning
@@ -12,23 +14,22 @@ public class LmFunction {
 
     /* vars */
 
-    private final String id;
+    private final String identifier;
     private final String description;
-    private final LinkedHashSet<String> triggers = new LinkedHashSet<>();
-    private final LinkedHashSet<Process> processes = new LinkedHashSet<>();
+    private final CommentedConfigurationNode node;
+    private final Set<String> triggers = new HashSet<>();
+    private final Set<Process> processes = new LinkedHashSet<>();
 
     /* constructors */
 
     public LmFunction(
-        @NotNull final String id,
+        @NotNull final String identifier,
         @NotNull final String description,
-        @NotNull final Set<String> triggers,
-        @NotNull final Set<Process> processes
+        @NotNull final CommentedConfigurationNode node
     ) {
-        this.id = id;
+        this.identifier = identifier;
         this.description = description;
-        this.triggers.addAll(triggers);
-        this.processes.addAll(processes);
+        this.node = node;
     }
 
     /* methods */
@@ -52,8 +53,8 @@ public class LmFunction {
     */
 
     @NotNull
-    public String getId() {
-        return id;
+    public String getIdentifier() {
+        return identifier;
     }
 
     @NotNull
@@ -62,12 +63,15 @@ public class LmFunction {
     }
 
     @NotNull
-    public LinkedHashSet<String> getTriggers() {
+    public CommentedConfigurationNode getNode() { return node; }
+
+    @NotNull
+    public Set<String> getTriggers() {
         return triggers;
     }
 
     @NotNull
-    public LinkedHashSet<Process> getProcesses() {
+    public Set<Process> getProcesses() {
         return processes;
     }
 }

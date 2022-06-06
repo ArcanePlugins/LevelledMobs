@@ -3,6 +3,7 @@ package me.lokka30.levelledmobs.bukkit.logic;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import org.jetbrains.annotations.NotNull;
+import org.spongepowered.configurate.CommentedConfigurationNode;
 
 public class Process {
 
@@ -10,18 +11,19 @@ public class Process {
 
     private final String identifier;
     private final String description;
-    private final LinkedHashSet<Preset> presets = new LinkedHashSet<>();
+    private final Set<Preset> presets = new LinkedHashSet<>();
+    private final CommentedConfigurationNode node;
 
     /* constructors */
 
     public Process(
         final @NotNull String identifier,
         final @NotNull String description,
-        final @NotNull Set<Preset> presets
+        final @NotNull CommentedConfigurationNode node
     ) {
         this.identifier = identifier;
         this.description = description;
-        this.presets.addAll(presets);
+        this.node = node;
     }
 
     /* getters and setters */
@@ -33,6 +35,9 @@ public class Process {
     public String getDescription() { return description; }
 
     @NotNull
-    public LinkedHashSet<Preset> getPresets() { return presets; }
+    public Set<Preset> getPresets() { return presets; }
+
+    @NotNull
+    public CommentedConfigurationNode getNode() { return node; }
 
 }

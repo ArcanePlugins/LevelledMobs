@@ -3,9 +3,14 @@ package me.lokka30.levelledmobs.bukkit.logic;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Objects;
 import me.lokka30.levelledmobs.bukkit.LevelledMobs;
+import me.lokka30.levelledmobs.bukkit.event.function.FunctionPostParseEvent;
+import me.lokka30.levelledmobs.bukkit.event.function.FunctionPreParseEvent;
 import me.lokka30.levelledmobs.bukkit.event.group.GroupPostParseEvent;
 import me.lokka30.levelledmobs.bukkit.event.group.GroupPreParseEvent;
+import me.lokka30.levelledmobs.bukkit.event.process.ProcessPostParseEvent;
+import me.lokka30.levelledmobs.bukkit.event.process.ProcessPreParseEvent;
 import me.lokka30.levelledmobs.bukkit.util.Log;
 import org.bukkit.Bukkit;
 import org.jetbrains.annotations.NotNull;
@@ -177,14 +182,167 @@ public final class LogicHandler {
             .getConfigHandler().getSettingsCfg()
             .getRoot().node("functions").childrenList();
 
-        nodeIterator:
         for(var functionNode : functionNodes) {
-            //TODO let's do something !
+            final var identifier = functionNode.node("function").getString();
+            final var description = functionNode.node("description").getString("");
+
+            /* assert valid identifier */
+            if(identifier == null || identifier.isBlank()) {
+                Log.sev("There is a function in settings.yml with an unknown/invalid identifier, " +
+                    "so LevelledMobs is unable to parse it.", true);
+                return false;
+            }
+            if(getFunctions().stream().anyMatch(otherFunction ->
+                otherFunction.getIdentifier().equalsIgnoreCase(identifier))
+            ) {
+                Log.sev("There are two or more functions in settings.yml which share the " +
+                    "same identifier, '" + identifier + "'. Functions must have unique " +
+                    "identifiers.", true);
+                return false;
+            }
+
+            /* create obj */
+            final var function = new LmFunction(identifier, description, functionNode);
+
+            /* add triggers */
+            final var triggersNode = functionNode.node("triggers");
+            if(triggersNode.empty() || !triggersNode.isList()) {
+                Log.sev("Unable to parse triggers of function '" + identifier +
+                    "': not a valid list of triggers.", true);
+                return false;
+            }
+            final List<String> triggersList;
+            try {
+                triggersList = Objects.requireNonNull(triggersNode.getList(String.class), "list");
+            } catch (SerializationException | NullPointerException ex) {
+                Log.sev("Unable to parse triggers of function '" + identifier +
+                    "'. This is usually caused by a the user creating a syntax error in " +
+                    "the settings.yml file. A stack trace will be printed below for debugging " +
+                    "purposes.", true);
+                ex.printStackTrace();
+                return false;
+            }
+            function.getTriggers().addAll(triggersList);
+
+            /* call pre parse fun */
+
+            final var functionPreParseEvent = new FunctionPreParseEvent(function);
+            Bukkit.getPluginManager().callEvent(functionPreParseEvent);
+            if(functionPreParseEvent.isCancelled()) continue;
+
+            /* parse processes todo */
+            if(!(parseProcesses(function)))
+                return false;
+
+            /* call post parse fun */
+            Bukkit.getPluginManager().callEvent(new FunctionPostParseEvent(function));
         }
 
-
-        //TODO
         Log.inf("Successfully parsed " + getFunctions().size() + " function(s).");
+        return true;
+    }
+
+    private boolean parseProcesses(final @NotNull LmFunction function) {
+        Objects.requireNonNull(function, "function");
+
+        final List<CommentedConfigurationNode> processNodes = function
+            .getNode().node("processes").childrenList();
+
+        for(var processNode : processNodes) {
+            final var identifier = processNode.node("process").getString();
+            final var description = processNode.node("description").getString("");
+
+            /* assert valid identifier */
+            if(identifier == null || identifier.isBlank()) {
+                Log.sev("There is a process in settings.yml with an unknown/invalid " +
+                    "identifier in the function '" + function.getIdentifier() + "', so "
+                    + "LevelledMobs is unable to parse it.", true);
+                return false;
+            }
+            if(function.getProcesses().stream().anyMatch(otherProcess ->
+                otherProcess.getIdentifier().equalsIgnoreCase(identifier))
+            ) {
+                Log.sev("There are two or more processes in the function '" +
+                    function.getIdentifier() + "' which share the same identifier, '" +
+                    identifier + "'. Processes must have unique identifiers.", true);
+                return false;
+            }
+
+            /* create obj */
+            final var process = new Process(identifier, description, processNode);
+
+            /* add triggers */
+            final var presetsNode = processNode.node("presets");
+            if(presetsNode.empty() || !presetsNode.isList()) {
+                Log.sev("Unable to parse presets of process '" + identifier +
+                    "': not a valid list of presets.", true);
+                return false;
+            }
+            final List<String> presetsIdentifiersList;
+            try {
+                presetsIdentifiersList = Objects.requireNonNull(presetsNode.getList(String.class), "presets");
+            } catch (SerializationException | NullPointerException ex) {
+                Log.sev("Unable to parse presets of process '" + identifier +
+                    "'. This is usually caused by a the user creating a syntax error in " +
+                    "the settings.yml file. A stack trace will be printed below for debugging " +
+                    "purposes.", true);
+                ex.printStackTrace();
+                return false;
+            }
+
+            presetIterator:
+            for(var presetIdentifier : presetsIdentifiersList) {
+                if(process.getPresets().stream().anyMatch(otherPreset ->
+                    otherPreset.getIdentifier().equals(presetIdentifier))
+                ) {
+                    Log.war("Process '" + identifier + "' has preset '" + presetIdentifier +
+                        "' listed more than once. A preset can only be used at most once per "
+                        + "process.", true);
+                    continue;
+                }
+
+                for(var otherPreset : getPresets()) {
+                    if(otherPreset.getIdentifier().equals(presetIdentifier)) {
+                        process.getPresets().add(otherPreset);
+                        continue presetIterator;
+                    }
+                }
+
+                Log.sev("Process '" + identifier + "' specifies an unknown preset, '" +
+                    presetIdentifier + "'.", true);
+                return false;
+            }
+
+            /* call pre parse process */
+
+            final var processPreParseEvent = new ProcessPreParseEvent(process);
+            Bukkit.getPluginManager().callEvent(processPreParseEvent);
+            if(processPreParseEvent.isCancelled()) continue;
+
+            /* parse actions */
+            if(!(parseActions(process)))
+                return false;
+
+            /* parse conditions */
+            if(!(parseConditions(process)))
+                return false;
+
+            /* call post parse process */
+            Bukkit.getPluginManager().callEvent(new ProcessPostParseEvent(process));
+        }
+
+        return true;
+    }
+
+    private boolean parseActions(final @NotNull Process process) {
+        Objects.requireNonNull(process, "process");
+        //TODO
+        return true;
+    }
+
+    private boolean parseConditions(final @NotNull Process process) {
+        Objects.requireNonNull(process, "process");
+        //TODO
         return true;
     }
 
