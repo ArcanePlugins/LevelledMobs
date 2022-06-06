@@ -4,6 +4,7 @@ import me.lokka30.levelledmobs.bukkit.logic.Preset;
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
 
+//TODO this should not be cancellable!
 public final class PresetPostParseEvent extends CancellablePresetEvent {
 
     /* vars */

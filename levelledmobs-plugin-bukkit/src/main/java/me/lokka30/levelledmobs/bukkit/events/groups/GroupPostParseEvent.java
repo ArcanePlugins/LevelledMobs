@@ -4,6 +4,7 @@ import me.lokka30.levelledmobs.bukkit.logic.Group;
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
 
+//TODO this should not be cancellable!
 public final class GroupPostParseEvent extends CancellableGroupEvent {
 
     /* vars */

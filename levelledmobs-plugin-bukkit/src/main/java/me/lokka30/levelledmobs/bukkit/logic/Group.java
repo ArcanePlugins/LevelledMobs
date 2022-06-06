@@ -13,6 +13,10 @@ public final class Group {
 
     /* constructors */
 
+    public Group(final @NotNull String identifier) {
+        this.identifier = identifier;
+    }
+
     public Group(
         final @NotNull String identifier,
         final @NotNull List<String> items

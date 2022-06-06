@@ -2,9 +2,11 @@ package me.lokka30.levelledmobs.bukkit.logic;
 
 import java.util.HashSet;
 import java.util.LinkedHashSet;
-import java.util.Objects;
 import me.lokka30.levelledmobs.bukkit.LevelledMobs;
+import me.lokka30.levelledmobs.bukkit.events.groups.GroupPostParseEvent;
+import me.lokka30.levelledmobs.bukkit.events.groups.GroupPreParseEvent;
 import me.lokka30.levelledmobs.bukkit.utils.Log;
+import org.bukkit.Bukkit;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.configurate.serialize.SerializationException;
 
@@ -45,48 +47,65 @@ public final class LogicHandler {
     private boolean parseGroups() {
         Log.inf("Parsing groups.");
 
-        //todo let's not use forEach here..
+        final var groupsMap = LevelledMobs.getInstance()
+                .getConfigHandler().getGroupsCfg()
+                .getRoot().node("groups")
+                .childrenMap();
 
-        LevelledMobs.getInstance()
-            .getConfigHandler().getGroupsCfg()
-            .getRoot().node("groups")
-            .childrenMap().forEach((key, section) -> {
+        // enumerate through groups map
+        for(var groupEntry : groupsMap.entrySet()) {
 
-                if(key instanceof String identifier) {
-                    // firstly, we don't want any duplicate groups
-                    if(getGroups()
-                        .stream()
-                        .anyMatch(group -> group.getIdentifier().equalsIgnoreCase(identifier))
-                    ) {
-                        // darn.. it's a duplicate. skip it and parse the next group
-                        Log.war("Skipping duplicate group '" + identifier +
-                            "'. Ensure every group uses unique names.",
-                            true);
-                    } else {
-                        // group is not a duplicate
-                        if(section.isList()) {
-                            // group has a list key
-                            try {
-                                getGroups().add(new Group(
-                                    identifier,
-                                    Objects.requireNonNull(section.getList(String.class))
-                                ));
-                            } catch(SerializationException ex) {
-                                Log.sev("Unable to parse group '" + identifier + "' - it is " +
-                                    "highly likely that the user has made a syntax error in the " +
-                                    "'groups.yml' file. A stack trace will be printed below for " +
-                                    "debugging purposes.", true);
-                                ex.printStackTrace();
-                            }
-                        }
-                    }
-                } else {
-                    Log.sev("Skipping group '" + key.toString() + "' as its identifier is " +
-                        "not a String (text).", true);
+            // let's make sure that the entry's key is a string (identifiers must be strings)
+            if(!(groupEntry.getKey() instanceof String)) {
+                Log.sev("Found group with an invalid identifier, '" + groupEntry.getKey() +
+                    "', group identifiers must be strings (text).", true);
+                // TODO make LM automatically fix these after the updater runs for groups.yml
+                return false;
+            }
+
+            final var group = new Group((String) groupEntry.getKey());
+
+            // let's make sure that all groups have unique identifiers
+            if(getGroups().stream().anyMatch(otherGroup ->
+                otherGroup.getIdentifier().equalsIgnoreCase(group.getIdentifier()))
+            ) {
+                Log.war("Found group with a duplicate identifier, '" + group.getIdentifier() +
+                    "', group identifiers must be unique.", true);
+                continue;
+            }
+
+            // let's call the pre-parse event
+            final var preParseEvent = new GroupPreParseEvent(group);
+            Bukkit.getPluginManager().callEvent(preParseEvent);
+            if(preParseEvent.isCancelled()) continue;
+
+            // we've got the green light to parse it now
+            if(groupEntry.getValue().isList()) {
+                // group has a list key
+                try {
+                    group.getItems().addAll(groupEntry.getValue().getList(String.class));
+                } catch(SerializationException ex) {
+                    Log.sev("Unable to parse group '" + group.getIdentifier() + "': it is " +
+                        "highly likely that the user has made a syntax error in the " +
+                        "'groups.yml' file. A stack trace will be printed below for " +
+                        "debugging purposes.", true);
+                    ex.printStackTrace();
+                    return false;
                 }
-            });
+            } else {
+                Log.sev("Unable to parse group '" + group.getIdentifier() + "' as it does " +
+                    "not contain a valid list of items.", true);
+                return false;
+            }
 
-        Log.inf("Successfully parsed " + getGroups().size() + " groups.");
+            // let's add the group to the set of groups
+            getGroups().add(group);
+
+            // let's call the post-parse event
+            Bukkit.getPluginManager().callEvent(new GroupPostParseEvent(group));
+        }
+
+        Log.inf("Successfully parsed " + getGroups().size() + " group(s)");
         return true;
     }
 
@@ -94,7 +113,7 @@ public final class LogicHandler {
         Log.inf("Parsing presets.");
 
         //TODO
-        Log.inf("Successfully parsed " + getPresets().size() + " presets.");
+        Log.inf("Successfully parsed " + getPresets().size() + " preset(s)");
         return true;
     }
 
@@ -102,7 +121,7 @@ public final class LogicHandler {
         Log.inf("Parsing custom drops.");
 
         //TODO
-        Log.inf("Successfully parsed " + "?" + " custom drops.");
+        Log.inf("Successfully parsed " + "?" + " custom drop(s).");
         return true;
     }
 
@@ -110,7 +129,7 @@ public final class LogicHandler {
         Log.inf("Parsing functions.");
 
         //TODO
-        Log.inf("Successfully parsed " + getFunctions().size() + " functions.");
+        Log.inf("Successfully parsed " + getFunctions().size() + " function(s).");
         return true;
     }
 
