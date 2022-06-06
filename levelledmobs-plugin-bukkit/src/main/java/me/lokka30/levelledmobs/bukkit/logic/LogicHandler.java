@@ -2,6 +2,7 @@ package me.lokka30.levelledmobs.bukkit.logic;
 
 import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.List;
 import me.lokka30.levelledmobs.bukkit.LevelledMobs;
 import me.lokka30.levelledmobs.bukkit.event.group.GroupPostParseEvent;
 import me.lokka30.levelledmobs.bukkit.event.group.GroupPreParseEvent;
@@ -171,15 +172,16 @@ public final class LogicHandler {
 
         Log.inf("Parsing functions.");
 
-        final CommentedConfigurationNode functionsNode = LevelledMobs.getInstance()
+        // don't use `var` here - type is not easily inferred without IDE
+        final List<CommentedConfigurationNode> functionNodes = LevelledMobs.getInstance()
             .getConfigHandler().getSettingsCfg()
-            .getRoot().node("functions");
+            .getRoot().node("functions").childrenList();
 
-        try {
-            Log.war(functionsNode.childrenMap().toString(), false);
-        } catch(Exception ex) {
-            Log.war(ex.getMessage(), false);
+        nodeIterator:
+        for(var functionNode : functionNodes) {
+            //TODO let's do something !
         }
+
 
         //TODO
         Log.inf("Successfully parsed " + getFunctions().size() + " function(s).");
