@@ -334,7 +334,7 @@ public class FileMigrator {
                     String newline = line.substring(0, startOfText) + "nametag-visibility-method: ['TARGETED', 'ATTACKED', 'TRACKING']";
                     newConfigLines.set(i, newline);
                     if (!hasVisibleTime){
-                        newline = line.substring(0, startOfText) + "nametag-visible-time: 1000";
+                        newline = line.substring(0, startOfText) + "nametag-visible-time: 1s";
                         newConfigLines.add(i, newline);
                         i++;
                     }

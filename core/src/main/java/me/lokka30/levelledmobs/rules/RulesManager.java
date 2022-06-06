@@ -22,10 +22,13 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.ConcurrentModificationException;
 import java.util.EnumMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -46,16 +49,21 @@ public class RulesManager {
         this.main = main;
         this.rulesInEffect = new TreeMap<>();
         this.biomeGroupMappings = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+        this.ruleNameMappings = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+        this.rulesCooldown = new TreeMap<>();
     }
 
     private final LevelledMobs main;
     @NotNull
     public final SortedMap<Integer, List<RuleInfo>> rulesInEffect;
+    final Map<String, RuleInfo> ruleNameMappings;
     @NotNull
     public final Map<String, List<String>> biomeGroupMappings;
+    final Map<String, List<Instant>> rulesCooldown;
     public boolean anyRuleHasChance;
+    final static Object ruleLocker = new Object();
 
-    public boolean getRule_IsWorldAllowedInAnyRule(final World world){
+    public boolean getRule_IsWorldAllowedInAnyRule(final @Nullable World world){
         if (world == null) return false;
         boolean result = false;
 
@@ -407,8 +415,8 @@ public class RulesManager {
             return result;
     }
 
-    public int getRule_nametagVisibleTime(@NotNull final LivingEntityWrapper lmEntity){
-        int result = 4000;
+    public long getRule_nametagVisibleTime(@NotNull final LivingEntityWrapper lmEntity){
+        long result = 4000L;
 
         for (final RuleInfo ruleInfo : lmEntity.getApplicableRules()){
             if (ruleInfo.nametagVisibleTime != null)
@@ -949,6 +957,31 @@ public class RulesManager {
             final List<String> newList = new ArrayList<>(groupMembers.size());
             newList.addAll(groupMembers);
             this.biomeGroupMappings.put(groupName.getKey(), newList);
+        }
+    }
+
+    void checkTempDisabledRules(){
+        synchronized (ruleLocker){
+            if (this.rulesCooldown.isEmpty()) return;
+
+            final Iterator<String> iterator = this.rulesCooldown.keySet().iterator();
+            while (iterator.hasNext()){
+                final String ruleName = iterator.next();
+                final RuleInfo rule = this.ruleNameMappings.get(ruleName);
+                if (rule == null || rule.conditions_CooldownTime == null || rule.conditions_CooldownTime <= 0){
+                    if (rule != null) rule.isTempDisabled = false;
+                    this.rulesCooldown.remove(ruleName);
+                    continue;
+                }
+
+                final List<Instant> instants = this.rulesCooldown.get(ruleName);
+                final int preCount = instants.size();
+                if (instants.removeIf(k -> Duration.between(k, Instant.now()).toMillis() > rule.conditions_CooldownTime)){
+                    Utils.logger.info(String.format("rule: %s, removing cooldown duration, pre: %s, post: %s",
+                            rule.getRuleName(), preCount, instants.size()));
+                }
+
+            }
         }
     }
 }

@@ -72,7 +72,7 @@ public final class LevelledMobs extends JavaPlugin {
     public PlaceholderApiIntegration placeholderApiIntegration;
     public boolean migratedFromPre30;
     public YmlParsingHelper helperSettings;
-    public int playerLevellingMinRelevelTime;
+    public long playerLevellingMinRelevelTime;
     public int maxPlayersRecorded;
 
     // Configuration

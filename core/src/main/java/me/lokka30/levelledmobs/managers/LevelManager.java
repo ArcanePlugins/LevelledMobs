@@ -886,8 +886,8 @@ public class LevelManager implements LevelInterface {
 
                     if (lmEntity.getLivingEntity() == null) continue;
                     final List<NametagVisibilityEnum> nametagVisibilityEnums = main.rulesManager.getRule_CreatureNametagVisbility(lmEntity);
-                    final int nametagVisibleTime = lmEntity.getNametagCooldownTime();
-                   if (nametagVisibleTime > 0 &&
+                    final long nametagVisibleTime = lmEntity.getNametagCooldownTime();
+                   if (nametagVisibleTime > 0L &&
                             nametagVisibilityEnums.contains(NametagVisibilityEnum.TARGETED) &&
                             lmEntity.getLivingEntity().hasLineOfSight(player)) {
 
@@ -991,7 +991,7 @@ public class LevelManager implements LevelInterface {
     }
 
     private boolean doesMobNeedRelevelling(final @NotNull LivingEntity mob, final @NotNull Player player){
-        if (main.playerLevellingMinRelevelTime > 0 && main.playerLevellingEntities.containsKey(mob)){
+        if (main.playerLevellingMinRelevelTime > 0L && main.playerLevellingEntities.containsKey(mob)){
             final Instant lastCheck = main.playerLevellingEntities.get(mob);
             final Duration duration = Duration.between(lastCheck, Instant.now());
 
@@ -999,7 +999,7 @@ public class LevelManager implements LevelInterface {
         }
 
         final String playerId;
-        if (main.playerLevellingMinRelevelTime > 0)
+        if (main.playerLevellingMinRelevelTime > 0L)
             main.playerLevellingEntities.put(mob, Instant.now());
 
         synchronized (mob.getPersistentDataContainer()) {
@@ -1009,7 +1009,7 @@ public class LevelManager implements LevelInterface {
             playerId = mob.getPersistentDataContainer().get(main.namespaced_keys.playerLevelling_Id, PersistentDataType.STRING);
         }
 
-        if (playerId == null && main.playerLevellingMinRelevelTime <= 0) return true;
+        if (playerId == null && main.playerLevellingMinRelevelTime <= 0L) return true;
         else if (playerId == null || !player.getUniqueId().toString().equals(playerId))
             return true;
 

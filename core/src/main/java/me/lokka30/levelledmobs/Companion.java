@@ -230,7 +230,7 @@ public class Companion {
         parseDebugsEnabled();
 
         main.configUtils.load();
-        main.playerLevellingMinRelevelTime = main.helperSettings.getInt(main.settingsCfg, "player-levelling-relevel-min-time", 5000);
+        main.playerLevellingMinRelevelTime = main.helperSettings.getIntTimeUnitMS(main.settingsCfg, "player-levelling-relevel-min-time", 5000L);
         this.useAdventure = main.helperSettings.getBoolean(main.settingsCfg, "use-adventure", true);
 
         return true;

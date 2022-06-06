@@ -124,9 +124,9 @@ public class NametagQueueManager {
             return;
         }
 
-        final int nametagTimerResetTime = item.lmEntity.getNametagCooldownTime();
+        final long nametagTimerResetTime = item.lmEntity.getNametagCooldownTime();
 
-        if (nametagTimerResetTime > 0 && !Utils.isNullOrEmpty(item.nametag)) {
+        if (nametagTimerResetTime > 0L && !Utils.isNullOrEmpty(item.nametag)) {
             synchronized (NametagTimerChecker.nametagTimer_Lock) {
                 final Map<Player, WeakHashMap<LivingEntity, Instant>> nametagCooldownQueue = main.nametagTimerChecker.getNametagCooldownQueue();
 

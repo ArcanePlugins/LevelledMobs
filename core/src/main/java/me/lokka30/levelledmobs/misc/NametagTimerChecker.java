@@ -35,7 +35,7 @@ public class NametagTimerChecker {
 
     private final LevelledMobs main;
     private final Map<Player, WeakHashMap<LivingEntity, Instant>> nametagCooldownQueue;
-    public final WeakHashMap<LivingEntity, Integer> cooldownTimes;
+    public final WeakHashMap<LivingEntity, Long> cooldownTimes;
     public final WeakHashMap<LivingEntity, Player> entityTargetMap;
     private final Queue<PlayerQueueItem> playersQueue;
     public final static Object nametagTimer_Lock = new Object();
@@ -74,7 +74,7 @@ public class NametagTimerChecker {
                     if (!livingEntity.isValid()) continue;
 
                     final Duration timeDuration = Duration.between(coolDown.getValue().get(livingEntity), Instant.now());
-                    final int cooldownTime = cooldownTimes.get(livingEntity);
+                    final long cooldownTime = cooldownTimes.get(livingEntity);
                     if (timeDuration.toMillis() >= cooldownTime) {
                         // if using LoS targeting check if it's still within LoS and don't remove if so.
                         final LivingEntityWrapper lmEntity = LivingEntityWrapper.getInstance(livingEntity, main);

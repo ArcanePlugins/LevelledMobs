@@ -87,7 +87,7 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
     public int chunkKillcount;
     private Integer mobLevel;
     private Integer skylightLevelAtSpawn;
-    private int nametagCooldownTime;
+    private long nametagCooldownTime;
     private String sourceSpawnerName;
     private String sourceSpawnEggName;
     @NotNull
@@ -368,7 +368,7 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
         return this.applicableGroups;
     }
 
-    public int getNametagCooldownTime(){
+    public long getNametagCooldownTime(){
         if (!hasCache) buildCache();
 
         return this.nametagCooldownTime;
