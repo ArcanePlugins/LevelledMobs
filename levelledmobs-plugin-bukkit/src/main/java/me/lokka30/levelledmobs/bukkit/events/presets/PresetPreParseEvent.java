@@ -1,10 +1,10 @@
-package me.lokka30.levelledmobs.bukkit.events.function;
+package me.lokka30.levelledmobs.bukkit.events.presets;
 
-import me.lokka30.levelledmobs.bukkit.logic.LmFunction;
+import me.lokka30.levelledmobs.bukkit.logic.Preset;
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
 
-public final class FunctionRunEvent extends CancellableFunctionEvent {
+public final class PresetPreParseEvent extends CancellablePresetEvent {
 
     /* vars */
 
@@ -12,7 +12,9 @@ public final class FunctionRunEvent extends CancellableFunctionEvent {
 
     /* constructors */
 
-    public FunctionRunEvent(final @NotNull LmFunction function) { super(function); }
+    public PresetPreParseEvent(final @NotNull Preset preset) {
+        super(preset);
+    }
 
     /* getters and setters */
 

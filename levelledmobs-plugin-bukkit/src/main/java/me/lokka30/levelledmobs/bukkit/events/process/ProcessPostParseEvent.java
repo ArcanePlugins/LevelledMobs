@@ -1,10 +1,10 @@
-package me.lokka30.levelledmobs.bukkit.events.function;
+package me.lokka30.levelledmobs.bukkit.events.process;
 
-import me.lokka30.levelledmobs.bukkit.logic.LmFunction;
+import me.lokka30.levelledmobs.bukkit.logic.Process;
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
 
-public final class FunctionRunEvent extends CancellableFunctionEvent {
+public final class ProcessPostParseEvent extends CancellableProcessEvent {
 
     /* vars */
 
@@ -12,7 +12,9 @@ public final class FunctionRunEvent extends CancellableFunctionEvent {
 
     /* constructors */
 
-    public FunctionRunEvent(final @NotNull LmFunction function) { super(function); }
+    public ProcessPostParseEvent(final @NotNull Process process) {
+        super(process);
+    }
 
     /* getters and setters */
 
