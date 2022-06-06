@@ -1,13 +1,13 @@
 package me.lokka30.levelledmobs.bukkit;
 
 import java.util.Objects;
-import me.lokka30.levelledmobs.bukkit.commands.CommandHandler;
-import me.lokka30.levelledmobs.bukkit.configs.ConfigHandler;
-import me.lokka30.levelledmobs.bukkit.integrations.IntegrationHandler;
-import me.lokka30.levelledmobs.bukkit.listeners.ListenerHandler;
+import me.lokka30.levelledmobs.bukkit.command.CommandHandler;
+import me.lokka30.levelledmobs.bukkit.config.ConfigHandler;
+import me.lokka30.levelledmobs.bukkit.integration.IntegrationHandler;
+import me.lokka30.levelledmobs.bukkit.listener.ListenerHandler;
 import me.lokka30.levelledmobs.bukkit.logic.LogicHandler;
-import me.lokka30.levelledmobs.bukkit.utils.ClassUtils;
-import me.lokka30.levelledmobs.bukkit.utils.Log;
+import me.lokka30.levelledmobs.bukkit.util.ClassUtils;
+import me.lokka30.levelledmobs.bukkit.util.Log;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 

@@ -3,11 +3,12 @@ package me.lokka30.levelledmobs.bukkit.logic;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import me.lokka30.levelledmobs.bukkit.LevelledMobs;
-import me.lokka30.levelledmobs.bukkit.events.groups.GroupPostParseEvent;
-import me.lokka30.levelledmobs.bukkit.events.groups.GroupPreParseEvent;
-import me.lokka30.levelledmobs.bukkit.utils.Log;
+import me.lokka30.levelledmobs.bukkit.event.group.GroupPostParseEvent;
+import me.lokka30.levelledmobs.bukkit.event.group.GroupPreParseEvent;
+import me.lokka30.levelledmobs.bukkit.util.Log;
 import org.bukkit.Bukkit;
 import org.jetbrains.annotations.NotNull;
+import org.spongepowered.configurate.CommentedConfigurationNode;
 import org.spongepowered.configurate.serialize.SerializationException;
 
 public final class LogicHandler {
@@ -36,7 +37,7 @@ public final class LogicHandler {
      * @param triggers a list of trigger IDs, which a function requires at least one match to apply
      */
     public void runFunctionsWithTriggers(
-        final @NotNull RunContext context,
+        final @NotNull Context context,
         final @NotNull String... triggers
     ) {
         for(var function : getFunctions())
@@ -112,6 +113,20 @@ public final class LogicHandler {
     private boolean parsePresets() {
         Log.inf("Parsing presets");
 
+        /*
+        summary:
+
+        for each preset in config
+            assert key is a string
+            set identifier = (string) key
+            set section = <config section of preset>
+            assert section is a node and not a key-value pair
+            create preset object
+            call pre-parse event
+            if pre-parse event cancelled, continue with next preset
+            call post-parse event
+         */
+
         //TODO
         Log.inf("Successfully parsed " + getPresets().size() + " preset(s)");
         return true;
@@ -126,7 +141,45 @@ public final class LogicHandler {
     }
 
     private boolean parseFunctions() {
+        /*
+        [pseudocode]
+        for each function
+            call pre-parse function event
+
+            for each process
+                call pre-parse process event
+
+                for each condition
+                    call condition parse event
+                    if event was cancelled, skip
+                    if a plugin made a claim to the condition's identifier
+                        add condition object from event to process's conditions list
+                    else
+                        error
+                for each action
+                    call action parse event
+                    if event was cancelled, skip
+                    if a plugin made a claim to the action's identifier
+                        add action object from event to process's actions list
+                    else
+                        error
+
+                call post-parse process event
+
+            call post-parse function event
+         */
+
         Log.inf("Parsing functions.");
+
+        final CommentedConfigurationNode functionsNode = LevelledMobs.getInstance()
+            .getConfigHandler().getSettingsCfg()
+            .getRoot().node("functions");
+
+        try {
+            Log.war(functionsNode.childrenMap().toString(), false);
+        } catch(Exception ex) {
+            Log.war(ex.getMessage(), false);
+        }
 
         //TODO
         Log.inf("Successfully parsed " + getFunctions().size() + " function(s).");

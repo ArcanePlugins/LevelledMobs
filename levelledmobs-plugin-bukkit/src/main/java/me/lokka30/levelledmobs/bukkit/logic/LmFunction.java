@@ -33,7 +33,7 @@ public class LmFunction {
 
     /* methods */
 
-    public void run(final @NotNull RunContext context) {
+    public void run(final @NotNull Context context) {
         //todo
     }
 
