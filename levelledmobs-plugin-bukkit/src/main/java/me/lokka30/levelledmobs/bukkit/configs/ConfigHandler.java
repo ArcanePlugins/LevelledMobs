@@ -28,7 +28,7 @@ public final class ConfigHandler {
     Order of the function calls does matter!
      */
     public boolean load() {
-        Log.inf("Loading configs.");
+        Log.inf("Loading configs");
         for(var cfg : Set.of(customDropsCfg, groupsCfg, presetsCfg, settingsCfg))
             if(!cfg.load())
                 return false;

@@ -23,7 +23,7 @@ public final class CommandHandler {
     /* methods */
 
     public boolean load() {
-        Log.inf("Registering commands.");
+        Log.inf("Registering commands");
         for(var baseCommand : getBaseCommands()) {
             if(!baseCommand.register())
                 return false;

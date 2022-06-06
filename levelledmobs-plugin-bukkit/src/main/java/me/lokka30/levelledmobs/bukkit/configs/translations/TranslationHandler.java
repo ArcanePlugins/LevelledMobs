@@ -67,7 +67,7 @@ public final class TranslationHandler {
 
         load translation config from file
          */
-        Log.inf("Loading translations.");
+        Log.inf("Loading translations");
 
         var lang = LevelledMobs.getInstance()
             .getConfigHandler()
@@ -82,7 +82,7 @@ public final class TranslationHandler {
         );
 
         while(!langToPathFun.apply(lang).toFile().exists()) {
-            Log.inf("Translation not immediately available - checking.");
+            Log.inf("Translation not immediately available - checking");
 
             final @Nullable var inbuilt = InbuiltLang.of(lang);
 
@@ -110,7 +110,7 @@ public final class TranslationHandler {
                 // this is done by just grabbing it straight from the InbuiltLang constant.
                 lang = inbuilt.toString();
 
-                Log.inf("Saving default translation for lang '" + lang + "'.");
+                Log.inf("Saving default translation for lang '" + lang + "'");
 
                 LevelledMobs.getInstance().saveResource(
                     "translations" + File.separator + lang + ".yml", false);
@@ -120,7 +120,7 @@ public final class TranslationHandler {
         }
 
         this.lang = lang;
-        Log.inf("Using translation '" + getLang() + "'.");
+        Log.inf("Using translation '" + getLang() + "'");
 
         // note: should not need to check if loader is already set, as the file name is dynamic.
         // this is unlike other config files (see: Config#load())

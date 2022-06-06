@@ -31,7 +31,7 @@ public final class CustomDropsCfg extends Config {
         if(fromVersion < UPDATER_CUTOFF_FILE_VERSION) {
             Log.sev("Configuration '" + getFileName() + "' is too old to be migrated: it " +
                 "is version '" + fromVersion + "', but the 'cutoff' version is '" +
-                UPDATER_CUTOFF_FILE_VERSION + "'.");
+                UPDATER_CUTOFF_FILE_VERSION + "'", true);
             return false;
         }
 
@@ -41,7 +41,7 @@ public final class CustomDropsCfg extends Config {
         //noinspection LoopStatementThatDoesntLoop
         while(currentFileVersion < getLatestFileVersion()) {
             Log.inf("Updating configuration '" + getFileName() + "' from file version '" +
-                currentFileVersion + "' to '" + (currentFileVersion + 1) + "'.");
+                currentFileVersion + "' to '" + (currentFileVersion + 1) + "'");
 
             switch(currentFileVersion) {
                 case LATEST_LM_3_CUSTOM_DROPS_FILE_VERSION -> {
@@ -51,14 +51,13 @@ public final class CustomDropsCfg extends Config {
                     root node("metadata", "version", "current").set(currentFileVersion)
                     loader save(root)
                      */
-                    Log.sev("Update logic is not yet available for LM3 Custom Drops.");
+                    Log.sev("Update logic is not yet available for LM3 Custom Drops", true);
                     return false;
                 }
                 default -> {
                     Log.sev("Attempted to update from file version '" + currentFileVersion +
                         "' of configuration '" + getFileName() + "', but no updater logic is " +
-                        "present for that file version. Please inform LevelledMobs maintainers, " +
-                        "as this should be impossible.");
+                        "present for that file version", true);
                     return false;
                 }
             }

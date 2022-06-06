@@ -164,7 +164,7 @@ public enum Message {
                     toParse = toParse.replace(replacements[j], replacements[j + 1]);
             } else {
                 Log.sev("Skipping placeholder replacement in message '" + this + "' as an odd "
-                    + "num of placeholder parameters were entered. Please inform LM maintainers.");
+                    + "num of placeholder parameters were entered.", true);
             }
 
             to[i] = MineDown.parse(toParse);

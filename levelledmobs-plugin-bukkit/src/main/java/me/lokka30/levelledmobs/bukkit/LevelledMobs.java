@@ -26,7 +26,7 @@ public final class LevelledMobs extends JavaPlugin {
     @Override
     public void onLoad() {
         instance = this;
-        Log.inf("Plugin initialized.");
+        Log.inf("Plugin initialized");
     }
 
     @Override
@@ -38,8 +38,8 @@ public final class LevelledMobs extends JavaPlugin {
             getListenerHandler().load() &&
             getCommandHandler().load()
         )) {
-            Log.sev("LevelledMobs encountered a fatal error during the startup process. " +
-                "It will disable itself to prevent possible issues resulting from malfunction.",
+            Log.sev("LevelledMobs encountered a fatal error during the startup process; " +
+                "it will disable itself to prevent possible issues resulting from malfunction.",
                 true);
             setEnabled(false);
             return;
@@ -53,12 +53,12 @@ public final class LevelledMobs extends JavaPlugin {
 
         runTestingProcedures();
 
-        Log.inf("Plugin enabled.");
+        Log.inf("Plugin enabled");
     }
 
     @Override
     public void onDisable() {
-        Log.inf("Plugin disabled.");
+        Log.inf("Plugin disabled");
     }
 
     /*
@@ -82,7 +82,7 @@ public final class LevelledMobs extends JavaPlugin {
     }
 
     private void runTestingProcedures() {
-        Log.war("Running testing procedures.", false);
+        Log.war("Running testing procedures", false);
     }
 
     /* getters and setters */

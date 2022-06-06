@@ -32,7 +32,7 @@ public abstract class Config {
     /* methods */
 
     public boolean load() {
-        Log.inf("Loading file '" + getFileName() + "'.");
+        Log.inf("Loading file '" + getFileName() + "'");
 
         saveDefaultFile(false);
 
@@ -83,12 +83,12 @@ public abstract class Config {
                 "compatible file version. Was it modified by the user?", false);
             return true;
         } else if(currentFileVersion < latestFileVersion) {
-            Log.inf("Update detected for configuration '" + getFileName() + "'; updating.");
+            Log.inf("Update detected for configuration '" + getFileName() + "'; updating");
             if(updateLogic(currentFileVersion)) {
-                Log.inf("Configuration '" + getFileName() + "' has been updated.");
+                Log.inf("Configuration '" + getFileName() + "' has been updated");
                 return true;
             } else {
-                Log.sev("Update for configuration '" + getFileName() + "' failed.",
+                Log.sev("Update for configuration '" + getFileName() + "' failed",
                     true);
                 return false;
             }
@@ -125,7 +125,7 @@ public abstract class Config {
                 return 0;
             } else {
                 Log.inf("LM4-style file version not found for config '" + getFileName() +
-                    "'; falling back to the LM3-style file version until the file is updated.");
+                    "'; falling back to the LM3-style file version until the file is updated");
                 return fileVersionLm3;
             }
         } else {
@@ -137,7 +137,7 @@ public abstract class Config {
         if(!replaceExistingFile && getAbsolutePath().toFile().exists())
             return;
 
-        Log.inf("Saving default file of configuration '" + getFileName() + "'.");
+        Log.inf("Saving default file of configuration '" + getFileName() + "'");
         LevelledMobs.getInstance().saveResource(getFileName(), replaceExistingFile);
     }
 

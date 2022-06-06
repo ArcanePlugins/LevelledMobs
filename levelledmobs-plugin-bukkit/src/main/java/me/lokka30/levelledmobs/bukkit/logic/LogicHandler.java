@@ -24,7 +24,7 @@ public final class LogicHandler {
     Initialisation - parse functions, presets, groups, etc.
      */
     public boolean load() {
-        Log.inf("Loading logic system.");
+        Log.inf("Loading logic system");
         return parseGroups() && parsePresets() && parseCustomDrops() && parseFunctions();
     }
 
@@ -45,7 +45,7 @@ public final class LogicHandler {
     }
 
     private boolean parseGroups() {
-        Log.inf("Parsing groups.");
+        Log.inf("Parsing groups");
 
         final var groupsMap = LevelledMobs.getInstance()
                 .getConfigHandler().getGroupsCfg()
@@ -110,7 +110,7 @@ public final class LogicHandler {
     }
 
     private boolean parsePresets() {
-        Log.inf("Parsing presets.");
+        Log.inf("Parsing presets");
 
         //TODO
         Log.inf("Successfully parsed " + getPresets().size() + " preset(s)");
@@ -118,7 +118,7 @@ public final class LogicHandler {
     }
 
     private boolean parseCustomDrops() {
-        Log.inf("Parsing custom drops.");
+        Log.inf("Parsing custom drops");
 
         //TODO
         Log.inf("Successfully parsed " + "?" + " custom drop(s).");

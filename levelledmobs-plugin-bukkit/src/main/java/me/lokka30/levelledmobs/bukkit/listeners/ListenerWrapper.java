@@ -42,7 +42,8 @@ public abstract class ListenerWrapper implements Listener {
             Bukkit.getPluginManager().registerEvents(this, LevelledMobs.getInstance());
         } catch(Exception ex) {
             if(isImperative()) {
-                Log.sev("Unable to register listener '" + getClass().getSimpleName() + "'.");
+                Log.sev("Unable to register listener '" + getClass().getSimpleName() + "'",
+                    true);
                 return false;
             }
         }

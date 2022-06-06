@@ -16,7 +16,7 @@ public final class ListenerHandler {
     /* methods */
 
     public boolean load() {
-        Log.inf("Registering listeners.");
+        Log.inf("Registering listeners");
         for(var listener : getListeners())
             if(!listener.register())
                 return false;
