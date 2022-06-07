@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Objects;
 import me.lokka30.levelledmobs.bukkit.LevelledMobs;
 import me.lokka30.levelledmobs.bukkit.event.action.ActionParseEvent;
+import me.lokka30.levelledmobs.bukkit.event.condition.ConditionParseEvent;
 import me.lokka30.levelledmobs.bukkit.event.function.FunctionPostParseEvent;
 import me.lokka30.levelledmobs.bukkit.event.function.FunctionPreParseEvent;
 import me.lokka30.levelledmobs.bukkit.event.group.GroupPostParseEvent;
@@ -321,6 +322,9 @@ public final class LogicHandler {
             if(processPreParseEvent.isCancelled()) continue;
 
             /* parse actions */
+            //TODO make preset parsing happen after function parsing
+            //TODO make preset parasing factor in sockets
+            //TODO future - may want to consider multiple sockets behaviour
             if(!(parseActions(process) && parseConditions(process)))
                 return false;
 
@@ -347,7 +351,6 @@ public final class LogicHandler {
 
                 final var actionParseEvent = new ActionParseEvent(identifier);
                 Bukkit.getPluginManager().callEvent(actionParseEvent);
-                //if(actionParseEvent.isCancelled()) continue; //TODO this line may be unnecessary, keeping just in case.
                 if(!actionParseEvent.isClaimed()) {
                     Log.sev(String.format(
                         "Action '%s' in process '%s' in function '%s' is not known to " +
@@ -364,9 +367,6 @@ public final class LogicHandler {
                     actionNode,
                     actionNode.node("socket").getString(null)
                 ));
-                //TODO make preset parsing happen after function parsing
-                //TODO make preset parasing factor in sockets
-                //todo may want to consider multiple sockets behaviour
             } else {
                 Log.sev(String.format(
                     "Process '%s' in function '%s' contains an item in the actions list which " +
@@ -380,9 +380,47 @@ public final class LogicHandler {
         return true;
     }
 
+    // TODO Test
     private boolean parseConditions(final @NotNull Process process) {
         Objects.requireNonNull(process, "process");
-        //TODO
+
+        final List<CommentedConfigurationNode> conditionNodes = process.getNode().node("if").childrenList();
+
+        for(var conditionNode : conditionNodes) {
+            if(conditionNode.hasChild("condition")) {
+                final String identifier = Objects.requireNonNull(
+                    conditionNode.node("condition").getString(null),
+                    "identifier"
+                );
+
+                final var conditionParseEvent = new ConditionParseEvent(identifier);
+                Bukkit.getPluginManager().callEvent(conditionParseEvent);
+                if(!conditionParseEvent.isClaimed()) {
+                    Log.sev(String.format(
+                        "Condition '%s' in process '%s' in function '%s' is not known to " +
+                            "LevelledMobs or any of it external integrations. Verify the " +
+                            "spelling is correct.",
+                        identifier, process.getIdentifier(), process.getFunction().getIdentifier()
+                    ), true);
+                    return false;
+                }
+
+            } else if(conditionNode.hasChild("socket")) {
+                process.getActions().add(new ActionSocket(
+                    process,
+                    conditionNode,
+                    conditionNode.node("socket").getString(null)
+                ));
+            } else {
+                Log.sev(String.format(
+                    "Process '%s' in function '%s' contains an item in the conditions list which " +
+                        "does not identify as an action or socket.",
+                    process.getIdentifier(), process.getFunction().getIdentifier()
+                ), true);
+                return false;
+            }
+        }
+
         return true;
     }
 
