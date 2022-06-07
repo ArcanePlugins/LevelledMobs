@@ -143,5 +143,7 @@ public enum DebugType {
 
     SKYLIGHT_LEVEL,
 
-    CHUNK_KILL_COUNT
+    CHUNK_KILL_COUNT,
+
+    RULE_COOLDOWN
 }

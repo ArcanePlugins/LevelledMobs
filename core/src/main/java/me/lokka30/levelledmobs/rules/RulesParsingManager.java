@@ -23,7 +23,6 @@ import org.bukkit.entity.EntityType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -768,8 +767,8 @@ public class RulesParsingManager {
         parsingInfo.conditions_ApplyBelowY = ymlHelper.getInt2(cs,"apply-below-y", parsingInfo.conditions_ApplyBelowY);
         parsingInfo.conditions_MinDistanceFromSpawn = ymlHelper.getInt2(cs, "min-distance-from-spawn", parsingInfo.conditions_MinDistanceFromSpawn);
         parsingInfo.conditions_MaxDistanceFromSpawn = ymlHelper.getInt2(cs, "max-distance-from-spawn", parsingInfo.conditions_MaxDistanceFromSpawn);
-        parsingInfo.conditions_CooldownTime = ymlHelper.getIntTimeUnitMS(cs, "cooldown", parsingInfo.conditions_CooldownTime);
-        parsingInfo.conditions_TimesToCooldownActivation = ymlHelper.getInt2(cs, "cooldown-times", parsingInfo.conditions_TimesToCooldownActivation);
+        parsingInfo.conditions_CooldownTime = ymlHelper.getIntTimeUnitMS(cs, "cooldown-time", parsingInfo.conditions_CooldownTime);
+        parsingInfo.conditions_TimesToCooldownActivation = ymlHelper.getInt2(cs, "cooldown-times-to-activation", parsingInfo.conditions_TimesToCooldownActivation);
 
         parsingInfo.conditions_WGRegions = buildCachedModalListOfString(cs, "allowed-worldguard-regions", parsingInfo.conditions_WGRegions);
         parsingInfo.conditions_WGRegionOwners = buildCachedModalListOfString(cs, "allowed-worldguard-region-owners", parsingInfo.conditions_WGRegionOwners);

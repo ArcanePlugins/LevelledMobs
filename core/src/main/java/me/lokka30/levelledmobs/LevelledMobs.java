@@ -167,6 +167,7 @@ public final class LevelledMobs extends JavaPlugin {
         levelManager.entitySpawnListener.processMobSpawns = helperSettings.getBoolean(settingsCfg, "level-mobs-upon-spawn", true);
         levelManager.clearRandomLevellingCache();
         configUtils.playerLevellingEnabled = rulesManager.isPlayerLevellingEnabled();
+        rulesManager.clearTempDisabledRulesCounts();
 
         reloadFinishedMsg.forEach(sender::sendMessage);
     }

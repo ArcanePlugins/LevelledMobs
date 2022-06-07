@@ -61,6 +61,7 @@ public class RulesManager {
     public final Map<String, List<String>> biomeGroupMappings;
     final Map<String, List<Instant>> rulesCooldown;
     public boolean anyRuleHasChance;
+    private Instant lastRulesCheck;
     final static Object ruleLocker = new Object();
 
     public boolean getRule_IsWorldAllowedInAnyRule(final @Nullable World world){
@@ -613,10 +614,15 @@ public class RulesManager {
     public ApplicableRulesResult getApplicableRules(final LivingEntityInterface lmInterface){
         final ApplicableRulesResult applicableRules = new ApplicableRulesResult();
 
+        if (this.lastRulesCheck == null || Duration.between(this.lastRulesCheck, Instant.now()).toMillis() > 100){
+            // check temp disabled rules every 100ms minimum
+            checkTempDisabledRules();
+            this.lastRulesCheck = Instant.now();
+        }
+
         for (final List<RuleInfo> rules : rulesInEffect.values()) {
             for (final RuleInfo ruleInfo : rules) {
-
-                if (!ruleInfo.ruleIsEnabled) continue;
+                if (!ruleInfo.ruleIsEnabled || ruleInfo.isTempDisabled) continue;
 
                 if (lmInterface instanceof LivingEntityWrapper && !isRuleApplicable_Entity((LivingEntityWrapper) lmInterface, ruleInfo))
                     continue;
@@ -631,6 +637,7 @@ public class RulesManager {
                     applicableRules.allApplicableRules_MadeChance.add(ruleInfo);
 
                 applicableRules.allApplicableRules.add(ruleInfo);
+                checkIfRuleShouldBeTempDisabled(ruleInfo, lmInterface);
 
                 if (ruleInfo.stopProcessingRules != null && ruleInfo.stopProcessingRules) {
                     Utils.debugLog(main, DebugType.DENIED_RULE_STOP_PROCESSING, String.format("&b%s&7, mob: &b%s&7, rule count: &b%s",
@@ -650,6 +657,27 @@ public class RulesManager {
 
         return hasWorldListSpecified ?
                 applicableRules : new ApplicableRulesResult();
+    }
+
+    private void checkIfRuleShouldBeTempDisabled(final @NotNull RuleInfo ruleInfo, final @NotNull LivingEntityInterface lmInterface){
+        if (!(lmInterface instanceof LivingEntityWrapper)) return;
+        final LivingEntityWrapper lmEntity = (LivingEntityWrapper) lmInterface;
+
+        // don't increment the count when just checking nametags, etc
+        if (!lmEntity.isNewlySpawned && !lmEntity.isRulesForceAll) return;
+
+        synchronized (ruleLocker){
+            if (!this.rulesCooldown.containsKey(ruleInfo.getRuleName()))
+                this.rulesCooldown.put(ruleInfo.getRuleName(), new LinkedList<>());
+            final List<Instant> instants = this.rulesCooldown.get(ruleInfo.getRuleName());
+            instants.add(Instant.now());
+
+            if (ruleInfo.conditions_TimesToCooldownActivation == null || instants.size() >= ruleInfo.conditions_TimesToCooldownActivation) {
+                if (ruleInfo.conditions_CooldownTime == null || ruleInfo.conditions_CooldownTime <= 0) return;
+                Utils.debugLog(main, DebugType.RULE_COOLDOWN, ruleInfo.getRuleName() + ": cooldown reached, disabling rule");
+                ruleInfo.isTempDisabled = true;
+            }
+        }
     }
 
     private boolean isRuleApplicable_Entity(final LivingEntityWrapper lmEntity, @NotNull final RuleInfo ri){
@@ -960,6 +988,12 @@ public class RulesManager {
         }
     }
 
+    public void clearTempDisabledRulesCounts(){
+        synchronized (ruleLocker){
+            this.rulesCooldown.clear();
+        }
+    }
+
     void checkTempDisabledRules(){
         synchronized (ruleLocker){
             if (this.rulesCooldown.isEmpty()) return;
@@ -970,17 +1004,20 @@ public class RulesManager {
                 final RuleInfo rule = this.ruleNameMappings.get(ruleName);
                 if (rule == null || rule.conditions_CooldownTime == null || rule.conditions_CooldownTime <= 0){
                     if (rule != null) rule.isTempDisabled = false;
-                    this.rulesCooldown.remove(ruleName);
+                    iterator.remove();
                     continue;
                 }
 
                 final List<Instant> instants = this.rulesCooldown.get(ruleName);
                 final int preCount = instants.size();
                 if (instants.removeIf(k -> Duration.between(k, Instant.now()).toMillis() > rule.conditions_CooldownTime)){
-                    Utils.logger.info(String.format("rule: %s, removing cooldown duration, pre: %s, post: %s",
+                    Utils.debugLog(main, DebugType.RULE_COOLDOWN, String.format("rule: %s, removed cooldown entries, pre: %s, post: %s",
                             rule.getRuleName(), preCount, instants.size()));
+                    if (instants.isEmpty()) {
+                        rule.isTempDisabled = false;
+                        iterator.remove();
+                    }
                 }
-
             }
         }
     }
