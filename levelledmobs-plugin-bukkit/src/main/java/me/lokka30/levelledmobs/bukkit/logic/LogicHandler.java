@@ -11,6 +11,7 @@ import me.lokka30.levelledmobs.bukkit.event.group.GroupPostParseEvent;
 import me.lokka30.levelledmobs.bukkit.event.group.GroupPreParseEvent;
 import me.lokka30.levelledmobs.bukkit.event.process.ProcessPostParseEvent;
 import me.lokka30.levelledmobs.bukkit.event.process.ProcessPreParseEvent;
+import me.lokka30.levelledmobs.bukkit.logic.action.ActionSocket;
 import me.lokka30.levelledmobs.bukkit.util.Log;
 import org.bukkit.Bukkit;
 import org.jetbrains.annotations.NotNull;
@@ -230,7 +231,7 @@ public final class LogicHandler {
             Bukkit.getPluginManager().callEvent(functionPreParseEvent);
             if(functionPreParseEvent.isCancelled()) continue;
 
-            /* parse processes todo */
+            /* parse processes */
             if(!(parseProcesses(function)))
                 return false;
 
@@ -269,7 +270,7 @@ public final class LogicHandler {
             }
 
             /* create obj */
-            final var process = new Process(identifier, description, processNode);
+            final var process = new Process(identifier, description, processNode, function);
 
             /* add triggers */
             final var presetsNode = processNode.node("presets");
@@ -313,30 +314,74 @@ public final class LogicHandler {
                 return false;
             }
 
-            /* call pre parse process */
-
+            /* call pre-parse process event */
             final var processPreParseEvent = new ProcessPreParseEvent(process);
             Bukkit.getPluginManager().callEvent(processPreParseEvent);
             if(processPreParseEvent.isCancelled()) continue;
 
             /* parse actions */
-            if(!(parseActions(process)))
+            if(!(parseActions(process) && parseConditions(process)))
                 return false;
 
-            /* parse conditions */
-            if(!(parseConditions(process)))
-                return false;
-
-            /* call post parse process */
+            /* call post-parse process event */
             Bukkit.getPluginManager().callEvent(new ProcessPostParseEvent(process));
+            function.getProcesses().add(process);
         }
 
         return true;
     }
 
     private boolean parseActions(final @NotNull Process process) {
+        /*
+        [pseudocode]
+            for each action node
+              if node is an action
+                let plugins claim it
+              else if node is a placeholder
+                for each preset
+                  if preset has action with same id as placeholder
+                  //todo may want to consider multiple placeholders ?
+                    use action from preset
+              else
+                error
+         */
+
         Objects.requireNonNull(process, "process");
+
         //TODO
+
+        final List<CommentedConfigurationNode> actionNodes = process.getNode().node("do").childrenList();
+
+        for(var actionNode : actionNodes) {
+            if(actionNode.hasChild("action")) {
+                //TODO
+                final String identifier = Objects.requireNonNull(
+                    actionNode.node("action").getString(null),
+                    "identifier"
+                );
+
+                // todo call actionparseevent
+
+                // todo if no ownership then error
+
+            } else if(actionNode.hasChild("socket")) {
+                process.getActions().add(new ActionSocket(
+                    process,
+                    actionNode,
+                    actionNode.node("socket").getString(null)
+                ));
+                //TODO make preset parsing happen after function parsing
+                //TODO make preset parasing factor in sockets
+            } else {
+                Log.sev(String.format(
+                    "Process '%s' in function '%s' contains an item in the actions list which " +
+                        "does not identify as an action or socket.",
+                    process.getIdentifier(), process.getFunction().getIdentifier()
+                ), true);
+                return false;
+            }
+        }
+
         return true;
     }
 

@@ -4,7 +4,7 @@ import me.lokka30.levelledmobs.bukkit.logic.Process;
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
 
-//TODO this should not be cancellable!
+//TODO this should not be cancellable
 public final class ProcessPostParseEvent extends CancellableProcessEvent {
 
     /* vars */
