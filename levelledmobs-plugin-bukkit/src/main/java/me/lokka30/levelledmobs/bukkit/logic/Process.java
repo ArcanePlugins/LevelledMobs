@@ -5,6 +5,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import me.lokka30.levelledmobs.bukkit.logic.action.Action;
+import me.lokka30.levelledmobs.bukkit.logic.condition.Condition;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.configurate.CommentedConfigurationNode;
 

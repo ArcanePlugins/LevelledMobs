@@ -47,7 +47,10 @@ public final class EntitySpawnListener extends ListenerWrapper {
         Fire the associated trigger.
          */
         LevelledMobs.getInstance().getLogicHandler().runFunctionsWithTriggers(
-            new Context().withEntity(entity),
+            new Context()
+                .withEntity(entity)
+                .withEntityType(entity.getType())
+                .withLocation(entity.getLocation()),
             "on-entity-spawn", "on-mob-spawn"
         );
     }

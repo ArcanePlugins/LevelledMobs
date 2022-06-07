@@ -25,8 +25,6 @@ public final class Context {
     @NotNull
     public Context withEntity(final @NotNull Entity entity) {
         this.entity = entity;
-        this.entityType = entity.getType();
-        this.location = entity.getLocation();
         return this;
     }
 
