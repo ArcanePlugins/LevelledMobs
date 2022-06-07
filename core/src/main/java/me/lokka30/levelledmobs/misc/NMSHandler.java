@@ -5,6 +5,7 @@ import me.lokka30.levelledmobs.managers.ExternalCompatibilityManager;
 import me.lokka30.levelledmobs.nametags.NMSUtil;
 import me.lokka30.levelledmobs.nametags.Nametags_18_R1;
 import me.lokka30.levelledmobs.nametags.Nametags_18_R2;
+import me.lokka30.levelledmobs.nametags.Nametags_19_R1;
 import org.bukkit.Bukkit;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -43,8 +44,10 @@ public class NMSHandler {
         if (this.currentUtil != null)
             return this.currentUtil;
 
-        // TODO: add 1.19 once available
+        boolean usedProtocolLib = false;
 
+        if ("v1_19_R1".equalsIgnoreCase(nmsVersionString))
+            this.currentUtil = new Nametags_19_R1();
         if ("v1_18_R2".equalsIgnoreCase(nmsVersionString))
             this.currentUtil = new Nametags_18_R2();
         else if ("v1_18_R1".equalsIgnoreCase(nmsVersionString))
@@ -53,7 +56,13 @@ public class NMSHandler {
             // we don't directly support this version, use ProtocolLib
             Utils.logger.info("We don't have NMS support for this version of Minecraft, using ProtocolLib");
             this.currentUtil = new ProtocolLibHandler(main);
+            usedProtocolLib = true;
         }
+
+        if (usedProtocolLib)
+            Utils.logger.info("Using ProtocolLib for nametag support");
+        else
+            Utils.logger.info(String.format("Using NMS version %s for nametag support", nmsVersionString));
 
         return this.currentUtil;
     }
