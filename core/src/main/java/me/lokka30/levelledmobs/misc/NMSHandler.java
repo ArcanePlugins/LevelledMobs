@@ -59,9 +59,7 @@ public class NMSHandler {
             usedProtocolLib = true;
         }
 
-        if (usedProtocolLib)
-            Utils.logger.info("Using ProtocolLib for nametag support");
-        else
+        if (!usedProtocolLib)
             Utils.logger.info(String.format("Using NMS version %s for nametag support", nmsVersionString));
 
         return this.currentUtil;
