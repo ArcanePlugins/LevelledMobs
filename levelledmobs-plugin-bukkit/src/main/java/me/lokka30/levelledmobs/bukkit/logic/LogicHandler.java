@@ -5,6 +5,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
 import me.lokka30.levelledmobs.bukkit.LevelledMobs;
+import me.lokka30.levelledmobs.bukkit.event.action.ActionParseEvent;
 import me.lokka30.levelledmobs.bukkit.event.function.FunctionPostParseEvent;
 import me.lokka30.levelledmobs.bukkit.event.function.FunctionPreParseEvent;
 import me.lokka30.levelledmobs.bukkit.event.group.GroupPostParseEvent;
@@ -331,38 +332,31 @@ public final class LogicHandler {
         return true;
     }
 
+    //TODO test
     private boolean parseActions(final @NotNull Process process) {
-        /*
-        [pseudocode]
-            for each action node
-              if node is an action
-                let plugins claim it
-              else if node is a placeholder
-                for each preset
-                  if preset has action with same id as placeholder
-                  //todo may want to consider multiple placeholders ?
-                    use action from preset
-              else
-                error
-         */
-
         Objects.requireNonNull(process, "process");
-
-        //TODO
 
         final List<CommentedConfigurationNode> actionNodes = process.getNode().node("do").childrenList();
 
         for(var actionNode : actionNodes) {
             if(actionNode.hasChild("action")) {
-                //TODO
                 final String identifier = Objects.requireNonNull(
                     actionNode.node("action").getString(null),
                     "identifier"
                 );
 
-                // todo call actionparseevent
-
-                // todo if no ownership then error
+                final var actionParseEvent = new ActionParseEvent(identifier);
+                Bukkit.getPluginManager().callEvent(actionParseEvent);
+                //if(actionParseEvent.isCancelled()) continue; //TODO this line may be unnecessary, keeping just in case.
+                if(!actionParseEvent.isClaimed()) {
+                    Log.sev(String.format(
+                        "Action '%s' in process '%s' in function '%s' is not known to " +
+                            "LevelledMobs or any of it external integrations. Verify the " +
+                            "spelling is correct.",
+                        identifier, process.getIdentifier(), process.getFunction().getIdentifier()
+                    ), true);
+                    return false;
+                }
 
             } else if(actionNode.hasChild("socket")) {
                 process.getActions().add(new ActionSocket(
@@ -372,6 +366,7 @@ public final class LogicHandler {
                 ));
                 //TODO make preset parsing happen after function parsing
                 //TODO make preset parasing factor in sockets
+                //todo may want to consider multiple sockets behaviour
             } else {
                 Log.sev(String.format(
                     "Process '%s' in function '%s' contains an item in the actions list which " +
