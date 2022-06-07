@@ -1,6 +1,6 @@
 package me.lokka30.levelledmobs.bukkit.event.group;
 
-import me.lokka30.levelledmobs.bukkit.logic.Group;
+import me.lokka30.levelledmobs.bukkit.logic.group.Group;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;

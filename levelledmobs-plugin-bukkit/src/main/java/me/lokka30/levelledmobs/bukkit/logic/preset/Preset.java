@@ -1,4 +1,4 @@
-package me.lokka30.levelledmobs.bukkit.logic;
+package me.lokka30.levelledmobs.bukkit.logic.preset;
 
 import org.jetbrains.annotations.NotNull;
 

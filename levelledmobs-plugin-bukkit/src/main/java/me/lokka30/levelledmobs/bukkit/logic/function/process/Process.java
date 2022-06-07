@@ -1,11 +1,13 @@
-package me.lokka30.levelledmobs.bukkit.logic;
+package me.lokka30.levelledmobs.bukkit.logic.function.process;
 
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-import me.lokka30.levelledmobs.bukkit.logic.action.Action;
-import me.lokka30.levelledmobs.bukkit.logic.condition.Condition;
+import me.lokka30.levelledmobs.bukkit.logic.function.process.action.Action;
+import me.lokka30.levelledmobs.bukkit.logic.function.process.condition.Condition;
+import me.lokka30.levelledmobs.bukkit.logic.function.LmFunction;
+import me.lokka30.levelledmobs.bukkit.logic.preset.Preset;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.configurate.CommentedConfigurationNode;
 

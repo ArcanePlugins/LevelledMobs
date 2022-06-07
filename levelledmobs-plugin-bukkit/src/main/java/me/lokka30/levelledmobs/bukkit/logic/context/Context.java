@@ -1,4 +1,4 @@
-package me.lokka30.levelledmobs.bukkit.logic;
+package me.lokka30.levelledmobs.bukkit.logic.context;
 
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
