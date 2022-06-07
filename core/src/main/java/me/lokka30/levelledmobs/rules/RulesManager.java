@@ -1021,4 +1021,40 @@ public class RulesManager {
             }
         }
     }
+
+    @NotNull
+    public String showTempDisabledRules(final boolean isFromConsole){
+        synchronized (ruleLocker) {
+            if (this.rulesCooldown.isEmpty()) {
+                final String message = "No rules are currently temporarily disabled";
+                if (isFromConsole)
+                    return String.format("%s %s", main.configUtils.getPrefix(), message);
+                else
+                    return message;
+            }
+
+            checkTempDisabledRules();
+
+            final StringBuilder sb = new StringBuilder();
+            if (isFromConsole) {
+                sb.append(main.configUtils.getPrefix());
+                sb.append(String.format(" %s rule(s) currently disabled:", this.rulesCooldown.size()));
+            }
+
+            for (final String ruleName : this.rulesCooldown.keySet()){
+                final RuleInfo rule = this.ruleNameMappings.get(ruleName);
+                if (rule == null || rule.conditions_CooldownTime == null) continue;
+                sb.append(System.lineSeparator());
+
+                sb.append(ruleName);
+                sb.append(": seconds left: ");
+                final Instant instant = this.rulesCooldown.get(ruleName).get(0);
+                final long millisecondsSince = Duration.between(instant, Instant.now()).toMillis();
+                final Duration duration = Duration.ofMillis(rule.conditions_CooldownTime - millisecondsSince);
+                sb.append(duration.toSeconds());
+            }
+
+            return sb.toString();
+        }
+    }
 }

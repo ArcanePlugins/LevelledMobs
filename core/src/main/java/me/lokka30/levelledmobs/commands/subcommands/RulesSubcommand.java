@@ -131,8 +131,15 @@ public class RulesSubcommand extends MessagesBase implements Subcommand {
             resetRules(sender, args);
         else if ("force_all".equalsIgnoreCase(args[1]))
             forceRelevel(sender);
+        else if ("show_temp_disabled".equalsIgnoreCase(args[1]))
+            showTempDisabled(sender);
         else
             showMessage("common.invalid-command");
+    }
+
+    private void showTempDisabled(final @NotNull CommandSender sender){
+        final boolean isConsoleSender = sender instanceof ConsoleCommandSender;
+        sender.sendMessage(main.rulesManager.showTempDisabledRules(isConsoleSender));
     }
 
     private void forceRelevel(final CommandSender sender){
@@ -485,7 +492,7 @@ public class RulesSubcommand extends MessagesBase implements Subcommand {
         final List<String> suggestions = new LinkedList<>();
 
         if (args.length == 2)
-            return Arrays.asList("force_all", "help_discord", "help_wiki", "reset", "show_all", "show_effective", "show_rule");
+            return Arrays.asList("force_all", "help_discord", "help_wiki", "reset", "show_all", "show_effective", "show_rule", "show_temp_disabled");
         else if (args.length >= 3) {
             if ("reset".equalsIgnoreCase(args[1]) && args.length == 3)
                 suggestions.addAll(List.of("basic", "average", "enhanced", "extreme"));

@@ -14,6 +14,8 @@ import me.lokka30.levelledmobs.misc.Addition;
 import me.lokka30.levelledmobs.misc.AdditionalLevelInformation;
 import me.lokka30.levelledmobs.misc.LevellableState;
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
+import me.lokka30.levelledmobs.misc.MythicMobUtils;
+import me.lokka30.levelledmobs.misc.MythicMobsMobInfo;
 import me.lokka30.levelledmobs.misc.NBTApplyResult;
 import me.lokka30.levelledmobs.misc.PlayerHomeCheckResult;
 import me.lokka30.levelledmobs.misc.PlayerLevelSourceResult;
@@ -450,10 +452,14 @@ public class LevelManager implements LevelInterface {
             // custom drops also get multiplied in the custom drops handler
             final CustomDropResult dropResult = main.customDropsHandler.getCustomItemDrops(lmEntity, customDrops, false);
 
-            if (dropResult.hasOverride) {
+            final MythicMobsMobInfo mmInfo = MythicMobUtils.getMythicMobInfo(lmEntity);
+            if (mmInfo != null && mmInfo.preventOtherDrops)
                 hasOverride = true;
+
+            if (dropResult.hasOverride) hasOverride = true;
+
+            if (hasOverride)
                 removeVanillaDrops(lmEntity, dropsToMultiply);
-            }
         }
 
         int additionUsed = 0;
@@ -1126,6 +1132,9 @@ public class LevelManager implements LevelInterface {
     }
 
     private void applyLevelledEquipment_NonAsync(@NotNull final LivingEntityWrapper lmEntity) {
+        final MythicMobsMobInfo mmInfo = MythicMobUtils.getMythicMobInfo(lmEntity);
+        if (mmInfo != null && mmInfo.preventRandomEquipment) return;
+
         final List<ItemStack> items = new LinkedList<>();
         final CustomDropResult dropResult = main.customDropsHandler.getCustomItemDrops(lmEntity, items, true);
         if (items.isEmpty()) return;
