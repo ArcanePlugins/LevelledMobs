@@ -4,17 +4,13 @@
 
 package me.lokka30.levelledmobs.managers;
 
-import com.comphenix.protocol.PacketType;
-import com.comphenix.protocol.ProtocolLibrary;
-import com.comphenix.protocol.events.PacketContainer;
-import com.comphenix.protocol.wrappers.WrappedChatComponent;
-import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 import me.lokka30.levelledmobs.LevelledMobs;
-import me.lokka30.levelledmobs.misc.DebugType;
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
+import me.lokka30.levelledmobs.nms.NMSHandler;
 import me.lokka30.levelledmobs.misc.NametagTimerChecker;
 import me.lokka30.levelledmobs.misc.QueueItem;
-import me.lokka30.levelledmobs.misc.Utils;
+import me.lokka30.levelledmobs.util.Utils;
+import me.lokka30.levelledmobs.nms.NMSUtil;
 import me.lokka30.levelledmobs.rules.NametagVisibilityEnum;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.LivingEntity;
@@ -24,13 +20,10 @@ import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 
-import java.lang.reflect.InvocationTargetException;
 import java.time.Instant;
-import java.util.ConcurrentModificationException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.WeakHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
@@ -45,13 +38,26 @@ public class NametagQueueManager {
 
     public NametagQueueManager(final LevelledMobs main) {
         this.main = main;
+        this.nmsHandler = new NMSHandler(main);
         this.queue = new LinkedBlockingQueue<>();
+        getNMSUtil();
     }
 
     private final LevelledMobs main;
     private boolean isRunning;
     private boolean doThread;
+    private NMSUtil nmsUtil;
     private final LinkedBlockingQueue<QueueItem> queue;
+    public final NMSHandler nmsHandler;
+
+    private void getNMSUtil(){
+
+        this.nmsUtil = nmsHandler.getCurrentUtil();
+    }
+
+    public boolean hasNametagSupport(){
+        return this.nmsUtil != null;
+    }
 
     public void start(){
         if (isRunning) return;
@@ -114,9 +120,15 @@ public class NametagQueueManager {
     }
 
     private void processItem(final @NotNull QueueItem item){
-        final int nametagTimerResetTime = item.lmEntity.getNametagCooldownTime();
+        if (this.nmsUtil == null){
+            // this would happen if the Minecraft version isn't supported directly by NMS
+            // and ProtocolLib is not installed
+            return;
+        }
 
-        if (nametagTimerResetTime > 0 && !Utils.isNullOrEmpty(item.nametag)) {
+        final long nametagTimerResetTime = item.lmEntity.getNametagCooldownTime();
+
+        if (nametagTimerResetTime > 0L && !Utils.isNullOrEmpty(item.nametag)) {
             synchronized (NametagTimerChecker.nametagTimer_Lock) {
                 final Map<Player, WeakHashMap<LivingEntity, Instant>> nametagCooldownQueue = main.nametagTimerChecker.getNametagCooldownQueue();
 
@@ -164,69 +176,31 @@ public class NametagQueueManager {
             }
         }
 
+        if (!item.lmEntity.getIsPopulated()) return;
+
+        if (main.helperSettings.getBoolean(main.settingsCfg, "use-customname-for-mob-nametags")){
+            updateNametag_CustomName(item.lmEntity, item.nametag);
+            return;
+        }
+
+        if (main.helperSettings.getBoolean(main.settingsCfg, "assert-entity-validity-with-nametag-packets") && !item.lmEntity.getLivingEntity().isValid())
+            return;
+
         updateNametag(item.lmEntity, item.nametag, item.players);
     }
 
     private void updateNametag(final @NotNull LivingEntityWrapper lmEntity, final String nametag, final List<Player> players) {
-        if (!lmEntity.getIsPopulated()) return;
-
-        if (main.helperSettings.getBoolean(main.settingsCfg, "use-customname-for-mob-nametags")){
-            updateNametag_CustomName(lmEntity, nametag);
-            return;
-        }
-
-        if (!ExternalCompatibilityManager.hasProtocolLibInstalled()) return;
-        if (main.helperSettings.getBoolean(main.settingsCfg, "assert-entity-validity-with-nametag-packets") && !lmEntity.getLivingEntity().isValid())
-            return;
-
         final int loopCount = lmEntity.playersNeedingNametagCooldownUpdate == null ?
                 1 : 2;
 
         for (int i = 0; i < loopCount; i++) {
             // will loop again to update with nametag cooldown for only the specified players
 
-            final WrappedDataWatcher dataWatcher;
-            final WrappedDataWatcher.Serializer chatSerializer;
-
-            try {
-                dataWatcher = WrappedDataWatcher.getEntityWatcher(lmEntity.getLivingEntity()).deepClone();
-            } catch (final ConcurrentModificationException ex) {
-                Utils.debugLog(main, DebugType.UPDATE_NAMETAG_FAIL, "&bConcurrentModificationException &7caught, skipping nametag update of &b" + lmEntity.getLivingEntity().getName() + "&7.");
-                return;
-            }
-
-            try {
-                chatSerializer = WrappedDataWatcher.Registry.getChatComponentSerializer(true);
-            } catch (final ConcurrentModificationException ex) {
-                Utils.debugLog(main, DebugType.UPDATE_NAMETAG_FAIL, "&bConcurrentModificationException &7caught, skipping nametag update of &b" + lmEntity.getLivingEntity().getName() + "&7.");
-                return;
-            } catch (final IllegalArgumentException ex) {
-                Utils.debugLog(main, DebugType.UPDATE_NAMETAG_FAIL, "Registry is empty (&bIllegalArgumentException&7 caught), skipping nametag update of &b" + lmEntity.getLivingEntity().getName() + "&7.");
-                return;
-            }
-
-            final WrappedDataWatcher.WrappedDataWatcherObject watcherObject = new WrappedDataWatcher.WrappedDataWatcherObject(2, chatSerializer);
-            final int objectIndex = 3;
-            final int fieldIndex = 0;
-            final Optional<Object> optional = Utils.isNullOrEmpty(nametag) ?
-                    Optional.empty() : Optional.of(WrappedChatComponent.fromChatMessage(nametag)[0].getHandle());
-
-            dataWatcher.setObject(watcherObject, optional);
-
-            if (nametag == null)
-                dataWatcher.setObject(objectIndex, false);
-            else {
-                final List<NametagVisibilityEnum> nametagVisibilityEnum = main.rulesManager.getRule_CreatureNametagVisbility(lmEntity);
-                final boolean doAlwaysVisible = i == 1 ||
+            final List<NametagVisibilityEnum> nametagVisibilityEnum = main.rulesManager.getRule_CreatureNametagVisbility(lmEntity);
+            final boolean doAlwaysVisible = i == 1 ||
                         !nametag.isEmpty() && lmEntity.getLivingEntity().isCustomNameVisible() ||
                         nametagVisibilityEnum.contains(NametagVisibilityEnum.ALWAYS_ON);
 
-                dataWatcher.setObject(objectIndex, doAlwaysVisible);
-            }
-
-            final PacketContainer packet = ProtocolLibrary.getProtocolManager().createPacket(PacketType.Play.Server.ENTITY_METADATA);
-            packet.getWatchableCollectionModifier().write(fieldIndex, dataWatcher.getWatchableObjects());
-            packet.getIntegers().write(fieldIndex, lmEntity.getLivingEntity().getEntityId());
 
             if (i == 0){
                 // these players are not getting always on nametags unless always on has been configured for the mob
@@ -234,32 +208,14 @@ public class NametagQueueManager {
                     if (lmEntity.playersNeedingNametagCooldownUpdate != null && lmEntity.playersNeedingNametagCooldownUpdate.contains(player))
                         continue;
 
-                    if (!sendPacket(player, lmEntity, packet)) return;
+                    nmsUtil.sendNametag(lmEntity.getLivingEntity(), nametag, player, doAlwaysVisible);
                 }
             } else {
                 // these players are getting always on nametags
                 for (final Player player : lmEntity.playersNeedingNametagCooldownUpdate)
-                    if (!sendPacket(player, lmEntity, packet)) return;
+                    nmsUtil.sendNametag(lmEntity.getLivingEntity(), nametag, player, true);
             }
         }
-    }
-
-    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
-    private boolean sendPacket(final @NotNull Player player, final LivingEntityWrapper lmEntity, final PacketContainer packet){
-        if (!player.isOnline()) return true;
-        if (!lmEntity.getLivingEntity().isValid()) return false;
-
-        try {
-            Utils.debugLog(main, DebugType.UPDATE_NAMETAG_SUCCESS, "Nametag packet sent for &b" + lmEntity.getLivingEntity().getName() + "&7 to &b" + player.getName() + "&7.");
-            ProtocolLibrary.getProtocolManager().sendServerPacket(player, packet);
-        } catch (final IllegalArgumentException ex) {
-            Utils.debugLog(main, DebugType.UPDATE_NAMETAG_FAIL, "&bIllegalArgumentException&7 caught whilst trying to sendServerPacket");
-        } catch (final InvocationTargetException ex) {
-            Utils.logger.error("Unable to update nametag packet for player &b" + player.getName() + "&7; Stack trace:");
-            ex.printStackTrace();
-        }
-
-        return true;
     }
 
     private void updateNametag_CustomName(final @NotNull LivingEntityWrapper lmEntity, final String nametag){

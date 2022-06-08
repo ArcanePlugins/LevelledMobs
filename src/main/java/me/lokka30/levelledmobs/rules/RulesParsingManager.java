@@ -4,15 +4,15 @@
 
 package me.lokka30.levelledmobs.rules;
 
-import me.lokka30.levelledmobs.LevelledMobs;
-import me.lokka30.levelledmobs.managers.ExternalCompatibilityManager;
 import me.lokka30.levelledmobs.misc.CachedModalList;
-import me.lokka30.levelledmobs.misc.CustomUniversalGroups;
-import me.lokka30.levelledmobs.misc.Utils;
 import me.lokka30.levelledmobs.misc.YmlParsingHelper;
 import me.lokka30.levelledmobs.rules.strategies.RandomLevellingStrategy;
-import me.lokka30.levelledmobs.rules.strategies.SpawnDistanceStrategy;
 import me.lokka30.levelledmobs.rules.strategies.YDistanceStrategy;
+import me.lokka30.levelledmobs.LevelledMobs;
+import me.lokka30.levelledmobs.managers.ExternalCompatibilityManager;
+import me.lokka30.levelledmobs.misc.CustomUniversalGroups;
+import me.lokka30.levelledmobs.util.Utils;
+import me.lokka30.levelledmobs.rules.strategies.SpawnDistanceStrategy;
 import org.bukkit.Particle;
 import org.bukkit.block.Biome;
 import org.bukkit.configuration.ConfigurationSection;
@@ -90,13 +90,21 @@ public class RulesParsingManager {
         this.main.rulesManager.anyRuleHasChance = this.defaultRule.conditions_Chance != null;
 
         this.main.rulesManager.buildBiomeGroupMappings(customBiomeGroups);
+        final Map<String, RuleInfo> ruleMappings = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
         this.customRules = parseCustomRules(config.get(ymlHelper.getKeyNameFromConfig(config, "custom-rules")));
         for (final RuleInfo ruleInfo : customRules) {
             if (!this.main.rulesManager.rulesInEffect.containsKey(ruleInfo.rulePriority))
                 this.main.rulesManager.rulesInEffect.put(ruleInfo.rulePriority, new LinkedList<>());
 
             this.main.rulesManager.rulesInEffect.get(ruleInfo.rulePriority).add(ruleInfo);
+            ruleMappings.put(ruleInfo.getRuleName(), ruleInfo);
             if (ruleInfo.conditions_Chance != null) this.main.rulesManager.anyRuleHasChance = true;
+        }
+
+        synchronized (RulesManager.ruleLocker) {
+            this.main.rulesManager.ruleNameMappings.clear();
+            this.main.rulesManager.ruleNameMappings.putAll(ruleMappings);
+            this.main.rulesManager.rulesCooldown.clear();
         }
     }
 
@@ -143,7 +151,7 @@ public class RulesParsingManager {
         parsingInfo.babyMobsInheritAdultSetting = true;
         parsingInfo.mobLevelInheritance = true;
         parsingInfo.creeperMaxDamageRadius = 5;
-        parsingInfo.nametagVisibleTime = 4000;
+        parsingInfo.nametagVisibleTime = 1000L;
         parsingInfo.nametagVisibilityEnum = List.of(NametagVisibilityEnum.TARGETED, NametagVisibilityEnum.ATTACKED, NametagVisibilityEnum.TRACKING);
 
         if (cs == null){
@@ -638,9 +646,9 @@ public class RulesParsingManager {
         parsingInfo.lockEntity = ymlHelper.getBoolean2(cs, "lock-entity", parsingInfo.lockEntity);
         parseNBT_Data(cs);
         parsingInfo.passengerMatchLevel = ymlHelper.getBoolean2(cs, "passenger-match-level", parsingInfo.passengerMatchLevel);
-        parsingInfo.nametagVisibleTime = ymlHelper.getInt2(cs, "nametag-visible-time", parsingInfo.nametagVisibleTime);
+        parsingInfo.nametagVisibleTime = ymlHelper.getIntTimeUnitMS(cs, "nametag-visible-time", parsingInfo.nametagVisibleTime);
         parsingInfo.maximumDeathInChunkThreshold = ymlHelper.getInt2(cs, "maximum-death-in-chunk-threshold", parsingInfo.maximumDeathInChunkThreshold);
-        parsingInfo.chunkMaxCoolDownTime = ymlHelper.getInt2(cs, "chunk-max-cooldown-seconds", parsingInfo.chunkMaxCoolDownTime);
+        parsingInfo.chunkMaxCoolDownTime = ymlHelper.getIntTimeUnit(cs, "chunk-max-cooldown-seconds", parsingInfo.chunkMaxCoolDownTime);
         parsingInfo.disableVanillaDropsOnChunkMax = ymlHelper.getBoolean2(cs, "disable-vanilla-drops-on-chunk-max", parsingInfo.disableVanillaDropsOnChunkMax);
         parsingInfo.spawnerParticlesCount = ymlHelper.getInt2(cs, "spawner-particles-count", parsingInfo.spawnerParticlesCount);
         parsingInfo.maxAdjacentChunks = ymlHelper.getInt2(cs, "max-adjacent-chunks", parsingInfo.maxAdjacentChunks);
@@ -759,6 +767,8 @@ public class RulesParsingManager {
         parsingInfo.conditions_ApplyBelowY = ymlHelper.getInt2(cs,"apply-below-y", parsingInfo.conditions_ApplyBelowY);
         parsingInfo.conditions_MinDistanceFromSpawn = ymlHelper.getInt2(cs, "min-distance-from-spawn", parsingInfo.conditions_MinDistanceFromSpawn);
         parsingInfo.conditions_MaxDistanceFromSpawn = ymlHelper.getInt2(cs, "max-distance-from-spawn", parsingInfo.conditions_MaxDistanceFromSpawn);
+        parsingInfo.conditions_CooldownTime = ymlHelper.getIntTimeUnitMS(cs, "cooldown-duration", parsingInfo.conditions_CooldownTime);
+        parsingInfo.conditions_TimesToCooldownActivation = ymlHelper.getInt2(cs, "cooldown-limit", parsingInfo.conditions_TimesToCooldownActivation);
 
         parsingInfo.conditions_WGRegions = buildCachedModalListOfString(cs, "allowed-worldguard-regions", parsingInfo.conditions_WGRegions);
         parsingInfo.conditions_WGRegionOwners = buildCachedModalListOfString(cs, "allowed-worldguard-region-owners", parsingInfo.conditions_WGRegionOwners);

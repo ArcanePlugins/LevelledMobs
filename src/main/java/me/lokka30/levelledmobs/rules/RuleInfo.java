@@ -4,9 +4,9 @@
 
 package me.lokka30.levelledmobs.rules;
 
-import me.lokka30.levelledmobs.managers.ExternalCompatibilityManager;
 import me.lokka30.levelledmobs.misc.CachedModalList;
 import me.lokka30.levelledmobs.rules.strategies.LevellingStrategy;
+import me.lokka30.levelledmobs.managers.ExternalCompatibilityManager;
 import me.lokka30.microlib.messaging.MessageUtils;
 import org.bukkit.Particle;
 import org.bukkit.block.Biome;
@@ -41,6 +41,8 @@ public class RuleInfo {
     private String ruleName;
     @DoNotMerge
     boolean ruleIsEnabled;
+    @DoNotMerge
+    boolean isTempDisabled;
     Boolean disableVanillaDropsOnChunkMax;
     boolean useNoSpawnerParticles;
     Boolean babyMobsInheritAdultSetting;
@@ -66,10 +68,12 @@ public class RuleInfo {
     Integer conditions_ApplyBelowY;
     Integer conditions_MinDistanceFromSpawn;
     Integer conditions_MaxDistanceFromSpawn;
-    Integer nametagVisibleTime;
+    Long nametagVisibleTime;
     Integer maximumDeathInChunkThreshold;
     Integer chunkMaxCoolDownTime;
     Integer maxAdjacentChunks;
+    Long conditions_CooldownTime;
+    Integer conditions_TimesToCooldownActivation;
     Float conditions_Chance;
     Double sunlightBurnAmount;
     public String nametag;

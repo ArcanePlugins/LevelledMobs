@@ -5,16 +5,16 @@
 package me.lokka30.levelledmobs.commands;
 
 import me.lokka30.levelledmobs.LevelledMobs;
-import me.lokka30.levelledmobs.commands.subcommands.CompatibilitySubcommand;
 import me.lokka30.levelledmobs.commands.subcommands.DebugSubcommand;
+import me.lokka30.levelledmobs.commands.subcommands.SummonSubcommand;
+import me.lokka30.levelledmobs.commands.subcommands.CompatibilitySubcommand;
 import me.lokka30.levelledmobs.commands.subcommands.InfoSubcommand;
 import me.lokka30.levelledmobs.commands.subcommands.KillSubcommand;
 import me.lokka30.levelledmobs.commands.subcommands.ReloadSubcommand;
 import me.lokka30.levelledmobs.commands.subcommands.RulesSubcommand;
 import me.lokka30.levelledmobs.commands.subcommands.SpawnerEggCommand;
 import me.lokka30.levelledmobs.commands.subcommands.SpawnerSubCommand;
-import me.lokka30.levelledmobs.commands.subcommands.SummonSubcommand;
-import me.lokka30.levelledmobs.misc.Utils;
+import me.lokka30.levelledmobs.util.Utils;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -55,7 +55,7 @@ public class LevelledMobsCommand implements CommandExecutor, TabCompleter {
     private final InfoSubcommand infoSubcommand;
     private final KillSubcommand killSubcommand;
     private final ReloadSubcommand reloadSubcommand;
-    private final RulesSubcommand rulesSubcommand;
+    public final RulesSubcommand rulesSubcommand;
     private final SpawnerEggCommand spawnerEggCommand;
     public final SpawnerSubCommand spawnerSubCommand;
     private final SummonSubcommand summonSubcommand;

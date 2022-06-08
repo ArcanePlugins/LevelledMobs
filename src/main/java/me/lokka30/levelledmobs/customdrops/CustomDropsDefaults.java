@@ -43,6 +43,8 @@ class CustomDropsDefaults {
     public String externalType;
     public String externalItemId;
     public Double externalAmount;
+    public boolean runOnSpawn;
+    public boolean runOnDeath;
 
     CustomDropsDefaults() {
         // these are the defaults of the defaults
@@ -62,30 +64,41 @@ class CustomDropsDefaults {
         this.playerCausedOnly = false;
         this.permissions = new LinkedList<>();
         this.overallPermissions = new LinkedList<>();
+        this.runOnSpawn = false;
+        this.runOnDeath = true;
     }
 
-    void setDefaultsFromDropItem(@NotNull final CustomDropItem drop) {
-        this.chance = drop.chance;
-        this.useChunkKillMax = drop.useChunkKillMax;
-        this.amount = drop.getAmount();
-        this.minLevel = drop.minLevel;
-        this.maxLevel = drop.maxLevel;
-        this.customModelData = drop.customModelDataId;
-        this.priority = drop.priority;
-        this.equippedSpawnChance = drop.equippedSpawnChance;
-        this.maxDropGroup = drop.maxDropGroup;
-        this.noMultiplier = drop.noMultiplier;
-        this.noSpawner = drop.noSpawner;
-        this.playerCausedOnly = drop.playerCausedOnly;
-        this.groupId = drop.groupId;
-        this.minPlayerLevel = drop.minPlayerLevel;
-        this.maxPlayerLevel = drop.maxPlayerLevel;
-        this.playerLevelVariable = drop.playerLevelVariable;
-        this.onlyDropIfEquipped = drop.onlyDropIfEquipped;
-        this.permissions.addAll(drop.permissions);
-        this.causeOfDeathReqs = drop.causeOfDeathReqs;
-        this.externalType = drop.externalType;
-        this.externalItemId = drop.externalItemId;
-        this.externalAmount = drop.externalAmount;
+    void setDefaultsFromDropItem(@NotNull final CustomDropBase dropBase) {
+        this.chance = dropBase.chance;
+        this.useChunkKillMax = dropBase.useChunkKillMax;
+        this.amount = dropBase.getAmount();
+        this.minLevel = dropBase.minLevel;
+        this.maxLevel = dropBase.maxLevel;
+        this.priority = dropBase.priority;
+        this.maxDropGroup = dropBase.maxDropGroup;
+        this.noSpawner = dropBase.noSpawner;
+        this.playerCausedOnly = dropBase.playerCausedOnly;
+        this.groupId = dropBase.groupId;
+        this.minPlayerLevel = dropBase.minPlayerLevel;
+        this.maxPlayerLevel = dropBase.maxPlayerLevel;
+        this.playerLevelVariable = dropBase.playerLevelVariable;
+        this.permissions.addAll(dropBase.permissions);
+        this.causeOfDeathReqs = dropBase.causeOfDeathReqs;
+
+        if (dropBase instanceof CustomDropItem) {
+            final CustomDropItem dropItem = (CustomDropItem) dropBase;
+            this.customModelData = dropItem.customModelDataId;
+            this.equippedSpawnChance = dropItem.equippedSpawnChance;
+            this.noMultiplier = dropItem.noMultiplier;
+            this.onlyDropIfEquipped = dropItem.onlyDropIfEquipped;
+            this.externalType = dropItem.externalType;
+            this.externalItemId = dropItem.externalItemId;
+            this.externalAmount = dropItem.externalAmount;
+        }
+        else if (dropBase instanceof CustomCommand){
+            final CustomCommand command = (CustomCommand) dropBase;
+            this.runOnSpawn = command.runOnSpawn;
+            this.runOnDeath = command.runOnDeath;
+        }
     }
 }

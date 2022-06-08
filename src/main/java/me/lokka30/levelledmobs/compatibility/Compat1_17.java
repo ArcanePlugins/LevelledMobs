@@ -5,6 +5,9 @@
 package me.lokka30.levelledmobs.compatibility;
 
 import org.bukkit.entity.EntityType;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -29,7 +32,8 @@ public class Compat1_17 {
         ).collect(Collectors.toCollection(HashSet::new));
     }
 
-    public static Collection<EntityType> getForceBlockedEntityType(){
+    @Contract(pure = true)
+    public static @NotNull @Unmodifiable Collection<EntityType> getForceBlockedEntityType(){
         return List.of(EntityType.GLOW_ITEM_FRAME, EntityType.MARKER);
     }
 }

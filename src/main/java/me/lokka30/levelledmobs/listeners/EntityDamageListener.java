@@ -9,7 +9,7 @@ import me.lokka30.levelledmobs.misc.Addition;
 import me.lokka30.levelledmobs.misc.DebugType;
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
 import me.lokka30.levelledmobs.misc.QueueItem;
-import me.lokka30.levelledmobs.misc.Utils;
+import me.lokka30.levelledmobs.util.Utils;
 import me.lokka30.levelledmobs.rules.NametagVisibilityEnum;
 import org.bukkit.entity.AreaEffectCloud;
 import org.bukkit.entity.EnderDragon;
@@ -63,9 +63,9 @@ public class EntityDamageListener implements Listener {
 
             final LivingEntityWrapper theHitter = LivingEntityWrapper.getInstance((LivingEntity) entityDamageByEntityEvent.getDamager(), main);
             final List<NametagVisibilityEnum> nametagVisibilityEnums = main.rulesManager.getRule_CreatureNametagVisbility(theHitter);
-            final int nametagVisibleTime = theHitter.getNametagCooldownTime();
+            final long nametagVisibleTime = theHitter.getNametagCooldownTime();
 
-            if (nametagVisibleTime > 0 &&
+            if (nametagVisibleTime > 0L &&
                 nametagVisibilityEnums.contains(NametagVisibilityEnum.ATTACKED)) {
                     if (theHitter.playersNeedingNametagCooldownUpdate == null)
                         theHitter.playersNeedingNametagCooldownUpdate = new HashSet<>();
@@ -90,9 +90,9 @@ public class EntityDamageListener implements Listener {
         }
 
         final List<NametagVisibilityEnum> nametagVisibilityEnums = main.rulesManager.getRule_CreatureNametagVisbility(lmEntity);
-        final int nametagVisibleTime = lmEntity.getNametagCooldownTime();
+        final long nametagVisibleTime = lmEntity.getNametagCooldownTime();
 
-        if (nametagVisibleTime > 0 && event instanceof EntityDamageByEntityEvent &&
+        if (nametagVisibleTime > 0L && event instanceof EntityDamageByEntityEvent &&
                 nametagVisibilityEnums.contains(NametagVisibilityEnum.ATTACKED)){
             final EntityDamageByEntityEvent entityDamageByEntityEvent = (EntityDamageByEntityEvent) event;
 

@@ -5,13 +5,13 @@
 package me.lokka30.levelledmobs.listeners;
 
 import me.lokka30.levelledmobs.LevelledMobs;
-import me.lokka30.levelledmobs.customdrops.CustomDropResult;
-import me.lokka30.levelledmobs.misc.AdjacentChunksResult;
+import me.lokka30.levelledmobs.result.AdjacentChunksResult;
 import me.lokka30.levelledmobs.misc.ChunkKillInfo;
 import me.lokka30.levelledmobs.misc.DebugType;
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
 import me.lokka30.levelledmobs.misc.NametagTimerChecker;
-import me.lokka30.levelledmobs.misc.Utils;
+import me.lokka30.levelledmobs.customdrops.CustomDropResult;
+import me.lokka30.levelledmobs.util.Utils;
 import me.lokka30.microlib.messaging.MessageUtils;
 import org.bukkit.Chunk;
 import org.bukkit.entity.EntityType;

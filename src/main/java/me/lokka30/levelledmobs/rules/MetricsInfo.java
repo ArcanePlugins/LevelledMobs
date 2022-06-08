@@ -4,11 +4,11 @@
 
 package me.lokka30.levelledmobs.rules;
 
+import me.lokka30.levelledmobs.rules.strategies.RandomLevellingStrategy;
+import me.lokka30.levelledmobs.rules.strategies.YDistanceStrategy;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.managers.ExternalCompatibilityManager;
-import me.lokka30.levelledmobs.rules.strategies.RandomLevellingStrategy;
 import me.lokka30.levelledmobs.rules.strategies.SpawnDistanceStrategy;
-import me.lokka30.levelledmobs.rules.strategies.YDistanceStrategy;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Comparator;

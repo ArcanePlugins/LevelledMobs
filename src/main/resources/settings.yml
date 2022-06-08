@@ -121,7 +121,7 @@ exceed-kill-in-chunk-message: true
 # ||  Do not touch this unless a LM developer tells you to.
 # ||  These settings pertian to Player Levelling, obviously
 # ||  this only affects LM if you are using Player Levelling.
-player-levelling-relevel-min-time: 5000
+player-levelling-relevel-min-time: 5s
 
 # ||  This setting determines how far away an entity can be
 # ||  for it to register under `%levelledmobs_mob-target%`.

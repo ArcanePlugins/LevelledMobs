@@ -6,13 +6,13 @@ package me.lokka30.levelledmobs.commands.subcommands;
 
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.commands.MessagesBase;
-import me.lokka30.levelledmobs.managers.ExternalCompatibilityManager;
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
-import me.lokka30.levelledmobs.misc.PaperUtils;
+import me.lokka30.levelledmobs.util.PaperUtils;
 import me.lokka30.levelledmobs.misc.QueueItem;
-import me.lokka30.levelledmobs.misc.SpigotUtils;
-import me.lokka30.levelledmobs.misc.Utils;
+import me.lokka30.levelledmobs.util.SpigotUtils;
 import me.lokka30.levelledmobs.rules.RuleInfo;
+import me.lokka30.levelledmobs.managers.ExternalCompatibilityManager;
+import me.lokka30.levelledmobs.util.Utils;
 import me.lokka30.microlib.messaging.MessageUtils;
 import me.lokka30.microlib.other.VersionUtils;
 import org.bukkit.Bukkit;
@@ -28,6 +28,7 @@ import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.IOException;
@@ -115,7 +116,7 @@ public class RulesSubcommand extends MessagesBase implements Subcommand {
                 return;
             }
 
-            getMobBeingLookedAt((Player) sender, showOnConsole, findNearbyEntities);
+            showEffectiveRules((Player) sender, showOnConsole, findNearbyEntities);
         } else if ("show_rule".equalsIgnoreCase(args[1]))
             showRule(sender, args);
         else if ("help_discord".equalsIgnoreCase(args[1])) {
@@ -130,8 +131,15 @@ public class RulesSubcommand extends MessagesBase implements Subcommand {
             resetRules(sender, args);
         else if ("force_all".equalsIgnoreCase(args[1]))
             forceRelevel(sender);
+        else if ("show_temp_disabled".equalsIgnoreCase(args[1]))
+            showTempDisabled(sender);
         else
             showMessage("common.invalid-command");
+    }
+
+    private void showTempDisabled(final @NotNull CommandSender sender){
+        final boolean isConsoleSender = sender instanceof ConsoleCommandSender;
+        sender.sendMessage(main.rulesManager.showTempDisabledRules(isConsoleSender));
     }
 
     private void forceRelevel(final CommandSender sender){
@@ -320,8 +328,46 @@ public class RulesSubcommand extends MessagesBase implements Subcommand {
             sender.sendMessage(sb.toString());
     }
 
-    private void getMobBeingLookedAt(@NotNull final Player player, final boolean showOnConsole, final boolean findNearbyEntities){
+    private void showEffectiveRules(@NotNull final Player player, final boolean showOnConsole, final boolean findNearbyEntities){
+        final LivingEntityWrapper lmEntity = getMobBeingLookedAt(player, findNearbyEntities);
+        if (lmEntity == null) return;
+
+        String entityName = lmEntity.getTypeName();
+        if (ExternalCompatibilityManager.hasMythicMobsInstalled() && ExternalCompatibilityManager.isMythicMob(lmEntity))
+            entityName = ExternalCompatibilityManager.getMythicMobInternalName(lmEntity);
+
+        final String locationStr = String.format("%s, %s, %s",
+                lmEntity.getLivingEntity().getLocation().getBlockX(),
+                lmEntity.getLivingEntity().getLocation().getBlockY(),
+                lmEntity.getLivingEntity().getLocation().getBlockZ());
+        final String mobLevel = lmEntity.isLevelled() ? lmEntity.getMobLevel() + "" : "0";
+        final List<String> messages = getMessage("command.levelledmobs.rules.effective-rules",
+                new String[]{"%mobname%", "%entitytype%", "%location%", "%world%", "%level%"},
+                new String[]{ entityName, lmEntity.getNameIfBaby(), locationStr, lmEntity.getWorldName(), mobLevel }
+        );
+
+        final StringBuilder sb = new StringBuilder();
+        sb.append(String.join("\n", messages).replace(main.configUtils.getPrefix() + " ", ""));
+
+        player.sendMessage(sb.toString());
+        if (!showOnConsole) sb.setLength(0);
+
+        final BukkitRunnable runnable = new BukkitRunnable() {
+            @Override
+            public void run() {
+                showEffectiveValues(player, lmEntity, showOnConsole, sb);
+                lmEntity.free();
+            }
+        };
+
+        lmEntity.inUseCount.getAndIncrement();
+        runnable.runTaskLater(main, 25);
+    }
+
+    @Nullable
+    public LivingEntityWrapper getMobBeingLookedAt(@NotNull final Player player, final boolean findNearbyEntities){
         LivingEntity livingEntity = null;
+        LivingEntityWrapper lmEntity = null;
         final Location eye = player.getEyeLocation();
         final SortedMap<Double, LivingEntity> entities = new TreeMap<>();
 
@@ -351,40 +397,10 @@ public class RulesSubcommand extends MessagesBase implements Subcommand {
                 livingEntity = entities.get(entities.firstKey());
 
             createParticleEffect(livingEntity.getLocation());
-            final LivingEntityWrapper lmEntity = LivingEntityWrapper.getInstance(livingEntity, main);
-
-            String entityName = lmEntity.getTypeName();
-            if (ExternalCompatibilityManager.hasMythicMobsInstalled() && ExternalCompatibilityManager.isMythicMob(lmEntity))
-                entityName = ExternalCompatibilityManager.getMythicMobInternalName(lmEntity);
-
-            final String locationStr = String.format("%s, %s, %s",
-                    lmEntity.getLivingEntity().getLocation().getBlockX(),
-                    lmEntity.getLivingEntity().getLocation().getBlockY(),
-                    lmEntity.getLivingEntity().getLocation().getBlockZ());
-            final String mobLevel = lmEntity.isLevelled() ? lmEntity.getMobLevel() + "" : "0";
-            final List<String> messages = getMessage("command.levelledmobs.rules.effective-rules",
-                    new String[]{"%mobname%", "%entitytype%", "%location%", "%world%", "%level%"},
-                    new String[]{ entityName, lmEntity.getNameIfBaby(), locationStr, lmEntity.getWorldName(), mobLevel }
-            );
-
-
-            final StringBuilder sb = new StringBuilder();
-            sb.append(String.join("\n", messages).replace(main.configUtils.getPrefix() + " ", ""));
-
-            player.sendMessage(sb.toString());
-            if (!showOnConsole) sb.setLength(0);
-
-            final BukkitRunnable runnable = new BukkitRunnable() {
-                @Override
-                public void run() {
-                    showEffectiveValues(player, lmEntity, showOnConsole, sb);
-                }
-            };
-
-            lmEntity.inUseCount.getAndIncrement();
-            runnable.runTaskLater(main, 25);
-            lmEntity.free();
+            lmEntity = LivingEntityWrapper.getInstance(livingEntity, main);
         }
+
+        return lmEntity;
     }
 
     private void createParticleEffect(@NotNull final Location location){
@@ -476,7 +492,7 @@ public class RulesSubcommand extends MessagesBase implements Subcommand {
         final List<String> suggestions = new LinkedList<>();
 
         if (args.length == 2)
-            return Arrays.asList("force_all", "help_discord", "help_wiki", "reset", "show_all", "show_effective", "show_rule");
+            return Arrays.asList("force_all", "help_discord", "help_wiki", "reset", "show_all", "show_effective", "show_rule", "show_temp_disabled");
         else if (args.length >= 3) {
             if ("reset".equalsIgnoreCase(args[1]) && args.length == 3)
                 suggestions.addAll(List.of("basic", "average", "enhanced", "extreme"));

@@ -401,7 +401,7 @@ default-rule:
     creature-death-nametag: '%tiered%Lvl %mob-lvl%&8 | &f%displayname%'
     nametag-placeholder-levelled: ''
     nametag-placeholder-unlevelled: ''
-    nametag-visible-time: 1000
+    nametag-visible-time: 1s
     nametag-visibility-method: ['TARGETED', 'ATTACKED', 'TRACKING']
 
     baby-mobs-inherit-adult-setting: true
@@ -412,7 +412,7 @@ default-rule:
 
     maximum-death-in-chunk-threshold: 0
     max-adjacent-chunks: 3
-    chunk-max-cooldown-seconds: 300
+    chunk-max-cooldown-seconds: 300s
     disable-vanilla-drops-on-chunk-max: false
 
     spawner-particles: 'SOUL'
@@ -437,7 +437,7 @@ custom-rules:
     conditions:
       entities:
         allowed-groups: ['all_passive_mobs']
-        allowed-list: ['BABY_', 'ENDER_DRAGON', 'WITHER', 'VILLAGER', 'ZOMBIE_VILLAGER', 'WANDERING_TRADER', 'PHANTOM', 'BAT', 'RAVAGER']
+        allowed-list: ['BABY_', 'ENDER_DRAGON', 'WITHER', 'VILLAGER', 'ZOMBIE_VILLAGER', 'WANDERING_TRADER', 'PHANTOM', 'BAT', 'RAVAGER', 'WARDEN']
     apply-settings:
       maxLevel: 0
 

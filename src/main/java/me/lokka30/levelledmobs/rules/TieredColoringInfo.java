@@ -4,7 +4,7 @@
 
 package me.lokka30.levelledmobs.rules;
 
-import me.lokka30.levelledmobs.misc.Utils;
+import me.lokka30.levelledmobs.util.Utils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

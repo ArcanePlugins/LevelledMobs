@@ -4,10 +4,18 @@
 
 package me.lokka30.levelledmobs;
 
+import me.lokka30.levelledmobs.compatibility.Compat1_19;
+import me.lokka30.levelledmobs.customdrops.CustomDropsHandler;
+import me.lokka30.levelledmobs.listeners.ServerStartListener;
+import me.lokka30.levelledmobs.managers.LevelManager;
+import me.lokka30.levelledmobs.managers.PlaceholderApiIntegration;
+import me.lokka30.levelledmobs.misc.ChunkKillInfo;
+import me.lokka30.levelledmobs.misc.FileLoader;
+import me.lokka30.levelledmobs.misc.VersionInfo;
+import me.lokka30.levelledmobs.rules.MetricsInfo;
 import me.lokka30.levelledmobs.commands.LevelledMobsCommand;
 import me.lokka30.levelledmobs.compatibility.Compat1_16;
 import me.lokka30.levelledmobs.compatibility.Compat1_17;
-import me.lokka30.levelledmobs.customdrops.CustomDropsHandler;
 import me.lokka30.levelledmobs.listeners.BlockPlaceListener;
 import me.lokka30.levelledmobs.listeners.ChunkLoadListener;
 import me.lokka30.levelledmobs.listeners.CombustListener;
@@ -24,17 +32,10 @@ import me.lokka30.levelledmobs.listeners.PlayerDeathListener;
 import me.lokka30.levelledmobs.listeners.PlayerInteractEventListener;
 import me.lokka30.levelledmobs.listeners.PlayerJoinListener;
 import me.lokka30.levelledmobs.listeners.PlayerPortalEventListener;
-import me.lokka30.levelledmobs.listeners.ServerStartListener;
-import me.lokka30.levelledmobs.managers.LevelManager;
-import me.lokka30.levelledmobs.managers.PlaceholderApiIntegration;
 
-import me.lokka30.levelledmobs.misc.ChunkKillInfo;
 import me.lokka30.levelledmobs.misc.DebugType;
-import me.lokka30.levelledmobs.misc.FileLoader;
 import me.lokka30.levelledmobs.misc.FileMigrator;
-import me.lokka30.levelledmobs.misc.Utils;
-import me.lokka30.levelledmobs.misc.VersionInfo;
-import me.lokka30.levelledmobs.rules.MetricsInfo;
+import me.lokka30.levelledmobs.util.Utils;
 import me.lokka30.microlib.exceptions.OutdatedServerVersionException;
 import me.lokka30.microlib.other.UpdateChecker;
 import me.lokka30.microlib.other.VersionUtils;
@@ -135,17 +136,19 @@ public class Companion {
                     "Compatible MC versions: &b" + String.join("&7,&b ", Utils.getSupportedServerVersions()) + "&7.");
         }
 
-        final Plugin protocolLibPlugin = Bukkit.getPluginManager().getPlugin("ProtocolLib");
+        if (!main.nametagQueueManager_.hasNametagSupport()) {
+            final Plugin protocolLibPlugin = Bukkit.getPluginManager().getPlugin("ProtocolLib");
 
-        if (protocolLibPlugin == null) {
-            incompatibilities.add("Your server does not have ProtocolLib installed! This means that you will" +
-                    "not be able to see any custom nametags/labels above any levelled mobs' heads. To fix this, " +
-                    "install the latest compatible version of ProtocolLib for your server.");
-        } else {
-            if(VersionUtils.isOneEighteen() && protocolLibPlugin.getDescription().getVersion().equals("4.7.0")) {
-                incompatibilities.add("You are running an outdated version of ProtocolLib! This version of " +
-                        "ProtocolLib does not support 1.18+ servers, so you will receive lots of errors if " +
-                        "you try to use it. Update to the latest ProtocolLib version as soon as possible.");
+            if (protocolLibPlugin == null) {
+                incompatibilities.add("Your server does not have ProtocolLib installed! This means that you will" +
+                        "not be able to see any custom nametags/labels above any levelled mobs' heads. To fix this, " +
+                        "install the latest compatible version of ProtocolLib for your server.");
+            } else {
+                if (VersionUtils.isOneEighteen() && protocolLibPlugin.getDescription().getVersion().equals("4.8.0")) {
+                    incompatibilities.add("You are running an outdated version of ProtocolLib! This version of " +
+                            "ProtocolLib does not support 1.18+ servers, so you will receive lots of errors if " +
+                            "you try to use it. Update to the latest ProtocolLib version as soon as possible.");
+                }
             }
         }
 
@@ -228,7 +231,7 @@ public class Companion {
         parseDebugsEnabled();
 
         main.configUtils.load();
-        main.playerLevellingMinRelevelTime = main.helperSettings.getInt(main.settingsCfg, "player-levelling-relevel-min-time", 5000);
+        main.playerLevellingMinRelevelTime = main.helperSettings.getIntTimeUnitMS(main.settingsCfg, "player-levelling-relevel-min-time", 5000L);
         this.useAdventure = main.helperSettings.getBoolean(main.settingsCfg, "use-adventure", true);
 
         return true;
@@ -566,9 +569,13 @@ public class Companion {
 
         if (VersionUtils.isOneSeventeen())
             groups_PassiveMobs.addAll(Compat1_17.getPassiveMobs());
+        if (main.nametagQueueManager_.nmsHandler.minecraftVersion >= 1.19)
+            groups_PassiveMobs.addAll(Compat1_19.getPassiveMobs());
 
-        if (VersionUtils.isOneSeventeen() || VersionUtils.isOneSixteen())
-            groups_HostileMobs.addAll(Compat1_16.getPassiveMobs());
+        if (main.nametagQueueManager_.nmsHandler.minecraftVersion >= 1.16)
+            groups_HostileMobs.addAll(Compat1_16.getHostileMobs());
+        if (main.nametagQueueManager_.nmsHandler.minecraftVersion >= 1.19)
+            groups_HostileMobs.addAll(Compat1_19.getHostileMobs());
 
         // include interfaces: WaterMob
         groups_AquaticMobs = Stream.of(
@@ -577,6 +584,9 @@ public class Companion {
                 EntityType.GUARDIAN,
                 EntityType.TURTLE
         ).collect(Collectors.toCollection(HashSet::new));
+
+        if (main.nametagQueueManager_.nmsHandler.minecraftVersion >= 1.19)
+            groups_AquaticMobs.addAll(Compat1_19.getAquaticMobs());
     }
 
     public void addRecentlyJoinedPlayer(final Player player){

@@ -5,15 +5,15 @@
 package me.lokka30.levelledmobs.customdrops;
 
 import me.lokka30.levelledmobs.LevelledMobs;
-import me.lokka30.levelledmobs.managers.ExternalCompatibilityManager;
 import me.lokka30.levelledmobs.misc.Addition;
-import me.lokka30.levelledmobs.misc.DebugType;
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
-import me.lokka30.levelledmobs.misc.PaperUtils;
-import me.lokka30.levelledmobs.misc.PlayerLevelSourceResult;
-import me.lokka30.levelledmobs.misc.SpigotUtils;
-import me.lokka30.levelledmobs.misc.Utils;
+import me.lokka30.levelledmobs.util.PaperUtils;
+import me.lokka30.levelledmobs.result.PlayerLevelSourceResult;
+import me.lokka30.levelledmobs.util.SpigotUtils;
 import me.lokka30.levelledmobs.misc.YmlParsingHelper;
+import me.lokka30.levelledmobs.managers.ExternalCompatibilityManager;
+import me.lokka30.levelledmobs.misc.DebugType;
+import me.lokka30.levelledmobs.util.Utils;
 import me.lokka30.levelledmobs.rules.LevelledMobSpawnReason;
 import me.lokka30.microlib.messaging.MessageUtils;
 import me.lokka30.microlib.other.VersionUtils;
@@ -317,7 +317,7 @@ public class CustomDropsHandler {
                 info.lmEntity.deathCause == EntityDamageEvent.DamageCause.VOID)
             return;
 
-        if (info.equippedOnly && dropBase instanceof CustomCommand) return;
+        if (info.equippedOnly && dropBase instanceof CustomCommand && !((CustomCommand) dropBase).runOnSpawn) return;
         if (info.equippedOnly && dropBase instanceof CustomDropItem && ((CustomDropItem) dropBase).equippedSpawnChance <= 0.0F) return;
         if (!info.equippedOnly && dropBase.playerCausedOnly && (dropBase.causeOfDeathReqs == null || dropBase.causeOfDeathReqs.isEmpty()) && !info.wasKilledByPlayer) return;
         if (dropBase.noSpawner && info.isSpawner) return;
@@ -371,7 +371,7 @@ public class CustomDropsHandler {
             }
         }
 
-        if (!checkDropPermissions(info, dropBase)) return;
+        if (!info.equippedOnly && !checkDropPermissions(info, dropBase)) return;
 
         boolean didNotMakeChance = false;
         float chanceRole = 0.0F;
@@ -713,6 +713,9 @@ public class CustomDropsHandler {
     }
 
     private void executeCommand(@NotNull final CustomCommand customCommand, @NotNull final CustomDropProcessingInfo info){
+        if (info.equippedOnly && !customCommand.runOnSpawn) return;
+        if (!info.equippedOnly && !customCommand.runOnDeath) return;
+
         for (String command : customCommand.commands){
 
             final String playerName = info.wasKilledByPlayer ?

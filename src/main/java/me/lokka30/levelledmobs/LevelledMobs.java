@@ -4,27 +4,26 @@
 
 package me.lokka30.levelledmobs;
 
+import me.lokka30.levelledmobs.managers.MobDataManager;
+import me.lokka30.levelledmobs.util.ConfigUtils;
+import me.lokka30.levelledmobs.misc.Namespaced_Keys;
+import me.lokka30.levelledmobs.misc.NametagTimerChecker;
+import me.lokka30.levelledmobs.misc.YmlParsingHelper;
+import me.lokka30.levelledmobs.rules.RulesManager;
+import me.lokka30.levelledmobs.rules.RulesParsingManager;
 import me.lokka30.levelledmobs.commands.LevelledMobsCommand;
 import me.lokka30.levelledmobs.customdrops.CustomDropsHandler;
 import me.lokka30.levelledmobs.listeners.BlockPlaceListener;
 import me.lokka30.levelledmobs.listeners.ChunkLoadListener;
 import me.lokka30.levelledmobs.listeners.EntityDamageDebugListener;
 import me.lokka30.levelledmobs.listeners.PlayerInteractEventListener;
-import me.lokka30.levelledmobs.managers.ExternalCompatibilityManager;
 import me.lokka30.levelledmobs.managers.LevelManager;
-import me.lokka30.levelledmobs.managers.MobDataManager;
 import me.lokka30.levelledmobs.managers.MobHeadManager;
 import me.lokka30.levelledmobs.managers.MobsQueueManager;
 import me.lokka30.levelledmobs.managers.NametagQueueManager;
 import me.lokka30.levelledmobs.managers.PlaceholderApiIntegration;
-import me.lokka30.levelledmobs.misc.ConfigUtils;
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
-import me.lokka30.levelledmobs.misc.Namespaced_Keys;
-import me.lokka30.levelledmobs.misc.NametagTimerChecker;
-import me.lokka30.levelledmobs.misc.Utils;
-import me.lokka30.levelledmobs.misc.YmlParsingHelper;
-import me.lokka30.levelledmobs.rules.RulesManager;
-import me.lokka30.levelledmobs.rules.RulesParsingManager;
+import me.lokka30.levelledmobs.util.Utils;
 import me.lokka30.microlib.maths.QuickTimer;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -54,26 +53,26 @@ public final class LevelledMobs extends JavaPlugin {
     // Manager classes
     public LevelInterface levelInterface;
     public LevelManager levelManager;
-    public final MobDataManager mobDataManager = new MobDataManager(this);
+    public MobDataManager mobDataManager;
     public CustomDropsHandler customDropsHandler;
     ChunkLoadListener chunkLoadListener;
     BlockPlaceListener blockPlaceListener;
     PlayerInteractEventListener playerInteractEventListener;
     public Namespaced_Keys namespaced_keys;
-    public final Companion companion = new Companion(this);
-    public final MobHeadManager mobHeadManager = new MobHeadManager(this);
-    public final RulesParsingManager rulesParsingManager = new RulesParsingManager(this);
-    public final RulesManager rulesManager = new RulesManager(this);
-    public final MobsQueueManager _mobsQueueManager = new MobsQueueManager(this);
-    public final NametagQueueManager nametagQueueManager_ = new NametagQueueManager(this);
-    public final NametagTimerChecker nametagTimerChecker = new NametagTimerChecker(this);
+    public Companion companion;
+    public MobHeadManager mobHeadManager;
+    public RulesParsingManager rulesParsingManager;
+    public RulesManager rulesManager;
+    public MobsQueueManager _mobsQueueManager;
+    public NametagQueueManager nametagQueueManager_;
+    public NametagTimerChecker nametagTimerChecker;
     public final Object attributeSyncObject = new Object();
     public LevelledMobsCommand levelledMobsCommand;
     public Random random;
     public PlaceholderApiIntegration placeholderApiIntegration;
     public boolean migratedFromPre30;
     public YmlParsingHelper helperSettings;
-    public int playerLevellingMinRelevelTime;
+    public long playerLevellingMinRelevelTime;
     public int maxPlayersRecorded;
 
     // Configuration
@@ -96,6 +95,14 @@ public final class LevelledMobs extends JavaPlugin {
         Utils.logger.info("&f~ Initiating start-up procedure ~");
         final QuickTimer timer = new QuickTimer();
 
+        this.nametagQueueManager_ = new NametagQueueManager(this);
+        this._mobsQueueManager = new MobsQueueManager(this);
+        this.companion = new Companion(this);
+        this.mobDataManager = new MobDataManager(this);
+        this.mobHeadManager = new MobHeadManager(this);
+        this.rulesParsingManager = new RulesParsingManager(this);
+        this.rulesManager = new RulesManager(this);
+        this.nametagTimerChecker = new NametagTimerChecker(this);
         this.namespaced_keys = new Namespaced_Keys(this);
         this.playerLevellingEntities = new WeakHashMap<>();
         this.helperSettings = new YmlParsingHelper();
@@ -112,7 +119,7 @@ public final class LevelledMobs extends JavaPlugin {
         companion.registerCommands();
 
         Utils.logger.info("&fStart-up: &7Running misc procedures...");
-        if (ExternalCompatibilityManager.hasProtocolLibInstalled()) {
+        if (this.nametagQueueManager_.hasNametagSupport()) {
             levelManager.startNametagAutoUpdateTask();
             levelManager.startNametagTimer();
         }
@@ -137,11 +144,8 @@ public final class LevelledMobs extends JavaPlugin {
         reloadFinishedMsg = Utils.replaceAllInList(reloadFinishedMsg, "%prefix%", configUtils.getPrefix());
         reloadFinishedMsg = Utils.colorizeAllInList(reloadFinishedMsg);
 
-        if (ExternalCompatibilityManager.hasProtocolLibInstalled()) {
-            if (ExternalCompatibilityManager.hasProtocolLibInstalled() && (levelManager.nametagAutoUpdateTask == null || levelManager.nametagAutoUpdateTask.isCancelled()))
-                levelManager.startNametagAutoUpdateTask();
-            else if (!ExternalCompatibilityManager.hasProtocolLibInstalled() && levelManager.nametagAutoUpdateTask != null && !levelManager.nametagAutoUpdateTask.isCancelled())
-                levelManager.stopNametagAutoUpdateTask();
+        if (nametagQueueManager_.hasNametagSupport() && (levelManager.nametagAutoUpdateTask == null || levelManager.nametagAutoUpdateTask.isCancelled())) {
+            levelManager.startNametagAutoUpdateTask();
         }
 
         if (helperSettings.getBoolean(settingsCfg,"debug-entity-damage") && !configUtils.debugEntityDamageWasEnabled) {
@@ -163,6 +167,7 @@ public final class LevelledMobs extends JavaPlugin {
         levelManager.entitySpawnListener.processMobSpawns = helperSettings.getBoolean(settingsCfg, "level-mobs-upon-spawn", true);
         levelManager.clearRandomLevellingCache();
         configUtils.playerLevellingEnabled = rulesManager.isPlayerLevellingEnabled();
+        rulesManager.clearTempDisabledRulesCounts();
 
         reloadFinishedMsg.forEach(sender::sendMessage);
     }

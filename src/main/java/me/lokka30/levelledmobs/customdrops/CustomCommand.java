@@ -23,6 +23,7 @@ public class CustomCommand extends CustomDropBase {
         super(defaults);
         this.rangedEntries = new TreeMap<>();
         this.commands = new LinkedList<>();
+        this.runOnDeath = true;
     }
 
     String commandName;
@@ -30,6 +31,8 @@ public class CustomCommand extends CustomDropBase {
     final public List<String> commands;
     @NotNull
     final Map<String, String> rangedEntries;
+    public boolean runOnSpawn;
+    public boolean runOnDeath;
     public int delay;
 
     public CustomCommand cloneItem() {

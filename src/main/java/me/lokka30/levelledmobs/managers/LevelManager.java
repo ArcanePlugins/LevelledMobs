@@ -7,37 +7,39 @@ package me.lokka30.levelledmobs.managers;
 import me.lokka30.levelledmobs.LevelInterface;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.LivingEntityInterface;
-import me.lokka30.levelledmobs.compatibility.Compat1_17;
-import me.lokka30.levelledmobs.customdrops.CustomDropItem;
-import me.lokka30.levelledmobs.customdrops.CustomDropResult;
-import me.lokka30.levelledmobs.customdrops.EquippedItemsInfo;
 import me.lokka30.levelledmobs.events.MobPostLevelEvent;
 import me.lokka30.levelledmobs.events.MobPreLevelEvent;
 import me.lokka30.levelledmobs.events.SummonedMobPreLevelEvent;
-import me.lokka30.levelledmobs.listeners.EntitySpawnListener;
 import me.lokka30.levelledmobs.misc.Addition;
-import me.lokka30.levelledmobs.misc.DebugType;
+import me.lokka30.levelledmobs.misc.AdditionalLevelInformation;
 import me.lokka30.levelledmobs.misc.LevellableState;
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
-import me.lokka30.levelledmobs.misc.NBTApplyResult;
-import me.lokka30.levelledmobs.misc.PlayerHomeCheckResult;
-import me.lokka30.levelledmobs.misc.PlayerLevelSourceResult;
-import me.lokka30.levelledmobs.misc.PlayerNetherOrWorldSpawnResult;
+import me.lokka30.levelledmobs.util.MythicMobUtils;
+import me.lokka30.levelledmobs.misc.MythicMobsMobInfo;
+import me.lokka30.levelledmobs.result.NBTApplyResult;
+import me.lokka30.levelledmobs.result.PlayerHomeCheckResult;
+import me.lokka30.levelledmobs.result.PlayerLevelSourceResult;
+import me.lokka30.levelledmobs.result.PlayerNetherOrWorldSpawnResult;
 import me.lokka30.levelledmobs.misc.QueueItem;
-import me.lokka30.levelledmobs.misc.Utils;
-import me.lokka30.levelledmobs.misc.AdditionalLevelInformation;
 import me.lokka30.levelledmobs.rules.FineTuningAttributes;
 import me.lokka30.levelledmobs.rules.HealthIndicator;
 import me.lokka30.levelledmobs.rules.LevelTierMatching;
-import me.lokka30.levelledmobs.rules.LevelledMobSpawnReason;
 import me.lokka30.levelledmobs.rules.MobCustomNameStatus;
 import me.lokka30.levelledmobs.rules.MobTamedStatus;
 import me.lokka30.levelledmobs.rules.NametagVisibilityEnum;
 import me.lokka30.levelledmobs.rules.PlayerLevellingOptions;
 import me.lokka30.levelledmobs.rules.strategies.LevellingStrategy;
 import me.lokka30.levelledmobs.rules.strategies.RandomLevellingStrategy;
-import me.lokka30.levelledmobs.rules.strategies.SpawnDistanceStrategy;
 import me.lokka30.levelledmobs.rules.strategies.YDistanceStrategy;
+import me.lokka30.levelledmobs.compatibility.Compat1_17;
+import me.lokka30.levelledmobs.customdrops.CustomDropItem;
+import me.lokka30.levelledmobs.customdrops.CustomDropResult;
+import me.lokka30.levelledmobs.customdrops.EquippedItemsInfo;
+import me.lokka30.levelledmobs.listeners.EntitySpawnListener;
+import me.lokka30.levelledmobs.misc.DebugType;
+import me.lokka30.levelledmobs.util.Utils;
+import me.lokka30.levelledmobs.rules.LevelledMobSpawnReason;
+import me.lokka30.levelledmobs.rules.strategies.SpawnDistanceStrategy;
 import me.lokka30.microlib.messaging.MessageUtils;
 import me.lokka30.microlib.other.VersionUtils;
 import org.bukkit.Bukkit;
@@ -450,10 +452,14 @@ public class LevelManager implements LevelInterface {
             // custom drops also get multiplied in the custom drops handler
             final CustomDropResult dropResult = main.customDropsHandler.getCustomItemDrops(lmEntity, customDrops, false);
 
-            if (dropResult.hasOverride) {
+            final MythicMobsMobInfo mmInfo = MythicMobUtils.getMythicMobInfo(lmEntity);
+            if (mmInfo != null && mmInfo.preventOtherDrops)
                 hasOverride = true;
+
+            if (dropResult.hasOverride) hasOverride = true;
+
+            if (hasOverride)
                 removeVanillaDrops(lmEntity, dropsToMultiply);
-            }
         }
 
         int additionUsed = 0;
@@ -581,7 +587,7 @@ public class LevelManager implements LevelInterface {
         else {
             checkLockedNametag(lmEntity);
 
-            nametag = lmEntity.lockedNametag == null ?
+            nametag = lmEntity.lockedNametag == null || lmEntity.lockedNametag.isEmpty() ?
                     main.rulesManager.getRule_Nametag(lmEntity) :
                     lmEntity.lockedNametag;
         }
@@ -886,8 +892,8 @@ public class LevelManager implements LevelInterface {
 
                     if (lmEntity.getLivingEntity() == null) continue;
                     final List<NametagVisibilityEnum> nametagVisibilityEnums = main.rulesManager.getRule_CreatureNametagVisbility(lmEntity);
-                    final int nametagVisibleTime = lmEntity.getNametagCooldownTime();
-                   if (nametagVisibleTime > 0 &&
+                    final long nametagVisibleTime = lmEntity.getNametagCooldownTime();
+                   if (nametagVisibleTime > 0L &&
                             nametagVisibilityEnums.contains(NametagVisibilityEnum.TARGETED) &&
                             lmEntity.getLivingEntity().hasLineOfSight(player)) {
 
@@ -991,7 +997,7 @@ public class LevelManager implements LevelInterface {
     }
 
     private boolean doesMobNeedRelevelling(final @NotNull LivingEntity mob, final @NotNull Player player){
-        if (main.playerLevellingMinRelevelTime > 0 && main.playerLevellingEntities.containsKey(mob)){
+        if (main.playerLevellingMinRelevelTime > 0L && main.playerLevellingEntities.containsKey(mob)){
             final Instant lastCheck = main.playerLevellingEntities.get(mob);
             final Duration duration = Duration.between(lastCheck, Instant.now());
 
@@ -999,7 +1005,7 @@ public class LevelManager implements LevelInterface {
         }
 
         final String playerId;
-        if (main.playerLevellingMinRelevelTime > 0)
+        if (main.playerLevellingMinRelevelTime > 0L)
             main.playerLevellingEntities.put(mob, Instant.now());
 
         synchronized (mob.getPersistentDataContainer()) {
@@ -1009,7 +1015,7 @@ public class LevelManager implements LevelInterface {
             playerId = mob.getPersistentDataContainer().get(main.namespaced_keys.playerLevelling_Id, PersistentDataType.STRING);
         }
 
-        if (playerId == null && main.playerLevellingMinRelevelTime <= 0) return true;
+        if (playerId == null && main.playerLevellingMinRelevelTime <= 0L) return true;
         else if (playerId == null || !player.getUniqueId().toString().equals(playerId))
             return true;
 
@@ -1017,7 +1023,7 @@ public class LevelManager implements LevelInterface {
     }
 
     public void stopNametagAutoUpdateTask() {
-        if (!ExternalCompatibilityManager.hasProtocolLibInstalled()) return;
+        if (!main.nametagQueueManager_.hasNametagSupport()) return;
 
         if (nametagAutoUpdateTask != null && !nametagAutoUpdateTask.isCancelled()) {
             Utils.logger.info("&fTasks: &7Stopping async nametag auto update task...");
@@ -1126,6 +1132,9 @@ public class LevelManager implements LevelInterface {
     }
 
     private void applyLevelledEquipment_NonAsync(@NotNull final LivingEntityWrapper lmEntity) {
+        final MythicMobsMobInfo mmInfo = MythicMobUtils.getMythicMobInfo(lmEntity);
+        if (mmInfo != null && mmInfo.preventRandomEquipment) return;
+
         final List<ItemStack> items = new LinkedList<>();
         final CustomDropResult dropResult = main.customDropsHandler.getCustomItemDrops(lmEntity, items, true);
         if (items.isEmpty()) return;
@@ -1358,7 +1367,8 @@ public class LevelManager implements LevelInterface {
 
                 if (lockEntity) {
                     lmEntity.getPDC().set(main.namespaced_keys.lockSettings, PersistentDataType.INTEGER, 1);
-                    lmEntity.getPDC().set(main.namespaced_keys.lockedNametag, PersistentDataType.STRING, lmEntity.lockedNametag);
+                    if (lmEntity.lockedNametag != null)
+                        lmEntity.getPDC().set(main.namespaced_keys.lockedNametag, PersistentDataType.STRING, lmEntity.lockedNametag);
                     if (lmEntity.lockedOverrideName != null)
                         lmEntity.getPDC().set(main.namespaced_keys.lockedNameOverride, PersistentDataType.STRING, lmEntity.lockedOverrideName);
                 }

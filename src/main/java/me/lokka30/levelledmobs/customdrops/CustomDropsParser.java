@@ -5,15 +5,15 @@
 package me.lokka30.levelledmobs.customdrops;
 
 import me.lokka30.levelledmobs.LevelledMobs;
-import me.lokka30.levelledmobs.managers.ExternalCompatibilityManager;
-import me.lokka30.levelledmobs.managers.NBTManager;
 import me.lokka30.levelledmobs.misc.CachedModalList;
-import me.lokka30.levelledmobs.misc.CustomUniversalGroups;
 import me.lokka30.levelledmobs.misc.DebugType;
-import me.lokka30.levelledmobs.misc.NBTApplyResult;
-import me.lokka30.levelledmobs.misc.Utils;
+import me.lokka30.levelledmobs.result.NBTApplyResult;
+import me.lokka30.levelledmobs.util.Utils;
 import me.lokka30.levelledmobs.misc.YmlParsingHelper;
 import me.lokka30.levelledmobs.rules.RuleInfo;
+import me.lokka30.levelledmobs.managers.ExternalCompatibilityManager;
+import me.lokka30.levelledmobs.managers.NBTManager;
+import me.lokka30.levelledmobs.misc.CustomUniversalGroups;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.configuration.ConfigurationSection;
@@ -337,6 +337,7 @@ public class CustomDropsParser {
                     item.externalType = ymlHelper.getString(itemInfoConfiguration, "type", this.defaults.externalType);
                     item.externalAmount = ymlHelper.getDouble2(itemInfoConfiguration, "external-amount", this.defaults.externalAmount);
 
+
                     if (item.isExternalItem && ExternalCompatibilityManager.hasLMItemsInstalled()){
 
                         if (!handler.lmItemsParser.getExternalItem(item)) continue;
@@ -391,6 +392,8 @@ public class CustomDropsParser {
 
             customCommand.commandName = ymlHelper.getString(cs,"name");
             customCommand.delay = ymlHelper.getInt(cs, "delay", 0);
+            customCommand.runOnSpawn = ymlHelper.getBoolean(cs, "run-on-spawn", false);
+            customCommand.runOnDeath = ymlHelper.getBoolean(cs, "run-on-death", true);
             parseRangedVariables(customCommand, cs);
 
             if (customCommand.commands.isEmpty())
@@ -462,7 +465,7 @@ public class CustomDropsParser {
 
     @NotNull
     private CachedModalList<CauseOfDeathEnum> buildCachedModalListOfDamageCause(final ConfigurationSection cs,
-                                                                                             final CachedModalList<CauseOfDeathEnum> defaultValue) {
+                                                                                final CachedModalList<CauseOfDeathEnum> defaultValue) {
         if (cs == null) return defaultValue;
 
         final CachedModalList<CauseOfDeathEnum> cachedModalList = new CachedModalList<>();

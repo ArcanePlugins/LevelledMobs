@@ -6,11 +6,12 @@ package me.lokka30.levelledmobs.misc;
 
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.LivingEntityInterface;
-import me.lokka30.levelledmobs.managers.ExternalCompatibilityManager;
 import me.lokka30.levelledmobs.rules.ApplicableRulesResult;
 import me.lokka30.levelledmobs.rules.FineTuningAttributes;
-import me.lokka30.levelledmobs.rules.LevelledMobSpawnReason;
 import me.lokka30.levelledmobs.rules.RuleInfo;
+import me.lokka30.levelledmobs.managers.ExternalCompatibilityManager;
+import me.lokka30.levelledmobs.rules.LevelledMobSpawnReason;
+import me.lokka30.levelledmobs.util.Utils;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Ageable;
@@ -87,7 +88,7 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
     public int chunkKillcount;
     private Integer mobLevel;
     private Integer skylightLevelAtSpawn;
-    private int nametagCooldownTime;
+    private long nametagCooldownTime;
     private String sourceSpawnerName;
     private String sourceSpawnEggName;
     @NotNull
@@ -368,7 +369,7 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
         return this.applicableGroups;
     }
 
-    public int getNametagCooldownTime(){
+    public long getNametagCooldownTime(){
         if (!hasCache) buildCache();
 
         return this.nametagCooldownTime;
