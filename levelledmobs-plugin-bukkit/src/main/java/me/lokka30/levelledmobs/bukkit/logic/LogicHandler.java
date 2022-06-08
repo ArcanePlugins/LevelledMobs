@@ -56,7 +56,7 @@ public final class LogicHandler {
     ) {
         for(var function : getFunctions())
             if(function.hasAnyTriggers(triggers))
-                function.run(context);
+                function.run(context, false);
     }
 
     private boolean parseGroups() {
@@ -354,7 +354,7 @@ public final class LogicHandler {
                     "identifier"
                 );
 
-                final var actionParseEvent = new ActionParseEvent(identifier);
+                final var actionParseEvent = new ActionParseEvent(identifier, process, actionNode);
                 Bukkit.getPluginManager().callEvent(actionParseEvent);
                 if(!actionParseEvent.isClaimed()) {
                     Log.sev(String.format(
@@ -398,7 +398,7 @@ public final class LogicHandler {
                     "identifier"
                 );
 
-                final var conditionParseEvent = new ConditionParseEvent(identifier);
+                final var conditionParseEvent = new ConditionParseEvent(identifier, process, conditionNode);
                 Bukkit.getPluginManager().callEvent(conditionParseEvent);
                 if(!conditionParseEvent.isClaimed()) {
                     Log.sev(String.format(

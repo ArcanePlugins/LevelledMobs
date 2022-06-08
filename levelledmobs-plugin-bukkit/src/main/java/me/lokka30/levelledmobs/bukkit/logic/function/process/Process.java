@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import me.lokka30.levelledmobs.bukkit.logic.context.Context;
 import me.lokka30.levelledmobs.bukkit.logic.function.process.action.Action;
 import me.lokka30.levelledmobs.bukkit.logic.function.process.condition.Condition;
 import me.lokka30.levelledmobs.bukkit.logic.function.LmFunction;
@@ -35,6 +36,25 @@ public class Process {
         this.description = description;
         this.node = node;
         this.function = function;
+    }
+
+    /* methods */
+
+    public boolean conditionsApply(final @NotNull Context context) {
+        final float conditionsPercentageRequired = 1.0f; //TODO configurable
+        final int totalConditions = getConditions().size();
+        int conditionsMet = 0;
+
+        for(var condition : getConditions())
+            if(condition.applies(context))
+                conditionsMet++;
+
+        return (conditionsMet * 1.0f / totalConditions) >= conditionsPercentageRequired;
+    }
+
+    public void runActions(final @NotNull Context context) {
+        for(var action : getActions())
+            action.run(context);
     }
 
     /* getters and setters */

@@ -36,8 +36,12 @@ public class LmFunction {
 
     /* methods */
 
-    public void run(final @NotNull Context context) {
-        //todo
+    public void run(final @NotNull Context context, final boolean overrideConditions) {
+        for(var process : getProcesses()) {
+            if(overrideConditions || process.conditionsApply(context))
+                process.runActions(context);
+        }
+        // TODO Consider ones like exit-function
     }
 
     public boolean hasAnyTriggers(final @NotNull String... triggersToCheck) {
