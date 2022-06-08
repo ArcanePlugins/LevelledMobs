@@ -31,11 +31,11 @@ public final class LevelledMobs extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        if(!(
-            assertRunningSpigot() &&
+        if(!(assertRunningSpigot() &&
             getConfigHandler().load() &&
+            getListenerHandler().loadPrimary() &&
             getLogicHandler().load() &&
-            getListenerHandler().load() &&
+            getListenerHandler().loadSecondary() &&
             getCommandHandler().load()
         )) {
             Log.sev("LevelledMobs encountered a fatal error during the startup process; " +
@@ -43,6 +43,8 @@ public final class LevelledMobs extends JavaPlugin {
                 true);
 
             //TODO send a message to online players as well (in case of reload)
+
+            // TODO make it still operational for reloading instead of just disabling.
 
             setEnabled(false);
             return;
