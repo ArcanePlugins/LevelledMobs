@@ -94,4 +94,7 @@ public class ActionParseEvent extends Event implements Cancellable {
     public HandlerList getHandlers() {
         return HANDLERS;
     }
+
+    @NotNull
+    public static HandlerList getHandlerList() { return HANDLERS; }
 }

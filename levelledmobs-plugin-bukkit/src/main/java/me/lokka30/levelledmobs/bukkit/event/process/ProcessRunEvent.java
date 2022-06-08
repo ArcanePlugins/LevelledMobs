@@ -23,12 +23,6 @@ public final class ProcessRunEvent extends Event implements Cancellable {
     /* getters and setters */
 
     @NotNull
-    @Override
-    public HandlerList getHandlers() {
-        return HANDLERS;
-    }
-
-    @NotNull
     public Process getProcess() { return process; }
 
     @Override
@@ -40,4 +34,13 @@ public final class ProcessRunEvent extends Event implements Cancellable {
     public void setCancelled(boolean state) {
         this.cancelled = state;
     }
+
+    @NotNull
+    @Override
+    public HandlerList getHandlers() {
+        return HANDLERS;
+    }
+
+    @NotNull
+    public static HandlerList getHandlerList() { return HANDLERS; }
 }

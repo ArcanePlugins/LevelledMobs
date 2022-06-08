@@ -7,7 +7,6 @@ import me.lokka30.levelledmobs.bukkit.util.Log;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 
-@SuppressWarnings("RedundantLabeledSwitchRuleCodeBlock")
 public class ActionParseListener extends ListenerWrapper {
 
     /* constructor */
@@ -22,16 +21,13 @@ public class ActionParseListener extends ListenerWrapper {
     public void onActionParse(final ActionParseEvent event) {
         Log.inf("DEBUG: action parse event: " + event.getIdentifier());
         switch(event.getIdentifier().toLowerCase(Locale.ROOT)) {
-            case "broadcast-message-to-sever" -> {
+            case "broadcast-message-to-server" -> {
+                Log.inf("DEBUG: stage 2");
                 event.getProcess().getActions().add(new BroadcastMessageToServerAction(
                     event.getProcess(), event.getNode()
                 ));
-            }
-            default -> {
-                return;
+                event.setClaimed(true);
             }
         }
-
-        event.setClaimed(true);
     }
 }
