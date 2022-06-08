@@ -1,4 +1,4 @@
-package me.lokka30.levelledmobs.nametags;
+package me.lokka30.levelledmobs.nms;
 
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
