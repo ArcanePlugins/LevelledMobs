@@ -244,14 +244,8 @@ public final class LogicHandler {
 
             /* call post parse fun */
             Bukkit.getPluginManager().callEvent(new FunctionPostParseEvent(function));
-        }
 
-        for(var function : getFunctions()) {
-            Log.inf(" ");
-            Log.inf(" ");
-            Log.inf("DEBUG: " + function.toString());
-            Log.inf(" ");
-            Log.inf(" ");
+            getFunctions().add(function);
         }
 
         Log.inf("Successfully parsed " + getFunctions().size() + " function(s).");
@@ -408,10 +402,16 @@ public final class LogicHandler {
 
         for(var conditionNode : conditionNodes) {
             if(conditionNode.hasChild("condition")) {
-                final String identifier = Objects.requireNonNull(
-                    conditionNode.node("condition").getString(null),
-                    "identifier"
-                );
+                final String identifier = conditionNode.node("condition").getString("");
+
+                if(identifier.isBlank()) {
+                    Log.sev(String.format(
+                        "Process '%s' in function '%s' has specified a condition item with an " +
+                            "invalid identifier.",
+                        process.getIdentifier(), process.getFunction().getIdentifier()
+                    ), true);
+                    return false;
+                }
 
                 final var conditionParseEvent = new ConditionParseEvent(identifier, process, conditionNode);
                 Bukkit.getPluginManager().callEvent(conditionParseEvent);
@@ -434,7 +434,7 @@ public final class LogicHandler {
             } else {
                 Log.sev(String.format(
                     "Process '%s' in function '%s' contains an item in the conditions list which " +
-                        "does not identify as an action or socket.",
+                        "does not identify as a condition or socket.",
                     process.getIdentifier(), process.getFunction().getIdentifier()
                 ), true);
                 return false;

@@ -4,6 +4,7 @@ import me.lokka30.levelledmobs.bukkit.LevelledMobs;
 import me.lokka30.levelledmobs.bukkit.api.data.keys.EntityKeyStore;
 import me.lokka30.levelledmobs.bukkit.data.InternalEntityDataUtil;
 import me.lokka30.levelledmobs.bukkit.logic.context.Context;
+import me.lokka30.levelledmobs.bukkit.util.Log;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -46,6 +47,7 @@ public final class EntitySpawnListener extends ListenerWrapper {
         /*
         Fire the associated trigger.
          */
+        Log.inf("DEBUG: Running functions with triggers");
         LevelledMobs.getInstance().getLogicHandler().runFunctionsWithTriggers(
             new Context()
                 .withEntity(entity)

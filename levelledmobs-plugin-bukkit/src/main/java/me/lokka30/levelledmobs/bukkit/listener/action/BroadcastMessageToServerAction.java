@@ -3,20 +3,19 @@ package me.lokka30.levelledmobs.bukkit.listener.action;
 import de.themoep.minedown.MineDown;
 import java.util.Objects;
 import me.lokka30.levelledmobs.bukkit.LevelledMobs;
-import me.lokka30.levelledmobs.bukkit.logic.function.process.action.Action;
 import me.lokka30.levelledmobs.bukkit.logic.context.Context;
 import me.lokka30.levelledmobs.bukkit.logic.function.process.Process;
+import me.lokka30.levelledmobs.bukkit.logic.function.process.action.Action;
 import me.lokka30.levelledmobs.bukkit.util.Log;
 import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.spongepowered.configurate.CommentedConfigurationNode;
 import org.spongepowered.configurate.ConfigurateException;
 
 public class BroadcastMessageToServerAction extends Action {
 
-    private final @Nullable String requiredPermission;
+    private final String requiredPermission;
     private String[] message = null;
 
     public BroadcastMessageToServerAction(Process process, final CommentedConfigurationNode node) {
@@ -24,7 +23,7 @@ public class BroadcastMessageToServerAction extends Action {
 
         this.requiredPermission = getNode()
             .node("required-permission")
-            .getString(null);
+            .getString();
 
         try {
             this.message = Objects.requireNonNull(getNode().node("message")
@@ -47,7 +46,6 @@ public class BroadcastMessageToServerAction extends Action {
                 for(var line : getMessage()) {
                     final var lineComponents = MineDown.parse(line);
                     for(var player : Bukkit.getOnlinePlayers()) {
-                        //noinspection ConstantConditions
                         if (!hasRequiredPermission() || player.hasPermission(
                             getRequiredPermission())) {
                             player.spigot().sendMessage(lineComponents);
@@ -58,9 +56,9 @@ public class BroadcastMessageToServerAction extends Action {
         }.runTaskAsynchronously(LevelledMobs.getInstance());
     }
 
-    public boolean hasRequiredPermission() { return requiredPermission != null; }
+    public boolean hasRequiredPermission() { return !requiredPermission.isEmpty(); }
 
-    @Nullable
+    @NotNull
     public String getRequiredPermission() { return requiredPermission; }
 
     @NotNull

@@ -4,6 +4,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import me.lokka30.levelledmobs.bukkit.logic.context.Context;
 import me.lokka30.levelledmobs.bukkit.logic.function.process.Process;
 import me.lokka30.levelledmobs.bukkit.logic.function.process.condition.Condition;
+import me.lokka30.levelledmobs.bukkit.util.Log;
 import org.spongepowered.configurate.CommentedConfigurationNode;
 
 public class ChanceCondition extends Condition {
@@ -23,7 +24,10 @@ public class ChanceCondition extends Condition {
 
     @Override
     public boolean applies(Context context) {
-        return ThreadLocalRandom.current().nextFloat() <= (getChance() / 100.0f);
+        final var random = ThreadLocalRandom.current().nextFloat();
+        final var chance = (getChance() / 100.0f);
+        Log.inf("DEBUG: chance: " + chance + ", random: " + random);
+        return random <= chance;
     }
 
     /* getters and setters */
