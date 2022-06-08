@@ -19,7 +19,7 @@ public class Process {
     private final String identifier;
     private final String description;
     private final CommentedConfigurationNode node;
-    private final LmFunction function;
+    private final LmFunction parentFunction;
     private final Set<Preset> presets = new LinkedHashSet<>();
     private final List<Action> actions = new ArrayList<>();
     private final List<Condition> conditions = new ArrayList<>();
@@ -31,24 +31,30 @@ public class Process {
         final @NotNull String identifier,
         final @NotNull String description,
         final @NotNull CommentedConfigurationNode node,
-        final @NotNull LmFunction function
+        final @NotNull LmFunction parentFunction
     ) {
         this.identifier = identifier;
         this.description = description;
         this.node = node;
-        this.function = function;
+        this.parentFunction = parentFunction;
     }
 
     /* methods */
 
     public boolean conditionsApply(final @NotNull Context context) {
-        final float conditionsPercentageRequired = 1.0f; //TODO configurable
         final int totalConditions = getConditions().size();
+
+        if(totalConditions == 0)
+            return true;
+
+        final float conditionsPercentageRequired = 1.0f; //TODO configurable
         int conditionsMet = 0;
 
-        for(var condition : getConditions())
-            if(condition.applies(context))
+        for(var condition : getConditions()) {
+            if (condition.applies(context)) {
                 conditionsMet++;
+            }
+        }
 
         return (conditionsMet * 1.0f / totalConditions) >= conditionsPercentageRequired;
     }
@@ -84,7 +90,7 @@ public class Process {
     public List<Condition> getConditions() { return conditions; }
 
     @NotNull
-    public LmFunction getFunction() { return function; }
+    public LmFunction getParentFunction() { return parentFunction; }
 
     public boolean shouldExit() {
         return exit;

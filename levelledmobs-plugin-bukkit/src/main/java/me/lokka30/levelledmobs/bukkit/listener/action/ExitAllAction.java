@@ -17,8 +17,8 @@ public class ExitAllAction extends Action {
 
     @Override
     public void run(Context context) {
-        getProcess().getFunction().setShouldExitAll(true);
-        getProcess().getFunction().setShouldExit(true);
-        getProcess().setShouldExit(true);
+        getParentProcess().getParentFunction().setShouldExitAll(true);
+        getParentProcess().getParentFunction().setShouldExit(true);
+        getParentProcess().setShouldExit(true);
     }
 }

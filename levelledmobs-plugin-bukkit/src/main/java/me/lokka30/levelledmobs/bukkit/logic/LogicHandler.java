@@ -214,23 +214,25 @@ public final class LogicHandler {
 
             /* add triggers */
             final var triggersNode = functionNode.node("triggers");
-            if(triggersNode.empty() || !triggersNode.isList()) {
-                Log.sev("Unable to parse triggers of function '" + identifier +
-                    "': not a valid list of triggers.", true);
-                return false;
+            if(!triggersNode.empty()) {
+                if(!triggersNode.isList()) {
+                    Log.sev("Unable to parse triggers of function '" + identifier +
+                        "': not a valid list of triggers.", true);
+                    return false;
+                }
+                final List<String> triggersList;
+                try {
+                    triggersList = Objects.requireNonNull(triggersNode.getList(String.class), "list");
+                } catch (SerializationException | NullPointerException ex) {
+                    Log.sev("Unable to parse triggers of function '" + identifier +
+                        "'. This is usually caused by a the user creating a syntax error in " +
+                        "the settings.yml file. A stack trace will be printed below for debugging " +
+                        "purposes.", true);
+                    ex.printStackTrace();
+                    return false;
+                }
+                function.getTriggers().addAll(triggersList);
             }
-            final List<String> triggersList;
-            try {
-                triggersList = Objects.requireNonNull(triggersNode.getList(String.class), "list");
-            } catch (SerializationException | NullPointerException ex) {
-                Log.sev("Unable to parse triggers of function '" + identifier +
-                    "'. This is usually caused by a the user creating a syntax error in " +
-                    "the settings.yml file. A stack trace will be printed below for debugging " +
-                    "purposes.", true);
-                ex.printStackTrace();
-                return false;
-            }
-            function.getTriggers().addAll(triggersList);
 
             /* call pre parse fun */
 
@@ -358,7 +360,7 @@ public final class LogicHandler {
                 if(identifier.isBlank()) {
                     Log.sev(String.format(
                         "Process '%s' in function '%s' has an action with an invalid identifier.",
-                        process.getIdentifier(), process.getFunction().getIdentifier()
+                        process.getIdentifier(), process.getParentFunction().getIdentifier()
                     ), true);
                     return false;
                 }
@@ -370,7 +372,7 @@ public final class LogicHandler {
                         "Action '%s' in process '%s' in function '%s' is not known to " +
                             "LevelledMobs or any of it external integrations. Verify the " +
                             "spelling is correct.",
-                        identifier, process.getIdentifier(), process.getFunction().getIdentifier()
+                        identifier, process.getIdentifier(), process.getParentFunction().getIdentifier()
                     ), true);
                     return false;
                 }
@@ -385,7 +387,7 @@ public final class LogicHandler {
                 Log.sev(String.format(
                     "Process '%s' in function '%s' contains an item in the actions list which " +
                         "does not identify as an action or socket.",
-                    process.getIdentifier(), process.getFunction().getIdentifier()
+                    process.getIdentifier(), process.getParentFunction().getIdentifier()
                 ), true);
                 return false;
             }
@@ -408,7 +410,7 @@ public final class LogicHandler {
                     Log.sev(String.format(
                         "Process '%s' in function '%s' has specified a condition item with an " +
                             "invalid identifier.",
-                        process.getIdentifier(), process.getFunction().getIdentifier()
+                        process.getIdentifier(), process.getParentFunction().getIdentifier()
                     ), true);
                     return false;
                 }
@@ -420,7 +422,7 @@ public final class LogicHandler {
                         "Condition '%s' in process '%s' in function '%s' is not known to " +
                             "LevelledMobs or any of it external integrations. Verify the " +
                             "spelling is correct.",
-                        identifier, process.getIdentifier(), process.getFunction().getIdentifier()
+                        identifier, process.getIdentifier(), process.getParentFunction().getIdentifier()
                     ), true);
                     return false;
                 }
@@ -435,7 +437,7 @@ public final class LogicHandler {
                 Log.sev(String.format(
                     "Process '%s' in function '%s' contains an item in the conditions list which " +
                         "does not identify as a condition or socket.",
-                    process.getIdentifier(), process.getFunction().getIdentifier()
+                    process.getIdentifier(), process.getParentFunction().getIdentifier()
                 ), true);
                 return false;
             }

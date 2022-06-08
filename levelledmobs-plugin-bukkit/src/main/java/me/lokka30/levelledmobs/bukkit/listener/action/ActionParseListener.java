@@ -3,6 +3,7 @@ package me.lokka30.levelledmobs.bukkit.listener.action;
 import java.util.Locale;
 import me.lokka30.levelledmobs.bukkit.event.action.ActionParseEvent;
 import me.lokka30.levelledmobs.bukkit.listener.ListenerWrapper;
+import me.lokka30.levelledmobs.bukkit.logic.function.process.action.Action;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 
@@ -18,32 +19,42 @@ public class ActionParseListener extends ListenerWrapper {
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onActionParse(final ActionParseEvent event) {
-        switch(event.getIdentifier().toLowerCase(Locale.ROOT)) {
+        final var process = event.getProcess();
+        final var node = event.getNode();
+
+        switch (event.getIdentifier().toLowerCase(Locale.ROOT)) {
+            case "__test" -> {
+                addAction(event, new TestAction(process, node));
+            }
+            case "broadcast-message-to-nearby-players" -> {
+                addAction(event, new BroadcastMessageToNearbyPlayersAction(process, node));
+            }
             case "broadcast-message-to-server" -> {
-                event.getProcess().getActions().add(new BroadcastMessageToServerAction(
-                    event.getProcess(), event.getNode()
-                ));
+                addAction(event, new BroadcastMessageToServerAction(process, node));
+            }
+            case "broadcast-message-to-world" -> {
+                addAction(event, new BroadcastMessageToWorldAction(process, node));
             }
             case "exit-all" -> {
-                event.getProcess().getActions().add(new ExitAllAction(
-                    event.getProcess(), event.getNode()
-                ));
+                addAction(event, new ExitAllAction(process, node));
             }
             case "exit-function" -> {
-                event.getProcess().getActions().add(new ExitFunctionAction(
-                    event.getProcess(), event.getNode()
-                ));
+                addAction(event, new ExitFunctionAction(process, node));
             }
             case "exit-process" -> {
-                event.getProcess().getActions().add(new ExitProcessAction(
-                    event.getProcess(), event.getNode()
-                ));
+                addAction(event, new ExitProcessAction(process, node));
             }
-            default -> {
-                // action does not belong to LM
-                return;
+            case "run-function" -> {
+                addAction(event, new RunFunctionAction(process, node));
+            }
+            case "set-drop-table-id" -> {
+                addAction(event, new SetDropTableIdAction(process, node));
             }
         }
+    }
+
+    private void addAction(final ActionParseEvent event, final Action action) {
+        event.getProcess().getActions().add(action);
         event.setClaimed(true);
     }
 }

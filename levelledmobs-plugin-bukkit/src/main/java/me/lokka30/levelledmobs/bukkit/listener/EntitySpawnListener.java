@@ -50,6 +50,7 @@ public final class EntitySpawnListener extends ListenerWrapper {
             new Context()
                 .withEntity(entity)
                 .withEntityType(entity.getType())
+                .withWorld(entity.getWorld())
                 .withLocation(entity.getLocation()),
             "on-entity-spawn", "on-mob-spawn"
         );

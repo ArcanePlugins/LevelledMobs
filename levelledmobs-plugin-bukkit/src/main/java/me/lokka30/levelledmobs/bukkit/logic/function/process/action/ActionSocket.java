@@ -40,7 +40,7 @@ public class ActionSocket extends Action {
         if(hasAlreadyWarned)
             return;
 
-        Log.sev("Process '" + getProcess().getIdentifier() + "' contains a socket for the " +
+        Log.sev("Process '" + getParentProcess().getIdentifier() + "' contains a socket for the " +
             "action '" + identifier + "', but no action was found in any presets to fulfil the " +
             "socket.", true);
 

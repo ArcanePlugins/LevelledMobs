@@ -11,13 +11,13 @@ public abstract class Condition {
     /* vars */
 
     private final Process process;
-    private final CommentedConfigurationNode node;
+    private final CommentedConfigurationNode conditionNode;
 
     /* constructors */
 
-    public Condition(final Process process, final @NotNull CommentedConfigurationNode node) {
+    public Condition(final Process process, final @NotNull CommentedConfigurationNode conditionNode) {
         this.process = Objects.requireNonNull(process, "process");
-        this.node = Objects.requireNonNull(node, "node");
+        this.conditionNode = Objects.requireNonNull(conditionNode, "node");
     }
 
     /* methods */
@@ -30,6 +30,6 @@ public abstract class Condition {
     public Process getProcess() { return process; }
 
     @NotNull
-    public CommentedConfigurationNode getNode() { return node; }
+    public CommentedConfigurationNode getConditionNode() { return conditionNode; }
 
 }

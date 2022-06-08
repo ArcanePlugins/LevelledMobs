@@ -6,22 +6,28 @@ import me.lokka30.levelledmobs.bukkit.logic.context.Context;
 import me.lokka30.levelledmobs.bukkit.logic.function.process.Process;
 import me.lokka30.levelledmobs.bukkit.logic.function.process.action.Action;
 import me.lokka30.levelledmobs.bukkit.util.Log;
-import org.bukkit.Bukkit;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.configurate.CommentedConfigurationNode;
 import org.spongepowered.configurate.ConfigurateException;
 
-public class BroadcastMessageToServerAction extends Action {
+public class BroadcastMessageToNearbyPlayersAction extends Action {
 
     private final String requiredPermission;
     private String[] message = null;
+    private final double range;
 
-    public BroadcastMessageToServerAction(Process process, final CommentedConfigurationNode node) {
+    public BroadcastMessageToNearbyPlayersAction(Process process, final CommentedConfigurationNode node) {
         super(process, node);
 
         this.requiredPermission = getActionNode()
             .node("required-permission")
             .getString("");
+
+        this.range = getActionNode()
+            .node("range")
+            .getDouble(16d);
 
         try {
             this.message = Objects.requireNonNull(getActionNode().node("message")
@@ -38,12 +44,30 @@ public class BroadcastMessageToServerAction extends Action {
 
     @Override
     public void run(Context context) {
+        final Entity entity;
+
+        if(context.getEntity() != null) {
+            entity = context.getEntity();
+        } else if(context.getPlayer() != null) {
+            entity = context.getPlayer();
+        } else {
+            Log.sev(String.format(
+                "A 'broadcast-message-to-world' action has encountered an issue in process '%s' " +
+                    "(in function '%s'), where a context is missing an entity or player.",
+                getParentProcess().getIdentifier(),
+                getParentProcess().getParentFunction().getIdentifier()
+            ), true);
+            return;
+        }
+
         for(var line : getMessage()) {
             final var lineComponents = MineDown.parse(line);
-            for(var player : Bukkit.getOnlinePlayers()) {
-                if (!hasRequiredPermission() || player.hasPermission(
-                    getRequiredPermission())) {
-                    player.spigot().sendMessage(lineComponents);
+            for(var nearbyEntity : entity.getNearbyEntities(range, range, range)) {
+                if(nearbyEntity instanceof Player player) {
+                    if (!hasRequiredPermission() || player.hasPermission(
+                        getRequiredPermission())) {
+                        player.spigot().sendMessage(lineComponents);
+                    }
                 }
             }
         }

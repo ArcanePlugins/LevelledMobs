@@ -3,7 +3,10 @@ package me.lokka30.levelledmobs.bukkit.data;
 import static org.bukkit.persistence.PersistentDataType.INTEGER;
 import static org.bukkit.persistence.PersistentDataType.STRING;
 
+import com.jeff_media.morepersistentdatatypes.DataType;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 import me.lokka30.levelledmobs.bukkit.api.data.EntityDataUtil;
 import me.lokka30.levelledmobs.bukkit.api.data.keys.EntityKeyStore;
 import org.bukkit.entity.LivingEntity;
@@ -13,6 +16,28 @@ public final class InternalEntityDataUtil extends EntityDataUtil {
 
     private InternalEntityDataUtil() {
         throw new IllegalStateException("Instantiation of utility-type class");
+    }
+
+    public static Set<String> getDropTableIds(final @NotNull LivingEntity entity) {
+        Objects.requireNonNull(entity, "entity");
+
+        final var result = getPdc(entity).get(EntityKeyStore.dropTableIds,
+            DataType.asGenericCollection(HashSet::new, DataType.STRING));
+
+        if(result == null) {
+            return new HashSet<>();
+        }
+
+        return result;
+    }
+
+    public static void setDropTableIds(
+        final @NotNull LivingEntity entity,
+        final @NotNull Set<String> dropTableIds
+    ) {
+        Objects.requireNonNull(entity, "entity");
+        Objects.requireNonNull(dropTableIds, "dropTableIds");
+        getPdc(entity).set(EntityKeyStore.dropTableIds, DataType.asSet(DataType.STRING), dropTableIds);
     }
 
     public static void setLevel(final @NotNull LivingEntity entity, final int to) {

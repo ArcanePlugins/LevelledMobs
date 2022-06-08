@@ -8,6 +8,10 @@ import org.spongepowered.configurate.CommentedConfigurationNode;
 
 public class ExitProcessAction extends Action {
 
+    /*
+    constructors
+     */
+
     public ExitProcessAction(
         @NotNull Process process,
         @NotNull CommentedConfigurationNode node
@@ -15,8 +19,10 @@ public class ExitProcessAction extends Action {
         super(process, node);
     }
 
+    /* methods */
+
     @Override
     public void run(Context context) {
-        getProcess().setShouldExit(true);
+        getParentProcess().setShouldExit(true);
     }
 }

@@ -11,7 +11,7 @@ public class EntityKeyStore extends KeyStore {
     /*
     Represents that an entity should not receive any updates from LM's label system.
 
-    Type: INTEGER
+    Type: Nullable Integer (bool - mob denies label)
     From: LM3, LM4
 
     Value | Representation | Notes
@@ -23,9 +23,23 @@ public class EntityKeyStore extends KeyStore {
     public static final NamespacedKey deniesLabel = getKey("DenyLM_Nametag");
 
     /*
+    Represents a collection of drop table IDs that an entity has.
+
+    Type: Non-Null Set<String> (drop table IDs)
+    ...type via 'MorePersistentDataTypes' library
+    From: LM4
+
+    Value    | Representation                | Notes
+    ---------+-------------------------------+-----------
+    null     | no drop table IDs             | Not Possible
+    non-null | Set<String> of drop table IDs | Empty by default
+     */
+    public static final NamespacedKey dropTableIds = getKey("DropTableIds");
+
+    /*
     Represents the current level of the entity.
 
-    Type: INTEGER (level)
+    Type: Nullable Integer (current level)
     From: LM1, LM2, LM3, LM4
 
     Value      | Representation
@@ -38,7 +52,7 @@ public class EntityKeyStore extends KeyStore {
     /*
     Represents the maximum determined level of the entity.
 
-    Type: INTEGER (level)
+    Type: Non-Null Integer (level)
     From: LM4
 
     Value      | Representation   | Notes
@@ -51,7 +65,7 @@ public class EntityKeyStore extends KeyStore {
     /*
     Represents the minimum determined level of the entity.
 
-    Type: INTEGER (level)
+    Type: Non-Null Integer (level)
     From: LM4
 
     Value      | Representation      | Notes
@@ -64,7 +78,7 @@ public class EntityKeyStore extends KeyStore {
     /*
     Represents whether the entity 'made the chance' to have any custom drops at all.
 
-    Type: INTEGER
+    Type: Nullable Integer (bool - made overall chance)
     From: LM3, LM4
 
     Value | Representation | Notes
@@ -79,7 +93,7 @@ public class EntityKeyStore extends KeyStore {
     If an entity was given an overridden name in a LM function then their overridden name will be
     stored using this key in their PersistentDataContainer.
 
-    Type: STRING (overriding entity name)
+    Type: Nullable String (overriding entity name)
     From: LM3
 
     Value      | Representation
@@ -100,7 +114,7 @@ public class EntityKeyStore extends KeyStore {
     If the entity was spawned by a LM spawner, then the name of the LM spawner will be stored using
     this key in the PDC.
 
-    Type: STRING
+    Type: Nullable String (source spawner name)
     From: LM3, LM4
 
     Value      | Representation
@@ -113,7 +127,7 @@ public class EntityKeyStore extends KeyStore {
     /*
     Represents the time of day (in ticks) in the world of the entity when they spawned in.
 
-    Type: INTEGER - world time (ticks)
+    Type: Non-Null Integer (world time in ticks)
     From: LM3, LM4
 
     Value      | Representation      | Notes
@@ -126,7 +140,7 @@ public class EntityKeyStore extends KeyStore {
     /*
     Represents the sky light level in the location of the entity when they spawned in.
 
-    Type: INTEGER (light level)
+    Type: Non-Null Integer (light level)
     From: LM3, LM4
 
     Value      | Representation   | Notes
@@ -139,7 +153,7 @@ public class EntityKeyStore extends KeyStore {
     /*
     Represents if an entity was a baby or not when they spawned in.
 
-    Type: INTEGER (Nullable)
+    Type: Nullable Integer (bool - was baby)
     From: LM3, LM4
 
     Value | Representation | Notes
@@ -153,7 +167,7 @@ public class EntityKeyStore extends KeyStore {
     /*
     Represents if an entity was summoned from `/lm summon` or not.
 
-    Type: INTEGER
+    Type: Nullable Integer (bool - was summoned)
     From: LM3, LM4
 
     Value | Representation | Notes

@@ -10,14 +10,14 @@ public abstract class Action {
 
     /* vars */
 
-    private final Process process;
-    private final CommentedConfigurationNode node;
+    private final Process parentProcess;
+    private final CommentedConfigurationNode actionNode;
 
     /* constructors */
 
-    public Action(final @NotNull Process process, final @NotNull CommentedConfigurationNode node) {
-        this.process = Objects.requireNonNull(process, "process");
-        this.node = Objects.requireNonNull(node, "node");
+    public Action(final @NotNull Process parentProcess, final @NotNull CommentedConfigurationNode actionNode) {
+        this.parentProcess = Objects.requireNonNull(parentProcess, "process");
+        this.actionNode = Objects.requireNonNull(actionNode, "node");
     }
 
     /* methods */
@@ -27,9 +27,9 @@ public abstract class Action {
     /* getters and setters */
 
     @NotNull
-    public Process getProcess() { return process; }
+    public Process getParentProcess() { return parentProcess; }
 
     @NotNull
-    public CommentedConfigurationNode getNode() { return node; }
+    public CommentedConfigurationNode getActionNode() { return actionNode; }
 
 }
