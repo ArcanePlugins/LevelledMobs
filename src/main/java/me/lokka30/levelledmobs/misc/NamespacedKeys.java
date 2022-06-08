@@ -9,23 +9,24 @@ import org.bukkit.NamespacedKey;
  * @author stumper66
  * @since 3.2.0
  */
-public class Namespaced_Keys {
-    public Namespaced_Keys(final LevelledMobs main){
+public class NamespacedKeys {
+
+    public NamespacedKeys(final LevelledMobs main) {
         levelKey = new NamespacedKey(main, "level");
         spawnReasonKey = new NamespacedKey(main, "spawnReason");
         noLevelKey = new NamespacedKey(main, "noLevel");
         wasBabyMobKey = new NamespacedKey(main, "wasBabyMob");
         overridenEntityNameKey = new NamespacedKey(main, "overridenEntityName");
         hasCustomNameTag = new NamespacedKey(main, "hasCustomNameTag");
-        playerLevelling_Id = new NamespacedKey(main, "playerLevelling_Id");
-        chanceRule_Allowed = new NamespacedKey(main, "chanceRule_Allowed");
-        chanceRule_Denied = new NamespacedKey(main, "chanceRule_Denied");
-        denyLM_Nametag = new NamespacedKey(main, "denyLM_Nametag");
+        playerLevellingId = new NamespacedKey(main, "playerLevelling_Id");
+        chanceRuleAllowed = new NamespacedKey(main, "chanceRule_Allowed");
+        chanceRuleDenied = new NamespacedKey(main, "chanceRule_Denied");
+        denyLmNametag = new NamespacedKey(main, "denyLM_Nametag");
         sourceSpawnerName = new NamespacedKey(main, "sourceSpawnerName");
         spawnedTimeOfDay = new NamespacedKey(main, "spawnedTimeOfDay");
         wasSummoned = new NamespacedKey(main, "wasSummoned");
         playerNetherCoords = new NamespacedKey(main, "playerNetherCoords");
-        playerNetherCoords_IntoWorld = new NamespacedKey(main, "playerNetherCoords_IntoWorld");
+        playerNetherCoordsIntoWorld = new NamespacedKey(main, "playerNetherCoords_IntoWorld");
         skyLightLevel = new NamespacedKey(main, "skyLightLevel");
         lockSettings = new NamespacedKey(main, "lockSettings");
         lockedNametag = new NamespacedKey(main, "lockedNametag");
@@ -34,19 +35,19 @@ public class Namespaced_Keys {
         spawnerEgg = new NamespacedKey(main, "spawnerEgg");
         spawnerEggName = new NamespacedKey(main, "spawnerEggName");
         keySpawner = new NamespacedKey(main, "spawner");
-        keySpawner_MinLevel = new NamespacedKey(main, "minlevel");
-        keySpawner_MaxLevel = new NamespacedKey(main, "maxlevel");
-        keySpawner_CustomDropId = new NamespacedKey(main, "customdropid");
-        keySpawner_Delay = new NamespacedKey(main, "delay");
-        keySpawner_MaxNearbyEntities = new NamespacedKey(main, "maxnearbyentities");
-        keySpawner_MinSpawnDelay = new NamespacedKey(main, "minspawndelay");
-        keySpawner_MaxSpawnDelay = new NamespacedKey(main, "maxspawndelay");
-        keySpawner_RequiredPlayerRange = new NamespacedKey(main, "requiredplayerrange");
-        keySpawner_SpawnCount = new NamespacedKey(main, "spawncount");
-        keySpawner_SpawnType = new NamespacedKey(main, "spawntype");
-        keySpawner_SpawnRange = new NamespacedKey(main, "spawnrange");
-        keySpawner_CustomName = new NamespacedKey(main, "customname");
-        keySpawner_Lore = new NamespacedKey(main, "lore");
+        keySpawnerMinLevel = new NamespacedKey(main, "minlevel");
+        keySpawnerMaxLevel = new NamespacedKey(main, "maxlevel");
+        keySpawnerCustomDropId = new NamespacedKey(main, "customdropid");
+        keySpawnerDelay = new NamespacedKey(main, "delay");
+        keySpawnerMaxNearbyEntities = new NamespacedKey(main, "maxnearbyentities");
+        keySpawnerMinSpawnDelay = new NamespacedKey(main, "minspawndelay");
+        keySpawnerMaxSpawnDelay = new NamespacedKey(main, "maxspawndelay");
+        keySpawnerRequiredPlayerRange = new NamespacedKey(main, "requiredplayerrange");
+        keySpawnerSpawnCount = new NamespacedKey(main, "spawncount");
+        keySpawnerSpawnType = new NamespacedKey(main, "spawntype");
+        keySpawnerSpawnRange = new NamespacedKey(main, "spawnrange");
+        keySpawnerCustomName = new NamespacedKey(main, "customname");
+        keySpawnerLore = new NamespacedKey(main, "lore");
 
         this.overallChanceKey = new NamespacedKey(main, "overallChance");
     }
@@ -57,15 +58,15 @@ public class Namespaced_Keys {
     public final NamespacedKey wasBabyMobKey; // This key tells LM not to level the mob in future
     public final NamespacedKey overridenEntityNameKey;
     public final NamespacedKey hasCustomNameTag;
-    public final NamespacedKey playerLevelling_Id;
-    public final NamespacedKey chanceRule_Allowed;
-    public final NamespacedKey chanceRule_Denied;
-    public final NamespacedKey denyLM_Nametag;
+    public final NamespacedKey playerLevellingId;
+    public final NamespacedKey chanceRuleAllowed;
+    public final NamespacedKey chanceRuleDenied;
+    public final NamespacedKey denyLmNametag;
     public final NamespacedKey sourceSpawnerName;
     public final NamespacedKey spawnedTimeOfDay;
     public final NamespacedKey wasSummoned;
     public final NamespacedKey playerNetherCoords;
-    public final NamespacedKey playerNetherCoords_IntoWorld;
+    public final NamespacedKey playerNetherCoordsIntoWorld;
     public final NamespacedKey skyLightLevel;
 
     public final NamespacedKey lockSettings;
@@ -75,19 +76,19 @@ public class Namespaced_Keys {
     final public NamespacedKey spawnerEgg;
     final public NamespacedKey spawnerEggName;
     final public NamespacedKey keySpawner;
-    final public NamespacedKey keySpawner_MinLevel;
-    final public NamespacedKey keySpawner_MaxLevel;
-    final public NamespacedKey keySpawner_CustomDropId;
-    final public NamespacedKey keySpawner_Delay;
-    final public NamespacedKey keySpawner_MaxNearbyEntities;
-    final public NamespacedKey keySpawner_MinSpawnDelay;
-    final public NamespacedKey keySpawner_MaxSpawnDelay;
-    final public NamespacedKey keySpawner_RequiredPlayerRange;
-    final public NamespacedKey keySpawner_SpawnCount;
-    final public NamespacedKey keySpawner_SpawnType;
-    final public NamespacedKey keySpawner_SpawnRange;
-    final public NamespacedKey keySpawner_CustomName;
-    final public NamespacedKey keySpawner_Lore;
+    final public NamespacedKey keySpawnerMinLevel;
+    final public NamespacedKey keySpawnerMaxLevel;
+    final public NamespacedKey keySpawnerCustomDropId;
+    final public NamespacedKey keySpawnerDelay;
+    final public NamespacedKey keySpawnerMaxNearbyEntities;
+    final public NamespacedKey keySpawnerMinSpawnDelay;
+    final public NamespacedKey keySpawnerMaxSpawnDelay;
+    final public NamespacedKey keySpawnerRequiredPlayerRange;
+    final public NamespacedKey keySpawnerSpawnCount;
+    final public NamespacedKey keySpawnerSpawnType;
+    final public NamespacedKey keySpawnerSpawnRange;
+    final public NamespacedKey keySpawnerCustomName;
+    final public NamespacedKey keySpawnerLore;
 
     public final NamespacedKey overallChanceKey;
 }

@@ -12,9 +12,8 @@ import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * This event is fired *before* a mob has
- * been levelled, but only if it was
- * spawned using the `/lm summon` command.
+ * This event is fired *before* a mob has been levelled, but only if it was spawned using the `/lm
+ * summon` command.
  *
  * @author lokka30
  * @since 2.5.0

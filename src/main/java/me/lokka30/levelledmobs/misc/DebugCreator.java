@@ -1,12 +1,5 @@
 package me.lokka30.levelledmobs.misc;
 
-import me.lokka30.levelledmobs.LevelledMobs;
-import org.bukkit.Bukkit;
-import org.bukkit.command.CommandSender;
-import org.bukkit.plugin.Plugin;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -18,6 +11,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
+import me.lokka30.levelledmobs.LevelledMobs;
+import org.bukkit.Bukkit;
+import org.bukkit.command.CommandSender;
+import org.bukkit.plugin.Plugin;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Creates debug.zip for troubleshooting purposes
@@ -27,16 +26,19 @@ import java.util.zip.ZipOutputStream;
  */
 
 public class DebugCreator {
-    public static void createDebug(final @NotNull LevelledMobs main, final CommandSender sender){
+
+    public static void createDebug(final @NotNull LevelledMobs main, final CommandSender sender) {
         final String pluginDir = main.getDataFolder().getAbsolutePath();
         final List<String> srcFiles = List.of(
-                "serverinfo.txt", "rules.yml", "settings.yml", "messages.yml", "customdrops.yml",
-                Bukkit.getWorldContainer().getAbsolutePath().substring(0, Bukkit.getWorldContainer().getAbsolutePath().length() - 1) + "logs" + File.separator + "latest.log");
+            "serverinfo.txt", "rules.yml", "settings.yml", "messages.yml", "customdrops.yml",
+            Bukkit.getWorldContainer().getAbsolutePath()
+                .substring(0, Bukkit.getWorldContainer().getAbsolutePath().length() - 1) + "logs"
+                + File.separator + "latest.log");
         final File serverInfoFile = new File(pluginDir, "serverinfo.txt");
-        try{
-            Files.writeString(serverInfoFile.toPath(), generateSystemInfo(main), StandardCharsets.UTF_8);
-        }
-        catch (final IOException e){
+        try {
+            Files.writeString(serverInfoFile.toPath(), generateSystemInfo(main),
+                StandardCharsets.UTF_8);
+        } catch (final IOException e) {
             e.printStackTrace();
         }
 
@@ -52,7 +54,7 @@ public class DebugCreator {
 
             for (final String srcFile : srcFiles) {
                 final File fileToZip = srcFile.contains(File.separator) ?
-                        new File(srcFile) : new File(pluginDir, srcFile);
+                    new File(srcFile) : new File(pluginDir, srcFile);
 
                 fis = new FileInputStream(fileToZip);
                 final ZipEntry zipEntry = new ZipEntry(fileToZip.getName());
@@ -67,40 +69,47 @@ public class DebugCreator {
             }
 
             result = true;
-        }
-        catch (final IOException e){
+        } catch (final IOException e) {
             e.printStackTrace();
-        }
-        finally {
+        } finally {
             try {
-                if (zipOut != null) zipOut.close();
-                if (fis != null) fis.close();
-                if (fos != null) fos.close();
+                if (zipOut != null) {
+                    zipOut.close();
+                }
+                if (fis != null) {
+                    fis.close();
+                }
+                if (fos != null) {
+                    fos.close();
+                }
+            } catch (final Exception ignored) {
             }
-            catch (final Exception ignored) {}
         }
 
         final File serverInfo = new File(pluginDir, "serverinfo.txt");
         if (serverInfo.exists()) //noinspection ResultOfMethodCallIgnored
+        {
             serverInfo.delete();
+        }
 
-        if (result)
+        if (result) {
             sender.sendMessage("Created file: " + zipFile.getAbsolutePath());
+        }
     }
 
     @NotNull
-    private static String generateSystemInfo(final @NotNull LevelledMobs main){
+    private static String generateSystemInfo(final @NotNull LevelledMobs main) {
         final File lmFile = new File(main.getClass().getProtectionDomain()
-                .getCodeSource()
-                .getLocation()
-                .getPath().replace("%20", " "));
+            .getCodeSource()
+            .getLocation()
+            .getPath().replace("%20", " "));
         MessageDigest shaDigest = null;
         final StringBuilder sb = new StringBuilder();
 
-        try{
+        try {
             shaDigest = MessageDigest.getInstance("SHA-256");
+        } catch (final Exception ignored) {
         }
-        catch (final Exception ignored) {}
 
         sb.append(main.getDescription().getName());
         sb.append(" ");
@@ -110,10 +119,11 @@ public class DebugCreator {
         sb.append(String.format("%,d", lmFile.length()));
         sb.append(System.lineSeparator());
         sb.append("sha256 hash: ");
-        if (shaDigest != null)
+        if (shaDigest != null) {
             sb.append(getFileChecksum(shaDigest, lmFile));
-        else
+        } else {
             sb.append("(error)");
+        }
         sb.append(System.lineSeparator());
 
         sb.append("server build: ");
@@ -132,10 +142,11 @@ public class DebugCreator {
 
         final List<String> plugins = new ArrayList<>(Bukkit.getPluginManager().getPlugins().length);
         final StringBuilder sbPlugins = new StringBuilder();
-        for (final Plugin p : Bukkit.getPluginManager().getPlugins()){
+        for (final Plugin p : Bukkit.getPluginManager().getPlugins()) {
             sbPlugins.setLength(0);
-            if (!p.isEnabled())
+            if (!p.isEnabled()) {
                 sbPlugins.append("(disabled) ");
+            }
 
             sbPlugins.append(p.getName());
             sbPlugins.append(" ");
@@ -162,12 +173,11 @@ public class DebugCreator {
         final byte[] byteArray = new byte[1024];
         int bytesCount;
 
-        try (final FileInputStream fis = new FileInputStream(file)){
+        try (final FileInputStream fis = new FileInputStream(file)) {
             while ((bytesCount = fis.read(byteArray)) != -1) {
                 digest.update(byteArray, 0, bytesCount);
             }
-        }
-        catch (final IOException e) {
+        } catch (final IOException e) {
             e.printStackTrace();
             return null;
         }
@@ -175,7 +185,9 @@ public class DebugCreator {
         final byte[] bytes = digest.digest();
         final StringBuilder sb = new StringBuilder();
 
-        for (final byte aByte : bytes) sb.append(Integer.toString((aByte & 0xff) + 0x100, 16).substring(1));
+        for (final byte aByte : bytes) {
+            sb.append(Integer.toString((aByte & 0xff) + 0x100, 16).substring(1));
+        }
 
         return sb.toString();
     }

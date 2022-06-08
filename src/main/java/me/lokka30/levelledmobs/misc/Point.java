@@ -4,17 +4,15 @@
 
 package me.lokka30.levelledmobs.misc;
 
+import java.util.Arrays;
 import org.bukkit.Location;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Arrays;
-
 /**
- * A smaller version of the Location class only including
- * a world name, and three integers for the x, y and z.
- * Finds uses where the extra data and precision of the
- * Location class is completely unnecessary.
+ * A smaller version of the Location class only including a world name, and three integers for the
+ * x, y and z. Finds uses where the extra data and precision of the Location class is completely
+ * unnecessary.
  *
  * @author lokka30
  * @see Location
@@ -61,6 +59,7 @@ public class Point {
     }
 
     public static boolean matches(final @NotNull Point point1, final @NotNull Point point2) {
-        return (point1.worldName.equals(point2.worldName) && Arrays.equals(point1.getCoordinates(), point2.getCoordinates()));
+        return (point1.worldName.equals(point2.worldName) && Arrays.equals(point1.getCoordinates(),
+            point2.getCoordinates()));
     }
 }

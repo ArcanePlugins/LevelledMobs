@@ -4,10 +4,9 @@
 
 package me.lokka30.levelledmobs.commands.subcommands;
 
+import java.util.List;
 import me.lokka30.levelledmobs.LevelledMobs;
 import org.bukkit.command.CommandSender;
-
-import java.util.List;
 
 /**
  * Provides the interface for parsing commands sent to LevelledMobs
@@ -17,7 +16,9 @@ import java.util.List;
  */
 interface Subcommand {
 
-    void parseSubcommand(final LevelledMobs main, final CommandSender sender, final String label, final String[] args);
+    void parseSubcommand(final LevelledMobs main, final CommandSender sender, final String label,
+        final String[] args);
 
-    List<String> parseTabCompletions(final LevelledMobs main, final CommandSender sender, final String[] args);
+    List<String> parseTabCompletions(final LevelledMobs main, final CommandSender sender,
+        final String[] args);
 }

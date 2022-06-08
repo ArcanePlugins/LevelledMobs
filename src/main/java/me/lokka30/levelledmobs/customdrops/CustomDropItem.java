@@ -4,23 +4,22 @@
 
 package me.lokka30.levelledmobs.customdrops;
 
+import java.util.List;
+import java.util.UUID;
 import me.lokka30.levelledmobs.util.Utils;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.List;
-import java.util.UUID;
-
 /**
- * This holds all the attributes set for a
- * custom drop item
+ * This holds all the attributes set for a custom drop item
  *
  * @author stumper66
  * @since 2.5.0
  */
 public class CustomDropItem extends CustomDropBase {
+
     int customModelDataId;
     float equippedSpawnChance;
     boolean noMultiplier;
@@ -68,11 +67,15 @@ public class CustomDropItem extends CustomDropBase {
         return copy;
     }
 
-    boolean setDamageRangeFromString(final String numberOrNumberRange){
-        if (numberOrNumberRange == null || numberOrNumberRange.isEmpty()) return false;
+    boolean setDamageRangeFromString(final String numberOrNumberRange) {
+        if (numberOrNumberRange == null || numberOrNumberRange.isEmpty()) {
+            return false;
+        }
 
-        if (!numberOrNumberRange.contains("-")){
-            if (!Utils.isInteger(numberOrNumberRange)) return false;
+        if (!numberOrNumberRange.contains("-")) {
+            if (!Utils.isInteger(numberOrNumberRange)) {
+                return false;
+            }
 
             this.damage = Integer.parseInt(numberOrNumberRange);
             this.hasDamageRange = false;
@@ -82,9 +85,13 @@ public class CustomDropItem extends CustomDropBase {
         }
 
         final String[] nums = numberOrNumberRange.split("-");
-        if (nums.length != 2) return false;
+        if (nums.length != 2) {
+            return false;
+        }
 
-        if (!Utils.isInteger(nums[0].trim()) || !Utils.isInteger(nums[1].trim())) return false;
+        if (!Utils.isInteger(nums[0].trim()) || !Utils.isInteger(nums[1].trim())) {
+            return false;
+        }
         this.damageRangeMin = Integer.parseInt(nums[0].trim());
         this.damageRangeMax = Integer.parseInt(nums[1].trim());
         this.hasDamageRange = true;
@@ -92,38 +99,41 @@ public class CustomDropItem extends CustomDropBase {
         return true;
     }
 
-    public int getDamage() { return this.damage; }
+    public int getDamage() {
+        return this.damage;
+    }
 
-    public void setDamage(final int damage){
+    public void setDamage(final int damage) {
         this.damage = damage;
         this.hasDamageRange = false;
     }
 
-    int getDamageRangeMin(){
+    int getDamageRangeMin() {
         return this.damageRangeMin;
     }
 
-    int getDamageRangeMax(){
+    int getDamageRangeMax() {
         return this.damageRangeMax;
     }
 
-    boolean getHasDamageRange(){
+    boolean getHasDamageRange() {
         return this.hasDamageRange;
     }
 
-    public void setMaterial(final Material material){
+    public void setMaterial(final Material material) {
         this.material = material;
         this.itemStack = new ItemStack(this.material, 1);
     }
 
-    String getDamageAsString(){
-        if (this.hasDamageRange)
+    String getDamageAsString() {
+        if (this.hasDamageRange) {
             return String.format("%s-%s", this.damageRangeMin, this.damageRangeMax);
-        else
+        } else {
             return String.valueOf(this.damage);
+        }
     }
 
-    public Material getMaterial(){
+    public Material getMaterial() {
         return this.material;
     }
 
@@ -131,13 +141,13 @@ public class CustomDropItem extends CustomDropBase {
         return itemStack;
     }
 
-    public void setItemStack(final @NotNull ItemStack itemStack){
+    public void setItemStack(final @NotNull ItemStack itemStack) {
         this.itemStack = itemStack;
         this.material = itemStack.getType();
     }
 
-    public String toString(){
+    public String toString() {
         return String.format("%s, amount: %s, chance: %s, equipped: %s",
-                this.material.name(), this.getAmountAsString(), this.chance, this.equippedSpawnChance);
+            this.material.name(), this.getAmountAsString(), this.chance, this.equippedSpawnChance);
     }
 }

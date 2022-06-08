@@ -4,6 +4,8 @@
 
 package me.lokka30.levelledmobs.misc;
 
+import java.io.File;
+import java.io.FileInputStream;
 import me.lokka30.levelledmobs.util.Utils;
 import me.lokka30.microlib.messaging.MessageUtils;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -12,9 +14,6 @@ import org.bukkit.util.FileUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.yaml.snakeyaml.Yaml;
-
-import java.io.File;
-import java.io.FileInputStream;
 
 /**
  * Used to load various configuration files and migrate if necessary
@@ -34,7 +33,8 @@ public final class FileLoader {
     }
 
     @Nullable
-    public static YamlConfiguration loadFile(@NotNull final Plugin plugin, String cfgName, final int compatibleVersion) {
+    public static YamlConfiguration loadFile(@NotNull final Plugin plugin, String cfgName,
+        final int compatibleVersion) {
         cfgName = cfgName + ".yml";
 
         Utils.logger.info("&fFile Loader: &7Loading file '&b" + cfgName + "&7'...");
@@ -45,14 +45,20 @@ public final class FileLoader {
         try (final FileInputStream fs = new FileInputStream(file)) {
             new Yaml().load(fs);
         } catch (final Exception e) {
-            final String parseErrorMessage = "LevelledMobs was unable to read file &b%s&r due to a user-caused YAML syntax error.\n" +
-                    "Please copy the contents of your file into a YAML Parser website, such as &b(https://tinyurl.com/yamlp)&r  to help locate the line of the mistake.\n" +
-                    "Failure to resolve this issue will cause LevelledMobs to function improperly, or likely not at all.\n" +
-                    "Below represents where LevelledMobs became confused while attempting to read your file:\n" +
+            final String parseErrorMessage =
+                "LevelledMobs was unable to read file &b%s&r due to a user-caused YAML syntax error.\n"
+                    +
+                    "Copy the contents of your file into a YAML Parser website, such as < https://tinyurl.com/yamlp >  to help locate the line of the mistake.\n"
+                    +
+                    "Failure to resolve this issue will cause LevelledMobs to function improperly, or likely not at all.\n"
+                    +
+                    "Below represents where LevelledMobs became confused while attempting to read your file:\n"
+                    +
                     "&b---- START ERROR ----&r\n" +
                     "&4%s&r\n" +
                     "&b---- END ERROR ----&r\n" +
-                    "If you have attempted to resolve this issue yourself, and are unable to, then please &b#create-a-ticket&r in the Official Arcane Plugins Support Discord:\n" +
+                    "If you have attempted to resolve this issue yourself, and are unable to, then please &b#create-a-ticket&r in the Official Arcane Plugins Support Discord:\n"
+                    +
                     "&bhttps://discord.io/arcaneplugins";
 
             Utils.logger.error(String.format(parseErrorMessage, cfgName, e));
@@ -63,61 +69,75 @@ public final class FileLoader {
         cfg.options().copyDefaults(true);
         final YmlParsingHelper ymlHelper = new YmlParsingHelper();
 
-        final int fileVersion = ymlHelper.getInt(cfg,"file-version");
+        final int fileVersion = ymlHelper.getInt(cfg, "file-version");
         final boolean isCustomDrops = cfgName.equals("customdrops.yml");
         final boolean isRules = cfgName.equals("rules.yml");
 
         // not migrating rules version 2 or newer
         if ((!isRules || fileVersion < 2) && fileVersion < compatibleVersion) {
-            final File backedupFile = new File(plugin.getDataFolder(), cfgName + ".v" + fileVersion + ".old");
+            final File backedupFile = new File(plugin.getDataFolder(),
+                cfgName + ".v" + fileVersion + ".old");
 
             // copy to old file
             FileUtil.copy(file, backedupFile);
-            Utils.logger.info("&fFile Loader: &8(Migration) &b" + cfgName + " backed up to " + backedupFile.getName());
+            Utils.logger.info("&fFile Loader: &8(Migration) &b" + cfgName + " backed up to "
+                + backedupFile.getName());
             // overwrite the file from new version
-            if (!isRules)
+            if (!isRules) {
                 plugin.saveResource(file.getName(), true);
+            }
 
             // copy supported values from old file to new
-            Utils.logger.info("&fFile Loader: &8(Migration) &7Migrating &b" + cfgName + "&7 from old version to new version.");
+            Utils.logger.info("&fFile Loader: &8(Migration) &7Migrating &b" + cfgName
+                + "&7 from old version to new version.");
 
-            if (isCustomDrops)
+            if (isCustomDrops) {
                 FileMigrator.copyCustomDrops(backedupFile, file, fileVersion);
-            else if (!isRules)
+            } else if (!isRules) {
                 FileMigrator.copyYmlValues(backedupFile, file, fileVersion);
-            else
+            } else {
                 FileMigrator.migrateRules(file);
+            }
 
             // reload cfg from the updated values
             cfg = YamlConfiguration.loadConfiguration(file);
 
-        } else if (!isRules)
+        } else if (!isRules) {
             checkFileVersion(file, compatibleVersion, ymlHelper.getInt(cfg, "file-version"));
+        }
 
         return cfg;
     }
 
-    public static @NotNull String getFileLoadErrorMessage(){
+    public static @NotNull String getFileLoadErrorMessage() {
         return MessageUtils.colorizeStandardCodes(
-                "&4An error occured&r whilst attempting to parse the file &brules.yml&r due to a user-caused YAML syntax error. Please see the console logs for more details."
+            "&4An error occured&r whilst attempting to parse the file &brules.yml&r due to a user-caused YAML syntax error. Please see the console logs for more details."
         );
     }
 
     public static void saveResourceIfNotExists(final Plugin instance, @NotNull final File file) {
         if (!file.exists()) {
-            Utils.logger.info("&fFile Loader: &7File '&b" + file.getName() + "&7' doesn't exist, creating it now...");
+            Utils.logger.info("&fFile Loader: &7File '&b" + file.getName()
+                + "&7' doesn't exist, creating it now...");
             instance.saveResource(file.getName(), false);
         }
     }
 
-    private static void checkFileVersion(final File file, final int compatibleVersion, final int installedVersion) {
-        if (compatibleVersion == installedVersion)
+    private static void checkFileVersion(final File file, final int compatibleVersion,
+        final int installedVersion) {
+        if (compatibleVersion == installedVersion) {
             return;
+        }
 
         final String what = installedVersion < compatibleVersion ?
-                "outdated" : "ahead of the compatible version of this file for this version of the plugin";
+            "outdated"
+            : "ahead of the compatible version of this file for this version of the plugin";
 
-        Utils.logger.error("&fFile Loader: &7The version of &b" + file.getName() + "&7 you have installed is " + what + "! Fix this as soon as possible, else the plugin will most likely malfunction.");
-        Utils.logger.error("&fFile Loader: &8(&7You have &bv" + installedVersion + "&7 installed but you are meant to be running &bv" + compatibleVersion + "&8)");
+        Utils.logger.error(
+            "&fFile Loader: &7The version of &b" + file.getName() + "&7 you have installed is "
+                + what
+                + "! Fix this as soon as possible, else the plugin will most likely malfunction.");
+        Utils.logger.error("&fFile Loader: &8(&7You have &bv" + installedVersion
+            + "&7 installed but you are meant to be running &bv" + compatibleVersion + "&8)");
     }
 }

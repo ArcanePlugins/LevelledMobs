@@ -7,12 +7,11 @@ package me.lokka30.levelledmobs.misc;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * This class is used to put cooldowns on certain actions,
- * on certain in-game objects - e.g. clicking entities or blocks.
+ * This class is used to put cooldowns on certain actions, on certain in-game objects - e.g.
+ * clicking entities or blocks.
  * <p>
- * For example, this is used in Debug Entity Damage to stop spam from
- * clicking the same entity over and over. It is also used in the
- * Spawner Info for the same reason: blocks unnecessary chat spam.
+ * For example, this is used in Debug Entity Damage to stop spam from clicking the same entity over
+ * and over. It is also used in the Spawner Info for the same reason: blocks unnecessary chat spam.
  *
  * @author lokka30
  * @see System#currentTimeMillis()
@@ -46,8 +45,7 @@ public class Cooldown {
     }
 
     /**
-     * Check if the cooldown's required time (seconds!) has surpassed since
-     * the starting point.
+     * Check if the cooldown's required time (seconds!) has surpassed since the starting point.
      *
      * @param requiredTimeInSeconds how many seconds should the cooldown have lasted?
      * @return if the cooldown has expired.

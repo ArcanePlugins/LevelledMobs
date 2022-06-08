@@ -24,16 +24,17 @@ public class PlayerDeathListener implements Listener {
 
     public PlayerDeathListener(final LevelledMobs main) {
         this.main = main;
-        if (VersionUtils.isRunningPaper())
+        if (VersionUtils.isRunningPaper()) {
             paperListener = new me.lokka30.levelledmobs.listeners.paper.PlayerDeathListener(main);
+        }
     }
 
     final private LevelledMobs main;
     private me.lokka30.levelledmobs.listeners.paper.PlayerDeathListener paperListener;
 
     /**
-     * This listener handles death nametags so we can determine which mob killed
-     * it and update the death message accordingly
+     * This listener handles death nametags so we can determine which mob killed it and update the
+     * death message accordingly
      *
      * @param event PlayerDeathEvent
      */
@@ -41,19 +42,21 @@ public class PlayerDeathListener implements Listener {
     public void onPlayerDeath(@NotNull final PlayerDeathEvent event) {
         // returns false if not a translatable component, in which case just use the old method
         // this can happen if another plugin has buthered the event by using the deprecated method (*cough* mythic mobs)
-        if (!VersionUtils.isRunningPaper() || !paperListener.onPlayerDeathEvent(event))
+        if (!VersionUtils.isRunningPaper() || !paperListener.onPlayerDeathEvent(event)) {
             nonPaper_PlayerDeath(event);
+        }
     }
 
-    private void nonPaper_PlayerDeath(@NotNull final PlayerDeathEvent event){
+    private void nonPaper_PlayerDeath(@NotNull final PlayerDeathEvent event) {
         final LivingEntityWrapper lmEntity = SpigotUtils.getPlayersKiller(event, main);
 
-        if (main.placeholderApiIntegration != null){
+        if (main.placeholderApiIntegration != null) {
             main.placeholderApiIntegration.putPlayerOrMobDeath(event.getEntity(), lmEntity);
             return;
         }
 
-        if (lmEntity != null)
+        if (lmEntity != null) {
             lmEntity.free();
+        }
     }
 }

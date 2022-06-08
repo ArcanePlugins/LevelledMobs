@@ -4,10 +4,9 @@
 
 package me.lokka30.levelledmobs.rules;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.util.LinkedList;
 import java.util.List;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Holds any rules relating to player levelling
@@ -16,6 +15,7 @@ import java.util.List;
  * @since 3.1.0
  */
 public class PlayerLevellingOptions implements Cloneable {
+
     PlayerLevellingOptions() {
         this.levelTiers = new LinkedList<>();
         this.decreaseLevel = true;
@@ -32,14 +32,26 @@ public class PlayerLevellingOptions implements Cloneable {
     public boolean decreaseLevel;
 
     public void mergeRule(final PlayerLevellingOptions options) {
-        if (options == null) return;
+        if (options == null) {
+            return;
+        }
 
         this.levelTiers.addAll(options.levelTiers);
-        if (options.matchPlayerLevel != null) this.matchPlayerLevel = options.matchPlayerLevel;
-        if (options.usePlayerMaxLevel != null) this.usePlayerMaxLevel = options.usePlayerMaxLevel;
-        if (options.playerLevelScale != null) this.playerLevelScale = options.playerLevelScale;
-        if (options.levelCap != null) this.levelCap = options.levelCap;
-        if (variable != null) this.variable = options.variable;
+        if (options.matchPlayerLevel != null) {
+            this.matchPlayerLevel = options.matchPlayerLevel;
+        }
+        if (options.usePlayerMaxLevel != null) {
+            this.usePlayerMaxLevel = options.usePlayerMaxLevel;
+        }
+        if (options.playerLevelScale != null) {
+            this.playerLevelScale = options.playerLevelScale;
+        }
+        if (options.levelCap != null) {
+            this.levelCap = options.levelCap;
+        }
+        if (variable != null) {
+            this.variable = options.variable;
+        }
     }
 
     public PlayerLevellingOptions cloneItem() {
@@ -53,53 +65,69 @@ public class PlayerLevellingOptions implements Cloneable {
         return copy;
     }
 
-    public String toString(){
+    public String toString() {
         final StringBuilder sb = new StringBuilder();
 
-        if (enabled != null && !enabled)
+        if (enabled != null && !enabled) {
             sb.append("(disabled)");
+        }
 
         if (variable != null) {
-            if (sb.length() > 0) sb.append(", ");
+            if (sb.length() > 0) {
+                sb.append(", ");
+            }
             sb.append("var: ");
             sb.append(variable);
         }
 
         if (matchPlayerLevel != null && matchPlayerLevel) {
-            if (sb.length() > 0) sb.append(", ");
+            if (sb.length() > 0) {
+                sb.append(", ");
+            }
             sb.append("match-plr-lvl");
         }
 
         if (usePlayerMaxLevel != null && usePlayerMaxLevel) {
-            if (sb.length() > 0) sb.append(", ");
+            if (sb.length() > 0) {
+                sb.append(", ");
+            }
             sb.append("use-plr-max-lvl");
         }
 
-        if (playerLevelScale != null){
-            if (sb.length() > 0) sb.append(", ");
+        if (playerLevelScale != null) {
+            if (sb.length() > 0) {
+                sb.append(", ");
+            }
             sb.append("scale: ");
             sb.append(playerLevelScale);
         }
 
-        if (levelCap != null){
-            if (sb.length() > 0) sb.append(", ");
+        if (levelCap != null) {
+            if (sb.length() > 0) {
+                sb.append(", ");
+            }
             sb.append("cap: ");
             sb.append(levelCap);
         }
 
         if (!levelTiers.isEmpty()) {
-            if (sb.length() > 0) sb.append(", ");
+            if (sb.length() > 0) {
+                sb.append(", ");
+            }
             sb.append(levelTiers);
         }
 
-        if (decreaseLevel){
-            if (sb.length() > 0) sb.append(", ");
+        if (decreaseLevel) {
+            if (sb.length() > 0) {
+                sb.append(", ");
+            }
             sb.append("decrease-lvl");
         }
 
-        if (sb.length() == 0)
+        if (sb.length() == 0) {
             return super.toString();
-        else
+        } else {
             return sb.toString();
+        }
     }
 }

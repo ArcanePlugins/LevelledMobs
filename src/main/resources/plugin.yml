@@ -1,18 +1,29 @@
-name: LevelledMobs
-version: ${project.version}
-main: me.lokka30.levelledmobs.LevelledMobs
-softdepend: [ WorldEdit, WorldGuard, ProtocolLib, MythicMobs, PlaceholderAPI, NBTAPI, SimplePets, Essentials, LM_Items ]
+name: 'LevelledMobs'
+version: '${project.version}'
+description: '${project.description}'
+authors: [ 'lokka30', 'PenalBuffalo', 'Oathkeeper' ]
+website: 'https://github.com/lokka30/LevelledMobs/'
+
+main: 'me.lokka30.levelledmobs.LevelledMobs'
 api-version: '1.16'
-load: POSTWORLD
-author: lokka30
-description: ${project.description}
-website: 'https://github.com/lokka30/LevelledMobs/wiki'
+load: 'POSTWORLD'
+
+softdepend:
+  - WorldEdit
+  - WorldGuard
+  - ProtocolLib
+  - MythicMobs
+  - PlaceholderAPI
+  - NBTAPI
+  - SimplePets
+  - Essentials
+  - LM_Items
 
 commands:
   levelledmobs:
-    description: Manage LevelledMobs
-    aliases: [ leveledmobs, lm, lvlmobs ]
-    usage: /<command> [kill/reload/summon/info/compatibility]
+    description: 'Manage the LevelledMobs plugin'
+    aliases: [ 'leveledmobs', 'lm', 'lvlmobs' ]
+    usage: '/<command> [subcommand]'
 
 permissions:
   levelledmobs.*:

@@ -1,9 +1,8 @@
 package me.lokka30.levelledmobs.rules;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.util.LinkedList;
 import java.util.List;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Holds results information when applying custom drops
@@ -12,7 +11,8 @@ import java.util.List;
  * @since 3.1.2
  */
 public class ApplicableRulesResult {
-    ApplicableRulesResult(){
+
+    ApplicableRulesResult() {
         this.allApplicableRules = new LinkedList<>();
         this.allApplicableRules_MadeChance = new LinkedList<>();
         this.allApplicableRules_DidNotMakeChance = new LinkedList<>();

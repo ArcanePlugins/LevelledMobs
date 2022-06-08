@@ -1,6 +1,6 @@
 package me.lokka30.levelledmobs.customdrops;
 
-public enum CauseOfDeathEnum {
+public enum DeathCause {
     BLOCK_EXPLOSION,
     CONTACT,
     CRAMMING,

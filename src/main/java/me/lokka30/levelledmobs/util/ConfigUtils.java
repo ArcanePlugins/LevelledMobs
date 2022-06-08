@@ -4,14 +4,12 @@
 
 package me.lokka30.levelledmobs.util;
 
+import java.util.List;
+import java.util.Objects;
 import me.lokka30.levelledmobs.LevelledMobs;
-import me.lokka30.levelledmobs.util.Utils;
 import me.lokka30.microlib.messaging.MessageUtils;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.List;
-import java.util.Objects;
 
 /**
  * Used for managing configuration data
@@ -36,12 +34,17 @@ public class ConfigUtils {
 
     public void load() {
         // anything less than 3 breaks the formula
-        if (SETTINGS_CREEPER_MAX_RADIUS < 3) SETTINGS_CREEPER_MAX_RADIUS = 3;
-        if (SETTINGS_SPAWN_DISTANCE_FROM_PLAYER < 1) SETTINGS_SPAWN_DISTANCE_FROM_PLAYER = 1;
+        if (SETTINGS_CREEPER_MAX_RADIUS < 3) {
+            SETTINGS_CREEPER_MAX_RADIUS = 3;
+        }
+        if (SETTINGS_SPAWN_DISTANCE_FROM_PLAYER < 1) {
+            SETTINGS_SPAWN_DISTANCE_FROM_PLAYER = 1;
+        }
     }
 
     public String getPrefix() {
-        return MessageUtils.colorizeAll(Objects.requireNonNull(main.messagesCfg.getString("common.prefix")));
+        return MessageUtils.colorizeAll(
+            Objects.requireNonNull(main.messagesCfg.getString("common.prefix")));
     }
 
     public void sendNoPermissionMsg(@NotNull final CommandSender sender) {

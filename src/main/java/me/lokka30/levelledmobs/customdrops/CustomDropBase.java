@@ -4,14 +4,13 @@
 
 package me.lokka30.levelledmobs.customdrops;
 
-import me.lokka30.levelledmobs.misc.CachedModalList;
-import me.lokka30.levelledmobs.util.Utils;
-import org.jetbrains.annotations.NotNull;
-
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
+import me.lokka30.levelledmobs.misc.CachedModalList;
+import me.lokka30.levelledmobs.util.Utils;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Base class for all custom drops including custom commands
@@ -44,43 +43,52 @@ public class CustomDropBase implements Cloneable {
     String playerLevelVariable;
     final public List<String> permissions;
     final Set<String> excludedMobs = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
-    CachedModalList<CauseOfDeathEnum> causeOfDeathReqs;
+    CachedModalList<DeathCause> causeOfDeathReqs;
 
-    public int getAmount(){
+    public int getAmount() {
         return this.amount;
     }
 
-    public void setAmount(final int amount){
+    public void setAmount(final int amount) {
         this.amount = amount;
-        if (this.amount > 64) this.amount = 64;
-        if (this.amount < 1) this.amount = 1;
+        if (this.amount > 64) {
+            this.amount = 64;
+        }
+        if (this.amount < 1) {
+            this.amount = 1;
+        }
         this.hasAmountRange = false;
     }
 
-    int getAmountRangeMin(){
+    int getAmountRangeMin() {
         return this.amountRangeMin;
     }
 
-    int getAmountRangeMax(){
+    int getAmountRangeMax() {
         return this.amountRangeMax;
     }
 
-    boolean getHasAmountRange(){
+    boolean getHasAmountRange() {
         return this.hasAmountRange;
     }
 
-    String getAmountAsString(){
-        if (this.hasAmountRange)
+    String getAmountAsString() {
+        if (this.hasAmountRange) {
             return String.format("%s-%s", this.amountRangeMin, this.amountRangeMax);
-        else
+        } else {
             return String.valueOf(this.amount);
+        }
     }
 
-    boolean setAmountRangeFromString(final String numberOrNumberRange){
-        if (numberOrNumberRange == null || numberOrNumberRange.isEmpty()) return false;
+    boolean setAmountRangeFromString(final String numberOrNumberRange) {
+        if (numberOrNumberRange == null || numberOrNumberRange.isEmpty()) {
+            return false;
+        }
 
-        if (!numberOrNumberRange.contains("-")){
-            if (!Utils.isInteger(numberOrNumberRange)) return false;
+        if (!numberOrNumberRange.contains("-")) {
+            if (!Utils.isInteger(numberOrNumberRange)) {
+                return false;
+            }
 
             this.amount = Integer.parseInt(numberOrNumberRange);
             this.hasAmountRange = false;
@@ -88,9 +96,13 @@ public class CustomDropBase implements Cloneable {
         }
 
         final String[] nums = numberOrNumberRange.split("-");
-        if (nums.length != 2) return false;
+        if (nums.length != 2) {
+            return false;
+        }
 
-        if (!Utils.isInteger(nums[0].trim()) || !Utils.isInteger(nums[1].trim())) return false;
+        if (!Utils.isInteger(nums[0].trim()) || !Utils.isInteger(nums[1].trim())) {
+            return false;
+        }
         this.amountRangeMin = Integer.parseInt(nums[0].trim());
         this.amountRangeMax = Integer.parseInt(nums[1].trim());
         this.hasAmountRange = true;
@@ -103,8 +115,10 @@ public class CustomDropBase implements Cloneable {
         try {
             copy = (CustomDropBase) super.clone();
             if (this.causeOfDeathReqs != null)
-                //noinspection unchecked
-                copy.causeOfDeathReqs = (CachedModalList<CauseOfDeathEnum>) this.causeOfDeathReqs.clone();
+            //noinspection unchecked
+            {
+                copy.causeOfDeathReqs = (CachedModalList<DeathCause>) this.causeOfDeathReqs.clone();
+            }
         } catch (final Exception e) {
             e.printStackTrace();
         }

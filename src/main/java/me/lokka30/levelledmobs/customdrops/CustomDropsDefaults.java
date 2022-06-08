@@ -4,20 +4,19 @@
 
 package me.lokka30.levelledmobs.customdrops;
 
+import java.util.LinkedList;
+import java.util.List;
 import me.lokka30.levelledmobs.misc.CachedModalList;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.LinkedList;
-import java.util.List;
-
 /**
- * Holds all default values for either all custom
- * drop items
+ * Holds all default values for either all custom drop items
  *
  * @author stumper66
  * @since 2.4.0
  */
 class CustomDropsDefaults {
+
     boolean noMultiplier;
     boolean noSpawner;
     public boolean override;
@@ -39,7 +38,7 @@ class CustomDropsDefaults {
     String playerLevelVariable;
     public final List<String> permissions;
     final List<String> overallPermissions;
-    CachedModalList<CauseOfDeathEnum> causeOfDeathReqs;
+    CachedModalList<DeathCause> causeOfDeathReqs;
     public String externalType;
     public String externalItemId;
     public Double externalAmount;
@@ -94,8 +93,7 @@ class CustomDropsDefaults {
             this.externalType = dropItem.externalType;
             this.externalItemId = dropItem.externalItemId;
             this.externalAmount = dropItem.externalAmount;
-        }
-        else if (dropBase instanceof CustomCommand){
+        } else if (dropBase instanceof CustomCommand) {
             final CustomCommand command = (CustomCommand) dropBase;
             this.runOnSpawn = command.runOnSpawn;
             this.runOnDeath = command.runOnDeath;

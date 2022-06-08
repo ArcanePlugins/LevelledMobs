@@ -7,7 +7,9 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 public class SummonMobOptions {
-    SummonMobOptions(@NotNull final LivingEntityPlaceHolder lmPlaceHolder, final CommandSender sender){
+
+    SummonMobOptions(@NotNull final LivingEntityPlaceHolder lmPlaceHolder,
+        final CommandSender sender) {
         this.lmPlaceHolder = lmPlaceHolder;
         this.sender = sender;
     }

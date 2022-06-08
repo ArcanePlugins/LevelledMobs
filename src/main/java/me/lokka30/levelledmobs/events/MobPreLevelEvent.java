@@ -4,6 +4,7 @@
 
 package me.lokka30.levelledmobs.events;
 
+import java.util.HashSet;
 import me.lokka30.levelledmobs.misc.AdditionalLevelInformation;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.LivingEntity;
@@ -12,15 +13,9 @@ import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.HashSet;
-
 /**
- * This event is fired *before*
- * a mob has been levelled. Note
- * that it does not fire when the
- * mob was spawned using `/lm
- * summon`, instead see Summoned-
- * -MobPreLevelEvent.
+ * This event is fired *before* a mob has been levelled. Note that it does not fire when the mob was
+ * spawned using `/lm summon`, instead see Summoned- -MobPreLevelEvent.
  *
  * @author lokka30
  * @since 2.5.0
@@ -52,12 +47,11 @@ public class MobPreLevelEvent extends Event implements Cancellable {
     }
 
     /**
-     * When a mob is levelled, the following enum is used to
-     * allow plugins to find the cause of the mob being
-     * levelled.
+     * When a mob is levelled, the following enum is used to allow plugins to find the cause of the
+     * mob being levelled.
      * <p>
-     * NORMAL: Spawned naturally, by a spawn egg, etc.
-     * CHANGED_LEVEL: When an existing levelled mob has its level changed.
+     * NORMAL: Spawned naturally, by a spawn egg, etc. CHANGED_LEVEL: When an existing levelled mob
+     * has its level changed.
      */
     public enum LevelCause {
         NORMAL,
@@ -70,7 +64,9 @@ public class MobPreLevelEvent extends Event implements Cancellable {
     private final HashSet<AdditionalLevelInformation> additionalInformation;
     private boolean showLM_Nametag;
 
-    public MobPreLevelEvent(@NotNull final LivingEntity entity, final int level, @NotNull final LevelCause levelCause, final @NotNull HashSet<AdditionalLevelInformation> additionalInformation) {
+    public MobPreLevelEvent(@NotNull final LivingEntity entity, final int level,
+        @NotNull final LevelCause levelCause,
+        final @NotNull HashSet<AdditionalLevelInformation> additionalInformation) {
         super(!Bukkit.isPrimaryThread());
         this.entity = entity;
         this.level = level;
@@ -99,11 +95,11 @@ public class MobPreLevelEvent extends Event implements Cancellable {
         this.level = level;
     }
 
-    public void setShowLM_Nametag(final boolean doRemove){
+    public void setShowLM_Nametag(final boolean doRemove) {
         this.showLM_Nametag = doRemove;
     }
 
-    public boolean getShowLM_Nametag(){
+    public boolean getShowLM_Nametag() {
         return this.showLM_Nametag;
     }
 }

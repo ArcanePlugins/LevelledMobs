@@ -7,11 +7,12 @@ package me.lokka30.levelledmobs.rules;
  * @since 3.1.2
  */
 class RuleCheckResult {
-    RuleCheckResult(final boolean useResult){
+
+    RuleCheckResult(final boolean useResult) {
         this.useResult = useResult;
     }
 
-    RuleCheckResult(final boolean useResult, final Boolean ruleMadeChance){
+    RuleCheckResult(final boolean useResult, final Boolean ruleMadeChance) {
         this.useResult = useResult;
         this.ruleMadeChance = ruleMadeChance;
     }

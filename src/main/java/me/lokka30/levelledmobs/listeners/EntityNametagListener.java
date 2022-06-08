@@ -17,8 +17,8 @@ import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Listens when a nametag is placed on an entity so LevelledMobs
- * can apply various rules around nametagged entities
+ * Listens when a nametag is placed on an entity so LevelledMobs can apply various rules around
+ * nametagged entities
  *
  * @author lokka30
  * @since 2.4.0
@@ -37,15 +37,21 @@ public class EntityNametagListener implements Listener {
             final Player player = event.getPlayer();
 
             // Must have name tag in main hand / off-hand
-            if (!(player.getInventory().getItemInMainHand().getType() == Material.NAME_TAG || player.getInventory().getItemInOffHand().getType() == Material.NAME_TAG))
+            if (!(player.getInventory().getItemInMainHand().getType() == Material.NAME_TAG
+                || player.getInventory().getItemInOffHand().getType() == Material.NAME_TAG)) {
                 return;
+            }
 
             // Must be a levelled mob
-            if (!main.levelManager.isLevelled((LivingEntity) event.getRightClicked())) return;
+            if (!main.levelManager.isLevelled((LivingEntity) event.getRightClicked())) {
+                return;
+            }
 
-            final LivingEntityWrapper lmEntity = LivingEntityWrapper.getInstance((LivingEntity) event.getRightClicked(), main);
+            final LivingEntityWrapper lmEntity = LivingEntityWrapper.getInstance(
+                (LivingEntity) event.getRightClicked(), main);
 
-            if (main.rulesManager.getRule_MobCustomNameStatus(lmEntity) == MobCustomNameStatus.NOT_NAMETAGGED) {
+            if (main.rulesManager.getRuleMobCustomNameStatus(lmEntity)
+                == MobCustomNameStatus.NOT_NAMETAGGED) {
                 main.levelInterface.removeLevel(lmEntity);
                 lmEntity.free();
                 return;

@@ -15,9 +15,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.world.ChunkLoadEvent;
 
 /**
- * Listens for when chunks are loaded and processes any mobs accordingly
- * Needed for server startup and for mostly passive mobs when players are
- * moving around
+ * Listens for when chunks are loaded and processes any mobs accordingly Needed for server startup
+ * and for mostly passive mobs when players are moving around
  *
  * @author stumper66
  * @since 2.4.0
@@ -33,21 +32,27 @@ public class ChunkLoadListener implements Listener {
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void onChunkLoad(final ChunkLoadEvent event) {
 
-        if (!main.helperSettings.getBoolean(main.settingsCfg, "ensure-mobs-are-levelled-on-chunk-load", true)) return;
+        if (!main.helperSettings.getBoolean(main.settingsCfg,
+            "ensure-mobs-are-levelled-on-chunk-load", true)) {
+            return;
+        }
 
         // Check each entity in the chunk
         for (final Entity entity : event.getChunk().getEntities()) {
 
             // Must be a *living* entity
-            if (!(entity instanceof LivingEntity)) continue;
-            final LivingEntityWrapper lmEntity = LivingEntityWrapper.getInstance((LivingEntity) entity, main);
+            if (!(entity instanceof LivingEntity)) {
+                continue;
+            }
+            final LivingEntityWrapper lmEntity = LivingEntityWrapper.getInstance(
+                (LivingEntity) entity, main);
 
             if (lmEntity.isLevelled()) {
                 lmEntity.free();
                 continue;
             }
 
-            main._mobsQueueManager.addToQueue(new QueueItem(lmEntity, event));
+            main.mobsQueueManager.addToQueue(new QueueItem(lmEntity, event));
             lmEntity.free();
         }
     }

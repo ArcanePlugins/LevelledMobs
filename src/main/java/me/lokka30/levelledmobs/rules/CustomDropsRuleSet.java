@@ -4,10 +4,9 @@
 
 package me.lokka30.levelledmobs.rules;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.util.LinkedList;
 import java.util.List;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * When in conjunction when a customdrops is being processed
@@ -16,9 +15,11 @@ import java.util.List;
  * @since 3.0.0
  */
 public class CustomDropsRuleSet {
-    public CustomDropsRuleSet(){
+
+    public CustomDropsRuleSet() {
         this.useDropTableIds = new LinkedList<>();
     }
+
     public boolean useDrops;
     public boolean override;
     public final @NotNull List<String> useDropTableIds;

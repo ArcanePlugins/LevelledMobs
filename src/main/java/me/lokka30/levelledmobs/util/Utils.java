@@ -4,14 +4,20 @@
 
 package me.lokka30.levelledmobs.util;
 
+import java.time.Duration;
+import java.time.Instant;
+import java.util.AbstractMap;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import me.lokka30.levelledmobs.LevelledMobs;
+import me.lokka30.levelledmobs.customdrops.DeathCause;
 import me.lokka30.levelledmobs.misc.CachedModalList;
 import me.lokka30.levelledmobs.misc.DebugType;
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
 import me.lokka30.levelledmobs.result.PlayerNetherOrWorldSpawnResult;
 import me.lokka30.levelledmobs.rules.MinAndMax;
 import me.lokka30.levelledmobs.rules.RulesManager;
-import me.lokka30.levelledmobs.customdrops.CauseOfDeathEnum;
 import me.lokka30.microlib.messaging.MessageUtils;
 import me.lokka30.microlib.messaging.MicroLogger;
 import me.lokka30.microlib.other.VersionUtils;
@@ -23,14 +29,6 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.jetbrains.annotations.Unmodifiable;
-
-import java.time.Duration;
-import java.time.Instant;
-import java.util.AbstractMap;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Holds common utilities
@@ -47,19 +45,8 @@ public final class Utils {
         throw new UnsupportedOperationException();
     }
 
-    /**
-     * Get a list of major Minecraft versions supported by LM.
-     *
-     * @return list
-     */
-    @Contract(pure = true)
     @NotNull
-    public static @Unmodifiable List<String> getSupportedServerVersions() {
-        return List.of("1.16", "1.17", "1.18", "1.19");
-    }
-
-    @NotNull
-    public static final MicroLogger logger = new MicroLogger("&b&lLevelledMobs: &7");
+    public static final MicroLogger logger = new MicroLogger("&bLevelledMobs:&7 ");
 
     /**
      * Rounds value to 2 decimal points.
@@ -86,24 +73,30 @@ public final class Utils {
      * @author stumper66
      */
     @NotNull
-    public static String replaceEx(@NotNull final String message, @NotNull final String replaceWhat, @NotNull final String replaceTo) {
+    public static String replaceEx(@NotNull final String message, @NotNull final String replaceWhat,
+        @NotNull final String replaceTo) {
         int count, position0, position1;
         count = position0 = 0;
         final String upperString = message.toUpperCase();
         final String upperPattern = replaceWhat.toUpperCase();
         final int inc = (message.length() / replaceWhat.length()) *
-                (replaceTo.length() - replaceWhat.length());
+            (replaceTo.length() - replaceWhat.length());
         final char[] chars = new char[message.length() + Math.max(0, inc)];
         while ((position1 = upperString.indexOf(upperPattern, position0)) != -1) {
-            for (int i = position0; i < position1; ++i)
+            for (int i = position0; i < position1; ++i) {
                 chars[count++] = message.charAt(i);
-            for (int i = 0; i < replaceTo.length(); ++i)
+            }
+            for (int i = 0; i < replaceTo.length(); ++i) {
                 chars[count++] = replaceTo.charAt(i);
+            }
             position0 = position1 + replaceWhat.length();
         }
-        if (position0 == 0) return message;
-        for (int i = position0; i < message.length(); ++i)
+        if (position0 == 0) {
+            return message;
+        }
+        for (int i = position0; i < message.length(); ++i) {
             chars[count++] = message.charAt(i);
+        }
 
         return new String(chars, 0, count);
     }
@@ -115,7 +108,9 @@ public final class Utils {
      * @return if str is an integer (e.g. "1234" = true, "hello" = false)
      */
     public static boolean isInteger(@Nullable final String str) {
-        if (isNullOrEmpty(str)) return false;
+        if (isNullOrEmpty(str)) {
+            return false;
+        }
 
         try {
             Integer.parseInt(str);
@@ -127,7 +122,9 @@ public final class Utils {
 
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public static boolean isDouble(@Nullable final String str) {
-        if (isNullOrEmpty(str)) return false;
+        if (isNullOrEmpty(str)) {
+            return false;
+        }
 
         try {
             Double.parseDouble(str);
@@ -142,10 +139,12 @@ public final class Utils {
     }
 
     @NotNull
-    public static final List<String> oneToNine = List.of("1", "2", "3", "4", "5", "6", "7", "8", "9");
+    public static final List<String> oneToNine = List.of("1", "2", "3", "4", "5", "6", "7", "8",
+        "9");
 
     @NotNull
-    public static List<String> replaceAllInList(@NotNull final List<String> oldList, @NotNull final String replaceWhat, @NotNull final String replaceTo) {
+    public static List<String> replaceAllInList(@NotNull final List<String> oldList,
+        @NotNull final String replaceWhat, @NotNull final String replaceTo) {
         final List<String> newList = new ArrayList<>(oldList.size());
         for (final String string : oldList) {
             newList.add(string.replace(replaceWhat, replaceTo));
@@ -168,23 +167,26 @@ public final class Utils {
      * Sends a debug message to console if enabled in settings
      *
      * @param instance  LevelledMobs class
-     * @param debugType Reference to whereabouts the debug log is called so that it can be traced back easily
+     * @param debugType Reference to whereabouts the debug log is called so that it can be traced
+     *                  back easily
      * @param msg       Message to help de-bugging
      */
-    public static void debugLog(@NotNull final LevelledMobs instance, @NotNull final DebugType debugType, @NotNull final String msg) {
-        if (instance.settingsCfg == null) return;
+    public static void debugLog(@NotNull final LevelledMobs instance,
+        @NotNull final DebugType debugType, @NotNull final String msg) {
+        if (instance.settingsCfg == null) {
+            return;
+        }
 
-        if (instance.companion.debugsEnabled.contains(debugType))
+        if (instance.companion.debugsEnabled.contains(debugType)) {
             logger.info("&8[&bDebug: " + debugType + "&8]&7 " + msg);
+        }
     }
 
     /**
-     * Puts the string into lowercase and makes
-     * every character that starts a word a
-     * capital letter.
+     * Puts the string into lowercase and makes every character that starts a word a capital
+     * letter.
      * <p>
-     * e.g. from: wiTheR sKeLeTOn
-     * to: Wither Skeleton
+     * e.g. from: wiTheR sKeLeTOn to: Wither Skeleton
      *
      * @param str string to capitalize
      * @return a string with each word capitalized
@@ -195,118 +197,169 @@ public final class Utils {
         final String[] words = str.toLowerCase().split(" "); // each word separated from str
         for (int i = 0; i < words.length; i++) {
             final String word = words[i];
-            if (word.isEmpty()) continue;
+            if (word.isEmpty()) {
+                continue;
+            }
 
             builder.append(String.valueOf(word.charAt(0)).toUpperCase()); // capitalize first letter
-            if (word.length() > 1)
+            if (word.length() > 1) {
                 builder.append(word.substring(1)); // append the rest of the word
+            }
 
             // if there is another word to capitalize, then add a space
-            if (i < words.length - 1)
+            if (i < words.length - 1) {
                 builder.append(" ");
+            }
         }
 
         return builder.toString();
     }
 
-    public static boolean isLivingEntityInModalList(final CachedModalList<String> list, final LivingEntityWrapper lmEntity) {
+    public static boolean isLivingEntityInModalList(final CachedModalList<String> list,
+        final LivingEntityWrapper lmEntity) {
         return isLivingEntityInModalList(list, lmEntity, false);
     }
 
-    public static boolean isLivingEntityInModalList(@NotNull final CachedModalList<String> list, final LivingEntityWrapper lmEntity, final boolean checkBabyMobs) {
-        if (list.allowAll) return true;
-        if (list.excludeAll) return false;
-        if (list.isEmpty()) return true;
+    public static boolean isLivingEntityInModalList(@NotNull final CachedModalList<String> list,
+        final LivingEntityWrapper lmEntity, final boolean checkBabyMobs) {
+        if (list.allowAll) {
+            return true;
+        }
+        if (list.excludeAll) {
+            return false;
+        }
+        if (list.isEmpty()) {
+            return true;
+        }
 
         final String checkName = checkBabyMobs ?
-                lmEntity.getNameIfBaby() :
-                lmEntity.getTypeName();
+            lmEntity.getNameIfBaby() :
+            lmEntity.getTypeName();
 
         for (final String group : lmEntity.getApplicableGroups()) {
-            if (list.excludedGroups.contains(group)) return false;
+            if (list.excludedGroups.contains(group)) {
+                return false;
+            }
         }
 
         // for denies we'll check for both baby and adult variants regardless of baby-mobs-inherit-adult-setting
-        if (list.excludedList.contains(lmEntity.getTypeName()) || list.excludedList.contains(lmEntity.getNameIfBaby()) ||
-                lmEntity.isBabyMob() && list.excludedList.contains("baby_")) return false;
+        if (list.excludedList.contains(lmEntity.getTypeName()) || list.excludedList.contains(
+            lmEntity.getNameIfBaby()) ||
+            lmEntity.isBabyMob() && list.excludedList.contains("baby_")) {
+            return false;
+        }
 
         for (final String group : lmEntity.getApplicableGroups()) {
-            if (list.allowedGroups.contains(group)) return true;
+            if (list.allowedGroups.contains(group)) {
+                return true;
+            }
         }
 
         return list.isBlacklist() || list.allowedList.contains(checkName) ||
-                lmEntity.isBabyMob() && list.allowedList.contains("baby_");
+            lmEntity.isBabyMob() && list.allowedList.contains("baby_");
     }
 
-    public static boolean isIntegerInModalList(@NotNull final CachedModalList<MinAndMax> list, final int checkNum) {
-        if (list.allowAll) return true;
-        if (list.excludeAll) return false;
-        if (list.isEmpty()) return true;
-
-        for (final MinAndMax exclude : list.excludedList){
-            if (checkNum >= exclude.min && checkNum <= exclude.max)
-                return false;
+    public static boolean isIntegerInModalList(@NotNull final CachedModalList<MinAndMax> list,
+        final int checkNum) {
+        if (list.allowAll) {
+            return true;
+        }
+        if (list.excludeAll) {
+            return false;
+        }
+        if (list.isEmpty()) {
+            return true;
         }
 
-        if (list.isBlacklist()) return true;
+        for (final MinAndMax exclude : list.excludedList) {
+            if (checkNum >= exclude.min && checkNum <= exclude.max) {
+                return false;
+            }
+        }
 
-        for (final MinAndMax include : list.allowedList){
-            if (checkNum >= include.min && checkNum <= include.max)
+        if (list.isBlacklist()) {
+            return true;
+        }
+
+        for (final MinAndMax include : list.allowedList) {
+            if (checkNum >= include.min && checkNum <= include.max) {
                 return true;
+            }
         }
 
         return false;
     }
 
 
-    public static boolean isBiomeInModalList(@NotNull final CachedModalList<Biome> list, final Biome biome, final RulesManager rulesManager) {
-        if (list.allowAll) return true;
-        if (list.excludeAll) return false;
-        if (list.isEmpty()) return true;
+    public static boolean isBiomeInModalList(@NotNull final CachedModalList<Biome> list,
+        final Biome biome, final RulesManager rulesManager) {
+        if (list.allowAll) {
+            return true;
+        }
+        if (list.excludeAll) {
+            return false;
+        }
+        if (list.isEmpty()) {
+            return true;
+        }
 
         for (final String group : list.excludedGroups) {
             if (rulesManager.biomeGroupMappings.containsKey(group) &&
-                    rulesManager.biomeGroupMappings.get(group).contains(biome.toString())) return false;
+                rulesManager.biomeGroupMappings.get(group).contains(biome.toString())) {
+                return false;
+            }
         }
 
-        if (list.excludedList.contains(biome)) return false;
+        if (list.excludedList.contains(biome)) {
+            return false;
+        }
 
         for (final String group : list.allowedGroups) {
             if (rulesManager.biomeGroupMappings.containsKey(group) &&
-                    rulesManager.biomeGroupMappings.get(group).contains(biome.toString()))
+                rulesManager.biomeGroupMappings.get(group).contains(biome.toString())) {
                 return true;
+            }
         }
 
         return list.isBlacklist() || list.allowedList.contains(biome);
     }
 
-    public static boolean isDamageCauseInModalList(@NotNull final CachedModalList<CauseOfDeathEnum> list, final CauseOfDeathEnum cause) {
-        if (list.allowAll) return true;
-        if (list.excludeAll) return false;
-        if (list.isEmpty()) return true;
+    public static boolean isDamageCauseInModalList(
+        @NotNull final CachedModalList<DeathCause> list, final DeathCause cause) {
+        if (list.allowAll) {
+            return true;
+        }
+        if (list.excludeAll) {
+            return false;
+        }
+        if (list.isEmpty()) {
+            return true;
+        }
 
         // note: no group support
 
-        if (list.excludedList.contains(cause)) return false;
+        if (list.excludedList.contains(cause)) {
+            return false;
+        }
 
         return list.isBlacklist() || list.allowedList.contains(cause);
     }
 
-    public static long getMillisecondsFromInstant(final Instant instant){
+    public static long getMillisecondsFromInstant(final Instant instant) {
         return Duration.between(instant, Instant.now()).toMillis();
     }
 
     @NotNull
-    public static PlayerNetherOrWorldSpawnResult getPortalOrWorldSpawn(final @NotNull LevelledMobs main, final @NotNull Player player){
+    public static PlayerNetherOrWorldSpawnResult getPortalOrWorldSpawn(
+        final @NotNull LevelledMobs main, final @NotNull Player player) {
         Location location = null;
         boolean isNetherPortalCoord = false;
         boolean isWorldPortalCoord = false;
 
-        if (player.getWorld().getEnvironment() == World.Environment.NETHER){
+        if (player.getWorld().getEnvironment() == World.Environment.NETHER) {
             location = main.companion.getPlayerNetherPortalLocation(player);
             isNetherPortalCoord = true;
-        }
-        else if (player.getWorld().getEnvironment() == World.Environment.NORMAL){
+        } else if (player.getWorld().getEnvironment() == World.Environment.NORMAL) {
             location = main.companion.getPlayerWorldPortalLocation(player);
             isWorldPortalCoord = true;
         }
@@ -317,18 +370,20 @@ public final class Utils {
             isWorldPortalCoord = false;
         }
 
-        return new PlayerNetherOrWorldSpawnResult(location, isNetherPortalCoord, isWorldPortalCoord);
+        return new PlayerNetherOrWorldSpawnResult(location, isNetherPortalCoord,
+            isWorldPortalCoord);
     }
 
     public static long getChunkKey(final @NotNull Chunk chunk) {
-        if (VersionUtils.isRunningPaper())
+        if (VersionUtils.isRunningPaper()) {
             return chunk.getChunkKey();
+        }
 
         final int x = chunk.getX() >> 4, z = chunk.getZ() >> 4;
         return (long) x & 0xffffffffL | ((long) z & 0xffffffffL) << 32;
     }
 
-    public static String displayChunkLocation(final @NotNull Location location){
+    public static String displayChunkLocation(final @NotNull Location location) {
         return String.format("%s,%s", location.getChunk().getX(), location.getChunk().getZ());
     }
 
