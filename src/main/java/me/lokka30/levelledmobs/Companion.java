@@ -4,6 +4,7 @@
 
 package me.lokka30.levelledmobs;
 
+import me.lokka30.levelledmobs.compatibility.Compat1_19;
 import me.lokka30.levelledmobs.customdrops.CustomDropsHandler;
 import me.lokka30.levelledmobs.listeners.ServerStartListener;
 import me.lokka30.levelledmobs.managers.LevelManager;
@@ -568,9 +569,13 @@ public class Companion {
 
         if (VersionUtils.isOneSeventeen())
             groups_PassiveMobs.addAll(Compat1_17.getPassiveMobs());
+        if (main.nametagQueueManager_.nmsHandler.minecraftVersion >= 1.19)
+            groups_PassiveMobs.addAll(Compat1_19.getPassiveMobs());
 
-        if (VersionUtils.isOneSeventeen() || VersionUtils.isOneSixteen())
-            groups_HostileMobs.addAll(Compat1_16.getPassiveMobs());
+        if (main.nametagQueueManager_.nmsHandler.minecraftVersion >= 1.16)
+            groups_HostileMobs.addAll(Compat1_16.getHostileMobs());
+        if (main.nametagQueueManager_.nmsHandler.minecraftVersion >= 1.19)
+            groups_HostileMobs.addAll(Compat1_19.getHostileMobs());
 
         // include interfaces: WaterMob
         groups_AquaticMobs = Stream.of(
@@ -579,6 +584,9 @@ public class Companion {
                 EntityType.GUARDIAN,
                 EntityType.TURTLE
         ).collect(Collectors.toCollection(HashSet::new));
+
+        if (main.nametagQueueManager_.nmsHandler.minecraftVersion >= 1.19)
+            groups_AquaticMobs.addAll(Compat1_19.getAquaticMobs());
     }
 
     public void addRecentlyJoinedPlayer(final Player player){

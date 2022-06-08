@@ -38,6 +38,7 @@ public class NametagQueueManager {
 
     public NametagQueueManager(final LevelledMobs main) {
         this.main = main;
+        this.nmsHandler = new NMSHandler(main);
         this.queue = new LinkedBlockingQueue<>();
         getNMSUtil();
     }
@@ -47,10 +48,11 @@ public class NametagQueueManager {
     private boolean doThread;
     private NMSUtil nmsUtil;
     private final LinkedBlockingQueue<QueueItem> queue;
+    public final NMSHandler nmsHandler;
 
     private void getNMSUtil(){
-        final NMSHandler handler = new NMSHandler(main);
-        this.nmsUtil = handler.getCurrentUtil();
+
+        this.nmsUtil = nmsHandler.getCurrentUtil();
     }
 
     public boolean hasNametagSupport(){

@@ -26,7 +26,7 @@ public class NMSHandler {
     private static final Pattern versionShortPattern = Pattern.compile(".*\\.(v\\d+_\\d+)(?:.+)?");
     private @NotNull String nmsVersionString = "unknown";
     private NMSUtil currentUtil;
-    private double minecraftVersion;
+    public double minecraftVersion;
 
     private void parseBukkitVersion(){
         // example: org.bukkit.craftbukkit.v1_18_R2.CraftServer
