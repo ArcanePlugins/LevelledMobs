@@ -21,6 +21,8 @@ public class LmFunction {
     private final CommentedConfigurationNode node;
     private final Set<String> triggers = new HashSet<>();
     private final Set<Process> processes = new LinkedHashSet<>();
+    private boolean exit = false;
+    private boolean exitAll = false; // TODO Implement
 
     /* constructors */
 
@@ -38,11 +40,14 @@ public class LmFunction {
 
     public void run(final @NotNull Context context, final boolean overrideConditions) {
         for(var process : getProcesses()) {
-            if(overrideConditions || process.conditionsApply(context)) {
-                process.runActions(context);
+            if(!shouldExit() && !shouldExitAll()) {
+                if(overrideConditions || process.conditionsApply(context)) {
+                    process.runActions(context);
+                }
             }
         }
-        // TODO Consider ones like exit-function
+        setShouldExit(false);
+        setShouldExitAll(false);
     }
 
     public boolean hasAnyTriggers(final @NotNull String... triggersToCheck) {
@@ -80,5 +85,21 @@ public class LmFunction {
     @NotNull
     public Set<Process> getProcesses() {
         return processes;
+    }
+
+    public boolean shouldExit() {
+        return exit;
+    }
+
+    public void setShouldExit(final boolean state) {
+        this.exit = state;
+    }
+
+    public boolean shouldExitAll() {
+        return exitAll;
+    }
+
+    public void setShouldExitAll(final boolean state) {
+        this.exitAll = state;
     }
 }

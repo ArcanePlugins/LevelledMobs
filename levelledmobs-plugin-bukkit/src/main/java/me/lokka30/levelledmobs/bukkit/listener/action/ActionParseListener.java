@@ -23,8 +23,27 @@ public class ActionParseListener extends ListenerWrapper {
                 event.getProcess().getActions().add(new BroadcastMessageToServerAction(
                     event.getProcess(), event.getNode()
                 ));
-                event.setClaimed(true);
+            }
+            case "exit-all" -> {
+                event.getProcess().getActions().add(new ExitAllAction(
+                    event.getProcess(), event.getNode()
+                ));
+            }
+            case "exit-function" -> {
+                event.getProcess().getActions().add(new ExitFunctionAction(
+                    event.getProcess(), event.getNode()
+                ));
+            }
+            case "exit-process" -> {
+                event.getProcess().getActions().add(new ExitProcessAction(
+                    event.getProcess(), event.getNode()
+                ));
+            }
+            default -> {
+                // action does not belong to LM
+                return;
             }
         }
+        event.setClaimed(true);
     }
 }

@@ -23,6 +23,7 @@ public class Process {
     private final Set<Preset> presets = new LinkedHashSet<>();
     private final List<Action> actions = new ArrayList<>();
     private final List<Condition> conditions = new ArrayList<>();
+    private boolean exit = false;
 
     /* constructors */
 
@@ -53,8 +54,13 @@ public class Process {
     }
 
     public void runActions(final @NotNull Context context) {
-        for(var action : getActions())
-            action.run(context);
+        for(var action : getActions()) {
+            if(!shouldExit()) {
+                action.run(context);
+            }
+        }
+
+        setShouldExit(false);
     }
 
     /* getters and setters */
@@ -79,5 +85,13 @@ public class Process {
 
     @NotNull
     public LmFunction getFunction() { return function; }
+
+    public boolean shouldExit() {
+        return exit;
+    }
+
+    public void setShouldExit(final boolean state) {
+        this.exit = state;
+    }
 
 }

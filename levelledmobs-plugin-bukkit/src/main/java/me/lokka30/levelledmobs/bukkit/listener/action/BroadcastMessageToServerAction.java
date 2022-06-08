@@ -23,7 +23,7 @@ public class BroadcastMessageToServerAction extends Action {
 
         this.requiredPermission = getNode()
             .node("required-permission")
-            .getString();
+            .getString("");
 
         try {
             this.message = Objects.requireNonNull(getNode().node("message")
