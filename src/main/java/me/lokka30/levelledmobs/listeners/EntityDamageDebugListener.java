@@ -7,7 +7,7 @@ package me.lokka30.levelledmobs.listeners;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.misc.Cooldown;
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
-import me.lokka30.levelledmobs.misc.Utils;
+import me.lokka30.levelledmobs.util.Utils;
 import me.lokka30.microlib.messaging.MessageUtils;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;

@@ -5,6 +5,7 @@
 package me.lokka30.levelledmobs.misc;
 
 import me.lokka30.levelledmobs.LevelledMobs;
+import me.lokka30.levelledmobs.util.Utils;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.util.FileUtil;
 import org.jetbrains.annotations.NotNull;

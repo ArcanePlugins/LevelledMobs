@@ -4,6 +4,7 @@
 
 package me.lokka30.levelledmobs.misc;
 
+import me.lokka30.levelledmobs.util.Utils;
 import me.lokka30.microlib.messaging.MessageUtils;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;

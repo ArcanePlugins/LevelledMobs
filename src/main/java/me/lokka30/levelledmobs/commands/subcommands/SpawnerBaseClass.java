@@ -2,9 +2,9 @@ package me.lokka30.levelledmobs.commands.subcommands;
 
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.commands.MessagesBase;
-import me.lokka30.levelledmobs.misc.PaperUtils;
-import me.lokka30.levelledmobs.misc.SpigotUtils;
-import me.lokka30.levelledmobs.misc.Utils;
+import me.lokka30.levelledmobs.util.PaperUtils;
+import me.lokka30.levelledmobs.util.SpigotUtils;
+import me.lokka30.levelledmobs.util.Utils;
 import me.lokka30.levelledmobs.rules.DoNotMerge;
 import me.lokka30.microlib.messaging.MessageUtils;
 import me.lokka30.microlib.other.VersionUtils;

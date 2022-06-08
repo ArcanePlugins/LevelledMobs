@@ -11,7 +11,7 @@ import me.lokka30.levelledmobs.rules.strategies.YDistanceStrategy;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.managers.ExternalCompatibilityManager;
 import me.lokka30.levelledmobs.misc.CustomUniversalGroups;
-import me.lokka30.levelledmobs.misc.Utils;
+import me.lokka30.levelledmobs.util.Utils;
 import me.lokka30.levelledmobs.rules.strategies.SpawnDistanceStrategy;
 import org.bukkit.Particle;
 import org.bukkit.block.Biome;

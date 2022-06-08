@@ -1,5 +1,8 @@
-package me.lokka30.levelledmobs.misc;
+package me.lokka30.levelledmobs.util;
 
+import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
+import me.lokka30.levelledmobs.misc.MythicMobsMobInfo;
+import me.lokka30.levelledmobs.util.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;

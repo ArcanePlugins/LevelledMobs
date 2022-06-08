@@ -1,4 +1,4 @@
-package me.lokka30.levelledmobs.misc;
+package me.lokka30.levelledmobs.result;
 
 import org.bukkit.Location;
 import org.jetbrains.annotations.Nullable;

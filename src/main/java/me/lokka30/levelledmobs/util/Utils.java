@@ -2,9 +2,13 @@
  * Copyright (c) 2020-2021  lokka30. Use of this source code is governed by the GNU AGPL v3.0 license that can be found in the LICENSE.md file.
  */
 
-package me.lokka30.levelledmobs.misc;
+package me.lokka30.levelledmobs.util;
 
 import me.lokka30.levelledmobs.LevelledMobs;
+import me.lokka30.levelledmobs.misc.CachedModalList;
+import me.lokka30.levelledmobs.misc.DebugType;
+import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
+import me.lokka30.levelledmobs.result.PlayerNetherOrWorldSpawnResult;
 import me.lokka30.levelledmobs.rules.MinAndMax;
 import me.lokka30.levelledmobs.rules.RulesManager;
 import me.lokka30.levelledmobs.customdrops.CauseOfDeathEnum;
@@ -51,7 +55,7 @@ public final class Utils {
     @Contract(pure = true)
     @NotNull
     public static @Unmodifiable List<String> getSupportedServerVersions() {
-        return List.of("1.16", "1.17", "1.18");
+        return List.of("1.16", "1.17", "1.18", "1.19");
     }
 
     @NotNull

@@ -11,7 +11,7 @@ import me.lokka30.levelledmobs.misc.DebugType;
 import me.lokka30.levelledmobs.misc.LevellableState;
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
 import me.lokka30.levelledmobs.misc.QueueItem;
-import me.lokka30.levelledmobs.misc.Utils;
+import me.lokka30.levelledmobs.util.Utils;
 import me.lokka30.levelledmobs.rules.LevelledMobSpawnReason;
 import me.lokka30.levelledmobs.rules.NametagVisibilityEnum;
 import me.lokka30.levelledmobs.managers.ExternalCompatibilityManager;

@@ -1,5 +1,7 @@
 package me.lokka30.levelledmobs.misc;
 
+import me.lokka30.levelledmobs.util.Utils;
+
 /**
  * Used as a placeholder for when a number or a number-range is passed
  * from a user argument

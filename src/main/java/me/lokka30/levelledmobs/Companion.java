@@ -34,7 +34,7 @@ import me.lokka30.levelledmobs.listeners.PlayerPortalEventListener;
 
 import me.lokka30.levelledmobs.misc.DebugType;
 import me.lokka30.levelledmobs.misc.FileMigrator;
-import me.lokka30.levelledmobs.misc.Utils;
+import me.lokka30.levelledmobs.util.Utils;
 import me.lokka30.microlib.exceptions.OutdatedServerVersionException;
 import me.lokka30.microlib.other.UpdateChecker;
 import me.lokka30.microlib.other.VersionUtils;

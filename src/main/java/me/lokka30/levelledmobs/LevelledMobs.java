@@ -5,7 +5,7 @@
 package me.lokka30.levelledmobs;
 
 import me.lokka30.levelledmobs.managers.MobDataManager;
-import me.lokka30.levelledmobs.misc.ConfigUtils;
+import me.lokka30.levelledmobs.util.ConfigUtils;
 import me.lokka30.levelledmobs.misc.Namespaced_Keys;
 import me.lokka30.levelledmobs.misc.NametagTimerChecker;
 import me.lokka30.levelledmobs.misc.YmlParsingHelper;
@@ -23,7 +23,7 @@ import me.lokka30.levelledmobs.managers.MobsQueueManager;
 import me.lokka30.levelledmobs.managers.NametagQueueManager;
 import me.lokka30.levelledmobs.managers.PlaceholderApiIntegration;
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
-import me.lokka30.levelledmobs.misc.Utils;
+import me.lokka30.levelledmobs.util.Utils;
 import me.lokka30.microlib.maths.QuickTimer;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;

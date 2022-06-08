@@ -11,7 +11,7 @@ import de.tr7zw.nbtapi.NBTEntity;
 import de.tr7zw.nbtapi.NBTItem;
 import me.lokka30.levelledmobs.misc.DebugType;
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
-import me.lokka30.levelledmobs.misc.NBTApplyResult;
+import me.lokka30.levelledmobs.result.NBTApplyResult;
 import me.lokka30.levelledmobs.customdrops.CustomDropItem;
 import org.bukkit.entity.LivingEntity;
 import org.jetbrains.annotations.NotNull;

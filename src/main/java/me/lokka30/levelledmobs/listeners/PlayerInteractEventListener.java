@@ -12,7 +12,7 @@ import me.lokka30.levelledmobs.misc.AdditionalLevelInformation;
 import me.lokka30.levelledmobs.misc.Cooldown;
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
 import me.lokka30.levelledmobs.misc.Point;
-import me.lokka30.levelledmobs.misc.Utils;
+import me.lokka30.levelledmobs.util.Utils;
 import me.lokka30.levelledmobs.commands.subcommands.SpawnerSubCommand;
 import me.lokka30.microlib.messaging.MessageUtils;
 import me.lokka30.microlib.other.VersionUtils;

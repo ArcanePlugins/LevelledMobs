@@ -14,7 +14,7 @@ import me.lokka30.levelledmobs.commands.subcommands.ReloadSubcommand;
 import me.lokka30.levelledmobs.commands.subcommands.RulesSubcommand;
 import me.lokka30.levelledmobs.commands.subcommands.SpawnerEggCommand;
 import me.lokka30.levelledmobs.commands.subcommands.SpawnerSubCommand;
-import me.lokka30.levelledmobs.misc.Utils;
+import me.lokka30.levelledmobs.util.Utils;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;

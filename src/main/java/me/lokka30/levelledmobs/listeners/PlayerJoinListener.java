@@ -8,7 +8,7 @@ import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.misc.FileLoader;
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
 import me.lokka30.levelledmobs.misc.PlayerQueueItem;
-import me.lokka30.levelledmobs.misc.Utils;
+import me.lokka30.levelledmobs.util.Utils;
 import me.lokka30.microlib.messaging.MessageUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;

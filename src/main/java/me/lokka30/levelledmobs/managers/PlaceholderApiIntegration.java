@@ -8,7 +8,7 @@ import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.misc.LastMobKilledInfo;
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
-import me.lokka30.levelledmobs.misc.Utils;
+import me.lokka30.levelledmobs.util.Utils;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;

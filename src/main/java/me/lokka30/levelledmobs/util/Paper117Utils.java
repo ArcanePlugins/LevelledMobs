@@ -1,4 +1,4 @@
-package me.lokka30.levelledmobs.misc;
+package me.lokka30.levelledmobs.util;
 
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;

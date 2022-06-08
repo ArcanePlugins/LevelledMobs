@@ -9,7 +9,7 @@ import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
 import me.lokka30.levelledmobs.nms.NMSHandler;
 import me.lokka30.levelledmobs.misc.NametagTimerChecker;
 import me.lokka30.levelledmobs.misc.QueueItem;
-import me.lokka30.levelledmobs.misc.Utils;
+import me.lokka30.levelledmobs.util.Utils;
 import me.lokka30.levelledmobs.nms.NMSUtil;
 import me.lokka30.levelledmobs.rules.NametagVisibilityEnum;
 import org.bukkit.Bukkit;
