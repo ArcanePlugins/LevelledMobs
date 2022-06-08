@@ -51,14 +51,14 @@ permissions:
     default: true
     description: 'Ability to run the `/levelledmobs` base command.'
 
-  'levelledmobs.command.kevelledmobs.about':
+  'levelledmobs.command.levelledmobs.about':
     default: true
     description: 'Read some information about this LevelledMobs version.'
     children:
       'levelledmobs.command.levelledmobs': true
 
-  'levelledmobs.command.kevelledmobs.reload':
-    default: true
+  'levelledmobs.command.levelledmobs.reload':
+    default: op
     description: 'Reload the plugin''s configuration.'
     children:
       'levelledmobs.command.levelledmobs': true

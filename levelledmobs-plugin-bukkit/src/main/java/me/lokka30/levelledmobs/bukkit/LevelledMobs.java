@@ -41,6 +41,9 @@ public final class LevelledMobs extends JavaPlugin {
             Log.sev("LevelledMobs encountered a fatal error during the startup process; " +
                 "it will disable itself to prevent possible issues resulting from malfunction.",
                 true);
+
+            //TODO send a message to online players as well (in case of reload)
+
             setEnabled(false);
             return;
         }

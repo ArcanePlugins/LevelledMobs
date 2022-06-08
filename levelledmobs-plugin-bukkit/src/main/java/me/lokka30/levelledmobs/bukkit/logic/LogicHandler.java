@@ -13,12 +13,12 @@ import me.lokka30.levelledmobs.bukkit.event.group.GroupPostParseEvent;
 import me.lokka30.levelledmobs.bukkit.event.group.GroupPreParseEvent;
 import me.lokka30.levelledmobs.bukkit.event.process.ProcessPostParseEvent;
 import me.lokka30.levelledmobs.bukkit.event.process.ProcessPreParseEvent;
-import me.lokka30.levelledmobs.bukkit.logic.function.process.action.ActionSocket;
 import me.lokka30.levelledmobs.bukkit.logic.context.Context;
 import me.lokka30.levelledmobs.bukkit.logic.function.LmFunction;
+import me.lokka30.levelledmobs.bukkit.logic.function.process.Process;
+import me.lokka30.levelledmobs.bukkit.logic.function.process.action.ActionSocket;
 import me.lokka30.levelledmobs.bukkit.logic.group.Group;
 import me.lokka30.levelledmobs.bukkit.logic.preset.Preset;
-import me.lokka30.levelledmobs.bukkit.logic.function.process.Process;
 import me.lokka30.levelledmobs.bukkit.util.Log;
 import org.bukkit.Bukkit;
 import org.jetbrains.annotations.NotNull;
@@ -246,6 +246,14 @@ public final class LogicHandler {
             Bukkit.getPluginManager().callEvent(new FunctionPostParseEvent(function));
         }
 
+        for(var function : getFunctions()) {
+            Log.inf(" ");
+            Log.inf(" ");
+            Log.inf("DEBUG: " + function.toString());
+            Log.inf(" ");
+            Log.inf(" ");
+        }
+
         Log.inf("Successfully parsed " + getFunctions().size() + " function(s).");
         return true;
     }
@@ -279,52 +287,54 @@ public final class LogicHandler {
             /* create obj */
             final var process = new Process(identifier, description, processNode, function);
 
-            /* add triggers */
-            final var presetsNode = processNode.node("presets");
-            if(presetsNode.empty() || !presetsNode.isList()) {
-                Log.sev("Unable to parse presets of process '" + identifier +
-                    "': not a valid list of presets.", true);
-                return false;
-            }
-            final List<String> presetsIdentifiersList;
-            try {
-                presetsIdentifiersList = Objects.requireNonNull(presetsNode.getList(String.class), "presets");
-            } catch (SerializationException | NullPointerException ex) {
-                Log.sev("Unable to parse presets of process '" + identifier +
-                    "'. This is usually caused by a the user creating a syntax error in " +
-                    "the settings.yml file. A stack trace will be printed below for debugging " +
-                    "purposes.", true);
-                ex.printStackTrace();
-                return false;
-            }
-
-            presetIterator:
-            for(var presetIdentifier : presetsIdentifiersList) {
-                if(process.getPresets().stream().anyMatch(otherPreset ->
-                    otherPreset.getIdentifier().equals(presetIdentifier))
-                ) {
-                    Log.war("Process '" + identifier + "' has preset '" + presetIdentifier +
-                        "' listed more than once. A preset can only be used at most once per "
-                        + "process.", true);
-                    continue;
-                }
-
-                for(var otherPreset : getPresets()) {
-                    if(otherPreset.getIdentifier().equals(presetIdentifier)) {
-                        process.getPresets().add(otherPreset);
-                        continue presetIterator;
-                    }
-                }
-
-                Log.sev("Process '" + identifier + "' specifies an unknown preset, '" +
-                    presetIdentifier + "'.", true);
-                return false;
-            }
-
             /* call pre-parse process event */
             final var processPreParseEvent = new ProcessPreParseEvent(process);
             Bukkit.getPluginManager().callEvent(processPreParseEvent);
             if(processPreParseEvent.isCancelled()) continue;
+
+            /* add presets */
+            if(processNode.hasChild("presets")) {
+                final var presetsNode = processNode.node("presets");
+                if(!presetsNode.isList()) {
+                    Log.sev("Unable to parse presets of process '" + identifier +
+                        "': not a valid list of presets.", true);
+                    return false;
+                }
+                final List<String> presetsIdentifiersList;
+                try {
+                    presetsIdentifiersList = Objects.requireNonNull(presetsNode.getList(String.class), "presets");
+                } catch (SerializationException | NullPointerException ex) {
+                    Log.sev("Unable to parse presets of process '" + identifier +
+                        "'. This is usually caused by a the user creating a syntax error in " +
+                        "the settings.yml file. A stack trace will be printed below for debugging " +
+                        "purposes.", true);
+                    ex.printStackTrace();
+                    return false;
+                }
+
+                presetIterator:
+                for(var presetIdentifier : presetsIdentifiersList) {
+                    if(process.getPresets().stream().anyMatch(otherPreset ->
+                        otherPreset.getIdentifier().equals(presetIdentifier))
+                    ) {
+                        Log.war("Process '" + identifier + "' has preset '" + presetIdentifier +
+                            "' listed more than once. A preset can only be used at most once per "
+                            + "process.", true);
+                        continue;
+                    }
+
+                    for(var otherPreset : getPresets()) {
+                        if(otherPreset.getIdentifier().equals(presetIdentifier)) {
+                            process.getPresets().add(otherPreset);
+                            continue presetIterator;
+                        }
+                    }
+
+                    Log.sev("Process '" + identifier + "' specifies an unknown preset, '" +
+                        presetIdentifier + "'.", true);
+                    return false;
+                }
+            }
 
             /* parse actions */
             //TODO make preset parsing happen after function parsing
@@ -349,10 +359,15 @@ public final class LogicHandler {
 
         for(var actionNode : actionNodes) {
             if(actionNode.hasChild("action")) {
-                final String identifier = Objects.requireNonNull(
-                    actionNode.node("action").getString(null),
-                    "identifier"
-                );
+                final String identifier = actionNode.node("action").getString("");
+
+                if(identifier.isBlank()) {
+                    Log.sev(String.format(
+                        "Process '%s' in function '%s' has an action with an invalid identifier.",
+                        process.getIdentifier(), process.getFunction().getIdentifier()
+                    ), true);
+                    return false;
+                }
 
                 final var actionParseEvent = new ActionParseEvent(identifier, process, actionNode);
                 Bukkit.getPluginManager().callEvent(actionParseEvent);
