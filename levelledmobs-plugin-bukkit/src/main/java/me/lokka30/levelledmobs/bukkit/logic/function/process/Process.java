@@ -9,7 +9,6 @@ import me.lokka30.levelledmobs.bukkit.logic.function.LmFunction;
 import me.lokka30.levelledmobs.bukkit.logic.function.process.action.Action;
 import me.lokka30.levelledmobs.bukkit.logic.function.process.condition.Condition;
 import me.lokka30.levelledmobs.bukkit.logic.preset.Preset;
-import me.lokka30.levelledmobs.bukkit.util.Log;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.configurate.CommentedConfigurationNode;
 
@@ -49,13 +48,6 @@ public class Process {
         for(var condition : getConditions())
             if(condition.applies(context))
                 conditionsMet++;
-
-        Log.inf(String.format(
-            "Conditions apply: {perc required: %f, totalConds: %d, condsMet: %d}",
-            conditionsPercentageRequired,
-            totalConditions,
-            conditionsMet
-        ));
 
         return (conditionsMet * 1.0f / totalConditions) >= conditionsPercentageRequired;
     }
