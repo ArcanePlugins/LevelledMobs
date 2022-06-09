@@ -26,6 +26,9 @@ public class ActionParseListener extends ListenerWrapper {
             case "__test" -> {
                 addAction(event, new TestAction(process, node));
             }
+            case "add-nbt-tag", "add-nbt-data" -> {
+                addAction(event, new AddNbtTagAction(process, node));
+            }
             case "broadcast-message-to-nearby-players" -> {
                 addAction(event, new BroadcastMessageToNearbyPlayersAction(process, node));
             }

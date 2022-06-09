@@ -1,7 +1,8 @@
 package me.lokka30.levelledmobs.bukkit.integration.internal;
 
 import me.lokka30.levelledmobs.bukkit.integration.Integration;
-import me.lokka30.levelledmobs.bukkit.integration.MobOwner;
+import me.lokka30.levelledmobs.bukkit.integration.IntegrationPriority;
+import me.lokka30.levelledmobs.bukkit.integration.mobowner.MobOwner;
 import me.lokka30.levelledmobs.bukkit.util.TriState;
 import org.bukkit.entity.LivingEntity;
 import org.jetbrains.annotations.NotNull;
@@ -12,7 +13,8 @@ public final class CitizensIntegration extends Integration implements MobOwner {
         super(
             "Detects mobs which are Citizens NPCs",
             true,
-            true
+            true,
+            IntegrationPriority.NORMAL
         );
     }
 

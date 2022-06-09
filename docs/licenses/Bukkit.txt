@@ -1,6 +1,7 @@
 ###### <start LevelledMobs notice>
 #
 # Bukkit is the API that LevelledMobs is built against.
+# Repository: <https://hub.spigotmc.org/stash/projects/SPIGOT/repos/bukkit/browse>
 #
 # Please view Bukkit's GPL v3 license below.
 #

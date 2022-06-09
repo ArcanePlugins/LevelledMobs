@@ -1,4 +1,4 @@
-package me.lokka30.levelledmobs.bukkit.integration;
+package me.lokka30.levelledmobs.bukkit.integration.mobowner;
 
 import me.lokka30.levelledmobs.bukkit.util.TriState;
 import org.bukkit.entity.LivingEntity;

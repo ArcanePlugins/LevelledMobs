@@ -11,6 +11,7 @@ public abstract class Integration {
     private final String description;
     private final boolean enabledByDefault;
     private final boolean internal;
+    private final IntegrationPriority priority;
     private boolean enabled;
 
     /* constructors */
@@ -18,11 +19,13 @@ public abstract class Integration {
     public Integration(
         final @NotNull String description,
         final boolean enabledByDefault,
-        final boolean internal
+        final boolean internal,
+        final IntegrationPriority priority
     ) {
         this.description = Objects.requireNonNull(description, "description");
         this.enabledByDefault = enabledByDefault;
         this.internal = internal;
+        this.priority = priority;
         this.enabled = enabledByDefault;
     }
 
@@ -36,6 +39,11 @@ public abstract class Integration {
     public boolean isEnabledByDefault() { return enabledByDefault; }
 
     public boolean isInternal() { return internal; }
+
+    @NotNull
+    public IntegrationPriority getPriority() {
+        return priority;
+    }
 
     public boolean isEnabled() { return enabled; }
 

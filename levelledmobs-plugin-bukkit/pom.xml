@@ -31,6 +31,12 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
+      <groupId>de.tr7zw</groupId>
+      <artifactId>item-nbt-api-plugin</artifactId>
+      <version>2.9.2</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>me.lokka30</groupId>
       <artifactId>levelledmobs-api-bukkit</artifactId>
       <version>4.0.0</version>
@@ -51,6 +57,11 @@
   </dependencies>
 
   <repositories>
+    <repository>
+      <id>codemc-repo</id>
+      <url>https://repo.codemc.org/repository/maven-public/</url>
+      <layout>default</layout>
+    </repository>
     <repository>
       <id>jeff-media-public</id>
       <url>https://hub.jeff-media.com/nexus/repository/jeff-media-public/</url>

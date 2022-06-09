@@ -1,7 +1,8 @@
 package me.lokka30.levelledmobs.bukkit.integration.internal;
 
 import me.lokka30.levelledmobs.bukkit.integration.Integration;
-import me.lokka30.levelledmobs.bukkit.integration.TranslationProvider;
+import me.lokka30.levelledmobs.bukkit.integration.IntegrationPriority;
+import me.lokka30.levelledmobs.bukkit.integration.translation.TranslationProvider;
 import org.bukkit.entity.EntityType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -12,7 +13,8 @@ public final class RtuLangApiIntegration extends Integration implements Translat
         super(
             "Allows usage of RTULangAPI for automatic translations",
             true,
-            true
+            true,
+            IntegrationPriority.NORMAL
         );
     }
 
