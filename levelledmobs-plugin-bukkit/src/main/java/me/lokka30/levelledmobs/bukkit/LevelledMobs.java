@@ -34,6 +34,7 @@ public final class LevelledMobs extends JavaPlugin {
         if(!(assertRunningSpigot() &&
             getConfigHandler().load() &&
             getListenerHandler().loadPrimary() &&
+            getIntegrationHandler().load() &&
             getLogicHandler().load() &&
             getListenerHandler().loadSecondary() &&
             getCommandHandler().load()

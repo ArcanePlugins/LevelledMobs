@@ -11,6 +11,7 @@ public final class CitizensIntegration extends Integration implements MobOwner {
 
     public CitizensIntegration() {
         super(
+            "Citizens",
             "Detects mobs which are Citizens NPCs",
             true,
             true,

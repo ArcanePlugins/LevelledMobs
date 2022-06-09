@@ -71,7 +71,12 @@ public class AddNbtTagAction extends Action {
                 .getPrimaryNbtProvider();
 
             if(nbtProvider == null) {
-                //TODO Error
+                //TODO improve error message
+                Log.sev("nbt error: no nbt provider", true);
+                getParentProcess().setShouldExit(true);
+                getParentProcess().getParentFunction().setShouldExit(true);
+                getParentProcess().getParentFunction().setShouldExitAll(true);
+                //todo darn, this really needs to be cleaned up
                 return;
             }
 
@@ -79,7 +84,13 @@ public class AddNbtTagAction extends Action {
                 final var result = nbtProvider.addNbtTag(livingEntity, tag);
                 //TODO should probably make the NbtProvider accept a collection of tags instead of
                 //     calling the method for each tag
-                //TODO handle exceptions etc (result.getException())
+                if(result.hasException()) {
+                    //TODO improve error message
+                    Log.war("nbt error: " + result.getException(), true);
+                    getParentProcess().setShouldExit(true);
+                    getParentProcess().getParentFunction().setShouldExit(true);
+                    getParentProcess().getParentFunction().setShouldExitAll(true);
+                }
             }
         } else {
             Log.sev(String.format(
@@ -88,6 +99,9 @@ public class AddNbtTagAction extends Action {
                 getParentProcess().getIdentifier(),
                 getParentProcess().getParentFunction().getIdentifier()
             ), true);
+            getParentProcess().setShouldExit(true);
+            getParentProcess().getParentFunction().setShouldExit(true);
+            getParentProcess().getParentFunction().setShouldExitAll(true);
         }
     }
 }

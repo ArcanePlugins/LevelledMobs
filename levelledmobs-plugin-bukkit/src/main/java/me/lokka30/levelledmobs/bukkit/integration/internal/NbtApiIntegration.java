@@ -5,8 +5,9 @@ import de.tr7zw.nbtapi.NBTEntity;
 import de.tr7zw.nbtapi.NBTItem;
 import me.lokka30.levelledmobs.bukkit.integration.Integration;
 import me.lokka30.levelledmobs.bukkit.integration.IntegrationPriority;
-import me.lokka30.levelledmobs.bukkit.integration.nbthandler.NbtProvider;
 import me.lokka30.levelledmobs.bukkit.integration.nbthandler.NbtModificationResult;
+import me.lokka30.levelledmobs.bukkit.integration.nbthandler.NbtProvider;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
@@ -15,11 +16,14 @@ public class NbtApiIntegration extends Integration implements NbtProvider {
 
     public NbtApiIntegration() {
         super(
+            "NBTAPI",
             "Allows LevelledMobs to modify the NBT data of items and entities.",
             true,
             true,
             IntegrationPriority.NORMAL
         );
+
+        setEnabled(Bukkit.getPluginManager().isPluginEnabled("NBTAPI"));
     }
 
     @Override

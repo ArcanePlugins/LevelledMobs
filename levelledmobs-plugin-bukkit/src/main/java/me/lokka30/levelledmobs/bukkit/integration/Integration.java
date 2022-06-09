@@ -8,6 +8,7 @@ public abstract class Integration {
 
     /* vars */
 
+    private final String identifier;
     private final String description;
     private final boolean enabledByDefault;
     private final boolean internal;
@@ -17,15 +18,17 @@ public abstract class Integration {
     /* constructors */
 
     public Integration(
+        final @NotNull String identifier,
         final @NotNull String description,
         final boolean enabledByDefault,
         final boolean internal,
         final IntegrationPriority priority
     ) {
+        this.identifier = Objects.requireNonNull(identifier, "identifier");
         this.description = Objects.requireNonNull(description, "description");
         this.enabledByDefault = enabledByDefault;
         this.internal = internal;
-        this.priority = priority;
+        this.priority = Objects.requireNonNull(priority, "priority");
         this.enabled = enabledByDefault;
     }
 
@@ -34,19 +37,34 @@ public abstract class Integration {
     /* getters and setters */
 
     @NotNull
-    public String getDescription() { return description; }
+    public String getIdentifier() {
+        return identifier;
+    }
 
-    public boolean isEnabledByDefault() { return enabledByDefault; }
+    @NotNull
+    public String getDescription() {
+        return description;
+    }
 
-    public boolean isInternal() { return internal; }
+    public boolean isEnabledByDefault() {
+        return enabledByDefault;
+    }
+
+    public boolean isInternal() {
+        return internal;
+    }
 
     @NotNull
     public IntegrationPriority getPriority() {
         return priority;
     }
 
-    public boolean isEnabled() { return enabled; }
+    public boolean isEnabled() {
+        return enabled;
+    }
 
-    public void setEnabled(final boolean state) { this.enabled = state; }
+    public void setEnabled(final boolean state) {
+        this.enabled = state;
+    }
 
 }

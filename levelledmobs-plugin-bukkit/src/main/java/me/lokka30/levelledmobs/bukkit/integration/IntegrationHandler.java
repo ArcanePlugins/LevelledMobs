@@ -4,8 +4,8 @@ import java.util.HashSet;
 import java.util.Set;
 import me.lokka30.levelledmobs.bukkit.integration.internal.CitizensIntegration;
 import me.lokka30.levelledmobs.bukkit.integration.internal.NbtApiIntegration;
-import me.lokka30.levelledmobs.bukkit.integration.internal.RtuLangApiIntegration;
 import me.lokka30.levelledmobs.bukkit.integration.nbthandler.NbtProvider;
+import org.bukkit.Bukkit;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -16,33 +16,37 @@ public final class IntegrationHandler {
 
     private final Set<Integration> integrations = new HashSet<>();
 
-    private final Set<Integration> internalIntegrations = Set.of(
-        new CitizensIntegration(),
-        new NbtApiIntegration(),
-        new RtuLangApiIntegration()
-    );
-
-    /* constructors */
-
-    public IntegrationHandler() {
-        integrations.addAll(internalIntegrations);
-    }
-
     /* methods */
 
-    /* getters and setters */
+    public boolean load() {
+        // TODO add check if these integrations are disabled.
 
-    @NotNull
-    public Set<Integration> getIntegrations() { return integrations; }
+        if(hasRequiredPlugins("Citizens"))
+            getIntegrations().add(new CitizensIntegration());
 
-    @NotNull
-    public Set<Integration> getInternalIntegrations() { return internalIntegrations; }
+        if(hasRequiredPlugins("NBTAPI"))
+            getIntegrations().add(new NbtApiIntegration());
+
+        return true;
+    }
+
+    public boolean hasRequiredPlugins(final String... plugins) {
+        for(var plugin : plugins) {
+            if(!Bukkit.getPluginManager().isPluginEnabled(plugin)) {
+                return false;
+            }
+        }
+        return true;
+    }
 
     @Nullable
     public NbtProvider getPrimaryNbtProvider() {
         Integration selected = null;
 
         for(var integration : getIntegrations()) {
+            if(!integration.isEnabled())
+                continue;
+
             if(integration instanceof NbtProvider) {
                 if(selected == null) {
                     selected = integration;
@@ -54,5 +58,10 @@ public final class IntegrationHandler {
 
         return (NbtProvider) selected;
     }
+
+    /* getters and setters */
+
+    @NotNull
+    public Set<Integration> getIntegrations() { return integrations; }
 
 }
