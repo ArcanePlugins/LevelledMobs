@@ -6,7 +6,7 @@
 
   <groupId>me.lokka30</groupId>
   <artifactId>LevelledMobs</artifactId>
-  <version>3.6.1 b646</version>
+  <version>3.6.1 b647</version>
   <packaging>jar</packaging>
   <name>LevelledMobs</name>
   <description>The Ultimate RPG Mob Levelling Plugin</description>
@@ -245,7 +245,7 @@
     <dependency>
       <groupId>io.github.stumper66</groupId>
       <artifactId>LM_Items</artifactId>
-      <version>1.0</version>
+      <version>1.0.1</version>
       <scope>provided</scope>
     </dependency>
   </dependencies>
