@@ -13,7 +13,8 @@ public class TestAction extends Action {
 
     public TestAction(
         @NotNull Process parentProcess,
-        @NotNull CommentedConfigurationNode actionNode) {
+        @NotNull CommentedConfigurationNode actionNode
+    ) {
         super(parentProcess, actionNode);
     }
 
@@ -22,6 +23,6 @@ public class TestAction extends Action {
     @Override
     public void run(Context context) {
         //TODO Remove debug
-        Log.inf("Running test action");
+        Log.inf("DEBUG: Running '__test' action");
     }
 }

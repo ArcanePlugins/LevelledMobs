@@ -16,7 +16,10 @@ public class BroadcastMessageToWorldAction extends Action {
     private final String requiredPermission;
     private String[] message = null;
 
-    public BroadcastMessageToWorldAction(Process process, final CommentedConfigurationNode node) {
+    public BroadcastMessageToWorldAction(
+        final @NotNull Process process,
+        final @NotNull CommentedConfigurationNode node
+    ) {
         super(process, node);
 
         this.requiredPermission = getActionNode()

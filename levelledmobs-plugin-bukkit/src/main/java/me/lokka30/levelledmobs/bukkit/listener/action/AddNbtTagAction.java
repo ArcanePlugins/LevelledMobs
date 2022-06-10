@@ -22,8 +22,8 @@ public class AddNbtTagAction extends Action {
     /* constructors */
 
     public AddNbtTagAction(
-        @NotNull Process parentProcess,
-        @NotNull CommentedConfigurationNode actionNode
+        final @NotNull Process parentProcess,
+        final @NotNull CommentedConfigurationNode actionNode
     ) {
         super(parentProcess, actionNode);
 

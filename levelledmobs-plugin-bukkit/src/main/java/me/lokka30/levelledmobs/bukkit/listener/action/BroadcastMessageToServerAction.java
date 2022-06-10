@@ -16,7 +16,10 @@ public class BroadcastMessageToServerAction extends Action {
     private final String requiredPermission;
     private String[] message = null;
 
-    public BroadcastMessageToServerAction(Process process, final CommentedConfigurationNode node) {
+    public BroadcastMessageToServerAction(
+        final @NotNull Process process,
+        final @NotNull CommentedConfigurationNode node
+    ) {
         super(process, node);
 
         this.requiredPermission = getActionNode()

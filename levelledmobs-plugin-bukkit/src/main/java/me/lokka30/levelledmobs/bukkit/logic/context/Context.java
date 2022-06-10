@@ -1,12 +1,10 @@
 package me.lokka30.levelledmobs.bukkit.logic.context;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import me.lokka30.levelledmobs.bukkit.LevelledMobs;
 import me.lokka30.levelledmobs.bukkit.logic.function.LmFunction;
-import org.bukkit.Location;
-import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -20,14 +18,17 @@ public final class Context {
 
     private Entity entity;
     private EntityType entityType;
-    private Location location;
     private Player player;
-    private World world;
     private final List<LmFunction> linkedFunctions = new ArrayList<>();
 
-    /* constructors */
+    /* methods */
 
-    public Context() {}
+    public String replacePlaceholders(final String from) {
+        return LevelledMobs.getInstance()
+            .getLogicHandler()
+            .getContextPlaceholderHandler()
+            .replace(from, this);
+    }
 
     /* getters and setters */
 
@@ -54,17 +55,6 @@ public final class Context {
     }
 
     @NotNull
-    public Context withLocation(final @NotNull Location location) {
-        this.location = Objects.requireNonNull(location, "location");
-        return this;
-    }
-
-    @Nullable
-    public Location getLocation() {
-        return location;
-    }
-
-    @NotNull
     public Context withPlayer(final @NotNull Player player) {
         this.player = Objects.requireNonNull(player, "player");
         return this;
@@ -82,25 +72,6 @@ public final class Context {
     }
 
     @NotNull
-    public Context withLinkedFunctions(final @NotNull Collection<LmFunction> linkedFunctions) {
-        getLinkedFunctions().addAll(Objects.requireNonNull(
-            linkedFunctions, "linkedFunctions"
-        ));
-        return this;
-    }
-
-    @NotNull
     public List<LmFunction> getLinkedFunctions() { return linkedFunctions; }
-
-    @NotNull
-    public Context withWorld(final @NotNull World world) {
-        this.world = Objects.requireNonNull(world, "world");
-        return this;
-    }
-
-    @Nullable
-    public World getWorld() {
-        return world;
-    }
 
 }

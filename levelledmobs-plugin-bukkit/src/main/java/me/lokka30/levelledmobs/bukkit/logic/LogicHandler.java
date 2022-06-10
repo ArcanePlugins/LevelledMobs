@@ -14,6 +14,7 @@ import me.lokka30.levelledmobs.bukkit.event.group.GroupPreParseEvent;
 import me.lokka30.levelledmobs.bukkit.event.process.ProcessPostParseEvent;
 import me.lokka30.levelledmobs.bukkit.event.process.ProcessPreParseEvent;
 import me.lokka30.levelledmobs.bukkit.logic.context.Context;
+import me.lokka30.levelledmobs.bukkit.logic.context.placeholder.ContextPlaceholderHandler;
 import me.lokka30.levelledmobs.bukkit.logic.function.LmFunction;
 import me.lokka30.levelledmobs.bukkit.logic.function.process.Process;
 import me.lokka30.levelledmobs.bukkit.logic.function.process.action.ActionSocket;
@@ -29,6 +30,7 @@ public final class LogicHandler {
 
     /* vars */
 
+    private final ContextPlaceholderHandler contextPlaceholderHandler = new ContextPlaceholderHandler();
     private final HashSet<Group> groups = new HashSet<>();
     private final HashSet<Preset> presets = new HashSet<>();
     private final LinkedHashSet<LmFunction> functions = new LinkedHashSet<>();
@@ -40,6 +42,7 @@ public final class LogicHandler {
      */
     public boolean load() {
         Log.inf("Loading logic system");
+        getContextPlaceholderHandler().load();
         return parseGroups() && parsePresets() && parseCustomDrops() && parseFunctions();
     }
 
@@ -447,6 +450,11 @@ public final class LogicHandler {
     }
 
     /* getters and setters */
+
+    @NotNull
+    public ContextPlaceholderHandler getContextPlaceholderHandler() {
+        return contextPlaceholderHandler;
+    }
 
     @NotNull
     public HashSet<Group> getGroups() { return groups; }

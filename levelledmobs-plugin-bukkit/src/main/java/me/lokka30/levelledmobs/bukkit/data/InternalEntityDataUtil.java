@@ -9,6 +9,7 @@ import java.util.Objects;
 import java.util.Set;
 import me.lokka30.levelledmobs.bukkit.api.data.EntityDataUtil;
 import me.lokka30.levelledmobs.bukkit.api.data.keys.EntityKeyStore;
+import me.lokka30.levelledmobs.bukkit.util.Log;
 import org.bukkit.entity.LivingEntity;
 import org.jetbrains.annotations.NotNull;
 
@@ -90,6 +91,14 @@ public final class InternalEntityDataUtil extends EntityDataUtil {
     public static void setWasSummoned(final @NotNull LivingEntity entity, final boolean to) {
         Objects.requireNonNull(entity, "entity");
         getPdc(entity).set(EntityKeyStore.maxLevel, INTEGER, boolToInt(to));
+    }
+
+    public static void unlevelMob(final @NotNull LivingEntity entity) {
+        //TODO remove some PDC keys
+        //TODO remove attribute multipliers             - use new PDC keys to check which ones LM modified.
+        //TODO if LM set a custom name then remove it   - use new pDC key to check if LM set the current custom name.
+        //TODO update mob nametag
+        Log.inf("can't unlevel mobs yet: logic missing.");
     }
 
 }

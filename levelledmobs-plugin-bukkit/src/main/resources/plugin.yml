@@ -1,4 +1,4 @@
-api-version: '1.14'
+api-version: '1.16'
 authors: ['lokka30', 'PenalBuffalo', 'UltimaOath']
 description: 'The Ultimate RPG Mob Levelling Solution'
 main: 'me.lokka30.levelledmobs.bukkit.LevelledMobs'
@@ -16,6 +16,9 @@ softdepend:
   - 'SimplePets'      # SimplePets is soft-dep as we must use its API for compatibility.
   - 'WorldEdit'       # WorldEdit is soft-dep for WorldGuard.
   - 'WorldGuard'      # WorldGuard is soft-dep for the Region API usage.
+
+libraries:
+  - 'org.spongepowered:configurate-yaml:4.1.2'
 
 commands:
   'levelledmobs':

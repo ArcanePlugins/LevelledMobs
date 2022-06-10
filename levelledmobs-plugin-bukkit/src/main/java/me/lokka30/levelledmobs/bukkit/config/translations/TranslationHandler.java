@@ -3,9 +3,14 @@ package me.lokka30.levelledmobs.bukkit.config.translations;
 import java.io.File;
 import java.nio.file.Path;
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.function.Function;
 import me.lokka30.levelledmobs.bukkit.LevelledMobs;
+import me.lokka30.levelledmobs.bukkit.util.EnumUtils;
 import me.lokka30.levelledmobs.bukkit.util.Log;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.configurate.CommentedConfigurationNode;
 import org.spongepowered.configurate.ConfigurateException;
@@ -252,6 +257,18 @@ public final class TranslationHandler {
 
     public int getCurrentFileVersion() {
         return getRoot().node("metadata", "version", "current").getInt(0);
+    }
+
+    public String getEntityName(final Entity entity) {
+        Objects.requireNonNull(entity, "entity");
+        //TODO
+        return getEntityName(entity.getType());
+    }
+
+    public String getEntityName(final @NotNull EntityType entityType) {
+        Objects.requireNonNull(entityType, "entityType");
+        //TODO
+        return EnumUtils.formatEnumConstant(entityType);
     }
 
     /* var getters and setters */

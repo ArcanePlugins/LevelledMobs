@@ -53,6 +53,9 @@ public class ActionParseListener extends ListenerWrapper {
             case "set-drop-table-id" -> {
                 addAction(event, new SetDropTableIdAction(process, node));
             }
+            case "set-level" -> {
+                addAction(event, new SetLevelAction(process, node));
+            }
         }
     }
 

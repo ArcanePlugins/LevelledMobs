@@ -18,7 +18,10 @@ public class BroadcastMessageToNearbyPlayersAction extends Action {
     private String[] message = null;
     private final double range;
 
-    public BroadcastMessageToNearbyPlayersAction(Process process, final CommentedConfigurationNode node) {
+    public BroadcastMessageToNearbyPlayersAction(
+        final @NotNull Process process,
+        final @NotNull CommentedConfigurationNode node
+    ) {
         super(process, node);
 
         this.requiredPermission = getActionNode()
