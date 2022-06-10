@@ -26,6 +26,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -88,8 +89,18 @@ public class EntityDeathListener implements Listener {
             }
         }
 
-        if (lmEntity.isLevelled()) {
+        if (lmEntity.getPDC().has(main.namespacedKeys.lockSettings) && lmEntity.getPDC().has(main.namespacedKeys.lockedDropRules)){
+            final String lockedDropRules = lmEntity.getPDC().get(main.namespacedKeys.lockedDropRules, PersistentDataType.STRING);
+            if (lockedDropRules != null) {
+                lmEntity.lockedCustomDrops = new LinkedList<>(List.of(lockedDropRules.split(";")));
+            }
+            if (lmEntity.getPDC().has(main.namespacedKeys.lockedDropRulesOverride)){
+                final Integer lockedOverride = lmEntity.getPDC().get(main.namespacedKeys.lockedDropRulesOverride, PersistentDataType.INTEGER);
+                lmEntity.hasLockedDropsOverride = (lockedOverride != null && lockedOverride == 1);
+            }
+        }
 
+        if (lmEntity.isLevelled()) {
             // Set levelled item drops
             main.levelManager.setLevelledItemDrops(lmEntity, event.getDrops());
 
@@ -98,7 +109,7 @@ public class EntityDeathListener implements Listener {
                 event.setDroppedExp(
                     main.levelManager.getLevelledExpDrops(lmEntity, event.getDroppedExp()));
             }
-        } else if (main.rulesManager.getRuleUseCustomDropsForMob(lmEntity).useDrops) {
+        } else if (lmEntity.lockedCustomDrops != null || main.rulesManager.getRuleUseCustomDropsForMob(lmEntity).useDrops) {
             final List<ItemStack> drops = new LinkedList<>();
             final CustomDropResult result = main.customDropsHandler.getCustomItemDrops(lmEntity,
                 drops, false);

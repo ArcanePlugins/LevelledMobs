@@ -31,6 +31,8 @@ public class NamespacedKeys {
         lockSettings = new NamespacedKey(main, "lockSettings");
         lockedNametag = new NamespacedKey(main, "lockedNametag");
         lockedNameOverride = new NamespacedKey(main, "lockedNameOverride");
+        lockedDropRules = new NamespacedKey(main, "lockedDropRules");
+        lockedDropRulesOverride = new NamespacedKey(main, "lockedDropRulesOverride");
 
         spawnerEgg = new NamespacedKey(main, "spawnerEgg");
         spawnerEggName = new NamespacedKey(main, "spawnerEggName");
@@ -72,6 +74,8 @@ public class NamespacedKeys {
     public final NamespacedKey lockSettings;
     public final NamespacedKey lockedNametag;
     public final NamespacedKey lockedNameOverride;
+    public final NamespacedKey lockedDropRules;
+    public final NamespacedKey lockedDropRulesOverride;
 
     final public NamespacedKey spawnerEgg;
     final public NamespacedKey spawnerEggName;

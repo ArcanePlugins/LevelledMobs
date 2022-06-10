@@ -83,6 +83,7 @@ public class CustomDropsHandler {
         processingInfo.lmEntity = lmEntity;
         processingInfo.equippedOnly = equippedOnly;
         processingInfo.newDrops = drops;
+
         processingInfo.dropRules = main.rulesManager.getRuleUseCustomDropsForMob(lmEntity);
         synchronized (lmEntity.getLivingEntity().getPersistentDataContainer()) {
             processingInfo.isSpawner = (lmEntity.getPDC()

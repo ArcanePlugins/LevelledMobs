@@ -112,10 +112,13 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
     public boolean wasPreviouslyLevelled;
     public boolean isRulesForceAll;
     public boolean isNewlySpawned;
+    public boolean lockEntitySettings;
+    public boolean hasLockedDropsOverride;
     public Boolean playerLevellingAllowDecrease;
     public Set<Player> playersNeedingNametagCooldownUpdate;
     public EntityDamageEvent.DamageCause deathCause;
     public List<String> nbtData;
+    public List<String> lockedCustomDrops;
     public String pendingPlayerIdToSet;
     public String lockedNametag;
     public String lockedOverrideName;
@@ -196,6 +199,9 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
         this.lockedNametag = null;
         this.lockedOverrideName = null;
         this.isNewlySpawned = false;
+        this.lockEntitySettings = false;
+        this.hasLockedDropsOverride = false;
+        this.lockedCustomDrops = null;
 
         super.clearEntityData();
     }

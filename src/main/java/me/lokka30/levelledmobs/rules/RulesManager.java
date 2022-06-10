@@ -154,6 +154,15 @@ public class RulesManager {
             dropRules.useDropTableIds.addAll(ruleInfo.customDrop_DropTableIds);
         }
 
+        if (lmEntity.lockedCustomDrops != null && !lmEntity.lockedCustomDrops.isEmpty()) {
+            dropRules.useDropTableIds.clear();
+            dropRules.useDropTableIds.addAll(lmEntity.lockedCustomDrops);
+            dropRules.useDrops = true;
+        }
+
+        if (lmEntity.hasLockedDropsOverride)
+            dropRules.override = true;
+
         return dropRules;
     }
 

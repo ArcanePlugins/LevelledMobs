@@ -87,8 +87,7 @@ public class DebugCreator {
         }
 
         final File serverInfo = new File(pluginDir, "serverinfo.txt");
-        if (serverInfo.exists()) //noinspection ResultOfMethodCallIgnored
-        {
+        if (serverInfo.exists()) {
             serverInfo.delete();
         }
 

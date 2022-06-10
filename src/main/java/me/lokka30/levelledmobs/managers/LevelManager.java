@@ -44,6 +44,7 @@ import me.lokka30.levelledmobs.result.NBTApplyResult;
 import me.lokka30.levelledmobs.result.PlayerHomeCheckResult;
 import me.lokka30.levelledmobs.result.PlayerLevelSourceResult;
 import me.lokka30.levelledmobs.result.PlayerNetherOrWorldSpawnResult;
+import me.lokka30.levelledmobs.rules.CustomDropsRuleSet;
 import me.lokka30.levelledmobs.rules.FineTuningAttributes;
 import me.lokka30.levelledmobs.rules.HealthIndicator;
 import me.lokka30.levelledmobs.rules.LevelTierMatching;
@@ -510,7 +511,7 @@ public class LevelManager implements LevelInterface {
             lmEntity);
         boolean hasOverride = false;
 
-        if (main.rulesManager.getRuleUseCustomDropsForMob(lmEntity).useDrops) {
+        if (lmEntity.lockedCustomDrops != null || main.rulesManager.getRuleUseCustomDropsForMob(lmEntity).useDrops) {
             // custom drops also get multiplied in the custom drops handler
             final CustomDropResult dropResult = main.customDropsHandler.getCustomItemDrops(lmEntity,
                 customDrops, false);
@@ -1348,14 +1349,15 @@ public class LevelManager implements LevelInterface {
         }
 
         // Custom Drops must be enabled.
-        if (!main.rulesManager.getRuleUseCustomDropsForMob(lmEntity).useDrops) {
+        final CustomDropsRuleSet customDropsRuleSet = main.rulesManager.getRuleUseCustomDropsForMob(lmEntity);
+        if (!customDropsRuleSet.useDrops) {
             return;
         }
 
         final BukkitRunnable runnable = new BukkitRunnable() {
             @Override
             public void run() {
-                applyLevelledEquipment_NonAsync(lmEntity);
+                applyLevelledEquipment_NonAsync(lmEntity, customDropsRuleSet);
                 if (lmEntity.inUseCount.getAndDecrement() <= 0) {
                     lmEntity.free();
                 }
@@ -1366,7 +1368,7 @@ public class LevelManager implements LevelInterface {
         runnable.runTask(main);
     }
 
-    private void applyLevelledEquipment_NonAsync(@NotNull final LivingEntityWrapper lmEntity) {
+    private void applyLevelledEquipment_NonAsync(@NotNull final LivingEntityWrapper lmEntity, final CustomDropsRuleSet customDropsRuleSet) {
         final MythicMobsMobInfo mmInfo = MythicMobUtils.getMythicMobInfo(lmEntity);
         if (mmInfo != null && mmInfo.preventRandomEquipment) {
             return;
@@ -1382,6 +1384,13 @@ public class LevelManager implements LevelInterface {
         final EntityEquipment equipment = lmEntity.getLivingEntity().getEquipment();
         if (equipment == null) {
             return;
+        }
+
+        if (lmEntity.lockEntitySettings && !customDropsRuleSet.useDropTableIds.isEmpty()){
+            final String customDrops = String.join(";", customDropsRuleSet.useDropTableIds);
+            lmEntity.getPDC().set(main.namespacedKeys.lockedDropRules, PersistentDataType.STRING, customDrops);
+            if (customDropsRuleSet.override)
+                lmEntity.getPDC().set(main.namespacedKeys.lockedDropRulesOverride, PersistentDataType.INTEGER, 1);
         }
 
         boolean hadMainItem = false;
@@ -1610,8 +1619,8 @@ public class LevelManager implements LevelInterface {
             nbtDatas.clear();
         }
 
-        final boolean lockEntity = main.rulesManager.getRuleDoLockEntity(lmEntity);
-        if (lockEntity && lmEntity.isNewlySpawned) {
+        lmEntity.lockEntitySettings = main.rulesManager.getRuleDoLockEntity(lmEntity);
+        if (lmEntity.lockEntitySettings && lmEntity.isNewlySpawned) {
             lmEntity.lockedNametag = main.rulesManager.getRuleNametag(lmEntity);
             lmEntity.lockedOverrideName = main.rulesManager.getRuleEntityOverriddenName(lmEntity,
                 true);
@@ -1650,7 +1659,7 @@ public class LevelManager implements LevelInterface {
                     }
                 }
 
-                if (lockEntity) {
+                if (lmEntity.lockEntitySettings) {
                     lmEntity.getPDC()
                         .set(main.namespacedKeys.lockSettings, PersistentDataType.INTEGER, 1);
                     if (lmEntity.lockedNametag != null) {

@@ -114,9 +114,7 @@ public class CustomDropBase implements Cloneable {
         CustomDropBase copy = null;
         try {
             copy = (CustomDropBase) super.clone();
-            if (this.causeOfDeathReqs != null)
-            //noinspection unchecked
-            {
+            if (this.causeOfDeathReqs != null) {
                 copy.causeOfDeathReqs = (CachedModalList<DeathCause>) this.causeOfDeathReqs.clone();
             }
         } catch (final Exception e) {
