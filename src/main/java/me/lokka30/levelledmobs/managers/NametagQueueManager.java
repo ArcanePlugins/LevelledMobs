@@ -226,7 +226,7 @@ public class NametagQueueManager {
             final List<NametagVisibilityEnum> nametagVisibilityEnum = main.rulesManager.getRuleCreatureNametagVisbility(
                 lmEntity);
             final boolean doAlwaysVisible = i == 1 ||
-                !nametag.isEmpty() && lmEntity.getLivingEntity().isCustomNameVisible() ||
+                    nametag != null && !nametag.isEmpty() && lmEntity.getLivingEntity().isCustomNameVisible() ||
                 nametagVisibilityEnum.contains(NametagVisibilityEnum.ALWAYS_ON);
 
             if (i == 0) {
