@@ -6,7 +6,7 @@
 
   <groupId>me.lokka30</groupId>
   <artifactId>LevelledMobs</artifactId>
-  <version>3.6.1 b649</version>
+  <version>3.6.1 b650</version>
   <packaging>jar</packaging>
   <name>LevelledMobs</name>
   <description>The Ultimate RPG Mob Levelling Plugin</description>
@@ -172,7 +172,7 @@
     <dependency>
       <groupId>io.papermc.paper</groupId>
       <artifactId>paper-api</artifactId>
-      <version>1.18.2-R0.1-SNAPSHOT</version>
+      <version>1.19-R0.1-SNAPSHOT</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -196,7 +196,7 @@
     <dependency>
       <groupId>org.spigotmc</groupId>
       <artifactId>spigot</artifactId>
-      <version>1.18.2-R0.1-SNAPSHOT</version>
+      <version>1.19-R0.1-SNAPSHOT</version>
       <classifier>remapped-mojang</classifier>
       <scope>provided</scope>
     </dependency>

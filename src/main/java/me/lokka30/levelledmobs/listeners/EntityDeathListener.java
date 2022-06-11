@@ -89,12 +89,13 @@ public class EntityDeathListener implements Listener {
             }
         }
 
-        if (lmEntity.getPDC().has(main.namespacedKeys.lockSettings) && lmEntity.getPDC().has(main.namespacedKeys.lockedDropRules)){
+        if (lmEntity.getPDC().has(main.namespacedKeys.lockSettings, PersistentDataType.INTEGER)
+                && lmEntity.getPDC().has(main.namespacedKeys.lockedDropRules, PersistentDataType.STRING)){
             final String lockedDropRules = lmEntity.getPDC().get(main.namespacedKeys.lockedDropRules, PersistentDataType.STRING);
             if (lockedDropRules != null) {
                 lmEntity.lockedCustomDrops = new LinkedList<>(List.of(lockedDropRules.split(";")));
             }
-            if (lmEntity.getPDC().has(main.namespacedKeys.lockedDropRulesOverride)){
+            if (lmEntity.getPDC().has(main.namespacedKeys.lockedDropRulesOverride, PersistentDataType.INTEGER)){
                 final Integer lockedOverride = lmEntity.getPDC().get(main.namespacedKeys.lockedDropRulesOverride, PersistentDataType.INTEGER);
                 lmEntity.hasLockedDropsOverride = (lockedOverride != null && lockedOverride == 1);
             }
