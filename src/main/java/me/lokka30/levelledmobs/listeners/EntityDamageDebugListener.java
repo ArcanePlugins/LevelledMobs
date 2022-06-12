@@ -4,6 +4,8 @@
 
 package me.lokka30.levelledmobs.listeners;
 
+import java.util.HashMap;
+import java.util.UUID;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.misc.Cooldown;
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
@@ -21,12 +23,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.HashMap;
-import java.util.UUID;
-
 /**
- * This class is used for debugging the plugin.
- * When an entity is punched, a player with permission
+ * This class is used for debugging the plugin. When an entity is punched, a player with permission
  * will receive a bunch of data about the mob.
  *
  * @author lokka30
@@ -35,6 +33,7 @@ import java.util.UUID;
 public class EntityDamageDebugListener implements Listener {
 
     private final LevelledMobs main;
+
     public EntityDamageDebugListener(final LevelledMobs main) {
         this.main = main;
     }
@@ -45,22 +44,32 @@ public class EntityDamageDebugListener implements Listener {
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void onEntityDamageByEntity(final EntityDamageByEntityEvent event) {
         // Make sure debug entity damage is enabled
-        if (!main.helperSettings.getBoolean(main.settingsCfg, "debug-entity-damage")) return;
+        if (!main.helperSettings.getBoolean(main.settingsCfg, "debug-entity-damage")) {
+            return;
+        }
 
         // Make sure the mob is a LivingEntity and the attacker is a Player
-        if (!(event.getEntity() instanceof LivingEntity) || !(event.getDamager() instanceof Player)) return;
-        final LivingEntityWrapper lmEntity = LivingEntityWrapper.getInstance((LivingEntity) event.getEntity(), main);
+        if (!(event.getEntity() instanceof LivingEntity)
+            || !(event.getDamager() instanceof Player)) {
+            return;
+        }
+        final LivingEntityWrapper lmEntity = LivingEntityWrapper.getInstance(
+            (LivingEntity) event.getEntity(), main);
 
         checkEntity((Player) event.getDamager(), lmEntity);
         lmEntity.free();
     }
 
-    private void checkEntity(final Player player, final @NotNull LivingEntityWrapper lmEntity){
+    private void checkEntity(final Player player, final @NotNull LivingEntityWrapper lmEntity) {
         // Make sure the mob is levelled
-        if (!lmEntity.isLevelled()) return;
+        if (!lmEntity.isLevelled()) {
+            return;
+        }
 
         // Make sure the player has debug perm
-        if (!player.hasPermission("levelledmobs.debug")) return;
+        if (!player.hasPermission("levelledmobs.debug")) {
+            return;
+        }
 
         // Don't spam the player's chat
         final String entityId = Integer.toString(lmEntity.getLivingEntity().getEntityId());
@@ -68,7 +77,9 @@ public class EntityDamageDebugListener implements Listener {
             final Cooldown cooldown = cooldownMap.get(player.getUniqueId());
 
             if (cooldown.doesCooldownBelongToIdentifier(entityId)) {
-                if (!cooldown.hasCooldownExpired(2)) return;
+                if (!cooldown.hasCooldownExpired(2)) {
+                    return;
+                }
             }
 
             cooldownMap.remove(player.getUniqueId());
@@ -76,22 +87,32 @@ public class EntityDamageDebugListener implements Listener {
 
         /* Now send them the debug message! :) */
 
-        send(player, "&8&m+---+&r Debug information for &b" + lmEntity.getTypeName() + "&r &8&m+---+&r");
+        send(player,
+            "&8&m+---+&r Debug information for &b" + lmEntity.getTypeName() + "&r &8&m+---+&r");
 
         // Print non-attributes
         send(player, "&f&nGlobal Values:", false);
         send(player, "&8&m->&b Level: &7" + lmEntity.getMobLevel());
-        send(player, "&8&m->&b Current Health: &7" + Utils.round(lmEntity.getLivingEntity().getHealth()), false);
-        if (lmEntity.getLivingEntity().getCustomName() != null)
-            send(player, "&8&m->&b Nametag: &7" + lmEntity.getLivingEntity().getCustomName(), false);
+        send(player,
+            "&8&m->&b Current Health: &7" + Utils.round(lmEntity.getLivingEntity().getHealth()),
+            false);
+        if (lmEntity.getLivingEntity().getCustomName() != null) {
+            send(player, "&8&m->&b Nametag: &7" + lmEntity.getLivingEntity().getCustomName(),
+                false);
+        }
 
         // Print attributes
         player.sendMessage(" ");
         send(player, "&f&nAttribute Values:", false);
         for (final Attribute attribute : Attribute.values()) {
-            final AttributeInstance attributeInstance = lmEntity.getLivingEntity().getAttribute(attribute);
-            if (attributeInstance == null) continue;
-            if (Utils.round(attributeInstance.getValue()) == 0.0) continue;
+            final AttributeInstance attributeInstance = lmEntity.getLivingEntity()
+                .getAttribute(attribute);
+            if (attributeInstance == null) {
+                continue;
+            }
+            if (Utils.round(attributeInstance.getValue()) == 0.0) {
+                continue;
+            }
 
             final StringBuilder sb = new StringBuilder();
             sb.append("&8&m->&b ");
@@ -100,18 +121,24 @@ public class EntityDamageDebugListener implements Listener {
             sb.append(Utils.round(attributeInstance.getValue()));
 
             int count = 0;
-            for (final AttributeModifier mod : attributeInstance.getModifiers()){
-                if (count == 0) sb.append(" (");
-                else sb.append(", ");
-                if (mod.getOperation() == AttributeModifier.Operation.MULTIPLY_SCALAR_1)
+            for (final AttributeModifier mod : attributeInstance.getModifiers()) {
+                if (count == 0) {
+                    sb.append(" (");
+                } else {
+                    sb.append(", ");
+                }
+                if (mod.getOperation() == AttributeModifier.Operation.MULTIPLY_SCALAR_1) {
                     sb.append("* ");
-                else
+                } else {
                     sb.append("+ ");
+                }
                 sb.append(Utils.round(mod.getAmount(), 5));
 
                 count++;
             }
-            if (count > 0) sb.append(")");
+            if (count > 0) {
+                sb.append(")");
+            }
 
             send(player, sb.toString(), false);
         }
@@ -136,9 +163,11 @@ public class EntityDamageDebugListener implements Listener {
     }
 
     private void send(final Player player, final String message, @NotNull final Boolean usePrefix) {
-        if (usePrefix)
-            player.sendMessage(MessageUtils.colorizeAll(main.configUtils.getPrefix() + "&7 " + message));
-        else
+        if (usePrefix) {
+            player.sendMessage(
+                MessageUtils.colorizeAll(main.configUtils.getPrefix() + "&7 " + message));
+        } else {
             player.sendMessage(MessageUtils.colorizeAll(message));
+        }
     }
 }

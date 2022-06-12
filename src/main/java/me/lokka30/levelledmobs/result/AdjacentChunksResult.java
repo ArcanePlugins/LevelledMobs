@@ -1,9 +1,8 @@
 package me.lokka30.levelledmobs.result;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.util.LinkedList;
 import java.util.List;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Used in conjunction with the chunk kill count feature
@@ -13,7 +12,8 @@ import java.util.List;
  */
 
 public class AdjacentChunksResult {
-    public AdjacentChunksResult(){
+
+    public AdjacentChunksResult() {
         this.chunkKeys = new LinkedList<>();
     }
 

@@ -4,10 +4,9 @@
 
 package me.lokka30.levelledmobs.misc;
 
+import java.util.List;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
-
-import java.util.List;
 
 /**
  * Holds data that goes into various queues for processing
@@ -16,12 +15,14 @@ import java.util.List;
  * @since 3.0.0
  */
 public class QueueItem {
-    public QueueItem(final LivingEntityWrapper lmEntity, final Event event){
+
+    public QueueItem(final LivingEntityWrapper lmEntity, final Event event) {
         this.lmEntity = lmEntity;
         this.event = event;
     }
 
-    public QueueItem(final LivingEntityWrapper lmEntity, final String nametag, final List<Player> players){
+    public QueueItem(final LivingEntityWrapper lmEntity, final String nametag,
+        final List<Player> players) {
         this.lmEntity = lmEntity;
         this.nametag = nametag;
         this.players = players;

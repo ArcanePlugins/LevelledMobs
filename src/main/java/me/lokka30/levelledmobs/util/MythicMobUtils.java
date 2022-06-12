@@ -1,22 +1,21 @@
 package me.lokka30.levelledmobs.util;
 
-import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
-import me.lokka30.levelledmobs.misc.MythicMobsMobInfo;
-import me.lokka30.levelledmobs.util.Utils;
-import org.bukkit.Bukkit;
-import org.bukkit.plugin.Plugin;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Optional;
 import java.util.UUID;
+import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
+import me.lokka30.levelledmobs.misc.MythicMobsMobInfo;
+import org.bukkit.Bukkit;
+import org.bukkit.plugin.Plugin;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class MythicMobUtils {
+
     @Nullable
-    public static MythicMobsMobInfo getMythicMobInfo(final @NotNull LivingEntityWrapper lmEntity){
+    public static MythicMobsMobInfo getMythicMobInfo(final @NotNull LivingEntityWrapper lmEntity) {
         // the below code was written against MythicMobs v5.0.4-f1007ca3
 
         /*
@@ -32,7 +31,9 @@ public class MythicMobUtils {
 
         // io.lumine.mythic.bukkit.MythicBukkit
         final Plugin mmMain = Bukkit.getPluginManager().getPlugin("MythicMobs");
-        if (mmMain == null) return null;
+        if (mmMain == null) {
+            return null;
+        }
 
         try {
             final Field field_mobManager = mmMain.getClass().getDeclaredField("mobManager");
@@ -44,12 +45,16 @@ public class MythicMobUtils {
 
             //     public Optional<ActiveMob> getActiveMob(UUID uuid) {
             //       return ((MobRegistry)this.mobRegistry.get()).getActiveMob(uuid); }
-            final Method method_getActiveMob = clazz_MobExecutor.getMethod("getActiveMob", UUID.class);
+            final Method method_getActiveMob = clazz_MobExecutor.getMethod("getActiveMob",
+                UUID.class);
 
             // Optional<io.lumine.mythic.core.mobs.ActiveMob>
-            final Optional<?> activeMobObj = (Optional<?>) method_getActiveMob.invoke(mobExecutorObj, lmEntity.getLivingEntity().getUniqueId());
+            final Optional<?> activeMobObj = (Optional<?>) method_getActiveMob.invoke(
+                mobExecutorObj, lmEntity.getLivingEntity().getUniqueId());
 
-            if (activeMobObj.isEmpty()) return null;
+            if (activeMobObj.isEmpty()) {
+                return null;
+            }
 
             // io.lumine.mythic.core.mobs.ActiveMob
             final Class<?> clazz_ActiveMob = activeMobObj.get().getClass();
@@ -61,11 +66,14 @@ public class MythicMobUtils {
             // io.lumine.mythic.core.mobs.MobType
             final Class<?> clazz_MobType = mobTypeObj.getClass();
 
-            final Field field_preventOtherDrops = clazz_MobType.getDeclaredField("preventOtherDrops"); // boolean
+            final Field field_preventOtherDrops = clazz_MobType.getDeclaredField(
+                "preventOtherDrops"); // boolean
             field_preventOtherDrops.setAccessible(true);
-            final Field field_preventRandomEquipment = clazz_MobType.getDeclaredField("preventRandomEquipment"); // boolean
+            final Field field_preventRandomEquipment = clazz_MobType.getDeclaredField(
+                "preventRandomEquipment"); // boolean
             field_preventRandomEquipment.setAccessible(true);
-            final Field field_internalName = clazz_MobType.getDeclaredField("internalName"); // string
+            final Field field_internalName = clazz_MobType.getDeclaredField(
+                "internalName"); // string
             field_internalName.setAccessible(true);
 
             final MythicMobsMobInfo result = new MythicMobsMobInfo();
@@ -74,7 +82,8 @@ public class MythicMobUtils {
             result.internalName = (String) field_internalName.get(mobTypeObj);
 
             return result;
-        } catch (NoSuchFieldException | InvocationTargetException | IllegalAccessException | NoSuchMethodException e) {
+        } catch (NoSuchFieldException | InvocationTargetException | IllegalAccessException |
+                 NoSuchMethodException e) {
             Utils.logger.warning("Error getting MythicMob info: " + e.getMessage());
         }
         return null;

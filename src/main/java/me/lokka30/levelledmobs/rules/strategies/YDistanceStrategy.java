@@ -4,45 +4,55 @@
 
 package me.lokka30.levelledmobs.rules.strategies;
 
+import java.util.concurrent.ThreadLocalRandom;
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.concurrent.ThreadLocalRandom;
-
 /**
- * Holds the configuration and logic for applying a levelling system that is
- * based upon the distance y level height
+ * Holds the configuration and logic for applying a levelling system that is based upon the distance
+ * y level height
  *
  * @author stumper66
  * @since 3.0.0
  */
 public class YDistanceStrategy implements LevellingStrategy, Cloneable {
+
     public Integer startingYLevel;
     public Integer endingYLevel;
     public Integer yPeriod;
 
-    public void mergeRule(final LevellingStrategy levellingStrategy){
-        if (levellingStrategy instanceof YDistanceStrategy)
+    public void mergeRule(final LevellingStrategy levellingStrategy) {
+        if (levellingStrategy instanceof YDistanceStrategy) {
             mergeYDistanceStrategy((YDistanceStrategy) levellingStrategy);
+        }
     }
 
-    private void mergeYDistanceStrategy(final YDistanceStrategy yds){
-        if (yds == null) return;
+    private void mergeYDistanceStrategy(final YDistanceStrategy yds) {
+        if (yds == null) {
+            return;
+        }
 
-        if (yds.startingYLevel != null) this.startingYLevel = yds.startingYLevel;
-        if (yds.endingYLevel != null) this.endingYLevel = yds.endingYLevel;
-        if (yds.yPeriod != null) this.yPeriod = yds.yPeriod;
+        if (yds.startingYLevel != null) {
+            this.startingYLevel = yds.startingYLevel;
+        }
+        if (yds.endingYLevel != null) {
+            this.endingYLevel = yds.endingYLevel;
+        }
+        if (yds.yPeriod != null) {
+            this.yPeriod = yds.yPeriod;
+        }
     }
 
-    public String toString(){
+    public String toString() {
         return String.format("ycoord: start: %s, end: %s, yPeriod: %s",
-                startingYLevel == null ? 0 : startingYLevel,
-                endingYLevel == null ? 0 : endingYLevel,
-                yPeriod == null ? 0 : yPeriod
+            startingYLevel == null ? 0 : startingYLevel,
+            endingYLevel == null ? 0 : endingYLevel,
+            yPeriod == null ? 0 : yPeriod
         );
     }
 
-    public int generateLevel(@NotNull final LivingEntityWrapper lmEntity, final int minLevel, final int maxLevel) {
+    public int generateLevel(@NotNull final LivingEntityWrapper lmEntity, final int minLevel,
+        final int maxLevel) {
 
         final int mobYLocation = lmEntity.getLivingEntity().getLocation().getBlockY();
         final int yStart = this.startingYLevel == null ? 0 : this.startingYLevel;
@@ -53,7 +63,8 @@ public class YDistanceStrategy implements LevellingStrategy, Cloneable {
 
         if (yPeriod > 0) {
             final double lvlPerPeriod = (maxLevel - minLevel) / (diff / yPeriod);
-            useLevel = (int) Math.floor(minLevel + (lvlPerPeriod * (mobYLocation - yStart) / yPeriod));
+            useLevel = (int) Math.floor(
+                minLevel + (lvlPerPeriod * (mobYLocation - yStart) / yPeriod));
         } else {
             final double useMobYLocation = mobYLocation - yStart;
             final double percent = useMobYLocation / diff;
@@ -62,17 +73,22 @@ public class YDistanceStrategy implements LevellingStrategy, Cloneable {
 
         useLevel += getVariance(lmEntity, useLevel >= maxLevel);
 
-        if (useLevel < minLevel)
+        if (useLevel < minLevel) {
             useLevel = minLevel;
-        else if (useLevel > maxLevel)
+        } else if (useLevel > maxLevel) {
             useLevel = maxLevel;
+        }
 
         return useLevel;
     }
 
-    private int getVariance(@NotNull final LivingEntityWrapper lmEntity, final boolean isAtMaxLevel){
-        final int variance = lmEntity.getMainInstance().rulesManager.getRule_MaxRandomVariance(lmEntity);
-        if (variance == 0) return 0;
+    private int getVariance(@NotNull final LivingEntityWrapper lmEntity,
+        final boolean isAtMaxLevel) {
+        final int variance = lmEntity.getMainInstance().rulesManager.getRuleMaxRandomVariance(
+            lmEntity);
+        if (variance == 0) {
+            return 0;
+        }
 
         final int change = ThreadLocalRandom.current().nextInt(0, variance + 1);
 

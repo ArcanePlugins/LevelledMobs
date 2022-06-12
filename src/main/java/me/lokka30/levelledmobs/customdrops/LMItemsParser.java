@@ -1,34 +1,36 @@
 package me.lokka30.levelledmobs.customdrops;
 
+import io.github.stumper66.lm_items.GetItemResult;
+import io.github.stumper66.lm_items.ItemsAPI;
+import io.github.stumper66.lm_items.LM_Items;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.managers.ExternalCompatibilityManager;
 import me.lokka30.levelledmobs.misc.DebugType;
 import me.lokka30.levelledmobs.util.Utils;
-import io.github.stumper66.lm_items.GetItemResult;
-import io.github.stumper66.lm_items.ItemsAPI;
-import io.github.stumper66.lm_items.LM_Items;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Interfaces with the plugin LM_Items so can custom items from 3rd party
- * plugins can be used directly in custom drops
+ * Interfaces with the plugin LM_Items so can custom items from 3rd party plugins can be used
+ * directly in custom drops
  *
  * @author stumper66
  * @since 3.5.0
  */
 public class LMItemsParser {
-    public LMItemsParser(final @NotNull LevelledMobs main){
+
+    public LMItemsParser(final @NotNull LevelledMobs main) {
         this.main = main;
     }
 
     private final LevelledMobs main;
 
-    public boolean parseExternalItemAttributes(@NotNull String materialName, final CustomDropItem item){
-        if (!ExternalCompatibilityManager.hasLMItemsInstalled()){
+    public boolean parseExternalItemAttributes(@NotNull String materialName,
+        final CustomDropItem item) {
+        if (!ExternalCompatibilityManager.hasLMItemsInstalled()) {
             Utils.logger.warning(String.format(
-                    "customdrops.yml references external item '%s' but LM_Items is not installed",
-                    materialName
+                "customdrops.yml references external item '%s' but LM_Items is not installed",
+                materialName
             ));
             return false;
         }
@@ -38,10 +40,10 @@ public class LMItemsParser {
         item.externalItemId = materialName.substring(colon + 1);
         final LM_Items lm_items = LM_Items.plugin;
 
-        if (!lm_items.doesSupportPlugin(item.externalPluginName)){
+        if (!lm_items.doesSupportPlugin(item.externalPluginName)) {
             Utils.logger.warning(String.format(
-                    "customdrops.yml references item from plugin '%s' but LM_Items does not support that plugin",
-                    item.externalPluginName
+                "customdrops.yml references item from plugin '%s' but LM_Items does not support that plugin",
+                item.externalPluginName
             ));
             return false;
         }
@@ -50,38 +52,50 @@ public class LMItemsParser {
         return getExternalItem(item);
     }
 
-    public boolean getExternalItem(final @NotNull CustomDropItem item){
+    public boolean getExternalItem(final @NotNull CustomDropItem item) {
         final ItemsAPI itemsAPI = LM_Items.plugin.getItemAPIForPlugin(item.externalPluginName);
 
-        if (itemsAPI == null){
-            Utils.logger.warning("Unable to get ItemsAPI from LM_Items for plugin " + item.externalPluginName);
+        if (itemsAPI == null) {
+            Utils.logger.warning(
+                "Unable to get ItemsAPI from LM_Items for plugin " + item.externalPluginName);
             return false;
         }
 
         final GetItemResult result = item.externalAmount == null ?
-                itemsAPI.getItem(item.externalType, item.externalItemId) :
-                itemsAPI.getItem(item.externalType, item.externalItemId, item.externalAmount);
-        if (!result.pluginIsInstalled){
-            Utils.logger.warning(String.format("custom item references plugin '%s' but that plugin is not installed", item.externalPluginName));
+            itemsAPI.getItem(item.externalType, item.externalItemId) :
+            itemsAPI.getItem(item.externalType, item.externalItemId, item.externalAmount);
+        if (!result.pluginIsInstalled) {
+            Utils.logger.warning(
+                String.format("custom item references plugin '%s' but that plugin is not installed",
+                    item.externalPluginName));
             return false;
         }
 
         final ItemStack itemStack = result.itemStack;
-        if (itemStack == null){
-            if (result.typeIsNotSupported){
-                if (item.externalType == null)
-                    Utils.logger.warning(String.format("custom item '%s:%s' doesn't support type (null)", item.externalPluginName, item.externalItemId));
-                else
-                    Utils.logger.warning(String.format("custom item '%s:%s' doesn't support type %s", item.externalPluginName, item.externalItemId, item.externalType));
+        if (itemStack == null) {
+            if (result.typeIsNotSupported) {
+                if (item.externalType == null) {
+                    Utils.logger.warning(
+                        String.format("custom item '%s:%s' doesn't support type (null)",
+                            item.externalPluginName, item.externalItemId));
+                } else {
+                    Utils.logger.warning(
+                        String.format("custom item '%s:%s' doesn't support type %s",
+                            item.externalPluginName, item.externalItemId, item.externalType));
+                }
 
                 return false;
             }
 
             if (main.companion.debugsEnabled.contains(DebugType.CUSTOM_DROPS)) {
-                if (item.externalType == null)
-                    Utils.logger.warning(String.format("custom item '%s:%s' returned a null item", item.externalPluginName, item.externalItemId));
-                else
-                    Utils.logger.warning(String.format("custom item '%s:%s' (%s) returned a null item", item.externalPluginName, item.externalItemId, item.externalType));
+                if (item.externalType == null) {
+                    Utils.logger.warning(String.format("custom item '%s:%s' returned a null item",
+                        item.externalPluginName, item.externalItemId));
+                } else {
+                    Utils.logger.warning(
+                        String.format("custom item '%s:%s' (%s) returned a null item",
+                            item.externalPluginName, item.externalItemId, item.externalType));
+                }
             }
 
             return false;

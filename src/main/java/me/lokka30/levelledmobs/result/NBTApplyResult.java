@@ -4,16 +4,16 @@
 
 package me.lokka30.levelledmobs.result;
 
+import java.util.List;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.List;
 
 /**
  * @author stumper66
  * @since 3.1.0
  */
 public class NBTApplyResult {
+
     @Nullable
     public ItemStack itemStack;
     public String exceptionMessage;

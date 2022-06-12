@@ -4,12 +4,11 @@
 
 package me.lokka30.levelledmobs.misc;
 
-import me.lokka30.levelledmobs.util.Utils;
-import org.jetbrains.annotations.NotNull;
-
 import java.io.InvalidObjectException;
 import java.util.LinkedList;
 import java.util.List;
+import me.lokka30.levelledmobs.util.Utils;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * A custom implementation for comparing program versions
@@ -18,20 +17,26 @@ import java.util.List;
  * @since 2.6.0
  */
 public class VersionInfo implements Comparable<VersionInfo> {
+
     public VersionInfo(final String version) throws InvalidObjectException {
-        if (version == null) throw new NullPointerException("version can't be null");
+        if (version == null) {
+            throw new NullPointerException("version can't be null");
+        }
 
         this.versionStr = version;
         final String[] split = version.split("\\.");
         this.thisVerSplit = new LinkedList<>();
-        for (final String numTemp : split){
-            if (!Utils.isDouble(numTemp)) throw new InvalidObjectException("Version can only contain numbers and periods");
+        for (final String numTemp : split) {
+            if (!Utils.isDouble(numTemp)) {
+                throw new InvalidObjectException("Version can only contain numbers and periods");
+            }
             final int intD = Integer.parseInt(numTemp);
             thisVerSplit.add(intD);
         }
 
-        for (int i = 4; i < thisVerSplit.size(); i++)
+        for (int i = 4; i < thisVerSplit.size(); i++) {
             thisVerSplit.add(0);
+        }
     }
 
     private final String versionStr;
@@ -39,9 +44,15 @@ public class VersionInfo implements Comparable<VersionInfo> {
 
     @Override
     public boolean equals(final Object o) {
-        if (o == null) return false;
-        if (o == this) return true;
-        if (!(o instanceof VersionInfo)) return false;
+        if (o == null) {
+            return false;
+        }
+        if (o == this) {
+            return true;
+        }
+        if (!(o instanceof VersionInfo)) {
+            return false;
+        }
 
         return this.versionStr.equals(((VersionInfo) o).getVersion());
     }
@@ -51,7 +62,7 @@ public class VersionInfo implements Comparable<VersionInfo> {
         return this.versionStr;
     }
 
-    private String getVersion(){
+    private String getVersion() {
         return this.versionStr;
     }
 
@@ -59,22 +70,25 @@ public class VersionInfo implements Comparable<VersionInfo> {
     public int compareTo(final @NotNull VersionInfo v) {
         for (int i = 0; i < 4; i++) {
 
-            if (v.thisVerSplit.size() <= i && this.thisVerSplit.size() - 1 <= i)
+            if (v.thisVerSplit.size() <= i && this.thisVerSplit.size() - 1 <= i) {
                 break;
+            }
 
-                // if one has extra digits we'll assume that one is newer
-            else if (v.thisVerSplit.size() <= i)
+            // if one has extra digits we'll assume that one is newer
+            else if (v.thisVerSplit.size() <= i) {
                 return 1;
-            else if (this.thisVerSplit.size() <= i)
+            } else if (this.thisVerSplit.size() <= i) {
                 return -1;
+            }
 
             final int compareInt = v.thisVerSplit.get(i);
             final int thisInt = this.thisVerSplit.get(i);
 
-            if (thisInt > compareInt)
+            if (thisInt > compareInt) {
                 return 1;
-            else if (thisInt < compareInt)
+            } else if (thisInt < compareInt) {
                 return -1;
+            }
         }
 
         return 0;

@@ -7,12 +7,13 @@ package me.lokka30.levelledmobs.result;
  * @since 3.3.0
  */
 public class PlayerLevelSourceResult {
-    public PlayerLevelSourceResult(final int numericResult){
+
+    public PlayerLevelSourceResult(final int numericResult) {
         this.numericResult = numericResult;
         this.isNumericResult = true;
     }
 
-    public PlayerLevelSourceResult(final String stringResult){
+    public PlayerLevelSourceResult(final String stringResult) {
         this.stringResult = stringResult != null ? stringResult : "";
         this.isNumericResult = false;
     }

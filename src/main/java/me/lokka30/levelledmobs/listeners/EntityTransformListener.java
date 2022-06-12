@@ -4,6 +4,8 @@
 
 package me.lokka30.levelledmobs.listeners;
 
+import java.util.Collections;
+import java.util.HashSet;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.misc.AdditionalLevelInformation;
 import me.lokka30.levelledmobs.misc.DebugType;
@@ -18,9 +20,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntitySpawnEvent;
 import org.bukkit.event.entity.EntityTransformEvent;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.Collections;
-import java.util.HashSet;
 
 /**
  * Listens for when a mob transforms so the applicable rules can be applied
@@ -40,53 +39,66 @@ public class EntityTransformListener implements Listener {
     public void onTransform(@NotNull final EntityTransformEvent event) {
         // is the original entity a living entity
         if (!(event.getEntity() instanceof LivingEntity)) {
-            Utils.debugLog(main, DebugType.ENTITY_TRANSFORM_FAIL, event.getEntity().getType().name() + ": entity was &bnot&7 an instance of LivingEntity");
+            Utils.debugLog(main, DebugType.ENTITY_TRANSFORM_FAIL, event.getEntity().getType().name()
+                + ": entity was &bnot&7 an instance of LivingEntity");
             return;
         }
 
         // is the original entity levelled
         if (!main.levelManager.isLevelled((LivingEntity) event.getEntity())) {
-            Utils.debugLog(main, DebugType.ENTITY_TRANSFORM_FAIL, event.getEntity() + ": original entity was &bnot&7 levelled");
+            Utils.debugLog(main, DebugType.ENTITY_TRANSFORM_FAIL,
+                event.getEntity() + ": original entity was &bnot&7 levelled");
             return;
         }
 
-        final LivingEntityWrapper lmEntity = LivingEntityWrapper.getInstance((LivingEntity) event.getEntity(), main);
+        final LivingEntityWrapper lmEntity = LivingEntityWrapper.getInstance(
+            (LivingEntity) event.getEntity(), main);
 
         boolean useInheritance = false;
         int level = 1;
 
-        if (main.rulesManager.getRule_MobLevelInheritance(lmEntity)){
+        if (main.rulesManager.getRuleMobLevelInheritance(lmEntity)) {
             useInheritance = true;
             level = lmEntity.getMobLevel();
         }
 
         for (final Entity transformedEntity : event.getTransformedEntities()) {
             if (!(transformedEntity instanceof LivingEntity)) {
-                Utils.debugLog(main, DebugType.ENTITY_TRANSFORM_FAIL, event.getEntity().getType().name() + ": entity was&b not&7 an instance of LivingEntity (loop)");
+                Utils.debugLog(main, DebugType.ENTITY_TRANSFORM_FAIL,
+                    event.getEntity().getType().name()
+                        + ": entity was&b not&7 an instance of LivingEntity (loop)");
                 continue;
             }
 
-            final LivingEntityWrapper transformedLmEntity = LivingEntityWrapper.getInstance((LivingEntity) transformedEntity, main);
-            final LevellableState levelledState = main.levelInterface.getLevellableState(transformedLmEntity);
+            final LivingEntityWrapper transformedLmEntity = LivingEntityWrapper.getInstance(
+                (LivingEntity) transformedEntity, main);
+            final LevellableState levelledState = main.levelInterface.getLevellableState(
+                transformedLmEntity);
             if (levelledState != LevellableState.ALLOWED) {
-                Utils.debugLog(main, DebugType.ENTITY_TRANSFORM_FAIL, transformedEntity.getType().name() + ": transformed entity was &bnot&7 levellable, reason: &b" + levelledState);
-                main.levelManager.updateNametag_WithDelay(transformedLmEntity);
+                Utils.debugLog(main, DebugType.ENTITY_TRANSFORM_FAIL,
+                    transformedEntity.getType().name()
+                        + ": transformed entity was &bnot&7 levellable, reason: &b"
+                        + levelledState);
+                main.levelManager.updateNametagWithDelay(transformedLmEntity);
                 transformedLmEntity.free();
                 continue;
             }
 
             if (useInheritance) {
                 main.levelInterface.applyLevelToMob(
-                        transformedLmEntity,
-                        level,
-                        false,
-                        false,
-                        new HashSet<>(Collections.singletonList(AdditionalLevelInformation.FROM_TRANSFORM_LISTENER))
+                    transformedLmEntity,
+                    level,
+                    false,
+                    false,
+                    new HashSet<>(Collections.singletonList(
+                        AdditionalLevelInformation.FROM_TRANSFORM_LISTENER))
                 );
-            } else
-                main.levelManager.entitySpawnListener.preprocessMob(transformedLmEntity, new EntitySpawnEvent(transformedEntity));
+            } else {
+                main.levelManager.entitySpawnListener.preprocessMob(transformedLmEntity,
+                    new EntitySpawnEvent(transformedEntity));
+            }
 
-            main.levelManager.updateNametag_WithDelay(lmEntity);
+            main.levelManager.updateNametagWithDelay(lmEntity);
             transformedLmEntity.free();
         }
 

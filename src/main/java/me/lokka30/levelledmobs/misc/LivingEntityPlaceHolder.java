@@ -4,6 +4,8 @@
 
 package me.lokka30.levelledmobs.misc;
 
+import java.util.List;
+import java.util.Stack;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.LivingEntityInterface;
 import me.lokka30.levelledmobs.rules.RuleInfo;
@@ -12,25 +14,23 @@ import org.bukkit.World;
 import org.bukkit.entity.EntityType;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.List;
-import java.util.Stack;
-
 /**
- * A wrapper for the LivingEntity class that provides various common function
- * and settings used for processing rules
- * Used only with the summon command
+ * A wrapper for the LivingEntity class that provides various common function and settings used for
+ * processing rules Used only with the summon command
  *
  * @author stumper66
  * @since 3.0.0
  */
-public class LivingEntityPlaceHolder extends LivingEntityWrapperBase implements LivingEntityInterface {
+public class LivingEntityPlaceHolder extends LivingEntityWrapperBase implements
+    LivingEntityInterface {
 
-    private LivingEntityPlaceHolder(final @NotNull LevelledMobs main){
+    private LivingEntityPlaceHolder(final @NotNull LevelledMobs main) {
         super(main);
     }
 
     @Deprecated
-    public LivingEntityPlaceHolder(final EntityType entityType, final @NotNull Location location, final @NotNull World world, final @NotNull LevelledMobs main){
+    public LivingEntityPlaceHolder(final EntityType entityType, final @NotNull Location location,
+        final @NotNull World world, final @NotNull LevelledMobs main) {
         // this constructor is provided for backwards compatibility only
         // to get an instance, LivingEntityPlaceHolder#getInstance should be called instead
         // when finished with it, LivingEntityPlaceHolder#free should be called
@@ -44,17 +44,20 @@ public class LivingEntityPlaceHolder extends LivingEntityWrapperBase implements 
     private final static Stack<LivingEntityPlaceHolder> cache = new Stack<>();
 
     @NotNull
-    public static LivingEntityPlaceHolder getInstance(final EntityType entityType, final @NotNull Location location, final @NotNull LevelledMobs main){
+    public static LivingEntityPlaceHolder getInstance(final EntityType entityType,
+        final @NotNull Location location, final @NotNull LevelledMobs main) {
         final LivingEntityPlaceHolder leph;
 
-        if (location.getWorld() == null)
+        if (location.getWorld() == null) {
             throw new NullPointerException("World can't be null");
+        }
 
         synchronized (cachedPlaceHolders_Lock) {
-            if (cache.empty())
+            if (cache.empty()) {
                 leph = new LivingEntityPlaceHolder(main);
-            else
+            } else {
                 leph = cache.pop();
+            }
         }
 
         leph.populateEntityData(entityType, location, location.getWorld());
@@ -62,14 +65,19 @@ public class LivingEntityPlaceHolder extends LivingEntityWrapperBase implements 
         return leph;
     }
 
-    private void populateEntityData(final EntityType entityType, final @NotNull Location location, final @NotNull World world){
+    private void populateEntityData(final EntityType entityType, final @NotNull Location location,
+        final @NotNull World world) {
         this.entityType = entityType;
         super.populateData(world, location);
     }
 
-    public void free(){
-        if (inUseCount.decrementAndGet() > 0) return;
-        if (!getIsPopulated()) return;
+    public void free() {
+        if (inUseCount.decrementAndGet() > 0) {
+            return;
+        }
+        if (!getIsPopulated()) {
+            return;
+        }
 
         clearEntityData();
         synchronized (cachedPlaceHolders_Lock) {
@@ -77,35 +85,37 @@ public class LivingEntityPlaceHolder extends LivingEntityWrapperBase implements 
         }
     }
 
-    public void clearEntityData(){
+    public void clearEntityData() {
         this.entityType = null;
         super.clearEntityData();
     }
 
     @NotNull
     public EntityType getEntityType() {
-        if (this.entityType == null)
+        if (this.entityType == null) {
             throw new NullPointerException("EntityType was null");
+        }
 
         return this.entityType;
     }
 
-    public @NotNull List<RuleInfo> getApplicableRules(){
+    public @NotNull List<RuleInfo> getApplicableRules() {
         return main.rulesManager.getApplicableRules(this).allApplicableRules;
     }
 
     @NotNull
-    public String getTypeName(){
+    public String getTypeName() {
         return this.entityType.name();
     }
 
-    public void setSpawnedTimeOfDay(final int ticks){
+    public void setSpawnedTimeOfDay(final int ticks) {
         this.spawnedTimeOfDay = ticks;
     }
 
-    public int getSpawnedTimeOfDay(){
-        if (this.spawnedTimeOfDay != null)
+    public int getSpawnedTimeOfDay() {
+        if (this.spawnedTimeOfDay != null) {
             return this.spawnedTimeOfDay;
+        }
 
         final int result = (int) getWorld().getTime();
         setSpawnedTimeOfDay(result);
@@ -117,7 +127,7 @@ public class LivingEntityPlaceHolder extends LivingEntityWrapperBase implements 
         return summonedLevel;
     }
 
-    public boolean isWasSummoned(){
+    public boolean isWasSummoned() {
         return summonedLevel != null;
     }
 }

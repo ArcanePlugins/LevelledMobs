@@ -4,6 +4,7 @@
 
 package me.lokka30.levelledmobs.events;
 
+import java.util.HashSet;
 import me.lokka30.levelledmobs.misc.AdditionalLevelInformation;
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
 import org.bukkit.Bukkit;
@@ -13,11 +14,8 @@ import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.HashSet;
-
 /**
- * This event is fired *after* a mob is levelled.
- * Other plugins can cancel this event.
+ * This event is fired *after* a mob is levelled. Other plugins can cancel this event.
  *
  * @author lokka30
  * @since 2.5.0
@@ -37,12 +35,11 @@ public class MobPostLevelEvent extends Event {
     }
 
     /**
-     * When a mob is levelled, the following enum is used to
-     * allow plugins to find the cause of the mob being
-     * levelled.
+     * When a mob is levelled, the following enum is used to allow plugins to find the cause of the
+     * mob being levelled.
      * <p>
-     * NORMAL: Spawned naturally, by a spawn egg, etc.
-     * CHANGED_LEVEL: When an existing levelled mob has its level changed.
+     * NORMAL: Spawned naturally, by a spawn egg, etc. CHANGED_LEVEL: When an existing levelled mob
+     * has its level changed.
      */
     public enum LevelCause {
         NORMAL,
@@ -54,7 +51,9 @@ public class MobPostLevelEvent extends Event {
     private final LevelCause levelCause;
     private final HashSet<AdditionalLevelInformation> additionalInformation;
 
-    public MobPostLevelEvent(@NotNull final LivingEntityWrapper lmEntity, @NotNull final LevelCause levelCause, @Nullable final HashSet<AdditionalLevelInformation> additionalInformation) {
+    public MobPostLevelEvent(@NotNull final LivingEntityWrapper lmEntity,
+        @NotNull final LevelCause levelCause,
+        @Nullable final HashSet<AdditionalLevelInformation> additionalInformation) {
         super(!Bukkit.isPrimaryThread());
         this.lmEntity = lmEntity;
         this.levelCause = levelCause;
@@ -65,7 +64,9 @@ public class MobPostLevelEvent extends Event {
         return lmEntity.getLivingEntity();
     }
 
-    public LivingEntityWrapper getLmEntity() { return lmEntity; }
+    public LivingEntityWrapper getLmEntity() {
+        return lmEntity;
+    }
 
     public int getLevel() {
         return lmEntity.getMobLevel();

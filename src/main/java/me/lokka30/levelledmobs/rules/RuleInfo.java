@@ -4,15 +4,6 @@
 
 package me.lokka30.levelledmobs.rules;
 
-import me.lokka30.levelledmobs.misc.CachedModalList;
-import me.lokka30.levelledmobs.rules.strategies.LevellingStrategy;
-import me.lokka30.levelledmobs.managers.ExternalCompatibilityManager;
-import me.lokka30.microlib.messaging.MessageUtils;
-import org.bukkit.Particle;
-import org.bukkit.block.Biome;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.LinkedList;
@@ -20,6 +11,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import me.lokka30.levelledmobs.managers.ExternalCompatibilityManager;
+import me.lokka30.levelledmobs.misc.CachedModalList;
+import me.lokka30.levelledmobs.rules.strategies.LevellingStrategy;
+import me.lokka30.microlib.messaging.MessageUtils;
+import org.bukkit.Particle;
+import org.bukkit.block.Biome;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Holds rules parsed from rules.yml to make up a list of rules
@@ -28,7 +27,8 @@ import java.util.TreeMap;
  * @since 3.0.0
  */
 public class RuleInfo {
-    public RuleInfo(final String id){
+
+    public RuleInfo(final String id) {
         this.ruleName = id;
 
         this.ruleIsEnabled = true;
@@ -91,7 +91,8 @@ public class RuleInfo {
     Map<String, List<LevelTierMatching>> entityNameOverrides_Level;
     Map<String, LevelTierMatching> entityNameOverrides;
     public List<NametagVisibilityEnum> nametagVisibilityEnum;
-    @NotNull @DoNotMerge
+    @NotNull
+    @DoNotMerge
     public final Map<String, String> ruleSourceNames;
     public Particle spawnerParticle;
     List<TieredColoringInfo> tieredColoringInfos;
@@ -118,107 +119,142 @@ public class RuleInfo {
     @Nullable FineTuningAttributes allMobMultipliers;
     Map<String, FineTuningAttributes> specificMobMultipliers;
 
-    public String getRuleName(){
+    public String getRuleName() {
         return this.ruleName;
     }
 
-    void setRuleName(final String name){
+    void setRuleName(final String name) {
         this.ruleName = name;
     }
 
     // this is only used for presets
     @SuppressWarnings("unchecked")
-    void mergePresetRules(final RuleInfo preset){
-        if (preset == null) return;
+    void mergePresetRules(final RuleInfo preset) {
+        if (preset == null) {
+            return;
+        }
 
         try {
             for (final Field f : preset.getClass().getDeclaredFields()) {
-                if (Modifier.isPrivate(f.getModifiers())) continue;
-                if (f.isAnnotationPresent(DoNotMerge.class)) continue;
-                if (f.get(preset) == null) continue;
+                if (Modifier.isPrivate(f.getModifiers())) {
+                    continue;
+                }
+                if (f.isAnnotationPresent(DoNotMerge.class)) {
+                    continue;
+                }
+                if (f.get(preset) == null) {
+                    continue;
+                }
 
                 boolean skipSettingValue = false;
                 final Object presetValue = f.get(preset);
 
-                if (f.getName().equals("entityNameOverrides") && this.entityNameOverrides != null && presetValue instanceof Map) {
+                if (f.getName().equals("entityNameOverrides") && this.entityNameOverrides != null
+                    && presetValue instanceof Map) {
                     this.entityNameOverrides.putAll((Map<String, LevelTierMatching>) presetValue);
                     skipSettingValue = true;
-                } else if (f.getName().equals("entityNameOverrides_Level") && this.entityNameOverrides_Level != null) {
-                    this.entityNameOverrides_Level.putAll((Map<String, List<LevelTierMatching>>) presetValue);
+                } else if (f.getName().equals("entityNameOverrides_Level")
+                    && this.entityNameOverrides_Level != null) {
+                    this.entityNameOverrides_Level.putAll(
+                        (Map<String, List<LevelTierMatching>>) presetValue);
                     skipSettingValue = true;
                 } else if (f.getName().equals("healthIndicator")) {
                     final HealthIndicator mergingPreset = (HealthIndicator) presetValue;
-                    if (this.healthIndicator == null || mergingPreset.doMerge == null || !mergingPreset.doMerge)
+                    if (this.healthIndicator == null || mergingPreset.doMerge == null
+                        || !mergingPreset.doMerge) {
                         this.healthIndicator = mergingPreset;
-                    else
+                    } else {
                         this.healthIndicator.mergeIndicator(mergingPreset.cloneItem());
+                    }
 
                     skipSettingValue = true;
                 } else if (f.getName().equals("allMobMultipliers")) {
                     final FineTuningAttributes mergingPreset = (FineTuningAttributes) presetValue;
-                    if (this.allMobMultipliers == null)
+                    if (this.allMobMultipliers == null) {
                         this.allMobMultipliers = mergingPreset.cloneItem();
-                    else
+                    } else {
                         this.allMobMultipliers.mergeAttributes(mergingPreset);
+                    }
                     skipSettingValue = true;
-                } else if (f.getName().equals("specificMobMultipliers")){
+                } else if (f.getName().equals("specificMobMultipliers")) {
                     final Map<String, FineTuningAttributes> mergingPreset = (Map<String, FineTuningAttributes>) presetValue;
-                    if (this.specificMobMultipliers == null)
+                    if (this.specificMobMultipliers == null) {
                         this.specificMobMultipliers = new TreeMap<>();
+                    }
 
-                    for (final Map.Entry<String, FineTuningAttributes> entityType : mergingPreset.entrySet())
-                        this.specificMobMultipliers.put(entityType.getKey(), entityType.getValue().cloneItem());
+                    for (final Map.Entry<String, FineTuningAttributes> entityType : mergingPreset.entrySet()) {
+                        this.specificMobMultipliers.put(entityType.getKey(),
+                            entityType.getValue().cloneItem());
+                    }
 
                     skipSettingValue = true;
-                } else if (f.getName().equals("customDrop_DropTableIds")){
+                } else if (f.getName().equals("customDrop_DropTableIds")) {
                     final List<String> mergingPreset = (List<String>) presetValue;
                     this.customDrop_DropTableIds.addAll(mergingPreset);
 
                     skipSettingValue = true;
-                }
-                else if (presetValue instanceof MergeableStringList && this.getClass().getDeclaredField(f.getName()).get(this) != null){
+                } else if (presetValue instanceof MergeableStringList
+                    && this.getClass().getDeclaredField(f.getName()).get(this) != null) {
                     final MergeableStringList mergingPreset = (MergeableStringList) presetValue;
                     if (mergingPreset.doMerge && !mergingPreset.isEmpty()) {
-                        final MergeableStringList current = (MergeableStringList) this.getClass().getDeclaredField(f.getName()).get(this);
+                        final MergeableStringList current = (MergeableStringList) this.getClass()
+                            .getDeclaredField(f.getName()).get(this);
                         current.items.addAll(mergingPreset.items);
                         skipSettingValue = true;
                     }
                 }
 
-                if (presetValue instanceof CachedModalList){
+                if (presetValue instanceof CachedModalList) {
                     final CachedModalList<?> cachedModalList_preset = (CachedModalList<?>) presetValue;
-                    final CachedModalList<?> thisCachedModalList = (CachedModalList<?>) this.getClass().getDeclaredField(f.getName()).get(this);
+                    final CachedModalList<?> thisCachedModalList = (CachedModalList<?>) this.getClass()
+                        .getDeclaredField(f.getName()).get(this);
 
-                    if (thisCachedModalList != null && cachedModalList_preset.doMerge)
+                    if (thisCachedModalList != null && cachedModalList_preset.doMerge) {
                         thisCachedModalList.mergeCachedModal(cachedModalList_preset);
-                    else
-                        this.getClass().getDeclaredField(f.getName()).set(this, cachedModalList_preset.clone());
+                    } else {
+                        this.getClass().getDeclaredField(f.getName())
+                            .set(this, cachedModalList_preset.clone());
+                    }
 
                     skipSettingValue = true;
                 }
                 if (presetValue instanceof LevellingStrategy) {
-                    if (this.levellingStrategy != null && this.levellingStrategy.getClass().equals(presetValue.getClass())) {
+                    if (this.levellingStrategy != null && this.levellingStrategy.getClass()
+                        .equals(presetValue.getClass())) {
                         this.levellingStrategy.mergeRule((LevellingStrategy) presetValue);
-                    } else
+                    } else {
                         this.levellingStrategy = (LevellingStrategy) presetValue;
+                    }
                     skipSettingValue = true;
                 }
 
                 if (presetValue instanceof TieredColoringInfo) {
-                    this.getClass().getDeclaredField(f.getName()).set(this, ((TieredColoringInfo) presetValue).cloneItem());
+                    this.getClass().getDeclaredField(f.getName())
+                        .set(this, ((TieredColoringInfo) presetValue).cloneItem());
                     skipSettingValue = true;
                 }
 
-                if (presetValue == MobCustomNameStatus.NOT_SPECIFIED) continue;
-                if (presetValue == MobTamedStatus.NOT_SPECIFIED) continue;
+                if (presetValue == MobCustomNameStatus.NOT_SPECIFIED) {
+                    continue;
+                }
+                if (presetValue == MobTamedStatus.NOT_SPECIFIED) {
+                    continue;
+                }
 
                 // skip default values such as false, 0, 0.0
-                if (presetValue instanceof Boolean && !((Boolean) presetValue)) continue;
-                if (presetValue instanceof Integer && ((Integer) presetValue == 0)) continue;
-                if (presetValue instanceof Double && ((Double) presetValue == 0.0)) continue;
+                if (presetValue instanceof Boolean && !((Boolean) presetValue)) {
+                    continue;
+                }
+                if (presetValue instanceof Integer && ((Integer) presetValue == 0)) {
+                    continue;
+                }
+                if (presetValue instanceof Double && ((Double) presetValue == 0.0)) {
+                    continue;
+                }
 
-                if (!skipSettingValue)
+                if (!skipSettingValue) {
                     this.getClass().getDeclaredField(f.getName()).set(this, presetValue);
+                }
                 this.ruleSourceNames.put(f.getName(), preset.ruleName);
             }
         } catch (final IllegalAccessException | NoSuchFieldException e) {
@@ -227,11 +263,12 @@ public class RuleInfo {
     }
 
     @NotNull
-    public String formatRulesVisually(){
+    public String formatRulesVisually() {
         return formatRulesVisually(null);
     }
+
     @NotNull
-    public String formatRulesVisually(final List<String> excludedKeys){
+    public String formatRulesVisually(final List<String> excludedKeys) {
         final SortedMap<String, String> values = new TreeMap<>();
         final StringBuilder sb = new StringBuilder();
 
@@ -242,24 +279,48 @@ public class RuleInfo {
         }
 
         try {
-            for(final Field f : this.getClass().getDeclaredFields()) {
-                if (Modifier.isPrivate(f.getModifiers())) continue;
-                if (f.get(this) == null) continue;
-                if (f.getName().equals("ruleSourceNames")) continue;
-                if (excludedKeys != null && excludedKeys.contains(f.getName())) continue;
+            for (final Field f : this.getClass().getDeclaredFields()) {
+                if (Modifier.isPrivate(f.getModifiers())) {
+                    continue;
+                }
+                if (f.get(this) == null) {
+                    continue;
+                }
+                if (f.getName().equals("ruleSourceNames")) {
+                    continue;
+                }
+                if (excludedKeys != null && excludedKeys.contains(f.getName())) {
+                    continue;
+                }
                 final Object value = f.get(this);
-                if (value.toString().equalsIgnoreCase("NOT_SPECIFIED")) continue;
-                if (value.toString().equalsIgnoreCase("{}")) continue;
-                if (value.toString().equalsIgnoreCase("[]")) continue;
+                if (value.toString().equalsIgnoreCase("NOT_SPECIFIED")) {
+                    continue;
+                }
+                if (value.toString().equalsIgnoreCase("{}")) {
+                    continue;
+                }
+                if (value.toString().equalsIgnoreCase("[]")) {
+                    continue;
+                }
                 if (value.toString().equalsIgnoreCase("0") &&
-                        f.getName().equals("rulePriority")) continue;
-                if (value.toString().equalsIgnoreCase("0.0")) continue;
+                    f.getName().equals("rulePriority")) {
+                    continue;
+                }
+                if (value.toString().equalsIgnoreCase("0.0")) {
+                    continue;
+                }
                 if (value.toString().equalsIgnoreCase("false") &&
-                        !f.getName().equals("ruleIsEnabled")) continue;
-                if (value.toString().equalsIgnoreCase("NONE")) continue;
+                    !f.getName().equals("ruleIsEnabled")) {
+                    continue;
+                }
+                if (value.toString().equalsIgnoreCase("NONE")) {
+                    continue;
+                }
                 if (value instanceof CachedModalList<?>) {
                     final CachedModalList<?> cml = (CachedModalList<?>) value;
-                    if (cml.isEmpty() && !cml.allowAll && !cml.excludeAll) continue;
+                    if (cml.isEmpty() && !cml.allowAll && !cml.excludeAll) {
+                        continue;
+                    }
                 }
                 final String showValue = "&b" + f.getName() + "&r, value: &b" + value + "&r";
                 values.put(f.getName(), showValue);
@@ -268,7 +329,7 @@ public class RuleInfo {
             e.printStackTrace();
         }
 
-        for (final String s : values.values()){
+        for (final String s : values.values()) {
             sb.append(MessageUtils.colorizeAll(s));
             sb.append("\n");
         }
@@ -277,9 +338,10 @@ public class RuleInfo {
         return sb.toString();
     }
 
-    public String toString(){
-        if (this.ruleName == null || this.ruleName.isEmpty())
+    public String toString() {
+        if (this.ruleName == null || this.ruleName.isEmpty()) {
             return super.toString();
+        }
 
         return this.ruleName;
     }

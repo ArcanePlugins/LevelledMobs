@@ -77,7 +77,7 @@ biome-groups:
 # +-------------------------------------------------------------------------------------------LM3
 presets:
   spawn_Levelling:
-#   This Strategy Preset controls the Spawn-Distance-Levelling system.
+    #   This Strategy Preset controls the Spawn-Distance-Levelling system.
     name: 'LVLling Strategy - Distance-From-Spawn'
     strategies:
       distance-from-spawn:
@@ -88,7 +88,7 @@ presets:
           z: default
 
   blended_Levelling:
-#   This Strategy Preset controls the Blended-Levelling sub-system to Spawn-Distance-Levelling.
+    #   This Strategy Preset controls the Blended-Levelling sub-system to Spawn-Distance-Levelling.
     name: 'LVLling Strategy - Blended-Levelling'
     strategies:
       distance-from-spawn:
@@ -100,7 +100,7 @@ presets:
           scale-downward: true
 
   random_Levelling:
-#   This Strategy Preset controls the Random-Levelling system.
+    #   This Strategy Preset controls the Random-Levelling system.
     name: 'LVLling Strategy - Random'
     strategies:
       random: true
@@ -129,7 +129,7 @@ presets:
         21-25: 1
 
   weighted_random_advanced:
-#   This Strategy Preset controls Weighted Random Bias.
+    #   This Strategy Preset controls Weighted Random Bias.
     name: 'LVLling Strategy - Weighted Random Bias ADVANCED Challenge'
     strategies:
       weighted-random:
@@ -138,9 +138,9 @@ presets:
         20-29: 3
         30-39: 2
         40-50: 1
-        
+
   weighted_random_extreme:
-#   This Strategy Preset controls Weighted Random Bias.
+    #   This Strategy Preset controls Weighted Random Bias.
     name: 'LVLling Strategy - Weighted Random Bias EXTREME Challenge'
     strategies:
       weighted-random:
@@ -151,7 +151,7 @@ presets:
         80-100: 1
 
   player_Levelling:
-#   This Strategy Preset controls the player-stat based levelling system.
+    #   This Strategy Preset controls the player-stat based levelling system.
     name: 'LVLling Strategy - Player Based AVERAGE CHALLENGE'
     strategies:
       player-levelling:
@@ -167,13 +167,13 @@ presets:
         variable: '%level%'
 
   apply_LevellingVariance:
-#   This Strategy Preset controls the random level variance applied.
+    #   This Strategy Preset controls the random level variance applied.
     name: 'LVLling Strategy - Apply Variance'
     strategies:
       max-random-variance: 2
 
   ycoord_Levelling:
-#   This Strategy Preset controls Y-Coordinate-Levelling.
+    #   This Strategy Preset controls Y-Coordinate-Levelling.
     name: 'LVLling Strategy - Y-LVLling'
     strategies:
       y-coordinate:
@@ -182,12 +182,12 @@ presets:
         period: 0
 
   allowed_worlds:
-#   This controls the allowed worlds to apply levels too.
+    #   This controls the allowed worlds to apply levels too.
     name: 'Excluded Worldlist'
     conditions:
       worlds:
-#        allowed-list: ['*']
-        excluded-list: ['world_the_end']
+        #        allowed-list: ['*']
+        excluded-list: [ 'world_the_end' ]
 
   basic_challenge:
     name: 'Basic-Challenge Multipliers'
@@ -226,7 +226,7 @@ presets:
         creeper-blast-damage: 0.75
         item-drop: 3
         xp-drop: 5
-#       Special Multipliers (0.0 Min - 1.0 Max)
+        #       Special Multipliers (0.0 Min - 1.0 Max)
         armor-bonus: 0.2
         armor-toughness: 0.15
 
@@ -256,7 +256,7 @@ presets:
         follow-range: 0.25
         item-drop: 3
         xp-drop: 5
-#       Special Multipliers (0.0 Min - 1.0 Max)
+        #       Special Multipliers (0.0 Min - 1.0 Max)
         armor-bonus: 0.3
         armor-toughness: 0.3
         attack-knockback: 0.5
@@ -288,7 +288,7 @@ presets:
         follow-range: 0.5
         item-drop: 3
         xp-drop: 5
-#       Special Multipliers (0.0 Min - 1.0 Max)
+        #       Special Multipliers (0.0 Min - 1.0 Max)
         armor-bonus: 0.5
         armor-toughness: 0.5
         attack-knockback: 0.5
@@ -308,7 +308,7 @@ presets:
         merge: true
 
   nametag_using_indicator:
-#   This controls the nametag, where the health is displayed using %health-indicator%
+    #   This controls the nametag, where the health is displayed using %health-indicator%
     name: 'Nametag - Health Indicator'
     apply-settings:
       nametag: '&8&l༺ %tiered%Lvl %mob-lvl%&8 | &f%displayname%&8 | &f%entity-health-rounded% %tiered%%heart_symbol% &r%health-indicator% &8&l༻'
@@ -326,7 +326,7 @@ presets:
         merge: true
 
   nametag_using_numbers:
-#   This controls the nametag, where the health is displayed using %entity-health-rounded%
+    #   This controls the nametag, where the health is displayed using %entity-health-rounded%
     name: 'Nametag - Health Numerical'
     apply-settings:
       nametag: '&8&l༺ %tiered%Lvl %mob-lvl%&8 | &f%displayname%&8 | &f%entity-health-rounded%&8/&f%entity-max-health-rounded% %tiered%%heart_symbol% &8&l༻'
@@ -348,25 +348,25 @@ default-rule:
   use-preset:
     - allowed_worlds
     - nametag_using_numbers
-#    - nametag_using_indicator
-#    - basic_challenge
+    #    - nametag_using_indicator
+    #    - basic_challenge
     - average_challenge
-#    - advanced_challenge
-#    - extreme_challenge
-#    - apply_LevellingVariance
-#    - weighted_random_basic
+    #    - advanced_challenge
+    #    - extreme_challenge
+    #    - apply_LevellingVariance
+    #    - weighted_random_basic
     - weighted_random_average
-#    - weighted_random_advanced
-#    - weighted_random_extreme
-#    - spawn_Levelling
-#    - blended_Levelling
-#    - ycoord_Levelling
-#    - random_Levelling
-#    - player_Levelling
+  #    - weighted_random_advanced
+  #    - weighted_random_extreme
+  #    - spawn_Levelling
+  #    - blended_Levelling
+  #    - ycoord_Levelling
+  #    - random_Levelling
+  #    - player_Levelling
 
   conditions:
     allowed-spawn-reasons:
-      excluded-list: ['SPAWNER']
+      excluded-list: [ 'SPAWNER' ]
 
     level-plugins:
       DANGEROUS_CAVES: false
@@ -382,10 +382,10 @@ default-rule:
       ELITE_BOSSES: false
       BLOOD_NIGHT: false
 
-#    apply-above-y: 64
-#    apply-below-y: 59
-#    min-distance-from-spawn: 1000
-#    max-distance-from-spawn: 5000
+    #    apply-above-y: 64
+    #    apply-below-y: 59
+    #    min-distance-from-spawn: 1000
+    #    max-distance-from-spawn: 5000
 
     mob-customname-status: EITHER
     mob-tamed-status: EITHER
@@ -394,15 +394,15 @@ default-rule:
     sunlight-intensity: 5
 
     entity-name-override:
-#      HUSK: ['Husk', 'Desert Zombie', 'Lost Soul', 'Dessicated Corpse']
-#      SKELETON: ['Bones', 'Billy Bones', 'Verta Brae']
-#      PILLAGER: ['Raider', 'Barbarian']
+    #      HUSK: ['Husk', 'Desert Zombie', 'Lost Soul', 'Dessicated Corpse']
+    #      SKELETON: ['Bones', 'Billy Bones', 'Verta Brae']
+    #      PILLAGER: ['Raider', 'Barbarian']
 
     creature-death-nametag: '%tiered%Lvl %mob-lvl%&8 | &f%displayname%'
     nametag-placeholder-levelled: ''
     nametag-placeholder-unlevelled: ''
     nametag-visible-time: 1s
-    nametag-visibility-method: ['TARGETED', 'ATTACKED', 'TRACKING']
+    nametag-visibility-method: [ 'TARGETED', 'ATTACKED', 'TRACKING' ]
 
     baby-mobs-inherit-adult-setting: true
     level-inheritance: true
@@ -436,8 +436,8 @@ custom-rules:
     use-preset: allowed_worlds
     conditions:
       entities:
-        allowed-groups: ['all_passive_mobs']
-        allowed-list: ['BABY_', 'ENDER_DRAGON', 'WITHER', 'VILLAGER', 'ZOMBIE_VILLAGER', 'WANDERING_TRADER', 'PHANTOM', 'BAT', 'RAVAGER', 'WARDEN']
+        allowed-groups: [ 'all_passive_mobs' ]
+        allowed-list: [ 'BABY_', 'ENDER_DRAGON', 'WITHER', 'VILLAGER', 'ZOMBIE_VILLAGER', 'WANDERING_TRADER', 'PHANTOM', 'BAT', 'RAVAGER', 'WARDEN' ]
     apply-settings:
       maxLevel: 0
 
@@ -446,7 +446,7 @@ custom-rules:
     use-preset: apply_LevellingVariance
     conditions:
       worlds:
-        allowed-list: ['world_nether']
+        allowed-list: [ 'world_nether' ]
     strategies:
       y-coordinate:
         start: 100
@@ -474,9 +474,9 @@ custom-rules:
     name: 'CR - Custom Zombie Piglin Levelling'
     conditions:
       worlds:
-        allowed-list: ['world_nether']
+        allowed-list: [ 'world_nether' ]
       entities:
-        allowed-list: ['ZOMBIFIED_PIGLIN']
+        allowed-list: [ 'ZOMBIFIED_PIGLIN' ]
     strategies:
       random: true
     apply-settings:

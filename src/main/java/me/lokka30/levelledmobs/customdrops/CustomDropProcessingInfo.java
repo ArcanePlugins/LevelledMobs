@@ -4,30 +4,28 @@
 
 package me.lokka30.levelledmobs.customdrops;
 
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
-import me.lokka30.levelledmobs.util.Utils;
 import me.lokka30.levelledmobs.rules.CustomDropsRuleSet;
+import me.lokka30.levelledmobs.util.Utils;
 import me.lokka30.microlib.messaging.MessageUtils;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
-
 /**
- * Used to store information when a custom drop item
- * is being requested either during mob spawn in for
- * equipped items or after mob death to get the items
- * the mob will potentially drop
+ * Used to store information when a custom drop item is being requested either during mob spawn in
+ * for equipped items or after mob death to get the items the mob will potentially drop
  *
  * @author stumper66
  * @since 2.4.1
  */
 class CustomDropProcessingInfo {
+
     CustomDropProcessingInfo() {
         this.groupIDsDroppedAlready = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
         this.allDropInstances = new LinkedList<>();
@@ -44,7 +42,7 @@ class CustomDropProcessingInfo {
     boolean equippedOnly;
     boolean deathByFire;
     boolean wasKilledByPlayer;
-    CauseOfDeathEnum deathCause;
+    DeathCause deathCause;
     boolean doNotMultiplyDrops;
     boolean hasOverride;
     boolean hasCustomDropId;
@@ -60,18 +58,22 @@ class CustomDropProcessingInfo {
     private StringBuilder debugMessages;
     public final List<Map.Entry<ItemStack, CustomDropItem>> stackToItem;
 
-    void addDebugMessage(final String message){
-        if (this.debugMessages == null)
+    void addDebugMessage(final String message) {
+        if (this.debugMessages == null) {
             this.debugMessages = new StringBuilder();
+        }
 
-        if (this.debugMessages.length() > 0)
+        if (this.debugMessages.length() > 0) {
             this.debugMessages.append(System.lineSeparator());
+        }
 
         this.debugMessages.append(message);
     }
 
-    void writeAnyDebugMessages(){
-        if (this.debugMessages == null) return;
+    void writeAnyDebugMessages() {
+        if (this.debugMessages == null) {
+            return;
+        }
 
         Utils.logger.info(MessageUtils.colorizeAll(this.debugMessages.toString()));
         this.debugMessages.setLength(0);

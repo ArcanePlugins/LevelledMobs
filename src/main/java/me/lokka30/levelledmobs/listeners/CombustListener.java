@@ -4,6 +4,8 @@
 
 package me.lokka30.levelledmobs.listeners;
 
+import java.util.Arrays;
+import java.util.List;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
 import org.bukkit.Material;
@@ -18,19 +20,15 @@ import org.bukkit.event.entity.EntityCombustByEntityEvent;
 import org.bukkit.event.entity.EntityCombustEvent;
 import org.bukkit.inventory.EntityEquipment;
 
-import java.util.Arrays;
-import java.util.List;
-
 /**
- * Listens for when an entity combusts for the purpose of increasing
- * sunlight damage if desired
+ * Listens for when an entity combusts for the purpose of increasing sunlight damage if desired
  *
  * @author stumper66
  * @since 2.4.0
  */
 public class CombustListener implements Listener {
 
-    public CombustListener(final LevelledMobs main){
+    public CombustListener(final LevelledMobs main) {
         this.main = main;
     }
 
@@ -38,34 +36,45 @@ public class CombustListener implements Listener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void onCombust(final EntityCombustEvent event) {
-        if (event instanceof EntityCombustByBlockEvent || event instanceof EntityCombustByEntityEvent) return;
+        if (event instanceof EntityCombustByBlockEvent
+            || event instanceof EntityCombustByEntityEvent) {
+            return;
+        }
 
         if (event.getEntity().getWorld().getEnvironment() == World.Environment.NETHER ||
-                event.getEntity().getWorld().getEnvironment() == World.Environment.THE_END)
+            event.getEntity().getWorld().getEnvironment() == World.Environment.THE_END) {
             return;
+        }
 
         final List<EntityType> entityTypesCanBurnInSunlight2 = Arrays.asList(
-                EntityType.SKELETON, EntityType.ZOMBIE, EntityType.ZOMBIE_VILLAGER, EntityType.STRAY, EntityType.DROWNED, EntityType.PHANTOM
+            EntityType.SKELETON, EntityType.ZOMBIE, EntityType.ZOMBIE_VILLAGER, EntityType.STRAY,
+            EntityType.DROWNED, EntityType.PHANTOM
         );
-        if (!entityTypesCanBurnInSunlight2.contains(event.getEntity().getType()))
+        if (!entityTypesCanBurnInSunlight2.contains(event.getEntity().getType())) {
             return;
+        }
 
         if (event.getEntity() instanceof LivingEntity) {
             final EntityEquipment equipment = ((LivingEntity) event.getEntity()).getEquipment();
 
-            if (equipment != null && equipment.getHelmet() != null && equipment.getHelmet().getType() != Material.AIR)
+            if (equipment != null && equipment.getHelmet() != null
+                && equipment.getHelmet().getType() != Material.AIR) {
                 return;
+            }
         }
 
-        final LivingEntityWrapper lmEntity = LivingEntityWrapper.getInstance((LivingEntity) event.getEntity(), main);
-        final double multiplier = main.rulesManager.getRule_SunlightBurnIntensity(lmEntity);
+        final LivingEntityWrapper lmEntity = LivingEntityWrapper.getInstance(
+            (LivingEntity) event.getEntity(), main);
+        final double multiplier = main.rulesManager.getRuleSunlightBurnIntensity(lmEntity);
         if (multiplier == 0.0) {
             lmEntity.free();
             return;
         }
 
         double newHealth = lmEntity.getLivingEntity().getHealth() - multiplier;
-        if (newHealth < 0.0) newHealth = 0.0;
+        if (newHealth < 0.0) {
+            newHealth = 0.0;
+        }
 
         if (lmEntity.getLivingEntity().getHealth() <= 0.0) {
             lmEntity.free();
@@ -73,8 +82,9 @@ public class CombustListener implements Listener {
         }
         lmEntity.getLivingEntity().setHealth(newHealth);
 
-        if (lmEntity.isLevelled())
+        if (lmEntity.isLevelled()) {
             main.levelManager.updateNametag(lmEntity);
+        }
 
         lmEntity.free();
     }

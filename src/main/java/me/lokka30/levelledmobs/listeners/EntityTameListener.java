@@ -4,21 +4,20 @@
 
 package me.lokka30.levelledmobs.listeners;
 
+import java.util.Collections;
+import java.util.HashSet;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.misc.AdditionalLevelInformation;
 import me.lokka30.levelledmobs.misc.DebugType;
 import me.lokka30.levelledmobs.misc.LevellableState;
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
-import me.lokka30.levelledmobs.util.Utils;
 import me.lokka30.levelledmobs.rules.MobTamedStatus;
+import me.lokka30.levelledmobs.util.Utils;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityTameEvent;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.Collections;
-import java.util.HashSet;
 
 /**
  * Listens when an entity is tamed so various rules can be applied
@@ -36,16 +35,17 @@ public class EntityTameListener implements Listener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     private void onEntityTameEvent(@NotNull final EntityTameEvent event) {
-        final LivingEntityWrapper lmEntity = LivingEntityWrapper.getInstance(event.getEntity(), main);
+        final LivingEntityWrapper lmEntity = LivingEntityWrapper.getInstance(event.getEntity(),
+            main);
         final LevellableState levellableState = main.levelInterface.getLevellableState(lmEntity);
 
-        if (levellableState != LevellableState.ALLOWED){
+        if (levellableState != LevellableState.ALLOWED) {
             Utils.debugLog(main, DebugType.ENTITY_TAME, "Levelable state was " + levellableState);
             lmEntity.free();
             return;
         }
 
-        if (main.rulesManager.getRule_MobTamedStatus(lmEntity) == MobTamedStatus.NOT_TAMED) {
+        if (main.rulesManager.getRuleMobTamedStatus(lmEntity) == MobTamedStatus.NOT_TAMED) {
             Utils.debugLog(main, DebugType.ENTITY_TAME, "no-level-conditions.tamed = &btrue");
 
             // if mob was levelled then remove it
@@ -58,8 +58,9 @@ public class EntityTameListener implements Listener {
 
         Utils.debugLog(main, DebugType.ENTITY_TAME, "Applying level to tamed mob");
         int level = -1;
-        if (lmEntity.isLevelled())
+        if (lmEntity.isLevelled()) {
             level = lmEntity.getMobLevel();
+        }
 
         if (level == -1) {
             level = main.levelInterface.generateLevel(lmEntity);
@@ -67,11 +68,11 @@ public class EntityTameListener implements Listener {
         }
 
         main.levelInterface.applyLevelToMob(
-                lmEntity,
-                level,
-                false,
-                false,
-                new HashSet<>(Collections.singletonList(AdditionalLevelInformation.FROM_TAME_LISTENER))
+            lmEntity,
+            level,
+            false,
+            false,
+            new HashSet<>(Collections.singletonList(AdditionalLevelInformation.FROM_TAME_LISTENER))
         );
         lmEntity.free();
     }

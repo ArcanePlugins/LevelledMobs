@@ -14,8 +14,7 @@ import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Listens for when an entity regains health so the nametag can
- * be updated accordingly
+ * Listens for when an entity regains health so the nametag can be updated accordingly
  *
  * @author konsolas, lokka30
  * @since 2.4.0
@@ -31,14 +30,19 @@ public class EntityRegainHealthListener implements Listener {
     // When the mob regains health, try to update their nametag.
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void onEntityRegainHealth(@NotNull final EntityRegainHealthEvent event) {
-        if (!(event.getEntity() instanceof LivingEntity)) return;
+        if (!(event.getEntity() instanceof LivingEntity)) {
+            return;
+        }
 
         // Make sure the mob is levelled
-        if (!main.levelManager.isLevelled((LivingEntity) event.getEntity())) return;
+        if (!main.levelManager.isLevelled((LivingEntity) event.getEntity())) {
+            return;
+        }
 
-        final LivingEntityWrapper lmEntity = LivingEntityWrapper.getInstance((LivingEntity) event.getEntity(), main);
+        final LivingEntityWrapper lmEntity = LivingEntityWrapper.getInstance(
+            (LivingEntity) event.getEntity(), main);
 
-        main.levelManager.updateNametag_WithDelay(lmEntity);
+        main.levelManager.updateNametagWithDelay(lmEntity);
         lmEntity.free();
     }
 

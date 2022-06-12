@@ -4,12 +4,11 @@
 
 package me.lokka30.levelledmobs.customdrops;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Holds any custom commands as parsed from customdrops.yml
@@ -19,7 +18,7 @@ import java.util.TreeMap;
  */
 public class CustomCommand extends CustomDropBase {
 
-    CustomCommand(@NotNull final CustomDropsDefaults defaults){
+    CustomCommand(@NotNull final CustomDropsDefaults defaults) {
         super(defaults);
         this.rangedEntries = new TreeMap<>();
         this.commands = new LinkedList<>();

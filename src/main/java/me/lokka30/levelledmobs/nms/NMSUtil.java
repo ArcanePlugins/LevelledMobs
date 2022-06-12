@@ -12,5 +12,7 @@ import org.jetbrains.annotations.Nullable;
  * @since 3.6.0
  */
 public interface NMSUtil {
-    void sendNametag(final @NotNull LivingEntity livingEntity, @Nullable String nametag, @NotNull Player player, final boolean doAlwaysVisible);
+
+    void sendNametag(final @NotNull LivingEntity livingEntity, @Nullable String nametag,
+        @NotNull Player player, final boolean doAlwaysVisible);
 }
