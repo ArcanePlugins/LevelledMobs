@@ -77,8 +77,14 @@ public class NametagTimerChecker {
                         continue;
                     }
 
+                    final Instant startInclusive = coolDown.getValue().get(livingEntity);
+                    if (startInclusive == null){
+                        entitiesToRemove.add(livingEntity);
+                        continue;
+                    }
+
                     final Duration timeDuration = Duration.between(
-                        coolDown.getValue().get(livingEntity), Instant.now());
+                        startInclusive, Instant.now());
                     final long cooldownTime = cooldownTimes.get(livingEntity);
                     if (timeDuration.toMillis() >= cooldownTime) {
                         // if using LoS targeting check if it's still within LoS and don't remove if so.
