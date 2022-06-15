@@ -24,11 +24,12 @@ public enum DeathCause {
     MELTING,
     POISON,
     PROJECTILE,
+    SONIC_BOOM,
     STARVATION,
     SUFFOCATION,
     SUICIDE,
     THORNS,
     VOID,
     WITHER,
-    PLAYER_CAUSED
+    PLAYER_CAUSED,
 }
