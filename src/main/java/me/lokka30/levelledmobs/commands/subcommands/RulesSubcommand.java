@@ -575,7 +575,7 @@ public class RulesSubcommand extends MessagesBase implements Subcommand {
                 "show_effective", "show_rule", "show_temp_disabled");
         } else if (args.length >= 3) {
             if ("reset".equalsIgnoreCase(args[1]) && args.length == 3) {
-                suggestions.addAll(List.of("basic", "average", "enhanced", "extreme"));
+                suggestions.addAll(List.of("basic", "average", "advanced", "extreme"));
             } else if ("show_all".equalsIgnoreCase(args[1])) {
                 boolean showOnConsole = false;
                 for (int i = 2; i < args.length; i++) {

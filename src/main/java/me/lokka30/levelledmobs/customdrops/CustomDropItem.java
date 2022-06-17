@@ -5,6 +5,7 @@
 package me.lokka30.levelledmobs.customdrops;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import me.lokka30.levelledmobs.util.Utils;
 import org.bukkit.Material;
@@ -40,6 +41,7 @@ public class CustomDropItem extends CustomDropBase {
     public String externalType;
     public String externalItemId;
     public Double externalAmount;
+    public Map<String, Object> externalExtras;
 
     CustomDropItem(@NotNull final CustomDropsDefaults defaults) {
         super(defaults);

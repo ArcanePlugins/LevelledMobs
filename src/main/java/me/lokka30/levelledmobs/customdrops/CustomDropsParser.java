@@ -399,9 +399,9 @@ public class CustomDropsParser {
                         this.defaults.externalType);
                     item.externalAmount = ymlHelper.getDouble2(itemInfoConfiguration,
                         "external-amount", this.defaults.externalAmount);
+                    item.externalExtras = parseExternalExtras(itemInfoConfiguration);
 
-                    if (item.isExternalItem && ExternalCompatibilityManager.hasLMItemsInstalled()) {
-
+                    if (item.isExternalItem && main.companion.externalCompatibilityManager.doesLMIMeetVersionRequirement()) {
                         if (!handler.lmItemsParser.getExternalItem(item)) {
                             continue;
                         }
@@ -413,6 +413,23 @@ public class CustomDropsParser {
                 parseCustomDropsAttributes(dropBase, itemInfoConfiguration, dropInstance);
             }
         } // next item
+    }
+
+    private @Nullable Map<String, Object> parseExternalExtras(final @NotNull ConfigurationSection cs){
+        final ConfigurationSection cs2 = ymlHelper.objTo_CS(cs, "extras");
+        if (cs2 == null) return null;
+
+        final Map<String, Object> results = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+
+        for (final String name : cs2.getKeys(false)) {
+            final Object value = cs2.get(name);
+            if (value != null) results.put(name, value);
+        }
+
+        if (results.isEmpty())
+            return null;
+        else
+            return results;
     }
 
     private void parseCustomDropsAttributes(@NotNull final CustomDropBase dropBase,
@@ -828,14 +845,21 @@ public class CustomDropsParser {
 
         if (materialName.contains(":")) {
             // this item is referencing a custom item from an external plugin, we will call LM_Items to get it
-            if (ExternalCompatibilityManager.hasLMItemsInstalled()) {
+            if (main.companion.externalCompatibilityManager.doesLMIMeetVersionRequirement()) {
                 if (!handler.lmItemsParser.parseExternalItemAttributes(materialName, item)) {
                     return false;
                 }
             } else {
-                Utils.logger.warning(String.format(
-                    "Custom drop '%s' requires plugin LM_Items but it is not installed",
-                    materialName));
+                if (ExternalCompatibilityManager.hasLMItemsInstalled()){
+                    Utils.logger.warning(String.format(
+                            "Custom drop '%s' requires plugin LM_Items but it is an old version",
+                            materialName));
+                }
+                else {
+                    Utils.logger.warning(String.format(
+                            "Custom drop '%s' requires plugin LM_Items but it is not installed",
+                            materialName));
+                }
                 return false;
             }
         } else {
@@ -1069,6 +1093,10 @@ public class CustomDropsParser {
             if (item.externalAmount != null) {
                 sb.append(", ex-amt: ");
                 sb.append(item.externalAmount);
+            }
+            if (item.externalExtras != null){
+                sb.append(", ex-xtras: ");
+                sb.append(item.externalExtras.size());
             }
         }
 

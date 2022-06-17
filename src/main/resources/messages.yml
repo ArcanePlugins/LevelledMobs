@@ -163,7 +163,7 @@ command:
         - '&8 &m->&b /%label% spawner copy'
         - '&8 &m->&b /%label% spawner info'
         - '&7&o Sample Spawner'
-        - '&7/%label% spawner create &b/minlevel&7 1 &b/maxlevel&7 10 &b/name&7 "My customized LM spawner" &b/customDropsId&7 Id1'
+        - '&7/%label% spawner create &b/minlevel&7 1 &b/maxlevel&7 10 &b/name&7 "My customized LM spawner" &b/customDropId&7 Id1'
       no-value:
         - '%prefix% No value was specified for: &b%keyname%&7'
       no-player:
@@ -217,7 +217,7 @@ command:
         - '%prefix% egg command syntax:'
         - '&8 &m->&b /%label% egg /minlevel <level> /maxlevel <level> /entity <entity type>'
         - '&7&o Sample Spawn Egg'
-        - '&7/%label% egg &b/minlevel&7 1 &b/maxlevel&7 10 &b/name&7 "My customized LM spawn egg" &b/customDropsId&7 Id1'
+        - '&7/%label% egg &b/minlevel&7 1 &b/maxlevel&7 10 &b/name&7 "My customized LM spawn egg" &b/customDropId&7 Id1'
       no-paper:
         - '%prefix% This feature is only available on servers running Paper or forks of Paper'
       no-value:
