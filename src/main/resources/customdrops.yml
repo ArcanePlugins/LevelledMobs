@@ -7,22 +7,18 @@
 #
 # --------------------------------------------------------------------------------------------LM3
 # +                                      ++                                                  +LM3
-# +  Main Developers                     ++  Need support documentation?                     +LM3
+# +  Main Developers                     ++  Documentation (on our Wiki)                     +LM3
 # +    lokka30                           ++    https://github.com/lokka30/LevelledMobs/wiki  +LM3
 # +      Author and developer            ++                                                  +LM3
-# +      https://ko-fi.com/lokka30       ++  ArcanePlugins Support Discord                   +LM3
-# +                                      ++    https://discord.gg/RQ8M4A5                    +LM3
-# +                                      ++                                                  +LM3
-# +    stumper66                         ++  Special thanks:                                 +LM3
-# +      Developer since v2              ++    ArcanePlugins developers and testers!         +LM3
-# +      https://ko-fi.com/penalbuffalo  ++    Donators, patrons, and other supporters!      +LM3
-# +                                      ++    SpigotMC, PaperMC, ProtocolLib, NBT-API,      +LM3
-# +                                      ++    PlaceholderAPI, and bStats!                   +LM3
-# +    UltimaOath                        ++                                                  +LM3
-# +      Docs and configs since v2       ++  Other Contributors:                             +LM3
-# +                                      ++    Eyrian, iCodinqs, deiphiz, CoolBoy, Esophose, +LM3
-# +                                      ++    7smile7, Hugo5551, konsolas, Shevchik,        +LM3
-# +                                      ++    limzikiki, and Zombie_Striker                 +LM3
+# +      https://ko-fi.com/lokka30       ++  Support/Discussion (on our Discord)             +LM3
+# +                                      ++    Join our Discord for free, quality support.   +LM3
+# +    PenalBuffalo (aka. stumper66)     ++    If you are unable to, PM @lokka30 on SpigotMC +LM3
+# +      LevelledMobs 3 maintainer       ++    https://discord.gg/RQ8M4A5                    +LM3
+# +      https://ko-fi.com/penalbuffalo  ++                                                  +LM3
+# +                                      ++  Welcome to LevelledMobs 3! Please read the      +LM3
+# +    UltimaOath (aka. Oathkeeper)      ++  relevant documentation prior to attempting any  +LM3
+# +      Docs and configs since v2       ++  changes to this file.                           +LM3
+# +      https://ko-fi.com/ultimaoath    ++                                                  +LM3
 # +                                      ++                                                  +LM3
 # --------------------------------------------------------------------------------------------LM3
 #                        _____         _             ____
@@ -90,13 +86,16 @@ all_ground_mobs:
   -
 
 all_aquatic_mobs:
-  - # +-------------------------------------------------------------------------------------------LM3
-    # +                                                                                          +LM3
-    # +   Section 03 - EntityType Drops                                                          +LM3
-    # +                                                                                          +LM3
-    # +-------------------------------------------------------------------------------------------LM3
-    #AXOLOTL:
-    #  -
+  -
+
+# +-------------------------------------------------------------------------------------------LM3
+# +                                                                                          +LM3
+# +   Section 03 - EntityType Drops                                                          +LM3
+# +                                                                                          +LM3
+# +-------------------------------------------------------------------------------------------LM3
+
+#AXOLOTL:
+#  -
 
 BAT:
   -
@@ -153,11 +152,13 @@ FOX:
   -
 
 GHAST:
-  - #GLOW_SQUID:
-    #  -
+  -
 
-    #GOAT:
-    #  -
+#GLOW_SQUID:
+#  -
+
+#GOAT:
+#  -
 
 GUARDIAN:
   -
@@ -307,11 +308,13 @@ ZOMBIE_VILLAGER:
   -
 
 ZOMBIFIED_PIGLIN:
-  - # +-------------------------------------------------------------------------------------------LM3
-    # +                                                                                          +LM3
-    # +   Section 04 - Drop Tables                                                               +LM3
-    # +                                                                                          +LM3
-  # +-------------------------------------------------------------------------------------------LM3
+  -
+
+# +-------------------------------------------------------------------------------------------LM3
+# +                                                                                          +LM3
+# +   Section 04 - Drop Tables                                                               +LM3
+# +                                                                                          +LM3
+# +-------------------------------------------------------------------------------------------LM3
 drop-table:
   basic_overworld:
     - STICK:
