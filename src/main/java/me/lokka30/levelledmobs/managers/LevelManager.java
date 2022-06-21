@@ -1427,7 +1427,7 @@ public class LevelManager implements LevelInterface {
                     equipment.setItemInMainHandDropChance(0);
                     equippedItemsInfo.mainHand = pair.getValue();
                     hadMainItem = true;
-                } else {
+                } else if (pair.getValue().maxEquipped > 1) {
                     equipment.setItemInOffHand(itemStack);
                     equipment.setItemInOffHandDropChance(0);
                     equippedItemsInfo.offhand = pair.getValue();
