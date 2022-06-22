@@ -26,7 +26,7 @@ class CustomDropsDefaults {
     public int priority;
     public int minLevel;
     public int maxLevel;
-    public int maxEquipped;
+    public boolean equipOffhand;
     int customModelData;
     int maxDropGroup;
     int minPlayerLevel;

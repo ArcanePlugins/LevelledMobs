@@ -42,7 +42,7 @@ defaults:
   nomultiplier: false
   nospawner: false
   equipped: 1.0
-  max-equipped: 1
+  equip-offhand: true
   override: false
   maxdropgroup: 1
   priority: 0

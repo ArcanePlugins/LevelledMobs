@@ -508,7 +508,7 @@ public class CustomDropsParser {
             this.defaults.causeOfDeathReqs);
         item.onlyDropIfEquipped = ymlHelper.getBoolean(cs, "only-drop-if-equipped",
             this.defaults.onlyDropIfEquipped);
-        item.maxEquipped = ymlHelper.getInt(cs, "max-equipped", 1);
+        item.equipOffhand = ymlHelper.getBoolean(cs, "equip-offhand", true);
         item.priority = ymlHelper.getInt(cs, "priority", this.defaults.priority);
         item.noMultiplier = ymlHelper.getBoolean(cs, "nomultiplier", this.defaults.noMultiplier);
         item.noSpawner = ymlHelper.getBoolean(cs, "nospawner", this.defaults.noSpawner);

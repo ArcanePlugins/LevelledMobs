@@ -33,7 +33,7 @@ public class CustomDropItem extends CustomDropBase {
     private int damage;
     private int damageRangeMin;
     private int damageRangeMax;
-    public int maxEquipped;
+    public boolean equipOffhand;
     public UUID customPlayerHeadId;
     private Material material;
     private ItemStack itemStack;
@@ -56,7 +56,7 @@ public class CustomDropItem extends CustomDropBase {
         this.equippedSpawnChance = defaults.equippedSpawnChance;
         this.noMultiplier = defaults.noMultiplier;
         this.onlyDropIfEquipped = defaults.onlyDropIfEquipped;
-        this.maxEquipped = defaults.maxEquipped;
+        this.equipOffhand = defaults.equipOffhand;
     }
 
     public CustomDropItem cloneItem() {
