@@ -37,13 +37,11 @@ common:
   no-permission:
     - '%prefix% You don''t have access to that.'
   players-only:
-    - '%prefix% Only players may use that.'
-  no-player:
-    - '%prefix% Command can only be run by a player'
+    - '%prefix% Only players have access to that.'
   player-offline:
-    - '%prefix% &r%player%&7 is offline or invalid.'
+    - '%prefix% Player ''&r%player%&7'' is offline.'
   invalid-command:
-    - '%prefix% Invalid command'
+    - '%prefix% Invalid command.'
 
 
 # +-------------------------------------------------------------------------------------------LM3
@@ -162,49 +160,50 @@ command:
         - '&8 &m->&b /%label% spawner create'
         - '&8 &m->&b /%label% spawner copy'
         - '&8 &m->&b /%label% spawner info'
-        - '&7&o Sample Spawner'
-        - '&7/%label% spawner create &b/minlevel&7 1 &b/maxlevel&7 10 &b/name&7 "My customized LM spawner" &b/customDropId&7 Id1'
+        - ' '
+        - '&fSample syntax:'
+        - '&8 &m->&b /%label% spawner create &3/minlevel&b 1 &3/maxlevel&b 10 &3/name&b "My customized LM spawner" &3/customDropId&b Id1'
       no-value:
-        - '%prefix% No value was specified for: &b%keyname%&7'
+        - '%prefix% No value was specified for key ''&b%keyname%&7''.'
       no-player:
-        - '%prefix% Command can only be run by a player unless /giveplayer is specified'
+        - '%prefix% Command can only be run by a player unless the &b/giveplayer&7 parameter is specified.'
       invalid-value:
-        - '%prefix% Invalid value for &b%keyname%&7, must be a number'
+        - '%prefix% Invalid value for &b%keyname%&7, must be a number.'
       no-level-specified:
-        - '%prefix% You must specify minLevel and/or maxLevel'
+        - '%prefix% You must specify minLevel and/or maxLevel.'
       inventory-full:
-        - '%prefix% &4Your inventory is full!'
+        - '%prefix% Your inventory is full.'
       spawner-give-message:
-        - '%prefix% Gave you a LM spawner'
+        - '%prefix% Gave you a LM spawner.'
       spawner-give-message-console:
         - '%prefix% Gave &r%playername%&7 a LM spawner. &8|&7 minLevel: &b%minlevel%&7, maxLevel: &b%maxlevel%&7'
       permission-denied:
-        - '%prefix% You don''t have permissions to update a spawner or convert a spawner to a LM spawner.'
+        - '%prefix% You don''t have permission to update or convert a LM spawner.'
       spawner-converted:
         - '%prefix% Converted vanilla spawner into a LM spawner with name "%spawnername%".'
       spawner-updated:
         - '%prefix% Updated LM spawner from spawn egg. Spawner name: "%spawnername%"'
       info:
         status-enabled:
-          - '%prefix% Spawner Info is &aenabled&f.'
+          - '%prefix% Spawner info is &aenabled&f.'
         status-not-enabled:
-          - '%prefix% Spawner Info is &cnot enabled&f.'
+          - '%prefix% Spawner info is &cnot enabled&f.'
         enabled:
-          - '%prefix% Spawner Info is &aenabled&f. Right-Click any Spawner for details!'
+          - '%prefix% Spawner info is &aenabled&f. Right-Click any Spawner for details!'
         disabled:
-          - '%prefix% Spawner Info has been &cdisabled&f.'
+          - '%prefix% Spawner info has been &cdisabled&f.'
       copy:
         vanilla-spawner:
-          - '%prefix% Spawner Copy only works with LM spawners'
+          - '%prefix% Spawner copy only works with LM spawners.'
         status-enabled:
-          - '%prefix% Spawner Copy is &aenabled&f.'
+          - '%prefix% Spawner copy is &aenabled&f.'
         status-not-enabled:
-          - '%prefix% Spawner Copy is &cnot enabled&f.'
+          - '%prefix% Spawner copy is &cnot enabled&f.'
         enabled:
-          - '%prefix% Spawner Copy is &aenabled&f. Right-Click a LM Spawner to make a copy.'
+          - '%prefix% Spawner copy is &aenabled&f. Right-Click a LM Spawner to make a copy.'
           - 'Your hand must be empty.'
         disabled:
-          - '%prefix% Spawner Copy has been &cdisabled&f.'
+          - '%prefix% Spawner copy has been &cdisabled&f.'
 
 
     # +-------------------------------------------------------------------------------------------LM3
