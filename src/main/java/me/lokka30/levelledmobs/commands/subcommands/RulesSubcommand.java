@@ -119,7 +119,7 @@ public class RulesSubcommand extends MessagesBase implements Subcommand {
             }
         } else if ("show_effective".equalsIgnoreCase(args[1])) {
             if (!(sender instanceof Player)) {
-                showMessage("common.no-player");
+                showMessage("common.players-only");
                 return;
             }
 

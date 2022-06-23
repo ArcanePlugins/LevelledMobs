@@ -50,7 +50,6 @@ public class PlayerJoinListener implements Listener {
         main.companion.addRecentlyJoinedPlayer(event.getPlayer());
         checkForNetherPortalCoords(event.getPlayer());
         main.nametagTimerChecker.addPlayerToQueue(new PlayerQueueItem(event.getPlayer(), true));
-        parseCompatibilityChecker(event.getPlayer());
         parseUpdateChecker(event.getPlayer());
 
         updateNametagsInWorldAsync(event.getPlayer(), event.getPlayer().getWorld().getEntities());
@@ -179,31 +178,6 @@ public class PlayerJoinListener implements Listener {
                 Collections.singletonList(player));
             lmEntity.free();
         }
-    }
-
-    private void parseCompatibilityChecker(@NotNull final Player player) {
-        // Player must have permission
-        if (!player.hasPermission("levelledmobs.compatibility-notice")) {
-            return;
-        }
-
-        // There must be possible incompatibilities
-        if (main.incompatibilitiesAmount == 0) {
-            return;
-        }
-
-        // Must be enabled in messages cfg
-        if (!main.messagesCfg.getBoolean("other.compatibility-notice.enabled")) {
-            return;
-        }
-
-        List<String> messages = main.messagesCfg.getStringList(
-            "other.compatibility-notice.messages");
-        messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.getPrefix());
-        messages = Utils.replaceAllInList(messages, "%incompatibilities%",
-            String.valueOf(main.incompatibilitiesAmount));
-        messages = Utils.colorizeAllInList(messages);
-        messages.forEach(player::sendMessage);
     }
 
     private void parseUpdateChecker(final Player player) {
