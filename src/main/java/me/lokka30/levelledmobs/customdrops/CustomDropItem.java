@@ -29,6 +29,7 @@ public class CustomDropItem extends CustomDropBase {
     public String mobHeadTexture;
     public List<String> lore;
     List<ItemFlag> itemFlags;
+    List<String> itemFlagsStrings;
     private boolean hasDamageRange;
     private int damage;
     private int damageRangeMin;
@@ -41,6 +42,7 @@ public class CustomDropItem extends CustomDropBase {
     public String externalPluginName;
     public String externalType;
     public String externalItemId;
+    public String nbtData;
     public Double externalAmount;
     public Map<String, Object> externalExtras;
 

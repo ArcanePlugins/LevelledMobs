@@ -37,6 +37,8 @@ class CustomDropsDefaults {
     Float overallChance;
     String groupId;
     String playerLevelVariable;
+    String nbtData;
+    List<String> itemFlagsStrings;
     public final List<String> permissions;
     final List<String> overallPermissions;
     CachedModalList<DeathCause> causeOfDeathReqs;
@@ -94,6 +96,9 @@ class CustomDropsDefaults {
             this.externalType = dropItem.externalType;
             this.externalItemId = dropItem.externalItemId;
             this.externalAmount = dropItem.externalAmount;
+            this.equipOffhand = dropItem.equipOffhand;
+            this.nbtData = dropItem.nbtData;
+            this.itemFlagsStrings = dropItem.itemFlagsStrings;
         } else if (dropBase instanceof CustomCommand) {
             final CustomCommand command = (CustomCommand) dropBase;
             this.runOnSpawn = command.runOnSpawn;

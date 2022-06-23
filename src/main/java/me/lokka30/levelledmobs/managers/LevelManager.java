@@ -1422,12 +1422,12 @@ public class LevelManager implements LevelInterface {
                     hadPlayerHead = true;
                 }
             } else {
-                if (!hadMainItem || !pair.getValue().equipOffhand) {
+                if (!hadMainItem) {
                     equipment.setItemInMainHand(itemStack);
                     equipment.setItemInMainHandDropChance(0);
                     equippedItemsInfo.mainHand = pair.getValue();
                     hadMainItem = true;
-                } else {
+                } else if (pair.getValue().equipOffhand) {
                     equipment.setItemInOffHand(itemStack);
                     equipment.setItemInOffHandDropChance(0);
                     equippedItemsInfo.offhand = pair.getValue();
