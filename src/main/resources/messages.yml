@@ -297,11 +297,12 @@ command:
     info:
       about:
         - ' '
-        - '&b&lLevelledMobs &fv%version%&7 by lokka30, stumper66 and Oathkeeper'
+        - '&b&lLevelledMobs&b v%version%'
         - '&7&o%description%'
         - ' '
-        - '&7This version of the plugin supports: &fMinecraft %supportedVersions%'
-        - '&7Code contributors: &f%contributors%'
+        - '&7Maintainers: &f%maintainers%'
+        - '&7Contributors: &f%contributors%'
+        - '&7Support for: &fMC &f%supportedVersions%'
         - ' '
       listSeparator: '&7, &f'
       usage:
