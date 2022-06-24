@@ -234,22 +234,22 @@ public class RulesSubcommand extends MessagesBase implements Subcommand {
 
         switch (difficulty) {
             case BASIC:
-                replaceWhat[2] = "#    - basic_challenge";
-                replaceWith[2] = "    - basic_challenge";
-                replaceWhat[3] = "#    - weighted_random_basic";
-                replaceWith[3] = "    - weighted_random_basic";
+                replaceWhat[2] = "#- basic_challenge";
+                replaceWith[2] = "- basic_challenge";
+                replaceWhat[3] = "#- weighted_random_basic";
+                replaceWith[3] = "- weighted_random_basic";
                 break;
             case ADVANCED:
-                replaceWhat[2] = "#    - advanced_challenge";
-                replaceWith[2] = "    - advanced_challenge";
-                replaceWhat[3] = "#    - weighted_random_advanced";
-                replaceWith[3] = "    - weighted_random_advanced_difficulty";
+                replaceWhat[2] = "#- advanced_challenge";
+                replaceWith[2] = "- advanced_challenge";
+                replaceWhat[3] = "#- weighted_random_advanced";
+                replaceWith[3] = "- weighted_random_advanced_difficulty";
                 break;
             case EXTREME:
-                replaceWhat[2] = "#    - extreme_challenge";
-                replaceWith[2] = "    - extreme_challenge";
-                replaceWhat[3] = "#    - weighted_random_extreme";
-                replaceWith[3] = "    - weighted_random_extreme";
+                replaceWhat[2] = "#- extreme_challenge";
+                replaceWith[2] = "- extreme_challenge";
+                replaceWhat[3] = "#- weighted_random_extreme";
+                replaceWith[3] = "- weighted_random_extreme";
                 break;
         }
 
