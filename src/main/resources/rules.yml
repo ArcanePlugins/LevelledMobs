@@ -392,6 +392,7 @@ default-rule:
 
   apply-settings:
     sunlight-intensity: 5
+    creeper-max-damage-radius: 3
 
     entity-name-override:
     #      HUSK: ['Husk', 'Desert Zombie', 'Lost Soul', 'Dessicated Corpse']
