@@ -129,7 +129,7 @@ public class CustomDropsParser {
                     final CustomDropInstance dropInstance = new CustomDropInstance(
                         EntityType.AREA_EFFECT_CLOUD); // entity type doesn't matter
                     parseCustomDrops2((List<?>) itemGroup.getValue(), dropInstance);
-                    if (!dropInstance.customItems.isEmpty()) {
+                    if (!dropInstance.customItems.isEmpty() || dropInstance.overrideStockDrops) {
                         handler.customItemGroups.put(itemGroupName, dropInstance);
                         handler.customDropIDs.put(itemGroupName, dropInstance);
                     }
@@ -230,7 +230,7 @@ public class CustomDropsParser {
                     }
                 } // end if not entity table
 
-                if (!dropInstance.customItems.isEmpty()) {
+                if (!dropInstance.customItems.isEmpty() || dropInstance.overrideStockDrops) {
                     if (isUniversalGroup) {
                         if (handler.customDropsitems_groups.containsKey(
                             universalGroup.toString())) {
@@ -876,6 +876,10 @@ public class CustomDropsParser {
             }
         } else {
             final Material material;
+            if ("override".equalsIgnoreCase(materialName)){
+                dropInstance.overrideStockDrops = true;
+                return true;
+            }
             try {
                 material = Material.valueOf(materialName.toUpperCase());
             } catch (final Exception e) {
