@@ -1310,6 +1310,10 @@ public class LevelManager implements LevelInterface {
         final int maxRadius = main.rulesManager.getRuleCreeperMaxBlastRadius(lmEntity);
         final double damage = main.mobDataManager.getAdditionsForLevel(lmEntity,
             Addition.CREEPER_BLAST_DAMAGE, 3);
+        if (damage == 0.0){
+            return;
+        }
+
         int blastRadius = 3 + (int) Math.floor(damage);
 
         if (blastRadius > maxRadius) {
