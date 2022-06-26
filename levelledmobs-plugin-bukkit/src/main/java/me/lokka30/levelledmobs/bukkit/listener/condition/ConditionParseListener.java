@@ -1,7 +1,7 @@
 package me.lokka30.levelledmobs.bukkit.listener.condition;
 
 import java.util.Locale;
-import me.lokka30.levelledmobs.bukkit.event.condition.ConditionParseEvent;
+import me.lokka30.levelledmobs.bukkit.logic.function.process.condition.ConditionParseEvent;
 import me.lokka30.levelledmobs.bukkit.listener.ListenerWrapper;
 import me.lokka30.levelledmobs.bukkit.logic.function.process.condition.Condition;
 import org.bukkit.event.EventHandler;

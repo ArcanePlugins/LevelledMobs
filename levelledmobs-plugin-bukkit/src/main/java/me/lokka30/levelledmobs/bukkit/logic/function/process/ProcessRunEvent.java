@@ -1,29 +1,29 @@
-package me.lokka30.levelledmobs.bukkit.event.group;
+package me.lokka30.levelledmobs.bukkit.logic.function.process;
 
-import me.lokka30.levelledmobs.bukkit.logic.group.Group;
+import me.lokka30.levelledmobs.bukkit.logic.function.process.Process;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
 
-public final class GroupPostParseEvent extends Event implements Cancellable {
+public final class ProcessRunEvent extends Event implements Cancellable {
 
     /* vars */
 
     private static final HandlerList HANDLERS = new HandlerList();
-    private final Group group;
+    private final Process process;
     private boolean cancelled = false;
 
     /* constructors */
 
-    public GroupPostParseEvent(final @NotNull Group group) {
-        this.group = group;
+    public ProcessRunEvent(final @NotNull Process process) {
+        this.process = process;
     }
 
     /* getters and setters */
 
     @NotNull
-    public Group getGroup() { return group; }
+    public Process getProcess() { return process; }
 
     @Override
     public boolean isCancelled() {

@@ -1,4 +1,4 @@
-package me.lokka30.levelledmobs.bukkit.event.condition;
+package me.lokka30.levelledmobs.bukkit.logic.function.process.condition;
 
 import me.lokka30.levelledmobs.bukkit.logic.function.process.Process;
 import org.bukkit.event.Cancellable;

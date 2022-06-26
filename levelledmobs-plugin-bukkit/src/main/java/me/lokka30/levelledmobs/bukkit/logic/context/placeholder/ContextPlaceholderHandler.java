@@ -2,7 +2,7 @@ package me.lokka30.levelledmobs.bukkit.logic.context.placeholder;
 
 import java.util.HashSet;
 import java.util.Set;
-import me.lokka30.levelledmobs.bukkit.event.context.ContextPlaceholdersLoadEvent;
+import me.lokka30.levelledmobs.bukkit.logic.context.ContextPlaceholdersLoadEvent;
 import me.lokka30.levelledmobs.bukkit.logic.context.Context;
 import me.lokka30.levelledmobs.bukkit.logic.context.placeholder.internal.EntityNamePlaceholder;
 import me.lokka30.levelledmobs.bukkit.logic.context.placeholder.internal.EntityTypePlaceholder;

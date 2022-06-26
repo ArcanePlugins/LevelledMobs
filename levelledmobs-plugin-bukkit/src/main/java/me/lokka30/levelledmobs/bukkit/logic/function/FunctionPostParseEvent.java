@@ -1,4 +1,4 @@
-package me.lokka30.levelledmobs.bukkit.event.function;
+package me.lokka30.levelledmobs.bukkit.logic.function;
 
 import me.lokka30.levelledmobs.bukkit.logic.function.LmFunction;
 import org.bukkit.event.Cancellable;

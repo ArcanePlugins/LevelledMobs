@@ -1,30 +1,29 @@
-package me.lokka30.levelledmobs.bukkit.event.process;
+package me.lokka30.levelledmobs.bukkit.logic.function;
 
-import me.lokka30.levelledmobs.bukkit.logic.function.process.Process;
+import me.lokka30.levelledmobs.bukkit.logic.function.LmFunction;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
 
-//TODO this should not be cancellable
-public final class ProcessPostParseEvent extends Event implements Cancellable {
+public final class FunctionRunEvent extends Event implements Cancellable {
 
     /* vars */
 
     private static final HandlerList HANDLERS = new HandlerList();
-    private final Process process;
+    private final LmFunction function;
     private boolean cancelled = false;
 
     /* constructors */
 
-    public ProcessPostParseEvent(final @NotNull Process process) {
-        this.process = process;
+    public FunctionRunEvent(final @NotNull LmFunction function) {
+        this.function = function;
     }
 
     /* getters and setters */
 
     @NotNull
-    public Process getProcess() { return process; }
+    public LmFunction getFunction() { return function; }
 
     @Override
     public boolean isCancelled() {
@@ -44,5 +43,4 @@ public final class ProcessPostParseEvent extends Event implements Cancellable {
 
     @NotNull
     public static HandlerList getHandlerList() { return HANDLERS; }
-
 }

@@ -1,4 +1,4 @@
-package me.lokka30.levelledmobs.bukkit.event.context;
+package me.lokka30.levelledmobs.bukkit.logic.context;
 
 import java.util.Set;
 import me.lokka30.levelledmobs.bukkit.LevelledMobs;

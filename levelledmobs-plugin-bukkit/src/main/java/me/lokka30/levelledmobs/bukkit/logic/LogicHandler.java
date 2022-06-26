@@ -5,14 +5,15 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
 import me.lokka30.levelledmobs.bukkit.LevelledMobs;
-import me.lokka30.levelledmobs.bukkit.event.action.ActionParseEvent;
-import me.lokka30.levelledmobs.bukkit.event.condition.ConditionParseEvent;
-import me.lokka30.levelledmobs.bukkit.event.function.FunctionPostParseEvent;
-import me.lokka30.levelledmobs.bukkit.event.function.FunctionPreParseEvent;
-import me.lokka30.levelledmobs.bukkit.event.group.GroupPostParseEvent;
-import me.lokka30.levelledmobs.bukkit.event.group.GroupPreParseEvent;
-import me.lokka30.levelledmobs.bukkit.event.process.ProcessPostParseEvent;
-import me.lokka30.levelledmobs.bukkit.event.process.ProcessPreParseEvent;
+import me.lokka30.levelledmobs.bukkit.logic.function.process.action.ActionParseEvent;
+import me.lokka30.levelledmobs.bukkit.logic.function.process.condition.ConditionParseEvent;
+import me.lokka30.levelledmobs.bukkit.logic.function.FunctionPostParseEvent;
+import me.lokka30.levelledmobs.bukkit.logic.function.FunctionPreParseEvent;
+import me.lokka30.levelledmobs.bukkit.logic.function.process.condition.ConditionSocket;
+import me.lokka30.levelledmobs.bukkit.logic.group.GroupPostParseEvent;
+import me.lokka30.levelledmobs.bukkit.logic.group.GroupPreParseEvent;
+import me.lokka30.levelledmobs.bukkit.logic.function.process.ProcessPostParseEvent;
+import me.lokka30.levelledmobs.bukkit.logic.function.process.ProcessPreParseEvent;
 import me.lokka30.levelledmobs.bukkit.logic.context.Context;
 import me.lokka30.levelledmobs.bukkit.logic.context.placeholder.ContextPlaceholderHandler;
 import me.lokka30.levelledmobs.bukkit.logic.function.LmFunction;
@@ -384,7 +385,7 @@ public final class LogicHandler {
                 process.getActions().add(new ActionSocket(
                     process,
                     actionNode,
-                    actionNode.node("socket").getString(null)
+                    actionNode.node("socket").getString("")
                 ));
             } else {
                 Log.sev(String.format(
@@ -399,11 +400,18 @@ public final class LogicHandler {
         return true;
     }
 
-    // TODO Test
     private boolean parseConditions(final @NotNull Process process) {
         Objects.requireNonNull(process, "process");
 
-        final List<CommentedConfigurationNode> conditionNodes = process.getNode().node("if").childrenList();
+        final var allConditionsNode = process.getNode().node("if");
+
+        if(allConditionsNode.empty()) {
+            // allow processes with no conditions.
+            // processes with no conditions always run when called.
+            return true;
+        }
+
+        final List<CommentedConfigurationNode> conditionNodes = allConditionsNode.childrenList();
 
         for(var conditionNode : conditionNodes) {
             if(conditionNode.hasChild("condition")) {
@@ -431,10 +439,10 @@ public final class LogicHandler {
                 }
 
             } else if(conditionNode.hasChild("socket")) {
-                process.getActions().add(new ActionSocket(
+                process.getConditions().add(new ConditionSocket(
                     process,
                     conditionNode,
-                    conditionNode.node("socket").getString(null)
+                    conditionNode.node("socket").getString("")
                 ));
             } else {
                 Log.sev(String.format(

@@ -1,7 +1,7 @@
 package me.lokka30.levelledmobs.bukkit.listener.action;
 
 import java.util.Locale;
-import me.lokka30.levelledmobs.bukkit.event.action.ActionParseEvent;
+import me.lokka30.levelledmobs.bukkit.logic.function.process.action.ActionParseEvent;
 import me.lokka30.levelledmobs.bukkit.listener.ListenerWrapper;
 import me.lokka30.levelledmobs.bukkit.logic.function.process.action.Action;
 import org.bukkit.event.EventHandler;

@@ -1,4 +1,4 @@
-package me.lokka30.levelledmobs.bukkit.event.process;
+package me.lokka30.levelledmobs.bukkit.logic.function.process;
 
 import me.lokka30.levelledmobs.bukkit.logic.function.process.Process;
 import org.bukkit.event.Cancellable;
@@ -6,7 +6,8 @@ import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
 
-public final class ProcessPreParseEvent extends Event implements Cancellable {
+//TODO this should not be cancellable
+public final class ProcessPostParseEvent extends Event implements Cancellable {
 
     /* vars */
 
@@ -16,12 +17,11 @@ public final class ProcessPreParseEvent extends Event implements Cancellable {
 
     /* constructors */
 
-    public ProcessPreParseEvent(final @NotNull Process process) {
+    public ProcessPostParseEvent(final @NotNull Process process) {
         this.process = process;
     }
 
     /* getters and setters */
-
 
     @NotNull
     public Process getProcess() { return process; }
@@ -44,4 +44,5 @@ public final class ProcessPreParseEvent extends Event implements Cancellable {
 
     @NotNull
     public static HandlerList getHandlerList() { return HANDLERS; }
+
 }

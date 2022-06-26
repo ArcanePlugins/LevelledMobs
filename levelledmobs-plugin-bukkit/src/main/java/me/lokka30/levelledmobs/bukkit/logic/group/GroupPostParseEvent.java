@@ -1,29 +1,29 @@
-package me.lokka30.levelledmobs.bukkit.event.function;
+package me.lokka30.levelledmobs.bukkit.logic.group;
 
-import me.lokka30.levelledmobs.bukkit.logic.function.LmFunction;
+import me.lokka30.levelledmobs.bukkit.logic.group.Group;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
 
-public final class FunctionRunEvent extends Event implements Cancellable {
+public final class GroupPostParseEvent extends Event implements Cancellable {
 
     /* vars */
 
     private static final HandlerList HANDLERS = new HandlerList();
-    private final LmFunction function;
+    private final Group group;
     private boolean cancelled = false;
 
     /* constructors */
 
-    public FunctionRunEvent(final @NotNull LmFunction function) {
-        this.function = function;
+    public GroupPostParseEvent(final @NotNull Group group) {
+        this.group = group;
     }
 
     /* getters and setters */
 
     @NotNull
-    public LmFunction getFunction() { return function; }
+    public Group getGroup() { return group; }
 
     @Override
     public boolean isCancelled() {

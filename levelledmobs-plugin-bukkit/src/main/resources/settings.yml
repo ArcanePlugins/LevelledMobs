@@ -162,10 +162,13 @@ lang: 'en_US'
 ##### If LevelledMobs was installed since you last reset your world, you can
 ##### disable this. This is enabled by default as most server owners likely
 ##### install LevelledMobs on servers with existing worlds.
+#
+# TODO move to advanced settings. clarify that this breaks player levelling
 scan-for-existing-mobs: true
 
 # The following settings are in regards to configuring
 # the '%levelledmobs_mob-target%' placeholder from PlaceholderAPI.
+# TODO clarify how this works
 mob-target-placeholder:
 
   # Format to use if the mob target is a levelled mob.
