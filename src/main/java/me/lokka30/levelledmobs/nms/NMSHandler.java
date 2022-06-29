@@ -75,6 +75,10 @@ public class NMSHandler {
                 "We don't have NMS support for this version of Minecraft, using ProtocolLib");
             this.currentUtil = new ProtocolLibHandler(main);
         }
+        else{
+            Utils.logger.warning(
+                    "ProtocolLib is not installed. No nametags will be visible");
+        }
 
         return this.currentUtil;
     }
