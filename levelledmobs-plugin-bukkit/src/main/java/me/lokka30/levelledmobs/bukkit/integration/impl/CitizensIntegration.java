@@ -1,4 +1,4 @@
-package me.lokka30.levelledmobs.bukkit.integration.internal;
+package me.lokka30.levelledmobs.bukkit.integration.impl;
 
 import me.lokka30.levelledmobs.bukkit.integration.Integration;
 import me.lokka30.levelledmobs.bukkit.integration.IntegrationPriority;

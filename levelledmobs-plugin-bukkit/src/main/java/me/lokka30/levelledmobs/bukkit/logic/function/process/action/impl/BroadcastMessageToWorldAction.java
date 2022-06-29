@@ -1,4 +1,4 @@
-package me.lokka30.levelledmobs.bukkit.listener.action;
+package me.lokka30.levelledmobs.bukkit.logic.function.process.action.impl;
 
 import de.themoep.minedown.MineDown;
 import java.util.Objects;
@@ -6,19 +6,17 @@ import me.lokka30.levelledmobs.bukkit.logic.context.Context;
 import me.lokka30.levelledmobs.bukkit.logic.function.process.Process;
 import me.lokka30.levelledmobs.bukkit.logic.function.process.action.Action;
 import me.lokka30.levelledmobs.bukkit.util.Log;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
+import org.bukkit.World;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.configurate.CommentedConfigurationNode;
 import org.spongepowered.configurate.ConfigurateException;
 
-public class BroadcastMessageToNearbyPlayersAction extends Action {
+public class BroadcastMessageToWorldAction extends Action {
 
     private final String requiredPermission;
     private String[] message = null;
-    private final double range;
 
-    public BroadcastMessageToNearbyPlayersAction(
+    public BroadcastMessageToWorldAction(
         final @NotNull Process process,
         final @NotNull CommentedConfigurationNode node
     ) {
@@ -27,10 +25,6 @@ public class BroadcastMessageToNearbyPlayersAction extends Action {
         this.requiredPermission = getActionNode()
             .node("required-permission")
             .getString("");
-
-        this.range = getActionNode()
-            .node("range")
-            .getDouble(16d);
 
         try {
             this.message = Objects.requireNonNull(getActionNode().node("message")
@@ -47,12 +41,12 @@ public class BroadcastMessageToNearbyPlayersAction extends Action {
 
     @Override
     public void run(Context context) {
-        final Entity entity;
+        final World world;
 
         if(context.getEntity() != null) {
-            entity = context.getEntity();
+            world = context.getEntity().getWorld();
         } else if(context.getPlayer() != null) {
-            entity = context.getPlayer();
+            world = context.getPlayer().getWorld();
         } else {
             Log.sev(String.format(
                 "A 'broadcast-message-to-world' action has encountered an issue in process '%s' " +
@@ -65,12 +59,10 @@ public class BroadcastMessageToNearbyPlayersAction extends Action {
 
         for(var line : getMessage()) {
             final var lineComponents = MineDown.parse(line);
-            for(var nearbyEntity : entity.getNearbyEntities(range, range, range)) {
-                if(nearbyEntity instanceof Player player) {
-                    if (!hasRequiredPermission() || player.hasPermission(
-                        getRequiredPermission())) {
-                        player.spigot().sendMessage(lineComponents);
-                    }
+            for(var player : world.getPlayers()) {
+                if (!hasRequiredPermission() || player.hasPermission(
+                    getRequiredPermission())) {
+                    player.spigot().sendMessage(lineComponents);
                 }
             }
         }

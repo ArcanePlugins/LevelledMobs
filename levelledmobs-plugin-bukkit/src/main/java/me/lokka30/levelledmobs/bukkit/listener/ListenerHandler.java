@@ -1,8 +1,8 @@
 package me.lokka30.levelledmobs.bukkit.listener;
 
 import java.util.Set;
-import me.lokka30.levelledmobs.bukkit.listener.action.ActionParseListener;
-import me.lokka30.levelledmobs.bukkit.listener.condition.ConditionParseListener;
+import me.lokka30.levelledmobs.bukkit.logic.function.process.action.impl.ActionParseListener;
+import me.lokka30.levelledmobs.bukkit.logic.function.process.condition.impl.ConditionParseListener;
 import me.lokka30.levelledmobs.bukkit.util.Log;
 import org.jetbrains.annotations.NotNull;
 

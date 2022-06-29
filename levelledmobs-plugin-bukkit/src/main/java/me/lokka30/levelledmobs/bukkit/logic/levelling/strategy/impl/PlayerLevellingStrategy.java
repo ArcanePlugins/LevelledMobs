@@ -7,6 +7,8 @@ import org.jetbrains.annotations.Nullable;
 
 public class PlayerLevellingStrategy extends LevellingStrategy {
 
+    // TODO private final String placeholder;
+
     public PlayerLevellingStrategy(int minLevel, int maxLevel) {
         super(minLevel, maxLevel);
     }

@@ -2,8 +2,8 @@ package me.lokka30.levelledmobs.bukkit.integration;
 
 import java.util.HashSet;
 import java.util.Set;
-import me.lokka30.levelledmobs.bukkit.integration.internal.CitizensIntegration;
-import me.lokka30.levelledmobs.bukkit.integration.internal.NbtApiIntegration;
+import me.lokka30.levelledmobs.bukkit.integration.impl.CitizensIntegration;
+import me.lokka30.levelledmobs.bukkit.integration.impl.NbtApiIntegration;
 import me.lokka30.levelledmobs.bukkit.integration.nbthandler.NbtProvider;
 import org.bukkit.Bukkit;
 import org.jetbrains.annotations.NotNull;

@@ -1,4 +1,4 @@
-package me.lokka30.levelledmobs.bukkit.integration.internal;
+package me.lokka30.levelledmobs.bukkit.integration.impl;
 
 import de.tr7zw.nbtapi.NBTContainer;
 import de.tr7zw.nbtapi.NBTEntity;

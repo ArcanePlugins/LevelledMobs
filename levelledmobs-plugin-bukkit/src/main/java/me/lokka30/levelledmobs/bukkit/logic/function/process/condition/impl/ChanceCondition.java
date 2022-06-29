@@ -1,4 +1,4 @@
-package me.lokka30.levelledmobs.bukkit.listener.condition;
+package me.lokka30.levelledmobs.bukkit.logic.function.process.condition.impl;
 
 import java.util.concurrent.ThreadLocalRandom;
 import me.lokka30.levelledmobs.bukkit.logic.context.Context;

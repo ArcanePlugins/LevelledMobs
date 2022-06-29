@@ -1,4 +1,4 @@
-package me.lokka30.levelledmobs.bukkit.listener.action;
+package me.lokka30.levelledmobs.bukkit.logic.function.process.action.impl;
 
 import java.util.Collections;
 import java.util.HashSet;
