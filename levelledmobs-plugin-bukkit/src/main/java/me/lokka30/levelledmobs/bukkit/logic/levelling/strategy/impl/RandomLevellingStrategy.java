@@ -14,6 +14,12 @@ public class RandomLevellingStrategy extends LevellingStrategy {
         super(minLevel, maxLevel);
     }
 
+    /*
+    `Integer` (object instead of primitive) is being used here
+    as it's possible that other levelling strategies aren't able to generate a
+    level for a mob at a context or perhaps user error in the config.
+    This particular levelling strategy will always return a non-null integer.
+    */
     @Override
     public @NotNull Integer generate(@NotNull Context context) {
         return ThreadLocalRandom.current().nextInt(getMinLevel(), getMaxLevel());
