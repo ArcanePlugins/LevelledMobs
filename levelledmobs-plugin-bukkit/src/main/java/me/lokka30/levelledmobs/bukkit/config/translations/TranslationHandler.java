@@ -27,7 +27,6 @@ public final class TranslationHandler {
     private final InbuiltLang defaultLang = InbuiltLang.getDefault();
     private final String defaultLangStr = defaultLang.toString();
 
-    @SuppressWarnings("FieldMayBeFinal")
     private String lang = defaultLangStr;
 
     private YamlConfigurationLoader loader = null;

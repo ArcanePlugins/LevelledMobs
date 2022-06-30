@@ -1,8 +1,9 @@
 package me.lokka30.levelledmobs.bukkit.config.translations;
 
 import de.themoep.minedown.MineDown;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
+
 import me.lokka30.levelledmobs.bukkit.util.Log;
 import net.md_5.bungee.api.chat.BaseComponent;
 import org.bukkit.command.CommandSender;
@@ -176,14 +177,14 @@ public enum Message {
         // ... firstly, let's add the prefix placeholders in the replacements array ...
 
         // let's start out with a list of the prefix placeholder replacement pairs [6 list items]
-        final var newReplacements = new ArrayList<>(Arrays.asList(
+        final List<String> newReplacements = new LinkedList<>(List.of(
             "%prefix-info%", Message.GENERIC_PREFIX_INFO.getDeclared()[0],
             "%prefix-warning%", Message.GENERIC_PREFIX_WARNING.getDeclared()[0],
             "%prefix-severe%", Message.GENERIC_PREFIX_SEVERE.getDeclared()[0]
         ));
 
         // now let's merge the replacements into the newReplacements list so they're combined
-        newReplacements.addAll(Arrays.asList(replacements));
+        newReplacements.addAll(List.of(replacements));
 
         // ... cool, now let's send these beautiful messages ...
 

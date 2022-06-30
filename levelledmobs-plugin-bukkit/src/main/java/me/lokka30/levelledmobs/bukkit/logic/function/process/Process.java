@@ -1,7 +1,7 @@
 package me.lokka30.levelledmobs.bukkit.logic.function.process;
 
-import java.util.ArrayList;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import me.lokka30.levelledmobs.bukkit.logic.context.Context;
@@ -21,8 +21,8 @@ public class Process {
     private final CommentedConfigurationNode node;
     private final LmFunction parentFunction;
     private final Set<Preset> presets = new LinkedHashSet<>();
-    private final List<Action> actions = new ArrayList<>();
-    private final List<Condition> conditions = new ArrayList<>();
+    private final List<Action> actions = new LinkedList<>();
+    private final List<Condition> conditions = new LinkedList<>();
     private boolean exit = false;
 
     /* constructors */

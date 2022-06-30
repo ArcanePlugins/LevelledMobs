@@ -315,7 +315,7 @@ public final class LogicHandler {
                 presetIterator:
                 for(var presetIdentifier : presetsIdentifiersList) {
                     if(process.getPresets().stream().anyMatch(otherPreset ->
-                        otherPreset.getIdentifier().equals(presetIdentifier))
+                        otherPreset.identifier().equals(presetIdentifier))
                     ) {
                         Log.war("Process '" + identifier + "' has preset '" + presetIdentifier +
                             "' listed more than once. A preset can only be used at most once per "
@@ -324,7 +324,7 @@ public final class LogicHandler {
                     }
 
                     for(var otherPreset : getPresets()) {
-                        if(otherPreset.getIdentifier().equals(presetIdentifier)) {
+                        if(otherPreset.identifier().equals(presetIdentifier)) {
                             process.getPresets().add(otherPreset);
                             continue presetIterator;
                         }

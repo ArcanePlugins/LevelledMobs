@@ -6,7 +6,7 @@
 
 # IntelliJ IDE
 .idea/
-LevelledMobs.iml
+*.iml
 
 # Eclipse IDE
 .classpath

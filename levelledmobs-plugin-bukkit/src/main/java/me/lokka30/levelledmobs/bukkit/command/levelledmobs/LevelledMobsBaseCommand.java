@@ -1,8 +1,8 @@
 package me.lokka30.levelledmobs.bukkit.command.levelledmobs;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
@@ -87,7 +87,7 @@ public class LevelledMobsBaseCommand extends BaseCommandWrapper {
         if(args.length < 2) {
             return Collections.emptyList();
         } else if(args.length == 2) {
-            final ArrayList<String> suggestions = new ArrayList<>();
+            final List<String> suggestions = new LinkedList<>();
 
             for(var subcommand : getSubcommands())
                 suggestions.add(subcommand.getLabels().iterator().next());

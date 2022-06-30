@@ -15,9 +15,9 @@ public final class CommandHandler {
     /* constructors */
 
     public CommandHandler() {
-        baseCommands.addAll(Set.of(
+        baseCommands.add(
             new LevelledMobsBaseCommand()
-        ));
+        );
     }
 
     /* methods */

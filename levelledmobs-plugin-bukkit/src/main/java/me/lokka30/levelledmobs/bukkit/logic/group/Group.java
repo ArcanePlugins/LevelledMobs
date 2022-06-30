@@ -1,6 +1,6 @@
 package me.lokka30.levelledmobs.bukkit.logic.group;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import org.jetbrains.annotations.NotNull;
 
@@ -9,7 +9,7 @@ public final class Group {
     /* vars */
 
     private final String identifier;
-    private final ArrayList<String> items = new ArrayList<>();
+    private final List<String> items = new LinkedList<>();
 
     /* constructors */
 
@@ -31,6 +31,6 @@ public final class Group {
     public String getIdentifier() { return identifier; }
 
     @NotNull
-    public ArrayList<String> getItems() { return items; }
+    public List<String> getItems() { return items; }
 
 }

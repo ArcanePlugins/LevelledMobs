@@ -1,7 +1,7 @@
 package me.lokka30.levelledmobs.bukkit.logic.function.process.condition.impl;
 
-import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import me.lokka30.levelledmobs.bukkit.logic.context.Context;
 import me.lokka30.levelledmobs.bukkit.logic.function.process.Process;
@@ -27,7 +27,7 @@ public class EntityBiomeCondition extends Condition {
 
     /* constructors */
 
-    public EntityBiomeCondition(Process process, final CommentedConfigurationNode node) {
+    public EntityBiomeCondition(final Process process, final CommentedConfigurationNode node) {
         super(process, node);
 
         final Type type;
@@ -56,7 +56,7 @@ public class EntityBiomeCondition extends Condition {
             return;
         }
 
-        final List<Biome> biomeTypes = new ArrayList<>();
+        final List<Biome> biomeTypes = new LinkedList<>();
 
         for (var entityTypeStr : biomeTypesStr) {
             try {
@@ -71,7 +71,7 @@ public class EntityBiomeCondition extends Condition {
     /* methods */
 
     @Override
-    public boolean applies(Context context) {
+    public boolean applies(final @NotNull Context context) {
         assert context.getLocation() != null;
         return getModalList().contains(context.getLocation().getBlock().getBiome());
     }

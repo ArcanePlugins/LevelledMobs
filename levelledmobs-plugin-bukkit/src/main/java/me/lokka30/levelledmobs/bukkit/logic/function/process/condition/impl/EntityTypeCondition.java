@@ -1,7 +1,7 @@
 package me.lokka30.levelledmobs.bukkit.logic.function.process.condition.impl;
 
-import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import me.lokka30.levelledmobs.bukkit.logic.context.Context;
 import me.lokka30.levelledmobs.bukkit.logic.function.process.Process;
@@ -56,7 +56,7 @@ public class EntityTypeCondition extends Condition {
             return;
         }
 
-        final List<EntityType> entityTypes = new ArrayList<>();
+        final List<EntityType> entityTypes = new LinkedList<>();
 
         for (var entityTypeStr : entityTypesStr) {
             try {

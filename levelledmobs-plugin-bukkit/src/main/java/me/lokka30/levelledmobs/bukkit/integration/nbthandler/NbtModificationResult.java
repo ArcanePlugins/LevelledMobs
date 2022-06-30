@@ -1,6 +1,6 @@
 package me.lokka30.levelledmobs.bukkit.integration.nbthandler;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import org.bukkit.entity.Entity;
@@ -12,9 +12,9 @@ public class NbtModificationResult {
     private ItemStack itemStack;
     private Entity entity;
     private Exception exception;
-    private final List<String> objectsAdded = new ArrayList<>();
-    private final List<String> objectsUpdated = new ArrayList<>();
-    private final List<String> objectsRemoved = new ArrayList<>();
+    private final List<String> objectsAdded = new LinkedList<>();
+    private final List<String> objectsUpdated = new LinkedList<>();
+    private final List<String> objectsRemoved = new LinkedList<>();
 
     public NbtModificationResult(final ItemStack itemStack) {
         this.itemStack = itemStack;

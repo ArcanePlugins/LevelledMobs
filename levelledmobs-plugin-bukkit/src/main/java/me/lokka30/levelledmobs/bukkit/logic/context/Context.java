@@ -1,10 +1,12 @@
 package me.lokka30.levelledmobs.bukkit.logic.context;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import me.lokka30.levelledmobs.bukkit.LevelledMobs;
 import me.lokka30.levelledmobs.bukkit.logic.function.LmFunction;
+import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -19,7 +21,9 @@ public final class Context {
     private Entity entity;
     private EntityType entityType;
     private Player player;
-    private final List<LmFunction> linkedFunctions = new ArrayList<>();
+    private World world;
+    private Location location;
+    private final List<LmFunction> linkedFunctions = new LinkedList<>();
 
     /* methods */
 
@@ -35,6 +39,8 @@ public final class Context {
     @NotNull
     public Context withEntity(final @NotNull Entity entity) {
         this.entity = Objects.requireNonNull(entity, "entity");
+        this.location = entity.getLocation();
+        this.world = entity.getWorld();
         return this;
     }
 
@@ -60,6 +66,18 @@ public final class Context {
         return this;
     }
 
+    @NotNull
+    public Context withWorld(final @NotNull World world){
+        this.world = Objects.requireNonNull(world, "world");
+        return this;
+    }
+
+    @NotNull
+    public Context withLocation(final @NotNull Location location){
+        this.location = Objects.requireNonNull(location, "location");
+        return this;
+    }
+
     @Nullable
     public Player getPlayer() { return player; }
 
@@ -69,6 +87,15 @@ public final class Context {
             linkedFunction, "linkedFunction"
         ));
         return this;
+    }
+
+    @Nullable
+    public Location getLocation(){
+        if (entity == null){
+            return null;
+        }
+
+        return entity.getLocation();
     }
 
     @NotNull

@@ -1,8 +1,9 @@
 package me.lokka30.levelledmobs.bukkit.logic.function;
 
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.TreeSet;
+
 import me.lokka30.levelledmobs.bukkit.logic.context.Context;
 import me.lokka30.levelledmobs.bukkit.logic.function.process.Process;
 import org.jetbrains.annotations.NotNull;
@@ -19,7 +20,7 @@ public class LmFunction {
     private final String identifier;
     private final String description;
     private final CommentedConfigurationNode node;
-    private final Set<String> triggers = new HashSet<>();
+    private final Set<String> triggers = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
     private final Set<Process> processes = new LinkedHashSet<>();
     private boolean exit = false;
     private boolean exitAll = false; // TODO Implement
@@ -50,13 +51,13 @@ public class LmFunction {
         setShouldExitAll(false);
     }
 
-    public boolean hasAnyTriggers(final @NotNull String... triggersToCheck) {
-        for(var trigger : getTriggers()) {
-            for(var triggerToCheck : triggersToCheck) {
-                if(trigger.equalsIgnoreCase(triggerToCheck))
-                    return true;
+    public boolean hasAnyTriggers(final @NotNull String @NotNull ... triggersToCheck) {
+        for(var triggerToCheck : triggersToCheck) {
+            if(getTriggers().contains(triggerToCheck)){
+                return true;
             }
         }
+
         return false;
     }
 
