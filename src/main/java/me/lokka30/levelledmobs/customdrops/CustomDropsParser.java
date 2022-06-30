@@ -391,15 +391,15 @@ public class CustomDropsParser {
                     dropBase = new CustomCommand(defaults);
                 } else {
                     final CustomDropItem item = new CustomDropItem(this.defaults);
+                    item.externalType = ymlHelper.getString(itemInfoConfiguration, "type",
+                            this.defaults.externalType);
+                    item.externalAmount = ymlHelper.getDouble2(itemInfoConfiguration,
+                            "external-amount", this.defaults.externalAmount);
+                    item.externalExtras = parseExternalExtras(itemInfoConfiguration);
+
                     if (!addMaterialToDrop(materialName, dropInstance, item)) {
                         continue;
                     }
-
-                    item.externalType = ymlHelper.getString(itemInfoConfiguration, "type",
-                        this.defaults.externalType);
-                    item.externalAmount = ymlHelper.getDouble2(itemInfoConfiguration,
-                        "external-amount", this.defaults.externalAmount);
-                    item.externalExtras = parseExternalExtras(itemInfoConfiguration);
 
                     if (item.isExternalItem && main.companion.externalCompatibilityManager.doesLMIMeetVersionRequirement()) {
                         if (!handler.lmItemsParser.getExternalItem(item)) {
