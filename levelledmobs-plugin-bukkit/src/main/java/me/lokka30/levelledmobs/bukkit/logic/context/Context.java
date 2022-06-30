@@ -13,7 +13,7 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-@SuppressWarnings("UnusedReturnValue")
+@SuppressWarnings({"unused", "UnusedReturnValue"})
 public final class Context {
 
     /* vars */
@@ -39,9 +39,10 @@ public final class Context {
     @NotNull
     public Context withEntity(final @NotNull Entity entity) {
         this.entity = Objects.requireNonNull(entity, "entity");
-        this.location = entity.getLocation();
-        this.world = entity.getWorld();
-        return this;
+
+        return this
+            .withEntityType(entity.getType())
+            .withLocation(entity.getLocation());
     }
 
     @Nullable
@@ -66,36 +67,42 @@ public final class Context {
         return this;
     }
 
+    @Nullable
+    public Player getPlayer() {
+        return player;
+    }
+
     @NotNull
     public Context withWorld(final @NotNull World world){
         this.world = Objects.requireNonNull(world, "world");
         return this;
     }
 
+    @Nullable
+    public World getWorld() {
+        return world;
+    }
+
     @NotNull
     public Context withLocation(final @NotNull Location location){
         this.location = Objects.requireNonNull(location, "location");
+
+        if(location.getWorld() != null) {
+            withWorld(location.getWorld());
+        }
+
         return this;
     }
 
     @Nullable
-    public Player getPlayer() { return player; }
+    public Location getLocation() {
+        return location;
+    }
 
     @NotNull
     public Context withLinkedFunction(final LmFunction linkedFunction) {
-        getLinkedFunctions().add(Objects.requireNonNull(
-            linkedFunction, "linkedFunction"
-        ));
+        getLinkedFunctions().add(Objects.requireNonNull(linkedFunction, "linkedFunction"));
         return this;
-    }
-
-    @Nullable
-    public Location getLocation(){
-        if (entity == null){
-            return null;
-        }
-
-        return entity.getLocation();
     }
 
     @NotNull

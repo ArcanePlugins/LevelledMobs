@@ -5,21 +5,21 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
 import me.lokka30.levelledmobs.bukkit.LevelledMobs;
-import me.lokka30.levelledmobs.bukkit.logic.function.process.action.ActionParseEvent;
-import me.lokka30.levelledmobs.bukkit.logic.function.process.condition.ConditionParseEvent;
-import me.lokka30.levelledmobs.bukkit.logic.function.FunctionPostParseEvent;
-import me.lokka30.levelledmobs.bukkit.logic.function.FunctionPreParseEvent;
-import me.lokka30.levelledmobs.bukkit.logic.function.process.condition.ConditionSocket;
-import me.lokka30.levelledmobs.bukkit.logic.group.GroupPostParseEvent;
-import me.lokka30.levelledmobs.bukkit.logic.group.GroupPreParseEvent;
-import me.lokka30.levelledmobs.bukkit.logic.function.process.ProcessPostParseEvent;
-import me.lokka30.levelledmobs.bukkit.logic.function.process.ProcessPreParseEvent;
 import me.lokka30.levelledmobs.bukkit.logic.context.Context;
 import me.lokka30.levelledmobs.bukkit.logic.context.placeholder.ContextPlaceholderHandler;
+import me.lokka30.levelledmobs.bukkit.logic.function.FunctionPostParseEvent;
+import me.lokka30.levelledmobs.bukkit.logic.function.FunctionPreParseEvent;
 import me.lokka30.levelledmobs.bukkit.logic.function.LmFunction;
 import me.lokka30.levelledmobs.bukkit.logic.function.process.Process;
+import me.lokka30.levelledmobs.bukkit.logic.function.process.ProcessPostParseEvent;
+import me.lokka30.levelledmobs.bukkit.logic.function.process.ProcessPreParseEvent;
+import me.lokka30.levelledmobs.bukkit.logic.function.process.action.ActionParseEvent;
 import me.lokka30.levelledmobs.bukkit.logic.function.process.action.ActionSocket;
+import me.lokka30.levelledmobs.bukkit.logic.function.process.condition.ConditionParseEvent;
+import me.lokka30.levelledmobs.bukkit.logic.function.process.condition.ConditionSocket;
 import me.lokka30.levelledmobs.bukkit.logic.group.Group;
+import me.lokka30.levelledmobs.bukkit.logic.group.GroupPostParseEvent;
+import me.lokka30.levelledmobs.bukkit.logic.group.GroupPreParseEvent;
 import me.lokka30.levelledmobs.bukkit.logic.preset.Preset;
 import me.lokka30.levelledmobs.bukkit.util.Log;
 import org.bukkit.Bukkit;
@@ -102,7 +102,11 @@ public final class LogicHandler {
             if(groupEntry.getValue().isList()) {
                 // group has a list key
                 try {
-                    group.getItems().addAll(groupEntry.getValue().getList(String.class));
+                    group.getItems().addAll(
+                        Objects.requireNonNull(
+                            groupEntry.getValue().getList(String.class), "groupEntry"
+                        )
+                    );
                 } catch(SerializationException ex) {
                     Log.sev("Unable to parse group '" + group.getIdentifier() + "': it is " +
                         "highly likely that the user has made a syntax error in the " +
@@ -315,7 +319,7 @@ public final class LogicHandler {
                 presetIterator:
                 for(var presetIdentifier : presetsIdentifiersList) {
                     if(process.getPresets().stream().anyMatch(otherPreset ->
-                        otherPreset.identifier().equals(presetIdentifier))
+                        otherPreset.getIdentifier().equals(presetIdentifier))
                     ) {
                         Log.war("Process '" + identifier + "' has preset '" + presetIdentifier +
                             "' listed more than once. A preset can only be used at most once per "
@@ -324,7 +328,7 @@ public final class LogicHandler {
                     }
 
                     for(var otherPreset : getPresets()) {
-                        if(otherPreset.identifier().equals(presetIdentifier)) {
+                        if(otherPreset.getIdentifier().equals(presetIdentifier)) {
                             process.getPresets().add(otherPreset);
                             continue presetIterator;
                         }

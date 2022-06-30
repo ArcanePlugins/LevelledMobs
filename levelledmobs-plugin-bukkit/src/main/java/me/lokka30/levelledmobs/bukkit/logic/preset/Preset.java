@@ -2,15 +2,18 @@ package me.lokka30.levelledmobs.bukkit.logic.preset;
 
 import org.jetbrains.annotations.NotNull;
 
-public record Preset(String identifier, String description) {
+public class Preset {
 
     /* vars */
+
+    private final String identifier;
+    private final String description;
 
     /* constructors */
 
     public Preset(
-            final @NotNull String identifier,
-            final @NotNull String description
+        final @NotNull String identifier,
+        final @NotNull String description
     ) {
         this.identifier = identifier;
         this.description = description;
@@ -18,15 +21,13 @@ public record Preset(String identifier, String description) {
 
     /* getters and setters */
 
-    @Override
     @NotNull
-    public String identifier() {
+    public String getIdentifier() {
         return identifier;
     }
 
-    @Override
     @NotNull
-    public String description() {
+    public String getDescription() {
         return description;
     }
 

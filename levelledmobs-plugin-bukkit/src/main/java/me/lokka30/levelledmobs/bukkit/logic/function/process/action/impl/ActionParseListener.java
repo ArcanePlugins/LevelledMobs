@@ -1,9 +1,9 @@
 package me.lokka30.levelledmobs.bukkit.logic.function.process.action.impl;
 
 import java.util.Locale;
-import me.lokka30.levelledmobs.bukkit.logic.function.process.action.ActionParseEvent;
 import me.lokka30.levelledmobs.bukkit.listener.ListenerWrapper;
 import me.lokka30.levelledmobs.bukkit.logic.function.process.action.Action;
+import me.lokka30.levelledmobs.bukkit.logic.function.process.action.ActionParseEvent;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.jetbrains.annotations.NotNull;
@@ -38,7 +38,7 @@ public class ActionParseListener extends ListenerWrapper {
         }
     }
 
-    private void addAction(final @NotNull ActionParseEvent event, final Action action) {
+    private void addAction(final @NotNull ActionParseEvent event, final @NotNull Action action) {
         event.getProcess().getActions().add(action);
         event.setClaimed(true);
     }

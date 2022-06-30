@@ -51,7 +51,7 @@ public class LmFunction {
         setShouldExitAll(false);
     }
 
-    public boolean hasAnyTriggers(final @NotNull String @NotNull ... triggersToCheck) {
+    public boolean hasAnyTriggers(final @NotNull String... triggersToCheck) {
         for(var triggerToCheck : triggersToCheck) {
             if(getTriggers().contains(triggerToCheck)){
                 return true;
