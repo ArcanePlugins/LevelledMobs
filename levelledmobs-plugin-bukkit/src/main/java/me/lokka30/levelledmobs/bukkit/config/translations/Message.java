@@ -174,45 +174,6 @@ public enum Message {
     }
 
     public void sendTo(final CommandSender sender, final String... replacements) {
-
-        /* create new replacements array */
-
-        // how many prefix pairs are there? ... three: info, warning, severe.
-        // added purely for code readability, and I doubt this value will change for at least v4.
-        // TODO-REMOVE final var prefixPairs = 3;
-
-        // create a new replacements array so we can replace the prefix placeholders in the message.
-        // the newReplacements array is larger than the replacements array to accomodate the
-        // number of prefix pairs to be replaced (prefixPairs variable).
-        // TODO-REMOVE final var newReplacements = new String[replacements.length + (prefixPairs * 2)];
-
-        /* set indices 0-5 to the three prefix pairs. */
-
-        // warning: if adding/removing a prefix pair, update the prefixPairs variable.
-        // TODO-REMOVE newReplacements[0] = "%prefix-info%";
-        // TODO-REMOVE newReplacements[1] = Message.GENERIC_PREFIX_INFO.getDeclared()[0];
-        // TODO-REMOVE newReplacements[2] = "%prefix-warning%";
-        // TODO-REMOVE newReplacements[3] = Message.GENERIC_PREFIX_WARNING.getDeclared()[0];
-        // TODO-REMOVE newReplacements[4] = "%prefix-severe%";
-        // TODO-REMOVE newReplacements[5] = Message.GENERIC_PREFIX_SEVERE.getDeclared()[0];
-
-        /* copy contents of old replacements array to new array */
-
-        // this check might be pointless. going to keep it here for safety
-        /* TODO-REMOVE
-        if(replacements.length != 0 && System.currentTimeMillis() == 0) {
-
-            System.arraycopy(
-                replacements, 0,         // start at index 0 of the replacements array
-                newReplacements, 6,     // start at index 6 of the newReplacements array
-                replacements.length             // how many elements we want to copy
-            );
-        }
-
-         */
-
-        // format the message using the replacements and send it to the specified CommandSender
-        // TODO-REMOVE for(var components : formatMd(newReplacements)) {
         for(var components : formatMd(replacements)) {
             if(components == null) {
                 sender.sendMessage(" ");
