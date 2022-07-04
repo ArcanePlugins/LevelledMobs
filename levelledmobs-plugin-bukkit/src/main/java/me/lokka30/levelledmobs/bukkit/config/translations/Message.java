@@ -1,8 +1,6 @@
 package me.lokka30.levelledmobs.bukkit.config.translations;
 
 import de.themoep.minedown.MineDown;
-import java.util.LinkedList;
-import java.util.List;
 import me.lokka30.levelledmobs.bukkit.util.Log;
 import net.md_5.bungee.api.chat.BaseComponent;
 import org.bukkit.command.CommandSender;
@@ -149,13 +147,16 @@ public enum Message {
     Format a message using MineDown
      */
     public BaseComponent[][] formatMd(final String... replacements) {
-        final var length = getDeclared().length;
-        final var to = new BaseComponent[length][];
-        for(int i = 0; i < length; i++) {
-            var toParse = getDeclared()[i];
+        final var declaredLen = getDeclared().length;
+        final var components = new BaseComponent[declaredLen][];
+        for(int line = 0; line < declaredLen; line++) {
+            var toParse = getDeclared()[line]
+                .replace("%prefix-info%", Message.GENERIC_PREFIX_INFO.getDeclared()[0])
+                .replace("%prefix-warning%", Message.GENERIC_PREFIX_WARNING.getDeclared()[0])
+                .replace("%prefix-severe%", Message.GENERIC_PREFIX_SEVERE.getDeclared()[0]);
 
             if(toParse.isBlank()) {
-                to[i] = null;
+                components[line] = null;
                 continue;
             }
 
@@ -167,28 +168,52 @@ public enum Message {
                     + "num of placeholder parameters were entered.", true);
             }
 
-            to[i] = MineDown.parse(toParse);
+            components[line] = MineDown.parse(toParse);
         }
-        return to;
+        return components;
     }
 
     public void sendTo(final CommandSender sender, final String... replacements) {
-        // ... firstly, let's add the prefix placeholders in the replacements array ...
-        final var newReplacements = new LinkedList<String>();
 
-        // let's start out with a list of the prefix placeholder replacement pairs [6 list items]
-        newReplacements.add("%prefix-info%");
-        newReplacements.add(Message.GENERIC_PREFIX_INFO.getDeclared()[0]);
-        newReplacements.add("%prefix-warning%");
-        newReplacements.add(Message.GENERIC_PREFIX_WARNING.getDeclared()[0]);
-        newReplacements.add("%prefix-severe%");
-        newReplacements.add(Message.GENERIC_PREFIX_SEVERE.getDeclared()[0]);
+        /* create new replacements array */
 
-        // now let's merge the replacements into the newReplacements list so they're combined
-        newReplacements.addAll(List.of(replacements));
+        // how many prefix pairs are there? ... three: info, warning, severe.
+        // added purely for code readability, and I doubt this value will change for at least v4.
+        // TODO-REMOVE final var prefixPairs = 3;
 
-        // ... cool, now let's send these beautiful messages ...
-        for(var components : formatMd(newReplacements.toArray(new String[0]))) {
+        // create a new replacements array so we can replace the prefix placeholders in the message.
+        // the newReplacements array is larger than the replacements array to accomodate the
+        // number of prefix pairs to be replaced (prefixPairs variable).
+        // TODO-REMOVE final var newReplacements = new String[replacements.length + (prefixPairs * 2)];
+
+        /* set indices 0-5 to the three prefix pairs. */
+
+        // warning: if adding/removing a prefix pair, update the prefixPairs variable.
+        // TODO-REMOVE newReplacements[0] = "%prefix-info%";
+        // TODO-REMOVE newReplacements[1] = Message.GENERIC_PREFIX_INFO.getDeclared()[0];
+        // TODO-REMOVE newReplacements[2] = "%prefix-warning%";
+        // TODO-REMOVE newReplacements[3] = Message.GENERIC_PREFIX_WARNING.getDeclared()[0];
+        // TODO-REMOVE newReplacements[4] = "%prefix-severe%";
+        // TODO-REMOVE newReplacements[5] = Message.GENERIC_PREFIX_SEVERE.getDeclared()[0];
+
+        /* copy contents of old replacements array to new array */
+
+        // this check might be pointless. going to keep it here for safety
+        /* TODO-REMOVE
+        if(replacements.length != 0 && System.currentTimeMillis() == 0) {
+
+            System.arraycopy(
+                replacements, 0,         // start at index 0 of the replacements array
+                newReplacements, 6,     // start at index 6 of the newReplacements array
+                replacements.length             // how many elements we want to copy
+            );
+        }
+
+         */
+
+        // format the message using the replacements and send it to the specified CommandSender
+        // TODO-REMOVE for(var components : formatMd(newReplacements)) {
+        for(var components : formatMd(replacements)) {
             if(components == null) {
                 sender.sendMessage(" ");
             } else {
