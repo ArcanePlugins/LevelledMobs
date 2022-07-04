@@ -31,6 +31,7 @@ public enum LevelledMobSpawnReason {
     BREEDING,
     SLIME_SPLIT,
     REINFORCEMENTS,
+    METAMORPHOSIS,
     NETHER_PORTAL,
     DISPENSE_EGG,
     INFECTION,

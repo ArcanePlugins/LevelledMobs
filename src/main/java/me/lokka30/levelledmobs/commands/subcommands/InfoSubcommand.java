@@ -6,7 +6,6 @@ package me.lokka30.levelledmobs.commands.subcommands;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.commands.MessagesBase;
 import org.bukkit.command.CommandSender;
@@ -36,21 +35,22 @@ public class InfoSubcommand extends MessagesBase implements Subcommand {
         }
 
         if (args.length == 1) {
-            final String version = main.getDescription().getVersion();
-            final String description = main.getDescription().getDescription();
-            assert description != null;
-            final List<String> codeContributors = List.of("stumper66", "Eyrian", "iCodinqs",
-                "deiphiz", "CoolBoy", "Esophose",
-                "7smile7", "UltimaOath", "konsolas", "Shevchik", "Hugo5551", "limzikiki",
-                "bStats Project", "SpigotMC Project", "ProfliX", "MrIvanPlays");
-            final String listSeparator = Objects.requireNonNull(
-                main.messagesCfg.getString("command.levelledmobs.info.listSeparator"),
-                "messages.yml: command.levelledmobs.info.listSeparator is undefined");
+            final String listSeparator = main.messagesCfg.getString("command.levelledmobs.info.listSeparator", "&7, &f");
 
             showMessage("command.levelledmobs.info.about",
-                new String[]{"%version%", "%description%", "%supportedVersions%", "%contributors%"},
-                new String[]{version, description, "1.16 - 1.19",
-                    String.join(listSeparator, codeContributors)}
+                new String[]{
+                    "%version%",
+                    "%description%",
+                    "%supportedVersions%",
+                    "%maintainers%",
+                    "%contributors%"},
+                new String[]{
+                    main.getDescription().getVersion(),
+                    main.getDescription().getDescription(),
+                    "1.16 - 1.19",
+                    String.join(listSeparator, main.getDescription().getAuthors()),
+                    "See &8&nhttps://github.com/lokka30/LevelledMobs/wiki/Credits"
+                }
             );
         } else {
             showMessage("command.levelledmobs.info.usage");

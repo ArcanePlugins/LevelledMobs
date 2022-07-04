@@ -129,7 +129,7 @@ public class CustomDropsParser {
                     final CustomDropInstance dropInstance = new CustomDropInstance(
                         EntityType.AREA_EFFECT_CLOUD); // entity type doesn't matter
                     parseCustomDrops2((List<?>) itemGroup.getValue(), dropInstance);
-                    if (!dropInstance.customItems.isEmpty()) {
+                    if (!dropInstance.customItems.isEmpty() || dropInstance.overrideStockDrops) {
                         handler.customItemGroups.put(itemGroupName, dropInstance);
                         handler.customDropIDs.put(itemGroupName, dropInstance);
                     }
@@ -230,7 +230,7 @@ public class CustomDropsParser {
                     }
                 } // end if not entity table
 
-                if (!dropInstance.customItems.isEmpty()) {
+                if (!dropInstance.customItems.isEmpty() || dropInstance.overrideStockDrops) {
                     if (isUniversalGroup) {
                         if (handler.customDropsitems_groups.containsKey(
                             universalGroup.toString())) {
@@ -391,17 +391,17 @@ public class CustomDropsParser {
                     dropBase = new CustomCommand(defaults);
                 } else {
                     final CustomDropItem item = new CustomDropItem(this.defaults);
+                    item.externalType = ymlHelper.getString(itemInfoConfiguration, "type",
+                            this.defaults.externalType);
+                    item.externalAmount = ymlHelper.getDouble2(itemInfoConfiguration,
+                            "external-amount", this.defaults.externalAmount);
+                    item.externalExtras = parseExternalExtras(itemInfoConfiguration);
+
                     if (!addMaterialToDrop(materialName, dropInstance, item)) {
                         continue;
                     }
 
-                    item.externalType = ymlHelper.getString(itemInfoConfiguration, "type",
-                        this.defaults.externalType);
-                    item.externalAmount = ymlHelper.getDouble2(itemInfoConfiguration,
-                        "external-amount", this.defaults.externalAmount);
-
-                    if (item.isExternalItem && ExternalCompatibilityManager.hasLMItemsInstalled()) {
-
+                    if (item.isExternalItem && main.companion.externalCompatibilityManager.doesLMIMeetVersionRequirement()) {
                         if (!handler.lmItemsParser.getExternalItem(item)) {
                             continue;
                         }
@@ -413,6 +413,23 @@ public class CustomDropsParser {
                 parseCustomDropsAttributes(dropBase, itemInfoConfiguration, dropInstance);
             }
         } // next item
+    }
+
+    private @Nullable Map<String, Object> parseExternalExtras(final @NotNull ConfigurationSection cs){
+        final ConfigurationSection cs2 = ymlHelper.objTo_CS(cs, "extras");
+        if (cs2 == null) return null;
+
+        final Map<String, Object> results = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+
+        for (final String name : cs2.getKeys(false)) {
+            final Object value = cs2.get(name);
+            if (value != null) results.put(name, value);
+        }
+
+        if (results.isEmpty())
+            return null;
+        else
+            return results;
     }
 
     private void parseCustomDropsAttributes(@NotNull final CustomDropBase dropBase,
@@ -491,6 +508,7 @@ public class CustomDropsParser {
             this.defaults.causeOfDeathReqs);
         item.onlyDropIfEquipped = ymlHelper.getBoolean(cs, "only-drop-if-equipped",
             this.defaults.onlyDropIfEquipped);
+        item.equipOffhand = ymlHelper.getBoolean(cs, "equip-offhand", this.defaults.equipOffhand);
         item.priority = ymlHelper.getInt(cs, "priority", this.defaults.priority);
         item.noMultiplier = ymlHelper.getBoolean(cs, "nomultiplier", this.defaults.noMultiplier);
         item.noSpawner = ymlHelper.getBoolean(cs, "nospawner", this.defaults.noSpawner);
@@ -533,11 +551,10 @@ public class CustomDropsParser {
         }
 
         parseEnchantments(objectToConfigurationSection2(cs, "enchantments"), item);
-
-        final String nbtStuff = ymlHelper.getString(cs, "nbt-data");
-        if (!Utils.isNullOrEmpty(nbtStuff)) {
+        item.nbtData = ymlHelper.getString(cs, "nbt-data", this.defaults.nbtData);
+        if (item.getMaterial() != Material.AIR && !Utils.isNullOrEmpty(item.nbtData)) {
             if (ExternalCompatibilityManager.hasNbtApiInstalled()) {
-                final NBTApplyResult result = NBTManager.applyNBT_Data_Item(item, nbtStuff);
+                final NBTApplyResult result = NBTManager.applyNBT_Data_Item(item, item.nbtData);
                 if (result.hadException()) {
                     Utils.logger.warning(
                         String.format("custom drop %s for %s has invalid NBT data: %s",
@@ -720,25 +737,37 @@ public class CustomDropsParser {
             return;
         }
 
-        final List<String> flagList = cs.getStringList(
+        item.itemFlagsStrings = cs.getStringList(
             ymlHelper.getKeyNameFromConfig(cs, "item_flags"));
+        if (item.itemFlagsStrings.isEmpty()) {
+            item.itemFlagsStrings = cs.getStringList(
+                    ymlHelper.getKeyNameFromConfig(cs, "item-flags"));
+        }
+
+        if (item.itemFlagsStrings.isEmpty() && this.defaults.itemFlagsStrings != null) {
+            item.itemFlagsStrings = this.defaults.itemFlagsStrings;
+        }
+
         String itemFlags = null;
 
-        if (flagList.isEmpty()) {
+        if (item.itemFlagsStrings.isEmpty()) {
             itemFlags = ymlHelper.getString(cs, "itemflags");
             if (Utils.isNullOrEmpty(itemFlags)) {
                 itemFlags = ymlHelper.getString(cs, "item_flags");
             }
+            if (Utils.isNullOrEmpty(itemFlags)) {
+                itemFlags = ymlHelper.getString(cs, "item-flags");
+            }
         }
 
-        if (flagList.isEmpty() && Utils.isNullOrEmpty(itemFlags)) {
+        if (item.itemFlagsStrings.isEmpty() && Utils.isNullOrEmpty(itemFlags)) {
             return;
         }
         final List<ItemFlag> results = new LinkedList<>();
-        final List<String> flagsToParse = flagList.isEmpty() ?
-            List.of(itemFlags.replace(',', ';').split(";")) : flagList;
+        item.itemFlagsStrings = item.itemFlagsStrings.isEmpty() ?
+            List.of(itemFlags.replace(',', ';').split(";")) : item.itemFlagsStrings;
 
-        for (final String flag : flagsToParse) {
+        for (final String flag : item.itemFlagsStrings) {
             try {
                 final ItemFlag newFlag = ItemFlag.valueOf(flag.trim().toUpperCase());
                 results.add(newFlag);
@@ -828,18 +857,29 @@ public class CustomDropsParser {
 
         if (materialName.contains(":")) {
             // this item is referencing a custom item from an external plugin, we will call LM_Items to get it
-            if (ExternalCompatibilityManager.hasLMItemsInstalled()) {
+            if (main.companion.externalCompatibilityManager.doesLMIMeetVersionRequirement()) {
                 if (!handler.lmItemsParser.parseExternalItemAttributes(materialName, item)) {
                     return false;
                 }
             } else {
-                Utils.logger.warning(String.format(
-                    "Custom drop '%s' requires plugin LM_Items but it is not installed",
-                    materialName));
+                if (ExternalCompatibilityManager.hasLMItemsInstalled()){
+                    Utils.logger.warning(String.format(
+                            "Custom drop '%s' requires plugin LM_Items but it is an old version",
+                            materialName));
+                }
+                else {
+                    Utils.logger.warning(String.format(
+                            "Custom drop '%s' requires plugin LM_Items but it is not installed",
+                            materialName));
+                }
                 return false;
             }
         } else {
             final Material material;
+            if ("override".equalsIgnoreCase(materialName)){
+                dropInstance.overrideStockDrops = true;
+                return true;
+            }
             try {
                 material = Material.valueOf(materialName.toUpperCase());
             } catch (final Exception e) {
@@ -1069,6 +1109,10 @@ public class CustomDropsParser {
             if (item.externalAmount != null) {
                 sb.append(", ex-amt: ");
                 sb.append(item.externalAmount);
+            }
+            if (item.externalExtras != null){
+                sb.append(", ex-xtras: ");
+                sb.append(item.externalExtras.size());
             }
         }
 

@@ -36,6 +36,28 @@ import simplepets.brainsynder.api.plugin.SimplePets;
 public class ExternalCompatibilityManager {
 
     private static Boolean useNewerEliteMobsKey = null;
+    private Boolean lmiMeetsVersionRequirement;
+
+    public boolean doesLMIMeetVersionRequirement(){
+        // must be 1.1.0 or newer
+        if (lmiMeetsVersionRequirement != null)
+            return lmiMeetsVersionRequirement;
+
+        final Plugin lmi = Bukkit.getPluginManager().getPlugin("LM_Items");
+        if (lmi == null) return false;
+
+        try {
+            final VersionInfo requiredVersion = new VersionInfo("1.1.0");
+            final VersionInfo lmiVersion = new VersionInfo(lmi.getDescription().getVersion());
+
+            lmiMeetsVersionRequirement = requiredVersion.compareTo(lmiVersion) <= 0;
+        } catch (InvalidObjectException e) {
+            e.printStackTrace();
+            lmiMeetsVersionRequirement = false;
+        }
+
+        return lmiMeetsVersionRequirement;
+    }
 
     public enum ExternalCompatibility {
         NOT_APPLICABLE,

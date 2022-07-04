@@ -45,6 +45,7 @@ import me.lokka30.levelledmobs.listeners.PlayerInteractEventListener;
 import me.lokka30.levelledmobs.listeners.PlayerJoinListener;
 import me.lokka30.levelledmobs.listeners.PlayerPortalEventListener;
 import me.lokka30.levelledmobs.listeners.ServerStartListener;
+import me.lokka30.levelledmobs.managers.ExternalCompatibilityManager;
 import me.lokka30.levelledmobs.managers.LevelManager;
 import me.lokka30.levelledmobs.managers.PlaceholderApiIntegration;
 import me.lokka30.levelledmobs.misc.ChunkKillInfo;
@@ -95,6 +96,7 @@ public class Companion {
         this.debugsEnabled = new LinkedList<>();
         this.entityDeathInChunkCounter = new HashMap<>();
         this.chunkKillNoticationTracker = new HashMap<>();
+        this.externalCompatibilityManager = new ExternalCompatibilityManager();
     }
 
     final private WeakHashMap<Player, Instant> recentlyJoinedPlayers;
@@ -113,6 +115,7 @@ public class Companion {
     final public List<DebugType> debugsEnabled;
     final private PluginManager pluginManager = Bukkit.getPluginManager();
     final private MetricsInfo metricsInfo;
+    final public ExternalCompatibilityManager externalCompatibilityManager;
     private BukkitTask hashMapCleanUp;
     final static private Object playerLogonTimesLock = new Object();
     final static private Object playerNetherPortalsLock = new Object();

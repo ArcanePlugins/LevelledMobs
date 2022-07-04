@@ -1310,6 +1310,10 @@ public class LevelManager implements LevelInterface {
         final int maxRadius = main.rulesManager.getRuleCreeperMaxBlastRadius(lmEntity);
         final double damage = main.mobDataManager.getAdditionsForLevel(lmEntity,
             Addition.CREEPER_BLAST_DAMAGE, 3);
+        if (damage == 0.0){
+            return;
+        }
+
         int blastRadius = 3 + (int) Math.floor(damage);
 
         if (blastRadius > maxRadius) {
@@ -1427,7 +1431,7 @@ public class LevelManager implements LevelInterface {
                     equipment.setItemInMainHandDropChance(0);
                     equippedItemsInfo.mainHand = pair.getValue();
                     hadMainItem = true;
-                } else {
+                } else if (pair.getValue().equipOffhand) {
                     equipment.setItemInOffHand(itemStack);
                     equipment.setItemInOffHandDropChance(0);
                     equippedItemsInfo.offhand = pair.getValue();

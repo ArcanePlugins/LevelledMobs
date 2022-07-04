@@ -83,7 +83,7 @@ public class SpawnerSubCommand extends SpawnerBaseClass implements Subcommand {
         if ((!hasGivePlayer || operationEnum != OperationEnum.CREATE)
             && !(sender instanceof Player)) {
             final String messageName = operationEnum != OperationEnum.CREATE ?
-                "common.no-player" : "command.levelledmobs.spawner.no-player";
+                "common.players-only" : "command.levelledmobs.spawner.no-player";
 
             showMessage(messageName);
             return;

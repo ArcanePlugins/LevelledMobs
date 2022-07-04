@@ -119,7 +119,7 @@ public class RulesSubcommand extends MessagesBase implements Subcommand {
             }
         } else if ("show_effective".equalsIgnoreCase(args[1])) {
             if (!(sender instanceof Player)) {
-                showMessage("common.no-player");
+                showMessage("common.players-only");
                 return;
             }
 
@@ -234,22 +234,22 @@ public class RulesSubcommand extends MessagesBase implements Subcommand {
 
         switch (difficulty) {
             case BASIC:
-                replaceWhat[2] = "#    - basic_challenge";
-                replaceWith[2] = "    - basic_challenge";
-                replaceWhat[3] = "#    - weighted_random_basic";
-                replaceWith[3] = "    - weighted_random_basic";
+                replaceWhat[2] = "#- basic_challenge";
+                replaceWith[2] = "- basic_challenge";
+                replaceWhat[3] = "#- weighted_random_basic";
+                replaceWith[3] = "- weighted_random_basic";
                 break;
             case ADVANCED:
-                replaceWhat[2] = "#    - advanced_challenge";
-                replaceWith[2] = "    - advanced_challenge";
-                replaceWhat[3] = "#    - weighted_random_advanced";
-                replaceWith[3] = "    - weighted_random_advanced_difficulty";
+                replaceWhat[2] = "#- advanced_challenge";
+                replaceWith[2] = "- advanced_challenge";
+                replaceWhat[3] = "#- weighted_random_advanced";
+                replaceWith[3] = "- weighted_random_advanced_difficulty";
                 break;
             case EXTREME:
-                replaceWhat[2] = "#    - extreme_challenge";
-                replaceWith[2] = "    - extreme_challenge";
-                replaceWhat[3] = "#    - weighted_random_extreme";
-                replaceWith[3] = "    - weighted_random_extreme";
+                replaceWhat[2] = "#- extreme_challenge";
+                replaceWith[2] = "- extreme_challenge";
+                replaceWhat[3] = "#- weighted_random_extreme";
+                replaceWith[3] = "- weighted_random_extreme";
                 break;
         }
 
@@ -575,7 +575,7 @@ public class RulesSubcommand extends MessagesBase implements Subcommand {
                 "show_effective", "show_rule", "show_temp_disabled");
         } else if (args.length >= 3) {
             if ("reset".equalsIgnoreCase(args[1]) && args.length == 3) {
-                suggestions.addAll(List.of("basic", "average", "enhanced", "extreme"));
+                suggestions.addAll(List.of("basic", "average", "advanced", "extreme"));
             } else if ("show_all".equalsIgnoreCase(args[1])) {
                 boolean showOnConsole = false;
                 for (int i = 2; i < args.length; i++) {

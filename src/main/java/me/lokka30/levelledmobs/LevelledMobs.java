@@ -86,7 +86,6 @@ public final class LevelledMobs extends JavaPlugin {
     // Misc
     public Map<String, Set<String>> customMobGroups;
     public EntityDamageDebugListener entityDamageDebugListener;
-    public int incompatibilitiesAmount;
     private long loadTime;
     public WeakHashMap<LivingEntity, Instant> playerLevellingEntities;
     public Stack<LivingEntityWrapper> cacheCheck;

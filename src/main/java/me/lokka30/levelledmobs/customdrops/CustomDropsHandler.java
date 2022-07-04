@@ -61,7 +61,7 @@ public class CustomDropsHandler {
         customDropsParser = new CustomDropsParser(main, this);
         this.ymlHelper = customDropsParser.ymlHelper;
         this.customEquippedItems = new WeakHashMap<>();
-        if (ExternalCompatibilityManager.hasLMItemsInstalled()) {
+        if (main.companion.externalCompatibilityManager.doesLMIMeetVersionRequirement()) {
             this.lmItemsParser = new LMItemsParser(main);
         }
     }
@@ -604,13 +604,13 @@ public class CustomDropsHandler {
         // if we made it this far then the item will be dropped
 
         if (dropItem.isExternalItem && isCustomDropsDebuggingEnabled()
-            && !ExternalCompatibilityManager.hasLMItemsInstalled()) {
+            && !main.companion.externalCompatibilityManager.doesLMIMeetVersionRequirement()) {
             Utils.debugLog(main, DebugType.CUSTOM_DROPS,
                 "Could not get external custom item - LM_Items is not installed");
         }
 
         ItemStack newItem;
-        if (dropItem.isExternalItem && ExternalCompatibilityManager.hasLMItemsInstalled()
+        if (dropItem.isExternalItem && main.companion.externalCompatibilityManager.doesLMIMeetVersionRequirement()
             && lmItemsParser.getExternalItem(dropItem)) {
             newItem = dropItem.getItemStack();
         } else if (info.deathByFire) {

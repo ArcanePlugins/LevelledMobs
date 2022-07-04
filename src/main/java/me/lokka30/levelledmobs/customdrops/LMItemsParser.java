@@ -1,5 +1,6 @@
 package me.lokka30.levelledmobs.customdrops;
 
+import io.github.stumper66.lm_items.ExternalItemRequest;
 import io.github.stumper66.lm_items.GetItemResult;
 import io.github.stumper66.lm_items.ItemsAPI;
 import io.github.stumper66.lm_items.LM_Items;
@@ -27,11 +28,19 @@ public class LMItemsParser {
 
     public boolean parseExternalItemAttributes(@NotNull String materialName,
         final CustomDropItem item) {
-        if (!ExternalCompatibilityManager.hasLMItemsInstalled()) {
-            Utils.logger.warning(String.format(
-                "customdrops.yml references external item '%s' but LM_Items is not installed",
-                materialName
-            ));
+        if (!main.companion.externalCompatibilityManager.doesLMIMeetVersionRequirement()) {
+            if (ExternalCompatibilityManager.hasLMItemsInstalled()){
+                Utils.logger.warning(String.format(
+                        "customdrops.yml references external item '%s' but LM_Items is an old version",
+                        materialName
+                ));
+            }
+            else {
+                Utils.logger.warning(String.format(
+                        "customdrops.yml references external item '%s' but LM_Items is not installed",
+                        materialName
+                ));
+            }
             return false;
         }
 
@@ -61,9 +70,13 @@ public class LMItemsParser {
             return false;
         }
 
-        final GetItemResult result = item.externalAmount == null ?
-            itemsAPI.getItem(item.externalType, item.externalItemId) :
-            itemsAPI.getItem(item.externalType, item.externalItemId, item.externalAmount);
+        final ExternalItemRequest itemRequest = new ExternalItemRequest(item.externalItemId);
+        itemRequest.itemType = item.externalType;
+        itemRequest.amount = item.externalAmount;
+        itemRequest.extras = item.externalExtras;
+
+        final GetItemResult result = itemsAPI.getItem(itemRequest);
+
         if (!result.pluginIsInstalled) {
             Utils.logger.warning(
                 String.format("custom item references plugin '%s' but that plugin is not installed",

@@ -5,6 +5,7 @@
 package me.lokka30.levelledmobs.customdrops;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import me.lokka30.levelledmobs.util.Utils;
 import org.bukkit.Material;
@@ -28,10 +29,12 @@ public class CustomDropItem extends CustomDropBase {
     public String mobHeadTexture;
     public List<String> lore;
     List<ItemFlag> itemFlags;
+    List<String> itemFlagsStrings;
     private boolean hasDamageRange;
     private int damage;
     private int damageRangeMin;
     private int damageRangeMax;
+    public boolean equipOffhand;
     public UUID customPlayerHeadId;
     private Material material;
     private ItemStack itemStack;
@@ -39,7 +42,9 @@ public class CustomDropItem extends CustomDropBase {
     public String externalPluginName;
     public String externalType;
     public String externalItemId;
+    public String nbtData;
     public Double externalAmount;
+    public Map<String, Object> externalExtras;
 
     CustomDropItem(@NotNull final CustomDropsDefaults defaults) {
         super(defaults);
@@ -53,6 +58,7 @@ public class CustomDropItem extends CustomDropBase {
         this.equippedSpawnChance = defaults.equippedSpawnChance;
         this.noMultiplier = defaults.noMultiplier;
         this.onlyDropIfEquipped = defaults.onlyDropIfEquipped;
+        this.equipOffhand = defaults.equipOffhand;
     }
 
     public CustomDropItem cloneItem() {

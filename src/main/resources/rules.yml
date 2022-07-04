@@ -7,22 +7,18 @@
 #
 # --------------------------------------------------------------------------------------------LM3
 # +                                      ++                                                  +LM3
-# +  Main Developers                     ++  Need support documentation?                     +LM3
+# +  Main Developers                     ++  Documentation (on our Wiki)                     +LM3
 # +    lokka30                           ++    https://github.com/lokka30/LevelledMobs/wiki  +LM3
 # +      Author and developer            ++                                                  +LM3
-# +      https://ko-fi.com/lokka30       ++  ArcanePlugins Support Discord                   +LM3
-# +                                      ++    https://discord.gg/RQ8M4A5                    +LM3
-# +                                      ++                                                  +LM3
-# +    stumper66                         ++  Special thanks:                                 +LM3
-# +      Developer since v2              ++    ArcanePlugins developers and testers!         +LM3
-# +      https://ko-fi.com/penalbuffalo  ++    Donators, patrons, and other supporters!      +LM3
-# +                                      ++    SpigotMC, PaperMC, ProtocolLib, NBT-API,      +LM3
-# +                                      ++    PlaceholderAPI, and bStats!                   +LM3
-# +    UltimaOath                        ++                                                  +LM3
-# +      Docs and configs since v2       ++  Other Contributors:                             +LM3
-# +                                      ++    Eyrian, iCodinqs, deiphiz, CoolBoy, Esophose, +LM3
-# +                                      ++    7smile7, Hugo5551, konsolas, Shevchik,        +LM3
-# +                                      ++    limzikiki, and Zombie_Striker                 +LM3
+# +      https://ko-fi.com/lokka30       ++  Support/Discussion (on our Discord)             +LM3
+# +                                      ++    Join our Discord for free, quality support.   +LM3
+# +    PenalBuffalo (aka. stumper66)     ++    If you are unable to, PM @lokka30 on SpigotMC +LM3
+# +      LevelledMobs 3 maintainer       ++    https://discord.gg/RQ8M4A5                    +LM3
+# +      https://ko-fi.com/penalbuffalo  ++                                                  +LM3
+# +                                      ++  Welcome to LevelledMobs 3! Please read the      +LM3
+# +    UltimaOath (aka. Oathkeeper)      ++  relevant documentation prior to attempting any  +LM3
+# +      Docs and configs since v2       ++  changes to this file.                           +LM3
+# +      https://ko-fi.com/ultimaoath    ++                                                  +LM3
 # +                                      ++                                                  +LM3
 # --------------------------------------------------------------------------------------------LM3
 #                                     _____     _
@@ -77,7 +73,7 @@ biome-groups:
 # +-------------------------------------------------------------------------------------------LM3
 presets:
   spawn_Levelling:
-    #   This Strategy Preset controls the Spawn-Distance-Levelling system.
+    # This Strategy Preset controls the Spawn-Distance-Levelling system.
     name: 'LVLling Strategy - Distance-From-Spawn'
     strategies:
       distance-from-spawn:
@@ -88,7 +84,7 @@ presets:
           z: default
 
   blended_Levelling:
-    #   This Strategy Preset controls the Blended-Levelling sub-system to Spawn-Distance-Levelling.
+    # This Strategy Preset controls the Blended-Levelling sub-system to Spawn-Distance-Levelling.
     name: 'LVLling Strategy - Blended-Levelling'
     strategies:
       distance-from-spawn:
@@ -100,14 +96,14 @@ presets:
           scale-downward: true
 
   random_Levelling:
-    #   This Strategy Preset controls the Random-Levelling system.
+    # This Strategy Preset controls the Random-Levelling system.
     name: 'LVLling Strategy - Random'
     strategies:
       random: true
       lower-mob-level-bias-factor: 5
 
   weighted_random_basic:
-    #   This Strategy Preset controls Weighted Random Bias.
+    # This Strategy Preset controls Weighted Random Bias.
     name: 'LVLling Strategy - Weighted Random Bias BASIC Challenge'
     strategies:
       weighted-random:
@@ -118,7 +114,7 @@ presets:
         9-10: 1
 
   weighted_random_average:
-    #   This Strategy Preset controls Weighted Random Bias.
+    # This Strategy Preset controls Weighted Random Bias.
     name: 'LVLling Strategy - Weighted Random Bias AVERAGE Challenge'
     strategies:
       weighted-random:
@@ -129,7 +125,7 @@ presets:
         21-25: 1
 
   weighted_random_advanced:
-    #   This Strategy Preset controls Weighted Random Bias.
+    # This Strategy Preset controls Weighted Random Bias.
     name: 'LVLling Strategy - Weighted Random Bias ADVANCED Challenge'
     strategies:
       weighted-random:
@@ -140,7 +136,7 @@ presets:
         40-50: 1
 
   weighted_random_extreme:
-    #   This Strategy Preset controls Weighted Random Bias.
+    # This Strategy Preset controls Weighted Random Bias.
     name: 'LVLling Strategy - Weighted Random Bias EXTREME Challenge'
     strategies:
       weighted-random:
@@ -151,7 +147,7 @@ presets:
         80-100: 1
 
   player_Levelling:
-    #   This Strategy Preset controls the player-stat based levelling system.
+    # This Strategy Preset controls the player-stat based levelling system.
     name: 'LVLling Strategy - Player Based AVERAGE CHALLENGE'
     strategies:
       player-levelling:
@@ -167,13 +163,13 @@ presets:
         variable: '%level%'
 
   apply_LevellingVariance:
-    #   This Strategy Preset controls the random level variance applied.
+    # This Strategy Preset controls the random level variance applied.
     name: 'LVLling Strategy - Apply Variance'
     strategies:
       max-random-variance: 2
 
   ycoord_Levelling:
-    #   This Strategy Preset controls Y-Coordinate-Levelling.
+    # This Strategy Preset controls Y-Coordinate-Levelling.
     name: 'LVLling Strategy - Y-LVLling'
     strategies:
       y-coordinate:
@@ -182,7 +178,7 @@ presets:
         period: 0
 
   allowed_worlds:
-    #   This controls the allowed worlds to apply levels too.
+    # This controls the allowed worlds to apply levels too.
     name: 'Excluded Worldlist'
     conditions:
       worlds:
@@ -348,21 +344,21 @@ default-rule:
   use-preset:
     - allowed_worlds
     - nametag_using_numbers
-    #    - nametag_using_indicator
-    #    - basic_challenge
+    #- nametag_using_indicator
+    #- basic_challenge
     - average_challenge
-    #    - advanced_challenge
-    #    - extreme_challenge
-    #    - apply_LevellingVariance
-    #    - weighted_random_basic
+    #- advanced_challenge
+    #- extreme_challenge
+    #- apply_LevellingVariance
+    #- weighted_random_basic
     - weighted_random_average
-  #    - weighted_random_advanced
-  #    - weighted_random_extreme
-  #    - spawn_Levelling
-  #    - blended_Levelling
-  #    - ycoord_Levelling
-  #    - random_Levelling
-  #    - player_Levelling
+    #- weighted_random_advanced
+    #- weighted_random_extreme
+    #- spawn_Levelling
+    #- blended_Levelling
+    #- ycoord_Levelling
+    #- random_Levelling
+    #- player_Levelling
 
   conditions:
     allowed-spawn-reasons:
@@ -382,10 +378,10 @@ default-rule:
       ELITE_BOSSES: false
       BLOOD_NIGHT: false
 
-    #    apply-above-y: 64
-    #    apply-below-y: 59
-    #    min-distance-from-spawn: 1000
-    #    max-distance-from-spawn: 5000
+    #apply-above-y: 64
+    #apply-below-y: 59
+    #min-distance-from-spawn: 1000
+    #max-distance-from-spawn: 5000
 
     mob-customname-status: EITHER
     mob-tamed-status: EITHER
@@ -395,9 +391,9 @@ default-rule:
     creeper-max-damage-radius: 3
 
     entity-name-override:
-    #      HUSK: ['Husk', 'Desert Zombie', 'Lost Soul', 'Dessicated Corpse']
-    #      SKELETON: ['Bones', 'Billy Bones', 'Verta Brae']
-    #      PILLAGER: ['Raider', 'Barbarian']
+      #HUSK: ['Husk', 'Desert Zombie', 'Lost Soul', 'Dessicated Corpse']
+      #SKELETON: ['Bones', 'Billy Bones', 'Verta Brae']
+      #PILLAGER: ['Raider', 'Barbarian']
 
     creature-death-nametag: '%tiered%Lvl %mob-lvl%&8 | &f%displayname%'
     nametag-placeholder-levelled: ''
