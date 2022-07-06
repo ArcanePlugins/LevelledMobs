@@ -45,5 +45,7 @@ public class ActionSocket extends Action {
             "socket.", true);
 
         hasAlreadyWarned = true;
+
+        //TODO exit all linked functions? idk.
     }
 }

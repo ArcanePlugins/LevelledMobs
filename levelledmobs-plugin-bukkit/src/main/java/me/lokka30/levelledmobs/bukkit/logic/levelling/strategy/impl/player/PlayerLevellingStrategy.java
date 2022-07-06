@@ -1,4 +1,4 @@
-package me.lokka30.levelledmobs.bukkit.logic.levelling.strategy.impl;
+package me.lokka30.levelledmobs.bukkit.logic.levelling.strategy.impl.player;
 
 import me.lokka30.levelledmobs.bukkit.logic.context.Context;
 import me.lokka30.levelledmobs.bukkit.logic.levelling.strategy.LevellingStrategy;
@@ -15,6 +15,15 @@ public class PlayerLevellingStrategy extends LevellingStrategy {
 
     @Override
     public @Nullable Integer generate(@NotNull Context context) {
+        //TODO
+        return null;
+    }
+
+    @Override
+    public @NotNull String replaceInFormula(
+        @NotNull String formula,
+        @NotNull Context context
+    ) {
         //TODO
         return null;
     }

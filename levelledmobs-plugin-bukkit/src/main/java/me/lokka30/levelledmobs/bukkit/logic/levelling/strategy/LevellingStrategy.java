@@ -20,6 +20,9 @@ public abstract class LevellingStrategy {
     @Nullable
     public abstract Integer generate(final @NotNull Context context);
 
+    @NotNull
+    public abstract String replaceInFormula(final @NotNull String formula, final @NotNull Context context);
+
     public int getMinLevel() {
         return minLevel;
     }

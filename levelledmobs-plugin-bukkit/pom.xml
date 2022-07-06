@@ -26,6 +26,11 @@
     </dependency>
     <!-- TODO add update checker from jeff_media -->
     <dependency>
+      <groupId>com.github.Redempt</groupId>
+      <artifactId>Crunch</artifactId>
+      <version>1.1.2</version>
+    </dependency>
+    <dependency>
       <groupId>de.themoep</groupId>
       <artifactId>minedown</artifactId>
       <version>1.7.1-SNAPSHOT</version>
@@ -70,6 +75,10 @@
     <repository>
       <id>minebench-repo</id>
       <url>https://repo.minebench.de/</url>
+    </repository>
+    <repository>
+      <id>redempt.dev</id>
+      <url>https://redempt.dev</url>
     </repository>
     <repository>
       <id>spigot-repo</id>

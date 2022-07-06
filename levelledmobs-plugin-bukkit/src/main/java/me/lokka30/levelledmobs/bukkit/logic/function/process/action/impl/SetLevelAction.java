@@ -1,11 +1,14 @@
 package me.lokka30.levelledmobs.bukkit.logic.function.process.action.impl;
 
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 import me.lokka30.levelledmobs.bukkit.LevelledMobs;
 import me.lokka30.levelledmobs.bukkit.data.InternalEntityDataUtil;
 import me.lokka30.levelledmobs.bukkit.logic.context.Context;
 import me.lokka30.levelledmobs.bukkit.logic.function.process.Process;
 import me.lokka30.levelledmobs.bukkit.logic.function.process.action.Action;
+import me.lokka30.levelledmobs.bukkit.logic.levelling.strategy.LevellingStrategy;
 import me.lokka30.levelledmobs.bukkit.util.Log;
 import org.bukkit.entity.LivingEntity;
 import org.jetbrains.annotations.NotNull;
@@ -16,8 +19,9 @@ public class SetLevelAction extends Action {
 
     /* vars */
 
-    private final String formula;
     private final boolean babiesInheritLevel;
+    private final String formula;
+    private final Set<LevellingStrategy> strategies = new HashSet<>();
     private final boolean passengersInheritLevel;
 
     /* constructors */
@@ -36,6 +40,8 @@ public class SetLevelAction extends Action {
 
         this.passengersInheritLevel = getActionNode().node("passengers-inherit-level")
             .getBoolean(true);
+
+        // TODO shout for levelling strategies to be added to the set-level-action
     }
 
     /* methods */
@@ -99,7 +105,7 @@ public class SetLevelAction extends Action {
             return null;
         }
 
-        final var formula = context.replacePlaceholders(getFormula());
+        var formula = context.replacePlaceholders(getFormula());
         //TODO levelling strategies in formula
 
         //TODO use Crunch to spit out a level. make sure to catch any exceptions

@@ -1,4 +1,4 @@
-package me.lokka30.levelledmobs.bukkit.logic.levelling.strategy.impl;
+package me.lokka30.levelledmobs.bukkit.logic.levelling.strategy.impl.random;
 
 import java.util.concurrent.ThreadLocalRandom;
 import me.lokka30.levelledmobs.bukkit.logic.context.Context;
@@ -23,6 +23,17 @@ public class RandomLevellingStrategy extends LevellingStrategy {
     @Override
     public @NotNull Integer generate(@NotNull Context context) {
         return ThreadLocalRandom.current().nextInt(getMinLevel(), getMaxLevel());
+    }
+
+    @Override
+    public @NotNull String replaceInFormula(@NotNull String formula, @NotNull Context context) {
+        final var placeholder = "%random-level%";
+
+        if(!formula.contains(placeholder)) {
+            return formula;
+        }
+
+        return formula.replace(placeholder, Integer.toString(generate(context)));
     }
 
 }
