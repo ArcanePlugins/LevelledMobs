@@ -213,8 +213,14 @@ public class Companion {
             return;
         }
 
+        boolean useAllDebugs = false;
         for (final String debug : debugsEnabled) {
             if (Utils.isNullOrEmpty(debug)) {
+                continue;
+            }
+
+            if ("*".equalsIgnoreCase(debug)){
+                useAllDebugs = true;
                 continue;
             }
 
@@ -224,6 +230,11 @@ public class Companion {
             } catch (final Exception ignored) {
                 Utils.logger.warning("Invalid value for debug-misc: " + debug);
             }
+        }
+
+        if (useAllDebugs){
+            this.debugsEnabled.clear();
+            this.debugsEnabled.addAll(List.of(DebugType.values()));
         }
 
         if (!this.debugsEnabled.isEmpty()) {
