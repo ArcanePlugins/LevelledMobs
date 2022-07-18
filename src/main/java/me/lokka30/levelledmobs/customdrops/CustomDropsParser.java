@@ -475,6 +475,9 @@ public class CustomDropsParser {
                 ymlHelper.getStringSet(cs, "overall_permission"));
         }
 
+        dropBase.causeOfDeathReqs = buildCachedModalListOfDamageCause(cs,
+                this.defaults.causeOfDeathReqs);
+
         if (dropBase instanceof CustomCommand) {
             final CustomCommand customCommand = (CustomCommand) dropBase;
             final List<String> commandsList = cs.getStringList(
@@ -504,8 +507,7 @@ public class CustomDropsParser {
 
         checkEquippedChance(item, cs);
         parseItemFlags(item, cs, dropInstance);
-        item.causeOfDeathReqs = buildCachedModalListOfDamageCause(cs,
-            this.defaults.causeOfDeathReqs);
+
         item.onlyDropIfEquipped = ymlHelper.getBoolean(cs, "only-drop-if-equipped",
             this.defaults.onlyDropIfEquipped);
         item.equipOffhand = ymlHelper.getBoolean(cs, "equip-offhand", this.defaults.equipOffhand);
