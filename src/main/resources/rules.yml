@@ -182,7 +182,7 @@ presets:
     name: 'Excluded Worldlist'
     conditions:
       worlds:
-        #        allowed-list: ['*']
+        # allowed-list: ['*']
         excluded-list: [ 'world_the_end' ]
 
   basic_challenge:

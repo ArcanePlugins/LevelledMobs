@@ -135,7 +135,7 @@ public class DebugSubcommand extends MessagesBase implements Subcommand {
     @Override
     public List<String> parseTabCompletions(final LevelledMobs main, final CommandSender sender,
         final String @NotNull [] args) {
-        Utils.logger.info(String.format("%s", args.length));
+
         if (args.length <= 2) {
             return List.of("create", "chunk_kill_count", "nbt_dump");
         }

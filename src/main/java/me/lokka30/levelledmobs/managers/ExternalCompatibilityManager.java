@@ -5,6 +5,8 @@
 package me.lokka30.levelledmobs.managers;
 
 import java.io.InvalidObjectException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -19,13 +21,13 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
 import org.bukkit.World;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
-import simplepets.brainsynder.api.plugin.SimplePets;
 
 /**
  * This class handles compatibility with other plugins such as EliteMobs and Citizens
@@ -157,7 +159,7 @@ public class ExternalCompatibilityManager {
 
             return false;
         } else {
-            return SimplePets.isPetEntity(lmEntity.getLivingEntity());
+            return isSimplePets(lmEntity.getLivingEntity());
         }
     }
 
@@ -521,5 +523,27 @@ public class ExternalCompatibilityManager {
 
         return new PlayerHomeCheckResult(null, user.getHome(user.getHomes().get(0)),
             user.getHomes().get(0));
+    }
+
+    private static boolean isSimplePets(final @NotNull LivingEntity livingEntity){
+        try {
+            final Class<?> clazz_PetCore = Class.forName(
+                    "simplepets.brainsynder.api.plugin.SimplePets");
+            final Class<?> clazz_IPetsPlugin = Class.forName(
+                    "simplepets.brainsynder.api.plugin.IPetsPlugin");
+
+            final Method method_getPlugin = clazz_PetCore.getDeclaredMethod("getPlugin");
+            // returns public class PetCore extends JavaPlugin implements IPetsPlugin
+            final Object objIPetsPlugin = method_getPlugin.invoke(null);
+
+            final Method method_isPetEntity = clazz_IPetsPlugin.getDeclaredMethod("isPetEntity", Entity.class);
+            return (boolean)method_isPetEntity.invoke(objIPetsPlugin, livingEntity);
+        } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException |
+            ClassNotFoundException e) {
+            Utils.logger.error("Error checking if " + livingEntity.getName() + " is a SimplePet");
+            e.printStackTrace();
+        }
+
+        return false;
     }
 }
