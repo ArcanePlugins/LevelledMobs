@@ -1,4 +1,4 @@
-<div class="center" style="text-align: center;">
+<div align="center">
 
 <img src="https://i.ibb.co/ySgMPd0/Levelled-Mobs-Banner-v2-0.png" width="600" height="300" alt="LevelledMobs Banner"></img>
 
@@ -51,7 +51,7 @@ It can hook with your favourite plugins, such as *EcoSkills*, *Aurelium Skills*,
 
 <br />
 
-<div class="center" style="text-align: center;">
+<div align="center">
 <img src="https://i.ibb.co/ZBfws4Y/LM-Gallery.png" width="500" height="300">
 </div>
 
