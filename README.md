@@ -59,26 +59,28 @@ It can hook with your favourite plugins, such as *EcoSkills*, *Aurelium Skills*,
 
 ## License
 
-LevelledMobs is libre software, licensed under the GNU General Public License v3.
+LevelledMobs is libre software, licensed under the GNU Affero General Public License v3.
 
 ```
 Copyright (C) 2020-2022  lokka30
 
 This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
+it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+GNU Affero General Public License for more details.
 
-You should have received a copy of the GNU General Public License
+You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 ```
 
 [View the license here](LICENSE.md).
+
+LevelledMobs 4 will be relicensed with GNU GPL v3 (non-Affero) as the re-code permits.
 
 ## Branches
 
