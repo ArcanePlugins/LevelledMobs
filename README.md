@@ -12,7 +12,7 @@ Maintained by PenalBuffalo, UltimaOath and lokka30.
 <img src="https://img.shields.io/badge/Chat%20%2F%20Support-on%20Discord-skyblue?style=for-the-badge&logo=discord&logoColor=white" alt="Support available on Discord"></img>
 </a>
 <a href="https://www.spigotmc.org/conversations/add?to=lokka30">
-<img src="https://img.shields.io/badge/Chat%20%2F%20Support-Spigot%20PMS-skyblue?style=for-the-badge&logo=googlemessages" alt="Support available through Spigot PMs"></img>
+<img src="https://img.shields.io/badge/Chat%20%2F%20Support-Spigot%20PM-skyblue?style=for-the-badge&logo=googlemessages" alt="Support available through Spigot PMs"></img>
 </a>
 
 <br />
