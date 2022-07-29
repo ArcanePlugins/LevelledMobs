@@ -233,7 +233,11 @@ public class RulesManager {
                     lmEntity.getNameIfBaby());
                 if (thisMobAttribs == null || tempAttribs.doNotMerge) {
                     thisMobAttribs = tempAttribs.cloneItem();
-                    allMobAttribs = null;
+
+                    if (tempAttribs.doNotMerge)
+                        allMobAttribs = null;
+                    else if (allMobAttribs != null)
+                        allMobAttribs.mergeAttributes(thisMobAttribs);
                 } else {
                     thisMobAttribs.mergeAttributes(tempAttribs);
                 }
