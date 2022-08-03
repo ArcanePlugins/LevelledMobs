@@ -491,8 +491,7 @@ public class RulesManager {
         }
 
         if (result == null || result.isEmpty()) {
-            return List.of(NametagVisibilityEnum.ATTACKED, NametagVisibilityEnum.TARGETED,
-                NametagVisibilityEnum.TRACKING);
+            return List.of(NametagVisibilityEnum.MELEE);
         } else {
             return result;
         }

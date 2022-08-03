@@ -164,8 +164,6 @@ public class RulesParsingManager {
         parsingInfo.mobLevelInheritance = true;
         parsingInfo.creeperMaxDamageRadius = 5;
         parsingInfo.nametagVisibleTime = 1000L;
-        parsingInfo.nametagVisibilityEnum = List.of(NametagVisibilityEnum.TARGETED,
-            NametagVisibilityEnum.ATTACKED, NametagVisibilityEnum.TRACKING);
 
         if (cs == null) {
             Utils.logger.info("default-rule section was null");

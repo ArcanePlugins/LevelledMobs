@@ -50,13 +50,6 @@ public class FineTuningAttributes implements Cloneable {
                 }
                 final Object presetValue = f.get(attributes);
 
-                if (presetValue instanceof Integer && ((Integer) presetValue == 0)) {
-                    continue;
-                }
-                if (presetValue instanceof Double && ((Double) presetValue == 0.0)) {
-                    continue;
-                }
-
                 this.getClass().getDeclaredField(f.getName()).set(this, presetValue);
             }
         } catch (final IllegalAccessException | NoSuchFieldException e) {
