@@ -90,8 +90,6 @@ public class EntityTransformListener implements Listener {
                 continue;
             }
 
-            Utils.logger.info(String.format("test: %s, %s", lmEntity.getSpawnReason(), transformedEntity.getEntitySpawnReason()));
-
             if (useInheritance) {
                 main.levelInterface.applyLevelToMob(
                     transformedLmEntity,
