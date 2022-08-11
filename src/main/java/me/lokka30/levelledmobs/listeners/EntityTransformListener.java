@@ -41,7 +41,6 @@ public class EntityTransformListener implements Listener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void onTransform(@NotNull final EntityTransformEvent event) {
-        Utils.logger.info("got transform event");
         // is the original entity a living entity
         if (!(event.getEntity() instanceof LivingEntity)) {
             Utils.debugLog(main, DebugType.ENTITY_TRANSFORM_FAIL, event.getEntity().getType().name()
