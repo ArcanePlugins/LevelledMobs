@@ -16,6 +16,7 @@ import me.lokka30.levelledmobs.misc.CachedModalList;
 import me.lokka30.levelledmobs.misc.DebugType;
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
 import me.lokka30.levelledmobs.result.PlayerNetherOrWorldSpawnResult;
+import me.lokka30.levelledmobs.rules.LevelledMobSpawnReason;
 import me.lokka30.levelledmobs.rules.MinAndMax;
 import me.lokka30.levelledmobs.rules.RulesManager;
 import me.lokka30.microlib.messaging.MessageUtils;
@@ -26,6 +27,7 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Biome;
 import org.bukkit.entity.Player;
+import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -391,5 +393,10 @@ public final class Utils {
     @Contract(value = "_, _ -> new", pure = true)
     public static <T, U> Map.@NotNull Entry<T, U> getPair(T first, U second) {
         return new AbstractMap.SimpleEntry<>(first, second);
+    }
+
+    public static LevelledMobSpawnReason adaptVanillaSpawnReason(
+            final CreatureSpawnEvent.@NotNull SpawnReason spawnReason) {
+        return LevelledMobSpawnReason.valueOf(spawnReason.toString());
     }
 }

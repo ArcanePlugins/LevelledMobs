@@ -233,9 +233,11 @@ public class RulesManager {
                     lmEntity.getNameIfBaby());
                 if (thisMobAttribs == null || tempAttribs.doNotMerge) {
                     thisMobAttribs = tempAttribs.cloneItem();
-                    if (tempAttribs.doNotMerge) {
+
+                    if (tempAttribs.doNotMerge)
                         allMobAttribs = null;
-                    }
+                    else if (allMobAttribs != null)
+                        allMobAttribs.mergeAttributes(thisMobAttribs);
                 } else {
                     thisMobAttribs.mergeAttributes(tempAttribs);
                 }
@@ -489,8 +491,7 @@ public class RulesManager {
         }
 
         if (result == null || result.isEmpty()) {
-            return List.of(NametagVisibilityEnum.ATTACKED, NametagVisibilityEnum.TARGETED,
-                NametagVisibilityEnum.TRACKING);
+            return List.of(NametagVisibilityEnum.MELEE);
         } else {
             return result;
         }

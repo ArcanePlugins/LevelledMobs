@@ -99,6 +99,6 @@ public class NametagSender implements NMSUtil {
     }
 
     public String toString() {
-        return "Nametags_18_R1";
+        return "Nametags_NMS";
     }
 }

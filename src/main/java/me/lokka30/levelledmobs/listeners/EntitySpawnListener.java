@@ -72,7 +72,7 @@ public class EntitySpawnListener implements Listener {
         if (event instanceof CreatureSpawnEvent) {
             final CreatureSpawnEvent.SpawnReason spawnReason = ((CreatureSpawnEvent) event).getSpawnReason();
 
-            lmEntity.setSpawnReason(adaptVanillaSpawnReason(spawnReason));
+            lmEntity.setSpawnReason(Utils.adaptVanillaSpawnReason(spawnReason));
             if ((spawnReason == CreatureSpawnEvent.SpawnReason.CUSTOM
                 || spawnReason == CreatureSpawnEvent.SpawnReason.SPAWNER_EGG) &&
                 !lmEntity.isLevelled()) {
@@ -181,11 +181,6 @@ public class EntitySpawnListener implements Listener {
             .sorted(Comparator.comparingDouble(Map.Entry::getKey))
             .map(Map.Entry::getValue)
             .collect(Collectors.toList());
-    }
-
-    private LevelledMobSpawnReason adaptVanillaSpawnReason(
-        final CreatureSpawnEvent.@NotNull SpawnReason spawnReason) {
-        return LevelledMobSpawnReason.valueOf(spawnReason.toString());
     }
 
     private void delayedAddToQueue(final @NotNull LivingEntityWrapper lmEntity, final Event event,
@@ -322,7 +317,7 @@ public class EntitySpawnListener implements Listener {
             }
 
             if (!lmEntity.reEvaluateLevel) {
-                lmEntity.setSpawnReason(adaptVanillaSpawnReason(spawnEvent.getSpawnReason()));
+                lmEntity.setSpawnReason(Utils.adaptVanillaSpawnReason(spawnEvent.getSpawnReason()));
             }
         } else if (event instanceof ChunkLoadEvent) {
             additionalInfo = AdditionalLevelInformation.FROM_CHUNK_LISTENER;

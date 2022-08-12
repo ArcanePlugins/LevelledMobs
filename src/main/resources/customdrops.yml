@@ -55,6 +55,9 @@ defaults:
   # the following defaults are for custom commands only:
   run-on-spawn: false
   run-on-death: true
+  min-player-level: -1
+  max-player-level: -1
+  player-level-variable: ''
 
 
 # +-------------------------------------------------------------------------------------------LM3

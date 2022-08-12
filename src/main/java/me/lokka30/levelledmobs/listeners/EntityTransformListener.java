@@ -6,17 +6,21 @@ package me.lokka30.levelledmobs.listeners;
 
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
+
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.misc.AdditionalLevelInformation;
 import me.lokka30.levelledmobs.misc.DebugType;
 import me.lokka30.levelledmobs.misc.LevellableState;
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
+import me.lokka30.levelledmobs.rules.LevelledMobSpawnReason;
 import me.lokka30.levelledmobs.util.Utils;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntitySpawnEvent;
 import org.bukkit.event.entity.EntityTransformEvent;
 import org.jetbrains.annotations.NotNull;
@@ -48,6 +52,8 @@ public class EntityTransformListener implements Listener {
         if (!main.levelManager.isLevelled((LivingEntity) event.getEntity())) {
             Utils.debugLog(main, DebugType.ENTITY_TRANSFORM_FAIL,
                 event.getEntity() + ": original entity was &bnot&7 levelled");
+            if (event.getTransformReason() == EntityTransformEvent.TransformReason.SPLIT)
+                checkForSlimeSplit((LivingEntity) event.getEntity(), event.getTransformedEntities());
             return;
         }
 
@@ -103,5 +109,19 @@ public class EntityTransformListener implements Listener {
         }
 
         lmEntity.free();
+    }
+
+    private void checkForSlimeSplit(final @NotNull LivingEntity livingEntity, final @NotNull List<Entity> transformedEntities){
+        if (livingEntity.getEntitySpawnReason() == CreatureSpawnEvent.SpawnReason.DEFAULT) return;
+        final LevelledMobSpawnReason spawnReason = Utils.adaptVanillaSpawnReason(livingEntity.getEntitySpawnReason());
+
+        for (final Entity transformedEntity : transformedEntities) {
+            if (!(transformedEntity instanceof LivingEntity)) continue;
+
+            final LivingEntity le = (LivingEntity) transformedEntity;
+            final LivingEntityWrapper lew = LivingEntityWrapper.getInstance(le, main);
+            lew.setSpawnReason(spawnReason);
+            lew.free();
+        }
     }
 }

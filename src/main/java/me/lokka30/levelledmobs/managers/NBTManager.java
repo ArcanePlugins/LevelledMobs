@@ -12,6 +12,7 @@ import de.tr7zw.nbtapi.NBTItem;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.TreeMap;
+
 import me.lokka30.levelledmobs.customdrops.CustomDropItem;
 import me.lokka30.levelledmobs.misc.DebugType;
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
@@ -56,7 +57,7 @@ public class NBTManager {
                 showChangedJson(jsonBefore, jsonAfter, result);
             }
 
-            if (jsonBefore.equals(jsonAfter)) {
+            if (lmEntity.getMainInstance().companion.debugsEnabled.contains(DebugType.NBT_APPLY_SUCCESS) && jsonBefore.equals(jsonAfter)) {
                 result.exceptionMessage = "No NBT data changed.  Make sure you have used proper NBT strings";
             }
         } catch (final Exception e) {
