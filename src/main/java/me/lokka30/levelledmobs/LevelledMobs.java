@@ -92,8 +92,12 @@ public final class LevelledMobs extends JavaPlugin {
     public Stack<LivingEntityWrapper> cacheCheck;
 
     @Override
-    public void onEnable() {
+    public void onLoad() {
         instance = this;
+    }
+
+    @Override
+    public void onEnable() {
         final QuickTimer timer = new QuickTimer();
 
         this.nametagQueueManager = new NametagQueueManager(this);
