@@ -1035,7 +1035,11 @@ public class LevelManager implements LevelInterface {
                 lmEntity.playerForPermissionsCheck = player;
 
                 if (lmEntity.isLevelled()) {
-                    if (main.configUtils.playerLevellingEnabled) {
+                    final boolean skipLevelling = (
+                            lmEntity.getSpawnReason() == LevelledMobSpawnReason.LM_SPAWNER ||
+                                    lmEntity.getSpawnReason() == LevelledMobSpawnReason.LM_SUMMON
+                    );
+                    if (main.configUtils.playerLevellingEnabled && !skipLevelling) {
                         final boolean hasKey = entityToPlayer.containsKey(lmEntity);
                         final List<Player> players = hasKey ?
                             entityToPlayer.get(lmEntity) : new LinkedList<>();
