@@ -75,6 +75,7 @@ public final class LevelledMobs extends JavaPlugin {
     public YmlParsingHelper helperSettings;
     public long playerLevellingMinRelevelTime;
     public int maxPlayersRecorded;
+    private static LevelledMobs instance;
 
     // Configuration
     public YamlConfiguration settingsCfg;
@@ -92,6 +93,7 @@ public final class LevelledMobs extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        instance = this;
         final QuickTimer timer = new QuickTimer();
 
         this.nametagQueueManager = new NametagQueueManager(this);
@@ -178,6 +180,10 @@ public final class LevelledMobs extends JavaPlugin {
         rulesManager.clearTempDisabledRulesCounts();
 
         reloadFinishedMsg.forEach(sender::sendMessage);
+    }
+
+    public static LevelledMobs getInstance(){
+        return instance;
     }
 
     @Override

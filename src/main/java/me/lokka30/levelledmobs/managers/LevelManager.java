@@ -764,7 +764,7 @@ public class LevelManager implements LevelInterface {
             displayName = lmEntity.getLivingEntity().getCustomName();
         }
 
-        nametag = replaceStringPlaceholders(nametag, lmEntity, colorize);
+        nametag = replaceStringPlaceholders(nametag, lmEntity, colorize, false);
 
         // This is after colorize so that color codes in nametags dont get translated
         nametag = nametag.replace("%displayname%", displayName);
