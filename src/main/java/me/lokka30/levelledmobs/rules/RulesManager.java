@@ -402,7 +402,10 @@ public class RulesManager {
 
         for (final RuleInfo ruleInfo : lmEntity.getApplicableRules()) {
             if (ruleInfo.playerLevellingOptions != null) {
-                levellingOptions = ruleInfo.playerLevellingOptions;
+                if (levellingOptions == null)
+                    levellingOptions = ruleInfo.playerLevellingOptions;
+                else
+                    levellingOptions.mergeRule(ruleInfo.playerLevellingOptions);
             }
         }
 
