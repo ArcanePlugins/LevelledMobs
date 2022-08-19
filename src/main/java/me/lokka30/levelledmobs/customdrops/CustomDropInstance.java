@@ -17,7 +17,7 @@ import org.jetbrains.annotations.NotNull;
  * @author stumper66
  * @since 2.4.0
  */
-class CustomDropInstance {
+public class CustomDropInstance {
 
     CustomDropInstance(final EntityType associatedMob) {
         this.associatedMob = associatedMob;
@@ -45,14 +45,14 @@ class CustomDropInstance {
 
     private final EntityType associatedMob;
     private final CustomUniversalGroups entityGroup;
-    final List<CustomDropBase> customItems;
-    Float overallChance;
-    final List<String> overallPermissions;
-    boolean overrideStockDrops;
+    public final List<CustomDropBase> customItems;
+    public Float overallChance;
+    public final List<String> overallPermissions;
+    public boolean overrideStockDrops;
     boolean utilizesGroupIds;
     final boolean isBabyMob;
 
-    void combineDrop(final CustomDropInstance dropInstance) {
+    public void combineDrop(final CustomDropInstance dropInstance) {
         if (dropInstance == null) {
             throw new NullPointerException("dropInstance");
         }
@@ -67,7 +67,7 @@ class CustomDropInstance {
         this.customItems.addAll(dropInstance.customItems);
     }
 
-    @NotNull String getMobOrGroupName() {
+    public @NotNull String getMobOrGroupName() {
         if (this.associatedMob != null) {
             return this.associatedMob.name();
         } else if (this.entityGroup != null) {

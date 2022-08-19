@@ -64,15 +64,21 @@ public class CustomDropsHandler {
         if (main.companion.externalCompatibilityManager.doesLMIMeetVersionRequirement()) {
             this.lmItemsParser = new LMItemsParser(main);
         }
+        this.externalCustomDrops = new ExternalCustomDropsImpl(this);
     }
 
-    private final LevelledMobs main;
+    final LevelledMobs main;
+    // regular custom drops defined for a mob type
     final Map<EntityType, CustomDropInstance> customDropsitems;
+    // regular custom drops defined for a mob type that is a baby
     final Map<EntityType, CustomDropInstance> customDropsitems_Babies;
+    // only used for the built-in universal groups
     final Map<String, CustomDropInstance> customDropsitems_groups;
+    // these are drops defined by a drop table
     final Map<String, CustomDropInstance> customDropIDs;
     @Nullable Map<String, CustomDropInstance> customItemGroups;
     public final CustomDropsParser customDropsParser;
+    public final ExternalCustomDrops externalCustomDrops;
     LMItemsParser lmItemsParser;
     private final YmlParsingHelper ymlHelper;
     private final WeakHashMap<LivingEntity, EquippedItemsInfo> customEquippedItems;
