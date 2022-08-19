@@ -5,8 +5,9 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
 
+@SuppressWarnings("unused")
 public interface ExternalCustomDrops {
-    void addCustomDrop(final @NotNull EntityType entityType, final @NotNull CustomDropInstance customDropInstance);
+    void addCustomDrop(final @NotNull CustomDropInstance customDropInstance);
 
     void addCustomDropTable(final @NotNull String dropName, final @NotNull CustomDropInstance customDropInstance);
 

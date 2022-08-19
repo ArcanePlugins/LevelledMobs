@@ -7,11 +7,14 @@ package me.lokka30.levelledmobs.customdrops;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+
+import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.util.Utils;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * This holds all the attributes set for a custom drop item
@@ -21,15 +24,15 @@ import org.jetbrains.annotations.NotNull;
  */
 public class CustomDropItem extends CustomDropBase {
 
-    int customModelDataId;
-    float equippedSpawnChance;
-    boolean noMultiplier;
-    boolean onlyDropIfEquipped;
+    public int customModelDataId;
+    public float equippedSpawnChance;
+    public boolean noMultiplier;
+    public boolean onlyDropIfEquipped;
     public String customName;
     public String mobHeadTexture;
     public List<String> lore;
-    List<ItemFlag> itemFlags;
-    List<String> itemFlagsStrings;
+    public @Nullable List<ItemFlag> itemFlags;
+    public @Nullable List<String> itemFlagsStrings;
     private boolean hasDamageRange;
     private int damage;
     private int damageRangeMin;
@@ -46,9 +49,18 @@ public class CustomDropItem extends CustomDropBase {
     public Double externalAmount;
     public Map<String, Object> externalExtras;
 
-    CustomDropItem(@NotNull final CustomDropsDefaults defaults) {
-        super(defaults);
+    @SuppressWarnings("unused")
+    public CustomDropItem(@NotNull final LevelledMobs levelledMobs) {
+        super(levelledMobs.customDropsHandler.customDropsParser.getDefaults());
+        setDefaults(levelledMobs.customDropsHandler.customDropsParser.getDefaults());
+    }
 
+    public CustomDropItem(@NotNull final CustomDropsDefaults defaults) {
+        super(defaults);
+        setDefaults(defaults);
+    }
+
+    private void setDefaults(@NotNull final CustomDropsDefaults defaults){
         this.customModelDataId = defaults.customModelData;
         this.chance = defaults.chance;
         this.maxLevel = defaults.maxLevel;
@@ -73,7 +85,7 @@ public class CustomDropItem extends CustomDropBase {
         return copy;
     }
 
-    boolean setDamageRangeFromString(final String numberOrNumberRange) {
+    public boolean setDamageRangeFromString(final String numberOrNumberRange) {
         if (numberOrNumberRange == null || numberOrNumberRange.isEmpty()) {
             return false;
         }
@@ -114,15 +126,15 @@ public class CustomDropItem extends CustomDropBase {
         this.hasDamageRange = false;
     }
 
-    int getDamageRangeMin() {
+    public int getDamageRangeMin() {
         return this.damageRangeMin;
     }
 
-    int getDamageRangeMax() {
+    public int getDamageRangeMax() {
         return this.damageRangeMax;
     }
 
-    boolean getHasDamageRange() {
+    public boolean getHasDamageRange() {
         return this.hasDamageRange;
     }
 
@@ -131,7 +143,7 @@ public class CustomDropItem extends CustomDropBase {
         this.itemStack = new ItemStack(this.material, 1);
     }
 
-    String getDamageAsString() {
+    public String getDamageAsString() {
         if (this.hasDamageRange) {
             return String.format("%s-%s", this.damageRangeMin, this.damageRangeMax);
         } else {

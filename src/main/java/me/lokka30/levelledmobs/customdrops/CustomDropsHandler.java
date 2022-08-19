@@ -64,12 +64,12 @@ public class CustomDropsHandler {
         if (main.companion.externalCompatibilityManager.doesLMIMeetVersionRequirement()) {
             this.lmItemsParser = new LMItemsParser(main);
         }
-        this.externalCustomDrops = new ExternalCustomDropsImpl(this);
+        this.externalCustomDrops = new ExternalCustomDropsImpl();
     }
 
     final LevelledMobs main;
     // regular custom drops defined for a mob type
-    final Map<EntityType, CustomDropInstance> customDropsitems;
+    private final Map<EntityType, CustomDropInstance> customDropsitems;
     // regular custom drops defined for a mob type that is a baby
     final Map<EntityType, CustomDropInstance> customDropsitems_Babies;
     // only used for the built-in universal groups
@@ -82,6 +82,32 @@ public class CustomDropsHandler {
     LMItemsParser lmItemsParser;
     private final YmlParsingHelper ymlHelper;
     private final WeakHashMap<LivingEntity, EquippedItemsInfo> customEquippedItems;
+
+    public @NotNull Map<EntityType, CustomDropInstance> getCustomDropsitems(){
+        final Map<EntityType, CustomDropInstance> drops = new TreeMap<>(this.customDropsitems);
+        for (final EntityType entityType : externalCustomDrops.getCustomDrops().keySet()){
+            final CustomDropInstance dropInstance = externalCustomDrops.getCustomDrops().get(entityType);
+            if (!drops.containsKey(entityType)){
+                drops.put(entityType, dropInstance);
+                continue;
+            }
+
+            // merge the 3rd party drops into the defined drops for the entity
+            // 3rd party drop settings will override any conflicting
+            final CustomDropInstance currentDropInstance = drops.get(entityType);
+            currentDropInstance.combineDrop(dropInstance);
+
+            if (dropInstance.overallChance != null)
+                currentDropInstance.overallChance = dropInstance.overallChance;
+            currentDropInstance.overallPermissions.addAll(dropInstance.overallPermissions);
+        }
+
+        return drops;
+    }
+
+    void addCustomDropItem(final @NotNull EntityType entityType, final @NotNull CustomDropInstance customDropInstance){
+        this.customDropsitems.put(entityType, customDropInstance);
+    }
 
     public CustomDropResult getCustomItemDrops(final LivingEntityWrapper lmEntity,
         final List<ItemStack> drops, final boolean equippedOnly) {
@@ -255,7 +281,7 @@ public class CustomDropsHandler {
 
             final Map<EntityType, CustomDropInstance> dropMap =
                 info.lmEntity.isBabyMob() && customDropsitems_Babies.containsKey(entityType) ?
-                    customDropsitems_Babies : customDropsitems;
+                    customDropsitems_Babies : getCustomDropsitems();
 
             if (dropMap.containsKey(entityType)) {
                 final CustomDropInstance dropInstance = dropMap.get(entityType);

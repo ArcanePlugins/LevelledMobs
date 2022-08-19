@@ -52,6 +52,9 @@ public class PlayerLevellingOptions implements Cloneable {
         if (variable != null) {
             this.variable = options.variable;
         }
+        if (options.enabled != null) {
+            this.enabled = options.enabled;
+        }
     }
 
     public PlayerLevellingOptions cloneItem() {

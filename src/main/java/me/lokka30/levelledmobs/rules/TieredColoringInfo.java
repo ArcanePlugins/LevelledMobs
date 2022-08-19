@@ -37,12 +37,20 @@ public class TieredColoringInfo implements Cloneable {
     static TieredColoringInfo createFromString(final @NotNull String key,
         final @NotNull String value) {
         final String[] numbers = key.split("-");
-        if (numbers.length != 2) {
+
+        if (numbers.length != 2 && numbers.length != 1) {
             Utils.logger.warning("Invalid tiered coloring key: " + key);
             return null;
         }
 
         final TieredColoringInfo coloringInfo = new TieredColoringInfo();
+        coloringInfo.text = value;
+
+        if (numbers.length == 1){
+            coloringInfo.minLevel = Integer.parseInt(numbers[0]);
+            coloringInfo.maxLevel = coloringInfo.minLevel;
+            return coloringInfo;
+        }
 
         for (int i = 0; i < 2; i++) {
             final String num = numbers[i].trim();
@@ -57,8 +65,6 @@ public class TieredColoringInfo implements Cloneable {
                 coloringInfo.maxLevel = Integer.parseInt(num);
             }
         }
-
-        coloringInfo.text = value;
 
         return coloringInfo;
     }

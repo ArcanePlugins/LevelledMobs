@@ -238,7 +238,7 @@ public class LevelManager implements LevelInterface {
     private int @Nullable [] getPlayerLevels(final @NotNull LivingEntityWrapper lmEntity) {
         final PlayerLevellingOptions options = main.rulesManager.getRulePlayerLevellingOptions(
             lmEntity);
-        if (options == null) {
+        if (options == null || options.enabled != null && !options.enabled) {
             return null;
         }
 

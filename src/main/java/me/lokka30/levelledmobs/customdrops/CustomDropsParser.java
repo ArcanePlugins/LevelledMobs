@@ -87,6 +87,10 @@ public class CustomDropsParser {
         }
     }
 
+    public @NotNull CustomDropsDefaults getDefaults(){
+        return this.defaults;
+    }
+
     private void processDefaults(final ConfigurationSection cs) {
         if (cs == null) {
             Utils.logger.warning("Defaults section was null");
@@ -242,12 +246,13 @@ public class CustomDropsParser {
                         }
                     } else {
                         final Map<EntityType, CustomDropInstance> dropMap = dropInstance.isBabyMob ?
-                            handler.customDropsitems_Babies : handler.customDropsitems;
+                            handler.customDropsitems_Babies : handler.getCustomDropsitems();
 
                         if (dropMap.containsKey(entityType)) {
                             dropMap.get(entityType).combineDrop(dropInstance);
                         } else {
                             dropMap.put(entityType, dropInstance);
+                            handler.addCustomDropItem(entityType, dropInstance);
                         }
                     }
                 }
@@ -257,7 +262,7 @@ public class CustomDropsParser {
         if (main.companion.debugsEnabled.contains(DebugType.CUSTOM_DROPS)) {
             int dropsCount = 0;
             int commandsCount = 0;
-            for (final CustomDropInstance cdi : handler.customDropsitems.values()) {
+            for (final CustomDropInstance cdi : handler.getCustomDropsitems().values()) {
                 for (final CustomDropBase base : cdi.customItems) {
                     if (base instanceof CustomDropItem) {
                         dropsCount++;
@@ -272,7 +277,7 @@ public class CustomDropsParser {
                 handler.customDropsitems_groups.size() + handler.customDropsitems_Babies.size();
             sbMain.append(String.format(
                 "drop instances: %s, custom groups: %s, item groups: %s, items: %s, commands: %s",
-                handler.customDropsitems.size(), itemsCount, handler.customItemGroups.size(),
+                handler.getCustomDropsitems().size(), itemsCount, handler.customItemGroups.size(),
                 dropsCount, commandsCount));
 
             showCustomDropsDebugInfo(sbMain);
@@ -916,7 +921,7 @@ public class CustomDropsParser {
         // build string list to alphabeticalize the drops by entity type including babies
         final SortedMap<String, EntityType> typeNames = new TreeMap<>();
 
-        for (final EntityType ent : handler.customDropsitems.keySet()) {
+        for (final EntityType ent : handler.getCustomDropsitems().keySet()) {
             typeNames.put(ent.toString(), ent);
         }
 
@@ -929,7 +934,7 @@ public class CustomDropsParser {
             final EntityType ent = EntityType.valueOf(
                 isBaby ? entTypeStr.substring(0, entTypeStr.length() - 2) : entTypeStr);
             final CustomDropInstance dropInstance = isBaby ?
-                handler.customDropsitems_Babies.get(ent) : handler.customDropsitems.get(ent);
+                handler.customDropsitems_Babies.get(ent) : handler.getCustomDropsitems().get(ent);
 
             final String override = dropInstance.overrideStockDrops ? " (override)" : "";
             final String overallChance = dropInstance.overallChance != null ? " (overall_chance: "

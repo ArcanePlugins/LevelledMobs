@@ -13,18 +13,16 @@ import java.util.TreeMap;
  * @since 3.7.0
  */
 public class ExternalCustomDropsImpl implements ExternalCustomDrops {
-    public ExternalCustomDropsImpl(final @NotNull CustomDropsHandler dropsHandler){
-        this.dropsHandler = dropsHandler;
+    public ExternalCustomDropsImpl(){
         this.customDropsitems = new TreeMap<>();
         this.customDropIDs = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
     }
 
-    private final CustomDropsHandler dropsHandler;
     final Map<EntityType, CustomDropInstance> customDropsitems;
     final Map<String, CustomDropInstance> customDropIDs;
 
-    public void addCustomDrop(final @NotNull EntityType entityType, final @NotNull CustomDropInstance customDropInstance){
-        this.customDropsitems.put(entityType, customDropInstance);
+    public void addCustomDrop(final @NotNull CustomDropInstance customDropInstance){
+        this.customDropsitems.put(customDropInstance.getAssociatedMobType(), customDropInstance);
     }
 
     public void addCustomDropTable(final @NotNull String dropName, final @NotNull CustomDropInstance customDropInstance){
