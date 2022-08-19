@@ -17,7 +17,7 @@ import org.jetbrains.annotations.NotNull;
  * @author stumper66
  * @since 3.1.0
  */
-public class LivingEntityWrapperBase {
+public abstract class LivingEntityWrapperBase {
 
     LivingEntityWrapperBase(final @NotNull LevelledMobs main) {
         this.main = main;

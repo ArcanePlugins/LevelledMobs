@@ -18,7 +18,7 @@ import org.jetbrains.annotations.NotNull;
  * @author stumper66
  * @since 3.0.0
  */
-public class CustomDropBase implements Cloneable {
+public abstract class CustomDropBase implements Cloneable {
 
     CustomDropBase(@NotNull final CustomDropsDefaults defaults) {
         this.amount = defaults.amount;
