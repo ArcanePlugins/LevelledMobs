@@ -551,11 +551,13 @@ public class SummonSubcommand extends MessagesBase implements Subcommand {
 
             case AT_LOCATION:
                 showMessage("command.levelledmobs.summon.atLocation.success",
-                    new String[]{"%amount%", "%level%", "%entity%", "%x%", "%x%", "%x%", "%world%"},
-                    new String[]{String.valueOf(options.amount), options.requestedLevel.toString(),
+                    new String[]{"%amount%", "%level%", "%entity%", "%x%", "%y%", "%z%", "%world%"},
+                    new String[]{String.valueOf(options.amount),
+                        options.requestedLevel.toString(),
                         options.lmPlaceHolder.getTypeName(),
-                        String.valueOf(location.getBlockX()), String.valueOf(location.getBlockY()),
-                        String.valueOf(location.getBlockX()),
+                        location.getBlockX() + "",
+                        location.getBlockY() + "",
+                        location.getBlockZ() + "",
                         location.getWorld() == null ? "(null)" : location.getWorld().getName()}
                 );
 
