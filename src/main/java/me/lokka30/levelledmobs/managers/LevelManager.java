@@ -238,7 +238,8 @@ public class LevelManager implements LevelInterface {
     private int @Nullable [] getPlayerLevels(final @NotNull LivingEntityWrapper lmEntity) {
         final PlayerLevellingOptions options = main.rulesManager.getRulePlayerLevellingOptions(
             lmEntity);
-        if (options == null) {
+
+        if (options == null || options.enabled != null && !options.enabled) {
             return null;
         }
 
@@ -764,7 +765,7 @@ public class LevelManager implements LevelInterface {
             displayName = lmEntity.getLivingEntity().getCustomName();
         }
 
-        nametag = replaceStringPlaceholders(nametag, lmEntity, colorize);
+        nametag = replaceStringPlaceholders(nametag, lmEntity, colorize, false);
 
         // This is after colorize so that color codes in nametags dont get translated
         nametag = nametag.replace("%displayname%", displayName);
@@ -1035,7 +1036,11 @@ public class LevelManager implements LevelInterface {
                 lmEntity.playerForPermissionsCheck = player;
 
                 if (lmEntity.isLevelled()) {
-                    if (main.configUtils.playerLevellingEnabled) {
+                    final boolean skipLevelling = (
+                            lmEntity.getSpawnReason() == LevelledMobSpawnReason.LM_SPAWNER ||
+                                    lmEntity.getSpawnReason() == LevelledMobSpawnReason.LM_SUMMON
+                    );
+                    if (main.configUtils.playerLevellingEnabled && !skipLevelling) {
                         final boolean hasKey = entityToPlayer.containsKey(lmEntity);
                         final List<Player> players = hasKey ?
                             entityToPlayer.get(lmEntity) : new LinkedList<>();

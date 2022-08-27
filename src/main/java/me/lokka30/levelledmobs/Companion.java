@@ -186,15 +186,15 @@ public class Companion {
                 }
             }
 
+            parseDebugsEnabled();
         } else {
             // if not reloading then it is called from the server load event to make sure any dependent
             // plugins are already loaded
+            parseDebugsEnabled();
             main.customDropsHandler.customDropsParser.loadDrops(
                 FileLoader.loadFile(main, "customdrops", FileLoader.CUSTOMDROPS_FILE_VERSION)
             );
         }
-
-        parseDebugsEnabled();
 
         main.configUtils.load();
         main.playerLevellingMinRelevelTime = main.helperSettings.getIntTimeUnitMS(main.settingsCfg,

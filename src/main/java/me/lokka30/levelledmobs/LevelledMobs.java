@@ -75,6 +75,7 @@ public final class LevelledMobs extends JavaPlugin {
     public YmlParsingHelper helperSettings;
     public long playerLevellingMinRelevelTime;
     public int maxPlayersRecorded;
+    private static LevelledMobs instance;
 
     // Configuration
     public YamlConfiguration settingsCfg;
@@ -89,6 +90,11 @@ public final class LevelledMobs extends JavaPlugin {
     private long loadTime;
     public WeakHashMap<LivingEntity, Instant> playerLevellingEntities;
     public Stack<LivingEntityWrapper> cacheCheck;
+
+    @Override
+    public void onLoad() {
+        instance = this;
+    }
 
     @Override
     public void onEnable() {
@@ -178,6 +184,10 @@ public final class LevelledMobs extends JavaPlugin {
         rulesManager.clearTempDisabledRulesCounts();
 
         reloadFinishedMsg.forEach(sender::sendMessage);
+    }
+
+    public static LevelledMobs getInstance(){
+        return instance;
     }
 
     @Override
