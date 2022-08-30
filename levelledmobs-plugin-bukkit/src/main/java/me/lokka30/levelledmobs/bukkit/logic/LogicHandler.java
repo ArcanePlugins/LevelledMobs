@@ -35,6 +35,7 @@ public final class LogicHandler {
     private final HashSet<Group> groups = new HashSet<>();
     private final HashSet<Preset> presets = new HashSet<>();
     private final LinkedHashSet<LmFunction> functions = new LinkedHashSet<>();
+    private CommentedConfigurationNode parsedFunctionsNode;
 
     /* methods */
 
@@ -149,7 +150,44 @@ public final class LogicHandler {
             call post-parse event
          */
 
-        //TODO
+        for(final CommentedConfigurationNode actualPresetNode : LevelledMobs.getInstance()
+            .getConfigHandler().getPresetsCfg()
+            .getRoot().node("presets")
+            .childrenList()
+        ) {
+            final String identifier = actualPresetNode.node("preset").getString();
+
+            /* assert valid identifier */
+            if(identifier == null || identifier.isBlank()) {
+                Log.sev("There is a preset in presets.yml with an unknown/invalid identifier, " +
+                    "so LevelledMobs is unable to parse it.", true);
+                return false;
+            }
+            if(getFunctions().stream().anyMatch(otherFunction ->
+                otherFunction.getIdentifier().equalsIgnoreCase(identifier))
+            ) {
+                Log.sev("There are two or more presets in presets.yml which share the " +
+                    "same identifier, '" + identifier + "'. Presets must have unique " +
+                    "identifiers.", true);
+                return false;
+            }
+
+            /*
+            parse preset node
+
+            removes the preset identifier key
+             */
+            final CommentedConfigurationNode parsedPresetNode = actualPresetNode.copy();
+            parsedPresetNode.removeChild("preset");
+
+            /* register parsed preset */
+            getPresets().add(new Preset(
+                identifier,
+                parsedPresetNode,
+                actualPresetNode
+            ));
+        }
+
         Log.inf("Successfully parsed " + getPresets().size() + " preset(s)");
         return true;
     }
@@ -193,10 +231,25 @@ public final class LogicHandler {
 
         Log.inf("Parsing functions.");
 
-        // don't use `var` here - type is not easily inferred without IDE
-        final List<CommentedConfigurationNode> functionNodes = LevelledMobs.getInstance()
+        /*
+        Initialise "GodsEye" Presets System
+
+        Recursively walks through the functions node and its child nodes, replaces all 'use-presets'
+        declarations.
+
+        Uses a clone/copy of the actual file-synced object so that the presets parser does not
+        mess with the user's file.
+
+        [start preset parsing]
+         */
+        setParsedFunctionsNode(LevelledMobs.getInstance()
             .getConfigHandler().getSettingsCfg()
-            .getRoot().node("functions").childrenList();
+            .getRoot().node("functions")
+            .copy()
+        );
+        walkNodePresetParse(getParsedFunctionsNode());
+
+        final List<CommentedConfigurationNode> functionNodes = getParsedFunctionsNode().childrenList();
 
         for(var functionNode : functionNodes) {
             final var identifier = functionNode.node("function").getString();
@@ -242,6 +295,10 @@ public final class LogicHandler {
                 function.getTriggers().addAll(triggersList);
             }
 
+            /*
+            [done preset parsing]
+             */
+
             /* call pre parse fun */
 
             final var functionPreParseEvent = new FunctionPreParseEvent(function);
@@ -260,6 +317,32 @@ public final class LogicHandler {
 
         Log.inf("Successfully parsed " + getFunctions().size() + " function(s).");
         return true;
+    }
+
+    private void walkNodePresetParse(final @NotNull CommentedConfigurationNode node) {
+        if(node.hasChild("use-presets")) {
+            final List<String> presetIds;
+            try {
+                presetIds = node.node("use-presets").getList(String.class);
+                if(presetIds == null) {
+                    throw new NullPointerException("presetIds is null");
+                }
+            } catch (SerializationException e) {
+                throw new RuntimeException(e);
+            }
+            node.removeChild("use-presets");
+
+            for(final String presetId : presetIds) {
+                for(final Preset preset : getPresets()) {
+                    if(!preset.getIdentifier().equals(presetId)) continue;
+
+                    node.mergeFrom(preset.getParsedNode());
+                }
+            }
+        }
+
+        node.childrenList().forEach(this::walkNodePresetParse);
+        node.childrenMap().values().forEach(this::walkNodePresetParse);
     }
 
     private boolean parseProcesses(final @NotNull LmFunction function) {
@@ -477,4 +560,12 @@ public final class LogicHandler {
     @NotNull
     public LinkedHashSet<LmFunction> getFunctions() { return functions; }
 
+    @NotNull
+    public CommentedConfigurationNode getParsedFunctionsNode() {
+        return this.parsedFunctionsNode;
+    }
+
+    private void setParsedFunctionsNode(final @NotNull CommentedConfigurationNode node) {
+        this.parsedFunctionsNode = node;
+    }
 }

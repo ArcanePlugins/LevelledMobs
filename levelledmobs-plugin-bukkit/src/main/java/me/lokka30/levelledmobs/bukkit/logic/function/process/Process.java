@@ -14,6 +14,12 @@ import org.spongepowered.configurate.CommentedConfigurationNode;
 
 public class Process {
 
+    /*
+    TODO
+        - isEnabled
+        - factor in isEnabled
+     */
+
     /* vars */
 
     private final String identifier;

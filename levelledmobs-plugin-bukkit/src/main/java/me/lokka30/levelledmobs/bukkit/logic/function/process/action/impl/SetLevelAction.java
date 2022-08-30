@@ -1,6 +1,7 @@
 package me.lokka30.levelledmobs.bukkit.logic.function.process.action.impl;
 
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.Objects;
 import java.util.Set;
 import me.lokka30.levelledmobs.bukkit.LevelledMobs;
@@ -9,7 +10,9 @@ import me.lokka30.levelledmobs.bukkit.logic.context.Context;
 import me.lokka30.levelledmobs.bukkit.logic.function.process.Process;
 import me.lokka30.levelledmobs.bukkit.logic.function.process.action.Action;
 import me.lokka30.levelledmobs.bukkit.logic.levelling.strategy.LevellingStrategy;
+import me.lokka30.levelledmobs.bukkit.logic.levelling.strategy.LevellingStrategyRequestEvent;
 import me.lokka30.levelledmobs.bukkit.util.Log;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.LivingEntity;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -41,7 +44,57 @@ public class SetLevelAction extends Action {
         this.passengersInheritLevel = getActionNode().node("passengers-inherit-level")
             .getBoolean(true);
 
-        // TODO shout for levelling strategies to be added to the set-level-action
+        // TODO Test.
+        /*
+        Here we want to call out for all known levelling strategies to be registered to the
+        SetLevelAction.
+         */
+        final var strategyNames = new LinkedList<String>(); //TODO remove for testing
+
+        // Iterate through each strategyId specified under the strategies section
+        for(var strategyNode : getActionNode().node("strategies").childrenList()) {
+
+            if(strategyNode.key() == null) {
+                //TODO log error: strategy key must not be null
+                new Throwable().printStackTrace();
+                continue;
+            }
+
+            // note: can't use the pattern style cast as IntelliJ's analyzer has trouble if it is
+            // present.
+            if(!(strategyNode.key() instanceof String)) {
+                //TODO log error: strategy keys must be strings
+                new Throwable().printStackTrace();
+                continue;
+            }
+            //noinspection PatternVariableCanBeUsed
+            final String strategyId = (String) strategyNode.key();
+
+            // fire LevellingStrategyRequestEvent
+            //noinspection ConstantConditions
+            final var stratReqEvent = new LevellingStrategyRequestEvent(strategyId, strategyNode);
+            Bukkit.getPluginManager().callEvent(stratReqEvent);
+
+            if(stratReqEvent.isCancelled()) {
+                continue;
+            }
+
+            // add all strategies from the events
+            getStrategies().addAll(stratReqEvent.getStrategies());
+
+            //TODO remove for testing
+            for(var strategy : stratReqEvent.getStrategies()) {
+                strategyNames.add(strategy.getName());
+            }
+        }
+
+        //TODO test debugging remove this
+        Log.war(String.format(
+            "DEBUG: The following levelling strategies are in the SetLevelAction located in the process '%s' in function '%s': %s",
+            getParentProcess().getIdentifier(),
+            getParentProcess().getParentFunction().getIdentifier(),
+            strategyNames
+        ), false);
     }
 
     /* methods */
@@ -59,7 +112,7 @@ public class SetLevelAction extends Action {
             return;
         }
 
-        if(!(context.getEntity() instanceof final LivingEntity livingEntity)) {
+        if(!(context.getEntity() instanceof final LivingEntity lent)) {
             //TODO better error message
             Log.war("set-level: entity must be livingentity", true);
             return;
@@ -67,14 +120,14 @@ public class SetLevelAction extends Action {
 
         //TODO handle babies level inheritance
         // ...
-        if(babiesInheritLevel()) {
+        if(getBabiesInheritLevel()) {
             //TODO
             Log.inf("babies inherit level logic not done yet");
         }
 
         //TODO handle passengers level inheritance
         // ...
-        if(passengersInheritLevel()) {
+        if(getPassengersInheritLevel()) {
             Log.inf("passengers inherit level logic not done yet");
         }
 
@@ -84,12 +137,12 @@ public class SetLevelAction extends Action {
         // remove level if entity has one. otherwise, job is done
         if (level == null) {
             // check if the entity is levelled or not
-            if(!InternalEntityDataUtil.isLevelled(livingEntity)) {
+            if(!InternalEntityDataUtil.isLevelled(lent)) {
                 return;
             }
 
             // Looks like the mob was previously levelled, so we need to remove most of the LM stuff
-            // TODO ...
+            InternalEntityDataUtil.unlevelMob(lent);
             return;
         }
 
@@ -115,6 +168,10 @@ public class SetLevelAction extends Action {
 
     /* getters and setters */
 
+    public Set<LevellingStrategy> getStrategies() {
+        return strategies;
+    }
+
     public int getMinPossibleLevel() {
         return Math.max(0, LevelledMobs.getInstance()
             .getConfigHandler().getSettingsCfg()
@@ -127,11 +184,11 @@ public class SetLevelAction extends Action {
         return formula;
     }
 
-    public boolean babiesInheritLevel() {
+    public boolean getBabiesInheritLevel() {
         return babiesInheritLevel;
     }
 
-    public boolean passengersInheritLevel() {
+    public boolean getPassengersInheritLevel() {
         return passengersInheritLevel;
     }
 }

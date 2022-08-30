@@ -6,8 +6,6 @@ name: 'LevelledMobs'
 version: '${project.version}'
 website: 'https://github.com/lokka30/LevelledMobs/'
 
-depend: []            # LevelledMobs doesn't have any dependencies. :)
-
 softdepend:
   - 'Essentials'      # EssentialsX is soft-dep as it is used for the 'home distance' placeholder.
   - 'NBTAPI'          # NBTAPI is soft-dep as the custom drops system allows NBT control.

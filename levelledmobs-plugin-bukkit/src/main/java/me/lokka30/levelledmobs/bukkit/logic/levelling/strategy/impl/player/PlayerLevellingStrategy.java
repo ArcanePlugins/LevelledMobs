@@ -10,7 +10,7 @@ public class PlayerLevellingStrategy extends LevellingStrategy {
     // TODO private final String placeholder;
 
     public PlayerLevellingStrategy(int minLevel, int maxLevel) {
-        super(minLevel, maxLevel);
+        super("Player Levelling", minLevel, maxLevel);
     }
 
     @Override

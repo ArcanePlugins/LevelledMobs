@@ -15,6 +15,12 @@ Note: To avoid a naming conflict with Java's 'Function' class, this is named 'Lm
  */
 public class LmFunction {
 
+    /*
+    TODO
+        - isEnabled
+        - factor in isEnabled
+     */
+
     /* vars */
 
     private final String identifier;
@@ -75,6 +81,12 @@ public class LmFunction {
         return description;
     }
 
+    /**
+     * <b>WARNING:</b> This node is a preset-parsed object copy, it does not reflect the actual
+     * node present in settings.yml. Modifying this node will not make any change to settings.yml!
+     *
+     * @return root config node of the function
+     */
     @NotNull
     public CommentedConfigurationNode getNode() { return node; }
 
