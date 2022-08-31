@@ -7,7 +7,7 @@ import me.lokka30.levelledmobs.bukkit.logic.context.Context;
 import me.lokka30.levelledmobs.bukkit.logic.function.process.Process;
 import me.lokka30.levelledmobs.bukkit.logic.function.process.condition.Condition;
 import me.lokka30.levelledmobs.bukkit.util.Log;
-import me.lokka30.levelledmobs.bukkit.util.modal.ModalCollection.Type;
+import me.lokka30.levelledmobs.bukkit.util.modal.ModalCollection.Mode;
 import me.lokka30.levelledmobs.bukkit.util.modal.ModalList;
 import org.bukkit.entity.EntityType;
 import org.jetbrains.annotations.NotNull;
@@ -30,17 +30,17 @@ public class EntityTypeCondition extends Condition {
     public EntityTypeCondition(Process process, final CommentedConfigurationNode node) {
         super(process, node);
 
-        final ModalList.Type type;
+        final Mode mode;
         final List<String> entityTypesStr;
 
         try {
             if (getConditionNode().hasChild("in-list")) {
-                type = Type.INCLUSIVE;
+                mode = Mode.INCLUSIVE;
                 entityTypesStr = getConditionNode().node("in-list").getList(
                     String.class, Collections.emptyList()
                 );
             } else if (getConditionNode().hasChild("not-in-list")) {
-                type = Type.EXCLUSIVE;
+                mode = Mode.EXCLUSIVE;
                 entityTypesStr = getConditionNode().node("not-in-list").getList(
                     String.class, Collections.emptyList()
                 );
@@ -65,7 +65,7 @@ public class EntityTypeCondition extends Condition {
             }
         }
 
-        this.modalList = new ModalList<>(entityTypes, type);
+        this.modalList = new ModalList<>(entityTypes, mode);
     }
 
     /* methods */

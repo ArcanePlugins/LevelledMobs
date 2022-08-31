@@ -66,10 +66,19 @@ public class RandomLevellingStrategy extends LevellingStrategy {
         }
 
         /* looks good, let's parse it */
+        /* TODO if confirmed working then use this smaller one instead.
         return new RandomLevellingStrategy(
             node.node("min-level").getInt(),
             node.node("max-level").getInt()
         );
+         */
+
+        final int minLevel = node.node("min-level").getInt();
+        final int maxLevel = node.node("max-level").getInt();
+
+        Log.tmpdebug("parsed random levelling strategy with min=" + minLevel + ", max=" + maxLevel);
+
+        return new RandomLevellingStrategy(minLevel, maxLevel);
     }
 
 }

@@ -520,9 +520,9 @@ If the program does terminal interaction, make it output a short notice like thi
 an interactive mode:
 
         <program>  Copyright (C) <year>  <name of author>
-        This program comes with ABSOLUTELY NO WARRANTY; for details type `show w'.
+        This program comes with ABSOLUTELY NO WARRANTY; for details mode `show w'.
         This is free software, and you are welcome to redistribute it
-        under certain conditions; type `show c' for details.
+        under certain conditions; mode `show c' for details.
 
 The hypothetical commands \`show w' and \`show c' should show the appropriate parts of the General
 Public License. Of course, your program's commands might be different; for a GUI interface, you

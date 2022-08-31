@@ -7,15 +7,15 @@ import org.jetbrains.annotations.NotNull;
 public abstract class ModalCollection<T> {
 
     private final Collection<T> items;
-    private final Type type;
+    private final Mode mode;
 
-    public ModalCollection(final Collection<T> items, final Type type) {
+    public ModalCollection(final Collection<T> items, final Mode mode) {
         this.items = Objects.requireNonNull(items, "items");
-        this.type = Objects.requireNonNull(type, "type");
+        this.mode = Objects.requireNonNull(mode, "mode");
     }
 
     public boolean contains(final T item) {
-        return switch(getType()) {
+        return switch(getMode()) {
             case INCLUSIVE -> getItems().contains(item);
             case EXCLUSIVE -> !getItems().contains(item);
         };
@@ -27,11 +27,11 @@ public abstract class ModalCollection<T> {
     }
 
     @NotNull
-    public Type getType() {
-        return type;
+    public ModalCollection.Mode getMode() {
+        return mode;
     }
 
-    public enum Type {
+    public enum Mode {
         INCLUSIVE,
         EXCLUSIVE
     }

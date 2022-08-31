@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.Objects;
 import java.util.Set;
 import me.lokka30.levelledmobs.bukkit.LevelledMobs;
+import me.lokka30.levelledmobs.bukkit.api.data.EntityDataUtil;
 import me.lokka30.levelledmobs.bukkit.data.InternalEntityDataUtil;
 import me.lokka30.levelledmobs.bukkit.logic.context.Context;
 import me.lokka30.levelledmobs.bukkit.logic.function.process.Process;
@@ -35,6 +36,7 @@ public class SetLevelAction extends Action {
         @NotNull CommentedConfigurationNode actionNode
     ) {
         super(parentProcess, actionNode);
+        Log.tmpdebug("Found set level action at path: " + getActionNode().path().toString());
 
         this.formula = getActionNode().node("formula")
             .getString("no-level");
@@ -53,12 +55,14 @@ public class SetLevelAction extends Action {
         final LinkedList<String> strategyNames = new LinkedList<>(); //TODO remove for testing
 
         // Iterate through each strategyId specified under the strategies section
-        for(CommentedConfigurationNode strategyNode : getActionNode()
+        Log.tmpdebug("strategies to loop thru: " + getActionNode().node("strategies").childrenMap().keySet().toString());
+        for(var strategyNodeEntry : getActionNode()
             .node("strategies")
-            .childrenList()
+            .childrenMap().entrySet()
         ) {
+            final CommentedConfigurationNode strategyNode = strategyNodeEntry.getValue();
 
-            if(strategyNode.key() == null) {
+            if(strategyNodeEntry.getKey() == null) {
                 //TODO log error: strategy key must not be null
                 new Throwable().printStackTrace();
                 continue;
@@ -66,18 +70,16 @@ public class SetLevelAction extends Action {
 
             // note: can't use the pattern style cast as IntelliJ's analyzer has trouble if it is
             // present.
-            if(!(strategyNode.key() instanceof String)) {
+            if(!(strategyNodeEntry.getKey() instanceof String strategyId)) {
                 //TODO log error: strategy keys must be strings
                 new Throwable().printStackTrace();
                 continue;
             }
-            //noinspection PatternVariableCanBeUsed
-            final String strategyId = (String) strategyNode.key();
 
             // fire LevellingStrategyRequestEvent
-            //noinspection ConstantConditions
             final var stratReqEvent = new LevellingStrategyRequestEvent(strategyId, strategyNode);
             Bukkit.getPluginManager().callEvent(stratReqEvent);
+            Log.tmpdebug("called strategy request event for strategy id: " + strategyId);
 
             if(stratReqEvent.isCancelled()) {
                 continue;
@@ -152,6 +154,8 @@ public class SetLevelAction extends Action {
 
         //TODO I left this todo here though I have no clue why. Probably safe to remove.
         InternalEntityDataUtil.setLevel((LivingEntity) context.getEntity(), level);
+
+        Log.tmpdebug("Done levelling mob, lvl: " + EntityDataUtil.getLevel((LivingEntity) context.getEntity()));
     }
 
     @Nullable

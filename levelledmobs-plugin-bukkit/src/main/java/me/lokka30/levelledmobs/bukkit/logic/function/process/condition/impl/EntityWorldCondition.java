@@ -5,7 +5,7 @@ import me.lokka30.levelledmobs.bukkit.logic.context.Context;
 import me.lokka30.levelledmobs.bukkit.logic.function.process.Process;
 import me.lokka30.levelledmobs.bukkit.logic.function.process.condition.Condition;
 import me.lokka30.levelledmobs.bukkit.util.Log;
-import me.lokka30.levelledmobs.bukkit.util.modal.ModalCollection.Type;
+import me.lokka30.levelledmobs.bukkit.util.modal.ModalCollection.Mode;
 import me.lokka30.levelledmobs.bukkit.util.modal.ModalList;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.configurate.CommentedConfigurationNode;
@@ -32,13 +32,13 @@ public class EntityWorldCondition extends Condition {
                 this.modalList = new ModalList<>(
                     getConditionNode().node("in-list")
                         .getList(String.class, Collections.emptyList()),
-                    Type.INCLUSIVE
+                    Mode.INCLUSIVE
                 );
             } else if (getConditionNode().hasChild("not-in-list")) {
                 this.modalList = new ModalList<>(
                     getConditionNode().node("not-in-list")
                         .getList(String.class, Collections.emptyList()),
-                    Type.EXCLUSIVE
+                    Mode.EXCLUSIVE
                 );
             } else {
                 //TODO make better error message

@@ -5,7 +5,7 @@ import me.lokka30.levelledmobs.bukkit.logic.context.Context;
 import me.lokka30.levelledmobs.bukkit.logic.function.process.Process;
 import me.lokka30.levelledmobs.bukkit.logic.function.process.condition.Condition;
 import me.lokka30.levelledmobs.bukkit.util.Log;
-import me.lokka30.levelledmobs.bukkit.util.modal.ModalCollection.Type;
+import me.lokka30.levelledmobs.bukkit.util.modal.ModalCollection.Mode;
 import me.lokka30.levelledmobs.bukkit.util.modal.ModalList;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.configurate.CommentedConfigurationNode;
@@ -32,13 +32,13 @@ public class EntityCustomNameContains extends Condition {
                 this.modalList = new ModalList<>(
                     getConditionNode().node("in-list")
                         .getList(String.class, Collections.emptyList()),
-                    Type.INCLUSIVE
+                    Mode.INCLUSIVE
                 );
             } else if (getConditionNode().hasChild("not-in-list")) {
                 this.modalList = new ModalList<>(
                     getConditionNode().node("not-in-list")
                         .getList(String.class, Collections.emptyList()),
-                    Type.EXCLUSIVE
+                    Mode.EXCLUSIVE
                 );
             } else {
                 //TODO make better error message
@@ -61,12 +61,12 @@ public class EntityCustomNameContains extends Condition {
         final var customName = context.getEntity().getCustomName();
 
         if(customName == null)
-            return getModalList().getType() == Type.EXCLUSIVE;
+            return getModalList().getMode() == Mode.EXCLUSIVE;
 
         final var hasAsterisk = getModalList().getItems().stream().anyMatch("*"::contains);
 
         if(hasAsterisk) {
-            return switch(getModalList().getType()) {
+            return switch(getModalList().getMode()) {
                 case INCLUSIVE -> true;
                 case EXCLUSIVE -> false;
             };
@@ -75,7 +75,7 @@ public class EntityCustomNameContains extends Condition {
         final var contains = getModalList().getItems().stream()
             .anyMatch(customName::contains);
 
-        return switch(getModalList().getType()) {
+        return switch(getModalList().getMode()) {
             case INCLUSIVE -> contains;
             case EXCLUSIVE -> !contains;
         };

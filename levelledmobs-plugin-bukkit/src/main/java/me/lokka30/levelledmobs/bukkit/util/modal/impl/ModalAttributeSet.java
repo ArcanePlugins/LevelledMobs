@@ -1,32 +1,37 @@
-package me.lokka30.levelledmobs.bukkit.util.modal;
+package me.lokka30.levelledmobs.bukkit.util.modal.impl;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 import me.lokka30.levelledmobs.bukkit.util.Log;
+import me.lokka30.levelledmobs.bukkit.util.modal.ModalCollection;
+import org.bukkit.attribute.Attribute;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.configurate.CommentedConfigurationNode;
 import org.spongepowered.configurate.ConfigurateException;
 
-public class ModalList<T> extends ModalCollection<T> {
+public class ModalAttributeSet extends ModalCollection<Attribute> {
 
-    public ModalList(
-        final @NotNull List<T> items,
-        final @NotNull ModalCollection.Mode mode
+    public ModalAttributeSet(
+        @NotNull List<String> strItems,
+        @NotNull Mode mode
     ) {
-        super(items, mode);
+        super(EnumSet.noneOf(Attribute.class), mode);
+
+        for(String strItem : strItems) {
+            getItems().add(Attribute.valueOf(strItem.toUpperCase()));
+        }
     }
 
-    public static ModalList<String> parseModalStringListFromNode(
-        final CommentedConfigurationNode node
-    ) {
+    public static ModalAttributeSet parseNode(final CommentedConfigurationNode node) {
         try {
             if(node.hasChild("in-list")) {
-                return new ModalList<>(
+                return new ModalAttributeSet(
                     node.node("in-list").getList(String.class, new ArrayList<>()),
                     Mode.INCLUSIVE
                 );
             } else if(node.hasChild("not-in-list")) {
-                return new ModalList<>(
+                return new ModalAttributeSet(
                     node.node("not-in-list").getList(String.class, new ArrayList<>()),
                     Mode.EXCLUSIVE
                 );
