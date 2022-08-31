@@ -17,6 +17,7 @@ import org.bukkit.entity.LivingEntity;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.configurate.CommentedConfigurationNode;
+import redempt.crunch.Crunch;
 
 public class SetLevelAction extends Action {
 
@@ -49,10 +50,13 @@ public class SetLevelAction extends Action {
         Here we want to call out for all known levelling strategies to be registered to the
         SetLevelAction.
          */
-        final var strategyNames = new LinkedList<String>(); //TODO remove for testing
+        final LinkedList<String> strategyNames = new LinkedList<>(); //TODO remove for testing
 
         // Iterate through each strategyId specified under the strategies section
-        for(var strategyNode : getActionNode().node("strategies").childrenList()) {
+        for(CommentedConfigurationNode strategyNode : getActionNode()
+            .node("strategies")
+            .childrenList()
+        ) {
 
             if(strategyNode.key() == null) {
                 //TODO log error: strategy key must not be null
@@ -89,12 +93,12 @@ public class SetLevelAction extends Action {
         }
 
         //TODO test debugging remove this
-        Log.war(String.format(
-            "DEBUG: The following levelling strategies are in the SetLevelAction located in the process '%s' in function '%s': %s",
+        Log.tmpdebug(String.format(
+            "The following levelling strategies are in the SetLevelAction located in the process '%s' in function '%s': %s",
             getParentProcess().getIdentifier(),
             getParentProcess().getParentFunction().getIdentifier(),
             strategyNames
-        ), false);
+        ));
     }
 
     /* methods */
@@ -146,7 +150,7 @@ public class SetLevelAction extends Action {
             return;
         }
 
-        //TODO
+        //TODO I left this todo here though I have no clue why. Probably safe to remove.
         InternalEntityDataUtil.setLevel((LivingEntity) context.getEntity(), level);
     }
 
@@ -154,16 +158,25 @@ public class SetLevelAction extends Action {
     public Integer processFormula(final @NotNull Context context) {
         Objects.requireNonNull(context, "context");
 
+        // check if the mob should have no level
         if(getFormula().equalsIgnoreCase("no-level")) {
+            // null = no level
             return null;
         }
 
-        var formula = context.replacePlaceholders(getFormula());
-        //TODO levelling strategies in formula
+        // replace context placeholders in the formula
+        String formula = context.replacePlaceholders(getFormula());
 
-        //TODO use Crunch to spit out a level. make sure to catch any exceptions
+        // replace levelling strategy placeholders in the formula
+        for(final LevellingStrategy strategy : getStrategies()) {
+            formula = strategy.replaceInFormula(formula, context);
+        }
 
-        return Math.max(getMinPossibleLevel(), 4);
+        // evaluate the formula with Crunch, don't allow values below the min possible level
+        return Math.max(
+            (int) Math.round(Crunch.evaluateExpression(formula)),
+            getMinPossibleLevel()
+        );
     }
 
     /* getters and setters */
@@ -173,6 +186,7 @@ public class SetLevelAction extends Action {
     }
 
     public int getMinPossibleLevel() {
+        // we don't want negative values as they create undefined game behaviour
         return Math.max(0, LevelledMobs.getInstance()
             .getConfigHandler().getSettingsCfg()
             .getRoot().node("advanced", "minimum-level").getInt(1)

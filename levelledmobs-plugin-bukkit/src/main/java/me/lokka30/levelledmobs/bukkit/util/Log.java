@@ -26,4 +26,9 @@ public final class Log extends UtilityClass {
         ));
     }
 
+    //TODO remove
+    public static void tmpdebug(final String msg) {
+        inf("[DEBUG] " + msg);
+    }
+
 }

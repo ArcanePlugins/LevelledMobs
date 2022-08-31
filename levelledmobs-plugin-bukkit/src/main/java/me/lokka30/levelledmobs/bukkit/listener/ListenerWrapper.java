@@ -15,7 +15,7 @@ public abstract class ListenerWrapper implements Listener {
 
     /**
      * Create a new listener.
-     *
+     * <p>
      * 'Imperative' listeners are required by LevelledMobs in order for the plugin to operate
      * correctly, OR, they are considered very stable events which should not see breaking
      * changes (that affect LevelledMobs).

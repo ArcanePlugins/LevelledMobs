@@ -3,7 +3,9 @@ package me.lokka30.levelledmobs.bukkit.logic.levelling.strategy.impl.random;
 import java.util.concurrent.ThreadLocalRandom;
 import me.lokka30.levelledmobs.bukkit.logic.context.Context;
 import me.lokka30.levelledmobs.bukkit.logic.levelling.strategy.LevellingStrategy;
+import me.lokka30.levelledmobs.bukkit.util.Log;
 import org.jetbrains.annotations.NotNull;
+import org.spongepowered.configurate.CommentedConfigurationNode;
 
 public class RandomLevellingStrategy extends LevellingStrategy {
 
@@ -27,6 +29,7 @@ public class RandomLevellingStrategy extends LevellingStrategy {
 
     @Override
     public @NotNull String replaceInFormula(@NotNull String formula, @NotNull Context context) {
+        Log.tmpdebug("Random Levelling Strategy is replacing %random-level% in " + formula);
         final var placeholder = "%random-level%";
 
         if(!formula.contains(placeholder)) {
@@ -34,6 +37,39 @@ public class RandomLevellingStrategy extends LevellingStrategy {
         }
 
         return formula.replace(placeholder, Integer.toString(generate(context)));
+    }
+
+    @NotNull
+    public static RandomLevellingStrategy parse(final CommentedConfigurationNode node) {
+        Log.tmpdebug("Parsing random levelling strategy at path: " + node.path().toString());
+
+        /* error checking */
+        final boolean declaresMinLevel = node.hasChild("min-level");
+        final boolean declaresMaxLevel = node.hasChild("max-level");
+        String whatToFix = null;
+        if(!declaresMaxLevel && !declaresMinLevel) {
+            whatToFix = "min and max";
+        } else if(!declaresMinLevel) {
+            whatToFix = "min";
+        } else if(!declaresMaxLevel) {
+            whatToFix = "max";
+        }
+        if(whatToFix != null) {
+            Log.sev(
+                String.format("""
+                Detected an invalid configuration for a Random Levelling strategy: you didn't specify a %s level. The strategy can't be parsed until this is fixed.""",
+                whatToFix),
+
+                true
+            );
+            throw new IllegalStateException();
+        }
+
+        /* looks good, let's parse it */
+        return new RandomLevellingStrategy(
+            node.node("min-level").getInt(),
+            node.node("max-level").getInt()
+        );
     }
 
 }
