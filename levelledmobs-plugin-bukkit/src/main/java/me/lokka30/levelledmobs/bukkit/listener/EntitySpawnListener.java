@@ -25,6 +25,7 @@ public final class EntitySpawnListener extends ListenerWrapper {
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void handle(final EntitySpawnEvent event) {
+
         /*
         LevelledMobs only concerns LivingEntities
          */

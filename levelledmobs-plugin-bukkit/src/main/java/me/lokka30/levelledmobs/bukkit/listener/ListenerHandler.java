@@ -15,7 +15,8 @@ public final class ListenerHandler {
     private final Set<ListenerWrapper> primaryListeners = Set.of(
         new ActionParseListener(),
         new ConditionParseListener(),
-        new LevellingStrategyRequestListener()
+        new LevellingStrategyRequestListener(),
+        new TestListener()
     );
 
     /**
