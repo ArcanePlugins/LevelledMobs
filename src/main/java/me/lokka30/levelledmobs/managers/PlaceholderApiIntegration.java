@@ -31,13 +31,15 @@ public class PlaceholderApiIntegration extends PlaceholderExpansion {
     public PlaceholderApiIntegration(final LevelledMobs main) {
         this.main = main;
         this.mobsByPlayerTracking = new TreeMap<>();
+        this.playerDeathInfo = new TreeMap<>();
     }
 
     private final LevelledMobs main;
     private final Map<UUID, LastMobKilledInfo> mobsByPlayerTracking;
+    private final Map<UUID, LastMobKilledInfo> playerDeathInfo;
 
     public void putPlayerOrMobDeath(final @NotNull Player player,
-        final @Nullable LivingEntityWrapper lmEntity) {
+        final @Nullable LivingEntityWrapper lmEntity, final boolean isPlayerDeath) {
         LastMobKilledInfo mobInfo = this.mobsByPlayerTracking.get(player.getUniqueId());
         if (mobInfo == null) {
             mobInfo = new LastMobKilledInfo();
@@ -49,6 +51,21 @@ public class PlaceholderApiIntegration extends PlaceholderExpansion {
 
         mobInfo.entityName = lmEntity != null ?
             main.levelManager.getNametag(lmEntity, false) : null;
+
+        if (isPlayerDeath)
+            putPlayerKillerInfo(player, lmEntity);
+    }
+
+    public void putPlayerKillerInfo(final @NotNull Player player,
+                                    final @Nullable LivingEntityWrapper lmEntity) {
+        LastMobKilledInfo mobInfo = new LastMobKilledInfo();
+        this.playerDeathInfo.put(player.getUniqueId(), mobInfo);
+
+        mobInfo.entityLevel = lmEntity != null && lmEntity.isLevelled() ?
+                lmEntity.getMobLevel() : null;
+
+        mobInfo.entityName = lmEntity != null ?
+                main.levelManager.getNametag(lmEntity, false) : null;
     }
 
     public void playedLoggedOut(final @NotNull Player player) {
@@ -97,6 +114,9 @@ public class PlaceholderApiIntegration extends PlaceholderExpansion {
         } else if ("mob-target".equalsIgnoreCase(identifier)) {
             return getMobNametagWithinPlayerSight(player);
         }
+        else if ("killed-by".equalsIgnoreCase(identifier)){
+            return getKilledByInfo(player);
+        }
 
         return null;
     }
@@ -121,6 +141,17 @@ public class PlaceholderApiIntegration extends PlaceholderExpansion {
         final LastMobKilledInfo mobInfo = this.mobsByPlayerTracking.get(player.getUniqueId());
         return mobInfo == null || mobInfo.entityName == null ?
             "" : mobInfo.entityName;
+    }
+
+    @NotNull
+    private String getKilledByInfo(final @NotNull Player player) {
+        if (!this.playerDeathInfo.containsKey(player.getUniqueId())) {
+            return "";
+        }
+
+        final LastMobKilledInfo mobInfo = this.playerDeathInfo.get(player.getUniqueId());
+        return mobInfo == null || mobInfo.entityName == null ?
+                "" : mobInfo.entityName;
     }
 
     @NotNull

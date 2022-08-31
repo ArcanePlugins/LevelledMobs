@@ -51,7 +51,7 @@ public class PlayerDeathListener implements Listener {
         final LivingEntityWrapper lmEntity = SpigotUtils.getPlayersKiller(event, main);
 
         if (main.placeholderApiIntegration != null) {
-            main.placeholderApiIntegration.putPlayerOrMobDeath(event.getEntity(), lmEntity);
+            main.placeholderApiIntegration.putPlayerOrMobDeath(event.getEntity(), lmEntity, true);
             return;
         }
 

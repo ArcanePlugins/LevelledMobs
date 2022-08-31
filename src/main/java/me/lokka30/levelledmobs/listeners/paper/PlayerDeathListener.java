@@ -38,13 +38,13 @@ public class PlayerDeathListener {
 
         if (lmEntity == null) {
             if (main.placeholderApiIntegration != null) {
-                main.placeholderApiIntegration.putPlayerOrMobDeath(event.getEntity(), null);
+                main.placeholderApiIntegration.putPlayerOrMobDeath(event.getEntity(), null, true);
             }
             return true;
         }
 
         if (main.placeholderApiIntegration != null) {
-            main.placeholderApiIntegration.putPlayerOrMobDeath(event.getEntity(), lmEntity);
+            main.placeholderApiIntegration.putPlayerOrMobDeath(event.getEntity(), lmEntity, true);
         }
         lmEntity.free();
 

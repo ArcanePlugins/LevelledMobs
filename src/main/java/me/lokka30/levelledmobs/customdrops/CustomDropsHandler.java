@@ -73,7 +73,7 @@ public class CustomDropsHandler {
     // regular custom drops defined for a mob type that is a baby
     final Map<EntityType, CustomDropInstance> customDropsitems_Babies;
     // only used for the built-in universal groups
-    final Map<String, CustomDropInstance> customDropsitems_groups;
+    private final Map<String, CustomDropInstance> customDropsitems_groups;
     // these are drops defined by a drop table
     final Map<String, CustomDropInstance> customDropIDs;
     @Nullable Map<String, CustomDropInstance> customItemGroups;
@@ -105,8 +105,34 @@ public class CustomDropsHandler {
         return drops;
     }
 
+    public @NotNull Map<String, CustomDropInstance> getCustomDropsitems_groups(){
+        final Map<String, CustomDropInstance> drops = new TreeMap<>(this.customItemGroups);
+        for (final String groupName : externalCustomDrops.getCustomDropTables().keySet()){
+            final CustomDropInstance dropInstance = externalCustomDrops.getCustomDropTables().get(groupName);
+            if (!drops.containsKey(groupName)){
+                drops.put(groupName, dropInstance);
+                continue;
+            }
+
+            // merge the 3rd party drops into the defined drops for the entity
+            // 3rd party drop settings will override any conflicting
+            final CustomDropInstance currentDropInstance = drops.get(groupName);
+            currentDropInstance.combineDrop(dropInstance);
+
+            if (dropInstance.overallChance != null)
+                currentDropInstance.overallChance = dropInstance.overallChance;
+            currentDropInstance.overallPermissions.addAll(dropInstance.overallPermissions);
+        }
+
+        return drops;
+    }
+
     void addCustomDropItem(final @NotNull EntityType entityType, final @NotNull CustomDropInstance customDropInstance){
         this.customDropsitems.put(entityType, customDropInstance);
+    }
+
+    void addCustomDropGroup(final @NotNull String groupName, final @NotNull CustomDropInstance customDropInstance){
+        this.customDropsitems_groups.put(groupName, customDropInstance);
     }
 
     public CustomDropResult getCustomItemDrops(final LivingEntityWrapper lmEntity,
@@ -172,7 +198,7 @@ public class CustomDropsHandler {
 
         final List<String> groupsList = new LinkedList<>();
         for (final String group : lmEntity.getApplicableGroups()) {
-            if (!customDropsitems_groups.containsKey(group)) {
+            if (!getCustomDropsitems_groups().containsKey(group)) {
                 continue;
             }
 
@@ -264,7 +290,7 @@ public class CustomDropsHandler {
 
         if (!overrideNonDropTableDrops) {
             for (final String group : groups) {
-                final CustomDropInstance dropInstance = customDropsitems_groups.get(group);
+                final CustomDropInstance dropInstance = getCustomDropsitems_groups().get(group);
                 info.allDropInstances.add(dropInstance);
 
                 for (final CustomDropBase baseItem : dropInstance.customItems) {

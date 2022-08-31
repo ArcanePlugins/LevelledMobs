@@ -236,13 +236,12 @@ public class CustomDropsParser {
 
                 if (!dropInstance.customItems.isEmpty() || dropInstance.overrideStockDrops) {
                     if (isUniversalGroup) {
-                        if (handler.customDropsitems_groups.containsKey(
+                        if (handler.getCustomDropsitems_groups().containsKey(
                             universalGroup.toString())) {
-                            handler.customDropsitems_groups.get(universalGroup.toString())
+                            handler.getCustomDropsitems_groups().get(universalGroup.toString())
                                 .combineDrop(dropInstance);
                         } else {
-                            handler.customDropsitems_groups.put(universalGroup.toString(),
-                                dropInstance);
+                            handler.addCustomDropGroup(universalGroup.toString(), dropInstance);
                         }
                     } else {
                         final Map<EntityType, CustomDropInstance> dropMap = dropInstance.isBabyMob ?
@@ -274,7 +273,7 @@ public class CustomDropsParser {
 
             final StringBuilder sbMain = new StringBuilder();
             final int itemsCount =
-                handler.customDropsitems_groups.size() + handler.customDropsitems_Babies.size();
+                handler.getCustomDropsitems_groups().size() + handler.customDropsitems_Babies.size();
             sbMain.append(String.format(
                 "drop instances: %s, custom groups: %s, item groups: %s, items: %s, commands: %s",
                 handler.getCustomDropsitems().size(), itemsCount, handler.customItemGroups.size(),
@@ -310,10 +309,10 @@ public class CustomDropsParser {
                 continue;
             }
 
-            final Set<Map.Entry<String, Object>> ItemsToCheck = itemConfiguration.getValues(false)
+            final Set<Map.Entry<String, Object>> itemsToCheck = itemConfiguration.getValues(false)
                 .entrySet();
 
-            if (ItemsToCheck.isEmpty() && itemObject.getClass().equals(LinkedHashMap.class)) {
+            if (itemsToCheck.isEmpty() && itemObject.getClass().equals(LinkedHashMap.class)) {
                 // empty list means a material name was provided with no attributes
                 final LinkedHashMap<String, Object> materials = (LinkedHashMap<String, Object>) itemObject;
                 boolean needsContinue = false;
@@ -330,7 +329,7 @@ public class CustomDropsParser {
                 }
             }
 
-            for (final Map.Entry<String, Object> itemEntry : ItemsToCheck) {
+            for (final Map.Entry<String, Object> itemEntry : itemsToCheck) {
                 final String materialName = itemEntry.getKey();
 
                 if (checkForMobOverride(itemEntry, dropInstance)) {
@@ -338,10 +337,8 @@ public class CustomDropsParser {
                 }
 
                 if ("overall_chance".equalsIgnoreCase(materialName)) {
-                    if (itemEntry.getValue() instanceof Double) {
-                        dropInstance.overallChance = (float) itemEntry.getValue();
-                    } else if (itemEntry.getValue() instanceof Integer) {
-                        dropInstance.overallChance = Float.valueOf((Integer) itemEntry.getValue());
+                    if (itemEntry.getValue() instanceof Number) {
+                        dropInstance.overallChance = ((Number) itemEntry.getValue()).floatValue();
                     }
                     continue;
                 } else if ("overall_permission".equalsIgnoreCase(materialName)) {
@@ -963,7 +960,7 @@ public class CustomDropsParser {
             }
         }
 
-        for (final Map.Entry<String, CustomDropInstance> customDrops : handler.customDropsitems_groups.entrySet()) {
+        for (final Map.Entry<String, CustomDropInstance> customDrops : handler.getCustomDropsitems_groups().entrySet()) {
             final CustomDropInstance dropInstance = customDrops.getValue();
             final String override = dropInstance.overrideStockDrops ? " (override)" : "";
             final String overallChance = dropInstance.overallChance != null ? " (overall_chance: "

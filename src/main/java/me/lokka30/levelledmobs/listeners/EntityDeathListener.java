@@ -76,7 +76,7 @@ public class EntityDeathListener implements Listener {
         if (lmEntity.getLivingEntity().getKiller() != null
             && main.placeholderApiIntegration != null) {
             main.placeholderApiIntegration.putPlayerOrMobDeath(
-                lmEntity.getLivingEntity().getKiller(), lmEntity);
+                lmEntity.getLivingEntity().getKiller(), lmEntity, false);
         }
 
         if (lmEntity.isLevelled() && lmEntity.getLivingEntity().getKiller() != null
