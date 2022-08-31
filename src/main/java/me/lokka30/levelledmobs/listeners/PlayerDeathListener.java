@@ -38,7 +38,7 @@ public class PlayerDeathListener implements Listener {
      *
      * @param event PlayerDeathEvent
      */
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.NORMAL)
     public void onPlayerDeath(@NotNull final PlayerDeathEvent event) {
         // returns false if not a translatable component, in which case just use the old method
         // this can happen if another plugin has buthered the event by using the deprecated method (*cough* mythic mobs)
