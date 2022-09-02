@@ -4,9 +4,13 @@ import static org.bukkit.persistence.PersistentDataType.INTEGER;
 import static org.bukkit.persistence.PersistentDataType.STRING;
 
 import java.util.Objects;
+import me.lokka30.levelledmobs.bukkit.api.PluginUtil;
 import me.lokka30.levelledmobs.bukkit.api.data.keys.EntityKeyStore;
+import org.bukkit.NamespacedKey;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.persistence.PersistentDataContainer;
+import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -24,12 +28,7 @@ public class EntityDataUtil {
      */
     public static boolean getDeniesLabel(final @NotNull LivingEntity entity) {
         Objects.requireNonNull(entity, "entity");
-        if(getPdc(entity).has(EntityKeyStore.deniesLabel, INTEGER)) {
-            // noinspection ConstantConditions
-            return getPdc(entity).get(EntityKeyStore.wasBaby, INTEGER) == 1;
-        } else {
-            return false;
-        }
+        return getDataBool(entity, EntityKeyStore.deniesLabel);
     }
 
     /*
@@ -37,7 +36,7 @@ public class EntityDataUtil {
      */
     public static void setDeniesLabel(final @NotNull LivingEntity entity, final boolean to) {
         Objects.requireNonNull(entity, "entity");
-        getPdc(entity).set(EntityKeyStore.deniesLabel, INTEGER, boolToInt(to));
+        setData(entity, EntityKeyStore.deniesLabel, INTEGER, boolToInt(to));
     }
 
     /*
@@ -45,16 +44,16 @@ public class EntityDataUtil {
      */
     public static boolean isLevelled(final @NotNull LivingEntity entity) {
         Objects.requireNonNull(entity, "entity");
-        return getPdc(entity).has(EntityKeyStore.level, INTEGER);
+        return getLevel(entity) != null;
     }
 
     /*
     FIXME Comment
      */
-    public static int getLevel(final @NotNull LivingEntity entity) {
+    @Nullable
+    public static Integer getLevel(final @NotNull LivingEntity entity) {
         Objects.requireNonNull(entity, "entity");
-        // noinspection ConstantConditions
-        return getPdc(entity).get(EntityKeyStore.level, INTEGER);
+        return getDataInt(entity, EntityKeyStore.level);
     }
 
     /*
@@ -62,21 +61,16 @@ public class EntityDataUtil {
      */
     public static boolean getMadeOverallChance(final @NotNull LivingEntity entity) {
         Objects.requireNonNull(entity, "entity");
-        if(getPdc(entity).has(EntityKeyStore.madeOverallChance, INTEGER)) {
-            // noinspection ConstantConditions
-            return getPdc(entity).get(EntityKeyStore.wasBaby, INTEGER) == 1;
-        } else {
-            return false;
-        }
+        return getDataBool(entity, EntityKeyStore.madeOverallChance);
     }
 
     /*
     FIXME Comment
      */
-    public static int getMinLevel(final @NotNull LivingEntity entity) {
+    @Nullable
+    public static Integer getMinLevel(final @NotNull LivingEntity entity) {
         Objects.requireNonNull(entity, "entity");
-        // noinspection ConstantConditions
-        return getPdc(entity).get(EntityKeyStore.minLevel, INTEGER);
+        return getDataInt(entity, EntityKeyStore.minLevel);
     }
 
     /*
@@ -84,16 +78,19 @@ public class EntityDataUtil {
      */
     public static int getMaxLevel(final @NotNull LivingEntity entity) {
         Objects.requireNonNull(entity, "entity");
-        // noinspection ConstantConditions
-        return getPdc(entity).get(EntityKeyStore.maxLevel, INTEGER);
+        return Objects.requireNonNull(
+            getDataInt(entity, EntityKeyStore.maxLevel),
+            "maxLevel"
+        );
     }
 
     /*
     FIXME Comment
      */
+    @Nullable
     public static String getOverriddenName(final @NotNull LivingEntity entity) {
         Objects.requireNonNull(entity, "entity");
-        return getPdc(entity).get(EntityKeyStore.overriddenName, STRING);
+        return getDataString(entity, EntityKeyStore.overriddenName);
     }
 
     /*
@@ -102,7 +99,7 @@ public class EntityDataUtil {
     @Nullable
     public static String getSourceSpawnerName(final @NotNull LivingEntity entity) {
         Objects.requireNonNull(entity, "entity");
-        return getPdc(entity).get(EntityKeyStore.spawnSkyLightLevel, STRING);
+        return getDataString(entity, EntityKeyStore.sourceSpawnerName);
     }
 
     /*
@@ -110,8 +107,10 @@ public class EntityDataUtil {
      */
     public static int getSpawnTimeOfDay(final @NotNull LivingEntity entity) {
         Objects.requireNonNull(entity, "entity");
-        // noinspection ConstantConditions
-        return getPdc(entity).get(EntityKeyStore.spawnTimeOfDay, INTEGER);
+        return Objects.requireNonNull(
+            getDataInt(entity, EntityKeyStore.spawnTimeOfDay),
+            "spawnTimeOfDay"
+        );
     }
 
     /*
@@ -119,21 +118,18 @@ public class EntityDataUtil {
      */
     public static int getSpawnSkyLightLevel(final @NotNull LivingEntity entity) {
         Objects.requireNonNull(entity, "entity");
-        // noinspection ConstantConditions
-        return getPdc(entity).get(EntityKeyStore.spawnSkyLightLevel, INTEGER);
+        return Objects.requireNonNull(
+            getDataInt(entity, EntityKeyStore.spawnSkyLightLevel),
+            "spawnSkyLightLevel"
+        );
     }
 
     /*
     FIXME Comment
      */
-    public static boolean getWasBabyMob(final @NotNull LivingEntity entity) {
+    public static boolean getWasBaby(final @NotNull LivingEntity entity) {
         Objects.requireNonNull(entity, "entity");
-        if(getPdc(entity).has(EntityKeyStore.wasBaby, INTEGER)) {
-            // noinspection ConstantConditions
-            return getPdc(entity).get(EntityKeyStore.wasBaby, INTEGER) == 1;
-        } else {
-            return false;
-        }
+        return getDataBool(entity, EntityKeyStore.wasBaby);
     }
 
     /*
@@ -141,12 +137,7 @@ public class EntityDataUtil {
      */
     public static boolean getWasSummoned(final @NotNull LivingEntity entity) {
         Objects.requireNonNull(entity, "entity");
-        if(getPdc(entity).has(EntityKeyStore.wasSummoned, INTEGER)) {
-            // noinspection ConstantConditions
-            return getPdc(entity).get(EntityKeyStore.wasSummoned, INTEGER) == 1;
-        } else {
-            return false;
-        }
+        return getDataBool(entity, EntityKeyStore.wasSummoned);
     }
 
     /*
@@ -154,9 +145,95 @@ public class EntityDataUtil {
 
     Warning: Please only read or modify the PDC on the main thread.
      */
+    @NotNull
     protected static PersistentDataContainer getPdc(final @NotNull LivingEntity entity) {
         Objects.requireNonNull(entity, "entity");
-        return entity.getPersistentDataContainer();
+        return Objects.requireNonNull(
+            entity.getPersistentDataContainer(),
+            "PersistentDataContainer"
+        );
+    }
+
+    protected static <T, Z> void setData(
+        final @NotNull LivingEntity entity,
+        final @NotNull NamespacedKey namespacedKey,
+        final @NotNull PersistentDataType<T, Z> type,
+        final @NotNull Z value
+    ) {
+        entity.setMetadata(
+            namespacedKey.toString(),
+            new FixedMetadataValue(PluginUtil.getMainInstance(), value)
+        );
+
+        getPdc(entity).set(namespacedKey, type, value);
+    }
+
+    @Nullable
+    protected static Integer getDataInt(
+        final @NotNull LivingEntity entity,
+        final @NotNull NamespacedKey namespacedKey
+    ) {
+        final String namespacedKeyStr = namespacedKey.toString();
+
+        if(entity.hasMetadata(namespacedKeyStr)) {
+            return entity.getMetadata(namespacedKeyStr).get(0).asInt();
+        }
+
+        final Integer ret = getPdc(entity).get(namespacedKey, INTEGER);
+        if(ret == null) {
+            entity.removeMetadata(namespacedKeyStr, PluginUtil.getMainInstance());
+        } else {
+            entity.setMetadata(namespacedKeyStr, new FixedMetadataValue(
+                PluginUtil.getMainInstance(),
+                ret
+            ));
+        }
+
+        return ret;
+    }
+
+    protected static boolean getDataBool(
+        final @NotNull LivingEntity entity,
+        final @NotNull NamespacedKey namespacedKey
+    ) {
+        final String namespacedKeyStr = namespacedKey.toString();
+
+        if(entity.hasMetadata(namespacedKeyStr)) {
+            return entity.getMetadata(namespacedKeyStr).get(0).asBoolean();
+        }
+
+        final Integer pdcVal = getPdc(entity).get(namespacedKey, INTEGER);
+        final boolean ret = pdcVal != null && pdcVal == 1;
+        entity.setMetadata(namespacedKeyStr, new FixedMetadataValue(
+            PluginUtil.getMainInstance(),
+            ret
+        ));
+
+        return ret;
+    }
+
+    @Nullable
+    protected static String getDataString(
+        final @NotNull LivingEntity entity,
+        final @NotNull NamespacedKey namespacedKey
+    ) {
+        final String namespacedKeyStr = namespacedKey.toString();
+
+        if(entity.hasMetadata(namespacedKeyStr)) {
+            return entity.getMetadata(namespacedKeyStr).get(0).asString();
+        }
+
+        final String ret = getPdc(entity).get(namespacedKey, STRING);
+        if(ret == null) {
+            entity.removeMetadata(namespacedKeyStr, PluginUtil.getMainInstance());
+        } else {
+            entity.setMetadata(namespacedKeyStr, new FixedMetadataValue(
+                PluginUtil.getMainInstance(),
+                ret
+            ));
+        }
+
+        return ret;
     }
 
     /*

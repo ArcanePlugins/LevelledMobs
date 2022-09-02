@@ -19,6 +19,10 @@ public final class InternalEntityDataUtil extends EntityDataUtil {
         throw new IllegalStateException("Instantiation of utility-type class");
     }
 
+    /*
+    WARNING: This method does NOT use a memory data cache.
+    It is therefore NOT applicable for use in EntitySpawnEvent.
+     */
     public static Set<String> getDropTableIds(final @NotNull LivingEntity entity) {
         Objects.requireNonNull(entity, "entity");
 
@@ -32,6 +36,10 @@ public final class InternalEntityDataUtil extends EntityDataUtil {
         return result;
     }
 
+    /*
+    WARNING: This method does NOT use a memory data cache.
+    It is therefore NOT applicable for use in EntitySpawnEvent.
+     */
     public static void setDropTableIds(
         final @NotNull LivingEntity entity,
         final @NotNull Set<String> dropTableIds
@@ -43,54 +51,54 @@ public final class InternalEntityDataUtil extends EntityDataUtil {
 
     public static void setLevel(final @NotNull LivingEntity entity, final int to) {
         Objects.requireNonNull(entity, "entity");
-        getPdc(entity).set(EntityKeyStore.level, INTEGER, to);
+        setData(entity, EntityKeyStore.level, INTEGER, to);
     }
 
     public static void setMadeOverallChance(final @NotNull LivingEntity entity, final boolean to) {
         Objects.requireNonNull(entity, "entity");
-        getPdc(entity).set(EntityKeyStore.madeOverallChance, INTEGER, boolToInt(to));
+        setData(entity, EntityKeyStore.madeOverallChance, INTEGER, boolToInt(to));
     }
 
     public static void setMinLevel(final @NotNull LivingEntity entity, final int to) {
         Objects.requireNonNull(entity, "entity");
-        getPdc(entity).set(EntityKeyStore.minLevel, INTEGER, to);
+        setData(entity, EntityKeyStore.minLevel, INTEGER, to);
     }
 
     public static void setMaxLevel(final @NotNull LivingEntity entity, final int to) {
         Objects.requireNonNull(entity, "entity");
-        getPdc(entity).set(EntityKeyStore.maxLevel, INTEGER, to);
+        setData(entity, EntityKeyStore.maxLevel, INTEGER, to);
     }
 
     public static void setOverriddenName(final @NotNull LivingEntity entity, final @NotNull String to) {
         Objects.requireNonNull(entity, "entity");
         Objects.requireNonNull(to, "to");
-        getPdc(entity).set(EntityKeyStore.overriddenName, STRING, to);
+        setData(entity, EntityKeyStore.overriddenName, STRING, to);
     }
 
     public static void setSourceSpawnerName(final @NotNull LivingEntity entity, final @NotNull String to) {
         Objects.requireNonNull(entity, "entity");
         Objects.requireNonNull(to, "to");
-        getPdc(entity).set(EntityKeyStore.sourceSpawnerName, STRING, to);
+        setData(entity, EntityKeyStore.sourceSpawnerName, STRING, to);
     }
 
     public static void setSpawnTimeOfDay(final @NotNull LivingEntity entity, final int to) {
         Objects.requireNonNull(entity, "entity");
-        getPdc(entity).set(EntityKeyStore.spawnTimeOfDay, INTEGER, to);
+        setData(entity, EntityKeyStore.spawnTimeOfDay, INTEGER, to);
     }
 
     public static void setSpawnSkyLightLevel(final @NotNull LivingEntity entity, final int to) {
         Objects.requireNonNull(entity, "entity");
-        getPdc(entity).set(EntityKeyStore.spawnSkyLightLevel, INTEGER, to);
+        setData(entity, EntityKeyStore.spawnSkyLightLevel, INTEGER, to);
     }
 
     public static void setWasBaby(final @NotNull LivingEntity entity, final boolean to) {
         Objects.requireNonNull(entity, "entity");
-        getPdc(entity).set(EntityKeyStore.wasBaby, INTEGER, boolToInt(to));
+        setData(entity, EntityKeyStore.wasBaby, INTEGER, boolToInt(to));
     }
 
     public static void setWasSummoned(final @NotNull LivingEntity entity, final boolean to) {
         Objects.requireNonNull(entity, "entity");
-        getPdc(entity).set(EntityKeyStore.maxLevel, INTEGER, boolToInt(to));
+        setData(entity, EntityKeyStore.wasSummoned, INTEGER, boolToInt(to));
     }
 
     public static void unlevelMob(final @NotNull LivingEntity entity) {
