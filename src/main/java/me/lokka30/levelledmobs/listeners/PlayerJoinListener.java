@@ -174,7 +174,7 @@ public class PlayerJoinListener implements Listener {
             final LivingEntityWrapper lmEntity = LivingEntityWrapper.getInstance(livingEntity,
                 main);
 
-            main.levelManager.updateNametag(lmEntity, main.levelManager.getNametag(lmEntity, false),
+            main.levelManager.updateNametag(lmEntity, main.levelManager.getNametag(lmEntity, false).getNametagNonNull(),
                 Collections.singletonList(player));
             lmEntity.free();
         }

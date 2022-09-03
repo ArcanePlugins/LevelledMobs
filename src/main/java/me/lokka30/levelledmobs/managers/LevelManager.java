@@ -39,6 +39,7 @@ import me.lokka30.levelledmobs.misc.DebugType;
 import me.lokka30.levelledmobs.misc.LevellableState;
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
 import me.lokka30.levelledmobs.misc.MythicMobsMobInfo;
+import me.lokka30.levelledmobs.misc.NametagUpdateResult;
 import me.lokka30.levelledmobs.misc.QueueItem;
 import me.lokka30.levelledmobs.result.NBTApplyResult;
 import me.lokka30.levelledmobs.result.PlayerHomeCheckResult;
@@ -676,8 +677,13 @@ public class LevelManager implements LevelInterface {
         }
     }
 
-    @Nullable
-    public String getNametag(final LivingEntityWrapper lmEntity, final boolean isDeathNametag) {
+    @NotNull
+    public NametagUpdateResult getNametag(final LivingEntityWrapper lmEntity, final boolean isDeathNametag) {
+        return getNametag(lmEntity, isDeathNametag, false);
+    }
+
+    @NotNull
+    public NametagUpdateResult getNametag(final LivingEntityWrapper lmEntity, final boolean isDeathNametag, boolean preserveMobName) {
         String nametag;
         if (isDeathNametag) {
             nametag = main.rulesManager.getRuleNametagCreatureDeath(lmEntity);
@@ -690,7 +696,7 @@ public class LevelManager implements LevelInterface {
         }
 
         if ("disabled".equalsIgnoreCase(nametag) || "none".equalsIgnoreCase(nametag)) {
-            return null;
+            return new NametagUpdateResult(null);
         }
 
         final boolean useCustomNameForNametags = main.helperSettings.getBoolean(main.settingsCfg,
@@ -698,17 +704,17 @@ public class LevelManager implements LevelInterface {
         // ignore if 'disabled'
         if (nametag.isEmpty()) {
             if (useCustomNameForNametags) {
-                return lmEntity.getTypeName();
+                return new NametagUpdateResult(lmEntity.getTypeName());
             } else {
-                return lmEntity.getLivingEntity()
-                    .getCustomName(); // CustomName can be null, that is meant to be the case.
+                return new NametagUpdateResult(lmEntity.getLivingEntity().getCustomName()); // CustomName can be null, that is meant to be the case.
             }
         }
         if (!lmEntity.isLevelled()) {
             nametag = "";
         }
 
-        return updateNametag(lmEntity, nametag, useCustomNameForNametags);
+        final boolean doColorize = !preserveMobName;
+        return updateNametag(lmEntity, nametag, useCustomNameForNametags, doColorize, preserveMobName);
     }
 
     private void checkLockedNametag(final @NotNull LivingEntityWrapper lmEntity) {
@@ -738,17 +744,15 @@ public class LevelManager implements LevelInterface {
         }
     }
 
-    @NotNull
-    public String updateNametag(final LivingEntityWrapper lmEntity, @NotNull String nametag,
+    @NotNull public NametagUpdateResult updateNametag(final LivingEntityWrapper lmEntity, @NotNull String nametag,
         final boolean useCustomNameForNametags) {
-        return updateNametag(lmEntity, nametag, useCustomNameForNametags, true);
+        return updateNametag(lmEntity, nametag, useCustomNameForNametags, true, false);
     }
 
-    @NotNull
-    public String updateNametag(final LivingEntityWrapper lmEntity, @NotNull String nametag,
-        final boolean useCustomNameForNametags, final boolean colorize) {
+    @NotNull public NametagUpdateResult updateNametag(final LivingEntityWrapper lmEntity, @NotNull String nametag,
+                                                      final boolean useCustomNameForNametags, final boolean colorize, boolean preserveMobName) {
         if (nametag.isEmpty()) {
-            return nametag;
+            return new NametagUpdateResult(nametag);
         }
 
         checkLockedNametag(lmEntity);
@@ -756,9 +760,13 @@ public class LevelManager implements LevelInterface {
             main.rulesManager.getRuleEntityOverriddenName(lmEntity, useCustomNameForNametags) :
             lmEntity.lockedOverrideName;
 
-        String displayName = overridenName == null ?
-            Utils.capitalize(lmEntity.getTypeName().replaceAll("_", " ")) :
-            overridenName;
+        boolean hasOverridenName = (overridenName != null && !overridenName.isEmpty());
+        String displayName = overridenName;
+
+        if (preserveMobName)
+            displayName =  "{DisplayName}";
+        else if (!hasOverridenName)
+            displayName = Utils.capitalize(lmEntity.getTypeName().replaceAll("_", " "));
 
         if (lmEntity.getLivingEntity().getCustomName() != null && !useCustomNameForNametags) {
             displayName = lmEntity.getLivingEntity().getCustomName();
@@ -777,11 +785,14 @@ public class LevelManager implements LevelInterface {
             nametag = ExternalCompatibilityManager.getPapiPlaceholder(null, nametag);
         }
 
-        return nametag;
+        final NametagUpdateResult result = new NametagUpdateResult(nametag);
+        // this field is only used for sending nametags to client
+        result.overriddenName = overridenName;
+
+        return result;
     }
 
-    @NotNull
-    private String formatHealthIndicator(final LivingEntityWrapper lmEntity) {
+    @NotNull private String formatHealthIndicator(final LivingEntityWrapper lmEntity) {
         final HealthIndicator indicator = main.rulesManager.getRuleNametagIndicator(lmEntity);
         final double mobHealth = lmEntity.getLivingEntity().getHealth();
 
@@ -926,7 +937,7 @@ public class LevelManager implements LevelInterface {
     }
 
     public void updateNametag(final LivingEntityWrapper lmEntity) {
-        String nametag = getNametag(lmEntity, false);
+        String nametag = getNametag(lmEntity, false, false).getNametag();
         if (nametag != null) {
             nametag = MessageUtils.colorizeAll(nametag);
         }
@@ -1175,7 +1186,7 @@ public class LevelManager implements LevelInterface {
             location.getWorld().equals(lmEntity.getWorld()) &&
             lmEntity.getLocation().distanceSquared(location) <= maxDistance) {
             //if within distance, update nametag.
-            String nametag = main.levelManager.getNametag(lmEntity, false);
+            String nametag = main.levelManager.getNametag(lmEntity, false, false).getNametag();
             if (nametag != null) {
                 nametag = MessageUtils.colorizeAll(nametag);
             }
@@ -1756,8 +1767,7 @@ public class LevelManager implements LevelInterface {
         Utils.debugLog(main, DebugType.APPLY_LEVEL_SUCCESS, sb.toString());
     }
 
-    @NotNull
-    private String getNBT_DebugMessage(final @NotNull List<NBTApplyResult> results) {
+    @NotNull private String getNBT_DebugMessage(final @NotNull List<NBTApplyResult> results) {
         final StringBuilder sb = new StringBuilder();
 
         for (final NBTApplyResult result : results) {

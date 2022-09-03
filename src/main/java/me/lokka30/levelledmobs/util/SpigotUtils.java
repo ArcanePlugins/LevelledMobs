@@ -93,7 +93,7 @@ public class SpigotUtils {
             return lmKiller;
         }
 
-        final String deathMessage = main.levelManager.getNametag(lmKiller, true);
+        final String deathMessage = main.levelManager.getNametag(lmKiller, true).getNametag();
         if (Utils.isNullOrEmpty(deathMessage) || "disabled".equalsIgnoreCase(deathMessage)) {
             return lmKiller;
         }

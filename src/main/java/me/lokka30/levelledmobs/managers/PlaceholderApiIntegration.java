@@ -50,7 +50,7 @@ public class PlaceholderApiIntegration extends PlaceholderExpansion {
             lmEntity.getMobLevel() : null;
 
         mobInfo.entityName = lmEntity != null ?
-            main.levelManager.getNametag(lmEntity, false) : null;
+            main.levelManager.getNametag(lmEntity, false).getNametag() : null;
 
         if (isPlayerDeath)
             putPlayerKillerInfo(player, lmEntity);
@@ -65,7 +65,7 @@ public class PlaceholderApiIntegration extends PlaceholderExpansion {
                 lmEntity.getMobLevel() : null;
 
         mobInfo.entityName = lmEntity != null ?
-                main.levelManager.getNametag(lmEntity, false) : null;
+                main.levelManager.getNametag(lmEntity, false).getNametag() : null;
     }
 
     public void playedLoggedOut(final @NotNull Player player) {
@@ -170,7 +170,7 @@ public class PlaceholderApiIntegration extends PlaceholderExpansion {
         if (!Utils.isNullOrEmpty(nametag)) {
             final boolean useCustomNameForNametags = main.helperSettings.getBoolean(
                 main.settingsCfg, "use-customname-for-mob-nametags");
-            nametag = main.levelManager.updateNametag(lmEntity, nametag, useCustomNameForNametags);
+            nametag = main.levelManager.updateNametag(lmEntity, nametag, useCustomNameForNametags).getNametagNonNull();
 
             if ("disabled".equalsIgnoreCase(nametag)) {
                 return "";
@@ -178,7 +178,7 @@ public class PlaceholderApiIntegration extends PlaceholderExpansion {
         }
 
         if (Utils.isNullOrEmpty(nametag) && lmEntity.isLevelled()) {
-            nametag = main.levelManager.getNametag(lmEntity, false);
+            nametag = main.levelManager.getNametag(lmEntity, false).getNametag();
         }
 
         lmEntity.free();
