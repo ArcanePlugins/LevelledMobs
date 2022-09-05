@@ -155,11 +155,9 @@ public class PlayerJoinListener implements Listener {
         }
 
         for (final Entity entity : entities) {
-            if (!(entity instanceof LivingEntity)) {
+            if (!(entity instanceof final LivingEntity livingEntity)) {
                 continue;
             }
-
-            final LivingEntity livingEntity = (LivingEntity) entity;
 
             // mob must be alive
             if (!livingEntity.isValid()) {

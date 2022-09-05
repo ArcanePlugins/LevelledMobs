@@ -449,9 +449,8 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
     }
 
     public boolean isBabyMob() {
-        if (livingEntity instanceof Zombie) {
+        if (livingEntity instanceof final Zombie zombie) {
             // for backwards compatibility
-            final Zombie zombie = (Zombie) livingEntity;
             try {
                 zombie.isAdult();
                 return !zombie.isAdult();

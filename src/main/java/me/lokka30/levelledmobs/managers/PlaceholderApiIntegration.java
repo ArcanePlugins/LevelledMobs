@@ -190,11 +190,10 @@ public class PlaceholderApiIntegration extends PlaceholderExpansion {
             "nametag-placeholder-maxblocks", 30);
 
         for (final Entity entity : player.getNearbyEntities(maxBlocks, maxBlocks, maxBlocks)) {
-            if (!(entity instanceof LivingEntity)) {
+            if (!(entity instanceof final LivingEntity le)) {
                 continue;
             }
 
-            final LivingEntity le = (LivingEntity) entity;
             final Vector toEntity = le.getEyeLocation().toVector().subtract(eye.toVector());
             final double dot = toEntity.normalize().dot(eye.getDirection());
             if (dot >= 0.975D) {

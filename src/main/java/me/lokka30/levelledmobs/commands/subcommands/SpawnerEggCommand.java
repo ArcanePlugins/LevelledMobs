@@ -247,20 +247,21 @@ public class SpawnerEggCommand extends SpawnerBaseClass implements Subcommand {
         final @NotNull CommandSender sender, @NotNull final String @NotNull [] args) {
         if (!Utils.isNullOrEmpty(args[args.length - 2])) {
             switch (args[args.length - 2].toLowerCase()) {
-                case "/entity":
+                case "/entity" -> {
                     final List<String> entityNames = new LinkedList<>();
                     for (final EntityType entityType : EntityType.values()) {
                         entityNames.add(entityType.toString().toLowerCase());
                     }
-
                     return entityNames;
-                case "/giveplayer":
+                }
+                case "/giveplayer" -> {
                     final List<String> players = new LinkedList<>();
                     for (final Player player : Bukkit.getOnlinePlayers()) {
                         players.add(player.getName());
                     }
                     players.sort(String.CASE_INSENSITIVE_ORDER);
                     return players;
+                }
             }
         }
 

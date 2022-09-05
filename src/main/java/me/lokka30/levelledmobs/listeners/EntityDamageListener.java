@@ -58,12 +58,11 @@ public class EntityDamageListener implements Listener {
         }
 
         if (event.getEntity() instanceof Player) {
-            if (!(event instanceof EntityDamageByEntityEvent)) {
+            if (!(event instanceof final EntityDamageByEntityEvent entityDamageByEntityEvent)) {
                 return;
             }
 
             // if a mob hit a player then show the mob's nametag
-            final EntityDamageByEntityEvent entityDamageByEntityEvent = (EntityDamageByEntityEvent) event;
             if (!(entityDamageByEntityEvent.getDamager() instanceof LivingEntity)
                 || entityDamageByEntityEvent.getDamager() instanceof Player) {
                 return;
@@ -107,9 +106,8 @@ public class EntityDamageListener implements Listener {
             lmEntity);
         final long nametagVisibleTime = lmEntity.getNametagCooldownTime();
 
-        if (nametagVisibleTime > 0L && event instanceof EntityDamageByEntityEvent &&
+        if (nametagVisibleTime > 0L && event instanceof final EntityDamageByEntityEvent entityDamageByEntityEvent &&
             nametagVisibilityEnums.contains(NametagVisibilityEnum.ATTACKED)) {
-            final EntityDamageByEntityEvent entityDamageByEntityEvent = (EntityDamageByEntityEvent) event;
 
             if (entityDamageByEntityEvent.getDamager() instanceof Player) {
                 if (lmEntity.playersNeedingNametagCooldownUpdate == null) {
@@ -151,10 +149,9 @@ public class EntityDamageListener implements Listener {
             return;
         }
 
-        if (!(event.getDamager() instanceof Projectile)) {
+        if (!(event.getDamager() instanceof final Projectile projectile)) {
             return;
         }
-        final Projectile projectile = (Projectile) event.getDamager();
 
         if (projectile.getShooter() == null) {
             return;
@@ -210,10 +207,9 @@ public class EntityDamageListener implements Listener {
     }
 
     private void processOtherRangedDamage(@NotNull final EntityDamageByEntityEvent event) {
-        if (!(event.getDamager() instanceof LivingEntity)) {
+        if (!(event.getDamager() instanceof final LivingEntity livingEntity)) {
             return;
         }
-        final LivingEntity livingEntity = (LivingEntity) event.getDamager();
 
         if (
             !(livingEntity instanceof Guardian) &&

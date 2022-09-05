@@ -62,8 +62,7 @@ public class PlayerDeathListener {
         final Entity damager = ((EntityDamageByEntityEvent) entityDamageEvent).getDamager();
         LivingEntity killer = null;
 
-        if (damager instanceof Projectile) {
-            final Projectile projectile = (Projectile) damager;
+        if (damager instanceof final Projectile projectile) {
             if (projectile.getShooter() instanceof LivingEntity) {
                 killer = (LivingEntity) projectile.getShooter();
             }
@@ -165,22 +164,18 @@ public class PlayerDeathListener {
         String playerKilled = null;
 
         for (final net.kyori.adventure.text.Component com : tc.args()) {
-            if (com instanceof TextComponent) {
-                final TextComponent tc2 = (TextComponent) com;
+            if (com instanceof final TextComponent tc2) {
                 playerKilled = tc2.content();
 
                 if (playerKilled.isEmpty() && tc2.hoverEvent() != null) {
                     // in rare cases the above method returns a empty string
                     // we'll extract the player name from the hover event
                     final HoverEvent<?> he = tc2.hoverEvent();
-                    if (he == null || !(he.value() instanceof HoverEvent.ShowEntity)) {
+                    if (he == null || !(he.value() instanceof final HoverEvent.ShowEntity se)) {
                         return null;
                     }
 
-                    final HoverEvent.ShowEntity se = (HoverEvent.ShowEntity) he.value();
-
-                    if (se.name() instanceof TextComponent) {
-                        final TextComponent tc3 = (TextComponent) se.name();
+                    if (se.name() instanceof final TextComponent tc3) {
                         playerKilled = tc3.content();
                     }
                 }

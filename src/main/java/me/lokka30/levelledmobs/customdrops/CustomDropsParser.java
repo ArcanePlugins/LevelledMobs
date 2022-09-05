@@ -290,10 +290,9 @@ public class CustomDropsParser {
         }
 
         for (final Object itemObject : itemConfigurations) {
-            if (itemObject instanceof String) {
+            if (itemObject instanceof final String materialName) {
                 // just the string was given
                 final CustomDropItem item = new CustomDropItem(this.defaults);
-                final String materialName = (String) itemObject;
 
                 if ("override".equalsIgnoreCase(materialName)) {
                     dropInstance.overrideStockDrops = true;
@@ -480,8 +479,7 @@ public class CustomDropsParser {
         dropBase.causeOfDeathReqs = buildCachedModalListOfDamageCause(cs,
                 this.defaults.causeOfDeathReqs);
 
-        if (dropBase instanceof CustomCommand) {
-            final CustomCommand customCommand = (CustomCommand) dropBase;
+        if (dropBase instanceof final CustomCommand customCommand) {
             final List<String> commandsList = cs.getStringList(
                 ymlHelper.getKeyNameFromConfig(cs, "command"));
             final String singleCommand = ymlHelper.getString(cs, "command");

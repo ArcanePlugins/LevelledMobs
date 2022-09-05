@@ -189,8 +189,7 @@ public class RulesManager {
             }
         }
 
-        if (lmInterface instanceof LivingEntityWrapper) {
-            final LivingEntityWrapper lmEntity = (LivingEntityWrapper) lmInterface;
+        if (lmInterface instanceof final LivingEntityWrapper lmEntity) {
             return (
                 allowedEntitiesList == null ||
                     !babyMobsInheritAdultSetting && lmEntity.isBabyMob()
@@ -777,10 +776,9 @@ public class RulesManager {
 
     private void checkIfRuleShouldBeTempDisabled(final @NotNull RuleInfo ruleInfo,
         final @NotNull LivingEntityInterface lmInterface) {
-        if (!(lmInterface instanceof LivingEntityWrapper)) {
+        if (!(lmInterface instanceof final LivingEntityWrapper lmEntity)) {
             return;
         }
-        final LivingEntityWrapper lmEntity = (LivingEntityWrapper) lmInterface;
 
         // don't increment the count when just checking nametags, etc
         if (!lmEntity.isNewlySpawned && !lmEntity.isRulesForceAll) {
@@ -1104,8 +1102,7 @@ public class RulesManager {
         Boolean ruleMadeChance = null;
 
         if (ri.conditions_Chance != null && ri.conditions_Chance < 1.0) {
-            if (lmInterface instanceof LivingEntityWrapper) {
-                final LivingEntityWrapper lmEntity = (LivingEntityWrapper) lmInterface;
+            if (lmInterface instanceof final LivingEntityWrapper lmEntity) {
                 // find out if this entity previously lost or won the chance previously and use that result if present
                 final Map<String, Boolean> prevChanceResults = lmEntity.getPrevChanceRuleResults();
                 if (prevChanceResults != null && prevChanceResults.containsKey(ri.getRuleName())) {

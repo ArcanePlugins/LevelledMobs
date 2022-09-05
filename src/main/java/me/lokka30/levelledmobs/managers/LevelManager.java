@@ -21,7 +21,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.TreeMap;
 import java.util.WeakHashMap;
-import java.util.stream.Collectors;
 import me.lokka30.levelledmobs.LevelInterface;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.LivingEntityInterface;
@@ -386,10 +385,10 @@ public class LevelManager implements LevelInterface {
             Location useLocation = result.location;
             if (useLocation == null || useLocation.getWorld() != player.getWorld()) {
                 netherOrWorldSpawnResult = Utils.getPortalOrWorldSpawn(main, player);
-                useLocation = netherOrWorldSpawnResult.location;
-                if (netherOrWorldSpawnResult.isWorldPortalLocation) {
+                useLocation = netherOrWorldSpawnResult.location();
+                if (netherOrWorldSpawnResult.isWorldPortalLocation()) {
                     sourceResult.homeNameUsed = "world_portal";
-                } else if (netherOrWorldSpawnResult.isNetherPortalLocation) {
+                } else if (netherOrWorldSpawnResult.isNetherPortalLocation()) {
                     sourceResult.homeNameUsed = "nether_portal";
                 } else {
                     sourceResult.homeNameUsed = "spawn";
@@ -408,10 +407,10 @@ public class LevelManager implements LevelInterface {
             if (useLocation == null || useLocation.getWorld() != player.getWorld()) {
                 final PlayerNetherOrWorldSpawnResult result = Utils.getPortalOrWorldSpawn(main,
                     player);
-                useLocation = result.location;
-                if (result.isWorldPortalLocation) {
+                useLocation = result.location();
+                if (result.isWorldPortalLocation()) {
                     sourceResult.homeNameUsed = "world_portal";
-                } else if (result.isNetherPortalLocation) {
+                } else if (result.isNetherPortalLocation()) {
                     sourceResult.homeNameUsed = "nether_portal";
                 } else {
                     sourceResult.homeNameUsed = "spawn";
@@ -522,7 +521,7 @@ public class LevelManager implements LevelInterface {
                 hasOverride = true;
             }
 
-            if (dropResult.hasOverride) {
+            if (dropResult.hasOverride()) {
                 hasOverride = true;
             }
 
@@ -1120,12 +1119,11 @@ public class LevelManager implements LevelInterface {
         final @NotNull List<Player> players) {
         final LivingEntity mob = lmEntity.getLivingEntity();
         final List<Player> sortedPlayers = players.stream()
-            .filter(p -> mob.getWorld().equals(p.getWorld()))
-            .filter(p -> p.getGameMode() != GameMode.SPECTATOR)
-            .map(p -> Map.entry(mob.getLocation().distanceSquared(p.getLocation()), p))
-            .sorted(Comparator.comparingDouble(Map.Entry::getKey))
-            .map(Map.Entry::getValue)
-            .collect(Collectors.toList());
+                .filter(p -> mob.getWorld().equals(p.getWorld()))
+                .filter(p -> p.getGameMode() != GameMode.SPECTATOR)
+                .map(p -> Map.entry(mob.getLocation().distanceSquared(p.getLocation()), p))
+                .sorted(Comparator.comparingDouble(Map.Entry::getKey))
+                .map(Map.Entry::getValue).toList();
 
         Player closestPlayer = null;
         for (final Player player : sortedPlayers) {
@@ -1250,45 +1248,23 @@ public class LevelManager implements LevelInterface {
         // This functionality should be added into the enum.
         final Attribute attribute;
         switch (addition) {
-            case ATTRIBUTE_MAX_HEALTH:
-                attribute = Attribute.GENERIC_MAX_HEALTH;
-                break;
-            case ATTRIBUTE_ATTACK_DAMAGE:
-                attribute = Attribute.GENERIC_ATTACK_DAMAGE;
-                break;
-            case ATTRIBUTE_MOVEMENT_SPEED:
-                attribute = Attribute.GENERIC_MOVEMENT_SPEED;
-                break;
-            case ATTRIBUTE_HORSE_JUMP_STRENGTH:
-                attribute = Attribute.HORSE_JUMP_STRENGTH;
-                break;
-            case ATTRIBUTE_ARMOR_BONUS:
-                attribute = Attribute.GENERIC_ARMOR;
-                break;
-            case ATTRIBUTE_ARMOR_TOUGHNESS:
-                attribute = Attribute.GENERIC_ARMOR_TOUGHNESS;
-                break;
-            case ATTRIBUTE_KNOCKBACK_RESISTANCE:
-                attribute = Attribute.GENERIC_KNOCKBACK_RESISTANCE;
-                break;
-            case ATTRIBUTE_FLYING_SPEED:
-                attribute = Attribute.GENERIC_FLYING_SPEED;
-                break;
-            case ATTRIBUTE_ATTACK_KNOCKBACK:
-                attribute = Attribute.GENERIC_ATTACK_KNOCKBACK;
-                break;
-            case ATTRIBUTE_FOLLOW_RANGE:
-                attribute = Attribute.GENERIC_FOLLOW_RANGE;
-                break;
-            case ATTRIBUTE_ZOMBIE_SPAWN_REINFORCEMENTS:
+            case ATTRIBUTE_MAX_HEALTH -> attribute = Attribute.GENERIC_MAX_HEALTH;
+            case ATTRIBUTE_ATTACK_DAMAGE -> attribute = Attribute.GENERIC_ATTACK_DAMAGE;
+            case ATTRIBUTE_MOVEMENT_SPEED -> attribute = Attribute.GENERIC_MOVEMENT_SPEED;
+            case ATTRIBUTE_HORSE_JUMP_STRENGTH -> attribute = Attribute.HORSE_JUMP_STRENGTH;
+            case ATTRIBUTE_ARMOR_BONUS -> attribute = Attribute.GENERIC_ARMOR;
+            case ATTRIBUTE_ARMOR_TOUGHNESS -> attribute = Attribute.GENERIC_ARMOR_TOUGHNESS;
+            case ATTRIBUTE_KNOCKBACK_RESISTANCE -> attribute = Attribute.GENERIC_KNOCKBACK_RESISTANCE;
+            case ATTRIBUTE_FLYING_SPEED -> attribute = Attribute.GENERIC_FLYING_SPEED;
+            case ATTRIBUTE_ATTACK_KNOCKBACK -> attribute = Attribute.GENERIC_ATTACK_KNOCKBACK;
+            case ATTRIBUTE_FOLLOW_RANGE -> attribute = Attribute.GENERIC_FOLLOW_RANGE;
+            case ATTRIBUTE_ZOMBIE_SPAWN_REINFORCEMENTS -> {
                 if (lmEntity.getSpawnReason() == LevelledMobSpawnReason.REINFORCEMENTS) {
                     return;
                 }
                 attribute = Attribute.ZOMBIE_SPAWN_REINFORCEMENTS;
-                break;
-
-            default:
-                throw new IllegalStateException(
+            }
+            default -> throw new IllegalStateException(
                     "Addition must be an Attribute, if so, it has not been considered in this method");
         }
 
@@ -1413,7 +1389,7 @@ public class LevelManager implements LevelInterface {
         boolean hadPlayerHead = false;
         final EquippedItemsInfo equippedItemsInfo = new EquippedItemsInfo();
 
-        for (final Map.Entry<ItemStack, CustomDropItem> pair : dropResult.stackToItem) {
+        for (final Map.Entry<ItemStack, CustomDropItem> pair : dropResult.stackToItem()) {
             final ItemStack itemStack = pair.getKey();
             final Material material = itemStack.getType();
 
@@ -1499,11 +1475,9 @@ public class LevelManager implements LevelInterface {
             return LevellableState.DENIED_LEVEL_0;
         }
 
-        if (!(lmInterface instanceof LivingEntityWrapper)) {
+        if (!(lmInterface instanceof final LivingEntityWrapper lmEntity)) {
             return LevellableState.ALLOWED;
         }
-
-        final LivingEntityWrapper lmEntity = (LivingEntityWrapper) lmInterface;
 
         final LevellableState externalCompatResult = ExternalCompatibilityManager.checkAllExternalCompats(
             lmEntity, main);

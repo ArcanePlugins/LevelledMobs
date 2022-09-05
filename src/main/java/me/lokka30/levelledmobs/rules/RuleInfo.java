@@ -187,9 +187,8 @@ public class RuleInfo {
                     this.customDrop_DropTableIds.addAll(mergingPreset);
 
                     skipSettingValue = true;
-                } else if (presetValue instanceof MergeableStringList
+                } else if (presetValue instanceof final MergeableStringList mergingPreset
                     && this.getClass().getDeclaredField(f.getName()).get(this) != null) {
-                    final MergeableStringList mergingPreset = (MergeableStringList) presetValue;
                     if (mergingPreset.doMerge && !mergingPreset.isEmpty()) {
                         final MergeableStringList current = (MergeableStringList) this.getClass()
                             .getDeclaredField(f.getName()).get(this);
@@ -198,8 +197,7 @@ public class RuleInfo {
                     }
                 }
 
-                if (presetValue instanceof CachedModalList) {
-                    final CachedModalList<?> cachedModalList_preset = (CachedModalList<?>) presetValue;
+                if (presetValue instanceof final CachedModalList<?> cachedModalList_preset) {
                     final CachedModalList<?> thisCachedModalList = (CachedModalList<?>) this.getClass()
                         .getDeclaredField(f.getName()).get(this);
 
@@ -308,8 +306,7 @@ public class RuleInfo {
                 if (value.toString().equalsIgnoreCase("NONE")) {
                     continue;
                 }
-                if (value instanceof CachedModalList<?>) {
-                    final CachedModalList<?> cml = (CachedModalList<?>) value;
+                if (value instanceof final CachedModalList<?> cml) {
                     if (cml.isEmpty() && !cml.allowAll && !cml.excludeAll) {
                         continue;
                     }

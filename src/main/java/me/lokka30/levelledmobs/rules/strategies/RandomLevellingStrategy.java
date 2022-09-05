@@ -168,11 +168,10 @@ public class RandomLevellingStrategy implements LevellingStrategy, Cloneable {
 
     @Override
     public void mergeRule(final LevellingStrategy levellingStrategy) {
-        if (!(levellingStrategy instanceof RandomLevellingStrategy)) {
+        if (!(levellingStrategy instanceof final RandomLevellingStrategy randomLevelling)) {
             return;
         }
 
-        final RandomLevellingStrategy randomLevelling = (RandomLevellingStrategy) levellingStrategy;
         if (this.weightedRandom == null || randomLevelling.doMerge) {
             this.weightedRandom = randomLevelling.weightedRandom;
         } else if (randomLevelling.weightedRandom != null) {

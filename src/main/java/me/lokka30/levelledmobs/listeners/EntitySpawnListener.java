@@ -282,8 +282,7 @@ public class EntitySpawnListener implements Listener {
 
         lmEntity.setSpawnedTimeOfDay((int) lmEntity.getWorld().getTime());
 
-        if (event instanceof SpawnerSpawnEvent) {
-            final SpawnerSpawnEvent spawnEvent = (SpawnerSpawnEvent) event;
+        if (event instanceof final SpawnerSpawnEvent spawnEvent) {
 
             if (spawnEvent.getSpawner() != null && spawnEvent.getSpawner()
                 .getPersistentDataContainer()
@@ -295,8 +294,7 @@ public class EntitySpawnListener implements Listener {
 
             Utils.debugLog(main, DebugType.MOB_SPAWNER,
                 "Spawned mob from vanilla spawner: &b" + spawnEvent.getEntityType());
-        } else if (event instanceof CreatureSpawnEvent) {
-            final CreatureSpawnEvent spawnEvent = (CreatureSpawnEvent) event;
+        } else if (event instanceof final CreatureSpawnEvent spawnEvent) {
 
             if (spawnEvent.getSpawnReason() == CreatureSpawnEvent.SpawnReason.SPAWNER ||
                 spawnEvent.getSpawnReason() == CreatureSpawnEvent.SpawnReason.SLIME_SPLIT) {
@@ -416,8 +414,7 @@ public class EntitySpawnListener implements Listener {
             return levellableState;
         }
 
-        if (event instanceof CreatureSpawnEvent) {
-            final CreatureSpawnEvent creatureSpawnEvent = (CreatureSpawnEvent) event;
+        if (event instanceof final CreatureSpawnEvent creatureSpawnEvent) {
 
             // the mob gets processed via SpawnerSpawnEvent
             if (((CreatureSpawnEvent) event).getSpawnReason()

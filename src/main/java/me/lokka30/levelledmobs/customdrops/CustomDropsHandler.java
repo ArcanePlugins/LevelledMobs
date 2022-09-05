@@ -473,9 +473,8 @@ public class CustomDropsHandler {
         }
 
         if (dropBase.excludedMobs.contains(info.lmEntity.getTypeName())) {
-            if (dropBase instanceof CustomDropItem && !info.equippedOnly
+            if (dropBase instanceof final CustomDropItem dropItem && !info.equippedOnly
                 && isCustomDropsDebuggingEnabled()) {
-                final CustomDropItem dropItem = (CustomDropItem) dropBase;
 
                 info.addDebugMessage(String.format(
                     "&8 - &7Mob: &b%s&7, item: %s, mob was excluded", info.lmEntity.getTypeName(),
@@ -490,8 +489,7 @@ public class CustomDropsHandler {
             doDrop = false;
         }
         if (!doDrop) {
-            if (dropBase instanceof CustomDropItem) {
-                final CustomDropItem dropItem = (CustomDropItem) dropBase;
+            if (dropBase instanceof final CustomDropItem dropItem) {
                 if (!info.equippedOnly && isCustomDropsDebuggingEnabled()) {
                     final ItemStack itemStack =
                         info.deathByFire ? getCookedVariantOfMeat(dropItem.getItemStack())
@@ -514,8 +512,7 @@ public class CustomDropsHandler {
         }
 
         // equip-chance and equip-drop-chance:
-        if (!info.equippedOnly && dropBase instanceof CustomDropItem) {
-            final CustomDropItem item = (CustomDropItem) dropBase;
+        if (!info.equippedOnly && dropBase instanceof final CustomDropItem item) {
             if (!checkIfMadeEquippedDropChance(info, item)) {
                 if (isCustomDropsDebuggingEnabled()) {
                     info.addDebugMessage(String.format(
@@ -559,8 +556,7 @@ public class CustomDropsHandler {
         }
 
         if (didNotMakeChance && !info.equippedOnly && isCustomDropsDebuggingEnabled()) {
-            if (dropBase instanceof CustomDropItem) {
-                final CustomDropItem dropItem = (CustomDropItem) dropBase;
+            if (dropBase instanceof final CustomDropItem dropItem) {
                 final ItemStack itemStack =
                     info.deathByFire ? getCookedVariantOfMeat(dropItem.getItemStack())
                         : dropItem.getItemStack();
@@ -631,11 +627,10 @@ public class CustomDropsHandler {
             return;
             // -----------------------------------------------------------------------------------------------------------------------------------------------
         }
-        if (!(dropBase instanceof CustomDropItem)) {
+        if (!(dropBase instanceof final CustomDropItem dropItem)) {
             Utils.logger.warning("Unsupported drop type: " + dropBase.getClass().getName());
             return;
         }
-        final CustomDropItem dropItem = (CustomDropItem) dropBase;
 
         if (info.equippedOnly && dropItem.equippedSpawnChance < 1.0F) {
             chanceRole = (float) ThreadLocalRandom.current().nextInt(0, 100001) * 0.00001F;
@@ -1047,22 +1042,15 @@ public class CustomDropsHandler {
     }
 
     private ItemStack getCookedVariantOfMeat(@NotNull final ItemStack itemStack) {
-        switch (itemStack.getType()) {
-            case BEEF:
-                return new ItemStack(Material.COOKED_BEEF);
-            case CHICKEN:
-                return new ItemStack(Material.COOKED_CHICKEN);
-            case COD:
-                return new ItemStack(Material.COOKED_COD);
-            case MUTTON:
-                return new ItemStack(Material.COOKED_MUTTON);
-            case PORKCHOP:
-                return new ItemStack(Material.COOKED_PORKCHOP);
-            case SALMON:
-                return new ItemStack(Material.COOKED_SALMON);
-            default:
-                return itemStack;
-        }
+        return switch (itemStack.getType()) {
+            case BEEF -> new ItemStack(Material.COOKED_BEEF);
+            case CHICKEN -> new ItemStack(Material.COOKED_CHICKEN);
+            case COD -> new ItemStack(Material.COOKED_COD);
+            case MUTTON -> new ItemStack(Material.COOKED_MUTTON);
+            case PORKCHOP -> new ItemStack(Material.COOKED_PORKCHOP);
+            case SALMON -> new ItemStack(Material.COOKED_SALMON);
+            default -> itemStack;
+        };
     }
 
     public void addEntityEquippedItems(final @NotNull LivingEntity livingEntity,

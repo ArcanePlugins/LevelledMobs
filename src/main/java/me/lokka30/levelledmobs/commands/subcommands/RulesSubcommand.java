@@ -191,21 +191,13 @@ public class RulesSubcommand extends MessagesBase implements Subcommand {
             return;
         }
 
-        ResetDifficulty difficulty = ResetDifficulty.UNSPECIFIED;
-        switch (args[2].toLowerCase()) {
-            case "basic":
-                difficulty = ResetDifficulty.BASIC;
-                break;
-            case "average":
-                difficulty = ResetDifficulty.AVERAGE;
-                break;
-            case "advanced":
-                difficulty = ResetDifficulty.ADVANCED;
-                break;
-            case "extreme":
-                difficulty = ResetDifficulty.EXTREME;
-                break;
-        }
+        ResetDifficulty difficulty = switch (args[2].toLowerCase()) {
+            case "basic" -> ResetDifficulty.BASIC;
+            case "average" -> ResetDifficulty.AVERAGE;
+            case "advanced" -> ResetDifficulty.ADVANCED;
+            case "extreme" -> ResetDifficulty.EXTREME;
+            default -> ResetDifficulty.UNSPECIFIED;
+        };
 
         if (difficulty == ResetDifficulty.UNSPECIFIED) {
             showMessage("command.levelledmobs.rules.invalid-difficulty", "%difficulty%", args[2]);
@@ -233,24 +225,24 @@ public class RulesSubcommand extends MessagesBase implements Subcommand {
             "#    - weighted_random_average", "", ""};
 
         switch (difficulty) {
-            case BASIC:
+            case BASIC -> {
                 replaceWhat[2] = "#- basic_challenge";
                 replaceWith[2] = "- basic_challenge";
                 replaceWhat[3] = "#- weighted_random_basic";
                 replaceWith[3] = "- weighted_random_basic";
-                break;
-            case ADVANCED:
+            }
+            case ADVANCED -> {
                 replaceWhat[2] = "#- advanced_challenge";
                 replaceWith[2] = "- advanced_challenge";
                 replaceWhat[3] = "#- weighted_random_advanced";
                 replaceWith[3] = "- weighted_random_advanced_difficulty";
-                break;
-            case EXTREME:
+            }
+            case EXTREME -> {
                 replaceWhat[2] = "#- extreme_challenge";
                 replaceWith[2] = "- extreme_challenge";
                 replaceWhat[3] = "#- weighted_random_extreme";
                 replaceWith[3] = "- weighted_random_extreme";
-                break;
+            }
         }
 
         try (final InputStream stream = main.getResource(filename)) {
@@ -414,11 +406,10 @@ public class RulesSubcommand extends MessagesBase implements Subcommand {
         final SortedMap<Double, LivingEntity> entities = new TreeMap<>();
 
         for (final Entity entity : player.getNearbyEntities(10, 10, 10)) {
-            if (!(entity instanceof LivingEntity)) {
+            if (!(entity instanceof final LivingEntity le)) {
                 continue;
             }
 
-            final LivingEntity le = (LivingEntity) entity;
             if (findNearbyEntities) {
                 final double distance = le.getLocation().distanceSquared(player.getLocation());
                 entities.put(distance, le);

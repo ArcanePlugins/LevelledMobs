@@ -8,7 +8,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.stream.Collectors;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.managers.ExternalCompatibilityManager;
 import me.lokka30.levelledmobs.rules.strategies.RandomLevellingStrategy;
@@ -105,8 +104,7 @@ public class MetricsInfo {
         final RuleInfo defaultRule = main.rulesParsingManager.defaultRule;
 
         if (defaultRule.levellingStrategy != null) {
-            if (defaultRule.levellingStrategy instanceof SpawnDistanceStrategy) {
-                final SpawnDistanceStrategy sds = (SpawnDistanceStrategy) defaultRule.levellingStrategy;
+            if (defaultRule.levellingStrategy instanceof final SpawnDistanceStrategy sds) {
                 if (sds.blendedLevellingEnabled == null || !sds.blendedLevellingEnabled) {
                     return "Spawn Distance";
                 } else {
@@ -114,8 +112,7 @@ public class MetricsInfo {
                 }
             } else if (defaultRule.levellingStrategy instanceof YDistanceStrategy) {
                 return "Y-Levelling";
-            } else if (defaultRule.levellingStrategy instanceof RandomLevellingStrategy) {
-                final RandomLevellingStrategy random = (RandomLevellingStrategy) defaultRule.levellingStrategy;
+            } else if (defaultRule.levellingStrategy instanceof final RandomLevellingStrategy random) {
                 if (random.weightedRandom != null && !random.weightedRandom.isEmpty()) {
                     return "Weighted Random";
                 }
@@ -231,7 +228,7 @@ public class MetricsInfo {
         }
 
         return main.rulesParsingManager.defaultRule.nametagVisibilityEnum.stream().sorted(
-                Comparator.comparing(NametagVisibilityEnum::toString)).collect(Collectors.toList())
+                        Comparator.comparing(NametagVisibilityEnum::toString)).toList()
             .toString()
             .replace("[", "").replace("]", "");
     }

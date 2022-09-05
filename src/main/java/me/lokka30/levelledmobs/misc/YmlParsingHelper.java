@@ -249,50 +249,36 @@ public class YmlParsingHelper {
 
         Duration duration = null;
         switch (unit) {
-            case "ms":
-            case "millisecond":
-            case "milliseconds":
-                duration = Duration.ofMillis(time);
-                break;
-            case "s":
-            case "second":
-            case "seconds":
+            case "ms", "millisecond", "milliseconds" -> duration = Duration.ofMillis(time);
+            case "s", "second", "seconds" -> {
                 duration = Duration.ofSeconds(time);
                 if (remainder > 0.0) {
                     duration = duration.plusMillis((long) (1000.0 * remainder));
                 }
-                break;
-            case "m":
-            case "minute":
-            case "minutes":
+            }
+            case "m", "minute", "minutes" -> {
                 duration = Duration.ofMinutes(time);
                 if (remainder > 0.0) {
                     duration = duration.plusMillis((long) (60000.0 * remainder));
                 }
-                break;
-            case "h":
-            case "hour":
-            case "hours":
+            }
+            case "h", "hour", "hours" -> {
                 duration = Duration.ofHours(time);
                 if (remainder > 0.0) {
                     duration = duration.plusMillis((long) (3600000.0 * remainder));
                 }
-                break;
-            case "d":
-            case "day":
-            case "days":
+            }
+            case "d", "day", "days" -> {
                 duration = Duration.ofDays(time);
                 if (remainder > 0.0) {
                     duration = duration.plusSeconds((long) (86400.0 * remainder));
                 }
-                break;
-            case "":
-                duration = useMS ? Duration.ofMillis(time) : Duration.ofSeconds(time);
-                break;
-            default:
+            }
+            case "" -> duration = useMS ? Duration.ofMillis(time) : Duration.ofSeconds(time);
+            default -> {
                 Utils.logger.warning("Invalid time unit specified: " + input + " (" + unit + ")");
                 Utils.logger.info(String.format("%s, %s", match.group(1), match.group(1)));
-                break;
+            }
         }
 
         if (duration != null) {
