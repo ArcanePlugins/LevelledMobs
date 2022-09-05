@@ -155,8 +155,7 @@ public class EntitySpawnListener implements Listener {
         }
     }
 
-    @NotNull
-    private static List<Player> getPlayersOnServerNearMob(final @NotNull LivingEntity mob,
+    @NotNull private static List<Player> getPlayersOnServerNearMob(final @NotNull LivingEntity mob,
         final int checkDistance) {
         final double maxDistanceSquared = checkDistance * 4;
 
@@ -170,8 +169,7 @@ public class EntitySpawnListener implements Listener {
             .collect(Collectors.toList());
     }
 
-    @NotNull
-    public static List<Player> getPlayersNearMob(final @NotNull LivingEntity mob,
+    @NotNull public static List<Player> getPlayersNearMob(final @NotNull LivingEntity mob,
         final int checkDistance) {
         return mob.getNearbyEntities(checkDistance, checkDistance, checkDistance).stream()
             .filter(e -> e instanceof org.bukkit.entity.Player)
@@ -410,8 +408,7 @@ public class EntitySpawnListener implements Listener {
         return result;
     }
 
-    @NotNull
-    private LevellableState getLevellableState(final LivingEntityWrapper lmEntity,
+    @NotNull private LevellableState getLevellableState(final LivingEntityWrapper lmEntity,
         @NotNull final Event event) {
         final LevellableState levellableState = main.levelInterface.getLevellableState(lmEntity);
 

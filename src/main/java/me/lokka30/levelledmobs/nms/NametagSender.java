@@ -80,8 +80,7 @@ public class NametagSender implements NMSUtil {
         }
     }
 
-    @NotNull
-    private static SynchedEntityData cloneEntityData(@NotNull final SynchedEntityData other,
+    @NotNull private static SynchedEntityData cloneEntityData(@NotNull final SynchedEntityData other,
         final Entity nmsEntity) {
         final SynchedEntityData entityData = new SynchedEntityData(nmsEntity);
         if (other.getAll() == null) {

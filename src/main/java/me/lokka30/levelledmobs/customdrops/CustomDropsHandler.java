@@ -366,8 +366,7 @@ public class CustomDropsHandler {
         return !hadAnyPerms;
     }
 
-    @NotNull
-    private List<String> getDropIds(@NotNull final CustomDropProcessingInfo processingInfo) {
+    @NotNull private List<String> getDropIds(@NotNull final CustomDropProcessingInfo processingInfo) {
         final List<String> dropIds = new LinkedList<>();
         if (processingInfo.dropRules != null) {
             for (final String id : processingInfo.dropRules.useDropTableIds) {
@@ -1010,8 +1009,7 @@ public class CustomDropsHandler {
         }
     }
 
-    @NotNull
-    private String processRangedCommand(final @NotNull String command,
+    @NotNull private String processRangedCommand(final @NotNull String command,
         final @NotNull CustomCommand cc) {
         if (cc.rangedEntries.isEmpty()) {
             return command;

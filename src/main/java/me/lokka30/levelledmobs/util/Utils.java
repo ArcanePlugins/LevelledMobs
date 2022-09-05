@@ -47,8 +47,7 @@ public final class Utils {
         throw new UnsupportedOperationException();
     }
 
-    @NotNull
-    public static final MicroLogger logger = new MicroLogger("&bLevelledMobs:&7 ");
+    @NotNull public static final MicroLogger logger = new MicroLogger("&bLevelledMobs:&7 ");
 
     /**
      * Rounds value to 2 decimal points.
@@ -74,8 +73,7 @@ public final class Utils {
      * @return modified message
      * @author stumper66
      */
-    @NotNull
-    public static String replaceEx(@NotNull final String message, @NotNull final String replaceWhat,
+    @NotNull public static String replaceEx(@NotNull final String message, @NotNull final String replaceWhat,
         @NotNull final String replaceTo) {
         int count, position0, position1;
         count = position0 = 0;
@@ -140,12 +138,10 @@ public final class Utils {
         return (str == null || str.isEmpty());
     }
 
-    @NotNull
-    public static final List<String> oneToNine = List.of("1", "2", "3", "4", "5", "6", "7", "8",
+    @NotNull public static final List<String> oneToNine = List.of("1", "2", "3", "4", "5", "6", "7", "8",
         "9");
 
-    @NotNull
-    public static List<String> replaceAllInList(@NotNull final List<String> oldList,
+    @NotNull public static List<String> replaceAllInList(@NotNull final List<String> oldList,
         @NotNull final String replaceWhat, @NotNull final String replaceTo) {
         final List<String> newList = new ArrayList<>(oldList.size());
         for (final String string : oldList) {
@@ -154,8 +150,7 @@ public final class Utils {
         return newList;
     }
 
-    @NotNull
-    public static List<String> colorizeAllInList(@NotNull final List<String> oldList) {
+    @NotNull public static List<String> colorizeAllInList(@NotNull final List<String> oldList) {
         final List<String> newList = new ArrayList<>(oldList.size());
 
         for (final String string : oldList) {
@@ -193,8 +188,7 @@ public final class Utils {
      * @param str string to capitalize
      * @return a string with each word capitalized
      */
-    @NotNull
-    public static String capitalize(@NotNull final String str) {
+    @NotNull public static String capitalize(@NotNull final String str) {
         final StringBuilder builder = new StringBuilder();
         final String[] words = str.toLowerCase().split(" "); // each word separated from str
         for (int i = 0; i < words.length; i++) {
@@ -351,8 +345,7 @@ public final class Utils {
         return Duration.between(instant, Instant.now()).toMillis();
     }
 
-    @NotNull
-    public static PlayerNetherOrWorldSpawnResult getPortalOrWorldSpawn(
+    @NotNull public static PlayerNetherOrWorldSpawnResult getPortalOrWorldSpawn(
         final @NotNull LevelledMobs main, final @NotNull Player player) {
         Location location = null;
         boolean isNetherPortalCoord = false;

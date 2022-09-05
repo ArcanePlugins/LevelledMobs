@@ -143,7 +143,7 @@ public class CustomDropItem extends CustomDropBase {
         this.itemStack = new ItemStack(this.material, 1);
     }
 
-    public String getDamageAsString() {
+    public @NotNull String getDamageAsString() {
         if (this.hasDamageRange) {
             return String.format("%s-%s", this.damageRangeMin, this.damageRangeMax);
         } else {

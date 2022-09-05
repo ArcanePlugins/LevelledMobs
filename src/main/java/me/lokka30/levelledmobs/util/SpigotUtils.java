@@ -51,16 +51,14 @@ public class SpigotUtils {
         meta.setDisplayName(displayName);
     }
 
-    @NotNull
-    public static String getPlayerDisplayName(final @Nullable Player player) {
+    @NotNull public static String getPlayerDisplayName(final @Nullable Player player) {
         if (player == null) {
             return "";
         }
         return player.getDisplayName();
     }
 
-    @Nullable
-    public static LivingEntityWrapper getPlayersKiller(@NotNull final PlayerDeathEvent event,
+    @Nullable public static LivingEntityWrapper getPlayersKiller(@NotNull final PlayerDeathEvent event,
         final LevelledMobs main) {
         if (event.getDeathMessage() == null) {
             return null;

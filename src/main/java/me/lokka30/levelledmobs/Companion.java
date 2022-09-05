@@ -242,8 +242,7 @@ public class Companion {
         }
     }
 
-    @Nullable
-    private YamlConfiguration loadEmbeddedResource(final String filename) {
+    @Nullable private YamlConfiguration loadEmbeddedResource(final String filename) {
         YamlConfiguration result = null;
         final InputStream inputStream = main.getResource(filename);
         if (inputStream == null) {
@@ -412,15 +411,13 @@ public class Companion {
         }
     }
 
-    @NotNull
-    public Map<EntityType, ChunkKillInfo> getorAddPairForSpecifiedChunk(final long chunkKey) {
+    @NotNull public Map<EntityType, ChunkKillInfo> getorAddPairForSpecifiedChunk(final long chunkKey) {
         synchronized (entityDeathInChunkCounterLock) {
             return this.entityDeathInChunkCounter.computeIfAbsent(chunkKey, k -> new HashMap<>());
         }
     }
 
-    @NotNull
-    public List<Map<EntityType, ChunkKillInfo>> getorAddPairForSpecifiedChunks(
+    @NotNull public List<Map<EntityType, ChunkKillInfo>> getorAddPairForSpecifiedChunks(
         final @NotNull List<Long> chunkKeys) {
         final List<Map<EntityType, ChunkKillInfo>> results = new ArrayList<>(chunkKeys.size());
 
@@ -630,8 +627,7 @@ public class Companion {
         }
     }
 
-    @Nullable
-    public Instant getRecentlyJoinedPlayerLogonTime(final Player player) {
+    @Nullable public Instant getRecentlyJoinedPlayerLogonTime(final Player player) {
         synchronized (playerLogonTimesLock) {
             return recentlyJoinedPlayers.get(player);
         }
@@ -643,8 +639,7 @@ public class Companion {
         }
     }
 
-    @Nullable
-    public Location getPlayerNetherPortalLocation(final @NotNull Player player) {
+    @Nullable public Location getPlayerNetherPortalLocation(final @NotNull Player player) {
         synchronized (playerNetherPortalsLock) {
             return playerNetherPortals.get(player);
         }
@@ -657,8 +652,7 @@ public class Companion {
         }
     }
 
-    @Nullable
-    public Location getPlayerWorldPortalLocation(final @NotNull Player player) {
+    @Nullable public Location getPlayerWorldPortalLocation(final @NotNull Player player) {
         synchronized (playerNetherPortalsLock) {
             return playerWorldPortals.get(player);
         }

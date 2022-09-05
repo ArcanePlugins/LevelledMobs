@@ -27,8 +27,7 @@ public abstract class LivingEntityWrapperBase {
     private Double calculatedDistanceFromSpawn;
     private World world;
     private Location location;
-    @NotNull
-    final LevelledMobs main;
+    @NotNull final LevelledMobs main;
     Integer summonedLevel;
     Integer spawnedTimeOfDay;
     private boolean isPopulated;
@@ -63,13 +62,11 @@ public abstract class LivingEntityWrapperBase {
         return calculatedDistanceFromSpawn;
     }
 
-    @NotNull
-    public LevelledMobs getMainInstance() {
+    @NotNull public LevelledMobs getMainInstance() {
         return this.main;
     }
 
-    @NotNull
-    public Location getLocation() {
+    @NotNull public Location getLocation() {
         if (this.location == null) {
             throw new NullPointerException("Location was null");
         }
@@ -77,8 +74,7 @@ public abstract class LivingEntityWrapperBase {
         return this.location;
     }
 
-    @NotNull
-    public World getWorld() {
+    @NotNull public World getWorld() {
         if (this.world == null) {
             throw new NullPointerException("World was null");
         }
@@ -86,8 +82,7 @@ public abstract class LivingEntityWrapperBase {
         return this.world;
     }
 
-    @NotNull
-    public String getWorldName() {
+    @NotNull public String getWorldName() {
         if (this.world == null) {
             throw new NullPointerException("World was null");
         }

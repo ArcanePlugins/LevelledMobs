@@ -175,7 +175,7 @@ public class MobHeadManager {
 
         String useName;
 
-        if (!Utils.isNullOrEmpty(dropItem.customName)) {
+        if (dropItem.customName != null && !dropItem.customName.isEmpty()) {
             String killerName = "";
             final Player killerPlayer = lmEntity.getLivingEntity().getKiller();
             if (killerPlayer != null) {
@@ -206,8 +206,7 @@ public class MobHeadManager {
         playerHead.setItemMeta(meta);
     }
 
-    @NotNull
-    private Material checkForVanillaHeads(@NotNull final LivingEntity livingEntity) {
+    @NotNull private Material checkForVanillaHeads(@NotNull final LivingEntity livingEntity) {
         switch (livingEntity.getType()) {
             case ENDER_DRAGON:
                 return Material.DRAGON_HEAD;
@@ -227,8 +226,7 @@ public class MobHeadManager {
         }
     }
 
-    @Nullable
-    private MobDataInfo getMobVariant(final Map<String, MobDataInfo> mobDatas,
+    @Nullable private MobDataInfo getMobVariant(final Map<String, MobDataInfo> mobDatas,
         @NotNull final LivingEntityWrapper lmEntity) {
         final EntityType et = lmEntity.getEntityType();
         final LivingEntity livingEntity = lmEntity.getLivingEntity();

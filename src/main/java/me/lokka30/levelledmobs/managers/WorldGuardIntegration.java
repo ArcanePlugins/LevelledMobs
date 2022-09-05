@@ -31,8 +31,7 @@ public class WorldGuardIntegration {
     private WorldGuardIntegration() {
     }
 
-    @NotNull
-    public static List<String> getWorldGuardRegionsForLocation(
+    @NotNull public static List<String> getWorldGuardRegionsForLocation(
         @NotNull final LivingEntityInterface lmInterface) {
         final List<String> wg_Regions = new LinkedList<>();
 
@@ -52,8 +51,7 @@ public class WorldGuardIntegration {
         return wg_Regions;
     }
 
-    @NotNull
-    public static List<String> getWorldGuardRegionOwnersForLocation(
+    @NotNull public static List<String> getWorldGuardRegionOwnersForLocation(
         @NotNull final LivingEntityInterface lmInterface) {
         final List<String> wg_Owners = new LinkedList<>();
 
@@ -82,8 +80,7 @@ public class WorldGuardIntegration {
         return wg_Owners;
     }
 
-    @Nullable
-    private static Set<ProtectedRegion> getRegionSet(
+    @Nullable private static Set<ProtectedRegion> getRegionSet(
         @NotNull final LivingEntityInterface lmInterface) {
         final com.sk89q.worldedit.world.World world = BukkitAdapter.adapt(lmInterface.getWorld());
 

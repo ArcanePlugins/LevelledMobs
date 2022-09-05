@@ -406,8 +406,7 @@ public class RulesSubcommand extends MessagesBase implements Subcommand {
         runnable.runTaskLater(main, 25);
     }
 
-    @Nullable
-    public LivingEntityWrapper getMobBeingLookedAt(@NotNull final Player player,
+    @Nullable public LivingEntityWrapper getMobBeingLookedAt(@NotNull final Player player,
         final boolean findNearbyEntities) {
         LivingEntity livingEntity = null;
         LivingEntityWrapper lmEntity = null;

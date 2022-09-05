@@ -53,11 +53,9 @@ public class RulesManager {
     }
 
     private final LevelledMobs main;
-    @NotNull
-    public final SortedMap<Integer, List<RuleInfo>> rulesInEffect;
+    @NotNull public final SortedMap<Integer, List<RuleInfo>> rulesInEffect;
     final Map<String, RuleInfo> ruleNameMappings;
-    @NotNull
-    public final Map<String, List<String>> biomeGroupMappings;
+    @NotNull public final Map<String, List<String>> biomeGroupMappings;
     final Map<String, List<Instant>> rulesCooldown;
     public boolean anyRuleHasChance;
     private Instant lastRulesCheck;
@@ -83,8 +81,7 @@ public class RulesManager {
         return result;
     }
 
-    @NotNull
-    public List<String> getRuleNbtData(final @NotNull LivingEntityWrapper lmEntity) {
+    @NotNull public List<String> getRuleNbtData(final @NotNull LivingEntityWrapper lmEntity) {
         final List<String> nbtData = new LinkedList<>();
 
         for (final RuleInfo ruleInfo : lmEntity.getApplicableRules()) {
@@ -139,8 +136,7 @@ public class RulesManager {
             lmEntity);
     }
 
-    @NotNull
-    public CustomDropsRuleSet getRuleUseCustomDropsForMob(
+    @NotNull public CustomDropsRuleSet getRuleUseCustomDropsForMob(
         @NotNull final LivingEntityWrapper lmEntity) {
         final CustomDropsRuleSet dropRules = new CustomDropsRuleSet();
 
@@ -209,8 +205,7 @@ public class RulesManager {
         }
     }
 
-    @Nullable
-    public FineTuningAttributes getFineTuningAttributes(
+    @Nullable public FineTuningAttributes getFineTuningAttributes(
         @NotNull final LivingEntityWrapper lmEntity) {
         FineTuningAttributes allMobAttribs = null;
         FineTuningAttributes thisMobAttribs = null;
@@ -252,8 +247,7 @@ public class RulesManager {
         }
     }
 
-    @NotNull
-    public Map<ExternalCompatibilityManager.ExternalCompatibility, Boolean> getRuleExternalCompatibility(
+    @NotNull public Map<ExternalCompatibilityManager.ExternalCompatibility, Boolean> getRuleExternalCompatibility(
         @NotNull final LivingEntityWrapper lmEntity
     ) {
         final Map<ExternalCompatibilityManager.ExternalCompatibility, Boolean> result = new EnumMap<>(
@@ -295,8 +289,7 @@ public class RulesManager {
         return maxBlast;
     }
 
-    @Nullable
-    public LevellingStrategy getRuleLevellingStrategy(
+    @Nullable public LevellingStrategy getRuleLevellingStrategy(
         @NotNull final LivingEntityWrapper lmEntity) {
         LevellingStrategy levellingStrategy = null;
 
@@ -395,8 +388,7 @@ public class RulesManager {
         return maxLevel;
     }
 
-    @Nullable
-    public PlayerLevellingOptions getRulePlayerLevellingOptions(
+    @Nullable public PlayerLevellingOptions getRulePlayerLevellingOptions(
         @NotNull final LivingEntityWrapper lmEntity) {
         PlayerLevellingOptions levellingOptions = null;
 
@@ -412,8 +404,7 @@ public class RulesManager {
         return levellingOptions;
     }
 
-    @NotNull
-    public String getRuleNametag(@NotNull final LivingEntityWrapper lmEntity) {
+    @NotNull public String getRuleNametag(@NotNull final LivingEntityWrapper lmEntity) {
         String nametag = "";
         for (final RuleInfo ruleInfo : lmEntity.getApplicableRules()) {
             if (!Utils.isNullOrEmpty(ruleInfo.nametag)) {
@@ -425,8 +416,7 @@ public class RulesManager {
         return nametag;
     }
 
-    @Nullable
-    public String getRuleNametagPlaceholder(@NotNull final LivingEntityWrapper lmEntity) {
+    @Nullable public String getRuleNametagPlaceholder(@NotNull final LivingEntityWrapper lmEntity) {
         String nametag = null;
         final boolean isLevelled = lmEntity.isLevelled();
 
@@ -444,8 +434,7 @@ public class RulesManager {
         return nametag;
     }
 
-    @NotNull
-    public String getRuleNametagCreatureDeath(@NotNull final LivingEntityWrapper lmEntity) {
+    @NotNull public String getRuleNametagCreatureDeath(@NotNull final LivingEntityWrapper lmEntity) {
         String nametag = "";
         for (final RuleInfo ruleInfo : lmEntity.getApplicableRules()) {
             if (!Utils.isNullOrEmpty(ruleInfo.nametag_CreatureDeath)) {
@@ -456,8 +445,7 @@ public class RulesManager {
         return nametag;
     }
 
-    @Nullable
-    public HealthIndicator getRuleNametagIndicator(@NotNull final LivingEntityWrapper lmEntity) {
+    @Nullable public HealthIndicator getRuleNametagIndicator(@NotNull final LivingEntityWrapper lmEntity) {
         HealthIndicator indicator = null;
 
         for (final RuleInfo ruleInfo : lmEntity.getApplicableRules()) {
@@ -474,8 +462,7 @@ public class RulesManager {
         return indicator;
     }
 
-    @NotNull
-    public List<NametagVisibilityEnum> getRuleCreatureNametagVisbility(
+    @NotNull public List<NametagVisibilityEnum> getRuleCreatureNametagVisbility(
         @NotNull final LivingEntityWrapper lmEntity) {
         List<NametagVisibilityEnum> result = null;
 
@@ -512,8 +499,7 @@ public class RulesManager {
         return result;
     }
 
-    @Nullable
-    public String getRuleTieredPlaceholder(@NotNull final LivingEntityWrapper lmEntity) {
+    @Nullable public String getRuleTieredPlaceholder(@NotNull final LivingEntityWrapper lmEntity) {
         List<TieredColoringInfo> coloringInfo = null;
         String tieredText = null;
 
@@ -553,8 +539,7 @@ public class RulesManager {
         return result;
     }
 
-    @Nullable
-    public String getRuleEntityOverriddenName(@NotNull final LivingEntityWrapper lmEntity,
+    @Nullable public String getRuleEntityOverriddenName(@NotNull final LivingEntityWrapper lmEntity,
         final boolean useCustomNameForNametags) {
         Map<String, List<LevelTierMatching>> entityNameOverrides_Level = null;
         Map<String, LevelTierMatching> entityNameOverrides = null;
@@ -621,8 +606,7 @@ public class RulesManager {
         return result;
     }
 
-    @Nullable
-    private LevelTierMatching getEntityNameOverrideLevel(
+    @Nullable private LevelTierMatching getEntityNameOverrideLevel(
         final Map<String, List<LevelTierMatching>> entityNameOverrides_Level,
         final LivingEntityWrapper lmEntity
     ) {
@@ -654,8 +638,7 @@ public class RulesManager {
         }
     }
 
-    @Nullable
-    public Particle getSpawnerParticle(final @NotNull LivingEntityWrapper lmEntity) {
+    @Nullable public Particle getSpawnerParticle(final @NotNull LivingEntityWrapper lmEntity) {
         Particle result = Particle.SOUL;
 
         for (final RuleInfo ruleInfo : lmEntity.getApplicableRules()) {
@@ -734,8 +717,7 @@ public class RulesManager {
         return result;
     }
 
-    @NotNull
-    public ApplicableRulesResult getApplicableRules(final LivingEntityInterface lmInterface) {
+    @NotNull public ApplicableRulesResult getApplicableRules(final LivingEntityInterface lmInterface) {
         final ApplicableRulesResult applicableRules = new ApplicableRulesResult();
 
         if (this.lastRulesCheck == null
@@ -1273,8 +1255,7 @@ public class RulesManager {
         }
     }
 
-    @NotNull
-    public String showTempDisabledRules(final boolean isFromConsole) {
+    @NotNull public String showTempDisabledRules(final boolean isFromConsole) {
         synchronized (ruleLocker) {
             if (this.rulesCooldown.isEmpty()) {
                 final String message = "No rules are currently temporarily disabled";

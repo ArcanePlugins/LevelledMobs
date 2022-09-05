@@ -32,8 +32,7 @@ public final class FileLoader {
         throw new UnsupportedOperationException();
     }
 
-    @Nullable
-    public static YamlConfiguration loadFile(@NotNull final Plugin plugin, String cfgName,
+    @Nullable public static YamlConfiguration loadFile(@NotNull final Plugin plugin, String cfgName,
         final int compatibleVersion) {
         cfgName = cfgName + ".yml";
 

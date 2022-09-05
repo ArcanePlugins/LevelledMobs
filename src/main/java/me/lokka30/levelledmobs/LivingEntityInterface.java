@@ -19,22 +19,18 @@ import org.jetbrains.annotations.NotNull;
  */
 public interface LivingEntityInterface {
 
-    @NotNull
-    EntityType getEntityType();
+    @NotNull EntityType getEntityType();
 
     Location getLocation();
 
     World getWorld();
 
-    @NotNull
-    String getTypeName();
+    @NotNull String getTypeName();
 
-    @NotNull
-    List<RuleInfo> getApplicableRules();
+    @NotNull List<RuleInfo> getApplicableRules();
 
     @SuppressWarnings("unused")
-    @NotNull
-    LevelledMobs getMainInstance();
+    @NotNull LevelledMobs getMainInstance();
 
     double getDistanceFromSpawn();
 

@@ -14,8 +14,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class MythicMobUtils {
 
-    @Nullable
-    public static MythicMobsMobInfo getMythicMobInfo(final @NotNull LivingEntityWrapper lmEntity) {
+    @Nullable public static MythicMobsMobInfo getMythicMobInfo(final @NotNull LivingEntityWrapper lmEntity) {
         // the below code was written against MythicMobs v5.0.4-f1007ca3
 
         /*

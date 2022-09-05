@@ -588,8 +588,7 @@ public class LevelManager implements LevelInterface {
         }
     }
 
-    @NotNull
-    private List<ItemStack> getDropsToMultiply(@NotNull final LivingEntityWrapper lmEntity,
+    @NotNull private List<ItemStack> getDropsToMultiply(@NotNull final LivingEntityWrapper lmEntity,
         @NotNull final List<ItemStack> drops) {
         final List<ItemStack> results = new ArrayList<>(drops.size());
         results.addAll(drops);
@@ -677,13 +676,11 @@ public class LevelManager implements LevelInterface {
         }
     }
 
-    @NotNull
-    public NametagUpdateResult getNametag(final LivingEntityWrapper lmEntity, final boolean isDeathNametag) {
+    @NotNull public NametagUpdateResult getNametag(final LivingEntityWrapper lmEntity, final boolean isDeathNametag) {
         return getNametag(lmEntity, isDeathNametag, false);
     }
 
-    @NotNull
-    public NametagUpdateResult getNametag(final LivingEntityWrapper lmEntity, final boolean isDeathNametag, boolean preserveMobName) {
+    @NotNull public NametagUpdateResult getNametag(final LivingEntityWrapper lmEntity, final boolean isDeathNametag, boolean preserveMobName) {
         String nametag;
         if (isDeathNametag) {
             nametag = main.rulesManager.getRuleNametagCreatureDeath(lmEntity);
@@ -856,17 +853,17 @@ public class LevelManager implements LevelInterface {
         return MessageUtils.colorizeAll(result);
     }
 
-    public String replaceStringPlaceholders(final String nametag,
+    public @NotNull String replaceStringPlaceholders(final @NotNull String nametag,
         @NotNull final LivingEntityWrapper lmEntity) {
         return replaceStringPlaceholders(nametag, lmEntity, true);
     }
 
-    public String replaceStringPlaceholders(final String nametag,
+    public @NotNull String replaceStringPlaceholders(final @NotNull String nametag,
         @NotNull final LivingEntityWrapper lmEntity, final boolean colorize) {
         return replaceStringPlaceholders(nametag, lmEntity, colorize, true);
     }
 
-    public String replaceStringPlaceholders(final String nametag,
+    public @NotNull String replaceStringPlaceholders(final @NotNull String nametag,
         @NotNull final LivingEntityWrapper lmEntity, final boolean colorize,
         final boolean usePAPI) {
         String result = nametag;
@@ -1480,8 +1477,7 @@ public class LevelManager implements LevelInterface {
         return result;
     }
 
-    @NotNull
-    public LevellableState getLevellableState(@NotNull final LivingEntityInterface lmInterface) {
+    @NotNull public LevellableState getLevellableState(@NotNull final LivingEntityInterface lmInterface) {
         /*
         Certain entity types are force-blocked, regardless of what the user has configured.
         This is also ran in getLevellableState(EntityType), however it is important that this is ensured

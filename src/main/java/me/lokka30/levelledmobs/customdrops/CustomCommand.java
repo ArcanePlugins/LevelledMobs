@@ -26,10 +26,8 @@ public class CustomCommand extends CustomDropBase {
     }
 
     String commandName;
-    @NotNull
-    final public List<String> commands;
-    @NotNull
-    final Map<String, String> rangedEntries;
+    @NotNull final public List<String> commands;
+    @NotNull final Map<String, String> rangedEntries;
     public boolean runOnSpawn;
     public boolean runOnDeath;
     public int delay;

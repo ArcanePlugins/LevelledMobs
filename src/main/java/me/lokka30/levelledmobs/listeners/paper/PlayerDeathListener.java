@@ -52,8 +52,7 @@ public class PlayerDeathListener {
         return true;
     }
 
-    @Nullable
-    private LivingEntityWrapper getPlayersKiller(@NotNull final PlayerDeathEvent event) {
+    @Nullable private LivingEntityWrapper getPlayersKiller(@NotNull final PlayerDeathEvent event) {
         final EntityDamageEvent entityDamageEvent = event.getEntity().getLastDamageCause();
         if (entityDamageEvent == null || entityDamageEvent.isCancelled()
             || !(entityDamageEvent instanceof EntityDamageByEntityEvent)) {
@@ -162,8 +161,7 @@ public class PlayerDeathListener {
         event.deathMessage(newCom);
     }
 
-    @Nullable
-    private String extractPlayerName(final @NotNull TranslatableComponent tc) {
+    @Nullable private String extractPlayerName(final @NotNull TranslatableComponent tc) {
         String playerKilled = null;
 
         for (final net.kyori.adventure.text.Component com : tc.args()) {

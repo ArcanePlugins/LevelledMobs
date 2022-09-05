@@ -57,10 +57,8 @@ public class RulesParsingManager {
     final private LevelledMobs main;
     final private YmlParsingHelper ymlHelper;
     private RuleInfo parsingInfo;
-    @NotNull
-    public final Map<String, RuleInfo> rulePresets;
-    @NotNull
-    public List<RuleInfo> customRules;
+    @NotNull public final Map<String, RuleInfo> rulePresets;
+    @NotNull public List<RuleInfo> customRules;
     public RuleInfo defaultRule;
     private Map<String, Set<String>> customBiomeGroups;
     private final Pattern emptyArrayPattern;
@@ -114,8 +112,7 @@ public class RulesParsingManager {
         }
     }
 
-    @NotNull
-    public List<RuleInfo> getAllRules() {
+    @NotNull public List<RuleInfo> getAllRules() {
         final List<RuleInfo> results = new LinkedList<>();
         if (this.defaultRule != null) {
             results.add(this.defaultRule);
@@ -153,8 +150,7 @@ public class RulesParsingManager {
         }
     }
 
-    @NotNull
-    private RuleInfo parseDefaults(final ConfigurationSection cs) {
+    @NotNull private RuleInfo parseDefaults(final ConfigurationSection cs) {
         this.parsingInfo = new RuleInfo("defaults");
         parsingInfo.restrictions_MinLevel = 0;
         parsingInfo.restrictions_MaxLevel = 0;
@@ -174,8 +170,7 @@ public class RulesParsingManager {
         return this.parsingInfo;
     }
 
-    @NotNull
-    private List<RuleInfo> parsePresets(final ConfigurationSection cs) {
+    @NotNull private List<RuleInfo> parsePresets(final ConfigurationSection cs) {
         final List<RuleInfo> results = new LinkedList<>();
         if (cs == null) {
             return results;
@@ -199,8 +194,7 @@ public class RulesParsingManager {
         return results;
     }
 
-    @NotNull
-    private CachedModalList<LevelledMobSpawnReason> buildCachedModalListOfSpawnReason(
+    @NotNull private CachedModalList<LevelledMobSpawnReason> buildCachedModalListOfSpawnReason(
         final ConfigurationSection cs,
         final CachedModalList<LevelledMobSpawnReason> defaultValue) {
         if (cs == null) {
@@ -284,8 +278,7 @@ public class RulesParsingManager {
         return cachedModalList;
     }
 
-    @NotNull
-    private CachedModalList<Biome> buildCachedModalListOfBiome(final ConfigurationSection cs,
+    @NotNull private CachedModalList<Biome> buildCachedModalListOfBiome(final ConfigurationSection cs,
         final CachedModalList<Biome> defaultValue) {
         if (cs == null) {
             return defaultValue;
@@ -389,8 +382,7 @@ public class RulesParsingManager {
         return cachedModalList;
     }
 
-    @Nullable
-    private CachedModalList<String> buildCachedModalListOfString(final ConfigurationSection cs,
+    @Nullable private CachedModalList<String> buildCachedModalListOfString(final ConfigurationSection cs,
         @NotNull final String name, final CachedModalList<String> defaultValue) {
         if (cs == null) {
             return defaultValue;
@@ -465,8 +457,7 @@ public class RulesParsingManager {
         return cachedModalList;
     }
 
-    @NotNull
-    private Set<String> getSetOfGroups(@NotNull final ConfigurationSection cs, final String key) {
+    @NotNull private Set<String> getSetOfGroups(@NotNull final ConfigurationSection cs, final String key) {
         String foundKeyName = null;
         for (final String enumeratedKey : cs.getKeys(false)) {
             if (key.equalsIgnoreCase(enumeratedKey)) {
@@ -514,8 +505,7 @@ public class RulesParsingManager {
         return results;
     }
 
-    @NotNull
-    private List<RuleInfo> parseCustomRules(final Object rulesSection) {
+    @NotNull private List<RuleInfo> parseCustomRules(final Object rulesSection) {
         final List<RuleInfo> results = new LinkedList<>();
         if (rulesSection == null) {
             return results;
@@ -699,8 +689,7 @@ public class RulesParsingManager {
         }
     }
 
-    @Nullable
-    private List<LevelTierMatching> parseNumberRange(final ConfigurationSection cs,
+    @Nullable private List<LevelTierMatching> parseNumberRange(final ConfigurationSection cs,
         final String keyName) {
         if (cs == null) {
             return null;
@@ -1068,8 +1057,7 @@ public class RulesParsingManager {
         parsePlayerLevellingOptions(objTo_CS(cs, "player-levelling"));
     }
 
-    @Nullable
-    private CachedModalList<MinAndMax> parseWorldTimeTicks(final ConfigurationSection cs,
+    @Nullable private CachedModalList<MinAndMax> parseWorldTimeTicks(final ConfigurationSection cs,
         final CachedModalList<MinAndMax> existingList) {
         if (cs == null) {
             return existingList;
@@ -1089,8 +1077,7 @@ public class RulesParsingManager {
         return result;
     }
 
-    @Nullable
-    private MinAndMax parseMinMaxValue(@Nullable final String numberPair,
+    @Nullable private MinAndMax parseMinMaxValue(@Nullable final String numberPair,
         @SuppressWarnings("SameParameterValue") final @NotNull String configName) {
         if (numberPair == null) {
             return null;
@@ -1105,8 +1092,7 @@ public class RulesParsingManager {
         }
     }
 
-    @NotNull
-    private Set<MinAndMax> parseMinMaxValue(@NotNull final Set<String> numberPairs,
+    @NotNull private Set<MinAndMax> parseMinMaxValue(@NotNull final Set<String> numberPairs,
         final @NotNull String configName) {
         final Set<MinAndMax> result = new TreeSet<>();
 
@@ -1284,8 +1270,7 @@ public class RulesParsingManager {
             spawnDistanceStrategy.scaleDownward);
     }
 
-    @Nullable
-    private Integer parseOptionalSpawnCoordinate(final String path,
+    @Nullable private Integer parseOptionalSpawnCoordinate(final String path,
         @NotNull final ConfigurationSection cs) {
         if (cs.getString(path) == null) {
             return null;
@@ -1345,8 +1330,7 @@ public class RulesParsingManager {
         }
     }
 
-    @Nullable
-    private FineTuningAttributes parseFineTuningValues(final ConfigurationSection cs) {
+    @Nullable private FineTuningAttributes parseFineTuningValues(final ConfigurationSection cs) {
         if (cs == null) {
             return null;
         }
@@ -1380,8 +1364,7 @@ public class RulesParsingManager {
         return attribs;
     }
 
-    @Nullable
-    private ConfigurationSection objTo_CS(final ConfigurationSection cs, final String path) {
+    @Nullable private ConfigurationSection objTo_CS(final ConfigurationSection cs, final String path) {
         if (cs == null) {
             return null;
         }
@@ -1416,8 +1399,7 @@ public class RulesParsingManager {
         }
     }
 
-    @Nullable
-    private ConfigurationSection objTo_CS_2(final Object object) {
+    @Nullable private ConfigurationSection objTo_CS_2(final Object object) {
         if (object == null) {
             return null;
         }

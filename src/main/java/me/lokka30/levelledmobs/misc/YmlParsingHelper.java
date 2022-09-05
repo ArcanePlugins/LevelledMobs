@@ -44,8 +44,7 @@ public class YmlParsingHelper {
         return cs.getBoolean(useName, defaultValue);
     }
 
-    @Nullable
-    public Boolean getBoolean2(final ConfigurationSection cs, @NotNull final String name,
+    @Nullable public Boolean getBoolean2(final ConfigurationSection cs, @NotNull final String name,
         final Boolean defaultValue) {
         if (cs == null) {
             return defaultValue;
@@ -59,13 +58,11 @@ public class YmlParsingHelper {
         }
     }
 
-    @Nullable
-    public String getString(final ConfigurationSection cs, @NotNull final String name) {
+    @Nullable public String getString(final ConfigurationSection cs, @NotNull final String name) {
         return getString(cs, name, null);
     }
 
-    @Nullable
-    public String getString(final ConfigurationSection cs, @NotNull final String name,
+    @Nullable public String getString(final ConfigurationSection cs, @NotNull final String name,
         final String defaultValue) {
         if (cs == null) {
             return defaultValue;
@@ -75,8 +72,7 @@ public class YmlParsingHelper {
         return cs.getString(useName, defaultValue);
     }
 
-    @NotNull
-    public Set<String> getStringSet(final ConfigurationSection cs, @NotNull final String name) {
+    @NotNull public Set<String> getStringSet(final ConfigurationSection cs, @NotNull final String name) {
         final String useName = getKeyNameFromConfig(cs, name);
 
         final Set<String> results = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
@@ -104,8 +100,7 @@ public class YmlParsingHelper {
         return cs.getInt(useName, defaultValue);
     }
 
-    @Nullable
-    public Integer getInt2(final ConfigurationSection cs, @NotNull final String name,
+    @Nullable public Integer getInt2(final ConfigurationSection cs, @NotNull final String name,
         final Integer defaultValue) {
         if (cs == null) {
             return defaultValue;
@@ -130,8 +125,7 @@ public class YmlParsingHelper {
         return cs.getDouble(useName, 0);
     }
 
-    @Nullable
-    public Double getDouble2(final ConfigurationSection cs, @NotNull final String name,
+    @Nullable public Double getDouble2(final ConfigurationSection cs, @NotNull final String name,
         final Double defaultValue) {
         if (cs == null) {
             return defaultValue;
@@ -159,8 +153,7 @@ public class YmlParsingHelper {
         return (float) cs.getDouble(useName, defaultValue);
     }
 
-    @Nullable
-    public Float getFloat2(final ConfigurationSection cs, @NotNull final String name,
+    @Nullable public Float getFloat2(final ConfigurationSection cs, @NotNull final String name,
         final Float defaultValue) {
         if (cs == null) {
             return defaultValue;
@@ -174,8 +167,7 @@ public class YmlParsingHelper {
         }
     }
 
-    @Nullable
-    public Integer getIntTimeUnit(final ConfigurationSection cs, @NotNull final String name,
+    @Nullable public Integer getIntTimeUnit(final ConfigurationSection cs, @NotNull final String name,
         final Integer defaultValue) {
         if (cs == null) {
             return defaultValue;
@@ -312,8 +304,7 @@ public class YmlParsingHelper {
         return defaultTime;
     }
 
-    @NotNull
-    public static List<String> getListFromConfigItem(@NotNull final ConfigurationSection cs,
+    @NotNull public static List<String> getListFromConfigItem(@NotNull final ConfigurationSection cs,
         final String key) {
         String foundKeyName = null;
         for (final String enumeratedKey : cs.getKeys(false)) {
@@ -336,8 +327,7 @@ public class YmlParsingHelper {
         return result;
     }
 
-    @NotNull
-    public String getKeyNameFromConfig(final @NotNull ConfigurationSection cs,
+    @NotNull public String getKeyNameFromConfig(final @NotNull ConfigurationSection cs,
         final @NotNull String key) {
         if (!key.contains(".")) {
             for (final String enumeratedKey : cs.getKeys(false)) {
@@ -391,8 +381,7 @@ public class YmlParsingHelper {
         return sb.toString();
     }
 
-    @Nullable
-    public ConfigurationSection objTo_CS(final ConfigurationSection cs, final String path) {
+    @Nullable public ConfigurationSection objTo_CS(final ConfigurationSection cs, final String path) {
         if (cs == null) {
             return null;
         }

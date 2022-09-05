@@ -177,8 +177,7 @@ public class EntityDeathListener implements Listener {
         return true;
     }
 
-    @Nullable
-    private AdjacentChunksResult getNumberOfEntityDeathsInAdjacentChunks(
+    @Nullable private AdjacentChunksResult getNumberOfEntityDeathsInAdjacentChunks(
         final @NotNull LivingEntityWrapper lmEntity) {
         final int adjacentChunksToCheck = main.rulesManager.getAdjacentChunksToCheck(lmEntity);
         if (adjacentChunksToCheck <= 0) {

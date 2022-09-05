@@ -398,7 +398,7 @@ public class SpawnerSubCommand extends SpawnerBaseClass implements Subcommand {
         return Collections.emptyList();
     }
 
-    private @NotNull List<String> tabCompletions_Create(@NotNull final String @NotNull [] args) {
+    @NotNull private List<String> tabCompletions_Create(@NotNull final String @NotNull [] args) {
         if (!Utils.isNullOrEmpty(args[args.length - 2])) {
             switch (args[args.length - 2].toLowerCase()) {
                 case "/spawntype":

@@ -58,8 +58,7 @@ public class NMSHandler {
         }
     }
 
-    @Nullable
-    public NMSUtil getCurrentUtil() {
+    @Nullable public NMSUtil getCurrentUtil() {
         if (this.currentUtil != null) {
             return this.currentUtil;
         }

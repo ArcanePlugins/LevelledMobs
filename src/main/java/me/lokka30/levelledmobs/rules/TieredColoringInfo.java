@@ -24,8 +24,7 @@ public class TieredColoringInfo implements Cloneable {
     private TieredColoringInfo() {
     }
 
-    @NotNull
-    static TieredColoringInfo createDefault(final @NotNull String value) {
+    @NotNull static TieredColoringInfo createDefault(final @NotNull String value) {
         final TieredColoringInfo coloringInfo = new TieredColoringInfo();
         coloringInfo.isDefault = true;
         coloringInfo.text = value;
@@ -33,8 +32,7 @@ public class TieredColoringInfo implements Cloneable {
         return coloringInfo;
     }
 
-    @Nullable
-    static TieredColoringInfo createFromString(final @NotNull String key,
+    @Nullable static TieredColoringInfo createFromString(final @NotNull String key,
         final @NotNull String value) {
         final String[] numbers = key.split("-");
 

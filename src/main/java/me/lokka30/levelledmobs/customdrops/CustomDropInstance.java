@@ -20,7 +20,7 @@ import org.jetbrains.annotations.Nullable;
  */
 public class CustomDropInstance {
 
-    public CustomDropInstance(final EntityType associatedMob) {
+    public CustomDropInstance(final @Nullable EntityType associatedMob) {
         this.associatedMob = associatedMob;
         this.entityGroup = null;
         this.customItems = new LinkedList<>();
@@ -82,8 +82,7 @@ public class CustomDropInstance {
         return this.associatedMob;
     }
 
-    @NotNull
-    public String toString() {
+    public @NotNull String toString() {
         if (this.associatedMob != null) {
             return this.overrideStockDrops ?
                 this.associatedMob.name() + " - override" :

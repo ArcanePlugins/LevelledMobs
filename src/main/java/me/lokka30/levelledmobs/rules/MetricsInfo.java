@@ -30,8 +30,7 @@ public class MetricsInfo {
 
     private final LevelledMobs main;
 
-    @NotNull
-    private String convertBooleanToString(final boolean result) {
+    @NotNull private String convertBooleanToString(final boolean result) {
         return result ? "Yes" : "No";
     }
 
@@ -47,13 +46,11 @@ public class MetricsInfo {
         return false;
     }
 
-    @NotNull
-    public String getUsesCustomDrops() {
+    @NotNull public String getUsesCustomDrops() {
         return convertBooleanToString(isCustomDropsEnabed());
     }
 
-    @NotNull
-    public String getUsesHealthIndicator() {
+    @NotNull public String getUsesHealthIndicator() {
         final boolean usesHealthIndicator =
             main.rulesParsingManager.defaultRule.healthIndicator != null &&
                 main.rulesParsingManager.defaultRule.nametag != null &&
@@ -63,8 +60,7 @@ public class MetricsInfo {
         return convertBooleanToString(usesHealthIndicator);
     }
 
-    @NotNull
-    public String getMaxLevelRange() {
+    @NotNull public String getMaxLevelRange() {
         // 1-10, 11-24, 25-50, 51-100, 101-499, 500+
         final int maxLevel = main.rulesParsingManager.defaultRule.restrictions_MaxLevel == null ?
             1 : main.rulesParsingManager.defaultRule.restrictions_MaxLevel;
@@ -84,8 +80,7 @@ public class MetricsInfo {
         }
     }
 
-    @NotNull
-    public String getCustomRulesUsed() {
+    @NotNull public String getCustomRulesUsed() {
         // 0, 1-2, 3-4, 5+
         int rulesEnabledCount = 0;
         for (final RuleInfo ruleInfo : main.rulesParsingManager.customRules) {
@@ -105,8 +100,7 @@ public class MetricsInfo {
         }
     }
 
-    @NotNull
-    public String getLevellingStrategy() {
+    @NotNull public String getLevellingStrategy() {
         // Random, Weighted Random, Spawn Distance, Blended, Y-Levelling
         final RuleInfo defaultRule = main.rulesParsingManager.defaultRule;
 
@@ -131,31 +125,26 @@ public class MetricsInfo {
         return "Random";
     }
 
-    @NotNull
-    public String usesPlayerLevelling() {
+    @NotNull public String usesPlayerLevelling() {
         return convertBooleanToString(main.rulesManager.isPlayerLevellingEnabled());
     }
 
-    @NotNull
-    public String usesAutoUpdateChecker() {
+    @NotNull public String usesAutoUpdateChecker() {
         return convertBooleanToString(
             main.helperSettings.getBoolean(main.settingsCfg, "use-update-checker", true));
     }
 
-    @NotNull
-    public String levelMobsUponSpawn() {
+    @NotNull public String levelMobsUponSpawn() {
         return convertBooleanToString(
             main.helperSettings.getBoolean(main.settingsCfg, "level-mobs-upon-spawn", true));
     }
 
-    @NotNull
-    public String checkMobsOnChunkLoad() {
+    @NotNull public String checkMobsOnChunkLoad() {
         return convertBooleanToString(main.helperSettings.getBoolean(main.settingsCfg,
             "ensure-mobs-are-levelled-on-chunk-load", true));
     }
 
-    @NotNull
-    public String customEntityNamesCount() {
+    @NotNull public String customEntityNamesCount() {
         // 0, 1-3, 4-8, 9-12, 13+
         int count = 0;
         if (main.rulesParsingManager.defaultRule.entityNameOverrides != null) {
@@ -178,8 +167,7 @@ public class MetricsInfo {
         }
     }
 
-    @NotNull
-    public String usesNbtData() {
+    @NotNull public String usesNbtData() {
         if (!ExternalCompatibilityManager.hasNbtApiInstalled()) {
             return "No";
         }
@@ -201,8 +189,7 @@ public class MetricsInfo {
         return "No";
     }
 
-    @NotNull
-    public Map<String, Integer> enabledCompats() {
+    @NotNull public Map<String, Integer> enabledCompats() {
         final Map<String, Integer> results = new TreeMap<>();
 
         for (final ExternalCompatibilityManager.ExternalCompatibility compat : ExternalCompatibilityManager.ExternalCompatibility.values()) {
@@ -237,8 +224,7 @@ public class MetricsInfo {
         return results;
     }
 
-    @NotNull
-    public String nametagVisibility() {
+    @NotNull public String nametagVisibility() {
         if (main.rulesParsingManager.defaultRule.nametagVisibilityEnum == null
             || main.rulesParsingManager.defaultRule.nametagVisibilityEnum.isEmpty()) {
             return "Undefined";

@@ -26,8 +26,7 @@ import org.jetbrains.annotations.NotNull;
  */
 public class NBTManager {
 
-    @NotNull
-    public static NBTApplyResult applyNBT_Data_Item(@NotNull final CustomDropItem item,
+    @NotNull public static NBTApplyResult applyNBT_Data_Item(@NotNull final CustomDropItem item,
         @NotNull final String nbtStuff) {
         final NBTApplyResult result = new NBTApplyResult();
         final NBTItem nbtent = new NBTItem(item.getItemStack());

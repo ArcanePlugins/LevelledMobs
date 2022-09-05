@@ -578,8 +578,7 @@ public class CustomDropsParser {
         applyMetaAttributes(item);
     }
 
-    @NotNull
-    private CachedModalList<DeathCause> buildCachedModalListOfDamageCause(
+    @NotNull private CachedModalList<DeathCause> buildCachedModalListOfDamageCause(
         final ConfigurationSection cs,
         final CachedModalList<DeathCause> defaultValue) {
         if (cs == null) {
@@ -805,8 +804,7 @@ public class CustomDropsParser {
             this.defaults.equippedSpawnChance);
     }
 
-    @Nullable
-    private ConfigurationSection objectToConfigurationSection2(final ConfigurationSection cs,
+    @Nullable private ConfigurationSection objectToConfigurationSection2(final ConfigurationSection cs,
         final String path) {
         if (cs == null) {
             return null;
@@ -834,8 +832,7 @@ public class CustomDropsParser {
         }
     }
 
-    @Nullable
-    private ConfigurationSection objectToConfigurationSection_old(final Object object) {
+    @Nullable private ConfigurationSection objectToConfigurationSection_old(final Object object) {
         if (object == null) {
             return null;
         }
@@ -1143,8 +1140,7 @@ public class CustomDropsParser {
         return sb.toString();
     }
 
-    @Nullable
-    private ConfigurationSection objTo_CS(final ConfigurationSection cs, final String path) {
+    @Nullable private ConfigurationSection objTo_CS(final ConfigurationSection cs, final String path) {
         if (cs == null) {
             return null;
         }

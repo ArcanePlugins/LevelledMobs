@@ -121,8 +121,7 @@ public class PlaceholderApiIntegration extends PlaceholderExpansion {
         return null;
     }
 
-    @NotNull
-    private String getLevelFromPlayer(final @NotNull Player player) {
+    private @NotNull String getLevelFromPlayer(final @NotNull Player player) {
         if (!this.mobsByPlayerTracking.containsKey(player.getUniqueId())) {
             return "";
         }
@@ -132,8 +131,7 @@ public class PlaceholderApiIntegration extends PlaceholderExpansion {
             "" : String.valueOf(mobInfo.entityLevel);
     }
 
-    @NotNull
-    private String getDisplaynameFromPlayer(final @NotNull Player player) {
+    private @NotNull String getDisplaynameFromPlayer(final @NotNull Player player) {
         if (!this.mobsByPlayerTracking.containsKey(player.getUniqueId())) {
             return "";
         }
@@ -143,8 +141,7 @@ public class PlaceholderApiIntegration extends PlaceholderExpansion {
             "" : mobInfo.entityName;
     }
 
-    @NotNull
-    private String getKilledByInfo(final @NotNull Player player) {
+    private @NotNull String getKilledByInfo(final @NotNull Player player) {
         if (!this.playerDeathInfo.containsKey(player.getUniqueId())) {
             return "";
         }
@@ -154,8 +151,7 @@ public class PlaceholderApiIntegration extends PlaceholderExpansion {
                 "" : mobInfo.entityName;
     }
 
-    @NotNull
-    private String getMobNametagWithinPlayerSight(final @Nullable Player player) {
+    private @NotNull String getMobNametagWithinPlayerSight(final @Nullable Player player) {
         if (player == null) {
             return "";
         }
@@ -187,8 +183,7 @@ public class PlaceholderApiIntegration extends PlaceholderExpansion {
             nametag : "";
     }
 
-    @Nullable
-    private LivingEntity getMobBeingLookedAt(final @NotNull Player player) {
+    private @Nullable LivingEntity getMobBeingLookedAt(final @NotNull Player player) {
         LivingEntity livingEntity = null;
         final Location eye = player.getEyeLocation();
         final int maxBlocks = main.helperSettings.getInt(main.settingsCfg,

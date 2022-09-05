@@ -39,10 +39,8 @@ public class RuleInfo {
     }
 
     private String ruleName;
-    @DoNotMerge
-    boolean ruleIsEnabled;
-    @DoNotMerge
-    boolean isTempDisabled;
+    @DoNotMerge boolean ruleIsEnabled;
+    @DoNotMerge boolean isTempDisabled;
     Boolean disableVanillaDropsOnChunkMax;
     boolean useNoSpawnerParticles;
     Boolean babyMobsInheritAdultSetting;
@@ -54,8 +52,7 @@ public class RuleInfo {
     Boolean mergeEntityNameOverrides;
     Boolean passengerMatchLevel;
     Boolean lockEntity;
-    @DoNotMerge
-    int rulePriority;
+    @DoNotMerge int rulePriority;
     Integer spawnerParticlesCount;
     Integer maxRandomVariance;
     Integer creeperMaxDamageRadius;
@@ -80,8 +77,7 @@ public class RuleInfo {
     String nametag_CreatureDeath;
     String nametag_Placeholder_Levelled;
     String nametag_Placeholder_Unlevelled;
-    @DoNotMerge
-    String presetName;
+    @DoNotMerge String presetName;
     final @NotNull List<String> customDrop_DropTableIds;
     HealthIndicator healthIndicator;
     MobCustomNameStatus conditions_MobCustomnameStatus;
@@ -91,9 +87,7 @@ public class RuleInfo {
     Map<String, List<LevelTierMatching>> entityNameOverrides_Level;
     Map<String, LevelTierMatching> entityNameOverrides;
     public List<NametagVisibilityEnum> nametagVisibilityEnum;
-    @NotNull
-    @DoNotMerge
-    public final Map<String, String> ruleSourceNames;
+    @NotNull @DoNotMerge public final Map<String, String> ruleSourceNames;
     public Particle spawnerParticle;
     List<TieredColoringInfo> tieredColoringInfos;
     Map<ExternalCompatibilityManager.ExternalCompatibility, Boolean> enabledExtCompats;
@@ -262,13 +256,11 @@ public class RuleInfo {
         }
     }
 
-    @NotNull
-    public String formatRulesVisually() {
+    @NotNull public String formatRulesVisually() {
         return formatRulesVisually(null);
     }
 
-    @NotNull
-    public String formatRulesVisually(final List<String> excludedKeys) {
+    @NotNull public String formatRulesVisually(final List<String> excludedKeys) {
         final SortedMap<String, String> values = new TreeMap<>();
         final StringBuilder sb = new StringBuilder();
 

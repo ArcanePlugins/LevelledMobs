@@ -34,8 +34,7 @@ public class MobDataManager {
         this.main = main;
     }
 
-    @Nullable
-    private Object getAttributeDefaultValue(@NotNull final LivingEntityWrapper lmEntity,
+    @Nullable private Object getAttributeDefaultValue(@NotNull final LivingEntityWrapper lmEntity,
         final Attribute attribute) {
         if (lmEntity.isMobTamed()) {
             // if the tamed variant in the cfg then use it, otherwise check for untamed path

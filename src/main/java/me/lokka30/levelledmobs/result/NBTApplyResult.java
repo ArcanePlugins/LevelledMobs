@@ -14,15 +14,11 @@ import org.jetbrains.annotations.Nullable;
  */
 public class NBTApplyResult {
 
-    @Nullable
-    public ItemStack itemStack;
+    @Nullable public ItemStack itemStack;
     public String exceptionMessage;
-    @Nullable
-    public List<String> objectsAdded;
-    @Nullable
-    public List<String> objectsUpdated;
-    @Nullable
-    public List<String> objectsRemoved;
+    @Nullable public List<String> objectsAdded;
+    @Nullable public List<String> objectsUpdated;
+    @Nullable public List<String> objectsRemoved;
 
     public boolean hadException() {
         return this.exceptionMessage != null;

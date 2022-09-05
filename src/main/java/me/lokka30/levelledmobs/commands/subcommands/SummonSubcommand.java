@@ -4,7 +4,6 @@
 
 package me.lokka30.levelledmobs.commands.subcommands;
 
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -315,7 +314,7 @@ public class SummonSubcommand extends MessagesBase implements Subcommand {
 
         // here, atPlayer, atLocation
         if (args.length == 5) {
-            return Arrays.asList("here", "atPlayer", "atLocation", "/override");
+            return List.of("here", "atPlayer", "atLocation", "/override");
         }
 
         boolean skipOverride = false;
@@ -582,8 +581,7 @@ public class SummonSubcommand extends MessagesBase implements Subcommand {
     }
 
     @Contract("_, _, _ -> new")
-    @NotNull
-    private Location getLocationNearPlayer(final @NotNull Player player,
+    @NotNull private Location getLocationNearPlayer(final @NotNull Player player,
         final @NotNull Location location, final int useDistFromPlayer) {
         int newX = location.getBlockX();
         int newZ = location.getBlockZ();
@@ -625,8 +623,7 @@ public class SummonSubcommand extends MessagesBase implements Subcommand {
         return new Location(location.getWorld(), newX, location.getBlockY(), newZ);
     }
 
-    @Nullable
-    private Location getRelativeLocation(final CommandSender sender, final String xStr,
+    @Nullable private Location getRelativeLocation(final CommandSender sender, final String xStr,
         final String yStr, final String zStr, final String worldName) {
         double x = 0, y = 0, z = 0;
         boolean xRelative = false, yRelative = false, zRelative = false;

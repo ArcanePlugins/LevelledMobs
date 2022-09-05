@@ -12,8 +12,7 @@ import org.jetbrains.annotations.NotNull;
  */
 class Paper117Utils {
 
-    @NotNull
-    static String serializeTextComponent(final @NotNull TextComponent textComponent) {
+    @NotNull static String serializeTextComponent(final @NotNull TextComponent textComponent) {
         return PlainTextComponentSerializer.plainText().serialize(textComponent);
     }
 }

@@ -14,8 +14,7 @@ public class SummonMobOptions {
         this.sender = sender;
     }
 
-    @NotNull
-    final LivingEntityPlaceHolder lmPlaceHolder;
+    @NotNull final LivingEntityPlaceHolder lmPlaceHolder;
     public final CommandSender sender;
     SummonSubcommand.SummonType summonType;
     public int amount;

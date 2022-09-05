@@ -54,8 +54,7 @@ public class PaperUtils {
             LegacyComponentSerializer.legacyAmpersand().deserialize(displayName)).build());
     }
 
-    @NotNull
-    public static String getPlayerDisplayName(final @Nullable Player player) {
+    @NotNull public static String getPlayerDisplayName(final @Nullable Player player) {
         if (player == null) {
             return "";
         }

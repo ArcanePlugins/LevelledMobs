@@ -18,10 +18,7 @@ public class ApplicableRulesResult {
         this.allApplicableRules_DidNotMakeChance = new LinkedList<>();
     }
 
-    @NotNull
-    public final List<RuleInfo> allApplicableRules;
-    @NotNull
-    public final List<RuleInfo> allApplicableRules_MadeChance;
-    @NotNull
-    public final List<RuleInfo> allApplicableRules_DidNotMakeChance;
+    @NotNull public final List<RuleInfo> allApplicableRules;
+    @NotNull public final List<RuleInfo> allApplicableRules_MadeChance;
+    @NotNull public final List<RuleInfo> allApplicableRules_DidNotMakeChance;
 }

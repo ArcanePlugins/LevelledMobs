@@ -4,7 +4,6 @@
 
 package me.lokka30.levelledmobs.commands;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -112,8 +111,8 @@ public class LevelledMobsCommand implements CommandExecutor, TabCompleter {
     }
 
     // Retain alphabetical order please.
-    private final List<String> commandsToCheck = Arrays.asList("debug", "egg", "summon", "kill",
-        "reload", "info", "spawner", "rules");
+    private final List<String> commandsToCheck = List.of("debug", "egg", "info", "kill",
+        "reload", "rules", "spawner", "summon");
 
     @Override
     public List<String> onTabComplete(final @NotNull CommandSender sender,
