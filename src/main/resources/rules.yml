@@ -311,7 +311,7 @@ default-rule:
     - average_challenge
     #- advanced_challenge
     #- extreme_challenge
-    #- weighted_random_Levelling
+    - weighted_random_Levelling
     #- spawn_Levelling
     #- lvl-mod_spawn-blended
     #- ycoord_Levelling
