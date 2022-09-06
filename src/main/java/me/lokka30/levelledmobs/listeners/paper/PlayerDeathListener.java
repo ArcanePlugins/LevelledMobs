@@ -2,7 +2,7 @@ package me.lokka30.levelledmobs.listeners.paper;
 
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
-import me.lokka30.levelledmobs.misc.NametagUpdateResult;
+import me.lokka30.levelledmobs.result.NametagUpdateResult;
 import me.lokka30.levelledmobs.util.Utils;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
@@ -26,8 +26,12 @@ public class PlayerDeathListener {
     }
 
     private final LevelledMobs main;
+    private boolean shouldCancelEvent;
+    private PlayerDeathEvent event;
 
     public boolean onPlayerDeathEvent(final @NotNull PlayerDeathEvent event) {
+        this.event = event;
+        this.shouldCancelEvent = false;
         if (event.deathMessage() == null) {
             return true;
         }
@@ -41,6 +45,7 @@ public class PlayerDeathListener {
             if (main.placeholderApiIntegration != null) {
                 main.placeholderApiIntegration.putPlayerOrMobDeath(event.getEntity(), null, true);
             }
+            if (this.shouldCancelEvent) event.setCancelled(true);
             return true;
         }
 
@@ -49,6 +54,7 @@ public class PlayerDeathListener {
         }
         lmEntity.free();
 
+        if (this.shouldCancelEvent) event.setCancelled(true);
         return true;
     }
 
@@ -80,16 +86,21 @@ public class PlayerDeathListener {
         }
 
         final NametagUpdateResult mobNametag = main.levelManager.getNametag(lmKiller, true, true);
+        if (mobNametag.getNametag() != null && mobNametag.getNametag().isEmpty()){
+            this.shouldCancelEvent = true;
+            return lmKiller;
+        }
+
         if (Utils.isNullOrEmpty(mobNametag.getNametagNonNull()) || "disabled".equalsIgnoreCase(mobNametag.getNametagNonNull())) {
             return lmKiller;
         }
 
-        updateDeathMessage(event, mobNametag);
+        updateDeathMessage(mobNametag);
 
         return lmKiller;
     }
 
-    private void updateDeathMessage(@NotNull final PlayerDeathEvent event, final NametagUpdateResult nametagUpdateResult) {
+    private void updateDeathMessage(final NametagUpdateResult nametagUpdateResult) {
         final TranslatableComponent tc = (TranslatableComponent) event.deathMessage();
         if (tc == null) {
             return;
@@ -108,10 +119,15 @@ public class PlayerDeathListener {
 
         if (mobKey == null) return;
         final String mobName = nametagUpdateResult.getNametagNonNull();
-
+        final String playerName = event.getPlayer().getName();
         final int displayNameIndex = mobName.indexOf("{DisplayName}");
-        if (displayNameIndex < 0) return;
 
+        if (displayNameIndex < 0){
+            event.deathMessage(LegacyComponentSerializer.legacyAmpersand().deserialize(mobName.replace("%player%", playerName)));
+            return;
+        }
+
+        // this component holds the component of the mob name and will show the translated name on clients
         final Component mobNameComponent = nametagUpdateResult.overriddenName == null ?
                 Component.translatable(mobKey) :
                 LegacyComponentSerializer.legacyAmpersand().deserialize(nametagUpdateResult.overriddenName);
@@ -121,29 +137,34 @@ public class PlayerDeathListener {
         // TODO: is there a better way to do the following?
         final boolean hasLeftText = displayNameIndex > 0;
         final boolean hasRightText = mobName.length() > displayNameIndex + 13;
+        Component leftText = hasLeftText ?
+                LegacyComponentSerializer.legacyAmpersand().deserialize(
+                mobName.substring(0, displayNameIndex).replace("%player%", playerName)) : null;
+        Component rightText = hasRightText ? LegacyComponentSerializer.legacyAmpersand().deserialize(
+                mobName.substring(displayNameIndex + 13).replace("%player%", playerName)) : null;
 
         if (hasLeftText && hasRightText){
-
             // creature-death-nametag: 'something here %displayname% something there'
-            final Component leftText = LegacyComponentSerializer.legacyAmpersand().deserialize(mobName.substring(0, displayNameIndex));
-            final Component rightText = LegacyComponentSerializer.legacyAmpersand().deserialize(mobName.substring(displayNameIndex + 13));
 
-            newCom = Component.translatable(tc.key(),
-                    Component.text(playerKilled),
+            newCom = nametagUpdateResult.hadDeathMessage ?
                     leftText.append(mobNameComponent)
-            ).append(rightText);
+                            .append(rightText):
+                    Component.translatable(tc.key(),
+                            Component.text(playerKilled),
+                            leftText.append(mobNameComponent)
+                    ).append(rightText);
+
         }
         else if (hasLeftText){
             // creature-death-nametag: 'something here %displayname%'
-            final Component leftText = LegacyComponentSerializer.legacyAmpersand().deserialize(mobName.substring(0, displayNameIndex));
-            newCom = Component.translatable(tc.key(),
-                    Component.text(playerKilled),
-                    leftText.append(mobNameComponent)
-            );
+            newCom = nametagUpdateResult.hadDeathMessage ?
+                    leftText.append(mobNameComponent) :
+                    Component.translatable(tc.key(),
+                            Component.text(playerKilled),
+                            leftText.append(mobNameComponent));
         }
         else if (hasRightText){
             // creature-death-nametag: '%displayname% something there'
-            final Component rightText = LegacyComponentSerializer.legacyAmpersand().deserialize(mobName.substring(displayNameIndex + 13));
             newCom = Component.translatable(tc.key(),
                     Component.text(playerKilled),
                     mobNameComponent

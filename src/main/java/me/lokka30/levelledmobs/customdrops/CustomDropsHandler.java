@@ -714,7 +714,7 @@ public class CustomDropsHandler {
             if (meta != null && dropItem.lore != null && !dropItem.lore.isEmpty()) {
                 final List<String> newLore = new ArrayList<>(dropItem.lore.size());
                 for (final String lore : dropItem.lore) {
-                    newLore.add(main.levelManager.updateNametag(info.lmEntity, lore, false, false, false).getNametagNonNull());
+                    newLore.add(main.levelManager.updateNametag(info.lmEntity, lore, false, false, false, false).getNametagNonNull());
 
                     if (VersionUtils.isRunningPaper() && main.companion.useAdventure) {
                         PaperUtils.updateItemMetaLore(meta, newLore);
@@ -726,7 +726,7 @@ public class CustomDropsHandler {
 
             if (meta != null && dropItem.customName != null && !dropItem.customName.isEmpty()) {
                 final String displayName = main.levelManager.updateNametag(info.lmEntity,
-                    dropItem.customName, false, false, false).getNametagNonNull();
+                    dropItem.customName, false, false, false, false).getNametagNonNull();
 
                 if (VersionUtils.isRunningPaper() && main.companion.useAdventure) {
                     PaperUtils.updateItemDisplayName(meta, displayName);

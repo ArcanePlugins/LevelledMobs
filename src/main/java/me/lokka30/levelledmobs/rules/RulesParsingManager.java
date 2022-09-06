@@ -787,7 +787,8 @@ public class RulesParsingManager {
         if (parsingInfo.maxAdjacentChunks != null && parsingInfo.maxAdjacentChunks > 10) {
             parsingInfo.maxAdjacentChunks = 10;
         }
-        parseSpawnerPartile(ymlHelper.getString(cs, "spawner-particles"));
+        parseSpawnerParticle(ymlHelper.getString(cs, "spawner-particles"));
+        parseDeathMessages(cs.getConfigurationSection("death-messages"));
 
         final Set<String> nametagVisibility = ymlHelper.getStringSet(cs,
             "nametag-visibility-method");
@@ -822,7 +823,41 @@ public class RulesParsingManager {
         }
     }
 
-    private void parseSpawnerPartile(final @Nullable String particle) {
+    private void parseDeathMessages(final @Nullable ConfigurationSection cs){
+        if (cs == null) return;
+
+        final DeathMessages deathMessages = new DeathMessages();
+
+        for (final String weightStr : cs.getKeys(false)){
+            final List<String> messages = cs.getStringList(weightStr);
+            if (messages.isEmpty()) {
+                final String temp = cs.getString(weightStr);
+                if (temp != null && !temp.isEmpty())
+                    messages.add(temp);
+            }
+
+            for (final String message : messages) {
+                if (!Utils.isInteger(weightStr)) {
+                    Utils.logger.warning("Invalid number in DeathMessages section: " + weightStr);
+                    continue;
+                }
+
+                int weight = Integer.parseInt(weightStr);
+                if (weight > 100) {
+                    Utils.logger.warning(String.format("value of %s is over the limit of 100 for death message weight", weight));
+                    weight = 100;
+                }
+
+                deathMessages.addEntry(weight, message);
+            }
+        }
+
+        if (!deathMessages.isEmpty()) {
+            this.parsingInfo.deathMessages = deathMessages;
+        }
+    }
+
+    private void parseSpawnerParticle(final @Nullable String particle) {
         if (particle == null) {
             return;
         }
@@ -1037,18 +1072,12 @@ public class RulesParsingManager {
     private void parseWeightedRandom(final @NotNull ConfigurationSection cs){
         final String useWeightedRandom = cs.getString("weighted-random");
 
-        if (useWeightedRandom != null && !useWeightedRandom.isEmpty()){
-            // weighted-random: true
-            if ("true".equalsIgnoreCase(useWeightedRandom)) {
-                final RandomLevellingStrategy randomLevelling = new RandomLevellingStrategy();
-                randomLevelling.autoGenerate = true;
-                this.parsingInfo.levellingStrategy = randomLevelling;
-                return;
-            }
-            else if (!"false".equalsIgnoreCase(useWeightedRandom)){
-                Utils.logger.warning("Invalid value for weighted-random: " + useWeightedRandom);
-                return;
-            }
+        // weighted-random: true
+        if ("true".equalsIgnoreCase(useWeightedRandom)) {
+            final RandomLevellingStrategy randomLevelling = new RandomLevellingStrategy();
+            randomLevelling.autoGenerate = true;
+            this.parsingInfo.levellingStrategy = randomLevelling;
+            return;
         }
 
         final ConfigurationSection cs_Random = objTo_CS(cs, "weighted-random");

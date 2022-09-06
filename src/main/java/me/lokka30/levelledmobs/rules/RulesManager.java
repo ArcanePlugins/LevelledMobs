@@ -25,6 +25,7 @@ import me.lokka30.levelledmobs.managers.WorldGuardIntegration;
 import me.lokka30.levelledmobs.misc.CachedModalList;
 import me.lokka30.levelledmobs.misc.DebugType;
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
+import me.lokka30.levelledmobs.result.RuleCheckResult;
 import me.lokka30.levelledmobs.rules.strategies.LevellingStrategy;
 import me.lokka30.levelledmobs.rules.strategies.RandomLevellingStrategy;
 import me.lokka30.levelledmobs.util.Utils;
@@ -714,6 +715,20 @@ public class RulesManager {
         }
 
         return result;
+    }
+
+    public @Nullable String getDeathMessage(final @NotNull LivingEntityWrapper lmEntity){
+        DeathMessages deathMessages = null;
+
+        for (final RuleInfo ruleInfo : lmEntity.getApplicableRules()) {
+            if (ruleInfo.deathMessages != null) {
+                deathMessages = ruleInfo.deathMessages;
+            }
+        }
+
+        return deathMessages == null ?
+                null :
+                deathMessages.getDeathMessage();
     }
 
     @NotNull public ApplicableRulesResult getApplicableRules(final LivingEntityInterface lmInterface) {

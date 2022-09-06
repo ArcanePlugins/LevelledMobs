@@ -38,7 +38,7 @@ import me.lokka30.levelledmobs.misc.DebugType;
 import me.lokka30.levelledmobs.misc.LevellableState;
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
 import me.lokka30.levelledmobs.misc.MythicMobsMobInfo;
-import me.lokka30.levelledmobs.misc.NametagUpdateResult;
+import me.lokka30.levelledmobs.result.NametagUpdateResult;
 import me.lokka30.levelledmobs.misc.QueueItem;
 import me.lokka30.levelledmobs.result.NBTApplyResult;
 import me.lokka30.levelledmobs.result.PlayerHomeCheckResult;
@@ -675,12 +675,13 @@ public class LevelManager implements LevelInterface {
         }
     }
 
-    @NotNull public NametagUpdateResult getNametag(final LivingEntityWrapper lmEntity, final boolean isDeathNametag) {
+    @NotNull public NametagUpdateResult getNametag(final @NotNull LivingEntityWrapper lmEntity, final boolean isDeathNametag) {
         return getNametag(lmEntity, isDeathNametag, false);
     }
 
-    @NotNull public NametagUpdateResult getNametag(final LivingEntityWrapper lmEntity, final boolean isDeathNametag, boolean preserveMobName) {
+    @NotNull public NametagUpdateResult getNametag(final @NotNull LivingEntityWrapper lmEntity, final boolean isDeathNametag, boolean preserveMobName) {
         String nametag;
+        boolean hadDeathMessage = false;
         if (isDeathNametag) {
             nametag = main.rulesManager.getRuleNametagCreatureDeath(lmEntity);
         } else {
@@ -693,6 +694,14 @@ public class LevelManager implements LevelInterface {
 
         if ("disabled".equalsIgnoreCase(nametag) || "none".equalsIgnoreCase(nametag)) {
             return new NametagUpdateResult(null);
+        }
+
+        if (isDeathNametag){
+            final String deathMessage = main.rulesManager.getDeathMessage(lmEntity);
+            if (deathMessage != null && !deathMessage.isEmpty()){
+                nametag = deathMessage.replace("%death_nametag%", nametag);
+                hadDeathMessage = true;
+            }
         }
 
         final boolean useCustomNameForNametags = main.helperSettings.getBoolean(main.settingsCfg,
@@ -710,7 +719,7 @@ public class LevelManager implements LevelInterface {
         }
 
         final boolean doColorize = !preserveMobName;
-        return updateNametag(lmEntity, nametag, useCustomNameForNametags, doColorize, preserveMobName);
+        return updateNametag(lmEntity, nametag, useCustomNameForNametags, doColorize, preserveMobName, hadDeathMessage);
     }
 
     private void checkLockedNametag(final @NotNull LivingEntityWrapper lmEntity) {
@@ -740,15 +749,18 @@ public class LevelManager implements LevelInterface {
         }
     }
 
-    @NotNull public NametagUpdateResult updateNametag(final LivingEntityWrapper lmEntity, @NotNull String nametag,
+    @NotNull public NametagUpdateResult updateNametag(final @NotNull LivingEntityWrapper lmEntity, @NotNull String nametag,
         final boolean useCustomNameForNametags) {
-        return updateNametag(lmEntity, nametag, useCustomNameForNametags, true, false);
+        return updateNametag(lmEntity, nametag, useCustomNameForNametags, true, false, false);
     }
 
-    @NotNull public NametagUpdateResult updateNametag(final LivingEntityWrapper lmEntity, @NotNull String nametag,
-                                                      final boolean useCustomNameForNametags, final boolean colorize, boolean preserveMobName) {
+    @NotNull public NametagUpdateResult updateNametag(final @NotNull LivingEntityWrapper lmEntity, @NotNull String nametag,
+                                                      final boolean useCustomNameForNametags, final boolean colorize,
+                                                      boolean preserveMobName, boolean hadDeathMessage) {
         if (nametag.isEmpty()) {
-            return new NametagUpdateResult(nametag);
+            final NametagUpdateResult result = new NametagUpdateResult(nametag);
+            result.hadDeathMessage = hadDeathMessage;
+            return result;
         }
 
         checkLockedNametag(lmEntity);
@@ -784,6 +796,7 @@ public class LevelManager implements LevelInterface {
         final NametagUpdateResult result = new NametagUpdateResult(nametag);
         // this field is only used for sending nametags to client
         result.overriddenName = overridenName;
+        result.hadDeathMessage = hadDeathMessage;
 
         return result;
     }

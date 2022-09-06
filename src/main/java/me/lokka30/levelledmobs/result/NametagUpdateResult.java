@@ -1,4 +1,4 @@
-package me.lokka30.levelledmobs.misc;
+package me.lokka30.levelledmobs.result;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -16,6 +16,7 @@ public class NametagUpdateResult {
 
     private final @Nullable String nametag;
     public @Nullable String overriddenName;
+    public boolean hadDeathMessage;
 
     public @Nullable String getNametag(){
         return this.nametag;

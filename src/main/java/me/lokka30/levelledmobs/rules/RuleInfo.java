@@ -86,6 +86,7 @@ public class RuleInfo {
     PlayerLevellingOptions playerLevellingOptions;
     Map<String, List<LevelTierMatching>> entityNameOverrides_Level;
     Map<String, LevelTierMatching> entityNameOverrides;
+    DeathMessages deathMessages;
     public List<NametagVisibilityEnum> nametagVisibilityEnum;
     @NotNull @DoNotMerge public final Map<String, String> ruleSourceNames;
     public Particle spawnerParticle;
@@ -101,7 +102,6 @@ public class RuleInfo {
     CachedModalList<String> conditions_CustomNames;
     CachedModalList<String> conditions_NoDropEntities;
     CachedModalList<String> conditions_WGRegions;
-
     CachedModalList<String> conditions_WGRegionOwners;
     CachedModalList<String> conditions_MM_Names;
     CachedModalList<String> conditions_SpawnerNames;
