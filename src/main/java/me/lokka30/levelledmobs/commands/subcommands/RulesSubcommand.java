@@ -219,29 +219,21 @@ public class RulesSubcommand extends MessagesBase implements Subcommand {
             String.valueOf(difficulty));
 
         final String filename = "rules.yml";
-        final String[] replaceWhat = new String[]{"    - average_challenge",
-            "    - weighted_random_average", "", ""};
-        final String[] replaceWith = new String[]{"#    - average_challenge",
-            "#    - weighted_random_average", "", ""};
+        final String[] replaceWhat = new String[]{"    - average_challenge", ""};
+        final String[] replaceWith = new String[]{"    #- average_challenge", ""};
 
         switch (difficulty) {
             case BASIC -> {
-                replaceWhat[2] = "#- basic_challenge";
-                replaceWith[2] = "- basic_challenge";
-                replaceWhat[3] = "#- weighted_random_basic";
-                replaceWith[3] = "- weighted_random_basic";
+                replaceWhat[1] = "#- basic_challenge";
+                replaceWith[1] = "- basic_challenge";
             }
             case ADVANCED -> {
-                replaceWhat[2] = "#- advanced_challenge";
-                replaceWith[2] = "- advanced_challenge";
-                replaceWhat[3] = "#- weighted_random_advanced";
-                replaceWith[3] = "- weighted_random_advanced_difficulty";
+                replaceWhat[1] = "#- advanced_challenge";
+                replaceWith[1] = "- advanced_challenge";
             }
             case EXTREME -> {
-                replaceWhat[2] = "#- extreme_challenge";
-                replaceWith[2] = "- extreme_challenge";
-                replaceWhat[3] = "#- weighted_random_extreme";
-                replaceWith[3] = "- weighted_random_extreme";
+                replaceWhat[1] = "#- extreme_challenge";
+                replaceWith[1] = "- extreme_challenge";
             }
         }
 
@@ -254,9 +246,7 @@ public class RulesSubcommand extends MessagesBase implements Subcommand {
             String rulesText = new String(stream.readAllBytes(), StandardCharsets.UTF_8);
             if (difficulty != ResetDifficulty.AVERAGE) {
                 rulesText = rulesText.replace(replaceWhat[0], replaceWith[0])
-                    .replace(replaceWhat[1], replaceWith[1])
-                    .replace(replaceWhat[2], replaceWith[2])
-                    .replace(replaceWhat[3], replaceWith[3]);
+                    .replace(replaceWhat[1], replaceWith[1]);
             }
 
             final File rulesFile = new File(main.getDataFolder(), filename);

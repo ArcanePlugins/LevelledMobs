@@ -110,6 +110,8 @@ public class RulesParsingManager {
             this.main.rulesManager.ruleNameMappings.putAll(ruleMappings);
             this.main.rulesManager.rulesCooldown.clear();
         }
+
+        autoGenerateWeightedRandom();
     }
 
     @NotNull public List<RuleInfo> getAllRules() {
@@ -1028,33 +1030,52 @@ public class RulesParsingManager {
             }
         }
 
-        final ConfigurationSection cs_Random = objTo_CS(cs, "weighted-random");
-        if (cs_Random != null) {
-            final Map<String, Integer> randomMap = new TreeMap<>();
-            final RandomLevellingStrategy randomLevelling = new RandomLevellingStrategy();
-            randomLevelling.doMerge = ymlHelper.getBoolean(cs_Random, "merge");
+        parseWeightedRandom(cs);
+        parsePlayerLevellingOptions(objTo_CS(cs, "player-levelling"));
+    }
 
-            for (final String range : cs_Random.getKeys(false)) {
-                if ("merge".equalsIgnoreCase(range)) {
-                    continue;
-                }
-                final int value = cs_Random.getInt(range);
-                randomMap.put(range, value);
-            }
+    private void parseWeightedRandom(final @NotNull ConfigurationSection cs){
+        final String useWeightedRandom = cs.getString("weighted-random");
 
-            if (!randomMap.isEmpty()) {
-                randomLevelling.weightedRandom = randomMap;
-            }
-
-            if (this.parsingInfo.levellingStrategy != null
-                && this.parsingInfo.levellingStrategy instanceof RandomLevellingStrategy) {
-                this.parsingInfo.levellingStrategy.mergeRule(randomLevelling);
-            } else {
+        if (useWeightedRandom != null && !useWeightedRandom.isEmpty()){
+            // weighted-random: true
+            if ("true".equalsIgnoreCase(useWeightedRandom)) {
+                final RandomLevellingStrategy randomLevelling = new RandomLevellingStrategy();
+                randomLevelling.autoGenerate = true;
                 this.parsingInfo.levellingStrategy = randomLevelling;
+                return;
+            }
+            else if (!"false".equalsIgnoreCase(useWeightedRandom)){
+                Utils.logger.warning("Invalid value for weighted-random: " + useWeightedRandom);
+                return;
             }
         }
 
-        parsePlayerLevellingOptions(objTo_CS(cs, "player-levelling"));
+        final ConfigurationSection cs_Random = objTo_CS(cs, "weighted-random");
+        if (cs_Random == null) return;
+
+        final Map<String, Integer> randomMap = new TreeMap<>();
+        final RandomLevellingStrategy randomLevelling = new RandomLevellingStrategy();
+        randomLevelling.doMerge = ymlHelper.getBoolean(cs_Random, "merge");
+
+        for (final String range : cs_Random.getKeys(false)) {
+            if ("merge".equalsIgnoreCase(range)) {
+                continue;
+            }
+            final int value = cs_Random.getInt(range);
+            randomMap.put(range, value);
+        }
+
+        if (!randomMap.isEmpty()) {
+            randomLevelling.weightedRandom.putAll(randomMap);
+        }
+
+        if (this.parsingInfo.levellingStrategy != null
+                && this.parsingInfo.levellingStrategy instanceof RandomLevellingStrategy) {
+            this.parsingInfo.levellingStrategy.mergeRule(randomLevelling);
+        } else {
+            this.parsingInfo.levellingStrategy = randomLevelling;
+        }
     }
 
     @Nullable private CachedModalList<MinAndMax> parseWorldTimeTicks(final ConfigurationSection cs,
@@ -1364,6 +1385,34 @@ public class RulesParsingManager {
         return attribs;
     }
 
+    private void autoGenerateWeightedRandom(){
+        RandomLevellingStrategy rls = null;
+        int minLevel = 1;
+        int maxLevel = 1;
+
+        for (final List<RuleInfo> rules : this.main.rulesManager.rulesInEffect.values()) {
+            for (final RuleInfo ruleInfo : rules) {
+                if (!"defaults".equals(ruleInfo.getRuleName())) continue;
+
+                if (ruleInfo.levellingStrategy instanceof final RandomLevellingStrategy randomLevellingStrategy){
+                    if (rls == null)
+                        rls = randomLevellingStrategy;
+                    else
+                        rls.mergeRule(randomLevellingStrategy);
+                }
+
+                if (ruleInfo.restrictions_MinLevel != null)
+                    minLevel = ruleInfo.restrictions_MinLevel;
+                if (ruleInfo.restrictions_MaxLevel != null)
+                    maxLevel = ruleInfo.restrictions_MaxLevel;
+            }
+        }
+
+        if (rls == null || !rls.autoGenerate || !rls.weightedRandom.isEmpty()) return;
+        for (int i = minLevel; i <= maxLevel; i++)
+            rls.weightedRandom.put(String.format("%s-%s", i, i), maxLevel - i + 1);
+    }
+
     @Nullable private ConfigurationSection objTo_CS(final ConfigurationSection cs, final String path) {
         if (cs == null) {
             return null;
@@ -1393,7 +1442,7 @@ public class RulesParsingManager {
             final String currentPath = Utils.isNullOrEmpty(cs.getCurrentPath()) ?
                 path : cs.getCurrentPath() + "." + path;
             Utils.logger.warning(
-                currentPath + ": couldn't parse Config of type: " + object.getClass()
+                currentPath + ": couldn't parse config of type: " + object.getClass()
                     .getSimpleName() + ", value: " + object);
             return null;
         }
@@ -1412,7 +1461,7 @@ public class RulesParsingManager {
             return result.getDefaultSection();
         } else {
             Utils.logger.warning(
-                "couldn't parse Config of type: " + object.getClass().getSimpleName() + ", value: "
+                "couldn't parse config of type: " + object.getClass().getSimpleName() + ", value: "
                     + object);
             return null;
         }
