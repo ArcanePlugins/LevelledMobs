@@ -7,6 +7,7 @@ package me.lokka30.levelledmobs.rules.strategies;
 import java.util.concurrent.ThreadLocalRandom;
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Holds the configuration and logic for applying a levelling system that is based upon the distance
@@ -51,8 +52,10 @@ public class YDistanceStrategy implements LevellingStrategy, Cloneable {
         );
     }
 
-    public int generateLevel(@NotNull final LivingEntityWrapper lmEntity, final int minLevel,
-        final int maxLevel) {
+    public int generateLevel(final @Nullable LivingEntityWrapper lmEntity, final int minLevel,
+                             final int maxLevel) {
+
+        if (lmEntity == null) return minLevel;
 
         final int mobYLocation = lmEntity.getLivingEntity().getLocation().getBlockY();
         final int yStart = this.startingYLevel == null ? 0 : this.startingYLevel;

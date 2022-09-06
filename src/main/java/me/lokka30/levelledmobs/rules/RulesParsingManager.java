@@ -1411,6 +1411,8 @@ public class RulesParsingManager {
         if (rls == null || !rls.autoGenerate || !rls.weightedRandom.isEmpty()) return;
         for (int i = minLevel; i <= maxLevel; i++)
             rls.weightedRandom.put(String.format("%s-%s", i, i), maxLevel - i + 1);
+
+        rls.populateWeightedRandom(minLevel, maxLevel);
     }
 
     @Nullable private ConfigurationSection objTo_CS(final ConfigurationSection cs, final String path) {

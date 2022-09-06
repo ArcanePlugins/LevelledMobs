@@ -5,6 +5,7 @@
 package me.lokka30.levelledmobs.rules.strategies;
 
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Interface for the various levelling systems
@@ -14,7 +15,7 @@ import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
  */
 public interface LevellingStrategy {
 
-    int generateLevel(final LivingEntityWrapper lmEntity, final int minLevel, final int maxLevel);
+    int generateLevel(final @Nullable LivingEntityWrapper lmEntity, final int minLevel, final int maxLevel);
 
     void mergeRule(final LevellingStrategy levellingStrategy);
 

@@ -29,6 +29,7 @@ import org.bukkit.entity.Animals;
 import org.bukkit.entity.Boss;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Flying;
+import org.bukkit.entity.Hoglin;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Monster;
 import org.bukkit.entity.Player;
@@ -889,7 +890,7 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
             groups.add(CustomUniversalGroups.ALL_AQUATIC_MOBS.toString());
         }
 
-        if (livingEntity instanceof Animals || livingEntity instanceof WaterMob
+        if (livingEntity instanceof Animals && !(livingEntity instanceof Hoglin) || livingEntity instanceof WaterMob
             || main.companion.passiveMobsGroup.contains(eType)) {
             groups.add(CustomUniversalGroups.ALL_PASSIVE_MOBS.toString());
         }

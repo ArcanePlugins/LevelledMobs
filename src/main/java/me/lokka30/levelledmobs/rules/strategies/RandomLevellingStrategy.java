@@ -12,6 +12,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
 import me.lokka30.levelledmobs.util.Utils;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Holds the configuration and logic for applying a levelling system that is based upon random
@@ -37,8 +38,8 @@ public class RandomLevellingStrategy implements LevellingStrategy, Cloneable {
     }
 
     @Override
-    public int generateLevel(final LivingEntityWrapper lmEntity, final int minLevel,
-        final int maxLevel) {
+    public int generateLevel(final @Nullable LivingEntityWrapper lmEntity, final int minLevel,
+                             final int maxLevel) {
         // this function only has lmEmtity to satify the interface requirement
         if (this.weightedRandom.isEmpty()) {
             return getRandomLevel(minLevel, maxLevel);
@@ -53,7 +54,7 @@ public class RandomLevellingStrategy implements LevellingStrategy, Cloneable {
     }
 
     public void populateWeightedRandom(final int minLevel, final int maxLevel) {
-        if (!this.weightedRandom.isEmpty()) {
+        if (this.weightedRandom.isEmpty()) {
             return;
         }
 
