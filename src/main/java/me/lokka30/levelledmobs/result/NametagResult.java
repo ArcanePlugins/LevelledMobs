@@ -9,12 +9,12 @@ import org.jetbrains.annotations.Nullable;
  * @author stumper66
  * @since 3.7.0
  */
-public class NametagUpdateResult {
-    public NametagUpdateResult(final @Nullable String nametag){
+public class NametagResult {
+    public NametagResult(final @Nullable String nametag){
         this.nametag = nametag;
     }
 
-    private final @Nullable String nametag;
+    private @Nullable String nametag;
     public @Nullable String overriddenName;
     public boolean hadDeathMessage;
 
@@ -26,5 +26,13 @@ public class NametagUpdateResult {
         return this.nametag == null ?
                 "" :
                 this.nametag;
+    }
+
+    public void setNametag(final @Nullable String nametag){
+        this.nametag = nametag;
+    }
+
+    public boolean isNullOrEmpty(){
+        return this.nametag == null || this.nametag.isEmpty();
     }
 }

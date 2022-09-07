@@ -539,8 +539,9 @@ public class RulesManager {
         return result;
     }
 
+    @SuppressWarnings("deprecation")
     @Nullable public String getRuleEntityOverriddenName(@NotNull final LivingEntityWrapper lmEntity,
-        final boolean useCustomNameForNametags) {
+                                                        final boolean useCustomNameForNametags) {
         Map<String, List<LevelTierMatching>> entityNameOverrides_Level = null;
         Map<String, LevelTierMatching> entityNameOverrides = null;
 
@@ -820,8 +821,9 @@ public class RulesManager {
         }
     }
 
+    @SuppressWarnings("deprecation")
     private boolean isRuleApplicableEntity(final LivingEntityWrapper lmEntity,
-        @NotNull final RuleInfo ri) {
+                                           @NotNull final RuleInfo ri) {
         if (ri.conditions_MinLevel != null && (!lmEntity.isLevelled()
             || lmEntity.getMobLevel() < ri.conditions_MinLevel)) {
             Utils.debugLog(main, DebugType.DENIED_RULE_MAXLEVEL,

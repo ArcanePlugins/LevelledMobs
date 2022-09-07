@@ -60,6 +60,7 @@ public class EntityDamageDebugListener implements Listener {
         lmEntity.free();
     }
 
+    @SuppressWarnings("deprecation")
     private void checkEntity(final Player player, final @NotNull LivingEntityWrapper lmEntity) {
         // Make sure the mob is levelled
         if (!lmEntity.isLevelled()) {

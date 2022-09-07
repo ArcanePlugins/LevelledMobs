@@ -3,7 +3,11 @@ package me.lokka30.levelledmobs.nms;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Optional;
+
+import me.lokka30.levelledmobs.result.NametagResult;
+import me.lokka30.microlib.messaging.MessageUtils;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.protocol.game.ClientboundSetEntityDataPacket;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -13,7 +17,6 @@ import net.minecraft.world.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * Sends NMS verison specific nametag packets to players
@@ -29,8 +32,8 @@ public class NametagSender implements NMSUtil {
 
     private final String nmsVersion;
 
-    public void sendNametag(final @NotNull LivingEntity livingEntity, @Nullable String nametag,
-        @NotNull Player player, final boolean doAlwaysVisible) {
+    public void sendNametag(final @NotNull LivingEntity livingEntity, @NotNull NametagResult nametag,
+                            @NotNull Player player, final boolean doAlwaysVisible) {
         // org.bukkit.craftbukkit.v1_18_R1.entity.CraftLivingEntity
 
         try {
@@ -45,25 +48,13 @@ public class NametagSender implements NMSUtil {
             final EntityDataAccessor<Optional<Component>> customNameAccessor =
                 new EntityDataAccessor<>(2, EntityDataSerializers.OPTIONAL_COMPONENT);
 
-            // org.bukkit.craftbukkit.v1_18_R1.util.CraftChatMessage
-            final Class<?> clazz_CraftChatMessage = Class.forName(
-                "org.bukkit.craftbukkit." + nmsVersion + ".util.CraftChatMessage");
-            final Method method_fromString = clazz_CraftChatMessage.getDeclaredMethod("fromString",
-                String.class);
-            // components = org.bukkit.craftbukkit.v1_18_R1.util.CraftChatMessage.fromString(nametag);
-            final Component[] components = (Component[]) method_fromString.invoke(
-                clazz_CraftChatMessage, nametag);
-
-            final Optional<Component> customName = nametag == null || nametag.isEmpty()
-                ? Optional.empty()
-                : Optional.ofNullable(components[0]);
-
+            final Optional<Component> customName = buildNametagComponent(livingEntity, nametag);
             entityData.set(customNameAccessor, customName);
 
             final EntityDataAccessor<Boolean> customNameVisibleAccessor =
                 new EntityDataAccessor<>(3, EntityDataSerializers.BOOLEAN);
 
-            entityData.set(customNameVisibleAccessor, nametag != null && doAlwaysVisible);
+            entityData.set(customNameVisibleAccessor, !nametag.isNullOrEmpty() && doAlwaysVisible);
 
             final ClientboundSetEntityDataPacket packet = new ClientboundSetEntityDataPacket(
                 internalLivingEntity.getId(), entityData, true
@@ -78,6 +69,34 @@ public class NametagSender implements NMSUtil {
                  ClassNotFoundException e) {
             e.printStackTrace();
         }
+    }
+
+    private @NotNull Optional<Component> buildNametagComponent(final @NotNull LivingEntity livingEntity,
+                                                               final @NotNull NametagResult nametag){
+        if (nametag.isNullOrEmpty())
+            return Optional.empty();
+
+        final String mobName = nametag.getNametagNonNull();
+        final String displayName = "{DisplayName}";
+        final int displayNameIndex = mobName.indexOf(displayName);
+
+        if (displayNameIndex < 0)
+            return Optional.of(Component.literal(nametag.getNametagNonNull()));
+
+        final boolean hasLeftText = displayNameIndex > 0;
+        final boolean hasRightText = mobName.length() > displayNameIndex + displayName.length();
+        final String leftText = hasLeftText ? mobName.substring(0, displayNameIndex) : null;
+        final String rightText = hasRightText ? mobName.substring(displayNameIndex + displayName.length()) : null;
+        final Component mobNameComponent = nametag.overriddenName == null ?
+                Component.translatable(livingEntity.getType().translationKey()) :
+                Component.literal(nametag.overriddenName);
+
+        MutableComponent comp = Component.empty();
+        if (hasLeftText) comp = comp.append(MessageUtils.colorizeAll(leftText));
+        comp.append(mobNameComponent);
+        if (hasRightText) comp = comp.append(MessageUtils.colorizeAll(rightText));
+
+        return Optional.of(comp);
     }
 
     @NotNull private static SynchedEntityData cloneEntityData(@NotNull final SynchedEntityData other,

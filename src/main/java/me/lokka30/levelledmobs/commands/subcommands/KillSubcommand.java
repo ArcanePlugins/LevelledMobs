@@ -318,8 +318,9 @@ public class KillSubcommand extends MessagesBase implements Subcommand {
         );
     }
 
+    @SuppressWarnings("deprecation")
     private boolean skipKillingEntity(final LevelledMobs main,
-        final @NotNull LivingEntity livingEntity, final RequestedLevel rl) {
+                                      final @NotNull LivingEntity livingEntity, final RequestedLevel rl) {
         if (livingEntity.getCustomName() != null && main.helperSettings.getBoolean(main.settingsCfg,
             "kill-skip-conditions.nametagged")) {
             return true;

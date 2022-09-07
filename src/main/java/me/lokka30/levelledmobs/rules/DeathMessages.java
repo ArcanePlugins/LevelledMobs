@@ -14,7 +14,7 @@ public class DeathMessages {
     }
 
     private final List<String> messages;
-    public boolean isEnabled;
+    public final boolean isEnabled;
 
     public void addEntry(final int weight, final @NotNull String message){
         final int number = Math.max(1, weight);

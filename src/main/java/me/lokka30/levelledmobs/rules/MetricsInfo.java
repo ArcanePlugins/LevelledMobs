@@ -113,7 +113,7 @@ public class MetricsInfo {
             } else if (defaultRule.levellingStrategy instanceof YDistanceStrategy) {
                 return "Y-Levelling";
             } else if (defaultRule.levellingStrategy instanceof final RandomLevellingStrategy random) {
-                if (random.weightedRandom != null && !random.weightedRandom.isEmpty()) {
+                if (!random.weightedRandom.isEmpty()) {
                     return "Weighted Random";
                 }
             }

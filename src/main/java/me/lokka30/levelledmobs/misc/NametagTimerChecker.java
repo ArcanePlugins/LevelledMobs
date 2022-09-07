@@ -108,7 +108,7 @@ public class NametagTimerChecker {
                     final LivingEntityWrapper lmEntity = LivingEntityWrapper.getInstance(
                         livingEntity, main);
                     main.levelManager.updateNametag(lmEntity,
-                        main.levelManager.getNametag(lmEntity, false).getNametagNonNull(), List.of(player));
+                        main.levelManager.getNametag(lmEntity, false), List.of(player));
                     lmEntity.free();
                 }
 

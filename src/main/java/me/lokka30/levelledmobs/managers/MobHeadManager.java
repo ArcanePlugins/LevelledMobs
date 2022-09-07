@@ -91,8 +91,9 @@ public class MobHeadManager {
         }
     }
 
+    @SuppressWarnings("deprecation")
     public void updateMobHeadFromPlayerHead(final @NotNull ItemStack playerHead,
-        final LivingEntityWrapper lmEntity, @NotNull final CustomDropItem dropItem) {
+                                            final LivingEntityWrapper lmEntity, @NotNull final CustomDropItem dropItem) {
 
         final String textureCode;
         final UUID id;

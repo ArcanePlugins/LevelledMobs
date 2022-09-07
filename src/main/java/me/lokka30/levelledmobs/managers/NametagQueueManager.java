@@ -17,6 +17,7 @@ import me.lokka30.levelledmobs.misc.NametagTimerChecker;
 import me.lokka30.levelledmobs.misc.QueueItem;
 import me.lokka30.levelledmobs.nms.NMSHandler;
 import me.lokka30.levelledmobs.nms.NMSUtil;
+import me.lokka30.levelledmobs.result.NametagResult;
 import me.lokka30.levelledmobs.rules.NametagVisibilityEnum;
 import me.lokka30.levelledmobs.util.Utils;
 import org.bukkit.Bukkit;
@@ -138,7 +139,7 @@ public class NametagQueueManager {
 
         final long nametagTimerResetTime = item.lmEntity.getNametagCooldownTime();
 
-        if (nametagTimerResetTime > 0L && !Utils.isNullOrEmpty(item.nametag)) {
+        if (nametagTimerResetTime > 0L && item.nametag != null && !item.nametag.isNullOrEmpty()) {
             synchronized (NametagTimerChecker.nametagTimer_Lock) {
                 final Map<Player, WeakHashMap<LivingEntity, Instant>> nametagCooldownQueue = main.nametagTimerChecker.getNametagCooldownQueue();
 
@@ -202,7 +203,7 @@ public class NametagQueueManager {
         }
 
         if (main.helperSettings.getBoolean(main.settingsCfg, "use-customname-for-mob-nametags")) {
-            updateNametagCustomName(item.lmEntity, item.nametag);
+            updateNametagCustomName(item.lmEntity, item.nametag.getNametag());
             return;
         }
 
@@ -215,7 +216,7 @@ public class NametagQueueManager {
         updateNametag(item.lmEntity, item.nametag, item.players);
     }
 
-    private void updateNametag(final @NotNull LivingEntityWrapper lmEntity, final String nametag,
+    private void updateNametag(final @NotNull LivingEntityWrapper lmEntity, final @NotNull NametagResult nametag,
         final List<Player> players) {
         final int loopCount = lmEntity.playersNeedingNametagCooldownUpdate == null ?
             1 : 2;
@@ -226,7 +227,7 @@ public class NametagQueueManager {
             final List<NametagVisibilityEnum> nametagVisibilityEnum = main.rulesManager.getRuleCreatureNametagVisbility(
                 lmEntity);
             final boolean doAlwaysVisible = i == 1 ||
-                    nametag != null && !nametag.isEmpty() && lmEntity.getLivingEntity().isCustomNameVisible() ||
+                    !nametag.isNullOrEmpty() && lmEntity.getLivingEntity().isCustomNameVisible() ||
                 nametagVisibilityEnum.contains(NametagVisibilityEnum.ALWAYS_ON);
 
             if (i == 0) {
@@ -249,8 +250,9 @@ public class NametagQueueManager {
         }
     }
 
+    @SuppressWarnings("deprecation")
     private void updateNametagCustomName(final @NotNull LivingEntityWrapper lmEntity,
-        final String nametag) {
+                                         final String nametag) {
         synchronized (lmEntity.getLivingEntity().getPersistentDataContainer()) {
             if (lmEntity.getPDC()
                 .has(main.namespacedKeys.hasCustomNameTag, PersistentDataType.INTEGER)) {

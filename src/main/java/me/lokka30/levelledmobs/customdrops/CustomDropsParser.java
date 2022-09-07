@@ -823,9 +823,9 @@ public class CustomDropsParser {
         } else {
             final String currentPath = Utils.isNullOrEmpty(cs.getCurrentPath()) ?
                 path : cs.getCurrentPath() + "." + path;
-            Utils.logger.warning(
-                currentPath + ": couldn't parse Config of type: " + object.getClass()
-                    .getSimpleName() + ", value: " + object);
+            Utils.logger.warning(String.format(
+                "%s: couldn't parse Config of type: %s, value: %s",
+                    currentPath, object.getClass().getSimpleName(), object));
             return null;
         }
     }

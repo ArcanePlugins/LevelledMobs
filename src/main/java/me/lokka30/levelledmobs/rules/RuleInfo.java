@@ -60,7 +60,6 @@ public class RuleInfo {
     Integer conditions_MaxLevel;
     Integer restrictions_MinLevel;
     Integer restrictions_MaxLevel;
-    Integer lowerMobLevelBiasFactor;
     Integer conditions_ApplyAboveY;
     Integer conditions_ApplyBelowY;
     Integer conditions_MinDistanceFromSpawn;

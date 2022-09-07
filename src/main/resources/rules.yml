@@ -100,7 +100,6 @@ presets:
     name: 'LVLling Strategy - Random'
     strategies:
       random: true
-      lower-mob-level-bias-factor: 5
 
   weighted_random_Levelling:
     # This Strategy Preset controls Weighted Random Bias.
@@ -355,6 +354,9 @@ default-rule:
       #PILLAGER: ['Raider', 'Barbarian']
 
     creature-death-nametag: '%tiered%Lvl %mob-lvl%&8 | &f%displayname%'
+    death-messages:
+    #  3: ['%player% was killed by a %death_nametag%!']
+    #  1: ['A level $mob-lvl% %displayname% slaughtered %player%!']
     nametag-placeholder-levelled: ''
     nametag-placeholder-unlevelled: ''
     nametag-visible-time: 1s
@@ -399,10 +401,8 @@ custom-rules:
 
   - enabled: true
     name: 'CR - Custom Nether Levelling'
-    use-preset: apply_LevellingVariance
     conditions:
-      worlds:
-        allowed-list: [ 'world_nether' ]
+      worlds: 'world_nether'
     strategies:
       y-coordinate:
         start: 100
@@ -429,24 +429,20 @@ custom-rules:
   - enabled: true
     name: 'CR - Custom Zombie Piglin Levelling'
     conditions:
-      worlds:
-        allowed-list: [ 'world_nether' ]
-      entities:
-        allowed-list: [ 'ZOMBIFIED_PIGLIN' ]
+      worlds: 'world_nether'
+      entities: 'ZOMBIFIED_PIGLIN'
     strategies:
       random: true
     apply-settings:
       minLevel: 1
       maxLevel: 5
       multipliers:
-        custom-mob-level:
-          ZOMBIFIED_PIGLIN:
-            max-health: 1.0
-            movement-speed: 0.25
-            attack-damage: 0.5
-            ranged-attack-damage: 0.0
-            item-drop: 0.5
-            xp-drop: 1.0
+        max-health: 1.0
+        movement-speed: 0.25
+        attack-damage: 0.5
+        ranged-attack-damage: 0.0
+        item-drop: 0.5
+        xp-drop: 1.0
       tiered-coloring:
         1-5: '&#22E76B' #Green
 

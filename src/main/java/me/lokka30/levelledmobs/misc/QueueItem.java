@@ -5,8 +5,11 @@
 package me.lokka30.levelledmobs.misc;
 
 import java.util.List;
+
+import me.lokka30.levelledmobs.result.NametagResult;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Holds data that goes into various queues for processing
@@ -21,7 +24,7 @@ public class QueueItem {
         this.event = event;
     }
 
-    public QueueItem(final LivingEntityWrapper lmEntity, final String nametag,
+    public QueueItem(final LivingEntityWrapper lmEntity, final @NotNull NametagResult nametag,
         final List<Player> players) {
         this.lmEntity = lmEntity;
         this.nametag = nametag;
@@ -31,5 +34,5 @@ public class QueueItem {
     public final LivingEntityWrapper lmEntity;
     public Event event;
     public List<Player> players;
-    public String nametag;
+    public NametagResult nametag;
 }

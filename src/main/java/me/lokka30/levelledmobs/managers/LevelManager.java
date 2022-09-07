@@ -38,7 +38,7 @@ import me.lokka30.levelledmobs.misc.DebugType;
 import me.lokka30.levelledmobs.misc.LevellableState;
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
 import me.lokka30.levelledmobs.misc.MythicMobsMobInfo;
-import me.lokka30.levelledmobs.result.NametagUpdateResult;
+import me.lokka30.levelledmobs.result.NametagResult;
 import me.lokka30.levelledmobs.misc.QueueItem;
 import me.lokka30.levelledmobs.result.NBTApplyResult;
 import me.lokka30.levelledmobs.result.PlayerHomeCheckResult;
@@ -92,6 +92,7 @@ import org.jetbrains.annotations.Nullable;
  * @author lokka30, stumper66, CoolBoy, Esophose, 7smile7, Shevchik, Hugo5551, limzikiki
  * @since 2.4.0
  */
+@SuppressWarnings("deprecation")
 public class LevelManager implements LevelInterface {
 
     public LevelManager(final LevelledMobs main) {
@@ -675,11 +676,11 @@ public class LevelManager implements LevelInterface {
         }
     }
 
-    @NotNull public NametagUpdateResult getNametag(final @NotNull LivingEntityWrapper lmEntity, final boolean isDeathNametag) {
+    @NotNull public NametagResult getNametag(final @NotNull LivingEntityWrapper lmEntity, final boolean isDeathNametag) {
         return getNametag(lmEntity, isDeathNametag, false);
     }
 
-    @NotNull public NametagUpdateResult getNametag(final @NotNull LivingEntityWrapper lmEntity, final boolean isDeathNametag, boolean preserveMobName) {
+    @NotNull public NametagResult getNametag(final @NotNull LivingEntityWrapper lmEntity, final boolean isDeathNametag, boolean preserveMobName) {
         String nametag;
         boolean hadDeathMessage = false;
         if (isDeathNametag) {
@@ -693,7 +694,7 @@ public class LevelManager implements LevelInterface {
         }
 
         if ("disabled".equalsIgnoreCase(nametag) || "none".equalsIgnoreCase(nametag)) {
-            return new NametagUpdateResult(null);
+            return new NametagResult(null);
         }
 
         if (isDeathNametag){
@@ -709,9 +710,9 @@ public class LevelManager implements LevelInterface {
         // ignore if 'disabled'
         if (nametag.isEmpty()) {
             if (useCustomNameForNametags) {
-                return new NametagUpdateResult(lmEntity.getTypeName());
+                return new NametagResult(lmEntity.getTypeName());
             } else {
-                return new NametagUpdateResult(lmEntity.getLivingEntity().getCustomName()); // CustomName can be null, that is meant to be the case.
+                return new NametagResult(lmEntity.getLivingEntity().getCustomName()); // CustomName can be null, that is meant to be the case.
             }
         }
         if (!lmEntity.isLevelled()) {
@@ -749,16 +750,16 @@ public class LevelManager implements LevelInterface {
         }
     }
 
-    @NotNull public NametagUpdateResult updateNametag(final @NotNull LivingEntityWrapper lmEntity, @NotNull String nametag,
-        final boolean useCustomNameForNametags) {
+    @NotNull public NametagResult updateNametag(final @NotNull LivingEntityWrapper lmEntity, @NotNull String nametag,
+                                                final boolean useCustomNameForNametags) {
         return updateNametag(lmEntity, nametag, useCustomNameForNametags, true, false, false);
     }
 
-    @NotNull public NametagUpdateResult updateNametag(final @NotNull LivingEntityWrapper lmEntity, @NotNull String nametag,
-                                                      final boolean useCustomNameForNametags, final boolean colorize,
-                                                      boolean preserveMobName, boolean hadDeathMessage) {
+    @NotNull public NametagResult updateNametag(final @NotNull LivingEntityWrapper lmEntity, @NotNull String nametag,
+                                                final boolean useCustomNameForNametags, final boolean colorize,
+                                                boolean preserveMobName, boolean hadDeathMessage) {
         if (nametag.isEmpty()) {
-            final NametagUpdateResult result = new NametagUpdateResult(nametag);
+            final NametagResult result = new NametagResult(nametag);
             result.hadDeathMessage = hadDeathMessage;
             return result;
         }
@@ -793,7 +794,7 @@ public class LevelManager implements LevelInterface {
             nametag = ExternalCompatibilityManager.getPapiPlaceholder(null, nametag);
         }
 
-        final NametagUpdateResult result = new NametagUpdateResult(nametag);
+        final NametagResult result = new NametagResult(nametag);
         // this field is only used for sending nametags to client
         result.overriddenName = overridenName;
         result.hadDeathMessage = hadDeathMessage;
@@ -946,9 +947,9 @@ public class LevelManager implements LevelInterface {
     }
 
     public void updateNametag(final LivingEntityWrapper lmEntity) {
-        String nametag = getNametag(lmEntity, false, false).getNametag();
-        if (nametag != null) {
-            nametag = MessageUtils.colorizeAll(nametag);
+        final NametagResult nametag = getNametag(lmEntity, false, true);
+        if (!nametag.isNullOrEmpty()) {
+            nametag.setNametag(MessageUtils.colorizeAll(nametag.getNametag()));
         }
 
         final QueueItem queueItem = new QueueItem(
@@ -960,11 +961,7 @@ public class LevelManager implements LevelInterface {
         main.nametagQueueManager.addToQueue(queueItem);
     }
 
-    private void updateNametag(final @NotNull LivingEntityWrapper lmEntity, final String nametag) {
-        updateNametag(lmEntity, nametag, lmEntity.getLivingEntity().getWorld().getPlayers());
-    }
-
-    public void updateNametag(final @NotNull LivingEntityWrapper lmEntity, final String nametag,
+    public void updateNametag(final @NotNull LivingEntityWrapper lmEntity, final NametagResult nametag,
         final List<Player> players) {
         main.nametagQueueManager.addToQueue(new QueueItem(lmEntity, nametag, players));
     }
@@ -1194,9 +1191,9 @@ public class LevelManager implements LevelInterface {
             location.getWorld().equals(lmEntity.getWorld()) &&
             lmEntity.getLocation().distanceSquared(location) <= maxDistance) {
             //if within distance, update nametag.
-            String nametag = main.levelManager.getNametag(lmEntity, false, false).getNametag();
-            if (nametag != null) {
-                nametag = MessageUtils.colorizeAll(nametag);
+            final NametagResult nametag = main.levelManager.getNametag(lmEntity, false, true);
+            if (nametag.isNullOrEmpty()) {
+                nametag.setNametag(MessageUtils.colorizeAll(nametag.getNametag()));
             }
             main.nametagQueueManager.addToQueue(
                 new QueueItem(lmEntity, nametag, Collections.singletonList(player)));
@@ -1915,6 +1912,6 @@ public class LevelManager implements LevelInterface {
         lmEntity.invalidateCache();
 
         // update nametag
-        main.levelManager.updateNametag(lmEntity, lmEntity.getLivingEntity().getCustomName());
+        main.levelManager.updateNametag(lmEntity);
     }
 }
