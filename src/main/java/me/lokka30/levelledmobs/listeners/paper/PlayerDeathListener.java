@@ -128,51 +128,20 @@ public class PlayerDeathListener {
                 Component.translatable(mobKey) :
                 LegacyComponentSerializer.legacyAmpersand().deserialize(nametagResult.overriddenName);
 
-        Component newCom;
-
-        // TODO: is there a better way to do the following?
         final boolean hasLeftText = displayNameIndex > 0;
         final boolean hasRightText = mobName.length() > displayNameIndex + 13;
-        Component leftText = hasLeftText ?
+        final Component leftText = hasLeftText ?
                 LegacyComponentSerializer.legacyAmpersand().deserialize(
                 mobName.substring(0, displayNameIndex).replace("%player%", playerName)) : null;
-        Component rightText = hasRightText ? LegacyComponentSerializer.legacyAmpersand().deserialize(
+        final Component rightText = hasRightText ? LegacyComponentSerializer.legacyAmpersand().deserialize(
                 mobName.substring(displayNameIndex + 13).replace("%player%", playerName)) : null;
 
-        if (hasLeftText && hasRightText){
-            // creature-death-nametag: 'something here %displayname% something there'
-
-            newCom = nametagResult.hadDeathMessage ?
-                    leftText.append(mobNameComponent)
-                            .append(rightText):
-                    Component.translatable(tc.key(),
-                            Component.text(playerKilled),
-                            leftText.append(mobNameComponent)
-                    ).append(rightText);
-
-        }
-        else if (hasLeftText){
-            // creature-death-nametag: 'something here %displayname%'
-            newCom = nametagResult.hadDeathMessage ?
-                    leftText.append(mobNameComponent) :
-                    Component.translatable(tc.key(),
-                            Component.text(playerKilled),
-                            leftText.append(mobNameComponent));
-        }
-        else if (hasRightText){
-            // creature-death-nametag: '%displayname% something there'
-            newCom = Component.translatable(tc.key(),
-                    Component.text(playerKilled),
-                    mobNameComponent
-            ).append(rightText);
-        }
-        else {
-            // creature-death-nametag: '%displayname%'
-            newCom = Component.translatable(tc.key(),
-                    Component.text(playerKilled),
-                    mobNameComponent
-            );
-        }
+        Component newCom = Component.empty();
+        if (hasLeftText)
+            newCom = newCom.append(leftText);
+        newCom = newCom.append(mobNameComponent);
+        if (hasRightText)
+            newCom = newCom.append(rightText);
 
         event.deathMessage(newCom);
     }

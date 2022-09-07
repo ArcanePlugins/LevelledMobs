@@ -356,7 +356,7 @@ default-rule:
     creature-death-nametag: '%tiered%Lvl %mob-lvl%&8 | &f%displayname%'
     death-messages:
     #  3: ['%player% was killed by a %death_nametag%!']
-    #  1: ['A level $mob-lvl% %displayname% slaughtered %player%!']
+    #  1: ['A level %mob-lvl% %displayname% slaughtered %player%!']
     nametag-placeholder-levelled: ''
     nametag-placeholder-unlevelled: ''
     nametag-visible-time: 1s
