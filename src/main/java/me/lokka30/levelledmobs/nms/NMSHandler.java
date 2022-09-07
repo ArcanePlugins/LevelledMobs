@@ -25,7 +25,7 @@ public class NMSHandler {
     private final LevelledMobs main;
     private static final Pattern versionPattern = Pattern.compile(".*\\.(v\\d+_\\d+_R\\d+)(?:.+)?");
     private static final Pattern versionShortPattern = Pattern.compile(".*\\.(v\\d+_\\d+)(?:.+)?");
-    private @NotNull String nmsVersionString = "unknown";
+    public @NotNull String nmsVersionString = "unknown";
     private NMSUtil currentUtil;
     public double minecraftVersion;
 

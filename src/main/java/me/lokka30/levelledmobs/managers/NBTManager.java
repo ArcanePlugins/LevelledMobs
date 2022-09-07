@@ -66,11 +66,6 @@ public class NBTManager {
         return result;
     }
 
-    public static String getNbtDumpOfEntity(final @NotNull LivingEntity entity) {
-        final NBTEntity nbt = new NBTEntity(entity);
-        return nbt.toString();
-    }
-
     private static void showChangedJson(final String jsonBefore, final String jsonAfter,
         final NBTApplyResult applyResult) {
         final Map<String, String> objectsBefore = new TreeMap<>();

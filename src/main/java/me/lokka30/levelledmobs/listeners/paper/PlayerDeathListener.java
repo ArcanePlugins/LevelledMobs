@@ -27,10 +27,8 @@ public class PlayerDeathListener {
 
     private final LevelledMobs main;
     private boolean shouldCancelEvent;
-    private PlayerDeathEvent event;
 
     public boolean onPlayerDeathEvent(final @NotNull PlayerDeathEvent event) {
-        this.event = event;
         this.shouldCancelEvent = false;
         if (event.deathMessage() == null) {
             return true;
@@ -95,16 +93,14 @@ public class PlayerDeathListener {
             return lmKiller;
         }
 
-        updateDeathMessage(mobNametag);
+        updateDeathMessage(event, mobNametag);
 
         return lmKiller;
     }
 
-    private void updateDeathMessage(final NametagResult nametagResult) {
-        final TranslatableComponent tc = (TranslatableComponent) event.deathMessage();
-        if (tc == null) {
+    private void updateDeathMessage(final @NotNull PlayerDeathEvent event, final NametagResult nametagResult) {
+        if (!(event.deathMessage() instanceof final TranslatableComponent tc))
             return;
-        }
 
         final String playerKilled = extractPlayerName(tc);
         if (playerKilled == null) {

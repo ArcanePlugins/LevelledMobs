@@ -5,9 +5,9 @@ import java.util.List;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.commands.MessagesBase;
 import me.lokka30.levelledmobs.managers.ExternalCompatibilityManager;
-import me.lokka30.levelledmobs.managers.NBTManager;
 import me.lokka30.levelledmobs.misc.DebugCreator;
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
+import me.lokka30.levelledmobs.nms.MiscUtils;
 import me.lokka30.levelledmobs.util.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -53,13 +53,13 @@ public class DebugSubcommand extends MessagesBase implements Subcommand {
         } else if ("chunk_kill_count".equalsIgnoreCase(args[1])) {
             chunkKillCount(sender, args);
         } else if ("nbt_dump".equalsIgnoreCase(args[1])) {
-            if (ExternalCompatibilityManager.hasNbtApiInstalled()) {
-                doNbtDump(sender, args);
-                if (!(commandSender instanceof ConsoleCommandSender)) {
-                    sender.sendMessage("NBT data has been written to the console");
-                }
-            } else {
-                sender.sendMessage("To run this command you must have NBTAPI plugin installed");
+            if ("unknown".equals(main.nametagQueueManager.nmsHandler.nmsVersionString)){
+                sender.sendMessage("Unable to dump, an unknown NMS version was detected");
+                return;
+            }
+            doNbtDump(sender, args);
+            if (!(commandSender instanceof ConsoleCommandSender)) {
+                sender.sendMessage("NBT data has been written to the console");
             }
         } else {
             showMessage("other.create-debug");
@@ -110,8 +110,10 @@ public class DebugSubcommand extends MessagesBase implements Subcommand {
             lmEntity.getNameIfBaby(),
             lmEntity.getWorldName(),
             locationStr,
-            NBTManager.getNbtDumpOfEntity(lmEntity.getLivingEntity())
+            MiscUtils.getNBTDump(main.nametagQueueManager.nmsHandler.nmsVersionString, lmEntity.getLivingEntity())
         );
+
+        final String nmsVersion = main.nametagQueueManager.nmsHandler.nmsVersionString;
 
         lmEntity.free();
         Utils.logger.info(message);
