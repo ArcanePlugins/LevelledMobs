@@ -17,6 +17,7 @@ import net.minecraft.world.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Sends NMS verison specific nametag packets to players
@@ -28,9 +29,17 @@ public class NametagSender implements NMSUtil {
 
     public NametagSender(final String nmsVersion) {
         this.nmsVersion = nmsVersion;
+        boolean hasKiori = false;
+        try {
+            Class.forName("net.kyori.adventure.text.Component");
+            hasKiori = true;
+        } catch (ClassNotFoundException ignored) { }
+
+        this.hasKiori = hasKiori;
     }
 
     private final String nmsVersion;
+    private final boolean hasKiori;
 
     public void sendNametag(final @NotNull LivingEntity livingEntity, @NotNull NametagResult nametag,
                             @NotNull Player player, final boolean doAlwaysVisible) {
@@ -76,6 +85,13 @@ public class NametagSender implements NMSUtil {
         if (nametag.isNullOrEmpty())
             return Optional.empty();
 
+        if (hasKiori){
+            // paper servers go here:
+            return Optional.of(KyoriNametags.generateComponent(livingEntity, nametag));
+        }
+
+        // the rest of this method will only be used on spigot servers
+
         final String mobName = nametag.getNametagNonNull();
         final String displayName = "{DisplayName}";
         final int displayNameIndex = mobName.indexOf(displayName);
@@ -83,20 +99,49 @@ public class NametagSender implements NMSUtil {
         if (displayNameIndex < 0)
             return Optional.of(Component.literal(nametag.getNametagNonNull()));
 
-        final boolean hasLeftText = displayNameIndex > 0;
-        final boolean hasRightText = mobName.length() > displayNameIndex + displayName.length();
-        final String leftText = hasLeftText ? mobName.substring(0, displayNameIndex) : null;
-        final String rightText = hasRightText ? mobName.substring(displayNameIndex + displayName.length()) : null;
+        final String leftText = displayNameIndex > 0 ?
+                resolveText(mobName.substring(0, displayNameIndex)) :
+                null;
+        final String rightText = mobName.length() > displayNameIndex + displayName.length() ?
+                resolveText(mobName.substring(displayNameIndex + displayName.length())) :
+                null;
         final Component mobNameComponent = nametag.overriddenName == null ?
                 Component.translatable(livingEntity.getType().translationKey()) :
                 Component.literal(nametag.overriddenName);
 
         MutableComponent comp = Component.empty();
-        if (hasLeftText) comp = comp.append(MessageUtils.colorizeAll(leftText));
-        comp.append(mobNameComponent);
-        if (hasRightText) comp = comp.append(MessageUtils.colorizeAll(rightText));
+        try {
+            final Class<?> clazz_CraftChatMessage = Class.forName(
+                    "org.bukkit.craftbukkit." + nmsVersion + ".util.CraftChatMessage");
+
+            final Method method_fromString = clazz_CraftChatMessage.getDeclaredMethod("fromString",
+                    String.class);
+
+            if (leftText != null) {
+                comp = comp.append(((Component[]) method_fromString.invoke(clazz_CraftChatMessage, leftText))[0]);
+            }
+            comp.append(mobNameComponent);
+            if (rightText != null) {
+                comp = comp.append(((Component[]) method_fromString.invoke(clazz_CraftChatMessage, rightText))[0]);
+            }
+
+        } catch (ClassNotFoundException | NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+            e.printStackTrace();
+        }
 
         return Optional.of(comp);
+    }
+
+    private @Nullable String resolveText(final @Nullable String text){
+        if (text == null || text.isEmpty()) return null;
+
+        String result = text;
+        if (text.contains("&#"))
+            result = MessageUtils.colorizeHexCodes(text);
+        if (text.contains("&"))
+            result = MessageUtils.colorizeAll(result);
+
+        return result;
     }
 
     @NotNull private static SynchedEntityData cloneEntityData(@NotNull final SynchedEntityData other,

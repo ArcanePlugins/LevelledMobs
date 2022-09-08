@@ -6,6 +6,7 @@ import me.lokka30.levelledmobs.result.NametagResult;
 import me.lokka30.levelledmobs.util.Utils;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.TextReplacementConfig;
 import net.kyori.adventure.text.TranslatableComponent;
 import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
@@ -89,7 +90,7 @@ public class PlayerDeathListener {
             return lmKiller;
         }
 
-        if (Utils.isNullOrEmpty(mobNametag.getNametagNonNull()) || "disabled".equalsIgnoreCase(mobNametag.getNametagNonNull())) {
+        if (mobNametag.isNullOrEmpty() || "disabled".equalsIgnoreCase(mobNametag.getNametag())) {
             return lmKiller;
         }
 
@@ -98,7 +99,7 @@ public class PlayerDeathListener {
         return lmKiller;
     }
 
-    private void updateDeathMessage(final @NotNull PlayerDeathEvent event, final NametagResult nametagResult) {
+    private void updateDeathMessage(final @NotNull PlayerDeathEvent event, final @NotNull NametagResult nametagResult) {
         if (!(event.deathMessage() instanceof final TranslatableComponent tc))
             return;
 
@@ -109,62 +110,48 @@ public class PlayerDeathListener {
 
         String mobKey = null;
         for (final Component c : tc.args()){
-            if (c instanceof TranslatableComponent)
-                mobKey = ((TranslatableComponent) c).key();
+            if (c instanceof final TranslatableComponent tc2) {
+                mobKey = tc2.key();
+                break;
+            }
         }
 
         if (mobKey == null) return;
         final String mobName = nametagResult.getNametagNonNull();
-        final String playerName = event.getPlayer().getName();
-        final int displayNameIndex = mobName.indexOf("{DisplayName}");
-
-        if (displayNameIndex < 0){
-            event.deathMessage(LegacyComponentSerializer.legacyAmpersand().deserialize(mobName.replace("%player%", playerName)));
-            return;
-        }
+        final Component playerName = event.getPlayer().displayName();
 
         // this component holds the component of the mob name and will show the translated name on clients
         final Component mobNameComponent = nametagResult.overriddenName == null ?
                 Component.translatable(mobKey) :
                 LegacyComponentSerializer.legacyAmpersand().deserialize(nametagResult.overriddenName);
 
-        final boolean hasLeftText = displayNameIndex > 0;
-        final boolean hasRightText = mobName.length() > displayNameIndex + 13;
-        final Component leftText = hasLeftText ?
-                LegacyComponentSerializer.legacyAmpersand().deserialize(
-                mobName.substring(0, displayNameIndex).replace("%player%", playerName)) : null;
-        final Component rightText = hasRightText ? LegacyComponentSerializer.legacyAmpersand().deserialize(
-                mobName.substring(displayNameIndex + 13).replace("%player%", playerName)) : null;
-
-        Component newCom = Component.empty();
-        if (hasLeftText)
-            newCom = newCom.append(leftText);
-        newCom = newCom.append(mobNameComponent);
-        if (hasRightText)
-            newCom = newCom.append(rightText);
-
-        event.deathMessage(newCom);
+        // replace placeholders and set the new death message
+        event.deathMessage(LegacyComponentSerializer.legacyAmpersand().deserialize(mobName)
+                .replaceText(TextReplacementConfig.builder()
+                        .matchLiteral("%player%").replacement(playerName).build())
+                .replaceText(TextReplacementConfig.builder()
+                        .matchLiteral("{DisplayName}").replacement(mobNameComponent).build())
+        );
     }
 
     @Nullable private String extractPlayerName(final @NotNull TranslatableComponent tc) {
         String playerKilled = null;
 
-        for (final net.kyori.adventure.text.Component com : tc.args()) {
-            if (com instanceof final TextComponent tc2) {
-                playerKilled = tc2.content();
+        for (final Component com : tc.args()) {
+            if (!(com instanceof final TextComponent tc2)) continue;
+            playerKilled = tc2.content();
 
-                if (playerKilled.isEmpty() && tc2.hoverEvent() != null) {
-                    // in rare cases the above method returns a empty string
-                    // we'll extract the player name from the hover event
-                    final HoverEvent<?> he = tc2.hoverEvent();
-                    if (he == null || !(he.value() instanceof final HoverEvent.ShowEntity se)) {
-                        return null;
-                    }
+            if (playerKilled.isEmpty() && tc2.hoverEvent() == null) continue;
 
-                    if (se.name() instanceof final TextComponent tc3) {
-                        playerKilled = tc3.content();
-                    }
-                }
+            // in rare cases the above method returns a empty string
+            // we'll extract the player name from the hover event
+            final HoverEvent<?> he = tc2.hoverEvent();
+            if (he == null || !(he.value() instanceof final HoverEvent.ShowEntity se)) {
+                return null;
+            }
+
+            if (se.name() instanceof final TextComponent tc3) {
+                playerKilled = tc3.content();
             }
         }
 

@@ -487,6 +487,7 @@ public class SummonSubcommand extends MessagesBase implements Subcommand {
                 for (int i = 0; i < 50; i++) {
                     useDistFromPlayer -= i;
                     if (useDistFromPlayer <= 0) {
+                        location = location.add(0, 1, 0);
                         break;
                     }
 
@@ -494,6 +495,7 @@ public class SummonSubcommand extends MessagesBase implements Subcommand {
                     final Location location_YMinus1 = location.add(0.0, -1.0, 0.0);
                     if (location.getBlock().isPassable() && location_YMinus1.getBlock()
                         .isPassable()) {
+                        location = location.add(0, 1, 0);
                         break; // found an open spot
                     }
                 }

@@ -118,9 +118,7 @@ public class NametagQueueManager {
             } catch (final Exception ex) {
                 final var entityName = lastEntityType == null ? "Unknown Entity" : lastEntityType;
 
-                Utils.logger.error("Unable to process nametag update for '" + entityName + "'. " +
-                    "This is usually caused by not running the correct ProtocolLib version for " +
-                    "your server's Minecraft version (e.g., MC 1.18 requires PL v4.8.0).");
+                Utils.logger.error("Unable to process nametag update for '" + entityName + "'. ");
                 ex.printStackTrace();
             } finally {
                 item.lmEntity.free();

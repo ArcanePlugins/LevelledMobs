@@ -185,7 +185,7 @@ public class MobHeadManager {
                     : SpigotUtils.getPlayerDisplayName(killerPlayer);
             }
 
-            useName = main.levelManager.replaceStringPlaceholders(dropItem.customName, lmEntity);
+            useName = main.levelManager.replaceStringPlaceholders(dropItem.customName, lmEntity, true);
             useName = MessageUtils.colorizeAll(useName);
 
             final String displayName = lmEntity.getLivingEntity().getCustomName() == null ?

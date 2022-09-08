@@ -6,6 +6,8 @@ package me.lokka30.levelledmobs.rules;
 
 import java.util.Map;
 import java.util.TreeMap;
+
+import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
 import org.jetbrains.annotations.NotNull;
 
 
@@ -37,6 +39,71 @@ public class HealthIndicator implements Cloneable {
         }
 
         return copy;
+    }
+
+    public @NotNull String formatHealthIndicator(final @NotNull LivingEntityWrapper lmEntity) {
+        final double mobHealth = lmEntity.getLivingEntity().getHealth();
+
+        if (mobHealth == 0.0) {
+            return "";
+        }
+
+        final int maxIndicators = this.maxIndicators != null ? this.maxIndicators : 10;
+        final String indicatorStr = this.indicator != null ? this.indicator : "▐";
+        final double scale = this.scale != null ? this.scale : 5.0;
+
+        int indicatorsToUse = scale == 0 ?
+                (int) Math.ceil(mobHealth) : (int) Math.ceil(mobHealth / scale);
+        final int tiersToUse = (int) Math.ceil((double) indicatorsToUse / (double) maxIndicators);
+        int toRecolor = 0;
+        if (tiersToUse > 0) {
+            toRecolor = indicatorsToUse % maxIndicators;
+        }
+
+        String primaryColor = "";
+        String secondaryColor = "";
+
+        if (this.tiers != null) {
+            if (this.tiers.containsKey(tiersToUse)) {
+                primaryColor = this.tiers.get(tiersToUse);
+            } else if (this.tiers.containsKey(0)) {
+                primaryColor = this.tiers.get(0);
+            }
+
+            if (tiersToUse > 0 && this.tiers.containsKey(tiersToUse - 1)) {
+                secondaryColor = this.tiers.get(tiersToUse - 1);
+            } else if (this.tiers.containsKey(0)) {
+                secondaryColor = this.tiers.get(0);
+            }
+        }
+
+        final StringBuilder result = new StringBuilder();
+        result.append(primaryColor);
+
+        if (tiersToUse < 2) {
+            boolean useHalf = false;
+            if (this.indicatorHalf != null && indicatorsToUse < maxIndicators) {
+                useHalf = scale / 2.0 <= (indicatorsToUse * scale) - mobHealth;
+                if (useHalf && indicatorsToUse > 0) {
+                    indicatorsToUse--;
+                }
+            }
+
+            result.append(indicatorStr.repeat(indicatorsToUse));
+            if (useHalf) {
+                result.append(this.indicatorHalf);
+            }
+        } else {
+            if (toRecolor == 0) {
+                result.append(indicatorStr.repeat(maxIndicators));
+            } else {
+                result.append(indicatorStr.repeat(toRecolor));
+                result.append(secondaryColor);
+                result.append(indicatorStr.repeat(maxIndicators - toRecolor));
+            }
+        }
+
+        return result.toString();
     }
 
     void mergeIndicator(final @NotNull HealthIndicator mergingIndicator) {

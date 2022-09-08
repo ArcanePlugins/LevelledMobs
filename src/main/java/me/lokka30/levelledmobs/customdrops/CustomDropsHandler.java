@@ -714,7 +714,7 @@ public class CustomDropsHandler {
             if (meta != null && dropItem.lore != null && !dropItem.lore.isEmpty()) {
                 final List<String> newLore = new ArrayList<>(dropItem.lore.size());
                 for (final String lore : dropItem.lore) {
-                    newLore.add(main.levelManager.updateNametag(info.lmEntity, lore, false, false, false, false).getNametagNonNull());
+                    newLore.add(main.levelManager.updateNametag(info.lmEntity, lore, false, false, false).getNametagNonNull());
 
                     if (VersionUtils.isRunningPaper() && main.companion.useAdventure) {
                         PaperUtils.updateItemMetaLore(meta, newLore);
@@ -726,7 +726,7 @@ public class CustomDropsHandler {
 
             if (meta != null && dropItem.customName != null && !dropItem.customName.isEmpty()) {
                 final String displayName = main.levelManager.updateNametag(info.lmEntity,
-                    dropItem.customName, false, false, false, false).getNametagNonNull();
+                    dropItem.customName, false, false, false).getNametagNonNull();
 
                 if (VersionUtils.isRunningPaper() && main.companion.useAdventure) {
                     PaperUtils.updateItemDisplayName(meta, displayName);
@@ -957,8 +957,7 @@ public class CustomDropsHandler {
 
             command = Utils.replaceEx(command, "%player%", playerName);
             command = processRangedCommand(command, customCommand);
-            command = main.levelManager.replaceStringPlaceholders(command, info.lmEntity, true,
-                false);
+            command = main.levelManager.replaceStringPlaceholders(command, info.lmEntity,false);
             if (command.contains("%") && ExternalCompatibilityManager.hasPapiInstalled()) {
                 command = ExternalCompatibilityManager.getPapiPlaceholder(info.mobKiller, command);
             }

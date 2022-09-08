@@ -59,7 +59,6 @@ import me.lokka30.levelledmobs.rules.strategies.SpawnDistanceStrategy;
 import me.lokka30.levelledmobs.rules.strategies.YDistanceStrategy;
 import me.lokka30.levelledmobs.util.MythicMobUtils;
 import me.lokka30.levelledmobs.util.Utils;
-import me.lokka30.microlib.messaging.MessageUtils;
 import me.lokka30.microlib.other.VersionUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -719,8 +718,7 @@ public class LevelManager implements LevelInterface {
             nametag = "";
         }
 
-        final boolean doColorize = !preserveMobName;
-        return updateNametag(lmEntity, nametag, useCustomNameForNametags, doColorize, preserveMobName, hadDeathMessage);
+        return updateNametag(lmEntity, nametag, useCustomNameForNametags, preserveMobName, hadDeathMessage);
     }
 
     private void checkLockedNametag(final @NotNull LivingEntityWrapper lmEntity) {
@@ -752,12 +750,12 @@ public class LevelManager implements LevelInterface {
 
     @NotNull public NametagResult updateNametag(final @NotNull LivingEntityWrapper lmEntity, @NotNull String nametag,
                                                 final boolean useCustomNameForNametags) {
-        return updateNametag(lmEntity, nametag, useCustomNameForNametags, true, false, false);
+        return updateNametag(lmEntity, nametag, useCustomNameForNametags, false, false);
     }
 
     @NotNull public NametagResult updateNametag(final @NotNull LivingEntityWrapper lmEntity, @NotNull String nametag,
-                                                final boolean useCustomNameForNametags, final boolean colorize,
-                                                boolean preserveMobName, boolean hadDeathMessage) {
+                                                final boolean useCustomNameForNametags, final boolean preserveMobName,
+                                                final boolean hadDeathMessage) {
         if (nametag.isEmpty()) {
             final NametagResult result = new NametagResult(nametag);
             result.hadDeathMessage = hadDeathMessage;
@@ -781,13 +779,15 @@ public class LevelManager implements LevelInterface {
             displayName = lmEntity.getLivingEntity().getCustomName();
         }
 
-        nametag = replaceStringPlaceholders(nametag, lmEntity, colorize, false);
+        nametag = replaceStringPlaceholders(nametag, lmEntity, false);
 
         // This is after colorize so that color codes in nametags dont get translated
         nametag = nametag.replace("%displayname%", displayName);
 
         if (nametag.toLowerCase().contains("%health-indicator%")) {
-            nametag = nametag.replace("%health-indicator%", formatHealthIndicator(lmEntity));
+            final HealthIndicator indicator = lmEntity.getMainInstance().rulesManager.getRuleNametagIndicator(lmEntity);
+            final String indicatorStr = indicator == null ? "" : indicator.formatHealthIndicator(lmEntity);
+            nametag = nametag.replace("%health-indicator%", indicatorStr);
         }
 
         if (nametag.contains("%") && ExternalCompatibilityManager.hasPapiInstalled()) {
@@ -802,83 +802,10 @@ public class LevelManager implements LevelInterface {
         return result;
     }
 
-    @NotNull private String formatHealthIndicator(final LivingEntityWrapper lmEntity) {
-        final HealthIndicator indicator = main.rulesManager.getRuleNametagIndicator(lmEntity);
-        final double mobHealth = lmEntity.getLivingEntity().getHealth();
 
-        if (indicator == null || mobHealth == 0.0) {
-            return "";
-        }
-
-        final int maxIndicators = indicator.maxIndicators != null ? indicator.maxIndicators : 10;
-        final String indicatorStr = indicator.indicator != null ? indicator.indicator : "▐";
-        final double scale = indicator.scale != null ? indicator.scale : 5.0;
-
-        int indicatorsToUse = scale == 0 ?
-            (int) Math.ceil(mobHealth) : (int) Math.ceil(mobHealth / scale);
-        final int tiersToUse = (int) Math.ceil((double) indicatorsToUse / (double) maxIndicators);
-        int toRecolor = 0;
-        if (tiersToUse > 0) {
-            toRecolor = indicatorsToUse % maxIndicators;
-        }
-
-        String primaryColor = "";
-        String secondaryColor = "";
-
-        if (indicator.tiers != null) {
-            if (indicator.tiers.containsKey(tiersToUse)) {
-                primaryColor = indicator.tiers.get(tiersToUse);
-            } else if (indicator.tiers.containsKey(0)) {
-                primaryColor = indicator.tiers.get(0);
-            }
-
-            if (tiersToUse > 0 && indicator.tiers.containsKey(tiersToUse - 1)) {
-                secondaryColor = indicator.tiers.get(tiersToUse - 1);
-            } else if (indicator.tiers.containsKey(0)) {
-                secondaryColor = indicator.tiers.get(0);
-            }
-        }
-
-        String result = primaryColor;
-
-        if (tiersToUse < 2) {
-            boolean useHalf = false;
-            if (indicator.indicatorHalf != null && indicatorsToUse < maxIndicators) {
-                useHalf = scale / 2.0 <= (indicatorsToUse * scale) - mobHealth;
-                if (useHalf && indicatorsToUse > 0) {
-                    indicatorsToUse--;
-                }
-            }
-
-            result += indicatorStr.repeat(indicatorsToUse);
-            if (useHalf) {
-                result += indicator.indicatorHalf;
-            }
-        } else {
-            if (toRecolor == 0) {
-                result += primaryColor + indicatorStr.repeat(maxIndicators);
-            } else {
-                result += primaryColor + indicatorStr.repeat(toRecolor);
-                result += secondaryColor + indicatorStr.repeat(maxIndicators - toRecolor);
-            }
-        }
-
-        return MessageUtils.colorizeAll(result);
-    }
 
     public @NotNull String replaceStringPlaceholders(final @NotNull String nametag,
-        @NotNull final LivingEntityWrapper lmEntity) {
-        return replaceStringPlaceholders(nametag, lmEntity, true);
-    }
-
-    public @NotNull String replaceStringPlaceholders(final @NotNull String nametag,
-        @NotNull final LivingEntityWrapper lmEntity, final boolean colorize) {
-        return replaceStringPlaceholders(nametag, lmEntity, colorize, true);
-    }
-
-    public @NotNull String replaceStringPlaceholders(final @NotNull String nametag,
-        @NotNull final LivingEntityWrapper lmEntity, final boolean colorize,
-        final boolean usePAPI) {
+        @NotNull final LivingEntityWrapper lmEntity, final boolean usePAPI) {
         String result = nametag;
 
         final double maxHealth = getMobAttributeValue(lmEntity);
@@ -925,10 +852,6 @@ public class LevelManager implements LevelInterface {
             result = ExternalCompatibilityManager.getPapiPlaceholder(null, result);
         }
 
-        if (colorize) {
-            result = MessageUtils.colorizeAll(result);
-        }
-
         return result;
     }
 
@@ -948,9 +871,6 @@ public class LevelManager implements LevelInterface {
 
     public void updateNametag(final LivingEntityWrapper lmEntity) {
         final NametagResult nametag = getNametag(lmEntity, false, true);
-        if (!nametag.isNullOrEmpty()) {
-            nametag.setNametag(MessageUtils.colorizeAll(nametag.getNametag()));
-        }
 
         final QueueItem queueItem = new QueueItem(
             lmEntity,
@@ -1192,9 +1112,6 @@ public class LevelManager implements LevelInterface {
             lmEntity.getLocation().distanceSquared(location) <= maxDistance) {
             //if within distance, update nametag.
             final NametagResult nametag = main.levelManager.getNametag(lmEntity, false, true);
-            if (nametag.isNullOrEmpty()) {
-                nametag.setNametag(MessageUtils.colorizeAll(nametag.getNametag()));
-            }
             main.nametagQueueManager.addToQueue(
                 new QueueItem(lmEntity, nametag, Collections.singletonList(player)));
         }
