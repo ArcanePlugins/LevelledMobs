@@ -107,6 +107,8 @@ public class CustomDropsHandler {
 
     public @NotNull Map<String, CustomDropInstance> getCustomDropsitems_groups(){
         final Map<String, CustomDropInstance> drops = new TreeMap<>(this.customItemGroups);
+        drops.putAll(this.customDropsitems_groups);
+
         for (final String groupName : externalCustomDrops.getCustomDropTables().keySet()){
             final CustomDropInstance dropInstance = externalCustomDrops.getCustomDropTables().get(groupName);
             if (!drops.containsKey(groupName)){
