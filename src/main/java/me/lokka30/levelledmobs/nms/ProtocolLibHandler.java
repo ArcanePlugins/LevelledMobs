@@ -31,6 +31,8 @@ public class ProtocolLibHandler implements NMSUtil {
 
     public void sendNametag(final @NotNull LivingEntity livingEntity, final @NotNull NametagResult nametag,
                             final @NotNull Player player, final boolean doAlwaysVisible) {
+
+        if (!player.isOnline() || !player.isValid()) return;
         final WrappedDataWatcher dataWatcher;
         final WrappedDataWatcher.Serializer chatSerializer;
 

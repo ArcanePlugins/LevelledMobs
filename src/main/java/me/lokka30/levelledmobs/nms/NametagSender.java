@@ -5,6 +5,7 @@ import java.lang.reflect.Method;
 import java.util.Optional;
 
 import me.lokka30.levelledmobs.result.NametagResult;
+import me.lokka30.levelledmobs.util.Utils;
 import me.lokka30.microlib.messaging.MessageUtils;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -44,6 +45,7 @@ public class NametagSender implements NMSUtil {
     public void sendNametag(final @NotNull LivingEntity livingEntity, @NotNull NametagResult nametag,
                             @NotNull Player player, final boolean doAlwaysVisible) {
         // org.bukkit.craftbukkit.v1_18_R1.entity.CraftLivingEntity
+        if (!player.isOnline() || !player.isValid()) return;
 
         try {
             final Class<?> clazz_CraftLivingEntity = Class.forName(
