@@ -3,6 +3,7 @@ package me.lokka30.levelledmobs.util;
 import java.util.List;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
+import me.lokka30.microlib.messaging.MessageUtils;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -96,7 +97,7 @@ public class SpigotUtils {
         }
 
         event.setDeathMessage(
-            Utils.replaceEx(event.getDeathMessage(), killer.getName(), deathMessage));
+                MessageUtils.colorizeAll(Utils.replaceEx(event.getDeathMessage(), killer.getName(), deathMessage)));
         return lmKiller;
     }
 }

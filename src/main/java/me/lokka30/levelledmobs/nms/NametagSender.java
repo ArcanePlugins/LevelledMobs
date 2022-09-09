@@ -5,7 +5,6 @@ import java.lang.reflect.Method;
 import java.util.Optional;
 
 import me.lokka30.levelledmobs.result.NametagResult;
-import me.lokka30.levelledmobs.util.Utils;
 import me.lokka30.microlib.messaging.MessageUtils;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -15,6 +14,7 @@ import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -28,19 +28,16 @@ import org.jetbrains.annotations.Nullable;
  */
 public class NametagSender implements NMSUtil {
 
-    public NametagSender(final String nmsVersion) {
+    public NametagSender(final String nmsVersion, final boolean hasKiori) {
         this.nmsVersion = nmsVersion;
-        boolean hasKiori = false;
-        try {
-            Class.forName("net.kyori.adventure.text.Component");
-            hasKiori = true;
-        } catch (ClassNotFoundException ignored) { }
-
         this.hasKiori = hasKiori;
+        buildReflection();
     }
 
     private final String nmsVersion;
     private final boolean hasKiori;
+    private Method resolveStringMethod;
+    private Class<?> clazz_CraftChatMessage;
 
     public void sendNametag(final @NotNull LivingEntity livingEntity, @NotNull NametagResult nametag,
                             @NotNull Player player, final boolean doAlwaysVisible) {
@@ -82,6 +79,7 @@ public class NametagSender implements NMSUtil {
         }
     }
 
+    @SuppressWarnings("deprecation")
     private @NotNull Optional<Component> buildNametagComponent(final @NotNull LivingEntity livingEntity,
                                                                final @NotNull NametagResult nametag){
         if (nametag.isNullOrEmpty())
@@ -98,8 +96,19 @@ public class NametagSender implements NMSUtil {
         final String displayName = "{DisplayName}";
         final int displayNameIndex = mobName.indexOf(displayName);
 
-        if (displayNameIndex < 0)
-            return Optional.of(Component.literal(nametag.getNametagNonNull()));
+        if (displayNameIndex < 0) {
+            Component comp = null;
+            try {
+                comp = ((Component[]) this.resolveStringMethod.invoke(
+                        this.clazz_CraftChatMessage, resolveText(nametag.getNametagNonNull())))[0];
+            } catch (IllegalAccessException | InvocationTargetException e) {
+                e.printStackTrace();
+            }
+            if (comp == null)
+                return Optional.empty();
+            else
+                return Optional.of(comp);
+        }
 
         final String leftText = displayNameIndex > 0 ?
                 resolveText(mobName.substring(0, displayNameIndex)) :
@@ -107,31 +116,39 @@ public class NametagSender implements NMSUtil {
         final String rightText = mobName.length() > displayNameIndex + displayName.length() ?
                 resolveText(mobName.substring(displayNameIndex + displayName.length())) :
                 null;
+
         final Component mobNameComponent = nametag.overriddenName == null ?
-                Component.translatable(livingEntity.getType().translationKey()) :
+                Component.translatable(Bukkit.getUnsafe().getTranslationKey(livingEntity.getType())) :
                 Component.literal(nametag.overriddenName);
 
         MutableComponent comp = Component.empty();
         try {
-            final Class<?> clazz_CraftChatMessage = Class.forName(
-                    "org.bukkit.craftbukkit." + nmsVersion + ".util.CraftChatMessage");
-
-            final Method method_fromString = clazz_CraftChatMessage.getDeclaredMethod("fromString",
-                    String.class);
-
             if (leftText != null) {
-                comp = comp.append(((Component[]) method_fromString.invoke(clazz_CraftChatMessage, leftText))[0]);
+                comp = comp.append(((Component[]) this.resolveStringMethod.invoke(this.clazz_CraftChatMessage, leftText))[0]);
             }
             comp.append(mobNameComponent);
             if (rightText != null) {
-                comp = comp.append(((Component[]) method_fromString.invoke(clazz_CraftChatMessage, rightText))[0]);
+                comp = comp.append(((Component[]) this.resolveStringMethod.invoke(this.clazz_CraftChatMessage, rightText))[0]);
             }
 
-        } catch (ClassNotFoundException | NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+        } catch (InvocationTargetException | IllegalAccessException e) {
             e.printStackTrace();
         }
 
         return Optional.of(comp);
+    }
+
+    private void buildReflection(){
+        try {
+            this.clazz_CraftChatMessage = Class.forName(
+                    "org.bukkit.craftbukkit." + nmsVersion + ".util.CraftChatMessage");
+
+            this.resolveStringMethod = clazz_CraftChatMessage.getDeclaredMethod("fromString",
+                    String.class);
+
+        } catch (ClassNotFoundException | NoSuchMethodException e) {
+            e.printStackTrace();
+        }
     }
 
     private @Nullable String resolveText(final @Nullable String text){

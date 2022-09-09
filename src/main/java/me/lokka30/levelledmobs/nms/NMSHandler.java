@@ -19,6 +19,13 @@ public class NMSHandler {
 
     public NMSHandler(final @NotNull LevelledMobs main) {
         this.main = main;
+        boolean hasKiori = false;
+        try {
+            Class.forName("net.kyori.adventure.text.Component");
+            hasKiori = true;
+        } catch (ClassNotFoundException ignored) { }
+
+        this.hasKiori = hasKiori;
         parseBukkitVersion();
     }
 
@@ -29,6 +36,7 @@ public class NMSHandler {
     private NMSUtil currentUtil;
     public double minecraftVersion;
     public boolean isUsingProtocolLib;
+    public final boolean hasKiori;
 
     private void parseBukkitVersion() {
         // example: org.bukkit.craftbukkit.v1_18_R2.CraftServer
@@ -64,9 +72,13 @@ public class NMSHandler {
             return this.currentUtil;
         }
 
-        if (this.minecraftVersion >= 1.18) {
+        // supported is paper >= 1.18 or spigot >= 1.19
+        // otherwise protocollib is used
+
+        if (hasKiori && this.minecraftVersion >= 1.18 ||
+            !hasKiori && this.minecraftVersion >= 1.19) {
             // 1.18 and newer we support with direct nms
-            this.currentUtil = new NametagSender(nmsVersionString);
+            this.currentUtil = new NametagSender(nmsVersionString, hasKiori);
             Utils.logger.info(
                 String.format("Using NMS version %s for nametag support", nmsVersionString));
         } else if (ExternalCompatibilityManager.hasProtocolLibInstalled()) {
