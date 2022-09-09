@@ -654,15 +654,32 @@ public class CustomDropsParser {
         return cachedModalList;
     }
 
-    private void parseEnchantments(final ConfigurationSection cs, final CustomDropItem item) {
+    private void parseEnchantments(final @Nullable ConfigurationSection cs, final @NotNull CustomDropItem item) {
         if (cs == null) {
             return;
         }
 
         final Map<String, Object> enchantMap = cs.getValues(false);
+
         for (final Map.Entry<String, Object> enchants : enchantMap.entrySet()) {
             final String enchantName = enchants.getKey();
             final Object value = enchants.getValue();
+
+            if (value instanceof LinkedHashMap){
+                // contains enchantment chances
+
+                final Enchantment en = Enchantment.getByKey(
+                        NamespacedKey.minecraft(enchantName.toLowerCase()));
+
+                if (en == null){
+                    Utils.logger.warning("Invalid enchantment: " + enchantName);
+                    continue;
+                }
+
+                final Map<Object, Object> enchantments = (Map<Object, Object>) value;
+                parseEnchantmentChances(en, enchantments, item);
+                continue;
+            }
 
             int enchantLevel = 1;
             if (value != null && Utils.isInteger(value.toString())) {
@@ -687,6 +704,75 @@ public class CustomDropsParser {
             }
         }
 
+    }
+
+    private void parseEnchantmentChances(final @NotNull Enchantment enchantment,
+                                         final @NotNull Map<Object, Object> enchantmentsMap,
+                                         final @NotNull CustomDropItem item){
+        final Map<Integer, Float> items = new TreeMap<>();
+        Integer defaultLevel = null;
+        Boolean doShuttle = null;
+
+        /*
+        * ENCHANTMENTS:
+        *  sharpness:
+        *    1: 0.4
+        *    2: 0.5
+        *    3: 0.6
+        *    default: 1
+        */
+
+        for (final Map.Entry<Object, Object> map : enchantmentsMap.entrySet()){
+            if ("shuffle".equalsIgnoreCase(map.getKey().toString())){
+                if ("false".equalsIgnoreCase(map.getValue().toString()))
+                    doShuttle = false;
+                continue;
+            }
+
+            final boolean isDefault = "default".equalsIgnoreCase(map.getKey().toString());
+            int enchantmentLevel = 0;
+
+            if (!isDefault) {
+                if (!Utils.isInteger(map.getKey().toString())) {
+                    Utils.logger.warning(String.format("Enchantment: %s, invalid enchantment level %s",
+                            enchantment, map.getKey()));
+                    continue;
+                }
+                enchantmentLevel = Integer.parseInt(map.getKey().toString());
+            }
+
+            double chanceValue;
+            try{
+                chanceValue = Double.parseDouble(map.getValue().toString());
+            }
+            catch (Exception ignored){
+                Utils.logger.warning(String.format("Enchantment: %s, invalid chance specified: %s",
+                        enchantment, map.getValue()));
+                continue;
+            }
+
+            if (isDefault)
+                defaultLevel = (int) chanceValue;
+            else
+                items.put(enchantmentLevel, (float)chanceValue);
+        }
+
+        if (items.isEmpty()) return;
+
+        if (item.enchantmentChances == null)
+            item.enchantmentChances = new EnchantmentChances();
+
+        if (doShuttle != null || defaultLevel != null) {
+            final EnchantmentChances.ChanceOptions opts = item.enchantmentChances.options.computeIfAbsent(
+                    enchantment, k-> new EnchantmentChances.ChanceOptions());
+
+            if (defaultLevel != null)
+                opts.defaultLevel = defaultLevel;
+            if (doShuttle != null)
+                opts.doShuffle = false;
+        }
+
+        item.enchantmentChances.items.put(enchantment, items);
     }
 
     private void parseRangedVariables(final CustomCommand cc,
@@ -989,10 +1075,10 @@ public class CustomDropsParser {
         if (item != null) {
             final String itemMaterial =
                 item.getMaterial() != null ? item.getMaterial().toString() : "(unknown)";
-            sb.append(String.format("    &b%s&r, amount: &b%s&r, chance: &b%s&r", itemMaterial,
+            sb.append(String.format("  &b%s&r, amount: &b%s&r, chance: &b%s&r", itemMaterial,
                 item.getAmountAsString(), baseItem.chance));
         } else {
-            sb.append(String.format("    COMMAND, chance: &b%s&r", baseItem.chance));
+            sb.append(String.format("  COMMAND, chance: &b%s&r", baseItem.chance));
         }
 
         if (baseItem.minLevel > -1) {
@@ -1115,13 +1201,44 @@ public class CustomDropsParser {
             }
         }
 
+        if (item.enchantmentChances != null && !item.enchantmentChances.isEmpty()){
+            final StringBuilder enchantmentLevels = new StringBuilder();
+            enchantmentLevels.append("encht-lvls: ");
+            for (final Enchantment enchantment : item.enchantmentChances.items.keySet()){
+                if (enchantmentLevels.length() > 12) enchantmentLevels.append("; ");
+                enchantmentLevels.append("&b");
+                enchantmentLevels.append(enchantment.getKey().value());
+                enchantmentLevels.append("&r: ");
+                boolean isFirst = true;
+                for (final Map.Entry<Integer, Float> chances : item.enchantmentChances.items.get(enchantment).entrySet()){
+                    if (!isFirst) enchantmentLevels.append(", ");
+                    enchantmentLevels.append(String.format("%s-&b%s&r",
+                            chances.getKey(), chances.getValue()));
+
+                    isFirst = false;
+                }
+
+                if (item.enchantmentChances.options.containsKey(enchantment)) {
+                    EnchantmentChances.ChanceOptions opts = item.enchantmentChances.options.get(enchantment);
+                    if (opts.defaultLevel != null)
+                        enchantmentLevels.append(", dflt: ").append(opts.defaultLevel);
+                    if (!opts.doShuffle)
+                        enchantmentLevels.append(", no shfl");
+                }
+            }
+
+            sb.append(System.lineSeparator());
+            sb.append("    ");
+            sb.append(enchantmentLevels);
+        }
+
         if (item.getItemStack() != null) {
             final ItemMeta meta = item.getItemStack().getItemMeta();
             final StringBuilder sb2 = new StringBuilder();
             if (meta != null) {
                 for (final Enchantment enchant : meta.getEnchants().keySet()) {
                     if (sb2.length() > 0) {
-                        sb.append(", ");
+                        sb2.append(", ");
                     }
                     sb2.append(String.format("&b%s&r (%s)", enchant.getKey().getKey(),
                         item.getItemStack().getItemMeta().getEnchants().get(enchant)));
@@ -1130,7 +1247,7 @@ public class CustomDropsParser {
 
             if (sb2.length() > 0) {
                 sb.append(System.lineSeparator());
-                sb.append("         ");
+                sb.append("    ");
                 sb.append(sb2);
             }
         }

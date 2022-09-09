@@ -31,6 +31,7 @@ import me.lokka30.microlib.messaging.MessageUtils;
 import me.lokka30.microlib.other.VersionUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.entity.EntityDamageEvent;
@@ -663,6 +664,8 @@ public class CustomDropsHandler {
                 "Could not get external custom item - LM_Items is not installed");
         }
 
+        processEnchantmentChances(dropItem);
+
         ItemStack newItem;
         if (dropItem.isExternalItem && main.companion.externalCompatibilityManager.doesLMIMeetVersionRequirement()
             && lmItemsParser.getExternalItem(dropItem)) {
@@ -754,6 +757,64 @@ public class CustomDropsHandler {
 
         info.newDrops.add(newItem);
         info.stackToItem.add(Utils.getPair(newItem, dropItem));
+    }
+
+    private void processEnchantmentChances(final @NotNull CustomDropItem dropItem){
+        if (dropItem.enchantmentChances == null || dropItem.enchantmentChances.isEmpty()) return;
+
+        final StringBuilder debug = new StringBuilder();
+        boolean isFirstEnchantment = true;
+        for (final Enchantment enchantment : dropItem.enchantmentChances.items.keySet()){
+            final EnchantmentChances.ChanceOptions opts = dropItem.enchantmentChances.options.get(enchantment);
+            boolean madeAnyChance = false;
+            if (isCustomDropsDebuggingEnabled()) {
+                if (!isFirstEnchantment) debug.append("; ");
+                debug.append(enchantment.getKey().value()).append(": ");
+            }
+
+            if (isFirstEnchantment)
+                isFirstEnchantment = false;
+
+            int enchantmentNumber = 0;
+            final List<Integer> levelsList = new ArrayList<>(dropItem.enchantmentChances.items.get(enchantment).keySet());
+            if (opts == null || opts.doShuffle)
+                Collections.shuffle(levelsList);
+
+            for (final int enchantLevel : levelsList){
+                final float chanceValue = dropItem.enchantmentChances.items.get(enchantment).get(enchantLevel);
+                if (chanceValue <= 0.0f) continue;
+                enchantmentNumber++;
+
+                final float chanceRole =
+                        (float) ThreadLocalRandom.current().nextInt(0, 100001) * 0.00001F;
+                final boolean madeChance = 1.0F - chanceRole < chanceValue;
+                if (!madeChance){
+                    if (isCustomDropsDebuggingEnabled()){
+                        if (enchantmentNumber > 1) debug.append(", ");
+                        debug.append(String.format("%s: &4%s&r &b(%s)&r", enchantLevel, chanceRole, chanceValue));
+                    }
+                    continue;
+                }
+
+                if (isCustomDropsDebuggingEnabled()){
+                    if (enchantmentNumber > 1) debug.append(", ");
+                    debug.append(String.format("%s: &2%s&r &b(%s)&r", enchantLevel, chanceRole, chanceValue));
+                }
+
+                dropItem.getItemStack().addUnsafeEnchantment(enchantment, enchantLevel);
+                madeAnyChance = true;
+                break;
+            }
+
+            if (!madeAnyChance && opts != null && opts.defaultLevel != null){
+                dropItem.getItemStack().addUnsafeEnchantment(enchantment, opts.defaultLevel);
+                if (isCustomDropsDebuggingEnabled())
+                    debug.append(", used dflt: &2").append(opts.defaultLevel).append("&r");
+            }
+        }
+
+        if (isCustomDropsDebuggingEnabled())
+            Utils.logger.info(debug.toString());
     }
 
     private boolean hasReachedChunkKillLimit(final @NotNull LivingEntityWrapper lmEntity) {

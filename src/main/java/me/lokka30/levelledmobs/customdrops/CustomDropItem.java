@@ -11,6 +11,7 @@ import java.util.UUID;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.util.Utils;
 import org.bukkit.Material;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
@@ -48,6 +49,7 @@ public class CustomDropItem extends CustomDropBase {
     public String nbtData;
     public Double externalAmount;
     public Map<String, Object> externalExtras;
+    public EnchantmentChances enchantmentChances;
 
     @SuppressWarnings("unused")
     public CustomDropItem(@NotNull final LevelledMobs levelledMobs) {

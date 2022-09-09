@@ -39,7 +39,7 @@ defaults:
   minLevel: -1
   maxLevel: -1
   custommodeldata: -1
-  nomultiplier: false
+  nomultiplier: true
   nospawner: false
   equipped: 1.0
   equip-offhand: true
