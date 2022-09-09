@@ -125,12 +125,14 @@ public class PlayerDeathListener {
                 Component.translatable(mobKey) :
                 LegacyComponentSerializer.legacyAmpersand().deserialize(nametagResult.overriddenName);
 
+        final Component newCom = Component.translatable(tc.key(), Component.text(playerKilled), mobNameComponent);
+
         // replace placeholders and set the new death message
         event.deathMessage(LegacyComponentSerializer.legacyAmpersand().deserialize(mobName)
                 .replaceText(TextReplacementConfig.builder()
                         .matchLiteral("%player%").replacement(playerName).build())
                 .replaceText(TextReplacementConfig.builder()
-                        .matchLiteral("{DisplayName}").replacement(mobNameComponent).build())
+                        .matchLiteral("{DisplayName}").replacement(newCom).build())
         );
     }
 

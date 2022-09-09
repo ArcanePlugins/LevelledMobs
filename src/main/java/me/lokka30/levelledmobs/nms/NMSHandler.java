@@ -28,6 +28,7 @@ public class NMSHandler {
     public @NotNull String nmsVersionString = "unknown";
     private NMSUtil currentUtil;
     public double minecraftVersion;
+    public boolean isUsingProtocolLib;
 
     private void parseBukkitVersion() {
         // example: org.bukkit.craftbukkit.v1_18_R2.CraftServer
@@ -73,6 +74,7 @@ public class NMSHandler {
             Utils.logger.info(
                 "We don't have NMS support for this version of Minecraft, using ProtocolLib");
             this.currentUtil = new ProtocolLibHandler(main);
+            this.isUsingProtocolLib = true;
         }
         else{
             Utils.logger.warning(
