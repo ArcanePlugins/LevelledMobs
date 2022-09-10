@@ -12,26 +12,28 @@ import org.jetbrains.annotations.NotNull;
  */
 public class EntityLevelPlaceholder implements ContextPlaceholder {
 
+    // TODO transfer to EntityPlaceholders class and use replaceIfExists instead
+
     @Override
+    @SuppressWarnings("ConstantConditions")
     public @NotNull String replace(String from, Context context) {
         if(context.getEntity() != null) {
             if(context.getEntity() instanceof LivingEntity entity) {
                 if(!EntityDataUtil.isLevelled(entity)) {
-                    Log.war("Unable to replace entity level placeholder in message '" + from + "': "
-                        + "entity is not levelled", true);
                     return from;
                 }
+
+                final int level = EntityDataUtil.getLevel(entity);
+                final int minLevel = EntityDataUtil.getMinLevel(entity);
+                final int maxLevel = EntityDataUtil.getMaxLevel(entity);
+                final float levelRatio = ((level - minLevel) * 1.0f / (maxLevel - minLevel));
 
                 return from
                     .replace("%entity-level%", Integer.toString(EntityDataUtil.getLevel(entity)))
                     .replace("%entity-min-level%", Integer.toString(EntityDataUtil.getMinLevel(entity)))
                     .replace("%entity-max-level%", Integer.toString(EntityDataUtil.getMaxLevel(entity)))
-                    .replace("%entity-level-ratio%", Float.toString(
-                        EntityDataUtil.getMinLevel(entity) / (EntityDataUtil.getMaxLevel(entity) * 1.0f)
-                    ));
+                    .replace("%entity-level-ratio%", Float.toString(levelRatio));
             } else {
-                Log.war("Unable to replace entity level placeholder in message '" + from + "': "
-                    + "entity is not a LivingEntity", true);
                 return from;
             }
         } else {

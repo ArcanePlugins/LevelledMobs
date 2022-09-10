@@ -33,6 +33,8 @@ permissions:
     description: 'A collection of most LevelledMobs permissions.'
     children:
       'levelledmobs.command.*': true
+      'levelledmobs.receive-update-notifications': true
+      'levelledmobs.debug': true
 
   'levelledmobs.command.*':
     default: op
@@ -67,3 +69,7 @@ permissions:
   'levelledmobs.receive-update-notifications':
     default: op
     description: 'Receive update checker notifications.'
+
+  'levelledmobs.debug':
+    default: op
+    description: 'Ability to use in-game LevelledMobs debug tools.'

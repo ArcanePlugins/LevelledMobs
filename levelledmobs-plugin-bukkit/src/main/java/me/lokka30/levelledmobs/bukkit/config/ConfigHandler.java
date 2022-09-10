@@ -6,6 +6,7 @@ import me.lokka30.levelledmobs.bukkit.config.groups.GroupsCfg;
 import me.lokka30.levelledmobs.bukkit.config.presets.PresetsCfg;
 import me.lokka30.levelledmobs.bukkit.config.settings.SettingsCfg;
 import me.lokka30.levelledmobs.bukkit.config.translations.TranslationHandler;
+import me.lokka30.levelledmobs.bukkit.debug.DebugHandler;
 import me.lokka30.levelledmobs.bukkit.util.Log;
 import org.jetbrains.annotations.NotNull;
 
@@ -33,7 +34,11 @@ public final class ConfigHandler {
             if(!cfg.load())
                 return false;
 
-        return translationHandler.load();
+        if(!translationHandler.load()) return false;
+
+        DebugHandler.load();
+
+        return true;
     }
 
     /* getters and setters */

@@ -137,11 +137,11 @@ public class SetLevelAction extends Action {
             Log.inf("passengers inherit level logic not done yet");
         }
 
-        final var level = processFormula(context);
+        final Integer[] levels = processFormula(context);
 
         // if the formula was invalid or returned 'no-level',
         // remove level if entity has one. otherwise, job is done
-        if (level == null) {
+        if (levels == null) {
             // check if the entity is levelled or not
             if(!InternalEntityDataUtil.isLevelled(lent)) {
                 return;
@@ -152,14 +152,23 @@ public class SetLevelAction extends Action {
             return;
         }
 
-        //TODO I left this todo here though I have no clue why. Probably safe to remove.
-        InternalEntityDataUtil.setLevel((LivingEntity) context.getEntity(), level);
+        // grab level, min level and max level from processFormula
+        final int level = levels[0];
+        final int minLevel = levels[1];
+        final int maxLevel = levels[2];
 
+        InternalEntityDataUtil.setLevel(lent, level);
+        InternalEntityDataUtil.setMinLevel(lent, minLevel);
+        InternalEntityDataUtil.setMaxLevel(lent, maxLevel);
+
+        Log.tmpdebug("Finished levelling a %s. Lvl=%s, MinLvl=%s, MaxLvl=%s".formatted(
+            lent.getType(), level, minLevel, maxLevel
+        ));
         Log.tmpdebug("Done levelling mob, lvl: " + EntityDataUtil.getLevel((LivingEntity) context.getEntity()));
     }
 
     @Nullable
-    public Integer processFormula(final @NotNull Context context) {
+    public Integer[] processFormula(final @NotNull Context context) {
         Objects.requireNonNull(context, "context");
 
         // check if the mob should have no level
@@ -171,16 +180,24 @@ public class SetLevelAction extends Action {
         // replace context placeholders in the formula
         String formula = context.replacePlaceholders(getFormula());
 
+        int minLevel = getMinPossibleLevel();
+        int maxLevel = getMinPossibleLevel();
+
         // replace levelling strategy placeholders in the formula
         for(final LevellingStrategy strategy : getStrategies()) {
             formula = strategy.replaceInFormula(formula, context);
+
+            minLevel = Math.max(minLevel, strategy.getMinLevel());
+            maxLevel = Math.max(maxLevel, strategy.getMaxLevel());
         }
 
         // evaluate the formula with Crunch, don't allow values below the min possible level
-        return Math.max(
+        final int level = Math.max(
             (int) Math.round(Crunch.evaluateExpression(formula)),
             getMinPossibleLevel()
         );
+
+        return new Integer[]{level, minLevel, maxLevel};
     }
 
     /* getters and setters */

@@ -3,6 +3,7 @@ package me.lokka30.levelledmobs.bukkit.logic.function.process.action.impl;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
+import me.lokka30.levelledmobs.bukkit.api.data.EntityDataUtil;
 import me.lokka30.levelledmobs.bukkit.logic.context.Context;
 import me.lokka30.levelledmobs.bukkit.logic.function.process.Process;
 import me.lokka30.levelledmobs.bukkit.logic.function.process.action.Action;
@@ -52,6 +53,7 @@ public class SetBuffsAction extends Action {
      */
     @Override
     public void run(Context context) {
+        Log.tmpdebug("Running SetBuffsAction: enabled=" + isEnabled());
         if(!isEnabled()) { return; }
 
         if(context.getEntity() == null) {
@@ -114,6 +116,12 @@ public class SetBuffsAction extends Action {
             final @NotNull LivingEntity entity
         ) {
             if(!isEnabled()) return;
+
+            if(!EntityDataUtil.isLevelled(entity)) {
+                Log.sev("SetBuffsAction: Mob is not levelled!", true);
+                return;
+            }
+
             Log.tmpdebug("Applying buff " + getNode().node("buff").getString("?"));
 
             if(!getAffectedEntities().contains(entity.getType())) {
@@ -126,16 +134,14 @@ public class SetBuffsAction extends Action {
             }
 
             final double multiplier = Crunch.evaluateExpression(
-                context.replacePlaceholders(
-                    getMultiplierFormula()
-                )
-            );
+                context.replacePlaceholders(getMultiplierFormula()));
+
             Log.tmpdebug("Buff multiplier = " + multiplier);
 
             for(final Attribute attribute : Attribute.values()) {
                 if(!getAttributes().contains(attribute)) continue;
 
-                Log.tmpdebug("Buffing attribute " + attribute);
+                Log.tmpdebug("Buffing attribute " + attribute + ".");
 
                 final AttributeInstance attinstance = entity.getAttribute(attribute);
                 if(attinstance == null) { continue; }
@@ -145,10 +151,10 @@ public class SetBuffsAction extends Action {
                 final boolean shouldAdjustHealth =
                     attribute == Attribute.GENERIC_MAX_HEALTH && shouldAdjustCurrentHealth();
 
-                double healthRatio = 0.0; // IntelliJ forces us to initialise this
+                double healthRatio = 0.0d;
 
                 if(shouldAdjustHealth) {
-                    healthRatio = entity.getHealth() / attinstance.getValue();
+                    healthRatio = entity.getHealth() / currentValue;
                 }
 
             /*

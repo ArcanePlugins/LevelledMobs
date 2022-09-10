@@ -31,6 +31,12 @@ public final class LevelledMobs extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        if(!assertRunningSpigot()) {
+            setEnabled(false);
+            return;
+        }
+
+        //TODO check for a runtime exception rather than comparing booleans
         if(!(assertRunningSpigot() &&
             getConfigHandler().load() &&
             getListenerHandler().loadPrimary() &&
