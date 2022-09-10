@@ -1,4 +1,4 @@
-package me.lokka30.levelledmobs.bukkit.util;
+package me.lokka30.levelledmobs.bukkit.util.math;
 
 public class MathUtils {
 

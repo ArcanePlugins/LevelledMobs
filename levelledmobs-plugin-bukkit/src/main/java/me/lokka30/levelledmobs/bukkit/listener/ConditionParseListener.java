@@ -1,9 +1,15 @@
-package me.lokka30.levelledmobs.bukkit.logic.function.process.condition.impl;
+package me.lokka30.levelledmobs.bukkit.listener;
 
 import java.util.Locale;
-import me.lokka30.levelledmobs.bukkit.logic.function.process.condition.ConditionParseEvent;
-import me.lokka30.levelledmobs.bukkit.listener.ListenerWrapper;
 import me.lokka30.levelledmobs.bukkit.logic.function.process.condition.Condition;
+import me.lokka30.levelledmobs.bukkit.logic.function.process.condition.ConditionParseEvent;
+import me.lokka30.levelledmobs.bukkit.logic.function.process.condition.impl.ChanceCondition;
+import me.lokka30.levelledmobs.bukkit.logic.function.process.condition.impl.EntityBiomeCondition;
+import me.lokka30.levelledmobs.bukkit.logic.function.process.condition.impl.EntityCustomNameContains;
+import me.lokka30.levelledmobs.bukkit.logic.function.process.condition.impl.EntityLevelCondition;
+import me.lokka30.levelledmobs.bukkit.logic.function.process.condition.impl.EntityTypeCondition;
+import me.lokka30.levelledmobs.bukkit.logic.function.process.condition.impl.EntityWorldCondition;
+import me.lokka30.levelledmobs.bukkit.logic.function.process.condition.impl.PlayerWorldCondition;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 
@@ -27,16 +33,18 @@ public class ConditionParseListener extends ListenerWrapper {
             case "chance" -> {
                 addCondition(event, new ChanceCondition(process, node));
             }
-            case "entity-biome", "mob-biome" -> {
+            case "entity-biome" -> {
                 addCondition(event, new EntityBiomeCondition(process, node));
             }
-            case "entity-custom-name-contains", "mob-custom-name-contains" -> {
+            case "entity-custom-name-contains" -> {
                 addCondition(event, new EntityCustomNameContains(process, node));
             }
-            case "entity-type", "mob-type" -> {
+            case "entity-level" ->
+                addCondition(event, new EntityLevelCondition(process, node));
+            case "entity-type" -> {
                 addCondition(event, new EntityTypeCondition(process, node));
             }
-            case "entity-world", "mob-world" -> {
+            case "entity-world" -> {
                 addCondition(event, new EntityWorldCondition(process, node));
             }
             case "player-world" -> {

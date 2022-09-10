@@ -14,9 +14,7 @@ import me.lokka30.levelledmobs.bukkit.logic.function.process.Process;
 import me.lokka30.levelledmobs.bukkit.logic.function.process.ProcessPostParseEvent;
 import me.lokka30.levelledmobs.bukkit.logic.function.process.ProcessPreParseEvent;
 import me.lokka30.levelledmobs.bukkit.logic.function.process.action.ActionParseEvent;
-import me.lokka30.levelledmobs.bukkit.logic.function.process.action.ActionSocket;
 import me.lokka30.levelledmobs.bukkit.logic.function.process.condition.ConditionParseEvent;
-import me.lokka30.levelledmobs.bukkit.logic.function.process.condition.ConditionSocket;
 import me.lokka30.levelledmobs.bukkit.logic.group.Group;
 import me.lokka30.levelledmobs.bukkit.logic.group.GroupPostParseEvent;
 import me.lokka30.levelledmobs.bukkit.logic.group.GroupPreParseEvent;
@@ -424,9 +422,6 @@ public final class LogicHandler {
             }
 
             /* parse actions */
-            //TODO make preset parsing happen after function parsing
-            //TODO make preset parasing factor in sockets
-            //TODO future - may want to consider multiple sockets behaviour
             if(!(parseActions(process) && parseConditions(process)))
                 return false;
 
@@ -438,7 +433,6 @@ public final class LogicHandler {
         return true;
     }
 
-    //TODO test
     private boolean parseActions(final @NotNull Process process) {
         Objects.requireNonNull(process, "process");
 
@@ -467,17 +461,10 @@ public final class LogicHandler {
                     ), true);
                     return false;
                 }
-
-            } else if(actionNode.hasChild("socket")) {
-                process.getActions().add(new ActionSocket(
-                    process,
-                    actionNode,
-                    actionNode.node("socket").getString("")
-                ));
             } else {
                 Log.sev(String.format(
                     "Process '%s' in function '%s' contains an item in the actions list which " +
-                        "does not identify as an action or socket.",
+                        "does not identify as an action.",
                     process.getIdentifier(), process.getParentFunction().getIdentifier()
                 ), true);
                 return false;
@@ -524,17 +511,10 @@ public final class LogicHandler {
                     ), true);
                     return false;
                 }
-
-            } else if(conditionNode.hasChild("socket")) {
-                process.getConditions().add(new ConditionSocket(
-                    process,
-                    conditionNode,
-                    conditionNode.node("socket").getString("")
-                ));
             } else {
                 Log.sev(String.format(
                     "Process '%s' in function '%s' contains an item in the conditions list which " +
-                        "does not identify as a condition or socket.",
+                        "does not identify as a condition.",
                     process.getIdentifier(), process.getParentFunction().getIdentifier()
                 ), true);
                 return false;

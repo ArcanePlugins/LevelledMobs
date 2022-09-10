@@ -1,7 +1,6 @@
 package me.lokka30.levelledmobs.bukkit.listener;
 
 import java.util.Set;
-import me.lokka30.levelledmobs.bukkit.logic.function.process.condition.impl.ConditionParseListener;
 import me.lokka30.levelledmobs.bukkit.util.Log;
 import org.jetbrains.annotations.NotNull;
 
@@ -15,7 +14,6 @@ public final class ListenerHandler {
     private final Set<ListenerWrapper> primaryListeners = Set.of(
         new ActionParseListener(),
         new ConditionParseListener(),
-        new EntityDamageByEntityListener(),
         new LevellingStrategyRequestListener(),
         new TestListener()
     );
@@ -24,8 +22,10 @@ public final class ListenerHandler {
      * These listeners must be registered later.
      */
     private final Set<ListenerWrapper> secondaryListeners = Set.of(
+        new EntityDamageByEntityListener(),
         new EntitySpawnListener(),
-        new PlayerJoinListener()
+        new PlayerJoinListener(),
+        new PlayerQuitListener()
     );
 
     /* methods */

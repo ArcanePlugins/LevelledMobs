@@ -7,7 +7,7 @@ import me.lokka30.levelledmobs.bukkit.config.translations.TranslationHandler;
 import me.lokka30.levelledmobs.bukkit.logic.context.Context;
 import me.lokka30.levelledmobs.bukkit.logic.context.placeholder.ContextPlaceholder;
 import me.lokka30.levelledmobs.bukkit.util.EnumUtils;
-import me.lokka30.levelledmobs.bukkit.util.MathUtils;
+import me.lokka30.levelledmobs.bukkit.util.math.MathUtils;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
