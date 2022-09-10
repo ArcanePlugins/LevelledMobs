@@ -38,6 +38,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
+import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -801,7 +802,16 @@ public class CustomDropsHandler {
                     debug.append(String.format("%s: &2%s&r &b(%s)&r", enchantLevel, chanceRole, chanceValue));
                 }
 
-                dropItem.getItemStack().addUnsafeEnchantment(enchantment, enchantLevel);
+                if (dropItem.getMaterial() == Material.ENCHANTED_BOOK){
+                    final EnchantmentStorageMeta meta = (EnchantmentStorageMeta) dropItem.getItemStack().getItemMeta();
+                    if (meta != null) {
+                        meta.addStoredEnchant(enchantment, enchantLevel, true);
+                        dropItem.getItemStack().setItemMeta(meta);
+                    }
+                }
+                else{
+                    dropItem.getItemStack().addUnsafeEnchantment(enchantment, enchantLevel);
+                }
                 madeAnyChance = true;
                 break;
             }
