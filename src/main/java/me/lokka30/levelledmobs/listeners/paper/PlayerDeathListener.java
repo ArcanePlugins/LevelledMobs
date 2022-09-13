@@ -120,12 +120,18 @@ public class PlayerDeathListener {
         final String mobName = nametagResult.getNametagNonNull();
         final Component playerName = event.getPlayer().displayName();
 
-        // this component holds the component of the mob name and will show the translated name on clients
-        final Component mobNameComponent = nametagResult.overriddenName == null ?
-                Component.translatable(mobKey) :
-                LegacyComponentSerializer.legacyAmpersand().deserialize(nametagResult.overriddenName);
+        Component newCom;
+        if (nametagResult.hadCustomDeathMessage){
+            newCom = Component.empty();
+        }
+        else {
+            // this component holds the component of the mob name and will show the translated name on clients
+            final Component mobNameComponent = nametagResult.overriddenName == null ?
+                    Component.translatable(mobKey) :
+                    LegacyComponentSerializer.legacyAmpersand().deserialize(nametagResult.overriddenName);
 
-        final Component newCom = Component.translatable(tc.key(), Component.text(playerKilled), mobNameComponent);
+            newCom = Component.translatable(tc.key(), Component.text(playerKilled), mobNameComponent);
+        }
 
         // replace placeholders and set the new death message
         event.deathMessage(LegacyComponentSerializer.legacyAmpersand().deserialize(mobName)

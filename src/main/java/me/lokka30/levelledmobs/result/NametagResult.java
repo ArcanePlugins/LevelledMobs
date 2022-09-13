@@ -16,7 +16,7 @@ public class NametagResult {
 
     private @Nullable String nametag;
     public @Nullable String overriddenName;
-    public boolean hadDeathMessage;
+    public boolean hadCustomDeathMessage;
 
     public @Nullable String getNametag(){
         return this.nametag;

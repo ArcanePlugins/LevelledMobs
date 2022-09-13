@@ -681,7 +681,7 @@ public class LevelManager implements LevelInterface {
 
     @NotNull public NametagResult getNametag(final @NotNull LivingEntityWrapper lmEntity, final boolean isDeathNametag, boolean preserveMobName) {
         String nametag;
-        boolean hadDeathMessage = false;
+        boolean hadCustomDeathMessage = false;
         if (isDeathNametag) {
             nametag = main.rulesManager.getRuleNametagCreatureDeath(lmEntity);
         } else {
@@ -700,7 +700,8 @@ public class LevelManager implements LevelInterface {
             final String deathMessage = main.rulesManager.getDeathMessage(lmEntity);
             if (deathMessage != null && !deathMessage.isEmpty()){
                 nametag = deathMessage.replace("%death_nametag%", nametag);
-                hadDeathMessage = true;
+                preserveMobName = false;
+                hadCustomDeathMessage = true;
             }
         }
 
@@ -718,7 +719,7 @@ public class LevelManager implements LevelInterface {
             nametag = "";
         }
 
-        return updateNametag(lmEntity, nametag, useCustomNameForNametags, preserveMobName, hadDeathMessage);
+        return updateNametag(lmEntity, nametag, useCustomNameForNametags, preserveMobName, hadCustomDeathMessage);
     }
 
     private void checkLockedNametag(final @NotNull LivingEntityWrapper lmEntity) {
@@ -755,10 +756,10 @@ public class LevelManager implements LevelInterface {
 
     @NotNull public NametagResult updateNametag(final @NotNull LivingEntityWrapper lmEntity, @NotNull String nametag,
                                                 final boolean useCustomNameForNametags, final boolean preserveMobName,
-                                                final boolean hadDeathMessage) {
+                                                final boolean hadCustomDeathMessage) {
         if (nametag.isEmpty()) {
             final NametagResult result = new NametagResult(nametag);
-            result.hadDeathMessage = hadDeathMessage;
+            result.hadCustomDeathMessage = hadCustomDeathMessage;
             return result;
         }
 
@@ -797,7 +798,7 @@ public class LevelManager implements LevelInterface {
         final NametagResult result = new NametagResult(nametag);
         // this field is only used for sending nametags to client
         result.overriddenName = overridenName;
-        result.hadDeathMessage = hadDeathMessage;
+        result.hadCustomDeathMessage = hadCustomDeathMessage;
 
         return result;
     }
