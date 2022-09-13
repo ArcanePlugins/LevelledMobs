@@ -116,9 +116,8 @@ public class EntityTransformListener implements Listener {
         final LevelledMobSpawnReason spawnReason = Utils.adaptVanillaSpawnReason(livingEntity.getEntitySpawnReason());
 
         for (final Entity transformedEntity : transformedEntities) {
-            if (!(transformedEntity instanceof LivingEntity)) continue;
+            if (!(transformedEntity instanceof final LivingEntity le)) continue;
 
-            final LivingEntity le = (LivingEntity) transformedEntity;
             final LivingEntityWrapper lew = LivingEntityWrapper.getInstance(le, main);
             lew.setSpawnReason(spawnReason);
             lew.free();

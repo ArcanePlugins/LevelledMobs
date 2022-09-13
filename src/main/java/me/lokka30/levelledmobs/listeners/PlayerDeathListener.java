@@ -38,10 +38,10 @@ public class PlayerDeathListener implements Listener {
      *
      * @param event PlayerDeathEvent
      */
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.NORMAL)
     public void onPlayerDeath(@NotNull final PlayerDeathEvent event) {
         // returns false if not a translatable component, in which case just use the old method
-        // this can happen if another plugin has buthered the event by using the deprecated method (*cough* mythic mobs)
+        // this can happen if another plugin has butchered the event by using the deprecated method (*cough* mythic mobs)
         if (!VersionUtils.isRunningPaper() || !paperListener.onPlayerDeathEvent(event)) {
             nonPaper_PlayerDeath(event);
         }
@@ -51,7 +51,7 @@ public class PlayerDeathListener implements Listener {
         final LivingEntityWrapper lmEntity = SpigotUtils.getPlayersKiller(event, main);
 
         if (main.placeholderApiIntegration != null) {
-            main.placeholderApiIntegration.putPlayerOrMobDeath(event.getEntity(), lmEntity);
+            main.placeholderApiIntegration.putPlayerOrMobDeath(event.getEntity(), lmEntity, true);
             return;
         }
 

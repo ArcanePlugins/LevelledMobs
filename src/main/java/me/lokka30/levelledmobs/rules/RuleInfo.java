@@ -39,10 +39,8 @@ public class RuleInfo {
     }
 
     private String ruleName;
-    @DoNotMerge
-    boolean ruleIsEnabled;
-    @DoNotMerge
-    boolean isTempDisabled;
+    @DoNotMerge boolean ruleIsEnabled;
+    @DoNotMerge boolean isTempDisabled;
     Boolean disableVanillaDropsOnChunkMax;
     boolean useNoSpawnerParticles;
     Boolean babyMobsInheritAdultSetting;
@@ -54,8 +52,7 @@ public class RuleInfo {
     Boolean mergeEntityNameOverrides;
     Boolean passengerMatchLevel;
     Boolean lockEntity;
-    @DoNotMerge
-    int rulePriority;
+    @DoNotMerge int rulePriority;
     Integer spawnerParticlesCount;
     Integer maxRandomVariance;
     Integer creeperMaxDamageRadius;
@@ -63,7 +60,6 @@ public class RuleInfo {
     Integer conditions_MaxLevel;
     Integer restrictions_MinLevel;
     Integer restrictions_MaxLevel;
-    Integer lowerMobLevelBiasFactor;
     Integer conditions_ApplyAboveY;
     Integer conditions_ApplyBelowY;
     Integer conditions_MinDistanceFromSpawn;
@@ -80,8 +76,7 @@ public class RuleInfo {
     String nametag_CreatureDeath;
     String nametag_Placeholder_Levelled;
     String nametag_Placeholder_Unlevelled;
-    @DoNotMerge
-    String presetName;
+    @DoNotMerge String presetName;
     final @NotNull List<String> customDrop_DropTableIds;
     HealthIndicator healthIndicator;
     MobCustomNameStatus conditions_MobCustomnameStatus;
@@ -90,10 +85,9 @@ public class RuleInfo {
     PlayerLevellingOptions playerLevellingOptions;
     Map<String, List<LevelTierMatching>> entityNameOverrides_Level;
     Map<String, LevelTierMatching> entityNameOverrides;
+    DeathMessages deathMessages;
     public List<NametagVisibilityEnum> nametagVisibilityEnum;
-    @NotNull
-    @DoNotMerge
-    public final Map<String, String> ruleSourceNames;
+    @NotNull @DoNotMerge public final Map<String, String> ruleSourceNames;
     public Particle spawnerParticle;
     List<TieredColoringInfo> tieredColoringInfos;
     Map<ExternalCompatibilityManager.ExternalCompatibility, Boolean> enabledExtCompats;
@@ -107,7 +101,6 @@ public class RuleInfo {
     CachedModalList<String> conditions_CustomNames;
     CachedModalList<String> conditions_NoDropEntities;
     CachedModalList<String> conditions_WGRegions;
-
     CachedModalList<String> conditions_WGRegionOwners;
     CachedModalList<String> conditions_MM_Names;
     CachedModalList<String> conditions_SpawnerNames;
@@ -193,9 +186,8 @@ public class RuleInfo {
                     this.customDrop_DropTableIds.addAll(mergingPreset);
 
                     skipSettingValue = true;
-                } else if (presetValue instanceof MergeableStringList
+                } else if (presetValue instanceof final MergeableStringList mergingPreset
                     && this.getClass().getDeclaredField(f.getName()).get(this) != null) {
-                    final MergeableStringList mergingPreset = (MergeableStringList) presetValue;
                     if (mergingPreset.doMerge && !mergingPreset.isEmpty()) {
                         final MergeableStringList current = (MergeableStringList) this.getClass()
                             .getDeclaredField(f.getName()).get(this);
@@ -204,8 +196,7 @@ public class RuleInfo {
                     }
                 }
 
-                if (presetValue instanceof CachedModalList) {
-                    final CachedModalList<?> cachedModalList_preset = (CachedModalList<?>) presetValue;
+                if (presetValue instanceof final CachedModalList<?> cachedModalList_preset) {
                     final CachedModalList<?> thisCachedModalList = (CachedModalList<?>) this.getClass()
                         .getDeclaredField(f.getName()).get(this);
 
@@ -262,13 +253,11 @@ public class RuleInfo {
         }
     }
 
-    @NotNull
-    public String formatRulesVisually() {
+    @NotNull public String formatRulesVisually() {
         return formatRulesVisually(null);
     }
 
-    @NotNull
-    public String formatRulesVisually(final List<String> excludedKeys) {
+    @NotNull public String formatRulesVisually(final List<String> excludedKeys) {
         final SortedMap<String, String> values = new TreeMap<>();
         final StringBuilder sb = new StringBuilder();
 
@@ -316,8 +305,7 @@ public class RuleInfo {
                 if (value.toString().equalsIgnoreCase("NONE")) {
                     continue;
                 }
-                if (value instanceof CachedModalList<?>) {
-                    final CachedModalList<?> cml = (CachedModalList<?>) value;
+                if (value instanceof final CachedModalList<?> cml) {
                     if (cml.isEmpty() && !cml.allowAll && !cml.excludeAll) {
                         continue;
                     }

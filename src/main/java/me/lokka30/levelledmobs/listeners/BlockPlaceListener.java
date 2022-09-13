@@ -100,33 +100,23 @@ public class BlockPlaceListener implements Listener {
                     targetPdc.set(key, PersistentDataType.INTEGER, valueInt);
                 } else if (valueInt != null) {
                     switch (i) {
-                        case 6:
-                            cs.setDelay(valueInt);
-                            break;
-                        case 7:
-                            cs.setMaxNearbyEntities(valueInt);
-                            break;
-                        case 8:
+                        case 6 -> cs.setDelay(valueInt);
+                        case 7 -> cs.setMaxNearbyEntities(valueInt);
+                        case 8 -> {
                             if (cs.getMaxSpawnDelay() < valueInt) {
                                 cs.setMaxSpawnDelay(valueInt);
                             }
                             cs.setMinSpawnDelay(valueInt);
-                            break;
-                        case 9:
+                        }
+                        case 9 -> {
                             if (cs.getMinSpawnDelay() > valueInt) {
                                 cs.setMinSpawnDelay(valueInt);
                             }
                             cs.setMaxSpawnDelay(valueInt);
-                            break;
-                        case 10:
-                            cs.setRequiredPlayerRange(valueInt);
-                            break;
-                        case 11:
-                            cs.setSpawnCount(valueInt);
-                            break;
-                        case 12:
-                            cs.setSpawnRange(valueInt);
-                            break;
+                        }
+                        case 10 -> cs.setRequiredPlayerRange(valueInt);
+                        case 11 -> cs.setSpawnCount(valueInt);
+                        case 12 -> cs.setSpawnRange(valueInt);
                     }
                 }
             }

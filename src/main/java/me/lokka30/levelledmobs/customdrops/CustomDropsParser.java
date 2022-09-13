@@ -87,6 +87,10 @@ public class CustomDropsParser {
         }
     }
 
+    public @NotNull CustomDropsDefaults getDefaults(){
+        return this.defaults;
+    }
+
     private void processDefaults(final ConfigurationSection cs) {
         if (cs == null) {
             Utils.logger.warning("Defaults section was null");
@@ -232,22 +236,22 @@ public class CustomDropsParser {
 
                 if (!dropInstance.customItems.isEmpty() || dropInstance.overrideStockDrops) {
                     if (isUniversalGroup) {
-                        if (handler.customDropsitems_groups.containsKey(
+                        if (handler.getCustomDropsitems_groups().containsKey(
                             universalGroup.toString())) {
-                            handler.customDropsitems_groups.get(universalGroup.toString())
+                            handler.getCustomDropsitems_groups().get(universalGroup.toString())
                                 .combineDrop(dropInstance);
                         } else {
-                            handler.customDropsitems_groups.put(universalGroup.toString(),
-                                dropInstance);
+                            handler.addCustomDropGroup(universalGroup.toString(), dropInstance);
                         }
                     } else {
                         final Map<EntityType, CustomDropInstance> dropMap = dropInstance.isBabyMob ?
-                            handler.customDropsitems_Babies : handler.customDropsitems;
+                            handler.customDropsitems_Babies : handler.getCustomDropsitems();
 
                         if (dropMap.containsKey(entityType)) {
                             dropMap.get(entityType).combineDrop(dropInstance);
                         } else {
                             dropMap.put(entityType, dropInstance);
+                            handler.addCustomDropItem(entityType, dropInstance);
                         }
                     }
                 }
@@ -257,7 +261,7 @@ public class CustomDropsParser {
         if (main.companion.debugsEnabled.contains(DebugType.CUSTOM_DROPS)) {
             int dropsCount = 0;
             int commandsCount = 0;
-            for (final CustomDropInstance cdi : handler.customDropsitems.values()) {
+            for (final CustomDropInstance cdi : handler.getCustomDropsitems().values()) {
                 for (final CustomDropBase base : cdi.customItems) {
                     if (base instanceof CustomDropItem) {
                         dropsCount++;
@@ -269,10 +273,10 @@ public class CustomDropsParser {
 
             final StringBuilder sbMain = new StringBuilder();
             final int itemsCount =
-                handler.customDropsitems_groups.size() + handler.customDropsitems_Babies.size();
+                handler.getCustomDropsitems_groups().size() + handler.customDropsitems_Babies.size();
             sbMain.append(String.format(
                 "drop instances: %s, custom groups: %s, item groups: %s, items: %s, commands: %s",
-                handler.customDropsitems.size(), itemsCount, handler.customItemGroups.size(),
+                handler.getCustomDropsitems().size(), itemsCount, handler.customItemGroups.size(),
                 dropsCount, commandsCount));
 
             showCustomDropsDebugInfo(sbMain);
@@ -286,10 +290,9 @@ public class CustomDropsParser {
         }
 
         for (final Object itemObject : itemConfigurations) {
-            if (itemObject instanceof String) {
+            if (itemObject instanceof final String materialName) {
                 // just the string was given
                 final CustomDropItem item = new CustomDropItem(this.defaults);
-                final String materialName = (String) itemObject;
 
                 if ("override".equalsIgnoreCase(materialName)) {
                     dropInstance.overrideStockDrops = true;
@@ -305,10 +308,10 @@ public class CustomDropsParser {
                 continue;
             }
 
-            final Set<Map.Entry<String, Object>> ItemsToCheck = itemConfiguration.getValues(false)
+            final Set<Map.Entry<String, Object>> itemsToCheck = itemConfiguration.getValues(false)
                 .entrySet();
 
-            if (ItemsToCheck.isEmpty() && itemObject.getClass().equals(LinkedHashMap.class)) {
+            if (itemsToCheck.isEmpty() && itemObject.getClass().equals(LinkedHashMap.class)) {
                 // empty list means a material name was provided with no attributes
                 final LinkedHashMap<String, Object> materials = (LinkedHashMap<String, Object>) itemObject;
                 boolean needsContinue = false;
@@ -325,7 +328,7 @@ public class CustomDropsParser {
                 }
             }
 
-            for (final Map.Entry<String, Object> itemEntry : ItemsToCheck) {
+            for (final Map.Entry<String, Object> itemEntry : itemsToCheck) {
                 final String materialName = itemEntry.getKey();
 
                 if (checkForMobOverride(itemEntry, dropInstance)) {
@@ -333,10 +336,8 @@ public class CustomDropsParser {
                 }
 
                 if ("overall_chance".equalsIgnoreCase(materialName)) {
-                    if (itemEntry.getValue() instanceof Double) {
-                        dropInstance.overallChance = (float) itemEntry.getValue();
-                    } else if (itemEntry.getValue() instanceof Integer) {
-                        dropInstance.overallChance = Float.valueOf((Integer) itemEntry.getValue());
+                    if (itemEntry.getValue() instanceof Number) {
+                        dropInstance.overallChance = ((Number) itemEntry.getValue()).floatValue();
                     }
                     continue;
                 } else if ("overall_permission".equalsIgnoreCase(materialName)) {
@@ -478,8 +479,7 @@ public class CustomDropsParser {
         dropBase.causeOfDeathReqs = buildCachedModalListOfDamageCause(cs,
                 this.defaults.causeOfDeathReqs);
 
-        if (dropBase instanceof CustomCommand) {
-            final CustomCommand customCommand = (CustomCommand) dropBase;
+        if (dropBase instanceof final CustomCommand customCommand) {
             final List<String> commandsList = cs.getStringList(
                 ymlHelper.getKeyNameFromConfig(cs, "command"));
             final String singleCommand = ymlHelper.getString(cs, "command");
@@ -576,8 +576,7 @@ public class CustomDropsParser {
         applyMetaAttributes(item);
     }
 
-    @NotNull
-    private CachedModalList<DeathCause> buildCachedModalListOfDamageCause(
+    @NotNull private CachedModalList<DeathCause> buildCachedModalListOfDamageCause(
         final ConfigurationSection cs,
         final CachedModalList<DeathCause> defaultValue) {
         if (cs == null) {
@@ -655,15 +654,32 @@ public class CustomDropsParser {
         return cachedModalList;
     }
 
-    private void parseEnchantments(final ConfigurationSection cs, final CustomDropItem item) {
+    private void parseEnchantments(final @Nullable ConfigurationSection cs, final @NotNull CustomDropItem item) {
         if (cs == null) {
             return;
         }
 
         final Map<String, Object> enchantMap = cs.getValues(false);
+
         for (final Map.Entry<String, Object> enchants : enchantMap.entrySet()) {
             final String enchantName = enchants.getKey();
             final Object value = enchants.getValue();
+
+            if (value instanceof LinkedHashMap){
+                // contains enchantment chances
+
+                final Enchantment en = Enchantment.getByKey(
+                        NamespacedKey.minecraft(enchantName.toLowerCase()));
+
+                if (en == null){
+                    Utils.logger.warning("Invalid enchantment: " + enchantName);
+                    continue;
+                }
+
+                final Map<Object, Object> enchantments = (Map<Object, Object>) value;
+                parseEnchantmentChances(en, enchantments, item);
+                continue;
+            }
 
             int enchantLevel = 1;
             if (value != null && Utils.isInteger(value.toString())) {
@@ -688,6 +704,75 @@ public class CustomDropsParser {
             }
         }
 
+    }
+
+    private void parseEnchantmentChances(final @NotNull Enchantment enchantment,
+                                         final @NotNull Map<Object, Object> enchantmentsMap,
+                                         final @NotNull CustomDropItem item){
+        final Map<Integer, Float> items = new TreeMap<>();
+        Integer defaultLevel = null;
+        Boolean doShuttle = null;
+
+        /*
+        * ENCHANTMENTS:
+        *  sharpness:
+        *    1: 0.4
+        *    2: 0.5
+        *    3: 0.6
+        *    default: 1
+        */
+
+        for (final Map.Entry<Object, Object> map : enchantmentsMap.entrySet()){
+            if ("shuffle".equalsIgnoreCase(map.getKey().toString())){
+                if ("false".equalsIgnoreCase(map.getValue().toString()))
+                    doShuttle = false;
+                continue;
+            }
+
+            final boolean isDefault = "default".equalsIgnoreCase(map.getKey().toString());
+            int enchantmentLevel = 0;
+
+            if (!isDefault) {
+                if (!Utils.isInteger(map.getKey().toString())) {
+                    Utils.logger.warning(String.format("Enchantment: %s, invalid enchantment level %s",
+                            enchantment, map.getKey()));
+                    continue;
+                }
+                enchantmentLevel = Integer.parseInt(map.getKey().toString());
+            }
+
+            double chanceValue;
+            try{
+                chanceValue = Double.parseDouble(map.getValue().toString());
+            }
+            catch (Exception ignored){
+                Utils.logger.warning(String.format("Enchantment: %s, invalid chance specified: %s",
+                        enchantment, map.getValue()));
+                continue;
+            }
+
+            if (isDefault)
+                defaultLevel = (int) chanceValue;
+            else
+                items.put(enchantmentLevel, (float)chanceValue);
+        }
+
+        if (items.isEmpty()) return;
+
+        if (item.enchantmentChances == null)
+            item.enchantmentChances = new EnchantmentChances();
+
+        if (doShuttle != null || defaultLevel != null) {
+            final EnchantmentChances.ChanceOptions opts = item.enchantmentChances.options.computeIfAbsent(
+                    enchantment, k-> new EnchantmentChances.ChanceOptions());
+
+            if (defaultLevel != null)
+                opts.defaultLevel = defaultLevel;
+            if (doShuttle != null)
+                opts.doShuffle = false;
+        }
+
+        item.enchantmentChances.items.put(enchantment, items);
     }
 
     private void parseRangedVariables(final CustomCommand cc,
@@ -803,8 +888,7 @@ public class CustomDropsParser {
             this.defaults.equippedSpawnChance);
     }
 
-    @Nullable
-    private ConfigurationSection objectToConfigurationSection2(final ConfigurationSection cs,
+    @Nullable private ConfigurationSection objectToConfigurationSection2(final ConfigurationSection cs,
         final String path) {
         if (cs == null) {
             return null;
@@ -825,15 +909,14 @@ public class CustomDropsParser {
         } else {
             final String currentPath = Utils.isNullOrEmpty(cs.getCurrentPath()) ?
                 path : cs.getCurrentPath() + "." + path;
-            Utils.logger.warning(
-                currentPath + ": couldn't parse Config of type: " + object.getClass()
-                    .getSimpleName() + ", value: " + object);
+            Utils.logger.warning(String.format(
+                "%s: couldn't parse Config of type: %s, value: %s",
+                    currentPath, object.getClass().getSimpleName(), object));
             return null;
         }
     }
 
-    @Nullable
-    private ConfigurationSection objectToConfigurationSection_old(final Object object) {
+    @Nullable private ConfigurationSection objectToConfigurationSection_old(final Object object) {
         if (object == null) {
             return null;
         }
@@ -916,7 +999,7 @@ public class CustomDropsParser {
         // build string list to alphabeticalize the drops by entity type including babies
         final SortedMap<String, EntityType> typeNames = new TreeMap<>();
 
-        for (final EntityType ent : handler.customDropsitems.keySet()) {
+        for (final EntityType ent : handler.getCustomDropsitems().keySet()) {
             typeNames.put(ent.toString(), ent);
         }
 
@@ -929,7 +1012,7 @@ public class CustomDropsParser {
             final EntityType ent = EntityType.valueOf(
                 isBaby ? entTypeStr.substring(0, entTypeStr.length() - 2) : entTypeStr);
             final CustomDropInstance dropInstance = isBaby ?
-                handler.customDropsitems_Babies.get(ent) : handler.customDropsitems.get(ent);
+                handler.customDropsitems_Babies.get(ent) : handler.getCustomDropsitems().get(ent);
 
             final String override = dropInstance.overrideStockDrops ? " (override)" : "";
             final String overallChance = dropInstance.overallChance != null ? " (overall_chance: "
@@ -958,7 +1041,7 @@ public class CustomDropsParser {
             }
         }
 
-        for (final Map.Entry<String, CustomDropInstance> customDrops : handler.customDropsitems_groups.entrySet()) {
+        for (final Map.Entry<String, CustomDropInstance> customDrops : handler.getCustomDropsitems_groups().entrySet()) {
             final CustomDropInstance dropInstance = customDrops.getValue();
             final String override = dropInstance.overrideStockDrops ? " (override)" : "";
             final String overallChance = dropInstance.overallChance != null ? " (overall_chance: "
@@ -992,10 +1075,10 @@ public class CustomDropsParser {
         if (item != null) {
             final String itemMaterial =
                 item.getMaterial() != null ? item.getMaterial().toString() : "(unknown)";
-            sb.append(String.format("    &b%s&r, amount: &b%s&r, chance: &b%s&r", itemMaterial,
+            sb.append(String.format("  &b%s&r, amount: &b%s&r, chance: &b%s&r", itemMaterial,
                 item.getAmountAsString(), baseItem.chance));
         } else {
-            sb.append(String.format("    COMMAND, chance: &b%s&r", baseItem.chance));
+            sb.append(String.format("  COMMAND, chance: &b%s&r", baseItem.chance));
         }
 
         if (baseItem.minLevel > -1) {
@@ -1118,13 +1201,44 @@ public class CustomDropsParser {
             }
         }
 
+        if (item.enchantmentChances != null && !item.enchantmentChances.isEmpty()){
+            final StringBuilder enchantmentLevels = new StringBuilder();
+            enchantmentLevels.append("encht-lvls: ");
+            for (final Enchantment enchantment : item.enchantmentChances.items.keySet()){
+                if (enchantmentLevels.length() > 12) enchantmentLevels.append("; ");
+                enchantmentLevels.append("&b");
+                enchantmentLevels.append(enchantment.getKey().value());
+                enchantmentLevels.append("&r: ");
+                boolean isFirst = true;
+                for (final Map.Entry<Integer, Float> chances : item.enchantmentChances.items.get(enchantment).entrySet()){
+                    if (!isFirst) enchantmentLevels.append(", ");
+                    enchantmentLevels.append(String.format("%s-&b%s&r",
+                            chances.getKey(), chances.getValue()));
+
+                    isFirst = false;
+                }
+
+                if (item.enchantmentChances.options.containsKey(enchantment)) {
+                    EnchantmentChances.ChanceOptions opts = item.enchantmentChances.options.get(enchantment);
+                    if (opts.defaultLevel != null)
+                        enchantmentLevels.append(", dflt: ").append(opts.defaultLevel);
+                    if (!opts.doShuffle)
+                        enchantmentLevels.append(", no shfl");
+                }
+            }
+
+            sb.append(System.lineSeparator());
+            sb.append("    ");
+            sb.append(enchantmentLevels);
+        }
+
         if (item.getItemStack() != null) {
             final ItemMeta meta = item.getItemStack().getItemMeta();
             final StringBuilder sb2 = new StringBuilder();
             if (meta != null) {
                 for (final Enchantment enchant : meta.getEnchants().keySet()) {
                     if (sb2.length() > 0) {
-                        sb.append(", ");
+                        sb2.append(", ");
                     }
                     sb2.append(String.format("&b%s&r (%s)", enchant.getKey().getKey(),
                         item.getItemStack().getItemMeta().getEnchants().get(enchant)));
@@ -1133,7 +1247,7 @@ public class CustomDropsParser {
 
             if (sb2.length() > 0) {
                 sb.append(System.lineSeparator());
-                sb.append("         ");
+                sb.append("    ");
                 sb.append(sb2);
             }
         }
@@ -1141,8 +1255,7 @@ public class CustomDropsParser {
         return sb.toString();
     }
 
-    @Nullable
-    private ConfigurationSection objTo_CS(final ConfigurationSection cs, final String path) {
+    @Nullable private ConfigurationSection objTo_CS(final ConfigurationSection cs, final String path) {
         if (cs == null) {
             return null;
         }

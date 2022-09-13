@@ -21,7 +21,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.TreeMap;
 import java.util.WeakHashMap;
-import java.util.stream.Collectors;
 import me.lokka30.levelledmobs.LevelInterface;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.LivingEntityInterface;
@@ -39,6 +38,7 @@ import me.lokka30.levelledmobs.misc.DebugType;
 import me.lokka30.levelledmobs.misc.LevellableState;
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
 import me.lokka30.levelledmobs.misc.MythicMobsMobInfo;
+import me.lokka30.levelledmobs.result.NametagResult;
 import me.lokka30.levelledmobs.misc.QueueItem;
 import me.lokka30.levelledmobs.result.NBTApplyResult;
 import me.lokka30.levelledmobs.result.PlayerHomeCheckResult;
@@ -59,7 +59,6 @@ import me.lokka30.levelledmobs.rules.strategies.SpawnDistanceStrategy;
 import me.lokka30.levelledmobs.rules.strategies.YDistanceStrategy;
 import me.lokka30.levelledmobs.util.MythicMobUtils;
 import me.lokka30.levelledmobs.util.Utils;
-import me.lokka30.microlib.messaging.MessageUtils;
 import me.lokka30.microlib.other.VersionUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -92,6 +91,7 @@ import org.jetbrains.annotations.Nullable;
  * @author lokka30, stumper66, CoolBoy, Esophose, 7smile7, Shevchik, Hugo5551, limzikiki
  * @since 2.4.0
  */
+@SuppressWarnings("deprecation")
 public class LevelManager implements LevelInterface {
 
     public LevelManager(final LevelledMobs main) {
@@ -386,10 +386,10 @@ public class LevelManager implements LevelInterface {
             Location useLocation = result.location;
             if (useLocation == null || useLocation.getWorld() != player.getWorld()) {
                 netherOrWorldSpawnResult = Utils.getPortalOrWorldSpawn(main, player);
-                useLocation = netherOrWorldSpawnResult.location;
-                if (netherOrWorldSpawnResult.isWorldPortalLocation) {
+                useLocation = netherOrWorldSpawnResult.location();
+                if (netherOrWorldSpawnResult.isWorldPortalLocation()) {
                     sourceResult.homeNameUsed = "world_portal";
-                } else if (netherOrWorldSpawnResult.isNetherPortalLocation) {
+                } else if (netherOrWorldSpawnResult.isNetherPortalLocation()) {
                     sourceResult.homeNameUsed = "nether_portal";
                 } else {
                     sourceResult.homeNameUsed = "spawn";
@@ -408,10 +408,10 @@ public class LevelManager implements LevelInterface {
             if (useLocation == null || useLocation.getWorld() != player.getWorld()) {
                 final PlayerNetherOrWorldSpawnResult result = Utils.getPortalOrWorldSpawn(main,
                     player);
-                useLocation = result.location;
-                if (result.isWorldPortalLocation) {
+                useLocation = result.location();
+                if (result.isWorldPortalLocation()) {
                     sourceResult.homeNameUsed = "world_portal";
-                } else if (result.isNetherPortalLocation) {
+                } else if (result.isNetherPortalLocation()) {
                     sourceResult.homeNameUsed = "nether_portal";
                 } else {
                     sourceResult.homeNameUsed = "spawn";
@@ -522,7 +522,7 @@ public class LevelManager implements LevelInterface {
                 hasOverride = true;
             }
 
-            if (dropResult.hasOverride) {
+            if (dropResult.hasOverride()) {
                 hasOverride = true;
             }
 
@@ -588,8 +588,7 @@ public class LevelManager implements LevelInterface {
         }
     }
 
-    @NotNull
-    private List<ItemStack> getDropsToMultiply(@NotNull final LivingEntityWrapper lmEntity,
+    @NotNull private List<ItemStack> getDropsToMultiply(@NotNull final LivingEntityWrapper lmEntity,
         @NotNull final List<ItemStack> drops) {
         final List<ItemStack> results = new ArrayList<>(drops.size());
         results.addAll(drops);
@@ -677,9 +676,13 @@ public class LevelManager implements LevelInterface {
         }
     }
 
-    @Nullable
-    public String getNametag(final LivingEntityWrapper lmEntity, final boolean isDeathNametag) {
+    @NotNull public NametagResult getNametag(final @NotNull LivingEntityWrapper lmEntity, final boolean isDeathNametag) {
+        return getNametag(lmEntity, isDeathNametag, false);
+    }
+
+    @NotNull public NametagResult getNametag(final @NotNull LivingEntityWrapper lmEntity, final boolean isDeathNametag, boolean preserveMobName) {
         String nametag;
+        boolean hadCustomDeathMessage = false;
         if (isDeathNametag) {
             nametag = main.rulesManager.getRuleNametagCreatureDeath(lmEntity);
         } else {
@@ -691,7 +694,16 @@ public class LevelManager implements LevelInterface {
         }
 
         if ("disabled".equalsIgnoreCase(nametag) || "none".equalsIgnoreCase(nametag)) {
-            return null;
+            return new NametagResult(null);
+        }
+
+        if (isDeathNametag){
+            final String deathMessage = main.rulesManager.getDeathMessage(lmEntity);
+            if (deathMessage != null && !deathMessage.isEmpty()){
+                nametag = deathMessage.replace("%death_nametag%", nametag);
+                preserveMobName = false;
+                hadCustomDeathMessage = true;
+            }
         }
 
         final boolean useCustomNameForNametags = main.helperSettings.getBoolean(main.settingsCfg,
@@ -699,17 +711,16 @@ public class LevelManager implements LevelInterface {
         // ignore if 'disabled'
         if (nametag.isEmpty()) {
             if (useCustomNameForNametags) {
-                return lmEntity.getTypeName();
+                return new NametagResult(lmEntity.getTypeName());
             } else {
-                return lmEntity.getLivingEntity()
-                    .getCustomName(); // CustomName can be null, that is meant to be the case.
+                return new NametagResult(lmEntity.getLivingEntity().getCustomName()); // CustomName can be null, that is meant to be the case.
             }
         }
         if (!lmEntity.isLevelled()) {
             nametag = "";
         }
 
-        return updateNametag(lmEntity, nametag, useCustomNameForNametags);
+        return updateNametag(lmEntity, nametag, useCustomNameForNametags, preserveMobName, hadCustomDeathMessage);
     }
 
     private void checkLockedNametag(final @NotNull LivingEntityWrapper lmEntity) {
@@ -739,17 +750,18 @@ public class LevelManager implements LevelInterface {
         }
     }
 
-    @NotNull
-    public String updateNametag(final LivingEntityWrapper lmEntity, @NotNull String nametag,
-        final boolean useCustomNameForNametags) {
-        return updateNametag(lmEntity, nametag, useCustomNameForNametags, true);
+    @NotNull public NametagResult updateNametag(final @NotNull LivingEntityWrapper lmEntity, @NotNull String nametag,
+                                                final boolean useCustomNameForNametags) {
+        return updateNametag(lmEntity, nametag, useCustomNameForNametags, false, false);
     }
 
-    @NotNull
-    public String updateNametag(final LivingEntityWrapper lmEntity, @NotNull String nametag,
-        final boolean useCustomNameForNametags, final boolean colorize) {
+    @NotNull public NametagResult updateNametag(final @NotNull LivingEntityWrapper lmEntity, @NotNull String nametag,
+                                                final boolean useCustomNameForNametags, final boolean preserveMobName,
+                                                final boolean hadCustomDeathMessage) {
         if (nametag.isEmpty()) {
-            return nametag;
+            final NametagResult result = new NametagResult(nametag);
+            result.hadCustomDeathMessage = hadCustomDeathMessage;
+            return result;
         }
 
         checkLockedNametag(lmEntity);
@@ -757,108 +769,45 @@ public class LevelManager implements LevelInterface {
             main.rulesManager.getRuleEntityOverriddenName(lmEntity, useCustomNameForNametags) :
             lmEntity.lockedOverrideName;
 
-        String displayName = overridenName == null ?
-            Utils.capitalize(lmEntity.getTypeName().replaceAll("_", " ")) :
-            overridenName;
+        boolean hasOverridenName = (overridenName != null && !overridenName.isEmpty());
+        String displayName = overridenName;
+
+        if (preserveMobName)
+            displayName =  "{DisplayName}";
+        else if (!hasOverridenName)
+            displayName = Utils.capitalize(lmEntity.getTypeName().replaceAll("_", " "));
 
         if (lmEntity.getLivingEntity().getCustomName() != null && !useCustomNameForNametags) {
             displayName = lmEntity.getLivingEntity().getCustomName();
         }
 
-        nametag = replaceStringPlaceholders(nametag, lmEntity, colorize, false);
+        nametag = replaceStringPlaceholders(nametag, lmEntity, false);
 
         // This is after colorize so that color codes in nametags dont get translated
         nametag = nametag.replace("%displayname%", displayName);
 
         if (nametag.toLowerCase().contains("%health-indicator%")) {
-            nametag = nametag.replace("%health-indicator%", formatHealthIndicator(lmEntity));
+            final HealthIndicator indicator = lmEntity.getMainInstance().rulesManager.getRuleNametagIndicator(lmEntity);
+            final String indicatorStr = indicator == null ? "" : indicator.formatHealthIndicator(lmEntity);
+            nametag = nametag.replace("%health-indicator%", indicatorStr);
         }
 
         if (nametag.contains("%") && ExternalCompatibilityManager.hasPapiInstalled()) {
             nametag = ExternalCompatibilityManager.getPapiPlaceholder(null, nametag);
         }
 
-        return nametag;
+        final NametagResult result = new NametagResult(nametag);
+        // this field is only used for sending nametags to client
+        result.overriddenName = overridenName;
+        result.hadCustomDeathMessage = hadCustomDeathMessage;
+
+        return result;
     }
 
-    @NotNull
-    private String formatHealthIndicator(final LivingEntityWrapper lmEntity) {
-        final HealthIndicator indicator = main.rulesManager.getRuleNametagIndicator(lmEntity);
-        final double mobHealth = lmEntity.getLivingEntity().getHealth();
 
-        if (indicator == null || mobHealth == 0.0) {
-            return "";
-        }
 
-        final int maxIndicators = indicator.maxIndicators != null ? indicator.maxIndicators : 10;
-        final String indicatorStr = indicator.indicator != null ? indicator.indicator : "▐";
-        final double scale = indicator.scale != null ? indicator.scale : 5.0;
-
-        int indicatorsToUse = scale == 0 ?
-            (int) Math.ceil(mobHealth) : (int) Math.ceil(mobHealth / scale);
-        final int tiersToUse = (int) Math.ceil((double) indicatorsToUse / (double) maxIndicators);
-        int toRecolor = 0;
-        if (tiersToUse > 0) {
-            toRecolor = indicatorsToUse % maxIndicators;
-        }
-
-        String primaryColor = "";
-        String secondaryColor = "";
-
-        if (indicator.tiers != null) {
-            if (indicator.tiers.containsKey(tiersToUse)) {
-                primaryColor = indicator.tiers.get(tiersToUse);
-            } else if (indicator.tiers.containsKey(0)) {
-                primaryColor = indicator.tiers.get(0);
-            }
-
-            if (tiersToUse > 0 && indicator.tiers.containsKey(tiersToUse - 1)) {
-                secondaryColor = indicator.tiers.get(tiersToUse - 1);
-            } else if (indicator.tiers.containsKey(0)) {
-                secondaryColor = indicator.tiers.get(0);
-            }
-        }
-
-        String result = primaryColor;
-
-        if (tiersToUse < 2) {
-            boolean useHalf = false;
-            if (indicator.indicatorHalf != null && indicatorsToUse < maxIndicators) {
-                useHalf = scale / 2.0 <= (indicatorsToUse * scale) - mobHealth;
-                if (useHalf && indicatorsToUse > 0) {
-                    indicatorsToUse--;
-                }
-            }
-
-            result += indicatorStr.repeat(indicatorsToUse);
-            if (useHalf) {
-                result += indicator.indicatorHalf;
-            }
-        } else {
-            if (toRecolor == 0) {
-                result += primaryColor + indicatorStr.repeat(maxIndicators);
-            } else {
-                result += primaryColor + indicatorStr.repeat(toRecolor);
-                result += secondaryColor + indicatorStr.repeat(maxIndicators - toRecolor);
-            }
-        }
-
-        return MessageUtils.colorizeAll(result);
-    }
-
-    public String replaceStringPlaceholders(final String nametag,
-        @NotNull final LivingEntityWrapper lmEntity) {
-        return replaceStringPlaceholders(nametag, lmEntity, true);
-    }
-
-    public String replaceStringPlaceholders(final String nametag,
-        @NotNull final LivingEntityWrapper lmEntity, final boolean colorize) {
-        return replaceStringPlaceholders(nametag, lmEntity, colorize, true);
-    }
-
-    public String replaceStringPlaceholders(final String nametag,
-        @NotNull final LivingEntityWrapper lmEntity, final boolean colorize,
-        final boolean usePAPI) {
+    public @NotNull String replaceStringPlaceholders(final @NotNull String nametag,
+        @NotNull final LivingEntityWrapper lmEntity, final boolean usePAPI) {
         String result = nametag;
 
         final double maxHealth = getMobAttributeValue(lmEntity);
@@ -905,10 +854,6 @@ public class LevelManager implements LevelInterface {
             result = ExternalCompatibilityManager.getPapiPlaceholder(null, result);
         }
 
-        if (colorize) {
-            result = MessageUtils.colorizeAll(result);
-        }
-
         return result;
     }
 
@@ -927,10 +872,8 @@ public class LevelManager implements LevelInterface {
     }
 
     public void updateNametag(final LivingEntityWrapper lmEntity) {
-        String nametag = getNametag(lmEntity, false);
-        if (nametag != null) {
-            nametag = MessageUtils.colorizeAll(nametag);
-        }
+        final boolean preserveMobName = !main.nametagQueueManager.nmsHandler.isUsingProtocolLib;
+        final NametagResult nametag = getNametag(lmEntity, false, preserveMobName);
 
         final QueueItem queueItem = new QueueItem(
             lmEntity,
@@ -941,11 +884,7 @@ public class LevelManager implements LevelInterface {
         main.nametagQueueManager.addToQueue(queueItem);
     }
 
-    private void updateNametag(final @NotNull LivingEntityWrapper lmEntity, final String nametag) {
-        updateNametag(lmEntity, nametag, lmEntity.getLivingEntity().getWorld().getPlayers());
-    }
-
-    public void updateNametag(final @NotNull LivingEntityWrapper lmEntity, final String nametag,
+    public void updateNametag(final @NotNull LivingEntityWrapper lmEntity, final NametagResult nametag,
         final List<Player> players) {
         main.nametagQueueManager.addToQueue(new QueueItem(lmEntity, nametag, players));
     }
@@ -1113,12 +1052,11 @@ public class LevelManager implements LevelInterface {
         final @NotNull List<Player> players) {
         final LivingEntity mob = lmEntity.getLivingEntity();
         final List<Player> sortedPlayers = players.stream()
-            .filter(p -> mob.getWorld().equals(p.getWorld()))
-            .filter(p -> p.getGameMode() != GameMode.SPECTATOR)
-            .map(p -> Map.entry(mob.getLocation().distanceSquared(p.getLocation()), p))
-            .sorted(Comparator.comparingDouble(Map.Entry::getKey))
-            .map(Map.Entry::getValue)
-            .collect(Collectors.toList());
+                .filter(p -> mob.getWorld().equals(p.getWorld()))
+                .filter(p -> p.getGameMode() != GameMode.SPECTATOR)
+                .map(p -> Map.entry(mob.getLocation().distanceSquared(p.getLocation()), p))
+                .sorted(Comparator.comparingDouble(Map.Entry::getKey))
+                .map(Map.Entry::getValue).toList();
 
         Player closestPlayer = null;
         for (final Player player : sortedPlayers) {
@@ -1176,10 +1114,8 @@ public class LevelManager implements LevelInterface {
             location.getWorld().equals(lmEntity.getWorld()) &&
             lmEntity.getLocation().distanceSquared(location) <= maxDistance) {
             //if within distance, update nametag.
-            String nametag = main.levelManager.getNametag(lmEntity, false);
-            if (nametag != null) {
-                nametag = MessageUtils.colorizeAll(nametag);
-            }
+            final boolean preserveMobName = !main.nametagQueueManager.nmsHandler.isUsingProtocolLib;
+            final NametagResult nametag = main.levelManager.getNametag(lmEntity, false, preserveMobName);
             main.nametagQueueManager.addToQueue(
                 new QueueItem(lmEntity, nametag, Collections.singletonList(player)));
         }
@@ -1243,45 +1179,23 @@ public class LevelManager implements LevelInterface {
         // This functionality should be added into the enum.
         final Attribute attribute;
         switch (addition) {
-            case ATTRIBUTE_MAX_HEALTH:
-                attribute = Attribute.GENERIC_MAX_HEALTH;
-                break;
-            case ATTRIBUTE_ATTACK_DAMAGE:
-                attribute = Attribute.GENERIC_ATTACK_DAMAGE;
-                break;
-            case ATTRIBUTE_MOVEMENT_SPEED:
-                attribute = Attribute.GENERIC_MOVEMENT_SPEED;
-                break;
-            case ATTRIBUTE_HORSE_JUMP_STRENGTH:
-                attribute = Attribute.HORSE_JUMP_STRENGTH;
-                break;
-            case ATTRIBUTE_ARMOR_BONUS:
-                attribute = Attribute.GENERIC_ARMOR;
-                break;
-            case ATTRIBUTE_ARMOR_TOUGHNESS:
-                attribute = Attribute.GENERIC_ARMOR_TOUGHNESS;
-                break;
-            case ATTRIBUTE_KNOCKBACK_RESISTANCE:
-                attribute = Attribute.GENERIC_KNOCKBACK_RESISTANCE;
-                break;
-            case ATTRIBUTE_FLYING_SPEED:
-                attribute = Attribute.GENERIC_FLYING_SPEED;
-                break;
-            case ATTRIBUTE_ATTACK_KNOCKBACK:
-                attribute = Attribute.GENERIC_ATTACK_KNOCKBACK;
-                break;
-            case ATTRIBUTE_FOLLOW_RANGE:
-                attribute = Attribute.GENERIC_FOLLOW_RANGE;
-                break;
-            case ATTRIBUTE_ZOMBIE_SPAWN_REINFORCEMENTS:
+            case ATTRIBUTE_MAX_HEALTH -> attribute = Attribute.GENERIC_MAX_HEALTH;
+            case ATTRIBUTE_ATTACK_DAMAGE -> attribute = Attribute.GENERIC_ATTACK_DAMAGE;
+            case ATTRIBUTE_MOVEMENT_SPEED -> attribute = Attribute.GENERIC_MOVEMENT_SPEED;
+            case ATTRIBUTE_HORSE_JUMP_STRENGTH -> attribute = Attribute.HORSE_JUMP_STRENGTH;
+            case ATTRIBUTE_ARMOR_BONUS -> attribute = Attribute.GENERIC_ARMOR;
+            case ATTRIBUTE_ARMOR_TOUGHNESS -> attribute = Attribute.GENERIC_ARMOR_TOUGHNESS;
+            case ATTRIBUTE_KNOCKBACK_RESISTANCE -> attribute = Attribute.GENERIC_KNOCKBACK_RESISTANCE;
+            case ATTRIBUTE_FLYING_SPEED -> attribute = Attribute.GENERIC_FLYING_SPEED;
+            case ATTRIBUTE_ATTACK_KNOCKBACK -> attribute = Attribute.GENERIC_ATTACK_KNOCKBACK;
+            case ATTRIBUTE_FOLLOW_RANGE -> attribute = Attribute.GENERIC_FOLLOW_RANGE;
+            case ATTRIBUTE_ZOMBIE_SPAWN_REINFORCEMENTS -> {
                 if (lmEntity.getSpawnReason() == LevelledMobSpawnReason.REINFORCEMENTS) {
                     return;
                 }
                 attribute = Attribute.ZOMBIE_SPAWN_REINFORCEMENTS;
-                break;
-
-            default:
-                throw new IllegalStateException(
+            }
+            default -> throw new IllegalStateException(
                     "Addition must be an Attribute, if so, it has not been considered in this method");
         }
 
@@ -1406,7 +1320,7 @@ public class LevelManager implements LevelInterface {
         boolean hadPlayerHead = false;
         final EquippedItemsInfo equippedItemsInfo = new EquippedItemsInfo();
 
-        for (final Map.Entry<ItemStack, CustomDropItem> pair : dropResult.stackToItem) {
+        for (final Map.Entry<ItemStack, CustomDropItem> pair : dropResult.stackToItem()) {
             final ItemStack itemStack = pair.getKey();
             final Material material = itemStack.getType();
 
@@ -1470,8 +1384,7 @@ public class LevelManager implements LevelInterface {
         return result;
     }
 
-    @NotNull
-    public LevellableState getLevellableState(@NotNull final LivingEntityInterface lmInterface) {
+    @NotNull public LevellableState getLevellableState(@NotNull final LivingEntityInterface lmInterface) {
         /*
         Certain entity types are force-blocked, regardless of what the user has configured.
         This is also ran in getLevellableState(EntityType), however it is important that this is ensured
@@ -1493,11 +1406,9 @@ public class LevelManager implements LevelInterface {
             return LevellableState.DENIED_LEVEL_0;
         }
 
-        if (!(lmInterface instanceof LivingEntityWrapper)) {
+        if (!(lmInterface instanceof final LivingEntityWrapper lmEntity)) {
             return LevellableState.ALLOWED;
         }
-
-        final LivingEntityWrapper lmEntity = (LivingEntityWrapper) lmInterface;
 
         final LevellableState externalCompatResult = ExternalCompatibilityManager.checkAllExternalCompats(
             lmEntity, main);
@@ -1757,8 +1668,7 @@ public class LevelManager implements LevelInterface {
         Utils.debugLog(main, DebugType.APPLY_LEVEL_SUCCESS, sb.toString());
     }
 
-    @NotNull
-    private String getNBT_DebugMessage(final @NotNull List<NBTApplyResult> results) {
+    @NotNull private String getNBT_DebugMessage(final @NotNull List<NBTApplyResult> results) {
         final StringBuilder sb = new StringBuilder();
 
         for (final NBTApplyResult result : results) {
@@ -1923,6 +1833,6 @@ public class LevelManager implements LevelInterface {
         lmEntity.invalidateCache();
 
         // update nametag
-        main.levelManager.updateNametag(lmEntity, lmEntity.getLivingEntity().getCustomName());
+        main.levelManager.updateNametag(lmEntity);
     }
 }

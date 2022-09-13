@@ -17,7 +17,6 @@ import me.lokka30.levelledmobs.customdrops.CustomDropItem;
 import me.lokka30.levelledmobs.misc.DebugType;
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
 import me.lokka30.levelledmobs.result.NBTApplyResult;
-import org.bukkit.entity.LivingEntity;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -26,8 +25,7 @@ import org.jetbrains.annotations.NotNull;
  */
 public class NBTManager {
 
-    @NotNull
-    public static NBTApplyResult applyNBT_Data_Item(@NotNull final CustomDropItem item,
+    @NotNull public static NBTApplyResult applyNBT_Data_Item(@NotNull final CustomDropItem item,
         @NotNull final String nbtStuff) {
         final NBTApplyResult result = new NBTApplyResult();
         final NBTItem nbtent = new NBTItem(item.getItemStack());
@@ -65,11 +63,6 @@ public class NBTManager {
         }
 
         return result;
-    }
-
-    public static String getNbtDumpOfEntity(final @NotNull LivingEntity entity) {
-        final NBTEntity nbt = new NBTEntity(entity);
-        return nbt.toString();
     }
 
     private static void showChangedJson(final String jsonBefore, final String jsonAfter,

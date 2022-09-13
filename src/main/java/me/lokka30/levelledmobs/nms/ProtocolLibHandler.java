@@ -9,11 +9,12 @@ import java.util.ConcurrentModificationException;
 import java.util.Optional;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.misc.DebugType;
+import me.lokka30.levelledmobs.result.NametagResult;
 import me.lokka30.levelledmobs.util.Utils;
+import me.lokka30.microlib.messaging.MessageUtils;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * Handles sending nametag packets to player via ProtocolLib
@@ -29,8 +30,10 @@ public class ProtocolLibHandler implements NMSUtil {
 
     private final LevelledMobs main;
 
-    public void sendNametag(final @NotNull LivingEntity livingEntity, @Nullable String nametag,
-        @NotNull Player player, final boolean doAlwaysVisible) {
+    public void sendNametag(final @NotNull LivingEntity livingEntity, final @NotNull NametagResult nametagInfo,
+                            final @NotNull Player player, final boolean doAlwaysVisible) {
+
+        if (!player.isOnline() || !player.isValid()) return;
         final WrappedDataWatcher dataWatcher;
         final WrappedDataWatcher.Serializer chatSerializer;
 
@@ -61,13 +64,14 @@ public class ProtocolLibHandler implements NMSUtil {
             2, chatSerializer);
         final int objectIndex = 3;
         final int fieldIndex = 0;
-        final Optional<Object> optional = Utils.isNullOrEmpty(nametag) ?
+        final Optional<Object> optional = nametagInfo.isNullOrEmpty() ?
             Optional.empty()
-            : Optional.of(WrappedChatComponent.fromChatMessage(nametag)[0].getHandle());
+            : Optional.of(WrappedChatComponent.fromChatMessage(
+                    MessageUtils.colorizeAll(nametagInfo.getNametag()))[0].getHandle());
 
         dataWatcher.setObject(watcherObject, optional);
 
-        if (nametag == null) {
+        if (nametagInfo.isNullOrEmpty()) {
             dataWatcher.setObject(objectIndex, false);
         } else {
             dataWatcher.setObject(objectIndex, doAlwaysVisible);

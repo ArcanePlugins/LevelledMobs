@@ -74,15 +74,13 @@ public class KillSubcommand extends MessagesBase implements Subcommand {
         }
 
         switch (args[1].toLowerCase()) {
-            case "all":
+            case "all" -> {
                 if (!sender.hasPermission("levelledmobs.command.kill.all")) {
                     main.configUtils.sendNoPermissionMsg(sender);
                     return;
                 }
-
                 if (checkArgs == 2) {
-                    if (sender instanceof Player) {
-                        final Player player = (Player) sender;
+                    if (sender instanceof Player player) {
                         parseKillAll(List.of(player.getWorld()), main, useNoDrops, rl);
                     } else {
                         showMessage("command.levelledmobs.kill.all.usage-console");
@@ -100,9 +98,7 @@ public class KillSubcommand extends MessagesBase implements Subcommand {
                         final World world = Bukkit.getWorld(args[2]);
                         if (world == null) {
                             showMessage("command.levelledmobs.kill.all.invalid-world", "%world%",
-                                args[2]);
-                            // TODO: see if we still need to follow the instructions below
-                            //messages = Utils.replaceAllInList(messages, "%world%", args[2]); //This is after the list is colourised to ensure that an input of a world name '&aGreen' will not be colourised.
+                                    args[2]);
                             return;
                         }
                         parseKillAll(List.of(world), main, useNoDrops, rl);
@@ -110,13 +106,12 @@ public class KillSubcommand extends MessagesBase implements Subcommand {
                 } else {
                     showMessage("command.levelledmobs.kill.all.usage");
                 }
-                break;
-            case "near":
+            }
+            case "near" -> {
                 if (!sender.hasPermission("levelledmobs.command.kill.near")) {
                     main.configUtils.sendNoPermissionMsg(sender);
                     return;
                 }
-
                 if (checkArgs == 3 || checkArgs == 4) {
                     if (!(sender instanceof BlockCommandSender) && !(sender instanceof Player)) {
                         showMessage("common.players-only");
@@ -128,7 +123,7 @@ public class KillSubcommand extends MessagesBase implements Subcommand {
                         radius = Integer.parseInt(args[2]);
                     } catch (final NumberFormatException exception) {
                         showMessage("command.levelledmobs.kill.near.invalid-radius", "%radius%",
-                            args[2]);
+                                args[2]);
                         //messages = Utils.replaceAllInList(messages, "%radius%", args[2]); //After the list is colourised, so %radius% is not coloursied.
                         return;
                     }
@@ -137,14 +132,14 @@ public class KillSubcommand extends MessagesBase implements Subcommand {
                     if (radius > maxRadius) {
                         radius = maxRadius;
                         showMessage("command.levelledmobs.kill.near.invalid-radius-max",
-                            "%maxRadius%", String.valueOf(maxRadius));
+                                "%maxRadius%", String.valueOf(maxRadius));
                     }
 
                     final int minRadius = 1;
                     if (radius < minRadius) {
                         radius = minRadius;
                         showMessage("command.levelledmobs.kill.near.invalid-radius-min",
-                            "%minRadius%", String.valueOf(minRadius));
+                                "%minRadius%", String.valueOf(minRadius));
                     }
 
                     int killed = 0;
@@ -153,49 +148,46 @@ public class KillSubcommand extends MessagesBase implements Subcommand {
                     if (sender instanceof BlockCommandSender) {
                         final Block block = ((BlockCommandSender) sender).getBlock();
                         mobsToKill = block.getWorld()
-                            .getNearbyEntities(block.getLocation(), radius, radius, radius);
+                                .getNearbyEntities(block.getLocation(), radius, radius, radius);
                     } else {
                         mobsToKill = ((Player) sender).getNearbyEntities(radius, radius, radius);
                     }
 
                     for (final Entity entity : mobsToKill) {
-                        if (entity instanceof LivingEntity) {
-                            final LivingEntity livingEntity = (LivingEntity) entity;
-                            if (main.levelInterface.isLevelled(livingEntity)) {
-                                if (skipKillingEntity(main, livingEntity, rl)) {
-                                    skipped++;
-                                } else {
-                                    livingEntity.setMetadata("noCommands",
-                                        new FixedMetadataValue(main, 1));
+                        if (!(entity instanceof final LivingEntity livingEntity)) continue;
 
-                                    if (useNoDrops) {
-                                        livingEntity.remove();
-                                    } else {
-                                        livingEntity.setHealth(0.0);
-                                    }
-                                    killed++;
-                                }
-                            }
+                        if (!main.levelInterface.isLevelled(livingEntity)) continue;
+
+                        if (skipKillingEntity(main, livingEntity, rl)) {
+                            skipped++;
+                            continue;
                         }
+
+                        livingEntity.setMetadata("noCommands",
+                                new FixedMetadataValue(main, 1));
+
+                        if (useNoDrops) {
+                            livingEntity.remove();
+                        } else {
+                            livingEntity.setHealth(0.0);
+                        }
+                        killed++;
                     }
 
                     showMessage("command.levelledmobs.kill.near.success",
-                        new String[]{"%killed%", "%skipped%", "%radius%"},
-                        new String[]{String.valueOf(killed), String.valueOf(skipped),
-                            String.valueOf(radius)}
+                            new String[]{"%killed%", "%skipped%", "%radius%"},
+                            new String[]{String.valueOf(killed), String.valueOf(skipped),
+                                    String.valueOf(radius)}
                     );
                 } else {
                     showMessage("command.levelledmobs.kill.near.usage");
                 }
-
-                break;
-            default:
-                showMessage("command.levelledmobs.kill.usage");
+            }
+            default -> showMessage("command.levelledmobs.kill.usage");
         }
     }
 
-    @Nullable
-    private RequestedLevel getLevelFromCommand(final @NotNull CommandSender sender,
+    @Nullable private RequestedLevel getLevelFromCommand(final @NotNull CommandSender sender,
         final String @NotNull [] args) {
         int rangeSpecifiedFlag = -1;
 
@@ -269,13 +261,11 @@ public class KillSubcommand extends MessagesBase implements Subcommand {
                 return worlds;
             }
         }
-        if (args[1].equalsIgnoreCase("near")) {
-            if (sender.hasPermission("levelledmobs.command.kill.near")) {
-                if (args.length == 4 && "/levels".equalsIgnoreCase(args[3])) {
-                    return List.of("/levels");
-                } else if (args.length == 3) {
-                    return Utils.oneToNine;
-                }
+        if (args[1].equalsIgnoreCase("near") && sender.hasPermission("levelledmobs.command.kill.near")) {
+            if (args.length == 4 && "/levels".equalsIgnoreCase(args[3])) {
+                return List.of("/levels");
+            } else if (args.length == 3) {
+                return Utils.oneToNine;
             }
         }
 
@@ -297,10 +287,9 @@ public class KillSubcommand extends MessagesBase implements Subcommand {
 
         for (final World world : worlds) {
             for (final Entity entity : world.getEntities()) {
-                if (!(entity instanceof LivingEntity)) {
+                if (!(entity instanceof final LivingEntity livingEntity)) {
                     continue;
                 }
-                final LivingEntity livingEntity = (LivingEntity) entity;
                 if (!main.levelInterface.isLevelled(livingEntity)) {
                     continue;
                 }
@@ -329,8 +318,9 @@ public class KillSubcommand extends MessagesBase implements Subcommand {
         );
     }
 
+    @SuppressWarnings("deprecation")
     private boolean skipKillingEntity(final LevelledMobs main,
-        final @NotNull LivingEntity livingEntity, final RequestedLevel rl) {
+                                      final @NotNull LivingEntity livingEntity, final RequestedLevel rl) {
         if (livingEntity.getCustomName() != null && main.helperSettings.getBoolean(main.settingsCfg,
             "kill-skip-conditions.nametagged")) {
             return true;

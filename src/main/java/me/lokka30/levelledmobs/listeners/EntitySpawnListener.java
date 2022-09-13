@@ -155,8 +155,7 @@ public class EntitySpawnListener implements Listener {
         }
     }
 
-    @NotNull
-    private static List<Player> getPlayersOnServerNearMob(final @NotNull LivingEntity mob,
+    @NotNull private static List<Player> getPlayersOnServerNearMob(final @NotNull LivingEntity mob,
         final int checkDistance) {
         final double maxDistanceSquared = checkDistance * 4;
 
@@ -170,8 +169,7 @@ public class EntitySpawnListener implements Listener {
             .collect(Collectors.toList());
     }
 
-    @NotNull
-    public static List<Player> getPlayersNearMob(final @NotNull LivingEntity mob,
+    @NotNull public static List<Player> getPlayersNearMob(final @NotNull LivingEntity mob,
         final int checkDistance) {
         return mob.getNearbyEntities(checkDistance, checkDistance, checkDistance).stream()
             .filter(e -> e instanceof org.bukkit.entity.Player)
@@ -284,8 +282,7 @@ public class EntitySpawnListener implements Listener {
 
         lmEntity.setSpawnedTimeOfDay((int) lmEntity.getWorld().getTime());
 
-        if (event instanceof SpawnerSpawnEvent) {
-            final SpawnerSpawnEvent spawnEvent = (SpawnerSpawnEvent) event;
+        if (event instanceof final SpawnerSpawnEvent spawnEvent) {
 
             if (spawnEvent.getSpawner() != null && spawnEvent.getSpawner()
                 .getPersistentDataContainer()
@@ -297,8 +294,7 @@ public class EntitySpawnListener implements Listener {
 
             Utils.debugLog(main, DebugType.MOB_SPAWNER,
                 "Spawned mob from vanilla spawner: &b" + spawnEvent.getEntityType());
-        } else if (event instanceof CreatureSpawnEvent) {
-            final CreatureSpawnEvent spawnEvent = (CreatureSpawnEvent) event;
+        } else if (event instanceof final CreatureSpawnEvent spawnEvent) {
 
             if (spawnEvent.getSpawnReason() == CreatureSpawnEvent.SpawnReason.SPAWNER ||
                 spawnEvent.getSpawnReason() == CreatureSpawnEvent.SpawnReason.SLIME_SPLIT) {
@@ -410,8 +406,7 @@ public class EntitySpawnListener implements Listener {
         return result;
     }
 
-    @NotNull
-    private LevellableState getLevellableState(final LivingEntityWrapper lmEntity,
+    @NotNull private LevellableState getLevellableState(final LivingEntityWrapper lmEntity,
         @NotNull final Event event) {
         final LevellableState levellableState = main.levelInterface.getLevellableState(lmEntity);
 
@@ -419,8 +414,7 @@ public class EntitySpawnListener implements Listener {
             return levellableState;
         }
 
-        if (event instanceof CreatureSpawnEvent) {
-            final CreatureSpawnEvent creatureSpawnEvent = (CreatureSpawnEvent) event;
+        if (event instanceof final CreatureSpawnEvent creatureSpawnEvent) {
 
             // the mob gets processed via SpawnerSpawnEvent
             if (((CreatureSpawnEvent) event).getSpawnReason()

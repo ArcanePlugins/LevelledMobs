@@ -126,8 +126,7 @@ public class ExternalCompatibilityManager {
         return checkIfPluginIsInstalledAndEnabled("NBTAPI");
     }
 
-    @NotNull
-    public static String getPapiPlaceholder(final Player player, final String placeholder) {
+    @NotNull public static String getPapiPlaceholder(final Player player, final String placeholder) {
         return me.clip.placeholderapi.PlaceholderAPI.setPlaceholders(player, placeholder);
     }
 
@@ -215,8 +214,7 @@ public class ExternalCompatibilityManager {
         return false;
     }
 
-    @NotNull
-    public static String getMythicMobInternalName(@NotNull final LivingEntityWrapper lmEntity) {
+    @NotNull public static String getMythicMobInternalName(@NotNull final LivingEntityWrapper lmEntity) {
         if (!isMythicMob(lmEntity)) {
             return "";
         }
@@ -485,8 +483,7 @@ public class ExternalCompatibilityManager {
         return isExternalType;
     }
 
-    @NotNull
-    public static List<String> getWGRegionsAtLocation(
+    @NotNull public static List<String> getWGRegionsAtLocation(
         @NotNull final LivingEntityInterface lmInterface) {
         if (!ExternalCompatibilityManager.hasWorldGuardInstalled()) {
             return Collections.emptyList();
@@ -495,8 +492,7 @@ public class ExternalCompatibilityManager {
         return WorldGuardIntegration.getWorldGuardRegionsForLocation(lmInterface);
     }
 
-    @NotNull
-    public static PlayerHomeCheckResult getPlayerHomeLocation(final @NotNull Player player,
+    @NotNull public static PlayerHomeCheckResult getPlayerHomeLocation(final @NotNull Player player,
         final boolean allowBed) {
         final Plugin plugin = Bukkit.getPluginManager().getPlugin("essentials");
         if (plugin == null) {

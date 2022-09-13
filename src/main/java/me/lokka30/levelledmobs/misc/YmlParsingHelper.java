@@ -44,8 +44,7 @@ public class YmlParsingHelper {
         return cs.getBoolean(useName, defaultValue);
     }
 
-    @Nullable
-    public Boolean getBoolean2(final ConfigurationSection cs, @NotNull final String name,
+    @Nullable public Boolean getBoolean2(final ConfigurationSection cs, @NotNull final String name,
         final Boolean defaultValue) {
         if (cs == null) {
             return defaultValue;
@@ -59,13 +58,11 @@ public class YmlParsingHelper {
         }
     }
 
-    @Nullable
-    public String getString(final ConfigurationSection cs, @NotNull final String name) {
+    @Nullable public String getString(final ConfigurationSection cs, @NotNull final String name) {
         return getString(cs, name, null);
     }
 
-    @Nullable
-    public String getString(final ConfigurationSection cs, @NotNull final String name,
+    @Nullable public String getString(final ConfigurationSection cs, @NotNull final String name,
         final String defaultValue) {
         if (cs == null) {
             return defaultValue;
@@ -75,8 +72,7 @@ public class YmlParsingHelper {
         return cs.getString(useName, defaultValue);
     }
 
-    @NotNull
-    public Set<String> getStringSet(final ConfigurationSection cs, @NotNull final String name) {
+    @NotNull public Set<String> getStringSet(final ConfigurationSection cs, @NotNull final String name) {
         final String useName = getKeyNameFromConfig(cs, name);
 
         final Set<String> results = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
@@ -104,8 +100,7 @@ public class YmlParsingHelper {
         return cs.getInt(useName, defaultValue);
     }
 
-    @Nullable
-    public Integer getInt2(final ConfigurationSection cs, @NotNull final String name,
+    @Nullable public Integer getInt2(final ConfigurationSection cs, @NotNull final String name,
         final Integer defaultValue) {
         if (cs == null) {
             return defaultValue;
@@ -130,8 +125,7 @@ public class YmlParsingHelper {
         return cs.getDouble(useName, 0);
     }
 
-    @Nullable
-    public Double getDouble2(final ConfigurationSection cs, @NotNull final String name,
+    @Nullable public Double getDouble2(final ConfigurationSection cs, @NotNull final String name,
         final Double defaultValue) {
         if (cs == null) {
             return defaultValue;
@@ -159,8 +153,7 @@ public class YmlParsingHelper {
         return (float) cs.getDouble(useName, defaultValue);
     }
 
-    @Nullable
-    public Float getFloat2(final ConfigurationSection cs, @NotNull final String name,
+    @Nullable public Float getFloat2(final ConfigurationSection cs, @NotNull final String name,
         final Float defaultValue) {
         if (cs == null) {
             return defaultValue;
@@ -174,8 +167,7 @@ public class YmlParsingHelper {
         }
     }
 
-    @Nullable
-    public Integer getIntTimeUnit(final ConfigurationSection cs, @NotNull final String name,
+    @Nullable public Integer getIntTimeUnit(final ConfigurationSection cs, @NotNull final String name,
         final Integer defaultValue) {
         if (cs == null) {
             return defaultValue;
@@ -257,50 +249,36 @@ public class YmlParsingHelper {
 
         Duration duration = null;
         switch (unit) {
-            case "ms":
-            case "millisecond":
-            case "milliseconds":
-                duration = Duration.ofMillis(time);
-                break;
-            case "s":
-            case "second":
-            case "seconds":
+            case "ms", "millisecond", "milliseconds" -> duration = Duration.ofMillis(time);
+            case "s", "second", "seconds" -> {
                 duration = Duration.ofSeconds(time);
                 if (remainder > 0.0) {
                     duration = duration.plusMillis((long) (1000.0 * remainder));
                 }
-                break;
-            case "m":
-            case "minute":
-            case "minutes":
+            }
+            case "m", "minute", "minutes" -> {
                 duration = Duration.ofMinutes(time);
                 if (remainder > 0.0) {
                     duration = duration.plusMillis((long) (60000.0 * remainder));
                 }
-                break;
-            case "h":
-            case "hour":
-            case "hours":
+            }
+            case "h", "hour", "hours" -> {
                 duration = Duration.ofHours(time);
                 if (remainder > 0.0) {
                     duration = duration.plusMillis((long) (3600000.0 * remainder));
                 }
-                break;
-            case "d":
-            case "day":
-            case "days":
+            }
+            case "d", "day", "days" -> {
                 duration = Duration.ofDays(time);
                 if (remainder > 0.0) {
                     duration = duration.plusSeconds((long) (86400.0 * remainder));
                 }
-                break;
-            case "":
-                duration = useMS ? Duration.ofMillis(time) : Duration.ofSeconds(time);
-                break;
-            default:
+            }
+            case "" -> duration = useMS ? Duration.ofMillis(time) : Duration.ofSeconds(time);
+            default -> {
                 Utils.logger.warning("Invalid time unit specified: " + input + " (" + unit + ")");
                 Utils.logger.info(String.format("%s, %s", match.group(1), match.group(1)));
-                break;
+            }
         }
 
         if (duration != null) {
@@ -312,8 +290,7 @@ public class YmlParsingHelper {
         return defaultTime;
     }
 
-    @NotNull
-    public static List<String> getListFromConfigItem(@NotNull final ConfigurationSection cs,
+    @NotNull public static List<String> getListFromConfigItem(@NotNull final ConfigurationSection cs,
         final String key) {
         String foundKeyName = null;
         for (final String enumeratedKey : cs.getKeys(false)) {
@@ -336,8 +313,7 @@ public class YmlParsingHelper {
         return result;
     }
 
-    @NotNull
-    public String getKeyNameFromConfig(final @NotNull ConfigurationSection cs,
+    @NotNull public String getKeyNameFromConfig(final @NotNull ConfigurationSection cs,
         final @NotNull String key) {
         if (!key.contains(".")) {
             for (final String enumeratedKey : cs.getKeys(false)) {
@@ -391,8 +367,7 @@ public class YmlParsingHelper {
         return sb.toString();
     }
 
-    @Nullable
-    public ConfigurationSection objTo_CS(final ConfigurationSection cs, final String path) {
+    @Nullable public ConfigurationSection objTo_CS(final ConfigurationSection cs, final String path) {
         if (cs == null) {
             return null;
         }

@@ -79,8 +79,7 @@ public class SpawnerBaseClass extends MessagesBase {
         return keyValue;
     }
 
-    @Nullable
-    private String parseFlagValue(final String keyName, final int argNumber,
+    @Nullable private String parseFlagValue(final String keyName, final int argNumber,
         final String @NotNull [] args, final boolean mustBeNumber) {
         if (argNumber + 1 >= args.length || args[argNumber + 1].startsWith("/")) {
             showMessage("command.levelledmobs.spawner.no-value", "%keyname%", keyName);
@@ -187,7 +186,7 @@ public class SpawnerBaseClass extends MessagesBase {
         }
     }
 
-    List<String> checkTabCompletion(final List<String> options, final String @NotNull [] args) {
+    @NotNull List<String> checkTabCompletion(final List<String> options, final String @NotNull [] args) {
         final Set<String> commandsList = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
         commandsList.addAll(options);
 
@@ -226,16 +225,12 @@ public class SpawnerBaseClass extends MessagesBase {
             this.spawnType = EntityType.UNKNOWN;
         }
 
-        @DoNotMerge
-        final public LevelledMobs main;
-        @DoNotMerge
-        final String label;
-        @DoNotMerge
-        public Player player;
+        @DoNotMerge final public LevelledMobs main;
+        @DoNotMerge final String label;
+        @DoNotMerge public Player player;
         public int minLevel;
         public int maxLevel;
-        @DoNotMerge
-        boolean noLore;
+        @DoNotMerge boolean noLore;
         public Integer delay;
         public Integer maxNearbyEntities;
         public Integer minSpawnDelay;
@@ -244,11 +239,9 @@ public class SpawnerBaseClass extends MessagesBase {
         public Integer spawnCount;
         public Integer spawnRange;
         public String customDropId;
-        @DoNotMerge
-        public String customName;
+        @DoNotMerge public String customName;
         public EntityType spawnType;
-        @DoNotMerge
-        String customLore;
+        @DoNotMerge String customLore;
         public String lore;
     }
 }

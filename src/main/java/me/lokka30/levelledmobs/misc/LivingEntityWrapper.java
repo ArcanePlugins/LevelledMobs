@@ -29,6 +29,7 @@ import org.bukkit.entity.Animals;
 import org.bukkit.entity.Boss;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Flying;
+import org.bukkit.entity.Hoglin;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Monster;
 import org.bukkit.entity.Player;
@@ -60,28 +61,9 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
         this.pdcLock = new ReentrantLock(true);
     }
 
-    @Deprecated(since = "3.2.0")
-    public LivingEntityWrapper(final @NotNull LivingEntity livingEntity,
-        final @NotNull LevelledMobs main) {
-        // this constructor is provided for backwards compatibility only
-        // to get an instance, LivingEntityWrapper#getInstance should be called instead
-        // when finished with it, LivingEntityWrapper#free should be called
-
-        super(main);
-        this.applicableGroups = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
-        this.applicableRules = new LinkedList<>();
-        this.mobExternalTypes = new LinkedList<>();
-        this.deathCause = EntityDamageEvent.DamageCause.CUSTOM;
-        this.cacheLock = new ReentrantLock(true);
-        this.pdcLock = new ReentrantLock(true);
-
-        setLivingEntity(livingEntity);
-    }
-
     // privates:
     private LivingEntity livingEntity;
-    @NotNull
-    private Set<String> applicableGroups;
+    @NotNull private Set<String> applicableGroups;
     private boolean hasCache;
     private boolean isBuildingCache;
     private boolean groupsAreBuilt;
@@ -92,11 +74,9 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
     private long nametagCooldownTime;
     private String sourceSpawnerName;
     private String sourceSpawnEggName;
-    @NotNull
-    private final List<RuleInfo> applicableRules;
+    @NotNull private final List<RuleInfo> applicableRules;
     private List<String> spawnedWGRegions;
-    @NotNull
-    private final List<ExternalCompatibilityManager.ExternalCompatibility> mobExternalTypes;
+    @NotNull private final List<ExternalCompatibilityManager.ExternalCompatibility> mobExternalTypes;
     private FineTuningAttributes fineTuningAttributes;
     private LevelledMobSpawnReason spawnReason;
     private Player playerForLevelling;
@@ -125,8 +105,7 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
     public Player playerForPermissionsCheck;
     public CommandSender summonedSender;
 
-    @NotNull
-    public static LivingEntityWrapper getInstance(final LivingEntity livingEntity,
+    @NotNull public static LivingEntityWrapper getInstance(final LivingEntity livingEntity,
         final @NotNull LevelledMobs main) {
         final LivingEntityWrapper lew;
 
@@ -390,8 +369,7 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
         }
     }
 
-    @Nullable
-    public Map<String, Boolean> getPrevChanceRuleResults() {
+    @Nullable public Map<String, Boolean> getPrevChanceRuleResults() {
         return this.prevChanceRuleResults;
     }
 
@@ -399,13 +377,11 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
         return this.livingEntity;
     }
 
-    @NotNull
-    public String getTypeName() {
+    @NotNull public String getTypeName() {
         return this.livingEntity.getType().toString();
     }
 
-    @NotNull
-    public Set<String> getApplicableGroups() {
+    @NotNull public Set<String> getApplicableGroups() {
         if (!groupsAreBuilt) {
             this.applicableGroups = buildApplicableGroupsForMob();
             groupsAreBuilt = true;
@@ -422,8 +398,7 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
         return this.nametagCooldownTime;
     }
 
-    @Nullable
-    public Player getPlayerForLevelling() {
+    @Nullable public Player getPlayerForLevelling() {
         synchronized (playerLock) {
             return this.playerForLevelling;
         }
@@ -436,8 +411,7 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
         this.playerForPermissionsCheck = player;
     }
 
-    @Nullable
-    public FineTuningAttributes getFineTuningAttributes() {
+    @Nullable public FineTuningAttributes getFineTuningAttributes() {
         if (!hasCache) {
             buildCache();
         }
@@ -445,8 +419,7 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
         return this.fineTuningAttributes;
     }
 
-    @NotNull
-    public List<RuleInfo> getApplicableRules() {
+    @NotNull public List<RuleInfo> getApplicableRules() {
         if (!hasCache) {
             buildCache();
         }
@@ -472,15 +445,13 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
         return this.livingEntity.getType();
     }
 
-    @NotNull
-    public PersistentDataContainer getPDC() {
+    @NotNull public PersistentDataContainer getPDC() {
         return livingEntity.getPersistentDataContainer();
     }
 
     public boolean isBabyMob() {
-        if (livingEntity instanceof Zombie) {
+        if (livingEntity instanceof final Zombie zombie) {
             // for backwards compatibility
-            final Zombie zombie = (Zombie) livingEntity;
             try {
                 zombie.isAdult();
                 return !zombie.isAdult();
@@ -495,8 +466,7 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
         return false;
     }
 
-    @NotNull
-    public LevelledMobSpawnReason getSpawnReason() {
+    @NotNull public LevelledMobSpawnReason getSpawnReason() {
         if (this.spawnReason != null) {
             return this.spawnReason;
         }
@@ -663,8 +633,7 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
         }
     }
 
-    @Nullable
-    public String getSourceSpawnerName() {
+    @Nullable public String getSourceSpawnerName() {
         if (this.sourceSpawnerName != null) {
             return this.sourceSpawnerName;
         }
@@ -688,8 +657,7 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
         return this.sourceSpawnerName;
     }
 
-    @Nullable
-    public String getSourceSpawnEggName() {
+    @Nullable public String getSourceSpawnEggName() {
         if (this.sourceSpawnEggName != null) {
             return this.sourceSpawnEggName;
         }
@@ -712,8 +680,7 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
         return this.sourceSpawnEggName;
     }
 
-    @NotNull
-    public String getNameIfBaby() {
+    @NotNull public String getNameIfBaby() {
         return this.isBabyMob() ?
             "BABY_" + getTypeName() :
             getTypeName();
@@ -730,8 +697,7 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
         }
     }
 
-    @NotNull
-    public List<ExternalCompatibilityManager.ExternalCompatibility> getMobExternalTypes() {
+    @NotNull public List<ExternalCompatibilityManager.ExternalCompatibility> getMobExternalTypes() {
         return this.mobExternalTypes;
     }
 
@@ -751,8 +717,7 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
         }
     }
 
-    @Nullable
-    public String getOverridenEntityName() {
+    @Nullable public String getOverridenEntityName() {
         if (!getPDCLock()) {
             return null;
         }
@@ -765,8 +730,7 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
         }
     }
 
-    @NotNull
-    public String getWGRegionName() {
+    @NotNull public String getWGRegionName() {
         if (this.spawnedWGRegions == null || this.spawnedWGRegions.isEmpty()) {
             return "";
         }
@@ -879,8 +843,7 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
         return this.wasSummoned;
     }
 
-    @NotNull
-    private Set<String> buildApplicableGroupsForMob() {
+    @NotNull private Set<String> buildApplicableGroupsForMob() {
         final Set<String> groups = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
 
         for (final Map.Entry<String, Set<String>> mobGroup : main.customMobGroups.entrySet()) {
@@ -927,7 +890,7 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
             groups.add(CustomUniversalGroups.ALL_AQUATIC_MOBS.toString());
         }
 
-        if (livingEntity instanceof Animals || livingEntity instanceof WaterMob
+        if (livingEntity instanceof Animals && !(livingEntity instanceof Hoglin) || livingEntity instanceof WaterMob
             || main.companion.passiveMobsGroup.contains(eType)) {
             groups.add(CustomUniversalGroups.ALL_PASSIVE_MOBS.toString());
         }

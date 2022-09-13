@@ -61,16 +61,11 @@ public class SpawnerSubCommand extends SpawnerBaseClass implements Subcommand {
             return;
         }
 
-        OperationEnum operationEnum = OperationEnum.CREATE;
-
-        switch (args[1].toLowerCase()) {
-            case "copy":
-                operationEnum = OperationEnum.COPY;
-                break;
-            case "info":
-                operationEnum = OperationEnum.INFO;
-                break;
-        }
+        OperationEnum operationEnum = switch (args[1].toLowerCase()) {
+            case "copy" -> OperationEnum.COPY;
+            case "info" -> OperationEnum.INFO;
+            default -> OperationEnum.CREATE;
+        };
 
         boolean hasGivePlayer = false;
         for (int i = 2; i < args.length; i++) {
@@ -90,15 +85,9 @@ public class SpawnerSubCommand extends SpawnerBaseClass implements Subcommand {
         }
 
         switch (args[1].toLowerCase()) {
-            case "create":
-                parseCreateCommand(args);
-                break;
-            case "copy":
-                parseCopyCommand(args);
-                break;
-            case "info":
-                parseInfoCommand(args);
-                break;
+            case "create" -> parseCreateCommand(args);
+            case "copy" -> parseCopyCommand(args);
+            case "info" -> parseInfoCommand(args);
         }
     }
 
@@ -398,7 +387,7 @@ public class SpawnerSubCommand extends SpawnerBaseClass implements Subcommand {
         return Collections.emptyList();
     }
 
-    private @NotNull List<String> tabCompletions_Create(@NotNull final String @NotNull [] args) {
+    @NotNull private List<String> tabCompletions_Create(@NotNull final String @NotNull [] args) {
         if (!Utils.isNullOrEmpty(args[args.length - 2])) {
             switch (args[args.length - 2].toLowerCase()) {
                 case "/spawntype":

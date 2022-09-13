@@ -172,8 +172,7 @@ public class FileMigrator {
 
     }
 
-    @NotNull
-    private static String compileListFromArray(final @NotNull List<String> list) {
+    @NotNull private static String compileListFromArray(final @NotNull List<String> list) {
         final StringBuilder sb = new StringBuilder();
         sb.append("[");
         for (final String item : list) {
@@ -284,8 +283,7 @@ public class FileMigrator {
         return true;
     }
 
-    @NotNull
-    private static Map<String, KeySectionInfo> buildKeySections(
+    @NotNull private static Map<String, KeySectionInfo> buildKeySections(
         @NotNull final List<String> contents) {
 
         final Map<String, KeySectionInfo> sections = new TreeMap<>();
@@ -769,8 +767,7 @@ public class FileMigrator {
         return count;
     }
 
-    @NotNull
-    private static String getPadding(final int space) {
+    @NotNull private static String getPadding(final int space) {
         return " ".repeat(space);
     }
 
@@ -782,8 +779,7 @@ public class FileMigrator {
         return (key1.equalsIgnoreCase(checkKey));
     }
 
-    @NotNull
-    private static String getEndingKey(@NotNull final String input) {
+    @NotNull private static String getEndingKey(@NotNull final String input) {
         final int lastPeriod = input.lastIndexOf('.');
         if (lastPeriod < 0) {
             return input;
@@ -792,8 +788,7 @@ public class FileMigrator {
         return input.substring(lastPeriod + 1);
     }
 
-    @Nullable
-    private static String getParentKey(@NotNull final String input) {
+    @Nullable private static String getParentKey(@NotNull final String input) {
         final int lastPeriod = input.lastIndexOf('.');
         if (lastPeriod < 0) {
             return null;
@@ -814,8 +809,7 @@ public class FileMigrator {
         return -1;
     }
 
-    @NotNull
-    private static SortedMap<String, FileMigrator.FieldInfo> getMapFromConfig(
+    @NotNull private static SortedMap<String, FileMigrator.FieldInfo> getMapFromConfig(
         @NotNull final List<String> input) {
         final SortedMap<String, FileMigrator.FieldInfo> configMap = new TreeMap<>();
         final List<String> currentKey = new LinkedList<>();

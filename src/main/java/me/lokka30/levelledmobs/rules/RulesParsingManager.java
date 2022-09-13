@@ -57,10 +57,8 @@ public class RulesParsingManager {
     final private LevelledMobs main;
     final private YmlParsingHelper ymlHelper;
     private RuleInfo parsingInfo;
-    @NotNull
-    public final Map<String, RuleInfo> rulePresets;
-    @NotNull
-    public List<RuleInfo> customRules;
+    @NotNull public final Map<String, RuleInfo> rulePresets;
+    @NotNull public List<RuleInfo> customRules;
     public RuleInfo defaultRule;
     private Map<String, Set<String>> customBiomeGroups;
     private final Pattern emptyArrayPattern;
@@ -112,10 +110,11 @@ public class RulesParsingManager {
             this.main.rulesManager.ruleNameMappings.putAll(ruleMappings);
             this.main.rulesManager.rulesCooldown.clear();
         }
+
+        autoGenerateWeightedRandom();
     }
 
-    @NotNull
-    public List<RuleInfo> getAllRules() {
+    @NotNull public List<RuleInfo> getAllRules() {
         final List<RuleInfo> results = new LinkedList<>();
         if (this.defaultRule != null) {
             results.add(this.defaultRule);
@@ -153,8 +152,7 @@ public class RulesParsingManager {
         }
     }
 
-    @NotNull
-    private RuleInfo parseDefaults(final ConfigurationSection cs) {
+    @NotNull private RuleInfo parseDefaults(final ConfigurationSection cs) {
         this.parsingInfo = new RuleInfo("defaults");
         parsingInfo.restrictions_MinLevel = 0;
         parsingInfo.restrictions_MaxLevel = 0;
@@ -174,8 +172,7 @@ public class RulesParsingManager {
         return this.parsingInfo;
     }
 
-    @NotNull
-    private List<RuleInfo> parsePresets(final ConfigurationSection cs) {
+    @NotNull private List<RuleInfo> parsePresets(final ConfigurationSection cs) {
         final List<RuleInfo> results = new LinkedList<>();
         if (cs == null) {
             return results;
@@ -199,8 +196,7 @@ public class RulesParsingManager {
         return results;
     }
 
-    @NotNull
-    private CachedModalList<LevelledMobSpawnReason> buildCachedModalListOfSpawnReason(
+    @NotNull private CachedModalList<LevelledMobSpawnReason> buildCachedModalListOfSpawnReason(
         final ConfigurationSection cs,
         final CachedModalList<LevelledMobSpawnReason> defaultValue) {
         if (cs == null) {
@@ -284,8 +280,7 @@ public class RulesParsingManager {
         return cachedModalList;
     }
 
-    @NotNull
-    private CachedModalList<Biome> buildCachedModalListOfBiome(final ConfigurationSection cs,
+    @NotNull private CachedModalList<Biome> buildCachedModalListOfBiome(final ConfigurationSection cs,
         final CachedModalList<Biome> defaultValue) {
         if (cs == null) {
             return defaultValue;
@@ -389,8 +384,7 @@ public class RulesParsingManager {
         return cachedModalList;
     }
 
-    @Nullable
-    private CachedModalList<String> buildCachedModalListOfString(final ConfigurationSection cs,
+    @Nullable private CachedModalList<String> buildCachedModalListOfString(final ConfigurationSection cs,
         @NotNull final String name, final CachedModalList<String> defaultValue) {
         if (cs == null) {
             return defaultValue;
@@ -465,8 +459,7 @@ public class RulesParsingManager {
         return cachedModalList;
     }
 
-    @NotNull
-    private Set<String> getSetOfGroups(@NotNull final ConfigurationSection cs, final String key) {
+    @NotNull private Set<String> getSetOfGroups(@NotNull final ConfigurationSection cs, final String key) {
         String foundKeyName = null;
         for (final String enumeratedKey : cs.getKeys(false)) {
             if (key.equalsIgnoreCase(enumeratedKey)) {
@@ -514,8 +507,7 @@ public class RulesParsingManager {
         return results;
     }
 
-    @NotNull
-    private List<RuleInfo> parseCustomRules(final Object rulesSection) {
+    @NotNull private List<RuleInfo> parseCustomRules(final Object rulesSection) {
         final List<RuleInfo> results = new LinkedList<>();
         if (rulesSection == null) {
             return results;
@@ -699,8 +691,7 @@ public class RulesParsingManager {
         }
     }
 
-    @Nullable
-    private List<LevelTierMatching> parseNumberRange(final ConfigurationSection cs,
+    @Nullable private List<LevelTierMatching> parseNumberRange(final ConfigurationSection cs,
         final String keyName) {
         if (cs == null) {
             return null;
@@ -775,8 +766,6 @@ public class RulesParsingManager {
             "nametag-placeholder-unlevelled", parsingInfo.nametag_Placeholder_Unlevelled);
         parsingInfo.sunlightBurnAmount = ymlHelper.getDouble2(cs, "sunlight-intensity",
             parsingInfo.sunlightBurnAmount);
-        parsingInfo.lowerMobLevelBiasFactor = ymlHelper.getInt2(cs, "lower-mob-level-bias-factor",
-            parsingInfo.lowerMobLevelBiasFactor);
         parsingInfo.lockEntity = ymlHelper.getBoolean2(cs, "lock-entity", parsingInfo.lockEntity);
         parseNBT_Data(cs);
         parsingInfo.passengerMatchLevel = ymlHelper.getBoolean2(cs, "passenger-match-level",
@@ -796,7 +785,8 @@ public class RulesParsingManager {
         if (parsingInfo.maxAdjacentChunks != null && parsingInfo.maxAdjacentChunks > 10) {
             parsingInfo.maxAdjacentChunks = 10;
         }
-        parseSpawnerPartile(ymlHelper.getString(cs, "spawner-particles"));
+        parseSpawnerParticle(ymlHelper.getString(cs, "spawner-particles"));
+        parseDeathMessages(cs.getConfigurationSection("death-messages"));
 
         final Set<String> nametagVisibility = ymlHelper.getStringSet(cs,
             "nametag-visibility-method");
@@ -831,7 +821,41 @@ public class RulesParsingManager {
         }
     }
 
-    private void parseSpawnerPartile(final @Nullable String particle) {
+    private void parseDeathMessages(final @Nullable ConfigurationSection cs){
+        if (cs == null) return;
+
+        final DeathMessages deathMessages = new DeathMessages();
+
+        for (final String weightStr : cs.getKeys(false)){
+            final List<String> messages = cs.getStringList(weightStr);
+            if (messages.isEmpty()) {
+                final String temp = cs.getString(weightStr);
+                if (temp != null && !temp.isEmpty())
+                    messages.add(temp);
+            }
+
+            for (final String message : messages) {
+                if (!Utils.isInteger(weightStr)) {
+                    Utils.logger.warning("Invalid number in DeathMessages section: " + weightStr);
+                    continue;
+                }
+
+                int weight = Integer.parseInt(weightStr);
+                if (weight > 100) {
+                    Utils.logger.warning(String.format("value of %s is over the limit of 100 for death message weight", weight));
+                    weight = 100;
+                }
+
+                deathMessages.addEntry(weight, message);
+            }
+        }
+
+        if (!deathMessages.isEmpty()) {
+            this.parsingInfo.deathMessages = deathMessages;
+        }
+    }
+
+    private void parseSpawnerParticle(final @Nullable String particle) {
         if (particle == null) {
             return;
         }
@@ -1039,37 +1063,49 @@ public class RulesParsingManager {
             }
         }
 
-        final ConfigurationSection cs_Random = objTo_CS(cs, "weighted-random");
-        if (cs_Random != null) {
-            final Map<String, Integer> randomMap = new TreeMap<>();
-            final RandomLevellingStrategy randomLevelling = new RandomLevellingStrategy();
-            randomLevelling.doMerge = ymlHelper.getBoolean(cs_Random, "merge");
-
-            for (final String range : cs_Random.getKeys(false)) {
-                if ("merge".equalsIgnoreCase(range)) {
-                    continue;
-                }
-                final int value = cs_Random.getInt(range);
-                randomMap.put(range, value);
-            }
-
-            if (!randomMap.isEmpty()) {
-                randomLevelling.weightedRandom = randomMap;
-            }
-
-            if (this.parsingInfo.levellingStrategy != null
-                && this.parsingInfo.levellingStrategy instanceof RandomLevellingStrategy) {
-                this.parsingInfo.levellingStrategy.mergeRule(randomLevelling);
-            } else {
-                this.parsingInfo.levellingStrategy = randomLevelling;
-            }
-        }
-
+        parseWeightedRandom(cs);
         parsePlayerLevellingOptions(objTo_CS(cs, "player-levelling"));
     }
 
-    @Nullable
-    private CachedModalList<MinAndMax> parseWorldTimeTicks(final ConfigurationSection cs,
+    private void parseWeightedRandom(final @NotNull ConfigurationSection cs){
+        final String useWeightedRandom = cs.getString("weighted-random");
+
+        // weighted-random: true
+        if ("true".equalsIgnoreCase(useWeightedRandom)) {
+            final RandomLevellingStrategy randomLevelling = new RandomLevellingStrategy();
+            randomLevelling.autoGenerate = true;
+            this.parsingInfo.levellingStrategy = randomLevelling;
+            return;
+        }
+
+        final ConfigurationSection cs_Random = objTo_CS(cs, "weighted-random");
+        if (cs_Random == null) return;
+
+        final Map<String, Integer> randomMap = new TreeMap<>();
+        final RandomLevellingStrategy randomLevelling = new RandomLevellingStrategy();
+        randomLevelling.doMerge = ymlHelper.getBoolean(cs_Random, "merge");
+
+        for (final String range : cs_Random.getKeys(false)) {
+            if ("merge".equalsIgnoreCase(range)) {
+                continue;
+            }
+            final int value = cs_Random.getInt(range);
+            randomMap.put(range, value);
+        }
+
+        if (!randomMap.isEmpty()) {
+            randomLevelling.weightedRandom.putAll(randomMap);
+        }
+
+        if (this.parsingInfo.levellingStrategy != null
+                && this.parsingInfo.levellingStrategy instanceof RandomLevellingStrategy) {
+            this.parsingInfo.levellingStrategy.mergeRule(randomLevelling);
+        } else {
+            this.parsingInfo.levellingStrategy = randomLevelling;
+        }
+    }
+
+    @Nullable private CachedModalList<MinAndMax> parseWorldTimeTicks(final ConfigurationSection cs,
         final CachedModalList<MinAndMax> existingList) {
         if (cs == null) {
             return existingList;
@@ -1089,8 +1125,7 @@ public class RulesParsingManager {
         return result;
     }
 
-    @Nullable
-    private MinAndMax parseMinMaxValue(@Nullable final String numberPair,
+    @Nullable private MinAndMax parseMinMaxValue(@Nullable final String numberPair,
         @SuppressWarnings("SameParameterValue") final @NotNull String configName) {
         if (numberPair == null) {
             return null;
@@ -1105,8 +1140,7 @@ public class RulesParsingManager {
         }
     }
 
-    @NotNull
-    private Set<MinAndMax> parseMinMaxValue(@NotNull final Set<String> numberPairs,
+    @NotNull private Set<MinAndMax> parseMinMaxValue(@NotNull final Set<String> numberPairs,
         final @NotNull String configName) {
         final Set<MinAndMax> result = new TreeSet<>();
 
@@ -1284,8 +1318,7 @@ public class RulesParsingManager {
             spawnDistanceStrategy.scaleDownward);
     }
 
-    @Nullable
-    private Integer parseOptionalSpawnCoordinate(final String path,
+    @Nullable private Integer parseOptionalSpawnCoordinate(final String path,
         @NotNull final ConfigurationSection cs) {
         if (cs.getString(path) == null) {
             return null;
@@ -1345,8 +1378,7 @@ public class RulesParsingManager {
         }
     }
 
-    @Nullable
-    private FineTuningAttributes parseFineTuningValues(final ConfigurationSection cs) {
+    @Nullable private FineTuningAttributes parseFineTuningValues(final ConfigurationSection cs) {
         if (cs == null) {
             return null;
         }
@@ -1380,8 +1412,37 @@ public class RulesParsingManager {
         return attribs;
     }
 
-    @Nullable
-    private ConfigurationSection objTo_CS(final ConfigurationSection cs, final String path) {
+    private void autoGenerateWeightedRandom(){
+        RandomLevellingStrategy rls = null;
+        int minLevel = 1;
+        int maxLevel = 1;
+
+        for (final List<RuleInfo> rules : this.main.rulesManager.rulesInEffect.values()) {
+            for (final RuleInfo ruleInfo : rules) {
+                if (!"defaults".equals(ruleInfo.getRuleName())) continue;
+
+                if (ruleInfo.levellingStrategy instanceof final RandomLevellingStrategy randomLevellingStrategy){
+                    if (rls == null)
+                        rls = randomLevellingStrategy;
+                    else
+                        rls.mergeRule(randomLevellingStrategy);
+                }
+
+                if (ruleInfo.restrictions_MinLevel != null)
+                    minLevel = ruleInfo.restrictions_MinLevel;
+                if (ruleInfo.restrictions_MaxLevel != null)
+                    maxLevel = ruleInfo.restrictions_MaxLevel;
+            }
+        }
+
+        if (rls == null || !rls.autoGenerate || !rls.weightedRandom.isEmpty()) return;
+        for (int i = minLevel; i <= maxLevel; i++)
+            rls.weightedRandom.put(String.format("%s-%s", i, i), maxLevel - i + 1);
+
+        rls.populateWeightedRandom(minLevel, maxLevel);
+    }
+
+    @Nullable private ConfigurationSection objTo_CS(final ConfigurationSection cs, final String path) {
         if (cs == null) {
             return null;
         }
@@ -1410,14 +1471,13 @@ public class RulesParsingManager {
             final String currentPath = Utils.isNullOrEmpty(cs.getCurrentPath()) ?
                 path : cs.getCurrentPath() + "." + path;
             Utils.logger.warning(
-                currentPath + ": couldn't parse Config of type: " + object.getClass()
+                currentPath + ": couldn't parse config of type: " + object.getClass()
                     .getSimpleName() + ", value: " + object);
             return null;
         }
     }
 
-    @Nullable
-    private ConfigurationSection objTo_CS_2(final Object object) {
+    @Nullable private ConfigurationSection objTo_CS_2(final Object object) {
         if (object == null) {
             return null;
         }
@@ -1430,7 +1490,7 @@ public class RulesParsingManager {
             return result.getDefaultSection();
         } else {
             Utils.logger.warning(
-                "couldn't parse Config of type: " + object.getClass().getSimpleName() + ", value: "
+                "couldn't parse config of type: " + object.getClass().getSimpleName() + ", value: "
                     + object);
             return null;
         }

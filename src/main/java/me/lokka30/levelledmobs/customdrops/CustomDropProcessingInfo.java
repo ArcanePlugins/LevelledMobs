@@ -36,8 +36,7 @@ class CustomDropProcessingInfo {
     public LivingEntityWrapper lmEntity;
     int addition;
     Player mobKiller;
-    @NotNull
-    final Map<String, Integer> playerLevelVariableCache;
+    @NotNull final Map<String, Integer> playerLevelVariableCache;
     boolean isSpawner;
     boolean equippedOnly;
     boolean deathByFire;
@@ -49,12 +48,10 @@ class CustomDropProcessingInfo {
     boolean hasEquippedItems;
     public String customDropId;
     List<ItemStack> newDrops;
-    @NotNull
-    final Map<String, Integer> groupIDsDroppedAlready;
+    @NotNull final Map<String, Integer> groupIDsDroppedAlready;
     Map<Integer, List<CustomDropBase>> prioritizedDrops;
     @Nullable CustomDropsRuleSet dropRules;
-    @NotNull
-    final List<CustomDropInstance> allDropInstances;
+    @NotNull final List<CustomDropInstance> allDropInstances;
     private StringBuilder debugMessages;
     public final List<Map.Entry<ItemStack, CustomDropItem>> stackToItem;
 

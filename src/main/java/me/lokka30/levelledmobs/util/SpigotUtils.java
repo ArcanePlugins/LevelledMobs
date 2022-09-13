@@ -3,6 +3,7 @@ package me.lokka30.levelledmobs.util;
 import java.util.List;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
+import me.lokka30.microlib.messaging.MessageUtils;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -51,16 +52,14 @@ public class SpigotUtils {
         meta.setDisplayName(displayName);
     }
 
-    @NotNull
-    public static String getPlayerDisplayName(final @Nullable Player player) {
+    @NotNull public static String getPlayerDisplayName(final @Nullable Player player) {
         if (player == null) {
             return "";
         }
         return player.getDisplayName();
     }
 
-    @Nullable
-    public static LivingEntityWrapper getPlayersKiller(@NotNull final PlayerDeathEvent event,
+    @Nullable public static LivingEntityWrapper getPlayersKiller(@NotNull final PlayerDeathEvent event,
         final LevelledMobs main) {
         if (event.getDeathMessage() == null) {
             return null;
@@ -75,8 +74,7 @@ public class SpigotUtils {
         final Entity damager = ((EntityDamageByEntityEvent) entityDamageEvent).getDamager();
         LivingEntity killer = null;
 
-        if (damager instanceof Projectile) {
-            final Projectile projectile = (Projectile) damager;
+        if (damager instanceof final Projectile projectile) {
             if (projectile.getShooter() instanceof LivingEntity) {
                 killer = (LivingEntity) projectile.getShooter();
             }
@@ -93,13 +91,13 @@ public class SpigotUtils {
             return lmKiller;
         }
 
-        final String deathMessage = main.levelManager.getNametag(lmKiller, true);
+        final String deathMessage = main.levelManager.getNametag(lmKiller, true).getNametag();
         if (Utils.isNullOrEmpty(deathMessage) || "disabled".equalsIgnoreCase(deathMessage)) {
             return lmKiller;
         }
 
         event.setDeathMessage(
-            Utils.replaceEx(event.getDeathMessage(), killer.getName(), deathMessage));
+                MessageUtils.colorizeAll(Utils.replaceEx(event.getDeathMessage(), killer.getName(), deathMessage)));
         return lmKiller;
     }
 }

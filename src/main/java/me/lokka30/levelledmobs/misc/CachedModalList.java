@@ -33,14 +33,10 @@ public class CachedModalList<T extends Comparable<T>> implements Cloneable {
         this.excludedGroups = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
     }
 
-    @NotNull
-    public Set<T> allowedList;
-    @NotNull
-    public Set<String> allowedGroups;
-    @NotNull
-    public Set<T> excludedList;
-    @NotNull
-    public Set<String> excludedGroups;
+    @NotNull public Set<T> allowedList;
+    @NotNull public Set<String> allowedGroups;
+    @NotNull public Set<T> excludedList;
+    @NotNull public Set<String> excludedGroups;
     public boolean doMerge;
     public boolean allowAll;
     public boolean excludeAll;

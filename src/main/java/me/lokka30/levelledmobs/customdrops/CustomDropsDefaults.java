@@ -87,8 +87,7 @@ class CustomDropsDefaults {
         this.permissions.addAll(dropBase.permissions);
         this.causeOfDeathReqs = dropBase.causeOfDeathReqs;
 
-        if (dropBase instanceof CustomDropItem) {
-            final CustomDropItem dropItem = (CustomDropItem) dropBase;
+        if (dropBase instanceof final CustomDropItem dropItem) {
             this.customModelData = dropItem.customModelDataId;
             this.equippedSpawnChance = dropItem.equippedSpawnChance;
             this.noMultiplier = dropItem.noMultiplier;
@@ -99,8 +98,7 @@ class CustomDropsDefaults {
             this.equipOffhand = dropItem.equipOffhand;
             this.nbtData = dropItem.nbtData;
             this.itemFlagsStrings = dropItem.itemFlagsStrings;
-        } else if (dropBase instanceof CustomCommand) {
-            final CustomCommand command = (CustomCommand) dropBase;
+        } else if (dropBase instanceof final CustomCommand command) {
             this.runOnSpawn = command.runOnSpawn;
             this.runOnDeath = command.runOnDeath;
         }

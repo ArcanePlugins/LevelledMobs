@@ -28,23 +28,11 @@ public class LivingEntityPlaceHolder extends LivingEntityWrapperBase implements
         super(main);
     }
 
-    @Deprecated
-    public LivingEntityPlaceHolder(final EntityType entityType, final @NotNull Location location,
-        final @NotNull World world, final @NotNull LevelledMobs main) {
-        // this constructor is provided for backwards compatibility only
-        // to get an instance, LivingEntityPlaceHolder#getInstance should be called instead
-        // when finished with it, LivingEntityPlaceHolder#free should be called
-
-        super(main);
-        populateEntityData(entityType, location, world);
-    }
-
     private EntityType entityType;
     private final static Object cachedPlaceHolders_Lock = new Object();
     private final static Stack<LivingEntityPlaceHolder> cache = new Stack<>();
 
-    @NotNull
-    public static LivingEntityPlaceHolder getInstance(final EntityType entityType,
+    @NotNull public static LivingEntityPlaceHolder getInstance(final EntityType entityType,
         final @NotNull Location location, final @NotNull LevelledMobs main) {
         final LivingEntityPlaceHolder leph;
 
@@ -90,8 +78,7 @@ public class LivingEntityPlaceHolder extends LivingEntityWrapperBase implements
         super.clearEntityData();
     }
 
-    @NotNull
-    public EntityType getEntityType() {
+    @NotNull public EntityType getEntityType() {
         if (this.entityType == null) {
             throw new NullPointerException("EntityType was null");
         }
@@ -103,8 +90,7 @@ public class LivingEntityPlaceHolder extends LivingEntityWrapperBase implements
         return main.rulesManager.getApplicableRules(this).allApplicableRules;
     }
 
-    @NotNull
-    public String getTypeName() {
+    @NotNull public String getTypeName() {
         return this.entityType.name();
     }
 

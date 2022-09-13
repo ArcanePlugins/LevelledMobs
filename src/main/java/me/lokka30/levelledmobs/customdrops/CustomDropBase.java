@@ -11,6 +11,7 @@ import java.util.TreeSet;
 import me.lokka30.levelledmobs.misc.CachedModalList;
 import me.lokka30.levelledmobs.util.Utils;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Base class for all custom drops including custom commands
@@ -72,7 +73,7 @@ public abstract class CustomDropBase implements Cloneable {
         return this.hasAmountRange;
     }
 
-    String getAmountAsString() {
+    @NotNull String getAmountAsString() {
         if (this.hasAmountRange) {
             return String.format("%s-%s", this.amountRangeMin, this.amountRangeMax);
         } else {
@@ -80,7 +81,7 @@ public abstract class CustomDropBase implements Cloneable {
         }
     }
 
-    boolean setAmountRangeFromString(final String numberOrNumberRange) {
+    boolean setAmountRangeFromString(final @Nullable String numberOrNumberRange) {
         if (numberOrNumberRange == null || numberOrNumberRange.isEmpty()) {
             return false;
         }
@@ -110,6 +111,7 @@ public abstract class CustomDropBase implements Cloneable {
         return true;
     }
 
+    @SuppressWarnings("unchecked")
     public CustomDropBase cloneItem() {
         CustomDropBase copy = null;
         try {

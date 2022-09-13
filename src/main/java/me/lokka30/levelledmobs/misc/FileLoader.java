@@ -32,8 +32,7 @@ public final class FileLoader {
         throw new UnsupportedOperationException();
     }
 
-    @Nullable
-    public static YamlConfiguration loadFile(@NotNull final Plugin plugin, String cfgName,
+    @Nullable public static YamlConfiguration loadFile(@NotNull final Plugin plugin, String cfgName,
         final int compatibleVersion) {
         cfgName = cfgName + ".yml";
 
@@ -46,20 +45,16 @@ public final class FileLoader {
             new Yaml().load(fs);
         } catch (final Exception e) {
             final String parseErrorMessage =
-                "LevelledMobs was unable to read file &b%s&r due to a user-caused YAML syntax error.\n"
-                    +
-                    "Copy the contents of your file into a YAML Parser website, such as < https://tinyurl.com/yamlp >  to help locate the line of the mistake.\n"
-                    +
-                    "Failure to resolve this issue will cause LevelledMobs to function improperly, or likely not at all.\n"
-                    +
-                    "Below represents where LevelledMobs became confused while attempting to read your file:\n"
-                    +
-                    "&b---- START ERROR ----&r\n" +
-                    "&4%s&r\n" +
-                    "&b---- END ERROR ----&r\n" +
-                    "If you have attempted to resolve this issue yourself, and are unable to, then please &b#create-a-ticket&r in the Official Arcane Plugins Support Discord:\n"
-                    +
-                    "&bhttps://discord.io/arcaneplugins";
+                    """
+                            LevelledMobs was unable to read file &b%s&r due to a user-caused YAML syntax error.
+                            Copy the contents of your file into a YAML Parser website, such as < https://tinyurl.com/yamlp >  to help locate the line of the mistake.
+                            Failure to resolve this issue will cause LevelledMobs to function improperly, or likely not at all.
+                            Below represents where LevelledMobs became confused while attempting to read your file:
+                            &b---- START ERROR ----&r
+                            &4%s&r
+                            &b---- END ERROR ----&r
+                            If you have attempted to resolve this issue yourself, and are unable to, then please &b#create-a-ticket&r in the Official Arcane Plugins Support Discord:
+                            &bhttps://discord.io/arcaneplugins""";
 
             Utils.logger.error(String.format(parseErrorMessage, cfgName, e));
             return null;

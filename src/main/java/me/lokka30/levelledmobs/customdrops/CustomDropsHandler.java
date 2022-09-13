@@ -31,12 +31,14 @@ import me.lokka30.microlib.messaging.MessageUtils;
 import me.lokka30.microlib.other.VersionUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
+import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -64,18 +66,78 @@ public class CustomDropsHandler {
         if (main.companion.externalCompatibilityManager.doesLMIMeetVersionRequirement()) {
             this.lmItemsParser = new LMItemsParser(main);
         }
+        this.externalCustomDrops = new ExternalCustomDropsImpl();
     }
 
-    private final LevelledMobs main;
-    final Map<EntityType, CustomDropInstance> customDropsitems;
+    final LevelledMobs main;
+    // regular custom drops defined for a mob type
+    private final Map<EntityType, CustomDropInstance> customDropsitems;
+    // regular custom drops defined for a mob type that is a baby
     final Map<EntityType, CustomDropInstance> customDropsitems_Babies;
-    final Map<String, CustomDropInstance> customDropsitems_groups;
+    // only used for the built-in universal groups
+    private final Map<String, CustomDropInstance> customDropsitems_groups;
+    // these are drops defined by a drop table
     final Map<String, CustomDropInstance> customDropIDs;
     @Nullable Map<String, CustomDropInstance> customItemGroups;
     public final CustomDropsParser customDropsParser;
+    public final ExternalCustomDrops externalCustomDrops;
     LMItemsParser lmItemsParser;
     private final YmlParsingHelper ymlHelper;
     private final WeakHashMap<LivingEntity, EquippedItemsInfo> customEquippedItems;
+
+    public @NotNull Map<EntityType, CustomDropInstance> getCustomDropsitems(){
+        final Map<EntityType, CustomDropInstance> drops = new TreeMap<>(this.customDropsitems);
+        for (final EntityType entityType : externalCustomDrops.getCustomDrops().keySet()){
+            final CustomDropInstance dropInstance = externalCustomDrops.getCustomDrops().get(entityType);
+            if (!drops.containsKey(entityType)){
+                drops.put(entityType, dropInstance);
+                continue;
+            }
+
+            // merge the 3rd party drops into the defined drops for the entity
+            // 3rd party drop settings will override any conflicting
+            final CustomDropInstance currentDropInstance = drops.get(entityType);
+            currentDropInstance.combineDrop(dropInstance);
+
+            if (dropInstance.overallChance != null)
+                currentDropInstance.overallChance = dropInstance.overallChance;
+            currentDropInstance.overallPermissions.addAll(dropInstance.overallPermissions);
+        }
+
+        return drops;
+    }
+
+    public @NotNull Map<String, CustomDropInstance> getCustomDropsitems_groups(){
+        final Map<String, CustomDropInstance> drops = new TreeMap<>(this.customItemGroups);
+        drops.putAll(this.customDropsitems_groups);
+
+        for (final String groupName : externalCustomDrops.getCustomDropTables().keySet()){
+            final CustomDropInstance dropInstance = externalCustomDrops.getCustomDropTables().get(groupName);
+            if (!drops.containsKey(groupName)){
+                drops.put(groupName, dropInstance);
+                continue;
+            }
+
+            // merge the 3rd party drops into the defined drops for the entity
+            // 3rd party drop settings will override any conflicting
+            final CustomDropInstance currentDropInstance = drops.get(groupName);
+            currentDropInstance.combineDrop(dropInstance);
+
+            if (dropInstance.overallChance != null)
+                currentDropInstance.overallChance = dropInstance.overallChance;
+            currentDropInstance.overallPermissions.addAll(dropInstance.overallPermissions);
+        }
+
+        return drops;
+    }
+
+    void addCustomDropItem(final @NotNull EntityType entityType, final @NotNull CustomDropInstance customDropInstance){
+        this.customDropsitems.put(entityType, customDropInstance);
+    }
+
+    void addCustomDropGroup(final @NotNull String groupName, final @NotNull CustomDropInstance customDropInstance){
+        this.customDropsitems_groups.put(groupName, customDropInstance);
+    }
 
     public CustomDropResult getCustomItemDrops(final LivingEntityWrapper lmEntity,
         final List<ItemStack> drops, final boolean equippedOnly) {
@@ -140,7 +202,7 @@ public class CustomDropsHandler {
 
         final List<String> groupsList = new LinkedList<>();
         for (final String group : lmEntity.getApplicableGroups()) {
-            if (!customDropsitems_groups.containsKey(group)) {
+            if (!getCustomDropsitems_groups().containsKey(group)) {
                 continue;
             }
 
@@ -232,7 +294,7 @@ public class CustomDropsHandler {
 
         if (!overrideNonDropTableDrops) {
             for (final String group : groups) {
-                final CustomDropInstance dropInstance = customDropsitems_groups.get(group);
+                final CustomDropInstance dropInstance = getCustomDropsitems_groups().get(group);
                 info.allDropInstances.add(dropInstance);
 
                 for (final CustomDropBase baseItem : dropInstance.customItems) {
@@ -249,7 +311,7 @@ public class CustomDropsHandler {
 
             final Map<EntityType, CustomDropInstance> dropMap =
                 info.lmEntity.isBabyMob() && customDropsitems_Babies.containsKey(entityType) ?
-                    customDropsitems_Babies : customDropsitems;
+                    customDropsitems_Babies : getCustomDropsitems();
 
             if (dropMap.containsKey(entityType)) {
                 final CustomDropInstance dropInstance = dropMap.get(entityType);
@@ -308,8 +370,7 @@ public class CustomDropsHandler {
         return !hadAnyPerms;
     }
 
-    @NotNull
-    private List<String> getDropIds(@NotNull final CustomDropProcessingInfo processingInfo) {
+    @NotNull private List<String> getDropIds(@NotNull final CustomDropProcessingInfo processingInfo) {
         final List<String> dropIds = new LinkedList<>();
         if (processingInfo.dropRules != null) {
             for (final String id : processingInfo.dropRules.useDropTableIds) {
@@ -416,9 +477,8 @@ public class CustomDropsHandler {
         }
 
         if (dropBase.excludedMobs.contains(info.lmEntity.getTypeName())) {
-            if (dropBase instanceof CustomDropItem && !info.equippedOnly
+            if (dropBase instanceof final CustomDropItem dropItem && !info.equippedOnly
                 && isCustomDropsDebuggingEnabled()) {
-                final CustomDropItem dropItem = (CustomDropItem) dropBase;
 
                 info.addDebugMessage(String.format(
                     "&8 - &7Mob: &b%s&7, item: %s, mob was excluded", info.lmEntity.getTypeName(),
@@ -433,8 +493,7 @@ public class CustomDropsHandler {
             doDrop = false;
         }
         if (!doDrop) {
-            if (dropBase instanceof CustomDropItem) {
-                final CustomDropItem dropItem = (CustomDropItem) dropBase;
+            if (dropBase instanceof final CustomDropItem dropItem) {
                 if (!info.equippedOnly && isCustomDropsDebuggingEnabled()) {
                     final ItemStack itemStack =
                         info.deathByFire ? getCookedVariantOfMeat(dropItem.getItemStack())
@@ -457,8 +516,7 @@ public class CustomDropsHandler {
         }
 
         // equip-chance and equip-drop-chance:
-        if (!info.equippedOnly && dropBase instanceof CustomDropItem) {
-            final CustomDropItem item = (CustomDropItem) dropBase;
+        if (!info.equippedOnly && dropBase instanceof final CustomDropItem item) {
             if (!checkIfMadeEquippedDropChance(info, item)) {
                 if (isCustomDropsDebuggingEnabled()) {
                     info.addDebugMessage(String.format(
@@ -502,8 +560,7 @@ public class CustomDropsHandler {
         }
 
         if (didNotMakeChance && !info.equippedOnly && isCustomDropsDebuggingEnabled()) {
-            if (dropBase instanceof CustomDropItem) {
-                final CustomDropItem dropItem = (CustomDropItem) dropBase;
+            if (dropBase instanceof final CustomDropItem dropItem) {
                 final ItemStack itemStack =
                     info.deathByFire ? getCookedVariantOfMeat(dropItem.getItemStack())
                         : dropItem.getItemStack();
@@ -574,11 +631,10 @@ public class CustomDropsHandler {
             return;
             // -----------------------------------------------------------------------------------------------------------------------------------------------
         }
-        if (!(dropBase instanceof CustomDropItem)) {
+        if (!(dropBase instanceof final CustomDropItem dropItem)) {
             Utils.logger.warning("Unsupported drop type: " + dropBase.getClass().getName());
             return;
         }
-        final CustomDropItem dropItem = (CustomDropItem) dropBase;
 
         if (info.equippedOnly && dropItem.equippedSpawnChance < 1.0F) {
             chanceRole = (float) ThreadLocalRandom.current().nextInt(0, 100001) * 0.00001F;
@@ -608,6 +664,8 @@ public class CustomDropsHandler {
             Utils.debugLog(main, DebugType.CUSTOM_DROPS,
                 "Could not get external custom item - LM_Items is not installed");
         }
+
+        processEnchantmentChances(dropItem);
 
         ItemStack newItem;
         if (dropItem.isExternalItem && main.companion.externalCompatibilityManager.doesLMIMeetVersionRequirement()
@@ -662,7 +720,7 @@ public class CustomDropsHandler {
             if (meta != null && dropItem.lore != null && !dropItem.lore.isEmpty()) {
                 final List<String> newLore = new ArrayList<>(dropItem.lore.size());
                 for (final String lore : dropItem.lore) {
-                    newLore.add(main.levelManager.updateNametag(info.lmEntity, lore, false, false));
+                    newLore.add(main.levelManager.updateNametag(info.lmEntity, lore, false, false, false).getNametagNonNull());
 
                     if (VersionUtils.isRunningPaper() && main.companion.useAdventure) {
                         PaperUtils.updateItemMetaLore(meta, newLore);
@@ -674,7 +732,7 @@ public class CustomDropsHandler {
 
             if (meta != null && dropItem.customName != null && !dropItem.customName.isEmpty()) {
                 final String displayName = main.levelManager.updateNametag(info.lmEntity,
-                    dropItem.customName, false, false);
+                    dropItem.customName, false, false, false).getNametagNonNull();
 
                 if (VersionUtils.isRunningPaper() && main.companion.useAdventure) {
                     PaperUtils.updateItemDisplayName(meta, displayName);
@@ -700,6 +758,73 @@ public class CustomDropsHandler {
 
         info.newDrops.add(newItem);
         info.stackToItem.add(Utils.getPair(newItem, dropItem));
+    }
+
+    private void processEnchantmentChances(final @NotNull CustomDropItem dropItem){
+        if (dropItem.enchantmentChances == null || dropItem.enchantmentChances.isEmpty()) return;
+
+        final StringBuilder debug = new StringBuilder();
+        boolean isFirstEnchantment = true;
+        for (final Enchantment enchantment : dropItem.enchantmentChances.items.keySet()){
+            final EnchantmentChances.ChanceOptions opts = dropItem.enchantmentChances.options.get(enchantment);
+            boolean madeAnyChance = false;
+            if (isCustomDropsDebuggingEnabled()) {
+                if (!isFirstEnchantment) debug.append("; ");
+                debug.append(enchantment.getKey().value()).append(": ");
+            }
+
+            if (isFirstEnchantment)
+                isFirstEnchantment = false;
+
+            int enchantmentNumber = 0;
+            final List<Integer> levelsList = new ArrayList<>(dropItem.enchantmentChances.items.get(enchantment).keySet());
+            if (opts == null || opts.doShuffle)
+                Collections.shuffle(levelsList);
+
+            for (final int enchantLevel : levelsList){
+                final float chanceValue = dropItem.enchantmentChances.items.get(enchantment).get(enchantLevel);
+                if (chanceValue <= 0.0f) continue;
+                enchantmentNumber++;
+
+                final float chanceRole =
+                        (float) ThreadLocalRandom.current().nextInt(0, 100001) * 0.00001F;
+                final boolean madeChance = 1.0F - chanceRole < chanceValue;
+                if (!madeChance){
+                    if (isCustomDropsDebuggingEnabled()){
+                        if (enchantmentNumber > 1) debug.append(", ");
+                        debug.append(String.format("%s: &4%s&r &b(%s)&r", enchantLevel, chanceRole, chanceValue));
+                    }
+                    continue;
+                }
+
+                if (isCustomDropsDebuggingEnabled()){
+                    if (enchantmentNumber > 1) debug.append(", ");
+                    debug.append(String.format("%s: &2%s&r &b(%s)&r", enchantLevel, chanceRole, chanceValue));
+                }
+
+                if (dropItem.getMaterial() == Material.ENCHANTED_BOOK){
+                    final EnchantmentStorageMeta meta = (EnchantmentStorageMeta) dropItem.getItemStack().getItemMeta();
+                    if (meta != null) {
+                        meta.addStoredEnchant(enchantment, enchantLevel, true);
+                        dropItem.getItemStack().setItemMeta(meta);
+                    }
+                }
+                else{
+                    dropItem.getItemStack().addUnsafeEnchantment(enchantment, enchantLevel);
+                }
+                madeAnyChance = true;
+                break;
+            }
+
+            if (!madeAnyChance && opts != null && opts.defaultLevel != null){
+                dropItem.getItemStack().addUnsafeEnchantment(enchantment, opts.defaultLevel);
+                if (isCustomDropsDebuggingEnabled())
+                    debug.append(", used dflt: &2").append(opts.defaultLevel).append("&r");
+            }
+        }
+
+        if (isCustomDropsDebuggingEnabled())
+            Utils.logger.info(debug.toString());
     }
 
     private boolean hasReachedChunkKillLimit(final @NotNull LivingEntityWrapper lmEntity) {
@@ -905,8 +1030,7 @@ public class CustomDropsHandler {
 
             command = Utils.replaceEx(command, "%player%", playerName);
             command = processRangedCommand(command, customCommand);
-            command = main.levelManager.replaceStringPlaceholders(command, info.lmEntity, true,
-                false);
+            command = main.levelManager.replaceStringPlaceholders(command, info.lmEntity,false);
             if (command.contains("%") && ExternalCompatibilityManager.hasPapiInstalled()) {
                 command = ExternalCompatibilityManager.getPapiPlaceholder(info.mobKiller, command);
             }
@@ -952,8 +1076,7 @@ public class CustomDropsHandler {
         }
     }
 
-    @NotNull
-    private String processRangedCommand(final @NotNull String command,
+    @NotNull private String processRangedCommand(final @NotNull String command,
         final @NotNull CustomCommand cc) {
         if (cc.rangedEntries.isEmpty()) {
             return command;
@@ -991,22 +1114,15 @@ public class CustomDropsHandler {
     }
 
     private ItemStack getCookedVariantOfMeat(@NotNull final ItemStack itemStack) {
-        switch (itemStack.getType()) {
-            case BEEF:
-                return new ItemStack(Material.COOKED_BEEF);
-            case CHICKEN:
-                return new ItemStack(Material.COOKED_CHICKEN);
-            case COD:
-                return new ItemStack(Material.COOKED_COD);
-            case MUTTON:
-                return new ItemStack(Material.COOKED_MUTTON);
-            case PORKCHOP:
-                return new ItemStack(Material.COOKED_PORKCHOP);
-            case SALMON:
-                return new ItemStack(Material.COOKED_SALMON);
-            default:
-                return itemStack;
-        }
+        return switch (itemStack.getType()) {
+            case BEEF -> new ItemStack(Material.COOKED_BEEF);
+            case CHICKEN -> new ItemStack(Material.COOKED_CHICKEN);
+            case COD -> new ItemStack(Material.COOKED_COD);
+            case MUTTON -> new ItemStack(Material.COOKED_MUTTON);
+            case PORKCHOP -> new ItemStack(Material.COOKED_PORKCHOP);
+            case SALMON -> new ItemStack(Material.COOKED_SALMON);
+            default -> itemStack;
+        };
     }
 
     public void addEntityEquippedItems(final @NotNull LivingEntity livingEntity,

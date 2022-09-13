@@ -60,6 +60,7 @@ public class EntityDamageDebugListener implements Listener {
         lmEntity.free();
     }
 
+    @SuppressWarnings("deprecation")
     private void checkEntity(final Player player, final @NotNull LivingEntityWrapper lmEntity) {
         // Make sure the mob is levelled
         if (!lmEntity.isLevelled()) {
@@ -143,12 +144,11 @@ public class EntityDamageDebugListener implements Listener {
             send(player, sb.toString(), false);
         }
 
-        if (lmEntity.getLivingEntity() instanceof Creeper) {
+        if (lmEntity.getLivingEntity() instanceof final Creeper creeper) {
             // Print unique values (per-mob)
             player.sendMessage(" ");
             send(player, "&f&nUnique Values:", false);
 
-            final Creeper creeper = (Creeper) lmEntity.getLivingEntity();
             send(player, "&8&m->&b Creeper Blast Radius: &7" + creeper.getExplosionRadius(), false);
         }
 

@@ -96,8 +96,7 @@ public class DebugCreator {
         }
     }
 
-    @NotNull
-    private static String generateSystemInfo(final @NotNull LevelledMobs main) {
+    @NotNull private static String generateSystemInfo(final @NotNull LevelledMobs main) {
         final File lmFile = new File(main.getClass().getProtectionDomain()
             .getCodeSource()
             .getLocation()
@@ -165,8 +164,7 @@ public class DebugCreator {
         return sb.toString();
     }
 
-    @Nullable
-    private static String getFileChecksum(final MessageDigest digest, final File file) {
+    @Nullable private static String getFileChecksum(final MessageDigest digest, final File file) {
         // taken from https://howtodoinjava.com/java/io/sha-md5-file-checksum-hash/
 
         final byte[] byteArray = new byte[1024];

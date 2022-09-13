@@ -83,9 +83,9 @@ presets:
           x: default
           z: default
 
-  blended_Levelling:
-    # This Strategy Preset controls the Blended-Levelling sub-system to Spawn-Distance-Levelling.
-    name: 'LVLling Strategy - Blended-Levelling'
+  lvl-mod_spawn-blended:
+    # This Strategy Preset controls the Blended addon to Spawn-Distance-Levelling, adding a Y-coordinate component to the system.
+    name: 'LVLling Modifier - Blended Addon to Spawn Distance Levelling'
     strategies:
       distance-from-spawn:
         blended-levelling:
@@ -100,55 +100,16 @@ presets:
     name: 'LVLling Strategy - Random'
     strategies:
       random: true
-      lower-mob-level-bias-factor: 5
 
-  weighted_random_basic:
+  weighted_random_Levelling:
     # This Strategy Preset controls Weighted Random Bias.
-    name: 'LVLling Strategy - Weighted Random Bias BASIC Challenge'
+    name: 'LVLling Strategy - Weighted Random'
     strategies:
-      weighted-random:
-        1-2: 5
-        3-4: 4
-        5-6: 3
-        7-8: 2
-        9-10: 1
+      weighted-random: true
 
-  weighted_random_average:
-    # This Strategy Preset controls Weighted Random Bias.
-    name: 'LVLling Strategy - Weighted Random Bias AVERAGE Challenge'
-    strategies:
-      weighted-random:
-        1-5: 5
-        6-10: 4
-        11-15: 3
-        16-20: 2
-        21-25: 1
-
-  weighted_random_advanced:
-    # This Strategy Preset controls Weighted Random Bias.
-    name: 'LVLling Strategy - Weighted Random Bias ADVANCED Challenge'
-    strategies:
-      weighted-random:
-        1-9: 5
-        10-19: 4
-        20-29: 3
-        30-39: 2
-        40-50: 1
-
-  weighted_random_extreme:
-    # This Strategy Preset controls Weighted Random Bias.
-    name: 'LVLling Strategy - Weighted Random Bias EXTREME Challenge'
-    strategies:
-      weighted-random:
-        1-19: 5
-        20-39: 4
-        40-59: 3
-        60-79: 2
-        80-100: 1
-
-  player_Levelling:
-    # This Strategy Preset controls the player-stat based levelling system.
-    name: 'LVLling Strategy - Player Based AVERAGE CHALLENGE'
+  lvl-mod_player-variable:
+    # This Strategy Preset controls the player-variable based level modification system.
+    name: 'LVLling Modifier - Player Variable AVERAGE CHALLENGE'
     strategies:
       player-levelling:
         match-level: true
@@ -162,9 +123,9 @@ presets:
           31-45: 21-25
         variable: '%level%'
 
-  apply_LevellingVariance:
-    # This Strategy Preset controls the random level variance applied.
-    name: 'LVLling Strategy - Apply Variance'
+  lvl-mod_apply-variance:
+    # This Strategy Preset controls the application of a random level variance to level previously applied.
+    name: 'LVLling Modifier - Apply Variance'
     strategies:
       max-random-variance: 2
 
@@ -349,16 +310,13 @@ default-rule:
     - average_challenge
     #- advanced_challenge
     #- extreme_challenge
-    #- apply_LevellingVariance
-    #- weighted_random_basic
-    - weighted_random_average
-    #- weighted_random_advanced
-    #- weighted_random_extreme
+    - weighted_random_Levelling
     #- spawn_Levelling
-    #- blended_Levelling
+    #- lvl-mod_spawn-blended
     #- ycoord_Levelling
     #- random_Levelling
-    #- player_Levelling
+    #- lvl-mod_player-variable
+    #- lvl-mod_apply-variance
 
   conditions:
     allowed-spawn-reasons:
@@ -396,6 +354,9 @@ default-rule:
       #PILLAGER: ['Raider', 'Barbarian']
 
     creature-death-nametag: '%tiered%Lvl %mob-lvl%&8 | &f%displayname%'
+    death-messages:
+    #  3: ['%player% was killed by a %death_nametag%!']
+    #  1: ['A level %mob-lvl% %displayname% slaughtered %player%!']
     nametag-placeholder-levelled: ''
     nametag-placeholder-unlevelled: ''
     nametag-visible-time: 1s
@@ -440,10 +401,8 @@ custom-rules:
 
   - enabled: true
     name: 'CR - Custom Nether Levelling'
-    use-preset: apply_LevellingVariance
     conditions:
-      worlds:
-        allowed-list: [ 'world_nether' ]
+      worlds: 'world_nether'
     strategies:
       y-coordinate:
         start: 100
@@ -470,24 +429,20 @@ custom-rules:
   - enabled: true
     name: 'CR - Custom Zombie Piglin Levelling'
     conditions:
-      worlds:
-        allowed-list: [ 'world_nether' ]
-      entities:
-        allowed-list: [ 'ZOMBIFIED_PIGLIN' ]
+      worlds: 'world_nether'
+      entities: 'ZOMBIFIED_PIGLIN'
     strategies:
       random: true
     apply-settings:
       minLevel: 1
       maxLevel: 5
       multipliers:
-        custom-mob-level:
-          ZOMBIFIED_PIGLIN:
-            max-health: 1.0
-            movement-speed: 0.25
-            attack-damage: 0.5
-            ranged-attack-damage: 0.0
-            item-drop: 0.5
-            xp-drop: 1.0
+        max-health: 1.0
+        movement-speed: 0.25
+        attack-damage: 0.5
+        ranged-attack-damage: 0.0
+        item-drop: 0.5
+        xp-drop: 1.0
       tiered-coloring:
         1-5: '&#22E76B' #Green
 

@@ -10,6 +10,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
 import org.bukkit.Location;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Holds the configuration and logic for applying a levelling system that is based upon the distance
@@ -87,8 +88,11 @@ public class SpawnDistanceStrategy implements LevellingStrategy, Cloneable {
         return sb.toString();
     }
 
-    public int generateLevel(@NotNull final LivingEntityWrapper lmEntity, final int minLevel,
-        final int maxLevel) {
+    public int generateLevel(final @Nullable LivingEntityWrapper lmEntity, final int minLevel,
+                             final int maxLevel) {
+
+        if (lmEntity == null) return minLevel;
+
         Location spawnLocation = lmEntity.getWorld().getSpawnLocation();
 
         if (this.spawnLocation_Z != null || this.spawnLocation_X != null) {

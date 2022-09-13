@@ -191,21 +191,13 @@ public class RulesSubcommand extends MessagesBase implements Subcommand {
             return;
         }
 
-        ResetDifficulty difficulty = ResetDifficulty.UNSPECIFIED;
-        switch (args[2].toLowerCase()) {
-            case "basic":
-                difficulty = ResetDifficulty.BASIC;
-                break;
-            case "average":
-                difficulty = ResetDifficulty.AVERAGE;
-                break;
-            case "advanced":
-                difficulty = ResetDifficulty.ADVANCED;
-                break;
-            case "extreme":
-                difficulty = ResetDifficulty.EXTREME;
-                break;
-        }
+        ResetDifficulty difficulty = switch (args[2].toLowerCase()) {
+            case "basic" -> ResetDifficulty.BASIC;
+            case "average" -> ResetDifficulty.AVERAGE;
+            case "advanced" -> ResetDifficulty.ADVANCED;
+            case "extreme" -> ResetDifficulty.EXTREME;
+            default -> ResetDifficulty.UNSPECIFIED;
+        };
 
         if (difficulty == ResetDifficulty.UNSPECIFIED) {
             showMessage("command.levelledmobs.rules.invalid-difficulty", "%difficulty%", args[2]);
@@ -227,30 +219,22 @@ public class RulesSubcommand extends MessagesBase implements Subcommand {
             String.valueOf(difficulty));
 
         final String filename = "rules.yml";
-        final String[] replaceWhat = new String[]{"    - average_challenge",
-            "    - weighted_random_average", "", ""};
-        final String[] replaceWith = new String[]{"#    - average_challenge",
-            "#    - weighted_random_average", "", ""};
+        final String[] replaceWhat = new String[]{"    - average_challenge", ""};
+        final String[] replaceWith = new String[]{"    #- average_challenge", ""};
 
         switch (difficulty) {
-            case BASIC:
-                replaceWhat[2] = "#- basic_challenge";
-                replaceWith[2] = "- basic_challenge";
-                replaceWhat[3] = "#- weighted_random_basic";
-                replaceWith[3] = "- weighted_random_basic";
-                break;
-            case ADVANCED:
-                replaceWhat[2] = "#- advanced_challenge";
-                replaceWith[2] = "- advanced_challenge";
-                replaceWhat[3] = "#- weighted_random_advanced";
-                replaceWith[3] = "- weighted_random_advanced_difficulty";
-                break;
-            case EXTREME:
-                replaceWhat[2] = "#- extreme_challenge";
-                replaceWith[2] = "- extreme_challenge";
-                replaceWhat[3] = "#- weighted_random_extreme";
-                replaceWith[3] = "- weighted_random_extreme";
-                break;
+            case BASIC -> {
+                replaceWhat[1] = "#- basic_challenge";
+                replaceWith[1] = "- basic_challenge";
+            }
+            case ADVANCED -> {
+                replaceWhat[1] = "#- advanced_challenge";
+                replaceWith[1] = "- advanced_challenge";
+            }
+            case EXTREME -> {
+                replaceWhat[1] = "#- extreme_challenge";
+                replaceWith[1] = "- extreme_challenge";
+            }
         }
 
         try (final InputStream stream = main.getResource(filename)) {
@@ -262,9 +246,7 @@ public class RulesSubcommand extends MessagesBase implements Subcommand {
             String rulesText = new String(stream.readAllBytes(), StandardCharsets.UTF_8);
             if (difficulty != ResetDifficulty.AVERAGE) {
                 rulesText = rulesText.replace(replaceWhat[0], replaceWith[0])
-                    .replace(replaceWhat[1], replaceWith[1])
-                    .replace(replaceWhat[2], replaceWith[2])
-                    .replace(replaceWhat[3], replaceWith[3]);
+                    .replace(replaceWhat[1], replaceWith[1]);
             }
 
             final File rulesFile = new File(main.getDataFolder(), filename);
@@ -406,8 +388,7 @@ public class RulesSubcommand extends MessagesBase implements Subcommand {
         runnable.runTaskLater(main, 25);
     }
 
-    @Nullable
-    public LivingEntityWrapper getMobBeingLookedAt(@NotNull final Player player,
+    @Nullable public LivingEntityWrapper getMobBeingLookedAt(@NotNull final Player player,
         final boolean findNearbyEntities) {
         LivingEntity livingEntity = null;
         LivingEntityWrapper lmEntity = null;
@@ -415,11 +396,10 @@ public class RulesSubcommand extends MessagesBase implements Subcommand {
         final SortedMap<Double, LivingEntity> entities = new TreeMap<>();
 
         for (final Entity entity : player.getNearbyEntities(10, 10, 10)) {
-            if (!(entity instanceof LivingEntity)) {
+            if (!(entity instanceof final LivingEntity le)) {
                 continue;
             }
 
-            final LivingEntity le = (LivingEntity) entity;
             if (findNearbyEntities) {
                 final double distance = le.getLocation().distanceSquared(player.getLocation());
                 entities.put(distance, le);

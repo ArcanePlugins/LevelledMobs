@@ -9,6 +9,7 @@ import java.util.List;
 import me.lokka30.levelledmobs.misc.CustomUniversalGroups;
 import org.bukkit.entity.EntityType;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Holds a mob or group instance and associates it with a list of custom drop items. This is where
@@ -17,9 +18,9 @@ import org.jetbrains.annotations.NotNull;
  * @author stumper66
  * @since 2.4.0
  */
-class CustomDropInstance {
+public class CustomDropInstance {
 
-    CustomDropInstance(final EntityType associatedMob) {
+    public CustomDropInstance(final @Nullable EntityType associatedMob) {
         this.associatedMob = associatedMob;
         this.entityGroup = null;
         this.customItems = new LinkedList<>();
@@ -27,7 +28,7 @@ class CustomDropInstance {
         this.isBabyMob = false;
     }
 
-    CustomDropInstance(final EntityType associatedMob, final boolean isBabyMob) {
+    CustomDropInstance(final @NotNull EntityType associatedMob, final boolean isBabyMob) {
         this.associatedMob = associatedMob;
         this.entityGroup = null;
         this.customItems = new LinkedList<>();
@@ -35,7 +36,7 @@ class CustomDropInstance {
         this.isBabyMob = isBabyMob;
     }
 
-    CustomDropInstance(final CustomUniversalGroups entityGroup) {
+    CustomDropInstance(final @NotNull CustomUniversalGroups entityGroup) {
         this.associatedMob = null;
         this.entityGroup = entityGroup;
         this.customItems = new LinkedList<>();
@@ -43,16 +44,16 @@ class CustomDropInstance {
         isBabyMob = false;
     }
 
-    private final EntityType associatedMob;
-    private final CustomUniversalGroups entityGroup;
-    final List<CustomDropBase> customItems;
-    Float overallChance;
-    final List<String> overallPermissions;
-    boolean overrideStockDrops;
+    private final @Nullable EntityType associatedMob;
+    private final @Nullable CustomUniversalGroups entityGroup;
+    public final @NotNull List<CustomDropBase> customItems;
+    public Float overallChance;
+    public final @NotNull List<String> overallPermissions;
+    public boolean overrideStockDrops;
     boolean utilizesGroupIds;
     final boolean isBabyMob;
 
-    void combineDrop(final CustomDropInstance dropInstance) {
+    public void combineDrop(final CustomDropInstance dropInstance) {
         if (dropInstance == null) {
             throw new NullPointerException("dropInstance");
         }
@@ -67,7 +68,7 @@ class CustomDropInstance {
         this.customItems.addAll(dropInstance.customItems);
     }
 
-    @NotNull String getMobOrGroupName() {
+    public @NotNull String getMobOrGroupName() {
         if (this.associatedMob != null) {
             return this.associatedMob.name();
         } else if (this.entityGroup != null) {
@@ -77,8 +78,11 @@ class CustomDropInstance {
         }
     }
 
-    @NotNull
-    public String toString() {
+    public @Nullable EntityType getAssociatedMobType(){
+        return this.associatedMob;
+    }
+
+    public @NotNull String toString() {
         if (this.associatedMob != null) {
             return this.overrideStockDrops ?
                 this.associatedMob.name() + " - override" :
