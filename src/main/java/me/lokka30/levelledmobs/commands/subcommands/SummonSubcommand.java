@@ -564,6 +564,7 @@ public class SummonSubcommand extends MessagesBase implements Subcommand {
                     }
             );
             case AT_PLAYER -> {
+
                 final String playerName = VersionUtils.isRunningPaper() ?
                         PaperUtils.getPlayerDisplayName(target)
                         : SpigotUtils.getPlayerDisplayName(target);
