@@ -21,20 +21,24 @@ import org.jetbrains.annotations.NotNull;
  * @author stumper66
  * @since 3.0.0
  */
-public class LivingEntityPlaceHolder extends LivingEntityWrapperBase implements
-    LivingEntityInterface {
+public class LivingEntityPlaceholder
+    extends LivingEntityWrapperBase
+    implements
+    LivingEntityInterface
+{
 
-    private LivingEntityPlaceHolder(final @NotNull LevelledMobs main) {
+    private LivingEntityPlaceholder(final @NotNull LevelledMobs main) {
         super(main);
     }
 
     private EntityType entityType;
     private final static Object cachedPlaceHolders_Lock = new Object();
-    private final static Stack<LivingEntityPlaceHolder> cache = new Stack<>();
+    private final static Stack<LivingEntityPlaceholder> cache = new Stack<>();
 
-    @NotNull public static LivingEntityPlaceHolder getInstance(final EntityType entityType,
+    @NotNull
+    public static LivingEntityPlaceholder getInstance(final EntityType entityType,
         final @NotNull Location location, final @NotNull LevelledMobs main) {
-        final LivingEntityPlaceHolder leph;
+        final LivingEntityPlaceholder leph;
 
         if (location.getWorld() == null) {
             throw new NullPointerException("World can't be null");
@@ -42,7 +46,7 @@ public class LivingEntityPlaceHolder extends LivingEntityWrapperBase implements
 
         synchronized (cachedPlaceHolders_Lock) {
             if (cache.empty()) {
-                leph = new LivingEntityPlaceHolder(main);
+                leph = new LivingEntityPlaceholder(main);
             } else {
                 leph = cache.pop();
             }
