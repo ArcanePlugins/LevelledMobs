@@ -1,7 +1,7 @@
 name: 'LevelledMobs'
 version: '${project.version}'
 description: '${project.description}'
-authors: [ 'lokka30', 'PenalBuffalo', 'Oathkeeper' ]
+authors: [ 'lokka30', 'PenalBuffalo', 'UltimaOath' ]
 website: 'https://github.com/lokka30/LevelledMobs/'
 
 main: 'me.lokka30.levelledmobs.LevelledMobs'
