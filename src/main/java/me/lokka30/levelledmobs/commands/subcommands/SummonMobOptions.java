@@ -1,7 +1,6 @@
 package me.lokka30.levelledmobs.commands.subcommands;
 
 import me.lokka30.levelledmobs.misc.LivingEntityPlaceholder;
-import me.lokka30.levelledmobs.misc.LivingEntityPlaceholder;
 import me.lokka30.levelledmobs.misc.RequestedLevel;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;

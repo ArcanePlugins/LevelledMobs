@@ -723,33 +723,6 @@ public class LevelManager implements LevelInterface {
         return updateNametag(lmEntity, nametag, useCustomNameForNametags, preserveMobName, hadCustomDeathMessage);
     }
 
-    private void checkLockedNametag(final @NotNull LivingEntityWrapper lmEntity) {
-        synchronized (lmEntity.getPDC()) {
-            Integer doLockSettings;
-            if (lmEntity.getPDC()
-                .has(main.namespacedKeys.lockSettings, PersistentDataType.INTEGER)) {
-                doLockSettings = lmEntity.getPDC()
-                    .get(main.namespacedKeys.lockSettings, PersistentDataType.INTEGER);
-                if (doLockSettings == null || doLockSettings != 1) {
-                    return;
-                }
-            } else {
-                return;
-            }
-
-            if (lmEntity.getPDC()
-                .has(main.namespacedKeys.lockedNametag, PersistentDataType.STRING)) {
-                lmEntity.lockedNametag = lmEntity.getPDC()
-                    .get(main.namespacedKeys.lockedNametag, PersistentDataType.STRING);
-            }
-            if (lmEntity.getPDC()
-                .has(main.namespacedKeys.lockedNameOverride, PersistentDataType.STRING)) {
-                lmEntity.lockedOverrideName = lmEntity.getPDC()
-                    .get(main.namespacedKeys.lockedNameOverride, PersistentDataType.STRING);
-            }
-        }
-    }
-
     @NotNull public NametagResult updateNametag(final @NotNull LivingEntityWrapper lmEntity, @NotNull String nametag,
                                                 final boolean useCustomNameForNametags) {
         return updateNametag(lmEntity, nametag, useCustomNameForNametags, false, false);
@@ -804,7 +777,32 @@ public class LevelManager implements LevelInterface {
         return result;
     }
 
+    private void checkLockedNametag(final @NotNull LivingEntityWrapper lmEntity) {
+        synchronized (lmEntity.getPDC()) {
+            Integer doLockSettings;
+            if (lmEntity.getPDC()
+                    .has(main.namespacedKeys.lockSettings, PersistentDataType.INTEGER)) {
+                doLockSettings = lmEntity.getPDC()
+                        .get(main.namespacedKeys.lockSettings, PersistentDataType.INTEGER);
+                if (doLockSettings == null || doLockSettings != 1) {
+                    return;
+                }
+            } else {
+                return;
+            }
 
+            if (lmEntity.getPDC()
+                    .has(main.namespacedKeys.lockedNametag, PersistentDataType.STRING)) {
+                lmEntity.lockedNametag = lmEntity.getPDC()
+                        .get(main.namespacedKeys.lockedNametag, PersistentDataType.STRING);
+            }
+            if (lmEntity.getPDC()
+                    .has(main.namespacedKeys.lockedNameOverride, PersistentDataType.STRING)) {
+                lmEntity.lockedOverrideName = lmEntity.getPDC()
+                        .get(main.namespacedKeys.lockedNameOverride, PersistentDataType.STRING);
+            }
+        }
+    }
 
     public @NotNull String replaceStringPlaceholders(final @NotNull String nametag,
         @NotNull final LivingEntityWrapper lmEntity, final boolean usePAPI) {
