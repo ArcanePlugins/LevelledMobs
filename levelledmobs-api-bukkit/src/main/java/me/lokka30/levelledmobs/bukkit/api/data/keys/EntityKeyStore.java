@@ -36,6 +36,16 @@ public class EntityKeyStore extends KeyStore {
      */
     public static final NamespacedKey dropTableIds = getKey("DropTableIds");
 
+    /**
+     * TODO Document
+     */
+    public static final NamespacedKey inheritanceTransformationFormula = getKey("InheritanceTransformationFormula");
+
+    /**
+     * TODO Document
+     */
+    public static final NamespacedKey inheritanceBreedingFormula = getKey("InheritanceBreedingFormula");
+
     /*
     Represents the current level of the entity.
 

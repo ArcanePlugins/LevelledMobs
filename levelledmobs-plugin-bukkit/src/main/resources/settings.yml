@@ -4,7 +4,9 @@
 ##########################################
 
 # TODO: Welcome to the settings.yml To-Do List
-# TODO: 
+# TODO:
+# TODO: - Replace 'mob' with 'entity'
+# TODO: - update the file as we are not using sockets anymore
 # TODO: - Clarify prefix and suffix placeholders for LM labels.
 # TODO: - Make the label formulas look all nice and formatted.
 

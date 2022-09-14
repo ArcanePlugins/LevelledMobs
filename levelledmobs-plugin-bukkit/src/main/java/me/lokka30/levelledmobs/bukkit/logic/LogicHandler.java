@@ -57,7 +57,7 @@ public final class LogicHandler {
         final @NotNull Context context,
         final @NotNull String... triggers
     ) {
-        for(var function : getFunctions())
+        for(LmFunction function : getFunctions())
             if(function.hasAnyTriggers(triggers))
                 function.run(context, false);
     }

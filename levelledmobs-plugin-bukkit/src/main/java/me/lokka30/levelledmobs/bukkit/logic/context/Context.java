@@ -1,5 +1,6 @@
 package me.lokka30.levelledmobs.bukkit.logic.context;
 
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -9,6 +10,7 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -24,6 +26,7 @@ public final class Context {
     private World world;
     private Location location;
     private final List<LmFunction> linkedFunctions = new LinkedList<>();
+    private final Collection<LivingEntity> parents = new LinkedList<>();
 
     /* methods */
 
@@ -107,5 +110,16 @@ public final class Context {
 
     @NotNull
     public List<LmFunction> getLinkedFunctions() { return linkedFunctions; }
+
+    /**
+     * TODO doc.
+     * <p>
+     * size=0 : no parents.
+     * size=1 : entity which it was transformed from.
+     * size=2 : entities which bred to create a child entity.
+     * @return TODO doc.
+     */
+    @NotNull
+    public Collection<LivingEntity> getParents() { return parents; }
 
 }

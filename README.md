@@ -1,5 +1,9 @@
 # LevelledMobs 4
 
+> Note: LevelledMobs 4 is an upcoming revamp of LevelledMobs, deep in development, and vastly
+> unsuitable for production usage in its current state. Please discuss v4 with us in the
+> ArcanePlugins Discord Server or in the GH Discussions section.
+
 > 🧟 **The Ultimate RPG Mob Levelling Solution**
 >
 > LevelledMobs is a drop-in plugin for your Minecraft server which instantly upgrades your server's PvE experience.
@@ -54,15 +58,3 @@ The following libraries were once used in LevelledMobs, though are no longer ado
 to credit them for their part in supporting LevelledMobs to be where it is today.
 
 * MicroLib by lokka30
-
-### Non-LM Files
-
-The following files do not fall under LevelledMobs' license.
-
-Please view the license stated at the top of the listed files below for more information.
-
-* `WeightedRandomContainer.java`
-    * Created by `Philipp` on StackExchange.
-* `player-head-textures.json`
-    * Contains texture IDs sourced from `Zombie_Striker`'s `Ultimate Mob Heads Fork` resource on
-      SpigotMC.org.

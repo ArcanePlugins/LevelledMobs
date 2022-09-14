@@ -39,6 +39,28 @@ public class EntityDataUtil {
         setData(entity, EntityKeyStore.deniesLabel, INTEGER, boolToInt(to));
     }
 
+    /**
+     * TODO Document
+     *
+     * @param entity TODO Document
+     * @return TODO Document
+     */
+    public static String getInheritanceTransformationFormula(final @NotNull LivingEntity entity) {
+        Objects.requireNonNull(entity, "entity");
+        return getDataString(entity, EntityKeyStore.inheritanceTransformationFormula);
+    }
+
+    /**
+     * TODO Document
+     *
+     * @param entity TODO Document
+     * @return TODO Document
+     */
+    public static String getInheritanceBreedingFormula(final @NotNull LivingEntity entity) {
+        Objects.requireNonNull(entity, "entity");
+        return getDataString(entity, EntityKeyStore.inheritanceBreedingFormula);
+    }
+
     /*
     FIXME Comment
      */

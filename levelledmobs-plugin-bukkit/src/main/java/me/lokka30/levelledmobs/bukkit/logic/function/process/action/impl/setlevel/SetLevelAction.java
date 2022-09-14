@@ -1,7 +1,6 @@
-package me.lokka30.levelledmobs.bukkit.logic.function.process.action.impl;
+package me.lokka30.levelledmobs.bukkit.logic.function.process.action.impl.setlevel;
 
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.Objects;
 import java.util.Set;
 import me.lokka30.levelledmobs.bukkit.LevelledMobs;
@@ -24,10 +23,8 @@ public class SetLevelAction extends Action {
 
     /* vars */
 
-    private final boolean babiesInheritLevel;
     private final String formula;
     private final Set<LevellingStrategy> strategies = new HashSet<>();
-    private final boolean passengersInheritLevel;
 
     /* constructors */
 
@@ -41,21 +38,13 @@ public class SetLevelAction extends Action {
         this.formula = getActionNode().node("formula")
             .getString("no-level");
 
-        this.babiesInheritLevel = getActionNode().node("babies-inherit-level")
-            .getBoolean(true);
+        //TODO handle inheritance.
 
-        this.passengersInheritLevel = getActionNode().node("passengers-inherit-level")
-            .getBoolean(true);
-
-        // TODO Test.
         /*
         Here we want to call out for all known levelling strategies to be registered to the
         SetLevelAction.
          */
-        final LinkedList<String> strategyNames = new LinkedList<>(); //TODO remove for testing
-
         // Iterate through each strategyId specified under the strategies section
-        Log.tmpdebug("strategies to loop thru: " + getActionNode().node("strategies").childrenMap().keySet().toString());
         for(var strategyNodeEntry : getActionNode()
             .node("strategies")
             .childrenMap().entrySet()
@@ -87,20 +76,7 @@ public class SetLevelAction extends Action {
 
             // add all strategies from the events
             getStrategies().addAll(stratReqEvent.getStrategies());
-
-            //TODO remove for testing
-            for(var strategy : stratReqEvent.getStrategies()) {
-                strategyNames.add(strategy.getName());
-            }
         }
-
-        //TODO test debugging remove this
-        Log.tmpdebug(String.format(
-            "The following levelling strategies are in the SetLevelAction located in the process '%s' in function '%s': %s",
-            getParentProcess().getIdentifier(),
-            getParentProcess().getParentFunction().getIdentifier(),
-            strategyNames
-        ));
     }
 
     /* methods */
@@ -124,18 +100,7 @@ public class SetLevelAction extends Action {
             return;
         }
 
-        //TODO handle babies level inheritance
-        // ...
-        if(getBabiesInheritLevel()) {
-            //TODO
-            Log.inf("babies inherit level logic not done yet");
-        }
-
-        //TODO handle passengers level inheritance
-        // ...
-        if(getPassengersInheritLevel()) {
-            Log.inf("passengers inherit level logic not done yet");
-        }
+        //TODO handle inheritance.
 
         final Integer[] levels = processFormula(context);
 
@@ -167,6 +132,12 @@ public class SetLevelAction extends Action {
         Log.tmpdebug("Done levelling mob, lvl: " + EntityDataUtil.getLevel((LivingEntity) context.getEntity()));
     }
 
+    /**
+     * TODO document. nullable int array of [level, minLevel, maxLevel] is returned. use tuple instead?
+     *
+     * @param context TODO doc
+     * @return TODO doc
+     */
     @Nullable
     public Integer[] processFormula(final @NotNull Context context) {
         Objects.requireNonNull(context, "context");
@@ -219,11 +190,4 @@ public class SetLevelAction extends Action {
         return formula;
     }
 
-    public boolean getBabiesInheritLevel() {
-        return babiesInheritLevel;
-    }
-
-    public boolean getPassengersInheritLevel() {
-        return passengersInheritLevel;
-    }
 }
