@@ -14,7 +14,6 @@ import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -79,7 +78,6 @@ public class NametagSender implements NMSUtil {
         }
     }
 
-    @SuppressWarnings("deprecation")
     private @NotNull Optional<Component> buildNametagComponent(final @NotNull LivingEntity livingEntity,
                                                                final @NotNull NametagResult nametag){
         if (nametag.isNullOrEmpty())
@@ -118,7 +116,7 @@ public class NametagSender implements NMSUtil {
                 null;
 
         final Component mobNameComponent = nametag.overriddenName == null ?
-                Component.translatable(Bukkit.getUnsafe().getTranslationKey(livingEntity.getType())) :
+                Component.translatable(getTranslationKey(livingEntity.getType())) :
                 Component.literal(nametag.overriddenName);
 
         MutableComponent comp = Component.empty();
@@ -136,6 +134,11 @@ public class NametagSender implements NMSUtil {
         }
 
         return Optional.of(comp);
+    }
+
+    @SuppressWarnings("deprecation")
+    private String getTranslationKey(final org.bukkit.entity.@NotNull EntityType type) {
+        return net.minecraft.world.entity.EntityType.byString(type.getName()).map(net.minecraft.world.entity.EntityType::getDescriptionId).orElse(null);
     }
 
     private void buildReflection(){

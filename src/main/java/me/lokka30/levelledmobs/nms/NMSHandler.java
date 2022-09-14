@@ -5,6 +5,8 @@ import java.util.regex.Pattern;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.managers.ExternalCompatibilityManager;
 import me.lokka30.levelledmobs.util.Utils;
+import me.lokka30.microlib.messaging.MessageUtils;
+import me.lokka30.microlib.other.VersionUtils;
 import org.bukkit.Bukkit;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -19,13 +21,7 @@ public class NMSHandler {
 
     public NMSHandler(final @NotNull LevelledMobs main) {
         this.main = main;
-        boolean hasKiori = false;
-        try {
-            Class.forName("net.kyori.adventure.text.Component");
-            hasKiori = true;
-        } catch (ClassNotFoundException ignored) { }
-
-        this.hasKiori = hasKiori;
+        this.hasPaper = VersionUtils.isRunningPaper();
         parseBukkitVersion();
     }
 
@@ -36,7 +32,7 @@ public class NMSHandler {
     private NMSUtil currentUtil;
     public double minecraftVersion;
     public boolean isUsingProtocolLib;
-    public final boolean hasKiori;
+    public final boolean hasPaper;
 
     private void parseBukkitVersion() {
         // example: org.bukkit.craftbukkit.v1_18_R2.CraftServer
@@ -75,10 +71,10 @@ public class NMSHandler {
         // supported is paper >= 1.18 or spigot >= 1.19
         // otherwise protocollib is used
 
-        if (hasKiori && this.minecraftVersion >= 1.18 ||
-            !hasKiori && this.minecraftVersion >= 1.19) {
+        if (hasPaper && this.minecraftVersion >= 1.18 ||
+            !hasPaper && this.minecraftVersion >= 1.19) {
             // 1.18 and newer we support with direct nms
-            this.currentUtil = new NametagSender(nmsVersionString, hasKiori);
+            this.currentUtil = new NametagSender(nmsVersionString, hasPaper);
             Utils.logger.info(
                 String.format("Using NMS version %s for nametag support", nmsVersionString));
         } else if (ExternalCompatibilityManager.hasProtocolLibInstalled()) {

@@ -14,7 +14,7 @@ import me.lokka30.levelledmobs.commands.MessagesBase;
 import me.lokka30.levelledmobs.managers.LevelManager;
 import me.lokka30.levelledmobs.misc.AdditionalLevelInformation;
 import me.lokka30.levelledmobs.misc.LevellableState;
-import me.lokka30.levelledmobs.misc.LivingEntityPlaceHolder;
+import me.lokka30.levelledmobs.misc.LivingEntityPlaceholder;
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
 import me.lokka30.levelledmobs.misc.RequestedLevel;
 import me.lokka30.levelledmobs.util.PaperUtils;
@@ -39,6 +39,7 @@ import org.jetbrains.annotations.Nullable;
  * Summons a levelled mob with a specific level and criteria
  *
  * @author stumper66
+ * @author lokka30
  * @since v2.0.0
  */
 public class SummonSubcommand extends MessagesBase implements Subcommand {
@@ -48,8 +49,12 @@ public class SummonSubcommand extends MessagesBase implements Subcommand {
     }
 
     @Override
-    public void parseSubcommand(final LevelledMobs main, final @NotNull CommandSender sender,
-        final String label, @NotNull final String @NotNull [] args) {
+    public void parseSubcommand(
+        @NotNull final LevelledMobs main,
+        @NotNull final CommandSender sender,
+        @NotNull final String label,
+        @NotNull final String... args
+    ) {
         commandSender = sender;
         messageLabel = label;
 
@@ -169,7 +174,7 @@ public class SummonSubcommand extends MessagesBase implements Subcommand {
                     return;
                 }
 
-                final LivingEntityPlaceHolder lmPlaceHolder = LivingEntityPlaceHolder.getInstance(
+                final LivingEntityPlaceholder lmPlaceHolder = LivingEntityPlaceholder.getInstance(
                     entityType, location, main);
 
                 final SummonMobOptions options = new SummonMobOptions(lmPlaceHolder, commandSender);
@@ -213,7 +218,7 @@ public class SummonSubcommand extends MessagesBase implements Subcommand {
                     return;
                 }
 
-                final LivingEntityPlaceHolder lmPlaceHolder = LivingEntityPlaceHolder.getInstance(
+                final LivingEntityPlaceholder lmPlaceHolder = LivingEntityPlaceholder.getInstance(
                     entityType, location, main);
                 final SummonMobOptions options = new SummonMobOptions(lmPlaceHolder, commandSender);
                 options.amount = amount;
@@ -261,7 +266,7 @@ public class SummonSubcommand extends MessagesBase implements Subcommand {
                 if (location == null || location.getWorld() == null) {
                     showMessage("command.levelledmobs.summon.atLocation.invalid-location");
                 } else {
-                    final LivingEntityPlaceHolder lmPlaceHolder = LivingEntityPlaceHolder.getInstance(
+                    final LivingEntityPlaceholder lmPlaceHolder = LivingEntityPlaceholder.getInstance(
                         entityType, location, main);
                     final SummonMobOptions options = new SummonMobOptions(lmPlaceHolder,
                         commandSender);
@@ -395,30 +400,30 @@ public class SummonSubcommand extends MessagesBase implements Subcommand {
     private void summonMobs(@NotNull final SummonMobOptions options) {
 
         final CommandSender sender = options.sender;
-        final LevelledMobs main = options.lmPlaceHolder.getMainInstance();
+        final LevelledMobs main = options.lmPlaceholder.getMainInstance();
         final Player target = options.player;
-        Location location = options.lmPlaceHolder.getLocation();
+        Location location = options.lmPlaceholder.getLocation();
 
         if (main.levelManager.FORCED_BLOCKED_ENTITY_TYPES.contains(
-            options.lmPlaceHolder.getEntityType())) {
+            options.lmPlaceholder.getEntityType())) {
             List<String> messages = main.messagesCfg.getStringList(
                 "command.levelledmobs.summon.not-levellable");
             messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.getPrefix());
             messages = Utils.replaceAllInList(messages, "%entity%",
-                options.lmPlaceHolder.getTypeName());
+                options.lmPlaceholder.getTypeName());
             messages = Utils.colorizeAllInList(messages);
             messages.forEach(sender::sendMessage);
             return;
         }
 
         if (!sender.isOp() && !options.override
-            && main.levelInterface.getLevellableState(options.lmPlaceHolder)
+            && main.levelInterface.getLevellableState(options.lmPlaceholder)
             != LevellableState.ALLOWED) {
             List<String> messages = main.messagesCfg.getStringList(
                 "command.levelledmobs.summon.not-levellable");
             messages = Utils.replaceAllInList(messages, "%prefix%", main.configUtils.getPrefix());
             messages = Utils.replaceAllInList(messages, "%entity%",
-                options.lmPlaceHolder.getTypeName());
+                options.lmPlaceholder.getTypeName());
             messages = Utils.colorizeAllInList(messages);
             messages.forEach(sender::sendMessage);
             return;
@@ -445,7 +450,7 @@ public class SummonSubcommand extends MessagesBase implements Subcommand {
             messages.forEach(sender::sendMessage);
         }
 
-        final int[] levels = main.levelManager.getMinAndMaxLevels(options.lmPlaceHolder);
+        final int[] levels = main.levelManager.getMinAndMaxLevels(options.lmPlaceholder);
         final int minLevel = levels[0];
         final int maxLevel = levels[1];
 
@@ -515,11 +520,12 @@ public class SummonSubcommand extends MessagesBase implements Subcommand {
                 options.requestedLevel.level;
 
             final Entity entity = location.getWorld()
-                .spawnEntity(location, options.lmPlaceHolder.getEntityType());
+                .spawnEntity(location, options.lmPlaceholder.getEntityType());
 
             if (entity instanceof LivingEntity) {
-                final LivingEntityWrapper lmEntity = LivingEntityWrapper.getInstance(
-                    (LivingEntity) entity, main);
+                final LivingEntityWrapper lmEntity = LivingEntityWrapper
+                    .getInstance((LivingEntity) entity, main);
+
                 lmEntity.setSummonedLevel(useLevel);
                 lmEntity.isNewlySpawned = true;
                 synchronized (LevelManager.summonedOrSpawnEggs_Lock) {
@@ -542,19 +548,20 @@ public class SummonSubcommand extends MessagesBase implements Subcommand {
         switch (options.summonType) {
             case HERE -> showMessage("command.levelledmobs.summon.here.success",
                     new String[]{"%amount%", "%level%", "%entity%"},
+                    new String[]{String.valueOf(options.amount), options.requestedLevel.toString(),
+                            options.lmPlaceholder.getTypeName()}
+            );
+            case AT_LOCATION -> showMessage("command.levelledmobs.summon.atLocation.success",
+                    new String[]{"%amount%", "%level%", "%entity%", "%x%", "%y%", "%z%", "%world%"},
                     new String[]{
                         String.valueOf(options.amount),
                         options.requestedLevel.toString(),
-                        options.lmPlaceHolder.getTypeName()
+                        options.lmPlaceholder.getTypeName(),
+                        Integer.toString(location.getBlockX()),
+                        Integer.toString(location.getBlockY()),
+                        Integer.toString(location.getBlockZ()),
+                        location.getWorld() == null ? "(null)" : location.getWorld().getName()
                     }
-            );
-            case AT_LOCATION -> showMessage("command.levelledmobs.summon.atLocation.success",
-                    new String[]{"%amount%", "%level%", "%entity%", "%x%", "%x%", "%x%", "%world%"},
-                    new String[]{String.valueOf(options.amount), options.requestedLevel.toString(),
-                            options.lmPlaceHolder.getTypeName(),
-                            String.valueOf(location.getBlockX()), String.valueOf(location.getBlockY()),
-                            String.valueOf(location.getBlockX()),
-                            location.getWorld() == null ? "(null)" : location.getWorld().getName()}
             );
             case AT_PLAYER -> {
 
@@ -565,7 +572,7 @@ public class SummonSubcommand extends MessagesBase implements Subcommand {
                         new String[]{"%amount%", "%level%", "%entity%", "%targetUsername%",
                                 "%targetDisplayname%"},
                         new String[]{String.valueOf(options.amount), options.requestedLevel.toString(),
-                                options.lmPlaceHolder.getTypeName(),
+                                options.lmPlaceholder.getTypeName(),
                                 target == null ? "(null)" : target.getName(),
                                 target == null ? "(null)" : playerName}
                 );
