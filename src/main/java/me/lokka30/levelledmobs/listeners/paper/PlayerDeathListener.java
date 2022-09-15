@@ -6,7 +6,6 @@ import me.lokka30.levelledmobs.result.NametagResult;
 import me.lokka30.levelledmobs.util.Utils;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
-import net.kyori.adventure.text.TextReplacementConfig;
 import net.kyori.adventure.text.TranslatableComponent;
 import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
@@ -118,28 +117,31 @@ public class PlayerDeathListener {
 
         if (mobKey == null) return;
         final String mobName = nametagResult.getNametagNonNull();
-        final Component playerName = event.getPlayer().displayName();
 
         Component newCom;
         if (nametagResult.hadCustomDeathMessage){
             newCom = Component.empty();
         }
         else {
-            // this component holds the component of the mob name and will show the translated name on clients
+            final int displayNameIndex = mobName.indexOf("{DisplayName}");
+            final Component leftComp = displayNameIndex > 0 ?
+                    LegacyComponentSerializer.legacyAmpersand().deserialize(mobName.substring(0, displayNameIndex)) :
+                    Component.empty();
+            final Component rightComp = mobName.length() > displayNameIndex + 13 ?
+                    LegacyComponentSerializer.legacyAmpersand().deserialize(mobName.substring(displayNameIndex + 13)) :
+                    Component.empty();
+
             final Component mobNameComponent = nametagResult.overriddenName == null ?
                     Component.translatable(mobKey) :
                     LegacyComponentSerializer.legacyAmpersand().deserialize(nametagResult.overriddenName);
 
-            newCom = Component.translatable(tc.key(), Component.text(playerKilled), mobNameComponent);
+            newCom = Component.translatable(tc.key(),
+                    Component.text(playerKilled),
+                    leftComp.append(mobNameComponent)
+            ).append(rightComp);
         }
 
-        // replace placeholders and set the new death message
-        event.deathMessage(LegacyComponentSerializer.legacyAmpersand().deserialize(mobName)
-                .replaceText(TextReplacementConfig.builder()
-                        .matchLiteral("%player%").replacement(playerName).build())
-                .replaceText(TextReplacementConfig.builder()
-                        .matchLiteral("{DisplayName}").replacement(newCom).build())
-        );
+        event.deathMessage(newCom);
     }
 
     @Nullable private String extractPlayerName(final @NotNull TranslatableComponent tc) {

@@ -5,7 +5,6 @@ import java.util.regex.Pattern;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.managers.ExternalCompatibilityManager;
 import me.lokka30.levelledmobs.util.Utils;
-import me.lokka30.microlib.messaging.MessageUtils;
 import me.lokka30.microlib.other.VersionUtils;
 import org.bukkit.Bukkit;
 import org.jetbrains.annotations.NotNull;
