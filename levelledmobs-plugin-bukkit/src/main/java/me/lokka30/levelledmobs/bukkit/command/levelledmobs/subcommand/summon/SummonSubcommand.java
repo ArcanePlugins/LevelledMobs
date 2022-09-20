@@ -63,7 +63,7 @@ public class SummonSubcommand extends CommandWrapper {
             // we want to make sure EntitySpawnListener knows that this mob was summoned.
             // EntitySpawnListener will convert this non-persistent metadata to be persistent.
             preSpawnEntity.setMetadata(
-                EntityKeyStore.wasSummoned.toString(),
+                EntityKeyStore.WAS_SUMMONED.toString(),
                 new FixedMetadataValue(LevelledMobs.getInstance(), 1)
             );
         });

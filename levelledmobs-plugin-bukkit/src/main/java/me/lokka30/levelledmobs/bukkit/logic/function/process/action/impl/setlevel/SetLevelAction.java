@@ -12,6 +12,7 @@ import me.lokka30.levelledmobs.bukkit.logic.function.process.action.Action;
 import me.lokka30.levelledmobs.bukkit.logic.levelling.strategy.LevellingStrategy;
 import me.lokka30.levelledmobs.bukkit.logic.levelling.strategy.LevellingStrategyRequestEvent;
 import me.lokka30.levelledmobs.bukkit.util.Log;
+import me.lokka30.levelledmobs.bukkit.util.TriLevel;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.LivingEntity;
 import org.jetbrains.annotations.NotNull;
@@ -26,6 +27,11 @@ public class SetLevelAction extends Action {
     private final String formula;
     private final Set<LevellingStrategy> strategies = new HashSet<>();
 
+    //TODO we need to initialise these in the constructor
+    private final boolean useInheritanceIfAvailable;
+    private final String inheritanceBreedingFormula;
+    private final String inheritanceTransformationFormula;
+
     /* constructors */
 
     public SetLevelAction(
@@ -38,7 +44,17 @@ public class SetLevelAction extends Action {
         this.formula = getActionNode().node("formula")
             .getString("no-level");
 
-        //TODO handle inheritance.
+        this.useInheritanceIfAvailable = getActionNode()
+            .node("inheritance", "use-if-available")
+            .getBoolean(false);
+
+        this.inheritanceBreedingFormula = getActionNode()
+            .node("inheritance", "breeding", "formula")
+            .getString("(%father-level% + %mother-level%) / 2");
+
+        this.inheritanceTransformationFormula = getActionNode()
+            .node("inheritance", "transformation", "formula")
+            .getString("%mother-level%");
 
         /*
         Here we want to call out for all known levelling strategies to be registered to the
@@ -57,8 +73,6 @@ public class SetLevelAction extends Action {
                 continue;
             }
 
-            // note: can't use the pattern style cast as IntelliJ's analyzer has trouble if it is
-            // present.
             if(!(strategyNodeEntry.getKey() instanceof String strategyId)) {
                 //TODO log error: strategy keys must be strings
                 new Throwable().printStackTrace();
@@ -68,7 +82,6 @@ public class SetLevelAction extends Action {
             // fire LevellingStrategyRequestEvent
             final var stratReqEvent = new LevellingStrategyRequestEvent(strategyId, strategyNode);
             Bukkit.getPluginManager().callEvent(stratReqEvent);
-            Log.tmpdebug("called strategy request event for strategy id: " + strategyId);
 
             if(stratReqEvent.isCancelled()) {
                 continue;
@@ -85,9 +98,6 @@ public class SetLevelAction extends Action {
     public void run(Context context) {
         Objects.requireNonNull(context, "context");
 
-        //TODO Remove debug
-        Log.inf("DEBUG: Running 'set-level' action");
-
         if(context.getEntity() == null) {
             //TODO better error message
             Log.war("set-level: function triggered without entity context", true);
@@ -100,15 +110,16 @@ public class SetLevelAction extends Action {
             return;
         }
 
-        //TODO handle inheritance.
+        TriLevel result;
 
-        final Integer[] levels = processFormula(context);
+        result = generateInheritedLevels(context);
+        if(result == null) result = generateStandardLevels(context);
 
         // if the formula was invalid or returned 'no-level',
         // remove level if entity has one. otherwise, job is done
-        if (levels == null) {
+        if (result == null) {
             // check if the entity is levelled or not
-            if(!InternalEntityDataUtil.isLevelled(lent)) {
+            if(!InternalEntityDataUtil.isLevelled(lent, false)) {
                 return;
             }
 
@@ -117,29 +128,61 @@ public class SetLevelAction extends Action {
             return;
         }
 
-        // grab level, min level and max level from processFormula
-        final int level = levels[0];
-        final int minLevel = levels[1];
-        final int maxLevel = levels[2];
+        InternalEntityDataUtil.setMinLevel(lent, result.getMinLevel(), true);
+        InternalEntityDataUtil.setLevel(lent, result.getLevel(), true);
+        InternalEntityDataUtil.setMaxLevel(lent, result.getMaxLevel(), true);
 
-        InternalEntityDataUtil.setLevel(lent, level);
-        InternalEntityDataUtil.setMinLevel(lent, minLevel);
-        InternalEntityDataUtil.setMaxLevel(lent, maxLevel);
+        //TODO apply inheritance formulas to (parent) entity.
 
         Log.tmpdebug("Finished levelling a %s. Lvl=%s, MinLvl=%s, MaxLvl=%s".formatted(
-            lent.getType(), level, minLevel, maxLevel
+            lent.getType(), result.getLevel(), result.getMinLevel(), result.getMaxLevel()
         ));
-        Log.tmpdebug("Done levelling mob, lvl: " + EntityDataUtil.getLevel((LivingEntity) context.getEntity()));
+    }
+
+    private TriLevel generateStandardLevels(Context context) {
+        return processFormula(context);
+    }
+
+    private TriLevel generateInheritedLevels(Context context) {
+        if(!useInheritanceIfAvailable()) return null;
+
+        final LivingEntity lent = Objects.requireNonNull(
+            (LivingEntity) context.getEntity(),
+            "LivingEntity"
+        );
+
+        final @Nullable LivingEntity father = EntityDataUtil.getFather(lent, false);
+        final @Nullable LivingEntity mother = EntityDataUtil.getMother(lent, false);
+
+        if(Boolean.TRUE.equals(EntityDataUtil.wasBred(lent, true))) {
+
+            if(father == null || mother == null) return null;
+
+            final String fatherFormula = EntityDataUtil.getInheritanceBreedingFormula(father, true);
+            final String motherFormula = EntityDataUtil.getInheritanceBreedingFormula(mother, true);
+
+
+
+            //TODO
+        } else if(Boolean.TRUE.equals(EntityDataUtil.wasTransformed(lent, true))) {
+
+            if(mother == null) return null;
+            final String formula = EntityDataUtil.getInheritanceTransformationFormula(mother, true);
+
+            //TODO
+        }
+
+        return null; //TODO remove me
     }
 
     /**
-     * TODO document. nullable int array of [level, minLevel, maxLevel] is returned. use tuple instead?
+     * TODO document.
      *
      * @param context TODO doc
      * @return TODO doc
      */
     @Nullable
-    public Integer[] processFormula(final @NotNull Context context) {
+    public TriLevel processFormula(final @NotNull Context context) {
         Objects.requireNonNull(context, "context");
 
         // check if the mob should have no level
@@ -168,7 +211,7 @@ public class SetLevelAction extends Action {
             getMinPossibleLevel()
         );
 
-        return new Integer[]{level, minLevel, maxLevel};
+        return new TriLevel(minLevel, level, maxLevel);
     }
 
     /* getters and setters */
@@ -190,4 +233,15 @@ public class SetLevelAction extends Action {
         return formula;
     }
 
+    public boolean useInheritanceIfAvailable() {
+        return useInheritanceIfAvailable;
+    }
+
+    public String getInheritanceTransformationFormula() {
+        return inheritanceTransformationFormula;
+    }
+
+    public String getInheritanceBreedingFormula() {
+        return inheritanceBreedingFormula;
+    }
 }

@@ -4,8 +4,10 @@ import static org.bukkit.persistence.PersistentDataType.INTEGER;
 import static org.bukkit.persistence.PersistentDataType.STRING;
 
 import java.util.Objects;
+import java.util.UUID;
 import me.lokka30.levelledmobs.bukkit.api.PluginUtil;
 import me.lokka30.levelledmobs.bukkit.api.data.keys.EntityKeyStore;
+import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.metadata.FixedMetadataValue;
@@ -26,17 +28,38 @@ public class EntityDataUtil {
     /*
     FIXME Comment
      */
-    public static boolean getDeniesLabel(final @NotNull LivingEntity entity) {
+    @Nullable
+    public static Boolean getDeniesLabel(
+        final @NotNull LivingEntity entity,
+        final boolean requirePersistence
+    ) {
         Objects.requireNonNull(entity, "entity");
-        return getDataBool(entity, EntityKeyStore.deniesLabel);
+        return getDataBool(entity, EntityKeyStore.DENIES_LABEL, requirePersistence);
     }
 
     /*
     FIXME Comment
      */
-    public static void setDeniesLabel(final @NotNull LivingEntity entity, final boolean to) {
+    public static void setDeniesLabel(
+        final @NotNull LivingEntity entity,
+        final boolean requirePersistence,
+        final boolean to
+    ) {
         Objects.requireNonNull(entity, "entity");
-        setData(entity, EntityKeyStore.deniesLabel, INTEGER, boolToInt(to));
+        setData(entity, EntityKeyStore.DENIES_LABEL, INTEGER, boolToInt(to), requirePersistence);
+    }
+
+    //TODO document
+    @Nullable
+    public static LivingEntity getFather(
+        final @NotNull LivingEntity entity,
+        final boolean requirePersistence
+    ) {
+        Objects.requireNonNull(entity, "entity");
+
+        final String uuidStr = getDataString(entity, EntityKeyStore.FATHER, requirePersistence);
+        if(uuidStr == null) return null;
+        return (LivingEntity) Bukkit.getEntity(UUID.fromString(uuidStr));
     }
 
     /**
@@ -45,9 +68,13 @@ public class EntityDataUtil {
      * @param entity TODO Document
      * @return TODO Document
      */
-    public static String getInheritanceTransformationFormula(final @NotNull LivingEntity entity) {
+    @Nullable
+    public static String getInheritanceTransformationFormula(
+        final @NotNull LivingEntity entity,
+        final boolean requirePersistence
+    ) {
         Objects.requireNonNull(entity, "entity");
-        return getDataString(entity, EntityKeyStore.inheritanceTransformationFormula);
+        return getDataString(entity, EntityKeyStore.INHERITANCE_TRANSFORMATION_FORMULA, requirePersistence);
     }
 
     /**
@@ -56,110 +83,181 @@ public class EntityDataUtil {
      * @param entity TODO Document
      * @return TODO Document
      */
-    public static String getInheritanceBreedingFormula(final @NotNull LivingEntity entity) {
+    @Nullable
+    public static String getInheritanceBreedingFormula(
+        final @NotNull LivingEntity entity,
+        final boolean requirePersistence
+    ) {
         Objects.requireNonNull(entity, "entity");
-        return getDataString(entity, EntityKeyStore.inheritanceBreedingFormula);
+        return getDataString(entity, EntityKeyStore.INHERITANCE_BREEDING_FORMULA, requirePersistence);
     }
 
     /*
     FIXME Comment
      */
-    public static boolean isLevelled(final @NotNull LivingEntity entity) {
+    public static boolean isLevelled(
+        final @NotNull LivingEntity entity,
+        final boolean requirePersistence
+    ) {
         Objects.requireNonNull(entity, "entity");
-        return getLevel(entity) != null;
+        //TODO use 'has key' instead of getting the value.
+        return getLevel(entity, requirePersistence) != null;
     }
 
     /*
     FIXME Comment
      */
     @Nullable
-    public static Integer getLevel(final @NotNull LivingEntity entity) {
+    public static Integer getLevel(
+        final @NotNull LivingEntity entity,
+        final boolean requirePersistence
+    ) {
         Objects.requireNonNull(entity, "entity");
-        return getDataInt(entity, EntityKeyStore.level);
-    }
-
-    /*
-    FIXME Comment
-     */
-    public static boolean getMadeOverallChance(final @NotNull LivingEntity entity) {
-        Objects.requireNonNull(entity, "entity");
-        return getDataBool(entity, EntityKeyStore.madeOverallChance);
-    }
-
-    /*
-    FIXME Comment
-     */
-    @Nullable
-    public static Integer getMinLevel(final @NotNull LivingEntity entity) {
-        Objects.requireNonNull(entity, "entity");
-        return getDataInt(entity, EntityKeyStore.minLevel);
-    }
-
-    /*
-    FIXME Comment
-     */
-    public static int getMaxLevel(final @NotNull LivingEntity entity) {
-        Objects.requireNonNull(entity, "entity");
-        return Objects.requireNonNull(
-            getDataInt(entity, EntityKeyStore.maxLevel),
-            "maxLevel"
-        );
+        return getDataInt(entity, EntityKeyStore.LEVEL, requirePersistence);
     }
 
     /*
     FIXME Comment
      */
     @Nullable
-    public static String getOverriddenName(final @NotNull LivingEntity entity) {
+    public static Boolean madeOverallChance(
+        final @NotNull LivingEntity entity,
+        final boolean requirePersistence
+    ) {
         Objects.requireNonNull(entity, "entity");
-        return getDataString(entity, EntityKeyStore.overriddenName);
+        return getDataBool(entity, EntityKeyStore.MADE_OVERALL_CHANCE, requirePersistence);
     }
 
     /*
     FIXME Comment
      */
     @Nullable
-    public static String getSourceSpawnerName(final @NotNull LivingEntity entity) {
+    public static Integer getMinLevel(
+        final @NotNull LivingEntity entity,
+        final boolean requirePersistence
+    ) {
         Objects.requireNonNull(entity, "entity");
-        return getDataString(entity, EntityKeyStore.sourceSpawnerName);
+        return getDataInt(entity, EntityKeyStore.MIN_LEVEL, requirePersistence);
     }
 
     /*
     FIXME Comment
      */
-    public static int getSpawnTimeOfDay(final @NotNull LivingEntity entity) {
+    @Nullable
+    public static Integer getMaxLevel(
+        final @NotNull LivingEntity entity,
+        final boolean requirePersistence
+    ) {
         Objects.requireNonNull(entity, "entity");
-        return Objects.requireNonNull(
-            getDataInt(entity, EntityKeyStore.spawnTimeOfDay),
-            "spawnTimeOfDay"
-        );
+        return getDataInt(entity, EntityKeyStore.MAX_LEVEL, requirePersistence);
+    }
+
+    @Nullable
+    public static LivingEntity getMother(
+        final @NotNull LivingEntity entity,
+        final boolean requirePersistence
+    ) {
+        Objects.requireNonNull(entity, "entity");
+
+        final String uuidStr = getDataString(entity, EntityKeyStore.MOTHER, requirePersistence);
+        if(uuidStr == null) return null;
+        return (LivingEntity) Bukkit.getEntity(UUID.fromString(uuidStr));
     }
 
     /*
     FIXME Comment
      */
-    public static int getSpawnSkyLightLevel(final @NotNull LivingEntity entity) {
+    @Nullable
+    public static String getOverriddenName(
+        final @NotNull LivingEntity entity,
+        final boolean requirePersistence
+    ) {
         Objects.requireNonNull(entity, "entity");
-        return Objects.requireNonNull(
-            getDataInt(entity, EntityKeyStore.spawnSkyLightLevel),
-            "spawnSkyLightLevel"
-        );
+        return getDataString(entity, EntityKeyStore.OVERRIDEN_ENTITY_NAME, requirePersistence);
     }
 
     /*
     FIXME Comment
      */
-    public static boolean getWasBaby(final @NotNull LivingEntity entity) {
+    @Nullable
+    public static String getSourceSpawnerName(
+        final @NotNull LivingEntity entity,
+        final boolean requirePersistence
+    ) {
         Objects.requireNonNull(entity, "entity");
-        return getDataBool(entity, EntityKeyStore.wasBaby);
+        return getDataString(entity, EntityKeyStore.SOURCE_SPAWNER_NAME, requirePersistence);
     }
 
     /*
     FIXME Comment
      */
-    public static boolean getWasSummoned(final @NotNull LivingEntity entity) {
+    @Nullable
+    public static Integer getSpawnTimeOfDay(
+        final @NotNull LivingEntity entity,
+        final boolean requirePersistence
+    ) {
         Objects.requireNonNull(entity, "entity");
-        return getDataBool(entity, EntityKeyStore.wasSummoned);
+        return getDataInt(entity, EntityKeyStore.SPAWNED_TIME_OF_DAY, requirePersistence);
+    }
+
+    /*
+    FIXME Comment
+     */
+    @Nullable
+    public static Integer getSpawnSkyLightLevel(
+        final @NotNull LivingEntity entity,
+        final boolean requirePersistence
+    ) {
+        Objects.requireNonNull(entity, "entity");
+        return getDataInt(entity, EntityKeyStore.SPAWNED_SKY_LIGHT_LEVEL, requirePersistence);
+    }
+
+    /*
+    FIXME Comment
+     */
+    @Nullable
+    public static Boolean wasBaby(
+        final @NotNull LivingEntity entity,
+        final boolean requirePersistence
+    ) {
+        Objects.requireNonNull(entity, "entity");
+        return getDataBool(entity, EntityKeyStore.WAS_BABY, requirePersistence);
+    }
+
+    /*
+    FIXME Comment
+     */
+    @Nullable
+    public static Boolean wasBred(
+        final @NotNull LivingEntity entity,
+        final boolean requirePersistence
+    ) {
+        Objects.requireNonNull(entity, "entity");
+        return getDataBool(entity, EntityKeyStore.WAS_BRED, requirePersistence);
+    }
+
+    /*
+    FIXME Comment
+     */
+    @Nullable
+    public static Boolean wasSummoned(
+        final @NotNull LivingEntity entity,
+        final boolean requirePersistence
+    ) {
+        Objects.requireNonNull(entity, "entity");
+        return getDataBool(entity, EntityKeyStore.WAS_SUMMONED, requirePersistence);
+    }
+
+    /*
+    FIXME Comment
+     */
+    @Nullable
+    public static Boolean wasTransformed(
+        final @NotNull LivingEntity entity,
+        final boolean requirePersistence
+    ) {
+        Objects.requireNonNull(entity, "entity");
+        return getDataBool(entity, EntityKeyStore.WAS_TRANSFORMED, requirePersistence);
     }
 
     /*
@@ -167,33 +265,47 @@ public class EntityDataUtil {
 
     Warning: Please only read or modify the PDC on the main thread.
      */
-    @NotNull
+    @Nullable
     protected static PersistentDataContainer getPdc(final @NotNull LivingEntity entity) {
         Objects.requireNonNull(entity, "entity");
-        return Objects.requireNonNull(
-            entity.getPersistentDataContainer(),
-            "PersistentDataContainer"
-        );
+        return entity.getPersistentDataContainer();
+    }
+
+    @NotNull
+    protected static PersistentDataContainer getPdcNonNull(final @NotNull LivingEntity entity) {
+        Objects.requireNonNull(entity, "entity");
+        return Objects.requireNonNull(entity.getPersistentDataContainer(), "PDC");
     }
 
     protected static <T, Z> void setData(
         final @NotNull LivingEntity entity,
         final @NotNull NamespacedKey namespacedKey,
         final @NotNull PersistentDataType<T, Z> type,
-        final @NotNull Z value
+        final @NotNull Z value,
+        final boolean requirePersistence
     ) {
         entity.setMetadata(
             namespacedKey.toString(),
             new FixedMetadataValue(PluginUtil.getMainInstance(), value)
         );
 
-        getPdc(entity).set(namespacedKey, type, value);
+        final PersistentDataContainer pdc = getPdc(entity);
+        if(pdc == null) {
+            if(requirePersistence)
+                throw new NullPointerException(
+                    "Unable to access the PersistentDataContainer of a for imperative setData call"
+                );
+
+            return;
+        }
+        pdc.set(namespacedKey, type, value);
     }
 
     @Nullable
     protected static Integer getDataInt(
         final @NotNull LivingEntity entity,
-        final @NotNull NamespacedKey namespacedKey
+        final @NotNull NamespacedKey namespacedKey,
+        final boolean requirePersistence
     ) {
         final String namespacedKeyStr = namespacedKey.toString();
 
@@ -201,7 +313,19 @@ public class EntityDataUtil {
             return entity.getMetadata(namespacedKeyStr).get(0).asInt();
         }
 
-        final Integer ret = getPdc(entity).get(namespacedKey, INTEGER);
+        Integer ret = null;
+
+        final PersistentDataContainer pdc = getPdc(entity);
+        if(pdc == null) {
+            if(requirePersistence)
+                throw new NullPointerException(
+                    "PersistentDataContainer is null where persistence is required"
+                );
+        } else {
+            ret = pdc.get(namespacedKey, INTEGER);
+        }
+
+
         if(ret == null) {
             entity.removeMetadata(namespacedKeyStr, PluginUtil.getMainInstance());
         } else {
@@ -214,9 +338,11 @@ public class EntityDataUtil {
         return ret;
     }
 
-    protected static boolean getDataBool(
+    @Nullable
+    protected static Boolean getDataBool(
         final @NotNull LivingEntity entity,
-        final @NotNull NamespacedKey namespacedKey
+        final @NotNull NamespacedKey namespacedKey,
+        final boolean requirePersistence
     ) {
         final String namespacedKeyStr = namespacedKey.toString();
 
@@ -224,8 +350,20 @@ public class EntityDataUtil {
             return entity.getMetadata(namespacedKeyStr).get(0).asBoolean();
         }
 
-        final Integer pdcVal = getPdc(entity).get(namespacedKey, INTEGER);
-        final boolean ret = pdcVal != null && pdcVal == 1;
+        final boolean ret;
+        final PersistentDataContainer pdc = getPdc(entity);
+        if(pdc == null) {
+            if(requirePersistence)
+                throw new NullPointerException
+                    ("PersistentDataContainer is null where persistence is required");
+
+            entity.removeMetadata(namespacedKeyStr, PluginUtil.getMainInstance());
+            return null;
+        } else {
+            final Integer pdcVal = pdc.get(namespacedKey, INTEGER);
+            ret = pdcVal != null && pdcVal == 1;
+        }
+
         entity.setMetadata(namespacedKeyStr, new FixedMetadataValue(
             PluginUtil.getMainInstance(),
             ret
@@ -237,7 +375,8 @@ public class EntityDataUtil {
     @Nullable
     protected static String getDataString(
         final @NotNull LivingEntity entity,
-        final @NotNull NamespacedKey namespacedKey
+        final @NotNull NamespacedKey namespacedKey,
+        final boolean requirePersistence
     ) {
         final String namespacedKeyStr = namespacedKey.toString();
 
@@ -245,7 +384,18 @@ public class EntityDataUtil {
             return entity.getMetadata(namespacedKeyStr).get(0).asString();
         }
 
-        final String ret = getPdc(entity).get(namespacedKey, STRING);
+        String ret = null;
+
+        final PersistentDataContainer pdc = getPdc(entity);
+        if(pdc == null) {
+            if(requirePersistence)
+                throw new NullPointerException(
+                    "PersistentDataContainer is null where persistence is required"
+                );
+        } else {
+            ret = pdc.get(namespacedKey, STRING);
+        }
+
         if(ret == null) {
             entity.removeMetadata(namespacedKeyStr, PluginUtil.getMainInstance());
         } else {

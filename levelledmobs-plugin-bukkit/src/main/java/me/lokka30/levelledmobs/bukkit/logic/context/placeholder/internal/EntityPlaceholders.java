@@ -3,6 +3,7 @@ package me.lokka30.levelledmobs.bukkit.logic.context.placeholder.internal;
 import static me.lokka30.levelledmobs.bukkit.util.StringUtils.replaceIfExists;
 
 import me.lokka30.levelledmobs.bukkit.LevelledMobs;
+import me.lokka30.levelledmobs.bukkit.api.data.EntityDataUtil;
 import me.lokka30.levelledmobs.bukkit.config.translations.TranslationHandler;
 import me.lokka30.levelledmobs.bukkit.logic.context.Context;
 import me.lokka30.levelledmobs.bukkit.logic.context.placeholder.ContextPlaceholder;
@@ -38,19 +39,30 @@ public final class EntityPlaceholders implements ContextPlaceholder {
                 getEntityName(entityType, entity));
 
             if(entity instanceof LivingEntity lent) {
-                str = replaceIfExists(str, "%entity-health%", () ->
-                    Double.toString(lent.getHealth()));
+                final LivingEntity father = EntityDataUtil.getFather(lent, false);
+                final LivingEntity mother = EntityDataUtil.getMother(lent, false);
 
-                str = replaceIfExists(str, "%entity-health-rounded%", () ->
-                    Double.toString(MathUtils.round2dp(lent.getHealth())));
+                str = replaceIfExists(str, "%entity-health%", () -> Double.toString(lent.getHealth()));
+                str = replaceIfExists(str, "%father-health%", () -> Double.toString(father.getHealth()));
+                str = replaceIfExists(str, "%mother-health%", () -> Double.toString(mother.getHealth()));
 
-                str = replaceIfExists(str, "%entity-max-health%", () ->
-                    Double.toString(lent.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue()));
+                str = replaceIfExists(str, "%entity-health-rounded%", () -> Double.toString(MathUtils.round2dp(lent.getHealth())));
+                str = replaceIfExists(str, "%entity-health-rounded%", () -> Double.toString(MathUtils.round2dp(father.getHealth())));
+                str = replaceIfExists(str, "%entity-health-rounded%", () -> Double.toString(MathUtils.round2dp(mother.getHealth())));
 
-                str = replaceIfExists(str, "%entity-max-health-rounded%", () ->
-                    Double.toString(MathUtils.round2dp(
-                        lent.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue()
-                    )));
+                str = replaceIfExists(str, "%entity-max-health%", () -> Double.toString(lent.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue()));
+                str = replaceIfExists(str, "%entity-max-health%", () -> Double.toString(father.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue()));
+                str = replaceIfExists(str, "%entity-max-health%", () -> Double.toString(mother.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue()));
+
+                str = replaceIfExists(str, "%entity-max-health-rounded%", () -> Double.toString(MathUtils.round2dp(lent.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue())));
+                str = replaceIfExists(str, "%entity-max-health-rounded%", () -> Double.toString(MathUtils.round2dp(father.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue())));
+                str = replaceIfExists(str, "%entity-max-health-rounded%", () -> Double.toString(MathUtils.round2dp(mother.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue())));
+
+                if(EntityDataUtil.isLevelled(lent, false)) {
+                    str = replaceIfExists(str, "%entity-level%", () -> Integer.toString(EntityDataUtil.getLevel(lent, false)));
+                    str = replaceIfExists(str, "%father-level%", () -> Integer.toString(EntityDataUtil.getLevel(father, false)));
+                    str = replaceIfExists(str, "%mother-level%", () -> Integer.toString(EntityDataUtil.getLevel(mother, false)));
+                }
             }
         }
 

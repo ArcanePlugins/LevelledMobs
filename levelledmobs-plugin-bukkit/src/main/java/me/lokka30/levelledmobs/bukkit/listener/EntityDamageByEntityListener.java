@@ -32,7 +32,7 @@ public class EntityDamageByEntityListener extends ListenerWrapper {
             !(event.getEntity() instanceof LivingEntity inspected) ||
             !(event.getDamager() instanceof Player inspector) ||
             !inspector.hasPermission("levelledmobs.debug") ||
-            !EntityDataUtil.isLevelled(inspected)
+            !EntityDataUtil.isLevelled(inspected, false)
         ) {
             return;
         }

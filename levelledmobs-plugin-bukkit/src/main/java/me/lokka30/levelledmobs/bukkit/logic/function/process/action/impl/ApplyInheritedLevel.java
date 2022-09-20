@@ -50,7 +50,7 @@ public class ApplyInheritedLevel extends Action {
 
         if(calculatedLevel == null) return;
 
-        InternalEntityDataUtil.setLevel(lent, calculatedLevel);
+        InternalEntityDataUtil.setLevel(lent, calculatedLevel, true);
     }
 
     @Nullable

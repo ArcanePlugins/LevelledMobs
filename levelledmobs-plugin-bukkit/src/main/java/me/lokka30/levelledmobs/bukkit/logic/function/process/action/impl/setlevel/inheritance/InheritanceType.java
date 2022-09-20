@@ -1,4 +1,4 @@
-package me.lokka30.levelledmobs.bukkit.logic.function.process.action.impl.setlevel;
+package me.lokka30.levelledmobs.bukkit.logic.function.process.action.impl.setlevel.inheritance;
 
 import org.jetbrains.annotations.Nullable;
 

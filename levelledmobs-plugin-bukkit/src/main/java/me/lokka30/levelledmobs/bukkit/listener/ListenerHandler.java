@@ -23,7 +23,9 @@ public final class ListenerHandler {
      */
     private final Set<ListenerWrapper> secondaryListeners = Set.of(
         new EntityDamageByEntityListener(),
+        new EntityBreedListener(),
         new EntitySpawnListener(),
+        new EntityTransformListener(),
         new PlayerJoinListener(),
         new PlayerQuitListener()
     );

@@ -1,5 +1,6 @@
 package me.lokka30.levelledmobs.bukkit.api.data.keys;
 
+import com.google.common.annotations.Beta;
 import org.bukkit.NamespacedKey;
 
 /*
@@ -20,7 +21,7 @@ public class EntityKeyStore extends KeyStore {
     0     | false          | N/A
     1     | true           | N/A
      */
-    public static final NamespacedKey deniesLabel = getKey("DenyLM_Nametag");
+    public static final NamespacedKey DENIES_LABEL = getKey("DenyLM_Nametag");
 
     /*
     Represents a collection of drop table IDs that an entity has.
@@ -34,17 +35,22 @@ public class EntityKeyStore extends KeyStore {
     null     | no drop table IDs             | Not Possible
     non-null | Set<String> of drop table IDs | Empty by default
      */
-    public static final NamespacedKey dropTableIds = getKey("DropTableIds");
+    public static final NamespacedKey DROP_TABLE_IDS = getKey("DropTableIds");
+
+    //TODO document. stores entity uuid of father entity
+    public static final NamespacedKey FATHER = getKey("Father");
 
     /**
      * TODO Document
      */
-    public static final NamespacedKey inheritanceTransformationFormula = getKey("InheritanceTransformationFormula");
+    public static final NamespacedKey INHERITANCE_TRANSFORMATION_FORMULA =
+        getKey("InheritanceTransformationFormula");
 
     /**
      * TODO Document
      */
-    public static final NamespacedKey inheritanceBreedingFormula = getKey("InheritanceBreedingFormula");
+    public static final NamespacedKey INHERITANCE_BREEDING_FORMULA =
+        getKey("InheritanceBreedingFormula");
 
     /*
     Represents the current level of the entity.
@@ -57,33 +63,7 @@ public class EntityKeyStore extends KeyStore {
     null       | entity not levelled
     non-null   | level of entity
      */
-    public static final NamespacedKey level = getKey("Level");
-
-    /*
-    Represents the maximum determined level of the entity.
-
-    Type: Non-Null Integer (level)
-    From: LM4
-
-    Value      | Representation   | Notes
-    -----------+------------------+-------------
-    null       | N/A              | Not Possible
-    non-null   | max level of ent | N/A
-     */
-    public static final NamespacedKey maxLevel = getKey("MaxLevel");
-
-    /*
-    Represents the minimum determined level of the entity.
-
-    Type: Non-Null Integer (level)
-    From: LM4
-
-    Value      | Representation      | Notes
-    -----------+---------------------+-------------
-    null       | N/A                 | Not Possible
-    non-null   | min level of entity | N/A
-     */
-    public static final NamespacedKey minLevel = getKey("MinLevel");
+    public static final NamespacedKey LEVEL = getKey("Level");
 
     /*
     Represents whether the entity 'made the chance' to have any custom drops at all.
@@ -97,7 +77,36 @@ public class EntityKeyStore extends KeyStore {
     0     | false          | N/A
     1     | true           | N/A
      */
-    public static final NamespacedKey madeOverallChance = getKey("OverallChance");
+    public static final NamespacedKey MADE_OVERALL_CHANCE = getKey("OverallChance");
+
+    /*
+    Represents the maximum determined level of the entity.
+
+    Type: Non-Null Integer (level)
+    From: LM4
+
+    Value      | Representation   | Notes
+    -----------+------------------+-------------
+    null       | N/A              | Not Possible
+    non-null   | max level of ent | N/A
+     */
+    public static final NamespacedKey MAX_LEVEL = getKey("MaxLevel");
+
+    /*
+    Represents the minimum determined level of the entity.
+
+    Type: Non-Null Integer (level)
+    From: LM4
+
+    Value      | Representation      | Notes
+    -----------+---------------------+-------------
+    null       | N/A                 | Not Possible
+    non-null   | min level of entity | N/A
+     */
+    public static final NamespacedKey MIN_LEVEL = getKey("MinLevel");
+
+    //TODO document. stores entity uuid of mother entity
+    public static final NamespacedKey MOTHER = getKey("Mother");
 
     /*
     If an entity was given an overridden name in a LM function then their overridden name will be
@@ -111,14 +120,14 @@ public class EntityKeyStore extends KeyStore {
     null       | not overridden
     non-null   | overriding name
      */
-    public static final NamespacedKey overriddenName = getKey("OverridenEntityName");
+    public static final NamespacedKey OVERRIDEN_ENTITY_NAME = getKey("OverridenEntityName");
 
     /*
     TODO make PDC keys for each player levelling variable.
     TODO add those keys to the entity data utils
      */
-    @Deprecated
-    public static final NamespacedKey playerLevellingId = getKey("PlayerLevellingId");
+    @Beta
+    public static final NamespacedKey PLAYER_LEVELLING_ID = getKey("PlayerLevellingId");
 
     /*
     If the entity was spawned by a LM spawner, then the name of the LM spawner will be stored using
@@ -132,7 +141,7 @@ public class EntityKeyStore extends KeyStore {
     null       | entity not from LM spawner
     non-null   | name of LM spawner
      */
-    public static final NamespacedKey sourceSpawnerName = getKey("SourceSpawnerName");
+    public static final NamespacedKey SOURCE_SPAWNER_NAME = getKey("SourceSpawnerName");
 
     /*
     Represents the time of day (in ticks) in the world of the entity when they spawned in.
@@ -145,7 +154,7 @@ public class EntityKeyStore extends KeyStore {
     null       | N/A                 | Not Possible
     non-null   | time of day (ticks) | N/A
      */
-    public static final NamespacedKey spawnTimeOfDay = getKey("SpawnedTimeOfDay");
+    public static final NamespacedKey SPAWNED_TIME_OF_DAY = getKey("SpawnedTimeOfDay");
 
     /*
     Represents the sky light level in the location of the entity when they spawned in.
@@ -158,7 +167,7 @@ public class EntityKeyStore extends KeyStore {
     null       | N/A              | Not Possible
     non-null   | sky light level  | N/A
      */
-    public static final NamespacedKey spawnSkyLightLevel = getKey("SkyLightLevel");
+    public static final NamespacedKey SPAWNED_SKY_LIGHT_LEVEL = getKey("SkyLightLevel");
 
     /*
     Represents if an entity was a baby or not when they spawned in.
@@ -172,7 +181,12 @@ public class EntityKeyStore extends KeyStore {
     0     | false          | N/A
     1     | true           | N/A
      */
-    public static final NamespacedKey wasBaby = getKey("WasBabyMob");
+    public static final NamespacedKey WAS_BABY = getKey("WasBabyMob");
+
+    /**
+     * TODO Document
+     */
+    public static final NamespacedKey WAS_BRED = getKey("WasBred");
 
     /*
     Represents if an entity was summoned from `/lm summon` or not.
@@ -186,6 +200,11 @@ public class EntityKeyStore extends KeyStore {
     0     | false          | N/A
     1     | true           | N/A
      */
-    public static final NamespacedKey wasSummoned = getKey("WasSummoned");
+    public static final NamespacedKey WAS_SUMMONED = getKey("WasSummoned");
+
+    /**
+     * TODO Document
+     */
+    public static final NamespacedKey WAS_TRANSFORMED = getKey("WasTransformed");
 
 }

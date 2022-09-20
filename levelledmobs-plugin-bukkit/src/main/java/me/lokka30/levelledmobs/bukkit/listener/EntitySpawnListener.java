@@ -36,7 +36,7 @@ public final class EntitySpawnListener extends ListenerWrapper {
         Check if the entity has any non-persistent metadata to migrate
          */
         // wasSummoned
-        var wasSummonedKeyStr = EntityKeyStore.wasSummoned.toString();
+        var wasSummonedKeyStr = EntityKeyStore.WAS_SUMMONED.toString();
         InternalEntityDataUtil.setWasSummoned(
             entity,
             entity.hasMetadata(wasSummonedKeyStr) &&
