@@ -25,6 +25,8 @@ public final class Context {
     private Player player;
     private World world;
     private Location location;
+    private LivingEntity father;
+    private LivingEntity mother;
     private final List<LmFunction> linkedFunctions = new LinkedList<>();
     private final Collection<LivingEntity> parents = new LinkedList<>();
 
@@ -111,15 +113,26 @@ public final class Context {
     @NotNull
     public List<LmFunction> getLinkedFunctions() { return linkedFunctions; }
 
-    /**
-     * TODO doc.
-     * <p>
-     * size=0 : no parents.
-     * size=1 : entity which it was transformed from.
-     * size=2 : entities which bred to create a child entity.
-     * @return TODO doc.
-     */
     @NotNull
-    public Collection<LivingEntity> getParents() { return parents; }
+    public Context withFather(final LivingEntity father) {
+        Objects.requireNonNull(father, "father");
+
+        this.father = father;
+        return this;
+    }
+
+    @Nullable
+    public LivingEntity getFather() { return father; }
+
+    @NotNull
+    public Context withMother(final LivingEntity mother) {
+        Objects.requireNonNull(mother, "mother");
+
+        this.mother = mother;
+        return this;
+    }
+
+    @Nullable
+    public LivingEntity getMother() { return mother; }
 
 }

@@ -27,7 +27,6 @@ public class SetLevelAction extends Action {
     private final String formula;
     private final Set<LevellingStrategy> strategies = new HashSet<>();
 
-    //TODO we need to initialise these in the constructor
     private final boolean useInheritanceIfAvailable;
     private final String inheritanceBreedingFormula;
     private final String inheritanceTransformationFormula;
@@ -158,21 +157,32 @@ public class SetLevelAction extends Action {
 
             if(father == null || mother == null) return null;
 
+            context
+                .withFather(father)
+                .withMother(mother);
+
             final String fatherFormula = EntityDataUtil.getInheritanceBreedingFormula(father, true);
             final String motherFormula = EntityDataUtil.getInheritanceBreedingFormula(mother, true);
 
+            //TODO do the rest of the calculate breed level pseudocode
 
-
-            //TODO
         } else if(Boolean.TRUE.equals(EntityDataUtil.wasTransformed(lent, true))) {
 
+            // during transformation, mother == father. we only check for one.
             if(mother == null) return null;
+
+            // yes: it is intentional the father is the same as the mother during transformation.
+            context
+                .withFather(mother)
+                .withMother(mother);
+
             final String formula = EntityDataUtil.getInheritanceTransformationFormula(mother, true);
 
-            //TODO
+            //TODO do the rest of the calculate transform level pseudocode
+
         }
 
-        return null; //TODO remove me
+        return null;
     }
 
     /**
@@ -201,7 +211,7 @@ public class SetLevelAction extends Action {
         for(final LevellingStrategy strategy : getStrategies()) {
             formula = strategy.replaceInFormula(formula, context);
 
-            minLevel = Math.max(minLevel, strategy.getMinLevel());
+            minLevel = Math.min(minLevel, strategy.getMinLevel());
             maxLevel = Math.max(maxLevel, strategy.getMaxLevel());
         }
 
