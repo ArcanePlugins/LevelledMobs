@@ -18,6 +18,7 @@ softdepend:
   - SimplePets
   - Essentials
   - LM_Items
+  - SCore
 
 commands:
   levelledmobs:
