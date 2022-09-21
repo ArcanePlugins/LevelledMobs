@@ -7,6 +7,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Function;
 import me.lokka30.levelledmobs.bukkit.LevelledMobs;
 import me.lokka30.levelledmobs.bukkit.api.data.EntityDataUtil;
+import me.lokka30.levelledmobs.bukkit.api.data.keys.EntityKeyStore;
 import me.lokka30.levelledmobs.bukkit.data.InternalEntityDataUtil;
 import me.lokka30.levelledmobs.bukkit.logic.context.Context;
 import me.lokka30.levelledmobs.bukkit.logic.function.process.Process;
@@ -19,6 +20,7 @@ import me.lokka30.levelledmobs.bukkit.util.StringUtils;
 import me.lokka30.levelledmobs.bukkit.util.TriLevel;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.configurate.CommentedConfigurationNode;
@@ -137,23 +139,27 @@ public class SetLevelAction extends Action {
 
         // apply inheritance formulas to (parent) entity.
         if(useInheritanceIfAvailable()) {
+            Log.tmpdebug("Applying inheritance formulas to (parent) entity.");
             InternalEntityDataUtil.setInheritanceBreedingFormula(lent,
                 getInheritanceBreedingFormula(), true);
             InternalEntityDataUtil.setInheritanceTransformationFormula(lent,
                 getInheritanceTransformationFormula(), true);
         }
 
-        Log.tmpdebug("Finished levelling a %s. Lvl=%s, MinLvl=%s, MaxLvl=%s".formatted(
+        Log.tmpdebug("Finished levelling a %s: Lvl=%s; MinLvl=%s; MaxLvl=%s.".formatted(
             lent.getType(), result.getLevel(), result.getMinLevel(), result.getMaxLevel()
         ));
     }
 
     private TriLevel generateStandardLevels(Context context) {
+        Log.tmpdebug("Generating standard level.");
         return processFormula(context);
     }
 
     private TriLevel generateInheritedLevels(Context context) {
+        Log.tmpdebug("Checking whether inheritance is enabled on this SetLevelAction.");
         if(!useInheritanceIfAvailable()) return null;
+        Log.tmpdebug("Checking whether to generate an inherited level.");
 
         final LivingEntity lent = Objects.requireNonNull(
             (LivingEntity) context.getEntity(),
@@ -164,8 +170,16 @@ public class SetLevelAction extends Action {
         final @Nullable LivingEntity mother = EntityDataUtil.getMother(lent, false);
 
         if(Boolean.TRUE.equals(EntityDataUtil.wasBred(lent, true))) {
+            Log.tmpdebug("Entity was bred. Generating inherited level.");
+
+            Log.tmpdebug("Father UUID is '%s'; mother UUID is '%s'.".formatted(
+                lent.getPersistentDataContainer().get(EntityKeyStore.FATHER, PersistentDataType.STRING),
+                lent.getPersistentDataContainer().get(EntityKeyStore.MOTHER, PersistentDataType.STRING)
+            ));
 
             if(father == null || mother == null) return null;
+
+            Log.tmpdebug("OK, father and mother entities exist.");
 
             context
                 .withFather(father)
@@ -177,6 +191,10 @@ public class SetLevelAction extends Action {
             final String motherFormula = StringUtils.emptyIfNull(
                 EntityDataUtil.getInheritanceBreedingFormula(mother, true)
             );
+
+            Log.tmpdebug("Father formula is '%s'; mother formula is '%s'.".formatted(
+                fatherFormula, motherFormula
+            ));
 
             // skip if both are null
             if(fatherFormula.isBlank() && motherFormula.isBlank()) {
@@ -216,6 +234,10 @@ public class SetLevelAction extends Action {
             final int fatherInheritedLevel = levelEvaluator.apply(fatherFormula);
             final int motherInheritedLevel = levelEvaluator.apply(motherFormula);
 
+            Log.tmpdebug("Father inherited level is '%s'; mother's is '%s'.".formatted(
+                fatherInheritedLevel, motherInheritedLevel
+            ));
+
             final int minLevel;
             final @Nullable Integer fatherMinLevel = EntityDataUtil
                 .getMinLevel(father, true);
@@ -246,6 +268,8 @@ public class SetLevelAction extends Action {
 
             // resolve differing formulas
             if(!fatherFormula.equalsIgnoreCase(motherFormula)) {
+                Log.tmpdebug("Resolving differing formulas.");
+
                 return switch(DifferingFormulaResolveType.getFromAdvancedSettings()) {
                     case USE_AVERAGE -> new TriLevel(
                         minLevel,
@@ -267,8 +291,12 @@ public class SetLevelAction extends Action {
 
         } else if(Boolean.TRUE.equals(EntityDataUtil.wasTransformed(lent, true))) {
 
+            Log.tmpdebug("Entity was transformed. Generating inherited level.");
+
             // during transformation, mother == father. we only check for one.
             if(mother == null) return null;
+
+            Log.tmpdebug("Mother exists. Continuing.");
 
             // yes: it is intentional the father is the same as the mother during transformation.
             context
@@ -277,8 +305,12 @@ public class SetLevelAction extends Action {
 
             if(!EntityDataUtil.isLevelled(mother, true)) return null;
 
+            Log.tmpdebug("Mother is levelled. Continuing.");
+
             final String formula = StringUtils.emptyIfNull(EntityDataUtil
                 .getInheritanceTransformationFormula(mother, true));
+
+            Log.tmpdebug("Formula is '%s'.".formatted(formula));
 
             if(formula.isBlank() || formula.equalsIgnoreCase("no-level")) {
                 return null;

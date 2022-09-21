@@ -134,7 +134,7 @@ public final class InternalEntityDataUtil extends EntityDataUtil {
     ) {
         Objects.requireNonNull(child, "child");
         Objects.requireNonNull(father, "father");
-        setData(child, EntityKeyStore.MOTHER, STRING, father.getUniqueId().toString(), requirePersistence);
+        setData(child, EntityKeyStore.FATHER, STRING, father.getUniqueId().toString(), requirePersistence);
     }
 
     public static void setMother(
@@ -194,6 +194,15 @@ public final class InternalEntityDataUtil extends EntityDataUtil {
         setData(entity, EntityKeyStore.WAS_BABY, INTEGER, boolToInt(to), requirePersistence);
     }
 
+    public static void setWasBred(
+        final @NotNull LivingEntity entity,
+        final boolean to,
+        final boolean requirePersistence
+    ) {
+        Objects.requireNonNull(entity, "entity");
+        setData(entity, EntityKeyStore.WAS_BRED, INTEGER, boolToInt(to), requirePersistence);
+    }
+
     public static void setWasSummoned(
         final @NotNull LivingEntity entity,
         final boolean to,
@@ -201,6 +210,15 @@ public final class InternalEntityDataUtil extends EntityDataUtil {
     ) {
         Objects.requireNonNull(entity, "entity");
         setData(entity, EntityKeyStore.WAS_SUMMONED, INTEGER, boolToInt(to), requirePersistence);
+    }
+
+    public static void setWasTransformed(
+        final @NotNull LivingEntity entity,
+        final boolean to,
+        final boolean requirePersistence
+    ) {
+        Objects.requireNonNull(entity, "entity");
+        setData(entity, EntityKeyStore.WAS_TRANSFORMED, INTEGER, boolToInt(to), requirePersistence);
     }
 
     public static void unlevelMob(

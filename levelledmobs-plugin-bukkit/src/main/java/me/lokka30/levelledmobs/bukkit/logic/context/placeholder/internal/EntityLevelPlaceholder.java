@@ -19,19 +19,19 @@ public class EntityLevelPlaceholder implements ContextPlaceholder {
     public @NotNull String replace(String from, Context context) {
         if(context.getEntity() != null) {
             if(context.getEntity() instanceof LivingEntity entity) {
-                if(!EntityDataUtil.isLevelled(entity)) {
+                if(!EntityDataUtil.isLevelled(entity, false)) {
                     return from;
                 }
 
-                final int level = EntityDataUtil.getLevel(entity);
-                final int minLevel = EntityDataUtil.getMinLevel(entity);
-                final int maxLevel = EntityDataUtil.getMaxLevel(entity);
+                final int level = EntityDataUtil.getLevel(entity, false);
+                final int minLevel = EntityDataUtil.getMinLevel(entity, false);
+                final int maxLevel = EntityDataUtil.getMaxLevel(entity, false);
                 final float levelRatio = ((level - minLevel) * 1.0f / (maxLevel - minLevel));
 
                 return from
-                    .replace("%entity-level%", Integer.toString(EntityDataUtil.getLevel(entity)))
-                    .replace("%entity-min-level%", Integer.toString(EntityDataUtil.getMinLevel(entity)))
-                    .replace("%entity-max-level%", Integer.toString(EntityDataUtil.getMaxLevel(entity)))
+                    .replace("%entity-level%", Integer.toString(EntityDataUtil.getLevel(entity, false)))
+                    .replace("%entity-min-level%", Integer.toString(EntityDataUtil.getMinLevel(entity, false)))
+                    .replace("%entity-max-level%", Integer.toString(EntityDataUtil.getMaxLevel(entity, false)))
                     .replace("%entity-level-ratio%", Float.toString(levelRatio));
             } else {
                 return from;

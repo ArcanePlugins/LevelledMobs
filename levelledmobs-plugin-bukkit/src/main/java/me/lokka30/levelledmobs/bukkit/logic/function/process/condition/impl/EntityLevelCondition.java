@@ -52,7 +52,7 @@ public class EntityLevelCondition extends Condition {
         if(entity == null) return false;
         if(!(entity instanceof LivingEntity lent)) return false;
 
-        final boolean isLevelled = EntityDataUtil.isLevelled(lent);
+        final boolean isLevelled = EntityDataUtil.isLevelled(lent, true);
 
         if(getLevelledState() == LevelledState.NOT_LEVELLED) return !isLevelled;
         if(getLevelledState() == LevelledState.LEVELLED) {
@@ -61,7 +61,7 @@ public class EntityLevelCondition extends Condition {
             if(getRequiredLevelRange() != null) return true;
 
             //noinspection ConstantConditions
-            return getRequiredLevelRange().contains(EntityDataUtil.getLevel(lent));
+            return getRequiredLevelRange().contains(EntityDataUtil.getLevel(lent, true));
         }
 
         return true;

@@ -24,6 +24,7 @@ public class EntityTransformListener extends ListenerWrapper {
             .forEach(child -> {
                 InternalEntityDataUtil.setFather(child, lparent, true);
                 InternalEntityDataUtil.setMother(child, lparent, true);
+                InternalEntityDataUtil.setWasTransformed(child, true, true);
             });
     }
 }

@@ -44,8 +44,6 @@ public class SetBuffsAction extends Action {
         ) {
             getBuffs().add(new Buff(buffNode));
         }
-
-        Log.tmpdebug("Parsed " + getBuffs().size() + " buffs.");
     }
 
     /**
@@ -53,7 +51,6 @@ public class SetBuffsAction extends Action {
      */
     @Override
     public void run(Context context) {
-        Log.tmpdebug("Running SetBuffsAction: enabled=" + isEnabled());
         if(!isEnabled()) { return; }
 
         if(context.getEntity() == null) {
@@ -94,8 +91,6 @@ public class SetBuffsAction extends Action {
         ) {
             this.node = node;
 
-            Log.tmpdebug("Parsing buff " + getNode().node("buff").getString("?"));
-
             this.enabled = getNode().node("enabled").getBoolean(true);
 
             this.affectedEntities =
@@ -117,31 +112,20 @@ public class SetBuffsAction extends Action {
         ) {
             if(!isEnabled()) return;
 
-            if(!EntityDataUtil.isLevelled(entity)) {
+            if(!EntityDataUtil.isLevelled(entity, true)) {
                 Log.sev("SetBuffsAction: Mob is not levelled!", true);
                 return;
             }
 
-            Log.tmpdebug("Applying buff " + getNode().node("buff").getString("?"));
-
             if(!getAffectedEntities().contains(entity.getType())) {
-                Log.tmpdebug(
-                    "Buff does not contain entity type, skipping. Modal list: " +
-                    "mode=" + getAffectedEntities().getMode() + ", items=" +
-                    getAffectedEntities().getItems() + "; entity type=" + entity.getType()
-                );
                 return;
             }
 
             final double multiplier = Crunch.evaluateExpression(
                 context.replacePlaceholders(getMultiplierFormula()));
 
-            Log.tmpdebug("Buff multiplier = " + multiplier);
-
             for(final Attribute attribute : Attribute.values()) {
                 if(!getAttributes().contains(attribute)) continue;
-
-                Log.tmpdebug("Buffing attribute " + attribute + ".");
 
                 final AttributeInstance attinstance = entity.getAttribute(attribute);
                 if(attinstance == null) { continue; }
@@ -171,14 +155,8 @@ public class SetBuffsAction extends Action {
                 ));
 
                 if(shouldAdjustHealth) {
-                    Log.tmpdebug("Buff previous health = " + entity.getHealth());
                     entity.setHealth(healthRatio * attinstance.getValue());
-                    Log.tmpdebug("Buff new health = " + entity.getHealth());
                 }
-
-                Log.tmpdebug(
-                    "applied attribute " + attribute + ", previous value = " + currentValue +
-                        ", new value = " + attinstance.getValue());
             }
         }
 

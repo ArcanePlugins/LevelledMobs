@@ -29,7 +29,6 @@ public class RandomLevellingStrategy extends LevellingStrategy {
 
     @Override
     public @NotNull String replaceInFormula(@NotNull String formula, @NotNull Context context) {
-        Log.tmpdebug("Random Levelling Strategy is replacing %random-level% in " + formula);
         final var placeholder = "%random-level%";
 
         if(!formula.contains(placeholder)) {
@@ -41,7 +40,6 @@ public class RandomLevellingStrategy extends LevellingStrategy {
 
     @NotNull
     public static RandomLevellingStrategy parse(final CommentedConfigurationNode node) {
-        Log.tmpdebug("Parsing random levelling strategy at path: " + node.path().toString());
 
         /* error checking */
         final boolean declaresMinLevel = node.hasChild("min-level");
@@ -75,8 +73,6 @@ public class RandomLevellingStrategy extends LevellingStrategy {
 
         final int minLevel = node.node("min-level").getInt();
         final int maxLevel = node.node("max-level").getInt();
-
-        Log.tmpdebug("parsed random levelling strategy with min=" + minLevel + ", max=" + maxLevel);
 
         return new RandomLevellingStrategy(minLevel, maxLevel);
     }

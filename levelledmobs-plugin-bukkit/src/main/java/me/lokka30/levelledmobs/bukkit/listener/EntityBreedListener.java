@@ -20,5 +20,6 @@ public class EntityBreedListener extends ListenerWrapper {
 
         InternalEntityDataUtil.setFather(child, father, true);
         InternalEntityDataUtil.setMother(child, mother, true);
+        InternalEntityDataUtil.setWasBred(child, true, true);
     }
 }
