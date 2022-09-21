@@ -250,7 +250,7 @@ public class LevelManager implements LevelInterface {
 
         int levelSource;
         final String variableToUse =
-            Utils.isNullOrEmpty(options.variable) ? "%level%" : options.variable;
+                Utils.isNullOrEmpty(options.variable) ? "%level%" : options.variable;
         final double scale = options.playerLevelScale != null ? options.playerLevelScale : 1.0;
         final boolean usePlayerMax = options.usePlayerMaxLevel != null && options.usePlayerMaxLevel;
         final boolean matchPlayerLvl = options.matchPlayerLevel != null && options.matchPlayerLevel;
@@ -348,13 +348,19 @@ public class LevelManager implements LevelInterface {
             }
         }
 
+        if (options.recheckPlayers != null && options.recheckPlayers) {
+            final String numberOrString = playerLevelSourceResult.isNumericResult ?
+                    playerLevelSourceResult.numericResult + "" : playerLevelSourceResult.stringResult;
+            if (numberOrString != null)
+                lmEntity.getPDC().set(main.namespacedKeys.playerLevellingSourceNumber, PersistentDataType.STRING, numberOrString);
+        }
         lmEntity.playerLevellingAllowDecrease = options.decreaseLevel;
 
         return results;
     }
 
-    public PlayerLevelSourceResult getPlayerLevelSourceNumber(final Player player,
-        final String variableToUse) {
+    public @NotNull PlayerLevelSourceResult getPlayerLevelSourceNumber(final @Nullable Player player,
+        final @NotNull String variableToUse) {
         if (player == null) {
             return new PlayerLevelSourceResult(1);
         }
@@ -1079,7 +1085,7 @@ public class LevelManager implements LevelInterface {
             main.companion.removeRecentlyJoinedPlayer(closestPlayer);
         }
 
-        if (doesMobNeedRelevelling(mob, closestPlayer)) {
+        if (doesMobNeedRelevelling(lmEntity, closestPlayer)) {
             lmEntity.pendingPlayerIdToSet = closestPlayer.getUniqueId().toString();
             lmEntity.setPlayerForLevelling(closestPlayer);
             lmEntity.reEvaluateLevel = true;
@@ -1119,8 +1125,10 @@ public class LevelManager implements LevelInterface {
         }
     }
 
-    private boolean doesMobNeedRelevelling(final @NotNull LivingEntity mob,
+    private boolean doesMobNeedRelevelling(final @NotNull LivingEntityWrapper lmEntity,
         final @NotNull Player player) {
+        final LivingEntity mob = lmEntity.getLivingEntity();
+
         if (main.playerLevellingMinRelevelTime > 0L && main.playerLevellingEntities.containsKey(
             mob)) {
             final Instant lastCheck = main.playerLevellingEntities.get(mob);
@@ -1150,6 +1158,21 @@ public class LevelManager implements LevelInterface {
             return true;
         } else if (playerId == null || !player.getUniqueId().toString().equals(playerId)) {
             return true;
+        }
+
+        final PlayerLevellingOptions opts = main.rulesManager.getRulePlayerLevellingOptions(lmEntity);
+        if (player.getUniqueId().toString().equals(playerId) && opts != null && opts.recheckPlayers != null && opts.recheckPlayers){
+            final String previousResult = lmEntity.getPDC().get(main.namespacedKeys.playerLevellingSourceNumber, PersistentDataType.STRING);
+            if (previousResult == null) {
+                return true;
+            }
+            final String variableToUse =
+                    Utils.isNullOrEmpty(opts.variable) ? "%level%" : opts.variable;
+            PlayerLevelSourceResult result = getPlayerLevelSourceNumber(player, variableToUse);
+            final String sourceNumberStr = result.isNumericResult ?
+                result.numericResult + "" : result.stringResult;
+
+            return !previousResult.equals(sourceNumberStr);
         }
 
         return !player.getUniqueId().toString().equals(playerId);

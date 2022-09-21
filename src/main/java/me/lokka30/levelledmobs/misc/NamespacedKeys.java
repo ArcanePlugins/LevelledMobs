@@ -33,6 +33,7 @@ public class NamespacedKeys {
         lockedNameOverride = new NamespacedKey(main, "lockedNameOverride");
         lockedDropRules = new NamespacedKey(main, "lockedDropRules");
         lockedDropRulesOverride = new NamespacedKey(main, "lockedDropRulesOverride");
+        playerLevellingSourceNumber = new NamespacedKey(main, "playerLevellingSourceNumber");
 
         spawnerEgg = new NamespacedKey(main, "spawnerEgg");
         spawnerEggName = new NamespacedKey(main, "spawnerEggName");
@@ -70,6 +71,7 @@ public class NamespacedKeys {
     public final NamespacedKey playerNetherCoords;
     public final NamespacedKey playerNetherCoordsIntoWorld;
     public final NamespacedKey skyLightLevel;
+    public final NamespacedKey playerLevellingSourceNumber;
 
     public final NamespacedKey lockSettings;
     public final NamespacedKey lockedNametag;

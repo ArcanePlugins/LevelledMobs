@@ -115,6 +115,7 @@ presets:
         match-level: true
         use-player-max-level: false
         decrease-level: true
+        recheck-players: false
         player-level-scale: 1.0
         level-cap: 30
         tiers:

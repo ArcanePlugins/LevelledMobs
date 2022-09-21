@@ -26,6 +26,7 @@ public class PlayerLevellingOptions implements Cloneable {
     public Boolean matchPlayerLevel;
     public Boolean enabled;
     public Boolean usePlayerMaxLevel;
+    public Boolean recheckPlayers;
     public Integer levelCap;
     public Double playerLevelScale;
     public String variable;
@@ -54,6 +55,9 @@ public class PlayerLevellingOptions implements Cloneable {
         }
         if (options.enabled != null) {
             this.enabled = options.enabled;
+        }
+        if (options.recheckPlayers != null) {
+            this.recheckPlayers = options.recheckPlayers;
         }
     }
 
@@ -125,6 +129,13 @@ public class PlayerLevellingOptions implements Cloneable {
                 sb.append(", ");
             }
             sb.append("decrease-lvl");
+        }
+
+        if (recheckPlayers != null && recheckPlayers){
+            if (sb.length() > 0) {
+                sb.append(", ");
+            }
+            sb.append("rechk-plr");
         }
 
         if (sb.length() == 0) {
