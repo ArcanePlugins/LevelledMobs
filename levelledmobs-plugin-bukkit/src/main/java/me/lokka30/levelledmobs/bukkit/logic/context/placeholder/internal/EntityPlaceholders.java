@@ -58,11 +58,9 @@ public final class EntityPlaceholders implements ContextPlaceholder {
                 str = replaceIfExists(str, "%entity-max-health-rounded%", () -> Double.toString(MathUtils.round2dp(father.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue())));
                 str = replaceIfExists(str, "%entity-max-health-rounded%", () -> Double.toString(MathUtils.round2dp(mother.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue())));
 
-                if(EntityDataUtil.isLevelled(lent, false)) {
-                    str = replaceIfExists(str, "%entity-level%", () -> Integer.toString(EntityDataUtil.getLevel(lent, false)));
-                    str = replaceIfExists(str, "%father-level%", () -> Integer.toString(EntityDataUtil.getLevel(father, false)));
-                    str = replaceIfExists(str, "%mother-level%", () -> Integer.toString(EntityDataUtil.getLevel(mother, false)));
-                }
+                str = replaceIfExists(str, "%entity-level%", () -> Integer.toString(EntityDataUtil.getLevel(lent, false)));
+                str = replaceIfExists(str, "%father-level%", () -> Integer.toString(EntityDataUtil.getLevel(father, false)));
+                str = replaceIfExists(str, "%mother-level%", () -> Integer.toString(EntityDataUtil.getLevel(mother, false)));
             }
         }
 
