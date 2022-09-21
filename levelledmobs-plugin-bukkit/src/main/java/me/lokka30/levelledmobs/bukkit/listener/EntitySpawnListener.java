@@ -40,7 +40,8 @@ public final class EntitySpawnListener extends ListenerWrapper {
         InternalEntityDataUtil.setWasSummoned(
             entity,
             entity.hasMetadata(wasSummonedKeyStr) &&
-                entity.getMetadata(wasSummonedKeyStr).stream().anyMatch(val -> val.asInt() == 1)
+                entity.getMetadata(wasSummonedKeyStr).stream().anyMatch(val -> val.asInt() == 1),
+            true
         );
         entity.removeMetadata(wasSummonedKeyStr, LevelledMobs.getInstance());
 

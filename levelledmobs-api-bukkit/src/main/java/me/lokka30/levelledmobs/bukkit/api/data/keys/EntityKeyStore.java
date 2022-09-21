@@ -43,14 +43,14 @@ public class EntityKeyStore extends KeyStore {
     /**
      * TODO Document
      */
-    public static final NamespacedKey INHERITANCE_TRANSFORMATION_FORMULA =
-        getKey("InheritanceTransformationFormula");
+    public static final NamespacedKey INHERITANCE_BREEDING_FORMULA =
+        getKey("InheritanceBreedingFormula");
 
     /**
      * TODO Document
      */
-    public static final NamespacedKey INHERITANCE_BREEDING_FORMULA =
-        getKey("InheritanceBreedingFormula");
+    public static final NamespacedKey INHERITANCE_TRANSFORMATION_FORMULA =
+        getKey("InheritanceTransformationFormula");
 
     /*
     Represents the current level of the entity.

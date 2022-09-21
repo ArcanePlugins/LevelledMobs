@@ -53,6 +53,44 @@ public final class InternalEntityDataUtil extends EntityDataUtil {
             .set(EntityKeyStore.DROP_TABLE_IDS, DataType.asSet(DataType.STRING), dropTableIds);
     }
 
+    /**
+     * TODO
+     *
+     * @param entity TODO
+     * @param to TODO
+     * @param requirePersistence TODO
+     */
+    public static void setInheritanceBreedingFormula(
+        final @NotNull LivingEntity entity,
+        final @NotNull String to,
+        final boolean requirePersistence
+    ) {
+        Objects.requireNonNull(entity, "entity");
+        Objects.requireNonNull(to, "to");
+
+        setData(entity, EntityKeyStore.INHERITANCE_BREEDING_FORMULA,
+            STRING, to, requirePersistence);
+    }
+
+    /**
+     * TODO
+     *
+     * @param entity TODO
+     * @param to TODO
+     * @param requirePersistence TODO
+     */
+    public static void setInheritanceTransformationFormula(
+        final @NotNull LivingEntity entity,
+        final @NotNull String to,
+        final boolean requirePersistence
+    ) {
+        Objects.requireNonNull(entity, "entity");
+        Objects.requireNonNull(to, "to");
+
+        setData(entity, EntityKeyStore.INHERITANCE_TRANSFORMATION_FORMULA,
+            STRING, to, requirePersistence);
+    }
+
     public static void setLevel(
         final @NotNull LivingEntity entity,
         final int to,

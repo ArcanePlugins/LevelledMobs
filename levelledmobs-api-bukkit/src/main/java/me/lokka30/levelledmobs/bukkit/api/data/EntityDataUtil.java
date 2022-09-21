@@ -69,12 +69,12 @@ public class EntityDataUtil {
      * @return TODO Document
      */
     @Nullable
-    public static String getInheritanceTransformationFormula(
+    public static String getInheritanceBreedingFormula(
         final @NotNull LivingEntity entity,
         final boolean requirePersistence
     ) {
         Objects.requireNonNull(entity, "entity");
-        return getDataString(entity, EntityKeyStore.INHERITANCE_TRANSFORMATION_FORMULA, requirePersistence);
+        return getDataString(entity, EntityKeyStore.INHERITANCE_BREEDING_FORMULA, requirePersistence);
     }
 
     /**
@@ -84,12 +84,12 @@ public class EntityDataUtil {
      * @return TODO Document
      */
     @Nullable
-    public static String getInheritanceBreedingFormula(
+    public static String getInheritanceTransformationFormula(
         final @NotNull LivingEntity entity,
         final boolean requirePersistence
     ) {
         Objects.requireNonNull(entity, "entity");
-        return getDataString(entity, EntityKeyStore.INHERITANCE_BREEDING_FORMULA, requirePersistence);
+        return getDataString(entity, EntityKeyStore.INHERITANCE_TRANSFORMATION_FORMULA, requirePersistence);
     }
 
     /*

@@ -2,6 +2,7 @@ package me.lokka30.levelledmobs.bukkit.util;
 
 import java.util.function.Supplier;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class StringUtils {
 
@@ -17,6 +18,13 @@ public class StringUtils {
             return str.replace(target, operation.get());
         }
         return str;
+    }
+
+    @NotNull
+    public static String emptyIfNull(
+        final @Nullable String str
+    ) {
+        return str == null ? " " : str;
     }
 
 }
