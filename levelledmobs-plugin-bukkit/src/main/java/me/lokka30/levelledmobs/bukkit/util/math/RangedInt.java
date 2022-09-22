@@ -17,6 +17,13 @@ public final class RangedInt {
     }
 
     public RangedInt(
+        final Integer num
+    ) {
+        this.min = num;
+        this.max = num;
+    }
+
+    public RangedInt(
         final String string
     ) {
 
@@ -41,7 +48,7 @@ public final class RangedInt {
     }
 
     @NotNull
-    public Integer generateRandom() {
+    public Integer choose() {
         return ThreadLocalRandom.current().nextInt(getMin(), getMax() + 1);
     }
 

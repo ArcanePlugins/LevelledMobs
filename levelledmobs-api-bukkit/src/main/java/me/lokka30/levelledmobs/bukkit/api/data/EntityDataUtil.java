@@ -5,7 +5,7 @@ import static org.bukkit.persistence.PersistentDataType.STRING;
 
 import java.util.Objects;
 import java.util.UUID;
-import me.lokka30.levelledmobs.bukkit.api.PluginUtil;
+import me.lokka30.levelledmobs.bukkit.api.util.PluginUtil;
 import me.lokka30.levelledmobs.bukkit.api.data.keys.EntityKeyStore;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;

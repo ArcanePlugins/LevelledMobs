@@ -13,7 +13,7 @@ public class RandomLevellingStrategy extends LevellingStrategy {
         final int minLevel,
         final int maxLevel
     ) {
-        super("Random Levelling", minLevel, maxLevel);
+        super("Random", minLevel, maxLevel);
     }
 
     /*

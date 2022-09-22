@@ -2,6 +2,7 @@ package me.lokka30.levelledmobs.bukkit.listener;
 
 import me.lokka30.levelledmobs.bukkit.logic.levelling.strategy.LevellingStrategyRequestEvent;
 import me.lokka30.levelledmobs.bukkit.logic.levelling.strategy.impl.random.RandomLevellingStrategy;
+import me.lokka30.levelledmobs.bukkit.logic.levelling.strategy.impl.weightedrandom.WeightedRandomLevellingStrategy;
 import me.lokka30.levelledmobs.bukkit.util.Log;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -34,8 +35,7 @@ public class LevellingStrategyRequestListener extends ListenerWrapper {
                 Log.sev("spawn distance levelling parsing not implemented", false);
             }
             case "weighted-random" -> {
-                //TODO Add static parsing method into WeightedRandomStrategy
-                Log.sev("weighted random levelling parsing not implemented", false);
+                event.getStrategies().add(WeightedRandomLevellingStrategy.parse(event.getStrategyNode()));
             }
             case "y-coord" -> {
                 //TODO Add static parsing method into YCoordStrategy

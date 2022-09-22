@@ -52,8 +52,8 @@ public class EntityDamageByEntityListener extends ListenerWrapper {
         );
 
         messenger.accept("&8&m-&8{&f&l LM:&7 Inspecting " +
-            "&bLvl. %entity-level% %entity-type-formatted% " +
-            "&8(&c%entity-health-rounded%&8/&c%entity-max-health-rounded%♥&8) &8}&m-"
+            "&bLvl.%entity-level% %entity-type-formatted% " +
+            "&8(&7%entity-health-rounded%&8/&7%entity-max-health-rounded%&c♥&8) &8}&m-"
         );
         messenger.accept("&9EntityName:&f %entity-name%");
         messenger.accept("&8... (end of information) ...");

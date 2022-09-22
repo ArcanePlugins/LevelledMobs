@@ -19,6 +19,7 @@ import me.lokka30.levelledmobs.bukkit.util.Log;
 import me.lokka30.levelledmobs.bukkit.util.StringUtils;
 import me.lokka30.levelledmobs.bukkit.util.TriLevel;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
@@ -133,6 +134,10 @@ public class SetLevelAction extends Action {
         InternalEntityDataUtil.setMinLevel(lent, result.getMinLevel(), true);
         InternalEntityDataUtil.setLevel(lent, result.getLevel(), true);
         InternalEntityDataUtil.setMaxLevel(lent, result.getMaxLevel(), true);
+
+        //TODO remove the debug nametags.
+        lent.setCustomName(ChatColor.BLUE + "" + ChatColor.UNDERLINE + "Lvl." + result.getLevel());
+        lent.setCustomNameVisible(true);
 
         // apply inheritance formulas to (parent) entity.
         if(useInheritanceIfAvailable()) {
@@ -378,7 +383,8 @@ public class SetLevelAction extends Action {
         return strategies;
     }
 
-    public int getMinPossibleLevel() {
+    // TODO let's move this into a more accessible area - SettingsCfg class?
+    public static int getMinPossibleLevel() {
         // we don't want negative values as they create undefined game behaviour
         return Math.max(0, LevelledMobs.getInstance()
             .getConfigHandler().getSettingsCfg()
