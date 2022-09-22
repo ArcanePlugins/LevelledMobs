@@ -7,10 +7,14 @@ import com.jeff_media.morepersistentdatatypes.DataType;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
+import me.lokka30.levelledmobs.bukkit.LevelledMobs;
 import me.lokka30.levelledmobs.bukkit.api.data.EntityDataUtil;
 import me.lokka30.levelledmobs.bukkit.api.data.keys.EntityKeyStore;
-import me.lokka30.levelledmobs.bukkit.util.Log;
+import org.bukkit.NamespacedKey;
+import org.bukkit.attribute.Attribute;
+import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.persistence.PersistentDataContainer;
 import org.jetbrains.annotations.NotNull;
 
 @SuppressWarnings("unused")
@@ -221,14 +225,49 @@ public final class InternalEntityDataUtil extends EntityDataUtil {
         setData(entity, EntityKeyStore.WAS_TRANSFORMED, INTEGER, boolToInt(to), requirePersistence);
     }
 
+    /**
+     * TODO Document
+     *
+     * @param entity TODO DOcument
+     */
     public static void unlevelMob(
         final @NotNull LivingEntity entity
     ) {
-        //TODO remove some PDC keys
-        //TODO remove attribute multipliers             - use new PDC keys to check which ones LM modified.
-        //TODO if LM set a custom name then remove it   - use new pDC key to check if LM set the current custom name.
-        //TODO update mob nametag
-        Log.inf("can't unlevel mobs yet: logic missing.");
+        final PersistentDataContainer pdc = entity.getPersistentDataContainer();
+
+        // Stores the health ratio of the mob so it can be adjusted when the mob is unlevelled
+        Double healthRatio = null;
+
+        // Removes attribute modifiers created by LevelledMobs
+        for(Attribute attribute : Attribute.values()) {
+
+            final AttributeInstance inst = entity.getAttribute(attribute);
+
+            if(inst == null) continue;
+
+            if(attribute == Attribute.GENERIC_MAX_HEALTH) {
+                healthRatio = entity.getHealth() / inst.getValue();
+            }
+
+            inst.getModifiers().removeIf(modifier ->
+                modifier.getName().startsWith("levelledmobs:")
+            );
+
+            if(attribute == Attribute.GENERIC_MAX_HEALTH) {
+                entity.setHealth(healthRatio * inst.getValue());
+            }
+
+        }
+
+        // remove PDC and metadata keys
+        for(final NamespacedKey key : EntityKeyStore.LEVEL_RELATED_KEYS) {
+            pdc.remove(key);
+            entity.removeMetadata(key.toString(), LevelledMobs.getInstance());
+        }
+
+        // TODO remove any items from the mob's inventory that are from LM
+
+        // TODO remove label on entity (nametag)
     }
 
 }

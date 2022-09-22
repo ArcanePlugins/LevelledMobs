@@ -115,21 +115,18 @@ public class SetLevelAction extends Action {
             return;
         }
 
+        if (EntityDataUtil.isLevelled(lent, true)) {
+            // Looks like the mob was previously levelled, so we need to remove most of the LM stuff
+            InternalEntityDataUtil.unlevelMob(lent);
+        }
+
         TriLevel result;
 
         result = generateInheritedLevels(context);
         if(result == null) result = generateStandardLevels(context);
 
-        // if the formula was invalid or returned 'no-level',
-        // remove level if entity has one. otherwise, job is done
-        if (result == null) {
-            // check if the entity is levelled or not
-            if(!InternalEntityDataUtil.isLevelled(lent, false)) {
-                return;
-            }
-
-            // Looks like the mob was previously levelled, so we need to remove most of the LM stuff
-            InternalEntityDataUtil.unlevelMob(lent);
+        // if the formula was invalid or returned 'no-level', skip
+        if(result == null) {
             return;
         }
 

@@ -207,4 +207,17 @@ public class EntityKeyStore extends KeyStore {
      */
     public static final NamespacedKey WAS_TRANSFORMED = getKey("WasTransformed");
 
+    //TODO document
+    public static final NamespacedKey[] LEVEL_RELATED_KEYS = new NamespacedKey[]{
+        DROP_TABLE_IDS,
+        INHERITANCE_BREEDING_FORMULA,
+        INHERITANCE_TRANSFORMATION_FORMULA,
+        LEVEL,
+        MADE_OVERALL_CHANCE,
+        MAX_LEVEL,
+        MIN_LEVEL,
+        OVERRIDEN_ENTITY_NAME,
+        PLAYER_LEVELLING_ID
+    };
+
 }
