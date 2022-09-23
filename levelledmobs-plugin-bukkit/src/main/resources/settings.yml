@@ -3,86 +3,33 @@
 # The Ultimate RPG Mob Levelling Plugin  #
 ##########################################
 
-# TODO: Welcome to the settings.yml To-Do List
-# TODO:
-# TODO: - Replace 'mob' with 'entity'
-# TODO: - update the file as we are not using sockets anymore
-# TODO: - Clarify prefix and suffix placeholders for LM labels.
-# TODO: - Make the label formulas look all nice and formatted.
-
-# These comments are also only here for brainstorming purposes
-# 99% of them will be removed once the file is considered finished
-# ^^ most of them are only to explain what is going on in LM 4.
-
-# LM 4 is based upon a Functions System, instead of LM 3's Rules System. They are quite similar.
-#
-# Functions are used to configure the plugin up to an extreme degree. So much is
-# possible!
-#
-# Users can create as many functions as they want, they act like methods/functions in
-# programming languages.
-#
-# Functions have Processes in them, which contain the actual logic of the function.
-# Processes have a list of Conditions and Actions. All (or a specific % of) conditions
-# must be satisfied in a given Process in order for it to execute all of the Actions.
-# Actions can be things like 'Level this mob' or 'Send a chat message'. Conditions can be
-# things like 'Is this mob already levelled' or 'What world is this mob in'. There are also
-# actions which can modify the processing in a function, e.g. 'exit-function' is an action
-# which stops a given function from doing any more processing.
-# 
-# Functions are processed from top to bottom, same with processes, actions, and conditions.
-#
-# Functions can also call other functions by using an action. LevelledMobs will detect if a
-# function seems to have a circular dependency (e.g. function1 runs function2 which then
-# runs function1 again), it will simply run the 'exit-function' action automatically and
-# yell at the console. An advanced setting can disable the circular dependency detection.
 functions:
-  - function: 'mob-leveller'
-    description: 'This function automatically levels mobs, if they fit certain requirements.'
-    
-    # A list of events which will trigger this function automatically.
-    # 'on-mob-spawn' = EntitySpawnEvent
-    # 'on-mob-scan' = when LM automatically scans an entity async, some random LivingEntity.
-    triggers: ['on-mob-spawn', 'on-mob-scan']
 
-    # Processes can be clumped together into Clusters. This allows a group of processes to be
-    # easily enabled/disabled. There is also an action to exit the current cluster. Clusters
-    # can be nested, though users should avoid this because it might look messy.
+  # This function automatically levels entities, if they fit certain requirements.
+  - function: 'entity-leveller'
+    triggers: ['on-entity-spawn', 'on-entity-startup-scan']
+
     processes:
-      - process: 'check-not-levellable'
-        description: 'Establishes conditions required for individual mobs to become levelled.'
-        use-presets: ['average-challenge']
-        if:
-          
-          # This condition makes sure that levels are only assigned to mobs
-          # that don't already have a level.
-          - check: 'levelled-state'
-            required-state: 'NOT_LEVELLED'
 
-          # This condition allows you to specify what world names should NOT
-          # have newly spawned mobs to be levelled by LevelledMobs.
+      # Establishes conditions required for individual entities to become levelled.
+      - process: 'check-not-levellable'
+        if:
+
+          # A list of world names which entities can't be levelled in. Note, this only affects
+          # newly spawned entities, not entities who teleport to another world, e.g. via a portal.
           - check: 'world'
-            case-sensitivity: true
             in-list: ['example_world_123']
 
-          # This condition allows you to specify what entity types should NOT
-          # be levelled by LevelledMobs.
+          # A list of entity types which are not allowed to become levelled.
+          # Note: you may want to consider nerfing the attribute multipliers on
+          # the entity instead of making it not levelled.
           - check: 'entity-type'
-            description: >
-              A list of mob entity types which are not allowed to become levelled.
-              Note: you may want to consider nerfing the attribute multipliers on
-              the mob instead of making it not levelled.
             in-list: []
 
-          # This condition allows you to specify a list of plugin names which
-          # should skip LevelledMobs' compatibility checks. For example,
-          # you can specify 'DangerousCaves' in the list to make DangerousCaves'
-          # mobs levelled by LevelledMobs. By default, we aim to only level mobs
-          # that are *not* managed by other plugins.
-          # You may have noticed that '*not* in list' is used instead of 'in list',
-          # this is done as we want to block all MobOwner plugins by default.
-          - check: 'mob-owner'
-            description: 'A list of MobOwner plugin integration names which are allowed to become levelled.'
+          # LevelledMobs will aim to not level entities that belong to other plugins, such as
+          # Citizens NPCs. If you want any of these integrations to be disabled for this Process,
+          # enter its identifier below.
+          - check: 'entity-owner' # TODO Rename MobOwner to EntityOwner
             not-in-list: []
 
         # A list of actions that this process will run, if the conditions are met.
@@ -100,8 +47,12 @@ functions:
           # useless.
           - action: 'exit-function'
 
+      # Applies a level to the entity (as the previous process ensures the entity has the correct
+      # conditions for this to run).
       - process: 'apply-level'
         do:
+
+          # Run the SetLevel Action
           - action: 'set-level'
             formula: '%weighted-random-level%'
             strategies:
@@ -112,76 +63,57 @@ functions:
                   '41-60': 4
                   '61-80': 2
                   '81-100': 1
-            # The difficulty preset will put set-level at this certain position,
-            # instead of putting it at the bottom of this actions list.
-          - socket: 'set-buffs'
-          - action: 'set-packet-nametag'
-            # TODO add color
-            formula: '[Lvl %mob-lvl% | %prefix%%mob-name%%suffix% | %mob-health%/%mob-max-health%hp | %mob-health-indicator-left%]'
+
+          # The difficulty preset will put set-level at this certain position,
+          # instead of putting it at the bottom of this actions list.
+          - action: 'set-buffs'
+            use-presets: ['average-challenge']
+
+          # Applies a label above the levelled entity's head, achieved through packets (so this does
+          # not change the 'actual' nametag of the entity).
+          - action: 'set-packet-label'
+            # TODO add the old prefix and suffix symbols from LM3
+            formula: '&8« &bLvl.%entity-level%&f %entity-prefix%&f%entity-name%&f%entity-suffix%&8 • &7%entity-health-rounded%&8/&7%entity-max-health-rounded%&c♥ &8»'
             visibility-methods: ['TARGETED', 'ATTACKED']
             visibility-duration: 5
-          - action: 'set-death-nametag'
-            # TODO add color
-            formula: '[Lvl %mob-lvl% | %prefix%%Mobname%%suffix%]'
-          - action: 'set-level-inheritance'
-            babies-inherit-level: true
-            passengers-inherit-level: true
+
+          # When the levelled entity is involved inside a death message, its name will be replaced
+          # with this formula.
+          - action: 'set-death-label'
+            formula: '&bLvl.%entity-level%&f %entity-prefix%&f%entity-name%&f%entity-suffix%&f'
 
   - function: 'nametag-updater'
-    description: 'This function updates the nametags of levelled mobs automatically.'
+    description: 'This function updates the nametags of levelled entities automatically.'
     triggers:
-      - 'on-mob-damage'
-      - 'on-mob-regain-health'
+      - 'on-entity-damage'
+      - 'on-entity-regain-health'
       - 'on-player-join'
       - 'on-player-teleport'
-      - 'on-mob-track'
-      - 'on-mob-scan'
+      - 'on-entity-track'
+      - 'on-entity-player-scan'
     processes:
-      - process: 'update-nametag-for-mob'
+      - process: 'update-nametag-for-entity'
         if:
-          # Make sure this process only affects levelled mobs.
-          - check: 'levelled-state'
+          - check: 'levelled-state' # TODO maybe rename 'check' to 'run'?
             required-state: 'LEVELLED'
         do:
-          # Update the nametag of the mob.
           - action: 'update-nametag'
 
 # What translation would you like to use?
 # By default this will choose 'en_US.yml' in the directory 'plugins/LevelledMobs/translations/'.
-#
-# Inbuilt translations you can use:
-# - de_DE   (German / Deutsche)
-# - en_AU   (English - Australia)
-# - en_GB   (English - United Kingdom)
-# - en_US   (English - United States of America)
-# - es_ES   (Spanish / Español)
-# - fr_FR   (French / Français)
+# Inbuilt translations you can use: TODO wiki link
 lang: 'en_US'
-
-# Should LevelledMobs asynchronously scan for pre-existing mobs to level?
-#
-##### Move to wiki:
-##### If LevelledMobs was installed since you last reset your world, you can
-##### disable this. This is enabled by default as most server owners likely
-##### install LevelledMobs on servers with existing worlds.
-#
-# TODO move to advanced settings. clarify that this breaks player levelling
-scan-for-existing-mobs: true
 
 # The following settings are in regards to configuring
 # the '%levelledmobs_mob-target%' placeholder from PlaceholderAPI.
 # TODO clarify how this works
 mob-target-placeholder:
 
-  # Format to use if the mob target is a levelled mob.
+  # Format to use if the target is a levelled entity.
   levelled: 'default'
 
-  # Format to use if the mob target is *not* a levelled mob.
-  not-levelled: '%entity-name%'
-
-##### NOTE TO REVIEWERS: Check out the `demo/advanced_settings.yml` file
-##### to see all of the hidden Advanced Settings that can be present in
-##### this file upon manual inclusion from the user.
+  # Format to use if the target is *not* a levelled entity.
+  not-levelled: '&f%entity-prefix%&f%entity-name%&f%entity-suffix%&f'
 
 #### File Metadata
 # Do not edit this section!
