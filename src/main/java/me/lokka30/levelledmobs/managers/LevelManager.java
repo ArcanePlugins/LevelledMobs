@@ -979,10 +979,13 @@ public class LevelManager implements LevelInterface {
                 lmEntity.playerForPermissionsCheck = player;
 
                 if (lmEntity.isLevelled()) {
-                    final boolean skipLevelling = (
+                    boolean skipLevelling = (
                             lmEntity.getSpawnReason() == LevelledMobSpawnReason.LM_SPAWNER ||
                                     lmEntity.getSpawnReason() == LevelledMobSpawnReason.LM_SUMMON
                     );
+                    if (main.configUtils.playerLevellingEnabled && !checkIfReadyForRelevelling(lmEntity)){
+                        skipLevelling = true;
+                    }
                     if (main.configUtils.playerLevellingEnabled && !skipLevelling) {
                         final boolean hasKey = entityToPlayer.containsKey(lmEntity);
                         final List<Player> players = hasKey ?
@@ -1050,6 +1053,25 @@ public class LevelManager implements LevelInterface {
 
             lmEntity.free();
         }
+    }
+
+    private boolean checkIfReadyForRelevelling(final @NotNull LivingEntityWrapper lmEntity){
+        final PlayerLevellingOptions opts = main.rulesManager.getRulePlayerLevellingOptions(lmEntity);
+        if (opts == null || opts.preserveEntityTime == null) {
+            return true;
+        }
+
+        if (!lmEntity.getPDC().has(main.namespacedKeys.lastLevelledTime)){
+            return true;
+        }
+
+        final Long lastLevelledTime = lmEntity.getPDC().get(main.namespacedKeys.lastLevelledTime, PersistentDataType.LONG);
+        if (lastLevelledTime == null) {
+            return true;
+        }
+
+        final Instant levelledTime = Instant.ofEpochMilli(lastLevelledTime);
+        return Utils.getMillisecondsFromInstant(levelledTime) > opts.preserveEntityTime;
     }
 
     private void checkEntityForPlayerLevelling(final @NotNull LivingEntityWrapper lmEntity,
@@ -1650,6 +1672,8 @@ public class LevelManager implements LevelInterface {
                 if (lmEntity.getLivingEntity() instanceof Creeper) {
                     main.levelManager.applyCreeperBlastRadius(lmEntity);
                 }
+
+                lmEntity.getPDC().set(main.namespacedKeys.lastLevelledTime, PersistentDataType.LONG, Instant.now().toEpochMilli());
 
                 lmEntity.free();
             }

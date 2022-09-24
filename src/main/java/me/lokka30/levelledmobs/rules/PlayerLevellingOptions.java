@@ -28,6 +28,7 @@ public class PlayerLevellingOptions implements Cloneable {
     public Boolean usePlayerMaxLevel;
     public Boolean recheckPlayers;
     public Integer levelCap;
+    public Long preserveEntityTime;
     public Double playerLevelScale;
     public String variable;
     public boolean decreaseLevel;

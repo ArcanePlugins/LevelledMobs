@@ -116,6 +116,7 @@ presets:
         use-player-max-level: false
         decrease-level: true
         recheck-players: false
+        preserve-entity: 10s
         player-level-scale: 1.0
         level-cap: 30
         tiers:
