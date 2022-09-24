@@ -82,8 +82,8 @@ functions:
           - action: 'set-death-label'
             formula: '&bLvl.%entity-level%&f %entity-prefix%&f%entity-name%&f%entity-suffix%&f'
 
-  - function: 'nametag-updater'
-    description: 'This function updates the nametags of levelled entities automatically.'
+  - function: 'label-updater'
+    description: 'This function updates the labels of levelled entities automatically.'
     triggers:
       - 'on-entity-damage'
       - 'on-entity-regain-health'
@@ -92,12 +92,12 @@ functions:
       - 'on-entity-track'
       - 'on-entity-player-scan'
     processes:
-      - process: 'update-nametag-for-entity'
+      - process: 'update-label-for-entity'
         if:
           - check: 'levelled-state' # TODO maybe rename 'check' to 'run'?
             required-state: 'LEVELLED'
         do:
-          - action: 'update-nametag'
+          - action: 'update-label'
 
 # What translation would you like to use?
 # By default this will choose 'en_US.yml' in the directory 'plugins/LevelledMobs/translations/'.
