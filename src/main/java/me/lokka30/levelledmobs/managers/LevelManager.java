@@ -1061,11 +1061,11 @@ public class LevelManager implements LevelInterface {
             return true;
         }
 
-        if (!lmEntity.getPDC().has(main.namespacedKeys.lastLevelledTime)){
+        if (!lmEntity.getPDC().has(main.namespacedKeys.lastDamageTime)){
             return true;
         }
 
-        final Long lastLevelledTime = lmEntity.getPDC().get(main.namespacedKeys.lastLevelledTime, PersistentDataType.LONG);
+        final Long lastLevelledTime = lmEntity.getPDC().get(main.namespacedKeys.lastDamageTime, PersistentDataType.LONG);
         if (lastLevelledTime == null) {
             return true;
         }
@@ -1672,8 +1672,6 @@ public class LevelManager implements LevelInterface {
                 if (lmEntity.getLivingEntity() instanceof Creeper) {
                     main.levelManager.applyCreeperBlastRadius(lmEntity);
                 }
-
-                lmEntity.getPDC().set(main.namespacedKeys.lastLevelledTime, PersistentDataType.LONG, Instant.now().toEpochMilli());
 
                 lmEntity.free();
             }
