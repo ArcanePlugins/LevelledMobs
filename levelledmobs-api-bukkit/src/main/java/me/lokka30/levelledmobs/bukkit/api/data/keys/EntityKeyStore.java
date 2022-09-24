@@ -52,6 +52,11 @@ public class EntityKeyStore extends KeyStore {
     public static final NamespacedKey INHERITANCE_TRANSFORMATION_FORMULA =
         getKey("InheritanceTransformationFormula");
 
+    /**
+     * TODO DOC
+     */
+    public static final NamespacedKey LABEL_HANDLER_FORMULAS = getKey("LabelHandlers");
+
     /*
     Represents the current level of the entity.
 

@@ -4,12 +4,17 @@ import static org.bukkit.persistence.PersistentDataType.INTEGER;
 import static org.bukkit.persistence.PersistentDataType.STRING;
 
 import com.jeff_media.morepersistentdatatypes.DataType;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import javax.annotation.Nonnull;
 import me.lokka30.levelledmobs.bukkit.LevelledMobs;
 import me.lokka30.levelledmobs.bukkit.api.data.EntityDataUtil;
 import me.lokka30.levelledmobs.bukkit.api.data.keys.EntityKeyStore;
+import me.lokka30.levelledmobs.bukkit.logic.context.Context;
+import me.lokka30.levelledmobs.bukkit.logic.label.LabelRegistry;
 import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
@@ -93,6 +98,53 @@ public final class InternalEntityDataUtil extends EntityDataUtil {
 
         setData(entity, EntityKeyStore.INHERITANCE_TRANSFORMATION_FORMULA,
             STRING, to, requirePersistence);
+    }
+
+    //TODO doc
+    @Nonnull
+    public static Map<String, String> getLabelHandlerFormulaMap(
+        final @Nonnull LivingEntity entity,
+        final boolean requirePersistence
+    ) {
+        Objects.requireNonNull(entity, "entity");
+
+        final Map<String, String> ret = getPdcNonNull(entity).get(
+            EntityKeyStore.LABEL_HANDLER_FORMULAS,
+            DataType.asMap(DataType.STRING, DataType.STRING)
+        );
+
+        if(ret == null) return new HashMap<>();
+
+        return ret;
+    }
+
+    public static void setLabelHandlerFormulaMap(
+        final @Nonnull LivingEntity entity,
+        final @Nonnull Map<String, String> labelHandlerFormulaMap,
+        final boolean requirePersistence
+    ) {
+        getPdcNonNull(entity).set(
+            EntityKeyStore.LABEL_HANDLER_FORMULAS,
+            DataType.asMap(DataType.STRING, DataType.STRING),
+            labelHandlerFormulaMap
+        );
+    }
+
+    public static void updateLabels(
+        final @Nonnull LivingEntity entity,
+        final @Nonnull Context context,
+        final boolean requirePersistence
+    ) {
+        final Map<String, String> labelHandlerFormulaMap = getLabelHandlerFormulaMap(
+            entity, requirePersistence);
+
+        labelHandlerFormulaMap.forEach((labelHandlerId, formula) -> {
+            LabelRegistry.getLabelHandlers()
+                .stream()
+                .filter(lh -> lh.getId().equals(labelHandlerId))
+                .findFirst()
+                .ifPresent(labelHandler -> labelHandler.update(entity, context));
+        });
     }
 
     public static void setLevel(
