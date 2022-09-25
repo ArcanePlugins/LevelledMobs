@@ -211,11 +211,6 @@ public final class Utils {
         return builder.toString();
     }
 
-    public static boolean isLivingEntityInModalList(final CachedModalList<String> list,
-        final LivingEntityWrapper lmEntity) {
-        return isLivingEntityInModalList(list, lmEntity, false);
-    }
-
     public static boolean isLivingEntityInModalList(@NotNull final CachedModalList<String> list,
         final LivingEntityWrapper lmEntity, final boolean checkBabyMobs) {
         if (list.allowAll) {

@@ -13,6 +13,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.ConcurrentModificationException;
+import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -66,6 +67,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
+import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.enchantments.EnchantmentTarget;
 import org.bukkit.entity.ChestedHorse;
 import org.bukkit.entity.Creeper;
@@ -1865,7 +1867,13 @@ public class LevelManager implements LevelInterface {
                     continue;
                 }
 
-                attInst.getModifiers().clear();
+                final Enumeration<AttributeModifier> existingMods = Collections.enumeration(attInst.getModifiers());
+                while (existingMods.hasMoreElements()){
+                    final AttributeModifier existingMod = existingMods.nextElement();
+
+                    if (main.mobDataManager.vanillaMultiplierNames.contains(existingMod.getName())) continue;
+                    attInst.removeModifier(existingMod);
+                }
             }
         }
 

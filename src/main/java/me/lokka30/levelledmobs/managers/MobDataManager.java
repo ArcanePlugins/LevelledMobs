@@ -4,7 +4,8 @@
 
 package me.lokka30.levelledmobs.managers;
 
-import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.Objects;
 import me.lokka30.levelledmobs.LevelledMobs;
@@ -33,7 +34,7 @@ public class MobDataManager {
     }
 
     private final LevelledMobs main;
-    private final List<String> vanillaMultiplierNames;
+    public final List<String> vanillaMultiplierNames;
 
     @Nullable private Object getAttributeDefaultValue(@NotNull final LivingEntityWrapper lmEntity,
         final Attribute attribute) {
@@ -101,15 +102,12 @@ public class MobDataManager {
                     .getValue() - lmEntity.getLivingEntity().getHealth();
         }
 
-        if (attrib.getModifiers().size() > 0) {
-            final List<AttributeModifier> existingMods = new ArrayList<>(
-                attrib.getModifiers().size());
-            existingMods.addAll(attrib.getModifiers());
+        final Enumeration<AttributeModifier> existingMods = Collections.enumeration(attrib.getModifiers());
+        while (existingMods.hasMoreElements()){
+            final AttributeModifier existingMod = existingMods.nextElement();
 
-            for (final AttributeModifier existingMod : existingMods) {
-                if (this.vanillaMultiplierNames.contains(existingMod.getName())) continue;
-                attrib.removeModifier(existingMod);
-            }
+            if (this.vanillaMultiplierNames.contains(existingMod.getName())) continue;
+            attrib.removeModifier(existingMod);
         }
 
         if (useStaticValues) {
