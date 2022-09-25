@@ -346,7 +346,7 @@ public class RulesSubcommand extends MessagesBase implements Subcommand {
 
     private void showEffectiveRules(@NotNull final Player player, final boolean showOnConsole,
         final boolean findNearbyEntities) {
-        final LivingEntityWrapper lmEntity = getMobBeingLookedAt(player, findNearbyEntities);
+        final LivingEntityWrapper lmEntity = getMobBeingLookedAt(player, findNearbyEntities, this.commandSender);
         if (lmEntity == null) {
             return;
         }
@@ -389,7 +389,8 @@ public class RulesSubcommand extends MessagesBase implements Subcommand {
     }
 
     @Nullable public LivingEntityWrapper getMobBeingLookedAt(@NotNull final Player player,
-        final boolean findNearbyEntities) {
+        final boolean findNearbyEntities, final @NotNull CommandSender sender) {
+        this.commandSender = sender;
         LivingEntity livingEntity = null;
         LivingEntityWrapper lmEntity = null;
         final Location eye = player.getEyeLocation();

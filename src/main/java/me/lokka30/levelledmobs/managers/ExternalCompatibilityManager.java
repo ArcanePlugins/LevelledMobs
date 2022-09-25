@@ -193,25 +193,10 @@ public class ExternalCompatibilityManager {
             return false;
         }
 
-        if (!p.getDescription().getVersion().startsWith("4.12") && !p.getDescription().getVersion()
-            .startsWith("5.")) {
-            final NamespacedKey mmKey = new NamespacedKey(p, "type");
-            synchronized (lmEntity.getLivingEntity().getPersistentDataContainer()) {
-                return lmEntity.getPDC().has(mmKey, PersistentDataType.STRING);
-            }
+        final NamespacedKey mmKey = new NamespacedKey(p, "type");
+        synchronized (lmEntity.getLivingEntity().getPersistentDataContainer()) {
+            return lmEntity.getPDC().has(mmKey, PersistentDataType.STRING);
         }
-
-        if (lmEntity.getLivingEntity().hasMetadata("mythicmob")) {
-            final List<MetadataValue> metadatas = lmEntity.getLivingEntity()
-                .getMetadata("mythicmob");
-            for (final MetadataValue md : metadatas) {
-                if (md.asBoolean()) {
-                    return true;
-                }
-            }
-        }
-
-        return false;
     }
 
     @NotNull public static String getMythicMobInternalName(@NotNull final LivingEntityWrapper lmEntity) {
@@ -224,33 +209,11 @@ public class ExternalCompatibilityManager {
             return "";
         }
 
-        final boolean useNamespaceKey =
-            p.getDescription().getVersion().startsWith("5.") &&
-                !p.getDescription().getVersion().startsWith("5.01") &&
-                !p.getDescription().getVersion().startsWith("5.00");
-
-        if (useNamespaceKey) {
-            final NamespacedKey mmKey = new NamespacedKey(p, "type");
-            synchronized (lmEntity.getLivingEntity().getPersistentDataContainer()) {
-                if (lmEntity.getPDC().has(mmKey, PersistentDataType.STRING)) {
-                    final String type = lmEntity.getPDC().get(mmKey, PersistentDataType.STRING);
-                    return type == null ? "" : type;
-                } else {
-                    return "";
-                }
-            }
-        }
-
-        // MM version 4, 5.00 and 5.01 detection below:
-
-        if (!lmEntity.getLivingEntity().hasMetadata("mobname")) {
-            return "";
-        }
-
-        final List<MetadataValue> metadatas = lmEntity.getLivingEntity().getMetadata("mobname");
-        for (final MetadataValue md : metadatas) {
-            if ("true".equalsIgnoreCase(md.asString())) {
-                return md.asString();
+        final NamespacedKey mmKey = new NamespacedKey(p, "type");
+        synchronized (lmEntity.getLivingEntity().getPersistentDataContainer()) {
+            if (lmEntity.getPDC().has(mmKey, PersistentDataType.STRING)) {
+                final String type = lmEntity.getPDC().get(mmKey, PersistentDataType.STRING);
+                return type == null ? "" : type;
             }
         }
 

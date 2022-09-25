@@ -26,6 +26,7 @@ import me.lokka30.levelledmobs.managers.MobHeadManager;
 import me.lokka30.levelledmobs.managers.MobsQueueManager;
 import me.lokka30.levelledmobs.managers.NametagQueueManager;
 import me.lokka30.levelledmobs.managers.PlaceholderApiIntegration;
+import me.lokka30.levelledmobs.misc.FileLoader;
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
 import me.lokka30.levelledmobs.misc.NamespacedKeys;
 import me.lokka30.levelledmobs.misc.NametagTimerChecker;
@@ -127,12 +128,28 @@ public final class LevelledMobs extends JavaPlugin {
             levelManager.startNametagAutoUpdateTask();
             levelManager.startNametagTimer();
         }
+
+        prepareToLoadCustomDrops();
         companion.startCleanupTask();
         companion.setupMetrics();
         companion.checkUpdates();
 
         loadTime += timer.getTimer();
         Utils.logger.info("Start-up complete (took " + loadTime + "ms)");
+    }
+
+    private void prepareToLoadCustomDrops(){
+        if (Bukkit.getPluginManager().getPlugin("LM_Items") != null){
+            final LevelledMobs mainInstance = this;
+            Bukkit.getScheduler().scheduleSyncDelayedTask(this, () -> customDropsHandler.customDropsParser.loadDrops(
+                    FileLoader.loadFile(mainInstance, "customdrops", FileLoader.CUSTOMDROPS_FILE_VERSION)
+            ), 10L);
+        }
+        else{
+            customDropsHandler.customDropsParser.loadDrops(
+                    FileLoader.loadFile(this, "customdrops", FileLoader.CUSTOMDROPS_FILE_VERSION)
+            );
+        }
     }
 
     public void reloadLM(final @NotNull CommandSender sender) {

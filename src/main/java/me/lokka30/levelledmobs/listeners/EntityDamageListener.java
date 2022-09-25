@@ -4,6 +4,7 @@
 
 package me.lokka30.levelledmobs.listeners;
 
+import java.time.Instant;
 import java.util.HashSet;
 import java.util.List;
 import me.lokka30.levelledmobs.LevelledMobs;
@@ -27,6 +28,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -118,6 +120,8 @@ public class EntityDamageListener implements Listener {
                     (Player) entityDamageByEntityEvent.getDamager());
             }
         }
+
+        lmEntity.getPDC().set(main.namespacedKeys.lastDamageTime, PersistentDataType.LONG, Instant.now().toEpochMilli());
 
         // Update their nametag with a 1 tick delay so that their health after the damage is shown
         main.levelManager.updateNametagWithDelay(lmEntity);

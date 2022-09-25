@@ -85,7 +85,7 @@ public class DebugSubcommand extends MessagesBase implements Subcommand {
         }
 
         final LivingEntityWrapper lmEntity = main.levelledMobsCommand.rulesSubcommand.getMobBeingLookedAt(
-            player, true);
+            player, true, sender);
         if (lmEntity == null) {
             sender.sendMessage("Could not locate any mobs near player: " + player.getName());
             return;
@@ -110,10 +110,8 @@ public class DebugSubcommand extends MessagesBase implements Subcommand {
             lmEntity.getNameIfBaby(),
             lmEntity.getWorldName(),
             locationStr,
-            MiscUtils.getNBTDump(main.nametagQueueManager.nmsHandler.nmsVersionString, lmEntity.getLivingEntity())
+            MiscUtils.getNBTDump(lmEntity.getLivingEntity(), main)
         );
-
-        final String nmsVersion = main.nametagQueueManager.nmsHandler.nmsVersionString;
 
         lmEntity.free();
         Utils.logger.info(message);

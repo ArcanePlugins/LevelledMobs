@@ -1254,6 +1254,8 @@ public class RulesParsingManager {
         options.enabled = ymlHelper.getBoolean2(cs, "enabled", options.enabled);
         options.variable = ymlHelper.getString(cs, "variable", options.variable);
         options.decreaseLevel = ymlHelper.getBoolean(cs, "decrease-level", true);
+        options.recheckPlayers = ymlHelper.getBoolean2(cs, "recheck-players", options.recheckPlayers);
+        options.preserveEntityTime = ymlHelper.getIntTimeUnitMS(cs, "preserve-entity", options.preserveEntityTime);
         parsingInfo.playerLevellingOptions = options;
 
         final ConfigurationSection csTiers = objTo_CS(cs, "tiers");
