@@ -27,12 +27,13 @@ import org.jetbrains.annotations.Nullable;
  * @since 2.6.0
  */
 public class MobDataManager {
-
-    private final LevelledMobs main;
-
     public MobDataManager(final LevelledMobs main) {
         this.main = main;
+        this.vanillaMultiplierNames = List.of("Random spawn bonus", "Baby speed boost");
     }
+
+    private final LevelledMobs main;
+    private final List<String> vanillaMultiplierNames;
 
     @Nullable private Object getAttributeDefaultValue(@NotNull final LivingEntityWrapper lmEntity,
         final Attribute attribute) {
@@ -74,6 +75,10 @@ public class MobDataManager {
                 .getBaseValue();
         final double additionValue = getAdditionsForLevel(lmEntity, addition, defaultValue);
 
+        if (additionValue == 0.0) {
+            return;
+        }
+
         final AttributeModifier mod = new AttributeModifier(attribute.name(), additionValue,
             AttributeModifier.Operation.ADD_NUMBER);
         final AttributeInstance attrib = lmEntity.getLivingEntity().getAttribute(attribute);
@@ -102,12 +107,9 @@ public class MobDataManager {
             existingMods.addAll(attrib.getModifiers());
 
             for (final AttributeModifier existingMod : existingMods) {
+                if (this.vanillaMultiplierNames.contains(existingMod.getName())) continue;
                 attrib.removeModifier(existingMod);
             }
-        }
-
-        if (additionValue == 0.0) {
-            return;
         }
 
         if (useStaticValues) {

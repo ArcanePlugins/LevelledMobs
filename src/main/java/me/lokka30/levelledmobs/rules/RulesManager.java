@@ -981,12 +981,12 @@ public class RulesManager {
     private @NotNull RuleCheckResult isRuleApplicableInterface(
         final LivingEntityInterface lmInterface, final RuleInfo ri) {
 
-        if (lmInterface instanceof LivingEntityWrapper) {
+        if (lmInterface instanceof final LivingEntityWrapper lmEntity) {
             if (ri.conditions_Entities != null && !Utils.isLivingEntityInModalList(
-                ri.conditions_Entities, (LivingEntityWrapper) lmInterface)) {
+                ri.conditions_Entities, lmEntity, true)) {
                 Utils.debugLog(main, DebugType.DENIED_RULE_ENTITIES_LIST,
                     String.format("&b%s&7, mob: &b%s&7", ri.getRuleName(),
-                        lmInterface.getTypeName()));
+                        lmEntity.getNameIfBaby()));
                 return new RuleCheckResult(false);
             }
         } else {
