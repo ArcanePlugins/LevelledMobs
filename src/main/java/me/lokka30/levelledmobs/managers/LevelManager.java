@@ -1456,7 +1456,7 @@ public class LevelManager implements LevelInterface {
         }
 
         final LevellableState externalCompatResult = ExternalCompatibilityManager.checkAllExternalCompats(
-            lmEntity, main);
+            lmEntity);
         if (externalCompatResult != LevellableState.ALLOWED) {
             return externalCompatResult;
         }

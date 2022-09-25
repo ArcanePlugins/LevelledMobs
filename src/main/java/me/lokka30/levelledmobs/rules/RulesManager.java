@@ -862,12 +862,31 @@ public class RulesManager {
             return false;
         }
 
-        if (lmEntity.isMobOfExternalType() && ri.conditions_ApplyPlugins != null
-            && !ri.conditions_ApplyPlugins.isEnabledInList(lmEntity.getTypeName(), lmEntity)) {
-            Utils.debugLog(main, DebugType.DENIED_RULE_PLUGIN_COMPAT,
-                String.format("&b%s&7, mob: &b%s&7, mob plugin: &b%s&7",
-                    ri.getRuleName(), lmEntity.getTypeName(), lmEntity.getMobExternalTypes()));
-            return false;
+        if (ri.conditions_ApplyPlugins != null){
+            ExternalCompatibilityManager.updateAllExternalCompats(lmEntity);
+
+            if (lmEntity.isMobOfExternalType()) {
+                boolean madeIt = false;
+                for (ExternalCompatibilityManager.ExternalCompatibility compat : lmEntity.getMobExternalTypes()){
+                    if (ri.conditions_ApplyPlugins.isEnabledInList(compat.name(), lmEntity)){
+                        madeIt = true;
+                        break;
+                    }
+                }
+
+                if (!madeIt) {
+                    Utils.debugLog(main, DebugType.DENIED_RULE_PLUGIN_COMPAT,
+                            String.format("&b%s&7, mob: &b%s&7, mob plugin: &b%s&7",
+                                    ri.getRuleName(), lmEntity.getNameIfBaby(), lmEntity.getMobExternalTypes()));
+                    return false;
+                }
+            }
+            else if (!lmEntity.isMobOfExternalType()){
+                Utils.debugLog(main, DebugType.DENIED_RULE_PLUGIN_COMPAT,
+                        String.format("&b%s&7, mob: &b%s&7&7",
+                                ri.getRuleName(), lmEntity.getNameIfBaby()));
+                return false;
+            }
         }
 
         if (ri.conditions_MM_Names != null) {
@@ -879,7 +898,7 @@ public class RulesManager {
             if (!ri.conditions_MM_Names.isEnabledInList(mm_Name, lmEntity)) {
                 Utils.debugLog(main, DebugType.DENIED_RULE_MYTHIC_MOBS_INTERNAL_NAME,
                     String.format("&b%s&7, mob: &b%s&7, mm_name: &b%s&7",
-                        ri.getRuleName(), lmEntity.getTypeName(), mm_Name));
+                        ri.getRuleName(), lmEntity.getNameIfBaby(), mm_Name));
                 return false;
             }
         }

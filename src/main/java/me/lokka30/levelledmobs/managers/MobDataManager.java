@@ -30,7 +30,17 @@ import org.jetbrains.annotations.Nullable;
 public class MobDataManager {
     public MobDataManager(final LevelledMobs main) {
         this.main = main;
-        this.vanillaMultiplierNames = List.of("Random spawn bonus", "Baby speed boost");
+        this.vanillaMultiplierNames = List.of(
+                "Attacking speed boost",
+                "Baby speed boost",
+                "Covered armor bonus",
+                "Drinking speed penalty",
+                "Leader zombie bonus",
+                "Random spawn bonus",
+                "Random zombie-spawn bonus",
+                "Zombie reinforcement caller charge",
+                "Zombie reinforcement callee charge"
+        );
     }
 
     private final LevelledMobs main;

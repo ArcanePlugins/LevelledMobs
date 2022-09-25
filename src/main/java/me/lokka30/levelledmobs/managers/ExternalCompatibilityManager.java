@@ -10,7 +10,6 @@ import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.LivingEntityInterface;
 import me.lokka30.levelledmobs.misc.LevellableState;
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
@@ -158,7 +157,7 @@ public class ExternalCompatibilityManager {
 
             return false;
         } else {
-            return isSimplePets(lmEntity.getLivingEntity());
+            return isSimplePets(lmEntity);
         }
     }
 
@@ -177,14 +176,19 @@ public class ExternalCompatibilityManager {
         return false;
     }
 
-    private static boolean isMobOfBloodNight(@NotNull final LivingEntityWrapper lmEntity) {
+    public static boolean isMobOfBloodNight(@NotNull final LivingEntityWrapper lmEntity) {
         final Plugin plugin = Bukkit.getPluginManager().getPlugin("BloodNight");
         if (plugin == null || !plugin.isEnabled()) {
             return false;
         }
 
-        return lmEntity.getPDC()
-            .has(new NamespacedKey(plugin, "mobtype"), PersistentDataType.STRING);
+        final boolean isBloodNightMob = lmEntity.getPDC()
+                .has(new NamespacedKey(plugin, "mobtype"), PersistentDataType.STRING);
+
+        if (isBloodNightMob)
+            lmEntity.setMobExternalType(ExternalCompatibility.BLOOD_NIGHT);
+
+        return isBloodNightMob;
     }
 
     public static boolean isMythicMob(@NotNull final LivingEntityWrapper lmEntity) {
@@ -220,9 +224,9 @@ public class ExternalCompatibilityManager {
         return "";
     }
 
-    static LevellableState checkAllExternalCompats(final LivingEntityWrapper lmEntity,
-        final @NotNull LevelledMobs main) {
-        final Map<ExternalCompatibilityManager.ExternalCompatibility, Boolean> compatRules = main.rulesManager.getRuleExternalCompatibility(
+    static LevellableState checkAllExternalCompats(final @NotNull LivingEntityWrapper lmEntity) {
+        final Map<ExternalCompatibilityManager.ExternalCompatibility, Boolean> compatRules =
+                lmEntity.getMainInstance().rulesManager.getRuleExternalCompatibility(
             lmEntity);
 
         if (!isExternalCompatibilityEnabled(ExternalCompatibility.DANGEROUS_CAVES, compatRules)) {
@@ -286,6 +290,19 @@ public class ExternalCompatibilityManager {
         }
 
         return LevellableState.ALLOWED;
+    }
+
+    public static void updateAllExternalCompats(final LivingEntityWrapper lmEntity) {
+        isMobOfDangerousCaves(lmEntity);
+        isMobOfEcoBosses(lmEntity);
+        isMobOfMythicMobs(lmEntity);
+        isMobOfEliteMobs(lmEntity);
+        isMobOfInfernalMobs(lmEntity);
+        isMobOfCitizens(lmEntity);
+        isMobOfShopkeepers(lmEntity);
+        isMobOfSimplePets(lmEntity);
+        isMobOfEliteMobs(lmEntity);
+        isMobOfBloodNight(lmEntity);
     }
 
     /**
@@ -484,7 +501,7 @@ public class ExternalCompatibilityManager {
             user.getHomes().get(0));
     }
 
-    private static boolean isSimplePets(final @NotNull LivingEntity livingEntity){
+    private static boolean isSimplePets(final @NotNull LivingEntityWrapper lmEntity){
         try {
             final Class<?> clazz_PetCore = Class.forName(
                     "simplepets.brainsynder.api.plugin.SimplePets");
@@ -496,10 +513,10 @@ public class ExternalCompatibilityManager {
             final Object objIPetsPlugin = method_getPlugin.invoke(null);
 
             final Method method_isPetEntity = clazz_IPetsPlugin.getDeclaredMethod("isPetEntity", Entity.class);
-            return (boolean)method_isPetEntity.invoke(objIPetsPlugin, livingEntity);
+            return (boolean)method_isPetEntity.invoke(objIPetsPlugin, lmEntity.getLivingEntity());
         } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException |
             ClassNotFoundException e) {
-            Utils.logger.error("Error checking if " + livingEntity.getName() + " is a SimplePet");
+            Utils.logger.error("Error checking if " + lmEntity.getNameIfBaby() + " is a SimplePet");
             e.printStackTrace();
         }
 
