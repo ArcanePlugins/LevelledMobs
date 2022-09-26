@@ -23,6 +23,6 @@ public class ExitProcessAction extends Action {
 
     @Override
     public void run(Context context) {
-        getParentProcess().setShouldExit(true);
+        getParentProcess().setExiting(true);
     }
 }

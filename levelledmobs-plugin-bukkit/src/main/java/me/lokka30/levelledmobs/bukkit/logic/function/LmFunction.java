@@ -4,6 +4,7 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.TreeSet;
 
+import javax.annotation.Nonnull;
 import me.lokka30.levelledmobs.bukkit.logic.context.Context;
 import me.lokka30.levelledmobs.bukkit.logic.function.process.Process;
 import org.jetbrains.annotations.NotNull;
@@ -13,6 +14,7 @@ import org.spongepowered.configurate.CommentedConfigurationNode;
 Note: To avoid a naming conflict with Java's 'Function' class, this is named 'LmFunction' (meaning
 'LevelledMobs Function').
  */
+@SuppressWarnings("unused")
 public class LmFunction {
 
     /*
@@ -29,7 +31,6 @@ public class LmFunction {
     private final Set<String> triggers = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
     private final Set<Process> processes = new LinkedHashSet<>();
     private boolean exit = false;
-    private boolean exitAll = false; // TODO Implement
 
     /* constructors */
 
@@ -47,14 +48,15 @@ public class LmFunction {
 
     public void run(final @NotNull Context context, final boolean overrideConditions) {
         for(var process : getProcesses()) {
-            if(!shouldExit() && !shouldExitAll()) {
-                if(overrideConditions || process.conditionsApply(context)) {
-                    process.runActions(context);
-                }
+            if(exiting()) {
+                this.exit = false;
+                return;
+            }
+
+            if(overrideConditions || process.conditionsApply(context)) {
+                process.runActions(context);
             }
         }
-        setShouldExit(false);
-        setShouldExitAll(false);
     }
 
     public boolean hasAnyTriggers(final @NotNull String... triggersToCheck) {
@@ -100,19 +102,17 @@ public class LmFunction {
         return processes;
     }
 
-    public boolean shouldExit() {
+    public boolean exiting() {
         return exit;
     }
 
-    public void setShouldExit(final boolean state) {
-        this.exit = state;
+    public void setExiting(final boolean exit) {
+        this.exit = exit;
+        getProcesses().forEach(process -> process.setExiting(exit));
     }
 
-    public boolean shouldExitAll() {
-        return exitAll;
-    }
-
-    public void setShouldExitAll(final boolean state) {
-        this.exitAll = state;
+    public void exitAll(final @Nonnull Context context) {
+        setExiting(true);
+        context.getLinkedFunctions().forEach(lmFunction -> lmFunction.setExiting(true));
     }
 }

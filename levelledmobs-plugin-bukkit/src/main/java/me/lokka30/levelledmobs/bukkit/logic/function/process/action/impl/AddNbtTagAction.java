@@ -7,7 +7,6 @@ import me.lokka30.levelledmobs.bukkit.LevelledMobs;
 import me.lokka30.levelledmobs.bukkit.logic.context.Context;
 import me.lokka30.levelledmobs.bukkit.logic.function.process.Process;
 import me.lokka30.levelledmobs.bukkit.logic.function.process.action.Action;
-import me.lokka30.levelledmobs.bukkit.util.Log;
 import org.bukkit.entity.LivingEntity;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.configurate.CommentedConfigurationNode;
@@ -33,21 +32,11 @@ public class AddNbtTagAction extends Action {
             } else if(getActionNode().hasChild("tag")) {
                 this.tags.add(getActionNode().node("tag").getString(""));
             } else {
-                Log.sev(String.format(
-                    "Action 'add-nbt-tag' in process '%s' (in function '%s') does not " +
-                        "specify a valid NBT tag, or list of NBT tags.",
-                    getParentProcess().getIdentifier(),
-                    getParentProcess().getParentFunction().getIdentifier()
-                ), true);
+                throw new IllegalStateException("No valid NBT tag(s) were specified.");
             }
         } catch(ConfigurateException | NullPointerException ex) {
-            Log.sev(String.format(
-                "Unable to parse action 'add-nbt-tag' in process '%s' (in function '%s'). " +
-                "This is usually caused by a syntax error created by the user, double-check " +
-                "your formatting of the 'settings.yml' file.",
-                getParentProcess().getIdentifier(),
-                getParentProcess().getParentFunction().getIdentifier()
-            ), true);
+            throw new IllegalStateException("Parsing error - likely caused by a user " +
+                "syntax error.", ex);
         }
     }
 
@@ -56,13 +45,7 @@ public class AddNbtTagAction extends Action {
     @Override
     public void run(Context context) {
         if(context.getEntity() == null) {
-            Log.sev(String.format(
-                "A 'add-nbt-tag' action has encountered an issue in process '%s' (in " +
-                    "function '%s'), where a context is missing an entity to handle.",
-                getParentProcess().getIdentifier(),
-                getParentProcess().getParentFunction().getIdentifier()
-            ), true);
-            return;
+            throw new IllegalStateException("No Entity context available");
         }
 
         if(context.getEntity() instanceof LivingEntity livingEntity) {
@@ -71,13 +54,8 @@ public class AddNbtTagAction extends Action {
                 .getPrimaryNbtProvider();
 
             if(nbtProvider == null) {
-                //TODO improve error message
-                Log.sev("nbt error: no nbt provider", true);
-                getParentProcess().setShouldExit(true);
-                getParentProcess().getParentFunction().setShouldExit(true);
-                getParentProcess().getParentFunction().setShouldExitAll(true);
-                //todo darn, this really needs to be cleaned up
-                return;
+                throw new IllegalStateException("Can't run AddNbtTagAction: no NBT " +
+                    "provider available.");
             }
 
             for(var tag : tags) {
@@ -85,23 +63,11 @@ public class AddNbtTagAction extends Action {
                 //TODO should probably make the NbtProvider accept a collection of tags instead of
                 //     calling the method for each tag
                 if(result.hasException()) {
-                    //TODO improve error message
-                    Log.war("nbt error: " + result.getException(), true);
-                    getParentProcess().setShouldExit(true);
-                    getParentProcess().getParentFunction().setShouldExit(true);
-                    getParentProcess().getParentFunction().setShouldExitAll(true);
+                    throw new RuntimeException(result.getException());
                 }
             }
         } else {
-            Log.sev(String.format(
-                "A 'add-nbt-tag' action has encountered an issue in process '%s' (in " +
-                    "function '%s'), where a context has an entity which is not a LivingEntity.",
-                getParentProcess().getIdentifier(),
-                getParentProcess().getParentFunction().getIdentifier()
-            ), true);
-            getParentProcess().setShouldExit(true);
-            getParentProcess().getParentFunction().setShouldExit(true);
-            getParentProcess().getParentFunction().setShouldExitAll(true);
+            throw new IllegalStateException("Context's entity is not a LivingEntity");
         }
     }
 }

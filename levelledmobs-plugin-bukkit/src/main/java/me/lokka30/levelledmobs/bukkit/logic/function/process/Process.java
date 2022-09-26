@@ -12,6 +12,7 @@ import me.lokka30.levelledmobs.bukkit.logic.preset.Preset;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.configurate.CommentedConfigurationNode;
 
+@SuppressWarnings("unused")
 public class Process {
 
     /*
@@ -66,13 +67,12 @@ public class Process {
     }
 
     public void runActions(final @NotNull Context context) {
+        exit = false;
         for(var action : getActions()) {
-            if(!shouldExit()) {
-                action.run(context);
-            }
+            if(exiting()) return;
+            action.run(context);
         }
-
-        setShouldExit(false);
+        exit = false;
     }
 
     /* getters and setters */
@@ -98,12 +98,12 @@ public class Process {
     @NotNull
     public LmFunction getParentFunction() { return parentFunction; }
 
-    public boolean shouldExit() {
+    public boolean exiting() {
         return exit;
     }
 
-    public void setShouldExit(final boolean state) {
-        this.exit = state;
+    public void setExiting(final boolean exit) {
+        this.exit = exit;
     }
 
 }

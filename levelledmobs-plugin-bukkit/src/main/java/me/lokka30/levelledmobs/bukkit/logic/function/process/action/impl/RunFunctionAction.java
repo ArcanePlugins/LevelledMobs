@@ -47,9 +47,7 @@ public class RunFunctionAction extends Action {
                 getParentProcess().getIdentifier(),
                 getParentProcess().getParentFunction().getIdentifier()
             ), true);
-            getParentProcess().getParentFunction().setShouldExitAll(true);
-            getParentProcess().getParentFunction().setShouldExit(true);
-            getParentProcess().setShouldExit(true);
+            getParentProcess().getParentFunction().exitAll(context);
             return;
         }
 

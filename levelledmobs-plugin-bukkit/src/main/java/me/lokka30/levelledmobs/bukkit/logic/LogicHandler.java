@@ -57,9 +57,15 @@ public final class LogicHandler {
         final @NotNull Context context,
         final @NotNull String... triggers
     ) {
+        final Runnable clearExitStatus = () -> getFunctions().forEach(lmf -> lmf.setExiting(false));
+
+        clearExitStatus.run();
+
         for(LmFunction function : getFunctions())
             if(function.hasAnyTriggers(triggers))
                 function.run(context, false);
+
+        clearExitStatus.run();
     }
 
     private boolean parseGroups() {
