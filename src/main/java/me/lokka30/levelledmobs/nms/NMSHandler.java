@@ -41,7 +41,7 @@ public class NMSHandler {
             // or 1.19 spigot and newer
             this.currentUtil = new NametagSender(versionInfo, hasPaper);
             Utils.logger.info(
-                String.format("Using NMS version %s for nametag support", versionInfo.getMinecraftVersion()));
+                String.format("Using NMS version %s for nametag support", versionInfo.getNMSVersion()));
         } else if (ExternalCompatibilityManager.hasProtocolLibInstalled()) {
             // we don't directly support this version, use ProtocolLib
             Utils.logger.info(

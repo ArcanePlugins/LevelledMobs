@@ -52,8 +52,6 @@ public class NametagSender implements NMSUtil {
             // Paper 1.18.0 +
             // Spigot 1.19.0 +
 
-            Utils.logger.info("vi: " + versionInfo);
-
             this.clazz_CraftChatMessage = Class.forName(
                     "org.bukkit.craftbukkit." + nmsVersion + ".util.CraftChatMessage");
 
