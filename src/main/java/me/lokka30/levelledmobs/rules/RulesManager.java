@@ -864,27 +864,21 @@ public class RulesManager {
 
         if (ri.conditions_ApplyPlugins != null){
             ExternalCompatibilityManager.updateAllExternalCompats(lmEntity);
+            final List<ExternalCompatibilityManager.ExternalCompatibility> mobCompats = lmEntity.getMobExternalTypes();
+            if (!lmEntity.isMobOfExternalType()) mobCompats.add(ExternalCompatibilityManager.ExternalCompatibility.NOT_APPLICABLE);
 
-            if (lmEntity.isMobOfExternalType()) {
-                boolean madeIt = false;
-                for (ExternalCompatibilityManager.ExternalCompatibility compat : lmEntity.getMobExternalTypes()){
-                    if (ri.conditions_ApplyPlugins.isEnabledInList(compat.name(), lmEntity)){
-                        madeIt = true;
-                        break;
-                    }
-                }
-
-                if (!madeIt) {
-                    Utils.debugLog(main, DebugType.DENIED_RULE_PLUGIN_COMPAT,
-                            String.format("&b%s&7, mob: &b%s&7, mob plugin: &b%s&7",
-                                    ri.getRuleName(), lmEntity.getNameIfBaby(), lmEntity.getMobExternalTypes()));
-                    return false;
+            boolean madeIt = false;
+            for (ExternalCompatibilityManager.ExternalCompatibility compat : mobCompats){
+                if (ri.conditions_ApplyPlugins.isEnabledInList(compat.name(), lmEntity)){
+                    madeIt = true;
+                    break;
                 }
             }
-            else if (!lmEntity.isMobOfExternalType()){
+
+            if (!madeIt) {
                 Utils.debugLog(main, DebugType.DENIED_RULE_PLUGIN_COMPAT,
-                        String.format("&b%s&7, mob: &b%s&7&7",
-                                ri.getRuleName(), lmEntity.getNameIfBaby()));
+                        String.format("&b%s&7, mob: &b%s&7, mob plugins: &b%s&7",
+                                ri.getRuleName(), lmEntity.getNameIfBaby(), mobCompats));
                 return false;
             }
         }
