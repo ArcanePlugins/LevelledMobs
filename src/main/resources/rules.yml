@@ -157,8 +157,8 @@ presets:
         max-health: 2.5
         attack-damage: 1.0
         ranged-attack-damage: 1.0
-        item-drop: 3
-        xp-drop: 5
+        item-drop: 3.0
+        xp-drop: 5.0
 
       tiered-coloring:
         1-2: '&#22E76B' #Green
@@ -183,8 +183,8 @@ presets:
         attack-damage: 2.25
         ranged-attack-damage: 2.25
         creeper-blast-damage: 0.75
-        item-drop: 3
-        xp-drop: 5
+        item-drop: 3.0
+        xp-drop: 5.0
         #       Special Multipliers (0.0 Min - 1.0 Max)
         armor-bonus: 0.2
         armor-toughness: 0.15
@@ -213,8 +213,8 @@ presets:
         ranged-attack-damage: 2.75
         creeper-blast-damage: 1.75
         follow-range: 0.25
-        item-drop: 3
-        xp-drop: 5
+        item-drop: 3.0
+        xp-drop: 5.0
         #       Special Multipliers (0.0 Min - 1.0 Max)
         armor-bonus: 0.3
         armor-toughness: 0.3
@@ -245,8 +245,8 @@ presets:
         ranged-attack-damage: 4.0
         creeper-blast-damage: 2.5
         follow-range: 0.5
-        item-drop: 3
-        xp-drop: 5
+        item-drop: 3.0
+        xp-drop: 5.0
         #       Special Multipliers (0.0 Min - 1.0 Max)
         armor-bonus: 0.5
         armor-toughness: 0.5

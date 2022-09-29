@@ -862,12 +862,25 @@ public class RulesManager {
             return false;
         }
 
-        if (lmEntity.isMobOfExternalType() && ri.conditions_ApplyPlugins != null
-            && !ri.conditions_ApplyPlugins.isEnabledInList(lmEntity.getTypeName(), lmEntity)) {
-            Utils.debugLog(main, DebugType.DENIED_RULE_PLUGIN_COMPAT,
-                String.format("&b%s&7, mob: &b%s&7, mob plugin: &b%s&7",
-                    ri.getRuleName(), lmEntity.getTypeName(), lmEntity.getMobExternalTypes()));
-            return false;
+        if (ri.conditions_ApplyPlugins != null){
+            ExternalCompatibilityManager.updateAllExternalCompats(lmEntity);
+            final List<ExternalCompatibilityManager.ExternalCompatibility> mobCompats = lmEntity.getMobExternalTypes();
+            if (!lmEntity.isMobOfExternalType()) mobCompats.add(ExternalCompatibilityManager.ExternalCompatibility.NOT_APPLICABLE);
+
+            boolean madeIt = false;
+            for (ExternalCompatibilityManager.ExternalCompatibility compat : mobCompats){
+                if (ri.conditions_ApplyPlugins.isEnabledInList(compat.name(), lmEntity)){
+                    madeIt = true;
+                    break;
+                }
+            }
+
+            if (!madeIt) {
+                Utils.debugLog(main, DebugType.DENIED_RULE_PLUGIN_COMPAT,
+                        String.format("&b%s&7, mob: &b%s&7, mob plugins: &b%s&7",
+                                ri.getRuleName(), lmEntity.getNameIfBaby(), mobCompats));
+                return false;
+            }
         }
 
         if (ri.conditions_MM_Names != null) {
@@ -879,7 +892,7 @@ public class RulesManager {
             if (!ri.conditions_MM_Names.isEnabledInList(mm_Name, lmEntity)) {
                 Utils.debugLog(main, DebugType.DENIED_RULE_MYTHIC_MOBS_INTERNAL_NAME,
                     String.format("&b%s&7, mob: &b%s&7, mm_name: &b%s&7",
-                        ri.getRuleName(), lmEntity.getTypeName(), mm_Name));
+                        ri.getRuleName(), lmEntity.getNameIfBaby(), mm_Name));
                 return false;
             }
         }
@@ -981,12 +994,12 @@ public class RulesManager {
     private @NotNull RuleCheckResult isRuleApplicableInterface(
         final LivingEntityInterface lmInterface, final RuleInfo ri) {
 
-        if (lmInterface instanceof LivingEntityWrapper) {
+        if (lmInterface instanceof final LivingEntityWrapper lmEntity) {
             if (ri.conditions_Entities != null && !Utils.isLivingEntityInModalList(
-                ri.conditions_Entities, (LivingEntityWrapper) lmInterface)) {
+                ri.conditions_Entities, lmEntity, true)) {
                 Utils.debugLog(main, DebugType.DENIED_RULE_ENTITIES_LIST,
                     String.format("&b%s&7, mob: &b%s&7", ri.getRuleName(),
-                        lmInterface.getTypeName()));
+                        lmEntity.getNameIfBaby()));
                 return new RuleCheckResult(false);
             }
         } else {

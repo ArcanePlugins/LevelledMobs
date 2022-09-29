@@ -1,12 +1,9 @@
 package me.lokka30.levelledmobs.nms;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.managers.ExternalCompatibilityManager;
 import me.lokka30.levelledmobs.util.Utils;
 import me.lokka30.microlib.other.VersionUtils;
-import org.bukkit.Bukkit;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -21,46 +18,14 @@ public class NMSHandler {
     public NMSHandler(final @NotNull LevelledMobs main) {
         this.main = main;
         this.hasPaper = VersionUtils.isRunningPaper();
-        parseBukkitVersion();
+        this.versionInfo = new ServerVersionInfo();
     }
 
     private final LevelledMobs main;
-    private static final Pattern versionPattern = Pattern.compile(".*\\.(v\\d+_\\d+_R\\d+)(?:.+)?");
-    private static final Pattern versionShortPattern = Pattern.compile(".*\\.(v\\d+_\\d+)(?:.+)?");
-    public @NotNull String nmsVersionString = "unknown";
     private NMSUtil currentUtil;
-    public double minecraftVersion;
     public boolean isUsingProtocolLib;
+    public final ServerVersionInfo versionInfo;
     public final boolean hasPaper;
-
-    private void parseBukkitVersion() {
-        // example: org.bukkit.craftbukkit.v1_18_R2.CraftServer
-        final Matcher nmsRegex = versionPattern.matcher(
-            Bukkit.getServer().getClass().getCanonicalName());
-        final Matcher nmsShortRegex = versionShortPattern.matcher(
-            Bukkit.getServer().getClass().getCanonicalName());
-
-        if (nmsShortRegex.find()) {
-            // example: 1.18
-            final String versionStr = nmsShortRegex.group(1).replace("_", ".").replace("v", "");
-            try {
-                minecraftVersion = Double.parseDouble(versionStr);
-            } catch (Exception e) {
-                Utils.logger.warning(
-                    String.format("Could not extract the minecraft version from '%s'. %s",
-                        Bukkit.getServer().getClass().getCanonicalName(), e.getMessage()));
-            }
-        }
-
-        // example: v1_18_R2
-        if (nmsRegex.find()) {
-            nmsVersionString = nmsRegex.group(1);
-        } else {
-            Utils.logger.warning(
-                "NMSHandler: Could not match regex for bukkit version: " + Bukkit.getServer()
-                    .getClass().getCanonicalName());
-        }
-    }
 
     @Nullable public NMSUtil getCurrentUtil() {
         if (this.currentUtil != null) {
@@ -70,12 +35,13 @@ public class NMSHandler {
         // supported is paper >= 1.18 or spigot >= 1.19
         // otherwise protocollib is used
 
-        if (hasPaper && this.minecraftVersion >= 1.18 ||
-            !hasPaper && this.minecraftVersion >= 1.19) {
-            // 1.18 and newer we support with direct nms
-            this.currentUtil = new NametagSender(nmsVersionString, hasPaper);
+        if (hasPaper && versionInfo.getMinecraftVersion() >= 1.18 ||
+            !hasPaper && versionInfo.getMinecraftVersion() >= 1.19) {
+            // 1.18 and newer we support with direct nms (Paper)
+            // or 1.19 spigot and newer
+            this.currentUtil = new NametagSender(versionInfo, hasPaper);
             Utils.logger.info(
-                String.format("Using NMS version %s for nametag support", nmsVersionString));
+                String.format("Using NMS version %s for nametag support", versionInfo.getNMSVersion()));
         } else if (ExternalCompatibilityManager.hasProtocolLibInstalled()) {
             // we don't directly support this version, use ProtocolLib
             Utils.logger.info(

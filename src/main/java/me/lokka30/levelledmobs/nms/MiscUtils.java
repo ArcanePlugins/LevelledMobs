@@ -9,16 +9,16 @@ import java.lang.reflect.Method;
 
 public class MiscUtils {
     public static @NotNull String getNBTDump(final @NotNull LivingEntity livingEntity, final @NotNull LevelledMobs main){
-        final String nmsVersion = main.nametagQueueManager.nmsHandler.nmsVersionString;
-        if (main.nametagQueueManager.nmsHandler.minecraftVersion <= 1.16){
-            return getNBTDump_1_16(livingEntity, nmsVersion);
+        final ServerVersionInfo versionInfo = main.nametagQueueManager.nmsHandler.versionInfo;
+        if (versionInfo.getMinecraftVersion() <= 1.16){
+            return getNBTDump_1_16(livingEntity, versionInfo.getNMSVersion());
         }
 
         try {
             final Class<?> clazz_CraftLivingEntity;
 
             clazz_CraftLivingEntity = Class.forName(
-                    "org.bukkit.craftbukkit." + nmsVersion + ".entity.CraftLivingEntity");
+                    "org.bukkit.craftbukkit." + versionInfo.getNMSVersion() + ".entity.CraftLivingEntity");
 
             final Method method_getHandle = clazz_CraftLivingEntity.getDeclaredMethod("getHandle");
             final net.minecraft.world.entity.LivingEntity internalLivingEntity = (net.minecraft.world.entity.LivingEntity) method_getHandle.invoke(
@@ -27,7 +27,7 @@ public class MiscUtils {
             final Class<?> compoundTagClazz = Class.forName("net.minecraft.nbt.NBTTagCompound");
             final Object compoundTag = compoundTagClazz.getConstructor().newInstance();
 
-            if (main.nametagQueueManager.nmsHandler.minecraftVersion >= 1.18){
+            if (versionInfo.getMinecraftVersion() >= 1.18){
                 internalLivingEntity.saveWithoutId((CompoundTag) compoundTag);
             }
             else {

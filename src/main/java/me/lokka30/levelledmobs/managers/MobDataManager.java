@@ -4,7 +4,8 @@
 
 package me.lokka30.levelledmobs.managers;
 
-import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.Objects;
 import me.lokka30.levelledmobs.LevelledMobs;
@@ -27,12 +28,23 @@ import org.jetbrains.annotations.Nullable;
  * @since 2.6.0
  */
 public class MobDataManager {
-
-    private final LevelledMobs main;
-
     public MobDataManager(final LevelledMobs main) {
         this.main = main;
+        this.vanillaMultiplierNames = List.of(
+                "Attacking speed boost",
+                "Baby speed boost",
+                "Covered armor bonus",
+                "Drinking speed penalty",
+                "Leader zombie bonus",
+                "Random spawn bonus",
+                "Random zombie-spawn bonus",
+                "Zombie reinforcement caller charge",
+                "Zombie reinforcement callee charge"
+        );
     }
+
+    private final LevelledMobs main;
+    public final List<String> vanillaMultiplierNames;
 
     @Nullable private Object getAttributeDefaultValue(@NotNull final LivingEntityWrapper lmEntity,
         final Attribute attribute) {
@@ -74,6 +86,10 @@ public class MobDataManager {
                 .getBaseValue();
         final double additionValue = getAdditionsForLevel(lmEntity, addition, defaultValue);
 
+        if (additionValue == 0.0) {
+            return;
+        }
+
         final AttributeModifier mod = new AttributeModifier(attribute.name(), additionValue,
             AttributeModifier.Operation.ADD_NUMBER);
         final AttributeInstance attrib = lmEntity.getLivingEntity().getAttribute(attribute);
@@ -96,18 +112,12 @@ public class MobDataManager {
                     .getValue() - lmEntity.getLivingEntity().getHealth();
         }
 
-        if (attrib.getModifiers().size() > 0) {
-            final List<AttributeModifier> existingMods = new ArrayList<>(
-                attrib.getModifiers().size());
-            existingMods.addAll(attrib.getModifiers());
+        final Enumeration<AttributeModifier> existingMods = Collections.enumeration(attrib.getModifiers());
+        while (existingMods.hasMoreElements()){
+            final AttributeModifier existingMod = existingMods.nextElement();
 
-            for (final AttributeModifier existingMod : existingMods) {
-                attrib.removeModifier(existingMod);
-            }
-        }
-
-        if (additionValue == 0.0) {
-            return;
+            if (this.vanillaMultiplierNames.contains(existingMod.getName())) continue;
+            attrib.removeModifier(existingMod);
         }
 
         if (useStaticValues) {
@@ -238,10 +248,7 @@ public class MobDataManager {
             }
         }
 
-        if (maxLevel == 0) {
-            return 0.0;
-        }
-        if (attributeValue == 0) {
+        if (maxLevel == 0 || attributeValue == 0) {
             return 0.0;
         }
 

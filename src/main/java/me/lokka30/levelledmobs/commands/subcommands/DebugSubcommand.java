@@ -53,7 +53,7 @@ public class DebugSubcommand extends MessagesBase implements Subcommand {
         } else if ("chunk_kill_count".equalsIgnoreCase(args[1])) {
             chunkKillCount(sender, args);
         } else if ("nbt_dump".equalsIgnoreCase(args[1])) {
-            if ("unknown".equals(main.nametagQueueManager.nmsHandler.nmsVersionString)){
+            if (!main.nametagQueueManager.nmsHandler.versionInfo.isNMSVersionValid()){
                 sender.sendMessage("Unable to dump, an unknown NMS version was detected");
                 return;
             }

@@ -108,10 +108,16 @@ public class PlayerDeathListener {
         }
 
         String mobKey = null;
+        Component itemComp = null;
         for (final Component c : tc.args()){
             if (c instanceof final TranslatableComponent tc2) {
-                mobKey = tc2.key();
-                break;
+                if ("chat.square_brackets".equals(tc2.key())) {
+                    // this is when the mob was holding a weapon
+                    itemComp = tc2;
+                }
+                else {
+                    mobKey = tc2.key();
+                }
             }
         }
 
@@ -135,10 +141,23 @@ public class PlayerDeathListener {
                     Component.translatable(mobKey) :
                     LegacyComponentSerializer.legacyAmpersand().deserialize(nametagResult.overriddenName);
 
-            newCom = Component.translatable(tc.key(),
-                    Component.text(playerKilled),
-                    leftComp.append(mobNameComponent)
-            ).append(rightComp);
+            if (itemComp == null) {
+                // mob wasn't using any weapon
+                // 2 arguments, example: "death.attack.mob": "%1$s was slain by %2$s"
+                newCom = Component.translatable(tc.key(),
+                        Component.text(playerKilled),
+                        leftComp.append(mobNameComponent)
+                ).append(rightComp);
+            }
+            else {
+                // mob had a weapon and it's details are stored in the itemComp component
+                // 3 arguments, example: "death.attack.mob.item": "%1$s was slain by %2$s using %3$s"
+                newCom = Component.translatable(tc.key(),
+                        Component.text(playerKilled),
+                        leftComp.append(mobNameComponent),
+                        itemComp
+                ).append(rightComp);
+            }
         }
 
         event.deathMessage(newCom);

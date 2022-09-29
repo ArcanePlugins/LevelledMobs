@@ -52,6 +52,7 @@ import me.lokka30.levelledmobs.misc.DebugType;
 import me.lokka30.levelledmobs.misc.FileLoader;
 import me.lokka30.levelledmobs.misc.FileMigrator;
 import me.lokka30.levelledmobs.misc.VersionInfo;
+import me.lokka30.levelledmobs.nms.ServerVersionInfo;
 import me.lokka30.levelledmobs.rules.MetricsInfo;
 import me.lokka30.levelledmobs.util.Utils;
 import me.lokka30.microlib.exceptions.OutdatedServerVersionException;
@@ -571,6 +572,7 @@ public class Companion {
     }
 
     private void buildUniversalGroups() {
+        final ServerVersionInfo versionInfo = main.nametagQueueManager.nmsHandler.versionInfo;
 
         // include interfaces: Monster, Boss
         hostileMobsGroup = Stream.of(
@@ -595,14 +597,14 @@ public class Companion {
         if (VersionUtils.isOneSeventeen()) {
             passiveMobsGroup.addAll(Compat1_17.getPassiveMobs());
         }
-        if (main.nametagQueueManager.nmsHandler.minecraftVersion >= 1.19) {
+        if (versionInfo.getMajorVersion() >= 1.19) {
             passiveMobsGroup.addAll(Compat1_19.getPassiveMobs());
         }
 
-        if (main.nametagQueueManager.nmsHandler.minecraftVersion >= 1.16) {
+        if (versionInfo.getMajorVersion() >= 1.16) {
             hostileMobsGroup.addAll(Compat1_16.getHostileMobs());
         }
-        if (main.nametagQueueManager.nmsHandler.minecraftVersion >= 1.19) {
+        if (versionInfo.getMajorVersion() >= 1.19) {
             hostileMobsGroup.addAll(Compat1_19.getHostileMobs());
         }
 
@@ -614,7 +616,7 @@ public class Companion {
             EntityType.TURTLE
         ).collect(Collectors.toCollection(HashSet::new));
 
-        if (main.nametagQueueManager.nmsHandler.minecraftVersion >= 1.19) {
+        if (versionInfo.getMajorVersion() >= 1.19) {
             aquaticMobsGroup.addAll(Compat1_19.getAquaticMobs());
         }
     }
