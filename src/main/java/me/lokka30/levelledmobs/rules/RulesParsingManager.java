@@ -1392,8 +1392,8 @@ public class RulesParsingManager {
         attribs.attackDamage = ymlHelper.getDouble2(cs, "attack-damage", attribs.attackDamage);
         attribs.rangedAttackDamage = ymlHelper.getDouble2(cs, "ranged-attack-damage",
             attribs.rangedAttackDamage);
-        attribs.itemDrop = ymlHelper.getInt2(cs, "item-drop", attribs.itemDrop);
-        attribs.xpDrop = ymlHelper.getInt2(cs, "xp-drop", attribs.xpDrop);
+        attribs.itemDrop = ymlHelper.getDouble2(cs, "item-drop", attribs.itemDrop);
+        attribs.xpDrop = ymlHelper.getDouble2(cs, "xp-drop", attribs.xpDrop);
         attribs.creeperExplosionRadius = ymlHelper.getDouble2(cs, "creeper-blast-damage",
             attribs.creeperExplosionRadius);
         attribs.armorBonus = ymlHelper.getDouble2(cs, "armor-bonus", attribs.armorBonus);

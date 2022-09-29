@@ -248,10 +248,7 @@ public class MobDataManager {
             }
         }
 
-        if (maxLevel == 0) {
-            return 0.0;
-        }
-        if (attributeValue == 0) {
+        if (maxLevel == 0 || attributeValue == 0) {
             return 0.0;
         }
 

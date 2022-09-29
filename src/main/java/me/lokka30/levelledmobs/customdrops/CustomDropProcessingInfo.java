@@ -34,7 +34,7 @@ class CustomDropProcessingInfo {
     }
 
     public LivingEntityWrapper lmEntity;
-    int addition;
+    double addition;
     Player mobKiller;
     @NotNull final Map<String, Integer> playerLevelVariableCache;
     boolean isSpawner;

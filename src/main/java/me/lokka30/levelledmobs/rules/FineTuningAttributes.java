@@ -23,7 +23,7 @@ public class FineTuningAttributes implements Cloneable {
     public Double maxHealth;
     public Double movementSpeed;
     public Double rangedAttackDamage;
-    public Integer itemDrop;
+    public Double itemDrop;
     public Double armorBonus;
     public Double armorToughness;
     public Double attackKnockback;
@@ -32,7 +32,7 @@ public class FineTuningAttributes implements Cloneable {
     public Double horseJumpStrength;
     public Double zombieReinforcements;
     public Double followRange;
-    public Integer xpDrop;
+    public Double xpDrop;
     public boolean doNotMerge;
 
     void mergeAttributes(final @Nullable FineTuningAttributes attributes) {

@@ -578,12 +578,12 @@ public class LevelManager implements LevelInterface {
     }
 
     public void multiplyDrop(final LivingEntityWrapper lmEntity,
-        @NotNull final ItemStack currentDrop, final int addition, final boolean isCustomDrop) {
+        @NotNull final ItemStack currentDrop, final double addition, final boolean isCustomDrop) {
         final int oldAmount = currentDrop.getAmount();
 
         if (isCustomDrop || main.mobDataManager.isLevelledDropManaged(
             lmEntity.getLivingEntity().getType(), currentDrop.getType())) {
-            int useAmount = currentDrop.getAmount() + (currentDrop.getAmount() * addition);
+            int useAmount = (int)Math.round(currentDrop.getAmount() + ((double)currentDrop.getAmount() * addition));
             if (useAmount > currentDrop.getMaxStackSize()) {
                 useAmount = currentDrop.getMaxStackSize();
             }
@@ -666,21 +666,21 @@ public class LevelManager implements LevelInterface {
     }
 
     //Calculates the XP dropped when a levellable creature dies.
-    public int getLevelledExpDrops(@NotNull final LivingEntityWrapper lmEntity, final int xp) {
+    public int getLevelledExpDrops(@NotNull final LivingEntityWrapper lmEntity, final double xp) {
         if (lmEntity.isLevelled()) {
             final double dropAddition = main.mobDataManager.getAdditionsForLevel(lmEntity,
                 Addition.CUSTOM_XP_DROP, 3.0);
-            int newXp = 0;
+            double newXp = 0;
             if (dropAddition > -1) {
-                newXp = (int) Math.round(xp + (xp * dropAddition));
+                newXp = Math.round(xp + (xp * dropAddition));
             }
 
             Utils.debugLog(main, DebugType.SET_LEVELLED_XP_DROPS,
                 String.format("&7Mob: &b%s&7: lvl: &b%s&7, xp-vanilla: &b%s&7, new-xp: &b%s&7",
-                    lmEntity.getNameIfBaby(), lmEntity.getMobLevel(), xp, newXp));
-            return newXp;
+                    lmEntity.getNameIfBaby(), lmEntity.getMobLevel(), xp, (int)newXp));
+            return (int)newXp;
         } else {
-            return xp;
+            return (int)xp;
         }
     }
 
