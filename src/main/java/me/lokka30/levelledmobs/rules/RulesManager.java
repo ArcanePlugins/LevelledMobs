@@ -943,9 +943,22 @@ public class RulesManager {
             }
         }
 
+        if (ri.conditions_MobCustomnameStatus != MobCustomNameStatus.NOT_SPECIFIED
+                && ri.conditions_MobCustomnameStatus != MobCustomNameStatus.EITHER) {
+            final boolean hasCustomName = lmEntity.getLivingEntity().getCustomName() != null;
+
+            if (hasCustomName && ri.conditions_MobCustomnameStatus == MobCustomNameStatus.NOT_NAMETAGGED ||
+                    !hasCustomName && ri.conditions_MobCustomnameStatus == MobCustomNameStatus.NAMETAGGED) {
+                Utils.debugLog(main, DebugType.DENIED_RULE_CUSTOM_NAME,
+                        String.format("&b%s&7, mob: &b%s&7, nametag: %s, rule: %s",
+                                ri.getRuleName(), lmEntity.getNameIfBaby(), lmEntity.getLivingEntity().getCustomName(),
+                                ri.conditions_MobCustomnameStatus));
+                return false;
+            }
+        }
+
         if (ri.conditions_MobTamedStatus != MobTamedStatus.NOT_SPECIFIED
-            && ri.conditions_MobTamedStatus != MobTamedStatus.EITHER &&
-            lmEntity.getLivingEntity() instanceof Tameable) {
+            && ri.conditions_MobTamedStatus != MobTamedStatus.EITHER) {
             if (lmEntity.isMobTamed() && ri.conditions_MobTamedStatus == MobTamedStatus.NOT_TAMED ||
                 !lmEntity.isMobTamed() && ri.conditions_MobTamedStatus == MobTamedStatus.TAMED) {
                 Utils.debugLog(main, DebugType.ENTITY_TAME,
