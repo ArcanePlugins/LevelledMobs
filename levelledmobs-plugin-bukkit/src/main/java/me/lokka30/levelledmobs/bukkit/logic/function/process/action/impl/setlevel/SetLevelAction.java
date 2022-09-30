@@ -157,7 +157,11 @@ public class SetLevelAction extends Action {
         final @Nullable LivingEntity father = EntityDataUtil.getFather(lent, false);
         final @Nullable LivingEntity mother = EntityDataUtil.getMother(lent, false);
 
+        /*
+        Entity Breeding Level Inheritance
+         */
         if(Boolean.TRUE.equals(EntityDataUtil.wasBred(lent, true))) {
+
 
             if(father == null || mother == null) return null;
             context
@@ -253,7 +257,13 @@ public class SetLevelAction extends Action {
             // yes, we are ignoring fatherLevel since it should be the same
             return new TriLevel(minLevel, motherInheritedLevel, maxLevel);
 
-        } else if(Boolean.TRUE.equals(EntityDataUtil.wasTransformed(lent, true))) {
+        }
+
+        /*
+        Entity Transformation Level Inheritance
+         */
+        if(Boolean.TRUE.equals(EntityDataUtil.wasTransformed(lent, true))) {
+
             // during transformation, mother == father. we only check for one.
             if(mother == null) return null;
 
@@ -288,15 +298,13 @@ public class SetLevelAction extends Action {
             );
         }
 
-        Log.tmpdebug("checking vehicle inheritance for " + lent.getType());
-        Log.tmpdebug("Using vehicle/passenger inheritance: " + (lent.isInsideVehicle()));
+        /*
+        Passenger/Vehicle Level Inheritance
+         */
         Entity vehicleEntity = lent;
         while(lent.isInsideVehicle()) {
-            Log.tmpdebug(vehicleEntity.getType() + " is inside a vehicle. checking.");
             if(vehicleEntity instanceof LivingEntity vehicleLentity) {
-                Log.tmpdebug(vehicleEntity.getType() + " is a LivingEntity.");
                 if(EntityDataUtil.isLevelled(vehicleLentity, true)) {
-                    Log.tmpdebug(vehicleEntity.getType() + " is levelled. inheriting level.");
                     //noinspection ConstantConditions
                     return new TriLevel(
                         EntityDataUtil.getMinLevel(vehicleLentity, true),
@@ -306,14 +314,12 @@ public class SetLevelAction extends Action {
                 }
             }
 
-            Log.tmpdebug("vehicle entity is inside vehicle: " + vehicleEntity.isInsideVehicle());
             if(!vehicleEntity.isInsideVehicle()) continue;
 
-            Log.tmpdebug("vehicle entity switching from " + vehicleEntity.getType() + " to " + vehicleEntity.getVehicle().getType() + ".");
             vehicleEntity = Objects.requireNonNull(vehicleEntity.getVehicle(), "vehicle");
         }
-        Log.tmpdebug("done for " + lent.getType());
 
+        // No level could be inherited, so return null.
         return null;
     }
 
