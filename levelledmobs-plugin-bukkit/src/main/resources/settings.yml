@@ -29,7 +29,7 @@ functions:
           # LevelledMobs will aim to not level entities that belong to other plugins, such as
           # Citizens NPCs. If you want any of these integrations to be disabled for this Process,
           # enter its identifier below.
-          - condition: 'entity-owner' # TODO Rename MobOwner to EntityOwner
+          - condition: 'mob-owner' # TODO Rename MobOwner to EntityOwner
             not-in-list: []
 
         # A list of actions that this process will run, if the conditions are met.
