@@ -10,7 +10,9 @@ import me.lokka30.levelledmobs.bukkit.LevelledMobs;
 import me.lokka30.levelledmobs.bukkit.command.BaseCommandWrapper;
 import me.lokka30.levelledmobs.bukkit.command.CommandWrapper;
 import me.lokka30.levelledmobs.bukkit.command.levelledmobs.subcommand.summon.SummonSubcommand;
+import me.lokka30.levelledmobs.bukkit.command.levelledmobs.subcommand.summon.TestSubcommand;
 import me.lokka30.levelledmobs.bukkit.config.translations.Message;
+import me.lokka30.levelledmobs.bukkit.util.Log;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 
@@ -29,17 +31,17 @@ import org.jetbrains.annotations.NotNull;
          .. /lm <subcommand>
  */
 public class LevelledMobsBaseCommand extends BaseCommandWrapper {
-
-    /* vars */
-    private final LinkedHashSet<CommandWrapper> subcommands = new LinkedHashSet<>(Set.of(
-        new SummonSubcommand()
-    ));
-
-    /* constructors */
-
-    public LevelledMobsBaseCommand() {
+    public LevelledMobsBaseCommand(final @NotNull LevelledMobs main){
         super("levelledmobs");
+        this.main = main;
+        this.subcommands = new LinkedHashSet<>(Set.of(
+                new SummonSubcommand(),
+                new TestSubcommand(main)
+        ));
     }
+
+    private final LevelledMobs main;
+    private final LinkedHashSet<CommandWrapper> subcommands;
 
     /* methods */
 
@@ -89,8 +91,14 @@ public class LevelledMobsBaseCommand extends BaseCommandWrapper {
         } else if(args.length == 2) {
             final List<String> suggestions = new LinkedList<>();
 
-            for(var subcommand : getSubcommands())
+            for(var subcommand : getSubcommands()) {
+                if (subcommand.getLabels().isEmpty()){
+                    // this happens if you forgot to call the super class constructor with your label name
+                    Log.sev("command " + subcommand.getClass().getName() + " is missing required labels!");
+                    continue;
+                }
                 suggestions.add(subcommand.getLabels().iterator().next());
+            }
 
             return suggestions;
         } else {

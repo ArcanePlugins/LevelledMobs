@@ -9,8 +9,10 @@ import me.lokka30.levelledmobs.bukkit.logic.function.process.Process;
 import me.lokka30.levelledmobs.bukkit.logic.function.process.action.Action;
 import me.lokka30.levelledmobs.bukkit.logic.label.LabelHandler;
 import me.lokka30.levelledmobs.bukkit.logic.label.LabelRegistry;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.configurate.CommentedConfigurationNode;
 
@@ -71,8 +73,10 @@ public class SetPermanentLabelAction extends Action {
             @NotNull LivingEntity lent,
             @Nonnull Context context
         ) {
-            lent.setCustomName(generateLabelLegacy(lent, context));
-            lent.setCustomNameVisible(isAlwaysVisible());
+            final String nametag = generateLabelLegacy(lent, context);
+            for (final Player player : Bukkit.getOnlinePlayers()){
+                LevelledMobs.getInstance().getNametagSender().sendNametag(lent, player, nametag);
+            }
         }
 
         public static boolean isAlwaysVisible() {

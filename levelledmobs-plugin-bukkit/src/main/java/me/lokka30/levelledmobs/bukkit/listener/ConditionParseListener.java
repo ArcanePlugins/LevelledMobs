@@ -14,7 +14,6 @@ import me.lokka30.levelledmobs.bukkit.logic.function.process.condition.impl.Play
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 
-@SuppressWarnings("RedundantLabeledSwitchRuleCodeBlock")
 public class ConditionParseListener extends ListenerWrapper {
 
     /* constructor */

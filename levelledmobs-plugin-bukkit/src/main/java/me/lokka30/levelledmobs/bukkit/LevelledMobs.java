@@ -6,6 +6,8 @@ import me.lokka30.levelledmobs.bukkit.config.ConfigHandler;
 import me.lokka30.levelledmobs.bukkit.integration.IntegrationHandler;
 import me.lokka30.levelledmobs.bukkit.listener.ListenerHandler;
 import me.lokka30.levelledmobs.bukkit.logic.LogicHandler;
+import me.lokka30.levelledmobs.bukkit.logic.nms.Definitions;
+import me.lokka30.levelledmobs.bukkit.logic.nms.NametagSender;
 import me.lokka30.levelledmobs.bukkit.util.ClassUtils;
 import me.lokka30.levelledmobs.bukkit.util.Log;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -15,11 +17,13 @@ public final class LevelledMobs extends JavaPlugin {
 
     /* vars */
 
-    private final CommandHandler commandHandler = new CommandHandler();
-    private final ConfigHandler configHandler = new ConfigHandler();
-    private final IntegrationHandler integrationHandler = new IntegrationHandler();
-    private final ListenerHandler listenerHandler = new ListenerHandler();
-    private final LogicHandler logicHandler = new LogicHandler();
+    private CommandHandler commandHandler;
+    private ConfigHandler configHandler;
+    private IntegrationHandler integrationHandler;
+    private ListenerHandler listenerHandler;
+    private LogicHandler logicHandler;
+    private Definitions nmsDefinitions;
+    private NametagSender nametagSender;
 
     /* methods */
 
@@ -35,6 +39,14 @@ public final class LevelledMobs extends JavaPlugin {
             setEnabled(false);
             return;
         }
+
+        this.commandHandler = new CommandHandler(this);
+        this.configHandler = new ConfigHandler();
+        this.integrationHandler = new IntegrationHandler();
+        this.listenerHandler = new ListenerHandler();
+        this.logicHandler = new LogicHandler();
+        this.nmsDefinitions = new Definitions();
+        this.nametagSender = new NametagSender(this);
 
         //TODO check for a runtime exception rather than comparing booleans
         if(!(assertRunningSpigot() &&
@@ -104,13 +116,14 @@ public final class LevelledMobs extends JavaPlugin {
     public IntegrationHandler getIntegrationHandler() { return integrationHandler; }
     public ListenerHandler getListenerHandler() { return listenerHandler; }
     public LogicHandler getLogicHandler() { return logicHandler; }
+    public Definitions getNmsDefinitions() { return nmsDefinitions; }
+    public NametagSender getNametagSender() { return nametagSender; }
 
     /* singleton */
 
     private static LevelledMobs instance;
 
-    @NotNull
-    public static LevelledMobs getInstance() {
+    public static @NotNull LevelledMobs getInstance() {
         return Objects.requireNonNull(instance, "instance");
     }
 
