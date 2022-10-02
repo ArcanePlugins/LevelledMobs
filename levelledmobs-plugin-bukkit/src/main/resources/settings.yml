@@ -17,7 +17,7 @@ functions:
 
           # A list of world names which entities can't be levelled in. Note, this only affects
           # newly spawned entities, not entities who teleport to another world, e.g. via a portal.
-          - condition: 'world'
+          - condition: 'entity-world'
             in-list: ['example_world_123']
 
           # A list of entity types which are not allowed to become levelled.
