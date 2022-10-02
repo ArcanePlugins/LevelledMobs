@@ -34,8 +34,10 @@ public class ActionParseListener extends ListenerWrapper {
             case "exit-process" -> addAction(event, new ExitProcessAction(process, node));
             case "run-function" -> addAction(event, new RunFunctionAction(process, node));
             case "set-buffs" -> addAction(event, new SetBuffsAction(process, node));
+            case "set-death-label" -> addAction(event, new SetDeathLabelAction(process, node));
             case "set-drop-table-id" -> addAction(event, new SetDropTableIdAction(process, node));
             case "set-level" -> addAction(event, new SetLevelAction(process, node));
+            case "set-packet-label" -> addAction(event, new SetPacketLabelAction(process, node));
             case "set-permanent-label" -> addAction(event, new SetPermanentLabelAction(process, node));
             case "test" -> addAction(event, new TestAction(process, node));
             case "update-labels" -> addAction(event, new UpdateLabelsAction(process, node));

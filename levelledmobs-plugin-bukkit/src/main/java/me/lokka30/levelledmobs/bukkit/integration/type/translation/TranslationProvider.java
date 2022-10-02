@@ -1,4 +1,4 @@
-package me.lokka30.levelledmobs.bukkit.integration.translation;
+package me.lokka30.levelledmobs.bukkit.integration.type.translation;
 
 import org.bukkit.entity.EntityType;
 import org.jetbrains.annotations.NotNull;

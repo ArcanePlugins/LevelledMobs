@@ -1,4 +1,4 @@
-package me.lokka30.levelledmobs.bukkit.integration.nbthandler;
+package me.lokka30.levelledmobs.bukkit.integration.type.nbt;
 
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.inventory.ItemStack;

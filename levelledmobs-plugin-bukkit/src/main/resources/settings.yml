@@ -29,7 +29,7 @@ functions:
           # LevelledMobs will aim to not level entities that belong to other plugins, such as
           # Citizens NPCs. If you want any of these integrations to be disabled for this Process,
           # enter its identifier below.
-          - condition: 'mob-owner' # TODO Rename MobOwner to EntityOwner
+          - condition: 'entity-owner'
             not-in-list: []
 
         # A list of actions that this process will run, if the conditions are met.
@@ -94,10 +94,10 @@ functions:
     processes:
       - process: 'update-label-for-entity'
         if:
-          - condition: 'levelled-state'
-            required-state: 'LEVELLED'
+          - condition: 'entity-level'
+            state: 'LEVELLED'
         do:
-          - action: 'update-label'
+          - action: 'update-labels'
 
 # What translation would you like to use?
 # By default this will choose 'en_US.yml' in the directory 'plugins/LevelledMobs/translations/'.

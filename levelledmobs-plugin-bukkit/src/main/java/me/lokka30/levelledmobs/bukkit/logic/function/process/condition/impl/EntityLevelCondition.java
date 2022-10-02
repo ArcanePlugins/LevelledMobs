@@ -37,12 +37,12 @@ public class EntityLevelCondition extends Condition {
             levelledState = LevelledState.EITHER;
         }
 
-        if(levelledState == LevelledState.NOT_LEVELLED) return;
-
-        if(getConditionNode().hasChild("range")) {
-            requiredLevelRange = new RangedInt(
-                getConditionNode().node("range").getString("")
-            );
+        if(levelledState != LevelledState.NOT_LEVELLED) {
+            if (getConditionNode().hasChild("range")) {
+                requiredLevelRange = new RangedInt(
+                    getConditionNode().node("range").getString("")
+                );
+            }
         }
     }
 

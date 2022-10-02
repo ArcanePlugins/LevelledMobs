@@ -1,4 +1,4 @@
-package me.lokka30.levelledmobs.bukkit.integration.nbthandler;
+package me.lokka30.levelledmobs.bukkit.integration.type.nbt;
 
 import java.util.LinkedList;
 import java.util.List;

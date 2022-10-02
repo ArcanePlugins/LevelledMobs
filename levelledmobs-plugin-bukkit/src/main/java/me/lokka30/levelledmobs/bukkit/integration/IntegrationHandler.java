@@ -4,7 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 import me.lokka30.levelledmobs.bukkit.integration.impl.CitizensIntegration;
 import me.lokka30.levelledmobs.bukkit.integration.impl.NbtApiIntegration;
-import me.lokka30.levelledmobs.bukkit.integration.nbthandler.NbtProvider;
+import me.lokka30.levelledmobs.bukkit.integration.type.nbt.NbtProvider;
 import org.bukkit.Bukkit;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

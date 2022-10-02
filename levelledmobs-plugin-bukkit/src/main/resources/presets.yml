@@ -30,8 +30,9 @@ presets:
         enabled: true
         affected-entities:
           not-in-list: ['ENDERMAN', 'WITHER_SKELETON']
-        attributes: ['GENERIC_MAX_HEALTH']
-        multiplier-formula: '1 + (%mob-level-percent% * 4)'
+        attributes:
+          in-list: ['GENERIC_MAX_HEALTH']
+        multiplier-formula: '1 + (%entity-level-ratio% * 4)'
 
         # Should LevelledMobs adjust the mob's current health
         # to match the previous health percentage they had,
@@ -55,72 +56,73 @@ presets:
         enabled: true
         affected-entities:
           not-in-list: ['ENDERMAN', 'CREEPER']
-        attributes: ['GENERIC_MOVEMENT_SPEED']
-        multiplier-formula: '1 + (%mob-level-percent% * 0.15)'
+        attributes:
+          in-list: ['GENERIC_MOVEMENT_SPEED']
+        multiplier-formula: '1 + (%entity-level-ratio% * 0.15)'
 
       - buff: 'armor-toughness-boost'
         enabled: true
         affected-entities:
           in-list: ['*']
-        attributes: ['GENERIC_ARMOR_TOUGHNESS']
-        multiplier-formula: '1 + (%mob-level-percent% * 0.15)'
+        attributes:
+          in-list: ['GENERIC_ARMOR_TOUGHNESS']
+        multiplier-formula: '1 + (%entity-level-ratio% * 0.15)'
 
       - buff: 'attack-damage-boost'
         enabled: true
         affected-entities:
           in-list: ['*']
-        attributes: ['GENERIC_ATTACK_DAMAGE']
-        multiplier-formula: '1 + (%mob-level-percent% * 1.25)'
+        attributes:
+          in-list: ['GENERIC_ATTACK_DAMAGE']
+        multiplier-formula: '1 + (%entity-level-ratio% * 1.25)'
 
       - buff: 'ranged-attack-damage-boost'
         enabled: true
         affected-entities:
           in-list: ['*']
-        attributes: ['CUSTOM_RANGED_ATTACK_DAMAGE']
-        multiplier-formula: '1 + %mob-level-percent%'
+        attributes:
+          in-list: ['CUSTOM_RANGED_ATTACK_DAMAGE']
+        multiplier-formula: '1 + %entity-level-ratio%'
 
       - buff: 'creeper-blast-damage-boost'
         enabled: true
         affected-entities:
           in-list: ['CREEPER']
-        attributes: ['CUSTOM_CREEPER_BLAST_DAMAGE']
-        multiplier-formula: '1 + %mob-level-percent%'
+        attributes:
+          in-list: ['CUSTOM_CREEPER_BLAST_DAMAGE']
+        multiplier-formula: '1 + %entity-level-ratio%'
 
       - buff: 'item-drop-boost'
         enabled: true
         affected-entities:
           not-in-list: ['ENDERMAN']
-        attributes: ['CUSTOM_ITEM_DROP']
-        multiplier-formula: '1 + (%mob-level-percent% * 3)'
+        attributes:
+          in-list: ['CUSTOM_ITEM_DROP']
+        multiplier-formula: '1 + (%entity-level-ratio% * 3)'
 
       - buff: 'xp-drop-boost'
         enabled: true
         affected-entities:
           not-in-list: ['ENDERMAN']
-        attributes: ['CUSTOM_XP_DROP']
-        multiplier-formula: '1 + (%mob-level-percent% * 5)'
-
-      - buff: 'armor-bonus-boost'
-        enabled: true
-        affected-entities:
-          in-list: ['*']
-        attributes: ['GENERIC_ARMOR_BONUS']
-        multiplier-formula: '1 + (%mob-level-percent% * 0.2)'
+        attributes:
+          in-list: ['CUSTOM_XP_DROP']
+        multiplier-formula: '1 + (%entity-level-ratio% * 5)'
 
       - buff: 'knockback-resistance-boost'
         enabled: true
         affected-entities:
           not-in-list: ['CREEPER']
-        attributes: ['GENERIC_KNOCKBACK_RESISTANCE']
-        multiplier-formula: '1 + (%mob-level-percent% * 0.25)'
+        attributes:
+          in-list: ['GENERIC_KNOCKBACK_RESISTANCE']
+        multiplier-formula: '1 + (%entity-level-ratio% * 0.25)'
 
-      # TODO remove this by default since mojang haven't patched it.
       - buff: 'zombie-spawn-reinforcements-boost'
-        enabled: false
+        enabled: true
         affected-entities:
           in-list: ['*']
-        attributes: ['GENERIC_ZOMBIE_SPAWN_REINFORCEMENTS']
-        multiplier-formula: '1 + (%mob-level-percent% * 0.15)'
+        attributes:
+          in-list: ['ZOMBIE_SPAWN_REINFORCEMENTS']
+        multiplier-formula: '1 + (%entity-level-ratio% * 0.15)'
 
   # Apply buffs to mobs, tuned to an advanced-level challenge.
   - preset: 'advanced-challenge'

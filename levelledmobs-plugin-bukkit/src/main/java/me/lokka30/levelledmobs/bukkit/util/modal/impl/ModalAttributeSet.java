@@ -19,6 +19,20 @@ public class ModalAttributeSet extends ModalCollection<Attribute> {
         super(EnumSet.noneOf(Attribute.class), mode);
 
         for(String strItem : strItems) {
+            if(strItem.equals("*")) {
+                getItems().clear();
+                setMode(getMode().inverse());
+                break;
+            }
+            if(strItem.startsWith("CUSTOM_")) {
+                Log.tmpdebug("Note: Skipping custom attribute " + strItem + ": not implemented");
+                continue;
+            }
+            if(strItem.equalsIgnoreCase("ZOMBIE_SPAWN_REINFORCEMENTS")) {
+                // TODO note: Mojang might not have patched a major bug with reinforcements
+                // that constantly multiply everywhere. keeping it disabled
+                continue;
+            }
             getItems().add(Attribute.valueOf(strItem.toUpperCase()));
         }
     }

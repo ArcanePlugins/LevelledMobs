@@ -19,6 +19,11 @@ public class ModalEntityTypeSet extends ModalCollection<EntityType> {
         super(EnumSet.noneOf(EntityType.class), mode);
 
         for(String strItem : strItems) {
+            if(strItem.equals("*")) {
+                getItems().clear();
+                setMode(getMode().inverse());
+                break;
+            }
             getItems().add(EntityType.valueOf(strItem.toUpperCase()));
         }
     }
