@@ -17,19 +17,19 @@ functions:
 
           # A list of world names which entities can't be levelled in. Note, this only affects
           # newly spawned entities, not entities who teleport to another world, e.g. via a portal.
-          - check: 'world'
+          - condition: 'world'
             in-list: ['example_world_123']
 
           # A list of entity types which are not allowed to become levelled.
           # Note: you may want to consider nerfing the attribute multipliers on
           # the entity instead of making it not levelled.
-          - check: 'entity-type'
+          - condition: 'entity-type'
             in-list: []
 
           # LevelledMobs will aim to not level entities that belong to other plugins, such as
           # Citizens NPCs. If you want any of these integrations to be disabled for this Process,
           # enter its identifier below.
-          - check: 'entity-owner' # TODO Rename MobOwner to EntityOwner
+          - condition: 'entity-owner' # TODO Rename MobOwner to EntityOwner
             not-in-list: []
 
         # A list of actions that this process will run, if the conditions are met.
@@ -94,7 +94,7 @@ functions:
     processes:
       - process: 'update-label-for-entity'
         if:
-          - check: 'levelled-state' # TODO maybe rename 'check' to 'run'?
+          - condition: 'levelled-state'
             required-state: 'LEVELLED'
         do:
           - action: 'update-label'
