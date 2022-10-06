@@ -32,7 +32,6 @@ import me.lokka30.levelledmobs.util.Utils;
 import org.bukkit.Particle;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.Tameable;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -668,6 +667,18 @@ public class RulesManager {
         }
 
         return result;
+    }
+
+    public @NotNull CachedModalList<VanillaBonusEnum> getAllowedVanillaBonuses(final @NotNull LivingEntityWrapper lmEntity){
+        CachedModalList<VanillaBonusEnum> result = null;
+
+        for (final RuleInfo ruleInfo : lmEntity.getApplicableRules()) {
+            if (ruleInfo.vanillaBonuses != null){
+                result = ruleInfo.vanillaBonuses;
+            }
+        }
+
+        return result != null ? result : new CachedModalList<>();
     }
 
     public int getMaximumDeathInChunkThreshold(final @NotNull LivingEntityWrapper lmEntity) {

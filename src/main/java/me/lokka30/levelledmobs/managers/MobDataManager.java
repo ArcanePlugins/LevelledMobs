@@ -6,12 +6,14 @@ package me.lokka30.levelledmobs.managers;
 
 import java.util.Collections;
 import java.util.Enumeration;
-import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.misc.Addition;
+import me.lokka30.levelledmobs.misc.CachedModalList;
 import me.lokka30.levelledmobs.misc.DebugType;
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
+import me.lokka30.levelledmobs.rules.VanillaBonusEnum;
 import me.lokka30.levelledmobs.util.Utils;
 import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
@@ -30,21 +32,23 @@ import org.jetbrains.annotations.Nullable;
 public class MobDataManager {
     public MobDataManager(final LevelledMobs main) {
         this.main = main;
-        this.vanillaMultiplierNames = List.of(
-                "Attacking speed boost",
-                "Baby speed boost",
-                "Covered armor bonus",
-                "Drinking speed penalty",
-                "Leader zombie bonus",
-                "Random spawn bonus",
-                "Random zombie-spawn bonus",
-                "Zombie reinforcement caller charge",
-                "Zombie reinforcement callee charge"
+        this.vanillaMultiplierNames = Map.ofEntries(
+                Map.entry("Attacking speed boost", VanillaBonusEnum.ATTACKING_SPEED_BOOST),
+                Map.entry("Baby speed boost", VanillaBonusEnum.BABY_SPEED_BOOST),
+                Map.entry("Covered armor bonus", VanillaBonusEnum.COVERED_ARMOR_BONUS),
+                Map.entry("Drinking speed penalty", VanillaBonusEnum.DRINKING_SPEED_PENALTY),
+                Map.entry("Fleeing speed boost", VanillaBonusEnum.FLEEING_SPEED_BOOST),
+                Map.entry("Leader zombie bonus", VanillaBonusEnum.LEADER_ZOMBIE_BONUS),
+                Map.entry("Random spawn bonus", VanillaBonusEnum.RANDOM_SPAWN_BONUS),
+                Map.entry("Random zombie-spawn bonus", VanillaBonusEnum.RANDOM_ZOMBIE_SPAWN_BONUS),
+                Map.entry("Sprinting speed boost", VanillaBonusEnum.SPRINTING_SPEED_BOOST),
+                Map.entry("Zombie reinforcement caller charge", VanillaBonusEnum.ZOMBIE_REINFORCE_CALLER),
+                Map.entry("Zombie reinforcement callee charge", VanillaBonusEnum.ZOMBIE_REINFORCE_CALLEE)
         );
     }
 
     private final LevelledMobs main;
-    public final List<String> vanillaMultiplierNames;
+    public final Map<String, VanillaBonusEnum> vanillaMultiplierNames;
 
     @Nullable private Object getAttributeDefaultValue(@NotNull final LivingEntityWrapper lmEntity,
         final Attribute attribute) {
@@ -112,11 +116,19 @@ public class MobDataManager {
                     .getValue() - lmEntity.getLivingEntity().getHealth();
         }
 
+        final CachedModalList<VanillaBonusEnum> allowedVanillaBonusEnums = main.rulesManager.getAllowedVanillaBonuses(lmEntity);
         final Enumeration<AttributeModifier> existingMods = Collections.enumeration(attrib.getModifiers());
         while (existingMods.hasMoreElements()){
             final AttributeModifier existingMod = existingMods.nextElement();
+            final VanillaBonusEnum vanillaBonusEnum = this.vanillaMultiplierNames.get(existingMod.getName());
+            if (vanillaBonusEnum != null){
+                if (allowedVanillaBonusEnums.isEmpty() || allowedVanillaBonusEnums.isEnabledInList(vanillaBonusEnum, lmEntity)) {
+                    continue;
+                }
+            }
 
-            if (this.vanillaMultiplierNames.contains(existingMod.getName())) continue;
+            Utils.debugLog(main, DebugType.MULTIPLIER_REMOVED, String.format(
+                    "Removing %s from %s", existingMod.getName(), lmEntity.getNameIfBaby()));
             attrib.removeModifier(existingMod);
         }
 

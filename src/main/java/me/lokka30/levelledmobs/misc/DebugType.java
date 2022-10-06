@@ -130,5 +130,7 @@ public enum DebugType {
 
     CHUNK_KILL_COUNT,
 
-    RULE_COOLDOWN
+    RULE_COOLDOWN,
+
+    MULTIPLIER_REMOVED
 }
