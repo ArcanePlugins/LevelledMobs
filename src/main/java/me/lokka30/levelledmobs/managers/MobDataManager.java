@@ -33,15 +33,21 @@ public class MobDataManager {
     public MobDataManager(final LevelledMobs main) {
         this.main = main;
         this.vanillaMultiplierNames = Map.ofEntries(
+                Map.entry("Armor modifier", VanillaBonusEnum.ARMOR_MODIFIER),
+                Map.entry("Armor toughness", VanillaBonusEnum.ARMOR_TOUGHNESS),
                 Map.entry("Attacking speed boost", VanillaBonusEnum.ATTACKING_SPEED_BOOST),
                 Map.entry("Baby speed boost", VanillaBonusEnum.BABY_SPEED_BOOST),
                 Map.entry("Covered armor bonus", VanillaBonusEnum.COVERED_ARMOR_BONUS),
                 Map.entry("Drinking speed penalty", VanillaBonusEnum.DRINKING_SPEED_PENALTY),
                 Map.entry("Fleeing speed boost", VanillaBonusEnum.FLEEING_SPEED_BOOST),
+                Map.entry("Horse armor bonus", VanillaBonusEnum.HORSE_ARMOR_BONUS),
+                Map.entry("Knockback resistance", VanillaBonusEnum.KNOCKBACK_RESISTANCE),
                 Map.entry("Leader zombie bonus", VanillaBonusEnum.LEADER_ZOMBIE_BONUS),
                 Map.entry("Random spawn bonus", VanillaBonusEnum.RANDOM_SPAWN_BONUS),
                 Map.entry("Random zombie-spawn bonus", VanillaBonusEnum.RANDOM_ZOMBIE_SPAWN_BONUS),
                 Map.entry("Sprinting speed boost", VanillaBonusEnum.SPRINTING_SPEED_BOOST),
+                Map.entry("Tool modifier", VanillaBonusEnum.TOOL_MODIFIER),
+                Map.entry("Weapon modifier", VanillaBonusEnum.WEAPON_MODIFIER),
                 Map.entry("Zombie reinforcement caller charge", VanillaBonusEnum.ZOMBIE_REINFORCE_CALLER),
                 Map.entry("Zombie reinforcement callee charge", VanillaBonusEnum.ZOMBIE_REINFORCE_CALLEE)
         );
@@ -127,8 +133,12 @@ public class MobDataManager {
                 }
             }
 
-            Utils.debugLog(main, DebugType.MULTIPLIER_REMOVED, String.format(
-                    "Removing %s from %s", existingMod.getName(), lmEntity.getNameIfBaby()));
+            if (!existingMod.getName().startsWith("GENERIC_")) {
+                Utils.debugLog(main, DebugType.MULTIPLIER_REMOVED, String.format(
+                        "Removing %s from (lvl %s) %s at %s,%s,%s", existingMod.getName(), lmEntity.getMobLevel(), lmEntity.getNameIfBaby(),
+                        lmEntity.getLocation().getBlockX(), lmEntity.getLocation().getBlockY(), lmEntity.getLocation().getBlockZ()));
+            }
+
             attrib.removeModifier(existingMod);
         }
 
