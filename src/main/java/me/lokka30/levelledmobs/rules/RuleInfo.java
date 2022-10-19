@@ -110,6 +110,7 @@ public class RuleInfo {
     CachedModalList<VanillaBonusEnum> vanillaBonuses;
     CachedModalList<LevelledMobSpawnReason> conditions_SpawnReasons;
     CachedModalList<String> conditions_Permission;
+    WithinCoordinates conditions_WithinCoords;
     @Nullable FineTuningAttributes allMobMultipliers;
     Map<String, FineTuningAttributes> specificMobMultipliers;
 

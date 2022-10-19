@@ -67,7 +67,7 @@ public class RulesParsingManager {
     private final static String ml_ExcludedItems = "excluded-list";
     private final static String ml_ExcludedGroups = "excluded-groups";
 
-    public void parseRulesMain(final YamlConfiguration config) {
+    public void parseRulesMain(final @Nullable YamlConfiguration config) {
         if (config == null) {
             return;
         }
@@ -114,7 +114,7 @@ public class RulesParsingManager {
         autoGenerateWeightedRandom();
     }
 
-    @NotNull public List<RuleInfo> getAllRules() {
+    public @NotNull List<RuleInfo> getAllRules() {
         final List<RuleInfo> results = new LinkedList<>();
         if (this.defaultRule != null) {
             results.add(this.defaultRule);
@@ -125,7 +125,7 @@ public class RulesParsingManager {
         return results;
     }
 
-    private void parseCustomMobGroups(final ConfigurationSection cs) {
+    private void parseCustomMobGroups(final @Nullable ConfigurationSection cs) {
         if (cs == null) {
             return;
         }
@@ -138,7 +138,7 @@ public class RulesParsingManager {
         }
     }
 
-    private void parseCustomBiomeGroups(final ConfigurationSection cs) {
+    private void parseCustomBiomeGroups(final @Nullable ConfigurationSection cs) {
         this.customBiomeGroups = new TreeMap<>();
         if (cs == null) {
             return;
@@ -152,7 +152,7 @@ public class RulesParsingManager {
         }
     }
 
-    @NotNull private RuleInfo parseDefaults(final ConfigurationSection cs) {
+    private @NotNull RuleInfo parseDefaults(final @Nullable ConfigurationSection cs) {
         this.parsingInfo = new RuleInfo("defaults");
         parsingInfo.restrictions_MinLevel = 0;
         parsingInfo.restrictions_MaxLevel = 0;
@@ -172,7 +172,7 @@ public class RulesParsingManager {
         return this.parsingInfo;
     }
 
-    @NotNull private List<RuleInfo> parsePresets(final ConfigurationSection cs) {
+    private @NotNull List<RuleInfo> parsePresets(final @Nullable ConfigurationSection cs) {
         final List<RuleInfo> results = new LinkedList<>();
         if (cs == null) {
             return results;
@@ -196,7 +196,7 @@ public class RulesParsingManager {
         return results;
     }
 
-    @Nullable private CachedModalList<?> buildCachedModalOfType(final @Nullable ConfigurationSection cs,
+    private @Nullable CachedModalList<?> buildCachedModalOfType(final @Nullable ConfigurationSection cs,
                                                          final @Nullable CachedModalList<?> defaultValue,
                                                          final @NotNull ModalListParsingTypes type) {
         if (cs == null) {
@@ -229,9 +229,9 @@ public class RulesParsingManager {
         return buildCachedModal(cs, defaultValue, mlpi);
     }
 
-    @NotNull private CachedModalList<?> buildCachedModal(final ConfigurationSection cs,
+    private @NotNull CachedModalList<?> buildCachedModal(final @Nullable ConfigurationSection cs,
                                                          final CachedModalList<?> defaultValue,
-                                                         final ModalListParsingInfo mlpi) {
+                                                         final @NotNull ModalListParsingInfo mlpi) {
 
         if (cs == null) {
             return defaultValue;
@@ -345,8 +345,8 @@ public class RulesParsingManager {
         return cachedModalList;
     }
 
-    @Nullable private CachedModalList<String> buildCachedModalListOfString(final ConfigurationSection cs,
-        @NotNull final String name, final CachedModalList<String> defaultValue) {
+    private @Nullable CachedModalList<String> buildCachedModalListOfString(final @Nullable ConfigurationSection cs,
+        final @NotNull String name, final CachedModalList<String> defaultValue) {
         if (cs == null) {
             return defaultValue;
         }
@@ -420,7 +420,7 @@ public class RulesParsingManager {
         return cachedModalList;
     }
 
-    @NotNull private Set<String> getSetOfGroups(@NotNull final ConfigurationSection cs, final String key) {
+    private @NotNull Set<String> getSetOfGroups(final @NotNull ConfigurationSection cs, final @NotNull String  key) {
         String foundKeyName = null;
         for (final String enumeratedKey : cs.getKeys(false)) {
             if (key.equalsIgnoreCase(enumeratedKey)) {
@@ -468,7 +468,7 @@ public class RulesParsingManager {
         return results;
     }
 
-    @NotNull private List<RuleInfo> parseCustomRules(final Object rulesSection) {
+    private @NotNull List<RuleInfo> parseCustomRules(final @Nullable Object rulesSection) {
         final List<RuleInfo> results = new LinkedList<>();
         if (rulesSection == null) {
             return results;
@@ -489,7 +489,7 @@ public class RulesParsingManager {
         return results;
     }
 
-    private void parseValues(final ConfigurationSection cs) {
+    private void parseValues(final @NotNull ConfigurationSection cs) {
         mergePreset(cs);
 
         parsingInfo.ruleIsEnabled = ymlHelper.getBoolean(cs, "enabled", true);
@@ -508,7 +508,7 @@ public class RulesParsingManager {
         parsingInfo.rulePriority = ymlHelper.getInt(cs, "priority");
     }
 
-    private void mergePreset(final ConfigurationSection cs) {
+    private void mergePreset(final @Nullable ConfigurationSection cs) {
         if (cs == null) {
             return;
         }
@@ -537,7 +537,7 @@ public class RulesParsingManager {
         }
     }
 
-    private void parseExternalCompat(final ConfigurationSection cs) {
+    private void parseExternalCompat(final @Nullable ConfigurationSection cs) {
         if (cs == null) {
             return;
         }
@@ -563,7 +563,7 @@ public class RulesParsingManager {
         }
     }
 
-    private void parseTieredColoring(final ConfigurationSection cs) {
+    private void parseTieredColoring(final @Nullable ConfigurationSection cs) {
         if (cs == null) {
             return;
         }
@@ -590,7 +590,7 @@ public class RulesParsingManager {
         }
     }
 
-    private void parseEntityNameOverride(final ConfigurationSection cs) {
+    private void parseEntityNameOverride(final @Nullable ConfigurationSection cs) {
         if (cs == null) {
             return;
         }
@@ -652,7 +652,7 @@ public class RulesParsingManager {
         }
     }
 
-    @Nullable private List<LevelTierMatching> parseNumberRange(final ConfigurationSection cs,
+    private @Nullable List<LevelTierMatching> parseNumberRange(final @Nullable ConfigurationSection cs,
         final String keyName) {
         if (cs == null) {
             return null;
@@ -689,7 +689,7 @@ public class RulesParsingManager {
         return levelTiers;
     }
 
-    private void parseApplySettings(final ConfigurationSection cs) {
+    private void parseApplySettings(final @Nullable ConfigurationSection cs) {
         if (cs == null) {
             return;
         }
@@ -926,6 +926,7 @@ public class RulesParsingManager {
             parsingInfo.conditions_CooldownTime);
         parsingInfo.conditions_TimesToCooldownActivation = ymlHelper.getInt2(cs, "cooldown-limit",
             parsingInfo.conditions_TimesToCooldownActivation);
+        parseWithinCoordinates(objTo_CS(cs, "within-coordinates"));
 
         parsingInfo.conditions_WGRegions = buildCachedModalListOfString(cs,
             "allowed-worldguard-regions", parsingInfo.conditions_WGRegions);
@@ -957,7 +958,34 @@ public class RulesParsingManager {
             ymlHelper.getString(cs, "skylight-level"), "skylight-level");
     }
 
-    private void parseStrategies(final ConfigurationSection cs) {
+    private void parseWithinCoordinates(final @Nullable ConfigurationSection cs){
+        if (cs == null) {
+            return;
+        }
+
+        final WithinCoordinates mdr = new WithinCoordinates();
+
+        for (WithinCoordinates.Axis axis : List.of(WithinCoordinates.Axis.X, WithinCoordinates.Axis.Y, WithinCoordinates.Axis.Z)) {
+            for (final String keyStart : List.of("start-", "end-")) {
+                final String key = keyStart + axis.name().toLowerCase();
+                final boolean isStart = "start-".equals(keyStart);
+                final String value = ymlHelper.getString(cs, key);
+
+                if (!mdr.parseAxis(value, axis, isStart)) {
+                    Utils.logger.warning(String.format("rule: %s, invalid value for %s: %s",
+                            parsingInfo.getRuleName(), key, value));
+                }
+            }
+        }
+
+        if (mdr.isEmpty()) {
+            return;
+        }
+
+        parsingInfo.conditions_WithinCoords = mdr;
+    }
+
+    private void parseStrategies(final @Nullable ConfigurationSection cs) {
         if (cs == null) {
             return;
         }
@@ -1066,7 +1094,7 @@ public class RulesParsingManager {
         }
     }
 
-    @Nullable private CachedModalList<MinAndMax> parseWorldTimeTicks(final ConfigurationSection cs,
+    private @Nullable CachedModalList<MinAndMax> parseWorldTimeTicks(final @Nullable ConfigurationSection cs,
         final CachedModalList<MinAndMax> existingList) {
         if (cs == null) {
             return existingList;
@@ -1086,7 +1114,7 @@ public class RulesParsingManager {
         return result;
     }
 
-    @Nullable private MinAndMax parseMinMaxValue(@Nullable final String numberPair,
+    private @Nullable MinAndMax parseMinMaxValue(final @Nullable String numberPair,
         @SuppressWarnings("SameParameterValue") final @NotNull String configName) {
         if (numberPair == null) {
             return null;
@@ -1101,7 +1129,7 @@ public class RulesParsingManager {
         }
     }
 
-    @NotNull private Set<MinAndMax> parseMinMaxValue(@NotNull final Set<String> numberPairs,
+    private @NotNull Set<MinAndMax> parseMinMaxValue(final @NotNull Set<String> numberPairs,
         final @NotNull String configName) {
         final Set<MinAndMax> result = new TreeSet<>();
 
@@ -1138,7 +1166,7 @@ public class RulesParsingManager {
         return result;
     }
 
-    private void parseHealthIndicator(final ConfigurationSection cs) {
+    private void parseHealthIndicator(final @Nullable ConfigurationSection cs) {
         if (cs == null) {
             return;
         }
@@ -1199,7 +1227,7 @@ public class RulesParsingManager {
         }
     }
 
-    private void parsePlayerLevellingOptions(final ConfigurationSection cs) {
+    private void parsePlayerLevellingOptions(final @Nullable ConfigurationSection cs) {
         if (cs == null) {
             return;
         }
@@ -1281,8 +1309,8 @@ public class RulesParsingManager {
             spawnDistanceStrategy.scaleDownward);
     }
 
-    @Nullable private Integer parseOptionalSpawnCoordinate(final String path,
-        @NotNull final ConfigurationSection cs) {
+    private @Nullable Integer parseOptionalSpawnCoordinate(final @NotNull String path,
+            final @NotNull ConfigurationSection cs) {
         if (cs.getString(path) == null) {
             return null;
         }
@@ -1293,7 +1321,7 @@ public class RulesParsingManager {
         return (cs.getInt(path));
     }
 
-    private void parseFineTuning(final ConfigurationSection cs) {
+    private void parseFineTuning(final @Nullable ConfigurationSection cs) {
         if (cs == null) {
             return;
         }
@@ -1343,7 +1371,7 @@ public class RulesParsingManager {
         }
     }
 
-    @Nullable private FineTuningAttributes parseFineTuningValues(final ConfigurationSection cs) {
+    private @Nullable FineTuningAttributes parseFineTuningValues(final @Nullable ConfigurationSection cs) {
         if (cs == null) {
             return null;
         }
@@ -1407,7 +1435,7 @@ public class RulesParsingManager {
         rls.populateWeightedRandom(minLevel, maxLevel);
     }
 
-    @Nullable private ConfigurationSection objTo_CS(final ConfigurationSection cs, final String path) {
+    private @Nullable ConfigurationSection objTo_CS(final @Nullable ConfigurationSection cs, final @NotNull String path) {
         if (cs == null) {
             return null;
         }
@@ -1442,7 +1470,7 @@ public class RulesParsingManager {
         }
     }
 
-    @Nullable private ConfigurationSection objTo_CS_2(final Object object) {
+    private @Nullable ConfigurationSection objTo_CS_2(final @Nullable Object object) {
         if (object == null) {
             return null;
         }

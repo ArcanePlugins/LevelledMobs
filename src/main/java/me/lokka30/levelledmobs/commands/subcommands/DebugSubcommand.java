@@ -10,6 +10,7 @@ import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
 import me.lokka30.levelledmobs.nms.MiscUtils;
 import me.lokka30.levelledmobs.util.Utils;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
@@ -40,7 +41,7 @@ public class DebugSubcommand extends MessagesBase implements Subcommand {
         }
 
         if (args.length <= 1) {
-            sender.sendMessage("Options: create / chunk_kill_count / nbt_dump");
+            sender.sendMessage("Options: create / chunk_kill_count / nbt_dump / mylocation");
             return;
         }
 
@@ -61,9 +62,25 @@ public class DebugSubcommand extends MessagesBase implements Subcommand {
             if (!(commandSender instanceof ConsoleCommandSender)) {
                 sender.sendMessage("NBT data has been written to the console");
             }
-        } else {
+        } else if ("mylocation".equalsIgnoreCase(args[1])){
+            showPlayerLocation(sender);
+        }
+        else {
             showMessage("other.create-debug");
         }
+    }
+
+    private void showPlayerLocation(final @NotNull CommandSender sender){
+        if (!(sender instanceof final Player player)){
+            sender.sendMessage("The command must be run by a player");
+            return;
+        }
+
+        final Location l = player.getLocation();
+        final String locationStr = String.format("location is %s, %s, %s in %s",
+                l.getBlockX(), l.getBlockY(), l.getBlockZ(), l.getWorld().getName());
+        sender.sendMessage("Your " + locationStr);
+        Utils.logger.info(String.format("Player %s %s", player.getName(), locationStr));
     }
 
     private void doNbtDump(final @NotNull CommandSender sender, final String @NotNull [] args) {
@@ -137,7 +154,7 @@ public class DebugSubcommand extends MessagesBase implements Subcommand {
         final String @NotNull [] args) {
 
         if (args.length <= 2) {
-            return List.of("create", "chunk_kill_count", "nbt_dump");
+            return List.of("create", "chunk_kill_count", "mylocation", "nbt_dump");
         }
         if ("chunk_kill_count".equalsIgnoreCase(args[1])) {
             return List.of("reset");
