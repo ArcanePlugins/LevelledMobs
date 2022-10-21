@@ -108,7 +108,8 @@ public class CustomDropsHandler {
     }
 
     public @NotNull Map<String, CustomDropInstance> getCustomDropsitems_groups(){
-        final Map<String, CustomDropInstance> drops = new TreeMap<>(this.customItemGroups);
+        final Map<String, CustomDropInstance> drops = new TreeMap<>(
+                this.customItemGroups != null ? this.customItemGroups : new HashMap<>());
         drops.putAll(this.customDropsitems_groups);
 
         for (final String groupName : externalCustomDrops.getCustomDropTables().keySet()){

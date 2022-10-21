@@ -99,8 +99,9 @@ public class PlayerDeathListener {
     }
 
     private void updateDeathMessage(final @NotNull PlayerDeathEvent event, final @NotNull NametagResult nametagResult) {
-        if (!(event.deathMessage() instanceof final TranslatableComponent tc))
+        if (!(event.deathMessage() instanceof final TranslatableComponent tc)) {
             return;
+        }
 
         final String playerKilled = extractPlayerName(tc);
         if (playerKilled == null) {
@@ -121,12 +122,15 @@ public class PlayerDeathListener {
             }
         }
 
-        if (mobKey == null) return;
+        if (mobKey == null) {
+            return;
+        }
         final String mobName = nametagResult.getNametagNonNull();
 
         Component newCom;
         if (nametagResult.hadCustomDeathMessage){
-            newCom = Component.empty();
+            newCom = LegacyComponentSerializer.legacyAmpersand().deserialize(
+                    mobName.replace("%player%", playerKilled));
         }
         else {
             final int displayNameIndex = mobName.indexOf("{DisplayName}");

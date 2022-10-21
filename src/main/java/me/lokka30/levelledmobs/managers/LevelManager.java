@@ -1871,7 +1871,7 @@ public class LevelManager implements LevelInterface {
                 while (existingMods.hasMoreElements()){
                     final AttributeModifier existingMod = existingMods.nextElement();
 
-                    if (main.mobDataManager.vanillaMultiplierNames.contains(existingMod.getName())) continue;
+                    if (main.mobDataManager.vanillaMultiplierNames.containsKey(existingMod.getName())) continue;
                     attInst.removeModifier(existingMod);
                 }
             }

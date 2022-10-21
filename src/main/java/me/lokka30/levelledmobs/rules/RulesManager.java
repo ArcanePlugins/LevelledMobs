@@ -32,7 +32,6 @@ import me.lokka30.levelledmobs.util.Utils;
 import org.bukkit.Particle;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.Tameable;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -670,6 +669,18 @@ public class RulesManager {
         return result;
     }
 
+    public @NotNull CachedModalList<VanillaBonusEnum> getAllowedVanillaBonuses(final @NotNull LivingEntityWrapper lmEntity){
+        CachedModalList<VanillaBonusEnum> result = null;
+
+        for (final RuleInfo ruleInfo : lmEntity.getApplicableRules()) {
+            if (ruleInfo.vanillaBonuses != null){
+                result = ruleInfo.vanillaBonuses;
+            }
+        }
+
+        return result != null ? result : new CachedModalList<>();
+    }
+
     public int getMaximumDeathInChunkThreshold(final @NotNull LivingEntityWrapper lmEntity) {
         int result = 0;
 
@@ -842,6 +853,11 @@ public class RulesManager {
             return false;
         }
 
+        if (ri.conditions_WithinCoords != null && !ri.conditions_WithinCoords.isEmpty() &&
+            !meetsMaxDistanceCriteria(lmEntity, ri)){
+            return false;
+        }
+
         if (ri.conditions_CustomNames != null) {
             final String customName = lmEntity.getLivingEntity().getCustomName() != null ?
                 lmEntity.getLivingEntity().getCustomName() : "(none)";
@@ -943,9 +959,22 @@ public class RulesManager {
             }
         }
 
+        if (ri.conditions_MobCustomnameStatus != MobCustomNameStatus.NOT_SPECIFIED
+                && ri.conditions_MobCustomnameStatus != MobCustomNameStatus.EITHER) {
+            final boolean hasCustomName = lmEntity.getLivingEntity().getCustomName() != null;
+
+            if (hasCustomName && ri.conditions_MobCustomnameStatus == MobCustomNameStatus.NOT_NAMETAGGED ||
+                    !hasCustomName && ri.conditions_MobCustomnameStatus == MobCustomNameStatus.NAMETAGGED) {
+                Utils.debugLog(main, DebugType.DENIED_RULE_CUSTOM_NAME,
+                        String.format("&b%s&7, mob: &b%s&7, nametag: %s, rule: %s",
+                                ri.getRuleName(), lmEntity.getNameIfBaby(), lmEntity.getLivingEntity().getCustomName(),
+                                ri.conditions_MobCustomnameStatus));
+                return false;
+            }
+        }
+
         if (ri.conditions_MobTamedStatus != MobTamedStatus.NOT_SPECIFIED
-            && ri.conditions_MobTamedStatus != MobTamedStatus.EITHER &&
-            lmEntity.getLivingEntity() instanceof Tameable) {
+            && ri.conditions_MobTamedStatus != MobTamedStatus.EITHER) {
             if (lmEntity.isMobTamed() && ri.conditions_MobTamedStatus == MobTamedStatus.NOT_TAMED ||
                 !lmEntity.isMobTamed() && ri.conditions_MobTamedStatus == MobTamedStatus.TAMED) {
                 Utils.debugLog(main, DebugType.ENTITY_TAME,
@@ -985,6 +1014,33 @@ public class RulesManager {
                     ri.conditions_SkyLightLevel));
                 return false;
             }
+        }
+
+        return true;
+    }
+
+    private boolean meetsMaxDistanceCriteria(final @NotNull LivingEntityWrapper lmEntity, final @NotNull RuleInfo rule){
+        final WithinCoordinates mdr = rule.conditions_WithinCoords;
+
+        if (mdr.getHasX() && !mdr.isLocationWithinRange(lmEntity.getLocation().getBlockX(), WithinCoordinates.Axis.X)){
+            Utils.debugLog(main, DebugType.DENIED_RULE_WITH_COORDINATES, String.format(
+                    "entity: %s, xCoord: %s, startX: %s, endX: %s",
+                    lmEntity.getNameIfBaby(), lmEntity.getLocation().getBlockX(), mdr.startX, mdr.endX));
+            return false;
+        }
+
+        if (mdr.getHasY() && !mdr.isLocationWithinRange(lmEntity.getLocation().getBlockY(), WithinCoordinates.Axis.Y)){
+            Utils.debugLog(main, DebugType.DENIED_RULE_WITH_COORDINATES, String.format(
+                    "entity: %s, yCoord: %s, startY: %s, endY: %s",
+                    lmEntity.getNameIfBaby(), lmEntity.getLocation().getBlockY(), mdr.startY, mdr.endY));
+            return false;
+        }
+
+        if (mdr.getHasZ() && !mdr.isLocationWithinRange(lmEntity.getLocation().getBlockZ(), WithinCoordinates.Axis.Z)){
+            Utils.debugLog(main, DebugType.DENIED_RULE_WITH_COORDINATES, String.format(
+                    "entity: %s, zCoord: %s, startZ: %s, endZ: %s",
+                    lmEntity.getNameIfBaby(), lmEntity.getLocation().getBlockZ(), mdr.startZ, mdr.endZ));
+            return false;
         }
 
         return true;

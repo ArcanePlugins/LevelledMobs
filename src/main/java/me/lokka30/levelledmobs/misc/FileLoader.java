@@ -53,7 +53,7 @@ public final class FileLoader {
                             &b---- START ERROR ----&r
                             &4%s&r
                             &b---- END ERROR ----&r
-                            If you have attempted to resolve this issue yourself, and are unable to, then please &b#create-a-ticket&r in the Official Arcane Plugins Support Discord:
+                            If an attempt to solve this error has come to no avail, you are welcome to ask for assistance in the ArcanePlugins Discord Guild.
                             &bhttps://discord.io/arcaneplugins""";
 
             Utils.logger.error(String.format(parseErrorMessage, cfgName, e));

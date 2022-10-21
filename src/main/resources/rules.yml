@@ -347,6 +347,11 @@ default-rule:
     mob-tamed-status: EITHER
 
   apply-settings:
+    multipliers:
+      vanilla-bonus:
+        allowed-list: 'BABY_SPEED_BOOST'
+        excluded-list: '*'
+
     sunlight-intensity: 5
     creeper-max-damage-radius: 3
 
