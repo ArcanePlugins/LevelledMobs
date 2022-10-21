@@ -1023,21 +1023,21 @@ public class RulesManager {
         final WithinCoordinates mdr = rule.conditions_WithinCoords;
 
         if (mdr.getHasX() && !mdr.isLocationWithinRange(lmEntity.getLocation().getBlockX(), WithinCoordinates.Axis.X)){
-            Utils.debugLog(main, DebugType.DENIED_RULE_MAX_DISTANCE, String.format(
+            Utils.debugLog(main, DebugType.DENIED_RULE_WITH_COORDINATES, String.format(
                     "entity: %s, xCoord: %s, startX: %s, endX: %s",
                     lmEntity.getNameIfBaby(), lmEntity.getLocation().getBlockX(), mdr.startX, mdr.endX));
             return false;
         }
 
         if (mdr.getHasY() && !mdr.isLocationWithinRange(lmEntity.getLocation().getBlockY(), WithinCoordinates.Axis.Y)){
-            Utils.debugLog(main, DebugType.DENIED_RULE_MAX_DISTANCE, String.format(
+            Utils.debugLog(main, DebugType.DENIED_RULE_WITH_COORDINATES, String.format(
                     "entity: %s, yCoord: %s, startY: %s, endY: %s",
                     lmEntity.getNameIfBaby(), lmEntity.getLocation().getBlockY(), mdr.startY, mdr.endY));
             return false;
         }
 
         if (mdr.getHasZ() && !mdr.isLocationWithinRange(lmEntity.getLocation().getBlockZ(), WithinCoordinates.Axis.Z)){
-            Utils.debugLog(main, DebugType.DENIED_RULE_MAX_DISTANCE, String.format(
+            Utils.debugLog(main, DebugType.DENIED_RULE_WITH_COORDINATES, String.format(
                     "entity: %s, zCoord: %s, startZ: %s, endZ: %s",
                     lmEntity.getNameIfBaby(), lmEntity.getLocation().getBlockZ(), mdr.startZ, mdr.endZ));
             return false;
