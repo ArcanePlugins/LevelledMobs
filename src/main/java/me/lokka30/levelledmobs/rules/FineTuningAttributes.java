@@ -35,6 +35,20 @@ public class FineTuningAttributes implements Cloneable {
     public Double xpDrop;
     public boolean doNotMerge;
 
+    public boolean isEmpty(){
+        try {
+            for (Field f : this.getClass().getDeclaredFields()){
+                if (f.get(this) instanceof Double && f.get(this) != null){
+                    return false;
+                }
+            }
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+
+        return true;
+    }
+
     void mergeAttributes(final @Nullable FineTuningAttributes attributes) {
         if (attributes == null) {
             return;
