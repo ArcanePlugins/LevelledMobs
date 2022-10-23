@@ -1377,7 +1377,10 @@ public class RulesParsingManager {
             return defaults;
         }
 
-        final FineTuningAttributes attribs = new FineTuningAttributes();
+        final boolean doMerge = ymlHelper.getBoolean(cs, "merge", true);
+
+        final FineTuningAttributes attribs = parsingInfo.allMobMultipliers != null && doMerge ?
+                parsingInfo.allMobMultipliers : new FineTuningAttributes();
 
         attribs.maxHealth = ymlHelper.getDouble2(cs, "max-health", attribs.maxHealth);
         attribs.movementSpeed = ymlHelper.getDouble2(cs, "movement-speed", attribs.movementSpeed);
