@@ -1063,7 +1063,7 @@ public class LevelManager implements LevelInterface {
             return true;
         }
 
-        if (!lmEntity.getPDC().has(main.namespacedKeys.lastDamageTime)){
+        if (!lmEntity.getPDC().has(main.namespacedKeys.lastDamageTime, PersistentDataType.LONG)){
             return true;
         }
 
