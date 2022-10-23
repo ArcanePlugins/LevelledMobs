@@ -349,8 +349,7 @@ default-rule:
   apply-settings:
     multipliers:
       vanilla-bonus:
-        allowed-list: 'BABY_SPEED_BOOST'
-        excluded-list: '*'
+        excluded-list: ['LEADER_ZOMBIE_BONUS', 'RANDOM_SPAWN_BONUS']
 
     sunlight-intensity: 5
     creeper-max-damage-radius: 3

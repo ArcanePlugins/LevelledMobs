@@ -1328,7 +1328,7 @@ public class RulesParsingManager {
 
         parsingInfo.vanillaBonuses = (CachedModalList<VanillaBonusEnum>) buildCachedModalOfType(cs,
                 parsingInfo.vanillaBonuses, ModalListParsingTypes.VANILLA_BONUSES);
-        parsingInfo.allMobMultipliers = parseFineTuningValues(cs);
+        parsingInfo.allMobMultipliers = parseFineTuningValues(cs, parsingInfo.allMobMultipliers);
 
         final ConfigurationSection cs_Custom = objTo_CS(cs, "custom-mob-level");
         if (cs_Custom == null) {
@@ -1354,7 +1354,7 @@ public class RulesParsingManager {
             }
 
             final FineTuningAttributes attribs = parseFineTuningValues(
-                objTo_CS(cs_Custom, mobName));
+                objTo_CS(cs_Custom, mobName), null);
             if (attribs == null) {
                 continue;
             }
@@ -1371,12 +1371,16 @@ public class RulesParsingManager {
         }
     }
 
-    private @Nullable FineTuningAttributes parseFineTuningValues(final @Nullable ConfigurationSection cs) {
+    private @Nullable FineTuningAttributes parseFineTuningValues(final @Nullable ConfigurationSection cs,
+                                                                 final @Nullable FineTuningAttributes defaults) {
         if (cs == null) {
-            return null;
+            return defaults;
         }
 
-        final FineTuningAttributes attribs = new FineTuningAttributes();
+        final boolean doMerge = ymlHelper.getBoolean(cs, "merge", true);
+
+        final FineTuningAttributes attribs = parsingInfo.allMobMultipliers != null && doMerge ?
+                parsingInfo.allMobMultipliers : new FineTuningAttributes();
 
         attribs.maxHealth = ymlHelper.getDouble2(cs, "max-health", attribs.maxHealth);
         attribs.movementSpeed = ymlHelper.getDouble2(cs, "movement-speed", attribs.movementSpeed);
@@ -1401,6 +1405,10 @@ public class RulesParsingManager {
             attribs.zombieReinforcements);
         attribs.followRange = ymlHelper.getDouble2(cs, "follow-range", attribs.followRange);
         attribs.doNotMerge = ymlHelper.getBoolean(cs, "do-not-merge", false);
+
+        if (attribs.isEmpty()) {
+            return defaults;
+        }
 
         return attribs;
     }
