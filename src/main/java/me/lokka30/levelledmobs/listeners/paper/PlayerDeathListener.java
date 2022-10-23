@@ -4,9 +4,13 @@ import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
 import me.lokka30.levelledmobs.result.NametagResult;
 import me.lokka30.levelledmobs.util.Utils;
+import net.kyori.adventure.key.Key;
+import net.kyori.adventure.key.Keyed;
+import net.kyori.adventure.key.KeyedValue;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.TextReplacementConfig;
 import net.kyori.adventure.text.TranslatableComponent;
+import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.entity.Entity;
@@ -104,8 +108,6 @@ public class PlayerDeathListener {
             return;
         }
 
-        final UUID playerKilled = event.getEntity().getUniqueId();
-
         String mobKey = null;
         Component itemComp = null;
         for (final Component c : tc.args()){
@@ -127,8 +129,10 @@ public class PlayerDeathListener {
 
         Component newCom;
         if (nametagResult.hadCustomDeathMessage){
-            newCom = LegacyComponentSerializer.legacyAmpersand().deserialize(
-                    mobName.replace("%player%", playerKilled));
+            final TextReplacementConfig replacementConfig = TextReplacementConfig.builder().matchLiteral("%player%")
+                    .replacement(buildPlayerComponent(event.getEntity())).build();
+            newCom = LegacyComponentSerializer.legacyAmpersand().deserialize(mobName)
+                    .replaceText(replacementConfig);
         }
         else {
             final int displayNameIndex = mobName.indexOf("{DisplayName}");
@@ -147,7 +151,7 @@ public class PlayerDeathListener {
                 // mob wasn't using any weapon
                 // 2 arguments, example: "death.attack.mob": "%1$s was slain by %2$s"
                 newCom = Component.translatable(tc.key(),
-                        Component.selector(playerKilled.toString()),
+                        buildPlayerComponent(event.getEntity()),
                         leftComp.append(mobNameComponent)
                 ).append(rightComp);
             }
@@ -155,7 +159,7 @@ public class PlayerDeathListener {
                 // mob had a weapon and it's details are stored in the itemComp component
                 // 3 arguments, example: "death.attack.mob.item": "%1$s was slain by %2$s using %3$s"
                 newCom = Component.translatable(tc.key(),
-                        Component.selector(playerKilled.toString()),
+                        buildPlayerComponent(event.getEntity()),
                         leftComp.append(mobNameComponent),
                         itemComp
                 ).append(rightComp);
@@ -163,5 +167,15 @@ public class PlayerDeathListener {
         }
 
         event.deathMessage(newCom);
+    }
+
+    private @NotNull Component buildPlayerComponent(final @NotNull Player player){
+        final Keyed playerKey = KeyedValue.keyedValue(Key.key("player"), player);
+        final HoverEvent<HoverEvent.ShowEntity> hoverEvent = HoverEvent.showEntity(
+                playerKey, player.getUniqueId(), player.name());
+        final ClickEvent clickEvent = ClickEvent.clickEvent(ClickEvent.Action.SUGGEST_COMMAND,
+                "/tell " + player.getName() + " ");
+
+        return Component.text(player.getName()).clickEvent(clickEvent).hoverEvent(hoverEvent);
     }
 }
