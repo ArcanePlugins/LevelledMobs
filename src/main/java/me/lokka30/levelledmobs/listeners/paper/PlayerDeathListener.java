@@ -5,8 +5,6 @@ import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
 import me.lokka30.levelledmobs.result.NametagResult;
 import me.lokka30.levelledmobs.util.Utils;
 import net.kyori.adventure.key.Key;
-import net.kyori.adventure.key.Keyed;
-import net.kyori.adventure.key.KeyedValue;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextReplacementConfig;
 import net.kyori.adventure.text.TranslatableComponent;
@@ -170,9 +168,10 @@ public class PlayerDeathListener {
     }
 
     private @NotNull Component buildPlayerComponent(final @NotNull Player player){
-        final Keyed playerKey = KeyedValue.keyedValue(Key.key("player"), player);
+        final Component playerName = main.nametagQueueManager.nmsHandler.versionInfo.getMinecraftVersion() >= 1.18 ?
+                player.name() : Component.text(player.getName());
         final HoverEvent<HoverEvent.ShowEntity> hoverEvent = HoverEvent.showEntity(
-                playerKey, player.getUniqueId(), player.name());
+                Key.key("minecraft"), player.getUniqueId(), playerName);
         final ClickEvent clickEvent = ClickEvent.clickEvent(ClickEvent.Action.SUGGEST_COMMAND,
                 "/tell " + player.getName() + " ");
 
