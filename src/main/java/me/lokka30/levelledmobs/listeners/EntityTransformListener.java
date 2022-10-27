@@ -20,7 +20,6 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntitySpawnEvent;
 import org.bukkit.event.entity.EntityTransformEvent;
 import org.jetbrains.annotations.NotNull;
@@ -91,6 +90,10 @@ public class EntityTransformListener implements Listener {
             }
 
             if (useInheritance) {
+                if (lmEntity.getSpawnReason() == LevelledMobSpawnReason.LM_SPAWNER) {
+                    transformedLmEntity.setSpawnReason(LevelledMobSpawnReason.SPAWNER);
+                }
+
                 main.levelInterface.applyLevelToMob(
                     transformedLmEntity,
                     level,
@@ -112,15 +115,21 @@ public class EntityTransformListener implements Listener {
     }
 
     private void checkForSlimeSplit(final @NotNull LivingEntity livingEntity, final @NotNull List<Entity> transformedEntities){
-        if (livingEntity.getEntitySpawnReason() == CreatureSpawnEvent.SpawnReason.DEFAULT) return;
-        final LevelledMobSpawnReason spawnReason = Utils.adaptVanillaSpawnReason(livingEntity.getEntitySpawnReason());
+        final LivingEntityWrapper parent = LivingEntityWrapper.getInstance(livingEntity, main);
+        if (parent.getSpawnReason() == LevelledMobSpawnReason.DEFAULT ||
+                parent.getSpawnReason() == LevelledMobSpawnReason.SLIME_SPLIT){
+            parent.free();
+            return;
+        }
 
         for (final Entity transformedEntity : transformedEntities) {
             if (!(transformedEntity instanceof final LivingEntity le)) continue;
 
             final LivingEntityWrapper lew = LivingEntityWrapper.getInstance(le, main);
-            lew.setSpawnReason(spawnReason);
+            lew.setSpawnReason(parent.getSpawnReason());
             lew.free();
         }
+
+        parent.free();
     }
 }
