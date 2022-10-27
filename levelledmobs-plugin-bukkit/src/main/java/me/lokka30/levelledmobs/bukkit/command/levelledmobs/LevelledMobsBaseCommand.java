@@ -31,16 +31,14 @@ import org.jetbrains.annotations.NotNull;
          .. /lm <subcommand>
  */
 public class LevelledMobsBaseCommand extends BaseCommandWrapper {
-    public LevelledMobsBaseCommand(final @NotNull LevelledMobs main){
+    public LevelledMobsBaseCommand(){
         super("levelledmobs");
-        this.main = main;
         this.subcommands = new LinkedHashSet<>(Set.of(
                 new SummonSubcommand(),
-                new TestSubcommand(main)
+                new TestSubcommand()
         ));
     }
 
-    private final LevelledMobs main;
     private final LinkedHashSet<CommandWrapper> subcommands;
 
     /* methods */

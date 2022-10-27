@@ -1,4 +1,4 @@
-package me.lokka30.levelledmobs.bukkit.logic.nms;
+package me.lokka30.levelledmobs.bukkit.nms;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -65,13 +65,13 @@ public class Definitions {
             buildClasses();
 
             // build methods
-            getMethod_ComponentAppend();
-            getMethod_TextComponents();
-            getMethod_Translatable();
+            getMethodComponentAppend();
+            getMethodTextComponents();
+            getMethodTranslatable();
             buildSimpleMethods();
             buildFields();
             buildConstructors();
-        } catch (ClassNotFoundException | NoSuchMethodException | NoSuchFieldException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -79,6 +79,7 @@ public class Definitions {
     private void buildClasses() throws ClassNotFoundException {
         this.clazz_IChatMutableComponent = Class.forName(
                 "net.minecraft.network.chat.IChatMutableComponent");
+
         this.clazz_IChatBaseComponent = Class.forName(
                 "net.minecraft.network.chat.IChatBaseComponent");
 
@@ -138,7 +139,7 @@ public class Definitions {
         }
     }
 
-    private void getMethod_ComponentAppend() throws NoSuchMethodException {
+    private void getMethodComponentAppend() throws NoSuchMethodException {
         // net.minecraft.network.chat.MutableComponent append(net.minecraft.network.chat.Component) ->
         // 1.18 = b, 1.19.0 = a, 1.19.1 = b
         final String methodName = ver.getRevision() == 0 || ver.getMinecraftVersion() == 1.18
@@ -148,7 +149,7 @@ public class Definitions {
                 methodName, this.clazz_IChatBaseComponent);
     }
 
-    private void getMethod_TextComponents() throws NoSuchMethodException{
+    private void getMethodTextComponents() throws NoSuchMethodException{
         // net.minecraft.network.chat.Component ->
         //     net.minecraft.network.chat.MutableComponent empty()
 
@@ -168,7 +169,7 @@ public class Definitions {
 
     }
 
-    private void getMethod_Translatable() throws NoSuchMethodException {
+    private void getMethodTranslatable() throws NoSuchMethodException {
         if (ver.getMinecraftVersion() <= 1.19) {
             // 1.18 instantiates an object, so this method doesn't apply
             return;

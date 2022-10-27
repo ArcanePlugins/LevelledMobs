@@ -1,4 +1,4 @@
-package me.lokka30.levelledmobs.bukkit.logic.nms;
+package me.lokka30.levelledmobs.bukkit.nms;
 
 import org.bukkit.Bukkit;
 import org.jetbrains.annotations.NotNull;
@@ -10,7 +10,7 @@ import me.lokka30.levelledmobs.bukkit.util.Log;
 
 @SuppressWarnings("unused")
 public class ServerVersionInfo {
-    public ServerVersionInfo(){
+    public ServerVersionInfo() {
         parseBukkitVersion();
         parseNMSVersion();
         checkifRunningPaper();
@@ -72,8 +72,7 @@ public class ServerVersionInfo {
         try {
             Class.forName("com.destroystokyo.paper.ParticleBuilder");
             this.isPaper = true;
-        }
-        catch(ClassNotFoundException ignored) { }
+        } catch(ClassNotFoundException ignored) {}
     }
 
     public int getMajorVersion(){

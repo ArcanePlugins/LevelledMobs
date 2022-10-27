@@ -1,29 +1,23 @@
 package me.lokka30.levelledmobs.bukkit.command.levelledmobs.subcommand.summon;
 
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
 import me.lokka30.levelledmobs.bukkit.LevelledMobs;
 import me.lokka30.levelledmobs.bukkit.command.CommandWrapper;
-import org.bukkit.GameMode;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
 // use this class for testing various things
 // for now it is used for testing nametag packets
 public class TestSubcommand extends CommandWrapper {
-    public TestSubcommand(final @NotNull LevelledMobs main){
+    public TestSubcommand() {
         super("test");
-        this.main = main;
     }
-
-    private final LevelledMobs main;
 
     @Override
     public void run(@NotNull CommandSender sender, @NotNull String[] args) {
@@ -47,7 +41,7 @@ public class TestSubcommand extends CommandWrapper {
         final LivingEntity le = (LivingEntity) entities.get(0);
 
         final String testNametag = "This is a test";
-        main.getNametagSender().sendNametag(le, (Player) sender, testNametag);
+        LevelledMobs.getInstance().getNametagSender().sendNametag(le, (Player) sender, testNametag);
     }
 
     @Override

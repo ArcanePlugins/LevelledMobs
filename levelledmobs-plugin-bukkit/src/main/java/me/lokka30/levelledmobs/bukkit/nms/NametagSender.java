@@ -1,4 +1,4 @@
-package me.lokka30.levelledmobs.bukkit.logic.nms;
+package me.lokka30.levelledmobs.bukkit.nms;
 
 import me.lokka30.levelledmobs.bukkit.LevelledMobs;
 import org.bukkit.entity.LivingEntity;
@@ -11,19 +11,20 @@ import java.util.List;
 import java.util.Optional;
 
 public class NametagSender {
-    public NametagSender(final @NotNull LevelledMobs main) {
-        this.main = main;
-        this.def = main.getNmsDefinitions();
+
+    public boolean load() {
+        this.def = LevelledMobs.getInstance().getNmsDefinitions();
+        return true;
     }
 
-    private final LevelledMobs main;
-    private final Definitions def;
+    private Definitions def;
 
     // TODO: change nametag to final @NotNull NMSComponent component
-    public void sendNametag(final @NotNull LivingEntity livingEntity,
-                            final @NotNull Player player,
-                            final @NotNull String nametag){
-
+    public void sendNametag(
+        final @NotNull LivingEntity livingEntity,
+        final @NotNull Player player,
+        final @NotNull String nametag
+    ) {
         if (!player.isOnline() || !player.isValid()) return;
 
         try {
@@ -32,11 +33,11 @@ public class NametagSender {
             // internalLivingEntity.getEntityData()
             final Object entityDataPreClone = def.method_getEntityData.invoke(internalLivingEntity);
             final Object entityData = cloneEntityData(entityDataPreClone, internalLivingEntity);
-            final Object OPTIONAL_COMPONENT = def.field_OPTIONAL_COMPONENT.get(def.clazz_DataWatcherRegistry);
+            final Object optionalComponent = def.field_OPTIONAL_COMPONENT.get(def.clazz_DataWatcherRegistry);
 
             // final EntityDataAccessor<Optional<Component>> customNameAccessor =
             //       new EntityDataAccessor<>(2, EntityDataSerializers.OPTIONAL_COMPONENT);
-            final Object customNameAccessor = def.ctor_EntityDataAccessor.newInstance(2, OPTIONAL_COMPONENT);
+            final Object customNameAccessor = def.ctor_EntityDataAccessor.newInstance(2, optionalComponent);
             final Optional<Object> customName = buildNametagComponent(livingEntity, nametag);
             // entityData.set(customNameAccessor, customName);
             def.method_set.invoke(entityData, customNameAccessor, customName);
@@ -66,9 +67,10 @@ public class NametagSender {
 
     // returns SynchedEntityData (DataWatcher)
     // args: SynchedEntityData, LivingEntity (nms)
-    private @NotNull Object cloneEntityData(@NotNull final Object other,
-        final Object internalLivingEntity) throws
-            InvocationTargetException, InstantiationException, IllegalAccessException {
+    private @NotNull Object cloneEntityData(
+        @NotNull final Object other,
+        final Object internalLivingEntity
+    ) throws InvocationTargetException, InstantiationException, IllegalAccessException {
 
         final Object entityData = def.ctor_SynchedEntityData.newInstance(internalLivingEntity);
         if (def.method_getAll.invoke(other) == null){
@@ -87,12 +89,14 @@ public class NametagSender {
         return entityData;
     }
 
-    private Optional<Object> buildNametagComponent(final @NotNull LivingEntity livingEntity, final @Nullable String nametag){
-        if (nametag == null || nametag.isEmpty())
-            return Optional.empty();
+    private Optional<Object> buildNametagComponent(
+        final @NotNull LivingEntity livingEntity,
+        final @Nullable String nametag
+    ) {
+        if (nametag == null || nametag.isEmpty()) return Optional.empty();
 
         // TODO: add translation support
-        Object result = ComponentUtils.getTextComponent(nametag, main.getNmsDefinitions());
+        Object result = ComponentUtils.getTextComponent(nametag, def);
         if (result == null)
             return Optional.empty();
         else

@@ -1,4 +1,4 @@
-package me.lokka30.levelledmobs.bukkit.logic.nms;
+package me.lokka30.levelledmobs.bukkit.nms;
 
 import me.lokka30.levelledmobs.bukkit.LevelledMobs;
 import org.bukkit.entity.LivingEntity;

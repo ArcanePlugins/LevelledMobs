@@ -2,8 +2,6 @@ package me.lokka30.levelledmobs.bukkit.command;
 
 import java.util.HashSet;
 import java.util.Set;
-
-import me.lokka30.levelledmobs.bukkit.LevelledMobs;
 import me.lokka30.levelledmobs.bukkit.command.levelledmobs.LevelledMobsBaseCommand;
 import me.lokka30.levelledmobs.bukkit.util.Log;
 import org.jetbrains.annotations.NotNull;
@@ -16,9 +14,9 @@ public final class CommandHandler {
 
     /* constructors */
 
-    public CommandHandler(final LevelledMobs main) {
+    public CommandHandler() {
         baseCommands.add(
-            new LevelledMobsBaseCommand(main)
+            new LevelledMobsBaseCommand()
         );
     }
 

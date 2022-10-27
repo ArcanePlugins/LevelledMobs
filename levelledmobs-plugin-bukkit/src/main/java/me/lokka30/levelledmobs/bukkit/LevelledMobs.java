@@ -6,8 +6,8 @@ import me.lokka30.levelledmobs.bukkit.config.ConfigHandler;
 import me.lokka30.levelledmobs.bukkit.integration.IntegrationHandler;
 import me.lokka30.levelledmobs.bukkit.listener.ListenerHandler;
 import me.lokka30.levelledmobs.bukkit.logic.LogicHandler;
-import me.lokka30.levelledmobs.bukkit.logic.nms.Definitions;
-import me.lokka30.levelledmobs.bukkit.logic.nms.NametagSender;
+import me.lokka30.levelledmobs.bukkit.nms.Definitions;
+import me.lokka30.levelledmobs.bukkit.nms.NametagSender;
 import me.lokka30.levelledmobs.bukkit.util.ClassUtils;
 import me.lokka30.levelledmobs.bukkit.util.Log;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -17,13 +17,13 @@ public final class LevelledMobs extends JavaPlugin {
 
     /* vars */
 
-    private CommandHandler commandHandler;
-    private ConfigHandler configHandler;
-    private IntegrationHandler integrationHandler;
-    private ListenerHandler listenerHandler;
-    private LogicHandler logicHandler;
-    private Definitions nmsDefinitions;
-    private NametagSender nametagSender;
+    private final CommandHandler commandHandler = new CommandHandler();
+    private final ConfigHandler configHandler = new ConfigHandler();
+    private final IntegrationHandler integrationHandler = new IntegrationHandler();
+    private final ListenerHandler listenerHandler = new ListenerHandler();
+    private final LogicHandler logicHandler = new LogicHandler();
+    private final Definitions nmsDefinitions = new Definitions();
+    private final NametagSender nametagSender = new NametagSender();
 
     /* methods */
 
@@ -40,17 +40,10 @@ public final class LevelledMobs extends JavaPlugin {
             return;
         }
 
-        this.commandHandler = new CommandHandler(this);
-        this.configHandler = new ConfigHandler();
-        this.integrationHandler = new IntegrationHandler();
-        this.listenerHandler = new ListenerHandler();
-        this.logicHandler = new LogicHandler();
-        this.nmsDefinitions = new Definitions();
-        this.nametagSender = new NametagSender(this);
-
         //TODO check for a runtime exception rather than comparing booleans
         if(!(assertRunningSpigot() &&
             getConfigHandler().load() &&
+            getNametagSender().load() &&
             getListenerHandler().loadPrimary() &&
             getIntegrationHandler().load() &&
             getLogicHandler().load() &&
@@ -74,8 +67,6 @@ public final class LevelledMobs extends JavaPlugin {
             Log.war("You are running an alpha/beta version of LevelledMobs. Please take care, "
             + "and beware that this version is unlikely to be tested.", false);
         }
-
-        runTestingProcedures();
 
         Log.inf("Plugin enabled");
     }
@@ -105,10 +96,6 @@ public final class LevelledMobs extends JavaPlugin {
         return false;
     }
 
-    private void runTestingProcedures() {
-        Log.war("Running testing procedures", false);
-    }
-
     /* getters and setters */
 
     public CommandHandler getCommandHandler() { return commandHandler; }
@@ -116,7 +103,9 @@ public final class LevelledMobs extends JavaPlugin {
     public IntegrationHandler getIntegrationHandler() { return integrationHandler; }
     public ListenerHandler getListenerHandler() { return listenerHandler; }
     public LogicHandler getLogicHandler() { return logicHandler; }
-    public Definitions getNmsDefinitions() { return nmsDefinitions; }
+    public Definitions getNmsDefinitions() {
+        return nmsDefinitions;
+    }
     public NametagSender getNametagSender() { return nametagSender; }
 
     /* singleton */
@@ -124,7 +113,11 @@ public final class LevelledMobs extends JavaPlugin {
     private static LevelledMobs instance;
 
     public static @NotNull LevelledMobs getInstance() {
-        return Objects.requireNonNull(instance, "instance");
+        return Objects.requireNonNull(
+            instance,
+            """
+                Attempted to access LevelledMobs.class instance before calling LevelledMobs#onLoad"""
+        );
     }
 
 }
