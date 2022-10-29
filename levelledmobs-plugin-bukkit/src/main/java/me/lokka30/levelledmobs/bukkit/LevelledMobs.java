@@ -35,29 +35,30 @@ public final class LevelledMobs extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        if(!assertRunningSpigot()) {
-            setEnabled(false);
-            return;
-        }
 
-        //TODO check for a runtime exception rather than comparing booleans
-        if(!(assertRunningSpigot() &&
-            getConfigHandler().load() &&
-            getNametagSender().load() &&
-            getListenerHandler().loadPrimary() &&
-            getIntegrationHandler().load() &&
-            getLogicHandler().load() &&
-            getListenerHandler().loadSecondary() &&
-            getCommandHandler().load()
-        )) {
-            Log.sev("LevelledMobs encountered a fatal error during the startup process; " +
-                "it will disable itself to prevent possible issues resulting from malfunction.",
-                true);
-
-            //TODO send a message to online players as well (in case of reload)
-
-            // TODO make it still operational for reloading instead of just disabling.
-
+        try {
+            assertRunningSpigot();
+            getConfigHandler().load();
+            getNametagSender().load();
+            getListenerHandler().loadPrimary();
+            getIntegrationHandler().load();
+            getLogicHandler().load();
+            getListenerHandler().loadSecondary();
+            getCommandHandler().load();
+        } catch(Exception ex) {
+            Log.sev("""
+                
+                LevelledMobs has encountered a fatal error during the startup process; it will disable itself to prevent possible issues resulting from the plugin malfunctioning.
+                Note that this may be a user-error, such as a stray apostrophe in a configuration file.
+                
+                If you are unable to resolve the error through analysing the debug information provided below, feel free to ask our volunteer helpers for assistance on the ArcanePlugins Discord Guild:
+                < https://www.discord.io/arcaneplugins >
+                
+                Notice: Do not use the reviews section to report this issue. Instead, join our Discord through the link provided above if you wish to receive assistance.
+                
+                -+- START EXCEPTION STACK TRACE -+-""");
+            ex.printStackTrace();
+            Log.sev("-+- END EXCEPTION STACK TRACE -+-");
             setEnabled(false);
             return;
         }
@@ -65,7 +66,7 @@ public final class LevelledMobs extends JavaPlugin {
         final var version = getDescription().getVersion();
         if(version.contains("alpha") || version.contains("beta")) {
             Log.war("You are running an alpha/beta version of LevelledMobs. Please take care, "
-            + "and beware that this version is unlikely to be tested.", false);
+            + "and beware that this version is unlikely to be tested.");
         }
 
         Log.inf("Plugin enabled");
@@ -79,21 +80,18 @@ public final class LevelledMobs extends JavaPlugin {
     /*
     Check if the server is running SpigotMC, or any derivative software.
      */
-    private boolean isRunningSpigot() {
+    private static boolean isRunningSpigot() {
         return ClassUtils.classExists("net.md_5.bungee.api.chat.TextComponent");
     }
 
     /*
     Ensure the server is running SpigotMC, or any derivative software.
      */
-    private boolean assertRunningSpigot() {
-        if(isRunningSpigot()) return true;
-
-        Log.sev("LevelledMobs does not run on CraftBukkit or other software which is not " +
-            "based upon the SpigotMC software. Switch to PaperMC or SpigotMC software - there " +
-            "is no reason to run CraftBukkit.", false);
-
-        return false;
+    private void assertRunningSpigot() {
+        if(isRunningSpigot()) return;
+        throw new IllegalStateException("""
+            This version of LevelledMobs is only able to run on SpigotMC-based servers, such as SpigotMC, PaperMC, and so on.
+            You are likely using CraftBukkit – there is no reason to use CraftBukkit, switch to SpigotMC or a derivative.""");
     }
 
     /* getters and setters */

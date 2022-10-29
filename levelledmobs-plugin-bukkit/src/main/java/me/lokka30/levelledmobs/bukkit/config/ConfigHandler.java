@@ -28,17 +28,15 @@ public final class ConfigHandler {
 
     Order of the function calls does matter!
      */
-    public boolean load() {
-        Log.inf("Loading configs");
-        for(var cfg : Set.of(customDropsCfg, groupsCfg, presetsCfg, settingsCfg))
-            if(!cfg.load())
-                return false;
+    public void load() {
+        Log.inf("Loading config files");
 
-        if(!translationHandler.load()) return false;
+        for(var cfg : Set.of(customDropsCfg, groupsCfg, presetsCfg, settingsCfg))
+            cfg.load();
 
         DebugHandler.load();
 
-        return true;
+        getTranslationHandler().load();
     }
 
     /* getters and setters */

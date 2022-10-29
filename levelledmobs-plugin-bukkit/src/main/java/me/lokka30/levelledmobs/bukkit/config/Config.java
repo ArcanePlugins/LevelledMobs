@@ -31,8 +31,8 @@ public abstract class Config {
 
     /* methods */
 
-    public boolean load() {
-        Log.inf("Loading file '" + getFileName() + "'");
+    public void load() {
+        Log.inf("Loading config file '" + getFileName() + "'");
 
         saveDefaultFile(false);
 
@@ -43,57 +43,35 @@ public abstract class Config {
         try {
             root = getLoader().load();
         } catch(ConfigurateException ex) {
-            Log.sev(
-                "Unable to load configuration '" + getFileName() + "'. This is usually a " +
-                    "user-caused error caused from YAML syntax errors inside the file, such as an " +
-                    "incorrect indent or stray symbol. We recommend that you use a YAML parser " +
-                    "website - such as the one linked here - to help locate where these errors " +
-                    "are appearing. --> https://www.yaml-online-parser.appspot.com/ <-- A stack " +
-                    "trace will be printed below for debugging purposes.", true
-            );
-            ex.printStackTrace();
-            return false;
+            throw new RuntimeException(ex);
         }
 
-        return update();
+        update();
     }
 
-    public boolean save() {
+    public void save() {
         try {
             getLoader().save(getRoot());
-            return true;
         } catch(ConfigurateException ex) {
-            Log.sev("LevelledMobs was unable to save data to the configuration '" +
-                getFileName() + "'. A stack trace will be printed below for debugging purposes.",
-                true);
-            ex.printStackTrace();
-            return false;
+            throw new RuntimeException(ex);
         }
     }
 
-    public boolean update() {
+    public void update() {
         final var currentFileVersion = getCurrentFileVersion();
 
         if(currentFileVersion == 0) {
-            Log.sev("Unable to detect the file version of configuration '" + getFileName() +
-                "'. Was the file metadata modified?", true);
-            return false;
+            throw new IllegalStateException("Unable to detect the file version of configuration '" +
+                getFileName() + "'. Was the file metadata modified?");
         } else if(currentFileVersion > latestFileVersion) {
-            Log.war("Configuration '" + getFileName() + "' is somehow newer than the latest " +
-                "compatible file version. Was it modified by the user?", false);
-            return true;
+            throw new IllegalStateException("Configuration '" + getFileName() +
+                "' is somehow newer than the latest " +
+                "compatible file version. Was it modified by the user?");
         } else if(currentFileVersion < latestFileVersion) {
             Log.inf("Update detected for configuration '" + getFileName() + "'; updating");
             if(updateLogic(currentFileVersion)) {
                 Log.inf("Configuration '" + getFileName() + "' has been updated");
-                return true;
-            } else {
-                Log.sev("Update for configuration '" + getFileName() + "' failed",
-                    true);
-                return false;
             }
-        } else {
-            return true;
         }
     }
 
@@ -120,11 +98,11 @@ public abstract class Config {
             Using the `max` method since we don't want numbers lower than 0.
              */
             if(fileVersionLm3 == 0) {
-                Log.sev("Unable to retrieve current file version of config '" + getFileName() +
-                    "'. Was it removed or modified by the user?", true);
-                return 0;
+                throw new IllegalStateException(
+                    "Unable to retrieve current file version of config '" + getFileName() +
+                    "'. Was it removed or modified by the user?");
             } else {
-                Log.inf("LM4-style file version not found for config '" + getFileName() +
+                Log.war("LM4-style file version not found for config '" + getFileName() +
                     "'; falling back to the LM3-style file version until the file is updated");
                 return fileVersionLm3;
             }
