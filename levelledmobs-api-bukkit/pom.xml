@@ -4,7 +4,7 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <parent>
     <artifactId>levelledmobs-parent</artifactId>
-    <groupId>me.lokka30</groupId>
+    <groupId>io.github.arcaneplugins.levelledmobs</groupId>
     <version>4</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
