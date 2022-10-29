@@ -1,15 +1,15 @@
 package io.github.arcaneplugins.levelledmobs.bukkit.logic.function.process.action.impl;
 
-import java.util.Map;
-import javax.annotation.Nonnull;
 import io.github.arcaneplugins.levelledmobs.bukkit.LevelledMobs;
+import io.github.arcaneplugins.levelledmobs.bukkit.api.data.EntityDataUtil;
 import io.github.arcaneplugins.levelledmobs.bukkit.data.InternalEntityDataUtil;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.context.Context;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.function.process.Process;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.function.process.action.Action;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.label.LabelHandler;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.label.LabelRegistry;
-import org.bukkit.Bukkit;
+import java.util.Map;
+import javax.annotation.Nonnull;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -55,7 +55,6 @@ public class SetPermanentLabelAction extends Action {
         return formula;
     }
 
-    @SuppressWarnings("unused")
     public static class PermanentLabelHandler extends LabelHandler {
 
         public static final PermanentLabelHandler INSTANCE = new PermanentLabelHandler();
@@ -73,10 +72,28 @@ public class SetPermanentLabelAction extends Action {
             @NotNull LivingEntity lent,
             @Nonnull Context context
         ) {
-            final String nametag = generateLabelLegacy(lent, context);
-            for (final Player player : Bukkit.getOnlinePlayers()){
-                LevelledMobs.getInstance().getNametagSender().sendNametag(lent, player, nametag);
-            }
+            if(!EntityDataUtil.isLevelled(lent, false)) return;
+
+            //noinspection deprecation
+            lent.setCustomName(generateLabelLegacy(lent, context));
+            lent.setCustomNameVisible(isAlwaysVisible());
+        }
+
+        @Override
+        public void update(
+            @NotNull Player player,
+            @NotNull Context context
+        ) {
+            deferPlayerUpdate(player, context);
+        }
+
+        @Override
+        public void update(
+            @NotNull LivingEntity lent,
+            @NotNull Player player,
+            @NotNull Context context
+        ) {
+            update(lent, context);
         }
 
         public static boolean isAlwaysVisible() {

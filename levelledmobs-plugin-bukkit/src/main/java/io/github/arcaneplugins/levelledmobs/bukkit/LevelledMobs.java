@@ -7,8 +7,8 @@ import io.github.arcaneplugins.levelledmobs.bukkit.command.CommandHandler;
 import io.github.arcaneplugins.levelledmobs.bukkit.config.ConfigHandler;
 import io.github.arcaneplugins.levelledmobs.bukkit.integration.IntegrationHandler;
 import io.github.arcaneplugins.levelledmobs.bukkit.listener.ListenerHandler;
-import io.github.arcaneplugins.levelledmobs.bukkit.nms.Definitions;
-import io.github.arcaneplugins.levelledmobs.bukkit.nms.NametagSender;
+import io.github.arcaneplugins.levelledmobs.bukkit.util.nms.Definitions;
+import io.github.arcaneplugins.levelledmobs.bukkit.util.nms.PacketLabelSender;
 import io.github.arcaneplugins.levelledmobs.bukkit.util.ClassUtils;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
@@ -23,7 +23,7 @@ public final class LevelledMobs extends JavaPlugin {
     private final ListenerHandler listenerHandler = new ListenerHandler();
     private final LogicHandler logicHandler = new LogicHandler();
     private final Definitions nmsDefinitions = new Definitions();
-    private final NametagSender nametagSender = new NametagSender();
+    private final PacketLabelSender packetLabelSender = new PacketLabelSender();
 
     /* methods */
 
@@ -104,7 +104,7 @@ public final class LevelledMobs extends JavaPlugin {
     public Definitions getNmsDefinitions() {
         return nmsDefinitions;
     }
-    public NametagSender getNametagSender() { return nametagSender; }
+    public PacketLabelSender getNametagSender() { return packetLabelSender; }
 
     /* singleton */
 

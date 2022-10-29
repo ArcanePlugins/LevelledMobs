@@ -1,4 +1,4 @@
-package io.github.arcaneplugins.levelledmobs.bukkit.nms;
+package io.github.arcaneplugins.levelledmobs.bukkit.util.nms;
 
 import org.bukkit.entity.LivingEntity;
 import org.jetbrains.annotations.NotNull;

@@ -1,4 +1,4 @@
-package io.github.arcaneplugins.levelledmobs.bukkit.nms;
+package io.github.arcaneplugins.levelledmobs.bukkit.util.nms;
 
 import io.github.arcaneplugins.levelledmobs.bukkit.LevelledMobs;
 import org.bukkit.entity.LivingEntity;
@@ -10,7 +10,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Optional;
 
-public class NametagSender {
+public class PacketLabelSender {
 
     public boolean load() {
         this.def = LevelledMobs.getInstance().getNmsDefinitions();

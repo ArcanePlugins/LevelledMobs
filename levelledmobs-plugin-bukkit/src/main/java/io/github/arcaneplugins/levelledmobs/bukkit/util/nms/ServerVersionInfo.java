@@ -1,4 +1,4 @@
-package io.github.arcaneplugins.levelledmobs.bukkit.nms;
+package io.github.arcaneplugins.levelledmobs.bukkit.util.nms;
 
 import io.github.arcaneplugins.levelledmobs.bukkit.util.Log;
 import org.bukkit.Bukkit;
