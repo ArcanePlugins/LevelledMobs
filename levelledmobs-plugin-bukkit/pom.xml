@@ -130,11 +130,11 @@
           <relocations>
             <relocation>
               <pattern>com.jeff_media.morepersistentdatatypes</pattern>
-              <shadedPattern>me.lokka30.levelledmobs.libs.morepersistentdatatypes</shadedPattern>
+              <shadedPattern>io.github.arcaneplugins.levelledmobs.libs.morepersistentdatatypes</shadedPattern>
             </relocation>
             <relocation>
               <pattern>de.themoep.minedown</pattern>
-              <shadedPattern>me.lokka30.levelledmobs.libs.minedown</shadedPattern>
+              <shadedPattern>io.github.arcaneplugins.levelledmobs.libs.minedown</shadedPattern>
             </relocation>
           </relocations>
         </configuration>
