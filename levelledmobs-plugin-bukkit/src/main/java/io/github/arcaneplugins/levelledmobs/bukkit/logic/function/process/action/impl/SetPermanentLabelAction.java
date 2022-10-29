@@ -81,7 +81,7 @@ public class SetPermanentLabelAction extends Action {
 
         public static boolean isAlwaysVisible() {
             return LevelledMobs.getInstance().getConfigHandler().getSettingsCfg().getRoot()
-                .node("advanced", "set-parmement-label-action", "always-visible")
+                .node("advanced", "set-permanent-label-action", "always-visible")
                 .getBoolean(true);
         }
 
