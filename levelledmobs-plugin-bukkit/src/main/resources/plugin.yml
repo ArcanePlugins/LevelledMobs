@@ -1,7 +1,7 @@
-api-version: '1.16'
+api-version: '1.18'
 authors: ['lokka30', 'PenalBuffalo', 'UltimaOath']
 description: 'The Ultimate RPG Mob Levelling Solution'
-main: 'me.lokka30.levelledmobs.bukkit.LevelledMobs'
+main: 'io.github.arcaneplugins.levelledmobs.bukkit.LevelledMobs'
 name: 'LevelledMobs'
 version: '${project.version}'
 website: 'https://github.com/lokka30/LevelledMobs/'
