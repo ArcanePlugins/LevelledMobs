@@ -1,5 +1,7 @@
 # LevelledMobs 4
 
+[![AGPLv3 or Later](https://www.gnu.org/graphics/agplv3-with-text-162x68.png)](https://www.gnu.org/licenses/agpl-3.0.html)
+
 > Note: LevelledMobs 4 is an upcoming revamp of LevelledMobs, deep in development, and vastly
 > unsuitable for production usage in its current state. Please discuss v4 with us in the
 > ArcanePlugins Discord Server or in the GH Discussions section.
@@ -17,17 +19,15 @@
 
 ## Contributors
 
-Please see [CONTRIBUTORS.md](CONTRIBUTORS.md) to see the list of wonderful people who made
+Please see [CONTRIBUTORS.md](CONTRIBUTORS.md) to see the list of the wonderful people who made
 LevelledMobs possible.
 
 ## License
 
-[![GPLv3 or Later](https://www.gnu.org/graphics/gplv3-or-later.png)](https://www.gnu.org/licenses/gpl-3.0.en.html)
-
-> Copyright (c) 2020-2022 lokka30
+> Copyright (c) 2020-2022 LevelledMobs Contributors
 >
 > This program is free software: you can redistribute it and/or modify
-> it under the terms of the GNU General Public License as published by
+> it under the terms of the GNU Affero General Public License as published by
 > the Free Software Foundation, either version 3 of the License, or
 > (at your option) any later version.
 >
@@ -36,7 +36,7 @@ LevelledMobs possible.
 > merchantability or fitness for a particular purpose. See the
 > GNU General Public License for more details.
 >
-> You have been supplied a copy of the GNU General Public License,
+> You have been supplied a copy of the GNU Affero General Public License,
 > though you may alternatively view it at <https://www.gnu.org/licenses>.
 
 ## Other Credits
