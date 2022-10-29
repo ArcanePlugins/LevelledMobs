@@ -19,7 +19,6 @@ import io.github.arcaneplugins.levelledmobs.bukkit.logic.function.process.action
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.function.process.action.impl.UpdateLabelsAction;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.function.process.action.impl.setlevel.SetLevelAction;
 import java.util.Locale;
-import me.lokka30.levelledmobs.bukkit.logic.function.process.action.impl.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.jetbrains.annotations.NotNull;
