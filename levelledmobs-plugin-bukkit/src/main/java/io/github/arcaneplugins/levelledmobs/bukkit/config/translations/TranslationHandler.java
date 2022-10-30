@@ -7,7 +7,6 @@ import java.util.Arrays;
 import java.util.Objects;
 import java.util.function.Function;
 import io.github.arcaneplugins.levelledmobs.bukkit.LevelledMobs;
-import io.github.arcaneplugins.levelledmobs.bukkit.util.EnumUtils;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.jetbrains.annotations.NotNull;
@@ -258,16 +257,19 @@ public final class TranslationHandler {
         return getRoot().node("metadata", "version", "current").getInt(0);
     }
 
-    public String getEntityName(final Entity entity) {
+    public @NotNull String getEntityName(final Entity entity) {
         Objects.requireNonNull(entity, "entity");
         //TODO
         return getEntityName(entity.getType());
     }
 
-    public String getEntityName(final @NotNull EntityType entityType) {
+    public @NotNull String getEntityName(final @NotNull EntityType entityType) {
         Objects.requireNonNull(entityType, "entityType");
-        //TODO
-        return EnumUtils.formatEnumConstant(entityType);
+
+        // TODO: add spigot support
+        // the function below only exists in paper
+        return entityType.translationKey();
+        //return EnumUtils.formatEnumConstant(entityType);
     }
 
     /* var getters and setters */

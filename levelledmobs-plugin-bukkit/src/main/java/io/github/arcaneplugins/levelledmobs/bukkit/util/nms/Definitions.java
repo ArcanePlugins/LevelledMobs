@@ -1,5 +1,6 @@
 package io.github.arcaneplugins.levelledmobs.bukkit.util.nms;
 
+import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Constructor;
@@ -32,6 +33,7 @@ public class Definitions {
     Class<?> clazz_ServerPlayerConnection;
     Class<?> clazz_NetworkManager;
     Class<?> clazz_EntityPlayer;
+    Class<?> clazz_PaperAdventure;
 
     // methods:
     Method method_ComponentAppend;
@@ -49,6 +51,7 @@ public class Definitions {
     Method method_define;
     Method method_getAccessor;
     Method method_getValue;
+    Method method_AsVanilla;
 
     // fields
     Field field_OPTIONAL_COMPONENT;
@@ -137,6 +140,9 @@ public class Definitions {
             this.clazz_TranslatableComponent = Class.forName(
                     "net.minecraft.network.chat.ChatMessage");
         }
+
+        this.clazz_PaperAdventure = Class.forName(
+                "io.papermc.paper.adventure.PaperAdventure");
     }
 
     private void getMethodComponentAppend() throws NoSuchMethodException {
@@ -216,6 +222,8 @@ public class Definitions {
 
         // net.minecraft.network.Connection getConnection() ->
         //this.method_getConnection = clazz_CraftPlayer.getDeclaredMethod("networkManager");
+
+        this.method_AsVanilla = clazz_PaperAdventure.getDeclaredMethod("asVanilla", Component.class);
     }
 
     private void buildFields() throws NoSuchFieldException {

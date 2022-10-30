@@ -17,16 +17,7 @@ public class EntityNamePlaceholder implements ContextPlaceholder {
         .getTranslationHandler();
 
     @Override
-    public @NotNull String replace(String from, Context context) {
-        if(context.getEntity() != null) {
-            return from.replace("%entity-name%", translationHandler.getEntityName(context.getEntity()));
-        } else if(context.getEntityType() != null) {
-            return from.replace("%entity-name%", translationHandler.getEntityName(context.getEntityType()));
-        } else {
-            // TODO error
-            Log.war("Unable to replace entity name placeholder in message '" + from + "': "
-                + "no entity/entity-type context", true);
-            return from;
-        }
+    public @NotNull String replace(final @NotNull String from, final @NotNull Context context) {
+        return from.replace("%entity-name%", "{EntityName}");
     }
 }

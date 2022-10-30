@@ -9,12 +9,14 @@ import io.github.arcaneplugins.levelledmobs.bukkit.logic.function.process.action
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.label.LabelHandler;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.label.LabelRegistry;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.label.type.packet.VisibilityMethod;
+
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import javax.annotation.Nonnull;
+
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -23,7 +25,6 @@ import org.spongepowered.configurate.CommentedConfigurationNode;
 import org.spongepowered.configurate.serialize.SerializationException;
 
 public class SetPacketLabelAction extends Action {
-
     private static final String LABEL_ID = "Permanent";
 
     private final String formula;
@@ -51,7 +52,7 @@ public class SetPacketLabelAction extends Action {
                 getVisibilityMethods().add(VisibilityMethod.valueOf(
                     visibilityMethodStr.toUpperCase(Locale.ROOT)));
             } catch(IllegalArgumentException ex) {
-                throw ex;
+                ex.printStackTrace();
             }
         }
 
@@ -60,7 +61,7 @@ public class SetPacketLabelAction extends Action {
     }
 
     @Override
-    public void run(Context context) {
+    public void run(final @NotNull Context context) {
 
         final Entity ent = context.getEntity();
 
@@ -130,11 +131,9 @@ public class SetPacketLabelAction extends Action {
         ) {
             if(!EntityDataUtil.isLevelled(lent, false)) return;
 
-            LevelledMobs.getInstance().getNametagSender()
-                .sendNametag(lent, player, generateLabelLegacy(lent, context));
-
-            //TODO: factor in visibility methods
-            //TODO: factor in visibility duration
+            context.withPlayer(player);
+            LevelledMobs.getInstance().getLabelData().processItem(
+                    context, generateLabelComponents(lent, context));
         }
 
     }

@@ -33,7 +33,7 @@ public final class InternalEntityDataUtil extends EntityDataUtil {
     WARNING: This method does NOT use a memory data cache.
     It is therefore NOT applicable for use in EntitySpawnEvent.
      */
-    public static Set<String> getDropTableIds(
+    public static @NotNull Set<String> getDropTableIds(
         final @NotNull LivingEntity entity
     ) {
         Objects.requireNonNull(entity, "entity");

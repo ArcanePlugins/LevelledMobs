@@ -35,7 +35,7 @@ public final class EntityPlaceholders implements ContextPlaceholder {
 
         if(entity != null) {
             str = StringUtils.replaceIfExists(str, "%entity-name%", () ->
-                getEntityName(entityType, entity));
+                "{EntityName}");
 
             if(entity instanceof LivingEntity lent) {
                 final LivingEntity father = EntityDataUtil.getFather(lent, false);
@@ -61,6 +61,9 @@ public final class EntityPlaceholders implements ContextPlaceholder {
                 str = StringUtils.replaceIfExists(str, "%entity-level%", () -> Integer.toString(EntityDataUtil.getLevel(lent, false)));
                 str = StringUtils.replaceIfExists(str, "%father-level%", () -> Integer.toString(EntityDataUtil.getLevel(father, false)));
                 str = StringUtils.replaceIfExists(str, "%mother-level%", () -> Integer.toString(EntityDataUtil.getLevel(mother, false)));
+
+                str = StringUtils.replaceIfExists(str, "%entity-prefix%", () -> ""); //TODO continue implementing; band-aid
+                str = StringUtils.replaceIfExists(str, "%entity-suffix%", () -> ""); //TODO continue implementing; band-aid
             }
         }
 

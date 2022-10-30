@@ -38,7 +38,7 @@
     </dependency>
     <dependency>
       <groupId>de.themoep</groupId>
-      <artifactId>minedown</artifactId>
+      <artifactId>minedown-adventure</artifactId>
       <version>1.7.1-SNAPSHOT</version>
       <scope>compile</scope>
     </dependency>

@@ -1,6 +1,9 @@
 package io.github.arcaneplugins.levelledmobs.bukkit.util.nms;
 
 import io.github.arcaneplugins.levelledmobs.bukkit.LevelledMobs;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.MiniMessage;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -19,11 +22,22 @@ public class PacketLabelSender {
 
     private Definitions def;
 
+    public void sendNametag(
+            final @NotNull LivingEntity livingEntity,
+            final @NotNull Player player,
+            final @NotNull String nametag
+    ) {
+        sendNametag(livingEntity,
+                player,
+                MiniMessage.miniMessage().deserialize(nametag)
+        );
+    }
+
     // TODO: change nametag to final @NotNull NMSComponent component
     public void sendNametag(
         final @NotNull LivingEntity livingEntity,
         final @NotNull Player player,
-        final @NotNull String nametag
+        final @NotNull Component nametag
     ) {
         if (!player.isOnline() || !player.isValid()) return;
 
@@ -38,7 +52,10 @@ public class PacketLabelSender {
             // final EntityDataAccessor<Optional<Component>> customNameAccessor =
             //       new EntityDataAccessor<>(2, EntityDataSerializers.OPTIONAL_COMPONENT);
             final Object customNameAccessor = def.ctor_EntityDataAccessor.newInstance(2, optionalComponent);
-            final Optional<Object> customName = buildNametagComponent(livingEntity, nametag);
+            final Optional<Object> customName = Optional.of(
+                    def.method_AsVanilla.invoke(def.clazz_PaperAdventure, nametag));
+            //final Optional<Object> customName = buildNametagComponent(livingEntity, nametag);
+            //final Optional<Object> customName =
             // entityData.set(customNameAccessor, customName);
             def.method_set.invoke(entityData, customNameAccessor, customName);
 
@@ -53,16 +70,30 @@ public class PacketLabelSender {
             final Object packet = def.ctor_Packet
                     .newInstance(livingEntityId, entityData, true);
 
-
             // final ServerPlayer serverPlayer = (ServerPlayer) method_PlayergetHandle.invoke(player);
             final Object serverPlayer = def.method_PlayergetHandle.invoke(player);
             final Object connection = def.field_Connection.get(serverPlayer);
 
-            // serverPlayer.connection.send(packet);
-            def.method_Send.invoke(connection, packet);
+            sendPacket(connection, packet);
         } catch (IllegalAccessException | InvocationTargetException | InstantiationException e) {
             e.printStackTrace();
         }
+    }
+
+    private void sendPacket(final @NotNull Object connection, final @NotNull Object packet){
+        // must run the following code on the main thread otherwise nothing happens
+        // TODO: queue these packets up then invoke at once every x ticks
+        // so we aren't potentially creating thousands of bukkit runnables
+        final Runnable runnable = () -> {
+            try {
+                // serverPlayer.connection.send(packet);
+                def.method_Send.invoke(connection, packet);
+            } catch (IllegalAccessException | InvocationTargetException e) {
+                e.printStackTrace();
+            }
+        };
+
+        Bukkit.getScheduler().runTask(LevelledMobs.getInstance(), runnable);
     }
 
     // returns SynchedEntityData (DataWatcher)

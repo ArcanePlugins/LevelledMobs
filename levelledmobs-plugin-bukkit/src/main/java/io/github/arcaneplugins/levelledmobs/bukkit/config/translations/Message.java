@@ -1,9 +1,10 @@
 package io.github.arcaneplugins.levelledmobs.bukkit.config.translations;
 
-import de.themoep.minedown.MineDown;
+import de.themoep.minedown.adventure.MineDown;
 import io.github.arcaneplugins.levelledmobs.bukkit.util.Log;
-import net.md_5.bungee.api.chat.BaseComponent;
+import net.kyori.adventure.text.Component;
 import org.bukkit.command.CommandSender;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 public enum Message {
@@ -146,44 +147,49 @@ public enum Message {
     /*
     Format a message using MineDown
      */
-    public BaseComponent[][] formatMd(final String... replacements) {
-        final var declaredLen = getDeclared().length;
-        final var components = new BaseComponent[declaredLen][];
-        for(int line = 0; line < declaredLen; line++) {
-            var toParse = getDeclared()[line]
-                .replace("%prefix-info%", Message.GENERIC_PREFIX_INFO.getDeclared()[0])
-                .replace("%prefix-warning%", Message.GENERIC_PREFIX_WARNING.getDeclared()[0])
-                .replace("%prefix-severe%", Message.GENERIC_PREFIX_SEVERE.getDeclared()[0]);
+    public static Component COMPONENT_EMPTY = Component.empty();
+    public static Component COMPONENT_NEW_LINE = Component.text("\n");
+
+    public Component formatMd(final String... replacements) {
+        Component component = COMPONENT_EMPTY;
+
+        for(int line = 0; line < getDeclared().length; line++) {
+            String toParse = getDeclared()[line];
 
             if(toParse.isBlank()) {
-                components[line] = null;
+                component = component.append(COMPONENT_NEW_LINE);
                 continue;
             }
+
+            toParse = toParse
+                    .replace("%prefix-info%", Message.GENERIC_PREFIX_INFO.getDeclared()[0])
+                    .replace("%prefix-warning%", Message.GENERIC_PREFIX_WARNING.getDeclared()[0])
+                    .replace("%prefix-severe%", Message.GENERIC_PREFIX_SEVERE.getDeclared()[0]);
 
             if(replacements.length % 2 == 0) {
                 for(int j = 0; j < replacements.length; j += 2)
                     toParse = toParse.replace(replacements[j], replacements[j + 1]);
             } else {
                 Log.sev("Skipping placeholder replacement in message '" + this + "' as an odd "
-                    + "num of placeholder parameters were entered.", true);
+                        + "number of placeholder parameters were entered.", true);
             }
 
-            components[line] = MineDown.parse(toParse);
-        }
-        return components;
-    }
+            component = component.append(MineDown.parse(toParse));
 
-    public void sendTo(final CommandSender sender, final String... replacements) {
-        for(var components : formatMd(replacements)) {
-            if(components == null) {
-                sender.sendMessage(" ");
-            } else {
-                sender.spigot().sendMessage(components);
+            if(line > 0) {
+                component = component.append(COMPONENT_NEW_LINE);
             }
         }
+
+        return component;
     }
 
-    public static String joinDelimited(final Iterable<? extends String> args) {
+    public void sendTo(final @NotNull CommandSender sender, final String... replacements) {
+        sender.sendMessage(formatMd(replacements));
+    }
+
+    @Contract("_ -> new")
+    public static @NotNull String joinDelimited(final Iterable<? extends String> args) {
         return String.join(Message.GENERIC_LIST_DELIMITER.getDeclared()[0], args);
     }
 

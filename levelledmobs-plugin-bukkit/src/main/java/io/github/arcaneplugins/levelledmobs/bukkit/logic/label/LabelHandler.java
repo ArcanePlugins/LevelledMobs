@@ -1,13 +1,17 @@
 package io.github.arcaneplugins.levelledmobs.bukkit.logic.label;
 
-import de.themoep.minedown.MineDown;
+import de.themoep.minedown.adventure.MineDown;
 import io.github.arcaneplugins.levelledmobs.bukkit.LevelledMobs;
 import io.github.arcaneplugins.levelledmobs.bukkit.api.data.EntityDataUtil;
 import io.github.arcaneplugins.levelledmobs.bukkit.data.InternalEntityDataUtil;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.context.Context;
 import javax.annotation.Nonnull;
-import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.TextComponent;
+
+import io.github.arcaneplugins.levelledmobs.bukkit.util.Log;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextReplacementConfig;
+import net.kyori.adventure.text.TranslatableComponent;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
@@ -35,15 +39,33 @@ public abstract class LabelHandler {
     }
 
     @Nonnull
-    public BaseComponent[] generateLabelComponents(
+    public Component generateLabelComponents(
         final @Nonnull LivingEntity lent,
         final @Nonnull Context context
     ) {
-        return MineDown.parse(
+        Log.inf("test: " + LevelledMobs.getInstance().getLogicHandler().getContextPlaceholderHandler().replace(
+                getFormula(lent), context));
+        Component nametag = MineDown.parse(
             LevelledMobs.getInstance().getLogicHandler().getContextPlaceholderHandler().replace(
                 getFormula(lent), context
             )
         );
+
+        Component replacement;
+        if(context.getEntity() != null) {
+            replacement = Component.translatable(context.getEntity().getType().translationKey());
+        } else if(context.getEntityType() != null) {
+            replacement = Component.translatable(context.getEntityType().translationKey());
+        } else {
+            // TODO error
+            Log.war("Unable to replace entity name placeholder in message '" +
+                    getFormula(lent) + "': "
+                    + "no entity/entity-type context", true);
+            replacement = Component.empty();
+        }
+
+        return nametag.replaceText(TextReplacementConfig.builder()
+                .matchLiteral("{EntityName}").replacement(replacement).build());
     }
 
     @Nonnull
@@ -51,7 +73,8 @@ public abstract class LabelHandler {
         final @Nonnull LivingEntity lent,
         final @Nonnull Context context
     ) {
-        return TextComponent.toLegacyText(generateLabelComponents(lent, context));
+        return MiniMessage.miniMessage().serialize(
+                generateLabelComponents(lent, context));
     }
 
     public abstract void update(

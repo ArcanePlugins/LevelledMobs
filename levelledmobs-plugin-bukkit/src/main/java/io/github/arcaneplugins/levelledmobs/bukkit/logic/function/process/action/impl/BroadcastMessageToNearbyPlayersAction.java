@@ -1,6 +1,6 @@
 package io.github.arcaneplugins.levelledmobs.bukkit.logic.function.process.action.impl;
 
-import de.themoep.minedown.MineDown;
+import de.themoep.minedown.adventure.MineDown;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.context.Context;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.function.process.Process;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.function.process.action.Action;
@@ -69,7 +69,7 @@ public class BroadcastMessageToNearbyPlayersAction extends Action {
                 if(nearbyEntity instanceof Player player) {
                     if (!hasRequiredPermission() || player.hasPermission(
                         getRequiredPermission())) {
-                        player.spigot().sendMessage(lineComponents);
+                        player.sendMessage(lineComponents);
                     }
                 }
             }

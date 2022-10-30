@@ -1,6 +1,6 @@
 package io.github.arcaneplugins.levelledmobs.bukkit.listener;
 
-import de.themoep.minedown.MineDown;
+import de.themoep.minedown.adventure.MineDown;
 import io.github.arcaneplugins.levelledmobs.bukkit.debug.DebugCategory;
 import java.util.function.Consumer;
 import io.github.arcaneplugins.levelledmobs.bukkit.LevelledMobs;
@@ -44,7 +44,7 @@ public class EntityDamageByEntityListener extends ListenerWrapper {
             .withWorld(inspected.getWorld())
             .withPlayer(inspector);
 
-        final Consumer<String> messenger = (message) -> inspector.spigot().sendMessage(
+        final Consumer<String> messenger = (message) -> inspector.sendMessage(
             MineDown.parse(
                 LevelledMobs.getInstance().getLogicHandler().getContextPlaceholderHandler()
                     .replace(message, context)
