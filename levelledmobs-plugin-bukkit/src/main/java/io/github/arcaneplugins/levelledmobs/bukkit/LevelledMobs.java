@@ -1,7 +1,6 @@
 package io.github.arcaneplugins.levelledmobs.bukkit;
 
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.LogicHandler;
-import io.github.arcaneplugins.levelledmobs.bukkit.logic.label.LabelData;
 import io.github.arcaneplugins.levelledmobs.bukkit.util.Log;
 import java.util.Objects;
 import io.github.arcaneplugins.levelledmobs.bukkit.command.CommandHandler;
@@ -25,7 +24,6 @@ public final class LevelledMobs extends JavaPlugin {
     private final LogicHandler logicHandler = new LogicHandler();
     private final Definitions nmsDefinitions = new Definitions();
     private final PacketLabelSender packetLabelSender = new PacketLabelSender();
-    private final LabelData labelData = new LabelData();
 
     /* methods */
 
@@ -107,7 +105,6 @@ public final class LevelledMobs extends JavaPlugin {
         return nmsDefinitions;
     }
     public PacketLabelSender getNametagSender() { return packetLabelSender; }
-    public LabelData getLabelData(){ return labelData; }
 
     /* singleton */
 

@@ -1,12 +1,12 @@
 package io.github.arcaneplugins.levelledmobs.bukkit.util;
 
-public final class TriLevel {
+public final class LevelTuple {
 
     private final int minLevel;
     private final int level;
     private final int maxLevel;
 
-    public TriLevel(
+    public LevelTuple(
         final int minLevel,
         final int level,
         final int maxLevel

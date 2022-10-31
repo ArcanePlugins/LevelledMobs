@@ -5,10 +5,10 @@ import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 
 @SuppressWarnings("unused")
-public final class Log extends UtilityClass {
+public final class Log {
 
-    private Log() {
-        super();
+    private Log() throws IllegalAccessException {
+        throw new IllegalAccessException("Attempted instantiation of utility class");
     }
 
     private static final Component prefixComp = Component.text("[LevelledMobs] ");

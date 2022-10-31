@@ -8,10 +8,11 @@ public class LabelRegistry {
 
     private static final Set<LabelHandler> labelHandlers = new HashSet<>();
 
+    private LabelRegistry() {}
+
     @Nonnull
     public static Set<LabelHandler> getLabelHandlers() {
         return labelHandlers;
     }
 
-    private LabelRegistry() {}
 }

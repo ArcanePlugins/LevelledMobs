@@ -9,14 +9,15 @@ import io.github.arcaneplugins.levelledmobs.bukkit.logic.function.process.action
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.label.LabelHandler;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.label.LabelRegistry;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.label.type.packet.VisibilityMethod;
-
+import java.time.Instant;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.WeakHashMap;
 import javax.annotation.Nonnull;
-
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -48,12 +49,8 @@ public class SetPacketLabelAction extends Action {
             throw new RuntimeException(ex);
         }
         for(final String visibilityMethodStr : visibilityMethodsStr) {
-            try {
-                getVisibilityMethods().add(VisibilityMethod.valueOf(
-                    visibilityMethodStr.toUpperCase(Locale.ROOT)));
-            } catch(IllegalArgumentException ex) {
-                ex.printStackTrace();
-            }
+            getVisibilityMethods().add(VisibilityMethod.valueOf(
+                visibilityMethodStr.toUpperCase(Locale.ROOT)));
         }
 
         this.visibilityDuration = getActionNode().node("visibility-duration")
@@ -107,6 +104,8 @@ public class SetPacketLabelAction extends Action {
             super(LABEL_ID);
         }
 
+        private final Map<Player, Map<LivingEntity, Instant>> nametagCooldowns = new HashMap<>();
+
         @Override
         public void update(
             @NotNull LivingEntity lent,
@@ -131,9 +130,20 @@ public class SetPacketLabelAction extends Action {
         ) {
             if(!EntityDataUtil.isLevelled(lent, false)) return;
 
-            context.withPlayer(player);
-            LevelledMobs.getInstance().getLabelData().processItem(
-                    context, generateLabelComponents(lent, context));
+            final Map<LivingEntity, Instant> playerEntry = getNametagCooldowns()
+                .computeIfAbsent(player, k -> new WeakHashMap<>());
+
+            playerEntry.put(lent, Instant.now());
+
+            LevelledMobs.getInstance().getNametagSender()
+                .sendNametag(lent, player, generateLabelComponents(lent, context));
+
+            //TODO handle nametag visibility durations.
+        }
+
+        @Nonnull
+        public Map<Player, Map<LivingEntity, Instant>> getNametagCooldowns() {
+            return nametagCooldowns;
         }
 
     }

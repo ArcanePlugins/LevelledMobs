@@ -16,7 +16,7 @@ import io.github.arcaneplugins.levelledmobs.bukkit.logic.function.process.action
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.levelling.strategy.LevellingStrategy;
 import io.github.arcaneplugins.levelledmobs.bukkit.util.Log;
 import io.github.arcaneplugins.levelledmobs.bukkit.util.StringUtils;
-import io.github.arcaneplugins.levelledmobs.bukkit.util.TriLevel;
+import io.github.arcaneplugins.levelledmobs.bukkit.util.LevelTuple;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -115,7 +115,7 @@ public class SetLevelAction extends Action {
             InternalEntityDataUtil.unlevelMob(lent);
         }
 
-        TriLevel result;
+        LevelTuple result;
 
         result = generateInheritedLevels(context);
         if(result == null) result = generateStandardLevels(context);
@@ -142,11 +142,11 @@ public class SetLevelAction extends Action {
         ));
     }
 
-    private TriLevel generateStandardLevels(Context context) {
+    private LevelTuple generateStandardLevels(Context context) {
         return processFormula(context);
     }
 
-    private TriLevel generateInheritedLevels(Context context) {
+    private LevelTuple generateInheritedLevels(Context context) {
         if(!useInheritanceIfAvailable()) return null;
 
         final LivingEntity lent = Objects.requireNonNull(
@@ -239,12 +239,12 @@ public class SetLevelAction extends Action {
             // resolve differing formulas
             if(!fatherFormula.equalsIgnoreCase(motherFormula)) {
                 return switch(DifferingFormulaResolveType.getFromAdvancedSettings()) {
-                    case USE_AVERAGE -> new TriLevel(
+                    case USE_AVERAGE -> new LevelTuple(
                         minLevel,
                         (fatherInheritedLevel + motherInheritedLevel) / 2,
                         maxLevel
                     );
-                    case USE_RANDOM -> new TriLevel(
+                    case USE_RANDOM -> new LevelTuple(
                         minLevel,
                         ThreadLocalRandom.current().nextBoolean() ?
                             fatherInheritedLevel : motherInheritedLevel,
@@ -255,7 +255,7 @@ public class SetLevelAction extends Action {
             }
 
             // yes, we are ignoring fatherLevel since it should be the same
-            return new TriLevel(minLevel, motherInheritedLevel, maxLevel);
+            return new LevelTuple(minLevel, motherInheritedLevel, maxLevel);
 
         }
 
@@ -282,7 +282,7 @@ public class SetLevelAction extends Action {
             }
 
             //noinspection ConstantConditions
-            return new TriLevel(
+            return new LevelTuple(
                 EntityDataUtil.getMinLevel(father, true),
 
                 (int) Math.floor(
@@ -306,7 +306,7 @@ public class SetLevelAction extends Action {
             if(vehicleEntity instanceof LivingEntity vehicleLentity) {
                 if(EntityDataUtil.isLevelled(vehicleLentity, true)) {
                     //noinspection ConstantConditions
-                    return new TriLevel(
+                    return new LevelTuple(
                         EntityDataUtil.getMinLevel(vehicleLentity, true),
                         EntityDataUtil.getLevel(vehicleLentity, true),
                         EntityDataUtil.getMaxLevel(vehicleLentity, true)
@@ -330,7 +330,7 @@ public class SetLevelAction extends Action {
      * @return TODO doc
      */
     @Nullable
-    public TriLevel processFormula(final @NotNull Context context) {
+    public LevelTuple processFormula(final @NotNull Context context) {
         Objects.requireNonNull(context, "context");
 
         // check if the mob should have no level
@@ -359,7 +359,7 @@ public class SetLevelAction extends Action {
             getMinPossibleLevel()
         );
 
-        return new TriLevel(minLevel, level, maxLevel);
+        return new LevelTuple(minLevel, level, maxLevel);
     }
 
     /* getters and setters */
