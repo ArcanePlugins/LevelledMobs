@@ -1,12 +1,14 @@
 package io.github.arcaneplugins.levelledmobs.bukkit.config.translations;
 
+import io.github.arcaneplugins.levelledmobs.bukkit.LevelledMobs;
 import io.github.arcaneplugins.levelledmobs.bukkit.util.Log;
 import java.io.File;
 import java.nio.file.Path;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
-import io.github.arcaneplugins.levelledmobs.bukkit.LevelledMobs;
+import javax.annotation.Nonnull;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.jetbrains.annotations.NotNull;
@@ -35,10 +37,8 @@ public final class TranslationHandler {
 
     /**
      * Attempts to load user's chosen translation.
-     *
      * This will always return true. This is just to make it cleaner to keep the order of onEnable's
      * load calls.
-     *
      * If all fails with this method, then LM will just use the defaults from {@link Message}.
      *
      * @return {@link Boolean#TRUE}
@@ -72,7 +72,7 @@ public final class TranslationHandler {
          */
         Log.inf("Loading translations");
 
-        var lang = LevelledMobs.getInstance()
+        String lang = LevelledMobs.getInstance()
             .getConfigHandler()
             .getSettingsCfg()
             .getRoot()
@@ -87,7 +87,7 @@ public final class TranslationHandler {
         while(!langToPathFun.apply(lang).toFile().exists()) {
             Log.inf("Translation not immediately available - checking");
 
-            final @Nullable var inbuilt = InbuiltLang.of(lang);
+            final @Nullable InbuiltLang inbuilt = InbuiltLang.of(lang);
 
             if(inbuilt == null) {
                 // avoiding a possible stack overflow in this loop if the file doesnt save for some reason
@@ -105,11 +105,12 @@ public final class TranslationHandler {
                 // let's just default to en_us
                 lang = defaultLangStr;
 
-                // we continue the loop so that it can generate the file again but this time for en_us
+                // we continue the loop so that it can generate
+                // the file again but this time for en_us
                 // noinspection UnnecessaryContinue
                 continue;
             } else {
-                // make sure the lang is using the correct format, ab_CD.
+                // make sure the lang is using the correct format, xx_YY.
                 // this is done by just grabbing it straight from the InbuiltLang constant.
                 lang = inbuilt.toString();
 
@@ -156,8 +157,8 @@ public final class TranslationHandler {
         /*
         load messages
          */
-        for(var message : Message.values()) {
-            final var node = getRoot().node((Object[]) message.getKeyPath());
+        for(final Message message : Message.values()) {
+            final CommentedConfigurationNode node = getRoot().node((Object[]) message.getKeyPath());
 
             if(node.empty()) {
                 Log.war("A message is missing its translation at path " +
@@ -168,7 +169,7 @@ public final class TranslationHandler {
 
             try {
                 if(message.isListType() && node.isList()) {
-                    final var list = node.getList(String.class);
+                    final List<String> list = node.getList(String.class);
                     if(list == null) {
                         message.setDeclared(new String[]{});
                     } else {
@@ -188,7 +189,7 @@ public final class TranslationHandler {
     }
 
     private void update() {
-        var currentFileVersion = getCurrentFileVersion();
+        int currentFileVersion = getCurrentFileVersion();
 
         if(currentFileVersion == 0) {
             Log.sev("Unable to detect file version of translation '" + getLang() + "'. Was " +
@@ -203,7 +204,7 @@ public final class TranslationHandler {
         }
 
         if(currentFileVersion < getUpdaterCutoffFileVersion()) {
-            final var heading = "Translation '" + getLang() + "' is too old for LevelledMobs to "
+            final String heading = "Translation '" + getLang() + "' is too old for LevelledMobs to "
                 + "update. ";
 
             // make a different recommendation based upon whether the translation is inbuilt
@@ -257,19 +258,22 @@ public final class TranslationHandler {
         return getRoot().node("metadata", "version", "current").getInt(0);
     }
 
-    public @NotNull String getEntityName(final Entity entity) {
+    @Nonnull
+    public String getEntityName(final Entity entity) {
         Objects.requireNonNull(entity, "entity");
-        //TODO
-        return getEntityName(entity.getType());
+
+        //noinspection deprecation
+        return Objects.requireNonNullElse(
+            entity.getCustomName(),
+            getEntityName(entity.getType())
+        );
     }
 
     public @NotNull String getEntityName(final @NotNull EntityType entityType) {
         Objects.requireNonNull(entityType, "entityType");
 
-        // TODO: add spigot support
-        // the function below only exists in paper
+        // TODO: add spigot support; the function below only exists in paper
         return entityType.translationKey();
-        //return EnumUtils.formatEnumConstant(entityType);
     }
 
     /* var getters and setters */
@@ -278,10 +282,13 @@ public final class TranslationHandler {
 
     public int getUpdaterCutoffFileVersion() { return updaterCutoffFileVersion; }
 
+    @Nonnull
     public String getLang() { return lang; }
 
+    @Nonnull
     public YamlConfigurationLoader getLoader() { return loader; }
 
+    @Nonnull
     public CommentedConfigurationNode getRoot() { return root; }
 
 }
