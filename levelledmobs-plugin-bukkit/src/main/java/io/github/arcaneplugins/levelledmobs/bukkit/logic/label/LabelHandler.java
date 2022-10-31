@@ -5,12 +5,10 @@ import io.github.arcaneplugins.levelledmobs.bukkit.LevelledMobs;
 import io.github.arcaneplugins.levelledmobs.bukkit.api.data.EntityDataUtil;
 import io.github.arcaneplugins.levelledmobs.bukkit.data.InternalEntityDataUtil;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.context.Context;
-import javax.annotation.Nonnull;
-
 import io.github.arcaneplugins.levelledmobs.bukkit.util.Log;
+import javax.annotation.Nonnull;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextReplacementConfig;
-import net.kyori.adventure.text.TranslatableComponent;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -43,9 +41,10 @@ public abstract class LabelHandler {
         final @Nonnull LivingEntity lent,
         final @Nonnull Context context
     ) {
-        Log.inf("test: " + LevelledMobs.getInstance().getLogicHandler().getContextPlaceholderHandler().replace(
+        Log.tmpdebug("test: " + LevelledMobs.getInstance().getLogicHandler().getContextPlaceholderHandler().replace(
                 getFormula(lent), context));
-        Component nametag = MineDown.parse(
+
+        final Component label = MineDown.parse(
             LevelledMobs.getInstance().getLogicHandler().getContextPlaceholderHandler().replace(
                 getFormula(lent), context
             )
@@ -64,7 +63,7 @@ public abstract class LabelHandler {
             replacement = Component.empty();
         }
 
-        return nametag.replaceText(TextReplacementConfig.builder()
+        return label.replaceText(TextReplacementConfig.builder()
                 .matchLiteral("{EntityName}").replacement(replacement).build());
     }
 
