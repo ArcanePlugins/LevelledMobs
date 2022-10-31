@@ -22,22 +22,22 @@ public class PacketLabelSender {
 
     private Definitions def;
 
-    public void sendNametag(
+    public void sendLabel(
             final @NotNull LivingEntity livingEntity,
             final @NotNull Player player,
-            final @NotNull String nametag
+            final @NotNull String label
     ) {
-        sendNametag(livingEntity,
+        sendLabel(livingEntity,
                 player,
-                MiniMessage.miniMessage().deserialize(nametag)
+                MiniMessage.miniMessage().deserialize(label)
         );
     }
 
-    // TODO: change nametag to final @NotNull NMSComponent component
-    public void sendNametag(
+    // TODO: change label to final @NotNull NMSComponent component
+    public void sendLabel(
         final @NotNull LivingEntity livingEntity,
         final @NotNull Player player,
-        final @NotNull Component nametag
+        final @NotNull Component label
     ) {
         if (!player.isOnline() || !player.isValid()) return;
 
@@ -53,8 +53,8 @@ public class PacketLabelSender {
             //       new EntityDataAccessor<>(2, EntityDataSerializers.OPTIONAL_COMPONENT);
             final Object customNameAccessor = def.ctor_EntityDataAccessor.newInstance(2, optionalComponent);
             final Optional<Object> customName = Optional.of(
-                    def.method_AsVanilla.invoke(def.clazz_PaperAdventure, nametag));
-            //final Optional<Object> customName = buildNametagComponent(livingEntity, nametag);
+                    def.method_AsVanilla.invoke(def.clazz_PaperAdventure, label));
+            //final Optional<Object> customName = buildLabelComponent(livingEntity, label);
             //final Optional<Object> customName =
             // entityData.set(customNameAccessor, customName);
             def.method_set.invoke(entityData, customNameAccessor, customName);
@@ -62,7 +62,7 @@ public class PacketLabelSender {
             final Object BOOLEAN = def.field_BOOLEAN.get(def.clazz_DataWatcherRegistry);
             final Object customNameVisibleAccessor = def.ctor_EntityDataAccessor.newInstance(3, BOOLEAN);
 
-            // entityData.set(customNameVisibleAccessor, !nametag.isNullOrEmpty() && doAlwaysVisible);
+            // entityData.set(customNameVisibleAccessor, !label.isNullOrEmpty() && doAlwaysVisible);
             // TODO: true / false needs to be set depending on various triggers
             def.method_set.invoke(entityData, customNameVisibleAccessor, true);
 
@@ -120,21 +120,22 @@ public class PacketLabelSender {
         return entityData;
     }
 
-    private Optional<Object> buildNametagComponent(
+    private Optional<Object> buildLabelComponent(
         final @NotNull LivingEntity livingEntity,
-        final @Nullable String nametag
+        final @Nullable String label
     ) {
-        if (nametag == null || nametag.isEmpty()) return Optional.empty();
+        if (label == null || label.isEmpty()) return Optional.empty();
 
         // TODO: add translation support
-        Object result = ComponentUtils.getTextComponent(nametag, def);
+        Object result = ComponentUtils.getTextComponent(label, def);
         if (result == null)
             return Optional.empty();
         else
             return Optional.of(result);
     }
 
+    //TODO what is this used for?
     public String toString() {
-        return "Nametags_NMS";
+        return "LabelsNMS";
     }
 }

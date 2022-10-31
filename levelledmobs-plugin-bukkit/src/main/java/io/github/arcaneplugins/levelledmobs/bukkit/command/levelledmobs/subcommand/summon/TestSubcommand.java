@@ -41,7 +41,7 @@ public class TestSubcommand extends CommandWrapper {
         final LivingEntity le = (LivingEntity) entities.get(0);
 
         final String testNametag = "This is a test";
-        LevelledMobs.getInstance().getNametagSender().sendNametag(le, (Player) sender, testNametag);
+        LevelledMobs.getInstance().getNametagSender().sendLabel(le, (Player) sender, testNametag);
     }
 
     @Override

@@ -136,7 +136,7 @@ public class SetPacketLabelAction extends Action {
             playerEntry.put(lent, Instant.now());
 
             LevelledMobs.getInstance().getNametagSender()
-                .sendNametag(lent, player, generateLabelComponents(lent, context));
+                .sendLabel(lent, player, generateLabelComponents(lent, context));
 
             //TODO handle nametag visibility durations.
         }
