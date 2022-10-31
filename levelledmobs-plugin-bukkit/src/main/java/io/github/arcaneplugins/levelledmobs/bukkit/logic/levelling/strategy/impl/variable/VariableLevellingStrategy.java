@@ -1,22 +1,22 @@
-package io.github.arcaneplugins.levelledmobs.bukkit.logic.levelling.strategy.impl.player;
+package io.github.arcaneplugins.levelledmobs.bukkit.logic.levelling.strategy.impl.variable;
 
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.levelling.strategy.LevellingStrategy;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.context.Context;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class PlayerLevellingStrategy extends LevellingStrategy {
+public class VariableLevellingStrategy extends LevellingStrategy {
 
     // TODO private final String placeholder;
 
-    public PlayerLevellingStrategy(int minLevel, int maxLevel) {
-        super("Player", minLevel, maxLevel);
+    public VariableLevellingStrategy(int minLevel, int maxLevel) {
+        super("Variable", minLevel, maxLevel);
     }
 
     @Override
     public @Nullable Integer generate(@NotNull Context context) {
         //TODO
-        return null;
+        throw new IllegalStateException("Not implemented");
     }
 
     @Override
@@ -25,6 +25,6 @@ public class PlayerLevellingStrategy extends LevellingStrategy {
         @NotNull Context context
     ) {
         //TODO
-        return null;
+        throw new IllegalStateException("Not implemented");
     }
 }
