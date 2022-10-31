@@ -1,41 +1,49 @@
 package io.github.arcaneplugins.levelledmobs.bukkit.command;
 
-import io.github.arcaneplugins.levelledmobs.bukkit.command.levelledmobs.LevelledMobsBaseCommand;
-import io.github.arcaneplugins.levelledmobs.bukkit.util.Log;
-import java.util.HashSet;
-import java.util.Set;
-import org.jetbrains.annotations.NotNull;
+import dev.jorel.commandapi.CommandAPI;
+import dev.jorel.commandapi.CommandAPICommand;
+import dev.jorel.commandapi.CommandAPIConfig;
+import dev.jorel.commandapi.arguments.ListArgument;
+import dev.jorel.commandapi.arguments.ListArgumentBuilder;
+import io.github.arcaneplugins.levelledmobs.bukkit.LevelledMobs;
+import io.github.arcaneplugins.levelledmobs.bukkit.command.levelledmobs.LevelledMobsCommand;
+import java.util.List;
+import org.bukkit.Bukkit;
+import org.bukkit.World;
+import org.bukkit.generator.WorldInfo;
 
-public final class CommandHandler {
+public class CommandHandler {
 
-    /* vars */
+    public static final List<CommandAPICommand> COMMANDS = List.of(
+        LevelledMobsCommand.INSTANCE
+    );
 
-    private final Set<BaseCommandWrapper> baseCommands = new HashSet<>();
-
-    /* constructors */
-
-    public CommandHandler() {
-        baseCommands.add(
-            new LevelledMobsBaseCommand()
-        );
-    }
-
-    /* methods */
-
-    public boolean load() {
-        Log.inf("Registering commands");
-        for(var baseCommand : getBaseCommands()) {
-            if(!baseCommand.register())
-                return false;
+    public void load(final LoadingStage loadingStage) {
+        switch(loadingStage) {
+            case ON_LOAD -> {
+                registerCommands();
+                CommandAPI.onLoad(new CommandAPIConfig());
+            }
+            case ON_ENABLE -> {
+                CommandAPI.onEnable(LevelledMobs.getInstance());
+            }
         }
-        return true;
     }
 
-    /* getters and setters */
+    private void registerCommands() {
+        COMMANDS.forEach(CommandAPICommand::register);
+    }
 
-    @NotNull
-    public Set<BaseCommandWrapper> getBaseCommands() {
-        return baseCommands;
+    public static ListArgument<World> createWorldListArgument(String nodeName) {
+        return new ListArgumentBuilder<World>(nodeName)
+            .withList(Bukkit.getWorlds())
+            .withMapper(WorldInfo::getName)
+            .build();
+    }
+
+    public enum LoadingStage {
+        ON_LOAD,
+        ON_ENABLE
     }
 
 }

@@ -1,15 +1,16 @@
 package io.github.arcaneplugins.levelledmobs.bukkit;
 
-import io.github.arcaneplugins.levelledmobs.bukkit.logic.LogicHandler;
-import io.github.arcaneplugins.levelledmobs.bukkit.util.Log;
-import java.util.Objects;
 import io.github.arcaneplugins.levelledmobs.bukkit.command.CommandHandler;
+import io.github.arcaneplugins.levelledmobs.bukkit.command.CommandHandler.LoadingStage;
 import io.github.arcaneplugins.levelledmobs.bukkit.config.ConfigHandler;
 import io.github.arcaneplugins.levelledmobs.bukkit.integration.IntegrationHandler;
 import io.github.arcaneplugins.levelledmobs.bukkit.listener.ListenerHandler;
+import io.github.arcaneplugins.levelledmobs.bukkit.logic.LogicHandler;
+import io.github.arcaneplugins.levelledmobs.bukkit.util.ClassUtils;
+import io.github.arcaneplugins.levelledmobs.bukkit.util.Log;
 import io.github.arcaneplugins.levelledmobs.bukkit.util.nms.Definitions;
 import io.github.arcaneplugins.levelledmobs.bukkit.util.nms.PacketLabelSender;
-import io.github.arcaneplugins.levelledmobs.bukkit.util.ClassUtils;
+import java.util.Objects;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
@@ -30,6 +31,7 @@ public final class LevelledMobs extends JavaPlugin {
     @Override
     public void onLoad() {
         instance = this;
+        getCommandHandler().load(LoadingStage.ON_LOAD);
         Log.inf("Plugin initialized");
     }
 
@@ -44,7 +46,7 @@ public final class LevelledMobs extends JavaPlugin {
             getIntegrationHandler().load();
             getLogicHandler().load();
             getListenerHandler().loadSecondary();
-            getCommandHandler().load();
+            getCommandHandler().load(LoadingStage.ON_ENABLE);
         } catch(Exception ex) {
             Log.sev("""
                 
@@ -70,6 +72,11 @@ public final class LevelledMobs extends JavaPlugin {
         }
 
         Log.inf("Plugin enabled");
+    }
+
+    public void reload() {
+        getConfigHandler().load();
+        getLogicHandler().load();
     }
 
     @Override

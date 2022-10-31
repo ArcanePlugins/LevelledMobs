@@ -49,6 +49,11 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
+      <groupId>dev.jorel</groupId>
+      <artifactId>commandapi-shade</artifactId>
+      <version>8.5.1</version>
+    </dependency>
+    <dependency>
       <groupId>io.github.arcaneplugins.levelledmobs</groupId>
       <artifactId>levelledmobs-api-bukkit</artifactId>
       <version>4.0.0</version>
@@ -130,11 +135,15 @@
           <relocations>
             <relocation>
               <pattern>com.jeff_media.morepersistentdatatypes</pattern>
-              <shadedPattern>io.github.arcaneplugins.levelledmobs.libs.morepersistentdatatypes</shadedPattern>
+              <shadedPattern>io.github.arcaneplugins.levelledmobs.lib.morepersistentdatatypes</shadedPattern>
             </relocation>
             <relocation>
               <pattern>de.themoep.minedown</pattern>
-              <shadedPattern>io.github.arcaneplugins.levelledmobs.libs.minedown</shadedPattern>
+              <shadedPattern>io.github.arcaneplugins.levelledmobs.lib.minedown</shadedPattern>
+            </relocation>
+            <relocation>
+              <pattern>dev.jorel.commandapi</pattern>
+              <shadedPattern>io.github.arcaneplugins.levelledmobs.lib.commandapi</shadedPattern>
             </relocation>
           </relocations>
         </configuration>
