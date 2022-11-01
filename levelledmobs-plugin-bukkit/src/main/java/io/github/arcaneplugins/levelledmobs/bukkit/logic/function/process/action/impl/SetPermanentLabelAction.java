@@ -10,6 +10,8 @@ import io.github.arcaneplugins.levelledmobs.bukkit.logic.label.LabelHandler;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.label.LabelRegistry;
 import java.util.Map;
 import javax.annotation.Nonnull;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -74,8 +76,16 @@ public class SetPermanentLabelAction extends Action {
         ) {
             if(!EntityDataUtil.isLevelled(lent, false)) return;
 
-            //noinspection deprecation
-            lent.setCustomName(generateLabelLegacy(lent, context));
+            final Component comp = generateLabelComponents(lent, context);
+
+            try {
+                lent.customName(comp);
+            } catch(NoSuchMethodError er) {
+                //TODO check if this works on spigot
+                //noinspection deprecation
+                lent.setCustomName(LegacyComponentSerializer.legacySection().serialize(comp));
+            }
+
             lent.setCustomNameVisible(isAlwaysVisible());
         }
 
