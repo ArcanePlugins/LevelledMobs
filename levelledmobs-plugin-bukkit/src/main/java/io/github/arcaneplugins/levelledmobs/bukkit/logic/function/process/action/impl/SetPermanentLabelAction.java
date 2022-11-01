@@ -20,7 +20,7 @@ import org.spongepowered.configurate.CommentedConfigurationNode;
 
 public class SetPermanentLabelAction extends Action {
 
-    private static final String LABEL_ID = "Permanent";
+    public static final String LABEL_ID = "Permanent";
 
     private final String formula;
 
