@@ -71,6 +71,8 @@ public final class LogicHandler {
     private boolean parseGroups() {
         Log.inf("Parsing groups");
 
+        getGroups().clear();
+
         final var groupsMap = LevelledMobs.getInstance()
                 .getConfigHandler().getGroupsCfg()
                 .getRoot().node("groups")
@@ -140,6 +142,8 @@ public final class LogicHandler {
     private boolean parsePresets() {
         Log.inf("Parsing presets");
 
+        getPresets().clear();
+
         /*
         summary:
 
@@ -199,6 +203,8 @@ public final class LogicHandler {
     private boolean parseCustomDrops() {
         Log.inf("Parsing custom drops");
 
+        //TODO getCustomDrops().clear();
+
         //TODO
         Log.inf("Successfully parsed " + "?" + " custom drop(s).");
         return true;
@@ -234,6 +240,8 @@ public final class LogicHandler {
          */
 
         Log.inf("Parsing functions.");
+
+        getFunctions().clear();
 
         /*
         Initialise "GodsEye" Presets System
@@ -352,6 +360,8 @@ public final class LogicHandler {
     private boolean parseProcesses(final @NotNull LmFunction function) {
         Objects.requireNonNull(function, "function");
 
+        function.getProcesses().clear();
+
         final List<CommentedConfigurationNode> processNodes = function
             .getNode().node("processes").childrenList();
 
@@ -442,6 +452,8 @@ public final class LogicHandler {
     private boolean parseActions(final @NotNull Process process) {
         Objects.requireNonNull(process, "process");
 
+        process.getActions().clear();
+
         final List<CommentedConfigurationNode> actionNodes = process.getNode().node("do").childrenList();
 
         for(var actionNode : actionNodes) {
@@ -482,6 +494,8 @@ public final class LogicHandler {
 
     private boolean parseConditions(final @NotNull Process process) {
         Objects.requireNonNull(process, "process");
+
+        process.getConditions().clear();
 
         final var allConditionsNode = process.getNode().node("if");
 

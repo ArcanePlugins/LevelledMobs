@@ -17,6 +17,8 @@ public class ContextPlaceholderHandler {
     public void load() {
         Log.inf("Loading context placeholders");
 
+        getContextPlaceholders().clear();
+
         getContextPlaceholders().addAll(Set.of(
             //TODO add more of these!
             new EntityLevelPlaceholder(),

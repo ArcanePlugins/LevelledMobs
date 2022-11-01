@@ -5,6 +5,7 @@ import io.github.arcaneplugins.levelledmobs.bukkit.command.levelledmobs.subcomma
 import io.github.arcaneplugins.levelledmobs.bukkit.command.levelledmobs.subcommand.BackupSubcommand;
 import io.github.arcaneplugins.levelledmobs.bukkit.command.levelledmobs.subcommand.ConfirmSubcommand;
 import io.github.arcaneplugins.levelledmobs.bukkit.command.levelledmobs.subcommand.EggSubcommand;
+import io.github.arcaneplugins.levelledmobs.bukkit.command.levelledmobs.subcommand.HelpSubcommand;
 import io.github.arcaneplugins.levelledmobs.bukkit.command.levelledmobs.subcommand.KillSubcommand;
 import io.github.arcaneplugins.levelledmobs.bukkit.command.levelledmobs.subcommand.ReloadSubcommand;
 import io.github.arcaneplugins.levelledmobs.bukkit.command.levelledmobs.subcommand.RoutineSubcommand;
@@ -20,6 +21,7 @@ public class LevelledMobsCommand {
         BackupSubcommand.INSTANCE,
         ConfirmSubcommand.INSTANCE,
         EggSubcommand.INSTANCE,
+        HelpSubcommand.INSTANCE,
         KillSubcommand.INSTANCE,
         ReloadSubcommand.INSTANCE,
         RoutineSubcommand.INSTANCE,

@@ -23,7 +23,6 @@ command:
       - "&8│ &7Quick Links: &8«&9&n[Resource Page](open_url=https://spigotmc.org/resources/74304)&8» «&9&n[Wiki](open_url=https://github.com/lokka30/LevelledMobs/Wiki)&8» «&9&n[Credits](open_url=https://github.com/lokka30/LevelledMobs/wiki/Credits)&8» «&9&n[Source](open_url=https://github.com/lokka30/LevelledMobs)&8»"
       - "&8│"
       - "&8└ &7Run &b[/lm help](run_command=/lm help) &7to list available commands."
-      - " "
 
     subcommand:
       summon:
