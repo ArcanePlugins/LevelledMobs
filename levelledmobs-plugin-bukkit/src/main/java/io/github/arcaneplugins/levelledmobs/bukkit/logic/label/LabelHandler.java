@@ -41,9 +41,6 @@ public abstract class LabelHandler {
         final @Nonnull LivingEntity lent,
         final @Nonnull Context context
     ) {
-        Log.tmpdebug("test: " + LevelledMobs.getInstance().getLogicHandler().getContextPlaceholderHandler().replace(
-                getFormula(lent), context));
-
         final Component label = MineDown.parse(
             LevelledMobs.getInstance().getLogicHandler().getContextPlaceholderHandler().replace(
                 getFormula(lent), context
