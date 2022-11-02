@@ -7,6 +7,10 @@ public class EggSubcommand {
     public static final CommandAPICommand INSTANCE =
         new CommandAPICommand("egg")
             .withPermission("levelledmobs.command.levelledmobs.egg")
+            .withShortDescription("Create and customise a spawn egg item which summons a " +
+                "levelled mob.")
+            .withFullDescription("Create and customise a spawn egg item which summons a levelled " +
+                "mob of your chosen specifications, such as the level, entity type, and more.")
             .executes((sender, args) -> {
                 sender.sendMessage("egg not implemented");
                 //TODO impl

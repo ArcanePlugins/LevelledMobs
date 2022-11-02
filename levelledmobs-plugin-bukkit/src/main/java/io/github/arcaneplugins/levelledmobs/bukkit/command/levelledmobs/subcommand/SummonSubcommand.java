@@ -9,6 +9,9 @@ public class SummonSubcommand {
     public static final CommandAPICommand INSTANCE =
         new CommandAPICommand("summon")
             .withPermission("levelledmobs.command.levelledmobs.summon")
+            .withShortDescription("Summons a levelled mob of your specifications.")
+            .withFullDescription("Summons a levelled mob of your specifications, similar to how " +
+                "Minecraft's summon command works.")
             .withSubcommands(
                 new CommandAPICommand("entity")
                     .withArguments(

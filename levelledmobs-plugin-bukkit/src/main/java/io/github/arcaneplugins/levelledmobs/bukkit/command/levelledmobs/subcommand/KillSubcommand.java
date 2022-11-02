@@ -31,6 +31,10 @@ public class KillSubcommand {
                 new TextArgument("worlds"),
                 new TextArgument("fineTuningParams")
             )
+            .withShortDescription("Kills levelled mobs on the server.")
+            .withFullDescription("Kills levelled mobs on the server, akin to how Minecraft's " +
+                "kill command works. Provides safety in skipping mobs by default which may " +
+                "not be intended for the mass-kill, such as nametagged or tamed mobs.")
             .withPermission("levelledmobs.command.levelledmobs.kill")
             .executes(KillSubcommand::execute);
 

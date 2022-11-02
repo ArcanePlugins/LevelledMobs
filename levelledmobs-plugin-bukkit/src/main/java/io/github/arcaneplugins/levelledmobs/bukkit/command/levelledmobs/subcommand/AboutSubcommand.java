@@ -10,6 +10,10 @@ public class AboutSubcommand {
     public static final CommandAPICommand INSTANCE =
         new CommandAPICommand("about")
             .withPermission("levelledmobs.command.levelledmobs.about")
+            .withShortDescription("View information about this version of LevelledMobs.")
+            .withFullDescription("Displays miscellaneous information about this version of " +
+                "LevelledMobs, such as the installed version, where to ask for help, and a list " +
+                "LevelledMobs maintainers.")
             .executes((sender, args) -> {
                 final PluginDescriptionFile pdf = LevelledMobs.getInstance().getDescription();
 
