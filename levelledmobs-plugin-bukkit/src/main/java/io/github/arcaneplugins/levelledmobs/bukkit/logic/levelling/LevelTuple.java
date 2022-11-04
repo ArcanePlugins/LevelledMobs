@@ -1,4 +1,4 @@
-package io.github.arcaneplugins.levelledmobs.bukkit.util;
+package io.github.arcaneplugins.levelledmobs.bukkit.logic.levelling;
 
 public final class LevelTuple {
 

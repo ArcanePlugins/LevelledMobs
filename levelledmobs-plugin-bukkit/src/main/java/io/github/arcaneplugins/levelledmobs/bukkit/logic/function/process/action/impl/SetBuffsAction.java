@@ -24,6 +24,14 @@ TODO Javadoc
  */
 public class SetBuffsAction extends Action {
 
+    /*
+    TODO: Add buffs
+        - CUSTOM_RANGED_ATTACK_DAMAGE
+        - CUSTOM_CREEPER_BLAST_DAMAGE
+        - CUSTOM_ITEM_DROP
+        - CUSTOM_XP_DROP
+     */
+
     private final Set<Buff> buffs = new HashSet<>();
     private final boolean enabled;
 

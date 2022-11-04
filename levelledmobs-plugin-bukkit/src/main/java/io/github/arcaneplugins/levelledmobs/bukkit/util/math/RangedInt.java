@@ -3,7 +3,7 @@ package io.github.arcaneplugins.levelledmobs.bukkit.util.math;
 import java.util.concurrent.ThreadLocalRandom;
 import org.jetbrains.annotations.NotNull;
 
-public final class RangedInt {
+public final class RangedInt implements Comparable<RangedInt> {
 
     private final Integer min;
     private final Integer max;
@@ -67,4 +67,8 @@ public final class RangedInt {
         return max;
     }
 
+    @Override
+    public int compareTo(@NotNull RangedInt o) {
+        return Integer.compare(getMax(), o.getMax());
+    }
 }

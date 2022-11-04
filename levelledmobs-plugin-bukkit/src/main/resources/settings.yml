@@ -72,8 +72,7 @@ functions:
           # Applies a label above the levelled entity's head, achieved through packets (so this does
           # not change the 'actual' nametag of the entity).
           - action: 'set-packet-label'
-            # TODO add the old prefix and suffix symbols from LM3
-            formula: '&8« &bLvl.%entity-level%&f %entity-prefix%&f%entity-name%&f%entity-suffix%&8 • &7%entity-health-rounded%&8/&7%entity-max-health-rounded%&c♥ &8»'
+            formula: '&8&l༺ &bLvl.%entity-level%&f %entity-prefix%&f%entity-name%&f%entity-suffix%&8 • &7%entity-health-rounded%&8/&7%entity-max-health-rounded%&c♥ &8&l༻'
             visibility-methods: ['TARGETED', 'ATTACKED']
             visibility-duration: 5
 
@@ -107,6 +106,7 @@ lang: 'en_US'
 # The following settings are in regards to configuring
 # the '%levelledmobs_mob-target%' placeholder from PlaceholderAPI.
 # TODO clarify how this works
+# TODO move to advanced settings
 mob-target-placeholder:
 
   # Format to use if the target is a levelled entity.

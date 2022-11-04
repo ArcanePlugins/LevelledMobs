@@ -1,6 +1,8 @@
 package io.github.arcaneplugins.levelledmobs.bukkit.listener;
 
+import io.github.arcaneplugins.levelledmobs.bukkit.LevelledMobs;
 import io.github.arcaneplugins.levelledmobs.bukkit.data.InternalEntityDataUtil;
+import io.github.arcaneplugins.levelledmobs.bukkit.logic.context.Context;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
@@ -25,6 +27,13 @@ public class EntityTransformListener extends ListenerWrapper {
                 InternalEntityDataUtil.setFather(child, lparent, true);
                 InternalEntityDataUtil.setMother(child, lparent, true);
                 InternalEntityDataUtil.setWasTransformed(child, true, true);
+
+                /*
+                Fire the associated trigger.
+                 */
+                LevelledMobs.getInstance().getLogicHandler().runFunctionsWithTriggers(
+                    new Context().withEntity(child), "on-entity-transform"
+                );
             });
     }
 }

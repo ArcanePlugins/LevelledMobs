@@ -2,10 +2,13 @@ package io.github.arcaneplugins.levelledmobs.bukkit.listener;
 
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.levelling.strategy.LevellingStrategyRequestEvent;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.levelling.strategy.impl.random.RandomLevellingStrategy;
+import io.github.arcaneplugins.levelledmobs.bukkit.logic.levelling.strategy.impl.spawndistance.SpawnDistanceLevellingStrategy;
+import io.github.arcaneplugins.levelledmobs.bukkit.logic.levelling.strategy.impl.variable.VariableLevellingStrategy;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.levelling.strategy.impl.weightedrandom.WeightedRandomLevellingStrategy;
-import io.github.arcaneplugins.levelledmobs.bukkit.util.Log;
+import io.github.arcaneplugins.levelledmobs.bukkit.logic.levelling.strategy.impl.yaxis.YAxisLevellingStrategy;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.spongepowered.configurate.CommentedConfigurationNode;
 
 public class LevellingStrategyRequestListener extends ListenerWrapper {
 
@@ -19,27 +22,23 @@ public class LevellingStrategyRequestListener extends ListenerWrapper {
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onLevellingStrategyRequest(final LevellingStrategyRequestEvent event) {
         if(event.isClaimed()) return;
-
-        Log.tmpdebug("Listener caught LevellingStrategyRequestEvent");
+        final CommentedConfigurationNode strategyNode = event.getStrategyNode();
 
         switch(event.getStrategyId()) {
-            case "player" -> {
-                //TODO Add static parsing method into PlayerLevellingStrategy
-                Log.sev("player levelling parsing not implemented", false);
-            }
             case "random" -> {
-                event.getStrategies().add(RandomLevellingStrategy.parse(event.getStrategyNode()));
+                event.getStrategies().add(RandomLevellingStrategy.parse(strategyNode));
             }
             case "spawn-distance" -> {
-                //TODO Add static parsing method into SpawnDistanceStrategy
-                Log.sev("spawn distance levelling parsing not implemented", false);
+                event.getStrategies().add(SpawnDistanceLevellingStrategy.parse(strategyNode));
+            }
+            case "variable" -> {
+                event.getStrategies().add(VariableLevellingStrategy.parse(strategyNode));
             }
             case "weighted-random" -> {
-                event.getStrategies().add(WeightedRandomLevellingStrategy.parse(event.getStrategyNode()));
+                event.getStrategies().add(WeightedRandomLevellingStrategy.parse(strategyNode));
             }
-            case "y-coord" -> {
-                //TODO Add static parsing method into YCoordStrategy
-                Log.sev("y coordinate levelling parsing not implemented", false);
+            case "y-axis" -> {
+                event.getStrategies().add(YAxisLevellingStrategy.parse(strategyNode));
             }
             default -> {
                 return;

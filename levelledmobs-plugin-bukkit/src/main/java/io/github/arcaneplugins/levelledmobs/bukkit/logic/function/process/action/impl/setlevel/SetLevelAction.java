@@ -16,7 +16,7 @@ import io.github.arcaneplugins.levelledmobs.bukkit.logic.function.process.action
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.levelling.strategy.LevellingStrategy;
 import io.github.arcaneplugins.levelledmobs.bukkit.util.Log;
 import io.github.arcaneplugins.levelledmobs.bukkit.util.StringUtils;
-import io.github.arcaneplugins.levelledmobs.bukkit.util.LevelTuple;
+import io.github.arcaneplugins.levelledmobs.bukkit.logic.levelling.LevelTuple;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
