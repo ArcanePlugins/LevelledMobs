@@ -8,6 +8,7 @@ import io.github.arcaneplugins.levelledmobs.bukkit.util.math.RangedInt;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import javax.annotation.Nonnull;
@@ -19,18 +20,21 @@ import org.spongepowered.configurate.CommentedConfigurationNode;
 public class YAxisLevellingStrategy extends LevellingStrategy {
 
     private final int defaultLevel;
+    private final boolean inverse;
     private final Map<RangedInt, RangedInt> yLevelTiersMap;
 
     public YAxisLevellingStrategy(
         final int minLevel,
         final int maxLevel,
         @Nonnull final Map<RangedInt, RangedInt> yLevelTiersMap,
-        final int defaultLevel
+        final int defaultLevel,
+        final boolean inverse
     ) {
         super("Y-Axis", minLevel, maxLevel);
 
         this.yLevelTiersMap = yLevelTiersMap;
         this.defaultLevel = defaultLevel;
+        this.inverse = inverse;
 
         // warn user if distance keys overlap
         Integer previousMax = null;
@@ -69,13 +73,21 @@ public class YAxisLevellingStrategy extends LevellingStrategy {
             ));
 
             if(yRange.contains(y)) {
-                final float yRatio = ((y - yRange.getMin()) * 1.0f /
-                    (yRange.getMax() - yRange.getMin()));
-
                 final int levelMin = levelRange.getMin();
                 final int levelMax = levelRange.getMax();
 
-                return (int) Math.floor(((levelMax - levelMin) * yRatio) + levelMin);
+                final int yMin = yRange.getMin();
+                final int yMax = yRange.getMax();
+
+                if(inverse) {
+                    return (int) Math.floor(
+                        (levelMax - levelMin) * ((y - yMax) * 1.0f / (yMin - yMax)) + levelMin
+                    );
+                } else {
+                    return (int) Math.floor(
+                        ((levelMax - levelMin) * ((y - yMin) * 1.0f / (yMax - yMin))) + levelMin
+                    );
+                }
             }
         }
 
@@ -108,6 +120,7 @@ public class YAxisLevellingStrategy extends LevellingStrategy {
                     4999: 50-99
                     5000-10000: 100
                     undefined: 1
+                    inverse: true
                 spawn-locations:
                     "example_world":
                         x: -153
@@ -145,10 +158,13 @@ public class YAxisLevellingStrategy extends LevellingStrategy {
         }
 
         AtomicInteger defaultLevel = new AtomicInteger(SetLevelAction.getMinPossibleLevel());
+        AtomicBoolean inverse = new AtomicBoolean(true);
 
         tiersNodeMap.forEach((key, value) -> {
             if(key.toString().equalsIgnoreCase("undefined")) {
                 defaultLevel.set(value.getInt());
+            } else if(key.toString().equalsIgnoreCase("inverse")) {
+                inverse.set(value.getBoolean());
             } else {
                 yLevelTiersMap.put(parseRngInt.apply(key), parseRngInt.apply(value));
             }
@@ -189,7 +205,8 @@ public class YAxisLevellingStrategy extends LevellingStrategy {
             minLevel,
             maxLevel,
             yLevelTiersMap,
-            defaultLevel.get()
+            defaultLevel.get(),
+            inverse.get()
         );
     }
 
