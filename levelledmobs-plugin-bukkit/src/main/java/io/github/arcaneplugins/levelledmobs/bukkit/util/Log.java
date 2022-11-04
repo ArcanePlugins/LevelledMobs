@@ -1,8 +1,6 @@
 package io.github.arcaneplugins.levelledmobs.bukkit.util;
 
 import io.github.arcaneplugins.levelledmobs.bukkit.LevelledMobs;
-import net.kyori.adventure.text.Component;
-import org.bukkit.Bukkit;
 
 @SuppressWarnings("unused")
 public final class Log {
@@ -11,14 +9,8 @@ public final class Log {
         throw new IllegalAccessException("Attempted instantiation of utility class");
     }
 
-    private static final Component prefixComp = Component.text("[LevelledMobs] ");
-
     public static void inf(final String msg) {
         LevelledMobs.getInstance().getLogger().info(msg);
-    }
-
-    public static void inf(final Component msg) {
-        Bukkit.getConsoleSender().sendMessage(prefixComp.append(msg));
     }
 
     public static void war(final String msg) {
@@ -44,7 +36,7 @@ public final class Log {
 
     //TODO remove
     public static void tmpdebug(final String msg) {
-        inf("[DEBUG] " + msg);
+        war("[DEBUG] " + msg);
     }
 
 }

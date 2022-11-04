@@ -1,22 +1,21 @@
 package io.github.arcaneplugins.levelledmobs.bukkit.logic.function.process.action.impl.setlevel;
 
+import io.github.arcaneplugins.levelledmobs.bukkit.LevelledMobs;
+import io.github.arcaneplugins.levelledmobs.bukkit.api.data.EntityDataUtil;
+import io.github.arcaneplugins.levelledmobs.bukkit.data.InternalEntityDataUtil;
+import io.github.arcaneplugins.levelledmobs.bukkit.logic.context.Context;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.function.process.Process;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.function.process.action.Action;
+import io.github.arcaneplugins.levelledmobs.bukkit.logic.function.process.action.impl.setlevel.inheritance.DifferingFormulaResolveType;
+import io.github.arcaneplugins.levelledmobs.bukkit.logic.levelling.LevelTuple;
+import io.github.arcaneplugins.levelledmobs.bukkit.logic.levelling.strategy.LevellingStrategy;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.levelling.strategy.LevellingStrategyRequestEvent;
+import io.github.arcaneplugins.levelledmobs.bukkit.util.StringUtils;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Function;
-import io.github.arcaneplugins.levelledmobs.bukkit.LevelledMobs;
-import io.github.arcaneplugins.levelledmobs.bukkit.api.data.EntityDataUtil;
-import io.github.arcaneplugins.levelledmobs.bukkit.data.InternalEntityDataUtil;
-import io.github.arcaneplugins.levelledmobs.bukkit.logic.context.Context;
-import io.github.arcaneplugins.levelledmobs.bukkit.logic.function.process.action.impl.setlevel.inheritance.DifferingFormulaResolveType;
-import io.github.arcaneplugins.levelledmobs.bukkit.logic.levelling.strategy.LevellingStrategy;
-import io.github.arcaneplugins.levelledmobs.bukkit.util.Log;
-import io.github.arcaneplugins.levelledmobs.bukkit.util.StringUtils;
-import io.github.arcaneplugins.levelledmobs.bukkit.logic.levelling.LevelTuple;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -43,7 +42,6 @@ public class SetLevelAction extends Action {
         @NotNull CommentedConfigurationNode actionNode
     ) {
         super(parentProcess, actionNode);
-        Log.tmpdebug("Found set level action at path: " + getActionNode().path().toString());
 
         this.formula = getActionNode().node("formula")
             .getString("no-level");
@@ -72,15 +70,11 @@ public class SetLevelAction extends Action {
             final CommentedConfigurationNode strategyNode = strategyNodeEntry.getValue();
 
             if(strategyNodeEntry.getKey() == null) {
-                //TODO log error: strategy key must not be null
-                new Throwable().printStackTrace();
-                continue;
+                throw new IllegalArgumentException("Strategy keys must not be null");
             }
 
             if(!(strategyNodeEntry.getKey() instanceof String strategyId)) {
-                //TODO log error: strategy keys must be strings
-                new Throwable().printStackTrace();
-                continue;
+                throw new IllegalArgumentException("Strategy keys must be of type String");
             }
 
             // fire LevellingStrategyRequestEvent
@@ -93,6 +87,13 @@ public class SetLevelAction extends Action {
 
             // add all strategies from the events
             getStrategies().addAll(stratReqEvent.getStrategies());
+        }
+
+        if(getStrategies().size() == 0) {
+            throw new IllegalArgumentException(
+                "SetLevelAction requres at least 1 levelling strategy. " +
+                    "For a basic context-based formula, you can use the Basic levelling strategy."
+            );
         }
     }
 
@@ -120,8 +121,9 @@ public class SetLevelAction extends Action {
         result = generateInheritedLevels(context);
         if(result == null) result = generateStandardLevels(context);
 
-        // if the formula was invalid or returned 'no-level', skip
+        // no level = remove it if it exists
         if(result == null) {
+            InternalEntityDataUtil.unlevelMob(lent);
             return;
         }
 
@@ -136,17 +138,13 @@ public class SetLevelAction extends Action {
             InternalEntityDataUtil.setInheritanceTransformationFormula(lent,
                 getInheritanceTransformationFormula(), true);
         }
-
-        Log.tmpdebug("Finished levelling a %s: Lvl=%s; MinLvl=%s; MaxLvl=%s.".formatted(
-            lent.getType(), result.getLevel(), result.getMinLevel(), result.getMaxLevel()
-        ));
     }
 
-    private LevelTuple generateStandardLevels(Context context) {
+    private @Nullable LevelTuple generateStandardLevels(Context context) {
         return processFormula(context);
     }
 
-    private LevelTuple generateInheritedLevels(Context context) {
+    private @Nullable LevelTuple generateInheritedLevels(Context context) {
         if(!useInheritanceIfAvailable()) return null;
 
         final LivingEntity lent = Objects.requireNonNull(
@@ -335,7 +333,7 @@ public class SetLevelAction extends Action {
 
         // check if the mob should have no level
         if(getFormula().equalsIgnoreCase("no-level")) {
-            // null = no level
+            // remember:    null = no level
             return null;
         }
 
@@ -353,11 +351,13 @@ public class SetLevelAction extends Action {
             maxLevel = Math.max(maxLevel, strategy.getMaxLevel());
         }
 
-        // evaluate the formula with Crunch, don't allow values below the min possible level
-        final int level = Math.max(
-            (int) Math.round(Crunch.evaluateExpression(formula)),
-            getMinPossibleLevel()
-        );
+        if(maxLevel < minLevel) maxLevel = minLevel;
+
+        // evaluate the formula with Crunch
+        final int levelEval = (int) Math.round(Crunch.evaluateExpression(formula));
+
+        // finally, ensure the evaluated level is between the min and max levels.
+        final int level = Math.min(Math.max(levelEval, minLevel), maxLevel);
 
         return new LevelTuple(minLevel, level, maxLevel);
     }

@@ -1,6 +1,7 @@
 package io.github.arcaneplugins.levelledmobs.bukkit.listener;
 
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.levelling.strategy.LevellingStrategyRequestEvent;
+import io.github.arcaneplugins.levelledmobs.bukkit.logic.levelling.strategy.impl.basic.BasicLevellingStrategy;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.levelling.strategy.impl.random.RandomLevellingStrategy;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.levelling.strategy.impl.spawndistance.SpawnDistanceLevellingStrategy;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.levelling.strategy.impl.variable.VariableLevellingStrategy;
@@ -25,6 +26,9 @@ public class LevellingStrategyRequestListener extends ListenerWrapper {
         final CommentedConfigurationNode strategyNode = event.getStrategyNode();
 
         switch(event.getStrategyId()) {
+            case "basic" -> {
+                event.getStrategies().add(BasicLevellingStrategy.parse(strategyNode));
+            }
             case "random" -> {
                 event.getStrategies().add(RandomLevellingStrategy.parse(strategyNode));
             }
