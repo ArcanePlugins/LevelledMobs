@@ -116,6 +116,22 @@ public class EntityDataUtil {
         return getDataInt(entity, EntityKeyStore.LEVEL, requirePersistence);
     }
 
+    //TODO document
+    @Nullable
+    public static Float getLevelRatio(
+        final @NotNull LivingEntity entity,
+        final boolean requirePersistence
+    ) {
+        final Integer level = getLevel(entity, requirePersistence);
+        if(level == null) return null;
+        final Integer minLevel = getMinLevel(entity, requirePersistence);
+        if(minLevel == null) return null;
+        final Integer maxLevel = getMaxLevel(entity, requirePersistence);
+        if(maxLevel == null) return null;
+
+        return (level - minLevel) * 1.0f / (maxLevel - minLevel);
+    }
+
     /*
     FIXME Comment
      */

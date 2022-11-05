@@ -1,12 +1,10 @@
 package io.github.arcaneplugins.levelledmobs.bukkit.logic.context.placeholder;
 
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.context.Context;
-import io.github.arcaneplugins.levelledmobs.bukkit.logic.context.placeholder.internal.EntityLevelPlaceholder;
 import io.github.arcaneplugins.levelledmobs.bukkit.util.Log;
 import java.util.HashSet;
 import java.util.Set;
-import io.github.arcaneplugins.levelledmobs.bukkit.logic.context.placeholder.internal.EntityPlaceholders;
-import io.github.arcaneplugins.levelledmobs.bukkit.logic.context.placeholder.internal.PlayerNamePlaceholder;
+import io.github.arcaneplugins.levelledmobs.bukkit.logic.context.placeholder.impl.StandardPlaceholders;
 import org.bukkit.Bukkit;
 import org.jetbrains.annotations.NotNull;
 
@@ -19,12 +17,7 @@ public class ContextPlaceholderHandler {
 
         getContextPlaceholders().clear();
 
-        getContextPlaceholders().addAll(Set.of(
-            //TODO add more of these!
-            new EntityLevelPlaceholder(),
-            new EntityPlaceholders(),
-            new PlayerNamePlaceholder()
-        ));
+        getContextPlaceholders().add(new StandardPlaceholders());
 
         Bukkit.getPluginManager().callEvent(new ContextPlaceholdersLoadEvent());
     }

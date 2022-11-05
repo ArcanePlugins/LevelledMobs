@@ -61,7 +61,7 @@ public abstract class LabelHandler {
         }
 
         return label.replaceText(TextReplacementConfig.builder()
-                .matchLiteral("{EntityName}").replacement(replacement).build());
+                .matchLiteral("%entity-name%").replacement(replacement).build());
     }
 
     @Nonnull
