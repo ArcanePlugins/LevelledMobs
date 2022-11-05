@@ -19,7 +19,7 @@ public class SpawnerKeyStore extends KeyStore {
     null     | no custom drop ID
     non-null | custom drop ID
      */
-    public static final NamespacedKey customDropId = getKey("CustomDropID");
+    public static final NamespacedKey CUSTOM_DROP_ID = getKey("CustomDropID");
 
     /*
     Name of a LM spawner.
@@ -31,7 +31,7 @@ public class SpawnerKeyStore extends KeyStore {
     ------+---------------
     any   | spawner name
      */
-    public static final NamespacedKey customName = getKey("CustomName");
+    public static final NamespacedKey CUSTOM_NAME = getKey("CustomName");
 
     /*
     Delay of a LM spawner.
@@ -43,7 +43,7 @@ public class SpawnerKeyStore extends KeyStore {
     ------+------------------------
     any   | spawner delay (seconds)
      */
-    public static final NamespacedKey delay = getKey("Delay");
+    public static final NamespacedKey DELAY = getKey("Delay");
 
     /*
     Lore of a LM spawner.
@@ -56,7 +56,7 @@ public class SpawnerKeyStore extends KeyStore {
     ------+---------------
     any   | spawner lore
      */
-    public static final NamespacedKey lore = getKey("Lore");
+    public static final NamespacedKey LORE = getKey("Lore");
 
     /*
     Max level of a LM spawner.
@@ -68,7 +68,7 @@ public class SpawnerKeyStore extends KeyStore {
     ------+------------------
     any   | spawner max level
      */
-    public static final NamespacedKey maxLevel = getKey("MaxLevel");
+    public static final NamespacedKey MAX_LEVEL = getKey("MaxLevel");
 
     /*
     Max nearby entities of a LM spawner.
@@ -80,7 +80,7 @@ public class SpawnerKeyStore extends KeyStore {
     ------+----------------------------
     any   | spawner max nearby entities
      */
-    public static final NamespacedKey maxNearbyEntities = getKey("MaxNearbyEntities");
+    public static final NamespacedKey MAX_NEARBY_ENTITIES = getKey("MaxNearbyEntities");
 
     /*
     Max spawn delay of a LM spawner.
@@ -92,7 +92,7 @@ public class SpawnerKeyStore extends KeyStore {
     ------+----------------------------------
     any   | spawner max spawn delay (seconds)
      */
-    public static final NamespacedKey maxSpawnDelay = getKey("MaxSpawnDelay");
+    public static final NamespacedKey MAX_SPAWN_DELAY = getKey("MaxSpawnDelay");
 
     /*
     Min level of a LM spawner.
@@ -104,7 +104,7 @@ public class SpawnerKeyStore extends KeyStore {
     ------+------------------
     any   | spawner min level
      */
-    public static final NamespacedKey minLevel = getKey("MinLevel");
+    public static final NamespacedKey MIN_LEVEL = getKey("MinLevel");
 
     /*
     Min spawn delay of a LM spawner.
@@ -116,7 +116,7 @@ public class SpawnerKeyStore extends KeyStore {
     ------+----------------------------------
     any   | spawner min spawn delay (seconds)
      */
-    public static final NamespacedKey minSpawnDelay = getKey("MinSpawnDelay");
+    public static final NamespacedKey MIN_SPAWN_DELAY = getKey("MinSpawnDelay");
 
     /*
     Required player range of a LM spawner.
@@ -128,7 +128,7 @@ public class SpawnerKeyStore extends KeyStore {
     ------+-------------------------------
     any   | required player range (blocks)
      */
-    public static final NamespacedKey requiredPlayerRange = getKey("RequiredPlayerRange");
+    public static final NamespacedKey REQUIRED_PLAYER_RANGE = getKey("RequiredPlayerRange");
 
     /*
     Spawn count of a LM spawner.
@@ -140,7 +140,7 @@ public class SpawnerKeyStore extends KeyStore {
     ------+------------------------
     any   | mobs to spawn per cycle
      */
-    public static final NamespacedKey spawnCount = getKey("SpawnCount");
+    public static final NamespacedKey SPAWN_COUNT = getKey("SpawnCount");
 
     /*
     Spawn range of a LM spawner.
@@ -152,7 +152,7 @@ public class SpawnerKeyStore extends KeyStore {
     ------+---------------------
     any   | spawn range (blocks)
      */
-    public static final NamespacedKey spawnRange = getKey("SpawnRange");
+    public static final NamespacedKey SPAWN_RANGE = getKey("SpawnRange");
 
     /*
     Entity type of a LM spawner.
@@ -164,7 +164,7 @@ public class SpawnerKeyStore extends KeyStore {
     ------+--------------------
     any   | EntityType constant
      */
-    public static final NamespacedKey spawnType = getKey("SpawnType");
+    public static final NamespacedKey SPAWN_TYPE = getKey("SpawnType");
 
     /*
     Indicates if a spawner is a LM spawner.
@@ -178,7 +178,7 @@ public class SpawnerKeyStore extends KeyStore {
     0     | false
     1     | true
      */
-    public static final NamespacedKey spawner = getKey("Spawner");
+    public static final NamespacedKey IS_SPAWNER = getKey("Spawner");
 
     /*
     Indicates if a spawn egg is a LM spawn egg.
@@ -192,7 +192,7 @@ public class SpawnerKeyStore extends KeyStore {
     0     | false
     1     | true
      */
-    public static final NamespacedKey spawnerEgg = getKey("SpawnerEgg");
+    public static final NamespacedKey IS_SPAWNER_EGG = getKey("SpawnerEgg");
 
     /*
     Name of a LM spawn egg.
@@ -204,6 +204,6 @@ public class SpawnerKeyStore extends KeyStore {
     ------+---------------
     any   | spawn egg name
      */
-    public static final NamespacedKey spawnerEggName = getKey("SpawnerEggName");
+    public static final NamespacedKey SPAWNER_EGG_NAME = getKey("SpawnerEggName");
 
 }

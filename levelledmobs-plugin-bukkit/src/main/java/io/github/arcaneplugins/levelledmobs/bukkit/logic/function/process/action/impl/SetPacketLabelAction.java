@@ -32,6 +32,7 @@ public class SetPacketLabelAction extends Action {
     private final EnumSet<VisibilityMethod> visibilityMethods = EnumSet
         .noneOf(VisibilityMethod.class);
     private final float visibilityDuration;
+    private final boolean primary;
 
     public SetPacketLabelAction(
         @NotNull Process parentProcess,
@@ -55,6 +56,8 @@ public class SetPacketLabelAction extends Action {
 
         this.visibilityDuration = getActionNode().node("visibility-duration")
             .getFloat(5.0f);
+
+        this.primary = getActionNode().node("primary").getBoolean(false);
     }
 
     @Override
@@ -66,12 +69,16 @@ public class SetPacketLabelAction extends Action {
         if(!(ent instanceof LivingEntity lent)) return;
 
         final Map<String, String> labelHandlerFormulaMap = InternalEntityDataUtil
-            .getLabelHandlerFormulaMap(lent, false);
+            .getLabelHandlerFormulaMap(lent, true);
 
         labelHandlerFormulaMap.put(LABEL_ID, getFormula());
 
         InternalEntityDataUtil
-            .setLabelHandlerFormulaMap(lent, labelHandlerFormulaMap, false);
+            .setLabelHandlerFormulaMap(lent, labelHandlerFormulaMap, true);
+
+        if(isPrimary()) {
+            LabelRegistry.setPrimaryLabelHandler(lent, LABEL_ID, true);
+        }
 
         PacketLabelHandler.INSTANCE.update(lent, context);
     }
@@ -80,6 +87,7 @@ public class SetPacketLabelAction extends Action {
 
      */
 
+    // TODO use this
     public EnumSet<VisibilityMethod> getVisibilityMethods() {
         return visibilityMethods;
     }
@@ -88,8 +96,13 @@ public class SetPacketLabelAction extends Action {
         return formula;
     }
 
+    // TODO use this
     public float getVisibilityDuration() {
         return visibilityDuration;
+    }
+
+    public boolean isPrimary() {
+        return primary;
     }
 
     public static class PacketLabelHandler extends LabelHandler {
@@ -128,7 +141,8 @@ public class SetPacketLabelAction extends Action {
             @NotNull Player player,
             @NotNull Context context
         ) {
-            if(!EntityDataUtil.isLevelled(lent, false)) return;
+            if(!EntityDataUtil.isLevelled(lent, true)) return;
+            if(EntityDataUtil.getDeniesLabel(lent, true)) return;
 
             final Map<LivingEntity, Instant> playerEntry = getNametagCooldowns()
                 .computeIfAbsent(player, k -> new WeakHashMap<>());

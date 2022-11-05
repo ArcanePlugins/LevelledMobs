@@ -28,13 +28,13 @@ public class EntityDataUtil {
     /*
     FIXME Comment
      */
-    @Nullable
-    public static Boolean getDeniesLabel(
+    public static boolean getDeniesLabel(
         final @NotNull LivingEntity entity,
         final boolean requirePersistence
     ) {
         Objects.requireNonNull(entity, "entity");
-        return getDataBool(entity, EntityKeyStore.DENIES_LABEL, requirePersistence);
+        final Boolean val = getDataBool(entity, EntityKeyStore.DENIES_LABEL, requirePersistence);
+        return val != null && val;
     }
 
     /*
@@ -174,6 +174,18 @@ public class EntityDataUtil {
     ) {
         Objects.requireNonNull(entity, "entity");
         return getDataString(entity, EntityKeyStore.OVERRIDEN_ENTITY_NAME, requirePersistence);
+    }
+
+    /*
+    FIXME Comment
+     */
+    @Nullable
+    public static String getPrimaryLabelHandler(
+        final @NotNull LivingEntity entity,
+        final boolean requirePersistence
+    ) {
+        Objects.requireNonNull(entity, "entity");
+        return getDataString(entity, EntityKeyStore.PRIMARY_LABEL_HANDLER, requirePersistence);
     }
 
     /*

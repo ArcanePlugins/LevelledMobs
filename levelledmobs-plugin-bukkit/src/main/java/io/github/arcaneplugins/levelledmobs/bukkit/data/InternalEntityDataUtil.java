@@ -213,6 +213,16 @@ public final class InternalEntityDataUtil extends EntityDataUtil {
         setData(entity, EntityKeyStore.OVERRIDEN_ENTITY_NAME, STRING, to, requirePersistence);
     }
 
+    public static void setPrimaryLabelHandler(
+        final @NotNull LivingEntity entity,
+        final @NotNull String to,
+        final boolean requirePersistence
+    ) {
+        Objects.requireNonNull(entity, "entity");
+        Objects.requireNonNull(to, "to");
+        setData(entity, EntityKeyStore.PRIMARY_LABEL_HANDLER, STRING, to, requirePersistence);
+    }
+
     public static void setSourceSpawnerName(
         final @NotNull LivingEntity entity,
         final @NotNull String to,

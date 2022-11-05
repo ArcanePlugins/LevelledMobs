@@ -74,14 +74,15 @@ public class SetPermanentLabelAction extends Action {
             @NotNull LivingEntity lent,
             @Nonnull Context context
         ) {
-            if(!EntityDataUtil.isLevelled(lent, false)) return;
+            if(!EntityDataUtil.isLevelled(lent, true)) return;
+            if(EntityDataUtil.getDeniesLabel(lent, true)) return;
 
             final Component comp = generateLabelComponents(lent, context);
 
             try {
                 lent.customName(comp);
             } catch(NoSuchMethodError er) {
-                //TODO check if this works on spigot
+                //TODO fingers crossed this works on spigot
                 //noinspection deprecation
                 lent.setCustomName(LegacyComponentSerializer.legacySection().serialize(comp));
             }

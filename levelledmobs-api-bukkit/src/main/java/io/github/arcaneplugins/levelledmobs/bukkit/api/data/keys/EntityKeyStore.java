@@ -1,6 +1,5 @@
 package io.github.arcaneplugins.levelledmobs.bukkit.api.data.keys;
 
-import com.google.common.annotations.Beta;
 import org.bukkit.NamespacedKey;
 
 /*
@@ -127,12 +126,8 @@ public class EntityKeyStore extends KeyStore {
      */
     public static final NamespacedKey OVERRIDEN_ENTITY_NAME = getKey("OverridenEntityName");
 
-    /*
-    TODO make PDC keys for each player levelling variable.
-    TODO add those keys to the entity data utils
-     */
-    @Beta
-    public static final NamespacedKey PLAYER_LEVELLING_ID = getKey("PlayerLevellingId");
+    //TODO document – see https://github.com/lokka30/LevelledMobs/issues/415
+    public static final NamespacedKey PRIMARY_LABEL_HANDLER = getKey("PrimaryLabelHandler");
 
     /*
     If the entity was spawned by a LM spawner, then the name of the LM spawner will be stored using
@@ -173,6 +168,12 @@ public class EntityKeyStore extends KeyStore {
     non-null   | sky light level  | N/A
      */
     public static final NamespacedKey SPAWNED_SKY_LIGHT_LEVEL = getKey("SkyLightLevel");
+
+    /*
+    TODO use this key
+    TODO add methods to the entity data utils
+     */
+    public static final NamespacedKey VARIABLE_LEVELLING_FORMULA = getKey("VariableLevellingFormula");
 
     /*
     Represents if an entity was a baby or not when they spawned in.
@@ -222,7 +223,7 @@ public class EntityKeyStore extends KeyStore {
         MAX_LEVEL,
         MIN_LEVEL,
         OVERRIDEN_ENTITY_NAME,
-        PLAYER_LEVELLING_ID
+        VARIABLE_LEVELLING_FORMULA
     };
 
 }
