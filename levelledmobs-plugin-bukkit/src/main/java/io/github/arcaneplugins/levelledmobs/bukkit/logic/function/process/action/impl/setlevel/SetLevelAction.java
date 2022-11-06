@@ -3,6 +3,7 @@ package io.github.arcaneplugins.levelledmobs.bukkit.logic.function.process.actio
 import io.github.arcaneplugins.levelledmobs.bukkit.LevelledMobs;
 import io.github.arcaneplugins.levelledmobs.bukkit.api.data.EntityDataUtil;
 import io.github.arcaneplugins.levelledmobs.bukkit.data.InternalEntityDataUtil;
+import io.github.arcaneplugins.levelledmobs.bukkit.logic.LogicHandler;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.context.Context;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.function.process.Process;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.function.process.action.Action;
@@ -192,10 +193,7 @@ public class SetLevelAction extends Action {
                 try {
                     return (int) Math.floor(
                         Crunch.evaluateExpression(
-                            LevelledMobs.getInstance()
-                                .getLogicHandler()
-                                .getContextPlaceholderHandler()
-                                .replace(formula, context)
+                            LogicHandler.replacePapiAndContextPlaceholders(formula, context)
                         )
                     );
                 } catch(Exception ex) {
@@ -285,10 +283,7 @@ public class SetLevelAction extends Action {
 
                 (int) Math.floor(
                     Crunch.evaluateExpression(
-                        LevelledMobs.getInstance()
-                            .getLogicHandler()
-                            .getContextPlaceholderHandler()
-                            .replace(formula, context)
+                        LogicHandler.replacePapiAndContextPlaceholders(formula, context)
                     )
                 ),
 
@@ -338,7 +333,7 @@ public class SetLevelAction extends Action {
         }
 
         // replace context placeholders in the formula
-        String formula = context.replacePlaceholders(getFormula());
+        String formula = LogicHandler.replacePapiAndContextPlaceholders(getFormula(), context);
 
         int minLevel = getMinPossibleLevel();
         int maxLevel = getMinPossibleLevel();

@@ -1,12 +1,12 @@
 package io.github.arcaneplugins.levelledmobs.bukkit.listener;
 
 import de.themoep.minedown.adventure.MineDown;
-import io.github.arcaneplugins.levelledmobs.bukkit.debug.DebugCategory;
-import java.util.function.Consumer;
-import io.github.arcaneplugins.levelledmobs.bukkit.LevelledMobs;
 import io.github.arcaneplugins.levelledmobs.bukkit.api.data.EntityDataUtil;
+import io.github.arcaneplugins.levelledmobs.bukkit.debug.DebugCategory;
 import io.github.arcaneplugins.levelledmobs.bukkit.debug.DebugHandler;
+import io.github.arcaneplugins.levelledmobs.bukkit.logic.LogicHandler;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.context.Context;
+import java.util.function.Consumer;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -45,10 +45,7 @@ public class EntityDamageByEntityListener extends ListenerWrapper {
             .withPlayer(inspector);
 
         final Consumer<String> messenger = (message) -> inspector.sendMessage(
-            MineDown.parse(
-                LevelledMobs.getInstance().getLogicHandler().getContextPlaceholderHandler()
-                    .replace(message, context)
-            )
+            MineDown.parse(LogicHandler.replacePapiAndContextPlaceholders(message, context))
         );
 
         messenger.accept("&8&m-&8{&f&l LM:&7 Inspecting " +

@@ -6,6 +6,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import io.github.arcaneplugins.levelledmobs.bukkit.LevelledMobs;
+import javax.annotation.Nonnull;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
@@ -32,7 +33,10 @@ public final class Context {
 
     /* methods */
 
-    public String replacePlaceholders(final String from) {
+    @Nonnull
+    public String replacePlaceholders(final @Nonnull String from) {
+        Objects.requireNonNull(from, "from str");
+
         return LevelledMobs.getInstance()
             .getLogicHandler()
             .getContextPlaceholderHandler()

@@ -1,5 +1,6 @@
 package io.github.arcaneplugins.levelledmobs.bukkit.logic.function.process.action.impl;
 
+import io.github.arcaneplugins.levelledmobs.bukkit.logic.LogicHandler;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.context.Context;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.function.process.Process;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.function.process.action.Action;
@@ -130,7 +131,8 @@ public class SetBuffsAction extends Action {
             }
 
             final double multiplier = Crunch.evaluateExpression(
-                context.replacePlaceholders(getMultiplierFormula()));
+                LogicHandler.replacePapiAndContextPlaceholders(getMultiplierFormula(), context)
+            );
 
             for(final Attribute attribute : Attribute.values()) {
                 if(!getAttributes().contains(attribute)) continue;

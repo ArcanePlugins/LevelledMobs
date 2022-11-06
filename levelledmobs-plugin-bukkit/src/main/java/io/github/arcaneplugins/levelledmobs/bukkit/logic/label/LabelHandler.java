@@ -1,9 +1,9 @@
 package io.github.arcaneplugins.levelledmobs.bukkit.logic.label;
 
 import de.themoep.minedown.adventure.MineDown;
-import io.github.arcaneplugins.levelledmobs.bukkit.LevelledMobs;
 import io.github.arcaneplugins.levelledmobs.bukkit.api.data.EntityDataUtil;
 import io.github.arcaneplugins.levelledmobs.bukkit.data.InternalEntityDataUtil;
+import io.github.arcaneplugins.levelledmobs.bukkit.logic.LogicHandler;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.context.Context;
 import io.github.arcaneplugins.levelledmobs.bukkit.util.Log;
 import javax.annotation.Nonnull;
@@ -42,9 +42,7 @@ public abstract class LabelHandler {
         final @Nonnull Context context
     ) {
         final Component label = MineDown.parse(
-            LevelledMobs.getInstance().getLogicHandler().getContextPlaceholderHandler().replace(
-                getFormula(lent), context
-            )
+            LogicHandler.replacePapiAndContextPlaceholders(getFormula(lent), context)
         );
 
         Component replacement;
@@ -64,6 +62,7 @@ public abstract class LabelHandler {
                 .matchLiteral("%entity-name%").replacement(replacement).build());
     }
 
+    //TODO use?
     @Nonnull
     public String generateLabelLegacy(
         final @Nonnull LivingEntity lent,

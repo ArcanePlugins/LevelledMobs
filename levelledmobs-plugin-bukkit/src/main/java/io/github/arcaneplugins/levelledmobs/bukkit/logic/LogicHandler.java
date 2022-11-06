@@ -1,27 +1,30 @@
 package io.github.arcaneplugins.levelledmobs.bukkit.logic;
 
-import io.github.arcaneplugins.levelledmobs.bukkit.logic.function.LmFunction;
-import io.github.arcaneplugins.levelledmobs.bukkit.logic.function.process.Process;
-import io.github.arcaneplugins.levelledmobs.bukkit.logic.function.process.action.ActionParseEvent;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Objects;
 import io.github.arcaneplugins.levelledmobs.bukkit.LevelledMobs;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.context.Context;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.context.placeholder.ContextPlaceholderHandler;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.function.FunctionPostParseEvent;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.function.FunctionPreParseEvent;
+import io.github.arcaneplugins.levelledmobs.bukkit.logic.function.LmFunction;
+import io.github.arcaneplugins.levelledmobs.bukkit.logic.function.process.Process;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.function.process.ProcessPostParseEvent;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.function.process.ProcessPreParseEvent;
+import io.github.arcaneplugins.levelledmobs.bukkit.logic.function.process.action.ActionParseEvent;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.function.process.condition.ConditionParseEvent;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.group.Group;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.group.GroupPostParseEvent;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.group.GroupPreParseEvent;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.preset.Preset;
 import io.github.arcaneplugins.levelledmobs.bukkit.util.Log;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Objects;
+import javax.annotation.Nonnull;
+import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.Bukkit;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.configurate.CommentedConfigurationNode;
 import org.spongepowered.configurate.serialize.SerializationException;
 
@@ -542,6 +545,28 @@ public final class LogicHandler {
         }
 
         return true;
+    }
+
+    @Nonnull
+    public static String replacePapiAndContextPlaceholders(
+        final @Nullable String str,
+        final @Nonnull Context context
+    ) {
+        Objects.requireNonNull(context, "context");
+
+        if(str == null || str.isBlank()) {
+            return "";
+        }
+
+        final String contextReplaced = context.replacePlaceholders(str);
+
+        if(contextReplaced.contains("%") && Bukkit.getPluginManager()
+            .isPluginEnabled("PlaceholderAPI")
+        ) {
+            return PlaceholderAPI.setPlaceholders(context.getPlayer(), contextReplaced);
+        } else {
+            return contextReplaced;
+        }
     }
 
     /* getters and setters */

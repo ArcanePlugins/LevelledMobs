@@ -1,6 +1,6 @@
 package io.github.arcaneplugins.levelledmobs.bukkit.logic.levelling.strategy.impl.basic;
 
-import io.github.arcaneplugins.levelledmobs.bukkit.LevelledMobs;
+import io.github.arcaneplugins.levelledmobs.bukkit.logic.LogicHandler;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.context.Context;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.levelling.strategy.LevellingStrategy;
 import java.util.Objects;
@@ -25,10 +25,8 @@ public class BasicLevellingStrategy extends LevellingStrategy {
 
     @Override
     public @Nullable Integer generate(@NotNull final Context context) {
-        return (int) Math.floor(Crunch.evaluateExpression(LevelledMobs.getInstance()
-            .getLogicHandler()
-            .getContextPlaceholderHandler()
-            .replace(getFormula(), context)
+        return (int) Math.floor(Crunch.evaluateExpression(
+            LogicHandler.replacePapiAndContextPlaceholders(getFormula(), context)
         ));
     }
 
