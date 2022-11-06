@@ -2,9 +2,13 @@ package io.github.arcaneplugins.levelledmobs.bukkit.logic.function.process.actio
 
 import io.github.arcaneplugins.levelledmobs.bukkit.LevelledMobs;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.context.Context;
+import io.github.arcaneplugins.levelledmobs.bukkit.logic.function.LmFunction;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.function.process.Process;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.function.process.action.Action;
 import io.github.arcaneplugins.levelledmobs.bukkit.util.Log;
+import java.util.Objects;
+import java.util.Optional;
+import javax.annotation.Nonnull;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.configurate.CommentedConfigurationNode;
 
@@ -12,6 +16,7 @@ public class RunFunctionAction extends Action {
 
     /* vars */
 
+    private final String otherFuncId;
     private boolean sentError = false;
 
     /* constructors */
@@ -21,18 +26,20 @@ public class RunFunctionAction extends Action {
         @NotNull CommentedConfigurationNode node
     ) {
         super(process, node);
+        this.otherFuncId = Objects.requireNonNull(
+            getActionNode().node("id").getString(),
+            "RunFunctionAction did not specify valid ID of function to run"
+        );
     }
 
     /* methods */
 
     @Override
     public void run(Context context) {
-        final var functionIdToRun = getActionNode().node("id").getString("");
+        final boolean potentiallyCircularFunction = context.getLinkedFunctions().stream()
+            .anyMatch(otherFunction -> otherFunction.getIdentifier().equals(getOtherFuncId()));
 
-        final var potentiallyCircularFunction = context.getLinkedFunctions().stream()
-            .anyMatch(otherFunction -> otherFunction.getIdentifier().equals(functionIdToRun));
-
-        final var useCircularFunctionDependencyDetection = LevelledMobs.getInstance()
+        final boolean useCircularFunctionDependencyDetection = LevelledMobs.getInstance()
             .getConfigHandler().getSettingsCfg()
             .getRoot().node("advanced", "circular-function-dependency-detection")
             .getBoolean(false);
@@ -43,7 +50,7 @@ public class RunFunctionAction extends Action {
                     "function '%s'). This protection can be disabled - be advised that recursive " +
                     "calls can result in memory leaks. LM will call 'exit-all' on the cause. " +
                     "This message will only appear once.",
-                functionIdToRun,
+                getOtherFuncId(),
                 getParentProcess().getIdentifier(),
                 getParentProcess().getParentFunction().getIdentifier()
             ), true);
@@ -51,11 +58,11 @@ public class RunFunctionAction extends Action {
             return;
         }
 
-        final var functionToRunOpt = LevelledMobs.getInstance()
+        final Optional<LmFunction> functionToRunOpt = LevelledMobs.getInstance()
             .getLogicHandler()
             .getFunctions()
             .stream()
-            .filter(otherFunction -> otherFunction.getIdentifier().equals(functionIdToRun))
+            .filter(otherFunction -> otherFunction.getIdentifier().equals(getOtherFuncId()))
             .findFirst();
 
         if(functionToRunOpt.isEmpty()) {
@@ -65,10 +72,10 @@ public class RunFunctionAction extends Action {
             Log.sev(String.format(
                 "Unable to run function '%s' from process '%s' in function '%s' as function '%s' " +
                     "does not exist.",
-                functionIdToRun,
+                getOtherFuncId(),
                 getParentProcess().getIdentifier(),
                 getParentProcess().getParentFunction().getIdentifier(),
-                functionIdToRun
+                getOtherFuncId()
             ), true);
 
             setHasSentError(true);
@@ -88,5 +95,10 @@ public class RunFunctionAction extends Action {
 
     public void setHasSentError(final boolean state) {
         this.sentError = state;
+    }
+
+    @Nonnull
+    public String getOtherFuncId() {
+        return otherFuncId;
     }
 }
