@@ -1,5 +1,6 @@
 package io.github.arcaneplugins.levelledmobs.bukkit.api.data;
 
+import static org.bukkit.persistence.PersistentDataType.DOUBLE;
 import static org.bukkit.persistence.PersistentDataType.INTEGER;
 import static org.bukkit.persistence.PersistentDataType.STRING;
 
@@ -7,6 +8,7 @@ import io.github.arcaneplugins.levelledmobs.bukkit.api.data.keys.EntityKeyStore;
 import io.github.arcaneplugins.levelledmobs.bukkit.api.util.PluginUtil;
 import java.util.Objects;
 import java.util.UUID;
+import javax.annotation.Nonnull;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.LivingEntity;
@@ -24,6 +26,16 @@ LM's plugin internals.
  */
 @SuppressWarnings("unused")
 public class EntityDataUtil {
+
+    //TODO document
+    @Nullable
+    public static Double getCreeperBlastRadiusMultiplier(
+        final @Nonnull LivingEntity entity,
+        final boolean requirePersistence
+    ) {
+        Objects.requireNonNull(entity, "entity");
+        return getDataDouble(entity, EntityKeyStore.CREEPER_BLAST_DAMAGE_MULT, requirePersistence);
+    }
 
     /*
     FIXME Comment
@@ -47,6 +59,16 @@ public class EntityDataUtil {
     ) {
         Objects.requireNonNull(entity, "entity");
         setData(entity, EntityKeyStore.DENIES_LABEL, INTEGER, boolToInt(to), requirePersistence);
+    }
+
+    //TODO document
+    @Nullable
+    public static Double getExpDropMultiplier(
+        final @Nonnull LivingEntity entity,
+        final boolean requirePersistence
+    ) {
+        Objects.requireNonNull(entity, "entity");
+        return getDataDouble(entity, EntityKeyStore.EXP_DROP_MULT, requirePersistence);
     }
 
     //TODO document
@@ -102,6 +124,16 @@ public class EntityDataUtil {
         Objects.requireNonNull(entity, "entity");
         //TODO use 'has key' instead of getting the value.
         return getLevel(entity, requirePersistence) != null;
+    }
+
+    //TODO document
+    @Nullable
+    public static Double getItemDropMultiplier(
+        final @Nonnull LivingEntity entity,
+        final boolean requirePersistence
+    ) {
+        Objects.requireNonNull(entity, "entity");
+        return getDataDouble(entity, EntityKeyStore.ITEM_DROP_MULT, requirePersistence);
     }
 
     /*
@@ -202,6 +234,16 @@ public class EntityDataUtil {
     ) {
         Objects.requireNonNull(entity, "entity");
         return getDataString(entity, EntityKeyStore.PRIMARY_LABEL_HANDLER, requirePersistence);
+    }
+
+    //TODO document
+    @Nullable
+    public static Double getShieldBreakerMultiplier(
+        final @Nonnull LivingEntity entity,
+        final boolean requirePersistence
+    ) {
+        Objects.requireNonNull(entity, "entity");
+        return getDataDouble(entity, EntityKeyStore.SHIELD_BREAKER_MULT, requirePersistence);
     }
 
     /*
@@ -351,6 +393,43 @@ public class EntityDataUtil {
                 );
         } else {
             ret = pdc.get(namespacedKey, INTEGER);
+        }
+
+
+        if(ret == null) {
+            entity.removeMetadata(namespacedKeyStr, PluginUtil.getMainInstance());
+        } else {
+            entity.setMetadata(namespacedKeyStr, new FixedMetadataValue(
+                PluginUtil.getMainInstance(),
+                ret
+            ));
+        }
+
+        return ret;
+    }
+
+    @Nullable
+    protected static Double getDataDouble(
+        final @NotNull LivingEntity entity,
+        final @NotNull NamespacedKey namespacedKey,
+        final boolean requirePersistence
+    ) {
+        final String namespacedKeyStr = namespacedKey.toString();
+
+        if(entity.hasMetadata(namespacedKeyStr)) {
+            return entity.getMetadata(namespacedKeyStr).get(0).asDouble();
+        }
+
+        Double ret = null;
+
+        final PersistentDataContainer pdc = getPdc(entity);
+        if(pdc == null) {
+            if(requirePersistence)
+                throw new NullPointerException(
+                    "PersistentDataContainer is null where persistence is required"
+                );
+        } else {
+            ret = pdc.get(namespacedKey, DOUBLE);
         }
 
 

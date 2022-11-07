@@ -20,6 +20,7 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.persistence.PersistentDataContainer;
+import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 
 @SuppressWarnings("unused")
@@ -27,6 +28,21 @@ public final class InternalEntityDataUtil extends EntityDataUtil {
 
     private InternalEntityDataUtil() {
         throw new IllegalStateException("Instantiation of utility-type class");
+    }
+
+    //TODO doc
+    public static void setCreeperBlastRadiusMultiplier(
+        final @Nonnull LivingEntity entity,
+        final double multiplier,
+        final boolean requirePersistence
+    ) {
+        setData(
+            entity,
+            EntityKeyStore.CREEPER_BLAST_DAMAGE_MULT,
+            PersistentDataType.DOUBLE,
+            multiplier,
+            requirePersistence
+        );
     }
 
     /*
@@ -60,6 +76,21 @@ public final class InternalEntityDataUtil extends EntityDataUtil {
         Objects.requireNonNull(dropTableIds, "dropTableIds");
         getPdcNonNull(entity)
             .set(EntityKeyStore.DROP_TABLE_IDS, DataType.asSet(DataType.STRING), dropTableIds);
+    }
+
+    //TODO doc
+    public static void setExpDropMultiplier(
+        final @Nonnull LivingEntity entity,
+        final double multiplier,
+        final boolean requirePersistence
+    ) {
+        setData(
+            entity,
+            EntityKeyStore.EXP_DROP_MULT,
+            PersistentDataType.DOUBLE,
+            multiplier,
+            requirePersistence
+        );
     }
 
     /**
@@ -98,6 +129,21 @@ public final class InternalEntityDataUtil extends EntityDataUtil {
 
         setData(entity, EntityKeyStore.INHERITANCE_TRANSFORMATION_FORMULA,
             STRING, to, requirePersistence);
+    }
+
+    //TODO doc
+    public static void setItemDropMultiplier(
+        final @Nonnull LivingEntity entity,
+        final double multiplier,
+        final boolean requirePersistence
+    ) {
+        setData(
+            entity,
+            EntityKeyStore.ITEM_DROP_MULT,
+            PersistentDataType.DOUBLE,
+            multiplier,
+            requirePersistence
+        );
     }
 
     //TODO doc
@@ -221,6 +267,21 @@ public final class InternalEntityDataUtil extends EntityDataUtil {
         Objects.requireNonNull(entity, "entity");
         Objects.requireNonNull(to, "to");
         setData(entity, EntityKeyStore.PRIMARY_LABEL_HANDLER, STRING, to, requirePersistence);
+    }
+
+    //TODO doc
+    public static void setShieldBreakerMultiplier(
+        final @Nonnull LivingEntity entity,
+        final double multiplier,
+        final boolean requirePersistence
+    ) {
+        setData(
+            entity,
+            EntityKeyStore.SHIELD_BREAKER_MULT,
+            PersistentDataType.DOUBLE,
+            multiplier,
+            requirePersistence
+        );
     }
 
     public static void setSourceSpawnerName(

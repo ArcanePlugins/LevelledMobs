@@ -10,7 +10,7 @@ import io.github.arcaneplugins.levelledmobs.bukkit.logic.function.process.action
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.function.process.action.impl.ExitFunctionAction;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.function.process.action.impl.ExitProcessAction;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.function.process.action.impl.RunFunctionAction;
-import io.github.arcaneplugins.levelledmobs.bukkit.logic.function.process.action.impl.SetBuffsAction;
+import io.github.arcaneplugins.levelledmobs.bukkit.logic.function.process.action.impl.setbuffs.SetBuffsAction;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.function.process.action.impl.SetDeathLabelAction;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.function.process.action.impl.SetDropTableIdAction;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.function.process.action.impl.SetPacketLabelAction;
