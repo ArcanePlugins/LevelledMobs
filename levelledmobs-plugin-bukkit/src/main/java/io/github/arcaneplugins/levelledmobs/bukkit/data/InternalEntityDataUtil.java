@@ -4,21 +4,22 @@ import static org.bukkit.persistence.PersistentDataType.INTEGER;
 import static org.bukkit.persistence.PersistentDataType.STRING;
 
 import com.jeff_media.morepersistentdatatypes.DataType;
+import io.github.arcaneplugins.levelledmobs.bukkit.LevelledMobs;
+import io.github.arcaneplugins.levelledmobs.bukkit.api.data.EntityDataUtil;
+import io.github.arcaneplugins.levelledmobs.bukkit.api.data.keys.EntityKeyStore;
+import io.github.arcaneplugins.levelledmobs.bukkit.logic.context.Context;
+import io.github.arcaneplugins.levelledmobs.bukkit.logic.label.LabelRegistry;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import javax.annotation.Nonnull;
-import io.github.arcaneplugins.levelledmobs.bukkit.LevelledMobs;
-import io.github.arcaneplugins.levelledmobs.bukkit.api.data.EntityDataUtil;
-import io.github.arcaneplugins.levelledmobs.bukkit.api.data.keys.EntityKeyStore;
-import io.github.arcaneplugins.levelledmobs.bukkit.logic.context.Context;
-import io.github.arcaneplugins.levelledmobs.bukkit.logic.label.LabelRegistry;
 import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
@@ -191,6 +192,30 @@ public final class InternalEntityDataUtil extends EntityDataUtil {
                 .findFirst()
                 .ifPresent(labelHandler -> labelHandler.update(entity, context));
         });
+    }
+
+    public static void updateLabels(
+        final @Nonnull Player player,
+        final @Nonnull Context context,
+        final boolean requirePersistence
+    ) {
+        player.getNearbyEntities(50, 50, 50) //TODO configurable distance
+            .stream()
+            .filter(entity -> entity instanceof LivingEntity)
+            .map(entity -> (LivingEntity) entity)
+            .filter(entity -> EntityDataUtil.isLevelled(entity, requirePersistence))
+            .forEach(entity -> {
+                final Map<String, String> labelHandlerFormulaMap = getLabelHandlerFormulaMap(
+                    entity, requirePersistence);
+
+                labelHandlerFormulaMap.forEach((labelHandlerId, formula) -> {
+                    LabelRegistry.getLabelHandlers()
+                        .stream()
+                        .filter(lh -> lh.getId().equals(labelHandlerId))
+                        .findFirst()
+                        .ifPresent(labelHandler -> labelHandler.update(entity, player, context));
+                });
+            });
     }
 
     public static void setLevel(

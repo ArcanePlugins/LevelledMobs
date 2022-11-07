@@ -77,7 +77,6 @@ public final class LevelledMobs extends JavaPlugin {
     public void reload() {
         getConfigHandler().load();
         getLogicHandler().load();
-        getCommandHandler().load(LoadingStage.ON_RELOAD);
     }
 
     @Override

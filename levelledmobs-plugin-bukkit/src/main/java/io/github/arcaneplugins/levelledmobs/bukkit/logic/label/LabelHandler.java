@@ -1,7 +1,6 @@
 package io.github.arcaneplugins.levelledmobs.bukkit.logic.label;
 
 import de.themoep.minedown.adventure.MineDown;
-import io.github.arcaneplugins.levelledmobs.bukkit.api.data.EntityDataUtil;
 import io.github.arcaneplugins.levelledmobs.bukkit.data.InternalEntityDataUtil;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.LogicHandler;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.context.Context;
@@ -78,41 +77,22 @@ public abstract class LabelHandler {
     );
 
     public abstract void update(
-        final @Nonnull Player player,
-        final @Nonnull Context context
-    );
-
-    public abstract void update(
         final @Nonnull LivingEntity lent,
         final @Nonnull Player player,
         final @Nonnull Context context
     );
-
-    protected void deferPlayerUpdate(
-        final @Nonnull Player player,
-        final @Nonnull Context context
-    ) {
-        //TODO customisable range. may want to use a more efficient nearby entities method too
-        player
-            .getNearbyEntities(50, 50, 50)
-            .stream()
-            .filter(entity -> entity instanceof LivingEntity)
-            .map(entity -> (LivingEntity) entity)
-            .filter(entity -> EntityDataUtil.isLevelled(entity, false))
-            .forEach(entity -> update(entity, player, context));
-    }
 
     protected void deferEntityUpdate(
-        final @Nonnull LivingEntity lent,
+        final @Nonnull LivingEntity entity,
         final @Nonnull Context context
     ) {
         //TODO customisable range. may want to use a more efficient nearby entities method too
-        lent
+        entity
             .getNearbyEntities(50, 50, 50)
             .stream()
             .filter(otherEntity -> otherEntity instanceof Player)
             .map(player -> (Player) player)
-            .forEach(player -> update(lent, player, context));
+            .forEach(player -> update(entity, player, context));
     }
 
 }

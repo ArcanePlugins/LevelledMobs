@@ -13,6 +13,7 @@ import io.github.arcaneplugins.levelledmobs.bukkit.logic.levelling.strategy.Leve
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.levelling.strategy.LevellingStrategyRequestEvent;
 import io.github.arcaneplugins.levelledmobs.bukkit.util.StringUtils;
 import java.util.HashSet;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
@@ -63,8 +64,9 @@ public class SetLevelAction extends Action {
         Here we want to call out for all known levelling strategies to be registered to the
         SetLevelAction.
          */
+
         // Iterate through each strategyId specified under the strategies section
-        for(var strategyNodeEntry : getActionNode()
+        for(Entry<Object, CommentedConfigurationNode> strategyNodeEntry : getActionNode()
             .node("strategies")
             .childrenMap().entrySet()
         ) {
@@ -79,7 +81,9 @@ public class SetLevelAction extends Action {
             }
 
             // fire LevellingStrategyRequestEvent
-            final var stratReqEvent = new LevellingStrategyRequestEvent(strategyId, strategyNode);
+            final LevellingStrategyRequestEvent stratReqEvent =
+                new LevellingStrategyRequestEvent(strategyId, strategyNode);
+
             Bukkit.getPluginManager().callEvent(stratReqEvent);
 
             if(stratReqEvent.isCancelled()) {
@@ -90,10 +94,11 @@ public class SetLevelAction extends Action {
             getStrategies().addAll(stratReqEvent.getStrategies());
         }
 
-        if(getStrategies().size() == 0) {
+        if(!getFormula().equalsIgnoreCase("no-level") && getStrategies().size() == 0) {
             throw new IllegalArgumentException(
-                "SetLevelAction requres at least 1 levelling strategy. " +
-                    "For a basic context-based formula, you can use the Basic levelling strategy."
+                "SetLevelAction requres at least 1 levelling strategy, unless specifying " +
+                    "no-level. " +
+                    "For a simple context-based formula, you can use the Basic Levelling Strategy."
             );
         }
     }

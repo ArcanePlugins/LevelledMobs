@@ -1,8 +1,11 @@
 package io.github.arcaneplugins.levelledmobs.bukkit.logic.function.process.action.impl.setbuffs;
 
+import static io.github.arcaneplugins.levelledmobs.bukkit.debug.DebugCategory.BUFFS;
+
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.context.Context;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.function.process.Process;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.function.process.action.Action;
+import io.github.arcaneplugins.levelledmobs.bukkit.util.Log;
 import java.util.HashSet;
 import java.util.Set;
 import javax.annotation.Nonnull;
@@ -37,13 +40,19 @@ public class SetBuffsAction extends Action {
     ) {
         super(parentProcess, actionNode);
 
+        Log.debug(BUFFS, () -> "Initialized SetBuffsAction @ " + getActionNode().path());
+
         this.enabled = getActionNode().node("enabled").getBoolean(true);
+        if(!isEnabled()) return;
 
         for(final CommentedConfigurationNode buffNode : getActionNode()
             .node("buffs").childrenList()
         ) {
+            Log.debug(BUFFS, () -> "Parsing buff @ " + buffNode.path());
             getBuffs().add(new Buff(buffNode));
         }
+
+        Log.debug(BUFFS, () -> "Parsed " + getBuffs().size() + " buffs");
     }
 
     /**

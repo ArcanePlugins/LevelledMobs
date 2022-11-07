@@ -8,6 +8,7 @@ import io.github.arcaneplugins.levelledmobs.bukkit.util.StringUtils;
 import io.github.arcaneplugins.levelledmobs.bukkit.util.math.MathUtils;
 import io.github.arcaneplugins.levelledmobs.bukkit.api.data.EntityDataUtil;
 import io.github.arcaneplugins.levelledmobs.bukkit.util.EnumUtils;
+import java.util.Objects;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -41,32 +42,21 @@ public final class StandardPlaceholders implements ContextPlaceholder {
                 final LivingEntity father = EntityDataUtil.getFather(lent, false);
                 final LivingEntity mother = EntityDataUtil.getMother(lent, false);
 
-                // we're creating a block here to restrict the scope of these variables
-                {
-                    final String entityOverName = EntityDataUtil.getOverriddenName(lent, false);
-                    if(entityOverName != null) str = StringUtils.replaceIfExists(str, "%entity-name%", () -> entityOverName);
+                //noinspection deprecation
+                str = StringUtils.replaceIfExists(str, "%entity-name%", () -> Objects.requireNonNullElse(lent.getCustomName(), "%entity-name%"));
+                //noinspection deprecation
+                str = StringUtils.replaceIfExists(str, "%father-name%", () -> Objects.requireNonNullElse(father.getCustomName(), "%father-name%"));
+                //noinspection deprecation
+                str = StringUtils.replaceIfExists(str, "%mother-name%", () -> Objects.requireNonNullElse(mother.getCustomName(), "%mother-name%"));
 
-                    final String fatherOverName = EntityDataUtil.getOverriddenName(father, false);
-                    if(fatherOverName != null) str = StringUtils.replaceIfExists(str, "%father-name%", () -> fatherOverName);
+                str = StringUtils.replaceIfExists(str, "%entity-name%", () -> Objects.requireNonNullElse(EntityDataUtil.getOverriddenName(lent, false), "%entity-name%"));
+                str = StringUtils.replaceIfExists(str, "%father-name%", () -> Objects.requireNonNullElse(EntityDataUtil.getOverriddenName(father, false), "%father-name%"));
+                str = StringUtils.replaceIfExists(str, "%mother-name%", () -> Objects.requireNonNullElse(EntityDataUtil.getOverriddenName(mother, false), "%mother-name%"));
 
-                    final String motherOverName = EntityDataUtil.getOverriddenName(mother, false);
-                    if(motherOverName != null) str = StringUtils.replaceIfExists(str, "%mother-name%", () -> motherOverName);
-                }
-
-                // we're creating a block here to restrict the scope of these variables
-                {
-                    //noinspection deprecation
-                    final String entityCustomName = lent.getCustomName();
-                    if(entityCustomName != null) str = StringUtils.replaceIfExists(str, "%entity-name%", () -> entityCustomName);
-
-                    //noinspection deprecation
-                    final String fatherCustomName = father.getCustomName();
-                    if(fatherCustomName != null) str = StringUtils.replaceIfExists(str, "%father-name%", () -> fatherCustomName);
-
-                    //noinspection deprecation
-                    final String motherCustomName = mother.getCustomName();
-                    if(motherCustomName != null) str = StringUtils.replaceIfExists(str, "%mother-name%", () -> motherCustomName);
-                }
+                //TODO use adventure to fetch translated entity name instead of formatting the type
+                str = StringUtils.replaceIfExists(str, "%entity-name%", () -> EnumUtils.formatEnumConstant(entity.getType()));
+                str = StringUtils.replaceIfExists(str, "%father-name%", () -> EnumUtils.formatEnumConstant(father.getType()));
+                str = StringUtils.replaceIfExists(str, "%mother-name%", () -> EnumUtils.formatEnumConstant(mother.getType()));
 
                 str = StringUtils.replaceIfExists(str, "%father-type%", () -> father.getType().name());
                 str = StringUtils.replaceIfExists(str, "%mother-type%", () -> mother.getType().name());

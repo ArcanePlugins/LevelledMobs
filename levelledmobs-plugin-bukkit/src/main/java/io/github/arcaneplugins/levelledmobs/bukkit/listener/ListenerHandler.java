@@ -22,30 +22,28 @@ public final class ListenerHandler {
      * These listeners must be registered later.
      */
     private final Set<ListenerWrapper> secondaryListeners = Set.of(
-        new EntityDamageByEntityListener(),
         new EntityBreedListener(),
+        new EntityDamageByEntityListener(),
+        new EntityDamageListener(),
+        new EntityExplodeListener(),
+        new EntityRegainHealthListener(),
         new EntitySpawnListener(),
         new EntityTransformListener(),
         new PlayerJoinListener(),
-        new PlayerQuitListener()
+        new PlayerQuitListener(),
+        new PlayerTeleportListener()
     );
 
     /* methods */
 
-    public boolean loadPrimary() {
+    public void loadPrimary() {
         Log.inf("Registering primary listeners");
-        for(var listener : getPrimaryListeners())
-            if(!listener.register())
-                return false;
-        return true;
+        getPrimaryListeners().forEach(ListenerWrapper::register);
     }
 
-    public boolean loadSecondary() {
+    public void loadSecondary() {
         Log.inf("Registering secondary listeners");
-        for(var listener : getSecondaryListeners())
-            if(!listener.register())
-                return false;
-        return true;
+        getSecondaryListeners().forEach(ListenerWrapper::register);
     }
 
     /* getters and setters */

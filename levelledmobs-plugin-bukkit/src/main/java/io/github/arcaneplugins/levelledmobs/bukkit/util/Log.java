@@ -1,6 +1,10 @@
 package io.github.arcaneplugins.levelledmobs.bukkit.util;
 
 import io.github.arcaneplugins.levelledmobs.bukkit.LevelledMobs;
+import io.github.arcaneplugins.levelledmobs.bukkit.debug.DebugCategory;
+import io.github.arcaneplugins.levelledmobs.bukkit.debug.DebugHandler;
+import java.util.function.Supplier;
+import javax.annotation.Nonnull;
 
 @SuppressWarnings("unused")
 public final class Log {
@@ -32,6 +36,14 @@ public final class Log {
         LevelledMobs.getInstance().getLogger().severe(msg + (!suggestSupport ? "" :
             " Feel free to contact our support team if assistance is required."
         ));
+    }
+
+    public static void debug(
+        @Nonnull final DebugCategory cat,
+        @Nonnull final Supplier<String> msg
+    ) {
+        if(!DebugHandler.isCategoryEnabled(cat)) return;
+        inf("[DEBUG : " + cat.name() + "] " + msg.get());
     }
 
     //TODO remove

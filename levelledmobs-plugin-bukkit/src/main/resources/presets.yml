@@ -30,8 +30,8 @@ presets:
         enabled: true
         affected-entities:
           not-in-list: ['ENDERMAN', 'WITHER_SKELETON']
-        attributes:
-          in-list: ['GENERIC_MAX_HEALTH']
+        types:
+          in-list: ['MAX_HEALTH']
         multiplier-formula: '1 + (%entity-level-ratio% * 4)'
 
         # Should LevelledMobs adjust the mob's current health
@@ -56,71 +56,71 @@ presets:
         enabled: true
         affected-entities:
           not-in-list: ['ENDERMAN', 'CREEPER']
-        attributes:
-          in-list: ['GENERIC_MOVEMENT_SPEED']
+        types:
+          in-list: ['MOVEMENT_SPEED']
         multiplier-formula: '1 + (%entity-level-ratio% * 0.15)'
 
       - buff: 'armor-toughness-boost'
         enabled: true
         affected-entities:
           in-list: ['*']
-        attributes:
-          in-list: ['GENERIC_ARMOR_TOUGHNESS']
+        types:
+          in-list: ['ARMOR_TOUGHNESS']
         multiplier-formula: '1 + (%entity-level-ratio% * 0.15)'
 
       - buff: 'attack-damage-boost'
         enabled: true
         affected-entities:
           in-list: ['*']
-        attributes:
-          in-list: ['GENERIC_ATTACK_DAMAGE']
+        types:
+          in-list: ['ATTACK_DAMAGE']
         multiplier-formula: '1 + (%entity-level-ratio% * 1.25)'
 
       - buff: 'ranged-attack-damage-boost'
         enabled: true
         affected-entities:
           in-list: ['*']
-        attributes:
-          in-list: ['CUSTOM_RANGED_ATTACK_DAMAGE']
+        types:
+          in-list: ['RANGED_ATTACK_DAMAGE']
         multiplier-formula: '1 + %entity-level-ratio%'
 
       - buff: 'creeper-blast-damage-boost'
         enabled: true
         affected-entities:
           in-list: ['CREEPER']
-        attributes:
-          in-list: ['CUSTOM_CREEPER_BLAST_DAMAGE']
+        types:
+          in-list: ['CREEPER_BLAST_DAMAGE']
         multiplier-formula: '1 + %entity-level-ratio%'
 
       - buff: 'item-drop-boost'
         enabled: true
         affected-entities:
           not-in-list: ['ENDERMAN']
-        attributes:
-          in-list: ['CUSTOM_ITEM_DROP']
+        types:
+          in-list: ['ITEM_DROP']
         multiplier-formula: '1 + (%entity-level-ratio% * 3)'
 
-      - buff: 'xp-drop-boost'
+      - buff: 'exp-drop-boost'
         enabled: true
         affected-entities:
           not-in-list: ['ENDERMAN']
-        attributes:
-          in-list: ['CUSTOM_XP_DROP']
+        types:
+          in-list: ['EXP_DROP']
         multiplier-formula: '1 + (%entity-level-ratio% * 5)'
 
       - buff: 'knockback-resistance-boost'
         enabled: true
         affected-entities:
           not-in-list: ['CREEPER']
-        attributes:
-          in-list: ['GENERIC_KNOCKBACK_RESISTANCE']
+        types:
+          in-list: ['KNOCKBACK_RESISTANCE']
         multiplier-formula: '1 + (%entity-level-ratio% * 0.25)'
 
       - buff: 'zombie-spawn-reinforcements-boost'
         enabled: true
         affected-entities:
           in-list: ['*']
-        attributes:
+        types:
           in-list: ['ZOMBIE_SPAWN_REINFORCEMENTS']
         multiplier-formula: '1 + (%entity-level-ratio% * 0.15)'
 

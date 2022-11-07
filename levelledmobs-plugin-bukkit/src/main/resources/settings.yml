@@ -88,10 +88,11 @@ functions:
       - 'on-entity-regain-health'
       - 'on-player-join'
       - 'on-player-teleport'
-      - 'on-entity-track'
-      - 'on-entity-player-scan'
+      - 'on-entity-track' # TODO add listener
+      - 'on-entity-player-scan' # TODO add listener
+      - 'on-entity-transform'
     processes:
-      - process: 'update-label-for-entity'
+      - process: 'update-label'
         if:
           - condition: 'entity-level'
             state: 'LEVELLED'

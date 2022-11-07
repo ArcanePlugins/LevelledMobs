@@ -92,14 +92,6 @@ public class SetPermanentLabelAction extends Action {
 
         @Override
         public void update(
-            @NotNull Player player,
-            @NotNull Context context
-        ) {
-            deferPlayerUpdate(player, context);
-        }
-
-        @Override
-        public void update(
             @NotNull LivingEntity lent,
             @NotNull Player player,
             @NotNull Context context

@@ -1,6 +1,8 @@
 package io.github.arcaneplugins.levelledmobs.bukkit.listener;
 
+import io.github.arcaneplugins.levelledmobs.bukkit.LevelledMobs;
 import io.github.arcaneplugins.levelledmobs.bukkit.data.InternalEntityDataUtil;
+import io.github.arcaneplugins.levelledmobs.bukkit.logic.context.Context;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -21,5 +23,13 @@ public class EntityBreedListener extends ListenerWrapper {
         InternalEntityDataUtil.setFather(child, father, true);
         InternalEntityDataUtil.setMother(child, mother, true);
         InternalEntityDataUtil.setWasBred(child, true, true);
+
+        LevelledMobs.getInstance().getLogicHandler().runFunctionsWithTriggers(
+            new Context()
+                .withEntity(child)
+                .withFather(father)
+                .withMother(mother)
+            , "on-entity-breed"
+        );
     }
 }

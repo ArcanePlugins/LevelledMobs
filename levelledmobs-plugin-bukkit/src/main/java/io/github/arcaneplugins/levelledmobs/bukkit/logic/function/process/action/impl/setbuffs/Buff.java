@@ -1,11 +1,13 @@
 package io.github.arcaneplugins.levelledmobs.bukkit.logic.function.process.action.impl.setbuffs;
 
+import static io.github.arcaneplugins.levelledmobs.bukkit.debug.DebugCategory.BUFFS;
+
 import io.github.arcaneplugins.levelledmobs.bukkit.api.data.EntityDataUtil;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.LogicHandler;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.context.Context;
+import io.github.arcaneplugins.levelledmobs.bukkit.util.Log;
+import io.github.arcaneplugins.levelledmobs.bukkit.util.modal.impl.ModalBuffTypeSet;
 import io.github.arcaneplugins.levelledmobs.bukkit.util.modal.impl.ModalEntityTypeSet;
-import java.util.Collections;
-import java.util.EnumSet;
 import java.util.Locale;
 import javax.annotation.Nonnull;
 import org.bukkit.attribute.Attribute;
@@ -15,7 +17,6 @@ import org.bukkit.attribute.AttributeModifier.Operation;
 import org.bukkit.entity.LivingEntity;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.configurate.CommentedConfigurationNode;
-import org.spongepowered.configurate.serialize.SerializationException;
 import redempt.crunch.Crunch;
 
 public class Buff {
@@ -23,34 +24,31 @@ public class Buff {
     private final CommentedConfigurationNode node;
     private final boolean enabled;
     private final ModalEntityTypeSet affectedEntities;
-    private final EnumSet<BuffType> buffTypes = EnumSet.noneOf(BuffType.class);
+    private final ModalBuffTypeSet buffTypes;
     private final String multiplierFormula;
     private final boolean adjustCurrentHealth;
 
     public Buff(
         final CommentedConfigurationNode node
     ) {
+        Log.debug(BUFFS, () -> "Initializing buff @ " + node.path());
+
         this.node = node;
 
         this.enabled = getNode().node("enabled").getBoolean(true);
 
+        if(!isEnabled()) {
+            this.affectedEntities = null;
+            this.buffTypes = null;
+            this.multiplierFormula = null;
+            this.adjustCurrentHealth = true;
+            return;
+        }
+
         this.affectedEntities =
             ModalEntityTypeSet.parseNode(getNode().node("affected-entities"));
 
-        try {
-            for(final String buffTypeStr : getNode().node("types")
-                .getList(String.class, Collections.emptyList())
-            ) {
-                try {
-                    getBuffTypes().add(BuffType.valueOf(buffTypeStr.toUpperCase(Locale.ROOT)));
-                } catch(IllegalArgumentException ex) {
-                    throw new IllegalArgumentException("Invalid BuffType value '" +
-                        buffTypeStr + "'!");
-                }
-            }
-        } catch (SerializationException e) {
-            throw new RuntimeException(e);
-        }
+        buffTypes = ModalBuffTypeSet.fromCfgSection(getNode().node("types"));
 
         this.multiplierFormula =
             getNode().node("multiplier-formula").getString("1.0");
@@ -63,6 +61,7 @@ public class Buff {
         final @NotNull Context context,
         final @NotNull LivingEntity entity
     ) {
+        Log.debug(BUFFS, () -> "Applying buffs to " + entity.getType() + "?= " + isEnabled());
         if(!isEnabled()) return;
 
         if(!EntityDataUtil.isLevelled(entity, true)) {
@@ -70,14 +69,19 @@ public class Buff {
         }
 
         if(!getAffectedEntities().contains(entity.getType())) {
+            Log.debug(BUFFS, () -> entity.getType() + "is not targeted by this buff; returning");
             return;
         }
 
         final double multiplier = Crunch.evaluateExpression(
             LogicHandler.replacePapiAndContextPlaceholders(getMultiplierFormula(), context)
         );
+        Log.debug(BUFFS, () -> "Evaluated multiplier = " + multiplier);
 
-        for(final BuffType buffType : getBuffTypes()) {
+        for(final BuffType buffType : getBuffTypes().getItems()) {
+            Log.debug(BUFFS, () -> "Applying buff type " + buffType +
+                ". Attribute?= " + buffType.representsAttribute());
+
             if(buffType.representsAttribute()) {
                 // Add attribute buff (NOT custom LM implementation) to entity
                 final Attribute attr = buffType.getAttribute();
@@ -88,6 +92,7 @@ public class Buff {
 
                 final boolean isAdjustingHealth = buffType == BuffType.MAX_HEALTH &&
                     shouldAdjustCurrentHealth();
+                Log.debug(BUFFS, () -> "Adjusting health: " + isAdjustingHealth);
                 double healthRatio = 0.0d;
 
                 if(isAdjustingHealth) {
@@ -138,7 +143,7 @@ public class Buff {
     }
 
     @Nonnull
-    public EnumSet<BuffType> getBuffTypes() {
+    public ModalBuffTypeSet getBuffTypes() {
         return buffTypes;
     }
 }

@@ -20,13 +20,12 @@ public final class DebugHandler {
     }
 
     public static void load() {
-        Log.tmpdebug("Loading debug handler");
+        Log.inf("Loading debug handler");
 
         final CommentedConfigurationNode parentNode = LevelledMobs.getInstance()
             .getConfigHandler().getSettingsCfg().getRoot()
             .node("advanced", "debug", "enabled-categories");
 
-        Log.tmpdebug("skipping, virtual: " + parentNode.virtual());
         if(parentNode.virtual())
             return;
 

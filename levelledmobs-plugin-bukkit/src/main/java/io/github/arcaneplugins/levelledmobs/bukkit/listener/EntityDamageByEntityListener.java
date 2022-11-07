@@ -1,12 +1,14 @@
 package io.github.arcaneplugins.levelledmobs.bukkit.listener;
 
 import de.themoep.minedown.adventure.MineDown;
+import io.github.arcaneplugins.levelledmobs.bukkit.LevelledMobs;
 import io.github.arcaneplugins.levelledmobs.bukkit.api.data.EntityDataUtil;
 import io.github.arcaneplugins.levelledmobs.bukkit.debug.DebugCategory;
 import io.github.arcaneplugins.levelledmobs.bukkit.debug.DebugHandler;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.LogicHandler;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.context.Context;
 import java.util.function.Consumer;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -24,7 +26,15 @@ public class EntityDamageByEntityListener extends ListenerWrapper {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.NORMAL)
     public void onEntityDamageByEntity(final EntityDamageByEntityEvent event) {
+        final Entity defender = event.getEntity();
+        final Entity attacker = event.getDamager(); //TODO see TODO below. need an attacker context.
+
         handleEntityInspector(event);
+
+        LevelledMobs.getInstance().getLogicHandler().runFunctionsWithTriggers(
+            new Context().withEntity(defender), "on-entity-damage-by-entity"
+            //TODO also have 'attacker' context
+        );
     }
 
     private void handleEntityInspector(final EntityDamageByEntityEvent event) {

@@ -25,11 +25,6 @@ public class CommandHandler {
                 Log.inf("Enabling commands");
                 CommandAPI.onEnable(LevelledMobs.getInstance());
             }
-            case ON_RELOAD -> {
-                Log.inf("Reloading commands");
-                unregisterCommands();
-                registerCommands();
-            }
             case ON_DISABLE -> {
                 Log.inf("Unregistering commands");
                 unregisterCommands();
@@ -48,7 +43,6 @@ public class CommandHandler {
     public enum LoadingStage {
         ON_LOAD,
         ON_ENABLE,
-        ON_RELOAD,
         ON_DISABLE
     }
 

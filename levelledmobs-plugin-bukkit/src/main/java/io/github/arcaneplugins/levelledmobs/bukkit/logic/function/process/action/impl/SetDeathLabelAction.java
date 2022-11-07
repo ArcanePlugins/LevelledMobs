@@ -14,15 +14,12 @@ public class SetDeathLabelAction extends Action {
         @NotNull CommentedConfigurationNode actionNode
     ) {
         super(parentProcess, actionNode);
+        Log.war("SetDeathLabelAction has not been implemented yet, it's currently useless.");
         //TODO
     }
 
     @Override
     public void run(Context context) {
-        Log.war(
-            "Skipped setting death label: not implemented, use permanent label action instead",
-            true
-        );
-        //TODO
+        //TODO implement
     }
 }

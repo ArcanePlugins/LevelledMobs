@@ -58,7 +58,7 @@ public class EntityLevelCondition extends Condition {
         if(getLevelledState() == LevelledState.LEVELLED) {
             if(!isLevelled) return false;
 
-            if(getRequiredLevelRange() != null) return true;
+            if(getRequiredLevelRange() == null) return true;
 
             //noinspection ConstantConditions
             return getRequiredLevelRange().contains(EntityDataUtil.getLevel(lent, true));

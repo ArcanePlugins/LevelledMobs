@@ -19,11 +19,12 @@ public class UpdateLabelsAction extends Action {
 
     @Override
     public void run(Context context) {
+        if(context.getEntity() instanceof LivingEntity lent) {
+            InternalEntityDataUtil.updateLabels(lent, context, false);
+        }
 
-        assert context.getEntity() != null;
-
-        InternalEntityDataUtil
-            .updateLabels((LivingEntity) context.getEntity(), context, false);
-
+        if(context.getPlayer() != null) {
+            InternalEntityDataUtil.updateLabels(context.getPlayer(), context, false);
+        }
     }
 }

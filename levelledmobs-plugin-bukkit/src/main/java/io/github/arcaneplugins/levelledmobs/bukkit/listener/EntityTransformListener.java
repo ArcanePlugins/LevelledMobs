@@ -32,7 +32,11 @@ public class EntityTransformListener extends ListenerWrapper {
                 Fire the associated trigger.
                  */
                 LevelledMobs.getInstance().getLogicHandler().runFunctionsWithTriggers(
-                    new Context().withEntity(child), "on-entity-transform"
+                    new Context()
+                        .withEntity(child)
+                        .withFather(lparent)
+                        .withMother(lparent)
+                    , "on-entity-transform"
                 );
             });
     }
