@@ -369,8 +369,9 @@ public final class LogicHandler {
             .getNode().node("processes").childrenList();
 
         for(var processNode : processNodes) {
-            final var identifier = processNode.node("process").getString();
-            final var description = processNode.node("description").getString("");
+            final String identifier = processNode.node("process").getString();
+            final String description = processNode.node("description").getString("");
+            final long delay = Math.max(processNode.node("delay").getInt(0), 0);
 
             /* assert valid identifier */
             if(identifier == null || identifier.isBlank()) {
@@ -389,16 +390,17 @@ public final class LogicHandler {
             }
 
             /* create obj */
-            final var process = new Process(identifier, description, processNode, function);
+            final Process process =
+                new Process(identifier, description, processNode, function, delay);
 
             /* call pre-parse process event */
-            final var processPreParseEvent = new ProcessPreParseEvent(process);
+            final ProcessPreParseEvent processPreParseEvent = new ProcessPreParseEvent(process);
             Bukkit.getPluginManager().callEvent(processPreParseEvent);
             if(processPreParseEvent.isCancelled()) continue;
 
             /* add presets */
             if(processNode.hasChild("presets")) {
-                final var presetsNode = processNode.node("presets");
+                final CommentedConfigurationNode presetsNode = processNode.node("presets");
                 if(!presetsNode.isList()) {
                     Log.sev("Unable to parse presets of process '" + identifier +
                         "': not a valid list of presets.", true);
@@ -417,7 +419,7 @@ public final class LogicHandler {
                 }
 
                 presetIterator:
-                for(var presetIdentifier : presetsIdentifiersList) {
+                for(final String presetIdentifier : presetsIdentifiersList) {
                     if(process.getPresets().stream().anyMatch(otherPreset ->
                         otherPreset.getIdentifier().equals(presetIdentifier))
                     ) {
@@ -434,15 +436,13 @@ public final class LogicHandler {
                         }
                     }
 
-                    Log.sev("Process '" + identifier + "' specifies an unknown preset, '" +
-                        presetIdentifier + "'.", true);
-                    return false;
+                    throw new IllegalArgumentException("Unknown preset '" + presetIdentifier + "'");
                 }
             }
 
             /* parse actions */
-            if(!(parseActions(process) && parseConditions(process)))
-                return false;
+            parseActions(process);
+            parseConditions(process);
 
             /* call post-parse process event */
             Bukkit.getPluginManager().callEvent(new ProcessPostParseEvent(process));
@@ -452,7 +452,7 @@ public final class LogicHandler {
         return true;
     }
 
-    private boolean parseActions(final @NotNull Process process) {
+    private void parseActions(final @NotNull Process process) {
         Objects.requireNonNull(process, "process");
 
         process.getActions().clear();
@@ -468,34 +468,30 @@ public final class LogicHandler {
                         "Process '%s' in function '%s' has an action with an invalid identifier.",
                         process.getIdentifier(), process.getParentFunction().getIdentifier()
                     ), true);
-                    return false;
+                    return;
                 }
 
-                final var actionParseEvent = new ActionParseEvent(identifier, process, actionNode);
+                final ActionParseEvent actionParseEvent =
+                    new ActionParseEvent(identifier, process, actionNode);
+
                 Bukkit.getPluginManager().callEvent(actionParseEvent);
+
                 if(!actionParseEvent.isClaimed()) {
-                    Log.sev(String.format(
-                        "Action '%s' in process '%s' in function '%s' is not known to " +
-                            "LevelledMobs or any of it external integrations. Verify the " +
-                            "spelling is correct.",
-                        identifier, process.getIdentifier(), process.getParentFunction().getIdentifier()
-                    ), true);
-                    return false;
+                    throw new IllegalArgumentException(
+                        "Unknown action '%s' at path '%s'.".formatted(identifier, actionNode.path())
+                    );
                 }
             } else {
-                Log.sev(String.format(
-                    "Process '%s' in function '%s' contains an item in the actions list which " +
-                        "does not identify as an action.",
-                    process.getIdentifier(), process.getParentFunction().getIdentifier()
-                ), true);
-                return false;
+                throw new IllegalArgumentException(
+                    "An item was declared in the actions list which is not an action at path '%s'."
+                        .formatted(actionNode.path())
+                );
             }
         }
 
-        return true;
     }
 
-    private boolean parseConditions(final @NotNull Process process) {
+    private void parseConditions(final @NotNull Process process) {
         Objects.requireNonNull(process, "process");
 
         process.getConditions().clear();
@@ -505,7 +501,7 @@ public final class LogicHandler {
         if(allConditionsNode.empty()) {
             // allow processes with no conditions.
             // processes with no conditions always run when called.
-            return true;
+            return;
         }
 
         final List<CommentedConfigurationNode> conditionNodes = allConditionsNode.childrenList();
@@ -515,36 +511,35 @@ public final class LogicHandler {
                 final String identifier = conditionNode.node("condition").getString("");
 
                 if(identifier.isBlank()) {
-                    Log.sev(String.format(
-                        "Process '%s' in function '%s' has specified a condition item with an " +
-                            "invalid identifier.",
-                        process.getIdentifier(), process.getParentFunction().getIdentifier()
-                    ), true);
-                    return false;
+                    throw new IllegalArgumentException(
+                        "Invalid condition ID specified at path '%s'.".formatted(
+                            conditionNode.path()
+                        )
+                    );
                 }
 
-                final var conditionParseEvent = new ConditionParseEvent(identifier, process, conditionNode);
+                final ConditionParseEvent conditionParseEvent =
+                    new ConditionParseEvent(identifier, process, conditionNode);
+
                 Bukkit.getPluginManager().callEvent(conditionParseEvent);
+
                 if(!conditionParseEvent.isClaimed()) {
-                    Log.sev(String.format(
-                        "Condition '%s' in process '%s' in function '%s' is not known to " +
-                            "LevelledMobs or any of it external integrations. Verify the " +
-                            "spelling is correct.",
-                        identifier, process.getIdentifier(), process.getParentFunction().getIdentifier()
-                    ), true);
-                    return false;
+                    throw new IllegalArgumentException(
+                        "Unknown condition '%s' at path '%s'.".formatted(
+                            identifier, conditionNode.path()
+                        )
+                    );
                 }
             } else {
-                Log.sev(String.format(
-                    "Process '%s' in function '%s' contains an item in the conditions list which " +
-                        "does not identify as a condition.",
-                    process.getIdentifier(), process.getParentFunction().getIdentifier()
-                ), true);
-                return false;
+                throw new IllegalArgumentException(
+                    "An item was declared in the conditions list "
+                        + "which is not a condition at path '%s'.".formatted(
+                            conditionNode.path()
+                    )
+                );
             }
         }
 
-        return true;
     }
 
     @Nonnull

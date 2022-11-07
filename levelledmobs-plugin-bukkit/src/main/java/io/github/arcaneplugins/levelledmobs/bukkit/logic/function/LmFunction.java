@@ -53,9 +53,7 @@ public class LmFunction {
                 return;
             }
 
-            if(overrideConditions || process.conditionsApply(context)) {
-                process.runActions(context);
-            }
+            process.call(context, overrideConditions);
         }
     }
 

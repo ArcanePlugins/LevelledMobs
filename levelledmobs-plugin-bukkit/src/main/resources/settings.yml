@@ -93,6 +93,7 @@ functions:
       - 'on-entity-transform'
     processes:
       - process: 'update-label'
+        delay: 1 # A 1-tick delay is in place so that the correct info (e.g. health) is displayed.
         if:
           - condition: 'entity-level'
             state: 'LEVELLED'
