@@ -14,6 +14,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.scheduler.BukkitRunnable;
 
 public class EntityDamageByEntityListener extends ListenerWrapper {
 
@@ -58,11 +59,16 @@ public class EntityDamageByEntityListener extends ListenerWrapper {
             MineDown.parse(LogicHandler.replacePapiAndContextPlaceholders(message, context))
         );
 
-        messenger.accept("&8&m-&8{&f&l LM:&7 Inspecting " +
-            "&bLvl.%entity-level% %entity-type-formatted% " +
-            "&8(&7%entity-health-rounded%&8/&7%entity-max-health-rounded%&c♥&8) &8}&m-"
-        );
-        messenger.accept("&9EntityName:&f %entity-name%");
-        messenger.accept("&8... (end of information) ...");
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                messenger.accept("&8&m-&8{&f&l LM:&7 Inspecting " +
+                    "&bLvl.%entity-level% %entity-type-formatted% " +
+                    "&8(&7%entity-health-rounded%&8/&7%entity-max-health-rounded%&c♥&8) &8}&m-"
+                );
+                messenger.accept("&9EntityName:&f %entity-name%");
+                messenger.accept("&8... (end of information) ...");
+            }
+        }.runTaskLater(LevelledMobs.getInstance(), 1);
     }
 }
