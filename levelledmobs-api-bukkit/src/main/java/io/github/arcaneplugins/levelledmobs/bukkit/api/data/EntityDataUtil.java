@@ -34,7 +34,7 @@ public class EntityDataUtil {
         final boolean requirePersistence
     ) {
         Objects.requireNonNull(entity, "entity");
-        return getDataDouble(entity, EntityKeyStore.CREEPER_BLAST_DAMAGE_MULT, requirePersistence);
+        return getDataDouble(entity, EntityKeyStore.CREEPER_BLAST_DAMAGE_MULTIPLIER_FORMULA, requirePersistence);
     }
 
     /*
@@ -63,12 +63,12 @@ public class EntityDataUtil {
 
     //TODO document
     @Nullable
-    public static Double getExpDropMultiplier(
+    public static String getExpDropMultiplierFormula(
         final @Nonnull LivingEntity entity,
         final boolean requirePersistence
     ) {
         Objects.requireNonNull(entity, "entity");
-        return getDataDouble(entity, EntityKeyStore.EXP_DROP_MULT, requirePersistence);
+        return getDataString(entity, EntityKeyStore.EXP_DROP_MULTIPLIER_FORMULA, requirePersistence);
     }
 
     //TODO document
@@ -133,7 +133,7 @@ public class EntityDataUtil {
         final boolean requirePersistence
     ) {
         Objects.requireNonNull(entity, "entity");
-        return getDataDouble(entity, EntityKeyStore.ITEM_DROP_MULT, requirePersistence);
+        return getDataDouble(entity, EntityKeyStore.ITEM_DROP_MULTIPLIER_FORMULA, requirePersistence);
     }
 
     /*
@@ -243,7 +243,7 @@ public class EntityDataUtil {
         final boolean requirePersistence
     ) {
         Objects.requireNonNull(entity, "entity");
-        return getDataDouble(entity, EntityKeyStore.SHIELD_BREAKER_MULT, requirePersistence);
+        return getDataDouble(entity, EntityKeyStore.SHIELD_BREAKER_MULTIPLIER_FORMULA, requirePersistence);
     }
 
     /*

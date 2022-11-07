@@ -1,11 +1,15 @@
 package io.github.arcaneplugins.levelledmobs.bukkit.logic.context;
 
+import io.github.arcaneplugins.levelledmobs.bukkit.LevelledMobs;
+import io.github.arcaneplugins.levelledmobs.bukkit.api.util.Pair;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.function.LmFunction;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
-import io.github.arcaneplugins.levelledmobs.bukkit.LevelledMobs;
+import java.util.function.Supplier;
 import javax.annotation.Nonnull;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -30,6 +34,8 @@ public final class Context {
     private LivingEntity mother;
     private final List<LmFunction> linkedFunctions = new LinkedList<>();
     private final Collection<LivingEntity> parents = new LinkedList<>();
+
+    private final Map<String, Pair<String, Supplier<String>>> miscContext = new HashMap<>();
 
     /* methods */
 
@@ -138,5 +144,10 @@ public final class Context {
 
     @Nullable
     public LivingEntity getMother() { return mother; }
+
+    @Nonnull
+    public Map<String, Pair<String, Supplier<String>>> getMiscContext() {
+        return miscContext;
+    }
 
 }

@@ -21,7 +21,6 @@ import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.persistence.PersistentDataContainer;
-import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 
 @SuppressWarnings("unused")
@@ -32,16 +31,16 @@ public final class InternalEntityDataUtil extends EntityDataUtil {
     }
 
     //TODO doc
-    public static void setCreeperBlastRadiusMultiplier(
+    public static void setCreeperBlastRadiusMultiplierFormula(
         final @Nonnull LivingEntity entity,
-        final double multiplier,
+        final @Nonnull String formula,
         final boolean requirePersistence
     ) {
         setData(
             entity,
-            EntityKeyStore.CREEPER_BLAST_DAMAGE_MULT,
-            PersistentDataType.DOUBLE,
-            multiplier,
+            EntityKeyStore.CREEPER_BLAST_DAMAGE_MULTIPLIER_FORMULA,
+            STRING,
+            formula,
             requirePersistence
         );
     }
@@ -80,16 +79,16 @@ public final class InternalEntityDataUtil extends EntityDataUtil {
     }
 
     //TODO doc
-    public static void setExpDropMultiplier(
+    public static void setExpDropMultiplierFormula(
         final @Nonnull LivingEntity entity,
-        final double multiplier,
+        final @Nonnull String formula,
         final boolean requirePersistence
     ) {
         setData(
             entity,
-            EntityKeyStore.EXP_DROP_MULT,
-            PersistentDataType.DOUBLE,
-            multiplier,
+            EntityKeyStore.EXP_DROP_MULTIPLIER_FORMULA,
+            STRING,
+            formula,
             requirePersistence
         );
     }
@@ -135,14 +134,14 @@ public final class InternalEntityDataUtil extends EntityDataUtil {
     //TODO doc
     public static void setItemDropMultiplier(
         final @Nonnull LivingEntity entity,
-        final double multiplier,
+        final @Nonnull String formula,
         final boolean requirePersistence
     ) {
         setData(
             entity,
-            EntityKeyStore.ITEM_DROP_MULT,
-            PersistentDataType.DOUBLE,
-            multiplier,
+            EntityKeyStore.ITEM_DROP_MULTIPLIER_FORMULA,
+            STRING,
+            formula,
             requirePersistence
         );
     }
@@ -297,14 +296,14 @@ public final class InternalEntityDataUtil extends EntityDataUtil {
     //TODO doc
     public static void setShieldBreakerMultiplier(
         final @Nonnull LivingEntity entity,
-        final double multiplier,
+        final @Nonnull String formula,
         final boolean requirePersistence
     ) {
         setData(
             entity,
-            EntityKeyStore.SHIELD_BREAKER_MULT,
-            PersistentDataType.DOUBLE,
-            multiplier,
+            EntityKeyStore.SHIELD_BREAKER_MULTIPLIER_FORMULA,
+            STRING,
+            formula,
             requirePersistence
         );
     }

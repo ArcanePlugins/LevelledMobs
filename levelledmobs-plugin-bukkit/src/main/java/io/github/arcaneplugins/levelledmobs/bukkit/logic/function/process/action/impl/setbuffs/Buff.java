@@ -73,17 +73,18 @@ public class Buff {
             return;
         }
 
-        final double multiplier = Crunch.evaluateExpression(
-            LogicHandler.replacePapiAndContextPlaceholders(getMultiplierFormula(), context)
-        );
-        Log.debug(BUFFS, () -> "Evaluated multiplier = " + multiplier);
-
         for(final BuffType buffType : getBuffTypes().getItems()) {
             Log.debug(BUFFS, () -> "Applying buff type " + buffType +
                 ". Attribute?= " + buffType.representsAttribute());
 
             if(buffType.representsAttribute()) {
                 // Add attribute buff (NOT custom LM implementation) to entity
+
+                final double multiplier = Crunch.evaluateExpression(
+                    LogicHandler.replacePapiAndContextPlaceholders(getMultiplierFormula(), context)
+                );
+                Log.debug(BUFFS, () -> "Evaluated multiplier = " + multiplier);
+
                 final Attribute attr = buffType.getAttribute();
                 final AttributeInstance attrInst = entity.getAttribute(attr);
                 if(attrInst == null) continue;
@@ -117,7 +118,7 @@ public class Buff {
                 }
             } else {
                 // Set non-attribute buff (custom LM implementation) to entity
-                buffType.getCustomMultiplierConsumer().accept(entity, multiplier);
+                buffType.getCustomFormulaConsumer().accept(entity, getMultiplierFormula());
             }
         }
     }

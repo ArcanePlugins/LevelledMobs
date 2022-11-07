@@ -23,14 +23,14 @@ public enum BuffType {
     ),
 
     CREEPER_BLAST_DAMAGE(
-        (lent, mult) -> InternalEntityDataUtil
-            .setCreeperBlastRadiusMultiplier(lent, mult, true)
+        (lent, formula) -> InternalEntityDataUtil
+            .setCreeperBlastRadiusMultiplierFormula(lent, formula, true)
     ),
 
     //TODO Implement
     EXP_DROP(
-        (lent, mult) -> InternalEntityDataUtil
-            .setExpDropMultiplier(lent, mult, true)
+        (lent, formula) -> InternalEntityDataUtil
+            .setExpDropMultiplierFormula(lent, formula, true)
     ),
 
     FLYING_SPEED(
@@ -47,8 +47,8 @@ public enum BuffType {
 
     //TODO Implement
     ITEM_DROP(
-        (lent, mult) -> InternalEntityDataUtil
-            .setItemDropMultiplier(lent, mult, true)
+        (lent, formula) -> InternalEntityDataUtil
+            .setItemDropMultiplier(lent, formula, true)
     ),
 
     KNOCKBACK_RESISTANCE(
@@ -69,8 +69,8 @@ public enum BuffType {
 
     //TODO Implement
     SHIELD_BREAKER(
-        (lent, mult) -> InternalEntityDataUtil
-            .setShieldBreakerMultiplier(lent, mult, true)
+        (lent, formula) -> InternalEntityDataUtil
+            .setShieldBreakerMultiplier(lent, formula, true)
     ),
 
     ZOMBIE_SPAWN_REINFORCEMENTS(
@@ -78,22 +78,22 @@ public enum BuffType {
     );
 
     private final @Nullable Attribute attribute;
-    private final @Nullable BiConsumer<LivingEntity, Double> multiplierConsumer;
+    private final @Nullable BiConsumer<LivingEntity, String> formulaConsumer;
     private final boolean representsAttribute;
 
     BuffType(
         final @Nonnull Attribute attribute
     ) {
         this.attribute = attribute;
-        this.multiplierConsumer = null;
+        this.formulaConsumer = null;
         this.representsAttribute = true;
     }
 
     BuffType(
-        final @Nonnull BiConsumer<LivingEntity, Double> multiplierConsumer
+        final @Nonnull BiConsumer<LivingEntity, String> formulaConsumer
     ) {
         this.attribute = null;
-        this.multiplierConsumer = multiplierConsumer;
+        this.formulaConsumer = formulaConsumer;
         this.representsAttribute = false;
     }
 
@@ -111,8 +111,8 @@ public enum BuffType {
      *
      * @return Custom-type multiplier consumer representation
      */
-    public @Nonnull BiConsumer<LivingEntity, Double> getCustomMultiplierConsumer() {
-        return Objects.requireNonNull(multiplierConsumer, "multiplierConsumer");
+    public @Nonnull BiConsumer<LivingEntity, String> getCustomFormulaConsumer() {
+        return Objects.requireNonNull(formulaConsumer, "formulaConsumer");
     }
 
     /**

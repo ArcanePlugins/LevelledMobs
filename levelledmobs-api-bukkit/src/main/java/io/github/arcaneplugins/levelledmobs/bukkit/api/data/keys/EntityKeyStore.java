@@ -9,7 +9,7 @@ FIXME comment
 public class EntityKeyStore extends KeyStore {
 
     //TODO document
-    public static final NamespacedKey CREEPER_BLAST_DAMAGE_MULT = getKey("CreeperBlastDamageMult");
+    public static final NamespacedKey CREEPER_BLAST_DAMAGE_MULTIPLIER_FORMULA = getKey("CreeperBlastDamageMultiplierFormula");
 
     /*
     Represents that an entity should not receive any updates from LM's label system.
@@ -40,7 +40,7 @@ public class EntityKeyStore extends KeyStore {
     public static final NamespacedKey DROP_TABLE_IDS = getKey("DropTableIds");
 
     //TODO document
-    public static final NamespacedKey EXP_DROP_MULT = getKey("ExpDropMult");
+    public static final NamespacedKey EXP_DROP_MULTIPLIER_FORMULA = getKey("ExpDropMultiplierFormula");
 
     //TODO document. stores entity uuid of father entity
     public static final NamespacedKey FATHER = getKey("Father");
@@ -58,7 +58,7 @@ public class EntityKeyStore extends KeyStore {
         getKey("InheritanceTransformationFormula");
 
     //TODO document
-    public static final NamespacedKey ITEM_DROP_MULT = getKey("ItemDropMult");
+    public static final NamespacedKey ITEM_DROP_MULTIPLIER_FORMULA = getKey("ItemDropMultiplierFormula");
 
     /**
      * TODO DOC
@@ -139,7 +139,7 @@ public class EntityKeyStore extends KeyStore {
     public static final NamespacedKey PRIMARY_LABEL_HANDLER = getKey("PrimaryLabelHandler");
 
     //TODO document
-    public static final NamespacedKey SHIELD_BREAKER_MULT = getKey("ShieldBreakerMult");
+    public static final NamespacedKey SHIELD_BREAKER_MULTIPLIER_FORMULA = getKey("ShieldBreakerMultiplierFormula");
 
     /*
     If the entity was spawned by a LM spawner, then the name of the LM spawner will be stored using

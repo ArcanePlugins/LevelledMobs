@@ -1,10 +1,14 @@
 package io.github.arcaneplugins.levelledmobs.bukkit.logic.context.placeholder;
 
+import io.github.arcaneplugins.levelledmobs.bukkit.api.util.Pair;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.context.Context;
-import io.github.arcaneplugins.levelledmobs.bukkit.util.Log;
-import java.util.HashSet;
-import java.util.Set;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.context.placeholder.impl.StandardPlaceholders;
+import io.github.arcaneplugins.levelledmobs.bukkit.util.Log;
+import io.github.arcaneplugins.levelledmobs.bukkit.util.StringUtils;
+import java.util.HashSet;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.function.Supplier;
 import javax.annotation.Nonnull;
 import org.bukkit.Bukkit;
 import org.jetbrains.annotations.NotNull;
@@ -24,8 +28,16 @@ public class ContextPlaceholderHandler {
     }
 
     public @Nonnull String replace(@Nonnull String input, final @Nonnull Context context) {
-        for(var placeholder : getContextPlaceholders()) {
+        for(final ContextPlaceholder placeholder : getContextPlaceholders()) {
             input = placeholder.replace(input, context);
+        }
+
+        for(final Entry<String, Pair<String, Supplier<String>>> entry : context
+            .getMiscContext().entrySet()
+        ) {
+            final String placeholder = entry.getValue().getLeft();
+            final Supplier<String> supplier = entry.getValue().getRight();
+            input = StringUtils.replaceIfExists(input, placeholder, supplier);
         }
 
         return input;
