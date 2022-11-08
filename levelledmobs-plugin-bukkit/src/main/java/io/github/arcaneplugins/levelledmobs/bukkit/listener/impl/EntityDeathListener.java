@@ -1,16 +1,21 @@
-package io.github.arcaneplugins.levelledmobs.bukkit.listener;
+package io.github.arcaneplugins.levelledmobs.bukkit.listener.impl;
+
+import static io.github.arcaneplugins.levelledmobs.bukkit.debug.DebugCategory.DEATH_DROPS;
 
 import io.github.arcaneplugins.levelledmobs.bukkit.LevelledMobs;
 import io.github.arcaneplugins.levelledmobs.bukkit.api.data.EntityDataUtil;
 import io.github.arcaneplugins.levelledmobs.bukkit.api.data.ItemDataUtil;
+import io.github.arcaneplugins.levelledmobs.bukkit.listener.ListenerWrapper;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.LogicHandler;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.context.Context;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.customdrops.CustomDropResult;
+import io.github.arcaneplugins.levelledmobs.bukkit.util.Log;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import javax.annotation.Nonnull;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
@@ -31,8 +36,10 @@ public class EntityDeathListener extends ListenerWrapper {
         final LivingEntity entity = event.getEntity();
 
         if(EntityDataUtil.isLevelled(entity, true)) {
+            Log.debug(DEATH_DROPS, () -> "Entity is levelled, handling death drops");
             handleItemDrops(event);
             handleExpDrops(event);
+            Log.debug(DEATH_DROPS, () -> "Finished handling death drops");
         }
 
         LevelledMobs.getInstance().getLogicHandler().runFunctionsWithTriggers(
@@ -41,26 +48,48 @@ public class EntityDeathListener extends ListenerWrapper {
     }
 
     private void handleItemDrops(final @Nonnull EntityDeathEvent event) {
+        final Supplier<String> debugDropLister = () -> {
+            final StringBuilder sb = new StringBuilder("*** Total Drop Evaluation (%s): "
+                .formatted(event.getDrops().size()));
+
+            for(final ItemStack is : event.getDrops()) {
+                if(is == null) {
+                    sb.append("[!!null!!]; ");
+                } else {
+                    sb.append("[%s x%s]; ".formatted(is.getType(), is.getAmount()));
+                }
+            }
+
+            return sb.toString();
+        };
+
+        Log.debug(DEATH_DROPS, debugDropLister);
+
         final List<ItemStack> vanillaDrops = new LinkedList<>();
         final List<ItemStack> nonVanillaDrops = new LinkedList<>();
         final List<ItemStack> customDrops = new LinkedList<>();
 
-        sortItemDrops(event, vanillaDrops, nonVanillaDrops, customDrops);
+        sortItemDrops(event, vanillaDrops, nonVanillaDrops);
         generateCustomItemDrops(event, vanillaDrops, nonVanillaDrops, customDrops);
         multiplyItemDrops(event, vanillaDrops, nonVanillaDrops, customDrops);
+
+        Log.debug(DEATH_DROPS, () -> "v-drops: %s, nv-drops: %s, c-drops: %s".formatted(
+            vanillaDrops.size(), nonVanillaDrops.size(), customDrops.size()));
 
         event.getDrops().clear();
         event.getDrops().addAll(vanillaDrops);
         event.getDrops().addAll(nonVanillaDrops);
         event.getDrops().addAll(customDrops);
+
+        Log.debug(DEATH_DROPS, debugDropLister);
     }
 
     private void sortItemDrops(
         final @Nonnull EntityDeathEvent event,
         final @Nonnull List<ItemStack> vanillaDrops,
-        final @Nonnull List<ItemStack> nonVanillaDrops,
-        final @Nonnull List<ItemStack> customDrops
+        final @Nonnull List<ItemStack> nonVanillaDrops
     ) {
+        Log.debug(DEATH_DROPS, () -> "[sort] Sorting item drops");
         // Note that LM Equipment which is dropped from the mob is considered non-vanilla
         // in the item sorting, NOT as an itemstack to be added to the customDrops list.
         // The customDrops list contains a list of NEW itemstacks to be dropped by the mob
@@ -68,8 +97,12 @@ public class EntityDeathListener extends ListenerWrapper {
 
         for(final ItemStack drop : event.getDrops()) {
             if(isNonVanillaItemDrop(event.getEntity(), drop)) {
+                Log.debug(DEATH_DROPS, () -> "[sort] Sorted non-vanilla drop '%s'."
+                    .formatted(drop.getType()));
                 nonVanillaDrops.add(drop);
             } else {
+                Log.debug(DEATH_DROPS, () -> "[sort] Sorted vanilla drop '%s'."
+                    .formatted(drop.getType()));
                 vanillaDrops.add(drop);
             }
         }
@@ -79,6 +112,9 @@ public class EntityDeathListener extends ListenerWrapper {
         final @Nonnull LivingEntity entity,
         final @Nonnull ItemStack itemStack
     ) {
+        Log.debug(DEATH_DROPS, () -> "[isNonVanilla] Checking if '%s' is non-vanilla"
+            .formatted(itemStack.getType()));
+
         // Return true if the item was created by LM ('Custom').
         if(ItemDataUtil.isItemCustom(itemStack).toFalsyBoolean())
             return true;
@@ -93,11 +129,20 @@ public class EntityDeathListener extends ListenerWrapper {
         final @Nonnull List<ItemStack> nonVanillaDrops,
         final @Nonnull List<ItemStack> customDrops
     ) {
+        Log.debug(DEATH_DROPS, () -> "[GenCustDrp] Generating custom item drops");
+
         //TODO FIXME IMPORTANT !!!!!!!!!!!!!!!!
         // Remove instantiation of CDR here, it's just to stop IDE from complaining before
         //  CustomDropHandler#createDropResult(EntityDeathEvent) is implemented.
         final CustomDropResult result =
             new CustomDropResult(Collections.emptyList(), false, false);
+
+        Log.debug(DEATH_DROPS, () -> "[GenCustDrp] Count: %s; Over-Van: %s; Over-NonVan: %s"
+            .formatted(
+                result.getDrops().size(),
+                result.overridesVanillaDrops(),
+                result.overridesNonVanillaDrops())
+        );
 
         customDrops.addAll(result.getDrops());
 
@@ -114,6 +159,8 @@ public class EntityDeathListener extends ListenerWrapper {
         final @Nonnull List<ItemStack> nonVanillaDrops,
         final @Nonnull List<ItemStack> customDrops
     ) {
+        Log.debug(DEATH_DROPS, () -> "[Mult] Multiplying item drops");
+
         final LivingEntity entity = event.getEntity();
 
         final double evaluatedMultiplier = Crunch.evaluateExpression(
@@ -123,15 +170,21 @@ public class EntityDeathListener extends ListenerWrapper {
             )
         );
 
+        Log.debug(DEATH_DROPS, () -> "[Mult] Evaluated multiplier: " + evaluatedMultiplier);
+
         final Function<ItemStack, ItemStack[]> stackMultiplier = (stack) -> {
             final int newAmount = (int) (stack.getAmount() * evaluatedMultiplier);
+            Log.debug(DEATH_DROPS, () -> "[Mult] NewAmount=" + newAmount);
 
             final int additionalStacks = (int) Math.floor(newAmount * 1.0d / stack.getMaxStackSize());
             final int lastStack = newAmount - (stack.getMaxStackSize() * additionalStacks);
 
+            Log.debug(DEATH_DROPS, () -> "[Mult] AdditionalStacks=" + additionalStacks);
+            Log.debug(DEATH_DROPS, () -> "[Mult] LastStack=" + lastStack);
+
             final ItemStack[] result = new ItemStack[additionalStacks + 1];
 
-            for(int i = 1; i < additionalStacks; i++) {
+            for(int i = 1; i <= additionalStacks; i++) {
                 final ItemStack is = stack.clone();
                 is.setAmount(stack.getMaxStackSize());
                 result[i - 1] = is;
@@ -146,6 +199,7 @@ public class EntityDeathListener extends ListenerWrapper {
         /*
         handle vanilla drops
          */
+        Log.debug(DEATH_DROPS, () -> "[Mult] Multiplying vanilla drops");
         final LinkedList<ItemStack> newVanillaDrops = new LinkedList<>();
         for(final ItemStack vanillaDrop : vanillaDrops) {
             newVanillaDrops.addAll(Arrays.asList(stackMultiplier.apply(vanillaDrop)));
@@ -156,6 +210,7 @@ public class EntityDeathListener extends ListenerWrapper {
         /*
         handle custom drops
          */
+        Log.debug(DEATH_DROPS, () -> "[Mult] Multiplying custom drops");
         final LinkedList<ItemStack> newCustomDrops = new LinkedList<>();
         for(final ItemStack customDrop : customDrops) {
             //TODO if custom drop is not multipliable, then `continue;`
@@ -174,7 +229,10 @@ public class EntityDeathListener extends ListenerWrapper {
             .getRoot().node("advanced", "multiply-non-vanilla-drops")
             .getBoolean(false);
 
+        Log.debug(DEATH_DROPS, () -> "[Mult] Multiply non-vanilla drops?=" + multiplyNonVanillaDrops);
+
         if(multiplyNonVanillaDrops) {
+            Log.debug(DEATH_DROPS, () -> "[Mult] Multiplying non-vanilla drops");
             final LinkedList<ItemStack> newNonVanillaDrops = new LinkedList<>();
             for(final ItemStack nonVanillaDrop : nonVanillaDrops) {
                 newNonVanillaDrops.addAll(Arrays.asList(stackMultiplier.apply(nonVanillaDrop)));
@@ -185,6 +243,7 @@ public class EntityDeathListener extends ListenerWrapper {
     }
 
     private void handleExpDrops(final @Nonnull EntityDeathEvent event) {
+        Log.debug(DEATH_DROPS, () -> "[Exp] Handling exp; starting with " + event.getDroppedExp());
         final LivingEntity entity = event.getEntity();
 
         final String multFormula = EntityDataUtil
@@ -199,7 +258,11 @@ public class EntityDeathListener extends ListenerWrapper {
             )
         );
 
-        event.setDroppedExp(event.getDroppedExp() * (int) eval);
+        Log.debug(DEATH_DROPS, () -> "[Exp] Multiplying exp drops by " + eval);
+
+        event.setDroppedExp((int) (event.getDroppedExp() * eval));
+
+        Log.debug(DEATH_DROPS, () -> "[Exp] finishing with " + event.getDroppedExp());
     }
 
 }

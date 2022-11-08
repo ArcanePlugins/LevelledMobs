@@ -1,5 +1,6 @@
 package io.github.arcaneplugins.levelledmobs.bukkit.debug;
 
+import io.github.arcaneplugins.levelledmobs.bukkit.listener.impl.EntityDeathListener;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.function.process.action.impl.setbuffs.SetBuffsAction;
 
 public enum DebugCategory {
@@ -13,5 +14,11 @@ public enum DebugCategory {
     /**
      * Shows the buff application process for {@link SetBuffsAction}.
      */
-    BUFFS
+    BUFFS,
+
+    /**
+     * Shows information about drop calculation in {@link EntityDeathListener}.
+     */
+    DEATH_DROPS,
+
 }

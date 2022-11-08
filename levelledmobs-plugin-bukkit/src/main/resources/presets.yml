@@ -90,7 +90,7 @@ presets:
           in-list: ['CREEPER']
         types:
           in-list: ['CREEPER_BLAST_DAMAGE']
-        multiplier-formula: '1 + %entity-level-ratio%'
+        multiplier-formula: '1 + (%entity-level-ratio% * 2)'
 
       - buff: 'item-drop-boost'
         enabled: true

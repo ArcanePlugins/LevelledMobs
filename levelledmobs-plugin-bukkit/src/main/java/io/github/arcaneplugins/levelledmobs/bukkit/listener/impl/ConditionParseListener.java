@@ -1,5 +1,6 @@
-package io.github.arcaneplugins.levelledmobs.bukkit.listener;
+package io.github.arcaneplugins.levelledmobs.bukkit.listener.impl;
 
+import io.github.arcaneplugins.levelledmobs.bukkit.listener.ListenerWrapper;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.function.process.condition.Condition;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.function.process.condition.impl.ChanceCondition;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.function.process.condition.impl.EntityLevelCondition;

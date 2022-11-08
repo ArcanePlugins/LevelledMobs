@@ -1,5 +1,6 @@
-package io.github.arcaneplugins.levelledmobs.bukkit.listener;
+package io.github.arcaneplugins.levelledmobs.bukkit.listener.impl;
 
+import io.github.arcaneplugins.levelledmobs.bukkit.listener.ListenerWrapper;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.levelling.strategy.LevellingStrategyRequestEvent;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.levelling.strategy.impl.basic.BasicLevellingStrategy;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.levelling.strategy.impl.random.RandomLevellingStrategy;

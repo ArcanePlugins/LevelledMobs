@@ -1,10 +1,11 @@
-package io.github.arcaneplugins.levelledmobs.bukkit.listener;
+package io.github.arcaneplugins.levelledmobs.bukkit.listener.impl;
 
 import de.themoep.minedown.adventure.MineDown;
 import io.github.arcaneplugins.levelledmobs.bukkit.LevelledMobs;
 import io.github.arcaneplugins.levelledmobs.bukkit.api.data.EntityDataUtil;
 import io.github.arcaneplugins.levelledmobs.bukkit.debug.DebugCategory;
 import io.github.arcaneplugins.levelledmobs.bukkit.debug.DebugHandler;
+import io.github.arcaneplugins.levelledmobs.bukkit.listener.ListenerWrapper;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.LogicHandler;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.context.Context;
 import java.util.function.Consumer;

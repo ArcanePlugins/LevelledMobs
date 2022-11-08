@@ -1,5 +1,6 @@
-package io.github.arcaneplugins.levelledmobs.bukkit.listener;
+package io.github.arcaneplugins.levelledmobs.bukkit.listener.impl;
 
+import io.github.arcaneplugins.levelledmobs.bukkit.listener.ListenerWrapper;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.function.process.action.Action;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.function.process.action.ActionParseEvent;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.function.process.action.impl.AddNbtTagAction;

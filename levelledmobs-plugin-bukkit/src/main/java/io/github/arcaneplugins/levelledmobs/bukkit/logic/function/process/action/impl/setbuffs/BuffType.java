@@ -1,12 +1,16 @@
 package io.github.arcaneplugins.levelledmobs.bukkit.logic.function.process.action.impl.setbuffs;
 
 import io.github.arcaneplugins.levelledmobs.bukkit.data.InternalEntityDataUtil;
+import io.github.arcaneplugins.levelledmobs.bukkit.logic.LogicHandler;
+import io.github.arcaneplugins.levelledmobs.bukkit.logic.context.Context;
 import java.util.Objects;
 import java.util.function.BiConsumer;
 import javax.annotation.Nonnull;
 import org.bukkit.attribute.Attribute;
+import org.bukkit.entity.Creeper;
 import org.bukkit.entity.LivingEntity;
 import org.jetbrains.annotations.Nullable;
+import redempt.crunch.Crunch;
 
 public enum BuffType {
 
@@ -23,11 +27,19 @@ public enum BuffType {
     ),
 
     CREEPER_BLAST_DAMAGE(
-        (lent, formula) -> InternalEntityDataUtil
-            .setCreeperBlastRadiusMultiplierFormula(lent, formula, true)
+        (lent, formula) -> {
+            if(!(lent instanceof Creeper creeper)) return;
+
+            final double multiplier = Crunch.evaluateExpression(
+                LogicHandler.replacePapiAndContextPlaceholders(
+                    formula, new Context().withEntity(creeper)
+                )
+            );
+
+            creeper.setExplosionRadius((int) (creeper.getExplosionRadius() * multiplier));
+        }
     ),
 
-    //TODO Implement
     EXP_DROP(
         (lent, formula) -> InternalEntityDataUtil
             .setExpDropMultiplierFormula(lent, formula, true)
@@ -45,7 +57,6 @@ public enum BuffType {
         Attribute.HORSE_JUMP_STRENGTH
     ),
 
-    //TODO Implement
     ITEM_DROP(
         (lent, formula) -> InternalEntityDataUtil
             .setItemDropMultiplier(lent, formula, true)
