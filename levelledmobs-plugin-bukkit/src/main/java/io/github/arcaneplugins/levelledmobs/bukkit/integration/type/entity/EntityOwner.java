@@ -1,6 +1,6 @@
 package io.github.arcaneplugins.levelledmobs.bukkit.integration.type.entity;
 
-import io.github.arcaneplugins.levelledmobs.bukkit.util.TriState;
+import io.github.arcaneplugins.levelledmobs.bukkit.api.util.TriState;
 import org.bukkit.entity.LivingEntity;
 import org.jetbrains.annotations.NotNull;
 
