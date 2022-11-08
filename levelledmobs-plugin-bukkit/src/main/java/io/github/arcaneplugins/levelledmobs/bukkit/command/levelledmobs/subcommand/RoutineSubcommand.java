@@ -4,6 +4,8 @@ import dev.jorel.commandapi.CommandAPICommand;
 
 public class RoutineSubcommand {
 
+    // NOTE: yes, this class is done, it is really this simple.
+
     public static final CommandAPICommand INSTANCE =
         new CommandAPICommand("routine")
             .withPermission("levelledmobs.command.levelledmobs.routine")
