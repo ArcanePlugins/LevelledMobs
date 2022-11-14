@@ -65,12 +65,6 @@ public final class LevelledMobs extends JavaPlugin {
             return;
         }
 
-        final String version = getDescription().getVersion();
-        if(version.contains("alpha") || version.contains("beta")) {
-            Log.war("You are running an alpha/beta version of LevelledMobs. Please take care, "
-            + "and beware that this version is unlikely to be tested.");
-        }
-
         Log.inf("Plugin enabled");
     }
 

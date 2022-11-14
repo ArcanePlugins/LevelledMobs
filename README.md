@@ -91,12 +91,30 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 **[View License Document: `LICENSE.md`](LICENSE.md)**
 
+### Embedded Projects
+
+We are grateful to the  authors and contributors of these projects,
+as they make the current version of LevelledMobs possible.
+
+Remember to give these projects a star. :)
+
+- [CommandAPI](https://github.com/JorelAli/CommandAPI) (jorel)
+- [Commons](https://commons.apache.org/) (Apache Software Foundation)
+- [Configurate](https://github.com/SpongePowered/Configurate/) (SpongePowered)
+- [Crunch](https://github.com/Redempt/Crunch) (Redempt)
+- [MineDown](https://github.com/Phoenix616/MineDown) (Phoenix616)
+- [MorePersistentDataTypes](https://github.com/JEFF-Media-GbR/MorePersistentDataTypes) (JEFF-Media-GbR)
+- [Item-NBT-API](https://github.com/tr7zw/Item-NBT-API) (tr7zw)
+- [Paper-API](https://github.com/PaperMC/Paper) (PaperMC)
+- [PlaceholderAPI](https://github.com/PlaceholderAPI/PlaceholderAPI) (Clip)
+- [Spigot-API](https://www.spigotmc.org/) (md_5)
+
 ## Branches
 
 * `main`: release branch (latest version on Spigot). Code here is stable.
 * `?.?-dev`: these branches contain unfinished code for future releases. Code here is unlikely to be
   stable.
-    * e.g. `3.0-dev`: code being written for LM v3.0
-    * e.g. `1.2-dev`: code being written for LM v1.2
+    * e.g. `3.0-dev`: code being written for LM v3.0.x
+    * e.g. `1.2-dev`: code being written for LM v1.2.x
 * `javadocs`: javadocs for the plugin
 * `task/???`: a branch addressing a specific topic (should be merged later).
