@@ -27,10 +27,19 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.configurate.CommentedConfigurationNode;
 import org.spongepowered.configurate.serialize.SerializationException;
+import redempt.crunch.Crunch;
+import redempt.crunch.functional.EvaluationEnvironment;
 
 public final class LogicHandler {
 
     /* vars */
+
+    public static final EvaluationEnvironment CRUNCH_EVAL_ENV = new EvaluationEnvironment();
+
+    static {
+        CRUNCH_EVAL_ENV.addFunction("between", 3,
+            (d) -> d[0] >= d[1] && d[0] <= d[2] ? 1d : 0d);
+    }
 
     private final ContextPlaceholderHandler contextPlaceholderHandler = new ContextPlaceholderHandler();
     private final HashSet<Group> groups = new HashSet<>();
@@ -39,6 +48,10 @@ public final class LogicHandler {
     private CommentedConfigurationNode parsedFunctionsNode;
 
     /* methods */
+
+    public static double evaluateExpression(final String expression) {
+        return Crunch.compileExpression(expression, CRUNCH_EVAL_ENV).evaluate();
+    }
 
     /**
     Initialisation - parse functions, presets, groups, etc.

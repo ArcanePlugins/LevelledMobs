@@ -8,10 +8,10 @@ import io.github.arcaneplugins.levelledmobs.bukkit.api.data.ItemDataUtil;
 import io.github.arcaneplugins.levelledmobs.bukkit.listener.ListenerWrapper;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.LogicHandler;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.context.Context;
-import io.github.arcaneplugins.levelledmobs.bukkit.logic.customdrops.CustomDropResult;
+import io.github.arcaneplugins.levelledmobs.bukkit.logic.customdrops.CustomDropHandler;
+import io.github.arcaneplugins.levelledmobs.bukkit.logic.customdrops.EntityDeathCustomDropResult;
 import io.github.arcaneplugins.levelledmobs.bukkit.util.Log;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Function;
@@ -23,7 +23,6 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
-import redempt.crunch.Crunch;
 
 public class EntityDeathListener extends ListenerWrapper {
 
@@ -130,13 +129,7 @@ public class EntityDeathListener extends ListenerWrapper {
         final @Nonnull List<ItemStack> customDrops
     ) {
         Log.debug(DEATH_DROPS, () -> "[GenCustDrp] Generating custom item drops");
-
-        //TODO FIXME IMPORTANT !!!!!!!!!!!!!!!!
-        // Remove instantiation of CDR here, it's just to stop IDE from complaining before
-        //  CustomDropHandler#createDropResult(EntityDeathEvent) is implemented.
-        final CustomDropResult result =
-            new CustomDropResult(Collections.emptyList(), false, false);
-
+        final EntityDeathCustomDropResult result = CustomDropHandler.handleEntityDeath(event);
         Log.debug(DEATH_DROPS, () -> "[GenCustDrp] Count: %s; Over-Van: %s; Over-NonVan: %s"
             .formatted(
                 result.getDrops().size(),
@@ -163,7 +156,7 @@ public class EntityDeathListener extends ListenerWrapper {
 
         final LivingEntity entity = event.getEntity();
 
-        final double evaluatedMultiplier = Crunch.evaluateExpression(
+        final double evaluatedMultiplier = LogicHandler.evaluateExpression(
             LogicHandler.replacePapiAndContextPlaceholders(
                 EntityDataUtil.getItemDropMultiplierFormula(entity, true),
                 new Context().withEntity(entity)
@@ -251,7 +244,7 @@ public class EntityDeathListener extends ListenerWrapper {
 
         if(multFormula == null || multFormula.isBlank()) return;
 
-        final double eval = Crunch.evaluateExpression(
+        final double eval = LogicHandler.evaluateExpression(
             LogicHandler.replacePapiAndContextPlaceholders(
                 multFormula,
                 new Context().withEntity(entity)

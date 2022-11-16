@@ -2,6 +2,7 @@ package io.github.arcaneplugins.levelledmobs.bukkit.logic.context;
 
 import io.github.arcaneplugins.levelledmobs.bukkit.LevelledMobs;
 import io.github.arcaneplugins.levelledmobs.bukkit.api.util.Pair;
+import io.github.arcaneplugins.levelledmobs.bukkit.logic.customdrops.cdevent.CustomDropsEvent;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.function.LmFunction;
 import java.util.Collection;
 import java.util.HashMap;
@@ -34,6 +35,7 @@ public final class Context {
     private LivingEntity mother;
     private final List<LmFunction> linkedFunctions = new LinkedList<>();
     private final Collection<LivingEntity> parents = new LinkedList<>();
+    private CustomDropsEvent customDropsEvent;
 
     private final Map<String, Pair<String, Supplier<String>>> miscContext = new HashMap<>();
 
@@ -126,7 +128,6 @@ public final class Context {
     @NotNull
     public Context withFather(final LivingEntity father) {
         Objects.requireNonNull(father, "father");
-
         this.father = father;
         return this;
     }
@@ -137,13 +138,23 @@ public final class Context {
     @NotNull
     public Context withMother(final LivingEntity mother) {
         Objects.requireNonNull(mother, "mother");
-
         this.mother = mother;
         return this;
     }
 
     @Nullable
     public LivingEntity getMother() { return mother; }
+
+    @NotNull
+    public Context withCustomDropsEvent(final CustomDropsEvent event) {
+        Objects.requireNonNull(event, "event");
+        this.customDropsEvent = event;
+        return this;
+    }
+
+    public @Nullable CustomDropsEvent getCustomDropsEvent() {
+        return customDropsEvent;
+    }
 
     @Nonnull
     public Map<String, Pair<String, Supplier<String>>> getMiscContext() {

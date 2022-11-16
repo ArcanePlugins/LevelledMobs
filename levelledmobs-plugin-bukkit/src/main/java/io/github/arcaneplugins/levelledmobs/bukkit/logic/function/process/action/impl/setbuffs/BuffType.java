@@ -10,7 +10,6 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Creeper;
 import org.bukkit.entity.LivingEntity;
 import org.jetbrains.annotations.Nullable;
-import redempt.crunch.Crunch;
 
 public enum BuffType {
 
@@ -30,7 +29,7 @@ public enum BuffType {
         (lent, formula) -> {
             if(!(lent instanceof Creeper creeper)) return;
 
-            final double multiplier = Crunch.evaluateExpression(
+            final double multiplier = LogicHandler.evaluateExpression(
                 LogicHandler.replacePapiAndContextPlaceholders(
                     formula, new Context().withEntity(creeper)
                 )

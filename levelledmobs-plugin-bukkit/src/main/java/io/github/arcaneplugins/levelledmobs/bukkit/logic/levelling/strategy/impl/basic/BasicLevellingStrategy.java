@@ -8,7 +8,6 @@ import javax.annotation.Nonnull;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.configurate.CommentedConfigurationNode;
-import redempt.crunch.Crunch;
 
 public class BasicLevellingStrategy extends LevellingStrategy {
 
@@ -25,7 +24,7 @@ public class BasicLevellingStrategy extends LevellingStrategy {
 
     @Override
     public @Nullable Integer generate(@NotNull final Context context) {
-        return (int) Math.floor(Crunch.evaluateExpression(
+        return (int) Math.floor(LogicHandler.evaluateExpression(
             LogicHandler.replacePapiAndContextPlaceholders(getFormula(), context)
         ));
     }

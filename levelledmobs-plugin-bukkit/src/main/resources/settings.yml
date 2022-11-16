@@ -4,8 +4,6 @@
 ##########################################
 
 functions:
-
-  # This function automatically levels entities, if they fit certain requirements.
   - function: 'entity-leveller'
     triggers: ['on-entity-spawn', 'on-entity-startup-scan']
 
@@ -32,27 +30,18 @@ functions:
           - condition: 'entity-owner'
             not-in-list: []
 
-        # A list of actions that this process will run, if the conditions are met.
         do:
-
-          # This action tells LevelledMobs that the mob should not
-          # receive any level, i.e., LevelledMobs should ignore it.
           - action: 'set-level'
             formula: 'no-level'
-
-          # This action tells LevelledMobs to not process the rest of
-          # the function any further. If this is otherwise omitted,
-          # then LevelledMobs will run the 'apply-level' process below,
-          # effectively making the 'check-not-levellable' process
-          # useless.
           - action: 'exit-function'
 
-      # Applies a level to the entity (as the previous process ensures the entity has the correct
-      # conditions for this to run).
+      # Applies a level to the entity if they don't already have one.
       - process: 'apply-level'
-        do:
+        if:
+          - condition: 'entity-level'
+            state: 'NOT_LEVELLED'
 
-          # Run the SetLevel Action
+        do:
           - action: 'set-level'
             formula: '%weighted-random-level%'
             strategies:
@@ -64,20 +53,17 @@ functions:
                   '61-80': 2
                   '81-100': 1
 
-          # The difficulty preset will put set-level at this certain position,
-          # instead of putting it at the bottom of this actions list.
+      # Update the entity's states according to their level.
+      - process: 'apply-levelled-stats'
+        do:
           - action: 'set-buffs'
             use-presets: ['average-challenge']
 
-          # Applies a label above the levelled entity's head, achieved through packets (so this does
-          # not change the 'actual' nametag of the entity).
           - action: 'set-packet-label'
             formula: '&8&l༺ &bLvl.%entity-level%&f %entity-prefix%&f%entity-name%&f%entity-suffix%&8 • &7%entity-health-rounded%&8/&7%entity-max-health-rounded%&c♥ &8&l༻'
             visibility-methods: ['TARGETED', 'ATTACKED']
             visibility-duration: 5
 
-          # When the levelled entity is involved inside a death message, its name will be replaced
-          # with this formula.
           - action: 'set-death-label'
             formula: '&bLvl.%entity-level%&f %entity-prefix%&f%entity-name%&f%entity-suffix%&f'
 

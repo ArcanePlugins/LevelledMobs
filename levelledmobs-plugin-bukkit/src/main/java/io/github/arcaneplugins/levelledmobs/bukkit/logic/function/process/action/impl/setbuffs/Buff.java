@@ -17,7 +17,6 @@ import org.bukkit.attribute.AttributeModifier.Operation;
 import org.bukkit.entity.LivingEntity;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.configurate.CommentedConfigurationNode;
-import redempt.crunch.Crunch;
 
 public class Buff {
 
@@ -80,7 +79,7 @@ public class Buff {
             if(buffType.representsAttribute()) {
                 // Add attribute buff (NOT custom LM implementation) to entity
 
-                final double multiplier = Crunch.evaluateExpression(
+                final double multiplier = LogicHandler.evaluateExpression(
                     LogicHandler.replacePapiAndContextPlaceholders(getMultiplierFormula(), context)
                 );
                 Log.debug(BUFFS, () -> "Evaluated multiplier = " + multiplier);

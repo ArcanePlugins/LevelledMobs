@@ -24,7 +24,6 @@ import org.bukkit.entity.LivingEntity;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.configurate.CommentedConfigurationNode;
-import redempt.crunch.Crunch;
 
 public class SetLevelAction extends Action {
 
@@ -197,7 +196,7 @@ public class SetLevelAction extends Action {
 
                 try {
                     return (int) Math.floor(
-                        Crunch.evaluateExpression(
+                        LogicHandler.evaluateExpression(
                             LogicHandler.replacePapiAndContextPlaceholders(formula, context)
                         )
                     );
@@ -287,7 +286,7 @@ public class SetLevelAction extends Action {
                 EntityDataUtil.getMinLevel(father, true),
 
                 (int) Math.floor(
-                    Crunch.evaluateExpression(
+                    LogicHandler.evaluateExpression(
                         LogicHandler.replacePapiAndContextPlaceholders(formula, context)
                     )
                 ),
@@ -354,7 +353,7 @@ public class SetLevelAction extends Action {
         if(maxLevel < minLevel) maxLevel = minLevel;
 
         // evaluate the formula with Crunch
-        final int levelEval = (int) Math.round(Crunch.evaluateExpression(formula));
+        final int levelEval = (int) Math.round(LogicHandler.evaluateExpression(formula));
 
         // finally, ensure the evaluated level is between the min and max levels.
         final int level = Math.min(Math.max(levelEval, minLevel), maxLevel);
