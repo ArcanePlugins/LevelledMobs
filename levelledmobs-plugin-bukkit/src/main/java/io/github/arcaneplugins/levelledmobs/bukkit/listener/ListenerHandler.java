@@ -11,6 +11,7 @@ import io.github.arcaneplugins.levelledmobs.bukkit.listener.impl.EntityRegainHea
 import io.github.arcaneplugins.levelledmobs.bukkit.listener.impl.EntitySpawnListener;
 import io.github.arcaneplugins.levelledmobs.bukkit.listener.impl.EntityTransformListener;
 import io.github.arcaneplugins.levelledmobs.bukkit.listener.impl.LevellingStrategyRequestListener;
+import io.github.arcaneplugins.levelledmobs.bukkit.listener.impl.PlayerDeathListener;
 import io.github.arcaneplugins.levelledmobs.bukkit.listener.impl.PlayerJoinListener;
 import io.github.arcaneplugins.levelledmobs.bukkit.listener.impl.PlayerQuitListener;
 import io.github.arcaneplugins.levelledmobs.bukkit.listener.impl.PlayerTeleportListener;
@@ -45,6 +46,7 @@ public final class ListenerHandler {
         new EntityRegainHealthListener(),
         new EntitySpawnListener(),
         new EntityTransformListener(),
+        new PlayerDeathListener(),
         new PlayerJoinListener(),
         new PlayerQuitListener(),
         new PlayerTeleportListener()

@@ -66,19 +66,24 @@ public class EntityDeathListener extends ListenerWrapper {
 
         final List<ItemStack> vanillaDrops = new LinkedList<>();
         final List<ItemStack> nonVanillaDrops = new LinkedList<>();
-        final List<ItemStack> customDrops = new LinkedList<>();
+        final List<ItemStack> customDropsToMultiply = new LinkedList<>();
+        final List<ItemStack> customDropsToNotMultiply = new LinkedList<>();
 
         sortItemDrops(event, vanillaDrops, nonVanillaDrops);
-        generateCustomItemDrops(event, vanillaDrops, nonVanillaDrops, customDrops);
-        multiplyItemDrops(event, vanillaDrops, nonVanillaDrops, customDrops);
+        generateCustomItemDrops(event, vanillaDrops, nonVanillaDrops,
+            customDropsToMultiply, customDropsToNotMultiply);
+        multiplyItemDrops(event, vanillaDrops, nonVanillaDrops,
+            customDropsToMultiply, customDropsToNotMultiply);
 
-        Log.debug(DEATH_DROPS, () -> "v-drops: %s, nv-drops: %s, c-drops: %s".formatted(
-            vanillaDrops.size(), nonVanillaDrops.size(), customDrops.size()));
+        Log.debug(DEATH_DROPS, () -> "v-drops: %s, nv-drops: %s, c-tm-drops: %s, c-tnm-drops: %s"
+            .formatted(vanillaDrops.size(), nonVanillaDrops.size(), customDropsToMultiply.size(),
+                customDropsToNotMultiply.size()));
 
         event.getDrops().clear();
         event.getDrops().addAll(vanillaDrops);
         event.getDrops().addAll(nonVanillaDrops);
-        event.getDrops().addAll(customDrops);
+        event.getDrops().addAll(customDropsToMultiply);
+        event.getDrops().addAll(customDropsToNotMultiply);
 
         Log.debug(DEATH_DROPS, debugDropLister);
     }
@@ -126,7 +131,8 @@ public class EntityDeathListener extends ListenerWrapper {
         final @Nonnull EntityDeathEvent event,
         final @Nonnull List<ItemStack> vanillaDrops,
         final @Nonnull List<ItemStack> nonVanillaDrops,
-        final @Nonnull List<ItemStack> customDrops
+        final @Nonnull List<ItemStack> customDropsToMultiply,
+        final @Nonnull List<ItemStack> customDropsToNotMultiply
     ) {
         Log.debug(DEATH_DROPS, () -> "[GenCustDrp] Generating custom item drops");
         final EntityDeathCustomDropResult result = CustomDropHandler.handleEntityDeath(event);
@@ -137,7 +143,7 @@ public class EntityDeathListener extends ListenerWrapper {
                 result.overridesNonVanillaDrops())
         );
 
-        customDrops.addAll(result.getDrops());
+        customDropsToMultiply.addAll(result.getDrops());
 
         if(result.overridesVanillaDrops())
             vanillaDrops.clear();
@@ -150,7 +156,8 @@ public class EntityDeathListener extends ListenerWrapper {
         final @Nonnull EntityDeathEvent event,
         final @Nonnull List<ItemStack> vanillaDrops,
         final @Nonnull List<ItemStack> nonVanillaDrops,
-        final @Nonnull List<ItemStack> customDrops
+        final @Nonnull List<ItemStack> customDropsToMultiply,
+        final @Nonnull List<ItemStack> customDropsToNotMultiply
     ) {
         Log.debug(DEATH_DROPS, () -> "[Mult] Multiplying item drops");
 
@@ -205,12 +212,12 @@ public class EntityDeathListener extends ListenerWrapper {
          */
         Log.debug(DEATH_DROPS, () -> "[Mult] Multiplying custom drops");
         final LinkedList<ItemStack> newCustomDrops = new LinkedList<>();
-        for(final ItemStack customDrop : customDrops) {
+        for(final ItemStack customDrop : customDropsToMultiply) {
             //TODO if custom drop is not multipliable, then `continue;`
             newCustomDrops.addAll(Arrays.asList(stackMultiplier.apply(customDrop)));
         }
-        customDrops.clear();
-        customDrops.addAll(newCustomDrops);
+        customDropsToMultiply.clear();
+        customDropsToMultiply.addAll(newCustomDrops);
 
 
         /*

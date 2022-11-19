@@ -5,6 +5,7 @@ import io.github.arcaneplugins.levelledmobs.bukkit.data.InternalEntityDataUtil;
 import io.github.arcaneplugins.levelledmobs.bukkit.listener.ListenerWrapper;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.context.Context;
 import io.github.arcaneplugins.levelledmobs.bukkit.api.data.keys.EntityKeyStore;
+import io.github.arcaneplugins.levelledmobs.bukkit.logic.customdrops.CustomDropHandler;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -52,5 +53,10 @@ public final class EntitySpawnListener extends ListenerWrapper {
         LevelledMobs.getInstance().getLogicHandler().runFunctionsWithTriggers(
             new Context().withEntity(entity), "on-entity-spawn"
         );
+
+        /*
+        Custom Drops
+         */
+        CustomDropHandler.handleEntitySpawn(event);
     }
 }
