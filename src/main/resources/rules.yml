@@ -1,308 +1,99 @@
-#                    _                   _ _          _ __  __       _
-#                   | |    _____   _____| | | ___  __| |  \/  | ___ | |__  ___
-#                   | |   / _ \ \ / / _ \ | |/ _ \/ _` | |\/| |/ _ \| '_ \/ __|
-#                   | |__|  __/\ V /  __/ | |  __/ (_| | |  | | (_) | |_) \__ \
-#                   |_____\___| \_/ \___|_|_|\___|\__,_|_|  |_|\___/|_.__/|___/
-#                             The Ultimate RPG Levelled Mobs Solution
-#
-# --------------------------------------------------------------------------------------------LM3
-# +                                      ++                                                  +LM3
-# +  Main Developers                     ++  Documentation (on our Wiki)                     +LM3
-# +    lokka30                           ++    https://github.com/lokka30/LevelledMobs/wiki  +LM3
-# +      Author and developer            ++                                                  +LM3
-# +      https://ko-fi.com/lokka30       ++  Support/Discussion (on our Discord)             +LM3
-# +                                      ++    Join our Discord for free, quality support.   +LM3
-# +    PenalBuffalo (aka. stumper66)     ++    If you are unable to, PM @lokka30 on SpigotMC +LM3
-# +      LevelledMobs 3 maintainer       ++    https://discord.gg/RQ8M4A5                    +LM3
-# +      https://ko-fi.com/penalbuffalo  ++                                                  +LM3
-# +                                      ++  Welcome to LevelledMobs 3! Please read the      +LM3
-# +    UltimaOath (aka. Oathkeeper)      ++  relevant documentation prior to attempting any  +LM3
-# +      Docs and configs since v2       ++  changes to this file.                           +LM3
-# +      https://ko-fi.com/ultimaoath    ++                                                  +LM3
-# +                                      ++                                                  +LM3
-# --------------------------------------------------------------------------------------------LM3
-#                                     _____     _
-#                                    | __  |_ _| |___ ___
-#                                    |    -| | | | -_|_ -|
-#                                    |__|__|___|_|___|___|
-#
-# +-------------------------------------------------------------------------------------------LM3
-# +                                                                                          +LM3
-# +   Section 01 - Custom Entity and Biome Groups                                            +LM3
-# +                                                                                          +LM3
-# +-------------------------------------------------------------------------------------------LM3
-mob-groups:
-  commons:
-    - ZOMBIE
-    - SKELETON
-    - CREEPER
-  farm:
-    - CHICKEN
-    - COW
-    - SHEEP
-    - PIG
+```
+This page was last updated for LevelledMobs 3.8.2 b721.
 
+Note that any approximated line numbers may become outdated as we update the configuration files.
+```
 
-biome-groups:
-  taigas:
-    - TAIGA
-    - TAIGA_MOUNTAINS
-    - SNOWY_TUNDRA
-    - SNOWY_TAIGA
-    - SNOWY_TAIGA_HILLS
-    - GIANT_TREE_TAIGA
-    - GIANT_SPRUCE_TAIGA
-    - GIANT_SPRUCE_TAIGA_HILLS
-    - GIANT_TREE_TAIGA_HILLS
-    - SNOWY_TAIGA_MOUNTAINS
-  flowers:
-    - FLOWER_FOREST
-    - SUNFLOWER_PLAINS
+***
 
-# +-------------------------------------------------------------------------------------------LM3
-# +                                                                                          +LM3
-# +   Section 02 - Presets                                                                   +LM3
-# +                                                                                          +LM3
-# +   This section comes prebuilt with several sets of PRESETS to use with LevelledMobs!     +LM3
-# +   Out-of-the-box most of these PRESETS are not enabled, and are only here to both        +LM3
-# +   demonstrate the system and allow you to quickly change or use many of the most         +LM3
-# +   popular features LevelledMobs has to offer! If you need help understanding PRESETS,    +LM3
-# +   read the official LevelledMobs Wiki!                                                   +LM3
-# +   https://github.com/lokka30/LevelledMobs/wiki/Documentation---rules.yml#presets         +LM3
-# +                                                                                          +LM3
-# +-------------------------------------------------------------------------------------------LM3
-presets:
-  spawn_Levelling:
-    # This Strategy Preset controls the Spawn-Distance-Levelling system.
-    name: 'LVLling Strategy - Distance-From-Spawn'
-    strategies:
-      distance-from-spawn:
-        increase-level-distance: 150
-        start-distance: 250
-        spawn-location:
-          x: default
-          z: default
+## How do I enable/disable LevelledMobs in certain worlds?
 
-  lvl-mod_spawn-blended:
-    # This Strategy Preset controls the Blended addon to Spawn-Distance-Levelling, adding a Y-coordinate component to the system.
-    name: 'LVLling Modifier - Blended Addon to Spawn Distance Levelling'
-    strategies:
-      distance-from-spawn:
-        blended-levelling:
-          enabled: true
-          transition-y-height: 62
-          lvl-multiplier: 0.05
-          multiplier-period: 10
-          scale-downward: true
+<details>
+<summary>See answer</summary>
 
-  random_Levelling:
-    # This Strategy Preset controls the Random-Levelling system.
-    name: 'LVLling Strategy - Random'
-    strategies:
-      random: true
-
-  weighted_random_Levelling:
-    # This Strategy Preset controls Weighted Random Bias.
-    name: 'LVLling Strategy - Weighted Random'
-    strategies:
-      weighted-random: true
-
-  lvl-mod_player-variable:
-    # This Strategy Preset controls the player-variable based level modification system.
-    name: 'LVLling Modifier - Player Variable AVERAGE CHALLENGE'
-    strategies:
-      player-levelling:
-        match-level: true
-        use-player-max-level: false
-        decrease-level: true
-        recheck-players: false
-        preserve-entity: 10s
-        player-level-scale: 1.0
-        level-cap: 30
-        tiers:
-          1-15: 1-10
-          16-30: 11-20
-          31-45: 21-25
-        variable: '%level%'
-
-  lvl-mod_apply-variance:
-    # This Strategy Preset controls the application of a random level variance to level previously applied.
-    name: 'LVLling Modifier - Apply Variance'
-    strategies:
-      max-random-variance: 2
-
-  ycoord_Levelling:
-    # This Strategy Preset controls Y-Coordinate-Levelling.
-    name: 'LVLling Strategy - Y-LVLling'
-    strategies:
-      y-coordinate:
-        start: 100
-        end: 20
-        period: 0
-
-  allowed_worlds:
+Around line 180 in `rules.yml`, you should see the `allowed_worlds` preset:
+```yaml
+ allowed_worlds:
     # This controls the allowed worlds to apply levels too.
     name: 'Excluded Worldlist'
     conditions:
       worlds:
         # allowed-list: ['*']
         excluded-list: [ 'world_the_end' ]
+```
 
-  basic_challenge:
-    name: 'Basic-Challenge Multipliers'
-    apply-settings:
-      minLevel: 1
-      maxLevel: 10
-      multipliers:
-        max-health: 2.5
-        attack-damage: 1.0
-        ranged-attack-damage: 1.0
-        item-drop: 3.0
-        xp-drop: 5.0
+### Whitelist
 
-      tiered-coloring:
-        1-2: '&#22E76B' #Green
-        3-4: '&#528CFF' #Blue
-        5-6: '&#FFCD56' #Yellow
-        7-8: '&#F2003D' #Red
-        9-10: '&#B447FF' #Purple
-        default: '&#FFFFFF' #White
-      health-indicator:
-        scale: 2
-        max: 5
-        merge: true
+If you want to use a *allowed-list*/*whitelist*, i.e., only worlds X, Y and Z are allowed to have levelled mobs, then use the following:
 
-  average_challenge:
-    name: 'Average-Challenge Multipliers'
-    apply-settings:
-      minLevel: 1
-      maxLevel: 25
-      multipliers:
-        max-health: 5.0
-        movement-speed: 0.15
-        attack-damage: 2.25
-        ranged-attack-damage: 2.25
-        creeper-blast-damage: 0.75
-        item-drop: 3.0
-        xp-drop: 5.0
-        #       Special Multipliers (0.0 Min - 1.0 Max)
-        armor-bonus: 0.2
-        armor-toughness: 0.15
+```yaml 
+allowed-list: [ 'X', 'Y', 'Z' ]
+# excluded-list: [ 'world_the_end' ]
+```
 
-      tiered-coloring:
-        1-5: '&#22E76B' #Green
-        6-10: '&#528CFF' #Blue
-        11-15: '&#FFCD56' #Yellow
-        16-20: '&#F2003D' #Red
-        21-25: '&#B447FF' #Purple
-        default: '&#FFFFFF' #White
-      health-indicator:
-        scale: 4
-        max: 5
-        merge: true
+Make sure `excluded-list` line has the comment symbol (`#`) so it is disabled.
 
-  advanced_challenge:
-    name: 'Advanced-Challenge Multipliers'
-    apply-settings:
-      minLevel: 1
-      maxLevel: 50
-      multipliers:
-        max-health: 8.0
-        movement-speed: 0.35
-        attack-damage: 3.5
-        ranged-attack-damage: 2.75
-        creeper-blast-damage: 1.75
-        follow-range: 0.25
-        item-drop: 3.0
-        xp-drop: 5.0
-        #       Special Multipliers (0.0 Min - 1.0 Max)
-        armor-bonus: 0.3
-        armor-toughness: 0.3
-        attack-knockback: 0.5
-        knockback-resistance: 0.5
+### Blacklist
 
-      tiered-coloring:
-        1-9: '&#22E76B' #Green
-        10-19: '&#528CFF' #Blue
-        20-29: '&#FFCD56' #Yellow
-        30-39: '&#F2003D' #Red
-        40-50: '&#B447FF' #Purple
-        default: '&#FFFFFF' #White
-      health-indicator:
-        scale: 8
-        max: 5
-        merge: true
+If you want to use a *excluded-list*/*blacklist*, i.e., all worlds except X, Y and Z are allowed to have levelled mobs, then use the following:
 
-  extreme_challenge:
-    name: 'Extreme-Challenge Multipliers'
-    apply-settings:
-      minLevel: 1
-      maxLevel: 100
-      multipliers:
-        max-health: 15.0
-        movement-speed: 1.0
-        attack-damage: 5.0
-        ranged-attack-damage: 4.0
-        creeper-blast-damage: 2.5
-        follow-range: 0.5
-        item-drop: 3.0
-        xp-drop: 5.0
-        #       Special Multipliers (0.0 Min - 1.0 Max)
-        armor-bonus: 0.5
-        armor-toughness: 0.5
-        attack-knockback: 0.5
-        knockback-resistance: 0.5
-        zombie-spawn-reinforcements: 0.15
+```yaml
+# allowed-list: ['my_world']
+excluded-list: [ 'X', 'Y', 'Z' ]
+```
 
-      tiered-coloring:
-        1-19: '&#22E76B' #Green
-        20-39: '&#528CFF' #Blue
-        40-59: '&#FFCD56' #Yellow
-        60-79: '&#F2003D' #Red
-        80-100: '&#B447FF' #Purple
-        default: '&#FFFFFF' #White
-      health-indicator:
-        scale: 16
-        max: 5
-        merge: true
+Make sure `allowed-list` line starts with the YAML comment symbol (`#`) so it is disabled.
+ 
+</details>
 
-  nametag_using_indicator:
-    #   This controls the nametag, where the health is displayed using %health-indicator%
-    name: 'Nametag - Health Indicator'
-    apply-settings:
-      nametag: '&8&l༺ %tiered%Lvl %mob-lvl%&8 | &f%displayname%&8 | &f%entity-health-rounded% %tiered%%heart_symbol% &r%health-indicator% &8&l༻'
-      health-indicator:
-        indicator: '█'
-        indicator-half: '▌'
-        colored-tiers:
-          tier-1: '&#22E76B' #Green
-          tier-2: '&#528CFF' #Blue
-          tier-3: '&#FFCD56' #Yellow
-          tier-4: '&#FE803C' #Orange
-          tier-5: '&#F2003D' #Red
-          tier-6: '&#B447FF' #Purple
-          default: '&#FFFFFF' #White
-        merge: true
+## Why are LM's custom mob labels/nametags not being displayed?
 
-  nametag_using_numbers:
-    #   This controls the nametag, where the health is displayed using %entity-health-rounded%
-    name: 'Nametag - Health Numerical'
-    apply-settings:
-      nametag: '&8&l༺ %tiered%Lvl %mob-lvl%&8 | &f%displayname%&8 | &f%entity-health-rounded%&8/&f%entity-max-health-rounded% %tiered%%heart_symbol% &8&l༻'
+<details>
+<summary>See answer</summary>
 
+> **Note:** This information does not pertain to LevelledMobs v3.5 or older, which requires ProtocolLib for 1.16-1.18 (and does not run on 1.19+). Keep your plugins and server software up-to-date!
 
-# +-------------------------------------------------------------------------------------------LM3
-# +                                                                                          +LM3
-# +   L O W E S T   P R I O R I T Y                                                          +LM3
-# +   Section 03 - Default Rules                                                             +LM3
-# +                                                                                          +LM3
-# +   This section sets the minimum required information for LevelledMobs to function!       +LM3
-# +   Much of this is managed by the PRESETS system, however a few configuration lines are   +LM3
-# +   listed individually as well. If you need help understanding the DEFAULT RULES,         +LM3
-# +   read the official LevelledMobs Wiki!                                                   +LM3
-# +   https://github.com/lokka30/LevelledMobs/wiki/Documentation---rules.yml#default-rule    +LM3
-# +                                                                                          +LM3
-# +-------------------------------------------------------------------------------------------LM3
+* Running a MC 1.16, 1.17, or non-Paper-based 1.18 server? Make sure you install [ProtocolLib](https://www.spigotmc.org/resources/protocollib.1997/) in addition to LevelledMobs.
+* Make sure there are no errors in your console, perhaps you have configured `rules.yml` incorrectly.
+* Otherwise, labels should be displaying - if this is not the case, please contact support.
+
+</details>
+
+## What levelling systems are available?
+
+<details>
+<summary>See answer</summary>
+ 
+- **Weighted Random Levelling** (**default**)
+    - Levels are a random number, but you can make certain level ranges more common than others.
+    - By default, lower levels are more common than higher levels.
+    - Comes with easy, normal, and hard mode presets.
+- **Random Levelling**
+    - Levels are a random number, each level has an equal chance of occurring.
+- **Spawn-Distance Levelling**
+    - Levels are based upon mobs' distance from their world's spawnpoint.
+- **Y-Coord Levelling**
+    - When mobs spawn, their level is based upon their current Y coordinate.
+- **Blended Levelling**
+    - Combines Spawn-Distance Levelling and Y-Coord Levelling together.
+- **Player Levelling**
+    - A special levelling system which allows you to use any player statistic from thousands of plugins (any PlaceholderAPI placeholder!) and make mobs levelled based upon that.
+    - For example, you can make mobs have higher levels for players that have more EXP or money. All up to you!
+    - We have an answer a few questions below this one where we explain in detail how you can use Player Levelling on your server.
+- ... and more to come!
+
+</details>
+
+## How do I switch to another levelling system?
+
+<details>
+<summary>See answer</summary>
+
+> **Note:** We have documented enabling the Player Levelling system for a separate question below, in case you were looking to enable that instead.
+
+Find this area at the start of the default-rules section (your file may look slightly different):
+
+```yaml
 default-rule:
   use-preset:
     - allowed_worlds
@@ -319,81 +110,354 @@ default-rule:
     #- random_Levelling
     #- lvl-mod_player-variable
     #- lvl-mod_apply-variance
+```
 
-  conditions:
+*Comment* out the levelling system you *don't* want to use, and *uncomment* the one you *want* to use.
+
+Make sure you have one (1) nametag preset enabled, and one (1) challenge preset enabled, and one (1) levelling strategy enabled for this default rule.
+
+Afterwards, run `/lm reload` or restart your server, so that your changes apply.
+
+Note that existing mobs will not have their levels changed. You can run `/lm rules force_all` to force a rules evaluation for all entities in all worlds, taking any changes that have been made into account. You may alternatively choose to run `/lm kill all * /nodrops` in order to kill all levelled entities in all worlds without causing them to make any drops as well, allowing new ones to spawn into the world naturally.
+
+</details>
+
+## Does LM change mob spawning mechanics / spawn rates?
+
+<details>
+<summary>See answer</summary>
+
+**No, LevelledMobs does not change any spawn mechanics.** LevelledMobs only 'levels up' mobs that spawn. It doesn't spawn more mobs in, and it doesn't stop mobs from spawning. Zero spawning mechanics are altered. We are highly reluctant to change this behavior with LevelledMobs, as we don't like to introduce any obscure behaviours. :)
+
+If you are having issues regarding mob spawning, configure your server software and/or anti-lag plugin.
+
+</details>
+
+## How do I make mobs from plugin X levelled / not levelled?
+
+### Also: What is the `level-plugins` section?
+
+<details>
+<summary>See answer</summary>
+
+From approximately [lines 327 to 399](https://github.com/ArcanePlugins/LevelledMobs/blob/master/src/main/resources/rules.yml#L327-L339) in `rules.yml`, you should see a section called `level-plugins`. This section has a list of supported plugins which are set to `false` by default. When you change any of these to `true`, newly spawned mobs from the respective plugin(s) are now considered for levelling by LevelledMobs.
+
+For compatibility reasons, we recommend leaving all of these disabled. 
+
+</details>
+
+## What server software is supported?
+
+<details>
+<summary>See answer</summary>
+
+See the [Compatibilities Wiki page](https://github.com/lokka30/LevelledMobs/wiki/Compatibilities).
+
+</details>
+
+## What plugins is LM compatible/incompatible with?
+
+<details>
+<summary>See answer</summary>
+
+See the [Compatibilities Wiki page](https://github.com/lokka30/LevelledMobs/wiki/Compatibilities).
+
+</details>
+
+## How are attribute values calculated? (Formula)
+
+<details>
+<summary>See answer</summary>
+
+The formula for each attribute value is:
+
+```
+newValue = defaultValue + ((defaultValue x configValue) x ((entityLevel - 1) / (maxLevel - 1)))
+```
+
+This formula will be simplified in the upcoming LevelledMobs 4.
+
+</details>
+
+## Will LM make my server lag?
+
+<details>
+<summary>See answer</summary>
+
+Nope! We take performance seriously – for the few performance issues that have ever been reported and validated, all were promptly solved. We've worked with contributors to improve memory management, and run code asynchronously wherever useful.
+
+</details>
+
+## How do I use the Player Level Modifier?
+
+<details>
+<summary>See answer</summary>
+
+> LM v3.8 renamed "Player Levelling" to "Player Level Modifier". 
+
+### [If you wish to watch a video alternative to this section, click here!](https://www.youtube.com/watch?v=qTZ_GlQjGD8)
+
+PLM is an add-on levelling system, which modifies the level of an entity based on a variable provided by the nearest player. It requires an actual levelling strategy to be enabled alongside this to function properly (for example, Weighted Random or Spawn-Distance Levelling), so that mobs have a baseline level until they are associated with a certain player. The default variable used for PLM is the exp level of the player, though any placeholder from PlaceholderAPI (PAPI) can be used, such as AureliumSkills, mcMMO, EcoSkills, and so on.
+
+Below is the default preset used for Player Levelling, located in `rules.yml`.
+
+```yaml
+lvl-mod_player-variable:
+# This Strategy Preset controls the player-variable based level modification system.
+name: 'LVLling Modifier - Player Variable AVERAGE CHALLENGE'
+strategies:
+    player-levelling:
+    match-level: true
+    use-player-max-level: false
+    decrease-level: true
+    recheck-players: false
+    preserve-entity: 10s
+    player-level-scale: 1.0
+    level-cap: 30
+    tiers:
+        1-15: 1-10
+        16-30: 11-20
+        31-45: 21-25
+    variable: '%level%'
+```
+
+If you are going to use any other `variable`, you will want to set `match-level` and `use-player-max-level` to `false`, as they will override the `variable` settings. Refer to the
+[wiki for Player Levelling](https://github.com/lokka30/LevelledMobs/wiki/Documentation---Strategies#player-variable-modifier)
+regarding the various settings and their descriptions.
+
+When you change the variable, you will need to understand what range of possible values that variable can produce. Your variable might only provide numbers as high as 50-100, or as high as 100,000 or more. If you're unsure of the value, you can use `/papi parse me <placeholder>`, replacing `<placeholder>` with the variable of your choosing. Once you understand the range of your `variable`, then you can adjust the possible `tiers`, which determine the potential levels that an entity will be adjusted to when near a player, based on the possible values of the `variable`. The values on the left side of `tiers` represent the potential values of the `variable`, while the values on the right side of `tiers` represent the potential level that LevelledMobs will adjust the entity to.
+
+By default, LevelledMobs includes this preset within your `rules.yml` file in a disabled state. To enable this feature, you can locate the below section and enable the `- lvl-mod_player-variable` preset by removing the `#` before the line (uncommenting it). 
+
+```yaml
+default-rule:
+  use-preset:
+    - allowed_worlds
+    - nametag_using_numbers
+    #- nametag_using_indicator
+    #- basic_challenge
+    - average_challenge
+    #- advanced_challenge
+    #- extreme_challenge
+    - weighted_random_Levelling
+    #- spawn_Levelling
+    #- lvl-mod_spawn-blended
+    #- ycoord_Levelling
+    #- random_Levelling
+    - lvl-mod_player-variable
+    #- lvl-mod_apply-variance
+```
+
+</details>
+
+## How do I translate the names of entities/mobs?
+
+<details>
+<summary>See answer</summary>
+
+> **Note:** There are several pre-made translations available in the
+[Official Translations](https://github.com/lokka30/LevelledMobs/wiki/Official-Translations)
+and
+[Unofficial Translations](https://github.com/lokka30/LevelledMobs/wiki/Unofficial-Translations)
+Wiki pages, which are ready to go!
+There might be a translation for the language you want to translate the mob names to,
+and the translations for your language might have entity names bundled too which you
+can simply copy and paste into the `entity-name-override` section (see below for info on that).
+
+See the `entity-name-override` section in `rules.yml`. This is at line `396` of the default `rules.yml` file, as of writing this answer.
+
+> **Note:** The translation process has been significantly simplified in the upcoming LevelledMobs 4. :)
+
+</details>
+
+## Does LevelledMobs make higher level mobs drop more/better items/XP?
+
+<details>
+<summary>See answer</summary>
+
+By default, LevelledMobs will multiply the item and experience orb drops on levelled mobs, where higher level mobs will drop more of them. You can customise the drops using our Custom Drops system.
+
+</details>
+
+## How does LevelledMobs work?
+
+<details>
+<summary>See answer</summary>
+
+Here is a short explanation for laymen:
+
+When mobs spawn on your server, LevelledMobs checks if they should be levelled. If they pass this inspection, then LevelledMobs will generate and assign a number to the mob (their 'level'). This level determines various qualities about the mob, such as the increase in strength and speed for higher level mobs. You can customise LevelledMobs to great extents, such as by adding your own custom drops for levelled mobs, and so much more!
+
+</details>
+
+## How do I change the label/nametag format?
+
+<details>
+<summary>See answer</summary>
+
+Firstly, let's check which nametag type preset you are using.
+
+Open up `rules.yml` and scroll down to the `use-presets` section for your `default-rule`.
+As of writing, this is approximately line `348`.
+
+You should see a section that looks similar to this:
+```yaml
+default-rule:
+  use-preset:
+    - allowed_worlds
+    - nametag_using_numbers
+    #- nametag_using_indicator
+    ...
+    ...
+    ...
+```
+
+Now, the nametag preset you are using is either `nametag_using_numbers` or `nametag_using_indicator`,
+whichever one is ***not*** commented out. By default, this is `nametag_using_numbers`.
+
+Now that you know which nametag preset you're using, scroll up to the area where such preset is configured.
+As of writing, this is either line `310` (for `nametag_using_indicator`), or line `328` (for `nametag_using_numbers`).
+
+You should see a section that looks similar to this:
+```yaml
+nametag_using_indicator:
+    name: 'Nametag - Health Indicator'
+    apply-settings:
+        nametag: '&8&l༺ %tiered%Lvl %mob-lvl%&8 | &f%displayname%&8 | &f%entity-health-rounded% %tiered%%heart_symbol% &r%health-indicator% &8&l༻'
+        health-indicator:
+            ...
+            ...
+            ...
+            merge: true
+
+nametag_using_numbers:
+    name: 'Nametag - Health Numerical'
+    apply-settings:
+        nametag: '&8&l༺ %tiered%Lvl %mob-lvl%&8 | &f%displayname%&8 | &f%entity-health-rounded%&8/&f%entity-max-health-rounded% %tiered%%heart_symbol% &8&l༻'
+```
+
+Simply edit the value of the relevant `nametag` option to customise the format. Then, run `/lm reload`
+(or restart your server) to apply the changes. 
+
+</details>
+
+## How do I edit mob drops?
+
+<details>
+<summary>See answer</summary>
+
+Check out `customdrops.yml`. That file is documented [here](https://github.com/lokka30/LevelledMobs/wiki/Documentation---customdrops.yml).
+
+</details>
+
+## How do I change the difficulty of levelled mobs?
+
+#### Also: What are Challenges, and how can they be modified?
+
+<details>
+<summary>See answer</summary>
+
+We have prepared 4 different "challenges" for our users. Challenges are essentially a difficulty level that only affects levelled mobs, being completely independent from your server's difficulty (e.g. 'hard').
+
+By default, the 'Average' challenge is used, which is intended to create levelled mobs as if Minecraft had a 'harder' difficulty. You can use the
+'basic' challenge to create mobs that are easier to fight, or any of the two harder challenges ('advanced' and 'extreme'). You can even create your
+own or modify the ones we have created for you.
+
+Around line `350` in the `rules.yml` file, you can select which "challenge" preset you would like to use. It looks like this by default:
+
+```yaml
+#- basic_challenge
+- average_challenge
+#- advanced_challenge
+#- extreme_challenge
+```
+
+Changing the one you want to use is akin to selecting a different levelling system. Make sure you have one (1) challenge enabled (no more, no less) at
+any given time. Disable the average challenge by adding a comment character (`#`) to the start of its line, and uncomment (remove the `#` character) the
+line of the challenge you want to use instead. For example, if you wanted to use the basic challenge, it should look like this:
+
+```yaml
+- basic_challenge
+#- average_challenge
+#- advanced_challenge
+#- extreme_challenge
+```
+
+If you are not satisfied with the challenges we have prepared, we suggest duplicating an existing challenge preset, modifying it, and then enabling it
+in the default rule area (add a line just like the other challenges). For example, to add an 'Insane Challenge' which is harder than 'extreme':
+
+1. From approx. lines `236` to `267` is the `extreme_challenge` preset. Duplicate that entire preset and rename the new, duplicate preset to `insane_challenge`.
+
+2. Edit the values to your liking. Multipliers follow a formula which we have documented in another answer on the FAQ Wiki page. Support may be available
+on our Discord for modifying these values. We recommend using a test server to experiment with values until you are fully satisfied with the outcome.
+
+3. At approx. lines `311` to `314` (in your default rule's `use-presets` section), add make sure all other challenges are commented out, and add the `insane_challenge` line (and make it enabled):
+
+```yaml
+#- basic_challenge
+#- average_challenge
+#- advanced_challenge
+#- extreme_challenge
+- insane_challenge
+```
+
+4. Save the file.
+
+5. Optional: run `/lm rules force_all` to make the new difficulty
+apply to existing levelled mobs on your server. This will re-level every loaded entity.
+
+</details>
+
+## How do I make mobs from Monster Spawners levelled?
+
+<details>
+<summary>See answer</summary>
+
+> **Note**: We have chosen to not make mobs from spawners levelled by
+default to keep things balanced. We recommend you make spawner mobs
+not have drop bonuses. We also recommend that spawner mobs do not
+have their health changed if you wish to not break mob farms that rely
+on fall damage.
+
+Approximately line `325` in `rules.yml`, in the `allowed-spawn-reasons` section, change:
+
+```yaml
+conditions:
     allowed-spawn-reasons:
-      excluded-list: [ 'SPAWNER' ]
+        excluded-list: [ 'SPAWNER' ]
+```
 
-    level-plugins:
-      DANGEROUS_CAVES: false
-      ECO_BOSSES: false
-      MYTHIC_MOBS: false
-      ELITE_MOBS: false
-      ELITE_MOBS_NPCS: false
-      ELITE_MOBS_SUPER_MOBS: false
-      INFERNAL_MOBS: false
-      CITIZENS: false
-      SHOPKEEPERS: false
-      SIMPLE_PETS: false
-      ELITE_BOSSES: false
-      BLOOD_NIGHT: false
+to:
 
-    #apply-above-y: 64
-    #apply-below-y: 59
-    #min-distance-from-spawn: 1000
-    #max-distance-from-spawn: 5000
+```yaml
+conditions:
+    allowed-spawn-reasons:
+        excluded-list: []
+```
 
-    mob-customname-status: EITHER
-    mob-tamed-status: EITHER
+This will make all mobs from Monster Spawners have a level.
 
-  apply-settings:
-    multipliers:
-      vanilla-bonus:
-        excluded-list: ['LEADER_ZOMBIE_BONUS', 'RANDOM_SPAWN_BONUS']
+</details>
 
-    sunlight-intensity: 5
-    creeper-max-damage-radius: 3
+## How do I make Mob X a levelled mob?
 
-    entity-name-override:
-      #HUSK: ['Husk', 'Desert Zombie', 'Lost Soul', 'Dessicated Corpse']
-      #SKELETON: ['Bones', 'Billy Bones', 'Verta Brae']
-      #PILLAGER: ['Raider', 'Barbarian']
+<details>
+<summary>See answer</summary>
 
-    creature-death-nametag: '%tiered%Lvl %mob-lvl%&8 | &f%displayname%'
-    death-messages:
-    #  3: ['%player% was killed by a %death_nametag%!']
-    #  1: ['A level %mob-lvl% %displayname% slaughtered %player%!']
-    nametag-placeholder-levelled: ''
-    nametag-placeholder-unlevelled: ''
-    nametag-visible-time: 1s
-    nametag-visibility-method: [ 'TARGETED', 'ATTACKED', 'TRACKING' ]
+By default, the following mobs are not levelled:
 
-    baby-mobs-inherit-adult-setting: true
-    level-inheritance: true
-    passenger-match-level: false
+- Passive Mobs
+- Baby Mobs (baby zombies, etc)
+- Ravagers, Ender Dragons, Withers, Wardens
+- Villagers, Zombie Villagers, Wandering Traders
+- Phantoms and Bats
 
-    use-custom-item-drops-for-mobs: true
+> **Note**: Mobs from spawners are also not levelled by default, we
+have answered how to change this in another answer on the FAQ Wiki page.
 
-    maximum-death-in-chunk-threshold: 0
-    max-adjacent-chunks: 3
-    chunk-max-cooldown-seconds: 300s
-    disable-vanilla-drops-on-chunk-max: false
+Around line `399` in `rules.yml`, you should see something like this:
 
-    spawner-particles: 'SOUL'
-    spawner-particles-count: 10
-
-# +-------------------------------------------------------------------------------------------LM3
-# +                                                                                          +LM3
-# +   H I G H E S T   P R I O R I T Y                                                        +LM3
-# +   Section 04 - Custom Rules                                                              +LM3
-# +                                                                                          +LM3
-# +   This section applies CUSTOM RULES, or exceptions, to the DEFAULT RULE. These rules     +LM3
-# +   modify the DEFAULT RULE to achieve your desired effect. Establish a CONDITION to       +LM3
-# +   check for, then set either a STRATEGY or APPLY-SETTINGS when the CONDITION is met.     +LM3
-# +   If you need help understanding CUSTOM RULES, read the official LevelledMobs Wiki!      +LM3
-# +   https://github.com/lokka30/LevelledMobs/wiki/Documentation---rules.yml#custom-rules    +LM3
-# +                                                                                          +LM3
-# +-------------------------------------------------------------------------------------------LM3
+```yaml
 custom-rules:
   - enabled: true
     name: 'CR - NoLevel All Passive + EntityTypes'
@@ -404,59 +468,94 @@ custom-rules:
         allowed-list: [ 'BABY_', 'ENDER_DRAGON', 'WITHER', 'VILLAGER', 'ZOMBIE_VILLAGER', 'WANDERING_TRADER', 'PHANTOM', 'BAT', 'RAVAGER', 'WARDEN' ]
     apply-settings:
       maxLevel: 0
+```
 
-  - enabled: true
-    name: 'CR - Custom Nether Levelling'
-    conditions:
-      worlds: 'world_nether'
-    strategies:
-      y-coordinate:
-        start: 100
-        end: 40
-        period: 0
+To make passive mobs levelled, change:
 
-  - enabled: true
-    name: 'CR - Custom Entity Attributes'
-    use-preset: allowed_worlds
-    apply-settings:
-      multipliers:
-        custom-mob-level:
-          ENDERMAN:
-            max-health: 0.0
-            movement-speed: 0.0
-          SILVERFISH:
-            max-health: 0.0
-            movement-speed: 0.0
-          CREEPER:
-            movement-speed: 0.025
-          WITHER_SKELETON:
-            max-health: 1.0
+```yaml
+allowed-groups: [ 'all_passive_mobs' ]
+```
 
-  - enabled: true
-    name: 'CR - Custom Zombie Piglin Levelling'
-    conditions:
-      worlds: 'world_nether'
-      entities: 'ZOMBIFIED_PIGLIN'
-    strategies:
-      random: true
+to:
+
+```yaml
+allowed-groups: []
+```
+
+To make one of the non-levelled mob types levelled, simply remove
+it from the `allowed-list` line. For example, to make baby mobs
+levelled, change:
+
+```yaml
+allowed-list: [ 'BABY_', 'ENDER_DRAGON', 'WITHER', 'VILLAGER', 'ZOMBIE_VILLAGER', 'WANDERING_TRADER', 'PHANTOM', 'BAT', 'RAVAGER', 'WARDEN' ]
+```
+
+to:
+
+```yaml
+allowed-list: [ 'ENDER_DRAGON', 'WITHER', 'VILLAGER', 'ZOMBIE_VILLAGER', 'WANDERING_TRADER', 'PHANTOM', 'BAT', 'RAVAGER', 'WARDEN' ]
+```
+
+How this area of rules.yml works by default, is that any mobs that pass the condition check (which checks their Entity Type e.g. `WITHER_SKELETON`),
+are set to 'Level 0', i.e., they have no level.
+
+</details>
+
+## How do I change the max level?
+
+<details>
+<summary>See answer</summary>
+
+Firstly, let's determine what Challenge preset you are using.
+
+From approximately line `311` to `314` in `rules.yml`, you should see something like this - you might have adjusted it, and that's fine:
+
+```yaml
+#- basic_challenge
+- average_challenge
+#- advanced_challenge
+#- extreme_challenge
+```
+
+Notice how in this example (default file) has the `average_challenge` preset enabled. This preset is defined around line `212` in `rules.yml`. If you
+are not using the average challenge then you will need to modify a different preset instead, e.g. modify the `basic_challenge` preset if you are using
+the basic challenge.
+
+For those using the average challenge, you should see something like this around line `175`:
+
+```yaml
+  average_challenge:
+    name: 'Average-Challenge Multipliers'
     apply-settings:
       minLevel: 1
-      maxLevel: 5
+      maxLevel: 25
       multipliers:
-        max-health: 1.0
-        movement-speed: 0.25
-        attack-damage: 0.5
-        ranged-attack-damage: 0.0
-        item-drop: 0.5
-        xp-drop: 1.0
-      tiered-coloring:
-        1-5: '&#22E76B' #Green
+        max-health: 5.0
+        movement-speed: 0.15
+        attack-damage: 2.25
+        ranged-attack-damage: 2.25
+        creeper-blast-damage: 0.7
+        #... continues ...
+```
+
+Change `maxLevel` (in this case, currently `25`) to whichever value you like. We recommend using a reasonable value such as `50`, `100`, or `1000`, but
+LM gives you the power to choose whichever value you want.
+
+Once your edit is done, save the file. We highly recommend running `/lm rules force_all` to relevel all mobs on your server so that they reflect the
+new max level. It would be weird to have level 25s roaming around which seem to have the same strength as a level 100. :)
+
+</details>
+
+## How do I make custom drops from other plugins such as ExecutableItems, ItemsAdder and EcoItems?
+
+<details>
+<summary>See answer</summary>
+
+Use PenalBuffalo's [LM Items](https://www.spigotmc.org/resources/lm-items.102081/) addon plugin.
+
+</details>
 
 
-# +-------------------------------------------------------------------------------------------LM3
-# +                                                                                          +LM3
-# +   Section 05 - Advanced Message Settings                                                 +LM3
-# +   DO NOT EDIT BEYOND HERE WITHOUT DEVELOPER APPROVAL                                     +LM3
-# +                                                                                          +LM3
-# +-------------------------------------------------------------------------------------------LM3
-file-version: 3
+## Your question not listed?
+Please ask our staff on the
+[ArcanePlugins Discord Server](https://www.discord.io/arcaneplugins).
