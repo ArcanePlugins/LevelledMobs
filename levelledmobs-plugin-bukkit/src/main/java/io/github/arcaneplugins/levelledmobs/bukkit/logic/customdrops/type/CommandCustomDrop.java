@@ -1,10 +1,13 @@
 package io.github.arcaneplugins.levelledmobs.bukkit.logic.customdrops.type;
 
+import io.github.arcaneplugins.levelledmobs.bukkit.logic.LogicHandler;
+import io.github.arcaneplugins.levelledmobs.bukkit.logic.context.Context;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.customdrops.CustomDrop;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.customdrops.recipient.CustomDropRecipient;
 import java.util.Collection;
 import java.util.HashSet;
 import javax.annotation.Nonnull;
+import org.bukkit.Bukkit;
 
 public class CommandCustomDrop extends CustomDrop {
 
@@ -19,6 +22,17 @@ public class CommandCustomDrop extends CustomDrop {
     ) {
         super(StandardCustomDropType.COMMAND.name(), recipient);
         this.command = command;
+    }
+
+    /* methods */
+
+    public void execute(
+        final @Nonnull Context context
+    ) {
+        Bukkit.dispatchCommand(
+            Bukkit.getConsoleSender(),
+            LogicHandler.replacePapiAndContextPlaceholders(getCommand(), context)
+        );
     }
 
     /* getters and setters */

@@ -2,17 +2,16 @@ package io.github.arcaneplugins.levelledmobs.bukkit.logic.customdrops;
 
 import java.util.Collection;
 import javax.annotation.Nonnull;
-import org.bukkit.inventory.ItemStack;
 
 //TODO instantiate
 public class EntityDeathCustomDropResult {
 
-    private final Collection<ItemStack> drops;
+    private final Collection<CustomDrop> drops;
     private final boolean overridesVanillaDrops;
     private final boolean overridesNonVanillaDrops;
 
     public EntityDeathCustomDropResult(
-        @Nonnull final Collection<ItemStack> drops,
+        @Nonnull final Collection<CustomDrop> drops,
         final boolean overridesVanillaDrops,
         final boolean overridesNonVanillaDrops
     ) {
@@ -21,7 +20,7 @@ public class EntityDeathCustomDropResult {
         this.overridesNonVanillaDrops = overridesNonVanillaDrops;
     }
 
-    public @Nonnull Collection<ItemStack> getDrops() {
+    public @Nonnull Collection<CustomDrop> getDrops() {
         return drops;
     }
 

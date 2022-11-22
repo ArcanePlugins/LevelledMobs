@@ -1,5 +1,7 @@
 package io.github.arcaneplugins.levelledmobs.bukkit.logic.levelling.strategy.impl.spawndistance;
 
+import static io.github.arcaneplugins.levelledmobs.bukkit.debug.DebugCategory.SPAWN_DISTANCE_STRATEGY;
+
 import io.github.arcaneplugins.levelledmobs.bukkit.api.util.Pair;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.context.Context;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.function.process.action.impl.setlevel.SetLevelAction;
@@ -91,10 +93,12 @@ public class SpawnDistanceLevellingStrategy extends LevellingStrategy {
             final RangedInt distanceRange = distanceLevelRanges.getKey();
             final RangedInt levelRange = distanceLevelRanges.getValue();
 
-            Log.tmpdebug("Distance range: %s-%s, Level range: %s-%s".formatted(
-                distanceRange.getMin(), distanceRange.getMax(),
-                levelRange.getMin(), levelRange.getMax()
-            ));
+            Log.debug(SPAWN_DISTANCE_STRATEGY, () -> "Distance range: %s-%s, Level range: %s-%s"
+                .formatted(
+                    distanceRange.getMin(), distanceRange.getMax(),
+                    levelRange.getMin(), levelRange.getMax()
+                )
+            );
 
             if(distanceRange.contains(distance)) {
                 final float distanceRatio = ((distance - distanceRange.getMin()) * 1.0f /

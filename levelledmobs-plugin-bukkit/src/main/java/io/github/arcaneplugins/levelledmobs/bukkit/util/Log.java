@@ -46,9 +46,4 @@ public final class Log {
         inf("[DEBUG : " + cat.name() + "] " + msg.get());
     }
 
-    //TODO remove
-    public static void tmpdebug(final String msg) {
-        war("[DEBUG] " + msg);
-    }
-
 }

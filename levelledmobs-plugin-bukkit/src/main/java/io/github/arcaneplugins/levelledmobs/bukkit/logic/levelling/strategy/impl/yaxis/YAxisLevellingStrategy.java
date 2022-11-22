@@ -1,5 +1,7 @@
 package io.github.arcaneplugins.levelledmobs.bukkit.logic.levelling.strategy.impl.yaxis;
 
+import static io.github.arcaneplugins.levelledmobs.bukkit.debug.DebugCategory.Y_AXIS_STRATEGY;
+
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.context.Context;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.function.process.action.impl.setlevel.SetLevelAction;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.levelling.strategy.LevellingStrategy;
@@ -67,7 +69,7 @@ public class YAxisLevellingStrategy extends LevellingStrategy {
             final RangedInt yRange = yLevelRanges.getKey();
             final RangedInt levelRange = yLevelRanges.getValue();
 
-            Log.tmpdebug("Y range: %s-%s, Level range: %s-%s".formatted(
+            Log.debug(Y_AXIS_STRATEGY, () -> "Y range: %s-%s, Level range: %s-%s".formatted(
                 yRange.getMin(), yRange.getMax(),
                 levelRange.getMin(), levelRange.getMax()
             ));

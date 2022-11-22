@@ -26,6 +26,8 @@ import org.bukkit.event.entity.EntitySpawnEvent;
 
 public class CustomDropHandler {
 
+    private CustomDropHandler() {}
+
     public static final Map<DropTableRecipient, Collection<CustomDrop>>
         DROP_TABLE_CUSTOM_DROPS_MAP = new HashMap<>();
 
@@ -66,6 +68,8 @@ public class CustomDropHandler {
         final @Nonnull EntityDeathEvent event
     ) {
         final LivingEntity entity = event.getEntity();
+
+        //TODO factor in cause-of-death via using event.getEntity().getLastDamageCause()
 
         //TODO this is just a placeholder to make the other code work. needs a proper impl
         return new EntityDeathCustomDropResult(

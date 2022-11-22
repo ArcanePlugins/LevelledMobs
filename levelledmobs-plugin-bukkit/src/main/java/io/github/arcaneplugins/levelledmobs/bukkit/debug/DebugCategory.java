@@ -2,6 +2,8 @@ package io.github.arcaneplugins.levelledmobs.bukkit.debug;
 
 import io.github.arcaneplugins.levelledmobs.bukkit.listener.impl.EntityDeathListener;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.function.process.action.impl.setbuffs.SetBuffsAction;
+import io.github.arcaneplugins.levelledmobs.bukkit.logic.levelling.strategy.impl.spawndistance.SpawnDistanceLevellingStrategy;
+import io.github.arcaneplugins.levelledmobs.bukkit.logic.levelling.strategy.impl.yaxis.YAxisLevellingStrategy;
 
 public enum DebugCategory {
 
@@ -20,5 +22,15 @@ public enum DebugCategory {
      * Shows information about drop calculation in {@link EntityDeathListener}.
      */
     DEATH_DROPS,
+
+    /**
+     * Shows information about logic in the {@link SpawnDistanceLevellingStrategy}.
+     */
+    SPAWN_DISTANCE_STRATEGY,
+
+    /**
+     * Shows information about logic in the {@link YAxisLevellingStrategy}.
+     */
+    Y_AXIS_STRATEGY,
 
 }
