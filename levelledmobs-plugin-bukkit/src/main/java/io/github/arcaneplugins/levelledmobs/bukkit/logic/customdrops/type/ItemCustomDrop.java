@@ -1,7 +1,7 @@
 package io.github.arcaneplugins.levelledmobs.bukkit.logic.customdrops.type;
 
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.customdrops.CustomDrop;
-import io.github.arcaneplugins.levelledmobs.bukkit.logic.customdrops.misc.EnchantTuple;
+import io.github.arcaneplugins.levelledmobs.bukkit.util.EnchantTuple;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.customdrops.recipient.CustomDropRecipient;
 import java.util.Collection;
 import java.util.EnumSet;
@@ -34,6 +34,7 @@ public class ItemCustomDrop extends CustomDrop {
         .noneOf(EquipmentSlot.class);
     private String lmItemsExternalType = null; //TODO
     private String lmItemsExternalAmount = null; //TODO
+    private boolean onlyDropIfEquipped = true;
 
     public ItemCustomDrop(
         final @Nonnull Material material,
@@ -131,7 +132,7 @@ public class ItemCustomDrop extends CustomDrop {
         return this;
     }
 
-    public boolean hasNoMultiplier() {
+    public boolean requiresNoMultiplier() {
         return noMultiplier;
     }
 
@@ -175,7 +176,7 @@ public class ItemCustomDrop extends CustomDrop {
         return name;
     }
 
-    public @Nonnull ItemCustomDrop withName(String name) {
+    public @Nonnull ItemCustomDrop withName(@Nullable String name) {
         this.name = name;
         return this;
     }
@@ -222,4 +223,14 @@ public class ItemCustomDrop extends CustomDrop {
         this.lmItemsExternalAmount = lmItemsExternalAmount;
         return this;
     }
+
+    public boolean shouldOnlyDropIfEquipped() {
+        return onlyDropIfEquipped;
+    }
+
+    public @Nonnull ItemCustomDrop withOnlyDropIfEquipped(final boolean value) {
+        onlyDropIfEquipped = value;
+        return this;
+    }
+
 }

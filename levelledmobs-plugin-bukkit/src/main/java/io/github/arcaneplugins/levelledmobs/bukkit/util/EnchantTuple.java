@@ -1,4 +1,4 @@
-package io.github.arcaneplugins.levelledmobs.bukkit.logic.customdrops.misc;
+package io.github.arcaneplugins.levelledmobs.bukkit.util;
 
 import javax.annotation.Nonnull;
 import org.bukkit.enchantments.Enchantment;
@@ -6,12 +6,12 @@ import org.bukkit.enchantments.Enchantment;
 public class EnchantTuple {
 
     private final Enchantment enchantment;
-    private final int chance;
+    private final float chance;
     private final int strength;
 
     public EnchantTuple(
         final @Nonnull Enchantment enchantment,
-        final int chance,
+        final float chance,
         final int strength
     ) {
         this.enchantment = enchantment;
@@ -23,7 +23,7 @@ public class EnchantTuple {
         return enchantment;
     }
 
-    public int getChance() {
+    public float getChance() {
         return chance;
     }
 

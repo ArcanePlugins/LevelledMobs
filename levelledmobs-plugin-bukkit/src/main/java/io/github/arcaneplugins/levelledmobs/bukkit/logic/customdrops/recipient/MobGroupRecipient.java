@@ -11,7 +11,7 @@ public class MobGroupRecipient extends CustomDropRecipient {
 
     public MobGroupRecipient(
         final @Nonnull Collection<ItemCustomDrop> drops,
-        final int overallChance,
+        final float overallChance,
         final @Nonnull Collection<String> overallPermissions,
         final @Nonnull String mobGroupId
     ) {

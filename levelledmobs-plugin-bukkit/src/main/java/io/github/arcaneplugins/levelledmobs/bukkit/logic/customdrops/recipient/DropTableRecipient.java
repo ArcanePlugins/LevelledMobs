@@ -12,7 +12,7 @@ public class DropTableRecipient extends CustomDropRecipient {
 
     public DropTableRecipient(
         final @NotNull Collection<ItemCustomDrop> drops,
-        final int overallChance,
+        final float overallChance,
         final @NotNull Collection<String> overallPermissions,
         final ModalEntityTypeSet applicableEntities
     ) {

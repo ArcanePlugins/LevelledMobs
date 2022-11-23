@@ -54,13 +54,13 @@ public abstract class CustomDrop {
     }
 
     public @Nonnull CustomDrop withFormulaCondition(
-        final @Nonnull String formulaCondition
+        final @Nullable String formulaCondition
     ) {
         this.formulaCondition = formulaCondition;
         return this;
     }
 
-    public boolean overridesVanillaDrops() {
+    public boolean shouldOverrideVanillaDrops() {
         return overridesVanillaDrops;
     }
 
@@ -116,7 +116,7 @@ public abstract class CustomDrop {
         return this;
     }
 
-    public boolean noSpawner() {
+    public boolean requiresNoSpawner() {
         return noSpawner;
     }
 

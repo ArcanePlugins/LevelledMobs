@@ -165,7 +165,7 @@ public class EntityDeathListener extends ListenerWrapper {
             if(lastDamageByEntity.getDamager() instanceof final Player player) {
                 final int lootingLevel = getPlayerItemLootingEnchLevel(player);
                 for(final CustomDrop drop : customDrops) {
-                    drop.withChance(Math.max(1f, drop.getChance() + (0.01f * lootingLevel)));
+                    drop.withChance(Math.min(100.0f, drop.getChance() + (1.0f * lootingLevel)));
                 }
             }
         }
@@ -245,7 +245,7 @@ public class EntityDeathListener extends ListenerWrapper {
         for(final CustomDrop customDrop : customDrops) {
             if(customDrop instanceof final ItemCustomDrop icd) {
                 final ItemStack is = icd.toItemStack();
-                if(icd.hasNoMultiplier()) {
+                if(icd.requiresNoMultiplier()) {
                     customDropsToDrop.add(is);
                 } else {
                     customDropsToDrop.addAll(Arrays.asList(stackMultiplier.apply(is)));

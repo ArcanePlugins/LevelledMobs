@@ -12,7 +12,7 @@ public class EntityTypeRecipient extends CustomDropRecipient {
 
     public EntityTypeRecipient(
         final @Nonnull Collection<ItemCustomDrop> drops,
-        final int overallChance,
+        final float overallChance,
         final @Nonnull Collection<String> overallPermissions,
         final EntityType entityType
     ) {

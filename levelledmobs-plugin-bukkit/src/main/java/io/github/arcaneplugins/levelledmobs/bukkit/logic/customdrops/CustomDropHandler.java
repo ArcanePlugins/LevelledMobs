@@ -28,14 +28,23 @@ public class CustomDropHandler {
 
     private CustomDropHandler() {}
 
+    //TODO Populate
     public static final Map<DropTableRecipient, Collection<CustomDrop>>
         DROP_TABLE_CUSTOM_DROPS_MAP = new HashMap<>();
 
+    //TODO Populate
     public static final Map<EntityTypeRecipient, Collection<CustomDrop>>
         ENTITY_TYPE_CUSTOM_DROPS_MAP = new HashMap<>();
 
+    //TODO Populate
     public static final Map<MobGroupRecipient, Collection<CustomDrop>>
         MOB_GROUP_CUSTOM_DROPS_MAP = new HashMap<>();
+
+    public static void clearCustomDropMaps() {
+        DROP_TABLE_CUSTOM_DROPS_MAP.clear();
+        ENTITY_TYPE_CUSTOM_DROPS_MAP.clear();
+        MOB_GROUP_CUSTOM_DROPS_MAP.clear();
+    }
 
     public static void handleEntitySpawn(
         final @Nonnull EntitySpawnEvent event

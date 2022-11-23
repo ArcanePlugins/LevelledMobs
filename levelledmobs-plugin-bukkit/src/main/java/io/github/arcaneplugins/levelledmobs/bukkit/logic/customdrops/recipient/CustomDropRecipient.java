@@ -7,12 +7,12 @@ import javax.annotation.Nonnull;
 public abstract class CustomDropRecipient {
 
     private final Collection<ItemCustomDrop> drops;
-    private final int overallChance;
+    private final float overallChance;
     private final Collection<String> overallPermissions;
 
     public CustomDropRecipient(
         final @Nonnull Collection<ItemCustomDrop> drops,
-        final int overallChance,
+        final float overallChance,
         final @Nonnull Collection<String> overallPermissions
     ) {
         this.drops = drops;
@@ -28,7 +28,7 @@ public abstract class CustomDropRecipient {
         return drops;
     }
 
-    public int getOverallChance() {
+    public float getOverallChance() {
         return overallChance;
     }
 

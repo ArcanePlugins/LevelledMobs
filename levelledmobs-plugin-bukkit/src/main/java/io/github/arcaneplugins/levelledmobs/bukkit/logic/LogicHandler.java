@@ -3,6 +3,11 @@ package io.github.arcaneplugins.levelledmobs.bukkit.logic;
 import io.github.arcaneplugins.levelledmobs.bukkit.LevelledMobs;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.context.Context;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.context.placeholder.ContextPlaceholderHandler;
+import io.github.arcaneplugins.levelledmobs.bukkit.logic.customdrops.CustomDrop;
+import io.github.arcaneplugins.levelledmobs.bukkit.logic.customdrops.CustomDropHandler;
+import io.github.arcaneplugins.levelledmobs.bukkit.logic.customdrops.recipient.CustomDropRecipient;
+import io.github.arcaneplugins.levelledmobs.bukkit.logic.customdrops.type.CommandCustomDrop;
+import io.github.arcaneplugins.levelledmobs.bukkit.logic.customdrops.type.ItemCustomDrop;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.function.FunctionPostParseEvent;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.function.FunctionPreParseEvent;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.function.LmFunction;
@@ -15,17 +20,29 @@ import io.github.arcaneplugins.levelledmobs.bukkit.logic.group.Group;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.group.GroupPostParseEvent;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.group.GroupPreParseEvent;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.preset.Preset;
+import io.github.arcaneplugins.levelledmobs.bukkit.util.EnchantTuple;
 import io.github.arcaneplugins.levelledmobs.bukkit.util.Log;
+import io.github.arcaneplugins.levelledmobs.bukkit.util.math.TimeUtils;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
+import java.util.function.Consumer;
 import javax.annotation.Nonnull;
 import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
+import org.bukkit.enchantments.Enchantment;
+import org.bukkit.inventory.ItemFlag;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.configurate.CommentedConfigurationNode;
+import org.spongepowered.configurate.ConfigurateException;
 import org.spongepowered.configurate.serialize.SerializationException;
 import redempt.crunch.Crunch;
 import redempt.crunch.functional.EvaluationEnvironment;
@@ -37,8 +54,28 @@ public final class LogicHandler {
     public static final EvaluationEnvironment CRUNCH_EVAL_ENV = new EvaluationEnvironment();
 
     static {
+        /*
+        Syntax: between(num, lower, upper)
+
+        Returns `1` if `num` is between (inclusive) `lower` and `upper`, else, returning `0`.
+
+        Example: between(7, 1, 5) -> 0
+            (7 is not between 1 and 5 (inclusive), so 0 (false) was returned.)
+         */
         CRUNCH_EVAL_ENV.addFunction("between", 3,
-            (d) -> d[0] >= d[1] && d[0] <= d[2] ? 1d : 0d);
+            (d) -> (d[0] >= d[1] && d[0] <= d[2]) ? 1.0d : 0.0d);
+
+        /*
+        Syntax: clamp(num, lower, upper)
+
+        Returns `num` although increasing it / reducing it to be in between (inclusive) the
+        `lower` and `upper` bounds.
+
+        Example: clamp(7, 1, 5) -> 5
+            (7 is larger than the upper bound of 5, so 5 was returned.)
+         */
+        CRUNCH_EVAL_ENV.addFunction("clamp", 3,
+            (d) -> Math.min(d[2], Math.max(d[0], d[1])));
     }
 
     private final ContextPlaceholderHandler contextPlaceholderHandler = new ContextPlaceholderHandler();
@@ -56,10 +93,13 @@ public final class LogicHandler {
     /**
     Initialisation - parse functions, presets, groups, etc.
      */
-    public boolean load() {
+    public void load() {
         Log.inf("Loading logic system");
         getContextPlaceholderHandler().load();
-        return parseGroups() && parsePresets() && parseCustomDrops() && parseFunctions();
+        parseGroups();
+        parsePresets();
+        parseCustomDrops();
+        parseFunctions();
     }
 
     /**
@@ -84,7 +124,7 @@ public final class LogicHandler {
         clearExitStatus.run();
     }
 
-    private boolean parseGroups() {
+    private void parseGroups() {
         Log.inf("Parsing groups");
 
         getGroups().clear();
@@ -99,10 +139,9 @@ public final class LogicHandler {
 
             // let's make sure that the entry's key is a string (identifiers must be strings)
             if(!(groupEntry.getKey() instanceof String)) {
-                Log.sev("Found group with an invalid identifier, '" + groupEntry.getKey() +
-                    "', group identifiers must be strings (text).", true);
-                // TODO make LM automatically fix these after the updater runs for groups.yml
-                return false;
+                throw new IllegalArgumentException(
+                    "Found group with an invalid identifier, '" + groupEntry.getKey() +
+                    "', group identifiers must be strings (text).");
             }
 
             final var group = new Group((String) groupEntry.getKey());
@@ -111,9 +150,9 @@ public final class LogicHandler {
             if(getGroups().stream().anyMatch(otherGroup ->
                 otherGroup.getIdentifier().equalsIgnoreCase(group.getIdentifier()))
             ) {
-                Log.war("Found group with a duplicate identifier, '" + group.getIdentifier() +
-                    "', group identifiers must be unique.", true);
-                continue;
+                throw new IllegalArgumentException(
+                    "Found group with a duplicate identifier, '" + group.getIdentifier() +
+                    "', group identifiers must be unique.");
             }
 
             // let's call the pre-parse event
@@ -131,17 +170,16 @@ public final class LogicHandler {
                         )
                     );
                 } catch(SerializationException ex) {
-                    Log.sev("Unable to parse group '" + group.getIdentifier() + "': it is " +
+                    Log.war("Unable to parse group '" + group.getIdentifier() + "': it is " +
                         "highly likely that the user has made a syntax error in the " +
                         "'groups.yml' file. A stack trace will be printed below for " +
-                        "debugging purposes.", true);
-                    ex.printStackTrace();
-                    return false;
+                        "debugging purposes.");
+                    throw new RuntimeException(ex);
                 }
             } else {
-                Log.sev("Unable to parse group '" + group.getIdentifier() + "' as it does " +
-                    "not contain a valid list of items.", true);
-                return false;
+                throw new IllegalArgumentException(
+                    "Unable to parse group '" + group.getIdentifier() + "' as it does " +
+                    "not contain a valid list of items.");
             }
 
             // let's add the group to the set of groups
@@ -152,11 +190,10 @@ public final class LogicHandler {
         }
 
         Log.inf("Successfully parsed " + getGroups().size() + " group(s)");
-        return true;
     }
 
-    private boolean parsePresets() {
-        Log.inf("Parsing presets");
+    private void parsePresets() {
+        Log.inf("Parsing presets.");
 
         getPresets().clear();
 
@@ -183,17 +220,17 @@ public final class LogicHandler {
 
             /* assert valid identifier */
             if(identifier == null || identifier.isBlank()) {
-                Log.sev("There is a preset in presets.yml with an unknown/invalid identifier, " +
-                    "so LevelledMobs is unable to parse it.", true);
-                return false;
+                throw new IllegalArgumentException(
+                    "There is a preset in presets.yml with an unknown/invalid identifier, " +
+                    "so LevelledMobs is unable to parse it.");
             }
             if(getFunctions().stream().anyMatch(otherFunction ->
                 otherFunction.getIdentifier().equalsIgnoreCase(identifier))
             ) {
-                Log.sev("There are two or more presets in presets.yml which share the " +
+                throw new IllegalArgumentException(
+                    "There are two or more presets in presets.yml which share the " +
                     "same identifier, '" + identifier + "'. Presets must have unique " +
-                    "identifiers.", true);
-                return false;
+                    "identifiers.");
             }
 
             /*
@@ -212,21 +249,163 @@ public final class LogicHandler {
             ));
         }
 
-        Log.inf("Successfully parsed " + getPresets().size() + " preset(s)");
-        return true;
+        Log.inf("Successfully parsed " + getPresets().size() + " preset(s).");
     }
 
-    private boolean parseCustomDrops() {
-        Log.inf("Parsing custom drops");
+    private void parseCustomDrops() {
+        Log.inf("Parsing custom drops.");
 
-        //TODO getCustomDrops().clear();
+        CustomDropHandler.clearCustomDropMaps();
 
+        parseDropTableCustomDrops();
+        parseEntityTypeCustomDrops();
+        parseMobGroupCustomDrops();
+
+        Log.inf("Successfully parsed custom drops.");
+    }
+
+    private void parseDropTableCustomDrops() {
+        Log.inf("Parsing Drop Table custom drops.");
         //TODO
-        Log.inf("Successfully parsed " + "?" + " custom drop(s).");
-        return true;
+        Log.inf("Successfully parsed custom drops for %s drop tables.".formatted(
+            CustomDropHandler.DROP_TABLE_CUSTOM_DROPS_MAP.size()));
     }
 
-    private boolean parseFunctions() {
+    private void parseEntityTypeCustomDrops() {
+        Log.inf("Parsing Entity Type custom drops.");
+        //TODO
+        Log.inf("Successfully parsed custom drops for %s entity types.".formatted(
+            CustomDropHandler.ENTITY_TYPE_CUSTOM_DROPS_MAP.size()));
+    }
+
+    private void parseMobGroupCustomDrops() {
+        Log.inf("Parsing Mob Group custom drops.");
+        //TODO
+        Log.inf("Successfully parsed custom drops for %s mob groups.".formatted(
+            CustomDropHandler.MOB_GROUP_CUSTOM_DROPS_MAP.size()));
+    }
+
+    //TODO use in the above methods.
+    private @Nonnull Collection<CustomDrop> parseCustomDropsAtSection(
+        final @Nonnull CommentedConfigurationNode dropsNode,
+        final @Nonnull CustomDropRecipient recipient
+    ) {
+        final Collection<CustomDrop> customDrops = new LinkedList<>();
+        dropsNode.childrenList()
+            .forEach(dropNode -> customDrops.add(parseCustomDropAtSection(dropNode, recipient)));
+        return customDrops;
+    }
+
+    private @Nonnull CustomDrop parseCustomDropAtSection(
+        final @Nonnull CommentedConfigurationNode dropNode,
+        final @Nonnull CustomDropRecipient recipient
+    ) {
+        final Consumer<CustomDrop> parseCommonAttribs = (cd) -> {
+            cd.withChance(dropNode.node("chance").getFloat(cd.getChance()));
+            if(dropNode.hasChild("min-level")) cd.withEntityMinLevel(dropNode.node("min-level").getInt());
+            if(dropNode.hasChild("max-level")) cd.withEntityMaxLevel(dropNode.node("max-level").getInt());
+            cd.withNoSpawner(dropNode.node("no-spawner").getBoolean(cd.requiresNoSpawner()));
+            cd.withPriority(dropNode.node("priority").getInt(cd.getPriority()));
+            if(dropNode.hasChild("max-drops-in-group")) cd.withMaxDropsInGroup(dropNode.node("max-drops-in-group").getInt());
+            cd.withChunkKillLimited(dropNode.node("chunk-kill-limited").getBoolean(cd.isChunkKillLimited()));
+            cd.withDropGroupId(dropNode.node("drop-group-id").getString(cd.getDropGroupId()));
+            cd.withOverridesVanillaDrops(dropNode.node("overrides-vanilla-drops").getBoolean(cd.shouldOverrideVanillaDrops()));
+            cd.withFormulaCondition(dropNode.node("formula-condition").getString());
+
+            try {
+                cd.withRequiredPermissions(dropNode.node("permissions").getList(String.class, Collections.emptyList()));
+                cd.withDeathCauses(dropNode.node("cause-of-death").getList(String.class, Collections.emptyList()));
+            } catch(SerializationException ex) {
+                throw new RuntimeException(ex);
+            }
+        };
+
+        if(dropNode.hasChild("material")) {
+            final ItemCustomDrop icd = new ItemCustomDrop(
+                Material.valueOf(dropNode.node("material")
+                    .getString("AIR").toUpperCase(Locale.ROOT)),
+                recipient
+            );
+
+            parseCommonAttribs.accept(icd);
+
+            icd.withName(dropNode.node("name").getString(icd.getName()));
+            icd.withAmount(dropNode.node("amount").getInt(icd.getAmount()));
+            if(dropNode.hasChild("custom-model-data")) icd.withCustomModelData(dropNode.node("custom-model-data").getInt());
+            icd.withNoMultiplier(dropNode.node("no-multiplier").getBoolean(icd.requiresNoMultiplier()));
+            icd.withDurabilityLoss(dropNode.node("durability-loss").getInt(icd.getDurabilityLoss()));
+            icd.withOnlyDropIfEquipped(dropNode.node("only-drop-if-equipped").getBoolean(icd.shouldOnlyDropIfEquipped()));
+
+            // lists are parsed here in the try catch block
+            try {
+                icd.withItemFlags(dropNode.node("item-flags").getList(ItemFlag.class, Collections.emptyList()));
+            } catch(SerializationException ex) {
+                throw new RuntimeException(ex);
+            }
+
+            final Collection<EnchantTuple> enchantTuples = new HashSet<>();
+            for(final CommentedConfigurationNode enchTupleNode :
+                dropNode.node("enchantments").childrenList()
+            ) {
+                final String enchantmentId = Objects.requireNonNull(
+                    enchTupleNode.node("id").getString(),
+                    "No enchantment ID specified at node '%s'".formatted(enchTupleNode.path())
+                );
+
+                enchantTuples.add(new EnchantTuple(
+                    Objects.requireNonNull(
+                        Enchantment.getByKey(NamespacedKey.minecraft(
+                            enchantmentId.toLowerCase(Locale.ROOT)
+                        )),
+                        "Invalid enchantment '%s'.".formatted(enchTupleNode.path())
+                    ),
+                    enchTupleNode.node("chance").getFloat(1.0f),
+                    enchTupleNode.node("strength").getInt(1)
+                ));
+            }
+            icd.withEnchantments(enchantTuples);
+
+            return icd;
+        } else if(dropNode.hasChild("command") || dropNode.hasChild("commands")) {
+            final Collection<String> commands = new LinkedList<>();
+
+            if(dropNode.hasChild("command")) {
+                commands.add(Objects.requireNonNull(dropNode.getString()));
+            } else {
+                try {
+                    commands.addAll(dropNode.getList(String.class, Collections.emptyList()));
+                } catch(ConfigurateException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+
+            final CommandCustomDrop ccd = new CommandCustomDrop(commands, recipient);
+
+            parseCommonAttribs.accept(ccd);
+
+            try {
+                ccd.withCommandRunEvents(dropNode.node("run").getList(String.class, Collections.emptyList()));
+            } catch(ConfigurateException ex) {
+                throw new RuntimeException(ex);
+            }
+
+            try {
+                ccd.withCommandDelay(TimeUtils.parseTimeToTicks(
+                    dropNode.node("delay").get(Object.class, 0L)
+                ));
+            } catch(SerializationException ex) {
+                throw new RuntimeException(ex);
+            }
+
+            return ccd;
+        } else {
+            throw new IllegalArgumentException("""
+                Custom drop at node '%s' does not define a material or command."""
+                .formatted(dropNode.path()));
+        }
+    }
+
+    private void parseFunctions() {
         /*
         [pseudocode]
         for each function
@@ -285,17 +464,17 @@ public final class LogicHandler {
 
             /* assert valid identifier */
             if(identifier == null || identifier.isBlank()) {
-                Log.sev("There is a function in settings.yml with an unknown/invalid identifier, " +
-                    "so LevelledMobs is unable to parse it.", true);
-                return false;
+                throw new IllegalArgumentException(
+                    "There is a function in settings.yml with an unknown/invalid identifier, " +
+                    "so LevelledMobs is unable to parse it.");
             }
             if(getFunctions().stream().anyMatch(otherFunction ->
                 otherFunction.getIdentifier().equalsIgnoreCase(identifier))
             ) {
-                Log.sev("There are two or more functions in settings.yml which share the " +
+                throw new IllegalArgumentException(
+                    "There are two or more functions in settings.yml which share the " +
                     "same identifier, '" + identifier + "'. Functions must have unique " +
-                    "identifiers.", true);
-                return false;
+                    "identifiers.");
             }
 
             /* create obj */
@@ -305,9 +484,9 @@ public final class LogicHandler {
             final var triggersNode = functionNode.node("triggers");
             if(!triggersNode.empty()) {
                 if(!triggersNode.isList()) {
-                    Log.sev("Unable to parse triggers of function '" + identifier +
-                        "': not a valid list of triggers.", true);
-                    return false;
+                    throw new IllegalArgumentException(
+                        "Unable to parse triggers of function '" + identifier +
+                        "': not a valid list of triggers.");
                 }
                 final List<String> triggersList;
                 try {
@@ -316,9 +495,8 @@ public final class LogicHandler {
                     Log.sev("Unable to parse triggers of function '" + identifier +
                         "'. This is usually caused by a the user creating a syntax error in " +
                         "the settings.yml file. A stack trace will be printed below for debugging " +
-                        "purposes.", true);
-                    ex.printStackTrace();
-                    return false;
+                        "purposes.");
+                    throw new RuntimeException(ex);
                 }
                 function.getTriggers().addAll(triggersList);
             }
@@ -334,8 +512,7 @@ public final class LogicHandler {
             if(functionPreParseEvent.isCancelled()) continue;
 
             /* parse processes */
-            if(!(parseProcesses(function)))
-                return false;
+            parseProcesses(function);
 
             /* call post parse fun */
             Bukkit.getPluginManager().callEvent(new FunctionPostParseEvent(function));
@@ -344,7 +521,6 @@ public final class LogicHandler {
         }
 
         Log.inf("Successfully parsed " + getFunctions().size() + " function(s).");
-        return true;
     }
 
     private void walkNodePresetParse(final @NotNull CommentedConfigurationNode node) {
@@ -373,7 +549,7 @@ public final class LogicHandler {
         node.childrenMap().values().forEach(this::walkNodePresetParse);
     }
 
-    private boolean parseProcesses(final @NotNull LmFunction function) {
+    private void parseProcesses(final @NotNull LmFunction function) {
         Objects.requireNonNull(function, "function");
 
         function.getProcesses().clear();
@@ -388,18 +564,18 @@ public final class LogicHandler {
 
             /* assert valid identifier */
             if(identifier == null || identifier.isBlank()) {
-                Log.sev("There is a process in settings.yml with an unknown/invalid " +
+                throw new IllegalArgumentException(
+                    "There is a process in settings.yml with an unknown/invalid " +
                     "identifier in the function '" + function.getIdentifier() + "', so "
-                    + "LevelledMobs is unable to parse it.", true);
-                return false;
+                    + "LevelledMobs is unable to parse it.");
             }
             if(function.getProcesses().stream().anyMatch(otherProcess ->
                 otherProcess.getIdentifier().equalsIgnoreCase(identifier))
             ) {
-                Log.sev("There are two or more processes in the function '" +
+                throw new IllegalArgumentException(
+                    "There are two or more processes in the function '" +
                     function.getIdentifier() + "' which share the same identifier, '" +
-                    identifier + "'. Processes must have unique identifiers.", true);
-                return false;
+                    identifier + "'. Processes must have unique identifiers.");
             }
 
             /* create obj */
@@ -415,9 +591,9 @@ public final class LogicHandler {
             if(processNode.hasChild("presets")) {
                 final CommentedConfigurationNode presetsNode = processNode.node("presets");
                 if(!presetsNode.isList()) {
-                    Log.sev("Unable to parse presets of process '" + identifier +
-                        "': not a valid list of presets.", true);
-                    return false;
+                    throw new IllegalArgumentException(
+                        "Unable to parse presets of process '" + identifier +
+                        "': not a valid list of presets.");
                 }
                 final List<String> presetsIdentifiersList;
                 try {
@@ -426,9 +602,8 @@ public final class LogicHandler {
                     Log.sev("Unable to parse presets of process '" + identifier +
                         "'. This is usually caused by a the user creating a syntax error in " +
                         "the settings.yml file. A stack trace will be printed below for debugging " +
-                        "purposes.", true);
-                    ex.printStackTrace();
-                    return false;
+                        "purposes.");
+                    throw new RuntimeException(ex);
                 }
 
                 presetIterator:
@@ -442,7 +617,7 @@ public final class LogicHandler {
                         continue;
                     }
 
-                    for(var otherPreset : getPresets()) {
+                    for(final Preset otherPreset : getPresets()) {
                         if(otherPreset.getIdentifier().equals(presetIdentifier)) {
                             process.getPresets().add(otherPreset);
                             continue presetIterator;
@@ -461,8 +636,6 @@ public final class LogicHandler {
             Bukkit.getPluginManager().callEvent(new ProcessPostParseEvent(process));
             function.getProcesses().add(process);
         }
-
-        return true;
     }
 
     private void parseActions(final @NotNull Process process) {
