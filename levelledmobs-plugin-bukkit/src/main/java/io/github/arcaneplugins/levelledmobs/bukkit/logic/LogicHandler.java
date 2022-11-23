@@ -348,8 +348,9 @@ public final class LogicHandler {
                 dropNode.node("enchantments").childrenList()
             ) {
                 final String enchantmentId = Objects.requireNonNull(
-                    enchTupleNode.node("id").getString(),
-                    "No enchantment ID specified at node '%s'".formatted(enchTupleNode.path())
+                    enchTupleNode.node("enchantment").getString(),
+                    "No enchantment ID specified at node '%s'"
+                        .formatted(enchTupleNode.node("enchantment").path())
                 );
 
                 enchantTuples.add(new EnchantTuple(
