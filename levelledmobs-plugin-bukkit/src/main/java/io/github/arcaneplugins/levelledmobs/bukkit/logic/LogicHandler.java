@@ -6,6 +6,9 @@ import io.github.arcaneplugins.levelledmobs.bukkit.logic.context.placeholder.Con
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.customdrops.CustomDrop;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.customdrops.CustomDropHandler;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.customdrops.recipient.CustomDropRecipient;
+import io.github.arcaneplugins.levelledmobs.bukkit.logic.customdrops.recipient.DropTableRecipient;
+import io.github.arcaneplugins.levelledmobs.bukkit.logic.customdrops.recipient.EntityTypeRecipient;
+import io.github.arcaneplugins.levelledmobs.bukkit.logic.customdrops.recipient.MobGroupRecipient;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.customdrops.type.CommandCustomDrop;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.customdrops.type.ItemCustomDrop;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.function.FunctionPostParseEvent;
@@ -23,6 +26,7 @@ import io.github.arcaneplugins.levelledmobs.bukkit.logic.preset.Preset;
 import io.github.arcaneplugins.levelledmobs.bukkit.util.EnchantTuple;
 import io.github.arcaneplugins.levelledmobs.bukkit.util.Log;
 import io.github.arcaneplugins.levelledmobs.bukkit.util.math.TimeUtils;
+import io.github.arcaneplugins.levelledmobs.bukkit.util.modal.impl.ModalEntityTypeSet;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -38,6 +42,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemFlag;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -255,7 +260,7 @@ public final class LogicHandler {
     private void parseCustomDrops() {
         Log.inf("Parsing custom drops.");
 
-        CustomDropHandler.clearCustomDropMaps();
+        CustomDropHandler.clearCustomDropRecipients();
 
         parseDropTableCustomDrops();
         parseEntityTypeCustomDrops();
@@ -266,26 +271,115 @@ public final class LogicHandler {
 
     private void parseDropTableCustomDrops() {
         Log.inf("Parsing Drop Table custom drops.");
-        //TODO
+
+        for(final CommentedConfigurationNode dropTableNode : LevelledMobs.getInstance()
+            .getConfigHandler().getCustomDropsCfg()
+            .getRoot().node("drop-tables").childrenList()
+        ) {
+            final DropTableRecipient recipient;
+
+            try {
+                recipient = new DropTableRecipient(
+                    Objects.requireNonNull(
+                        dropTableNode.node("drop-table").getString(),
+                        "Drop table at path '%s' does not specify a drop table ID."
+                            .formatted(dropTableNode.path())
+                    ),
+                    new LinkedList<>(),
+                    dropTableNode.node("overall-chance").getFloat(1.0f),
+                    dropTableNode.node("overall-permissions")
+                        .getList(String.class, Collections.emptyList()),
+                    ModalEntityTypeSet.parseNode(dropTableNode.node("entities"))
+                );
+            } catch(SerializationException ex) {
+                throw new RuntimeException(ex);
+            }
+
+            recipient.getDrops().addAll(
+                parseCustomDropsAtSection(dropTableNode.node("drops"), recipient)
+            );
+
+            CustomDropHandler.DROP_TABLE_RECIPIENTS.add(recipient);
+        }
+
         Log.inf("Successfully parsed custom drops for %s drop tables.".formatted(
-            CustomDropHandler.DROP_TABLE_CUSTOM_DROPS_MAP.size()));
+            CustomDropHandler.DROP_TABLE_RECIPIENTS.size()));
     }
 
     private void parseEntityTypeCustomDrops() {
         Log.inf("Parsing Entity Type custom drops.");
-        //TODO
+
+        for(final CommentedConfigurationNode entityTypeNode : LevelledMobs.getInstance()
+            .getConfigHandler().getCustomDropsCfg()
+            .getRoot().node("entities").childrenList()
+        ) {
+            final EntityTypeRecipient recipient;
+
+            try {
+                recipient = new EntityTypeRecipient(
+                    new LinkedList<>(),
+                    entityTypeNode.node("overall-chance").getFloat(1.0f),
+                    entityTypeNode.node("overall-permissions")
+                        .getList(String.class, Collections.emptyList()),
+                    EntityType.valueOf(
+                        Objects.requireNonNull(
+                            entityTypeNode.node("entity").getString(),
+                            "Entity drops list at path '%s' does not specify an entity type."
+                                .formatted(entityTypeNode.path())
+                        ).toUpperCase(Locale.ROOT)
+                    )
+                );
+            } catch(SerializationException ex) {
+                throw new RuntimeException(ex);
+            }
+
+            recipient.getDrops().addAll(
+                parseCustomDropsAtSection(entityTypeNode.node("drops"), recipient)
+            );
+
+            CustomDropHandler.ENTITY_TYPE_RECIPIENTS.add(recipient);
+        }
+
         Log.inf("Successfully parsed custom drops for %s entity types.".formatted(
-            CustomDropHandler.ENTITY_TYPE_CUSTOM_DROPS_MAP.size()));
+            CustomDropHandler.ENTITY_TYPE_RECIPIENTS.size()));
     }
 
     private void parseMobGroupCustomDrops() {
         Log.inf("Parsing Mob Group custom drops.");
-        //TODO
+
+        for(final CommentedConfigurationNode mobGroupNode : LevelledMobs.getInstance()
+            .getConfigHandler().getCustomDropsCfg()
+            .getRoot().node("mob-groups").childrenList()
+        ) {
+            final MobGroupRecipient recipient;
+
+            try {
+                recipient = new MobGroupRecipient(
+                    new LinkedList<>(),
+                    mobGroupNode.node("overall-chance").getFloat(1.0f),
+                    mobGroupNode.node("overall-permissions")
+                        .getList(String.class, Collections.emptyList()),
+                    Objects.requireNonNull(
+                        mobGroupNode.node("mob-group").getString(),
+                        "CustomDrop MobGroup list at path '%s' does not specify a mob group ID."
+                            .formatted(mobGroupNode.path())
+                    )
+                );
+            } catch(SerializationException ex) {
+                throw new RuntimeException(ex);
+            }
+
+            recipient.getDrops().addAll(
+                parseCustomDropsAtSection(mobGroupNode.node("drops"), recipient)
+            );
+
+            CustomDropHandler.MOB_GROUP_RECIPIENTS.add(recipient);
+        }
+
         Log.inf("Successfully parsed custom drops for %s mob groups.".formatted(
-            CustomDropHandler.MOB_GROUP_CUSTOM_DROPS_MAP.size()));
+            CustomDropHandler.MOB_GROUP_RECIPIENTS.size()));
     }
 
-    //TODO use in the above methods.
     private @Nonnull Collection<CustomDrop> parseCustomDropsAtSection(
         final @Nonnull CommentedConfigurationNode dropsNode,
         final @Nonnull CustomDropRecipient recipient

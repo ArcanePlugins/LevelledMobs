@@ -1,6 +1,6 @@
 package io.github.arcaneplugins.levelledmobs.bukkit.logic.customdrops.recipient;
 
-import io.github.arcaneplugins.levelledmobs.bukkit.logic.customdrops.type.ItemCustomDrop;
+import io.github.arcaneplugins.levelledmobs.bukkit.logic.customdrops.CustomDrop;
 import java.util.Collection;
 import javax.annotation.Nonnull;
 import org.jetbrains.annotations.NotNull;
@@ -10,7 +10,7 @@ public class MobGroupRecipient extends CustomDropRecipient {
     private final String mobGroupId;
 
     public MobGroupRecipient(
-        final @Nonnull Collection<ItemCustomDrop> drops,
+        final @Nonnull Collection<CustomDrop> drops,
         final float overallChance,
         final @Nonnull Collection<String> overallPermissions,
         final @Nonnull String mobGroupId

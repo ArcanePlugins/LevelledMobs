@@ -1,7 +1,6 @@
 package io.github.arcaneplugins.levelledmobs.bukkit.logic.customdrops;
 
 import io.github.arcaneplugins.levelledmobs.bukkit.LevelledMobs;
-import io.github.arcaneplugins.levelledmobs.bukkit.logic.LogicHandler;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.context.Context;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.customdrops.cdevent.CustomDropsEvent;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.customdrops.recipient.DropTableRecipient;
@@ -13,12 +12,10 @@ import io.github.arcaneplugins.levelledmobs.bukkit.logic.customdrops.type.Standa
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.group.Group;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
-import java.util.Map;
 import java.util.Optional;
 import javax.annotation.Nonnull;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.entity.EntityDeathEvent;
@@ -28,22 +25,14 @@ public class CustomDropHandler {
 
     private CustomDropHandler() {}
 
-    //TODO Populate
-    public static final Map<DropTableRecipient, Collection<CustomDrop>>
-        DROP_TABLE_CUSTOM_DROPS_MAP = new HashMap<>();
+    public static final Collection<DropTableRecipient> DROP_TABLE_RECIPIENTS = new HashSet<>();
+    public static final Collection<EntityTypeRecipient> ENTITY_TYPE_RECIPIENTS = new HashSet<>();
+    public static final Collection<MobGroupRecipient> MOB_GROUP_RECIPIENTS = new HashSet<>();
 
-    //TODO Populate
-    public static final Map<EntityTypeRecipient, Collection<CustomDrop>>
-        ENTITY_TYPE_CUSTOM_DROPS_MAP = new HashMap<>();
-
-    //TODO Populate
-    public static final Map<MobGroupRecipient, Collection<CustomDrop>>
-        MOB_GROUP_CUSTOM_DROPS_MAP = new HashMap<>();
-
-    public static void clearCustomDropMaps() {
-        DROP_TABLE_CUSTOM_DROPS_MAP.clear();
-        ENTITY_TYPE_CUSTOM_DROPS_MAP.clear();
-        MOB_GROUP_CUSTOM_DROPS_MAP.clear();
+    public static void clearCustomDropRecipients() {
+        DROP_TABLE_RECIPIENTS.clear();
+        ENTITY_TYPE_RECIPIENTS.clear();
+        MOB_GROUP_RECIPIENTS.clear();
     }
 
     public static void handleEntitySpawn(
@@ -61,13 +50,7 @@ public class CustomDropHandler {
             } else if(cd.getType().equalsIgnoreCase(StandardCustomDropType.COMMAND.name())) {
                 final CommandCustomDrop ccd = (CommandCustomDrop) cd;
                 if(ccd.getCommandRunEvents().contains(CustomDropsEvent.ON_SPAWN.name())) {
-                    Bukkit.dispatchCommand(
-                        Bukkit.getConsoleSender(),
-                        LogicHandler.replacePapiAndContextPlaceholders(
-                            ccd.getCommand(),
-                            new Context().withEntity(entity)
-                        )
-                    );
+                    ccd.execute(new Context().withEntity(entity));
                 }
             }
         }
@@ -94,22 +77,22 @@ public class CustomDropHandler {
     ) {
         final Collection<CustomDrop> applicableCds = new LinkedList<>();
 
-        DROP_TABLE_CUSTOM_DROPS_MAP.forEach((recip, cds) -> {
+        DROP_TABLE_RECIPIENTS.forEach((recip) -> {
             if(recip.getApplicableEntities().contains(entityType)) {
-                applicableCds.addAll(cds);
+                applicableCds.addAll(recip.getDrops());
             }
 
             //TODO also get the drop tables applied to the entity thru a LmFunction
             //TODO in lm3 that's called 'usedroptableid'
         });
 
-        ENTITY_TYPE_CUSTOM_DROPS_MAP.forEach((recip, cds) -> {
+        ENTITY_TYPE_RECIPIENTS.forEach((recip) -> {
             if(recip.getEntityType() == entityType) {
-                applicableCds.addAll(cds);
+                applicableCds.addAll(recip.getDrops());
             }
         });
 
-        MOB_GROUP_CUSTOM_DROPS_MAP.forEach((recip, cds) -> {
+        MOB_GROUP_RECIPIENTS.forEach((recip) -> {
             final Optional<Group> groupOpt = LevelledMobs.getInstance()
                 .getLogicHandler()
                 .getGroups()
@@ -120,7 +103,7 @@ public class CustomDropHandler {
             groupOpt.ifPresent(group -> {
                 for(final String groupItem : group.getItems()) {
                     if(groupItem.equalsIgnoreCase(entityType.name())) {
-                        applicableCds.addAll(cds);
+                        applicableCds.addAll(recip.getDrops());
                         return;
                     }
                 }
