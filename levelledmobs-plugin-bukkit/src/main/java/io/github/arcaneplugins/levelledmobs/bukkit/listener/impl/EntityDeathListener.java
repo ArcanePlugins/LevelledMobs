@@ -10,9 +10,9 @@ import io.github.arcaneplugins.levelledmobs.bukkit.logic.LogicHandler;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.context.Context;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.customdrops.CustomDrop;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.customdrops.CustomDropHandler;
-import io.github.arcaneplugins.levelledmobs.bukkit.logic.customdrops.EntityDeathCustomDropResult;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.customdrops.type.CommandCustomDrop;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.customdrops.type.ItemCustomDrop;
+import io.github.arcaneplugins.levelledmobs.bukkit.logic.customdrops.type.StandardCustomDropType;
 import io.github.arcaneplugins.levelledmobs.bukkit.util.Log;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -83,7 +83,7 @@ public class EntityDeathListener extends ListenerWrapper {
         final List<ItemStack> customDropsToDrop = new LinkedList<>();
 
         sortItemDrops(event, vanillaDrops, nonVanillaDrops);
-        generateCustomItemDrops(event, vanillaDrops, nonVanillaDrops, customDrops);
+        generateCustomDrops(event, vanillaDrops, nonVanillaDrops, customDrops);
         multiplyItemDrops(event, context,
             vanillaDrops, nonVanillaDrops,
             customDrops, customDropsToDrop
@@ -141,39 +141,49 @@ public class EntityDeathListener extends ListenerWrapper {
         return entity instanceof InventoryHolder ih && ih.getInventory().contains(itemStack);
     }
 
-    private void generateCustomItemDrops(
+    private void generateCustomDrops(
         final @Nonnull EntityDeathEvent event,
         final @Nonnull List<ItemStack> vanillaDrops,
         final @Nonnull List<ItemStack> nonVanillaDrops,
         final @Nonnull List<CustomDrop> customDrops
     ) {
-        Log.debug(DEATH_DROPS, () -> "[GenCustDrp] Generating custom item drops");
+        Log.debug(DEATH_DROPS, () -> "[GenCustDrp] Generating custom item drops. "
+            + "Collection size: %s".formatted(customDrops.size()));
 
-        final EntityDeathCustomDropResult result = CustomDropHandler.handleEntityDeath(event);
-
-        Log.debug(DEATH_DROPS, () -> "[GenCustDrp] Count: %s; Over-Van: %s; Over-NonVan: %s"
-            .formatted(
-                result.getDrops().size(),
-                result.overridesVanillaDrops(),
-                result.overridesNonVanillaDrops())
+        customDrops.addAll(
+            CustomDropHandler.generateCustomDrops(
+                new Context()
+                    .withEntity(event.getEntity())
+                    .withEvent(event)
+            )
         );
 
-        customDrops.addAll(result.getDrops());
+        Log.debug(DEATH_DROPS, () -> "[GenCustDrp] Generated %s custom drops."
+            .formatted(customDrops.size()));
 
+        /* TODO
+            • Chances
+            • Entity Death stuff
+         */
+
+        /*
+        We want to increase the chance of custom item drops if the player is using a looting item.
+         */
         final EntityDamageEvent lastDamage = event.getEntity().getLastDamageCause();
         if(lastDamage instanceof final EntityDamageByEntityEvent lastDamageByEntity) {
             if(lastDamageByEntity.getDamager() instanceof final Player player) {
                 final int lootingLevel = getPlayerItemLootingEnchLevel(player);
                 for(final CustomDrop drop : customDrops) {
+                    if(!drop.getType().equals(StandardCustomDropType.ITEM.name())) return;
+
                     drop.withChance(Math.min(100.0f, drop.getChance() + (1.0f * lootingLevel)));
                 }
             }
         }
 
-        if(result.overridesVanillaDrops())
+        if(customDrops.stream().anyMatch(CustomDrop::shouldOverrideVanillaDrops))
             vanillaDrops.clear();
-
-        if(result.overridesNonVanillaDrops())
+        if(customDrops.stream().anyMatch(CustomDrop::shouldOverrideNonVanillaDrops))
             nonVanillaDrops.clear();
     }
 

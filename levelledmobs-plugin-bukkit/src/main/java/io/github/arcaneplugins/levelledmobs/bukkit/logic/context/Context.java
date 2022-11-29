@@ -1,8 +1,7 @@
 package io.github.arcaneplugins.levelledmobs.bukkit.logic.context;
 
 import io.github.arcaneplugins.levelledmobs.bukkit.LevelledMobs;
-import io.github.arcaneplugins.levelledmobs.bukkit.api.util.Pair;
-import io.github.arcaneplugins.levelledmobs.bukkit.logic.customdrops.cdevent.CustomDropsEvent;
+import io.github.arcaneplugins.levelledmobs.bukkit.logic.customdrops.cdevent.CustomDropsEventType;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.function.LmFunction;
 import java.util.Collection;
 import java.util.HashMap;
@@ -18,6 +17,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -35,9 +35,14 @@ public final class Context {
     private LivingEntity mother;
     private final List<LmFunction> linkedFunctions = new LinkedList<>();
     private final Collection<LivingEntity> parents = new LinkedList<>();
-    private CustomDropsEvent customDropsEvent;
+    private Event event;
+    private CustomDropsEventType customDropsEventType;
 
-    private final Map<String, Pair<String, Supplier<String>>> miscContext = new HashMap<>();
+    /*
+    Key: Misc Context ID (as used in placeholders)
+    Val: Supplier for Context
+     */
+    private final Map<String, Supplier<Object>> miscContext = new HashMap<>();
 
     /* methods */
 
@@ -101,10 +106,8 @@ public final class Context {
     }
 
     @NotNull
-    public Context withLocation(final @NotNull Location location){
-        this.location = Objects.requireNonNull(location, "location");
-
-        if(location.getWorld() != null) {
+    public Context withLocation(final @Nullable Location location) {
+        if(location != null && location.getWorld() != null) {
             withWorld(location.getWorld());
         }
 
@@ -118,7 +121,7 @@ public final class Context {
 
     @NotNull
     public Context withLinkedFunction(final LmFunction linkedFunction) {
-        getLinkedFunctions().add(Objects.requireNonNull(linkedFunction, "linkedFunction"));
+        getLinkedFunctions().add(linkedFunction);
         return this;
     }
 
@@ -127,7 +130,6 @@ public final class Context {
 
     @NotNull
     public Context withFather(final LivingEntity father) {
-        Objects.requireNonNull(father, "father");
         this.father = father;
         return this;
     }
@@ -137,7 +139,6 @@ public final class Context {
 
     @NotNull
     public Context withMother(final LivingEntity mother) {
-        Objects.requireNonNull(mother, "mother");
         this.mother = mother;
         return this;
     }
@@ -145,20 +146,39 @@ public final class Context {
     @Nullable
     public LivingEntity getMother() { return mother; }
 
+    @Nullable
+    public Event getEvent() {
+        return event;
+    }
+
     @NotNull
-    public Context withCustomDropsEvent(final CustomDropsEvent event) {
-        Objects.requireNonNull(event, "event");
-        this.customDropsEvent = event;
+    public Context withEvent(final @Nullable Event event) {
+        this.event = event;
         return this;
     }
 
-    public @Nullable CustomDropsEvent getCustomDropsEvent() {
-        return customDropsEvent;
+    @NotNull
+    public Context withCustomDropsEventType(final CustomDropsEventType event) {
+        Objects.requireNonNull(event, "event");
+        this.customDropsEventType = event;
+        return this;
     }
 
-    @Nonnull
-    public Map<String, Pair<String, Supplier<String>>> getMiscContext() {
+    public @Nullable CustomDropsEventType getCustomDropsEventType() {
+        return customDropsEventType;
+    }
+
+    public Map<String, Supplier<Object>> getMiscContextMap() {
         return miscContext;
+    }
+
+    public @NotNull Context withMiscContext(final String key, final Supplier<Object> value) {
+        getMiscContextMap().put(key, value);
+        return this;
+    }
+
+    public @Nullable Supplier<Object> getMiscContext(final String key) {
+        return getMiscContextMap().get(key);
     }
 
 }

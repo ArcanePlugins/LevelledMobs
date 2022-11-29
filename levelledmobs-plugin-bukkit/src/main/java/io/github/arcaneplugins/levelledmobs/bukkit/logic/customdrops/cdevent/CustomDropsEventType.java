@@ -1,6 +1,6 @@
 package io.github.arcaneplugins.levelledmobs.bukkit.logic.customdrops.cdevent;
 
-public enum CustomDropsEvent {
+public enum CustomDropsEventType {
     ON_SPAWN,
     ON_DEATH
 }

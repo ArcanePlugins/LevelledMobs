@@ -22,6 +22,7 @@ public abstract class CustomDrop {
     private Integer entityMinLevel = null;
     private Integer entityMaxLevel = null;
     private boolean overridesVanillaDrops = false;
+    private boolean overridesNonVanillaDrops = false;
     private String formulaCondition = null;
 
     public CustomDrop(
@@ -66,6 +67,15 @@ public abstract class CustomDrop {
 
     public @Nonnull CustomDrop withOverridesVanillaDrops(boolean overridesVanillaDrops) {
         this.overridesVanillaDrops = overridesVanillaDrops;
+        return this;
+    }
+
+    public boolean shouldOverrideNonVanillaDrops() {
+        return overridesNonVanillaDrops;
+    }
+
+    public @Nonnull CustomDrop withOverridesNonVanillaDrops(final boolean overridesNonVanillaDrops) {
+        this.overridesNonVanillaDrops = overridesNonVanillaDrops;
         return this;
     }
 

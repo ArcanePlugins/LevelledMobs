@@ -1,8 +1,9 @@
 package io.github.arcaneplugins.levelledmobs.bukkit.logic.customdrops.type;
 
+import io.github.arcaneplugins.levelledmobs.bukkit.api.data.ItemDataUtil;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.customdrops.CustomDrop;
-import io.github.arcaneplugins.levelledmobs.bukkit.util.EnchantTuple;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.customdrops.recipient.CustomDropRecipient;
+import io.github.arcaneplugins.levelledmobs.bukkit.util.EnchantTuple;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.HashSet;
@@ -19,6 +20,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 
+@SuppressWarnings("UnusedReturnValue")
 public class ItemCustomDrop extends CustomDrop {
 
     private final Material material;
@@ -77,6 +79,11 @@ public class ItemCustomDrop extends CustomDrop {
 
     public @Nonnull ItemStack toItemStack() {
         final ItemStack is = new ItemStack(getMaterial(), getAmount());
+
+        if(!is.hasItemMeta()) return is;
+
+        ItemDataUtil.setIsItemCustom(is, true);
+
         final ItemMeta im = is.getItemMeta();
 
         for(final EnchantTuple tuple : getEnchantments()) {
@@ -93,9 +100,6 @@ public class ItemCustomDrop extends CustomDrop {
             is.addUnsafeEnchantment(enchantment, strength);
         }
 
-        if(!is.hasItemMeta() || im == null)
-            return is;
-
         if(im instanceof Damageable dim)
             dim.setDamage(getDurabilityLoss());
 
@@ -106,6 +110,8 @@ public class ItemCustomDrop extends CustomDrop {
         im.setCustomModelData(getCustomModelData());
 
         im.addItemFlags(getItemFlags().toArray(new ItemFlag[0]));
+
+        is.setItemMeta(im);
 
         return is;
     }
@@ -190,6 +196,7 @@ public class ItemCustomDrop extends CustomDrop {
         return equipmentChance;
     }
 
+    //TODO this needs to be parsed
     public @Nonnull ItemCustomDrop withEquipmentChance(float equipmentChance) {
         this.equipmentChance = equipmentChance;
         return this;
@@ -199,6 +206,7 @@ public class ItemCustomDrop extends CustomDrop {
         return allowedEquipmentSlots;
     }
 
+    //TODO this needs to be parsed
     public @Nonnull ItemCustomDrop withAllowedEquipmentSlots(
         final @Nonnull Collection<EquipmentSlot> equipmentSlots
     ) {

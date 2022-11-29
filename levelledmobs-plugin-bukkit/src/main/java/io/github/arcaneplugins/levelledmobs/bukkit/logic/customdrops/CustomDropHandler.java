@@ -2,7 +2,7 @@ package io.github.arcaneplugins.levelledmobs.bukkit.logic.customdrops;
 
 import io.github.arcaneplugins.levelledmobs.bukkit.LevelledMobs;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.context.Context;
-import io.github.arcaneplugins.levelledmobs.bukkit.logic.customdrops.cdevent.CustomDropsEvent;
+import io.github.arcaneplugins.levelledmobs.bukkit.logic.customdrops.cdevent.CustomDropsEventType;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.customdrops.recipient.DropTableRecipient;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.customdrops.recipient.EntityTypeRecipient;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.customdrops.recipient.MobGroupRecipient;
@@ -11,14 +11,13 @@ import io.github.arcaneplugins.levelledmobs.bukkit.logic.customdrops.type.ItemCu
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.customdrops.type.StandardCustomDropType;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.group.Group;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.Objects;
 import java.util.Optional;
 import javax.annotation.Nonnull;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntitySpawnEvent;
 
 public class CustomDropHandler {
@@ -35,13 +34,18 @@ public class CustomDropHandler {
         MOB_GROUP_RECIPIENTS.clear();
     }
 
+    //TODO move this to EntitySpawnListener
     public static void handleEntitySpawn(
         final @Nonnull EntitySpawnEvent event
     ) {
         // This is a safe cast since LM will only call this after it has verified this is a LivngEnt
         final LivingEntity entity = (LivingEntity) event.getEntity();
 
-        final Collection<CustomDrop> cds = getDefinedCustomDropsForEntityType(event.getEntityType());
+        final Context context = new Context()
+            .withEntity(entity)
+            .withEvent(event);
+
+        final Collection<CustomDrop> cds = getDefinedCustomDropsForEntityType(context);
 
         for(final @Nonnull CustomDrop cd : cds) {
             if(cd.getType().equals(StandardCustomDropType.ITEM.name())) {
@@ -49,32 +53,28 @@ public class CustomDropHandler {
                 icd.attemptToApplyEquipment(entity);
             } else if(cd.getType().equalsIgnoreCase(StandardCustomDropType.COMMAND.name())) {
                 final CommandCustomDrop ccd = (CommandCustomDrop) cd;
-                if(ccd.getCommandRunEvents().contains(CustomDropsEvent.ON_SPAWN.name())) {
-                    ccd.execute(new Context().withEntity(entity));
+                if(ccd.getCommandRunEvents().contains(CustomDropsEventType.ON_SPAWN.name())) {
+                    ccd.execute(context);
                 }
             }
         }
     }
 
-    public static EntityDeathCustomDropResult handleEntityDeath(
-        final @Nonnull EntityDeathEvent event
+    public static @Nonnull Collection<CustomDrop> generateCustomDrops(
+        final @Nonnull Context context
     ) {
-        final LivingEntity entity = event.getEntity();
-
-        //TODO factor in cause-of-death via using event.getEntity().getLastDamageCause()
-
-        //TODO this is just a placeholder to make the other code work. needs a proper impl
-        return new EntityDeathCustomDropResult(
-            Collections.emptyList(),
-            false,
-            false
-        );
+        //TODO
+        throw new RuntimeException("Not Implemented");
     }
 
-    //TODO use
     public static @Nonnull Collection<CustomDrop> getDefinedCustomDropsForEntityType(
-        final @Nonnull EntityType entityType
+        final @Nonnull Context context
     ) {
+        final EntityType entityType = Objects.requireNonNull(
+            context.getEntityType(),
+            "Entity type context undefined"
+        );
+
         final Collection<CustomDrop> applicableCds = new LinkedList<>();
 
         DROP_TABLE_RECIPIENTS.forEach((recip) -> {

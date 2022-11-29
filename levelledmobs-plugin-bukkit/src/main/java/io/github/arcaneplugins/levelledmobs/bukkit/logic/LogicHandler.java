@@ -404,6 +404,7 @@ public final class LogicHandler {
             cd.withChunkKillLimited(dropNode.node("chunk-kill-limited").getBoolean(cd.isChunkKillLimited()));
             cd.withDropGroupId(dropNode.node("drop-group-id").getString(cd.getDropGroupId()));
             cd.withOverridesVanillaDrops(dropNode.node("overrides-vanilla-drops").getBoolean(cd.shouldOverrideVanillaDrops()));
+            cd.withOverridesNonVanillaDrops(dropNode.node("overrides-non-vanilla-drops").getBoolean(cd.shouldOverrideVanillaDrops()));
             cd.withFormulaCondition(dropNode.node("formula-condition").getString());
 
             try {
