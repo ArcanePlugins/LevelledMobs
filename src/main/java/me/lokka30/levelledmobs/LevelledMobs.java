@@ -31,6 +31,7 @@ import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
 import me.lokka30.levelledmobs.misc.NamespacedKeys;
 import me.lokka30.levelledmobs.misc.NametagTimerChecker;
 import me.lokka30.levelledmobs.misc.YmlParsingHelper;
+import me.lokka30.levelledmobs.nms.Definitions;
 import me.lokka30.levelledmobs.rules.RulesManager;
 import me.lokka30.levelledmobs.rules.RulesParsingManager;
 import me.lokka30.levelledmobs.util.ConfigUtils;
@@ -76,6 +77,7 @@ public final class LevelledMobs extends JavaPlugin {
     public YmlParsingHelper helperSettings;
     public long playerLevellingMinRelevelTime;
     public int maxPlayersRecorded;
+    private Definitions definitions;
     private static LevelledMobs instance;
 
     // Configuration
@@ -101,6 +103,7 @@ public final class LevelledMobs extends JavaPlugin {
     public void onEnable() {
         final QuickTimer timer = new QuickTimer();
 
+        this.definitions = new Definitions();
         this.nametagQueueManager = new NametagQueueManager(this);
         this.mobsQueueManager = new MobsQueueManager(this);
         this.companion = new Companion(this);
@@ -205,6 +208,10 @@ public final class LevelledMobs extends JavaPlugin {
 
     public static LevelledMobs getInstance(){
         return instance;
+    }
+
+    public @NotNull Definitions getDefinitions(){
+        return this.definitions;
     }
 
     @Override
