@@ -1,7 +1,9 @@
 package me.lokka30.levelledmobs.nms;
 
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Field;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import me.lokka30.levelledmobs.LevelledMobs;
@@ -25,7 +27,6 @@ public class NametagSender implements NMSUtil {
         this.def = LevelledMobs.getInstance().getDefinitions();
     }
 
-    //private final ServerVersionInfo versionInfo;
     private final Definitions def;
 
     public void sendNametag(final @NotNull LivingEntity livingEntity, @NotNull NametagResult nametag,
@@ -39,14 +40,14 @@ public class NametagSender implements NMSUtil {
             // internalLivingEntity.getEntityData()
             final Object entityDataPreClone = def.method_getEntityData.invoke(internalLivingEntity);
             final Object entityData = cloneEntityData(entityDataPreClone, internalLivingEntity);
+            //final Object entityData = entityDataPreClone;
             final Object optionalComponent = def.field_OPTIONAL_COMPONENT.get(def.clazz_DataWatcherRegistry);
 
             // final EntityDataAccessor<Optional<Component>> customNameAccessor =
             //       new EntityDataAccessor<>(2, EntityDataSerializers.OPTIONAL_COMPONENT);
             final Object customNameAccessor = def.ctor_EntityDataAccessor.newInstance(2, optionalComponent);
             final Optional<Object> customName = buildNametagComponent(livingEntity, nametag);
-            //final Optional<Object> customName =
-            // entityData.set(customNameAccessor, customName);
+            //final Optional<Object> customName = entityData.set(customNameAccessor, customName);
             def.method_set.invoke(entityData, customNameAccessor, customName);
 
             final Object BOOLEAN = def.field_BOOLEAN.get(def.clazz_DataWatcherRegistry);
@@ -59,8 +60,11 @@ public class NametagSender implements NMSUtil {
 
             Object packet;
             if (def.getIsOneNinteenThreeOrNewer()){
+                // List<DataWatcher.b<?>>
+                // java.util.List packDirty() -> b
+                final List<?> packDirty = (List<?>) def.method_PackDirty.invoke(entityData);
                 packet = def.ctor_Packet
-                        .newInstance(livingEntityId, List.of(entityData));
+                        .newInstance(livingEntityId, packDirty);
             }
             else{
                 packet = def.ctor_Packet
@@ -72,6 +76,7 @@ public class NametagSender implements NMSUtil {
             final Object connection = def.field_Connection.get(serverPlayer);
 
             sendPacket(connection, packet);
+            //def.method_test.invoke(entityData, serverPlayer);
         } catch (IllegalAccessException | InvocationTargetException | InstantiationException e) {
             e.printStackTrace();
         }
@@ -92,19 +97,59 @@ public class NametagSender implements NMSUtil {
 
     // returns SynchedEntityData (DataWatcher)
     // args: SynchedEntityData, LivingEntity (nms)
+    @SuppressWarnings("unchecked")
     private @NotNull Object cloneEntityData(
-            @NotNull final Object other,
+            @NotNull final Object entityDataPreClone,
+            final Object internalLivingEntity
+    ) throws InvocationTargetException, InstantiationException, IllegalAccessException {
+
+        if (!def.getIsOneNinteenThreeOrNewer()) {
+            return cloneEntityDataLegacy(entityDataPreClone, internalLivingEntity);
+        }
+
+        // constructor:
+        // public net.minecraft.network.syncher.DataWatcher(net.minecraft.world.entity.Entity)
+        final Object entityData = def.ctor_SynchedEntityData.newInstance(internalLivingEntity);
+
+        try{
+            Field f = entityDataPreClone.getClass().getDeclaredField("e");
+            f.setAccessible(true);
+            // private final Int2ObjectMap<DataWatcher.Item<?>> itemsById
+            Field itemsByIdField = def.clazz_DataWatcher.getDeclaredField("e");
+            itemsByIdField.setAccessible(true);
+
+            final Map<Integer, Object> itemsById = (Map<Integer, Object>) f.get(entityDataPreClone);
+            if (itemsById.isEmpty()) {
+                return entityData;
+            }
+
+            for (final Object objDataItem : itemsById.values()){
+                final Object accessor = def.method_getAccessor.invoke(objDataItem);
+                final Object value = def.method_getValue.invoke(objDataItem);
+                def.method_define.invoke(entityData, accessor, value);
+            }
+            return entityData;
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+
+        return entityData;
+    }
+
+    private @NotNull Object cloneEntityDataLegacy(
+            @NotNull final Object entityDataPreClone,
             final Object internalLivingEntity
     ) throws InvocationTargetException, InstantiationException, IllegalAccessException {
 
         final Object entityData = def.ctor_SynchedEntityData.newInstance(internalLivingEntity);
-        if (def.method_getAll.invoke(other) == null){
+        if (def.method_getAll.invoke(entityDataPreClone) == null){
             return entityData;
         }
 
         // SynchedEntityData.DataItem
         // List<DataItem<?>> getAll()
-        for (final Object dataItem : (List<?>)def.method_getAll.invoke(other)){
+        for (final Object dataItem : (List<?>)def.method_getAll.invoke(entityDataPreClone)){
             // entityData.define(dataItem.getAccessor(), dataItem.getValue());
             final Object accessor = def.method_getAccessor.invoke(dataItem);
             final Object value = def.method_getValue.invoke(dataItem);
