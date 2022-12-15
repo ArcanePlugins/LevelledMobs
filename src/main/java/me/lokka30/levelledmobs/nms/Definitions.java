@@ -42,7 +42,6 @@ public class Definitions {
     Class<?> clazz_EntityPlayer;
     Class<?> clazz_PaperAdventure;
     Class<?> clazz_EntityTypes;
-    Class<?> clazz_Test;
 
     // methods:
     Method method_ComponentAppend;
@@ -65,12 +64,13 @@ public class Definitions {
     Method method_GetDescriptionId;
     Method method_getNonDefaultValues;
     Method method_SynchedEntityData_Define;
-    Method method_PackDirty;
+    Method method_GetAllNonDefaultValues;
 
     // fields
     Field field_OPTIONAL_COMPONENT;
     Field field_BOOLEAN;
     Field field_Connection;
+    Field field_Int2ObjectMap;
 
     // Constructors
     Constructor<?> ctor_EntityDataAccessor;
@@ -167,11 +167,6 @@ public class Definitions {
 
         this.clazz_EntityTypes = Class.forName(
                 "net.minecraft.world.entity.EntityTypes");
-
-        this.clazz_Test = Class.forName(
-                "net.minecraft.server.level.EntityPlayer");
-
-        Class<?> testClass = Class.forName("net.minecraft.network.syncher.DataWatcher$Item");
     }
 
     private void getMethodComponentAppend() throws NoSuchMethodException {
@@ -321,7 +316,7 @@ public class Definitions {
             this.method_SynchedEntityData_Define = clazz_DataWatcher.getMethod("a", clazz_DataWatcherObject, Object.class);
 
             // java.util.List packDirty() -> b
-            this.method_PackDirty = clazz_DataWatcher.getMethod("b");
+            this.method_GetAllNonDefaultValues = clazz_DataWatcher.getMethod("c");
         }
     }
 
@@ -335,6 +330,12 @@ public class Definitions {
         // net.minecraft.server.level.ServerPlayer ->
         //    net.minecraft.server.network.ServerGamePacketListenerImpl connection ->
         this.field_Connection = clazz_EntityPlayer.getDeclaredField("b");
+
+        if (this.isOneNinteenThreeOrNewer){
+            // private final Int2ObjectMap<DataWatcher.Item<?>> itemsById
+            this.field_Int2ObjectMap = clazz_DataWatcher.getDeclaredField("e");
+            this.field_Int2ObjectMap.setAccessible(true);
+        }
     }
 
     private void buildConstructors() throws NoSuchMethodException {
