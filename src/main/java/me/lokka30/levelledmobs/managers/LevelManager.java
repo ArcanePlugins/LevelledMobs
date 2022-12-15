@@ -611,7 +611,7 @@ public class LevelManager implements LevelInterface {
             // look thru the animal's inventory for leather. That is the only item that will get duplicated
             for (final ItemStack item : chestItems) {
                 if (item.getType() == Material.LEATHER) {
-                    return Collections.singletonList(item);
+                    return List.of(item);
                 }
             }
 
@@ -1145,7 +1145,7 @@ public class LevelManager implements LevelInterface {
             final boolean preserveMobName = !main.nametagQueueManager.nmsHandler.isUsingProtocolLib;
             final NametagResult nametag = main.levelManager.getNametag(lmEntity, false, preserveMobName);
             main.nametagQueueManager.addToQueue(
-                new QueueItem(lmEntity, nametag, Collections.singletonList(player)));
+                new QueueItem(lmEntity, nametag, List.of(player)));
         }
     }
 

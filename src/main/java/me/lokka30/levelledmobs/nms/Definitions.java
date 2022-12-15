@@ -64,7 +64,8 @@ public class Definitions {
     Method method_GetDescriptionId;
     Method method_getNonDefaultValues;
     Method method_SynchedEntityData_Define;
-    Method method_GetAllNonDefaultValues;
+    Method method_DataWatcher_GetItem;
+    Method method_DataWatcherItem_Value;
 
     // fields
     Field field_OPTIONAL_COMPONENT;
@@ -315,8 +316,14 @@ public class Definitions {
             // define(net.minecraft.network.syncher.EntityDataAccessor,java.lang.Object) -> a
             this.method_SynchedEntityData_Define = clazz_DataWatcher.getMethod("a", clazz_DataWatcherObject, Object.class);
 
-            // java.util.List packDirty() -> b
-            this.method_GetAllNonDefaultValues = clazz_DataWatcher.getMethod("c");
+            // private <T> DataWatcher.Item<T> getItem(DataWatcherObject<T> datawatcherobject)
+            // net.minecraft.network.syncher.SynchedEntityData$DataItem getItem(net.minecraft.network.syncher.EntityDataAccessor) -> b
+            this.method_DataWatcher_GetItem = clazz_DataWatcher.getDeclaredMethod("b", clazz_DataWatcherObject);
+            this.method_DataWatcher_GetItem.setAccessible(true);
+
+            // net.minecraft.network.syncher.SynchedEntityData$DataItem -> abq$a:
+            //       net.minecraft.network.syncher.SynchedEntityData$DataValue value() -> e
+            this.method_DataWatcherItem_Value = clazz_DataWatcher_Item.getDeclaredMethod("e");
         }
     }
 

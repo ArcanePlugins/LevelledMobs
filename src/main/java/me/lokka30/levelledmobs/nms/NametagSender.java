@@ -1,6 +1,7 @@
 package me.lokka30.levelledmobs.nms;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -20,6 +21,7 @@ import org.jetbrains.annotations.Nullable;
  * @author stumper66
  * @since 3.6.0
  */
+@SuppressWarnings("unchecked")
 public class NametagSender implements NMSUtil {
 
     public NametagSender() {
@@ -31,7 +33,7 @@ public class NametagSender implements NMSUtil {
     public void sendNametag(final @NotNull LivingEntity livingEntity, final @NotNull NametagResult nametag,
                             final @NotNull Player player, final boolean doAlwaysVisible) {
 
-        if (nametag.isNullOrEmpty() || !player.isOnline() || !player.isValid()) return;
+        if (!player.isOnline() || !player.isValid()) return;
 
         final Runnable runnable = () -> sendNametagNonAsync(livingEntity, nametag, player, doAlwaysVisible);
 
@@ -56,9 +58,10 @@ public class NametagSender implements NMSUtil {
             final Object optionalComponent = def.field_OPTIONAL_COMPONENT.get(def.clazz_DataWatcherRegistry);
 
             // final EntityDataAccessor<Optional<Component>> customNameAccessor =
-            //       new EntityDataAccessor<>(2, EntityDataSerializers.OPTIONAL_COMPONENT);
+            //     //new EntityDataAccessor<>(2, EntityDataSerializers.OPTIONAL_COMPONENT);
             final Object customNameAccessor = def.ctor_EntityDataAccessor.newInstance(2, optionalComponent);
             final Optional<Object> customName = buildNametagComponent(livingEntity, nametag);
+
             //final Optional<Object> customName = entityData.set(customNameAccessor, customName);
             def.method_set.invoke(entityData, customNameAccessor, customName);
 
@@ -66,17 +69,17 @@ public class NametagSender implements NMSUtil {
             final Object customNameVisibleAccessor = def.ctor_EntityDataAccessor.newInstance(3, BOOLEAN);
 
             // entityData.set(customNameVisibleAccessor, !nametag.isNullOrEmpty() && doAlwaysVisible);
-            def.method_set.invoke(entityData, customNameVisibleAccessor, !nametag.isNullOrEmpty() && doAlwaysVisible);
+            def.method_set.invoke(entityData, customNameVisibleAccessor, doAlwaysVisible);
 
             final int livingEntityId = (int)def.method_getId.invoke(internalLivingEntity);
 
             Object packet;
             if (def.getIsOneNinteenThreeOrNewer()){
                 // List<DataWatcher.b<?>>
-                // java.util.List packDirty() -> b
-                final List<?> packDirty = (List<?>) def.method_GetAllNonDefaultValues.invoke(entityData);
+                // java.util.List getAllNonDefaultValues() -> c
+                final List<?> getAllNonDefaultValues = getNametagFields(entityData);
                 packet = def.ctor_Packet
-                        .newInstance(livingEntityId, packDirty);
+                        .newInstance(livingEntityId, getAllNonDefaultValues);
             }
             else{
                 packet = def.ctor_Packet
@@ -95,7 +98,6 @@ public class NametagSender implements NMSUtil {
 
     // returns SynchedEntityData (DataWatcher)
     // args: SynchedEntityData, LivingEntity (nms)
-    @SuppressWarnings("unchecked")
     private @Nullable Object cloneEntityData(
             final @NotNull Object entityDataPreClone,
             final @NotNull Object internalLivingEntity
@@ -152,12 +154,40 @@ public class NametagSender implements NMSUtil {
         return entityData;
     }
 
+    private @NotNull List<Object> getNametagFields(final @NotNull Object entityData){
+        final List<Object> results = new LinkedList<>();
+        try{
+            final Map<Integer, Object> itemsById = (Map<Integer, Object>)
+                    def.field_Int2ObjectMap.get(entityData);
+            if (itemsById.isEmpty()) {
+                return results;
+            }
+
+            for (final int objDataId : itemsById.keySet()){
+                if (objDataId < 2 || objDataId > 3) continue;
+                final Object objDataItem = itemsById.get(objDataId);
+                final Object accessor = def.method_getAccessor.invoke(objDataItem);
+
+                // DataWatcher.Item
+                final Object dataWatcherItem = def.method_DataWatcher_GetItem.invoke(entityData, accessor);
+                results.add(def.method_DataWatcherItem_Value.invoke(dataWatcherItem));
+                //results.add(objDataItem);
+            }
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+
+        return results;
+    }
+
     private Optional<Object> buildNametagComponent(
             final @NotNull LivingEntity livingEntity,
             final @NotNull NametagResult nametag
     ) {
-        if (nametag.isNullOrEmpty())
-            return Optional.empty();
+        if (nametag.isNullOrEmpty()) {
+            return Optional.of(ComponentUtils.getEmptyComponent());
+        }
 
         if (def.getHasKiori()){
             // paper servers go here:
