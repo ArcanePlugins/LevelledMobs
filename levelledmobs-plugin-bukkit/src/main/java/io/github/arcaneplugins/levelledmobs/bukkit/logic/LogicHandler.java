@@ -260,6 +260,13 @@ public final class LogicHandler {
     private void parseCustomDrops() {
         Log.inf("Parsing custom drops.");
 
+        //TODO REMOVE WHEN READY
+        //noinspection ConstantValue
+        if(true) {
+            Log.war("Custom drops will not be parsed: implementation incomplete.");
+            return;
+        }
+
         CustomDropHandler.clearCustomDropRecipients();
 
         parseDropTableCustomDrops();
@@ -373,6 +380,12 @@ public final class LogicHandler {
                 parseCustomDropsAtSection(mobGroupNode.node("drops"), recipient)
             );
 
+            for(final CustomDrop cd : parseCustomDropsAtSection(
+                mobGroupNode.node("drops"), recipient
+            )) {
+                recipient.getDrops().add(cd);
+            }
+
             CustomDropHandler.MOB_GROUP_RECIPIENTS.add(recipient);
         }
 
@@ -380,7 +393,7 @@ public final class LogicHandler {
             CustomDropHandler.MOB_GROUP_RECIPIENTS.size()));
     }
 
-    private @Nonnull Collection<CustomDrop> parseCustomDropsAtSection(
+    private @Nonnull Collection<? extends CustomDrop> parseCustomDropsAtSection(
         final @Nonnull CommentedConfigurationNode dropsNode,
         final @Nonnull CustomDropRecipient recipient
     ) {

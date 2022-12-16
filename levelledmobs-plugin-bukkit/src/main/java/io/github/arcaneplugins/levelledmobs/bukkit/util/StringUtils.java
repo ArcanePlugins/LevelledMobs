@@ -12,10 +12,10 @@ public class StringUtils {
     public static String replaceIfExists(
         final @NotNull String str,
         final @NotNull String target,
-        final @NotNull Supplier<@NotNull String> operation
+        final @NotNull Supplier<@NotNull Object> operation
     ) {
         if(str.contains(target)) {
-            return str.replace(target, operation.get());
+            return str.replace(target, operation.get().toString());
         }
         return str;
     }

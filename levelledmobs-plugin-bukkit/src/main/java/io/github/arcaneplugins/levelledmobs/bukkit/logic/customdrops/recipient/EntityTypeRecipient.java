@@ -1,6 +1,6 @@
 package io.github.arcaneplugins.levelledmobs.bukkit.logic.customdrops.recipient;
 
-import io.github.arcaneplugins.levelledmobs.bukkit.logic.customdrops.type.ItemCustomDrop;
+import io.github.arcaneplugins.levelledmobs.bukkit.logic.customdrops.CustomDrop;
 import java.util.Collection;
 import javax.annotation.Nonnull;
 import org.bukkit.entity.EntityType;
@@ -11,7 +11,7 @@ public class EntityTypeRecipient extends CustomDropRecipient {
     private final EntityType entityType;
 
     public EntityTypeRecipient(
-        final @Nonnull Collection<ItemCustomDrop> drops,
+        final @Nonnull Collection<CustomDrop> drops,
         final float overallChance,
         final @Nonnull Collection<String> overallPermissions,
         final EntityType entityType

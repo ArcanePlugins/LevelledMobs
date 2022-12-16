@@ -4,6 +4,8 @@
 # Use of this source code is governed by the GNU GPL v3.0
 # license that can be found in the LICENSE.md file.
 
+# Local-only directories
+local/
 testing/
 
 # IntelliJ IDE

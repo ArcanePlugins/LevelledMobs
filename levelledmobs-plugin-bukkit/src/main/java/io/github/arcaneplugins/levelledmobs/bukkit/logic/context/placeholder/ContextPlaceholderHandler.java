@@ -1,6 +1,5 @@
 package io.github.arcaneplugins.levelledmobs.bukkit.logic.context.placeholder;
 
-import io.github.arcaneplugins.levelledmobs.bukkit.api.util.Pair;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.context.Context;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.context.placeholder.impl.StandardPlaceholders;
 import io.github.arcaneplugins.levelledmobs.bukkit.util.Log;
@@ -32,11 +31,11 @@ public class ContextPlaceholderHandler {
             input = placeholder.replace(input, context);
         }
 
-        for(final Entry<String, Pair<String, Supplier<String>>> entry : context
-            .getMiscContext().entrySet()
+        for(final Entry<String, Supplier<Object>> entry : context
+            .getMiscContextMap().entrySet()
         ) {
-            final String placeholder = entry.getValue().getLeft();
-            final Supplier<String> supplier = entry.getValue().getRight();
+            final String placeholder = entry.getKey();
+            final Supplier<Object> supplier = entry.getValue();
             input = StringUtils.replaceIfExists(input, placeholder, supplier);
         }
 
