@@ -1,46 +1,49 @@
 package io.github.arcaneplugins.levelledmobs.bukkit.util.nms;
 
-import org.bukkit.entity.LivingEntity;
+import io.github.arcaneplugins.levelledmobs.bukkit.LevelledMobs;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class ComponentUtils {
-
     public static void append(
-        final @NotNull Object component,
-        final @Nullable Object appendingComponent,
-        final @NotNull Definitions definitions
-    ) throws Exception {
+            final @NotNull Object component,
+            final @Nullable Object appendingComponent
+    ) {
         if (appendingComponent == null) return;
+        final Definitions def = LevelledMobs.getInstance().getNmsDefinitions();
 
-        if (component.getClass() != definitions.clazz_IChatMutableComponent){
-            throw new Exception("Invalid type: " + component.getClass().getName());
+        try {
+            if (component.getClass() != def.clazz_IChatMutableComponent) {
+                throw new Exception("Invalid type: " + component.getClass().getName());
+            }
+
+            if (appendingComponent.getClass() != def.clazz_IChatMutableComponent){
+                throw new Exception("Invalid type: " + appendingComponent.getClass().getName());
+            }
+
+            def.method_ComponentAppend.invoke(component, appendingComponent);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-
-        if (appendingComponent.getClass() != definitions.clazz_IChatMutableComponent){
-            throw new Exception("Invalid type: " + appendingComponent.getClass().getName());
-        }
-
-        definitions.method_ComponentAppend.invoke(component, appendingComponent);
     }
 
-    public static @Nullable Object getEmptyComponent(
-        final @NotNull Definitions definitions
-    ) {
-        return getTextComponent(null, definitions);
+    public static @NotNull Object getEmptyComponent() {
+        final Object result = getTextComponent(null);
+        assert result != null;
+        return result;
     }
 
     public static @Nullable Object getTextComponent(
-        final @Nullable String text,
-        final @NotNull Definitions definitions
+            final @Nullable String text
     ) {
+        final Definitions def = LevelledMobs.getInstance().getNmsDefinitions();
         try {
-            if (text == null && definitions.getServerVersionInfo().getMinecraftVersion() >= 1.19) {
+            if (text == null && def.getServerVersionInfo().getMinecraftVersion() >= 1.19) {
                 // #empty()
-                return definitions.method_EmptyComponent.invoke(null);
+                return def.method_EmptyComponent.invoke(null);
             } else {
                 // #nullToEmpty(text)
-                return definitions.method_TextComponent.invoke(null, text);
+                return def.method_TextComponent.invoke(null, text);
             }
         } catch (Exception e){
             e.printStackTrace();
@@ -49,32 +52,31 @@ public class ComponentUtils {
     }
 
     public static @Nullable Object getTranslatableComponent(
-        final @NotNull Definitions definitions,
-        final @NotNull String key
+            final @NotNull String key
     ) {
-        return getTranslatableComponent(definitions, key, (Object) null);
+        return getTranslatableComponent(key, (Object) null);
     }
 
     public static @Nullable Object getTranslatableComponent(
-        final @NotNull Definitions definitions,
-        final @NotNull String key,
-        final @Nullable Object... args
+            final @NotNull String key,
+            final @Nullable Object... args
     ) {
+        final Definitions def = LevelledMobs.getInstance().getNmsDefinitions();
         try {
-            if (definitions.getServerVersionInfo().getMinecraftVersion() >= 1.19){
+            if (def.getServerVersionInfo().getMinecraftVersion() >= 1.19){
                 if (args == null || args.length == 0) {
-                    return definitions.method_Translatable.invoke(key);
+                    return def.method_Translatable.invoke(null, key);
                 }
                 else {
-                    return definitions.method_TranslatableWithArgs.invoke(key, args);
+                    return def.method_TranslatableWithArgs.invoke(null, key, args);
                 }
             }
             else{
                 if (args == null || args.length == 0) {
-                    return definitions.clazz_TranslatableComponent.getConstructor(String.class).newInstance(key);
+                    return def.clazz_TranslatableComponent.getConstructor(String.class).newInstance(key);
                 }
                 else {
-                    return definitions.clazz_TranslatableComponent.getConstructor(
+                    return def.clazz_TranslatableComponent.getConstructor(
                             String.class, Object[].class).newInstance(key, args);
                 }
             }
@@ -82,12 +84,5 @@ public class ComponentUtils {
             e.printStackTrace();
             return null;
         }
-    }
-
-    public static @NotNull String getTranslationKey(final @NotNull LivingEntity livingEntity){
-        // only needed for spigot. paper has a built-in method
-        // TODO: implement the method below in reflection
-        //return net.minecraft.world.entity.EntityType.byString(type.getName()).map(net.minecraft.world.entity.EntityType::getDescriptionId).orElse(null);
-        return "";
     }
 }

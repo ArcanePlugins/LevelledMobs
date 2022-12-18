@@ -17,8 +17,7 @@ public class NMSComponent {
         }
 
         try{
-            ComponentUtils.append(this.component, appendingComponent.getInternalComponent(),
-                    LevelledMobs.getInstance().getNmsDefinitions());
+            ComponentUtils.append(this.component, appendingComponent.getInternalComponent());
         }
         catch (Exception e){
             e.printStackTrace();
@@ -27,8 +26,7 @@ public class NMSComponent {
 
     public static @NotNull NMSComponent empty(){
         NMSComponent nmsComponent = new NMSComponent();
-        nmsComponent.component = ComponentUtils.getEmptyComponent(
-                LevelledMobs.getInstance().getNmsDefinitions());
+        nmsComponent.component = ComponentUtils.getEmptyComponent();
 
         return nmsComponent;
     }
@@ -40,7 +38,7 @@ public class NMSComponent {
     public static @NotNull NMSComponent translatable(final @NotNull String key, final @Nullable Object... args){
         NMSComponent nmsComponent = new NMSComponent();
         nmsComponent.component = ComponentUtils.getTranslatableComponent(
-                LevelledMobs.getInstance().getNmsDefinitions(), key, args);
+                key, args);
 
         return nmsComponent;
     }
@@ -55,9 +53,10 @@ public class NMSComponent {
     }
 
     public static @NotNull String getTranslationKey(final @NotNull LivingEntity livingEntity){
-        if (LevelledMobs.getInstance().getNmsDefinitions().getServerVersionInfo().getIsPaper())
+        final Definitions def = LevelledMobs.getInstance().getNmsDefinitions();
+        if (def.getServerVersionInfo().getIsPaper())
             return livingEntity.getType().translationKey();
         else
-            return ComponentUtils.getTranslationKey(livingEntity);
+            return def.getTranslationKey(livingEntity);
     }
 }
