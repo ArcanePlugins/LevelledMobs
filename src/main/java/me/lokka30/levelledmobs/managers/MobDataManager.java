@@ -13,6 +13,7 @@ import me.lokka30.levelledmobs.misc.Addition;
 import me.lokka30.levelledmobs.misc.CachedModalList;
 import me.lokka30.levelledmobs.misc.DebugType;
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
+import me.lokka30.levelledmobs.rules.FineTuningAttributes;
 import me.lokka30.levelledmobs.rules.VanillaBonusEnum;
 import me.lokka30.levelledmobs.util.Utils;
 import org.bukkit.Material;
@@ -90,9 +91,9 @@ public class MobDataManager {
         final @NotNull Attribute attribute, final Addition addition) {
         final boolean useStaticValues = main.helperSettings.getBoolean(main.settingsCfg,
             "attributes-use-preset-base-values");
-        final double defaultValue = useStaticValues ?
-            (double) Objects.requireNonNull(getAttributeDefaultValue(lmEntity, attribute)) :
-            Objects.requireNonNull(lmEntity.getLivingEntity().getAttribute(attribute))
+        final float defaultValue = useStaticValues ?
+            (float) Objects.requireNonNull(getAttributeDefaultValue(lmEntity, attribute)) :
+                (float) Objects.requireNonNull(lmEntity.getLivingEntity().getAttribute(attribute))
                 .getBaseValue();
         final double additionValue = getAdditionsForLevel(lmEntity, addition, defaultValue);
 
@@ -172,115 +173,44 @@ public class MobDataManager {
         }
     }
 
-    public final double getAdditionsForLevel(final LivingEntityWrapper lmEntity,
-        final Addition addition, final double defaultValue) {
-        final double maxLevel = main.rulesManager.getRuleMobMaxLevel(lmEntity);
+    public final float getAdditionsForLevel(final LivingEntityWrapper lmEntity,
+        final Addition addition, final float defaultValue) {
+        final float maxLevel = main.rulesManager.getRuleMobMaxLevel(lmEntity);
 
-        double attributeValue = 0;
-        double attributeMax = 0;
+        //double attributeValue = 0;
+        final FineTuningAttributes fineTuning = lmEntity.getFineTuningAttributes();
+        FineTuningAttributes.Multiplier multiplier = null;
+        float attributeMax = 0;
 
-        if (lmEntity.getFineTuningAttributes() != null) {
-            switch (addition) {
-                case CUSTOM_XP_DROP:
-                    if (lmEntity.getFineTuningAttributes().xpDrop != null) {
-                        attributeValue = lmEntity.getFineTuningAttributes().xpDrop;
-                    }
-                    if (attributeValue == -1.0) {
-                        return -1;
-                    }
-                    break;
-                case CUSTOM_ITEM_DROP:
-                    if (lmEntity.getFineTuningAttributes().itemDrop != null) {
-                        attributeValue = lmEntity.getFineTuningAttributes().itemDrop;
-                    }
-                    if (attributeValue == -1.0) {
-                        return -1;
-                    }
-                    break;
-                case ATTRIBUTE_MAX_HEALTH:
-                    if (lmEntity.getFineTuningAttributes().maxHealth != null) {
-                        attributeValue = lmEntity.getFineTuningAttributes().maxHealth;
-                    }
-                    break;
-                case ATTRIBUTE_ATTACK_DAMAGE:
-                    if (lmEntity.getFineTuningAttributes().attackDamage != null) {
-                        attributeValue = lmEntity.getFineTuningAttributes().attackDamage;
-                    }
-                    break;
-                case ATTRIBUTE_MOVEMENT_SPEED:
-                    if (lmEntity.getFineTuningAttributes().movementSpeed != null) {
-                        attributeValue = lmEntity.getFineTuningAttributes().movementSpeed;
-                    }
-                    break;
-                case CUSTOM_RANGED_ATTACK_DAMAGE:
-                    if (lmEntity.getFineTuningAttributes().rangedAttackDamage != null) {
-                        attributeValue = lmEntity.getFineTuningAttributes().rangedAttackDamage;
-                    }
-                    break;
-                case CREEPER_BLAST_DAMAGE:
-                    if (lmEntity.getFineTuningAttributes().creeperExplosionRadius != null) {
-                        attributeValue = lmEntity.getFineTuningAttributes().creeperExplosionRadius;
-                    }
-                    break;
-                case ATTRIBUTE_HORSE_JUMP_STRENGTH:
-                    if (lmEntity.getFineTuningAttributes().horseJumpStrength != null) {
-                        attributeValue = lmEntity.getFineTuningAttributes().horseJumpStrength;
-                    }
-                    break;
-                case ATTRIBUTE_ARMOR_BONUS:
-                    attributeMax = 30.0;
-                    if (lmEntity.getFineTuningAttributes().armorBonus != null) {
-                        attributeValue = lmEntity.getFineTuningAttributes().armorBonus;
-                    }
-                    break;
-                case ATTRIBUTE_ARMOR_TOUGHNESS:
-                    attributeMax = 50.0;
-                    if (lmEntity.getFineTuningAttributes().armorToughness != null) {
-                        attributeValue = lmEntity.getFineTuningAttributes().armorToughness;
-                    }
-                    break;
-                case ATTRIBUTE_ATTACK_KNOCKBACK:
-                    attributeMax = 5.0;
-                    if (lmEntity.getFineTuningAttributes().attackKnockback != null) {
-                        attributeValue = lmEntity.getFineTuningAttributes().attackKnockback;
-                    }
-                    break;
-                case ATTRIBUTE_FLYING_SPEED:
-                    if (lmEntity.getFineTuningAttributes().flyingSpeed != null) {
-                        attributeValue = lmEntity.getFineTuningAttributes().flyingSpeed;
-                    }
-                    break;
-                case ATTRIBUTE_KNOCKBACK_RESISTANCE:
-                    attributeMax = 1.0;
-                    if (lmEntity.getFineTuningAttributes().knockbackResistance != null) {
-                        attributeValue = lmEntity.getFineTuningAttributes().knockbackResistance;
-                    }
-                    break;
-                case ATTRIBUTE_ZOMBIE_SPAWN_REINFORCEMENTS:
-                    attributeMax = 1.0;
-                    if (lmEntity.getFineTuningAttributes().zombieReinforcements != null) {
-                        attributeValue = lmEntity.getFineTuningAttributes().zombieReinforcements;
-                    }
-                    break;
-                case ATTRIBUTE_FOLLOW_RANGE:
-                    if (lmEntity.getFineTuningAttributes().followRange != null) {
-                        attributeValue = lmEntity.getFineTuningAttributes().followRange;
-                    }
-                    break;
+        if (fineTuning != null) {
+            multiplier = fineTuning.getItem(addition);
+            switch (addition){
+                case ATTRIBUTE_ARMOR_BONUS -> attributeMax = 30.0f;
+                case ATTRIBUTE_ARMOR_TOUGHNESS -> attributeMax = 50.0f;
+                case ATTRIBUTE_ATTACK_KNOCKBACK -> attributeMax = 5.0f;
+                case ATTRIBUTE_KNOCKBACK_RESISTANCE,
+                     ATTRIBUTE_ZOMBIE_SPAWN_REINFORCEMENTS -> attributeMax = 1.0f;
             }
         }
 
-        if (maxLevel == 0 || attributeValue == 0) {
-            return 0.0;
+        if (maxLevel == 0 || multiplier == null) {
+            return 0.0f;
         }
 
-        // only used for 5 specific attributes
-        if (attributeMax > 0.0) {
-            return (lmEntity.getMobLevel() / maxLevel) * (attributeMax * attributeValue);
-        } else
-        // normal formula for most attributes
-        {
-            return (defaultValue * attributeValue) * ((lmEntity.getMobLevel()) / maxLevel);
+        final float multiplierValue = multiplier.value();
+
+        if (lmEntity.getUseStackedMultipliers() || multiplier.useStacked()){
+            return (float) lmEntity.getMobLevel() * multiplierValue;
+        }
+        else {
+            // only used for 5 specific attributes
+            if (attributeMax > 0.0) {
+                return (lmEntity.getMobLevel() / maxLevel) * (attributeMax * multiplierValue);
+            } else
+            // normal formula for most attributes
+            {
+                return (defaultValue * multiplierValue) * ((lmEntity.getMobLevel()) / maxLevel);
+            }
         }
     }
 }
