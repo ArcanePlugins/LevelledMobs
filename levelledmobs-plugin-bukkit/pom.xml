@@ -51,7 +51,7 @@
     <dependency>
       <groupId>dev.jorel</groupId>
       <artifactId>commandapi-shade</artifactId>
-      <version>8.7.0</version>
+      <version>8.7.1</version>
     </dependency>
     <dependency>
       <groupId>io.github.arcaneplugins.levelledmobs</groupId>
