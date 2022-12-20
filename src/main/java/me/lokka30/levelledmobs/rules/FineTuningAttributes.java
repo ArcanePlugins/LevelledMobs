@@ -23,7 +23,7 @@ public class FineTuningAttributes implements Cloneable {
         this.multipliers = new LinkedHashMap<>();
     }
 
-    private final Map<Addition, Multiplier> multipliers;
+    private Map<Addition, Multiplier> multipliers;
     public boolean doNotMerge;
     public Boolean useStacked;
 
@@ -36,7 +36,7 @@ public class FineTuningAttributes implements Cloneable {
             return;
         }
 
-        this.multipliers.putAll(attributes.multipliers);
+        this.multipliers.putAll(attributes.copyMultipliers());
     }
 
     public void addItem(final Addition addition, final Multiplier multiplier){
@@ -92,7 +92,6 @@ public class FineTuningAttributes implements Cloneable {
     }
 
     public record Multiplier(Addition addition, boolean useStacked, float value){
-
         @Contract(pure = true)
         public @NotNull String toString(){
             final StringBuilder sb = new StringBuilder();
@@ -109,8 +108,26 @@ public class FineTuningAttributes implements Cloneable {
         FineTuningAttributes copy = null;
         try {
             copy = (FineTuningAttributes) super.clone();
+            copy.cloneMultipliers();
         } catch (final Exception e) {
             e.printStackTrace();
+        }
+
+        return copy;
+    }
+
+    private void cloneMultipliers(){
+        final Map<Addition, Multiplier> copy = copyMultipliers();
+        this.multipliers = new LinkedHashMap<>(copy.size());
+        this.multipliers.putAll(copy);
+    }
+
+    private @NotNull Map<Addition, Multiplier> copyMultipliers(){
+        final Map<Addition, Multiplier> copy = new LinkedHashMap<>(this.multipliers.size());
+
+        for (final Addition addition : this.multipliers.keySet()){
+            final Multiplier old = this.multipliers.get(addition);
+            copy.put(addition, new Multiplier(addition, old.useStacked, old.value));
         }
 
         return copy;
@@ -131,7 +148,7 @@ public class FineTuningAttributes implements Cloneable {
             }
             sb.append(getShortName(item.addition()));
             sb.append(": ");
-            sb.append(item.value);
+            sb.append(item.value());
             if (item.useStacked()){
                 sb.append(" (");
                 sb.append("stk)");
@@ -140,4 +157,5 @@ public class FineTuningAttributes implements Cloneable {
 
         return sb.toString();
     }
+
 }
