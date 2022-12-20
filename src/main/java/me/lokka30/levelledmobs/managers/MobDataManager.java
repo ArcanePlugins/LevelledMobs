@@ -199,7 +199,7 @@ public class MobDataManager {
 
         final float multiplierValue = multiplier.value();
 
-        if (lmEntity.getUseStackedMultipliers() || multiplier.useStacked()){
+        if (fineTuning.useStacked || multiplier.useStacked()){
             return (float) lmEntity.getMobLevel() * multiplierValue;
         }
         else {

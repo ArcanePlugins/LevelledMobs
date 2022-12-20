@@ -68,7 +68,6 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
     private boolean isBuildingCache;
     private boolean groupsAreBuilt;
     private boolean wasSummoned;
-    private Boolean useStackedMultipliers;
     public int chunkKillcount;
     private Integer mobLevel;
     private Integer skylightLevelAtSpawn;
@@ -148,7 +147,6 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
 
     public void clearEntityData() {
         this.livingEntity = null;
-        this.useStackedMultipliers = null;
         this.chunkKillcount = 0;
         this.applicableGroups.clear();
         this.applicableRules.clear();
@@ -369,14 +367,6 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
                 this.prevChanceRuleResults.put(ruleName, false);
             }
         }
-    }
-
-    public boolean getUseStackedMultipliers(){
-        if (this.useStackedMultipliers == null){
-            this.useStackedMultipliers = main.rulesManager.getUseStacked(this);
-        }
-
-        return this.useStackedMultipliers;
     }
 
     public @Nullable Map<String, Boolean> getPrevChanceRuleResults() {

@@ -4,8 +4,6 @@
 
 package me.lokka30.levelledmobs.rules;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -38,21 +36,7 @@ public class FineTuningAttributes implements Cloneable {
             return;
         }
 
-        try {
-            for (final Field f : attributes.getClass().getDeclaredFields()) {
-                if (!Modifier.isPublic(f.getModifiers())) {
-                    continue;
-                }
-                if (f.get(attributes) == null) {
-                    continue;
-                }
-                final Object presetValue = f.get(attributes);
-
-                this.getClass().getDeclaredField(f.getName()).set(this, presetValue);
-            }
-        } catch (final IllegalAccessException | NoSuchFieldException e) {
-            e.printStackTrace();
-        }
+        this.multipliers.putAll(attributes.multipliers);
     }
 
     public void addItem(final Addition addition, final Multiplier multiplier){

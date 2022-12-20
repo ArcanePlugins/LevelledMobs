@@ -729,18 +729,6 @@ public class RulesManager {
         return result;
     }
 
-    public boolean getUseStacked(final @NotNull LivingEntityWrapper lmEntity){
-        boolean result = false;
-
-        for (final RuleInfo ruleInfo : lmEntity.getApplicableRules()) {
-            if (ruleInfo.allMobMultipliers != null && ruleInfo.allMobMultipliers.useStacked != null){
-                result = ruleInfo.allMobMultipliers.useStacked;
-            }
-        }
-
-        return result;
-    }
-
     public @Nullable String getDeathMessage(final @NotNull LivingEntityWrapper lmEntity){
         DeathMessages deathMessages = null;
 

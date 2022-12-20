@@ -157,7 +157,7 @@ public class RulesSubcommand extends MessagesBase implements Subcommand {
         for (final World world : Bukkit.getWorlds()) {
             worldCount++;
             for (final Entity entity : world.getEntities()) {
-                if (!(entity instanceof LivingEntity)) {
+                if (!(entity instanceof LivingEntity) || entity instanceof Player) {
                     continue;
                 }
 
