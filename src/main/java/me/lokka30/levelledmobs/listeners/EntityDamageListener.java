@@ -201,9 +201,9 @@ public class EntityDamageListener implements Listener {
             main.mobsQueueManager.addToQueue(new QueueItem(shooter, event));
         }
 
-        final double newDamage =
-            event.getDamage() + main.mobDataManager.getAdditionsForLevel(shooter,
-                Addition.CUSTOM_RANGED_ATTACK_DAMAGE, event.getDamage());
+        final float newDamage =
+                (float) event.getDamage() + main.mobDataManager.getAdditionsForLevel(shooter,
+                Addition.CUSTOM_RANGED_ATTACK_DAMAGE, (float) event.getDamage());
         Utils.debugLog(main, DebugType.RANGED_DAMAGE_MODIFICATION, String.format(
             "&7Source: &b%s&7 (lvl &b%s&7), damage: &b%s&7, new damage: &b%s&7",
             shooter.getNameIfBaby(), shooter.getMobLevel(), event.getDamage(), newDamage));
@@ -238,7 +238,7 @@ public class EntityDamageListener implements Listener {
         final LivingEntityWrapper lmEntity = LivingEntityWrapper.getInstance(livingEntity, main);
         event.setDamage(
             main.mobDataManager.getAdditionsForLevel(lmEntity, Addition.CUSTOM_RANGED_ATTACK_DAMAGE,
-                event.getDamage())); // use ranged attack damage value
+                    (float) event.getDamage())); // use ranged attack damage value
         Utils.debugLog(main, DebugType.RANGED_DAMAGE_MODIFICATION,
             "New guardianDamage: &b" + event.getDamage());
         lmEntity.free();

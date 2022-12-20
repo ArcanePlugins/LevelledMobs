@@ -544,7 +544,7 @@ public class LevelManager implements LevelInterface {
         if (!doNotMultiplyDrops && !dropsToMultiply.isEmpty()) {
             // Get currentDrops added per level valu
             final double additionValue = main.mobDataManager.getAdditionsForLevel(lmEntity,
-                Addition.CUSTOM_ITEM_DROP, 2.0);
+                Addition.CUSTOM_ITEM_DROP, 2.0f);
             if (additionValue == -1) {
                 Utils.debugLog(main, DebugType.SET_LEVELLED_ITEM_DROPS, String.format(
                     "&7Mob: &b%s&7, mob-lvl: &b%s&7, removing any drops present",
@@ -611,7 +611,7 @@ public class LevelManager implements LevelInterface {
             // look thru the animal's inventory for leather. That is the only item that will get duplicated
             for (final ItemStack item : chestItems) {
                 if (item.getType() == Material.LEATHER) {
-                    return Collections.singletonList(item);
+                    return List.of(item);
                 }
             }
 
@@ -669,7 +669,7 @@ public class LevelManager implements LevelInterface {
     public int getLevelledExpDrops(@NotNull final LivingEntityWrapper lmEntity, final double xp) {
         if (lmEntity.isLevelled()) {
             final double dropAddition = main.mobDataManager.getAdditionsForLevel(lmEntity,
-                Addition.CUSTOM_XP_DROP, 3.0);
+                Addition.CUSTOM_XP_DROP, 3.0f);
             double newXp = 0;
             if (dropAddition > -1) {
                 newXp = Math.round(xp + (xp * dropAddition));
@@ -1145,7 +1145,7 @@ public class LevelManager implements LevelInterface {
             final boolean preserveMobName = !main.nametagQueueManager.nmsHandler.isUsingProtocolLib;
             final NametagResult nametag = main.levelManager.getNametag(lmEntity, false, preserveMobName);
             main.nametagQueueManager.addToQueue(
-                new QueueItem(lmEntity, nametag, Collections.singletonList(player)));
+                new QueueItem(lmEntity, nametag, List.of(player)));
         }
     }
 

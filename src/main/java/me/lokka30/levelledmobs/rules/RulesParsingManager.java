@@ -20,6 +20,7 @@ import java.util.TreeSet;
 import java.util.regex.Pattern;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.managers.ExternalCompatibilityManager;
+import me.lokka30.levelledmobs.misc.Addition;
 import me.lokka30.levelledmobs.misc.CachedModalList;
 import me.lokka30.levelledmobs.misc.CustomUniversalGroups;
 import me.lokka30.levelledmobs.misc.YmlParsingHelper;
@@ -1382,35 +1383,86 @@ public class RulesParsingManager {
         final FineTuningAttributes attribs = parsingInfo.allMobMultipliers != null && doMerge ?
                 parsingInfo.allMobMultipliers : new FineTuningAttributes();
 
-        attribs.maxHealth = ymlHelper.getDouble2(cs, "max-health", attribs.maxHealth);
-        attribs.movementSpeed = ymlHelper.getDouble2(cs, "movement-speed", attribs.movementSpeed);
-        attribs.attackDamage = ymlHelper.getDouble2(cs, "attack-damage", attribs.attackDamage);
-        attribs.rangedAttackDamage = ymlHelper.getDouble2(cs, "ranged-attack-damage",
-            attribs.rangedAttackDamage);
-        attribs.itemDrop = ymlHelper.getDouble2(cs, "item-drop", attribs.itemDrop);
-        attribs.xpDrop = ymlHelper.getDouble2(cs, "xp-drop", attribs.xpDrop);
-        attribs.creeperExplosionRadius = ymlHelper.getDouble2(cs, "creeper-blast-damage",
-            attribs.creeperExplosionRadius);
-        attribs.armorBonus = ymlHelper.getDouble2(cs, "armor-bonus", attribs.armorBonus);
-        attribs.armorToughness = ymlHelper.getDouble2(cs, "armor-toughness",
-            attribs.armorToughness);
-        attribs.attackKnockback = ymlHelper.getDouble2(cs, "attack-knockback",
-            attribs.attackKnockback);
-        attribs.flyingSpeed = ymlHelper.getDouble2(cs, "flying-speed", attribs.flyingSpeed);
-        attribs.knockbackResistance = ymlHelper.getDouble2(cs, "knockback-resistance",
-            attribs.knockbackResistance);
-        attribs.horseJumpStrength = ymlHelper.getDouble2(cs, "horse-jump-strength",
-            attribs.horseJumpStrength);
-        attribs.zombieReinforcements = ymlHelper.getDouble2(cs, "zombie-spawn-reinforcements",
-            attribs.zombieReinforcements);
-        attribs.followRange = ymlHelper.getDouble2(cs, "follow-range", attribs.followRange);
-        attribs.doNotMerge = ymlHelper.getBoolean(cs, "do-not-merge", false);
+        for (final String item : cs.getKeys(false)){
+            switch (item.toLowerCase()) {
+                case "use-stacked" ->
+                        attribs.useStacked = ymlHelper.getBoolean2(cs, item, attribs.useStacked);
+                case "do-not-merge" ->
+                        attribs.doNotMerge = ymlHelper.getBoolean(cs, item, false);
+                case "vanilla-bonus", "custom-mob-level" -> { }
+                default -> {
+                    LMMultiplier lmMultiplier;
+                    try{
+                        lmMultiplier = LMMultiplier.valueOf(item.replace("-", "_").toUpperCase());
+                    }
+                    catch (Exception ignored){
+                        Utils.logger.warning("Invalid multiplier: " + item);
+                        continue;
+                    }
+
+                    final Addition addition = attribs.getAdditionFromLMMultiplier(lmMultiplier);
+                    FineTuningAttributes.Multiplier multiplier = parseFineTuningValues2(
+                            cs, addition, item);
+                    if (multiplier != null) {
+                        attribs.addItem(addition, multiplier);
+                    }
+                }
+            }
+        }
 
         if (attribs.isEmpty()) {
             return defaults;
         }
 
         return attribs;
+    }
+
+    private @Nullable FineTuningAttributes.Multiplier parseFineTuningValues2(
+            final @NotNull ConfigurationSection cs,
+            final @NotNull Addition addition,
+            final @NotNull String item){
+
+        final List<?> values = cs.getList(item);
+        if (values == null){
+            final Float value = ymlHelper.getFloat2(cs, item, null);
+            return value != null ?
+                new FineTuningAttributes.Multiplier(addition, false, value) :
+                null;
+        }
+
+        float value = Float.MIN_VALUE;
+        boolean useStacked = false;
+        int count = 0;
+        for (final Object obj : values){
+            if (count > 2) break;
+
+            if (obj instanceof Float flt){
+                value = flt;
+            }
+            else if (obj instanceof Double dbl){
+                value = dbl.floatValue();
+            }
+            else if (obj instanceof Integer integer){
+                value = integer;
+            }
+            else if (obj instanceof String str){
+                if ("stacked".equalsIgnoreCase(str)){
+                    useStacked = true;
+                }
+                else if (Utils.isDouble(str)){
+                    value = Float.parseFloat(str);
+                }
+            }
+
+            count++;
+        }
+
+        if (value > Float.MIN_VALUE){
+            return new FineTuningAttributes.Multiplier(
+                    addition, useStacked, value);
+        }
+
+        return null;
     }
 
     private void autoGenerateWeightedRandom(){

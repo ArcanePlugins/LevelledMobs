@@ -35,11 +35,13 @@ public class NMSHandler {
         // supported is paper >= 1.18 or spigot >= 1.19
         // otherwise protocollib is used
 
-        if (hasPaper && versionInfo.getMinecraftVersion() >= 1.18 ||
-            !hasPaper && versionInfo.getMinecraftVersion() >= 1.19) {
+        //if (hasPaper && versionInfo.getMinecraftVersion() >= 1.18 ||
+        //        !hasPaper && versionInfo.getMinecraftVersion() >= 1.19) {
+
+        if (versionInfo.getMinecraftVersion() >= 1.17) {
             // 1.18 and newer we support with direct nms (Paper)
             // or 1.19 spigot and newer
-            this.currentUtil = new NametagSender(versionInfo, hasPaper);
+            this.currentUtil = new NametagSender();
             Utils.logger.info(
                 String.format("Using NMS version %s for nametag support", versionInfo.getNMSVersion()));
         } else if (ExternalCompatibilityManager.hasProtocolLibInstalled()) {

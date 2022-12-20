@@ -10,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
 import java.lang.reflect.Method;
 
 public class KyoriNametags {
-    public static @NotNull net.minecraft.network.chat.Component generateComponent(
+    public static @NotNull Object generateComponent(
             final @NotNull LivingEntity livingEntity, final @NotNull NametagResult nametagResult){
 
         final String nametag = nametagResult.getNametagNonNull();
@@ -30,13 +30,12 @@ public class KyoriNametags {
         try{
             final Class<?> clazz = Class.forName("io.papermc.paper.adventure.PaperAdventure");
             final Method asVanilla = clazz.getDeclaredMethod("asVanilla", Component.class);
-            final Object mcComponent = asVanilla.invoke(clazz, result);
-            return (net.minecraft.network.chat.Component) mcComponent;
+            return asVanilla.invoke(clazz, result);
         }
         catch (Exception e){
             e.printStackTrace();
         }
 
-        return net.minecraft.network.chat.Component.empty();
+        return ComponentUtils.getEmptyComponent();
     }
 }

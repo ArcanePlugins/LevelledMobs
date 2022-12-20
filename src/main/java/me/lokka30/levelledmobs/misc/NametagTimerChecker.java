@@ -1,6 +1,5 @@
 package me.lokka30.levelledmobs.misc;
 
-
 import java.time.Duration;
 import java.time.Instant;
 import java.util.HashMap;
@@ -10,6 +9,7 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.WeakHashMap;
 import me.lokka30.levelledmobs.LevelledMobs;
+import me.lokka30.levelledmobs.result.NametagResult;
 import me.lokka30.levelledmobs.rules.NametagVisibilityEnum;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -107,8 +107,9 @@ public class NametagTimerChecker {
 
                     final LivingEntityWrapper lmEntity = LivingEntityWrapper.getInstance(
                         livingEntity, main);
-                    main.levelManager.updateNametag(lmEntity,
-                        main.levelManager.getNametag(lmEntity, false), List.of(player));
+
+                    final NametagResult nametag = main.levelManager.getNametag(lmEntity, false, true);
+                    main.levelManager.updateNametag(lmEntity, nametag, List.of(player));
                     lmEntity.free();
                 }
 
