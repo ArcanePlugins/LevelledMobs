@@ -4,6 +4,9 @@
 
 package me.lokka30.levelledmobs.managers;
 
+import static me.lokka30.levelledmobs.misc.DebugType.ATTRIBUTE_MULTIPLIERS;
+import static me.lokka30.levelledmobs.util.Utils.debugLog;
+
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Map;
@@ -135,7 +138,7 @@ public class MobDataManager {
             }
 
             if (!existingMod.getName().startsWith("GENERIC_")) {
-                Utils.debugLog(main, DebugType.MULTIPLIER_REMOVED, String.format(
+                debugLog(main, DebugType.MULTIPLIER_REMOVED, String.format(
                         "Removing %s from (lvl %s) %s at %s,%s,%s", existingMod.getName(), lmEntity.getMobLevel(), lmEntity.getNameIfBaby(),
                         lmEntity.getLocation().getBlockX(), lmEntity.getLocation().getBlockY(), lmEntity.getLocation().getBlockZ()));
             }
@@ -144,13 +147,13 @@ public class MobDataManager {
         }
 
         if (useStaticValues) {
-            Utils.debugLog(main, DebugType.ATTRIBUTE_MULTIPLIERS,
+            debugLog(main, ATTRIBUTE_MULTIPLIERS,
                 String.format("%s (%s): attrib: %s, base: %s, new base value: %s",
                     lmEntity.getNameIfBaby(), lmEntity.getMobLevel(), attribute.name(),
                     Utils.round(attrib.getBaseValue(), 3), Utils.round(defaultValue, 3)));
             attrib.setBaseValue(defaultValue);
         } else {
-            Utils.debugLog(main, DebugType.ATTRIBUTE_MULTIPLIERS,
+            debugLog(main, ATTRIBUTE_MULTIPLIERS,
                 String.format("%s (%s): attrib: %s, base: %s, addtion: %s",
                     lmEntity.getNameIfBaby(), lmEntity.getMobLevel(), attribute.name(),
                     Utils.round(attrib.getBaseValue(), 3), Utils.round(additionValue, 3)));
@@ -159,22 +162,26 @@ public class MobDataManager {
 
         // MAX_HEALTH specific: set health to max health
         if (attribute == Attribute.GENERIC_MAX_HEALTH) {
-            double newHealth = attrib.getValue() - existingDamage;
-            if (newHealth < 0.0) {
-                newHealth = 0.0;
-            }
             try {
-                if (lmEntity.getLivingEntity().getHealth() <= 0.0) {
-                    return;
-                }
-                lmEntity.getLivingEntity().setHealth(newHealth);
-            } catch (final IllegalArgumentException ignored) {
-            }
+                if (lmEntity.getLivingEntity().getHealth() <= 0.0) return;
+                lmEntity.getLivingEntity().setHealth(
+                    Math.max(
+                        0.0d,
+                        attrib.getValue() - existingDamage
+                    )
+                );
+            } catch (final IllegalArgumentException ignored) {}
         }
     }
 
-    public final float getAdditionsForLevel(final LivingEntityWrapper lmEntity,
-        final Addition addition, final float defaultValue) {
+    public final float getAdditionsForLevel(
+        final LivingEntityWrapper lmEntity,
+        final Addition addition,
+        final float defaultValue
+    ) {
+        debugLog(main, ATTRIBUTE_MULTIPLIERS,
+            "Getting additions for level for entity '" + lmEntity.getTypeName() + "'.");
+
         final float maxLevel = main.rulesManager.getRuleMobMaxLevel(lmEntity);
 
         //double attributeValue = 0;
@@ -194,21 +201,24 @@ public class MobDataManager {
         }
 
         if (maxLevel == 0 || multiplier == null) {
+            debugLog(main, ATTRIBUTE_MULTIPLIERS, "maxLevel=0 / multiplier=null; returning 0");
             return 0.0f;
         }
 
         final float multiplierValue = multiplier.value();
+        debugLog(main, ATTRIBUTE_MULTIPLIERS, "MultiplierValue: " + multiplierValue);
 
-        if (fineTuning.useStacked || multiplier.useStacked()){
+        if (fineTuning.useStacked || multiplier.useStacked()) {
+            debugLog(main, ATTRIBUTE_MULTIPLIERS, "Using stacked formula");
             return (float) lmEntity.getMobLevel() * multiplierValue;
-        }
-        else {
-            // only used for 5 specific attributes
+        } else {
+            debugLog(main, ATTRIBUTE_MULTIPLIERS, "Using standard formula");
+
             if (attributeMax > 0.0) {
+                // only used for 5 specific attributes
                 return (lmEntity.getMobLevel() / maxLevel) * (attributeMax * multiplierValue);
-            } else
-            // normal formula for most attributes
-            {
+            } else {
+                // normal formula for most attributes
                 return (defaultValue * multiplierValue) * ((lmEntity.getMobLevel()) / maxLevel);
             }
         }
