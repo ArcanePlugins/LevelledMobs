@@ -98,9 +98,9 @@ public class MobDataManager {
             (float) Objects.requireNonNull(getAttributeDefaultValue(lmEntity, attribute)) :
                 (float) Objects.requireNonNull(lmEntity.getLivingEntity().getAttribute(attribute))
                 .getBaseValue();
-        final double additionValue = getAdditionsForLevel(lmEntity, addition, defaultValue);
+        final float additionValue = getAdditionsForLevel(lmEntity, addition, defaultValue);
 
-        if (additionValue == 0.0) {
+        if (additionValue == 0.0f) {
             return;
         }
 
@@ -179,12 +179,8 @@ public class MobDataManager {
         final Addition addition,
         final float defaultValue
     ) {
-        debugLog(main, ATTRIBUTE_MULTIPLIERS,
-            "Getting additions for level for entity '" + lmEntity.getTypeName() + "'.");
-
         final float maxLevel = main.rulesManager.getRuleMobMaxLevel(lmEntity);
 
-        //double attributeValue = 0;
         final FineTuningAttributes fineTuning = lmEntity.getFineTuningAttributes();
         FineTuningAttributes.Multiplier multiplier = null;
         float attributeMax = 0;
@@ -200,19 +196,21 @@ public class MobDataManager {
             }
         }
 
-        if (maxLevel == 0 || multiplier == null) {
-            debugLog(main, ATTRIBUTE_MULTIPLIERS, "maxLevel=0 / multiplier=null; returning 0");
+        if (maxLevel == 0 || multiplier == null || multiplier.value() == 0.0f) {
+            debugLog(main, ATTRIBUTE_MULTIPLIERS, lmEntity.getNameIfBaby() +
+                    ", maxLevel=0 / multiplier=null; returning 0 for " + addition);
             return 0.0f;
         }
 
         final float multiplierValue = multiplier.value();
-        debugLog(main, ATTRIBUTE_MULTIPLIERS, "MultiplierValue: " + multiplierValue);
 
-        if (fineTuning.useStacked || multiplier.useStacked()) {
-            debugLog(main, ATTRIBUTE_MULTIPLIERS, "Using stacked formula");
+        if (fineTuning.useStacked != null && fineTuning.useStacked || multiplier.useStacked()) {
+            debugLog(main, ATTRIBUTE_MULTIPLIERS, multiplier +
+                    ", using stacked formula");
             return (float) lmEntity.getMobLevel() * multiplierValue;
         } else {
-            debugLog(main, ATTRIBUTE_MULTIPLIERS, "Using standard formula");
+            debugLog(main, ATTRIBUTE_MULTIPLIERS,  multiplier +
+                    ", using standard formula");
 
             if (attributeMax > 0.0) {
                 // only used for 5 specific attributes

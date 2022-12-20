@@ -188,7 +188,7 @@ presets:
         #       Special Multipliers (0.0 Min - 1.0 Max)
         armor-bonus: 0.2
         armor-toughness: 0.15
-        ##   optional: use the stacker multiplier instead
+        ##   optional: use the stacked multiplier instead
         # max-health: [ '4.25', 'STACKED' ]
         # movement-speed: [ '0.002', 'STACKED' ]
         # attack-damage: [ '0.25', 'STACKED' ]
