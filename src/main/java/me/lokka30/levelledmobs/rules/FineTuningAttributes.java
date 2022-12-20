@@ -25,7 +25,7 @@ public class FineTuningAttributes implements Cloneable {
 
     private final Map<Addition, Multiplier> multipliers;
     public boolean doNotMerge;
-    public Boolean useStacked;
+    public Boolean useStacked = false;
 
     public boolean isEmpty(){
         return this.multipliers.isEmpty();
@@ -140,4 +140,5 @@ public class FineTuningAttributes implements Cloneable {
 
         return sb.toString();
     }
+
 }

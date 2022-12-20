@@ -1386,23 +1386,24 @@ public class RulesParsingManager {
         for (final String item : cs.getKeys(false)){
             switch (item.toLowerCase()) {
                 case "use-stacked" ->
-                        attribs.useStacked = ymlHelper.getBoolean2(cs, item, attribs.useStacked);
+                    attribs.useStacked = ymlHelper.getBoolean2(cs, item, attribs.useStacked);
                 case "do-not-merge" ->
-                        attribs.doNotMerge = ymlHelper.getBoolean(cs, item, false);
+                    attribs.doNotMerge = ymlHelper.getBoolean(cs, item, false);
                 case "vanilla-bonus", "custom-mob-level" -> { }
                 default -> {
                     LMMultiplier lmMultiplier;
-                    try{
-                        lmMultiplier = LMMultiplier.valueOf(item.replace("-", "_").toUpperCase());
-                    }
-                    catch (Exception ignored){
+                    try {
+                        lmMultiplier = LMMultiplier
+                            .valueOf(item.replace("-", "_")
+                            .toUpperCase());
+                    } catch (Exception ignored){
                         Utils.logger.warning("Invalid multiplier: " + item);
                         continue;
                     }
 
                     final Addition addition = attribs.getAdditionFromLMMultiplier(lmMultiplier);
-                    FineTuningAttributes.Multiplier multiplier = parseFineTuningValues2(
-                            cs, addition, item);
+                    FineTuningAttributes.Multiplier multiplier =
+                        parseFineTuningValues2(cs, addition, item);
                     if (multiplier != null) {
                         attribs.addItem(addition, multiplier);
                     }
