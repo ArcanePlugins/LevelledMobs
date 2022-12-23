@@ -52,7 +52,7 @@ import me.lokka30.levelledmobs.misc.DebugType;
 import me.lokka30.levelledmobs.misc.FileLoader;
 import me.lokka30.levelledmobs.misc.FileMigrator;
 import me.lokka30.levelledmobs.misc.VersionInfo;
-import me.lokka30.levelledmobs.nms.ServerVersionInfo;
+import me.lokka30.levelledmobs.nametag.ServerVersionInfo;
 import me.lokka30.levelledmobs.rules.MetricsInfo;
 import me.lokka30.levelledmobs.util.Utils;
 import me.lokka30.microlib.exceptions.OutdatedServerVersionException;
@@ -572,7 +572,7 @@ public class Companion {
     }
 
     private void buildUniversalGroups() {
-        final ServerVersionInfo versionInfo = main.nametagQueueManager.nmsHandler.versionInfo;
+        final ServerVersionInfo versionInfo = main.nametagQueueManager.nametagSenderHandler.versionInfo;
 
         // include interfaces: Monster, Boss
         hostileMobsGroup = Stream.of(

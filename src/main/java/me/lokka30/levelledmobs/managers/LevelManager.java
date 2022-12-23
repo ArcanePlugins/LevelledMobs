@@ -878,7 +878,7 @@ public class LevelManager implements LevelInterface {
     }
 
     public void updateNametag(final LivingEntityWrapper lmEntity) {
-        final boolean preserveMobName = !main.nametagQueueManager.nmsHandler.isUsingProtocolLib;
+        final boolean preserveMobName = !main.nametagQueueManager.nametagSenderHandler.isUsingProtocolLib;
         final NametagResult nametag = getNametag(lmEntity, false, preserveMobName);
 
         final QueueItem queueItem = new QueueItem(
@@ -1142,7 +1142,7 @@ public class LevelManager implements LevelInterface {
             location.getWorld().equals(lmEntity.getWorld()) &&
             lmEntity.getLocation().distanceSquared(location) <= maxDistance) {
             //if within distance, update nametag.
-            final boolean preserveMobName = !main.nametagQueueManager.nmsHandler.isUsingProtocolLib;
+            final boolean preserveMobName = !main.nametagQueueManager.nametagSenderHandler.isUsingProtocolLib;
             final NametagResult nametag = main.levelManager.getNametag(lmEntity, false, preserveMobName);
             main.nametagQueueManager.addToQueue(
                 new QueueItem(lmEntity, nametag, List.of(player)));

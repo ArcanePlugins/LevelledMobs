@@ -168,7 +168,7 @@ public class PlayerDeathListener {
     }
 
     private @NotNull Component buildPlayerComponent(final @NotNull Player player){
-        final Component playerName = main.nametagQueueManager.nmsHandler.versionInfo.getMinecraftVersion() >= 1.18 ?
+        final Component playerName = main.nametagQueueManager.nametagSenderHandler.versionInfo.getMinecraftVersion() >= 1.18 ?
                 player.name() : Component.text(player.getName());
         final HoverEvent<HoverEvent.ShowEntity> hoverEvent = HoverEvent.showEntity(
                 Key.key("minecraft"), player.getUniqueId(), playerName);

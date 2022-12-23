@@ -1,4 +1,4 @@
-package me.lokka30.levelledmobs.nms;
+package me.lokka30.levelledmobs.nametag;
 
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.managers.ExternalCompatibilityManager;
@@ -8,52 +8,55 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Gets the correct NMS version for sending nametag packets
+ * Manages the ideal nametag sender implementation for the server's version
  *
- * @author stumper66
+ * @author PenalBuffalo (aka stumper66)
  * @since 3.6.0
  */
-public class NMSHandler {
+public class NametagSenderHandler {
 
-    public NMSHandler(final @NotNull LevelledMobs main) {
+    public NametagSenderHandler(
+        final @NotNull LevelledMobs main
+    ) {
         this.main = main;
         this.hasPaper = VersionUtils.isRunningPaper();
         this.versionInfo = new ServerVersionInfo();
     }
 
     private final LevelledMobs main;
-    private NMSUtil currentUtil;
+    private NametagSender currentUtil;
     public boolean isUsingProtocolLib;
     public final ServerVersionInfo versionInfo;
     public final boolean hasPaper;
 
-    @Nullable public NMSUtil getCurrentUtil() {
+    @Nullable
+    public NametagSender getCurrentUtil() {
         if (this.currentUtil != null) {
             return this.currentUtil;
         }
 
-        // supported is paper >= 1.18 or spigot >= 1.19
+        // supported is spigot >= 1.17
         // otherwise protocollib is used
-
-        //if (hasPaper && versionInfo.getMinecraftVersion() >= 1.18 ||
-        //        !hasPaper && versionInfo.getMinecraftVersion() >= 1.19) {
 
         if (versionInfo.getMinecraftVersion() >= 1.17) {
             // 1.18 and newer we support with direct nms (Paper)
             // or 1.19 spigot and newer
-            this.currentUtil = new NametagSender();
+            this.currentUtil = new NmsNametagSender();
+
             Utils.logger.info(
-                String.format("Using NMS version %s for nametag support", versionInfo.getNMSVersion()));
+                String.format("Using NMS version %s for nametag support",
+                    versionInfo.getNMSVersion())
+            );
+
         } else if (ExternalCompatibilityManager.hasProtocolLibInstalled()) {
             // we don't directly support this version, use ProtocolLib
             Utils.logger.info(
                 "We don't have NMS support for this version of Minecraft, using ProtocolLib");
-            this.currentUtil = new ProtocolLibHandler(main);
+
+            this.currentUtil = new ProtocolLibNametagSender(main);
             this.isUsingProtocolLib = true;
-        }
-        else{
-            Utils.logger.warning(
-                    "ProtocolLib is not installed. No nametags will be visible");
+        } else {
+            Utils.logger.warning("ProtocolLib is not installed. No nametags will be visible");
         }
 
         return this.currentUtil;
