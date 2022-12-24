@@ -1,20 +1,18 @@
 package io.github.arcaneplugins.levelledmobs.bukkit.command.levelledmobs.subcommand;
 
-import dev.jorel.commandapi.CommandAPI;
 import dev.jorel.commandapi.CommandAPICommand;
-import dev.jorel.commandapi.arguments.EntitySelector;
 import dev.jorel.commandapi.arguments.EntitySelectorArgument;
 import dev.jorel.commandapi.arguments.TextArgument;
+import dev.jorel.commandapi.arguments.WorldArgument;
 import dev.jorel.commandapi.exceptions.WrapperCommandSyntaxException;
 import io.github.arcaneplugins.levelledmobs.bukkit.api.data.EntityDataUtil;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
-import org.bukkit.Bukkit;
+import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -26,9 +24,8 @@ public class KillSubcommand {
     public static final CommandAPICommand INSTANCE_1 =
         new CommandAPICommand("kill")
             .withArguments(
-                new EntitySelectorArgument<Collection<Entity>>
-                    ("entities", EntitySelector.MANY_ENTITIES),
-                new TextArgument("worlds"),
+                new EntitySelectorArgument.ManyEntities("entities"),
+                new WorldArgument("world"),
                 new TextArgument("fineTuningParams")
             )
             .withShortDescription("Kills levelled mobs on the server.")
@@ -41,9 +38,8 @@ public class KillSubcommand {
     public static final CommandAPICommand INSTANCE_2 =
         new CommandAPICommand("kill")
             .withArguments(
-                new EntitySelectorArgument<Collection<Entity>>
-                    ("entities", EntitySelector.MANY_ENTITIES),
-                new TextArgument("worlds")
+                new EntitySelectorArgument.ManyEntities("entities"),
+                new WorldArgument("world")
             )
             .withPermission("levelledmobs.command.levelledmobs.kill")
             .executes(KillSubcommand::execute);
@@ -55,10 +51,7 @@ public class KillSubcommand {
         //noinspection unchecked
         final Collection<Entity> entities = (Collection<Entity>) args[0];
 
-        final Set<String> worldNames = Arrays
-            .stream(((String) args[1]).split(","))
-            .map(String::toLowerCase)
-            .collect(Collectors.toSet());
+        final World world = (World) args[1];
 
         final Map<String, String> fineTuningParams = args.length == 2 ?
             Collections.emptyMap() :
@@ -70,14 +63,6 @@ public class KillSubcommand {
         entities.removeIf(entity ->
             entity.getType() == EntityType.PLAYER ||
             !(entity instanceof LivingEntity));
-
-        for(final String worldName : worldNames) {
-            if(worldName.equals("*")) continue;
-            if(Bukkit.getWorld(worldName) == null) {
-                throw CommandAPI.fail("Invalid world " + worldName);
-                //TODO translatable error
-            }
-        }
 
         // how many entities in the selector were skipped since they were not in any of
         // the specified worlds
@@ -100,9 +85,7 @@ public class KillSubcommand {
         for(final Entity entity : entities) {
             final LivingEntity lent = (LivingEntity) entity;
 
-            if(!worldNames.contains("*") &&
-                !worldNames.contains(entity.getWorld().getName().toLowerCase())
-            ) {
+            if(!world.getUID().equals(entity.getWorld().getUID())) {
                 skippedByWorld++;
                 skippedTotal++;
                 continue;
@@ -114,7 +97,7 @@ public class KillSubcommand {
                 continue;
             }
 
-            if(skipTamed && entity instanceof Tameable tent && tent.isTamed()) {
+            if(skipTamed && entity instanceof final Tameable tameable && tameable.isTamed()) {
                 skippedByTamed++;
                 skippedTotal++;
                 continue;
@@ -133,18 +116,17 @@ public class KillSubcommand {
             killed++;
         }
 
-        sender.sendMessage(
-            """
-               LM: Killed %s of %s entities in worlds %s. Skipped %s entities:
+        sender.sendMessage("""
+               LM: Killed %s of %s entities in world '%s'. Skipped %s entities:
                • %s (non-levelled)
                • %s (world)
                • %s (tamed)
                • %s (nametagged)"""
-                .formatted(
-                    killed, selected, String.join(", ", worldNames),
-                    skippedTotal, skippedByNonLevelled, skippedByWorld,
-                    skippedByTamed, skippedByNametag
-                )
+            .formatted(
+                killed, selected, world.getName(),
+                skippedTotal, skippedByNonLevelled, skippedByWorld,
+                skippedByTamed, skippedByNametag
+            )
         );
 
         //TODO Make this overview translatable. also only show skipped info when relevant

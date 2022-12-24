@@ -10,6 +10,9 @@ import java.util.List;
 
 public class CommandHandler {
 
+    public static final CommandAPIConfig CMD_CONFIG = new CommandAPIConfig()
+        .silentLogs(false); //TODO set to `true` when commands are 100% complete.
+
     public static final List<CommandAPICommand> COMMANDS = List.of(
         LevelledMobsCommand.INSTANCE
     );
@@ -19,7 +22,7 @@ public class CommandHandler {
             case ON_LOAD -> {
                 Log.inf("Loading commands");
                 registerCommands();
-                CommandAPI.onLoad(new CommandAPIConfig());
+                CommandAPI.onLoad(CMD_CONFIG);
             }
             case ON_ENABLE -> {
                 Log.inf("Enabling commands");

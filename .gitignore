@@ -6,7 +6,6 @@
 
 # Local-only directories
 local/
-testing/
 
 # IntelliJ IDE
 .idea/
