@@ -10,6 +10,7 @@ import io.github.arcaneplugins.levelledmobs.bukkit.util.ClassUtils;
 import io.github.arcaneplugins.levelledmobs.bukkit.util.Log;
 import io.github.arcaneplugins.levelledmobs.bukkit.util.nms.Definitions;
 import io.github.arcaneplugins.levelledmobs.bukkit.util.nms.PacketLabelSender;
+import io.github.arcaneplugins.levelledmobs.bukkit.util.throwable.SilentException;
 import java.util.Objects;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
@@ -47,20 +48,33 @@ public final class LevelledMobs extends JavaPlugin {
             getLogicHandler().load();
             getListenerHandler().loadSecondary();
             getCommandHandler().load(LoadingStage.ON_ENABLE);
-        } catch(Exception ex) {
-            Log.sev("""
+        } catch(final Exception ex) {
+            if(!(ex instanceof SilentException)) {
+                Log.sev("""
                 
-                LevelledMobs has encountered a fatal error during the startup process; it will disable itself to prevent possible issues resulting from the plugin malfunctioning.
-                Note that this may be a user-error, such as a stray apostrophe in a configuration file.
+                LevelledMobs was unable to enable itself. This is commonly caused by a configuration syntax mistake by the user.
                 
-                If you are unable to resolve the error through analysing the debug information provided below, feel free to ask our volunteer helpers for assistance on the ArcanePlugins Discord Guild:
-                < https://www.discord.io/arcaneplugins >
+                If you are unable to solve this issue on your own, support is provided by volunteers on the ArcanePlugins Discord Guild: < https://discord.gg/HqZwdcJ >
                 
-                Notice: Do not use the reviews section to report this issue. Instead, join our Discord through the link provided above if you wish to receive assistance.
+                Although Discord is preferred for all communication, you can also message the author if required: < https://www.spigotmc.org/conversations/add?to=lokka30 >
+                
+                A stack trace will be provided below to aid maintainers and advanced users in locating the root cause of this issue.
+                
+                Warning: No support can be possibly provided in the SpigotMC reviews section, do not post your issue there.
                 
                 -+- START EXCEPTION STACK TRACE -+-""");
-            ex.printStackTrace();
-            Log.sev("-+- END EXCEPTION STACK TRACE -+-");
+
+                ex.printStackTrace();
+
+                Log.sev("""
+                
+                -+- END EXCEPTION STACK TRACE -+-
+                
+                Warning: Before reporting this issue to LevelledMobs maintainers, read the information above the stack trace.
+                
+                Warning: No support can be possibly provided in the SpigotMC reviews section, do not post your issue there.""");
+            }
+
             setEnabled(false);
             return;
         }
@@ -90,9 +104,8 @@ public final class LevelledMobs extends JavaPlugin {
      */
     private void assertRunningSpigot() {
         if(isRunningSpigot()) return;
-        throw new IllegalStateException("""
-            This version of LevelledMobs is only able to run on SpigotMC-based servers, such as SpigotMC, PaperMC, and so on.
-            You are likely using CraftBukkit – there is no reason to use CraftBukkit, switch to SpigotMC or a derivative.""");
+        throw new SilentException("""
+            LevelledMobs has detected that your server is not running the SpigotMC server software, or any derivative such as PaperMC.""");
     }
 
     /* getters and setters */
