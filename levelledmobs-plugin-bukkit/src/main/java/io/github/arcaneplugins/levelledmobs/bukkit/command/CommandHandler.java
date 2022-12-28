@@ -21,8 +21,8 @@ public class CommandHandler {
         switch(loadingStage) {
             case ON_LOAD -> {
                 Log.inf("Loading commands");
-                registerCommands();
                 CommandAPI.onLoad(CMD_CONFIG);
+                registerCommands();
             }
             case ON_ENABLE -> {
                 Log.inf("Enabling commands");

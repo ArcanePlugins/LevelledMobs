@@ -30,7 +30,16 @@ public enum DebugCategory {
 
     /**
      * Shows information about logic in the {@link YAxisLevellingStrategy}.
+     *
+     * @since 4.0.0
      */
     Y_AXIS_STRATEGY,
+
+    /**
+     * Generic debug category, not recommended for use outside temporary testing.
+     *
+     * @since 4.0.0
+     */
+    UNKNOWN,
 
 }
