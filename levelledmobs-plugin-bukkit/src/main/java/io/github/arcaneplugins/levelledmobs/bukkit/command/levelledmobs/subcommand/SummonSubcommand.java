@@ -4,10 +4,10 @@ import dev.jorel.commandapi.CommandAPICommand;
 import dev.jorel.commandapi.arguments.EntityTypeArgument;
 import dev.jorel.commandapi.arguments.StringArgument;
 
-public class SummonSubcommand {
+public final class SummonSubcommand {
 
-    public static final CommandAPICommand INSTANCE =
-        new CommandAPICommand("summon")
+    public static CommandAPICommand createInstance() {
+        return new CommandAPICommand("summon")
             .withPermission("levelledmobs.command.levelledmobs.summon")
             .withShortDescription("Summons a levelled mob of your specifications.")
             .withFullDescription("Summons a levelled mob of your specifications, similar to how " +
@@ -33,5 +33,6 @@ public class SummonSubcommand {
                         sender.sendMessage("Not implemented");
                     })
             );
+    }
 
 }

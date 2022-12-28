@@ -3,10 +3,10 @@ package io.github.arcaneplugins.levelledmobs.bukkit.command.levelledmobs.subcomm
 import dev.jorel.commandapi.CommandAPICommand;
 import io.github.arcaneplugins.levelledmobs.bukkit.LevelledMobs;
 
-public class ReloadSubcommand {
+public final class ReloadSubcommand {
 
-    public static final CommandAPICommand INSTANCE =
-        new CommandAPICommand("reload")
+    public static CommandAPICommand createInstance() {
+        return new CommandAPICommand("reload")
             .withPermission("levelledmobs.command.levelledmobs.reload")
             .withShortDescription("Reload LevelledMobs' configuration files.")
             .withFullDescription("Reloads LevelledMobs' configuration files without having to " +
@@ -23,5 +23,6 @@ public class ReloadSubcommand {
                     //TODO translatable messages
                 }
             });
+    }
 
 }

@@ -19,10 +19,10 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Tameable;
 
-public class KillSubcommand {
+public final class KillSubcommand {
 
-    public static final CommandAPICommand INSTANCE_1 =
-        new CommandAPICommand("kill")
+    public static CommandAPICommand createInstance1() {
+        return new CommandAPICommand("kill")
             .withArguments(
                 new EntitySelectorArgument.ManyEntities("entities"),
                 new WorldArgument("world"),
@@ -34,15 +34,18 @@ public class KillSubcommand {
                 "not be intended for the mass-kill, such as nametagged or tamed mobs.")
             .withPermission("levelledmobs.command.levelledmobs.kill")
             .executes(KillSubcommand::execute);
+    }
 
-    public static final CommandAPICommand INSTANCE_2 =
-        new CommandAPICommand("kill")
+    public static CommandAPICommand createInstance2() {
+        return new CommandAPICommand("kill")
             .withArguments(
                 new EntitySelectorArgument.ManyEntities("entities"),
                 new WorldArgument("world")
             )
             .withPermission("levelledmobs.command.levelledmobs.kill")
             .executes(KillSubcommand::execute);
+    }
+
 
     private static void execute(
         final @Nonnull CommandSender sender,

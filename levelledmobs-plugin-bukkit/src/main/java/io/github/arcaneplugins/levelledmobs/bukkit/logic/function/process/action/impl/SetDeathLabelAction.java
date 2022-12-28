@@ -14,7 +14,7 @@ public class SetDeathLabelAction extends Action {
         @NotNull CommentedConfigurationNode actionNode
     ) {
         super(parentProcess, actionNode);
-        Log.war("SetDeathLabelAction has not been implemented yet, it's currently useless.");
+        Log.war("SetDeathLabelAction will not be parsed: implementation incomplete.");
         //TODO
     }
 

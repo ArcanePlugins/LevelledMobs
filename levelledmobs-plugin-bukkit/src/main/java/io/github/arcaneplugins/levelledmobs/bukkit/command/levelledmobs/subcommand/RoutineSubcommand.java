@@ -1,17 +1,27 @@
 package io.github.arcaneplugins.levelledmobs.bukkit.command.levelledmobs.subcommand;
 
 import dev.jorel.commandapi.CommandAPICommand;
+import io.github.arcaneplugins.levelledmobs.bukkit.command.levelledmobs.subcommand.routine.CompatibilityRoutine;
+import io.github.arcaneplugins.levelledmobs.bukkit.command.levelledmobs.subcommand.routine.HaltRoutine;
+import io.github.arcaneplugins.levelledmobs.bukkit.command.levelledmobs.subcommand.routine.ResetConfigsRoutine;
+import io.github.arcaneplugins.levelledmobs.bukkit.command.levelledmobs.subcommand.routine.UnlevelAllRoutine;
 
-public class RoutineSubcommand {
+public final class RoutineSubcommand {
 
-    // NOTE: yes, this class is done, it is really this simple.
-
-    public static final CommandAPICommand INSTANCE =
-        new CommandAPICommand("routine")
+    public static CommandAPICommand createInstance() {
+        return new CommandAPICommand("routine")
             .withPermission("levelledmobs.command.levelledmobs.routine")
             .withShortDescription("Advanced users only: run the specified routine.")
             .withFullDescription("Advanced users only: run the specified routine. Routines " +
                 "contain miscellaneous code which is often used during testing and when " +
-                "support staff are assisting a server owner with a situation.");
+                "support staff are assisting a server owner with a situation.")
+            .withSubcommands(
+                CompatibilityRoutine.createInstance(),
+                HaltRoutine.createInstance(),
+                ResetConfigsRoutine.createInstance(),
+                UnlevelAllRoutine.createInstance1(),
+                UnlevelAllRoutine.createInstance2()
+            );
+    }
 
 }

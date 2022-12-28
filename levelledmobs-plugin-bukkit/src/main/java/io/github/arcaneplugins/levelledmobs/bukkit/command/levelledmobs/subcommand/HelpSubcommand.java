@@ -4,10 +4,10 @@ import dev.jorel.commandapi.CommandAPICommand;
 import io.github.arcaneplugins.levelledmobs.bukkit.command.CommandHandler;
 import org.bukkit.ChatColor;
 
-public class HelpSubcommand {
+public final class HelpSubcommand {
 
-    public static final CommandAPICommand INSTANCE =
-        new CommandAPICommand("help")
+    public static CommandAPICommand createInstance() {
+        return new CommandAPICommand("help")
             .withPermission("levelledmobs.command.levelledmobs.help")
             .withShortDescription("View a list of available commands and support links.")
             .withFullDescription("Sends the user a list of available LevelledMobs commands and " +
@@ -29,5 +29,6 @@ public class HelpSubcommand {
 
                 sender.sendMessage("Support and documentation links: N/A");
             });
+    }
 
 }

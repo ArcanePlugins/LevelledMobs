@@ -6,23 +6,32 @@ import dev.jorel.commandapi.CommandAPIConfig;
 import io.github.arcaneplugins.levelledmobs.bukkit.LevelledMobs;
 import io.github.arcaneplugins.levelledmobs.bukkit.command.levelledmobs.LevelledMobsCommand;
 import io.github.arcaneplugins.levelledmobs.bukkit.util.Log;
-import java.util.List;
+import java.util.Collection;
+import java.util.LinkedList;
 
-public class CommandHandler {
+public final class CommandHandler {
+
+    public static final Collection<CommandAPICommand> COMMANDS = new LinkedList<>();
 
     public static final CommandAPIConfig CMD_CONFIG = new CommandAPIConfig()
         .silentLogs(false); //TODO set to `true` when commands are 100% complete.
-
-    public static final List<CommandAPICommand> COMMANDS = List.of(
-        LevelledMobsCommand.INSTANCE
-    );
 
     public void load(final LoadingStage loadingStage) {
         switch(loadingStage) {
             case ON_LOAD -> {
                 Log.inf("Loading commands");
+
                 CommandAPI.onLoad(CMD_CONFIG);
-                registerCommands();
+
+                /*
+                add command objects to commands list
+                 */
+                COMMANDS.add(LevelledMobsCommand.createInstance());
+
+                /*
+                register commands in commands list
+                 */
+                COMMANDS.forEach(CommandAPICommand::register);
             }
             case ON_ENABLE -> {
                 Log.inf("Enabling commands");
@@ -33,10 +42,6 @@ public class CommandHandler {
                 unregisterCommands();
             }
         }
-    }
-
-    private void registerCommands() {
-        COMMANDS.forEach(CommandAPICommand::register);
     }
 
     private void unregisterCommands() {

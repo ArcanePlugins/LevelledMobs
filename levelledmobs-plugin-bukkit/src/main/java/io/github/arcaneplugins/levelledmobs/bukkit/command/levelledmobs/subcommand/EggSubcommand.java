@@ -2,10 +2,10 @@ package io.github.arcaneplugins.levelledmobs.bukkit.command.levelledmobs.subcomm
 
 import dev.jorel.commandapi.CommandAPICommand;
 
-public class EggSubcommand {
+public final class EggSubcommand {
 
-    public static final CommandAPICommand INSTANCE =
-        new CommandAPICommand("egg")
+    public static CommandAPICommand createInstance() {
+        return new CommandAPICommand("egg")
             .withPermission("levelledmobs.command.levelledmobs.egg")
             .withShortDescription("Create and customise a spawn egg item which summons a " +
                 "levelled mob.")
@@ -15,5 +15,6 @@ public class EggSubcommand {
                 sender.sendMessage("egg not implemented");
                 //TODO impl
             });
+    }
 
 }

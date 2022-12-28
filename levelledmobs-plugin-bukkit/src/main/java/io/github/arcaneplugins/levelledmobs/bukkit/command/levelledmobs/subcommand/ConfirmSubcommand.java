@@ -5,12 +5,12 @@ import java.util.HashMap;
 import java.util.Map;
 import org.bukkit.command.CommandSender;
 
-public class ConfirmSubcommand {
+public final class ConfirmSubcommand {
 
     public static final Map<CommandSender, Runnable> CONFIRMATION_MAP = new HashMap<>();
 
-    public static final CommandAPICommand INSTANCE =
-        new CommandAPICommand("confirm")
+    public static CommandAPICommand createInstance() {
+        return new CommandAPICommand("confirm")
             .withPermission("levelledmobs.command.levelledmobs.confirm")
             .withShortDescription("Confirms a potentially dangerous LevelledMobs command.")
             .withFullDescription("Allows users to confirm actions from potentially dangerous " +
@@ -26,5 +26,6 @@ public class ConfirmSubcommand {
                     sender.sendMessage("LM: Nothing to confirm.");
                 }
             });
+    }
 
 }

@@ -5,10 +5,10 @@ import io.github.arcaneplugins.levelledmobs.bukkit.LevelledMobs;
 import io.github.arcaneplugins.levelledmobs.bukkit.config.translations.Message;
 import org.bukkit.plugin.PluginDescriptionFile;
 
-public class AboutSubcommand {
+public final class AboutSubcommand {
 
-    public static final CommandAPICommand INSTANCE =
-        new CommandAPICommand("about")
+    public static CommandAPICommand createInstance() {
+        return new CommandAPICommand("about")
             .withPermission("levelledmobs.command.levelledmobs.about")
             .withShortDescription("View information about this version of LevelledMobs.")
             .withFullDescription("Displays miscellaneous information about this version of " +
@@ -22,5 +22,6 @@ public class AboutSubcommand {
                     "%maintainers%", Message.joinDelimited(pdf.getAuthors())
                 );
             });
+    }
 
 }

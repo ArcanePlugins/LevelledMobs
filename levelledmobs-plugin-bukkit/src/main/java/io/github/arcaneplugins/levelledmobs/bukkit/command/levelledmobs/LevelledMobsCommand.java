@@ -11,33 +11,30 @@ import io.github.arcaneplugins.levelledmobs.bukkit.command.levelledmobs.subcomma
 import io.github.arcaneplugins.levelledmobs.bukkit.command.levelledmobs.subcommand.RoutineSubcommand;
 import io.github.arcaneplugins.levelledmobs.bukkit.command.levelledmobs.subcommand.SpawnerSubcommand;
 import io.github.arcaneplugins.levelledmobs.bukkit.command.levelledmobs.subcommand.SummonSubcommand;
-import java.util.Collection;
-import java.util.List;
 
-public class LevelledMobsCommand {
+public final class LevelledMobsCommand {
 
-    public static final Collection<CommandAPICommand> SUBCOMMANDS = List.of(
-        AboutSubcommand.INSTANCE,
-        BackupSubcommand.INSTANCE,
-        ConfirmSubcommand.INSTANCE,
-        EggSubcommand.INSTANCE,
-        HelpSubcommand.INSTANCE,
-        KillSubcommand.INSTANCE_1,
-        KillSubcommand.INSTANCE_2,
-        ReloadSubcommand.INSTANCE,
-        RoutineSubcommand.INSTANCE,
-        SpawnerSubcommand.INSTANCE,
-        SummonSubcommand.INSTANCE
-    );
-
-    public static final CommandAPICommand INSTANCE =
-        new CommandAPICommand("levelledmobs")
-            .withSubcommands(SUBCOMMANDS.toArray(new CommandAPICommand[0]))
+    public static CommandAPICommand createInstance() {
+        return new CommandAPICommand("levelledmobs")
+            .withSubcommands(
+                AboutSubcommand.createInstance(),
+                BackupSubcommand.createInstance(),
+                ConfirmSubcommand.createInstance(),
+                EggSubcommand.createInstance(),
+                HelpSubcommand.createInstance(),
+                KillSubcommand.createInstance1(),
+                KillSubcommand.createInstance2(),
+                ReloadSubcommand.createInstance(),
+                RoutineSubcommand.createInstance(),
+                SpawnerSubcommand.createInstance(),
+                SummonSubcommand.createInstance()
+            )
             .withAliases("lm", "lvlmobs", "leveledmobs")
             .withPermission("levelledmobs.command.levelledmobs")
             .withShortDescription("Manage the LevelledMobs plugin.")
             .withFullDescription("Manage the LevelledMobs plugin, from re-loading the "
                 + "configuration to creating a levelled mob spawn egg item with your "
                 + "chosen specifications.");
+    }
 
 }

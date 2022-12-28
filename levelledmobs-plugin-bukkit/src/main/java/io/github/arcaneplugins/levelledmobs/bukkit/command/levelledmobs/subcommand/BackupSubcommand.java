@@ -2,10 +2,10 @@ package io.github.arcaneplugins.levelledmobs.bukkit.command.levelledmobs.subcomm
 
 import dev.jorel.commandapi.CommandAPICommand;
 
-public class BackupSubcommand {
+public final class BackupSubcommand {
 
-    public static final CommandAPICommand INSTANCE =
-        new CommandAPICommand("backup")
+    public static CommandAPICommand createInstance() {
+        return new CommandAPICommand("backup")
             .withPermission("levelledmobs.command.levelledmobs.backup")
             .withShortDescription("Backup your LevelledMobs configuration files.")
             .withFullDescription("Copies LevelledMobs' configuration files into a compressed " +
@@ -14,5 +14,6 @@ public class BackupSubcommand {
                 sender.sendMessage("backup not implemented");
                 //TODO impl
             });
+    }
 
 }
