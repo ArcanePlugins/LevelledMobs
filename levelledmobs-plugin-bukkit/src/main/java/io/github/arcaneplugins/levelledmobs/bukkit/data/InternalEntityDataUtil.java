@@ -294,7 +294,7 @@ public final class InternalEntityDataUtil extends EntityDataUtil {
     }
 
     //TODO doc
-    public static void setShieldBreakerMultiplier(
+    public static void setShieldBreakerMultiplierFormula(
         final @Nonnull LivingEntity entity,
         final @Nonnull String formula,
         final boolean requirePersistence

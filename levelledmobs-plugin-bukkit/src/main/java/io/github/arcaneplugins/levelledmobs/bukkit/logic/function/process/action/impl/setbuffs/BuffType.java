@@ -29,6 +29,9 @@ public enum BuffType {
         (lent, formula) -> {
             if(!(lent instanceof Creeper creeper)) return;
 
+            InternalEntityDataUtil
+                .setCreeperBlastRadiusMultiplierFormula(lent, formula, true);
+
             final double multiplier = LogicHandler.evaluateExpression(
                 LogicHandler.replacePapiAndContextPlaceholders(
                     formula, new Context().withEntity(creeper)
@@ -80,7 +83,7 @@ public enum BuffType {
     //TODO Implement
     SHIELD_BREAKER(
         (lent, formula) -> InternalEntityDataUtil
-            .setShieldBreakerMultiplier(lent, formula, true)
+            .setShieldBreakerMultiplierFormula(lent, formula, true)
     ),
 
     ZOMBIE_SPAWN_REINFORCEMENTS(

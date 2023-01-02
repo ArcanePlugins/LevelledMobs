@@ -8,7 +8,11 @@ import io.github.arcaneplugins.levelledmobs.bukkit.debug.DebugHandler;
 import io.github.arcaneplugins.levelledmobs.bukkit.listener.ListenerWrapper;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.LogicHandler;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.context.Context;
+import io.github.arcaneplugins.levelledmobs.bukkit.util.PlayerUtils;
+import io.github.arcaneplugins.levelledmobs.bukkit.util.PlayerUtils.FoundItemInHandResult;
 import java.util.function.Consumer;
+import javax.annotation.Nonnull;
+import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -31,6 +35,7 @@ public class EntityDamageByEntityListener extends ListenerWrapper {
         final Entity defender = event.getEntity();
         final Entity attacker = event.getDamager(); //TODO see TODO below. need an attacker context.
 
+        handleShieldBreaker(event);
         handleEntityInspector(event);
 
         LevelledMobs.getInstance().getLogicHandler().runFunctionsWithTriggers(
@@ -39,24 +44,26 @@ public class EntityDamageByEntityListener extends ListenerWrapper {
         );
     }
 
-    private void handleEntityInspector(final EntityDamageByEntityEvent event) {
+    private void handleEntityInspector(
+        final EntityDamageByEntityEvent event
+    ) {
         if (!DebugHandler.isCategoryEnabled(DebugCategory.ENTITY_INSPECTOR) ||
-            !(event.getEntity() instanceof LivingEntity inspected) ||
-            !(event.getDamager() instanceof Player inspector) ||
-            !inspector.hasPermission("levelledmobs.debug") ||
-            !EntityDataUtil.isLevelled(inspected, false)
+            !(event.getEntity() instanceof final LivingEntity enInspected) ||
+            !(event.getDamager() instanceof final Player plInspector) ||
+            !plInspector.hasPermission("levelledmobs.debug") ||
+            !EntityDataUtil.isLevelled(enInspected, true)
         ) {
             return;
         }
 
         final Context context = new Context()
-            .withEntity(inspected)
-            .withLocation(inspected.getLocation())
-            .withEntityType(inspected.getType())
-            .withWorld(inspected.getWorld())
-            .withPlayer(inspector);
+            .withEntity(enInspected)
+            .withLocation(enInspected.getLocation())
+            .withEntityType(enInspected.getType())
+            .withWorld(enInspected.getWorld())
+            .withPlayer(plInspector);
 
-        final Consumer<String> messenger = (message) -> inspector.sendMessage(
+        final Consumer<String> messenger = (message) -> plInspector.sendMessage(
             MineDown.parse(LogicHandler.replacePapiAndContextPlaceholders(message, context))
         );
 
@@ -71,5 +78,54 @@ public class EntityDamageByEntityListener extends ListenerWrapper {
                 messenger.accept("&8... (end of information) ...");
             }
         }.runTaskLater(LevelledMobs.getInstance(), 1);
+    }
+
+    private void handleShieldBreaker(
+        final @Nonnull EntityDamageByEntityEvent event
+    ) {
+        /*
+        To handle the shield breaker, the following conditions must be met:
+            1. The defending entity is a Player
+            2. The attacking entity is a LivingEntity
+            3. The attacking entity is levelled
+         */
+        if(!(event.getEntity() instanceof final Player plDefender &&
+            event.getDamager() instanceof final LivingEntity enAttacker &&
+            EntityDataUtil.isLevelled(enAttacker, true)
+        )) return;
+
+        final FoundItemInHandResult shieldSearch = PlayerUtils.findItemStackInEitherHand(
+            plDefender,
+            itemStack -> itemStack != null && itemStack.getType() == Material.SHIELD
+        );
+
+        if(shieldSearch == null) return;
+
+        final String formula = EntityDataUtil
+            .getShieldBreakerMultiplierFormula(enAttacker, true);
+
+        if(formula == null) return;
+
+        @SuppressWarnings("unused") //TODO remove
+        final double multiplier = LogicHandler.evaluateExpression(
+            LogicHandler.replacePapiAndContextPlaceholders(
+                formula,
+                new Context()
+                    .withEntity(plDefender)
+                    //TODO also have attacker context. Context#withAttacker(enAttacker)
+            )
+        );
+
+        /*
+        darn ... unfortunately the bukkit API does not allow us to get the entity who caused
+        the player's item to be damaged in PlayerItemDamageEvent. so shield breaking won't be
+        a feature until that changes. I'll leave the code here in case it becomes possible
+        in the future.
+
+        Yes, I have thought about using a bit of hacky code to get around it, but I'd rather not
+        since it could cause weird side-effects. For instance, applying a 1-tick-expiry
+        temporary metadata value to `plDefender` with the `multiplier` value, and then referencing
+        that in the `PlayerItemDamageEvent`.
+        */
     }
 }
