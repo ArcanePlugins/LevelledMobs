@@ -216,6 +216,14 @@ public final class HelpSubcommand {
 
             return new ChapterAndPageNum(chapter, pageNum);
         }).replaceSuggestions(ArgumentSuggestions.strings(info -> {
+            /*
+            TODO fix - this doesn't seem to be working.
+            should be just simple debugging
+
+            docs for implementing:
+            <https://commandapi.jorel.dev/8.7.0/customarguments.html#example---message-builder-for-invalid-objective-argument>
+             */
+
             final String[] breadcrumbs = info.currentInput().split(" ");
             Chapter chapter = hs.getHomeChapter();
             boolean endsWithPageNum = false;
