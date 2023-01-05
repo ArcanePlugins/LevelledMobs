@@ -13,18 +13,19 @@ command:
       - "%prefix-severe% Invalid subcommand '&b%subcommand%&7'."
       - "%prefix-info% Run '&b&n[/lm help](run_command=/lm help)&7' for a list of available commands."
 
-    main:
-      - " "
-      - "&8┌ [LevelledMobs](color=aqua-blue format=bold) &8v%version%"
-      - "&8│"
-      - "&8│ &7The &oUltimate&7 RPG Mob Levelling Solution"
-      - "&8│ &7Maintained by &b%maintainers%"
-      - "&8│"
-      - "&8│ &7Quick Links: &8«&9&n[Resource Page](open_url=https://spigotmc.org/resources/74304)&8» «&9&n[Wiki](open_url=https://github.com/lokka30/LevelledMobs/Wiki)&8» «&9&n[Credits](open_url=https://github.com/lokka30/LevelledMobs/wiki/Credits)&8» «&9&n[Source](open_url=https://github.com/lokka30/LevelledMobs)&8»"
-      - "&8│"
-      - "&8└ &7Run &b[/lm help](run_command=/lm help) &7to list available commands."
-
     subcommand:
+      about: |
+        &8┌ [LevelledMobs](color=aqua-blue format=bold) &8v%version%s
+        &8│
+        &8│ &7by [ArcanePlugins](color=blue format=underlined open_url=https://github.com/ArcanePlugins) &8•&7 [lokka30](color=gray format=italic open_url=https://github.com/lokka30), [PenalBuffalo](color=gray format=italic open_url=https://github.com/stumper66) & [UltimaOath](color=gray format=italic open_url=https://github.com/Oathkeeper).
+        &8│
+        &8│ &8Copyright © 2020 - 2023 [LevelledMobs Contributors](color=dark_gray format=italic open_url=https://github.com/ArcanePlugins/LevelledMobs/wiki/Credits).
+        &8│ &8LevelledMobs is [GNU AGPL v3 Free Software](color=dark_gray format=italic open_url=https://github.com/ArcanePlugins/LevelledMobs/blob/master/LICENSE.md).
+        &8│
+        &8│ &7Quick Links: [Resource](color=blue format=underlined open_url=https://spigotmc.org/resources/74304)&8 • [Wiki](color=blue format=underlined open_url=https://github.com/ArcanePlugins/LevelledMobs/Wiki)&8 • [Credits](color=blue format=underlined open_url=https://github.com/ArcanePlugins/LevelledMobs/wiki/Credits)&8 • [Source](color=blue format=underlined open_url=https://github.com/ArcanePlugins/LevelledMobs)
+        &8│
+        &8└ &7Run [/lm help](color=blue format=underlined run_command=/lm help) &7for help in using LevelledMobs.
+
       reload:
         start:
           - "%prefix-info% Reloading configuration..."
