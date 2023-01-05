@@ -21,13 +21,13 @@ public final class HelpSubcommand {
 
     private static final HelpSystem hs = new HelpSystem();
 
-    public static CommandAPICommand createInstance() {
+    public static List<CommandAPICommand> createInstances() {
         final HomeChapter home = hs.getHomeChapter();
         home.addPages(
             """
             &8 • &9&nClick here&7 to view command help.
             &8 • &9&nClick here&7 to view documentation.
-            &8 • &9&nClick here&7 to ask for support with LM.-------"""
+            &8 • &9&nClick here&7 to ask for support with LM."""
         );
 
         { // Breadcrumb: Home -> Support
@@ -51,7 +51,7 @@ public final class HelpSubcommand {
                 """
                 &7Recommended documentation:
                 
-                &8 • &9&Read the Frequently Asked Questions
+                &8 • &9&nRead the Frequently Asked Questions
                 &8 • &9&nRead the Wiki
                 &8 • &9&nRead API Developer Javadocs"""
             );
@@ -148,22 +148,36 @@ public final class HelpSubcommand {
             }
         }
 
-        return new CommandAPICommand("help")
-            .withPermission("levelledmobs.command.levelledmobs.help")
-            .withShortDescription("View a list of available LM commands and support links.")
-            .withFullDescription("Sends the user a list of available LevelledMobs commands and " +
-                "also a list of URLs providing documentation and support.")
-            .withArguments(chapterArgument("chapter"))
-            .executes((sender, args) -> {
-                //TODO Add Translatable Messages for the header and footers
-                //TODO Add Translatable Messages for the chapter pages.
-                final ChapterAndPageNum arg = (ChapterAndPageNum) args[0];
+        return List.of(
+            new CommandAPICommand("help")
+                .withPermission("levelledmobs.command.levelledmobs.help")
+                .withShortDescription("View a list of available LM commands and support links.")
+                .withFullDescription("Sends the user a list of available LevelledMobs commands and " +
+                    "also a list of URLs providing documentation and support.")
+                .withArguments(chapterArgument("chapter"))
+                .executes((sender, args) -> {
+                    //TODO Add Translatable Messages for the header and footers
+                    //TODO Add Translatable Messages for the chapter pages.
+                    final ChapterAndPageNum arg = (ChapterAndPageNum) args[0];
 
-                final Chapter c = arg.chapter();
-                final int pageNum = arg.pageNum();
+                    final Chapter c = arg.chapter();
+                    final int pageNum = arg.pageNum();
 
-                sender.sendMessage(Message.formatMd(new String[]{c.getFormattedPage(pageNum)}));
-            });
+                    sender.sendMessage(Message.formatMd(new String[]{c.getFormattedPage(pageNum)}));
+                }),
+            new CommandAPICommand("help")
+                .withPermission("levelledmobs.command.levelledmobs.help")
+                .withShortDescription("View a list of available LM commands and support links.")
+                .withFullDescription("Sends the user a list of available LevelledMobs commands and " +
+                    "also a list of URLs providing documentation and support.")
+                .executes((sender, args) -> {
+                    sender.sendMessage(
+                        Message.formatMd(new String[]{
+                            hs.getHomeChapter().getFormattedPage(1)
+                        })
+                    );
+                })
+        );
     }
 
     public static Argument<ChapterAndPageNum> chapterArgument(final String nodeName) {
@@ -196,7 +210,7 @@ public final class HelpSubcommand {
 
             if(pageNum < 1 || pageNum > chapter.getPages().size()) {
                 throw new CustomArgumentException(
-                    new MessageBuilder("Page does not exist: ").appendArgInput()
+                    "Page '%s' does not exist in chapter '%s'".formatted(pageNum, chapter.getId())
                 );
             }
 

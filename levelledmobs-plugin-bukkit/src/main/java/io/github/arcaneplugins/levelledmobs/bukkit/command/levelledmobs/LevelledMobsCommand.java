@@ -21,7 +21,6 @@ public final class LevelledMobsCommand {
                 BackupSubcommand.createInstance(),
                 ConfirmSubcommand.createInstance(),
                 EggSubcommand.createInstance(),
-                HelpSubcommand.createInstance(),
                 KillSubcommand.createInstance1(),
                 KillSubcommand.createInstance2(),
                 ReloadSubcommand.createInstance(),
@@ -29,6 +28,7 @@ public final class LevelledMobsCommand {
                 SpawnerSubcommand.createInstance(),
                 SummonSubcommand.createInstance()
             )
+            .withSubcommands(HelpSubcommand.createInstances().toArray(new CommandAPICommand[0]))
             .withAliases("lm", "lvlmobs", "leveledmobs")
             .withPermission("levelledmobs.command.levelledmobs")
             .withShortDescription("Manage the LevelledMobs plugin.")
