@@ -97,30 +97,20 @@ public class SpawnerEggCommand extends SpawnerBaseClass implements Subcommand {
             }
 
             switch (command) {
-                case "/name":
-                    info.customName = foundValue;
-                    break;
-                case "/customdropid":
-                    info.customDropId = foundValue;
-                    break;
-                case "/lore":
-                    info.customLore = foundValue;
-                    break;
-                case "/entity":
+                case "/name" -> info.customName = foundValue;
+                case "/customdropid" -> info.customDropId = foundValue;
+                case "/lore" -> info.customLore = foundValue;
+                case "/entity" -> {
                     try {
                         info.spawnType = EntityType.valueOf(foundValue.toUpperCase());
                     } catch (final Exception ignored) {
                         commandSender.sendMessage("Invalid spawn type: " + foundValue);
                         return;
                     }
-                    break;
-                case "/minlevel":
-                    info.minLevel = Integer.parseInt(foundValue);
-                    break;
-                case "/maxlevel":
-                    info.maxLevel = Integer.parseInt(foundValue);
-                    break;
-                case "/giveplayer":
+                }
+                case "/minlevel" -> info.minLevel = Integer.parseInt(foundValue);
+                case "/maxlevel" -> info.maxLevel = Integer.parseInt(foundValue);
+                case "/giveplayer" -> {
                     if (Utils.isNullOrEmpty(foundValue)) {
                         showMessage("command.levelledmobs.spawn_egg.no-player-specified");
                         return;
@@ -135,7 +125,7 @@ public class SpawnerEggCommand extends SpawnerBaseClass implements Subcommand {
                         showMessage("common.player-offline", "%player%", foundValue);
                         return;
                     }
-                    break;
+                }
             }
         }
 

@@ -181,51 +181,27 @@ public class SpawnerSubCommand extends SpawnerBaseClass implements Subcommand {
             }
 
             switch (command) {
-                case "/name":
-                    info.customName = foundValue;
-                    break;
-                case "/customdropid":
-                    info.customDropId = foundValue;
-                    break;
-                case "/lore":
-                    info.customLore = foundValue;
-                    break;
-                case "/spawntype":
+                case "/name" -> info.customName = foundValue;
+                case "/customdropid" -> info.customDropId = foundValue;
+                case "/lore" -> info.customLore = foundValue;
+                case "/spawntype" -> {
                     try {
                         info.spawnType = EntityType.valueOf(foundValue.toUpperCase());
                     } catch (final Exception ignored) {
                         commandSender.sendMessage("Invalid spawn type: " + foundValue);
                         return;
                     }
-                    break;
-                case "/minlevel":
-                    info.minLevel = Integer.parseInt(foundValue);
-                    break;
-                case "/maxlevel":
-                    info.maxLevel = Integer.parseInt(foundValue);
-                    break;
-                case "/delay":
-                    info.delay = Integer.parseInt(foundValue);
-                    break;
-                case "/maxnearbyentities":
-                    info.maxNearbyEntities = Integer.parseInt(foundValue);
-                    break;
-                case "/minspawndelay":
-                    info.minSpawnDelay = Integer.parseInt(foundValue);
-                    break;
-                case "/maxspawndelay":
-                    info.maxSpawnDelay = Integer.parseInt(foundValue);
-                    break;
-                case "/requiredplayerrange":
-                    info.requiredPlayerRange = Integer.parseInt(foundValue);
-                    break;
-                case "/spawncount":
-                    info.spawnCount = Integer.parseInt(foundValue);
-                    break;
-                case "/spawnrange":
-                    info.spawnRange = Integer.parseInt(foundValue);
-                    break;
-                case "/giveplayer":
+                }
+                case "/minlevel" -> info.minLevel = Integer.parseInt(foundValue);
+                case "/maxlevel" -> info.maxLevel = Integer.parseInt(foundValue);
+                case "/delay" -> info.delay = Integer.parseInt(foundValue);
+                case "/maxnearbyentities" -> info.maxNearbyEntities = Integer.parseInt(foundValue);
+                case "/minspawndelay" -> info.minSpawnDelay = Integer.parseInt(foundValue);
+                case "/maxspawndelay" -> info.maxSpawnDelay = Integer.parseInt(foundValue);
+                case "/requiredplayerrange" -> info.requiredPlayerRange = Integer.parseInt(foundValue);
+                case "/spawncount" -> info.spawnCount = Integer.parseInt(foundValue);
+                case "/spawnrange" -> info.spawnRange = Integer.parseInt(foundValue);
+                case "/giveplayer" -> {
                     if (Utils.isNullOrEmpty(foundValue)) {
                         showMessage("command.levelledmobs.spawner.no-player-specified");
                         return;
@@ -240,7 +216,7 @@ public class SpawnerSubCommand extends SpawnerBaseClass implements Subcommand {
                         showMessage("common.player-offline", "%player%", foundValue);
                         return;
                     }
-                    break;
+                }
             }
         }
 
@@ -380,7 +356,7 @@ public class SpawnerSubCommand extends SpawnerBaseClass implements Subcommand {
         if ("create".equalsIgnoreCase(args[1])) {
             return tabCompletions_Create(args);
         } else if (("info".equalsIgnoreCase(args[1]) || "copy".equalsIgnoreCase(args[1]))
-            && args.length <= 3) {
+            && args.length == 3) {
             return Arrays.asList("on", "off");
         }
 
@@ -390,32 +366,36 @@ public class SpawnerSubCommand extends SpawnerBaseClass implements Subcommand {
     @NotNull private List<String> tabCompletions_Create(@NotNull final String @NotNull [] args) {
         if (!Utils.isNullOrEmpty(args[args.length - 2])) {
             switch (args[args.length - 2].toLowerCase()) {
-                case "/spawntype":
+                case "/spawntype" -> {
                     final List<String> entityNames = new LinkedList<>();
                     for (final EntityType entityType : EntityType.values()) {
                         entityNames.add(entityType.toString().toLowerCase());
                     }
-
                     return entityNames;
-                case "/delay":
+                }
+                case "/delay" -> {
                     return Collections.singletonList("0");
-                case "/minspawndelay":
+                }
+                case "/minspawndelay" -> {
                     return Collections.singletonList("200");
-                case "/maxspawndelay":
+                }
+                case "/maxspawndelay" -> {
                     return Collections.singletonList("800");
-                case "/maxnearbyentities":
-                case "/requiredplayerrange":
+                }
+                case "/maxnearbyentities", "/requiredplayerrange" -> {
                     return Collections.singletonList("16");
-                case "/spawncount":
-                case "/spawnrange":
+                }
+                case "/spawncount", "/spawnrange" -> {
                     return Collections.singletonList("4");
-                case "/giveplayer":
+                }
+                case "/giveplayer" -> {
                     final List<String> players = new LinkedList<>();
                     for (final Player player : Bukkit.getOnlinePlayers()) {
                         players.add(player.getName());
                     }
                     players.sort(String.CASE_INSENSITIVE_ORDER);
                     return players;
+                }
             }
         }
 
