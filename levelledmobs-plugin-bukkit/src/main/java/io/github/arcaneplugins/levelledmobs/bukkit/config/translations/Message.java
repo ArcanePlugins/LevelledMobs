@@ -2,6 +2,7 @@ package io.github.arcaneplugins.levelledmobs.bukkit.config.translations;
 
 import de.themoep.minedown.adventure.MineDown;
 import io.github.arcaneplugins.levelledmobs.bukkit.util.Log;
+import java.util.Arrays;
 import net.kyori.adventure.text.Component;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.Contract;
@@ -147,8 +148,8 @@ public enum Message {
 
     /**
      * Create a new Message
-     *
-     * The name of the constant should be akin to the position it has in the translation file
+     * <p>
+     * The name of the constant should be akin to the path it has in the translation file
      *
      * @param def the default messages to use if translation has not specified it, should be
      *            matching exactly what is used in the 'en_US' translation.
@@ -168,37 +169,40 @@ public enum Message {
     /*
     Format a message using MineDown
      */
-    public static Component COMPONENT_EMPTY = Component.empty();
-    public static Component COMPONENT_NEW_LINE = Component.text("\n");
 
-    public Component formatMd(final String... replacements) {
-        Component component = COMPONENT_EMPTY;
+    public static Component formatMd(final String[] messageStr, final String... replacements) {
+        Component component = Component.empty();
 
-        for(int line = 0; line < getDeclared().length; line++) {
-            String toParse = getDeclared()[line];
+        for(int line = 0; line < messageStr.length; line++) {
+            String toParse = messageStr[line];
 
             if(toParse.isBlank()) {
-                component = component.append(COMPONENT_NEW_LINE);
+                component = component.append(Component.newline());
                 continue;
             }
 
             toParse = toParse
-                    .replace("%prefix-info%", Message.GENERIC_PREFIX_INFO.getDeclared()[0])
-                    .replace("%prefix-warning%", Message.GENERIC_PREFIX_WARNING.getDeclared()[0])
-                    .replace("%prefix-severe%", Message.GENERIC_PREFIX_SEVERE.getDeclared()[0]);
+                    .replace("%prefix-info%",
+                        Message.GENERIC_PREFIX_INFO.getDeclared()[0])
+                    .replace("%prefix-warning%",
+                        Message.GENERIC_PREFIX_WARNING.getDeclared()[0])
+                    .replace("%prefix-severe%",
+                        Message.GENERIC_PREFIX_SEVERE.getDeclared()[0]);
 
             if(replacements.length % 2 == 0) {
                 for(int j = 0; j < replacements.length; j += 2)
                     toParse = toParse.replace(replacements[j], replacements[j + 1]);
             } else {
-                Log.sev("Skipping placeholder replacement in message '" + this + "' as an odd "
-                        + "number of placeholder parameters were entered.", true);
+                Log.sev("Skipping placeholder replacement in message '" + Arrays.toString(
+                    messageStr) + "' as an odd number of placeholder parameters were entered.",
+                    true
+                );
             }
 
             component = component.append(MineDown.parse(toParse));
 
             if(line > 0) {
-                component = component.append(COMPONENT_NEW_LINE);
+                component = component.append(Component.newline());
             }
         }
 
@@ -206,7 +210,7 @@ public enum Message {
     }
 
     public void sendTo(final @NotNull CommandSender sender, final String... replacements) {
-        sender.sendMessage(formatMd(replacements));
+        sender.sendMessage(formatMd(getDeclared(), replacements));
     }
 
     @Contract("_ -> new")
@@ -244,9 +248,9 @@ public enum Message {
 
     /**
      * Returns whether the message is a list-type or string-type
-     *
+     * <p>
      * {@code false}: is a one-line string, NOT multi line capable, e.g., list delimiter: "&7, &b"
-     *
+     * <p>
      * {@code true}:  is in the string-list format, e.g., no perms message: ["No permission!",
      * "yell at admin"]
      *
