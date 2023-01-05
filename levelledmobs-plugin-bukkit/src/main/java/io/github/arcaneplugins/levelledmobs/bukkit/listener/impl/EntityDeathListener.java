@@ -9,7 +9,6 @@ import io.github.arcaneplugins.levelledmobs.bukkit.listener.ListenerWrapper;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.LogicHandler;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.context.Context;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.customdrops.CustomDrop;
-import io.github.arcaneplugins.levelledmobs.bukkit.logic.customdrops.CustomDropHandler;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.customdrops.type.CommandCustomDrop;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.customdrops.type.ItemCustomDrop;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.customdrops.type.StandardCustomDropType;
@@ -150,6 +149,7 @@ public class EntityDeathListener extends ListenerWrapper {
         Log.debug(DEATH_DROPS, () -> "[GenCustDrp] Generating custom item drops. "
             + "Collection size: %s".formatted(customDrops.size()));
 
+        /* TODO once custom drops is implemented then enable this
         customDrops.addAll(
             CustomDropHandler.generateCustomDrops(
                 new Context()
@@ -157,6 +157,7 @@ public class EntityDeathListener extends ListenerWrapper {
                     .withEvent(event)
             )
         );
+         */
 
         Log.debug(DEATH_DROPS, () -> "[GenCustDrp] Generated %s custom drops."
             .formatted(customDrops.size()));

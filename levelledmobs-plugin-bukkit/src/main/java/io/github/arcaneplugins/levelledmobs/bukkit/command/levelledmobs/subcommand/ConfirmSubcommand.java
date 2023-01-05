@@ -12,9 +12,9 @@ public final class ConfirmSubcommand {
     public static CommandAPICommand createInstance() {
         return new CommandAPICommand("confirm")
             .withPermission("levelledmobs.command.levelledmobs.confirm")
-            .withShortDescription("Confirms a potentially dangerous LevelledMobs command.")
+            .withShortDescription("Confirms a potentially dangerous action from another command.")
             .withFullDescription("Allows users to confirm actions from potentially dangerous " +
-                "LevelledMobs commands, such as one from `/lm routine`.")
+                "LM commands, such as some routines in `/lm routine`.")
             .executes((sender, args) -> {
                 if(CONFIRMATION_MAP.containsKey(sender)) {
                     //TODO Translatable Message

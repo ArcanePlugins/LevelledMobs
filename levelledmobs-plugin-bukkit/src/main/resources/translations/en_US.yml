@@ -25,6 +25,16 @@ command:
       - "&8└ &7Run &b[/lm help](run_command=/lm help) &7to list available commands."
 
     subcommand:
+      reload:
+        start:
+          - "%prefix-info% Reloading configuration..."
+
+        complete-success:
+          - "%prefix-info% Reload complete."
+
+        complete-failure:
+          - "%prefix-severe% Reload failed; check console for more information."
+
       summon:
         not-summonable:
           - "%prefix-severe% The entity type '&b%entity-type%&7' is not summonable."

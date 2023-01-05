@@ -56,6 +56,11 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
+      <groupId>com.github.ArcanePlugins.ArcaneFramework</groupId>
+      <artifactId>arcaneframework-bukkit</artifactId>
+      <version>0.2.2</version>
+    </dependency>
+    <dependency>
       <groupId>io.github.arcaneplugins.levelledmobs</groupId>
       <artifactId>levelledmobs-api-bukkit</artifactId>
       <version>4.0.0</version>
@@ -91,6 +96,11 @@
     <repository>
       <id>jeff-media-public</id>
       <url>https://hub.jeff-media.com/nexus/repository/jeff-media-public/</url>
+    </repository>
+    <repository>
+      <!-- Used for ArcaneFramework -->
+      <id>jitpack.io</id>
+      <url>https://jitpack.io</url>
     </repository>
     <repository>
       <id>minebench-repo</id>

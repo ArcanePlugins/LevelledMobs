@@ -2,26 +2,26 @@ package io.github.arcaneplugins.levelledmobs.bukkit.command.levelledmobs.subcomm
 
 import dev.jorel.commandapi.CommandAPICommand;
 import io.github.arcaneplugins.levelledmobs.bukkit.LevelledMobs;
+import io.github.arcaneplugins.levelledmobs.bukkit.config.translations.Message;
 
 public final class ReloadSubcommand {
 
     public static CommandAPICommand createInstance() {
         return new CommandAPICommand("reload")
             .withPermission("levelledmobs.command.levelledmobs.reload")
-            .withShortDescription("Reload LevelledMobs' configuration files.")
-            .withFullDescription("Reloads LevelledMobs' configuration files without having to " +
-                "restart the server.")
+            .withShortDescription("Reloads LM config files.")
+            .withFullDescription("Reloads LevelledMobs config files.")
             .executes((sender, args) -> {
-                sender.sendMessage("LM: Reloading...");
-                //TODO translatable messages
+                Message.COMMAND_LEVELLEDMOBS_SUBCOMMAND_RELOAD_START.sendTo(sender);
+
                 try {
                     LevelledMobs.getInstance().reload();
-                    sender.sendMessage("LM: Reload complete.");
-                    //TODO translatable messages
-                } catch(Exception ex) {
-                    sender.sendMessage("LM: Reload failed, check console for more information.");
-                    //TODO translatable messages
+                } catch(final Exception ignored) {
+                    Message.COMMAND_LEVELLEDMOBS_SUBCOMMAND_RELOAD_COMPLETE_FAILURE.sendTo(sender);
+                    return;
                 }
+
+                Message.COMMAND_LEVELLEDMOBS_SUBCOMMAND_RELOAD_COMPLETE_SUCCESS.sendTo(sender);
             });
     }
 

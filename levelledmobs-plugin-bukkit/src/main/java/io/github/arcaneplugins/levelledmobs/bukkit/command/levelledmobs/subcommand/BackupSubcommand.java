@@ -7,11 +7,11 @@ public final class BackupSubcommand {
     public static CommandAPICommand createInstance() {
         return new CommandAPICommand("backup")
             .withPermission("levelledmobs.command.levelledmobs.backup")
-            .withShortDescription("Backup your LevelledMobs configuration files.")
+            .withShortDescription("Backup your config files.")
             .withFullDescription("Copies LevelledMobs' configuration files into a compressed " +
-                "zip file, placed in the `LevelledMobs/backups` directory.")
+                "zip file, placed in the `backups` directory within LM's directory.")
             .executes((sender, args) -> {
-                sender.sendMessage("backup not implemented");
+                sender.sendMessage("[LM] error: backup not implemented");
                 //TODO impl
             });
     }

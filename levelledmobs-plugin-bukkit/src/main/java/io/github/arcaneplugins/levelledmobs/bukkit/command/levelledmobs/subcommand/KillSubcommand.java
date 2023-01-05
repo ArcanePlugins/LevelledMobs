@@ -4,7 +4,6 @@ import dev.jorel.commandapi.CommandAPICommand;
 import dev.jorel.commandapi.arguments.EntitySelectorArgument;
 import dev.jorel.commandapi.arguments.TextArgument;
 import dev.jorel.commandapi.arguments.WorldArgument;
-import dev.jorel.commandapi.exceptions.WrapperCommandSyntaxException;
 import io.github.arcaneplugins.levelledmobs.bukkit.api.data.EntityDataUtil;
 import java.util.Arrays;
 import java.util.Collection;
@@ -28,10 +27,11 @@ public final class KillSubcommand {
                 new WorldArgument("world"),
                 new TextArgument("fineTuningParams")
             )
-            .withShortDescription("Kills levelled mobs on the server.")
-            .withFullDescription("Kills levelled mobs on the server, akin to how Minecraft's " +
-                "kill command works. Provides safety in skipping mobs by default which may " +
-                "not be intended for the mass-kill, such as nametagged or tamed mobs.")
+            .withShortDescription("Allows using fine-tuning parameters to override default " +
+                "logic in the kill subcommand.")
+            .withFullDescription("Identical to the other `kill` subcommand, however, allowing " +
+                "users to override default logic, such as disabling the standard nametag and " +
+                "tamed mob protections.")
             .withPermission("levelledmobs.command.levelledmobs.kill")
             .executes(KillSubcommand::execute);
     }
@@ -43,6 +43,11 @@ public final class KillSubcommand {
                 new WorldArgument("world")
             )
             .withPermission("levelledmobs.command.levelledmobs.kill")
+            .withShortDescription("Kills levelled mobs on the server.")
+            .withFullDescription("Kills levelled mobs on the server. Very similar to Minecraft's "
+                + "own `/kill` command, but this only targets levelled mobs and has various "
+                + "safety measures implemented, such as tamed pets being excluded by default.")
+            .withPermission("levelledmobs.command.levelledmobs.kill")
             .executes(KillSubcommand::execute);
     }
 
@@ -50,7 +55,7 @@ public final class KillSubcommand {
     private static void execute(
         final @Nonnull CommandSender sender,
         final @Nonnull Object[] args
-    ) throws WrapperCommandSyntaxException {
+    ) {
         //noinspection unchecked
         final Collection<Entity> entities = (Collection<Entity>) args[0];
 
@@ -79,11 +84,15 @@ public final class KillSubcommand {
 
         final boolean skipTamed = fineTuningParams
             .getOrDefault("skip-tamed", "true")
-            .equals("true");
+            .equalsIgnoreCase("true");
 
         final boolean skipNametagged = fineTuningParams
             .getOrDefault("skip-nametagged", "true")
-            .equals("true");
+            .equalsIgnoreCase("true");
+
+        final boolean remove = fineTuningParams
+            .getOrDefault("remove", "true")
+            .equalsIgnoreCase("true");
 
         for(final Entity entity : entities) {
             final LivingEntity lent = (LivingEntity) entity;
@@ -114,8 +123,11 @@ public final class KillSubcommand {
                 continue;
             }
 
-            //TODO make a setting which allows use of entity#remove instead. it has no drops
-            lent.setHealth(0.0d);
+            if(remove) {
+                lent.remove();
+            } else {
+                lent.setHealth(0.0d);
+            }
             killed++;
         }
 

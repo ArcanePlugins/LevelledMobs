@@ -11,10 +11,10 @@ public final class RoutineSubcommand {
     public static CommandAPICommand createInstance() {
         return new CommandAPICommand("routine")
             .withPermission("levelledmobs.command.levelledmobs.routine")
-            .withShortDescription("Advanced users only: run the specified routine.")
-            .withFullDescription("Advanced users only: run the specified routine. Routines " +
-                "contain miscellaneous code which is often used during testing and when " +
-                "support staff are assisting a server owner with a situation.")
+            .withShortDescription("[Advanced Users Only] Run the specified routine.")
+            .withFullDescription("[Advanced Users Only] Run the specified routine. This is a " +
+                "potentially dangerous command (depending on which routine is used). You are " +
+                "advised to not use this without the instruction of a LevelledMobs maintainer.")
             .withSubcommands(
                 CompatibilityRoutine.createInstance(),
                 HaltRoutine.createInstance(),
@@ -22,6 +22,8 @@ public final class RoutineSubcommand {
                 UnlevelAllRoutine.createInstance1(),
                 UnlevelAllRoutine.createInstance2()
             );
+
+        // Note: Yes, there is meant to not be any 'executes' method. This is subcommand-based. :)
     }
 
 }

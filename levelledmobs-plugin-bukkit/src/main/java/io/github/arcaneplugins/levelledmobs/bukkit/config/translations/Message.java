@@ -53,6 +53,27 @@ public enum Message {
         "&8└ &7Run &b[/lm help](run_command=/lm help) &7to list available commands.",
         " "
     ),
+    COMMAND_LEVELLEDMOBS_SUBCOMMAND_RELOAD_START(
+        true,
+
+        new String[]{"command", "levelledmobs", "subcommand", "reload", "start"},
+
+        "%prefix-info% Reloading configuration..."
+    ),
+    COMMAND_LEVELLEDMOBS_SUBCOMMAND_RELOAD_COMPLETE_SUCCESS(
+        true,
+
+        new String[]{"command", "levelledmobs", "subcommand", "reload", "complete-success"},
+
+        "%prefix-info% Reload complete."
+    ),
+    COMMAND_LEVELLEDMOBS_SUBCOMMAND_RELOAD_COMPLETE_FAILURE(
+        true,
+
+        new String[]{"command", "levelledmobs", "subcommand", "reload", "complete-failure"},
+
+        "%prefix-severe% Reload failed; check console for more information."
+    ),
     COMMAND_LEVELLEDMOBS_SUBCOMMAND_SUMMON_NOT_SUMMONABLE(
         true,
 
