@@ -21,8 +21,7 @@ public final class ClassUtils {
 
             try {
                 Class.forName(classpath);
-            } catch(ClassNotFoundException e) {
-                e.printStackTrace();
+            } catch(final ClassNotFoundException ignored) {
                 classExists = false;
             }
 

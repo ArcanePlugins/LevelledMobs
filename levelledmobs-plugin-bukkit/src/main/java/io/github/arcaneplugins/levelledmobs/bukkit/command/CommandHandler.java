@@ -14,6 +14,7 @@ public final class CommandHandler {
     private static final Collection<CommandAPICommand> COMMANDS = new LinkedList<>();
 
     public static final CommandAPIConfig CMD_CONFIG = new CommandAPIConfig()
+        .verboseOutput(true) //TODO set to `false` when commands are 100% complete.
         .silentLogs(false); //TODO set to `true` when commands are 100% complete.
 
     public void load(final LoadingStage loadingStage) {

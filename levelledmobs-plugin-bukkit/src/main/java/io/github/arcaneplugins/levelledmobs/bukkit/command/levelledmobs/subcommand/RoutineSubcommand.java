@@ -5,6 +5,7 @@ import io.github.arcaneplugins.levelledmobs.bukkit.command.levelledmobs.subcomma
 import io.github.arcaneplugins.levelledmobs.bukkit.command.levelledmobs.subcommand.routine.HaltRoutine;
 import io.github.arcaneplugins.levelledmobs.bukkit.command.levelledmobs.subcommand.routine.ReloadCommandsRoutine;
 import io.github.arcaneplugins.levelledmobs.bukkit.command.levelledmobs.subcommand.routine.ResetConfigsRoutine;
+import io.github.arcaneplugins.levelledmobs.bukkit.command.levelledmobs.subcommand.routine.TestRoutine;
 import io.github.arcaneplugins.levelledmobs.bukkit.command.levelledmobs.subcommand.routine.UnlevelAllRoutine;
 
 public final class RoutineSubcommand {
@@ -21,6 +22,8 @@ public final class RoutineSubcommand {
                 HaltRoutine.createInstance(),
                 ReloadCommandsRoutine.createInstance(),
                 ResetConfigsRoutine.createInstance(),
+                TestRoutine.createInstance1(),
+                TestRoutine.createInstance2(),
                 UnlevelAllRoutine.createInstance1(),
                 UnlevelAllRoutine.createInstance2()
             );

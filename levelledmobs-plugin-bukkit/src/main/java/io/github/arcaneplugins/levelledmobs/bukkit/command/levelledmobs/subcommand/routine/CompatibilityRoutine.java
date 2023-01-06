@@ -18,13 +18,13 @@ public final class CompatibilityRoutine {
                     %s%sLM4 Compatibility Checker Routine
                     
                     %s[Plugin Info]
-                    %s• Plugin Version: %s
+                    %s • Plugin Version: %s
                     
                     %s[Server Software Info]
-                    %s• Bukkit Version: %s
-                    • Has Spigot API: %s
-                    • Has Paper API: %s
-                    • Has Adventure API: %s
+                    %s • Bukkit Version: %s
+                     • Has Spigot API: %s
+                     • Has Paper API: %s
+                     • Has Adventure API: %s
                     
                     %s(...end of information...)
                     """.formatted(
@@ -41,7 +41,7 @@ public final class CompatibilityRoutine {
                         ChatColor.AQUA,
                         ChatColor.GRAY,
                         Bukkit.getVersion(),
-                        ClassUtils.classExists("org.bukkit.entity.Player.Spigot"),
+                        ClassUtils.classExists("net.md_5.bungee.api.ChatColor"),
                         ClassUtils.classExists("com.destroystokyo.paper.ParticleBuilder"),
                         ClassUtils.classExists("net.kyori.adventure.Adventure"),
 

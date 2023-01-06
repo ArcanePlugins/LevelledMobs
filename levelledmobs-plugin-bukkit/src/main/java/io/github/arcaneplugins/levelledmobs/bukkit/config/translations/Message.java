@@ -42,7 +42,7 @@ public enum Message {
 
         """
         
-        &8┌ [LevelledMobs](color=aqua-blue format=bold) &8v%version%\s
+        &8┌ [LevelledMobs](color=aqua-blue format=bold) &8v%version%
         &8│
         &8│ &7by [ArcanePlugins](color=blue format=underlined open_url=https://github.com/ArcanePlugins) &8•&7 [lokka30](color=gray format=italic open_url=https://github.com/lokka30), [PenalBuffalo](color=gray format=italic open_url=https://github.com/stumper66) & [UltimaOath](color=gray format=italic open_url=https://github.com/Oathkeeper).
         &8│
