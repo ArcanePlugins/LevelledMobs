@@ -16,8 +16,7 @@ public final class AboutSubcommand {
                 final PluginDescriptionFile pdf = LevelledMobs.getInstance().getDescription();
 
                 Message.COMMAND_LEVELLEDMOBS_SUBCOMMAND_ABOUT.sendTo(sender,
-                    "%version%", pdf.getVersion(),
-                    "%maintainers%", Message.joinDelimited(pdf.getAuthors())
+                    "%version%", pdf.getVersion()
                 );
             });
     }

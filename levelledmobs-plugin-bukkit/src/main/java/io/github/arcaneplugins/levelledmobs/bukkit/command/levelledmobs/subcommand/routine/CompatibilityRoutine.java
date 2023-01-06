@@ -10,25 +10,27 @@ public final class CompatibilityRoutine {
 
     public static CommandAPICommand createInstance() {
         return new CommandAPICommand("compatibility")
-            .withShortDescription("Run compatibility diagnostic")
+            .withShortDescription("Run compatibility diagnostic tool.")
             .withPermission("levelledmobs.command.levelledmobs.routine.compatibility")
             .executes((sender, args) -> {
                 sender.sendMessage(
                     """
-                    %sLM4 Compatibility Checker Routine
+                    %s%sLM4 Compatibility Checker Routine
                     
-                    %s[LevelledMobs Info]
+                    %s[Plugin Info]
                     %s• Plugin Version: %s
                     
                     %s[Server Software Info]
                     %s• Bukkit Version: %s
                     • Has Spigot API: %s
                     • Has Paper API: %s
+                    • Has Adventure API: %s
                     
                     %s(...end of information...)
                     """.formatted(
                         //header
                         ChatColor.BLUE,
+                        ChatColor.BOLD,
 
                         //levelledmobs info
                         ChatColor.AQUA,
@@ -41,6 +43,7 @@ public final class CompatibilityRoutine {
                         Bukkit.getVersion(),
                         ClassUtils.classExists("org.bukkit.entity.Player.Spigot"),
                         ClassUtils.classExists("com.destroystokyo.paper.ParticleBuilder"),
+                        ClassUtils.classExists("net.kyori.adventure.Adventure"),
 
                         //footer
                         ChatColor.DARK_GRAY

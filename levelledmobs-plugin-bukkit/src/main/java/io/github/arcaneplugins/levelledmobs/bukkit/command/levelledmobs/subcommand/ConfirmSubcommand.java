@@ -1,6 +1,7 @@
 package io.github.arcaneplugins.levelledmobs.bukkit.command.levelledmobs.subcommand;
 
 import dev.jorel.commandapi.CommandAPICommand;
+import io.github.arcaneplugins.levelledmobs.bukkit.config.translations.Message;
 import java.util.HashMap;
 import java.util.Map;
 import org.bukkit.command.CommandSender;
@@ -17,13 +18,12 @@ public final class ConfirmSubcommand {
                 "LM commands, such as some routines in `/lm routine`.")
             .executes((sender, args) -> {
                 if(CONFIRMATION_MAP.containsKey(sender)) {
-                    //TODO Translatable Message
-                    sender.sendMessage("LM: Confirming action.");
+                    Message.COMMAND_LEVELLEDMOBS_SUBCOMMAND_CONFIRM_START.sendTo(sender);
                     CONFIRMATION_MAP.get(sender).run();
                     CONFIRMATION_MAP.remove(sender);
+                    Message.COMMAND_LEVELLEDMOBS_SUBCOMMAND_CONFIRM_COMPLETE.sendTo(sender);
                 } else {
-                    //TODO Translatable Message
-                    sender.sendMessage("LM: Nothing to confirm.");
+                    Message.COMMAND_LEVELLEDMOBS_SUBCOMMAND_CONFIRM_NONE.sendTo(sender);
                 }
             });
     }

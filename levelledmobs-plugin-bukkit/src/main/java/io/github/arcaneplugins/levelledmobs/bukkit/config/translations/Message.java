@@ -54,6 +54,30 @@ public enum Message {
         &8└ &7Run [/lm help](color=blue format=underlined run_command=/lm help) &7for help in using LevelledMobs.
         """.split("\n")
     ),
+    COMMAND_LEVELLEDMOBS_SUBCOMMAND_CONFIRM_START(
+        true,
+
+        new String[]{"command", "levelledmobs", "subcommand", "confirm", "start"},
+
+        """
+        %prefix-info% Confirming action..."""
+    ),
+    COMMAND_LEVELLEDMOBS_SUBCOMMAND_CONFIRM_COMPLETE(
+        true,
+
+        new String[]{"command", "levelledmobs", "subcommand", "confirm", "complete"},
+
+        """
+        %prefix-info% Action confirmed."""
+    ),
+    COMMAND_LEVELLEDMOBS_SUBCOMMAND_CONFIRM_NONE(
+        true,
+
+        new String[]{"command", "levelledmobs", "subcommand", "confirm", "none"},
+
+        """
+        %prefix-warning% You do not have any actions to confirm."""
+    ),
     COMMAND_LEVELLEDMOBS_SUBCOMMAND_RELOAD_START(
         true,
 
@@ -209,10 +233,14 @@ public enum Message {
         return component;
     }
 
-    public void sendTo(final @NotNull CommandSender sender, final String... replacements) {
+    public void sendTo(
+        final @NotNull CommandSender sender,
+        final String... replacements
+    ) {
         sender.sendMessage(formatMd(getDeclared(), replacements));
     }
 
+    @SuppressWarnings("unused")
     @Contract("_ -> new")
     public static @NotNull String joinDelimited(final Iterable<? extends String> args) {
         return String.join(Message.GENERIC_LIST_DELIMITER.getDeclared()[0], args);
@@ -242,7 +270,9 @@ public enum Message {
      *
      * @param declared the array of declared messages
      */
-    public void setDeclared(final String[] declared) {
+    public void setDeclared(
+        final String[] declared
+    ) {
         this.declared = declared;
     }
 

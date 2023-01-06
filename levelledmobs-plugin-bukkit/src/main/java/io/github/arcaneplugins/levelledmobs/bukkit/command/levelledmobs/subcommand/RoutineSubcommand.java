@@ -3,6 +3,7 @@ package io.github.arcaneplugins.levelledmobs.bukkit.command.levelledmobs.subcomm
 import dev.jorel.commandapi.CommandAPICommand;
 import io.github.arcaneplugins.levelledmobs.bukkit.command.levelledmobs.subcommand.routine.CompatibilityRoutine;
 import io.github.arcaneplugins.levelledmobs.bukkit.command.levelledmobs.subcommand.routine.HaltRoutine;
+import io.github.arcaneplugins.levelledmobs.bukkit.command.levelledmobs.subcommand.routine.ReloadCommandsRoutine;
 import io.github.arcaneplugins.levelledmobs.bukkit.command.levelledmobs.subcommand.routine.ResetConfigsRoutine;
 import io.github.arcaneplugins.levelledmobs.bukkit.command.levelledmobs.subcommand.routine.UnlevelAllRoutine;
 
@@ -18,6 +19,7 @@ public final class RoutineSubcommand {
             .withSubcommands(
                 CompatibilityRoutine.createInstance(),
                 HaltRoutine.createInstance(),
+                ReloadCommandsRoutine.createInstance(),
                 ResetConfigsRoutine.createInstance(),
                 UnlevelAllRoutine.createInstance1(),
                 UnlevelAllRoutine.createInstance2()
