@@ -1,7 +1,7 @@
 package io.github.arcaneplugins.levelledmobs.bukkit.listener.impl;
 
-import io.github.arcaneplugins.levelledmobs.bukkit.LevelledMobs;
 import io.github.arcaneplugins.levelledmobs.bukkit.listener.ListenerWrapper;
+import io.github.arcaneplugins.levelledmobs.bukkit.logic.LogicHandler;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.context.Context;
 import javax.annotation.Nonnull;
 import org.bukkit.entity.Player;
@@ -21,7 +21,7 @@ public class PlayerDeathListener extends ListenerWrapper {
 
         final Context context = new Context().withPlayer(player);
 
-        LevelledMobs.getInstance().getLogicHandler().runFunctionsWithTriggers(
+        LogicHandler.runFunctionsWithTriggers(
             context, "on-player-death"
         );
     }

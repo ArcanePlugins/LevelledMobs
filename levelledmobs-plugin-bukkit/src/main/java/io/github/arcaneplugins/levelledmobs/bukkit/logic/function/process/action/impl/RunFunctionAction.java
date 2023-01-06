@@ -1,6 +1,7 @@
 package io.github.arcaneplugins.levelledmobs.bukkit.logic.function.process.action.impl;
 
 import io.github.arcaneplugins.levelledmobs.bukkit.LevelledMobs;
+import io.github.arcaneplugins.levelledmobs.bukkit.logic.LogicHandler;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.context.Context;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.function.LmFunction;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.function.process.Process;
@@ -58,10 +59,7 @@ public class RunFunctionAction extends Action {
             return;
         }
 
-        final Optional<LmFunction> functionToRunOpt = LevelledMobs.getInstance()
-            .getLogicHandler()
-            .getFunctions()
-            .stream()
+        final Optional<LmFunction> functionToRunOpt = LogicHandler.getFunctions().stream()
             .filter(otherFunction -> otherFunction.getIdentifier().equals(getOtherFuncId()))
             .findFirst();
 

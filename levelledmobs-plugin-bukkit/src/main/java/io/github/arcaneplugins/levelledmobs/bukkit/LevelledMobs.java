@@ -1,5 +1,7 @@
 package io.github.arcaneplugins.levelledmobs.bukkit;
 
+import io.github.arcaneplugins.entitylabellib.bukkit.EntityLabelLib;
+import io.github.arcaneplugins.entitylabellib.bukkit.LabelHandler;
 import io.github.arcaneplugins.levelledmobs.bukkit.command.CommandHandler;
 import io.github.arcaneplugins.levelledmobs.bukkit.command.CommandHandler.LoadingStage;
 import io.github.arcaneplugins.levelledmobs.bukkit.config.ConfigHandler;
@@ -8,8 +10,6 @@ import io.github.arcaneplugins.levelledmobs.bukkit.listener.ListenerHandler;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.LogicHandler;
 import io.github.arcaneplugins.levelledmobs.bukkit.util.ClassUtils;
 import io.github.arcaneplugins.levelledmobs.bukkit.util.Log;
-import io.github.arcaneplugins.levelledmobs.bukkit.util.nms.Definitions;
-import io.github.arcaneplugins.levelledmobs.bukkit.util.nms.PacketLabelSender;
 import io.github.arcaneplugins.levelledmobs.bukkit.util.throwable.SilentException;
 import java.util.Objects;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -19,21 +19,27 @@ public final class LevelledMobs extends JavaPlugin {
 
     /* vars */
 
-    private final CommandHandler commandHandler = new CommandHandler();
+    private LabelHandler libLabelHandler = null; // note: LabelHandler of EntityLabelLib, not LM.
+
+
+    // TODO transition ConfigHandler into a utility class
     private final ConfigHandler configHandler = new ConfigHandler();
-    private final IntegrationHandler integrationHandler = new IntegrationHandler();
-    private final ListenerHandler listenerHandler = new ListenerHandler();
-    private final LogicHandler logicHandler = new LogicHandler();
-    private final Definitions nmsDefinitions = new Definitions();
-    private final PacketLabelSender packetLabelSender = new PacketLabelSender();
+
+    // TODO remove LM3 nametag system code
 
     /* methods */
 
     @Override
     public void onLoad() {
         instance = this;
-        getCommandHandler().load(LoadingStage.ON_LOAD);
+        initializeLibLabelHandler();
+        CommandHandler.load(LoadingStage.ON_LOAD);
         Log.inf("Plugin initialized");
+    }
+
+    private void initializeLibLabelHandler() {
+        Log.inf("Initializing EntityLabelLib packet label handler");
+        libLabelHandler = EntityLabelLib.instantiateLabelHandler(this);
     }
 
     @Override
@@ -42,12 +48,11 @@ public final class LevelledMobs extends JavaPlugin {
         try {
             assertRunningSpigot();
             getConfigHandler().load();
-            getNametagSender().load();
-            getListenerHandler().loadPrimary();
-            getIntegrationHandler().load();
-            getLogicHandler().load();
-            getListenerHandler().loadSecondary();
-            getCommandHandler().load(LoadingStage.ON_ENABLE);
+            ListenerHandler.loadPrimary();
+            IntegrationHandler.load();
+            LogicHandler.load();
+            ListenerHandler.loadSecondary();
+            CommandHandler.load(LoadingStage.ON_ENABLE);
         } catch(final Exception ex) {
             if(!(ex instanceof SilentException)) {
                 Log.sev("""
@@ -83,12 +88,14 @@ public final class LevelledMobs extends JavaPlugin {
     }
 
     public void reload() {
+        LogicHandler.unload();
         getConfigHandler().load();
-        getLogicHandler().load();
+        LogicHandler.load();
     }
 
     @Override
     public void onDisable() {
+        LogicHandler.unload();
         Log.inf("Plugin disabled");
     }
 
@@ -104,21 +111,17 @@ public final class LevelledMobs extends JavaPlugin {
      */
     private void assertRunningSpigot() {
         if(isRunningSpigot()) return;
+
         throw new SilentException("""
             LevelledMobs has detected that your server is not running the SpigotMC server software, or any derivative such as PaperMC.""");
     }
 
     /* getters and setters */
 
-    public CommandHandler getCommandHandler() { return commandHandler; }
     public ConfigHandler getConfigHandler() { return configHandler; }
-    public IntegrationHandler getIntegrationHandler() { return integrationHandler; }
-    public ListenerHandler getListenerHandler() { return listenerHandler; }
-    public LogicHandler getLogicHandler() { return logicHandler; }
-    public Definitions getNmsDefinitions() {
-        return nmsDefinitions;
+    public @NotNull LabelHandler getLibLabelHandler() {
+        return Objects.requireNonNull(libLabelHandler, "libLabelHandler not initialized");
     }
-    public PacketLabelSender getNametagSender() { return packetLabelSender; }
 
     /* singleton */
 

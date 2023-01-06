@@ -1,6 +1,6 @@
 package io.github.arcaneplugins.levelledmobs.bukkit.logic.customdrops;
 
-import io.github.arcaneplugins.levelledmobs.bukkit.LevelledMobs;
+import io.github.arcaneplugins.levelledmobs.bukkit.logic.LogicHandler;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.context.Context;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.customdrops.cdevent.CustomDropsEventType;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.customdrops.recipient.DropTableRecipient;
@@ -60,6 +60,7 @@ public class CustomDropHandler {
         }
     }
 
+    //TODO
     public static @Nonnull Collection<CustomDrop> generateCustomDrops(
         final @Nonnull Context context
     ) {
@@ -93,10 +94,7 @@ public class CustomDropHandler {
         });
 
         MOB_GROUP_RECIPIENTS.forEach((recip) -> {
-            final Optional<Group> groupOpt = LevelledMobs.getInstance()
-                .getLogicHandler()
-                .getGroups()
-                .stream()
+            final Optional<Group> groupOpt = LogicHandler.getGroups().stream()
                 .filter(g -> g.getIdentifier().equalsIgnoreCase(recip.getMobGroupId()))
                 .findFirst();
 

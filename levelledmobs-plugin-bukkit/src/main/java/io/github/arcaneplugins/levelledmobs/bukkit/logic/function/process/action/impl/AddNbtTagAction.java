@@ -1,6 +1,6 @@
 package io.github.arcaneplugins.levelledmobs.bukkit.logic.function.process.action.impl;
 
-import io.github.arcaneplugins.levelledmobs.bukkit.LevelledMobs;
+import io.github.arcaneplugins.levelledmobs.bukkit.integration.IntegrationHandler;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.context.Context;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.function.process.Process;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.function.process.action.Action;
@@ -49,9 +49,7 @@ public class AddNbtTagAction extends Action {
         }
 
         if(context.getEntity() instanceof LivingEntity livingEntity) {
-            final var nbtProvider = LevelledMobs.getInstance()
-                .getIntegrationHandler()
-                .getPrimaryNbtProvider();
+            final var nbtProvider = IntegrationHandler.getPrimaryNbtProvider();
 
             if(nbtProvider == null) {
                 throw new IllegalStateException("Can't run AddNbtTagAction: no NBT " +

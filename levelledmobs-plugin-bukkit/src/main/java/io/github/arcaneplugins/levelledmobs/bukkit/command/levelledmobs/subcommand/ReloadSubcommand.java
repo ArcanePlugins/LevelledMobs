@@ -16,7 +16,8 @@ public final class ReloadSubcommand {
 
                 try {
                     LevelledMobs.getInstance().reload();
-                } catch(final Exception ignored) {
+                } catch(final Exception ex) {
+                    ex.printStackTrace();
                     Message.COMMAND_LEVELLEDMOBS_SUBCOMMAND_RELOAD_COMPLETE_FAILURE.sendTo(sender);
                     return;
                 }

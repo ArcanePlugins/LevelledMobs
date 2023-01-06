@@ -22,12 +22,16 @@ import org.jetbrains.annotations.NotNull;
 
 public final class ListenerHandler {
 
+    private ListenerHandler() throws IllegalAccessException {
+        throw new IllegalAccessException("Illegal instantiation of utility class");
+    }
+
     /* vars */
 
     /**
      * These listeners must be registered earlier.
      */
-    private final Set<ListenerWrapper> primaryListeners = Set.of(
+    private static final Set<ListenerWrapper> PRIMARY_LISTENERS = Set.of(
         new ActionParseListener(),
         new ConditionParseListener(),
         new LevellingStrategyRequestListener(),
@@ -37,7 +41,7 @@ public final class ListenerHandler {
     /**
      * These listeners must be registered later.
      */
-    private final Set<ListenerWrapper> secondaryListeners = Set.of(
+    private static final Set<ListenerWrapper> SECONDARY_LISTENERS = Set.of(
         new EntityBreedListener(),
         new EntityDamageByEntityListener(),
         new EntityDamageListener(),
@@ -54,12 +58,12 @@ public final class ListenerHandler {
 
     /* methods */
 
-    public void loadPrimary() {
+    public static void loadPrimary() {
         Log.inf("Registering primary listeners");
         getPrimaryListeners().forEach(ListenerWrapper::register);
     }
 
-    public void loadSecondary() {
+    public static void loadSecondary() {
         Log.inf("Registering secondary listeners");
         getSecondaryListeners().forEach(ListenerWrapper::register);
     }
@@ -67,9 +71,9 @@ public final class ListenerHandler {
     /* getters and setters */
 
     @NotNull
-    public Set<ListenerWrapper> getPrimaryListeners() { return primaryListeners; }
+    public static Set<ListenerWrapper> getPrimaryListeners() { return PRIMARY_LISTENERS; }
 
     @NotNull
-    public Set<ListenerWrapper> getSecondaryListeners() { return secondaryListeners; }
+    public static Set<ListenerWrapper> getSecondaryListeners() { return SECONDARY_LISTENERS; }
 
 }

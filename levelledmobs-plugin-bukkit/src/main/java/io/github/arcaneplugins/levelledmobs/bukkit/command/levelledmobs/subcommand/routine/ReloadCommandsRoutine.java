@@ -3,7 +3,7 @@ package io.github.arcaneplugins.levelledmobs.bukkit.command.levelledmobs.subcomm
 import dev.jorel.commandapi.CommandAPI;
 import dev.jorel.commandapi.CommandAPICommand;
 import dev.jorel.commandapi.RegisteredCommand;
-import io.github.arcaneplugins.levelledmobs.bukkit.LevelledMobs;
+import io.github.arcaneplugins.levelledmobs.bukkit.command.CommandHandler;
 import io.github.arcaneplugins.levelledmobs.bukkit.command.CommandHandler.LoadingStage;
 import io.github.arcaneplugins.levelledmobs.bukkit.config.translations.Message;
 
@@ -31,7 +31,7 @@ public final class ReloadCommandsRoutine {
                 sender.sendMessage(Message.formatMd(new String[]{
                     "%prefix-info% &8[Register]&7 Registering commands."
                 }));
-                LevelledMobs.getInstance().getCommandHandler().load(LoadingStage.FORCED);
+                CommandHandler.load(LoadingStage.FORCED);
                 sender.sendMessage(Message.formatMd(new String[]{
                     "%prefix-info% &8[Register]&7 Registered commands successfully."
                 }));

@@ -15,9 +15,12 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import javax.annotation.Nonnull;
+import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.persistence.PersistentDataContainer;
@@ -415,6 +418,29 @@ public final class InternalEntityDataUtil extends EntityDataUtil {
         // TODO remove any items from the mob's inventory that are from LM
 
         // TODO remove label on entity (nametag)
+    }
+
+    @SuppressWarnings("UnusedReturnValue")
+    public static LivingEntity summonMob(
+        final EntityType entityType,
+        final Location location,
+        final int level,
+        final int minLevel,
+        final int maxLevel
+    ) {
+        final Class<? extends Entity> entityClass = entityType.getEntityClass();
+        if(entityClass == null ||
+            !LivingEntity.class.isAssignableFrom(entityClass)
+        ) throw new IllegalArgumentException(entityType + " is not summonable");
+
+        return (LivingEntity) location.getWorld().spawn(location, entityClass, entity -> {
+            final LivingEntity lent = (LivingEntity) entity;
+
+            setLevel(lent, level, true);
+            setMinLevel(lent, minLevel, true);
+            setMaxLevel(lent, maxLevel, true);
+            setWasSummoned(lent, true, true);
+        });
     }
 
 }

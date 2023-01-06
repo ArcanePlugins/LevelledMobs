@@ -1,8 +1,8 @@
 package io.github.arcaneplugins.levelledmobs.bukkit.listener.impl;
 
-import io.github.arcaneplugins.levelledmobs.bukkit.LevelledMobs;
 import io.github.arcaneplugins.levelledmobs.bukkit.data.InternalEntityDataUtil;
 import io.github.arcaneplugins.levelledmobs.bukkit.listener.ListenerWrapper;
+import io.github.arcaneplugins.levelledmobs.bukkit.logic.LogicHandler;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.context.Context;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -32,7 +32,7 @@ public class EntityTransformListener extends ListenerWrapper {
                 /*
                 Fire the associated trigger.
                  */
-                LevelledMobs.getInstance().getLogicHandler().runFunctionsWithTriggers(
+                LogicHandler.runFunctionsWithTriggers(
                     new Context()
                         .withEntity(child)
                         .withFather(lparent)

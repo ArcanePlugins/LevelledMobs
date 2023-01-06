@@ -9,6 +9,8 @@ import io.github.arcaneplugins.levelledmobs.bukkit.util.math.MathUtils;
 import io.github.arcaneplugins.levelledmobs.bukkit.api.data.EntityDataUtil;
 import io.github.arcaneplugins.levelledmobs.bukkit.util.EnumUtils;
 import java.util.Objects;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -54,9 +56,12 @@ public final class StandardPlaceholders implements ContextPlaceholder {
                 str = StringUtils.replaceIfExists(str, "%mother-name%", () -> Objects.requireNonNullElse(EntityDataUtil.getOverriddenName(mother, false), "%mother-name%"));
 
                 //TODO use adventure to fetch translated entity name instead of formatting the type
-                str = StringUtils.replaceIfExists(str, "%entity-name%", () -> EnumUtils.formatEnumConstant(entity.getType()));
-                str = StringUtils.replaceIfExists(str, "%father-name%", () -> EnumUtils.formatEnumConstant(father.getType()));
-                str = StringUtils.replaceIfExists(str, "%mother-name%", () -> EnumUtils.formatEnumConstant(mother.getType()));
+                str = StringUtils.replaceIfExists(str, "%entity-name%", () -> LegacyComponentSerializer.legacySection().serialize(
+                    Component.translatable(entityType.translationKey())));
+                str = StringUtils.replaceIfExists(str, "%father-name%", () -> LegacyComponentSerializer.legacySection().serialize(
+                    Component.translatable(father.getType().translationKey())));
+                str = StringUtils.replaceIfExists(str, "%mother-name%", () -> LegacyComponentSerializer.legacySection().serialize(
+                    Component.translatable(mother.getType().translationKey())));
 
                 str = StringUtils.replaceIfExists(str, "%father-type%", () -> father.getType().name());
                 str = StringUtils.replaceIfExists(str, "%mother-type%", () -> mother.getType().name());

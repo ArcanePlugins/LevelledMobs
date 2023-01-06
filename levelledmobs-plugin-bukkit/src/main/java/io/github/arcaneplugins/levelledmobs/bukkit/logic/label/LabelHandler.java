@@ -1,14 +1,12 @@
 package io.github.arcaneplugins.levelledmobs.bukkit.logic.label;
 
 import de.themoep.minedown.adventure.MineDown;
+import io.github.arcaneplugins.entitylabellib.bukkit.PacketInterceptor.LabelResponse;
 import io.github.arcaneplugins.levelledmobs.bukkit.data.InternalEntityDataUtil;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.LogicHandler;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.context.Context;
-import io.github.arcaneplugins.levelledmobs.bukkit.util.Log;
 import javax.annotation.Nonnull;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextReplacementConfig;
-import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
@@ -35,41 +33,26 @@ public abstract class LabelHandler {
             .getOrDefault(getId(), "");
     }
 
+    @Deprecated // deprecation: use generateLabelResponse instead.
     @Nonnull
     public Component generateLabelComponents(
         final @Nonnull LivingEntity lent,
         final @Nonnull Context context
     ) {
-        final Component label = MineDown.parse(
-            LogicHandler.replacePapiAndContextPlaceholders(getFormula(lent), context)
+        return MineDown.parse(
+            LogicHandler.replacePapiAndContextPlaceholders(
+                getFormula(lent),
+                context
+            )
         );
-
-        Component replacement;
-        if(context.getEntity() != null) {
-            replacement = Component.translatable(context.getEntity().getType().translationKey());
-        } else if(context.getEntityType() != null) {
-            replacement = Component.translatable(context.getEntityType().translationKey());
-        } else {
-            // TODO error
-            Log.war("Unable to replace entity name placeholder in message '" +
-                    getFormula(lent) + "': "
-                    + "no entity/entity-type context", true);
-            replacement = Component.empty();
-        }
-
-        return label.replaceText(TextReplacementConfig.builder()
-                .matchLiteral("%entity-name%").replacement(replacement).build());
     }
 
-    //TODO use?
     @Nonnull
-    public String generateLabelLegacy(
+    public abstract LabelResponse generateLabelResponse(
         final @Nonnull LivingEntity lent,
+        final @Nonnull Player player,
         final @Nonnull Context context
-    ) {
-        return MiniMessage.miniMessage().serialize(
-                generateLabelComponents(lent, context));
-    }
+    );
 
     public abstract void update(
         final @Nonnull LivingEntity lent,

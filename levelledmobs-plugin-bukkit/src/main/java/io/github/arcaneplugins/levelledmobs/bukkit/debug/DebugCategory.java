@@ -42,4 +42,9 @@ public enum DebugCategory {
      */
     UNKNOWN,
 
+    /**
+     * Shows various logic happening in the background for packet labels
+     */
+    PACKET_LABELS
+
 }

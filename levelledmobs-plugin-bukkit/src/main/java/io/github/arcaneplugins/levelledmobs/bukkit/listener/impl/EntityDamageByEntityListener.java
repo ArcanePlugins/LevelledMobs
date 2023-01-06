@@ -38,7 +38,7 @@ public class EntityDamageByEntityListener extends ListenerWrapper {
         handleShieldBreaker(event);
         handleEntityInspector(event);
 
-        LevelledMobs.getInstance().getLogicHandler().runFunctionsWithTriggers(
+        LogicHandler.runFunctionsWithTriggers(
             new Context().withEntity(defender), "on-entity-damage-by-entity"
             //TODO also have 'attacker' context
         );

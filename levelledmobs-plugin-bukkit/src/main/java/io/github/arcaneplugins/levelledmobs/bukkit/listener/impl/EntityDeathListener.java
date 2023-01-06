@@ -50,7 +50,7 @@ public class EntityDeathListener extends ListenerWrapper {
             Log.debug(DEATH_DROPS, () -> "Finished handling death drops");
         }
 
-        LevelledMobs.getInstance().getLogicHandler().runFunctionsWithTriggers(
+        LogicHandler.runFunctionsWithTriggers(
             context, "on-entity-death"
         );
     }

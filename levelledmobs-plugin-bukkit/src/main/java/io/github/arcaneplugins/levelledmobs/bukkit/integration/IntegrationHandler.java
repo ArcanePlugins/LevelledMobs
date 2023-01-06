@@ -12,14 +12,19 @@ import org.jetbrains.annotations.Nullable;
 @SuppressWarnings("unused")
 public final class IntegrationHandler {
 
+    private IntegrationHandler() throws IllegalAccessException {
+        throw new IllegalAccessException("Illegal instantiation of utility class");
+    }
+
     /* vars */
 
-    private final Set<Integration> integrations = new HashSet<>();
+    private static final Set<Integration> INTEGRATIONS = new HashSet<>();
 
     /* methods */
 
-    public boolean load() {
+    public static boolean load() {
         // TODO add check if these integrations are disabled.
+        // TODO check why this returns a boolean
 
         if(hasRequiredPlugins("Citizens"))
             getIntegrations().add(new CitizensIntegration());
@@ -30,7 +35,7 @@ public final class IntegrationHandler {
         return true;
     }
 
-    public boolean hasRequiredPlugins(final String... plugins) {
+    public static boolean hasRequiredPlugins(final String... plugins) {
         for(var plugin : plugins) {
             if(!Bukkit.getPluginManager().isPluginEnabled(plugin)) {
                 return false;
@@ -40,7 +45,7 @@ public final class IntegrationHandler {
     }
 
     @Nullable
-    public NbtProvider getPrimaryNbtProvider() {
+    public static NbtProvider getPrimaryNbtProvider() {
         Integration selected = null;
 
         for(var integration : getIntegrations()) {
@@ -62,6 +67,6 @@ public final class IntegrationHandler {
     /* getters and setters */
 
     @NotNull
-    public Set<Integration> getIntegrations() { return integrations; }
+    public static Set<Integration> getIntegrations() { return INTEGRATIONS; }
 
 }

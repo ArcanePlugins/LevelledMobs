@@ -1,7 +1,7 @@
 package io.github.arcaneplugins.levelledmobs.bukkit.listener.impl;
 
-import io.github.arcaneplugins.levelledmobs.bukkit.LevelledMobs;
 import io.github.arcaneplugins.levelledmobs.bukkit.listener.ListenerWrapper;
+import io.github.arcaneplugins.levelledmobs.bukkit.logic.LogicHandler;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.context.Context;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -16,7 +16,7 @@ public final class PlayerJoinListener extends ListenerWrapper {
     @EventHandler(priority = EventPriority.MONITOR)
     public void handle(final PlayerJoinEvent event) {
         /* Trigger */
-        LevelledMobs.getInstance().getLogicHandler().runFunctionsWithTriggers(
+        LogicHandler.runFunctionsWithTriggers(
             new Context().withPlayer(event.getPlayer()),
             "on-player-join"
         );

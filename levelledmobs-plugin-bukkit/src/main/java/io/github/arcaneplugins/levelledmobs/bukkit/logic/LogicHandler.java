@@ -18,6 +18,7 @@ import io.github.arcaneplugins.levelledmobs.bukkit.logic.function.process.Proces
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.function.process.ProcessPostParseEvent;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.function.process.ProcessPreParseEvent;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.function.process.action.ActionParseEvent;
+import io.github.arcaneplugins.levelledmobs.bukkit.logic.function.process.action.impl.setpacketlabel.PacketInterceptorUtil;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.function.process.condition.ConditionParseEvent;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.group.Group;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.group.GroupPostParseEvent;
@@ -54,6 +55,10 @@ import redempt.crunch.functional.EvaluationEnvironment;
 
 public final class LogicHandler {
 
+    private LogicHandler() throws IllegalAccessException {
+        throw new IllegalAccessException("Illegal instantiation of utility class");
+    }
+
     /* vars */
 
     public static final EvaluationEnvironment CRUNCH_EVAL_ENV = new EvaluationEnvironment();
@@ -83,11 +88,11 @@ public final class LogicHandler {
             (d) -> Math.min(d[2], Math.max(d[0], d[1])));
     }
 
-    private final ContextPlaceholderHandler contextPlaceholderHandler = new ContextPlaceholderHandler();
-    private final HashSet<Group> groups = new HashSet<>();
-    private final HashSet<Preset> presets = new HashSet<>();
-    private final LinkedHashSet<LmFunction> functions = new LinkedHashSet<>();
-    private CommentedConfigurationNode parsedFunctionsNode;
+    private static final ContextPlaceholderHandler CONTEXT_PLACEHOLDER_HANDLER = new ContextPlaceholderHandler();
+    private static final HashSet<Group> GROUPS = new HashSet<>();
+    private static final HashSet<Preset> PRESETS = new HashSet<>();
+    private static final LinkedHashSet<LmFunction> LM_FUNCTIONS = new LinkedHashSet<>();
+    private static CommentedConfigurationNode parsedFunctionsNode;
 
     /* methods */
 
@@ -98,13 +103,21 @@ public final class LogicHandler {
     /**
     Initialisation - parse functions, presets, groups, etc.
      */
-    public void load() {
+    public static void load() {
         Log.inf("Loading logic system");
         getContextPlaceholderHandler().load();
         parseGroups();
         parsePresets();
         parseCustomDrops();
         parseFunctions();
+        PacketInterceptorUtil.registerInterceptor();
+        LevelledMobs.getInstance().getLibLabelHandler().registerListeners();
+    }
+
+    public static void unload() {
+        Log.inf("Unregistering packet interceptor");
+        PacketInterceptorUtil.unregisterInterceptor();
+        LevelledMobs.getInstance().getLibLabelHandler().unregisterListeners();
     }
 
     /**
@@ -114,7 +127,7 @@ public final class LogicHandler {
      * @param context the context given for the function to run with
      * @param triggers a list of trigger IDs, which a function requires at least one match to apply
      */
-    public void runFunctionsWithTriggers(
+    public static void runFunctionsWithTriggers(
         final @NotNull Context context,
         final @NotNull String... triggers
     ) {
@@ -129,7 +142,7 @@ public final class LogicHandler {
         clearExitStatus.run();
     }
 
-    private void parseGroups() {
+    private static void parseGroups() {
         Log.inf("Parsing groups");
 
         getGroups().clear();
@@ -197,7 +210,7 @@ public final class LogicHandler {
         Log.inf("Successfully parsed " + getGroups().size() + " group(s)");
     }
 
-    private void parsePresets() {
+    private static void parsePresets() {
         Log.inf("Parsing presets.");
 
         getPresets().clear();
@@ -257,7 +270,7 @@ public final class LogicHandler {
         Log.inf("Successfully parsed " + getPresets().size() + " preset(s).");
     }
 
-    private void parseCustomDrops() {
+    private static void parseCustomDrops() {
         Log.inf("Parsing custom drops.");
 
         //TODO REMOVE WHEN READY
@@ -276,7 +289,7 @@ public final class LogicHandler {
         Log.inf("Successfully parsed custom drops.");
     }
 
-    private void parseDropTableCustomDrops() {
+    private static void parseDropTableCustomDrops() {
         Log.inf("Parsing Drop Table custom drops.");
 
         for(final CommentedConfigurationNode dropTableNode : LevelledMobs.getInstance()
@@ -313,7 +326,7 @@ public final class LogicHandler {
             CustomDropHandler.DROP_TABLE_RECIPIENTS.size()));
     }
 
-    private void parseEntityTypeCustomDrops() {
+    private static void parseEntityTypeCustomDrops() {
         Log.inf("Parsing Entity Type custom drops.");
 
         for(final CommentedConfigurationNode entityTypeNode : LevelledMobs.getInstance()
@@ -351,7 +364,7 @@ public final class LogicHandler {
             CustomDropHandler.ENTITY_TYPE_RECIPIENTS.size()));
     }
 
-    private void parseMobGroupCustomDrops() {
+    private static void parseMobGroupCustomDrops() {
         Log.inf("Parsing Mob Group custom drops.");
 
         for(final CommentedConfigurationNode mobGroupNode : LevelledMobs.getInstance()
@@ -393,7 +406,7 @@ public final class LogicHandler {
             CustomDropHandler.MOB_GROUP_RECIPIENTS.size()));
     }
 
-    private @Nonnull Collection<? extends CustomDrop> parseCustomDropsAtSection(
+    private static @Nonnull Collection<? extends CustomDrop> parseCustomDropsAtSection(
         final @Nonnull CommentedConfigurationNode dropsNode,
         final @Nonnull CustomDropRecipient recipient
     ) {
@@ -403,7 +416,7 @@ public final class LogicHandler {
         return customDrops;
     }
 
-    private @Nonnull CustomDrop parseCustomDropAtSection(
+    private static @Nonnull CustomDrop parseCustomDropAtSection(
         final @Nonnull CommentedConfigurationNode dropNode,
         final @Nonnull CustomDropRecipient recipient
     ) {
@@ -514,7 +527,7 @@ public final class LogicHandler {
         }
     }
 
-    private void parseFunctions() {
+    private static void parseFunctions() {
         /*
         [pseudocode]
         for each function
@@ -632,7 +645,7 @@ public final class LogicHandler {
         Log.inf("Successfully parsed " + getFunctions().size() + " function(s).");
     }
 
-    private void walkNodePresetParse(final @NotNull CommentedConfigurationNode node) {
+    private static void walkNodePresetParse(final @NotNull CommentedConfigurationNode node) {
         if(node.hasChild("use-presets")) {
             final List<String> presetIds;
             try {
@@ -654,11 +667,11 @@ public final class LogicHandler {
             }
         }
 
-        node.childrenList().forEach(this::walkNodePresetParse);
-        node.childrenMap().values().forEach(this::walkNodePresetParse);
+        node.childrenList().forEach(LogicHandler::walkNodePresetParse);
+        node.childrenMap().values().forEach(LogicHandler::walkNodePresetParse);
     }
 
-    private void parseProcesses(final @NotNull LmFunction function) {
+    private static void parseProcesses(final @NotNull LmFunction function) {
         Objects.requireNonNull(function, "function");
 
         function.getProcesses().clear();
@@ -747,7 +760,7 @@ public final class LogicHandler {
         }
     }
 
-    private void parseActions(final @NotNull Process process) {
+    private static void parseActions(final @NotNull Process process) {
         Objects.requireNonNull(process, "process");
 
         process.getActions().clear();
@@ -786,7 +799,7 @@ public final class LogicHandler {
 
     }
 
-    private void parseConditions(final @NotNull Process process) {
+    private static void parseConditions(final @NotNull Process process) {
         Objects.requireNonNull(process, "process");
 
         process.getConditions().clear();
@@ -862,25 +875,25 @@ public final class LogicHandler {
     /* getters and setters */
 
     @NotNull
-    public ContextPlaceholderHandler getContextPlaceholderHandler() {
-        return contextPlaceholderHandler;
+    public static ContextPlaceholderHandler getContextPlaceholderHandler() {
+        return CONTEXT_PLACEHOLDER_HANDLER;
     }
 
     @NotNull
-    public HashSet<Group> getGroups() { return groups; }
+    public static HashSet<Group> getGroups() { return GROUPS; }
 
     @NotNull
-    public HashSet<Preset> getPresets() { return presets; }
+    public static HashSet<Preset> getPresets() { return PRESETS; }
 
     @NotNull
-    public LinkedHashSet<LmFunction> getFunctions() { return functions; }
+    public static LinkedHashSet<LmFunction> getFunctions() { return LM_FUNCTIONS; }
 
     @NotNull
-    public CommentedConfigurationNode getParsedFunctionsNode() {
-        return this.parsedFunctionsNode;
+    public static CommentedConfigurationNode getParsedFunctionsNode() {
+        return parsedFunctionsNode;
     }
 
-    private void setParsedFunctionsNode(final @NotNull CommentedConfigurationNode node) {
-        this.parsedFunctionsNode = node;
+    private static void setParsedFunctionsNode(final @NotNull CommentedConfigurationNode node) {
+        parsedFunctionsNode = node;
     }
 }

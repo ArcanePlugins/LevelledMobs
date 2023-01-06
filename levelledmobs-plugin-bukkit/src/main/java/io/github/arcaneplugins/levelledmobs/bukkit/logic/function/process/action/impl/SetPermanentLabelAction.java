@@ -1,5 +1,7 @@
 package io.github.arcaneplugins.levelledmobs.bukkit.logic.function.process.action.impl;
 
+import io.github.arcaneplugins.entitylabellib.bukkit.PacketInterceptor;
+import io.github.arcaneplugins.entitylabellib.bukkit.PacketInterceptor.LabelResponse;
 import io.github.arcaneplugins.levelledmobs.bukkit.LevelledMobs;
 import io.github.arcaneplugins.levelledmobs.bukkit.api.data.EntityDataUtil;
 import io.github.arcaneplugins.levelledmobs.bukkit.data.InternalEntityDataUtil;
@@ -67,6 +69,16 @@ public class SetPermanentLabelAction extends Action {
 
         private PermanentLabelHandler() {
             super(LABEL_ID);
+        }
+
+        @NotNull
+        @Override
+        public PacketInterceptor.LabelResponse generateLabelResponse(
+            final @NotNull LivingEntity lent,
+            final @NotNull Player player,
+            final @NotNull Context context
+        ) {
+            return new LabelResponse(generateLabelComponents(lent, context), isAlwaysVisible());
         }
 
         @Override

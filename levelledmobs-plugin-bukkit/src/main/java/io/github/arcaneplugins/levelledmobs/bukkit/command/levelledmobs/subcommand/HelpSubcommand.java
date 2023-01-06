@@ -53,9 +53,13 @@ public final class HelpSubcommand {
 
         home.addPages(
             """
-            &8 • [Click here](color=blue format=underlined run_command=/lm help /lm)&7 to view command help.
-            &8 • [Click here](color=blue format=underlined run_command=/lm help documentation)&7 to view documentation.
-            &8 • [Click here](color=blue format=underlined run_command=/lm help support)&7 to ask for support with LM."""
+            &7Welcome to the LevelledMobs in-game help menu!
+            
+            &8 • [Click here](color=blue format=underlined run_command=/lm help /lm)&7 to view LM command help.
+            &8 • [Click here](color=blue format=underlined run_command=/lm help documentation)&7 to view LM documentation.
+            &8 • [Click here](color=blue format=underlined run_command=/lm help support)&7 to ask for support with using LM.
+            
+            &b&oTip:&7&o The LM in-game help menu is interactive: open your chat box and use your mouse to [hover](color=gray format=italic show_text=You got it!) and click."""
         );
 
         { // Breadcrumb: home -> support
@@ -77,8 +81,6 @@ public final class HelpSubcommand {
             final SubChapter home_documentation = new SubChapter(home, "documentation");
             home_documentation.addPages(
                 """
-                &7Recommended documentation:
-                
                 &8 • [Read the Frequently Asked Questions](color=blue format=underlined open_url=https://github.com/lokka30/LevelledMobs/wiki/Frequently-Asked-Questions)
                 &8 • [Read the Wiki](color=blue format=underlined open_url=https://github.com/ArcanePlugins/LevelledMobs/wiki)
                 &8 • [Read API Developer Javadocs](color=blue format=underlined open_url=https://lokka30.github.io/LevelledMobs/)"""
@@ -90,8 +92,6 @@ public final class HelpSubcommand {
             home_lm.addPages(
                 // p1
                 """
-                &7Available sub-commands:
-                
                 &8 • [/lm](color=blue format=underlined run_command=/lm help /lm)
                 &8 ⎣ &7Provides commands to manage LevelledMobs.
                 
@@ -134,46 +134,43 @@ public final class HelpSubcommand {
                 final SubChapter home_lm_about = new SubChapter(home_lm, "about");
                 home_lm_about.addPages(
                     """
-                    &8&l » &7Command: [/lm about](color=blue format=underlined run_command=/lm help /lm about)
-                    
-                    &f&nDescription
+                    &f&lDescription
                     &8 • &7View info about the installed version of the plugin.
                     
-                    &f&nExample Usage
+                    &f&lExample Usage
                     &8 • [/lm about](color=blue format=underlined run_command=/lm about)"""
                 );
             }
 
-            { // Breadcrumb: Home -> /LM -> Summon
+            { // Breadcrumb: home -> /lm -> summon
                 final SubChapter home_lm_summon = new SubChapter(home_lm, "summon");
                 home_lm_summon.addPages(
                     """
-                    &8&l » &7Command: [/lm summon](color=blue format=underlined run_command=/lm help /lm summon)
-                    
-                    &f&nDescription
+                    &f&lDescription
                     &8 • &7Summons a levelled mob of chosen specifications, similar to Minecraft's [/summon](color=blue format=underlined run_command=/help summon) command.
                     
-                    &f&nUsage
-                    &8 • [/lm summon <entityType> ?...?](color=blue format=underlined run_command=/lm help /lm summon entitytype)
-                    &8 • [/lm summon <customEntityId> ?...?](color=blue format=underlined run_command=/lm help /lm summon customentityid)""" //todo update the usage list
+                    &f&lUsage
+                    &8 • [/lm summon entity ...](color=blue format=underlined run_command=/lm help /lm summon entity)
+                    &8 • [/lm summon custom ...](color=blue format=underlined run_command=/lm help /lm summon custom)""" //todo update the usage list
                 );
 
-                { // Breadcrumb: Home -> /LM -> Summon -> EntityType
+                { // Breadcrumb: home -> /lm -> summon -> entity
                     final SubChapter home_lm_summon_entitytype =
-                        new SubChapter(home_lm_summon, "entityType");
+                        new SubChapter(home_lm_summon, "entity");
                     home_lm_summon_entitytype.addPages(
                         """
-                        &8&l » &7Command: [/lm summon <entityType> ...](color=blue format=underlined run_command=/lm help /lm summon entitytype)
-                                       
-                        &f&nDescription
-                        &8 • &7Summons a generic levelled mob of the specified entity type with chosen specifications.
+                        &f&lDescription
+                        &8 • &7Summon a levelled mob into the world by entity type.
                         
-                        &f&nUsage
-                        &8 • [/lm summon <entityType> ?...?](color=blue format=underlined run_command=/lm help /lm summon entitytype)
+                        &f&lUsage
+                        &8 • &7/lm summon entity &b<entityType> &e<amountRange> &a<levelRange> &d<minLevel> &6<maxLevel> &b<location>
                         
-                        &f&nExample Usage
-                        &8 • [/lm summon Zombie ?...?](color=blue format=underlined run_command=/lm summon zombie ?...?)
-                        """ //todo update the usage and example usage
+                        &f&lExample Usage
+                        &8 • [/lm summon entity zombie 1 15 1 100 ~ 300 ~](color=blue format=underlined run_command=/lm summon entity zombie 1 75 1 100 ~ ~ ~)
+                        &8 ⎣ [Hover to Learn More](format=italic show_text=Spawns in 1 zombie which is level 15, with a min level of 1, a max level of 100, at the sender's location but at y:300.)
+                        
+                        &8 • [/lm summon entity zombie 1..4 50..52 1 100 ~ ~ ~](color=blue format=underlined run_command=/lm summon entity zombie 1..4 50..52 1 100 ~ ~ ~)
+                        &8 ⎣ [Hover to Learn More](format=italic show_text=Spawns from 1 to 4 (random) zombies with levels from 50 to 52 (random), with a min level of 1, a max level of 100, at the sender's location.)"""
                     );
                 }
             }

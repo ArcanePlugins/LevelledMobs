@@ -11,13 +11,17 @@ import java.util.LinkedList;
 
 public final class CommandHandler {
 
+    private CommandHandler() throws IllegalAccessException {
+        throw new IllegalAccessException("Illegal instantiation of utiltiy class");
+    }
+
     private static final Collection<CommandAPICommand> COMMANDS = new LinkedList<>();
 
     public static final CommandAPIConfig CMD_CONFIG = new CommandAPIConfig()
         .verboseOutput(true) //TODO set to `false` when commands are 100% complete.
         .silentLogs(false); //TODO set to `true` when commands are 100% complete.
 
-    public void load(final LoadingStage loadingStage) {
+    public static void load(final LoadingStage loadingStage) {
         switch(loadingStage) {
             case ON_LOAD -> {
                 Log.inf("Loading commands");
@@ -39,13 +43,13 @@ public final class CommandHandler {
         }
     }
 
-    private void registerCommands() {
+    private static void registerCommands() {
         COMMANDS.clear();
         COMMANDS.add(LevelledMobsCommand.createInstance());
         COMMANDS.forEach(CommandAPICommand::register);
     }
 
-    private void unregisterCommands() {
+    private static void unregisterCommands() {
         COMMANDS.forEach(cmd -> CommandAPI.unregister(cmd.getName()));
     }
 

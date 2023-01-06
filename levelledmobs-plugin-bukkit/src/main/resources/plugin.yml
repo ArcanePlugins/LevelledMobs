@@ -4,16 +4,16 @@ description: 'The Ultimate RPG Mob Levelling Solution'
 main: 'io.github.arcaneplugins.levelledmobs.bukkit.LevelledMobs'
 name: 'LevelledMobs'
 version: '${project.version}'
-website: 'https://github.com/lokka30/LevelledMobs/'
+website: 'https://github.com/ArcanePlugins/LevelledMobs/'
 
 softdepend:
-  - 'Essentials'      # EssentialsX is soft-dep as it is used for the 'home distance' placeholder.
+  - 'Essentials'      # EssentialsX is soft-dep as it is used for the 'home distance' placeholder. # TODO implement
   - 'NBTAPI'          # NBTAPI is soft-dep as the custom drops system allows NBT control.
   - 'PlaceholderAPI'  # PlaceholderAPI is soft-dep as LM supplies placeholders for it.
   - 'ProtocolLib'     # ProtocolLib is soft-dep as it is the fallback nametag packet handler.
   - 'SimplePets'      # SimplePets is soft-dep as we must use its API for compatibility.
-  - 'WorldEdit'       # WorldEdit is soft-dep for WorldGuard.
+  - 'WorldEdit'       # Needs to be listed here as LM will use the its API for WorldGuard.
   - 'WorldGuard'      # WorldGuard is soft-dep for the Region API usage.
 
 libraries:
-  - 'org.spongepowered:configurate-yaml:4.1.2'
+  - 'org.spongepowered:configurate-yaml:4.1.2' # remember to synchronise with pom.xml

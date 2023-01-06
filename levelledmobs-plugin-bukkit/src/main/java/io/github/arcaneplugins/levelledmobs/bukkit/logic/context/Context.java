@@ -1,6 +1,6 @@
 package io.github.arcaneplugins.levelledmobs.bukkit.logic.context;
 
-import io.github.arcaneplugins.levelledmobs.bukkit.LevelledMobs;
+import io.github.arcaneplugins.levelledmobs.bukkit.logic.LogicHandler;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.customdrops.cdevent.CustomDropsEventType;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.function.LmFunction;
 import java.util.Collection;
@@ -50,10 +50,7 @@ public final class Context {
     public String replacePlaceholders(final @Nonnull String from) {
         Objects.requireNonNull(from, "from str");
 
-        return LevelledMobs.getInstance()
-            .getLogicHandler()
-            .getContextPlaceholderHandler()
-            .replace(from, this);
+        return LogicHandler.getContextPlaceholderHandler().replace(from, this);
     }
 
     /* getters and setters */
