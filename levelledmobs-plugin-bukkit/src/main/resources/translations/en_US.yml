@@ -26,6 +26,16 @@ command:
         &8│
         &8└ &7Run [/lm help](color=blue format=underlined run_command=/lm help) &7for help in using LevelledMobs.
 
+      confirm:
+        start:
+          - "%prefix-info% Confirming action..."
+
+        complete:
+          - "%prefix-info% Action confirmed."
+
+        none:
+          - "%prefix-warning% You do not have any actions to confirm."
+
       reload:
         start:
           - "%prefix-info% Reloading configuration..."
