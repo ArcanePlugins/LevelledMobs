@@ -56,10 +56,15 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>com.github.ArcanePlugins.ArcaneFramework</groupId>
+      <groupId>io.github.arcaneplugins.arcaneframework</groupId>
       <artifactId>arcaneframework-bukkit</artifactId>
-      <version>0.2.4</version>
+      <version>0.2.10</version>
       <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.github.ArcanePlugins.EntityLabelLib</groupId>
+      <artifactId>EntityLabelLib-Bukkit</artifactId>
+      <version>1.0.0-alpha-1</version>
     </dependency>
     <dependency>
       <groupId>io.github.arcaneplugins.levelledmobs</groupId>

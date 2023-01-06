@@ -17,10 +17,40 @@ import javax.annotation.Nonnull;
 
 public final class HelpSubcommand {
 
-    private static final HelpSystem hs = new HelpSystem();
-
     public static List<CommandAPICommand> createInstances() {
-        final HomeChapter home = hs.getHomeChapter();
+        HelpSystem.msgLeadingHelpCommand = "/lm help";
+        HelpSystem.msgStructure = """
+            
+            &8┌ &b&lLM &fHelp Menu &8• &7Path: %breadcrumbs%
+            
+            &r%page-contents%&r
+            
+            &8└ &8&m-&8{%previous-page%&8}&7 Page %page-current%&7 of %page-max%&8 &8{%next-page%&8}&m-
+            """;
+
+        HelpSystem.msgHeadingPreviousPage = """
+            [«««](color=blue format=bold run_command=%leading-help-command%%chapter-path% %previous-index%)""";
+
+        HelpSystem.msgHeadingNextPage = """
+            [»»»](color=blue format=bold run_command=%leading-help-command%%chapter-path% %next-index%)""";
+
+        HelpSystem.msgHeadingPageMax = """
+            [%max-index%](color=gray format=italic run_command=%leading-help-command%%chapter-path% %max-index%)""";
+
+        HelpSystem.msgHeadingPageCurrent = """
+            [%current-index%](color=gray format=italic run_command=%leading-help-command%%chapter-path% %current-index%)""";
+
+        HelpSystem.msgBreadcrumb = """
+            [%chapter-id%](color=white format=underlined run_command=%leading-help-command%%chapter-path%)""";
+
+        HelpSystem.msgBreadcrumbSeparator = """
+            &8 »\s""";
+
+        final HomeChapter home = HelpSystem.getHomeChapter();
+
+        home.getPages().clear();
+        home.getSubChapters().clear();
+
         home.addPages(
             """
             &8 • [Click here](color=blue format=underlined run_command=/lm help /lm)&7 to view command help.
@@ -32,7 +62,7 @@ public final class HelpSubcommand {
             final SubChapter home_support = new SubChapter(home, "support");
             home_support.addPages(
                 """
-                [Check the Docs](/lm help documentation)&7 before contacting support.
+                [Check the Docs](color=blue format=underlined run_command=/lm help documentation)&7 before contacting support.
                 
                 &7Free user support is provided by volunteer staff at the following sites:
                 
@@ -101,7 +131,7 @@ public final class HelpSubcommand {
             );
 
             { // Breadcrumb: Home -> /LM -> About
-                final SubChapter home_lm_about = new SubChapter(home_lm, "About");
+                final SubChapter home_lm_about = new SubChapter(home_lm, "about");
                 home_lm_about.addPages(
                     """
                     &8&l » &7Command: [/lm about](color=blue format=underlined run_command=/lm help /lm about)
@@ -115,7 +145,7 @@ public final class HelpSubcommand {
             }
 
             { // Breadcrumb: Home -> /LM -> Summon
-                final SubChapter home_lm_summon = new SubChapter(home_lm, "Summon");
+                final SubChapter home_lm_summon = new SubChapter(home_lm, "summon");
                 home_lm_summon.addPages(
                     """
                     &8&l » &7Command: [/lm summon](color=blue format=underlined run_command=/lm help /lm summon)
@@ -130,7 +160,7 @@ public final class HelpSubcommand {
 
                 { // Breadcrumb: Home -> /LM -> Summon -> EntityType
                     final SubChapter home_lm_summon_entitytype =
-                        new SubChapter(home_lm_summon, "EntityType");
+                        new SubChapter(home_lm_summon, "entityType");
                     home_lm_summon_entitytype.addPages(
                         """
                         &8&l » &7Command: [/lm summon <entityType> ...](color=blue format=underlined run_command=/lm help /lm summon entitytype)
@@ -174,7 +204,7 @@ public final class HelpSubcommand {
                 .executes((sender, args) -> {
                     sender.sendMessage(
                         Message.formatMd(new String[]{
-                            hs.getHomeChapter().getFormattedPage(1)
+                            home.getFormattedPage(1)
                         })
                     );
                 })
@@ -185,16 +215,16 @@ public final class HelpSubcommand {
 
         return new CustomArgument<>(new GreedyStringArgument(nodeName), info -> {
             final String[] breadcrumbs = info.input().split(" ");
-            Chapter chapter = hs.getHomeChapter();
+            Chapter currentChapter = HelpSystem.getHomeChapter();
             int pageNum = 1;
 
             for(final String breadcrumb : breadcrumbs) {
-                final Optional<SubChapter> optSubChapter = chapter.getSubChapters().stream()
+                final Optional<SubChapter> optSubChapter = currentChapter.getSubChapters().stream()
                     .filter(subChapter -> subChapter.getId().equalsIgnoreCase(breadcrumb))
                     .findFirst();
 
                 if(optSubChapter.isPresent()) {
-                    chapter = optSubChapter.get();
+                    currentChapter = optSubChapter.get();
                     continue;
                 }
 
@@ -209,13 +239,13 @@ public final class HelpSubcommand {
                 }
             }
 
-            if(pageNum < 1 || pageNum > chapter.getPages().size()) {
+            if(pageNum < 1 || pageNum > currentChapter.getPages().size()) {
                 throw new CustomArgumentException(
-                    "Page '%s' does not exist in chapter '%s'".formatted(pageNum, chapter.getId())
+                    "Page '%s' does not exist in chapter '%s'".formatted(pageNum, currentChapter.getId())
                 );
             }
 
-            return new ChapterAndPageNum(chapter, pageNum);
+            return new ChapterAndPageNum(currentChapter, pageNum);
         });
         /*.replaceSuggestions(ArgumentSuggestions.strings(info -> {
             // It seems that suggestions can't be made for greedy string arguments aside from their
