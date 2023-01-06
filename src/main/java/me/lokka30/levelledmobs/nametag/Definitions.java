@@ -86,6 +86,9 @@ public class Definitions {
             ver.getMinecraftVersion() == 1.19d && ver.getRevision() >= 3d ||
                 ver.getMinecraftVersion() >= 1.20d;
 
+        // protocollib is used on 1.16
+        if (ver.getMinecraftVersion() < 1.17) return;
+
         try {
             buildClasses();
 
