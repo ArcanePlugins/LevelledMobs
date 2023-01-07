@@ -21,7 +21,7 @@ public enum DebugCategory {
     /**
      * Shows information about drop calculation in {@link EntityDeathListener}.
      */
-    DEATH_DROPS,
+    DROPS,
 
     /**
      * Shows information about logic in the {@link SpawnDistanceLevellingStrategy}.

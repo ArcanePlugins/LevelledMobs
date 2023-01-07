@@ -6,7 +6,14 @@ import io.github.arcaneplugins.levelledmobs.bukkit.listener.ListenerWrapper;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.LogicHandler;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.context.Context;
 import io.github.arcaneplugins.levelledmobs.bukkit.api.data.keys.EntityKeyStore;
+import io.github.arcaneplugins.levelledmobs.bukkit.logic.customdrops.CustomDrop;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.customdrops.CustomDropHandler;
+import io.github.arcaneplugins.levelledmobs.bukkit.logic.customdrops.cdevent.CustomDropsEventType;
+import io.github.arcaneplugins.levelledmobs.bukkit.logic.customdrops.type.CommandCustomDrop;
+import io.github.arcaneplugins.levelledmobs.bukkit.logic.customdrops.type.ItemCustomDrop;
+import io.github.arcaneplugins.levelledmobs.bukkit.logic.customdrops.type.StandardCustomDropType;
+import java.util.Collection;
+import javax.annotation.Nonnull;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -39,7 +46,7 @@ public final class EntitySpawnListener extends ListenerWrapper {
         Check if the entity has any non-persistent metadata to migrate
          */
         // wasSummoned
-        var wasSummonedKeyStr = EntityKeyStore.WAS_SUMMONED.toString();
+        final String wasSummonedKeyStr = EntityKeyStore.WAS_SUMMONED.toString();
         InternalEntityDataUtil.setWasSummoned(
             entity,
             entity.hasMetadata(wasSummonedKeyStr) &&
@@ -58,6 +65,32 @@ public final class EntitySpawnListener extends ListenerWrapper {
         /*
         Custom Drops
          */
-        CustomDropHandler.handleEntitySpawn(event);
+        handleCustomDrops(event);
+    }
+
+    private static void handleCustomDrops(
+        final @Nonnull EntitySpawnEvent event
+    ) {
+        // This is a safe cast since LM will only call this after it has verified this is a LivngEnt
+        final LivingEntity entity = (LivingEntity) event.getEntity();
+
+        final Context context = new Context()
+            .withEntity(entity)
+            .withEvent(event);
+
+        final Collection<CustomDrop> cds =
+            CustomDropHandler.getDefinedCustomDropsForEntity(entity);
+
+        for(final @Nonnull CustomDrop cd : cds) {
+            if(cd.getType().equals(StandardCustomDropType.ITEM.name())) {
+                final ItemCustomDrop icd = (ItemCustomDrop) cd;
+                icd.attemptToApplyEquipment(entity);
+            } else if(cd.getType().equalsIgnoreCase(StandardCustomDropType.COMMAND.name())) {
+                final CommandCustomDrop ccd = (CommandCustomDrop) cd;
+                if(ccd.getCommandRunEvents().contains(CustomDropsEventType.ON_SPAWN.name())) {
+                    ccd.execute(CustomDropsEventType.ON_SPAWN, context);
+                }
+            }
+        }
     }
 }

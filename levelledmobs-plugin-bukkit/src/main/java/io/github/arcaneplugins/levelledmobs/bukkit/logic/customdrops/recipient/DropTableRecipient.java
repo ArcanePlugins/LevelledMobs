@@ -30,7 +30,7 @@ public class DropTableRecipient extends CustomDropRecipient {
     }
 
     @Nonnull
-    public ModalEntityTypeSet getApplicableEntities() {
+    public ModalEntityTypeSet getApplicableEntityTypes() {
         return applicableEntities;
     }
 

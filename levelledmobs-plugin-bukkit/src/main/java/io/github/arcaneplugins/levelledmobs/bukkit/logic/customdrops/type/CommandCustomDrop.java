@@ -4,6 +4,7 @@ import io.github.arcaneplugins.levelledmobs.bukkit.LevelledMobs;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.LogicHandler;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.context.Context;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.customdrops.CustomDrop;
+import io.github.arcaneplugins.levelledmobs.bukkit.logic.customdrops.cdevent.CustomDropsEventType;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.customdrops.recipient.CustomDropRecipient;
 import java.util.Collection;
 import java.util.HashSet;
@@ -29,15 +30,18 @@ public class CommandCustomDrop extends CustomDrop {
     /* methods */
 
     public void execute(
+        final @Nonnull CustomDropsEventType eventType,
         final @Nonnull Context context
     ) {
+        if(!getCommandRunEvents().contains(eventType.name())) return;
+
         if(getCommandDelay() == 0L) {
             executeImmediately(context);
         } else {
             new BukkitRunnable() {
                 @Override
                 public void run() {
-                    execute(context);
+                    executeImmediately(context);
                 }
             }.runTaskLater(LevelledMobs.getInstance(), getCommandDelay());
         }

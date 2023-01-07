@@ -273,13 +273,6 @@ public final class LogicHandler {
     private static void parseCustomDrops() {
         Log.inf("Parsing custom drops.");
 
-        //TODO REMOVE WHEN READY
-        //noinspection ConstantValue
-        if(true) {
-            Log.war("Custom drops will not be parsed: implementation incomplete.");
-            return;
-        }
-
         CustomDropHandler.clearCustomDropRecipients();
 
         parseDropTableCustomDrops();
@@ -450,7 +443,7 @@ public final class LogicHandler {
 
             parseCommonAttribs.accept(icd);
 
-            icd.withName(dropNode.node("name").getString(icd.getName()));
+            if(dropNode.hasChild("name")) icd.withName(dropNode.node("name").getString());
             icd.withAmount(dropNode.node("amount").getInt(icd.getAmount()));
             if(dropNode.hasChild("custom-model-data")) icd.withCustomModelData(dropNode.node("custom-model-data").getInt());
             icd.withNoMultiplier(dropNode.node("no-multiplier").getBoolean(icd.requiresNoMultiplier()));

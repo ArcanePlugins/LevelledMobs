@@ -1,15 +1,22 @@
 package io.github.arcaneplugins.levelledmobs.bukkit.logic.customdrops.type;
 
+import static io.github.arcaneplugins.levelledmobs.bukkit.debug.DebugCategory.DROPS;
+
 import io.github.arcaneplugins.levelledmobs.bukkit.api.data.ItemDataUtil;
+import io.github.arcaneplugins.levelledmobs.bukkit.config.translations.Message;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.customdrops.CustomDrop;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.customdrops.recipient.CustomDropRecipient;
 import io.github.arcaneplugins.levelledmobs.bukkit.util.EnchantTuple;
+import io.github.arcaneplugins.levelledmobs.bukkit.util.Log;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.LivingEntity;
@@ -78,8 +85,10 @@ public class ItemCustomDrop extends CustomDrop {
     }
 
     public @Nonnull ItemStack toItemStack() {
+        Log.debug(DROPS, () -> "ItemCustomDrop#toItemStack begin");
         final ItemStack is = new ItemStack(getMaterial(), getAmount());
 
+        Log.debug(DROPS, () -> "ItemCustomDrop#toItemStack has item meta: " + is.hasItemMeta());
         if(!is.hasItemMeta()) return is;
 
         ItemDataUtil.setIsItemCustom(is, true);
@@ -104,8 +113,13 @@ public class ItemCustomDrop extends CustomDrop {
             dim.setDamage(getDurabilityLoss());
 
         if(getName() != null)
-            //noinspection deprecation
-            im.setDisplayName(getName());
+            im.displayName(Message.formatMd(new String[]{getName()}));
+
+        Log.debug(DROPS, () ->
+            "Item drop displayName: " + LegacyComponentSerializer.legacySection().serialize(
+                Objects.requireNonNullElse(im.displayName(), Component.empty())
+            )
+        );
 
         im.setCustomModelData(getCustomModelData());
 
@@ -113,6 +127,7 @@ public class ItemCustomDrop extends CustomDrop {
 
         is.setItemMeta(im);
 
+        Log.debug(DROPS, () -> "ItemCustomDrop#toItemStack done");
         return is;
     }
 

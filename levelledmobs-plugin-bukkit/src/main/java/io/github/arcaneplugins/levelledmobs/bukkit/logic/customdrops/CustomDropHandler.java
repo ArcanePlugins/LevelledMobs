@@ -1,28 +1,26 @@
 package io.github.arcaneplugins.levelledmobs.bukkit.logic.customdrops;
 
+import io.github.arcaneplugins.levelledmobs.bukkit.api.data.EntityDataUtil;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.LogicHandler;
-import io.github.arcaneplugins.levelledmobs.bukkit.logic.context.Context;
-import io.github.arcaneplugins.levelledmobs.bukkit.logic.customdrops.cdevent.CustomDropsEventType;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.customdrops.recipient.DropTableRecipient;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.customdrops.recipient.EntityTypeRecipient;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.customdrops.recipient.MobGroupRecipient;
-import io.github.arcaneplugins.levelledmobs.bukkit.logic.customdrops.type.CommandCustomDrop;
-import io.github.arcaneplugins.levelledmobs.bukkit.logic.customdrops.type.ItemCustomDrop;
-import io.github.arcaneplugins.levelledmobs.bukkit.logic.customdrops.type.StandardCustomDropType;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.group.Group;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import javax.annotation.Nonnull;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.event.entity.EntitySpawnEvent;
 
 public class CustomDropHandler {
 
-    private CustomDropHandler() {}
+    private CustomDropHandler() throws IllegalAccessException {
+        throw new IllegalAccessException("Illegal instantiation of utility class");
+    }
 
     public static final Collection<DropTableRecipient> DROP_TABLE_RECIPIENTS = new HashSet<>();
     public static final Collection<EntityTypeRecipient> ENTITY_TYPE_RECIPIENTS = new HashSet<>();
@@ -34,57 +32,34 @@ public class CustomDropHandler {
         MOB_GROUP_RECIPIENTS.clear();
     }
 
-    //TODO move this to EntitySpawnListener
-    public static void handleEntitySpawn(
-        final @Nonnull EntitySpawnEvent event
+    public static @Nonnull List<CustomDrop> getDefinedCustomDropsForEntity(
+        final @Nonnull LivingEntity entity
     ) {
-        // This is a safe cast since LM will only call this after it has verified this is a LivngEnt
-        final LivingEntity entity = (LivingEntity) event.getEntity();
+        Objects.requireNonNull(entity, "entity");
 
-        final Context context = new Context()
-            .withEntity(entity)
-            .withEvent(event);
+        final List<CustomDrop> cds = new LinkedList<>();
 
-        final Collection<CustomDrop> cds = getDefinedCustomDropsForEntityType(context);
+        if(!EntityDataUtil.isLevelled(entity, true)) return cds;
 
-        for(final @Nonnull CustomDrop cd : cds) {
-            if(cd.getType().equals(StandardCustomDropType.ITEM.name())) {
-                final ItemCustomDrop icd = (ItemCustomDrop) cd;
-                icd.attemptToApplyEquipment(entity);
-            } else if(cd.getType().equalsIgnoreCase(StandardCustomDropType.COMMAND.name())) {
-                final CommandCustomDrop ccd = (CommandCustomDrop) cd;
-                if(ccd.getCommandRunEvents().contains(CustomDropsEventType.ON_SPAWN.name())) {
-                    ccd.execute(context);
-                }
-            }
-        }
-    }
+        // stage 1: add entity-type drops
+        cds.addAll(getDefinedCustomDropsForEntityType(entity.getType()));
 
-    //TODO
-    public static @Nonnull Collection<CustomDrop> generateCustomDrops(
-        final @Nonnull Context context
-    ) {
-        //TODO
-        throw new RuntimeException("Not Implemented");
+        // stage 2: get drop-table drops
+        //TODO get the drop tables applied to the entity thru a LmFunction
+        //TODO in lm3 that's called 'usedroptableid'
+
+        return cds;
     }
 
     public static @Nonnull Collection<CustomDrop> getDefinedCustomDropsForEntityType(
-        final @Nonnull Context context
+        final @Nonnull EntityType entityType
     ) {
-        final EntityType entityType = Objects.requireNonNull(
-            context.getEntityType(),
-            "Entity type context undefined"
-        );
-
         final Collection<CustomDrop> applicableCds = new LinkedList<>();
 
         DROP_TABLE_RECIPIENTS.forEach((recip) -> {
-            if(recip.getApplicableEntities().contains(entityType)) {
+            if(recip.getApplicableEntityTypes().contains(entityType)) {
                 applicableCds.addAll(recip.getDrops());
             }
-
-            //TODO also get the drop tables applied to the entity thru a LmFunction
-            //TODO in lm3 that's called 'usedroptableid'
         });
 
         ENTITY_TYPE_RECIPIENTS.forEach((recip) -> {

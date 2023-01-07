@@ -138,12 +138,18 @@ public abstract class Config {
 
     @NotNull
     protected YamlConfigurationLoader getLoader() {
-        return Objects.requireNonNull(loader, "loader");
+        return Objects.requireNonNull(
+            loader,
+            "Illegal attempt to access config loader before config is loaded"
+        );
     }
 
     @NotNull
     public CommentedConfigurationNode getRoot() {
-        return Objects.requireNonNull(root, "root");
+        return Objects.requireNonNull(
+            root,
+            "Illegal attempt to access config root before config is loaded"
+        );
     }
 
 }
