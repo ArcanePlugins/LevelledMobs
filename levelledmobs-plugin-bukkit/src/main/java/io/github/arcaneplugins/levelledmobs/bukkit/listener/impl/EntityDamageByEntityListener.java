@@ -8,11 +8,16 @@ import io.github.arcaneplugins.levelledmobs.bukkit.debug.DebugHandler;
 import io.github.arcaneplugins.levelledmobs.bukkit.listener.ListenerWrapper;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.LogicHandler;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.context.Context;
+import io.github.arcaneplugins.levelledmobs.bukkit.logic.function.process.action.impl.setbuffs.Buff;
+import io.github.arcaneplugins.levelledmobs.bukkit.util.EnumUtils;
 import io.github.arcaneplugins.levelledmobs.bukkit.util.PlayerUtils;
 import io.github.arcaneplugins.levelledmobs.bukkit.util.PlayerUtils.FoundItemInHandResult;
+import java.text.DecimalFormat;
 import java.util.function.Consumer;
 import javax.annotation.Nonnull;
 import org.bukkit.Material;
+import org.bukkit.attribute.Attribute;
+import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -67,15 +72,53 @@ public class EntityDamageByEntityListener extends ListenerWrapper {
             MineDown.parse(LogicHandler.replacePapiAndContextPlaceholders(message, context))
         );
 
+        final DecimalFormat to4dp = new DecimalFormat("#,##0.0###");
+
         new BukkitRunnable() {
             @Override
             public void run() {
-                messenger.accept("&8&m-&8{&f&l LM:&7 Inspecting " +
-                    "&bLvl.%entity-level% %entity-type-formatted% " +
-                    "&8(&7%entity-health-rounded%&8/&7%entity-max-health-rounded%&c♥&8) &8}&m-"
+                messenger.accept(
+                    "&8┌ &f&lLM:&7 Inspecting &bLvl.%entity-level% %entity-type-formatted%"
                 );
-                messenger.accept("&9EntityName:&f %entity-name%");
-                messenger.accept("&8... (end of information) ...");
+                messenger.accept("&8 • &7Name:&f %entity-name%");
+                messenger.accept("&8 • &7Health:&f %entity-health-rounded%&8/&f%entity-max-health-rounded% HP");
+                messenger.accept(
+                    "&8 • &7Min Level: &f%s&7; Max Level: &f%s&7; Ratio: &f%s".formatted(
+                        EntityDataUtil.getMinLevel(enInspected, false),
+                        EntityDataUtil.getMaxLevel(enInspected, false),
+                        to4dp.format(EntityDataUtil.getLevelRatio(enInspected, false))
+                    )
+                );
+
+                messenger.accept("&8 • &7Attributes:");
+                for(final Attribute a : Attribute.values()) {
+                    final AttributeInstance ai = enInspected.getAttribute(a);
+                    if(ai == null) continue;
+
+                    final StringBuilder sb = new StringBuilder(
+                        "&8   • &7" + EnumUtils.formatEnumConstant(a) + ": &f" +
+                            to4dp.format(ai.getValue()) + "&7"
+                    );
+
+                    if(ai.getValue() != ai.getBaseValue())
+                        sb.append(" (from &f")
+                            .append(to4dp.format(ai.getBaseValue()))
+                            .append("&7)");
+
+                    if(ai.getModifiers().stream()
+                        .anyMatch(mod -> mod.getName().startsWith(Buff.ATTRIBUTE_MODIFIER_PREFIX))
+                    ) {
+                        sb.append(" [✔LM](color=dark_aqua format=italic ")
+                            .append("show_text=Modified by LevelledMobs)");
+                    } else {
+                        sb.append(" [❌LM](color=dark_gray format=italic ")
+                            .append("show_text=Not modified by LevelledMobs)");
+                    }
+
+                    messenger.accept(sb.toString());
+                }
+
+                messenger.accept("&8└ ... (end of information) ...");
             }
         }.runTaskLater(LevelledMobs.getInstance(), 1);
     }

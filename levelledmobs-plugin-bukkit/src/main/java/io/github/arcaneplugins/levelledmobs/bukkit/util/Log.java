@@ -5,9 +5,19 @@ import io.github.arcaneplugins.levelledmobs.bukkit.debug.DebugCategory;
 import io.github.arcaneplugins.levelledmobs.bukkit.debug.DebugHandler;
 import java.util.function.Supplier;
 import javax.annotation.Nonnull;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
 
 @SuppressWarnings("unused")
 public final class Log {
+
+    /*
+    When testing, sometimes it is useful to include this suffix on particular debug logs to
+    make it more clear to see amongst the rest of the mess.
+     */
+    @SuppressWarnings("unused")
+    public static final String DEBUG_I_AM_BLIND_SUFFIX = " " + ChatColor.AQUA + "<------ notice me";
 
     private Log() throws IllegalAccessException {
         throw new IllegalAccessException("Attempted instantiation of utility class");
@@ -40,10 +50,23 @@ public final class Log {
 
     public static void debug(
         @Nonnull final DebugCategory cat,
-        @Nonnull final Supplier<String> msg
+        @Nonnull final Supplier<String> msgSupplier
     ) {
         if(!DebugHandler.isCategoryEnabled(cat)) return;
-        inf("[DEBUG : " + cat.name() + "] " + msg.get());
+
+        final String msg = msgSupplier.get();
+
+        if(DebugHandler.isCategoryEnabled(DebugCategory.BROADCAST_TO_OPS)) {
+            for(final Player player : Bukkit.getOnlinePlayers()) {
+                if(!player.isOp()) continue;
+
+                player.sendMessage(
+                    ChatColor.DARK_GRAY + "[LM DEBUG : " + cat.name() + "] " + msg
+                );
+            }
+        }
+
+        inf("[DEBUG : " + cat.name() + "] " + msg);
     }
 
 }

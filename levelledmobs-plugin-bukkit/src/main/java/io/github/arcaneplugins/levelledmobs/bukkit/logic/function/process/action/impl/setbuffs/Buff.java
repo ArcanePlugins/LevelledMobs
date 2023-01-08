@@ -20,6 +20,8 @@ import org.spongepowered.configurate.CommentedConfigurationNode;
 
 public class Buff {
 
+    public static final String ATTRIBUTE_MODIFIER_PREFIX = "levelledmobs:multiplier.";
+
     private final CommentedConfigurationNode node;
     private final boolean enabled;
     private final ModalEntityTypeSet affectedEntities;
@@ -107,7 +109,7 @@ public class Buff {
                  */
 
                 attrInst.addModifier(new AttributeModifier(
-                    "levelledmobs:multiplier." + attr.toString().toLowerCase(Locale.ROOT),
+                    ATTRIBUTE_MODIFIER_PREFIX + attr.toString().toLowerCase(Locale.ROOT),
                     (multiplier * currentVal) - currentVal,
                     Operation.ADD_NUMBER
                 ));

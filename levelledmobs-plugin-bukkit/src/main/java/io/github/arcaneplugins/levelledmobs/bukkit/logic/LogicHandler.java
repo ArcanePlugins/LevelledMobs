@@ -1,5 +1,7 @@
 package io.github.arcaneplugins.levelledmobs.bukkit.logic;
 
+import static io.github.arcaneplugins.levelledmobs.bukkit.debug.DebugCategory.DROPS;
+
 import io.github.arcaneplugins.levelledmobs.bukkit.LevelledMobs;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.context.Context;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.context.placeholder.ContextPlaceholderHandler;
@@ -26,6 +28,7 @@ import io.github.arcaneplugins.levelledmobs.bukkit.logic.group.GroupPreParseEven
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.preset.Preset;
 import io.github.arcaneplugins.levelledmobs.bukkit.util.EnchantTuple;
 import io.github.arcaneplugins.levelledmobs.bukkit.util.Log;
+import io.github.arcaneplugins.levelledmobs.bukkit.util.math.RangedInt;
 import io.github.arcaneplugins.levelledmobs.bukkit.util.math.TimeUtils;
 import io.github.arcaneplugins.levelledmobs.bukkit.util.modal.impl.ModalEntityTypeSet;
 import java.util.Collection;
@@ -299,7 +302,7 @@ public final class LogicHandler {
                             .formatted(dropTableNode.path())
                     ),
                     new LinkedList<>(),
-                    dropTableNode.node("overall-chance").getFloat(1.0f),
+                    dropTableNode.node("overall-chance").getFloat(100.0f),
                     dropTableNode.node("overall-permissions")
                         .getList(String.class, Collections.emptyList()),
                     ModalEntityTypeSet.parseNode(dropTableNode.node("entities"))
@@ -331,7 +334,7 @@ public final class LogicHandler {
             try {
                 recipient = new EntityTypeRecipient(
                     new LinkedList<>(),
-                    entityTypeNode.node("overall-chance").getFloat(1.0f),
+                    entityTypeNode.node("overall-chance").getFloat(100.0f),
                     entityTypeNode.node("overall-permissions")
                         .getList(String.class, Collections.emptyList()),
                     EntityType.valueOf(
@@ -369,7 +372,7 @@ public final class LogicHandler {
             try {
                 recipient = new MobGroupRecipient(
                     new LinkedList<>(),
-                    mobGroupNode.node("overall-chance").getFloat(1.0f),
+                    mobGroupNode.node("overall-chance").getFloat(100.0f),
                     mobGroupNode.node("overall-permissions")
                         .getList(String.class, Collections.emptyList()),
                     Objects.requireNonNull(
@@ -414,7 +417,7 @@ public final class LogicHandler {
         final @Nonnull CustomDropRecipient recipient
     ) {
         final Consumer<CustomDrop> parseCommonAttribs = (cd) -> {
-            cd.withChance(dropNode.node("chance").getFloat(cd.getChance()));
+            cd.withChance(Math.max(0, Math.min(100, dropNode.node("chance").getFloat(100f))));
             if(dropNode.hasChild("min-level")) cd.withEntityMinLevel(dropNode.node("min-level").getInt());
             if(dropNode.hasChild("max-level")) cd.withEntityMaxLevel(dropNode.node("max-level").getInt());
             cd.withNoSpawner(dropNode.node("no-spawner").getBoolean(cd.requiresNoSpawner()));
@@ -443,29 +446,53 @@ public final class LogicHandler {
 
             parseCommonAttribs.accept(icd);
 
-            if(dropNode.hasChild("name")) icd.withName(dropNode.node("name").getString());
-            icd.withAmount(dropNode.node("amount").getInt(icd.getAmount()));
-            if(dropNode.hasChild("custom-model-data")) icd.withCustomModelData(dropNode.node("custom-model-data").getInt());
-            icd.withNoMultiplier(dropNode.node("no-multiplier").getBoolean(icd.requiresNoMultiplier()));
-            icd.withDurabilityLoss(dropNode.node("durability-loss").getInt(icd.getDurabilityLoss()));
-            icd.withOnlyDropIfEquipped(dropNode.node("only-drop-if-equipped").getBoolean(icd.shouldOnlyDropIfEquipped()));
+            if(dropNode.hasChild("name"))
+                icd.withName(dropNode.node("name").getString());
+
+            if(dropNode.hasChild("amount"))
+                icd.withAmount(
+                    new RangedInt(
+                        dropNode.node("amount").getString("0")
+                    )
+                );
+
+            if(dropNode.hasChild("custom-model-data"))
+                icd.withCustomModelData(dropNode.node("custom-model-data").getInt());
+
+            if(dropNode.hasChild("no-multiplier"))
+                icd.withNoMultiplier(dropNode.node("no-multiplier").getBoolean());
+
+            if(dropNode.hasChild("durability-loss"))
+                icd.withDurabilityLoss(dropNode.node("durability-loss").getInt());
+
+            if(dropNode.hasChild("only-drop-if-equipped"))
+                icd.withOnlyDropIfEquipped(
+                    dropNode.node("only-drop-if-equipped").getBoolean()
+                );
 
             // lists are parsed here in the try catch block
             try {
-                icd.withItemFlags(dropNode.node("item-flags").getList(ItemFlag.class, Collections.emptyList()));
+                icd.withItemFlags(
+                    dropNode.node("item-flags")
+                        .getList(ItemFlag.class, Collections.emptyList())
+                );
             } catch(SerializationException ex) {
                 throw new RuntimeException(ex);
             }
 
+            Log.debug(DROPS, () -> "START parsing enchant tuples");
             final Collection<EnchantTuple> enchantTuples = new HashSet<>();
             for(final CommentedConfigurationNode enchTupleNode :
                 dropNode.node("enchantments").childrenList()
             ) {
+                Log.debug(DROPS, () -> "Parsing enchant tuple at path " + enchTupleNode.path());
+
                 final String enchantmentId = Objects.requireNonNull(
                     enchTupleNode.node("enchantment").getString(),
                     "No enchantment ID specified at node '%s'"
                         .formatted(enchTupleNode.node("enchantment").path())
                 );
+                Log.debug(DROPS, () -> "enchantment ID = " + enchantmentId);
 
                 enchantTuples.add(new EnchantTuple(
                     Objects.requireNonNull(
@@ -474,11 +501,13 @@ public final class LogicHandler {
                         )),
                         "Invalid enchantment '%s'.".formatted(enchTupleNode.path())
                     ),
-                    enchTupleNode.node("chance").getFloat(1.0f),
+                    enchTupleNode.node("chance").getFloat(100.0f),
                     enchTupleNode.node("strength").getInt(1)
                 ));
             }
             icd.withEnchantments(enchantTuples);
+            Log.debug(DROPS, () -> "Enchantment tuples parsed: " + icd.getEnchantments().size());
+            Log.debug(DROPS, () -> "DONE parsing enchant tuples");
 
             return icd;
         } else if(dropNode.hasChild("command") || dropNode.hasChild("commands")) {

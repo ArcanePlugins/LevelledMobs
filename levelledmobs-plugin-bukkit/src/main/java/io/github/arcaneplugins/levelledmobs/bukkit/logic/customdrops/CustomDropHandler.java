@@ -1,20 +1,28 @@
 package io.github.arcaneplugins.levelledmobs.bukkit.logic.customdrops;
 
+import static io.github.arcaneplugins.levelledmobs.bukkit.debug.DebugCategory.DROPS;
+
 import io.github.arcaneplugins.levelledmobs.bukkit.api.data.EntityDataUtil;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.LogicHandler;
+import io.github.arcaneplugins.levelledmobs.bukkit.logic.context.Context;
+import io.github.arcaneplugins.levelledmobs.bukkit.logic.customdrops.recipient.CustomDropRecipient;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.customdrops.recipient.DropTableRecipient;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.customdrops.recipient.EntityTypeRecipient;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.customdrops.recipient.MobGroupRecipient;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.group.Group;
+import io.github.arcaneplugins.levelledmobs.bukkit.util.Log;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.function.Function;
 import javax.annotation.Nonnull;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 
 public class CustomDropHandler {
 
@@ -33,42 +41,108 @@ public class CustomDropHandler {
     }
 
     public static @Nonnull List<CustomDrop> getDefinedCustomDropsForEntity(
-        final @Nonnull LivingEntity entity
+        final @Nonnull LivingEntity entity,
+        final @Nonnull Context context
     ) {
         Objects.requireNonNull(entity, "entity");
+
+        Log.debug(DROPS, () -> "getDefinedCustomDropsForEntity BEGIN");
 
         final List<CustomDrop> cds = new LinkedList<>();
 
         if(!EntityDataUtil.isLevelled(entity, true)) return cds;
+        Log.debug(DROPS, () -> "Entity is levelled (OK)");
 
         // stage 1: add entity-type drops
-        cds.addAll(getDefinedCustomDropsForEntityType(entity.getType()));
+        Log.debug(DROPS, () -> "Adding entity-type drops (size=" + cds.size() + ")");
+        cds.addAll(getDefinedCustomDropsForEntityType(entity.getType(), context));
 
         // stage 2: get drop-table drops
+        Log.debug(DROPS, () -> "Getting drop-table drops (size=" + cds.size() + ")");
         //TODO get the drop tables applied to the entity thru a LmFunction
         //TODO in lm3 that's called 'usedroptableid'
+
+        // stage 3: filtration
+        Log.debug(DROPS, () -> "Filtration (size=" + cds.size() + ")");
+        final int level = Objects.requireNonNull(
+            EntityDataUtil.getLevel(entity, true),
+            "level"
+        );
+
+        cds.removeIf(cd -> cd.getEntityMinLevel() != null && cd.getEntityMinLevel() > level);
+        cds.removeIf(cd -> cd.getEntityMaxLevel() != null && cd.getEntityMaxLevel() < level);
+
+        Log.debug(DROPS, () -> "getDefinedCustomDropsForEntity DONE (size=" + cds.size() + ")");
 
         return cds;
     }
 
     public static @Nonnull Collection<CustomDrop> getDefinedCustomDropsForEntityType(
-        final @Nonnull EntityType entityType
+        final @Nonnull EntityType entityType,
+        final @Nonnull Context context
     ) {
         final Collection<CustomDrop> applicableCds = new LinkedList<>();
 
-        DROP_TABLE_RECIPIENTS.forEach((recip) -> {
-            if(recip.getApplicableEntityTypes().contains(entityType)) {
-                applicableCds.addAll(recip.getDrops());
-            }
-        });
+        final Function<CustomDropRecipient, Boolean> doesDropTableNotApply = recip -> {
+            Log.debug(DROPS, () ->
+                "doesDropTableNotApply BEGIN: " + recip.getClass().getSimpleName()
+            );
 
-        ENTITY_TYPE_RECIPIENTS.forEach((recip) -> {
-            if(recip.getEntityType() == entityType) {
-                applicableCds.addAll(recip.getDrops());
+            // check overall permissions
+            Log.debug(DROPS, () -> "checking overall permissions");
+            if(!recip.getOverallPermissions().isEmpty()) {
+                Log.debug(DROPS, () -> "overall permissions is not empty");
+                final Player player = context.getPlayer();
+                Log.debug(DROPS, () -> "has player context: " + (player != null));
+                if(player == null) return true;
+                for(final String overallPermission : recip.getOverallPermissions()) {
+                    if(!player.hasPermission(overallPermission)) {
+                        Log.debug(DROPS, () -> player.getName() + " doesn't have perm: " +
+                            overallPermission + "; not applying drop table.");
+                        return true;
+                    }
+                }
             }
-        });
+            Log.debug(DROPS, () -> "overall permissions check passed (OK)");
 
-        MOB_GROUP_RECIPIENTS.forEach((recip) -> {
+            // check overall chance
+            Log.debug(DROPS, () -> "checking overall chance");
+            final float overallChance = recip.getOverallChance();
+            Log.debug(DROPS, () -> "overallChance=" + overallChance);
+            if(overallChance != 100f) {
+                final float randomChance =
+                    ThreadLocalRandom.current().nextFloat(0, 100);
+
+                Log.debug(DROPS, () -> "randomChance=" + randomChance);
+
+                final boolean chanceUnsatisfied = overallChance < randomChance;
+
+                Log.debug(DROPS, () -> "chance satisfied: " + !chanceUnsatisfied);
+
+                return chanceUnsatisfied;
+            }
+            Log.debug(DROPS, () -> "overall chance check passed (OK)");
+
+            Log.debug(DROPS, () -> "doesDropTableNotApply: DONE (OK)");
+
+            return false;
+        };
+
+        for(final DropTableRecipient recip : DROP_TABLE_RECIPIENTS) {
+            if(!recip.getApplicableEntityTypes().contains(entityType)) continue;
+            if(doesDropTableNotApply.apply(recip)) continue;
+            applicableCds.addAll(recip.getDrops());
+        }
+
+        for(final EntityTypeRecipient recip : ENTITY_TYPE_RECIPIENTS) {
+            if(recip.getEntityType() != entityType) continue;
+            if(doesDropTableNotApply.apply(recip)) continue;
+            applicableCds.addAll(recip.getDrops());
+        }
+
+        for(final MobGroupRecipient recip : MOB_GROUP_RECIPIENTS) {
+            if(doesDropTableNotApply.apply(recip)) continue;
+
             final Optional<Group> groupOpt = LogicHandler.getGroups().stream()
                 .filter(g -> g.getIdentifier().equalsIgnoreCase(recip.getMobGroupId()))
                 .findFirst();
@@ -81,7 +155,7 @@ public class CustomDropHandler {
                     }
                 }
             });
-        });
+        }
 
         return applicableCds;
     }

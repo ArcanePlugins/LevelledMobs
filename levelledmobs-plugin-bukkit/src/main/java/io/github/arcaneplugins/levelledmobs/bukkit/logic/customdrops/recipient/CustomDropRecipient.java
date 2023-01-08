@@ -20,6 +20,7 @@ public abstract class CustomDropRecipient {
         this.overallPermissions = overallPermissions;
     }
 
+    @SuppressWarnings("unused")
     @Nonnull
     public abstract CustomDropRecipientType getRecipientType();
 

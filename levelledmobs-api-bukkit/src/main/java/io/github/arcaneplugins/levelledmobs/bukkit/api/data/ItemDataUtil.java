@@ -34,8 +34,8 @@ public class ItemDataUtil {
         final boolean isCustom
     ) {
         final ItemMeta im = stack.getItemMeta();
-        if(im == null || !stack.hasItemMeta())
-            throw new IllegalArgumentException("Unable to set PDC value to item: no metadata");
+        if(im == null)
+            throw new IllegalArgumentException("Unable to set PDC value to item: metadata is null");
         final PersistentDataContainer pdc = im.getPersistentDataContainer();
 
         pdc.set(ItemKeyStore.IS_CUSTOM_ITEM, BYTE, (byte) (isCustom ? 1 : 0));

@@ -19,6 +19,13 @@ public class EnchantTuple {
         this.strength = strength;
     }
 
+    @Override
+    public String toString() {
+        return """
+            {"type"="%s", "chance"=%s, "strength"=%s}"""
+            .formatted(getEnchantment(), getChance(),getStrength());
+    }
+
     public @Nonnull Enchantment getEnchantment() {
         return enchantment;
     }

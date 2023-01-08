@@ -17,13 +17,16 @@ import io.github.arcaneplugins.levelledmobs.bukkit.logic.customdrops.type.Standa
 import io.github.arcaneplugins.levelledmobs.bukkit.util.EquipmentUtils;
 import io.github.arcaneplugins.levelledmobs.bukkit.util.Log;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import javax.annotation.Nonnull;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -116,6 +119,10 @@ public class EntityDeathListener extends ListenerWrapper {
             )
         );
 
+        for (ItemStack is : customDropsToDrop) {
+            Log.debug(DROPS, () -> "Item flags: " + is.getItemFlags() + Log.DEBUG_I_AM_BLIND_SUFFIX);
+        }
+
         event.getDrops().clear();
         event.getDrops().addAll(vanillaDrops);
         event.getDrops().addAll(nonVanillaDrops);
@@ -174,41 +181,90 @@ public class EntityDeathListener extends ListenerWrapper {
         Log.debug(DROPS, () -> "[GenCustDrp] Generating custom item drops. "
             + "Collection size: %s".formatted(customDrops.size()));
 
+        final Context context = new Context()
+            .withEntity(entity)
+            .withEvent(event);
+
+        Log.debug(DROPS, () -> "attempting to retrieve player context");
+        Player player = null;
+        if(entity.getLastDamageCause() != null) {
+            Log.debug(DROPS, () -> "last damage cause found");
+            if(entity.getLastDamageCause() instanceof final EntityDamageByEntityEvent lastDamage) {
+                Log.debug(DROPS, () -> "last damage cause is instanceof ...ByEntity");
+                if(lastDamage.getDamager() instanceof final Player found) {
+                    player = found;
+                    context.withPlayer(player);
+                    Log.debug(DROPS, () -> "player context found");
+                }
+            }
+        }
+
         customDrops.addAll(
-            CustomDropHandler.getDefinedCustomDropsForEntity(entity)
+            CustomDropHandler.getDefinedCustomDropsForEntity(
+                entity,
+                context
+            )
         );
 
         Log.debug(DROPS, () -> "[GenCustDrp] Generated %s custom drops."
             .formatted(customDrops.size()));
 
-        /* TODO
-            • Chances
-            • Entity Death stuff
-         */
+        Log.debug(DROPS, () -> "[GenCustDrp] Filtering custom drops by chance");
+        customDrops.removeIf(drop -> drop.getChance() == 0f ||
+            drop.getChance() < ThreadLocalRandom.current().nextFloat(0, 100));
+        Log.debug(DROPS, () -> "[GenCustDrp] Drops chance-filtered, resulting in %s custom drops."
+            .formatted(customDrops.size()));
+
+        Log.debug(DROPS, () -> "[GenCustDrp] Filtering custom drops by death cause");
+        customDrops.removeIf(drop -> {
+            Log.debug(DROPS, () -> "START Checking drop of type " + drop.getType());
+            final Collection<String> deathCauses = drop.getDeathCauses();
+            Log.debug(DROPS, () -> "Allowed death causes: " + deathCauses + "(OK)");
+            if (deathCauses.isEmpty())
+                return false;
+            Log.debug(DROPS, () -> "Death causes is not empty; continuing (OK)");
+
+            final EntityDamageEvent ed = entity.getLastDamageCause();
+            if (ed == null)
+                return false;
+            Log.debug(DROPS, () -> "Last damage cause is defined (OK)");
+
+            if(ed instanceof final EntityDamageByEntityEvent ede &&
+                ede.getDamager().getType() == EntityType.PLAYER
+            ) {
+                Log.debug(DROPS, () ->
+                    "removing drop due to player death cause: " + !deathCauses.contains("PLAYER")
+                );
+                return !deathCauses.contains("PLAYER");
+            }
+
+            Log.debug(DROPS, () -> "checking death cause " + ed.getCause().name());
+            return !deathCauses.contains(ed.getCause().name());
+        });
+        Log.debug(DROPS, () -> "[GenCustDrp] Drops cause-filtered, resulting in %s custom drops."
+            .formatted(customDrops.size()));
 
         /*
         We want to increase the chance of custom item drops if the player is using a looting item.
          */
-        final EntityDamageEvent lastDamage = entity.getLastDamageCause();
-        if(lastDamage instanceof final EntityDamageByEntityEvent lastDamageByEntity) {
-            if(lastDamageByEntity.getDamager() instanceof final Player player) {
-                final int lootingLevel = getPlayerItemLootingEnchLevel(player);
+        if(player != null) {
+            final int lootingLevel = getPlayerItemLootingEnchLevel(player);
 
-                Log.debug(DROPS, () -> "[GenCustDrp] Player looting level: %s"
-                    .formatted(lootingLevel));
+            Log.debug(DROPS, () -> "[GenCustDrp] Player looting level: %s"
+                .formatted(lootingLevel));
 
-                if(lootingLevel > 0) {
-                    for(final CustomDrop drop : customDrops) {
-                        if(!drop.getType().equals(StandardCustomDropType.ITEM.name())) return;
+            if(lootingLevel > 0) {
+                for(final CustomDrop drop : customDrops) {
+                    if(!drop.getType().equals(StandardCustomDropType.ITEM.name())) return;
 
-                        drop.withChance(Math.min(100.0f, drop.getChance() + (1.0f * lootingLevel)));
-                    }
+                    drop.withChance(Math.max(0, Math.min(100.0f, drop.getChance() + (1.0f * lootingLevel))));
                 }
             }
         }
 
         if(customDrops.stream().anyMatch(CustomDrop::shouldOverrideVanillaDrops))
             vanillaDrops.clear();
+
         if(customDrops.stream().anyMatch(CustomDrop::shouldOverrideNonVanillaDrops))
             nonVanillaDrops.clear();
     }

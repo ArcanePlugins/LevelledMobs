@@ -45,6 +45,12 @@ public enum DebugCategory {
     /**
      * Shows various logic happening in the background for packet labels
      */
-    PACKET_LABELS
+    PACKET_LABELS,
+
+    /**
+     * When this debug category is enabled, debug logs are also broadcasted in chat to
+     * server operators, in addition to the server console (as per normal).
+     */
+    BROADCAST_TO_OPS
 
 }

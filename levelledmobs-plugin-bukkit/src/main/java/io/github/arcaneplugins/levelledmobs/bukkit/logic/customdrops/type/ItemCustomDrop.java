@@ -8,6 +8,7 @@ import io.github.arcaneplugins.levelledmobs.bukkit.logic.customdrops.CustomDrop;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.customdrops.recipient.CustomDropRecipient;
 import io.github.arcaneplugins.levelledmobs.bukkit.util.EnchantTuple;
 import io.github.arcaneplugins.levelledmobs.bukkit.util.Log;
+import io.github.arcaneplugins.levelledmobs.bukkit.util.math.RangedInt;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.HashSet;
@@ -32,7 +33,7 @@ public class ItemCustomDrop extends CustomDrop {
 
     private final Material material;
     private String name = null;
-    private int amount = 1;
+    private RangedInt amount = new RangedInt(1);
     private Integer customModelData = null;
     private boolean noMultiplier = true; //TODO
     private final Collection<ItemFlag> itemFlags = EnumSet.noneOf(ItemFlag.class);
@@ -86,27 +87,34 @@ public class ItemCustomDrop extends CustomDrop {
 
     public @Nonnull ItemStack toItemStack() {
         Log.debug(DROPS, () -> "ItemCustomDrop#toItemStack begin");
-        final ItemStack is = new ItemStack(getMaterial(), getAmount());
-
-        Log.debug(DROPS, () -> "ItemCustomDrop#toItemStack has item meta: " + is.hasItemMeta());
-        if(!is.hasItemMeta()) return is;
+        final ItemStack is = new ItemStack(getMaterial(), getAmount().choose());
+        
+        if(is.getItemMeta() == null) return is;
 
         ItemDataUtil.setIsItemCustom(is, true);
 
         final ItemMeta im = is.getItemMeta();
 
+        Log.debug(DROPS, () -> "Processing enchant tuples");
         for(final EnchantTuple tuple : getEnchantments()) {
-            if(tuple.getChance() > ThreadLocalRandom.current().nextFloat()) continue;
+            Log.debug(DROPS, () -> "Processing enchant tuple BEGIN: " + tuple);
+
+            final float randomChance = ThreadLocalRandom.current().nextFloat(0, 100);
+            Log.debug(DROPS, () -> "tupleChance=%s; randomChance=%s"
+                .formatted(tuple.getChance(), randomChance));
+            if(tuple.getChance() < randomChance) continue;
+            Log.debug(DROPS, () -> "Chance passed (OK)");
 
             final Enchantment enchantment = tuple.getEnchantment();
             final int strength = tuple.getStrength();
 
-            if(im.hasEnchant(enchantment)) {
-                if(im.getEnchantLevel(enchantment) >= strength)
-                    continue;
-            }
+            if(im.hasEnchant(enchantment) && im.getEnchantLevel(enchantment) >= strength)
+                continue;
 
-            is.addUnsafeEnchantment(enchantment, strength);
+            Log.debug(DROPS, () -> "Enchant is not already applied to item (OK)");
+
+            im.addEnchant(enchantment, strength, true);
+            Log.debug(DROPS, () -> "Enchant added (OK, DONE)");
         }
 
         if(im instanceof Damageable dim)
@@ -124,6 +132,7 @@ public class ItemCustomDrop extends CustomDrop {
         im.setCustomModelData(getCustomModelData());
 
         im.addItemFlags(getItemFlags().toArray(new ItemFlag[0]));
+        Log.debug(DROPS, () -> "Item flags: " + im.getItemFlags() + Log.DEBUG_I_AM_BLIND_SUFFIX);
 
         is.setItemMeta(im);
 
@@ -184,11 +193,11 @@ public class ItemCustomDrop extends CustomDrop {
         return this;
     }
 
-    public int getAmount() {
+    public RangedInt getAmount() {
         return amount;
     }
 
-    public @Nonnull ItemCustomDrop withAmount(int amount) {
+    public @Nonnull ItemCustomDrop withAmount(RangedInt amount) {
         this.amount = amount;
         return this;
     }

@@ -37,12 +37,15 @@ public abstract class CustomDrop {
 
     public @Nonnull String getType() { return type; }
 
+    @SuppressWarnings("unused")
     public @Nonnull CustomDropRecipient getRecipient() { return recipient; }
 
+    // TODO Use
     public @Nonnull Collection<String> getDeathCauses() {
         return deathCauses;
     }
 
+    @SuppressWarnings("UnusedReturnValue")
     public @Nonnull CustomDrop withDeathCauses(
         final @Nonnull Collection<String> deathCauses
     ) {
@@ -54,6 +57,7 @@ public abstract class CustomDrop {
         return formulaCondition;
     }
 
+    @SuppressWarnings("UnusedReturnValue")
     public @Nonnull CustomDrop withFormulaCondition(
         final @Nullable String formulaCondition
     ) {
@@ -65,6 +69,7 @@ public abstract class CustomDrop {
         return overridesVanillaDrops;
     }
 
+    @SuppressWarnings("UnusedReturnValue")
     public @Nonnull CustomDrop withOverridesVanillaDrops(boolean overridesVanillaDrops) {
         this.overridesVanillaDrops = overridesVanillaDrops;
         return this;
@@ -74,6 +79,7 @@ public abstract class CustomDrop {
         return overridesNonVanillaDrops;
     }
 
+    @SuppressWarnings("UnusedReturnValue")
     public @Nonnull CustomDrop withOverridesNonVanillaDrops(final boolean overridesNonVanillaDrops) {
         this.overridesNonVanillaDrops = overridesNonVanillaDrops;
         return this;
@@ -83,6 +89,7 @@ public abstract class CustomDrop {
         return requiredPermissions;
     }
 
+    @SuppressWarnings("UnusedReturnValue")
     public @Nonnull CustomDrop withRequiredPermissions(
         final Collection<String> requiredPermissions
     ) {
@@ -90,10 +97,12 @@ public abstract class CustomDrop {
         return this;
     }
 
+    // todo use
     public boolean isChunkKillLimited() {
         return chunkKillLimited;
     }
 
+    @SuppressWarnings("UnusedReturnValue")
     public @Nonnull CustomDrop withChunkKillLimited(boolean chunkKillLimited) {
         this.chunkKillLimited = chunkKillLimited;
         return this;
@@ -103,33 +112,40 @@ public abstract class CustomDrop {
         return dropGroupId;
     }
 
+    @SuppressWarnings("UnusedReturnValue")
     public @Nonnull CustomDrop withDropGroupId(String dropGroupId) {
         this.dropGroupId = dropGroupId;
         return this;
     }
 
+    // todo use
     public @Nullable Integer getMaxDropsInGroup() {
         return maxDropsInGroup;
     }
 
+    @SuppressWarnings("UnusedReturnValue")
     public @Nonnull CustomDrop withMaxDropsInGroup(Integer maxDropsInGroup) {
         this.maxDropsInGroup = maxDropsInGroup;
         return this;
     }
 
+    // TODO Use
     public int getPriority() {
         return priority;
     }
 
+    @SuppressWarnings("UnusedReturnValue")
     public @Nonnull CustomDrop withPriority(int priority) {
         this.priority = priority;
         return this;
     }
 
+    // TODO Use
     public boolean requiresNoSpawner() {
         return noSpawner;
     }
 
+    @SuppressWarnings("UnusedReturnValue")
     public @Nonnull CustomDrop withNoSpawner(boolean noSpawner) {
         this.noSpawner = noSpawner;
         return this;
@@ -139,15 +155,18 @@ public abstract class CustomDrop {
         return chance;
     }
 
+    @SuppressWarnings("UnusedReturnValue")
     public @Nonnull CustomDrop withChance(float chance) {
         this.chance = chance;
         return this;
     }
 
+    // todo use
     public @Nullable Integer getEntityMaxLevel() {
         return entityMaxLevel;
     }
 
+    @SuppressWarnings("UnusedReturnValue")
     public @Nonnull CustomDrop withEntityMaxLevel(
         final @Nullable Integer entityMaxLevel
     ) {
@@ -155,10 +174,12 @@ public abstract class CustomDrop {
         return this;
     }
 
+    // todo use
     public @Nullable Integer getEntityMinLevel() {
         return entityMinLevel;
     }
 
+    @SuppressWarnings("UnusedReturnValue")
     public @Nonnull CustomDrop withEntityMinLevel(
         final @Nullable Integer entityMinLevel
     ) {

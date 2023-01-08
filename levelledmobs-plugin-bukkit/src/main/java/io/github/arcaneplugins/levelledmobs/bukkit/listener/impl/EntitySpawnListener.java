@@ -39,8 +39,7 @@ public final class EntitySpawnListener extends ListenerWrapper {
         /*
         LevelledMobs only concerns LivingEntities
          */
-        if(!(event.getEntity() instanceof final LivingEntity entity))
-            return;
+        if(!(event.getEntity() instanceof final LivingEntity entity)) return;
 
         /*
         Check if the entity has any non-persistent metadata to migrate
@@ -59,7 +58,8 @@ public final class EntitySpawnListener extends ListenerWrapper {
         Fire the associated trigger.
          */
         LogicHandler.runFunctionsWithTriggers(
-            new Context().withEntity(entity), "on-entity-spawn"
+            new Context().withEntity(entity),
+            "on-entity-spawn"
         );
 
         /*
@@ -78,8 +78,10 @@ public final class EntitySpawnListener extends ListenerWrapper {
             .withEntity(entity)
             .withEvent(event);
 
-        final Collection<CustomDrop> cds =
-            CustomDropHandler.getDefinedCustomDropsForEntity(entity);
+        final Collection<CustomDrop> cds = CustomDropHandler.getDefinedCustomDropsForEntity(
+            entity,
+            new Context().withEntity(entity)
+        );
 
         for(final @Nonnull CustomDrop cd : cds) {
             if(cd.getType().equals(StandardCustomDropType.ITEM.name())) {
