@@ -1,8 +1,4 @@
-package me.lokka30.levelledmobs.nms;
-
-import net.kyori.adventure.text.Component;
-import org.bukkit.entity.LivingEntity;
-import org.jetbrains.annotations.NotNull;
+package me.lokka30.levelledmobs.nametag;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -10,9 +6,16 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Optional;
+import net.kyori.adventure.text.Component;
+import org.bukkit.entity.LivingEntity;
+import org.jetbrains.annotations.NotNull;
 
+/**
+ * @author PenalBuffalo (aka stumper66)
+ */
 public class Definitions {
-    public Definitions(){
+
+    public Definitions() {
         this.ver = new ServerVersionInfo();
         build();
     }
@@ -78,9 +81,13 @@ public class Definitions {
     Constructor<?> ctor_SynchedEntityData;
     Constructor<?> ctor_Packet;
 
-    private void build(){
-        this.isOneNinteenThreeOrNewer = ver.getMinecraftVersion() == 1.19 && ver.getRevision()>= 3 ||
-                ver.getMinecraftVersion() >= 1.20;
+    private void build() {
+        this.isOneNinteenThreeOrNewer =
+            ver.getMinecraftVersion() == 1.19d && ver.getRevision() >= 3d ||
+                ver.getMinecraftVersion() >= 1.20d;
+
+        // protocollib is used on 1.16
+        if (ver.getMinecraftVersion() < 1.17) return;
 
         try {
             buildClasses();
@@ -99,91 +106,92 @@ public class Definitions {
 
     private void buildClasses() throws ClassNotFoundException {
         this.clazz_IChatMutableComponent = Class.forName(
-                "net.minecraft.network.chat.IChatMutableComponent");
+            "net.minecraft.network.chat.IChatMutableComponent");
 
         this.clazz_IChatBaseComponent = Class.forName(
-                "net.minecraft.network.chat.IChatBaseComponent");
+            "net.minecraft.network.chat.IChatBaseComponent");
 
         this.clazz_CraftEntity = Class.forName(
-                "org.bukkit.craftbukkit." + ver.getNMSVersion() + ".entity.CraftEntity");
+            "org.bukkit.craftbukkit." + ver.getNMSVersion() + ".entity.CraftEntity");
 
         this.clazz_CraftLivingEntity = Class.forName(
-                "org.bukkit.craftbukkit." + ver.getNMSVersion() + ".entity.CraftLivingEntity");
+            "org.bukkit.craftbukkit." + ver.getNMSVersion() + ".entity.CraftLivingEntity");
 
         // net.minecraft.network.syncher.SynchedEntityData
         this.clazz_DataWatcher = Class.forName(
-                "net.minecraft.network.syncher.DataWatcher");
+            "net.minecraft.network.syncher.DataWatcher");
 
         this.clazz_DataWatcher_Item = Class.forName(
-                "net.minecraft.network.syncher.DataWatcher$Item");
+            "net.minecraft.network.syncher.DataWatcher$Item");
 
         this.clazz_DataWatcherRegistry = Class.forName(
-                "net.minecraft.network.syncher.DataWatcherRegistry");
+            "net.minecraft.network.syncher.DataWatcherRegistry");
 
         this.clazz_Entity = Class.forName(
-                "net.minecraft.world.entity.Entity");
+            "net.minecraft.world.entity.Entity");
 
         this.clazz_DataWatcherObject = Class.forName(
-                "net.minecraft.network.syncher.DataWatcherObject");
+            "net.minecraft.network.syncher.DataWatcherObject");
 
         this.clazz_DataWatcherSerializer = Class.forName(
-                "net.minecraft.network.syncher.DataWatcherSerializer");
+            "net.minecraft.network.syncher.DataWatcherSerializer");
 
         this.clazz_ClientboundSetEntityDataPacket = Class.forName(
-                "net.minecraft.network.protocol.game.PacketPlayOutEntityMetadata");
+            "net.minecraft.network.protocol.game.PacketPlayOutEntityMetadata");
 
         this.clazz_CraftPlayer = Class.forName(
-                "org.bukkit.craftbukkit." + ver.getNMSVersion() + ".entity.CraftPlayer");
+            "org.bukkit.craftbukkit." + ver.getNMSVersion() + ".entity.CraftPlayer");
 
         this.clazz_Packet = Class.forName(
-                "net.minecraft.network.protocol.Packet");
+            "net.minecraft.network.protocol.Packet");
 
         this.clazz_NetworkManager = Class.forName(
-                "net.minecraft.network.NetworkManager");
+            "net.minecraft.network.NetworkManager");
 
         //net.minecraft.server.network.ServerPlayerConnection ->
         // void send(net.minecraft.network.protocol.Packet) ->
         this.clazz_PlayerConnection = Class.forName(
-                "net.minecraft.server.network.PlayerConnection");
+            "net.minecraft.server.network.PlayerConnection");
 
         this.clazz_ServerPlayerConnection = Class.forName(
-                "net.minecraft.server.network.ServerPlayerConnection");
+            "net.minecraft.server.network.ServerPlayerConnection");
 
         // net.minecraft.server.level.ServerPlayer ->
         this.clazz_EntityPlayer = Class.forName(
-                "net.minecraft.server.level.EntityPlayer");
+            "net.minecraft.server.level.EntityPlayer");
 
         if (ver.getMinecraftVersion() < 1.19) {
             // this is basically TranslatableComponent
             this.clazz_TranslatableComponent = Class.forName(
-                    "net.minecraft.network.chat.ChatMessage");
+                "net.minecraft.network.chat.ChatMessage");
         }
 
         try {
             this.clazz_PaperAdventure = Class.forName(
-                    "io.papermc.paper.adventure.PaperAdventure");
+                "io.papermc.paper.adventure.PaperAdventure");
             this.hasKiori = true;
+        } catch (ClassNotFoundException ignored) {
         }
-        catch (ClassNotFoundException ignored){ }
 
         this.clazz_EntityTypes = Class.forName(
-                "net.minecraft.world.entity.EntityTypes");
+            "net.minecraft.world.entity.EntityTypes");
     }
 
     private void getMethodComponentAppend() throws NoSuchMethodException {
         // net.minecraft.network.chat.MutableComponent append(net.minecraft.network.chat.Component) ->
         // 1.18 = b, 1.19.0 = a, 1.19.1 = b
         String methodName = ver.getRevision() == 0 || ver.getMinecraftVersion() == 1.18
-                ? "a" : "b";
+            ? "a" : "b";
 
-        if (ver.getMinecraftVersion() <= 1.17)
+        if (ver.getMinecraftVersion() <= 1.17) {
             methodName = "addSibling";
+        }
 
         this.method_ComponentAppend = clazz_IChatMutableComponent.getDeclaredMethod(
-                methodName, this.clazz_IChatBaseComponent);
+            methodName, this.clazz_IChatBaseComponent);
     }
 
-    private void getMethodTextComponents() throws NoSuchMethodException{
+    private void getMethodTextComponents() throws NoSuchMethodException {
         // net.minecraft.network.chat.Component ->
         //     net.minecraft.network.chat.MutableComponent empty()
 
@@ -214,11 +222,12 @@ public class Definitions {
         // net.minecraft.network.chat.MutableComponent translatable(java.lang.String,java.lang.Object[])
 
         this.method_Translatable = clazz_IChatBaseComponent.getDeclaredMethod("a");
-        this.method_TranslatableWithArgs = clazz_IChatBaseComponent.getDeclaredMethod("a", String.class, Object[].class);
+        this.method_TranslatableWithArgs = clazz_IChatBaseComponent.getDeclaredMethod("a",
+            String.class, Object[].class);
     }
 
     @SuppressWarnings("deprecation")
-    public @NotNull String getTranslationKey(final @NotNull LivingEntity livingEntity){
+    public @NotNull String getTranslationKey(final @NotNull LivingEntity livingEntity) {
         // only needed for spigot. paper has a built-in method
 
         // net.minecraft.world.entity.EntityType ->
@@ -227,7 +236,8 @@ public class Definitions {
 
         Optional<?> optionalResult;
         try {
-            optionalResult = (Optional<?>)this.method_EntityTypeByString.invoke(null, livingEntity.getType().getName());
+            optionalResult = (Optional<?>) this.method_EntityTypeByString.invoke(null,
+                livingEntity.getType().getName());
 
             if (optionalResult.isEmpty()) {
                 return "";
@@ -248,24 +258,27 @@ public class Definitions {
         // net.minecraft.network.syncher.SynchedEntityData getEntityData() ->
 
         String methodName = this.isOneNinteenThreeOrNewer ?
-                "al" : "ai";
-        if (ver.getMinecraftVersion() <= 1.17)
+            "al" : "ai";
+        if (ver.getMinecraftVersion() <= 1.17) {
             methodName = "getDataWatcher";
+        }
 
         // net.minecraft.network.syncher.SynchedEntityData getEntityData() ->
         this.method_getEntityData = clazz_Entity.getMethod(methodName);
 
         methodName = ver.getMinecraftVersion() >= 1.18 ?
-                "b" : "set";
+            "b" : "set";
 
         // set(net.minecraft.network.syncher.EntityDataAccessor,java.lang.Object) ->
-        this.method_set = clazz_DataWatcher.getMethod(methodName, clazz_DataWatcherObject, Object.class);
+        this.method_set = clazz_DataWatcher.getMethod(methodName, clazz_DataWatcherObject,
+            Object.class);
 
         // int getId() ->
         methodName = this.isOneNinteenThreeOrNewer ?
-                "ah" : "ae";
-        if (ver.getMinecraftVersion() <= 1.17)
+            "ah" : "ae";
+        if (ver.getMinecraftVersion() <= 1.17) {
             methodName = "getId";
+        }
 
         this.method_getId = clazz_Entity.getDeclaredMethod(methodName);
 
@@ -275,20 +288,21 @@ public class Definitions {
         //    void send(net.minecraft.network.protocol.Packet) ->
 
         methodName = ver.getMinecraftVersion() >= 1.18 ?
-                "a" : "sendPacket";
+            "a" : "sendPacket";
         this.method_Send = clazz_ServerPlayerConnection.getDeclaredMethod(methodName, clazz_Packet);
 
         methodName = ver.getMinecraftVersion() >= 1.18 ?
-                "c" : "getAll";
+            "c" : "getAll";
         // java.util.List getAll() ->
         this.method_getAll = clazz_DataWatcher.getDeclaredMethod(methodName);
 
         methodName = ver.getMinecraftVersion() >= 1.18 ?
-                "a" : "register";
+            "a" : "register";
 
         // net.minecraft.network.syncher.SynchedEntityData ->
         //    define(net.minecraft.network.syncher.EntityDataAccessor,java.lang.Object) ->
-        this.method_define = clazz_DataWatcher.getDeclaredMethod(methodName, clazz_DataWatcherObject, Object.class);
+        this.method_define = clazz_DataWatcher.getDeclaredMethod(methodName,
+            clazz_DataWatcherObject, Object.class);
 
         // net.minecraft.network.syncher.EntityDataAccessor getAccessor() ->
         this.method_getAccessor = clazz_DataWatcher_Item.getDeclaredMethod("a");
@@ -298,8 +312,10 @@ public class Definitions {
         // net.minecraft.network.Connection getConnection() ->
         //this.method_getConnection = clazz_CraftPlayer.getDeclaredMethod("networkManager");
 
-        if (this.hasKiori)
-            this.method_AsVanilla = clazz_PaperAdventure.getDeclaredMethod("asVanilla", Component.class);
+        if (this.hasKiori) {
+            this.method_AsVanilla = clazz_PaperAdventure.getDeclaredMethod("asVanilla",
+                Component.class);
+        }
 
         // java.util.Optional byString(java.lang.String) -> a
         this.method_EntityTypeByString = clazz_EntityTypes.getDeclaredMethod("a", String.class);
@@ -307,18 +323,20 @@ public class Definitions {
         // java.lang.String getDescriptionId() -> g
         this.method_GetDescriptionId = clazz_EntityTypes.getDeclaredMethod("g");
 
-        if (this.getIsOneNinteenThreeOrNewer()){
+        if (this.isOneNinteenThreeOrNewer()) {
             // new methods here were added in 1.19.3
 
             // java.util.List getNonDefaultValues() -> c
             this.method_getNonDefaultValues = clazz_DataWatcher.getDeclaredMethod("c");
 
             // define(net.minecraft.network.syncher.EntityDataAccessor,java.lang.Object) -> a
-            this.method_SynchedEntityData_Define = clazz_DataWatcher.getMethod("a", clazz_DataWatcherObject, Object.class);
+            this.method_SynchedEntityData_Define = clazz_DataWatcher.getMethod("a",
+                clazz_DataWatcherObject, Object.class);
 
             // private <T> DataWatcher.Item<T> getItem(DataWatcherObject<T> datawatcherobject)
             // net.minecraft.network.syncher.SynchedEntityData$DataItem getItem(net.minecraft.network.syncher.EntityDataAccessor) -> b
-            this.method_DataWatcher_GetItem = clazz_DataWatcher.getDeclaredMethod("b", clazz_DataWatcherObject);
+            this.method_DataWatcher_GetItem = clazz_DataWatcher.getDeclaredMethod("b",
+                clazz_DataWatcherObject);
             this.method_DataWatcher_GetItem.setAccessible(true);
 
             // net.minecraft.network.syncher.SynchedEntityData$DataItem -> abq$a:
@@ -338,7 +356,7 @@ public class Definitions {
         //    net.minecraft.server.network.ServerGamePacketListenerImpl connection ->
         this.field_Connection = clazz_EntityPlayer.getDeclaredField("b");
 
-        if (this.isOneNinteenThreeOrNewer){
+        if (this.isOneNinteenThreeOrNewer) {
             // private final Int2ObjectMap<DataWatcher.Item<?>> itemsById
             this.field_Int2ObjectMap = clazz_DataWatcher.getDeclaredField("e");
             this.field_Int2ObjectMap.setAccessible(true);
@@ -347,7 +365,7 @@ public class Definitions {
 
     private void buildConstructors() throws NoSuchMethodException {
         this.ctor_EntityDataAccessor = clazz_DataWatcherObject.getConstructor(
-                int.class, clazz_DataWatcherSerializer);
+            int.class, clazz_DataWatcherSerializer);
 
         this.ctor_SynchedEntityData = clazz_DataWatcher.getConstructor(clazz_Entity);
 
@@ -356,24 +374,23 @@ public class Definitions {
             // public net.minecraft.network.protocol.game.PacketPlayOutEntityMetadata(int,java.util.List<DataWatcher.b<?>>)
 
             this.ctor_Packet = clazz_ClientboundSetEntityDataPacket.getConstructor(
-                    int.class, List.class);
-        }
-        else{
+                int.class, List.class);
+        } else {
             // up to 1.19.2 use this one:
             this.ctor_Packet = clazz_ClientboundSetEntityDataPacket.getConstructor(
-                    int.class, clazz_DataWatcher, boolean.class);
+                int.class, clazz_DataWatcher, boolean.class);
         }
     }
 
-    public boolean getHasKiori(){
-        return this.hasKiori;
+    public boolean hasKiori() {
+        return hasKiori;
     }
 
-    public @NotNull ServerVersionInfo getServerVersionInfo(){
-        return this.ver;
+    public @NotNull ServerVersionInfo getServerVersionInfo() {
+        return ver;
     }
 
-    public boolean getIsOneNinteenThreeOrNewer(){
-        return this.isOneNinteenThreeOrNewer;
+    public boolean isOneNinteenThreeOrNewer() {
+        return isOneNinteenThreeOrNewer;
     }
 }

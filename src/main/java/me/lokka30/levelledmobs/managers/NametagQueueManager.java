@@ -15,8 +15,8 @@ import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
 import me.lokka30.levelledmobs.misc.NametagTimerChecker;
 import me.lokka30.levelledmobs.misc.QueueItem;
-import me.lokka30.levelledmobs.nms.NMSHandler;
-import me.lokka30.levelledmobs.nms.NMSUtil;
+import me.lokka30.levelledmobs.nametag.NametagSenderHandler;
+import me.lokka30.levelledmobs.nametag.NametagSender;
 import me.lokka30.levelledmobs.result.NametagResult;
 import me.lokka30.levelledmobs.rules.NametagVisibilityEnum;
 import me.lokka30.levelledmobs.util.Utils;
@@ -38,7 +38,7 @@ public class NametagQueueManager {
 
     public NametagQueueManager(final LevelledMobs main) {
         this.main = main;
-        this.nmsHandler = new NMSHandler(main);
+        this.nametagSenderHandler = new NametagSenderHandler(main);
         this.queue = new LinkedBlockingQueue<>();
         getNMSUtil();
     }
@@ -46,17 +46,17 @@ public class NametagQueueManager {
     private final LevelledMobs main;
     private boolean isRunning;
     private boolean doThread;
-    private NMSUtil nmsUtil;
+    private NametagSender nametagSender;
     private final LinkedBlockingQueue<QueueItem> queue;
-    public final NMSHandler nmsHandler;
+    public final NametagSenderHandler nametagSenderHandler;
 
     private void getNMSUtil() {
 
-        this.nmsUtil = nmsHandler.getCurrentUtil();
+        this.nametagSender = nametagSenderHandler.getCurrentUtil();
     }
 
     public boolean hasNametagSupport() {
-        return this.nmsUtil != null;
+        return this.nametagSender != null;
     }
 
     public void start() {
@@ -129,7 +129,7 @@ public class NametagQueueManager {
     }
 
     private void processItem(final @NotNull QueueItem item) {
-        if (this.nmsUtil == null) {
+        if (this.nametagSender == null) {
             // this would happen if the Minecraft version isn't supported directly by NMS
             // and ProtocolLib is not installed
             return;
@@ -236,13 +236,13 @@ public class NametagQueueManager {
                         continue;
                     }
 
-                    nmsUtil.sendNametag(lmEntity.getLivingEntity(), nametag, player,
+                    nametagSender.sendNametag(lmEntity.getLivingEntity(), nametag, player,
                         doAlwaysVisible);
                 }
             } else {
                 // these players are getting always on nametags
                 for (final Player player : lmEntity.playersNeedingNametagCooldownUpdate) {
-                    nmsUtil.sendNametag(lmEntity.getLivingEntity(), nametag, player, true);
+                    nametagSender.sendNametag(lmEntity.getLivingEntity(), nametag, player, true);
                 }
             }
         }

@@ -124,6 +124,7 @@ public class PlayerDeathListener {
             return;
         }
         final String mobName = nametagResult.getNametagNonNull();
+        final int displayNameIndex = mobName.indexOf("{DisplayName}");
 
         Component newCom;
         if (nametagResult.hadCustomDeathMessage){
@@ -132,8 +133,14 @@ public class PlayerDeathListener {
             newCom = LegacyComponentSerializer.legacyAmpersand().deserialize(mobName)
                     .replaceText(replacementConfig);
         }
+        else if (displayNameIndex < 0){
+            // creature-death-nametag in rules.yml doesn't contain %displayname%
+            // so we'll just send the whole thing as text
+            newCom = Component.translatable(tc.key(),
+                    buildPlayerComponent(event.getEntity()),
+                    LegacyComponentSerializer.legacyAmpersand().deserialize(mobName));
+        }
         else {
-            final int displayNameIndex = mobName.indexOf("{DisplayName}");
             final Component leftComp = displayNameIndex > 0 ?
                     LegacyComponentSerializer.legacyAmpersand().deserialize(mobName.substring(0, displayNameIndex)) :
                     Component.empty();
@@ -168,7 +175,7 @@ public class PlayerDeathListener {
     }
 
     private @NotNull Component buildPlayerComponent(final @NotNull Player player){
-        final Component playerName = main.nametagQueueManager.nmsHandler.versionInfo.getMinecraftVersion() >= 1.18 ?
+        final Component playerName = main.nametagQueueManager.nametagSenderHandler.versionInfo.getMinecraftVersion() >= 1.18 ?
                 player.name() : Component.text(player.getName());
         final HoverEvent<HoverEvent.ShowEntity> hoverEvent = HoverEvent.showEntity(
                 Key.key("minecraft"), player.getUniqueId(), playerName);

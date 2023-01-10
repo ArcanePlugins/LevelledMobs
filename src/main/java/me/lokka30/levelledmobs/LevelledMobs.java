@@ -31,7 +31,7 @@ import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
 import me.lokka30.levelledmobs.misc.NamespacedKeys;
 import me.lokka30.levelledmobs.misc.NametagTimerChecker;
 import me.lokka30.levelledmobs.misc.YmlParsingHelper;
-import me.lokka30.levelledmobs.nms.Definitions;
+import me.lokka30.levelledmobs.nametag.Definitions;
 import me.lokka30.levelledmobs.rules.RulesManager;
 import me.lokka30.levelledmobs.rules.RulesParsingManager;
 import me.lokka30.levelledmobs.util.ConfigUtils;

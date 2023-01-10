@@ -339,7 +339,7 @@ public class SummonSubcommand extends MessagesBase implements Subcommand {
         // these are for atPlayer and atLocation
         if (args.length > 5) {
             switch (args[4].toLowerCase()) {
-                case "atplayer":
+                case "atplayer" -> {
                     if (args.length == 6) {
                         final List<String> suggestions = new LinkedList<>();
                         for (final Player onlinePlayer : Bukkit.getOnlinePlayers()) {
@@ -359,9 +359,8 @@ public class SummonSubcommand extends MessagesBase implements Subcommand {
                             return List.of();
                         }
                     }
-                    break;
-
-                case "atlocation":
+                }
+                case "atlocation" -> {
                     if (args.length < 9) { // args 6, 7 and 8 = x, y and z
                         return List.of("~");
                     } else if (args.length == 9) {
@@ -375,16 +374,17 @@ public class SummonSubcommand extends MessagesBase implements Subcommand {
                             return List.of();
                         }
                     }
-
-                    break;
-                case "here":
+                }
+                case "here" -> {
                     if (!skipOverride) {
                         return List.of("/override");
                     } else {
                         return List.of();
                     }
-                default:
+                }
+                default -> {
                     return List.of();
+                }
             }
         }
 
