@@ -12,6 +12,7 @@ import javax.annotation.Nonnull;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
@@ -243,7 +244,8 @@ public class EntityDataUtil {
         final boolean requirePersistence
     ) {
         Objects.requireNonNull(entity, "entity");
-        return getDataString(entity, EntityKeyStore.SHIELD_BREAKER_MULTIPLIER_FORMULA, requirePersistence);
+        return getDataString(entity, EntityKeyStore.SHIELD_BREAKER_MULTIPLIER_FORMULA,
+            requirePersistence);
     }
 
     /*
@@ -256,6 +258,19 @@ public class EntityDataUtil {
     ) {
         Objects.requireNonNull(entity, "entity");
         return getDataString(entity, EntityKeyStore.SOURCE_SPAWNER_NAME, requirePersistence);
+    }
+
+    //TODO Document
+    @Nullable
+    public static SpawnReason getSpawnReason(
+        final @NotNull LivingEntity entity,
+        final boolean requirePersistence
+    ) {
+        Objects.requireNonNull(entity, "entity");
+
+        final String s = getDataString(entity, EntityKeyStore.SPAWN_REASON, requirePersistence);
+
+        return s == null ? null : SpawnReason.valueOf(s);
     }
 
     /*

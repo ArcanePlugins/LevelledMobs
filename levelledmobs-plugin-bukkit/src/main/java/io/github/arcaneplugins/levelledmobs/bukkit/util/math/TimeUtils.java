@@ -14,6 +14,7 @@ public class TimeUtils {
     ) {
         if(o instanceof final String s) {
             try {
+                // default unit: ticks
                 return Long.parseLong(s);
             } catch(NumberFormatException ignored) {}
 
@@ -37,7 +38,7 @@ public class TimeUtils {
                     .formatted(s.substring(s.length() - 1)));
             }
         } else if(o instanceof final Number n) {
-            return (long) n;
+            return n.longValue();
         } else {
             throw new IllegalArgumentException("Unable to parse type " +
                 o.getClass().getSimpleName());

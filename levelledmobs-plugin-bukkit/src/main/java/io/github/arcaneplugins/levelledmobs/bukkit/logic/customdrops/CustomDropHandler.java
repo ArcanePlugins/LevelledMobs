@@ -1,6 +1,7 @@
 package io.github.arcaneplugins.levelledmobs.bukkit.logic.customdrops;
 
 import static io.github.arcaneplugins.levelledmobs.bukkit.debug.DebugCategory.DROPS;
+import static io.github.arcaneplugins.levelledmobs.bukkit.debug.DebugCategory.UNKNOWN;
 
 import io.github.arcaneplugins.levelledmobs.bukkit.api.data.EntityDataUtil;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.LogicHandler;
@@ -20,9 +21,11 @@ import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Function;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 
 public class CustomDropHandler {
 
@@ -62,15 +65,69 @@ public class CustomDropHandler {
         //TODO get the drop tables applied to the entity thru a LmFunction
         //TODO in lm3 that's called 'usedroptableid'
 
-        // stage 3: filtration
-        Log.debug(DROPS, () -> "Filtration (size=" + cds.size() + ")");
+        /*
+        Stage 3
+        Filtration
+
+        If this area becomes too large, best it is moved to a separate method.
+         */
+        Log.debug(DROPS, () -> "Filtration (size=" + cds.size() + ")" + Log.DEBUG_I_AM_BLIND_SUFFIX);
+
         final int level = Objects.requireNonNull(
             EntityDataUtil.getLevel(entity, true),
             "level"
         );
 
+        final boolean wasSpawnedByMobSpawner = Objects.requireNonNullElse(
+            EntityDataUtil.getSpawnReason(entity, true),
+            UNKNOWN
+        ) == SpawnReason.SPAWNER;
+
+        final @Nullable Player player = context.getPlayer();
+
+        Log.debug(DROPS, () -> "Entity was spawned by Mob Spawner: " + wasSpawnedByMobSpawner);
+        Log.debug(DROPS, () -> "Any custom drop contains no-spawner: " +
+            cds.stream().anyMatch(CustomDrop::requiresNoSpawner));
+
+        // min and max levels
         cds.removeIf(cd -> cd.getEntityMinLevel() != null && cd.getEntityMinLevel() > level);
         cds.removeIf(cd -> cd.getEntityMaxLevel() != null && cd.getEntityMaxLevel() < level);
+
+        // no-spawner
+        cds.removeIf(cd -> wasSpawnedByMobSpawner && cd.requiresNoSpawner());
+
+        // required permissions
+        if(player != null) {
+            cds.removeIf(cd ->
+                cd.getRequiredPermissions().stream().anyMatch(perm -> !player.hasPermission(perm))
+            );
+        }
+
+        cds.forEach(cd -> {
+            final String formula = cd.getFormulaCondition();
+            if(formula == null) return;
+            Log.debug(DROPS, () -> "--- Formula Condition ---");
+            Log.debug(DROPS, () -> "Formula: " + formula);
+            Log.debug(DROPS, () -> "Evaluation: " +
+                LogicHandler.evaluateExpression(
+                    LogicHandler.replacePapiAndContextPlaceholders(
+                        formula,
+                        context
+                    )
+                )
+            );
+            Log.debug(DROPS, () -> "--- done ---");
+        });
+
+        // formula condition
+        cds.removeIf(cd -> cd.getFormulaCondition() != null &&
+            LogicHandler.evaluateExpression(
+                LogicHandler.replacePapiAndContextPlaceholders(
+                    cd.getFormulaCondition(),
+                    context
+                )
+            ) != 1.0d
+        );
 
         Log.debug(DROPS, () -> "getDefinedCustomDropsForEntity DONE (size=" + cds.size() + ")");
 

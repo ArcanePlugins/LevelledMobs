@@ -1,11 +1,11 @@
 package io.github.arcaneplugins.levelledmobs.bukkit.listener.impl;
 
 import io.github.arcaneplugins.levelledmobs.bukkit.LevelledMobs;
+import io.github.arcaneplugins.levelledmobs.bukkit.api.data.keys.EntityKeyStore;
 import io.github.arcaneplugins.levelledmobs.bukkit.data.InternalEntityDataUtil;
 import io.github.arcaneplugins.levelledmobs.bukkit.listener.ListenerWrapper;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.LogicHandler;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.context.Context;
-import io.github.arcaneplugins.levelledmobs.bukkit.api.data.keys.EntityKeyStore;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.customdrops.CustomDrop;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.customdrops.CustomDropHandler;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.customdrops.cdevent.CustomDropsEventType;
@@ -17,6 +17,7 @@ import javax.annotation.Nonnull;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntitySpawnEvent;
 
 public final class EntitySpawnListener extends ListenerWrapper {
@@ -53,6 +54,19 @@ public final class EntitySpawnListener extends ListenerWrapper {
             true
         );
         entity.removeMetadata(wasSummonedKeyStr, LevelledMobs.getInstance());
+
+        /*
+        Add other data
+         */
+
+        if(event instanceof final CreatureSpawnEvent csevent) {
+            // Set spawn reason of entity
+            InternalEntityDataUtil.setSpawnReason(
+                csevent.getEntity(),
+                csevent.getSpawnReason(),
+                true
+            );
+        }
 
         /*
         Fire the associated trigger.

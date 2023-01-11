@@ -132,7 +132,6 @@ public class ItemCustomDrop extends CustomDrop {
         im.setCustomModelData(getCustomModelData());
 
         im.addItemFlags(getItemFlags().toArray(new ItemFlag[0]));
-        Log.debug(DROPS, () -> "Item flags: " + im.getItemFlags() + Log.DEBUG_I_AM_BLIND_SUFFIX);
 
         is.setItemMeta(im);
 

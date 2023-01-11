@@ -67,6 +67,7 @@ public class CommandCustomDrop extends CustomDrop {
         return commandDelay;
     }
 
+    @SuppressWarnings("UnusedReturnValue")
     public @Nonnull CommandCustomDrop withCommandDelay(final long commandDelay) {
         this.commandDelay = commandDelay;
         return this;
@@ -76,8 +77,15 @@ public class CommandCustomDrop extends CustomDrop {
         return commandRunEvents;
     }
 
+    @SuppressWarnings("UnusedReturnValue")
     public @Nonnull CommandCustomDrop withCommandRunEvents(final @Nonnull Collection<String> runEvents) {
         getCommandRunEvents().addAll(runEvents);
+        return this;
+    }
+
+    @SuppressWarnings("UnusedReturnValue")
+    public @Nonnull CommandCustomDrop withCommandRunEvent(final @Nonnull String runEvent) {
+        getCommandRunEvents().add(runEvent);
         return this;
     }
 

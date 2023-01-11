@@ -23,6 +23,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.jetbrains.annotations.NotNull;
 
@@ -167,6 +168,7 @@ public final class InternalEntityDataUtil extends EntityDataUtil {
         return ret;
     }
 
+    //TODO Document
     public static void setLabelHandlerFormulaMap(
         final @Nonnull LivingEntity entity,
         final @Nonnull Map<String, String> labelHandlerFormulaMap,
@@ -179,6 +181,7 @@ public final class InternalEntityDataUtil extends EntityDataUtil {
         );
     }
 
+    //TODO Document
     public static void updateLabels(
         final @Nonnull LivingEntity entity,
         final @Nonnull Context context,
@@ -196,6 +199,7 @@ public final class InternalEntityDataUtil extends EntityDataUtil {
         });
     }
 
+    //TODO Document
     public static void updateLabels(
         final @Nonnull Player player,
         final @Nonnull Context context,
@@ -220,6 +224,7 @@ public final class InternalEntityDataUtil extends EntityDataUtil {
             });
     }
 
+    //TODO Document
     public static void setLevel(
         final @NotNull LivingEntity entity,
         final int to,
@@ -229,6 +234,7 @@ public final class InternalEntityDataUtil extends EntityDataUtil {
         setData(entity, EntityKeyStore.LEVEL, INTEGER, to, requirePersistence);
     }
 
+    //TODO Document
     public static void setMadeOverallChance(
         final @NotNull LivingEntity entity,
         final boolean to,
@@ -238,6 +244,7 @@ public final class InternalEntityDataUtil extends EntityDataUtil {
         setData(entity, EntityKeyStore.MADE_OVERALL_CHANCE, INTEGER, boolToInt(to), requirePersistence);
     }
 
+    //TODO Document
     public static void setMinLevel(
         final @NotNull LivingEntity entity,
         final int to,
@@ -247,6 +254,7 @@ public final class InternalEntityDataUtil extends EntityDataUtil {
         setData(entity, EntityKeyStore.MIN_LEVEL, INTEGER, to, requirePersistence);
     }
 
+    //TODO Document
     public static void setMaxLevel(
         final @NotNull LivingEntity entity,
         final int to,
@@ -256,6 +264,7 @@ public final class InternalEntityDataUtil extends EntityDataUtil {
         setData(entity, EntityKeyStore.MAX_LEVEL, INTEGER, to, requirePersistence);
     }
 
+    //TODO Document
     public static void setFather(
         final @NotNull LivingEntity child,
         final @NotNull LivingEntity father,
@@ -266,6 +275,7 @@ public final class InternalEntityDataUtil extends EntityDataUtil {
         setData(child, EntityKeyStore.FATHER, STRING, father.getUniqueId().toString(), requirePersistence);
     }
 
+    //TODO Document
     public static void setMother(
         final @NotNull LivingEntity child,
         final @NotNull LivingEntity mother,
@@ -276,6 +286,7 @@ public final class InternalEntityDataUtil extends EntityDataUtil {
         setData(child, EntityKeyStore.MOTHER, STRING, mother.getUniqueId().toString(), requirePersistence);
     }
 
+    //TODO Document
     public static void setOverriddenName(
         final @NotNull LivingEntity entity,
         final @NotNull String to,
@@ -286,6 +297,7 @@ public final class InternalEntityDataUtil extends EntityDataUtil {
         setData(entity, EntityKeyStore.OVERRIDEN_ENTITY_NAME, STRING, to, requirePersistence);
     }
 
+    //TODO Document
     public static void setPrimaryLabelHandler(
         final @NotNull LivingEntity entity,
         final @NotNull String to,
@@ -311,6 +323,7 @@ public final class InternalEntityDataUtil extends EntityDataUtil {
         );
     }
 
+    //TODO Document
     public static void setSourceSpawnerName(
         final @NotNull LivingEntity entity,
         final @NotNull String to,
@@ -321,6 +334,18 @@ public final class InternalEntityDataUtil extends EntityDataUtil {
         setData(entity, EntityKeyStore.SOURCE_SPAWNER_NAME, STRING, to, requirePersistence);
     }
 
+    //TODO Document
+    public static void setSpawnReason(
+        final @NotNull LivingEntity entity,
+        final @NotNull SpawnReason to,
+        final boolean requirePersistence
+    ) {
+        Objects.requireNonNull(entity, "entity");
+        Objects.requireNonNull(to, "to");
+        setData(entity, EntityKeyStore.SPAWN_REASON, STRING, to.name(), requirePersistence);
+    }
+
+    //TODO Document
     public static void setSpawnTimeOfDay(
         final @NotNull LivingEntity entity,
         final int to,
@@ -330,6 +355,7 @@ public final class InternalEntityDataUtil extends EntityDataUtil {
         setData(entity, EntityKeyStore.SPAWNED_TIME_OF_DAY, INTEGER, to, requirePersistence);
     }
 
+    //TODO Document
     public static void setSpawnSkyLightLevel(
         final @NotNull LivingEntity entity,
         final int to,
@@ -339,6 +365,7 @@ public final class InternalEntityDataUtil extends EntityDataUtil {
         setData(entity, EntityKeyStore.SPAWNED_SKY_LIGHT_LEVEL, INTEGER, to, requirePersistence);
     }
 
+    //TODO Document
     public static void setWasBaby(
         final @NotNull LivingEntity entity,
         final boolean to,
@@ -348,6 +375,7 @@ public final class InternalEntityDataUtil extends EntityDataUtil {
         setData(entity, EntityKeyStore.WAS_BABY, INTEGER, boolToInt(to), requirePersistence);
     }
 
+    //TODO Document
     public static void setWasBred(
         final @NotNull LivingEntity entity,
         final boolean to,
@@ -357,6 +385,7 @@ public final class InternalEntityDataUtil extends EntityDataUtil {
         setData(entity, EntityKeyStore.WAS_BRED, INTEGER, boolToInt(to), requirePersistence);
     }
 
+    //TODO Document
     public static void setWasSummoned(
         final @NotNull LivingEntity entity,
         final boolean to,
@@ -366,6 +395,7 @@ public final class InternalEntityDataUtil extends EntityDataUtil {
         setData(entity, EntityKeyStore.WAS_SUMMONED, INTEGER, boolToInt(to), requirePersistence);
     }
 
+    //TODO Document
     public static void setWasTransformed(
         final @NotNull LivingEntity entity,
         final boolean to,

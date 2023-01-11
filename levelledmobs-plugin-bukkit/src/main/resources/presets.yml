@@ -58,15 +58,7 @@ presets:
           not-in-list: ['ENDERMAN', 'CREEPER']
         types:
           in-list: ['MOVEMENT_SPEED']
-        multiplier-formula: '1 + (%entity-level-ratio% * 0.15)'
-
-      - buff: 'armor-toughness-boost'
-        enabled: true
-        affected-entities:
-          in-list: ['*']
-        types:
-          in-list: ['ARMOR_TOUGHNESS']
-        multiplier-formula: '1 + (%entity-level-ratio% * 0.15)'
+        multiplier-formula: '1 + (%entity-level-ratio% * 0.9)'
 
       - buff: 'attack-damage-boost'
         enabled: true
@@ -107,22 +99,6 @@ presets:
         types:
           in-list: ['EXP_DROP']
         multiplier-formula: '1 + (%entity-level-ratio% * 5)'
-
-      - buff: 'knockback-resistance-boost'
-        enabled: true
-        affected-entities:
-          not-in-list: ['CREEPER']
-        types:
-          in-list: ['KNOCKBACK_RESISTANCE']
-        multiplier-formula: '1 + (%entity-level-ratio% * 0.25)'
-
-      - buff: 'zombie-spawn-reinforcements-boost'
-        enabled: true
-        affected-entities:
-          in-list: ['*']
-        types:
-          in-list: ['ZOMBIE_SPAWN_REINFORCEMENTS']
-        multiplier-formula: '1 + (%entity-level-ratio% * 0.15)'
 
   # Apply buffs to mobs, tuned to an advanced-level challenge.
   - preset: 'advanced-challenge'

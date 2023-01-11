@@ -40,7 +40,6 @@ public abstract class CustomDrop {
     @SuppressWarnings("unused")
     public @Nonnull CustomDropRecipient getRecipient() { return recipient; }
 
-    // TODO Use
     public @Nonnull Collection<String> getDeathCauses() {
         return deathCauses;
     }
@@ -85,6 +84,7 @@ public abstract class CustomDrop {
         return this;
     }
 
+    //TODO Use
     public @Nonnull Collection<String> getRequiredPermissions() {
         return requiredPermissions;
     }
@@ -140,7 +140,6 @@ public abstract class CustomDrop {
         return this;
     }
 
-    // TODO Use
     public boolean requiresNoSpawner() {
         return noSpawner;
     }

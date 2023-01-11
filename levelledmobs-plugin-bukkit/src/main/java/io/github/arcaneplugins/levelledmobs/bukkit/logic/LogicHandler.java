@@ -417,21 +417,50 @@ public final class LogicHandler {
         final @Nonnull CustomDropRecipient recipient
     ) {
         final Consumer<CustomDrop> parseCommonAttribs = (cd) -> {
-            cd.withChance(Math.max(0, Math.min(100, dropNode.node("chance").getFloat(100f))));
-            if(dropNode.hasChild("min-level")) cd.withEntityMinLevel(dropNode.node("min-level").getInt());
-            if(dropNode.hasChild("max-level")) cd.withEntityMaxLevel(dropNode.node("max-level").getInt());
-            cd.withNoSpawner(dropNode.node("no-spawner").getBoolean(cd.requiresNoSpawner()));
-            cd.withPriority(dropNode.node("priority").getInt(cd.getPriority()));
-            if(dropNode.hasChild("max-drops-in-group")) cd.withMaxDropsInGroup(dropNode.node("max-drops-in-group").getInt());
-            cd.withChunkKillLimited(dropNode.node("chunk-kill-limited").getBoolean(cd.isChunkKillLimited()));
-            cd.withDropGroupId(dropNode.node("drop-group-id").getString(cd.getDropGroupId()));
-            cd.withOverridesVanillaDrops(dropNode.node("overrides-vanilla-drops").getBoolean(cd.shouldOverrideVanillaDrops()));
-            cd.withOverridesNonVanillaDrops(dropNode.node("overrides-non-vanilla-drops").getBoolean(cd.shouldOverrideVanillaDrops()));
-            cd.withFormulaCondition(dropNode.node("formula-condition").getString());
+            if(dropNode.hasChild("chance"))
+                cd.withChance(Math.max(0, Math.min(100, dropNode.node("chance")
+                    .getFloat())));
+
+            if(dropNode.hasChild("min-level"))
+                cd.withEntityMinLevel(dropNode.node("min-level").getInt());
+
+            if(dropNode.hasChild("max-level"))
+                cd.withEntityMaxLevel(dropNode.node("max-level").getInt());
+
+            if(dropNode.hasChild("no-spawner"))
+                cd.withNoSpawner(dropNode.node("no-spawner").getBoolean());
+
+            if(dropNode.hasChild("priority"))
+                cd.withPriority(dropNode.node("priority").getInt());
+
+            if(dropNode.hasChild("max-drops-in-group"))
+                cd.withMaxDropsInGroup(dropNode.node("max-drops-in-group").getInt());
+
+            if(dropNode.hasChild("chunk-kill-limited"))
+                cd.withChunkKillLimited(dropNode.node("chunk-kill-limited").getBoolean());
+
+            if(dropNode.hasChild("drop-group-id"))
+                cd.withDropGroupId(dropNode.node("drop-group-id").getString());
+
+            if(dropNode.hasChild("overrides-vanilla-drops"))
+                cd.withOverridesVanillaDrops(dropNode.node("overrides-vanilla-drops")
+                    .getBoolean());
+
+            if(dropNode.hasChild("overrides-non-vanilla-drops"))
+                cd.withOverridesNonVanillaDrops(dropNode.node("overrides-non-vanilla-drops")
+                    .getBoolean());
+
+            if(dropNode.hasChild("formula-condition"))
+                cd.withFormulaCondition(dropNode.node("formula-condition").getString());
 
             try {
-                cd.withRequiredPermissions(dropNode.node("permissions").getList(String.class, Collections.emptyList()));
-                cd.withDeathCauses(dropNode.node("cause-of-death").getList(String.class, Collections.emptyList()));
+                if(dropNode.hasChild("permissions"))
+                    cd.withRequiredPermissions(dropNode.node("permissions")
+                        .getList(String.class, Collections.emptyList()));
+
+                if(dropNode.hasChild("cause-of-death"))
+                    cd.withDeathCauses(dropNode.node("cause-of-death")
+                        .getList(String.class, Collections.emptyList()));
             } catch(SerializationException ex) {
                 throw new RuntimeException(ex);
             }
@@ -510,41 +539,79 @@ public final class LogicHandler {
             Log.debug(DROPS, () -> "DONE parsing enchant tuples");
 
             return icd;
-        } else if(dropNode.hasChild("command") || dropNode.hasChild("commands")) {
-            final Collection<String> commands = new LinkedList<>();
+        } else if(dropNode.hasChild("commands")) {
+            final List<String> commands = new LinkedList<>();
 
-            if(dropNode.hasChild("command")) {
-                commands.add(Objects.requireNonNull(dropNode.getString()));
-            } else {
+            final CommentedConfigurationNode commandsNode = dropNode.node("commands");
+
+            if(commandsNode.isList()) {
                 try {
-                    commands.addAll(dropNode.getList(String.class, Collections.emptyList()));
+                    commands.addAll(
+                        commandsNode.getList(
+                            String.class,
+                            Collections.emptyList()
+                        )
+                    );
                 } catch(ConfigurateException ex) {
                     throw new RuntimeException(ex);
                 }
+            } else {
+                commands.add(
+                    Objects.requireNonNull(commandsNode.getString(), "commandsNode")
+                );
+            }
+
+            // replace the leading slash in the commands
+            for(int i = 0; i < commands.size(); i++) {
+                final String original = commands.get(i);
+
+                if(!original.startsWith("/")) {
+                    throw new IllegalArgumentException(
+                        "Custom drop commands must begin with a slash: " + original
+                    );
+                }
+
+                commands.set(i, original.substring(1));
             }
 
             final CommandCustomDrop ccd = new CommandCustomDrop(commands, recipient);
 
             parseCommonAttribs.accept(ccd);
 
-            try {
-                ccd.withCommandRunEvents(dropNode.node("run").getList(String.class, Collections.emptyList()));
-            } catch(ConfigurateException ex) {
-                throw new RuntimeException(ex);
+            final CommentedConfigurationNode runNode = dropNode.node("run");
+            if(runNode.isList()) {
+                try {
+                    ccd.withCommandRunEvents(
+                        runNode.getList(String.class, Collections.emptyList())
+                    );
+                } catch(ConfigurateException ex) {
+                    throw new RuntimeException(ex);
+                }
+            } else {
+                ccd.withCommandRunEvent(
+                    Objects.requireNonNull(runNode.getString(), "runNode")
+                );
             }
 
-            try {
-                ccd.withCommandDelay(TimeUtils.parseTimeToTicks(
-                    dropNode.node("delay").get(Object.class, 0L)
-                ));
-            } catch(SerializationException ex) {
-                throw new RuntimeException(ex);
+            final CommentedConfigurationNode delayNode = dropNode.node("delay");
+
+            if(!delayNode.virtual()) {
+                try {
+                    ccd.withCommandDelay(TimeUtils.parseTimeToTicks(
+                        Objects.requireNonNull(
+                            dropNode.node("delay").get(Object.class),
+                            "delay"
+                        )
+                    ));
+                } catch(SerializationException ex) {
+                    throw new RuntimeException(ex);
+                }
             }
 
             return ccd;
         } else {
             throw new IllegalArgumentException("""
-                Custom drop at node '%s' does not define a material or command."""
+                Custom drop at node '%s' does not define a material or list of commands."""
                 .formatted(dropNode.path()));
         }
     }

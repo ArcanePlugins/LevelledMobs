@@ -119,10 +119,6 @@ public class EntityDeathListener extends ListenerWrapper {
             )
         );
 
-        for (ItemStack is : customDropsToDrop) {
-            Log.debug(DROPS, () -> "Item flags: " + is.getItemFlags() + Log.DEBUG_I_AM_BLIND_SUFFIX);
-        }
-
         event.getDrops().clear();
         event.getDrops().addAll(vanillaDrops);
         event.getDrops().addAll(nonVanillaDrops);

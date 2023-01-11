@@ -155,6 +155,9 @@ public class EntityKeyStore extends KeyStore {
      */
     public static final NamespacedKey SOURCE_SPAWNER_NAME = getKey("SourceSpawnerName");
 
+    // TODO Document (since LM3)
+    public static final NamespacedKey SPAWN_REASON = getKey("SpawnReason");
+
     /*
     Represents the time of day (in ticks) in the world of the entity when they spawned in.
 

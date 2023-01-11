@@ -33,9 +33,13 @@ public final class UnlevelAllRoutine {
                     }
                 }
 
-                sender.sendMessage(
-                    "%sUnlevelled %s entities in %s worlds."
-                        .formatted(GRAY, affectedMobs, worldCount)
+                sender.sendMessage("""
+                    %sLM: Unlevelled %s entities in %s worlds.
+                    %sLM: You may need to re-log for packet labels to be updated on previously-levelled entities."""
+                    .formatted(
+                        GRAY, affectedMobs, worldCount,
+                        GRAY
+                    )
                 );
             });
     }
@@ -60,9 +64,13 @@ public final class UnlevelAllRoutine {
                     affectedMobs++;
                 }
 
-                sender.sendMessage(
-                    "%sUnlevelled %s entities in world '%s'."
-                        .formatted(GRAY, affectedMobs, world.getName())
+                sender.sendMessage("""
+                    %sLM: Unlevelled %s entities in world '%s'.
+                    %sLM: You may need to re-log for packet labels to be updated on previously-levelled entities."""
+                    .formatted(
+                        GRAY, affectedMobs, world.getName(),
+                        GRAY
+                    )
                 );
             });
     }
