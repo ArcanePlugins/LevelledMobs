@@ -73,7 +73,7 @@ public final class InternalEntityDataUtil extends EntityDataUtil {
     ) {
         Objects.requireNonNull(entity, "entity");
 
-        final var result = getPdcNonNull(entity).get(
+        final HashSet<String> result = getPdcNonNull(entity).get(
             EntityKeyStore.DROP_TABLE_IDS,
             DataType.asGenericCollection(HashSet::new, DataType.STRING)
         );

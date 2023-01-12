@@ -4,6 +4,7 @@ import static io.github.arcaneplugins.levelledmobs.bukkit.debug.DebugCategory.DR
 import static io.github.arcaneplugins.levelledmobs.bukkit.debug.DebugCategory.DROPS_GENERIC;
 
 import io.github.arcaneplugins.levelledmobs.bukkit.api.data.EntityDataUtil;
+import io.github.arcaneplugins.levelledmobs.bukkit.data.InternalEntityDataUtil;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.LogicHandler;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.context.Context;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.customdrops.recipient.CustomDropRecipient;
@@ -24,8 +25,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.function.Function;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import org.bukkit.entity.EntityType;
@@ -75,8 +76,15 @@ public class CustomDropHandler {
         Retrieve Drop-Table Drops
          */
         Log.debug(DROPS_GENERIC, () -> "Getting drop-table drops (size=" + cds.size() + ")");
-        //TODO get the drop tables applied to the entity thru a LmFunction
-        //TODO in lm3 that's called 'usedroptableid'
+        final Set<String> dropTableIds = InternalEntityDataUtil.getDropTableIds(entity);
+
+        for(final String dropTableId : dropTableIds) {
+            for(final DropTableRecipient recip : DROP_TABLE_RECIPIENTS) {
+                if(!recip.getId().equalsIgnoreCase(dropTableId)) continue;
+                if(doesCustomDropRecipientNotMeetConditions(recip, context)) continue;
+                cds.addAll(recip.getDrops());
+            }
+        }
 
         /*
         Stage 3
@@ -102,7 +110,7 @@ public class CustomDropHandler {
     ) {
         Objects.requireNonNull(cds, "customDrops");
 
-        Log.debug(DROPS_GENERIC, () -> "Filtration (size=" + cds.size() + ")" + Log.DEBUG_I_AM_BLIND_SUFFIX);
+        Log.debug(DROPS_GENERIC, () -> "Filtration (size=" + cds.size() + ")");
 
         final int level = Objects.requireNonNull(
             EntityDataUtil.getLevel(entity, true),
@@ -290,71 +298,74 @@ public class CustomDropHandler {
         Log.debug(DROPS_FILTRATION_BY_GROUP, () -> "Finishing with " + cds.size() + " drops.");
     }
 
+    private static boolean doesCustomDropRecipientNotMeetConditions(
+        final @NotNull CustomDropRecipient recipient,
+        final @NotNull Context context
+    ) {
+        Log.debug(DROPS_GENERIC, () ->
+            "doesDropTableNotApply BEGIN: " + recipient.getClass().getSimpleName()
+        );
+
+        // check overall permissions
+        Log.debug(DROPS_GENERIC, () -> "checking overall permissions");
+        if(!recipient.getOverallPermissions().isEmpty()) {
+            Log.debug(DROPS_GENERIC, () -> "overall permissions is not empty");
+            final Player player = context.getPlayer();
+            Log.debug(DROPS_GENERIC, () -> "has player context: " + (player != null));
+            if(player == null) return true;
+            for(final String overallPermission : recipient.getOverallPermissions()) {
+                if(!player.hasPermission(overallPermission)) {
+                    Log.debug(DROPS_GENERIC, () -> player.getName() + " doesn't have perm: " +
+                        overallPermission + "; not applying drop table.");
+                    return true;
+                }
+            }
+        }
+        Log.debug(DROPS_GENERIC, () -> "overall permissions check passed (OK)");
+
+        // check overall chance
+        Log.debug(DROPS_GENERIC, () -> "checking overall chance");
+        final float overallChance = recipient.getOverallChance();
+        Log.debug(DROPS_GENERIC, () -> "overallChance=" + overallChance);
+        if(overallChance != 100f) {
+            final float randomChance =
+                ThreadLocalRandom.current().nextFloat(0, 100);
+
+            Log.debug(DROPS_GENERIC, () -> "randomChance=" + randomChance);
+
+            final boolean chanceUnsatisfied = overallChance < randomChance;
+
+            Log.debug(DROPS_GENERIC, () -> "chance satisfied: " + !chanceUnsatisfied);
+
+            return chanceUnsatisfied;
+        }
+        Log.debug(DROPS_GENERIC, () -> "overall chance check passed (OK)");
+
+        Log.debug(DROPS_GENERIC, () -> "doesDropTableNotApply: DONE (OK)");
+
+        return false;
+    }
+
     public static @Nonnull List<CustomDrop> getDefinedCustomDropsForEntityType(
         final @Nonnull EntityType entityType,
         final @Nonnull Context context
     ) {
         final List<CustomDrop> applicableCds = new LinkedList<>();
 
-        final Function<CustomDropRecipient, Boolean> doesDropTableNotApply = recip -> {
-            Log.debug(DROPS_GENERIC, () ->
-                "doesDropTableNotApply BEGIN: " + recip.getClass().getSimpleName()
-            );
-
-            // check overall permissions
-            Log.debug(DROPS_GENERIC, () -> "checking overall permissions");
-            if(!recip.getOverallPermissions().isEmpty()) {
-                Log.debug(DROPS_GENERIC, () -> "overall permissions is not empty");
-                final Player player = context.getPlayer();
-                Log.debug(DROPS_GENERIC, () -> "has player context: " + (player != null));
-                if(player == null) return true;
-                for(final String overallPermission : recip.getOverallPermissions()) {
-                    if(!player.hasPermission(overallPermission)) {
-                        Log.debug(DROPS_GENERIC, () -> player.getName() + " doesn't have perm: " +
-                            overallPermission + "; not applying drop table.");
-                        return true;
-                    }
-                }
-            }
-            Log.debug(DROPS_GENERIC, () -> "overall permissions check passed (OK)");
-
-            // check overall chance
-            Log.debug(DROPS_GENERIC, () -> "checking overall chance");
-            final float overallChance = recip.getOverallChance();
-            Log.debug(DROPS_GENERIC, () -> "overallChance=" + overallChance);
-            if(overallChance != 100f) {
-                final float randomChance =
-                    ThreadLocalRandom.current().nextFloat(0, 100);
-
-                Log.debug(DROPS_GENERIC, () -> "randomChance=" + randomChance);
-
-                final boolean chanceUnsatisfied = overallChance < randomChance;
-
-                Log.debug(DROPS_GENERIC, () -> "chance satisfied: " + !chanceUnsatisfied);
-
-                return chanceUnsatisfied;
-            }
-            Log.debug(DROPS_GENERIC, () -> "overall chance check passed (OK)");
-
-            Log.debug(DROPS_GENERIC, () -> "doesDropTableNotApply: DONE (OK)");
-
-            return false;
-        };
-
         for(final DropTableRecipient recip : DROP_TABLE_RECIPIENTS) {
             if(!recip.getApplicableEntityTypes().contains(entityType)) continue;
-            if(doesDropTableNotApply.apply(recip)) continue;
+            if(doesCustomDropRecipientNotMeetConditions(recip, context)) continue;
             applicableCds.addAll(recip.getDrops());
         }
 
         for(final EntityTypeRecipient recip : ENTITY_TYPE_RECIPIENTS) {
             if(recip.getEntityType() != entityType) continue;
-            if(doesDropTableNotApply.apply(recip)) continue;
+            if(doesCustomDropRecipientNotMeetConditions(recip, context)) continue;
             applicableCds.addAll(recip.getDrops());
         }
 
         for(final MobGroupRecipient recip : MOB_GROUP_RECIPIENTS) {
-            if(doesDropTableNotApply.apply(recip)) continue;
+            if(doesCustomDropRecipientNotMeetConditions(recip, context)) continue;
 
             final Optional<Group> groupOpt = LogicHandler.getGroups().stream()
                 .filter(g -> g.getIdentifier().equalsIgnoreCase(recip.getMobGroupId()))

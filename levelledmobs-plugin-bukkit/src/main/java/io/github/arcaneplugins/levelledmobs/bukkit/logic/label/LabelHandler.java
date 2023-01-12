@@ -1,14 +1,12 @@
 package io.github.arcaneplugins.levelledmobs.bukkit.logic.label;
 
-import de.themoep.minedown.adventure.MineDown;
 import io.github.arcaneplugins.entitylabellib.bukkit.PacketInterceptor.LabelResponse;
 import io.github.arcaneplugins.levelledmobs.bukkit.data.InternalEntityDataUtil;
-import io.github.arcaneplugins.levelledmobs.bukkit.logic.LogicHandler;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.context.Context;
 import javax.annotation.Nonnull;
-import net.kyori.adventure.text.Component;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 public abstract class LabelHandler {
 
@@ -33,25 +31,12 @@ public abstract class LabelHandler {
             .getOrDefault(getId(), "");
     }
 
-    @Deprecated // deprecation: use generateLabelResponse instead.
-    @Nonnull
-    public Component generateLabelComponents(
-        final @Nonnull LivingEntity lent,
-        final @Nonnull Context context
-    ) {
-        return MineDown.parse(
-            LogicHandler.replacePapiAndContextPlaceholders(
-                getFormula(lent),
-                context
-            )
-        );
-    }
-
-    @Nonnull
+    // note: player can be null or non-null, the implementation should annotate whichever it wants.
+    @NotNull
     public abstract LabelResponse generateLabelResponse(
-        final @Nonnull LivingEntity lent,
-        final @Nonnull Player player,
-        final @Nonnull Context context
+        final @NotNull LivingEntity lent,
+        final Player player,
+        final @NotNull Context context
     );
 
     public abstract void update(

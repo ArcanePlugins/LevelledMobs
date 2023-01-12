@@ -1,23 +1,26 @@
 package io.github.arcaneplugins.levelledmobs.bukkit.logic.function.process.action.impl;
 
+import de.themoep.minedown.adventure.MineDown;
 import io.github.arcaneplugins.entitylabellib.bukkit.PacketInterceptor;
 import io.github.arcaneplugins.entitylabellib.bukkit.PacketInterceptor.LabelResponse;
 import io.github.arcaneplugins.levelledmobs.bukkit.LevelledMobs;
 import io.github.arcaneplugins.levelledmobs.bukkit.api.data.EntityDataUtil;
 import io.github.arcaneplugins.levelledmobs.bukkit.data.InternalEntityDataUtil;
+import io.github.arcaneplugins.levelledmobs.bukkit.logic.LogicHandler;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.context.Context;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.function.process.Process;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.function.process.action.Action;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.label.LabelHandler;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.label.LabelRegistry;
 import java.util.Map;
+import java.util.Objects;
 import javax.annotation.Nonnull;
-import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.configurate.CommentedConfigurationNode;
 
 public class SetPermanentLabelAction extends Action {
@@ -75,10 +78,18 @@ public class SetPermanentLabelAction extends Action {
         @Override
         public PacketInterceptor.LabelResponse generateLabelResponse(
             final @NotNull LivingEntity lent,
-            final @NotNull Player player,
+            final @Nullable Player player,
             final @NotNull Context context
         ) {
-            return new LabelResponse(generateLabelComponents(lent, context), isAlwaysVisible());
+            return new LabelResponse(
+                MineDown.parse(
+                    LogicHandler.replacePapiAndContextPlaceholders(
+                        getFormula(lent),
+                        context
+                    )
+                ),
+                isAlwaysVisible()
+            );
         }
 
         @Override
@@ -89,14 +100,14 @@ public class SetPermanentLabelAction extends Action {
             if(!EntityDataUtil.isLevelled(lent, true)) return;
             if(EntityDataUtil.getDeniesLabel(lent, true)) return;
 
-            final Component comp = generateLabelComponents(lent, context);
+            final LabelResponse response = generateLabelResponse(lent, null, context);
+            Objects.requireNonNull(response.labelComponent(), "Label must be defined");
 
             try {
-                lent.customName(comp);
+                lent.customName(response.labelComponent());
             } catch(NoSuchMethodError er) {
-                //TODO fingers crossed this works on spigot
                 //noinspection deprecation
-                lent.setCustomName(LegacyComponentSerializer.legacySection().serialize(comp));
+                lent.setCustomName(LegacyComponentSerializer.legacySection().serialize(response.labelComponent()));
             }
 
             lent.setCustomNameVisible(isAlwaysVisible());
