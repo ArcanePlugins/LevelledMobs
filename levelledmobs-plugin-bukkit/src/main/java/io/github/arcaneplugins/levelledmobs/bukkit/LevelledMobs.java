@@ -1,5 +1,6 @@
 package io.github.arcaneplugins.levelledmobs.bukkit;
 
+import io.github.arcaneplugins.arcaneframework.support.SupportChecker;
 import io.github.arcaneplugins.entitylabellib.bukkit.EntityLabelLib;
 import io.github.arcaneplugins.entitylabellib.bukkit.LabelHandler;
 import io.github.arcaneplugins.levelledmobs.bukkit.command.CommandHandler;
@@ -8,6 +9,7 @@ import io.github.arcaneplugins.levelledmobs.bukkit.config.ConfigHandler;
 import io.github.arcaneplugins.levelledmobs.bukkit.integration.IntegrationHandler;
 import io.github.arcaneplugins.levelledmobs.bukkit.listener.ListenerHandler;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.LogicHandler;
+import io.github.arcaneplugins.levelledmobs.bukkit.task.TaskHandler;
 import io.github.arcaneplugins.levelledmobs.bukkit.util.ClassUtils;
 import io.github.arcaneplugins.levelledmobs.bukkit.util.Log;
 import io.github.arcaneplugins.levelledmobs.bukkit.util.throwable.SilentException;
@@ -88,13 +90,16 @@ public final class LevelledMobs extends JavaPlugin {
     }
 
     public void reload() {
+        TaskHandler.stopTasks();
         LogicHandler.unload();
         getConfigHandler().load();
         LogicHandler.load();
+        TaskHandler.startTasks();
     }
 
     @Override
     public void onDisable() {
+        TaskHandler.stopTasks();
         LogicHandler.unload();
         Log.inf("Plugin disabled");
     }
@@ -110,7 +115,7 @@ public final class LevelledMobs extends JavaPlugin {
     Ensure the server is running SpigotMC, or any derivative software.
      */
     private void assertRunningSpigot() {
-        if(isRunningSpigot()) return;
+        if(SupportChecker.SPIGOTMC_OR_DERIVATIVE) return;
 
         throw new SilentException("""
             LevelledMobs has detected that your server is not running the SpigotMC server software, or any derivative such as PaperMC.""");

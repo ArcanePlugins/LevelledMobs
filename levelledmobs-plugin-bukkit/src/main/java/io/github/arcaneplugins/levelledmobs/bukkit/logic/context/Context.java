@@ -56,7 +56,9 @@ public final class Context {
     /* getters and setters */
 
     @NotNull
-    public Context withEntity(final @NotNull Entity entity) {
+    public Context withEntity(
+        final @NotNull Entity entity
+    ) {
         this.entity = Objects.requireNonNull(entity, "entity");
 
         return this

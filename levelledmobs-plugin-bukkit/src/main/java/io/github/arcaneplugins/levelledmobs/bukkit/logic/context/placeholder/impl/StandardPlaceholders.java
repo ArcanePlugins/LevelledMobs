@@ -55,7 +55,6 @@ public final class StandardPlaceholders implements ContextPlaceholder {
                 str = StringUtils.replaceIfExists(str, "%father-name%", () -> Objects.requireNonNullElse(EntityDataUtil.getOverriddenName(father, false), "%father-name%"));
                 str = StringUtils.replaceIfExists(str, "%mother-name%", () -> Objects.requireNonNullElse(EntityDataUtil.getOverriddenName(mother, false), "%mother-name%"));
 
-                //TODO use adventure to fetch translated entity name instead of formatting the type
                 str = StringUtils.replaceIfExists(str, "%entity-name%", () -> LegacyComponentSerializer.legacySection().serialize(
                     Component.translatable(entityType.translationKey())));
                 str = StringUtils.replaceIfExists(str, "%father-name%", () -> LegacyComponentSerializer.legacySection().serialize(
@@ -68,6 +67,14 @@ public final class StandardPlaceholders implements ContextPlaceholder {
 
                 str = StringUtils.replaceIfExists(str, "%father-type-formatted%", () -> EnumUtils.formatEnumConstant(father.getType()));
                 str = StringUtils.replaceIfExists(str, "%mother-type-formatted%", () -> EnumUtils.formatEnumConstant(mother.getType()));
+
+                str = StringUtils.replaceIfExists(str, "%entity-biome%", () -> entity.getLocation().getBlock().getBiome().name());
+                str = StringUtils.replaceIfExists(str, "%father-biome%", () -> father.getLocation().getBlock().getBiome().name());
+                str = StringUtils.replaceIfExists(str, "%mother-biome%", () -> mother.getLocation().getBlock().getBiome().name());
+
+                str = StringUtils.replaceIfExists(str, "%entity-biome-formatted%", () -> EnumUtils.formatEnumConstant(entity.getLocation().getBlock().getBiome()));
+                str = StringUtils.replaceIfExists(str, "%father-biome-formatted%", () -> EnumUtils.formatEnumConstant(father.getLocation().getBlock().getBiome()));
+                str = StringUtils.replaceIfExists(str, "%mother-biome-formatted%", () -> EnumUtils.formatEnumConstant(mother.getLocation().getBlock().getBiome()));
 
                 str = StringUtils.replaceIfExists(str, "%entity-health%", () -> Double.toString(lent.getHealth()));
                 str = StringUtils.replaceIfExists(str, "%father-health%", () -> Double.toString(father.getHealth()));

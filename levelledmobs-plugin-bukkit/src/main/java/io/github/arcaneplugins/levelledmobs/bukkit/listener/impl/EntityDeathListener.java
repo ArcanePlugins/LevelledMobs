@@ -1,6 +1,6 @@
 package io.github.arcaneplugins.levelledmobs.bukkit.listener.impl;
 
-import static io.github.arcaneplugins.levelledmobs.bukkit.debug.DebugCategory.DROPS;
+import static io.github.arcaneplugins.levelledmobs.bukkit.debug.DebugCategory.DROPS_GENERIC;
 
 import io.github.arcaneplugins.levelledmobs.bukkit.LevelledMobs;
 import io.github.arcaneplugins.levelledmobs.bukkit.api.data.EntityDataUtil;
@@ -50,10 +50,10 @@ public class EntityDeathListener extends ListenerWrapper {
         final Context context = new Context().withEntity(entity);
 
         if(EntityDataUtil.isLevelled(entity, true)) {
-            Log.debug(DROPS, () -> "Entity is levelled, handling death drops");
+            Log.debug(DROPS_GENERIC, () -> "Entity is levelled, handling death drops");
             handleItemDrops(event, context);
             handleExpDrops(event);
-            Log.debug(DROPS, () -> "Finished handling death drops");
+            Log.debug(DROPS_GENERIC, () -> "Finished handling death drops");
         }
 
         LogicHandler.runFunctionsWithTriggers(
@@ -82,7 +82,7 @@ public class EntityDeathListener extends ListenerWrapper {
             return sb.toString();
         };
 
-        Log.debug(DROPS, debugDropLister);
+        Log.debug(DROPS_GENERIC, debugDropLister);
 
         final List<ItemStack> vanillaDrops = new LinkedList<>();
         final List<ItemStack> nonVanillaDrops = new LinkedList<>();
@@ -96,7 +96,7 @@ public class EntityDeathListener extends ListenerWrapper {
             customDrops, customDropsToDrop
         );
 
-        Log.debug(DROPS, () -> """
+        Log.debug(DROPS_GENERIC, () -> """
             Custom Drops to Drop (pre-filtering): %s."""
             .formatted(
                 customDropsToDrop.size()
@@ -111,7 +111,7 @@ public class EntityDeathListener extends ListenerWrapper {
                     ItemDataUtil.isItemCustom(predicateStack).toFalsyBoolean()
             ) != null);
 
-        Log.debug(DROPS, () -> """
+        Log.debug(DROPS_GENERIC, () -> """
             Vanilla Drops: %s; Non-Vanilla Drops: %s; Custom Drops: %s; Custom Drops to Drop: %s."""
             .formatted(
                 vanillaDrops.size(), nonVanillaDrops.size(),
@@ -124,7 +124,7 @@ public class EntityDeathListener extends ListenerWrapper {
         event.getDrops().addAll(nonVanillaDrops);
         event.getDrops().addAll(customDropsToDrop);
 
-        Log.debug(DROPS, debugDropLister);
+        Log.debug(DROPS_GENERIC, debugDropLister);
     }
 
     private void sortItemDrops(
@@ -132,7 +132,7 @@ public class EntityDeathListener extends ListenerWrapper {
         final @Nonnull List<ItemStack> vanillaDrops,
         final @Nonnull List<ItemStack> nonVanillaDrops
     ) {
-        Log.debug(DROPS, () -> "[sort] Sorting item drops");
+        Log.debug(DROPS_GENERIC, () -> "[sort] Sorting item drops");
         // Note that LM Equipment which is dropped from the mob is considered non-vanilla
         // in the item sorting, NOT as an itemstack to be added to the customDrops list.
         // The customDrops list contains a list of NEW itemstacks to be dropped by the mob
@@ -140,11 +140,11 @@ public class EntityDeathListener extends ListenerWrapper {
 
         for(final ItemStack drop : event.getDrops()) {
             if(isNonVanillaItemDrop(event.getEntity(), drop)) {
-                Log.debug(DROPS, () -> "[sort] Sorted non-vanilla drop '%s'."
+                Log.debug(DROPS_GENERIC, () -> "[sort] Sorted non-vanilla drop '%s'."
                     .formatted(drop.getType()));
                 nonVanillaDrops.add(drop);
             } else {
-                Log.debug(DROPS, () -> "[sort] Sorted vanilla drop '%s'."
+                Log.debug(DROPS_GENERIC, () -> "[sort] Sorted vanilla drop '%s'."
                     .formatted(drop.getType()));
                 vanillaDrops.add(drop);
             }
@@ -155,7 +155,7 @@ public class EntityDeathListener extends ListenerWrapper {
         final @Nonnull LivingEntity entity,
         final @Nonnull ItemStack itemStack
     ) {
-        Log.debug(DROPS, () -> "[isNonVanilla] Checking if '%s' is non-vanilla"
+        Log.debug(DROPS_GENERIC, () -> "[isNonVanilla] Checking if '%s' is non-vanilla"
             .formatted(itemStack.getType()));
 
         // Return true if the item was created by LM ('Custom').
@@ -174,23 +174,23 @@ public class EntityDeathListener extends ListenerWrapper {
     ) {
         final LivingEntity entity = event.getEntity();
 
-        Log.debug(DROPS, () -> "[GenCustDrp] Generating custom item drops. "
+        Log.debug(DROPS_GENERIC, () -> "[GenCustDrp] Generating custom item drops. "
             + "Collection size: %s".formatted(customDrops.size()));
 
         final Context context = new Context()
             .withEntity(entity)
             .withEvent(event);
 
-        Log.debug(DROPS, () -> "attempting to retrieve player context");
+        Log.debug(DROPS_GENERIC, () -> "attempting to retrieve player context");
         Player player = null;
         if(entity.getLastDamageCause() != null) {
-            Log.debug(DROPS, () -> "last damage cause found");
+            Log.debug(DROPS_GENERIC, () -> "last damage cause found");
             if(entity.getLastDamageCause() instanceof final EntityDamageByEntityEvent lastDamage) {
-                Log.debug(DROPS, () -> "last damage cause is instanceof ...ByEntity");
+                Log.debug(DROPS_GENERIC, () -> "last damage cause is instanceof ...ByEntity");
                 if(lastDamage.getDamager() instanceof final Player found) {
                     player = found;
                     context.withPlayer(player);
-                    Log.debug(DROPS, () -> "player context found");
+                    Log.debug(DROPS_GENERIC, () -> "player context found");
                 }
             }
         }
@@ -202,42 +202,42 @@ public class EntityDeathListener extends ListenerWrapper {
             )
         );
 
-        Log.debug(DROPS, () -> "[GenCustDrp] Generated %s custom drops."
+        Log.debug(DROPS_GENERIC, () -> "[GenCustDrp] Generated %s custom drops."
             .formatted(customDrops.size()));
 
-        Log.debug(DROPS, () -> "[GenCustDrp] Filtering custom drops by chance");
+        Log.debug(DROPS_GENERIC, () -> "[GenCustDrp] Filtering custom drops by chance");
         customDrops.removeIf(drop -> drop.getChance() == 0f ||
             drop.getChance() < ThreadLocalRandom.current().nextFloat(0, 100));
-        Log.debug(DROPS, () -> "[GenCustDrp] Drops chance-filtered, resulting in %s custom drops."
+        Log.debug(DROPS_GENERIC, () -> "[GenCustDrp] Drops chance-filtered, resulting in %s custom drops."
             .formatted(customDrops.size()));
 
-        Log.debug(DROPS, () -> "[GenCustDrp] Filtering custom drops by death cause");
+        Log.debug(DROPS_GENERIC, () -> "[GenCustDrp] Filtering custom drops by death cause");
         customDrops.removeIf(drop -> {
-            Log.debug(DROPS, () -> "START Checking drop of type " + drop.getType());
+            Log.debug(DROPS_GENERIC, () -> "START Checking drop of type " + drop.getType());
             final Collection<String> deathCauses = drop.getDeathCauses();
-            Log.debug(DROPS, () -> "Allowed death causes: " + deathCauses + "(OK)");
+            Log.debug(DROPS_GENERIC, () -> "Allowed death causes: " + deathCauses + "(OK)");
             if (deathCauses.isEmpty())
                 return false;
-            Log.debug(DROPS, () -> "Death causes is not empty; continuing (OK)");
+            Log.debug(DROPS_GENERIC, () -> "Death causes is not empty; continuing (OK)");
 
             final EntityDamageEvent ed = entity.getLastDamageCause();
             if (ed == null)
                 return false;
-            Log.debug(DROPS, () -> "Last damage cause is defined (OK)");
+            Log.debug(DROPS_GENERIC, () -> "Last damage cause is defined (OK)");
 
             if(ed instanceof final EntityDamageByEntityEvent ede &&
                 ede.getDamager().getType() == EntityType.PLAYER
             ) {
-                Log.debug(DROPS, () ->
+                Log.debug(DROPS_GENERIC, () ->
                     "removing drop due to player death cause: " + !deathCauses.contains("PLAYER")
                 );
                 return !deathCauses.contains("PLAYER");
             }
 
-            Log.debug(DROPS, () -> "checking death cause " + ed.getCause().name());
+            Log.debug(DROPS_GENERIC, () -> "checking death cause " + ed.getCause().name());
             return !deathCauses.contains(ed.getCause().name());
         });
-        Log.debug(DROPS, () -> "[GenCustDrp] Drops cause-filtered, resulting in %s custom drops."
+        Log.debug(DROPS_GENERIC, () -> "[GenCustDrp] Drops cause-filtered, resulting in %s custom drops."
             .formatted(customDrops.size()));
 
         /*
@@ -246,7 +246,7 @@ public class EntityDeathListener extends ListenerWrapper {
         if(player != null) {
             final int lootingLevel = getPlayerItemLootingEnchLevel(player);
 
-            Log.debug(DROPS, () -> "[GenCustDrp] Player looting level: %s"
+            Log.debug(DROPS_GENERIC, () -> "[GenCustDrp] Player looting level: %s"
                 .formatted(lootingLevel));
 
             if(lootingLevel > 0) {
@@ -278,7 +278,7 @@ public class EntityDeathListener extends ListenerWrapper {
         final @Nonnull List<CustomDrop> customDrops,
         final @Nonnull List<ItemStack> customDropsToDrop
     ) {
-        Log.debug(DROPS, () -> "[Mult] Multiplying item drops");
+        Log.debug(DROPS_GENERIC, () -> "[Mult] Multiplying item drops");
 
         final LivingEntity entity = event.getEntity();
 
@@ -289,17 +289,17 @@ public class EntityDeathListener extends ListenerWrapper {
             )
         );
 
-        Log.debug(DROPS, () -> "[Mult] Evaluated multiplier: " + evaluatedMultiplier);
+        Log.debug(DROPS_GENERIC, () -> "[Mult] Evaluated multiplier: " + evaluatedMultiplier);
 
         final Function<ItemStack, ItemStack[]> stackMultiplier = (stack) -> {
             final int newAmount = (int) (stack.getAmount() * evaluatedMultiplier);
-            Log.debug(DROPS, () -> "[Mult] NewAmount=" + newAmount);
+            Log.debug(DROPS_GENERIC, () -> "[Mult] NewAmount=" + newAmount);
 
             final int additionalStacks = (int) Math.floor(newAmount * 1.0d / stack.getMaxStackSize());
             final int lastStack = newAmount - (stack.getMaxStackSize() * additionalStacks);
 
-            Log.debug(DROPS, () -> "[Mult] AdditionalStacks=" + additionalStacks);
-            Log.debug(DROPS, () -> "[Mult] LastStack=" + lastStack);
+            Log.debug(DROPS_GENERIC, () -> "[Mult] AdditionalStacks=" + additionalStacks);
+            Log.debug(DROPS_GENERIC, () -> "[Mult] LastStack=" + lastStack);
 
             final ItemStack[] result = new ItemStack[additionalStacks + 1];
 
@@ -318,7 +318,7 @@ public class EntityDeathListener extends ListenerWrapper {
         /*
         handle vanilla drops
          */
-        Log.debug(DROPS, () -> "[Mult] Multiplying vanilla drops");
+        Log.debug(DROPS_GENERIC, () -> "[Mult] Multiplying vanilla drops");
         final LinkedList<ItemStack> newVanillaDrops = new LinkedList<>();
         for(final ItemStack vanillaDrop : vanillaDrops) {
             newVanillaDrops.addAll(Arrays.asList(stackMultiplier.apply(vanillaDrop)));
@@ -329,7 +329,7 @@ public class EntityDeathListener extends ListenerWrapper {
         /*
         handle custom drops
          */
-        Log.debug(DROPS, () -> "[Mult] Multiplying custom drops");
+        Log.debug(DROPS_GENERIC, () -> "[Mult] Multiplying custom drops");
         for(final CustomDrop customDrop : customDrops) {
             if(customDrop instanceof final ItemCustomDrop icd) {
                 final ItemStack is = icd.toItemStack();
@@ -340,7 +340,7 @@ public class EntityDeathListener extends ListenerWrapper {
                     customDropsToDrop.addAll(Arrays.asList(stackMultiplier.apply(is)));
                 }
             } else if(customDrop instanceof final CommandCustomDrop ccd) {
-                Log.debug(DROPS, () -> "[Mult] Command drop detected, running if applicable");
+                Log.debug(DROPS_GENERIC, () -> "[Mult] Command drop detected, running if applicable");
                 if(ccd.getCommandRunEvents().contains("ON_DEATH")) {
                     ccd.execute(CustomDropsEventType.ON_DEATH, context);
                 }
@@ -357,10 +357,10 @@ public class EntityDeathListener extends ListenerWrapper {
             .getRoot().node("advanced", "multiply-non-vanilla-drops")
             .getBoolean(false);
 
-        Log.debug(DROPS, () -> "[Mult] Multiply non-vanilla drops?=" + multiplyNonVanillaDrops);
+        Log.debug(DROPS_GENERIC, () -> "[Mult] Multiply non-vanilla drops?=" + multiplyNonVanillaDrops);
 
         if(multiplyNonVanillaDrops) {
-            Log.debug(DROPS, () -> "[Mult] Multiplying non-vanilla drops");
+            Log.debug(DROPS_GENERIC, () -> "[Mult] Multiplying non-vanilla drops");
             final LinkedList<ItemStack> newNonVanillaDrops = new LinkedList<>();
             for(final ItemStack nonVanillaDrop : nonVanillaDrops) {
                 newNonVanillaDrops.addAll(Arrays.asList(stackMultiplier.apply(nonVanillaDrop)));
@@ -371,7 +371,7 @@ public class EntityDeathListener extends ListenerWrapper {
     }
 
     private void handleExpDrops(final @Nonnull EntityDeathEvent event) {
-        Log.debug(DROPS, () -> "[Exp] Handling exp; starting with " + event.getDroppedExp());
+        Log.debug(DROPS_GENERIC, () -> "[Exp] Handling exp; starting with " + event.getDroppedExp());
         final LivingEntity entity = event.getEntity();
 
         final String multFormula = EntityDataUtil
@@ -386,11 +386,11 @@ public class EntityDeathListener extends ListenerWrapper {
             )
         );
 
-        Log.debug(DROPS, () -> "[Exp] Multiplying exp drops by " + eval);
+        Log.debug(DROPS_GENERIC, () -> "[Exp] Multiplying exp drops by " + eval);
 
         event.setDroppedExp((int) (event.getDroppedExp() * eval));
 
-        Log.debug(DROPS, () -> "[Exp] finishing with " + event.getDroppedExp());
+        Log.debug(DROPS_GENERIC, () -> "[Exp] finishing with " + event.getDroppedExp());
     }
 
     private static @Nonnull ItemStack getPlayerPrimaryHeldItem(

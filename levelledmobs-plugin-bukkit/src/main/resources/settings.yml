@@ -5,42 +5,23 @@
 
 functions:
   - function: 'entity-leveller'
-    triggers: ['on-entity-spawn', 'on-entity-startup-scan']
-
+    triggers: ['on-entity-spawn', 'on-entity-scan']
     processes:
-
-      # Establishes conditions required for individual entities to become levelled.
       - process: 'check-not-levellable'
         if:
-
-          # A list of world names which entities can't be levelled in. Note, this only affects
-          # newly spawned entities, not entities who teleport to another world, e.g. via a portal.
-          - condition: 'entity-world'
-            in-list: ['example_world_123']
-
-          # A list of entity types which are not allowed to become levelled.
-          # Note: you may want to consider nerfing the attribute multipliers on
-          # the entity instead of making it not levelled.
           - condition: 'entity-type'
-            in-list: []
-
-          # LevelledMobs will aim to not level entities that belong to other plugins, such as
-          # Citizens NPCs. If you want any of these integrations to be disabled for this Process,
-          # enter its identifier below.
+            in-group: ['passive-mobs', 'neutral-mobs']
           - condition: 'entity-owner'
             not-in-list: []
-
         do:
           - action: 'set-level'
             formula: 'no-level'
           - action: 'exit-function'
 
-      # Applies a level to the entity if they don't already have one.
       - process: 'apply-level'
         if:
           - condition: 'entity-level'
             state: 'NOT_LEVELLED'
-
         do:
           - action: 'set-level'
             formula: '%weighted-random-level%'
@@ -53,7 +34,6 @@ functions:
                   '61-80': 2
                   '81-100': 1
 
-      # Update the entity's states according to their level.
       - process: 'apply-levelled-stats'
         do:
           - action: 'set-buffs'
@@ -65,7 +45,7 @@ functions:
             visibility-duration: 5
 
           - action: 'set-death-label'
-            formula: '&bLvl.%entity-level%&f %entity-prefix%&f%entity-name%&f%entity-suffix%&f'
+            formula: '[Lvl.%entity-level%](color=aqua) %entity-prefix%%entity-name%%entity-suffix%'
 
   - function: 'label-updater'
     description: 'This function updates the labels of levelled entities automatically.'
@@ -75,7 +55,7 @@ functions:
       - 'on-player-join'
       - 'on-player-teleport'
       - 'on-entity-track' # TODO add listener
-      - 'on-entity-player-scan' # TODO add listener
+      - 'on-entity-scan'
       - 'on-entity-transform'
     processes:
       - process: 'update-label'
@@ -86,21 +66,12 @@ functions:
         do:
           - action: 'update-labels'
 
-# What translation would you like to use?
-# By default this will choose 'en_US.yml' in the directory 'plugins/LevelledMobs/translations/'.
-# Inbuilt translations you can use: TODO wiki link
 lang: 'en_US'
 
-# The following settings are in regards to configuring
-# the '%levelledmobs_mob-target%' placeholder from PlaceholderAPI.
-# TODO clarify how this works
 # TODO move to advanced settings
+# TODO Implement
 mob-target-placeholder:
-
-  # Format to use if the target is a levelled entity.
   levelled: 'default'
-
-  # Format to use if the target is *not* a levelled entity.
   not-levelled: '&f%entity-prefix%&f%entity-name%&f%entity-suffix%&f'
 
 #### File Metadata

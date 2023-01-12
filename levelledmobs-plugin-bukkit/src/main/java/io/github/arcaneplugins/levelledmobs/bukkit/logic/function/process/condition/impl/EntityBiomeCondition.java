@@ -1,16 +1,19 @@
 package io.github.arcaneplugins.levelledmobs.bukkit.logic.function.process.condition.impl;
 
+import io.github.arcaneplugins.levelledmobs.bukkit.logic.LogicHandler;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.context.Context;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.function.process.Process;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.function.process.condition.Condition;
-import io.github.arcaneplugins.levelledmobs.bukkit.util.Log;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
+import io.github.arcaneplugins.levelledmobs.bukkit.logic.group.Group;
 import io.github.arcaneplugins.levelledmobs.bukkit.util.modal.ModalCollection.Mode;
 import io.github.arcaneplugins.levelledmobs.bukkit.util.modal.ModalList;
+import java.util.Collections;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import org.bukkit.block.Biome;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.configurate.CommentedConfigurationNode;
 import org.spongepowered.configurate.ConfigurateException;
 
@@ -23,65 +26,120 @@ public class EntityBiomeCondition extends Condition {
 
     Do not make this variable `final`.
      */
-    private ModalList<Biome> modalList;
+    private ModalList<Biome> biomeModalList = null;
+    private ModalList<Group> groupModalList = null;
 
     /* constructors */
 
-    public EntityBiomeCondition(final Process process, final CommentedConfigurationNode node) {
+    public EntityBiomeCondition(
+        final Process process,
+        final CommentedConfigurationNode node
+    ) {
         super(process, node);
-
-        final Mode mode;
-        final List<String> biomeTypesStr;
 
         try {
             if (getConditionNode().hasChild("in-list")) {
-                mode = Mode.INCLUSIVE;
-                biomeTypesStr = getConditionNode().node("in-list").getList(
-                    String.class, Collections.emptyList()
+                biomeModalList = new ModalList<>(
+                    getConditionNode().node("in-list")
+                        .getList(Biome.class, Collections.emptyList()),
+                    Mode.INCLUSIVE
                 );
             } else if (getConditionNode().hasChild("not-in-list")) {
-                mode = Mode.EXCLUSIVE;
-                biomeTypesStr = getConditionNode().node("not-in-list").getList(
-                    String.class, Collections.emptyList()
+                biomeModalList = new ModalList<>(
+                    getConditionNode().node("not-in-list")
+                        .getList(Biome.class, Collections.emptyList()),
+                    Mode.EXCLUSIVE
+                );
+            } else if (getConditionNode().hasChild("in-group")) {
+                groupModalList = new ModalList<>(
+                    getConditionNode().node("in-group")
+                        .getList(String.class, Collections.emptyList())
+                        .stream()
+                        .map(groupId -> {
+                            final Optional<Group> group = LogicHandler.getGroups().stream()
+                                .filter(otherGroup ->
+                                    otherGroup.getIdentifier().equalsIgnoreCase(groupId))
+                                .findFirst();
+
+                            if(group.isEmpty()) {
+                                throw new IllegalArgumentException("Unknown group: " + groupId);
+                            }
+
+                            return group.get();
+                        })
+                        .collect(Collectors.toList()),
+                    Mode.INCLUSIVE
+                );
+            } else if (getConditionNode().hasChild("not-in-group")) {
+                groupModalList = new ModalList<>(
+                    getConditionNode().node("not-in-group")
+                        .getList(String.class, Collections.emptyList())
+                        .stream()
+                        .map(groupId -> {
+                            final Optional<Group> group = LogicHandler.getGroups().stream()
+                                .filter(otherGroup ->
+                                    otherGroup.getIdentifier().equalsIgnoreCase(groupId))
+                                .findFirst();
+
+                            if(group.isEmpty()) {
+                                throw new IllegalArgumentException("Unknown group: " + groupId);
+                            }
+
+                            return group.get();
+                        })
+                        .collect(Collectors.toList()),
+                    Mode.EXCLUSIVE
                 );
             } else {
-                //TODO make better error message
-                Log.sev("entity biome condition error: no in-list/not-in-list declaration",
-                    true);
-                return;
+                throw new IllegalArgumentException(
+                    "Missing 'in-list' or 'not-in-list' or 'in-group' or 'not-in-group' "
+                        + "declaration in entity biome condition"
+                );
             }
-        } catch (ConfigurateException ex) {
-            //TODO make better error message
-            Log.sev("entity biome condition error: unable to parse yml", true);
-            return;
+        } catch (final ConfigurateException ex) {
+            throw new RuntimeException(ex);
         }
-
-        final List<Biome> biomeTypes = new LinkedList<>();
-
-        for (var entityTypeStr : biomeTypesStr) {
-            try {
-                biomeTypes.add(Biome.valueOf(entityTypeStr));
-            } catch (IllegalArgumentException ignored) {
-            }
-        }
-
-        this.modalList = new ModalList<>(biomeTypes, mode);
     }
 
     /* methods */
 
     @Override
     public boolean applies(final @NotNull Context context) {
-        assert context.getLocation() != null;
-        return getModalList().contains(context.getLocation().getBlock().getBiome());
+        Objects.requireNonNull(context.getEntity(), "entity");
+        Objects.requireNonNull(context.getEntity().getLocation(), "location");
+
+        final Biome biome = context.getEntity().getLocation().getBlock().getBiome();
+
+        if(getBiomeModalList() != null) {
+            return getBiomeModalList().contains(biome);
+        } else if(getGroupModalList() != null) {
+            /*
+            if any of the groups in the group modal list contain the biome, and the modal list
+            mode is Inclusive, then return true
+             */
+            final boolean contains = getGroupModalList().getItems().stream()
+                .anyMatch(group -> group.getItems().contains(biome.name()));
+
+            final Mode mode = getGroupModalList().getMode();
+
+            return switch (mode) {
+                case INCLUSIVE -> contains;
+                case EXCLUSIVE -> !contains;
+            };
+        } else {
+            throw new IllegalStateException("Biome and group modal lists are undefined");
+        }
     }
 
 
     /* getters and setters */
 
-    @NotNull
-    public ModalList<Biome> getModalList() {
-        return modalList;
+    @Nullable
+    public ModalList<Biome> getBiomeModalList() {
+        return biomeModalList;
     }
+
+    @Nullable
+    public ModalList<Group> getGroupModalList() { return groupModalList; }
 
 }

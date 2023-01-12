@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 public abstract class CustomDrop {
 
@@ -24,6 +25,7 @@ public abstract class CustomDrop {
     private boolean overridesVanillaDrops = false;
     private boolean overridesNonVanillaDrops = false;
     private String formulaCondition = null;
+    private boolean shuffle = true;
 
     public CustomDrop(
         final @Nonnull String type,
@@ -118,7 +120,6 @@ public abstract class CustomDrop {
         return this;
     }
 
-    // todo use
     public @Nullable Integer getMaxDropsInGroup() {
         return maxDropsInGroup;
     }
@@ -129,7 +130,6 @@ public abstract class CustomDrop {
         return this;
     }
 
-    // TODO Use
     public int getPriority() {
         return priority;
     }
@@ -185,5 +185,13 @@ public abstract class CustomDrop {
         this.entityMinLevel = entityMinLevel;
         return this;
     }
+
+    public boolean shouldShuffle() { return shuffle; }
+
+    @SuppressWarnings("UnusedReturnValue")
+    public @NotNull CustomDrop withShuffling(final boolean shuffle) {
+        this.shuffle = shuffle;
+        return this;
+    };
 
 }

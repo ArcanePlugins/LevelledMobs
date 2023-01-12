@@ -1,12 +1,13 @@
 package io.github.arcaneplugins.levelledmobs.bukkit.logic.function.process.action.impl;
 
-import de.themoep.minedown.adventure.MineDown;
+import io.github.arcaneplugins.levelledmobs.bukkit.config.translations.Message;
+import io.github.arcaneplugins.levelledmobs.bukkit.logic.LogicHandler;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.context.Context;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.function.process.Process;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.function.process.action.Action;
-import io.github.arcaneplugins.levelledmobs.bukkit.util.Log;
 import java.util.Objects;
-import org.bukkit.entity.Entity;
+import net.kyori.adventure.text.Component;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.configurate.CommentedConfigurationNode;
@@ -30,49 +31,41 @@ public class BroadcastMessageToNearbyPlayersAction extends Action {
 
         this.range = getActionNode()
             .node("range")
-            .getDouble(16d);
+            .getDouble(32d);
 
         try {
-            this.message = Objects.requireNonNull(getActionNode().node("message")
-                .getList(String.class)).toArray(new String[0]);
+            this.message = Objects.requireNonNull(
+                getActionNode().node("message").getList(String.class),
+                "message"
+            ).toArray(new String[0]);
         } catch(ConfigurateException | NullPointerException ex) {
-            Log.sev("Unable to parse action '" + getClass().getSimpleName() + "' in " +
-                "process '" + process.getIdentifier() + "': invalid message value. This is " +
-                "usually the result of a user-caused syntax error in settings.yml. A stack trace " +
-                "will be printed below for debugging purposes.",
-                true);
-            ex.printStackTrace();
+            throw new RuntimeException(ex);
         }
     }
 
     @Override
     public void run(Context context) {
-        final Entity entity;
+        final Location location;
 
-        if(context.getEntity() != null) {
-            entity = context.getEntity();
+        if(context.getLocation() != null) {
+            location = context.getLocation();
+        } else if(context.getEntity() != null) {
+            location = context.getEntity().getLocation();
         } else if(context.getPlayer() != null) {
-            entity = context.getPlayer();
+            location = context.getPlayer().getLocation();
         } else {
-            Log.sev(String.format(
-                "A 'broadcast-message-to-world' action has encountered an issue in process '%s' " +
-                    "(in function '%s'), where a context is missing an entity or player.",
-                getParentProcess().getIdentifier(),
-                getParentProcess().getParentFunction().getIdentifier()
-            ), true);
-            return;
+            throw new RuntimeException("Action requires a location context");
         }
 
-        for(var line : getMessage()) {
-            final var lineComponents = MineDown.parse(line);
-            for(var nearbyEntity : entity.getNearbyEntities(range, range, range)) {
-                if(nearbyEntity instanceof Player player) {
-                    if (!hasRequiredPermission() || player.hasPermission(
-                        getRequiredPermission())) {
-                        player.sendMessage(lineComponents);
-                    }
-                }
-            }
+        final String[] lines = new String[getMessage().length];
+        for(int i = 0; i < lines.length; i++) {
+            lines[i] = LogicHandler.replacePapiAndContextPlaceholders(getMessage()[i], context);
+        }
+        final Component msg = Message.formatMd(lines);
+
+        for(final Player player : location.getNearbyPlayers(range, range, range)) {
+            if(hasRequiredPermission() && !player.hasPermission(getRequiredPermission())) continue;
+            player.sendMessage(msg);
         }
     }
 

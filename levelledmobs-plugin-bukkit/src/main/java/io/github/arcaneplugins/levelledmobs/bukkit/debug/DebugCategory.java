@@ -21,7 +21,9 @@ public enum DebugCategory {
     /**
      * Shows information about drop calculation in {@link EntityDeathListener}.
      */
-    DROPS,
+    DROPS_GENERIC,
+
+    DROPS_FILTRATION_BY_GROUP,
 
     /**
      * Shows information about logic in the {@link SpawnDistanceLevellingStrategy}.

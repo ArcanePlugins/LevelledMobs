@@ -3,9 +3,6 @@
 # The Ultimate RPG Mob Levelling Plugin  #
 ##########################################
 
-# Create your own Groups which you can use in functions :)
-# Feel free to remove the example groups. They are present to
-# show you how to define them. It's super easy!
 groups:
   'example-ocean-biomes':
     - 'A_BIOME_NAME'
@@ -23,6 +20,7 @@ groups:
     - '#4 - LevelledMobs'
     - '#5 - LevelledMobs'
     - 'Honorable mention: LevelledMobs'
+    - '... yes, you can use groups to write anything you want!'
 
 #### File Metadata
 # Do not edit this section!

@@ -1,12 +1,15 @@
 package io.github.arcaneplugins.levelledmobs.bukkit.logic.function.process.action.impl;
 
-import de.themoep.minedown.adventure.MineDown;
+import io.github.arcaneplugins.levelledmobs.bukkit.config.translations.Message;
+import io.github.arcaneplugins.levelledmobs.bukkit.logic.LogicHandler;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.context.Context;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.function.process.Process;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.function.process.action.Action;
 import io.github.arcaneplugins.levelledmobs.bukkit.util.Log;
 import java.util.Objects;
+import net.kyori.adventure.text.Component;
 import org.bukkit.World;
+import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.configurate.CommentedConfigurationNode;
 import org.spongepowered.configurate.ConfigurateException;
@@ -43,28 +46,30 @@ public class BroadcastMessageToWorldAction extends Action {
     public void run(Context context) {
         final World world;
 
-        if(context.getEntity() != null) {
+        if(context.getLocation() != null) {
+            world = context.getLocation().getWorld();
+        } else if(context.getEntity() != null) {
             world = context.getEntity().getWorld();
         } else if(context.getPlayer() != null) {
             world = context.getPlayer().getWorld();
         } else {
-            Log.sev(String.format(
+            throw new RuntimeException(String.format(
                 "A 'broadcast-message-to-world' action has encountered an issue in process '%s' " +
                     "(in function '%s'), where a context is missing an entity or player.",
                 getParentProcess().getIdentifier(),
                 getParentProcess().getParentFunction().getIdentifier()
-            ), true);
-            return;
+            ));
         }
 
-        for(var line : getMessage()) {
-            final var lineComponents = MineDown.parse(line);
-            for(var player : world.getPlayers()) {
-                if (!hasRequiredPermission() || player.hasPermission(
-                    getRequiredPermission())) {
-                    player.sendMessage(lineComponents);
-                }
-            }
+        final String[] lines = new String[getMessage().length];
+        for(int i = 0; i < lines.length; i++) {
+            lines[i] = LogicHandler.replacePapiAndContextPlaceholders(getMessage()[i], context);
+        }
+        final Component msg = Message.formatMd(lines);
+
+        for(final Player player : world.getPlayers()) {
+            if(hasRequiredPermission() && !player.hasPermission(getRequiredPermission())) continue;
+            player.sendMessage(msg);
         }
     }
 

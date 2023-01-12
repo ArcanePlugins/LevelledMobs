@@ -1,8 +1,9 @@
 package io.github.arcaneplugins.levelledmobs.bukkit.logic;
 
-import static io.github.arcaneplugins.levelledmobs.bukkit.debug.DebugCategory.DROPS;
+import static io.github.arcaneplugins.levelledmobs.bukkit.debug.DebugCategory.DROPS_GENERIC;
 
 import io.github.arcaneplugins.levelledmobs.bukkit.LevelledMobs;
+import io.github.arcaneplugins.levelledmobs.bukkit.config.groups.InbuiltGroup;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.context.Context;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.context.placeholder.ContextPlaceholderHandler;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.customdrops.CustomDrop;
@@ -38,6 +39,8 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.function.Consumer;
 import javax.annotation.Nonnull;
@@ -118,9 +121,13 @@ public final class LogicHandler {
     }
 
     public static void unload() {
-        Log.inf("Unregistering packet interceptor");
+        Log.inf("Unregistering EntityLabelLib packet interceptor");
+
         PacketInterceptorUtil.unregisterInterceptor();
-        LevelledMobs.getInstance().getLibLabelHandler().unregisterListeners();
+
+        try {
+            LevelledMobs.getInstance().getLibLabelHandler().unregisterListeners();
+        } catch(NullPointerException ignored) {}
     }
 
     /**
@@ -150,13 +157,13 @@ public final class LogicHandler {
 
         getGroups().clear();
 
-        final var groupsMap = LevelledMobs.getInstance()
+        final Map<Object, CommentedConfigurationNode> groupsMap = LevelledMobs.getInstance()
                 .getConfigHandler().getGroupsCfg()
                 .getRoot().node("groups")
                 .childrenMap();
 
         // enumerate through groups map
-        for(var groupEntry : groupsMap.entrySet()) {
+        for(final Entry<Object, CommentedConfigurationNode> groupEntry : groupsMap.entrySet()) {
 
             // let's make sure that the entry's key is a string (identifiers must be strings)
             if(!(groupEntry.getKey() instanceof String)) {
@@ -165,7 +172,7 @@ public final class LogicHandler {
                     "', group identifiers must be strings (text).");
             }
 
-            final var group = new Group((String) groupEntry.getKey());
+            final Group group = new Group((String) groupEntry.getKey());
 
             // let's make sure that all groups have unique identifiers
             if(getGroups().stream().anyMatch(otherGroup ->
@@ -177,7 +184,7 @@ public final class LogicHandler {
             }
 
             // let's call the pre-parse event
-            final var preParseEvent = new GroupPreParseEvent(group);
+            final GroupPreParseEvent preParseEvent = new GroupPreParseEvent(group);
             Bukkit.getPluginManager().callEvent(preParseEvent);
             if(preParseEvent.isCancelled()) continue;
 
@@ -209,6 +216,21 @@ public final class LogicHandler {
             // let's call the post-parse event
             Bukkit.getPluginManager().callEvent(new GroupPostParseEvent(group));
         }
+
+        // add inbuilt groups unless they already exist (and are thus overridden).
+        // LM won't call any events for these because they are already parsed.
+        List.of(
+            InbuiltGroup.PASSIVE_MOBS,
+            InbuiltGroup.NEUTRAL_MOBS,
+            InbuiltGroup.HOSTILE_MOBS,
+            InbuiltGroup.BOSS_MOBS
+        ).forEach(inbuiltGroup -> {
+            if(getGroups().stream().noneMatch(group ->
+                group.getIdentifier().equals(inbuiltGroup.getIdentifier()))
+            ) {
+                getGroups().add(inbuiltGroup);
+            }
+        });
 
         Log.inf("Successfully parsed " + getGroups().size() + " group(s)");
     }
@@ -453,6 +475,9 @@ public final class LogicHandler {
             if(dropNode.hasChild("formula-condition"))
                 cd.withFormulaCondition(dropNode.node("formula-condition").getString());
 
+            if(dropNode.hasChild("shuffle"))
+                cd.withShuffling(dropNode.node("shuffle").getBoolean());
+
             try {
                 if(dropNode.hasChild("permissions"))
                     cd.withRequiredPermissions(dropNode.node("permissions")
@@ -509,19 +534,19 @@ public final class LogicHandler {
                 throw new RuntimeException(ex);
             }
 
-            Log.debug(DROPS, () -> "START parsing enchant tuples");
+            Log.debug(DROPS_GENERIC, () -> "START parsing enchant tuples");
             final Collection<EnchantTuple> enchantTuples = new HashSet<>();
             for(final CommentedConfigurationNode enchTupleNode :
                 dropNode.node("enchantments").childrenList()
             ) {
-                Log.debug(DROPS, () -> "Parsing enchant tuple at path " + enchTupleNode.path());
+                Log.debug(DROPS_GENERIC, () -> "Parsing enchant tuple at path " + enchTupleNode.path());
 
                 final String enchantmentId = Objects.requireNonNull(
                     enchTupleNode.node("enchantment").getString(),
                     "No enchantment ID specified at node '%s'"
                         .formatted(enchTupleNode.node("enchantment").path())
                 );
-                Log.debug(DROPS, () -> "enchantment ID = " + enchantmentId);
+                Log.debug(DROPS_GENERIC, () -> "enchantment ID = " + enchantmentId);
 
                 enchantTuples.add(new EnchantTuple(
                     Objects.requireNonNull(
@@ -535,8 +560,8 @@ public final class LogicHandler {
                 ));
             }
             icd.withEnchantments(enchantTuples);
-            Log.debug(DROPS, () -> "Enchantment tuples parsed: " + icd.getEnchantments().size());
-            Log.debug(DROPS, () -> "DONE parsing enchant tuples");
+            Log.debug(DROPS_GENERIC, () -> "Enchantment tuples parsed: " + icd.getEnchantments().size());
+            Log.debug(DROPS_GENERIC, () -> "DONE parsing enchant tuples");
 
             return icd;
         } else if(dropNode.hasChild("commands")) {

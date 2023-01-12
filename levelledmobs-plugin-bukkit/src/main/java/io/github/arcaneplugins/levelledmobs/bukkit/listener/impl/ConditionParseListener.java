@@ -1,19 +1,21 @@
 package io.github.arcaneplugins.levelledmobs.bukkit.listener.impl;
 
 import io.github.arcaneplugins.levelledmobs.bukkit.listener.ListenerWrapper;
+import io.github.arcaneplugins.levelledmobs.bukkit.logic.function.process.Process;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.function.process.condition.Condition;
+import io.github.arcaneplugins.levelledmobs.bukkit.logic.function.process.condition.ConditionParseEvent;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.function.process.condition.impl.ChanceCondition;
+import io.github.arcaneplugins.levelledmobs.bukkit.logic.function.process.condition.impl.EntityBiomeCondition;
+import io.github.arcaneplugins.levelledmobs.bukkit.logic.function.process.condition.impl.EntityCustomNameContains;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.function.process.condition.impl.EntityLevelCondition;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.function.process.condition.impl.EntityOwnerCondition;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.function.process.condition.impl.EntityTypeCondition;
-import java.util.Locale;
-import io.github.arcaneplugins.levelledmobs.bukkit.logic.function.process.condition.ConditionParseEvent;
-import io.github.arcaneplugins.levelledmobs.bukkit.logic.function.process.condition.impl.EntityBiomeCondition;
-import io.github.arcaneplugins.levelledmobs.bukkit.logic.function.process.condition.impl.EntityCustomNameContains;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.function.process.condition.impl.EntityWorldCondition;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.function.process.condition.impl.PlayerWorldCondition;
+import java.util.Locale;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.spongepowered.configurate.CommentedConfigurationNode;
 
 public class ConditionParseListener extends ListenerWrapper {
 
@@ -27,8 +29,8 @@ public class ConditionParseListener extends ListenerWrapper {
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onConditionParse(final ConditionParseEvent event) {
-        final var process = event.getProcess();
-        final var node = event.getNode();
+        final Process process = event.getProcess();
+        final CommentedConfigurationNode node = event.getNode();
 
         switch(event.getIdentifier().toLowerCase(Locale.ROOT)) {
             case "chance" ->

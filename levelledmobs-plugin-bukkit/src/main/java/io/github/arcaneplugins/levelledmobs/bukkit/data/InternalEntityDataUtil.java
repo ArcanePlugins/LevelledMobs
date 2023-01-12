@@ -49,6 +49,21 @@ public final class InternalEntityDataUtil extends EntityDataUtil {
         );
     }
 
+    //todo doc
+    public static void setDeathLabelFormula(
+        final @NotNull LivingEntity entity,
+        final @NotNull String formula,
+        final boolean requirePersistence
+    ) {
+        setData(
+            entity,
+            EntityKeyStore.DEATH_LABEL_FORMULA,
+            STRING,
+            formula,
+            requirePersistence
+        );
+    }
+
     /*
     WARNING: This method does NOT use a memory data cache.
     It is therefore NOT applicable for use in EntitySpawnEvent.

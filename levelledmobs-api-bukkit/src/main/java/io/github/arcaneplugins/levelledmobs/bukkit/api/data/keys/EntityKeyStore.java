@@ -2,14 +2,22 @@ package io.github.arcaneplugins.levelledmobs.bukkit.api.data.keys;
 
 import org.bukkit.NamespacedKey;
 
-/*
-FIXME comment
+/**
+TODO Document
+<p>
+Some of the key IDs appear to use an inconsistent naming formula - this is because they were
+grandfathered in to provide greater compatibility with legacy levelled mobs from LM3.
+
+@author lokka30
  */
 @SuppressWarnings("unused")
 public class EntityKeyStore extends KeyStore {
 
     //TODO document
     public static final NamespacedKey CREEPER_BLAST_DAMAGE_MULTIPLIER_FORMULA = getKey("CreeperBlastDamageMultiplierFormula");
+
+    //TODO Document
+    public static final NamespacedKey DEATH_LABEL_FORMULA = getKey("DeathLabelFormula");
 
     /*
     Represents that an entity should not receive any updates from LM's label system.

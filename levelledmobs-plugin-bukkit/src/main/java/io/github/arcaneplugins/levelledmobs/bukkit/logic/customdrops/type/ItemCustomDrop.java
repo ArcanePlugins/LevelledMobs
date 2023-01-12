@@ -1,6 +1,6 @@
 package io.github.arcaneplugins.levelledmobs.bukkit.logic.customdrops.type;
 
-import static io.github.arcaneplugins.levelledmobs.bukkit.debug.DebugCategory.DROPS;
+import static io.github.arcaneplugins.levelledmobs.bukkit.debug.DebugCategory.DROPS_GENERIC;
 
 import io.github.arcaneplugins.levelledmobs.bukkit.api.data.ItemDataUtil;
 import io.github.arcaneplugins.levelledmobs.bukkit.config.translations.Message;
@@ -86,7 +86,7 @@ public class ItemCustomDrop extends CustomDrop {
     }
 
     public @Nonnull ItemStack toItemStack() {
-        Log.debug(DROPS, () -> "ItemCustomDrop#toItemStack begin");
+        Log.debug(DROPS_GENERIC, () -> "ItemCustomDrop#toItemStack begin");
         final ItemStack is = new ItemStack(getMaterial(), getAmount().choose());
         
         if(is.getItemMeta() == null) return is;
@@ -95,15 +95,15 @@ public class ItemCustomDrop extends CustomDrop {
 
         final ItemMeta im = is.getItemMeta();
 
-        Log.debug(DROPS, () -> "Processing enchant tuples");
+        Log.debug(DROPS_GENERIC, () -> "Processing enchant tuples");
         for(final EnchantTuple tuple : getEnchantments()) {
-            Log.debug(DROPS, () -> "Processing enchant tuple BEGIN: " + tuple);
+            Log.debug(DROPS_GENERIC, () -> "Processing enchant tuple BEGIN: " + tuple);
 
             final float randomChance = ThreadLocalRandom.current().nextFloat(0, 100);
-            Log.debug(DROPS, () -> "tupleChance=%s; randomChance=%s"
+            Log.debug(DROPS_GENERIC, () -> "tupleChance=%s; randomChance=%s"
                 .formatted(tuple.getChance(), randomChance));
             if(tuple.getChance() < randomChance) continue;
-            Log.debug(DROPS, () -> "Chance passed (OK)");
+            Log.debug(DROPS_GENERIC, () -> "Chance passed (OK)");
 
             final Enchantment enchantment = tuple.getEnchantment();
             final int strength = tuple.getStrength();
@@ -111,10 +111,10 @@ public class ItemCustomDrop extends CustomDrop {
             if(im.hasEnchant(enchantment) && im.getEnchantLevel(enchantment) >= strength)
                 continue;
 
-            Log.debug(DROPS, () -> "Enchant is not already applied to item (OK)");
+            Log.debug(DROPS_GENERIC, () -> "Enchant is not already applied to item (OK)");
 
             im.addEnchant(enchantment, strength, true);
-            Log.debug(DROPS, () -> "Enchant added (OK, DONE)");
+            Log.debug(DROPS_GENERIC, () -> "Enchant added (OK, DONE)");
         }
 
         if(im instanceof Damageable dim)
@@ -123,7 +123,7 @@ public class ItemCustomDrop extends CustomDrop {
         if(getName() != null)
             im.displayName(Message.formatMd(new String[]{getName()}));
 
-        Log.debug(DROPS, () ->
+        Log.debug(DROPS_GENERIC, () ->
             "Item drop displayName: " + LegacyComponentSerializer.legacySection().serialize(
                 Objects.requireNonNullElse(im.displayName(), Component.empty())
             )
@@ -135,7 +135,7 @@ public class ItemCustomDrop extends CustomDrop {
 
         is.setItemMeta(im);
 
-        Log.debug(DROPS, () -> "ItemCustomDrop#toItemStack done");
+        Log.debug(DROPS_GENERIC, () -> "ItemCustomDrop#toItemStack done");
         return is;
     }
 

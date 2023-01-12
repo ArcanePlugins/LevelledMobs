@@ -38,6 +38,20 @@ public class EntityDataUtil {
         return getDataString(entity, EntityKeyStore.CREEPER_BLAST_DAMAGE_MULTIPLIER_FORMULA, requirePersistence);
     }
 
+    /**
+     * TODO DOcument
+     * @param entity TODO Document
+     * @param requirePersistence TODO Document
+     * @return death label formula
+     */
+    public static @Nullable String getDeathLabelFormula(
+        final @NotNull LivingEntity entity,
+        final boolean requirePersistence
+    ) {
+        Objects.requireNonNull(entity, "entity");
+        return getDataString(entity, EntityKeyStore.DEATH_LABEL_FORMULA, requirePersistence);
+    }
+
     /*
     FIXME Comment
      */

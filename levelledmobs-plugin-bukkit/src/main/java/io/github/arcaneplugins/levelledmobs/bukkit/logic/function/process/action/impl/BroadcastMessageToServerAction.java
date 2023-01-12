@@ -1,12 +1,14 @@
 package io.github.arcaneplugins.levelledmobs.bukkit.logic.function.process.action.impl;
 
-import de.themoep.minedown.adventure.MineDown;
+import io.github.arcaneplugins.levelledmobs.bukkit.config.translations.Message;
+import io.github.arcaneplugins.levelledmobs.bukkit.logic.LogicHandler;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.context.Context;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.function.process.Process;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.function.process.action.Action;
-import io.github.arcaneplugins.levelledmobs.bukkit.util.Log;
 import java.util.Objects;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.configurate.CommentedConfigurationNode;
 import org.spongepowered.configurate.ConfigurateException;
@@ -27,28 +29,26 @@ public class BroadcastMessageToServerAction extends Action {
             .getString("");
 
         try {
-            this.message = Objects.requireNonNull(getActionNode().node("message")
-                .getList(String.class)).toArray(new String[0]);
+            this.message = Objects.requireNonNull(
+                getActionNode().node("message").getList(String.class),
+                "message"
+            ).toArray(new String[0]);
         } catch(ConfigurateException | NullPointerException ex) {
-            Log.sev("Unable to parse action '" + getClass().getSimpleName() + "' in " +
-                "process '" + process.getIdentifier() + "': invalid message value. This is " +
-                "usually the result of a user-caused syntax error in settings.yml. A stack trace " +
-                "will be printed below for debugging purposes.",
-                true);
-            ex.printStackTrace();
+            throw new RuntimeException(ex);
         }
     }
 
     @Override
     public void run(Context context) {
-        for(var line : getMessage()) {
-            final var lineComponents = MineDown.parse(line);
-            for(var player : Bukkit.getOnlinePlayers()) {
-                if (!hasRequiredPermission() || player.hasPermission(
-                    getRequiredPermission())) {
-                    player.sendMessage(lineComponents);
-                }
-            }
+        final String[] lines = new String[getMessage().length];
+        for(int i = 0; i < lines.length; i++) {
+            lines[i] = LogicHandler.replacePapiAndContextPlaceholders(getMessage()[i], context);
+        }
+        final Component msg = Message.formatMd(lines);
+
+        for(final Player player : Bukkit.getOnlinePlayers()) {
+            if(hasRequiredPermission() && !player.hasPermission(getRequiredPermission())) continue;
+            player.sendMessage(msg);
         }
     }
 
