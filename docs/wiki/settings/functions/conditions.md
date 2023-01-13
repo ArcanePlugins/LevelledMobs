@@ -13,4 +13,67 @@ For instance, you can use the 'Entity Type' condition to make a Process only run
 
 ## Conditions List
 
-- This list has not been written yet. :(
+#### Chance
+
+Allows you to use a random percentage chance that the Condition will be satisfied.
+
+##### Example
+
+```yaml
+- condition: 'chance'
+  value: 75.5
+```
+
+> Sets a 75.5% chance that the condition will be satisfied.
+
+#### Entity Biome
+
+Checks what biome an entity is. The condition is met if the biome is/isn't in a list/[Group](../../groups/groups.md) of biomes.
+
+##### Example
+
+N/A, please yell at lokka30.
+
+#### Entity Custom Name Contains
+
+> *This Condition will be altered quite a lot soon, so please don't use it. I won't document it so I don't waste time. ;)*
+
+#### Entity Level
+
+Documentation N/A
+
+##### Example
+
+Documentation N/A
+
+#### Entity Owner
+
+Documentation N/A
+
+##### Example
+
+Documentation N/A
+
+#### Entity Type
+
+Documentation N/A
+
+##### Example
+
+Documentation N/A
+
+#### Entity World
+
+Documentation N/A
+
+##### Example
+
+Documentation N/A
+
+#### Player World
+
+Documentation N/A
+
+##### Example
+
+Documentation N/A

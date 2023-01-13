@@ -15,6 +15,7 @@ import io.github.arcaneplugins.levelledmobs.bukkit.logic.function.process.action
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.label.LabelHandler;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.label.LabelRegistry;
 import io.github.arcaneplugins.levelledmobs.bukkit.util.Log;
+import io.github.arcaneplugins.levelledmobs.bukkit.util.math.TimeUtils;
 import java.time.Instant;
 import java.util.Collections;
 import java.util.EnumSet;
@@ -38,7 +39,7 @@ public class SetPacketLabelAction extends Action {
     private final String formula;
     private final EnumSet<VisibilityMethod> visibilityMethods =
         EnumSet.noneOf(VisibilityMethod.class);
-    private final float visibilityDuration;
+    private final long visibilityDuration;
     private final boolean primary;
 
     public SetPacketLabelAction(
@@ -61,8 +62,9 @@ public class SetPacketLabelAction extends Action {
                 visibilityMethodStr.toUpperCase(Locale.ROOT)));
         }
 
-        this.visibilityDuration = getActionNode().node("visibility-duration")
-            .getFloat(5.0f);
+        this.visibilityDuration = TimeUtils.parseTimeToTicks(
+            getActionNode().node("visibility-duration").getString("5s")
+        );
 
         this.primary = getActionNode().node("primary").getBoolean(false);
     }
@@ -104,7 +106,7 @@ public class SetPacketLabelAction extends Action {
         return formula;
     }
 
-    public float getVisibilityDuration() {
+    public long getVisibilityDuration() {
         return visibilityDuration;
     }
 

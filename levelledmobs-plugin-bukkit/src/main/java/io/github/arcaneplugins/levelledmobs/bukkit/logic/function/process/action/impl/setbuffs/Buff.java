@@ -22,21 +22,33 @@ public class Buff {
 
     public static final String ATTRIBUTE_MODIFIER_PREFIX = "levelledmobs:multiplier.";
 
-    private final CommentedConfigurationNode node;
     private final boolean enabled;
     private final ModalEntityTypeSet affectedEntities;
     private final ModalBuffTypeSet buffTypes;
     private final String multiplierFormula;
     private final boolean adjustCurrentHealth;
 
+    @SuppressWarnings("unused")
+    public Buff(
+        final boolean enabled,
+        final ModalEntityTypeSet affectedEntities,
+        final ModalBuffTypeSet buffTypes,
+        final String multiplierFormula,
+        final boolean adjustCurrentHealth
+    ) {
+        this.enabled = enabled;
+        this.affectedEntities = affectedEntities;
+        this.buffTypes = buffTypes;
+        this.multiplierFormula = multiplierFormula;
+        this.adjustCurrentHealth = adjustCurrentHealth;
+    }
+
     public Buff(
         final CommentedConfigurationNode node
     ) {
         Log.debug(BUFFS, () -> "Initializing buff @ " + node.path());
 
-        this.node = node;
-
-        this.enabled = getNode().node("enabled").getBoolean(true);
+        this.enabled = node.node("enabled").getBoolean(true);
 
         if(!isEnabled()) {
             this.affectedEntities = null;
@@ -47,15 +59,15 @@ public class Buff {
         }
 
         this.affectedEntities =
-            ModalEntityTypeSet.parseNode(getNode().node("affected-entities"));
+            ModalEntityTypeSet.parseNode(node.node("affected-entities"));
 
-        buffTypes = ModalBuffTypeSet.fromCfgSection(getNode().node("types"));
+        buffTypes = ModalBuffTypeSet.fromCfgSection(node.node("types"));
 
         this.multiplierFormula =
-            getNode().node("multiplier-formula").getString("1.0");
+            node.node("multiplier-formula").getString("1.0");
 
         this.adjustCurrentHealth =
-            getNode().node("adjust-current-health").getBoolean(true);
+            node.node("adjust-current-health").getBoolean(true);
     }
 
     public void apply(
@@ -122,10 +134,6 @@ public class Buff {
                 buffType.getCustomFormulaConsumer().accept(entity, getMultiplierFormula());
             }
         }
-    }
-
-    public CommentedConfigurationNode getNode() {
-        return node;
     }
 
     public boolean isEnabled() {

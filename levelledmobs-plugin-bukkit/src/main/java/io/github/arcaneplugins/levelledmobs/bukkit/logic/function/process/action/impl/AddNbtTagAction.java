@@ -1,6 +1,7 @@
 package io.github.arcaneplugins.levelledmobs.bukkit.logic.function.process.action.impl;
 
 import io.github.arcaneplugins.levelledmobs.bukkit.integration.IntegrationHandler;
+import io.github.arcaneplugins.levelledmobs.bukkit.integration.type.nbt.NbtModificationResult;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.context.Context;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.function.process.Process;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.function.process.action.Action;
@@ -56,8 +57,8 @@ public class AddNbtTagAction extends Action {
                     "provider available.");
             }
 
-            for(var tag : tags) {
-                final var result = nbtProvider.addNbtTag(livingEntity, tag);
+            for(final String tag : tags) {
+                final NbtModificationResult result = nbtProvider.addNbtTag(livingEntity, tag);
                 //TODO should probably make the NbtProvider accept a collection of tags instead of
                 //     calling the method for each tag
                 if(result.hasException()) {

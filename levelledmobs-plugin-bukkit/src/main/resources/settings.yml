@@ -42,7 +42,7 @@ functions:
           - action: 'set-packet-label'
             formula: '&8&l༺ &bLvl.%entity-level%&f %entity-prefix%&f%entity-name%&f%entity-suffix%&8 • &7%entity-health-rounded%&8/&7%entity-max-health-rounded%&c♥ &8&l༻'
             visibility-methods: ['TARGETED', 'ATTACKED']
-            visibility-duration: 5
+            visibility-duration: '5s'
 
           - action: 'set-death-label'
             formula: '[Lvl.%entity-level%](color=aqua) %entity-prefix%%entity-name%%entity-suffix%'

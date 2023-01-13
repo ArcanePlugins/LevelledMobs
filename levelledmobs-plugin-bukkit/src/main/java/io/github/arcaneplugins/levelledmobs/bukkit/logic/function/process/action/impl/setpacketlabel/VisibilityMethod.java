@@ -6,6 +6,8 @@ public enum VisibilityMethod {
 
     TARGETED,
 
+    TRACKED,
+
     ATTACKED,
 
     MELEE,

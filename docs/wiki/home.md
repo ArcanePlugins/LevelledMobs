@@ -6,11 +6,7 @@
 
 **Warning: This Wiki is for LM4, not [LM3](https://github.com/ArcanePlugins/LevelledMobs/Wiki).** They're wildly different!
 
-This is a temporary site to develop the LM4 Wiki to a sufficient state. These links will be moved
-to a side-bar area.
-
-Please note that this will also mean that you will find inner pages hidden inside the 'See Also'
-sections of some pages. 😄
+This is a temporary site to develop the LM4 Wiki to a sufficient state. Unfortunately there is no side-bar to put navigation links in, so we'll have to list them out whenever required. :)
 
 <br>
 

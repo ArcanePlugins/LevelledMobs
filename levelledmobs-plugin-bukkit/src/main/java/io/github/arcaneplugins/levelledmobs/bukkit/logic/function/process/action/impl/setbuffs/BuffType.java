@@ -76,11 +76,12 @@ public enum BuffType {
         Attribute.GENERIC_MOVEMENT_SPEED
     ),
 
+    //TODO Not Implemented
     RANGED_ATTACK_DAMAGE(
-        Attribute.GENERIC_ATTACK_DAMAGE
+        (lent, formula) -> {}
     ),
 
-    //TODO Implement
+    //Not Implemented; see GitHub Issue
     SHIELD_BREAKER(
         (lent, formula) -> InternalEntityDataUtil
             .setShieldBreakerMultiplierFormula(lent, formula, true)
