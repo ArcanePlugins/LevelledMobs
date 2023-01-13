@@ -14,7 +14,7 @@ This is a temporary site to develop the LM4 Wiki to a sufficient state. Unfortun
 
 • [🏡 Home](home.md)
 • [🔌 Installation](installation.md)
-• [🙋‍ Frequently Asked Questions (FAQ)](faq.md)
+• [👋 Frequently Asked Questions (FAQ)](faq.md)
 • [👉 Commands](commands.md)
 • [🛑 Permissions](permissions.md)
 • [👍 Compatibility](compatibility.md)
