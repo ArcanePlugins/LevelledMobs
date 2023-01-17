@@ -74,7 +74,7 @@ public class PacketInterceptorUtil {
                     ) {
                         cf.complete(null);
                         return cf;
-                    };
+                    }
 
                     Log.debug(PACKET_LABELS, () -> "intercept: done; returning label response");
                     cf.complete(

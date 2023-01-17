@@ -32,8 +32,6 @@ public abstract class Config {
     /* methods */
 
     public void load() {
-        Log.inf("Loading config file '" + getFileName() + "'");
-
         saveDefaultFile(false);
 
         if(loader == null) {
@@ -115,7 +113,7 @@ public abstract class Config {
         if(!replaceExistingFile && getAbsolutePath().toFile().exists())
             return;
 
-        Log.inf("Saving default file of configuration '" + getFileName() + "'");
+        Log.inf("Saving default file '" + getFileName() + "'");
         LevelledMobs.getInstance().saveResource(getFileName(), replaceExistingFile);
     }
 

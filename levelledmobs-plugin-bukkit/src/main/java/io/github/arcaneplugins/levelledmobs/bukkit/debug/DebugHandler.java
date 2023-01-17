@@ -20,8 +20,6 @@ public final class DebugHandler {
     }
 
     public static void load() {
-        Log.inf("Loading debug handler");
-
         final CommentedConfigurationNode parentNode = LevelledMobs.getInstance()
             .getConfigHandler().getSettingsCfg().getRoot()
             .node("advanced", "debug", "enabled-categories");

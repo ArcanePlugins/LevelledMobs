@@ -124,6 +124,7 @@ public final class LogicHandler {
         Log.inf("Unregistering EntityLabelLib packet interceptor");
 
         PacketInterceptorUtil.unregisterInterceptor();
+        LevelledMobs.getInstance().getLibLabelHandler().unregisterListeners();
 
         try {
             LevelledMobs.getInstance().getLibLabelHandler().unregisterListeners();
@@ -153,8 +154,6 @@ public final class LogicHandler {
     }
 
     private static void parseGroups() {
-        Log.inf("Parsing groups");
-
         getGroups().clear();
 
         final Map<Object, CommentedConfigurationNode> groupsMap = LevelledMobs.getInstance()
@@ -231,13 +230,9 @@ public final class LogicHandler {
                 getGroups().add(inbuiltGroup);
             }
         });
-
-        Log.inf("Successfully parsed " + getGroups().size() + " group(s)");
     }
 
     private static void parsePresets() {
-        Log.inf("Parsing presets.");
-
         getPresets().clear();
 
         /*
@@ -291,25 +286,17 @@ public final class LogicHandler {
                 actualPresetNode
             ));
         }
-
-        Log.inf("Successfully parsed " + getPresets().size() + " preset(s).");
     }
 
     private static void parseCustomDrops() {
-        Log.inf("Parsing custom drops.");
-
         CustomDropHandler.clearCustomDropRecipients();
 
         parseDropTableCustomDrops();
         parseEntityTypeCustomDrops();
         parseMobGroupCustomDrops();
-
-        Log.inf("Successfully parsed custom drops.");
     }
 
     private static void parseDropTableCustomDrops() {
-        Log.inf("Parsing Drop Table custom drops.");
-
         for(final CommentedConfigurationNode dropTableNode : LevelledMobs.getInstance()
             .getConfigHandler().getCustomDropsCfg()
             .getRoot().node("drop-tables").childrenList()
@@ -339,14 +326,9 @@ public final class LogicHandler {
 
             CustomDropHandler.DROP_TABLE_RECIPIENTS.add(recipient);
         }
-
-        Log.inf("Successfully parsed custom drops for %s drop tables.".formatted(
-            CustomDropHandler.DROP_TABLE_RECIPIENTS.size()));
     }
 
     private static void parseEntityTypeCustomDrops() {
-        Log.inf("Parsing Entity Type custom drops.");
-
         for(final CommentedConfigurationNode entityTypeNode : LevelledMobs.getInstance()
             .getConfigHandler().getCustomDropsCfg()
             .getRoot().node("entities").childrenList()
@@ -377,14 +359,9 @@ public final class LogicHandler {
 
             CustomDropHandler.ENTITY_TYPE_RECIPIENTS.add(recipient);
         }
-
-        Log.inf("Successfully parsed custom drops for %s entity types.".formatted(
-            CustomDropHandler.ENTITY_TYPE_RECIPIENTS.size()));
     }
 
     private static void parseMobGroupCustomDrops() {
-        Log.inf("Parsing Mob Group custom drops.");
-
         for(final CommentedConfigurationNode mobGroupNode : LevelledMobs.getInstance()
             .getConfigHandler().getCustomDropsCfg()
             .getRoot().node("mob-groups").childrenList()
@@ -419,9 +396,6 @@ public final class LogicHandler {
 
             CustomDropHandler.MOB_GROUP_RECIPIENTS.add(recipient);
         }
-
-        Log.inf("Successfully parsed custom drops for %s mob groups.".formatted(
-            CustomDropHandler.MOB_GROUP_RECIPIENTS.size()));
     }
 
     private static @Nonnull Collection<? extends CustomDrop> parseCustomDropsAtSection(
@@ -669,9 +643,6 @@ public final class LogicHandler {
 
             call post-parse function event
          */
-
-        Log.inf("Parsing functions.");
-
         getFunctions().clear();
 
         /*
@@ -755,8 +726,6 @@ public final class LogicHandler {
 
             getFunctions().add(function);
         }
-
-        Log.inf("Successfully parsed " + getFunctions().size() + " function(s).");
     }
 
     private static void walkNodePresetParse(final @NotNull CommentedConfigurationNode node) {

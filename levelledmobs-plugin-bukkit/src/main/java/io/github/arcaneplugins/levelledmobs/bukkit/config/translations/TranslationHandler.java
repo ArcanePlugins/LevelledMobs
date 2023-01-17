@@ -70,8 +70,6 @@ public final class TranslationHandler {
 
         load translation config from file
          */
-        Log.inf("Loading translations");
-
         String lang = LevelledMobs.getInstance()
             .getConfigHandler()
             .getSettingsCfg()
@@ -124,7 +122,6 @@ public final class TranslationHandler {
         }
 
         this.lang = lang;
-        Log.inf("Using translation '" + getLang() + "'");
 
         // note: should not need to check if loader is already set, as the file name is dynamic.
         // this is unlike other config files (see: Config#load())

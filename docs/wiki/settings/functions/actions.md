@@ -322,7 +322,7 @@ It's a bad idea.
 
 ```yaml
 - action: 'set-permanent-label'
-  formula: '&bLvl.%entity-level%&f %entity-name%'
+  formula: '&bLvl.%entity-level%&f %entity-type-formatted%'
 ```
 
 </details>

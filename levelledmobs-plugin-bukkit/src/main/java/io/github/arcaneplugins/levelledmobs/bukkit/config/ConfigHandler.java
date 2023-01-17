@@ -29,7 +29,7 @@ public final class ConfigHandler {
     Order of the function calls does matter!
      */
     public void load() {
-        Log.inf("Loading config files");
+        Log.inf("Loading configuration");
 
         for(var cfg : Set.of(customDropsCfg, groupsCfg, presetsCfg, settingsCfg))
             cfg.load();

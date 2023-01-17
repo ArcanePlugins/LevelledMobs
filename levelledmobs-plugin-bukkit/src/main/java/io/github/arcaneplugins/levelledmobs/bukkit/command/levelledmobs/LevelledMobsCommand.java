@@ -11,6 +11,7 @@ import io.github.arcaneplugins.levelledmobs.bukkit.command.levelledmobs.subcomma
 import io.github.arcaneplugins.levelledmobs.bukkit.command.levelledmobs.subcommand.RoutineSubcommand;
 import io.github.arcaneplugins.levelledmobs.bukkit.command.levelledmobs.subcommand.SpawnerSubcommand;
 import io.github.arcaneplugins.levelledmobs.bukkit.command.levelledmobs.subcommand.SummonSubcommand;
+import io.github.arcaneplugins.levelledmobs.bukkit.config.translations.Message;
 
 public final class LevelledMobsCommand {
 
@@ -34,7 +35,17 @@ public final class LevelledMobsCommand {
             .withShortDescription("Manage the LevelledMobs plugin.")
             .withFullDescription("Manage the LevelledMobs plugin, from re-loading the "
                 + "configuration to creating a levelled mob spawn egg item with your "
-                + "chosen specifications.");
+                + "chosen specifications.")
+            .executes((sender, args) -> {
+                sender.sendMessage(
+                    Message.formatMd(
+                        new String[]{
+                            """
+                            %prefix-info% Please specify a subcommand, such as [/lm about](color=blue format=underlined run_command=/lm about). [Click here](color=blue format=underlined run_command=/lm help) for command help."""
+                        }
+                    )
+                );
+            });
     }
 
 }

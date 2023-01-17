@@ -76,13 +76,13 @@ public final class StandardPlaceholders implements ContextPlaceholder {
                 str = StringUtils.replaceIfExists(str, "%father-biome-formatted%", () -> EnumUtils.formatEnumConstant(father.getLocation().getBlock().getBiome()));
                 str = StringUtils.replaceIfExists(str, "%mother-biome-formatted%", () -> EnumUtils.formatEnumConstant(mother.getLocation().getBlock().getBiome()));
 
-                str = StringUtils.replaceIfExists(str, "%entity-health%", () -> Double.toString(lent.getHealth()));
-                str = StringUtils.replaceIfExists(str, "%father-health%", () -> Double.toString(father.getHealth()));
-                str = StringUtils.replaceIfExists(str, "%mother-health%", () -> Double.toString(mother.getHealth()));
+                str = StringUtils.replaceIfExists(str, "%entity-health%", () -> Double.toString(MathUtils.round2dp(lent.getHealth())));
+                str = StringUtils.replaceIfExists(str, "%father-health%", () -> Double.toString(MathUtils.round2dp(father.getHealth())));
+                str = StringUtils.replaceIfExists(str, "%mother-health%", () -> Double.toString(MathUtils.round2dp(mother.getHealth())));
 
-                str = StringUtils.replaceIfExists(str, "%entity-health-rounded%", () -> Double.toString(MathUtils.round2dp(lent.getHealth())));
-                str = StringUtils.replaceIfExists(str, "%father-health-rounded%", () -> Double.toString(MathUtils.round2dp(father.getHealth())));
-                str = StringUtils.replaceIfExists(str, "%mother-health-rounded%", () -> Double.toString(MathUtils.round2dp(mother.getHealth())));
+                str = StringUtils.replaceIfExists(str, "%entity-health-rounded%", () -> Double.toString((int) lent.getHealth()));
+                str = StringUtils.replaceIfExists(str, "%father-health-rounded%", () -> Double.toString((int) father.getHealth()));
+                str = StringUtils.replaceIfExists(str, "%mother-health-rounded%", () -> Double.toString((int) mother.getHealth()));
 
                 str = StringUtils.replaceIfExists(str, "%entity-max-health%", () -> Double.toString(lent.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue()));
                 str = StringUtils.replaceIfExists(str, "%father-max-health%", () -> Double.toString(father.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue()));

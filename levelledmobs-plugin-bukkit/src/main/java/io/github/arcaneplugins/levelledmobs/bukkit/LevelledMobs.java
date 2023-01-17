@@ -40,7 +40,6 @@ public final class LevelledMobs extends JavaPlugin {
     }
 
     private void initializeLibLabelHandler() {
-        Log.inf("Initializing EntityLabelLib packet label handler");
         libLabelHandler = EntityLabelLib.instantiateLabelHandler(this);
     }
 
@@ -99,7 +98,9 @@ public final class LevelledMobs extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        TaskHandler.stopTasks();
+        try { TaskHandler.stopTasks(); } catch(NoClassDefFoundError ignored) {}
+        // I have no idea why the JRE is doing this. Bukkit should stop the sync tasks anyways.
+
         LogicHandler.unload();
         Log.inf("Plugin disabled");
     }

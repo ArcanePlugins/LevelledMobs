@@ -2,7 +2,6 @@ package io.github.arcaneplugins.levelledmobs.bukkit.logic.context.placeholder;
 
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.context.Context;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.context.placeholder.impl.StandardPlaceholders;
-import io.github.arcaneplugins.levelledmobs.bukkit.util.Log;
 import io.github.arcaneplugins.levelledmobs.bukkit.util.StringUtils;
 import java.util.HashSet;
 import java.util.Map.Entry;
@@ -17,12 +16,8 @@ public class ContextPlaceholderHandler {
     private final Set<ContextPlaceholder> contextPlaceholders = new HashSet<>();
 
     public void load() {
-        Log.inf("Loading context placeholders");
-
         getContextPlaceholders().clear();
-
         getContextPlaceholders().add(new StandardPlaceholders());
-
         Bukkit.getPluginManager().callEvent(new ContextPlaceholdersLoadEvent());
     }
 
