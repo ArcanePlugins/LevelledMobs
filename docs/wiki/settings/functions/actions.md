@@ -267,7 +267,7 @@ more control over that.
 
 #### Set Level
 
-> **Note:** [Click here for a list of Levelling Strategies.](levelling-strategies.md)
+> **Note:** [Click here for a list of Levelling Strategies](levelling-strategies.md).
 
 Documentation N/A
 

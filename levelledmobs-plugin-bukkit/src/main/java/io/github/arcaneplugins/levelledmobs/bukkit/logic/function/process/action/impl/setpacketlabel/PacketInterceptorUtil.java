@@ -9,6 +9,7 @@ import io.github.arcaneplugins.levelledmobs.bukkit.data.InternalEntityDataUtil;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.context.Context;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.function.process.action.impl.setpacketlabel.SetPacketLabelAction.PacketLabelHandler;
 import io.github.arcaneplugins.levelledmobs.bukkit.util.Log;
+import java.util.concurrent.CompletableFuture;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -53,13 +54,16 @@ public class PacketInterceptorUtil {
 
         @NotNull
         @Override
-        public LabelResponse interceptEntityLabelPacket(
+        public CompletableFuture<LabelResponse> interceptEntityLabelPacket(
             final @NotNull Entity entity,
             final @NotNull Player player
         ) {
             Log.debug(PACKET_LABELS, () -> "intercept: begin intercepting packet");
+
+            final CompletableFuture<LabelResponse> cf = new CompletableFuture<>();
+
             try {
-                return Bukkit.getScheduler().callSyncMethod(LevelledMobs.getInstance(), () -> {
+                Bukkit.getScheduler().callSyncMethod(LevelledMobs.getInstance(), () -> {
                     if(!(entity instanceof final LivingEntity lentity) ||
                         entity.getType() == EntityType.PLAYER ||
                         !EntityDataUtil.isLevelled(lentity, true) ||
@@ -67,19 +71,28 @@ public class PacketInterceptorUtil {
                         !InternalEntityDataUtil
                             .getLabelHandlerFormulaMap(lentity, true)
                             .containsKey(SetPacketLabelAction.LABEL_ID)
-                    ) return new LabelResponse(null, null);
+                    ) {
+                        cf.complete(null);
+                        return cf;
+                    };
 
                     Log.debug(PACKET_LABELS, () -> "intercept: done; returning label response");
-                    return PacketLabelHandler.INSTANCE.generateLabelResponse(
-                        lentity,
-                        player,
-                        new Context().withEntity(lentity).withPlayer(player)
+                    cf.complete(
+                        PacketLabelHandler.INSTANCE.generateLabelResponse(
+                            lentity,
+                            player,
+                            new Context().withEntity(lentity).withPlayer(player)
+                        )
                     );
-                }).get();
+
+                    return cf;
+                });
             } catch(final Exception ex) {
-                Log.debug(PACKET_LABELS, () -> "intercept: caught exception; rethrowing");
-                throw new RuntimeException(ex);
+                Log.debug(PACKET_LABELS, () -> "intercept: caught exception");
+                cf.completeExceptionally(ex);
             }
+
+            return cf;
         }
     }
 

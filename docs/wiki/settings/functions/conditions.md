@@ -28,11 +28,22 @@ Allows you to use a random percentage chance that the Condition will be satisfie
 
 #### Entity Biome
 
-Checks what biome an entity is. The condition is met if the biome is/isn't in a list/[Group](../../groups/groups.md) of biomes.
+Checks what biome an entity is. The condition is met if the biome is/isn't in a list or [Group](../../groups/groups.md) of biomes.
+
+[Click here](https://hub.spigotmc.org/javadocs/spigot/org/bukkit/block/Biome.html) to view a list of biome IDs you can use.
 
 ##### Example
 
-N/A, please yell at lokka30.
+```yaml
+- condition: 'entity-biome'
+  in-list: ['SAVANNA', 'JUNGLE']
+  # Alternatively...
+  not-in-list: ['SAVANNA', 'JUNGLE']
+  # Alternatively...
+  in-group: ['HotBiomes', 'WaterBiomes']
+  # Alternatively...
+  not-in-group: ['HotBiomes', 'WaterBiomes']
+```
 
 #### Entity Custom Name Contains
 

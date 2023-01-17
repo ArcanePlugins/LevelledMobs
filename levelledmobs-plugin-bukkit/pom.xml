@@ -52,7 +52,7 @@
     <dependency>
       <groupId>dev.jorel</groupId>
       <artifactId>commandapi-shade</artifactId>
-      <version>8.7.2-SNAPSHOT</version>
+      <version>8.7.3</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
@@ -123,10 +123,6 @@
     <repository>
       <id>placeholderapi</id>
       <url>https://repo.extendedclip.com/content/repositories/placeholderapi/</url>
-    </repository>
-    <repository>
-      <id>oss.sonatype.org-snapshot</id>
-      <url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
     </repository>
   </repositories>
 

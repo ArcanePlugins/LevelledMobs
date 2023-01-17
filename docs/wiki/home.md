@@ -22,6 +22,7 @@ This is a temporary site to develop the LM4 Wiki to a sufficient state. Unfortun
 
 ### Configuration
 
+• [🎛️ Functions System](settings/functions/functions.md)
 • [🛠️ Settings](settings/settings.md)
 • [📜 Translations](translations/translations.md)
 • [🗂️ Default Files](snippets/default-files.md)
