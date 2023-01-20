@@ -22,8 +22,7 @@ public final class RoutineSubcommand {
                 HaltRoutine.createInstance(),
                 ReloadCommandsRoutine.createInstance(),
                 ResetConfigsRoutine.createInstance(),
-                TestRoutine.createInstance1(),
-                TestRoutine.createInstance2(),
+                TestRoutine.createInstance(),
                 UnlevelAllRoutine.createInstance1(),
                 UnlevelAllRoutine.createInstance2()
             );

@@ -1,30 +1,31 @@
 package io.github.arcaneplugins.levelledmobs.bukkit.command.levelledmobs.subcommand.routine;
 
-import static org.bukkit.ChatColor.GREEN;
-
 import dev.jorel.commandapi.CommandAPICommand;
-import dev.jorel.commandapi.arguments.WorldArgument;
-import org.bukkit.World;
+import io.github.arcaneplugins.levelledmobs.bukkit.command.levelledmobs.subcommand.ConfirmSubcommand;
+import org.bukkit.ChatColor;
 
 public class TestRoutine {
 
-    public static CommandAPICommand createInstance1() {
-        return new CommandAPICommand("test1")
-            .withShortDescription("Generic test routine")
+    public static CommandAPICommand createInstance() {
+        return new CommandAPICommand("test")
+            .withShortDescription("Test routine for maintainers, DO NOT RUN.")
+            .withFullDescription("Test routine for maintainers, DO NOT RUN.")
             .withPermission("levelledmobs.command.levelledmobs.routine.test")
-            .withArguments(new WorldArgument("world"))
             .executes((sender, args) -> {
-                final World world = (World) args[0];
-                sender.sendMessage(GREEN + "World: " + world.getName());
-            });
-    }
+                sender.sendMessage(
+                    ChatColor.YELLOW +
+                        "This command is potentially dangerous; to confirm it, run /lm confirm."
+                );
 
-    public static CommandAPICommand createInstance2() {
-        return new CommandAPICommand("test2")
-            .withShortDescription("Generic test routine")
-            .withPermission("levelledmobs.command.levelledmobs.routine.test")
-            .executes((sender, args) -> {
-                sender.sendMessage(GREEN + "Works without world argument.");
+                //noinspection CodeBlock2Expr
+                ConfirmSubcommand.CONFIRMATION_MAP.put(
+                    sender,
+                    () -> {
+                        sender.sendMessage(
+                            ChatColor.RED + "Error: Not Implemented"
+                        );
+                    }
+                );
             });
     }
 

@@ -38,8 +38,6 @@ public final class SummonSubcommand {
                         new LocationArgument("location")
                     )
                     .executes((sender, args) -> {
-                        sender.sendMessage("LM: Not implemented."); //todo rm
-
                         final EntityType entityType = (EntityType) args[0];
                         final IntegerRange amountRange = (IntegerRange) args[1];
                         final IntegerRange levelRange = (IntegerRange) args[2];
