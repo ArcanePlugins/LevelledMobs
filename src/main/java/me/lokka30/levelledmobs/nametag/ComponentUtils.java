@@ -21,18 +21,7 @@ public class ComponentUtils {
         final Definitions def = LevelledMobs.getInstance().getDefinitions();
 
         try {
-            if (component.getClass() != def.clazz_IChatMutableComponent) {
-                throw new IllegalArgumentException
-                    ("Invalid type: " + component.getClass().getName());
-            }
-
-            if (appendingComponent.getClass() != def.clazz_IChatMutableComponent) {
-                throw new IllegalArgumentException
-                    ("Invalid type: " + appendingComponent.getClass().getName());
-            }
-
             def.method_ComponentAppend.invoke(component, appendingComponent);
-
         } catch (final Exception ex) {
             ex.printStackTrace();
         }
