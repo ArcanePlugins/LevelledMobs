@@ -123,6 +123,9 @@ public final class LevelledMobs extends JavaPlugin {
             Bukkit.getPluginManager().disablePlugin(this);
             return;
         }
+        definitions.useTranslationComponents = helperSettings.getBoolean(settingsCfg,
+                "use-translation-components", true);
+        nametagQueueManager.nametagSenderHandler.refresh();
         companion.registerListeners();
         companion.registerCommands();
 
@@ -199,9 +202,13 @@ public final class LevelledMobs extends JavaPlugin {
 
         levelManager.entitySpawnListener.processMobSpawns = helperSettings.getBoolean(settingsCfg,
             "level-mobs-upon-spawn", true);
+
         levelManager.clearRandomLevellingCache();
         configUtils.playerLevellingEnabled = rulesManager.isPlayerLevellingEnabled();
         rulesManager.clearTempDisabledRulesCounts();
+        definitions.useTranslationComponents = helperSettings.getBoolean(settingsCfg,
+                "use-translation-components", true);
+        nametagQueueManager.nametagSenderHandler.refresh();
 
         reloadFinishedMsg.forEach(sender::sendMessage);
     }

@@ -6,6 +6,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Optional;
+
+import me.lokka30.levelledmobs.LevelledMobs;
 import net.kyori.adventure.text.Component;
 import org.bukkit.entity.LivingEntity;
 import org.jetbrains.annotations.NotNull;
@@ -23,6 +25,7 @@ public class Definitions {
     private final ServerVersionInfo ver;
     private boolean hasKiori;
     private boolean isOneNinteenThreeOrNewer;
+    public boolean useTranslationComponents;
 
     // classes:
     Class<?> clazz_IChatMutableComponent;

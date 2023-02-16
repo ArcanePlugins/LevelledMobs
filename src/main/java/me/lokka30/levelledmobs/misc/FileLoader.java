@@ -23,7 +23,7 @@ import org.yaml.snakeyaml.Yaml;
  */
 public final class FileLoader {
 
-    public static final int SETTINGS_FILE_VERSION = 33;    // Last changed: v3.4.0 b621
+    public static final int SETTINGS_FILE_VERSION = 34;    // Last changed: v3.9.4 b736
     public static final int MESSAGES_FILE_VERSION = 8;     // Last changed: v3.4.0 b621
     public static final int CUSTOMDROPS_FILE_VERSION = 10; // Last changed: v3.1.0 b474
     public static final int RULES_FILE_VERSION = 3;        // Last changed: v3.4.0 b621

@@ -26,10 +26,10 @@ import org.jetbrains.annotations.Nullable;
 public class NmsNametagSender implements NametagSender {
 
     public NmsNametagSender() {
-        this.def = LevelledMobs.getInstance().getDefinitions();
+        refresh();
     }
 
-    private final Definitions def;
+    private Definitions def;
 
     public void sendNametag(
         final @NotNull LivingEntity livingEntity,
@@ -45,6 +45,10 @@ public class NmsNametagSender implements NametagSender {
             LevelledMobs.getInstance(),
             () -> sendNametagNonAsync(livingEntity, nametag, player, alwaysVisible)
         );
+    }
+
+    public void refresh(){
+        this.def = LevelledMobs.getInstance().getDefinitions();
     }
 
     private void sendNametagNonAsync(
@@ -229,10 +233,15 @@ public class NmsNametagSender implements NametagSender {
             resolveText(mobName.substring(displayNameIndex + displayName.length())) :
             null;
 
-        final Object mobNameComponent = nametag.overriddenName == null ?
-            ComponentUtils.getTranslatableComponent(def.getTranslationKey(livingEntity)) :
-            ComponentUtils.getTextComponent(nametag.overriddenName);
-
+        Object mobNameComponent;
+        if (nametag.overriddenName == null) {
+            mobNameComponent = def.useTranslationComponents ?
+                    ComponentUtils.getTranslatableComponent(def.getTranslationKey(livingEntity)) :
+                    ComponentUtils.getTextComponent(livingEntity.getName());
+        }
+        else{
+            mobNameComponent = ComponentUtils.getTextComponent(nametag.overriddenName);
+        }
 
         // for whatever reason if you use an empty component,
         // the nametag will get duplicated with each call of this function
