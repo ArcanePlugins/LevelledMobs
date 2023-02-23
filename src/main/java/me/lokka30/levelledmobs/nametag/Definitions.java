@@ -7,7 +7,6 @@ import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Optional;
 
-import me.lokka30.levelledmobs.LevelledMobs;
 import net.kyori.adventure.text.Component;
 import org.bukkit.entity.LivingEntity;
 import org.jetbrains.annotations.NotNull;

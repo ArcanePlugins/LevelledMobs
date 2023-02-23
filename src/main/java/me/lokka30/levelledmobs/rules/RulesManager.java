@@ -58,6 +58,7 @@ public class RulesManager {
     @NotNull public final Map<String, List<String>> biomeGroupMappings;
     final Map<String, List<Instant>> rulesCooldown;
     public boolean anyRuleHasChance;
+    public boolean hasAnyWGCondition;
     private Instant lastRulesCheck;
     final static Object ruleLocker = new Object();
 
