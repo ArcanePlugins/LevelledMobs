@@ -10,7 +10,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <artifactId>levelledmobs-plugin-bukkit</artifactId>
-  <version>4.0.0-alpha-4</version>
+  <version>4.0.0-alpha-4-mani123</version>
 
   <properties>
     <maven.compiler.source>17</maven.compiler.source>

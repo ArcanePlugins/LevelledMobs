@@ -10,9 +10,9 @@ import io.github.arcaneplugins.levelledmobs.bukkit.integration.IntegrationHandle
 import io.github.arcaneplugins.levelledmobs.bukkit.listener.ListenerHandler;
 import io.github.arcaneplugins.levelledmobs.bukkit.logic.LogicHandler;
 import io.github.arcaneplugins.levelledmobs.bukkit.task.TaskHandler;
-import io.github.arcaneplugins.levelledmobs.bukkit.util.ClassUtils;
 import io.github.arcaneplugins.levelledmobs.bukkit.util.Log;
 import io.github.arcaneplugins.levelledmobs.bukkit.util.throwable.SilentException;
+import java.util.Collections;
 import java.util.Objects;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
@@ -27,8 +27,6 @@ public final class LevelledMobs extends JavaPlugin {
     // TODO transition ConfigHandler into a utility class
     private final ConfigHandler configHandler = new ConfigHandler();
 
-    // TODO remove LM3 nametag system code
-
     /* methods */
 
     @Override
@@ -40,7 +38,10 @@ public final class LevelledMobs extends JavaPlugin {
     }
 
     private void initializeLibLabelHandler() {
-        libLabelHandler = EntityLabelLib.instantiateLabelHandler(this);
+        libLabelHandler = EntityLabelLib.instantiateLabelHandler(
+            this,
+            Collections.emptyList()
+        );
     }
 
     @Override
@@ -98,18 +99,9 @@ public final class LevelledMobs extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        try { TaskHandler.stopTasks(); } catch(NoClassDefFoundError ignored) {}
-        // I have no idea why the JRE is doing this. Bukkit should stop the sync tasks anyways.
-
+        TaskHandler.stopTasks();
         LogicHandler.unload();
         Log.inf("Plugin disabled");
-    }
-
-    /*
-    Check if the server is running SpigotMC, or any derivative software.
-     */
-    private static boolean isRunningSpigot() {
-        return ClassUtils.classExists("net.md_5.bungee.api.chat.TextComponent");
     }
 
     /*
@@ -137,7 +129,7 @@ public final class LevelledMobs extends JavaPlugin {
         return Objects.requireNonNull(
             instance,
             """
-                Attempted to access LevelledMobs.class instance before calling LevelledMobs#onLoad"""
+            Attempted to access LevelledMobs.class instance before calling LevelledMobs#onLoad"""
         );
     }
 

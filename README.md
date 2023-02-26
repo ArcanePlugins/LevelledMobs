@@ -73,7 +73,7 @@ LevelledMobs is libre software, licensed under the GNU Affero General Public Lic
 The copyright notice follows:
 
 ```
-Copyright (C) 2020-2022 LevelledMobs Contributors
+Copyright (C) 2020-2023 lokka30, stumper66, and contributors
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as
