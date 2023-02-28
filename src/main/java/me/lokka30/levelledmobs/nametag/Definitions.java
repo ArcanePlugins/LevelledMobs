@@ -19,12 +19,16 @@ public class Definitions {
     public Definitions() {
         this.ver = new ServerVersionInfo();
         build();
+        if (hasMiniMessage) mm = net.kyori.adventure.text.minimessage.MiniMessage.miniMessage();
     }
 
     private final ServerVersionInfo ver;
     private boolean hasKiori;
     private boolean isOneNinteenThreeOrNewer;
+    private boolean hasMiniMessage;
     public boolean useTranslationComponents;
+    private boolean useLegacySerializer;
+    public net.kyori.adventure.text.minimessage.MiniMessage mm;
 
     // classes:
     Class<?> clazz_IChatMutableComponent;
@@ -177,6 +181,14 @@ public class Definitions {
 
         this.clazz_EntityTypes = Class.forName(
             "net.minecraft.world.entity.EntityTypes");
+
+        if (hasKiori){
+            try{
+                Class.forName("net.kyori.adventure.text.minimessage.MiniMessage");
+                this.hasMiniMessage = true;
+            }
+            catch (ClassNotFoundException ignored) {}
+        }
     }
 
     private void getMethodComponentAppend() throws NoSuchMethodException {
@@ -394,5 +406,13 @@ public class Definitions {
 
     public boolean isOneNinteenThreeOrNewer() {
         return isOneNinteenThreeOrNewer;
+    }
+
+    public void setUseLegacySerializer(final boolean useLegacySerializer){
+        this.useLegacySerializer = useLegacySerializer;
+    }
+
+    public boolean getUseLegacySerializer(){
+        return !this.hasMiniMessage || this.useLegacySerializer;
     }
 }

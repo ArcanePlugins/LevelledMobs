@@ -125,6 +125,8 @@ public final class LevelledMobs extends JavaPlugin {
         }
         definitions.useTranslationComponents = helperSettings.getBoolean(settingsCfg,
                 "use-translation-components", true);
+        definitions.setUseLegacySerializer(helperSettings.getBoolean(settingsCfg,
+                "use-legacy-serializer", true));
         nametagQueueManager.nametagSenderHandler.refresh();
         companion.registerListeners();
         companion.registerCommands();
@@ -208,6 +210,8 @@ public final class LevelledMobs extends JavaPlugin {
         rulesManager.clearTempDisabledRulesCounts();
         definitions.useTranslationComponents = helperSettings.getBoolean(settingsCfg,
                 "use-translation-components", true);
+        definitions.setUseLegacySerializer(helperSettings.getBoolean(settingsCfg,
+                "use-legacy-serializer", true));
         nametagQueueManager.nametagSenderHandler.refresh();
 
         reloadFinishedMsg.forEach(sender::sendMessage);
