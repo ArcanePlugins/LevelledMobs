@@ -921,7 +921,7 @@ public class RulesManager {
             }
 
             if (!ri.conditions_SpawnerNames.isEnabledInList(checkName, lmEntity)) {
-                Utils.debugLog(main, DebugType.DENIED_RULE_SPAWN_REASON,
+                Utils.debugLog(main, DebugType.DENIED_RULE_SPAWNER_NAME,
                     String.format("&b%s&7, mob: &b%s&7, spawner: &b%s&7",
                         ri.getRuleName(), lmEntity.getNameIfBaby(), checkName));
                 return false;

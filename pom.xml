@@ -6,7 +6,7 @@
 
   <groupId>me.lokka30</groupId>
   <artifactId>LevelledMobs</artifactId>
-  <version>3.9.4 b739</version>
+  <version>3.9.4 b740</version>
 
   <name>LevelledMobs</name>
   <description>The Ultimate RPG Mob Levelling Solution</description>
@@ -97,10 +97,6 @@
     <repository>
       <id>essentials-releases</id>
       <url>https://repo.essentialsx.net/releases/</url>
-    </repository>
-    <repository>
-      <id>papermc</id>
-      <url>https://papermc.io/repo/repository/maven-public/</url>
     </repository>
     <repository>
       <id>placeholderapi</id>
