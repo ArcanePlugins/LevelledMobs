@@ -6,7 +6,7 @@
 
   <groupId>me.lokka30</groupId>
   <artifactId>LevelledMobs</artifactId>
-  <version>3.9.2 b734</version>
+  <version>3.9.4 b740</version>
 
   <name>LevelledMobs</name>
   <description>The Ultimate RPG Mob Levelling Solution</description>
@@ -99,10 +99,6 @@
       <url>https://repo.essentialsx.net/releases/</url>
     </repository>
     <repository>
-      <id>papermc</id>
-      <url>https://papermc.io/repo/repository/maven-public/</url>
-    </repository>
-    <repository>
       <id>placeholderapi</id>
       <url>https://repo.extendedclip.com/content/repositories/placeholderapi/</url>
     </repository>
@@ -138,7 +134,7 @@
     <dependency>
       <groupId>io.papermc.paper</groupId>
       <artifactId>paper-api</artifactId>
-      <version>1.19.2-R0.1-SNAPSHOT</version>
+      <version>1.19.3-R0.1-SNAPSHOT</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -157,7 +153,7 @@
     <dependency>
       <groupId>org.spigotmc</groupId>
       <artifactId>spigot-api</artifactId>
-      <version>1.19.2-R0.1-SNAPSHOT</version>
+      <version>1.19.3-R0.1-SNAPSHOT</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -187,13 +183,13 @@
     <dependency>
       <groupId>de.tr7zw</groupId>
       <artifactId>item-nbt-api-plugin</artifactId>
-      <version>2.10.0</version>
+      <version>2.11.1</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>com.google.code.gson</groupId>
       <artifactId>gson</artifactId>
-      <version>2.10</version>
+      <version>2.10.1</version>
       <scope>provided</scope>
     </dependency>
     <dependency>

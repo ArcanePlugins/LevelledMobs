@@ -209,7 +209,8 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
             } catch (Exception ignored) {
             }
 
-            this.spawnedWGRegions = ExternalCompatibilityManager.getWGRegionsAtLocation(this);
+            if (main.rulesManager.hasAnyWGCondition)
+                this.spawnedWGRegions = ExternalCompatibilityManager.getWGRegionsAtLocation(this);
 
             this.hasCache = true;
             // the lines below must remain after hasCache = true to prevent stack overflow

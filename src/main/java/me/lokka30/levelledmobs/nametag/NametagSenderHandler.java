@@ -61,4 +61,10 @@ public class NametagSenderHandler {
 
         return this.currentUtil;
     }
+
+    public void refresh(){
+        if (this.currentUtil instanceof final NmsNametagSender sender){
+            sender.refresh();
+        }
+    }
 }

@@ -10,6 +10,7 @@ import net.kyori.adventure.text.TextReplacementConfig;
 import net.kyori.adventure.text.TranslatableComponent;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
+import net.kyori.adventure.text.serializer.ComponentSerializer;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -125,12 +126,15 @@ public class PlayerDeathListener {
         }
         final String mobName = nametagResult.getNametagNonNull();
         final int displayNameIndex = mobName.indexOf("{DisplayName}");
+        final ComponentSerializer<Component, ?, String> cs = main.getDefinitions().getUseLegacySerializer() ?
+                LegacyComponentSerializer.legacyAmpersand() :
+                main.getDefinitions().mm;
 
         Component newCom;
         if (nametagResult.hadCustomDeathMessage){
             final TextReplacementConfig replacementConfig = TextReplacementConfig.builder().matchLiteral("%player%")
                     .replacement(buildPlayerComponent(event.getEntity())).build();
-            newCom = LegacyComponentSerializer.legacyAmpersand().deserialize(mobName)
+            newCom = cs.deserialize(mobName)
                     .replaceText(replacementConfig);
         }
         else if (displayNameIndex < 0){
@@ -138,19 +142,19 @@ public class PlayerDeathListener {
             // so we'll just send the whole thing as text
             newCom = Component.translatable(tc.key(),
                     buildPlayerComponent(event.getEntity()),
-                    LegacyComponentSerializer.legacyAmpersand().deserialize(mobName));
+                    cs.deserialize(mobName));
         }
         else {
             final Component leftComp = displayNameIndex > 0 ?
-                    LegacyComponentSerializer.legacyAmpersand().deserialize(mobName.substring(0, displayNameIndex)) :
+                    cs.deserialize(mobName.substring(0, displayNameIndex)) :
                     Component.empty();
             final Component rightComp = mobName.length() > displayNameIndex + 13 ?
-                    LegacyComponentSerializer.legacyAmpersand().deserialize(mobName.substring(displayNameIndex + 13)) :
+                    cs.deserialize(mobName.substring(displayNameIndex + 13)) :
                     Component.empty();
 
             final Component mobNameComponent = nametagResult.overriddenName == null ?
                     Component.translatable(mobKey) :
-                    LegacyComponentSerializer.legacyAmpersand().deserialize(nametagResult.overriddenName);
+                    cs.deserialize(nametagResult.overriddenName);
 
             if (itemComp == null) {
                 // mob wasn't using any weapon

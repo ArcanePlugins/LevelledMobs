@@ -1,6 +1,6 @@
 package me.lokka30.levelledmobs.nametag;
 
-import java.lang.reflect.Method;
+import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.result.NametagResult;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextReplacementConfig;
@@ -20,34 +20,50 @@ public class KyoriNametags {
 
         final String nametag = nametagResult.getNametagNonNull();
         final String mobKey = livingEntity.getType().translationKey();
+        final Definitions def = LevelledMobs.getInstance().getDefinitions();
 
         // this component holds the component of the mob name and will show the translated name on clients
-        final net.kyori.adventure.text.Component mobNameComponent =
-            nametagResult.overriddenName == null ?
-                net.kyori.adventure.text.Component.translatable(mobKey) :
-                LegacyComponentSerializer
+        net.kyori.adventure.text.Component mobNameComponent;
+        if (nametagResult.overriddenName == null){
+            if (def.useTranslationComponents){
+                mobNameComponent = net.kyori.adventure.text.Component.translatable(mobKey);
+            }
+            else{
+                mobNameComponent = net.kyori.adventure.text.Component.text(livingEntity.getName());
+            }
+        }
+        else{
+            mobNameComponent = LegacyComponentSerializer
                     .legacyAmpersand()
                     .deserialize(nametagResult.overriddenName);
+        }
 
         // replace placeholders and set the new death message
-        final Component result = LegacyComponentSerializer
-            .legacyAmpersand()
-            .deserialize(nametag)
-            .replaceText(
-                TextReplacementConfig.builder()
-                    .matchLiteral("{DisplayName}")
-                    .replacement(mobNameComponent).build()
-            );
+        Component result;
+        if (def.getUseLegacySerializer()) {
+            result = LegacyComponentSerializer
+                    .legacyAmpersand()
+                    .deserialize(nametag)
+                    .replaceText(
+                            TextReplacementConfig.builder()
+                                    .matchLiteral("{DisplayName}")
+                                    .replacement(mobNameComponent).build()
+                    );
+        }
+        else{
+            //Utils.logger.info("Using MiniMessage");
+            result = def.mm
+                    .deserialize(nametag)
+                    .replaceText(
+                            TextReplacementConfig.builder()
+                                    .matchLiteral("{DisplayName}")
+                                    .replacement(mobNameComponent).build()
+                    );
+        }
 
         // PaperAdventure.asVanilla(kyoriComponent)
         try {
-            final Class<?> clazz = Class
-                .forName("io.papermc.paper.adventure.PaperAdventure");
-
-            final Method asVanilla = clazz
-                .getDeclaredMethod("asVanilla", Component.class);
-
-            return asVanilla.invoke(clazz, result);
+            return def.method_AsVanilla.invoke(def.clazz_PaperAdventure, result);
         } catch (final Exception ex) {
             ex.printStackTrace();
         }

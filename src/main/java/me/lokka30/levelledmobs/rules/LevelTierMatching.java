@@ -6,6 +6,8 @@ package me.lokka30.levelledmobs.rules;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
+
 import me.lokka30.levelledmobs.util.Utils;
 import org.jetbrains.annotations.NotNull;
 
@@ -115,5 +117,18 @@ public class LevelTierMatching {
             return String.format("-%s %s", maxLevel,
                 names == null ? Arrays.toString(valueRanges) : names);
         }
+    }
+
+    @Override
+    public boolean equals(final Object obj){
+        if (obj == null) return false;
+        if (!(obj instanceof LevelTierMatching)) return false;
+
+        return this.toString().equals(obj.toString());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.toString());
     }
 }

@@ -89,6 +89,8 @@ public class RulesParsingManager {
         this.main.rulesManager.rulesInEffect.put(Integer.MIN_VALUE, new LinkedList<>());
         this.main.rulesManager.rulesInEffect.get(Integer.MIN_VALUE).add(defaultRule);
         this.main.rulesManager.anyRuleHasChance = this.defaultRule.conditions_Chance != null;
+        this.main.rulesManager.hasAnyWGCondition = this.defaultRule.conditions_WGRegions != null
+                || this.defaultRule.conditions_WGRegionOwners != null;
 
         this.main.rulesManager.buildBiomeGroupMappings(customBiomeGroups);
         final Map<String, RuleInfo> ruleMappings = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
@@ -103,6 +105,9 @@ public class RulesParsingManager {
             ruleMappings.put(ruleInfo.getRuleName(), ruleInfo);
             if (ruleInfo.conditions_Chance != null) {
                 this.main.rulesManager.anyRuleHasChance = true;
+            }
+            if (ruleInfo.conditions_WGRegions != null || ruleInfo.conditions_WGRegionOwners != null) {
+                this.main.rulesManager.hasAnyWGCondition = true;
             }
         }
 

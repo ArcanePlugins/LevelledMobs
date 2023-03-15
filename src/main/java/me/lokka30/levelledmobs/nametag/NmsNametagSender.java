@@ -4,7 +4,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
+
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.result.NametagResult;
 import me.lokka30.microlib.messaging.MessageUtils;
@@ -24,10 +26,10 @@ import org.jetbrains.annotations.Nullable;
 public class NmsNametagSender implements NametagSender {
 
     public NmsNametagSender() {
-        this.def = LevelledMobs.getInstance().getDefinitions();
+        refresh();
     }
 
-    private final Definitions def;
+    private Definitions def;
 
     public void sendNametag(
         final @NotNull LivingEntity livingEntity,
@@ -43,6 +45,10 @@ public class NmsNametagSender implements NametagSender {
             LevelledMobs.getInstance(),
             () -> sendNametagNonAsync(livingEntity, nametag, player, alwaysVisible)
         );
+    }
+
+    public void refresh(){
+        this.def = LevelledMobs.getInstance().getDefinitions();
     }
 
     private void sendNametagNonAsync(
@@ -69,7 +75,6 @@ public class NmsNametagSender implements NametagSender {
             // final EntityDataAccessor<Optional<Component>> customNameAccessor =
             //     //new EntityDataAccessor<>(2, EntityDataSerializers.OPTIONAL_COMPONENT);
             final Object customNameAccessor =
-
                 def.ctor_EntityDataAccessor.newInstance(2, optionalComponent);
             final Optional<Object> customName = buildNametagComponent(livingEntity, nametag);
 
@@ -228,12 +233,19 @@ public class NmsNametagSender implements NametagSender {
             resolveText(mobName.substring(displayNameIndex + displayName.length())) :
             null;
 
-        final Object mobNameComponent = nametag.overriddenName == null ?
-            ComponentUtils.getTranslatableComponent(def.getTranslationKey(livingEntity)) :
-            ComponentUtils.getTextComponent(nametag.overriddenName);
+        Object mobNameComponent;
+        if (nametag.overriddenName == null) {
+            mobNameComponent = def.useTranslationComponents ?
+                    ComponentUtils.getTranslatableComponent(def.getTranslationKey(livingEntity)) :
+                    ComponentUtils.getTextComponent(livingEntity.getName());
+        }
+        else{
+            mobNameComponent = ComponentUtils.getTextComponent(nametag.overriddenName);
+        }
 
-        final Object comp = ComponentUtils.getEmptyComponent();
-        // MutableComponent comp = Component.empty();
+        // for whatever reason if you use an empty component,
+        // the nametag will get duplicated with each call of this function
+        Object comp = Objects.requireNonNull(ComponentUtils.getTextComponent(""));
 
         if (leftText != null) {
             // comp.append(Component);

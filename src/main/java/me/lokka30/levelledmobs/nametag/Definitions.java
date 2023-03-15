@@ -6,6 +6,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Optional;
+
 import net.kyori.adventure.text.Component;
 import org.bukkit.entity.LivingEntity;
 import org.jetbrains.annotations.NotNull;
@@ -18,11 +19,16 @@ public class Definitions {
     public Definitions() {
         this.ver = new ServerVersionInfo();
         build();
+        if (hasMiniMessage) mm = net.kyori.adventure.text.minimessage.MiniMessage.miniMessage();
     }
 
     private final ServerVersionInfo ver;
     private boolean hasKiori;
     private boolean isOneNinteenThreeOrNewer;
+    private boolean hasMiniMessage;
+    public boolean useTranslationComponents;
+    private boolean useLegacySerializer;
+    public net.kyori.adventure.text.minimessage.MiniMessage mm;
 
     // classes:
     Class<?> clazz_IChatMutableComponent;
@@ -175,6 +181,14 @@ public class Definitions {
 
         this.clazz_EntityTypes = Class.forName(
             "net.minecraft.world.entity.EntityTypes");
+
+        if (hasKiori){
+            try{
+                Class.forName("net.kyori.adventure.text.minimessage.MiniMessage");
+                this.hasMiniMessage = true;
+            }
+            catch (ClassNotFoundException ignored) {}
+        }
     }
 
     private void getMethodComponentAppend() throws NoSuchMethodException {
@@ -231,7 +245,7 @@ public class Definitions {
         // only needed for spigot. paper has a built-in method
 
         // net.minecraft.world.entity.EntityType ->
-        //    300:300:java.util.Optional byString(java.lang.String) -> a
+        //   java.util.Optional byString(java.lang.String) -> a
         // public static Optional<EntityTypes<?>> byString(String s)
 
         Optional<?> optionalResult;
@@ -256,11 +270,21 @@ public class Definitions {
         this.method_getHandle = clazz_CraftLivingEntity.getDeclaredMethod("getHandle");
 
         // net.minecraft.network.syncher.SynchedEntityData getEntityData() ->
+        String methodName;
 
-        String methodName = this.isOneNinteenThreeOrNewer ?
-            "al" : "ai";
-        if (ver.getMinecraftVersion() <= 1.17) {
+        if (this.isOneNinteenThreeOrNewer){
+            // 1.19.4+
+            if (ver.getRevision() >=4)
+                methodName = "aj";
+            else // 1.19.3 only
+                methodName = "al";
+        }
+        else if (ver.getMinecraftVersion() <= 1.17) {
             methodName = "getDataWatcher";
+        }
+        else{
+            // 1.18 - 1.19.2
+            methodName = "ai";
         }
 
         // net.minecraft.network.syncher.SynchedEntityData getEntityData() ->
@@ -273,10 +297,22 @@ public class Definitions {
         this.method_set = clazz_DataWatcher.getMethod(methodName, clazz_DataWatcherObject,
             Object.class);
 
-        // int getId() ->
-        methodName = this.isOneNinteenThreeOrNewer ?
-            "ah" : "ae";
-        if (ver.getMinecraftVersion() <= 1.17) {
+        // net.minecraft.world.level.entity.EntityAccess ->
+        //   int getId() ->
+        if (this.isOneNinteenThreeOrNewer){
+            if (ver.getRevision() >= 4){
+                methodName = "af";
+            }
+            else if (this.isOneNinteenThreeOrNewer){
+                // 1.19.3
+                methodName = "ah";
+            }
+            else{
+                // 1.18 - 1.19.2
+                methodName = "ae";
+            }
+        }
+        else if (ver.getMinecraftVersion() <= 1.17) {
             methodName = "getId";
         }
 
@@ -357,7 +393,9 @@ public class Definitions {
         this.field_Connection = clazz_EntityPlayer.getDeclaredField("b");
 
         if (this.isOneNinteenThreeOrNewer) {
-            // private final Int2ObjectMap<DataWatcher.Item<?>> itemsById
+            // net.minecraft.network.syncher.SynchedEntityData ->
+            //   it.unimi.dsi.fastutil.ints.Int2ObjectMap itemsById -> e
+            // (decompiled) private final Int2ObjectMap<DataWatcher.Item<?>> itemsById
             this.field_Int2ObjectMap = clazz_DataWatcher.getDeclaredField("e");
             this.field_Int2ObjectMap.setAccessible(true);
         }
@@ -392,5 +430,13 @@ public class Definitions {
 
     public boolean isOneNinteenThreeOrNewer() {
         return isOneNinteenThreeOrNewer;
+    }
+
+    public void setUseLegacySerializer(final boolean useLegacySerializer){
+        this.useLegacySerializer = useLegacySerializer;
+    }
+
+    public boolean getUseLegacySerializer(){
+        return !this.hasMiniMessage || this.useLegacySerializer;
     }
 }

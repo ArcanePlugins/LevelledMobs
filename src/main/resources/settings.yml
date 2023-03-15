@@ -133,10 +133,22 @@ nametag-placeholder-maxblocks: 30
 # || It is recommended that you keep this enabled.
 use-adventure: true
 
+# || When set to true, nametags will show the mob name
+# || translated to your client language settings.
+# || However some older clients don't support this
+# || and will show the translation key instead.
+use-translation-components: true
+
+# || If your server software (e.g. Paper) has
+# || the Adventure library in it, then you can change
+# || this to false and use MiniMessage for nametag
+# || format parsing
+use-legacy-serializer: true
+
 # ||  ADVANCED USERS ONLY
 # ||  Do not touch this unless a LM developer tells you to.
 # ||  This value must not be modified, else your configuration
 # ||  may be corrupted by the migrator, since the migrator uses
 # ||  this value to check what changes the file requires to
 # ||  become updated to the latest file version.
-file-version: 33
+file-version: 34

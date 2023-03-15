@@ -4,12 +4,12 @@
 
 package me.lokka30.levelledmobs.listeners;
 
-import java.util.Collections;
 import java.util.List;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.misc.FileLoader;
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
 import me.lokka30.levelledmobs.misc.PlayerQueueItem;
+import me.lokka30.levelledmobs.result.NametagResult;
 import me.lokka30.levelledmobs.util.Utils;
 import me.lokka30.microlib.messaging.MessageUtils;
 import org.bukkit.Bukkit;
@@ -172,8 +172,8 @@ public class PlayerJoinListener implements Listener {
             final LivingEntityWrapper lmEntity = LivingEntityWrapper.getInstance(livingEntity,
                 main);
 
-            main.levelManager.updateNametag(lmEntity, main.levelManager.getNametag(lmEntity, false),
-                Collections.singletonList(player));
+            final NametagResult nametag = main.levelManager.getNametag(lmEntity, false, true);
+            main.levelManager.updateNametag(lmEntity, nametag, List.of(player));
             lmEntity.free();
         }
     }
