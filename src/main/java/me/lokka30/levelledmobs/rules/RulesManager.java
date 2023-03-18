@@ -82,6 +82,13 @@ public class RulesManager {
         return result;
     }
 
+    public void addCustomRule(final @Nullable RuleInfo ri){
+        if (ri == null) return;
+
+        main.rulesParsingManager.customRules.add(ri);
+        main.rulesParsingManager.checkCustomRules();
+    }
+
     @NotNull public List<String> getRuleNbtData(final @NotNull LivingEntityWrapper lmEntity) {
         final List<String> nbtData = new LinkedList<>();
 
