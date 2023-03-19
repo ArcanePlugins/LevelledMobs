@@ -9,6 +9,7 @@ import java.util.Optional;
 
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.result.NametagResult;
+import me.lokka30.levelledmobs.util.Utils;
 import me.lokka30.microlib.messaging.MessageUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.LivingEntity;
@@ -220,7 +221,7 @@ public class NmsNametagSender implements NametagSender {
         final int displayNameIndex = mobName.indexOf(displayName);
 
         if (displayNameIndex < 0) {
-            final Object comp = ComponentUtils.getTextComponent(nametag.getNametagNonNull());
+            final Object comp = ComponentUtils.getTextComponent(MessageUtils.colorizeAll(nametag.getNametagNonNull()));
             return comp == null ?
                 Optional.empty() : Optional.of(comp);
         }

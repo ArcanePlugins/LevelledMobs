@@ -93,9 +93,16 @@ public class RulesParsingManager {
                 || this.defaultRule.conditions_WGRegionOwners != null;
 
         this.main.rulesManager.buildBiomeGroupMappings(customBiomeGroups);
-        final Map<String, RuleInfo> ruleMappings = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
         this.customRules = parseCustomRules(
             config.get(ymlHelper.getKeyNameFromConfig(config, "custom-rules")));
+
+        checkCustomRules();
+        autoGenerateWeightedRandom();
+    }
+
+    public void checkCustomRules(){
+        final Map<String, RuleInfo> ruleMappings = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+
         for (final RuleInfo ruleInfo : customRules) {
             if (!this.main.rulesManager.rulesInEffect.containsKey(ruleInfo.rulePriority)) {
                 this.main.rulesManager.rulesInEffect.put(ruleInfo.rulePriority, new LinkedList<>());
@@ -116,8 +123,6 @@ public class RulesParsingManager {
             this.main.rulesManager.ruleNameMappings.putAll(ruleMappings);
             this.main.rulesManager.rulesCooldown.clear();
         }
-
-        autoGenerateWeightedRandom();
     }
 
     public @NotNull List<RuleInfo> getAllRules() {

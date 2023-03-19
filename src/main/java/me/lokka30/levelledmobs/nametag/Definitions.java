@@ -299,7 +299,7 @@ public class Definitions {
 
         // net.minecraft.world.level.entity.EntityAccess ->
         //   int getId() ->
-        if (this.isOneNinteenThreeOrNewer){
+        if (ver.getMinecraftVersion() >= 1.18){
             if (ver.getRevision() >= 4){
                 methodName = "af";
             }
