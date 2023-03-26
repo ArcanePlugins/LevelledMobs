@@ -182,7 +182,7 @@ public class Definitions {
         this.clazz_EntityTypes = Class.forName(
             "net.minecraft.world.entity.EntityTypes");
 
-        if (hasKiori){
+        if (hasKiori && ver.getMinecraftVersion() >= 1.18){
             try{
                 Class.forName("net.kyori.adventure.text.minimessage.MiniMessage");
                 this.hasMiniMessage = true;
