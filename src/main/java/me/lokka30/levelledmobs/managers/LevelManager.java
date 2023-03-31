@@ -257,7 +257,7 @@ public class LevelManager implements LevelInterface {
         final boolean usePlayerMax = options.usePlayerMaxLevel != null && options.usePlayerMaxLevel;
         final boolean matchPlayerLvl = options.matchPlayerLevel != null && options.matchPlayerLevel;
         final PlayerLevelSourceResult playerLevelSourceResult = getPlayerLevelSourceNumber(
-            lmEntity.getPlayerForLevelling(), variableToUse);
+            lmEntity.getPlayerForLevelling(), lmEntity, variableToUse);
         final double origLevelSource =
             playerLevelSourceResult.isNumericResult ? playerLevelSourceResult.numericResult : 1;
 
@@ -362,7 +362,7 @@ public class LevelManager implements LevelInterface {
     }
 
     public @NotNull PlayerLevelSourceResult getPlayerLevelSourceNumber(final @Nullable Player player,
-        final @NotNull String variableToUse) {
+        final @NotNull LivingEntityWrapper lmEntity ,final @NotNull String variableToUse) {
         if (player == null) {
             return new PlayerLevelSourceResult(1);
         }
@@ -470,6 +470,9 @@ public class LevelManager implements LevelInterface {
                 }
             }
         }
+
+        final int maxRandomVariance = main.rulesManager.getRuleMaxRandomVariance(lmEntity);
+        origLevelSource += maxRandomVariance;
 
         sourceResult.numericResult = (int) Math.round(origLevelSource);
         return sourceResult;
@@ -1192,7 +1195,7 @@ public class LevelManager implements LevelInterface {
             }
             final String variableToUse =
                     Utils.isNullOrEmpty(opts.variable) ? "%level%" : opts.variable;
-            PlayerLevelSourceResult result = getPlayerLevelSourceNumber(player, variableToUse);
+            PlayerLevelSourceResult result = getPlayerLevelSourceNumber(player, lmEntity, variableToUse);
             final String sourceNumberStr = result.isNumericResult ?
                 result.numericResult + "" : result.stringResult;
 

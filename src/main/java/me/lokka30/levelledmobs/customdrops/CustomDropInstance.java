@@ -28,7 +28,7 @@ public class CustomDropInstance {
         this.isBabyMob = false;
     }
 
-    CustomDropInstance(final @NotNull EntityType associatedMob, final boolean isBabyMob) {
+    public CustomDropInstance(final @NotNull EntityType associatedMob, final boolean isBabyMob) {
         this.associatedMob = associatedMob;
         this.entityGroup = null;
         this.customItems = new LinkedList<>();
@@ -36,7 +36,7 @@ public class CustomDropInstance {
         this.isBabyMob = isBabyMob;
     }
 
-    CustomDropInstance(final @NotNull CustomUniversalGroups entityGroup) {
+    public CustomDropInstance(final @NotNull CustomUniversalGroups entityGroup) {
         this.associatedMob = null;
         this.entityGroup = entityGroup;
         this.customItems = new LinkedList<>();

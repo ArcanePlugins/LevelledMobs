@@ -987,7 +987,7 @@ public class CustomDropsHandler {
             } else {
                 //levelToUse = main.levelManager.getPlayerLevelSourceNumber(info.mobKiller, variableToUse);
                 final PlayerLevelSourceResult result = main.levelManager.getPlayerLevelSourceNumber(
-                    info.mobKiller, variableToUse);
+                    info.mobKiller, info.lmEntity, variableToUse);
                 levelToUse = result.isNumericResult ? result.numericResult : 1;
                 info.playerLevelVariableCache.put(variableToUse, levelToUse);
             }
