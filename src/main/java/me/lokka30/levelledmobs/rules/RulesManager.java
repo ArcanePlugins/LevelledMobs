@@ -118,8 +118,8 @@ public class RulesManager {
         return result;
     }
 
-    public int getRuleMaxRandomVariance(@NotNull final LivingEntityWrapper lmEntity) {
-        int result = 0;
+    public @Nullable Integer getRuleMaxRandomVariance(@NotNull final LivingEntityWrapper lmEntity) {
+        Integer result = null;
 
         for (final RuleInfo ruleInfo : lmEntity.getApplicableRules()) {
             if (ruleInfo.maxRandomVariance != null) {

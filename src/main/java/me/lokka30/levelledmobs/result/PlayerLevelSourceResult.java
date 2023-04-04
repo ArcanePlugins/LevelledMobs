@@ -19,6 +19,7 @@ public class PlayerLevelSourceResult {
     }
 
     public int numericResult;
+    public Integer randomVarianceResult;
     public String stringResult;
     public final boolean isNumericResult;
     public String homeNameUsed;

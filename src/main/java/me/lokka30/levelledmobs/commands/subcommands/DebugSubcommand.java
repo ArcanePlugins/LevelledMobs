@@ -118,7 +118,7 @@ public class DebugSubcommand extends MessagesBase implements Subcommand {
             lmEntity.getLivingEntity().getLocation().getBlockX(),
             lmEntity.getLivingEntity().getLocation().getBlockY(),
             lmEntity.getLivingEntity().getLocation().getBlockZ());
-        final String mobLevel = lmEntity.isLevelled() ? lmEntity.getMobLevel() + "" : "0";
+        final String mobLevel = lmEntity.isLevelled() ? String.valueOf(lmEntity.getMobLevel()) : "0";
 
         final String message = String.format(
             "Showing nbt dump for: %s (lvl %s %s) in %s, %s\n%s",

@@ -70,7 +70,7 @@ public class NametagQueueManager {
             @Override
             public void run() {
                 try {
-                    main();
+                    mainThread();
                 } catch (final InterruptedException ignored) {
                     isRunning = false;
                 }
@@ -99,7 +99,7 @@ public class NametagQueueManager {
         queue.offer(item);
     }
 
-    private void main() throws InterruptedException {
+    private void mainThread() throws InterruptedException {
         while (doThread) {
 
             final QueueItem item = queue.poll(200, TimeUnit.MILLISECONDS);

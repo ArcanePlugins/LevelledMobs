@@ -22,6 +22,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.TreeMap;
 import java.util.WeakHashMap;
+import java.util.concurrent.ThreadLocalRandom;
+
 import me.lokka30.levelledmobs.LevelInterface;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.LivingEntityInterface;
@@ -318,6 +320,12 @@ public class LevelManager implements LevelInterface {
             }
         }
 
+        String varianceDebug = "";
+        if (playerLevelSourceResult.randomVarianceResult != null){
+            results[1] += playerLevelSourceResult.randomVarianceResult;
+            varianceDebug = String.format(", var: %s", playerLevelSourceResult.randomVarianceResult);
+        }
+
         if (options.levelCap != null) {
             if (results[0] > options.levelCap) {
                 results[0] = options.levelCap;
@@ -332,27 +340,27 @@ public class LevelManager implements LevelInterface {
 
         if (tierMatched == null) {
             Utils.debugLog(main, DebugType.PLAYER_LEVELLING, String.format(
-                "mob: %s, player: %s, lvl-src: %s%s, lvl-scale: %s, %sresult: %s",
-                lmEntity.getNameIfBaby(), player.getName(), origLevelSource, homeName, levelSource,
-                capDisplay, Arrays.toString(results)));
+                "mob: %s, player: %s, lvl-src: %s%s%s, lvl-scale: %s, %sresult: %s",
+                lmEntity.getNameIfBaby(), player.getName(), origLevelSource, homeName,
+                varianceDebug, levelSource, capDisplay, Arrays.toString(results)));
         } else {
             if (playerLevelSourceResult.isNumericResult) {
                 Utils.debugLog(main, DebugType.PLAYER_LEVELLING, String.format(
-                    "mob: %s, player: %s, lvl-src: %s%s, lvl-scale: %s, tier: %s, %sresult: %s",
+                    "mob: %s, player: %s, lvl-src: %s%s%s, lvl-scale: %s, tier: %s, %sresult: %s",
                     lmEntity.getNameIfBaby(), player.getName(), origLevelSource, homeName,
-                    levelSource, tierMatched, capDisplay, Arrays.toString(results)));
+                    varianceDebug, levelSource, tierMatched, capDisplay, Arrays.toString(results)));
             } else {
                 Utils.debugLog(main, DebugType.PLAYER_LEVELLING, String.format(
-                    "mob: %s, player: %s, lvl-src: '%s', tier: %s, %sresult: %s",
+                    "mob: %s, player: %s, lvl-src: '%s'%s, tier: %s, %sresult: %s",
                     lmEntity.getNameIfBaby(), player.getName(),
-                    playerLevelSourceResult.stringResult, tierMatched, capDisplay,
-                    Arrays.toString(results)));
+                    playerLevelSourceResult.stringResult, varianceDebug, tierMatched,
+                    capDisplay, Arrays.toString(results)));
             }
         }
 
         if (options.recheckPlayers != null && options.recheckPlayers) {
             final String numberOrString = playerLevelSourceResult.isNumericResult ?
-                    playerLevelSourceResult.numericResult + "" : playerLevelSourceResult.stringResult;
+                    String.valueOf(playerLevelSourceResult.numericResult) : playerLevelSourceResult.stringResult;
             if (numberOrString != null)
                 lmEntity.getPDC().set(main.namespacedKeys.playerLevellingSourceNumber, PersistentDataType.STRING, numberOrString);
         }
@@ -471,8 +479,10 @@ public class LevelManager implements LevelInterface {
             }
         }
 
-        final int maxRandomVariance = main.rulesManager.getRuleMaxRandomVariance(lmEntity);
-        origLevelSource += maxRandomVariance;
+        final Integer maxRandomVariance = main.rulesManager.getRuleMaxRandomVariance(lmEntity);
+        if (maxRandomVariance != null){
+            sourceResult.randomVarianceResult = ThreadLocalRandom.current().nextInt(0, maxRandomVariance + 1);
+        }
 
         sourceResult.numericResult = (int) Math.round(origLevelSource);
         return sourceResult;
@@ -1197,7 +1207,7 @@ public class LevelManager implements LevelInterface {
                     Utils.isNullOrEmpty(opts.variable) ? "%level%" : opts.variable;
             PlayerLevelSourceResult result = getPlayerLevelSourceNumber(player, lmEntity, variableToUse);
             final String sourceNumberStr = result.isNumericResult ?
-                result.numericResult + "" : result.stringResult;
+                    String.valueOf(result.numericResult) : result.stringResult;
 
             return !previousResult.equals(sourceNumberStr);
         }
