@@ -22,8 +22,9 @@ import org.jetbrains.annotations.Nullable;
  * @since 3.1.0
  */
 public class RandomLevellingStrategy implements LevellingStrategy, Cloneable {
-    public RandomLevellingStrategy(){
+    public RandomLevellingStrategy() {
         this.weightedRandom = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+        this.enabled = true;
     }
 
     public final @NotNull Map<String, Integer> weightedRandom;
@@ -32,6 +33,7 @@ public class RandomLevellingStrategy implements LevellingStrategy, Cloneable {
     private int minLevel;
     private int maxLevel;
     public boolean autoGenerate;
+    public boolean enabled;
 
     public int generateLevel(final int minLevel, final int maxLevel) {
         return generateLevel(null, minLevel, maxLevel);
@@ -174,7 +176,7 @@ public class RandomLevellingStrategy implements LevellingStrategy, Cloneable {
             return;
         }
 
-        if (randomLevelling.doMerge) {
+        if (randomLevelling.doMerge && randomLevelling.enabled) {
             this.weightedRandom.putAll(randomLevelling.weightedRandom);
         }
     }
