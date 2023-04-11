@@ -41,7 +41,7 @@ public class DebugSubcommand extends MessagesBase implements Subcommand {
         }
 
         if (args.length <= 1) {
-            sender.sendMessage("Options: create / chunk_kill_count / nbt_dump / mylocation");
+            sender.sendMessage("Options: create / chunk_kill_count / nbt_dump / mylocation, spawn_distance");
             return;
         }
 
@@ -64,10 +64,64 @@ public class DebugSubcommand extends MessagesBase implements Subcommand {
             }
         } else if ("mylocation".equalsIgnoreCase(args[1])){
             showPlayerLocation(sender);
-        }
-        else {
+        } else if ("spawn_distance".equalsIgnoreCase(args[1])) {
+            showSpawnDistance(sender, args);
+        } else {
             showMessage("other.create-debug");
         }
+    }
+
+    private void showSpawnDistance(final @NotNull CommandSender sender, final String @NotNull [] args){
+        Player player = null;
+        if (!(sender instanceof Player) && args.length < 3) {
+            sender.sendMessage("Must specify a player when running this command from console");
+            return;
+        }
+        if (args.length >= 3) {
+            player = Bukkit.getPlayer(args[2]);
+            if (player == null) {
+                sender.sendMessage("Invalid playername: " + args[2]);
+                return;
+            }
+        }
+
+        if (player == null) {
+            player = (Player) sender;
+        }
+
+        final LivingEntityWrapper lmEntity = main.levelledMobsCommand.rulesSubcommand.getMobBeingLookedAt(
+                player, true, sender);
+
+        if (lmEntity == null){
+            sender.sendMessage("Could not locate any mobs near player: " + player.getName());
+            return;
+        }
+
+        final double distance = lmEntity.getDistanceFromSpawn();
+
+        final String locationStr = String.format("%s, %s, %s",
+                lmEntity.getLivingEntity().getLocation().getBlockX(),
+                lmEntity.getLivingEntity().getLocation().getBlockY(),
+                lmEntity.getLivingEntity().getLocation().getBlockZ());
+        final String mobLevel = lmEntity.isLevelled() ? String.valueOf(lmEntity.getMobLevel()) : "0";
+
+        String entityName = lmEntity.getTypeName();
+        if (ExternalCompatibilityManager.hasMythicMobsInstalled()
+                && ExternalCompatibilityManager.isMythicMob(lmEntity)) {
+            entityName = ExternalCompatibilityManager.getMythicMobInternalName(lmEntity);
+        }
+
+        final String message = String.format(
+                "Spawn distance is %s for: %s (lvl %s %s) in %s, %s",
+                Utils.round(distance, 1),
+                entityName,
+                mobLevel,
+                lmEntity.getNameIfBaby(),
+                lmEntity.getWorldName(),
+                locationStr);
+
+        lmEntity.free();
+        sender.sendMessage(message);
     }
 
     private void showPlayerLocation(final @NotNull CommandSender sender){
@@ -154,7 +208,7 @@ public class DebugSubcommand extends MessagesBase implements Subcommand {
         final String @NotNull [] args) {
 
         if (args.length <= 2) {
-            return List.of("create", "chunk_kill_count", "mylocation", "nbt_dump");
+            return List.of("create", "chunk_kill_count", "mylocation", "nbt_dump", "spawn_distance");
         }
         if ("chunk_kill_count".equalsIgnoreCase(args[1])) {
             return List.of("reset");

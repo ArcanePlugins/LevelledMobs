@@ -133,6 +133,8 @@ nametag-placeholder-maxblocks: 30
 # || It is recommended that you keep this enabled.
 use-adventure: true
 
+level-mobs-upon-spawn: true
+
 # || When set to true, nametags will show the mob name
 # || translated to your client language settings.
 # || However some older clients don't support this
