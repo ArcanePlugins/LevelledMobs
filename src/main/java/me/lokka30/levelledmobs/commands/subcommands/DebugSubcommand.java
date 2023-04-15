@@ -41,7 +41,7 @@ public class DebugSubcommand extends MessagesBase implements Subcommand {
         }
 
         if (args.length <= 1) {
-            sender.sendMessage("Options: create / chunk_kill_count / nbt_dump / mylocation, spawn_distance");
+            sender.sendMessage("Options: create / chunk_kill_count / nbt_dump / mylocation / spawn_distance");
             return;
         }
 
