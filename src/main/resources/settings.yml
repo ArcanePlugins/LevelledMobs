@@ -32,34 +32,56 @@
 # ||  ADVANCED USERS ONLY | DEBUG
 # ||  Do not touch this unless a LM developer tells you to.
 # ||  These settings print a lot of 'behind the scenes'
-# ||  information about LevelledMobs' operations.
+# ||  information about LevelledMobs' operations to the console.
 debug-entity-damage: false
 debug-misc: [ ]
 
+# ||  This is a good update checker - it doesn't freeze
+# ||  your server startup since it is asynchronous, it
+# ||  only speaks if it found an update, and it only runs
+# ||  once every server startup. Pointless to disable.
+use-update-checker: true
+
+# ||  ADVANCED USERS ONLY
+# ||  If your server software (e.g. Paper) has
+# ||  the Adventure library in it, then LevelledMobs
+# ||  will use it, so long this setting is enabled.
+# ||  CraftBukkit and Spigot servers do not have
+# ||  this library, although PaperMC servers and
+# ||  all PaperMC forks (Airplane, etc) do.
+# ||  It is recommended that you keep this enabled.
+use-adventure: true
+
 # ||  ADVANCED USERS ONLY
 # ||  Do not touch this unless a LM developer tells you to.
-# ||  This setting controls the repeating asynchronous nametag
-# ||  and levelling update tasks.
-# ||  This controls the timing and distance from players
-# ||  when the check is performed. This can be resource intensive
-# ||  if you perform updates too frequently, or too far away.
+# ||  If your server software (e.g. Paper) has the Adventure
+# ||  Library in it, then you can change this to false and
+# ||  use MiniMessage for nametag parsing.
+use-legacy-serializer: true
+
+# ||  ADVANCED USERS ONLY
+# ||  Do not touch this unless a LM developer tells you to.
+# ||  This system controls the repeating asynchronous listener which
+# ||  maintains the accuracy of levelling and nametag information.
+# ||  This is very important and resource sensitive, so it is not
+# ||  suggested to alter these settings without testing beforehand.
+# ||  This system acts as a garbage collection and verification
+# ||  mechanism, as well as a form of 'rechecking' entities to ensure
+# ||  they follow the rules of the system.
 async-task-update-period: 6
 async-task-max-blocks-from-player: 100
 
 # ||  ADVANCED USERS ONLY
 # ||  Do not touch this unless a LM developer tells you to.
-# ||  Customize the summon command limit
-customize-summon-command-limit: 10
+# ||  Enables the on-spawn listener to apply levels to entities.
+# ||  If false, entities will no longer be levelled when they spawn in.
+level-mobs-upon-spawn: true
 
 # ||  ADVANCED USERS ONLY
 # ||  Do not touch this unless a LM developer tells you to.
-# ||  This setting controls the Custom Commands ratelimiter.
-customcommand-amount-limit: 100
-
-# ||  ADVANCED USERS ONLY
-# ||  Do not touch this unless a LM developer tells you to.
-# ||  Should nametag packets be ignored if the mob has died?
-assert-entity-validity-with-nametag-packets: true
+# ||  Enables the on-load listener to apply levels to entities once
+# ||  a chunk has been loaded. If false, this listener will be disabled.
+ensure-mobs-are-levelled-on-chunk-load: true
 
 # ||  ADVANCED USERS ONLY
 # ||  Do not touch this unless a LM developer tells you to.
@@ -70,36 +92,57 @@ mob-process-delay: 0
 
 # ||  ADVANCED USERS ONLY
 # ||  Do not touch this unless a LM developer tells you to.
-# ||  Ensure mobs are levelled on chunk load?
-ensure-mobs-are-levelled-on-chunk-load: true
+# ||  Should nametag packets be ignored if the mob has died?
+assert-entity-validity-with-nametag-packets: true
 
-# ||  ADVANCED USERS ONLY
-# ||  Do not touch this unless a LM developer tells you to.
-# ||  Should mob attributes be based upon preset base-values?
-attributes-use-preset-base-values: false
+# ||  When player kill exceed amount of levelled mobs in
+# ||  a chunk(within given period). Should we send message
+# ||  to player to inform him?
+exceed-kill-in-chunk-message: true
 
-# ||  ADVANCED USERS ONLY
+# ||  This sets a hard limit on the number of entities
+# ||  you can summon using the LevelledMobs summon command.
+# ||  This is to prevent accidental crashes.
+customize-summon-command-limit: 10
+
 # ||  What is the max distance the summon command will
 # ||  spawn mobs away from players?
 summon-command-spawn-distance-from-player: 5
 
-# ||  Check for updates?
-# ||  This is a good update checker - it doesn't freeze
-# ||  your server startup since it is asynchronous, it
-# ||  only speaks if it found an update, and it only runs
-# ||  once every server startup. Pointless to disable.
-use-update-checker: true
+# ||  Do not touch this unless a LM developer tells you to.
+# ||  This sets a hard limit on the number of times a command
+# ||  being 'dropped' from the Custom Drops system can be
+# ||  performed in a loop. This is to prevent accidental crashes.
+customcommand-amount-limit: 100
+
+# ||  When set to true, nametags will show the mob name
+# ||  translated to your client language settings.
+# ||  However some older or hacked clients do not support
+# ||  this and will show the translation key instead.
+use-translation-components: true
+
+# ||  ADVANCED USERS ONLY
+# ||  Do not touch this unless a LM developer tells you to.
+# ||  Should mob attributes be based upon preset base-values?
+# ||  This will use an internal hard-set of values for the
+# ||  attributes of entities rather than any adjusted value
+# ||  when listened for in the world.
+attributes-use-preset-base-values: false
+
+# ||  These settings pertian to Player Levelling, which sets
+# ||  the updating period for the Player Levelling tasks.
+player-levelling-relevel-min-time: 5s
+
+# ||  This setting determines how far away an entity can be
+# ||  for it to register under `%levelledmobs_mob-target%`.
+nametag-placeholder-maxblocks: 30
 
 # ||  What conditions should a mob have in order for the
 # ||  LevelledMobs kill command to 'skip' it (not kill the mob)?
 kill-skip-conditions:
-
-  # ||  These ones are self-explanatory.
   nametagged: true
   tamed: true
   leashed: true
-
-  # ||  If the mob is a zombie villager that is converting, skip.
   convertingZombieVillager: true
 
 # ||  Should mob heads be multiplied by LevelledMobs'
@@ -107,45 +150,6 @@ kill-skip-conditions:
 # ||  have heads in their economies, so it is set to false
 # ||  by default as to not harm their economies.
 mobs-multiply-head-drops: false
-
-# || When player kill exceed amount of levelled mobs in
-# || a chunk(within given period). Should we send message
-# || to player to inform him?
-exceed-kill-in-chunk-message: true
-
-# ||  ADVANCED USERS ONLY
-# ||  Do not touch this unless a LM developer tells you to.
-# ||  These settings pertian to Player Levelling, obviously
-# ||  this only affects LM if you are using Player Levelling.
-player-levelling-relevel-min-time: 5s
-
-# ||  This setting determines how far away an entity can be
-# ||  for it to register under `%levelledmobs_mob-target%`.
-nametag-placeholder-maxblocks: 30
-
-# || ADVANCED USERS ONLY
-# || If your server software (e.g. Paper) has
-# || the Adventure library in it, then LevelledMobs
-# || will use it, so long this setting is enabled.
-# || CraftBukkit and Spigot servers do not have
-# || this library, although PaperMC servers and
-# || all PaperMC forks (Airplane, etc) do.
-# || It is recommended that you keep this enabled.
-use-adventure: true
-
-level-mobs-upon-spawn: true
-
-# || When set to true, nametags will show the mob name
-# || translated to your client language settings.
-# || However some older clients don't support this
-# || and will show the translation key instead.
-use-translation-components: true
-
-# || If your server software (e.g. Paper) has
-# || the Adventure library in it, then you can change
-# || this to false and use MiniMessage for nametag
-# || format parsing
-use-legacy-serializer: true
 
 # ||  ADVANCED USERS ONLY
 # ||  Do not touch this unless a LM developer tells you to.

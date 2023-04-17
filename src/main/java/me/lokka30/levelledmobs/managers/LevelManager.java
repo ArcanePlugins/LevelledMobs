@@ -722,6 +722,9 @@ public class LevelManager implements LevelInterface {
             final String deathMessage = main.rulesManager.getDeathMessage(lmEntity);
             if (deathMessage != null && !deathMessage.isEmpty()){
                 nametag = deathMessage.replace("%death_nametag%", nametag);
+                final Player player = lmEntity.getPlayerForLevelling();
+                nametag = nametag.replace("%player%", player != null ? player.getName() : "");
+                nametag = replaceStringPlaceholders(nametag, lmEntity, true);
                 preserveMobName = false;
                 hadCustomDeathMessage = true;
             }
