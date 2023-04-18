@@ -323,6 +323,10 @@ public class LevelManager implements LevelInterface {
         String varianceDebug = "";
         if (playerLevelSourceResult.randomVarianceResult != null){
             results[1] += playerLevelSourceResult.randomVarianceResult;
+            if (results[1] < 1)
+                results[1] = 1;
+            if (results[0] > results[1])
+                results[0] = results[1];
             varianceDebug = String.format(", var: %s", playerLevelSourceResult.randomVarianceResult);
         }
 
@@ -482,6 +486,9 @@ public class LevelManager implements LevelInterface {
         final Integer maxRandomVariance = main.rulesManager.getRuleMaxRandomVariance(lmEntity);
         if (maxRandomVariance != null){
             sourceResult.randomVarianceResult = ThreadLocalRandom.current().nextInt(0, maxRandomVariance + 1);
+            if (ThreadLocalRandom.current().nextBoolean()){
+                sourceResult.randomVarianceResult *= -1;
+            }
         }
 
         sourceResult.numericResult = (int) Math.round(origLevelSource);
