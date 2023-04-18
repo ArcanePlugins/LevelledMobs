@@ -121,14 +121,6 @@ customcommand-amount-limit: 100
 # ||  this and will show the translation key instead.
 use-translation-components: true
 
-# ||  ADVANCED USERS ONLY
-# ||  Do not touch this unless a LM developer tells you to.
-# ||  Should mob attributes be based upon preset base-values?
-# ||  This will use an internal hard-set of values for the
-# ||  attributes of entities rather than any adjusted value
-# ||  when listened for in the world.
-attributes-use-preset-base-values: false
-
 # ||  These settings pertian to Player Levelling, which sets
 # ||  the updating period for the Player Levelling tasks.
 player-levelling-relevel-min-time: 5s

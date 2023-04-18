@@ -82,6 +82,7 @@ public class RulesManager {
         return result;
     }
 
+    @SuppressWarnings("unused")
     public void addCustomRule(final @Nullable RuleInfo ri){
         if (ri == null) return;
 

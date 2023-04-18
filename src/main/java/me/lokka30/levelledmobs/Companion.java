@@ -167,7 +167,6 @@ public class Companion {
         main.customDropsHandler = new CustomDropsHandler(main);
 
         if (!isReload) {
-            main.attributesCfg = loadEmbeddedResource("defaultAttributes.yml");
             main.dropsCfg = loadEmbeddedResource("defaultDrops.yml");
             main.mobHeadManager.loadTextures(
                 Objects.requireNonNull(loadEmbeddedResource("textures.yml")));
