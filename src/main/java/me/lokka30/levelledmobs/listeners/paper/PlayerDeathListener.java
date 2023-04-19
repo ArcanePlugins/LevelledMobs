@@ -86,6 +86,7 @@ public class PlayerDeathListener {
             return lmKiller;
         }
 
+        lmKiller.setPlayerForLevelling(event.getPlayer());
         final NametagResult mobNametag = main.levelManager.getNametag(lmKiller, true, true);
         if (mobNametag.getNametag() != null && mobNametag.getNametag().isEmpty()){
             this.shouldCancelEvent = true;

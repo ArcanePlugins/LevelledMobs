@@ -25,7 +25,6 @@ import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.entity.EntityType;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * Manages data related to various mob levelling
@@ -60,23 +59,6 @@ public class MobDataManager {
     private final LevelledMobs main;
     public final Map<String, VanillaBonusEnum> vanillaMultiplierNames;
 
-    @Nullable private Object getAttributeDefaultValue(@NotNull final LivingEntityWrapper lmEntity,
-        final Attribute attribute) {
-        if (lmEntity.isMobTamed()) {
-            // if the tamed variant in the cfg then use it, otherwise check for untamed path
-            final String tamedPath = "TAMED_" + lmEntity.getTypeName() + "." + attribute;
-            if (main.attributesCfg.contains(tamedPath)) {
-                return main.attributesCfg.get(tamedPath);
-            }
-        }
-
-        final String path = lmEntity.getTypeName() + "." + attribute;
-
-        return main.attributesCfg.contains(path) ?
-            main.attributesCfg.get(path) :
-            null;
-    }
-
     final boolean isLevelledDropManaged(final EntityType entityType,
         @NotNull final Material material) {
         // Head drops
@@ -92,12 +74,8 @@ public class MobDataManager {
 
     void setAdditionsForLevel(@NotNull final LivingEntityWrapper lmEntity,
         final @NotNull Attribute attribute, final Addition addition) {
-        final boolean useStaticValues = main.helperSettings.getBoolean(main.settingsCfg,
-            "attributes-use-preset-base-values");
-        final float defaultValue = useStaticValues ?
-            (float) Objects.requireNonNull(getAttributeDefaultValue(lmEntity, attribute)) :
-                (float) Objects.requireNonNull(lmEntity.getLivingEntity().getAttribute(attribute))
-                .getBaseValue();
+        final float defaultValue = (float) Objects.requireNonNull(lmEntity.getLivingEntity()
+            .getAttribute(attribute)).getBaseValue();
         final float additionValue = getAdditionsForLevel(lmEntity, addition, defaultValue);
 
         if (additionValue == 0.0f) {
@@ -145,20 +123,12 @@ public class MobDataManager {
 
             attrib.removeModifier(existingMod);
         }
+        debugLog(main, ATTRIBUTE_MULTIPLIERS,
+            String.format("%s (%s): attrib: %s, base: %s, addtion: %s",
+                lmEntity.getNameIfBaby(), lmEntity.getMobLevel(), attribute.name(),
+                Utils.round(attrib.getBaseValue(), 3), Utils.round(additionValue, 3)));
+        attrib.addModifier(mod);
 
-        if (useStaticValues) {
-            debugLog(main, ATTRIBUTE_MULTIPLIERS,
-                String.format("%s (%s): attrib: %s, base: %s, new base value: %s",
-                    lmEntity.getNameIfBaby(), lmEntity.getMobLevel(), attribute.name(),
-                    Utils.round(attrib.getBaseValue(), 3), Utils.round(defaultValue, 3)));
-            attrib.setBaseValue(defaultValue);
-        } else {
-            debugLog(main, ATTRIBUTE_MULTIPLIERS,
-                String.format("%s (%s): attrib: %s, base: %s, addtion: %s",
-                    lmEntity.getNameIfBaby(), lmEntity.getMobLevel(), attribute.name(),
-                    Utils.round(attrib.getBaseValue(), 3), Utils.round(additionValue, 3)));
-            attrib.addModifier(mod);
-        }
 
         // MAX_HEALTH specific: set health to max health
         if (attribute == Attribute.GENERIC_MAX_HEALTH) {

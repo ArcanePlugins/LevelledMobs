@@ -1077,8 +1077,9 @@ public class CustomDropsParser {
                 item.getMaterial() != null ? item.getMaterial().toString() : "(unknown)";
             sb.append(String.format("  &b%s&r, amount: &b%s&r, chance: &b%s&r", itemMaterial,
                 item.getAmountAsString(), baseItem.chance));
-        } else {
-            sb.append(String.format("  COMMAND, chance: &b%s&r", baseItem.chance));
+        } else if (baseItem instanceof final CustomCommand cc) {
+            sb.append(String.format("  COMMAND, chance: &b%s&r, run-on-spawn: %s, run-on-death: %s",
+                    baseItem.chance, cc.runOnSpawn, cc.runOnDeath));
         }
 
         if (baseItem.minLevel > -1) {

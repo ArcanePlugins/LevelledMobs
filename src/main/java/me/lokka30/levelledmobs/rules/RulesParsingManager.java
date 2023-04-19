@@ -1039,16 +1039,7 @@ public class RulesParsingManager {
             spawnDistanceStrategy.startDistance = ymlHelper.getInt2(cs_SpawnDistance,
                 "start-distance", spawnDistanceStrategy.startDistance);
 
-            if (cs_SpawnDistance.get(
-                ymlHelper.getKeyNameFromConfig(cs_SpawnDistance, "spawn-location.x")) != null) {
-                spawnDistanceStrategy.spawnLocation_X = parseOptionalSpawnCoordinate(
-                    ymlHelper.getKeyNameFromConfig(cs, "spawn-location.x"), cs_SpawnDistance);
-            }
-            if (cs_SpawnDistance.get(
-                ymlHelper.getKeyNameFromConfig(cs_SpawnDistance, "spawn-location.z")) != null) {
-                spawnDistanceStrategy.spawnLocation_Z = parseOptionalSpawnCoordinate(
-                    ymlHelper.getKeyNameFromConfig(cs, "spawn-location.z"), cs_SpawnDistance);
-            }
+            parseOptionalSpawnCoordinate(cs_SpawnDistance, spawnDistanceStrategy);
 
             if (ymlHelper.getString(cs_SpawnDistance, "blended-levelling") != null) {
                 parseBlendedLevelling(objTo_CS(cs_SpawnDistance, "blended-levelling"),
@@ -1071,10 +1062,17 @@ public class RulesParsingManager {
         final String useWeightedRandom = cs.getString("weighted-random");
 
         // weighted-random: true
-        if ("true".equalsIgnoreCase(useWeightedRandom)) {
+        final boolean isDisabled = "false".equalsIgnoreCase(useWeightedRandom);
+        if (isDisabled || "true".equalsIgnoreCase(useWeightedRandom)) {
             final RandomLevellingStrategy randomLevelling = new RandomLevellingStrategy();
-            randomLevelling.autoGenerate = true;
+            if (isDisabled){
+                randomLevelling.enabled = false;
+            }
+            else{
+                randomLevelling.autoGenerate = true;
+            }
             this.parsingInfo.levellingStrategy = randomLevelling;
+
             return;
         }
 
@@ -1320,16 +1318,20 @@ public class RulesParsingManager {
             spawnDistanceStrategy.scaleDownward);
     }
 
-    private @Nullable Integer parseOptionalSpawnCoordinate(final @NotNull String path,
-            final @NotNull ConfigurationSection cs) {
-        if (cs.getString(path) == null) {
-            return null;
-        }
-        if ("default".equalsIgnoreCase(cs.getString(path))) {
-            return null;
+    private void parseOptionalSpawnCoordinate(final @NotNull ConfigurationSection cs,
+            final @NotNull SpawnDistanceStrategy sds) {
+        final ConfigurationSection spawnLocation = objTo_CS_2(cs.get("spawn-location"));
+        if (spawnLocation == null){
+            return;
         }
 
-        return (cs.getInt(path));
+        if (!"default".equalsIgnoreCase(spawnLocation.getString("x"))) {
+            sds.spawnLocation_X = spawnLocation.getInt("x");
+        }
+
+        if (!"default".equalsIgnoreCase(spawnLocation.getString("z"))) {
+            sds.spawnLocation_Z = spawnLocation.getInt("z");
+        }
     }
 
     private void parseFineTuning(final @Nullable ConfigurationSection cs) {

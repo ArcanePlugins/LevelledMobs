@@ -87,9 +87,9 @@ public class YDistanceStrategy implements LevellingStrategy, Cloneable {
 
     private int getVariance(@NotNull final LivingEntityWrapper lmEntity,
         final boolean isAtMaxLevel) {
-        final int variance = lmEntity.getMainInstance().rulesManager.getRuleMaxRandomVariance(
+        final Integer variance = lmEntity.getMainInstance().rulesManager.getRuleMaxRandomVariance(
             lmEntity);
-        if (variance == 0) {
+        if (variance == null || variance == 0) {
             return 0;
         }
 

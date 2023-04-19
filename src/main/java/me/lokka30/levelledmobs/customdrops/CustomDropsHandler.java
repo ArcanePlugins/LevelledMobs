@@ -533,6 +533,7 @@ public class CustomDropsHandler {
             return;
         }
 
+        final boolean runOnSpawn = dropBase instanceof CustomCommand cc && cc.runOnSpawn;
         boolean didNotMakeChance = false;
         float chanceRole = 0.0F;
 
@@ -553,14 +554,14 @@ public class CustomDropsHandler {
             return;
         }
 
-        if (!info.equippedOnly && dropBase.chance < 1.0) {
+        if ((!info.equippedOnly || runOnSpawn) && dropBase.chance < 1.0) {
             chanceRole = (float) ThreadLocalRandom.current().nextInt(0, 100001) * 0.00001F;
             if (1.0F - chanceRole >= dropBase.chance) {
                 didNotMakeChance = true;
             }
         }
 
-        if (didNotMakeChance && !info.equippedOnly && isCustomDropsDebuggingEnabled()) {
+        if (didNotMakeChance && (!info.equippedOnly || runOnSpawn) && isCustomDropsDebuggingEnabled()) {
             if (dropBase instanceof final CustomDropItem dropItem) {
                 final ItemStack itemStack =
                     info.deathByFire ? getCookedVariantOfMeat(dropItem.getItemStack())
@@ -574,8 +575,14 @@ public class CustomDropsHandler {
                     );
                 }
             }
+            else if (isCustomDropsDebuggingEnabled()){
+                info.addDebugMessage(String.format(
+                        "&8 - &7Custom command&7, chance: &b%s&7, chanceRole: &b%s&7, executed: &bfalse&7.",
+                        dropBase.chance, Utils.round(chanceRole, 4))
+                );
+            }
         }
-        if (!info.equippedOnly && didNotMakeChance) {
+        if ((!info.equippedOnly || runOnSpawn) && didNotMakeChance) {
             return;
         }
 
@@ -987,7 +994,7 @@ public class CustomDropsHandler {
             } else {
                 //levelToUse = main.levelManager.getPlayerLevelSourceNumber(info.mobKiller, variableToUse);
                 final PlayerLevelSourceResult result = main.levelManager.getPlayerLevelSourceNumber(
-                    info.mobKiller, variableToUse);
+                    info.mobKiller, info.lmEntity, variableToUse);
                 levelToUse = result.isNumericResult ? result.numericResult : 1;
                 info.playerLevelVariableCache.put(variableToUse, levelToUse);
             }
