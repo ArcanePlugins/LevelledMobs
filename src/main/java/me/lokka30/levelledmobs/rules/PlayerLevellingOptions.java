@@ -32,6 +32,7 @@ public class PlayerLevellingOptions implements Cloneable {
     public Double playerLevelScale;
     public String variable;
     public boolean decreaseLevel;
+    public boolean doMerge;
 
     public void mergeRule(final PlayerLevellingOptions options) {
         if (options == null) {

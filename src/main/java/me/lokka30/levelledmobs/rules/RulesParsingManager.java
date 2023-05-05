@@ -1250,6 +1250,7 @@ public class RulesParsingManager {
             options.playerLevelScale);
         options.levelCap = ymlHelper.getInt2(cs, "level-cap", options.levelCap);
         options.enabled = ymlHelper.getBoolean2(cs, "enabled", options.enabled);
+        options.doMerge = ymlHelper.getBoolean(cs, "merge", options.doMerge);
         options.variable = ymlHelper.getString(cs, "variable", options.variable);
         options.decreaseLevel = ymlHelper.getBoolean(cs, "decrease-level", true);
         options.recheckPlayers = ymlHelper.getBoolean2(cs, "recheck-players", options.recheckPlayers);
