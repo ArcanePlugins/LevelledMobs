@@ -402,7 +402,7 @@ public class RulesManager {
 
         for (final RuleInfo ruleInfo : lmEntity.getApplicableRules()) {
             if (ruleInfo.playerLevellingOptions != null) {
-                if (levellingOptions == null)
+                if (levellingOptions == null || !levellingOptions.doMerge)
                     levellingOptions = ruleInfo.playerLevellingOptions.cloneItem();
                 else
                     levellingOptions.mergeRule(ruleInfo.playerLevellingOptions);
