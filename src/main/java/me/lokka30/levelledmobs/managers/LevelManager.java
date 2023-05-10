@@ -837,6 +837,12 @@ public class LevelManager implements LevelInterface {
 
     public @NotNull String replaceStringPlaceholders(final @NotNull String text,
         @NotNull final LivingEntityWrapper lmEntity, final boolean usePAPI) {
+        return replaceStringPlaceholders(text, lmEntity, usePAPI, null);
+    }
+
+    public @NotNull String replaceStringPlaceholders(final @NotNull String text,
+        @NotNull final LivingEntityWrapper lmEntity, final boolean usePAPI,
+        final @Nullable Player player) {
         String result = text;
 
         final double maxHealth = getMobAttributeValue(lmEntity);
@@ -880,7 +886,7 @@ public class LevelManager implements LevelInterface {
             String.valueOf(lmEntity.getLivingEntity().getLocation().getBlockZ()));
 
         if (usePAPI && result.contains("%") && ExternalCompatibilityManager.hasPapiInstalled()) {
-            result = ExternalCompatibilityManager.getPapiPlaceholder(null, result);
+            result = ExternalCompatibilityManager.getPapiPlaceholder(player, result);
         }
 
         return result;

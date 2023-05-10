@@ -164,7 +164,6 @@ public class CustomDropsHandler {
             }
         }
 
-        Utils.logger.info(lmEntity.getTypeName() + ", killer: " + lmEntity.getLivingEntity().getKiller());
         if (lmEntity.getLivingEntity().getKiller() != null) {
             processingInfo.wasKilledByPlayer = true;
             processingInfo.mobKiller = lmEntity.getLivingEntity().getKiller();
@@ -731,7 +730,7 @@ public class CustomDropsHandler {
                 for (String lore : dropItem.lore) {
                     if (lore.contains("%")) {
                         lore = lore.replace("%player%", info.mobKiller == null ? "" : info.mobKiller.getName());
-                        lore = main.levelManager.replaceStringPlaceholders(lore, info.lmEntity, true);
+                        lore = main.levelManager.replaceStringPlaceholders(lore, info.lmEntity, true, info.mobKiller);
                     }
 
                     newLore.add(lore);
@@ -746,7 +745,7 @@ public class CustomDropsHandler {
 
             if (meta != null && dropItem.customName != null && !dropItem.customName.isEmpty()) {
                 String customName = dropItem.customName.replace("%player%", info.mobKiller == null ? "" : info.mobKiller.getName());
-                customName = main.levelManager.replaceStringPlaceholders(customName, info.lmEntity, true);
+                customName = main.levelManager.replaceStringPlaceholders(customName, info.lmEntity, true, info.mobKiller);
 
                 if (VersionUtils.isRunningPaper() && main.companion.useAdventure) {
                     PaperUtils.updateItemDisplayName(meta, customName);

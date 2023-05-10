@@ -12,6 +12,8 @@ import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Hashtable;
+
 /**
  * Interfaces with the plugin LM_Items so can custom items from 3rd party plugins can be used
  * directly in custom drops
@@ -74,22 +76,23 @@ public class LMItemsParser {
         final ExternalItemRequest itemRequest = new ExternalItemRequest(item.externalItemId);
         itemRequest.itemType = item.externalType;
         itemRequest.amount = item.externalAmount;
-        itemRequest.extras = item.externalExtras;
 
-        for (final String key : itemRequest.extras.keySet()){
-            if (!(itemRequest.extras.get(key) instanceof String value) ||
-                    !value.contains("%")){
-                continue;
-            }
+        if (item.externalExtras != null){
+            itemRequest.extras = new Hashtable<>(item.externalExtras.size());
 
-            if (info != null) {
-                value = main.levelManager.replaceStringPlaceholders(value, info.lmEntity, true);
-            }
-            else if (ExternalCompatibilityManager.hasPapiInstalled()) {
-                value = ExternalCompatibilityManager.getPapiPlaceholder(null, value);
-            }
+            for (final String key : item.externalExtras.keySet()){
+                Object value = item.externalExtras.get(key);
+                if (value instanceof String stringValue && stringValue.contains("%")){
+                    if (info != null) {
+                        value = main.levelManager.replaceStringPlaceholders(stringValue, info.lmEntity, true, info.mobKiller);
+                    }
+                    else if (ExternalCompatibilityManager.hasPapiInstalled()) {
+                        value = ExternalCompatibilityManager.getPapiPlaceholder(null, stringValue);
+                    }
+                }
 
-            itemRequest.extras.put(key, value);
+                itemRequest.extras.put(key, value);
+            }
         }
 
         final GetItemResult result = itemsAPI.getItem(itemRequest);
