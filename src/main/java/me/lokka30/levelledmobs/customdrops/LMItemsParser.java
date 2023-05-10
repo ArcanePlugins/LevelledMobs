@@ -10,6 +10,7 @@ import me.lokka30.levelledmobs.misc.DebugType;
 import me.lokka30.levelledmobs.util.Utils;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Interfaces with the plugin LM_Items so can custom items from 3rd party plugins can be used
@@ -58,10 +59,10 @@ public class LMItemsParser {
         }
 
         item.isExternalItem = true;
-        return getExternalItem(item);
+        return getExternalItem(item, null);
     }
 
-    public boolean getExternalItem(final @NotNull CustomDropItem item) {
+    public boolean getExternalItem(final @NotNull CustomDropItem item, final @Nullable CustomDropProcessingInfo info) {
         final ItemsAPI itemsAPI = LM_Items.plugin.getItemAPIForPlugin(item.externalPluginName);
 
         if (itemsAPI == null) {
@@ -74,6 +75,22 @@ public class LMItemsParser {
         itemRequest.itemType = item.externalType;
         itemRequest.amount = item.externalAmount;
         itemRequest.extras = item.externalExtras;
+
+        for (final String key : itemRequest.extras.keySet()){
+            if (!(itemRequest.extras.get(key) instanceof String value) ||
+                    !value.contains("%")){
+                continue;
+            }
+
+            if (info != null) {
+                value = main.levelManager.replaceStringPlaceholders(value, info.lmEntity, true);
+            }
+            else if (ExternalCompatibilityManager.hasPapiInstalled()) {
+                value = ExternalCompatibilityManager.getPapiPlaceholder(null, value);
+            }
+
+            itemRequest.extras.put(key, value);
+        }
 
         final GetItemResult result = itemsAPI.getItem(itemRequest);
 

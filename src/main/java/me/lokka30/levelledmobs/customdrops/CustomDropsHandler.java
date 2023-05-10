@@ -164,6 +164,7 @@ public class CustomDropsHandler {
             }
         }
 
+        Utils.logger.info(lmEntity.getTypeName() + ", killer: " + lmEntity.getLivingEntity().getKiller());
         if (lmEntity.getLivingEntity().getKiller() != null) {
             processingInfo.wasKilledByPlayer = true;
             processingInfo.mobKiller = lmEntity.getLivingEntity().getKiller();
@@ -677,7 +678,7 @@ public class CustomDropsHandler {
 
         ItemStack newItem;
         if (dropItem.isExternalItem && main.companion.externalCompatibilityManager.doesLMIMeetVersionRequirement()
-            && lmItemsParser.getExternalItem(dropItem)) {
+            && lmItemsParser.getExternalItem(dropItem, info)) {
             newItem = dropItem.getItemStack();
         } else if (info.deathByFire) {
             newItem = getCookedVariantOfMeat(dropItem.getItemStack().clone());
@@ -727,8 +728,13 @@ public class CustomDropsHandler {
 
             if (meta != null && dropItem.lore != null && !dropItem.lore.isEmpty()) {
                 final List<String> newLore = new ArrayList<>(dropItem.lore.size());
-                for (final String lore : dropItem.lore) {
-                    newLore.add(main.levelManager.updateNametag(info.lmEntity, lore, false, false, false).getNametagNonNull());
+                for (String lore : dropItem.lore) {
+                    if (lore.contains("%")) {
+                        lore = lore.replace("%player%", info.mobKiller == null ? "" : info.mobKiller.getName());
+                        lore = main.levelManager.replaceStringPlaceholders(lore, info.lmEntity, true);
+                    }
+
+                    newLore.add(lore);
 
                     if (VersionUtils.isRunningPaper() && main.companion.useAdventure) {
                         PaperUtils.updateItemMetaLore(meta, newLore);
@@ -739,13 +745,13 @@ public class CustomDropsHandler {
             }
 
             if (meta != null && dropItem.customName != null && !dropItem.customName.isEmpty()) {
-                final String displayName = main.levelManager.updateNametag(info.lmEntity,
-                    dropItem.customName, false, false, false).getNametagNonNull();
+                String customName = dropItem.customName.replace("%player%", info.mobKiller == null ? "" : info.mobKiller.getName());
+                customName = main.levelManager.replaceStringPlaceholders(customName, info.lmEntity, true);
 
                 if (VersionUtils.isRunningPaper() && main.companion.useAdventure) {
-                    PaperUtils.updateItemDisplayName(meta, displayName);
+                    PaperUtils.updateItemDisplayName(meta, customName);
                 } else {
-                    SpigotUtils.updateItemDisplayName(meta, MessageUtils.colorizeAll(displayName));
+                    SpigotUtils.updateItemDisplayName(meta, MessageUtils.colorizeAll(customName));
                 }
             }
 

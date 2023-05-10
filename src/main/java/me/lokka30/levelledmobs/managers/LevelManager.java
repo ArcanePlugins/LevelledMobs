@@ -835,9 +835,9 @@ public class LevelManager implements LevelInterface {
         }
     }
 
-    public @NotNull String replaceStringPlaceholders(final @NotNull String nametag,
+    public @NotNull String replaceStringPlaceholders(final @NotNull String text,
         @NotNull final LivingEntityWrapper lmEntity, final boolean usePAPI) {
-        String result = nametag;
+        String result = text;
 
         final double maxHealth = getMobAttributeValue(lmEntity);
         final double entityHealth = getMobHealth(lmEntity);

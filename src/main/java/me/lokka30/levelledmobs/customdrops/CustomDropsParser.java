@@ -403,7 +403,7 @@ public class CustomDropsParser {
                     }
 
                     if (item.isExternalItem && main.companion.externalCompatibilityManager.doesLMIMeetVersionRequirement()) {
-                        if (!handler.lmItemsParser.getExternalItem(item)) {
+                        if (!handler.lmItemsParser.getExternalItem(item, null)) {
                             continue;
                         }
                     }
