@@ -193,8 +193,9 @@ public class Definitions {
 
     private void getMethodComponentAppend() throws NoSuchMethodException {
         // net.minecraft.network.chat.MutableComponent append(net.minecraft.network.chat.Component) ->
-        // 1.18 = b, 1.19.0 = a, 1.19.1 = b
-        String methodName = ver.getRevision() == 0 || ver.getMinecraftVersion() == 1.18
+        // 1.19.0 = a, everything else  = b
+        String methodName = ver.getMinecraftVersion() == 1.19 && ver.getRevision() == 0 ||
+                ver.getMinecraftVersion() == 1.18
             ? "a" : "b";
 
         if (ver.getMinecraftVersion() <= 1.17) {
@@ -210,7 +211,7 @@ public class Definitions {
         //     net.minecraft.network.chat.MutableComponent empty()
 
         if (ver.getMinecraftVersion() >= 1.19) {
-            // 1.19.0 = g, 1.19.1 = h
+            // 1.19.0 = g, 1.19.1+ = h
             final String methodName = ver.getRevision() == 0 ? "g" : "h";
 
             // net.minecraft.network.chat.Component ->
@@ -226,7 +227,7 @@ public class Definitions {
     }
 
     private void getMethodTranslatable() throws NoSuchMethodException {
-        if (ver.getMinecraftVersion() < 1.19) {
+        if (ver.getMinecraftVersion() <= 1.18) {
             // 1.18 instantiates an object, so this method doesn't apply
             return;
         }
@@ -272,9 +273,12 @@ public class Definitions {
         // net.minecraft.network.syncher.SynchedEntityData getEntityData() ->
         String methodName;
 
-        if (this.isOneNinteenThreeOrNewer){
+        if (ver.getMinecraftVersion() >= 1.20){
+            methodName = "ai";
+        }
+        else if (ver.getMinecraftVersion() == 1.19){
             // 1.19.4+
-            if (ver.getRevision() >=4)
+            if (ver.getRevision() >= 4)
                 methodName = "aj";
             else // 1.19.3 only
                 methodName = "al";
@@ -299,6 +303,9 @@ public class Definitions {
 
         // net.minecraft.world.level.entity.EntityAccess ->
         //   int getId() ->
+        if (ver.getMinecraftVersion() >= 1.20){
+            methodName = "ae";
+        }
         if (ver.getMinecraftVersion() >= 1.18){
             if (ver.getRevision() >= 4){
                 methodName = "af";
@@ -370,8 +377,9 @@ public class Definitions {
                 clazz_DataWatcherObject, Object.class);
 
             // private <T> DataWatcher.Item<T> getItem(DataWatcherObject<T> datawatcherobject)
-            // net.minecraft.network.syncher.SynchedEntityData$DataItem getItem(net.minecraft.network.syncher.EntityDataAccessor) -> b
-            this.method_DataWatcher_GetItem = clazz_DataWatcher.getDeclaredMethod("b",
+            // net.minecraft.network.syncher.SynchedEntityData$DataItem getItem(net.minecraft.network.syncher.EntityDataAccessor) ->
+            methodName = ver.getMinecraftVersion() >= 1.20 ? "c" : "b";
+            this.method_DataWatcher_GetItem = clazz_DataWatcher.getDeclaredMethod(methodName,
                 clazz_DataWatcherObject);
             this.method_DataWatcher_GetItem.setAccessible(true);
 
