@@ -16,10 +16,14 @@ import me.lokka30.levelledmobs.commands.subcommands.RulesSubcommand;
 import me.lokka30.levelledmobs.commands.subcommands.SpawnerEggCommand;
 import me.lokka30.levelledmobs.commands.subcommands.SpawnerSubCommand;
 import me.lokka30.levelledmobs.commands.subcommands.SummonSubcommand;
+import me.lokka30.levelledmobs.util.PaperUtils;
+import me.lokka30.levelledmobs.util.SpigotUtils;
 import me.lokka30.levelledmobs.util.Utils;
+import me.lokka30.microlib.other.VersionUtils;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.command.TabCompleter;
 import org.jetbrains.annotations.NotNull;
 
@@ -69,6 +73,7 @@ public class LevelledMobsCommand implements CommandExecutor, TabCompleter {
                     // Retain alphabetical order please.
                     case "debug" -> debugSubcommand.parseSubcommand(main, sender, label, args);
                     case "egg" -> spawnerEggCommand.parseSubcommand(main, sender, label, args);
+                    case "help" -> showHelp(sender);
                     case "info" -> infoSubcommand.parseSubcommand(main, sender, label, args);
                     case "kill" -> killSubcommand.parseSubcommand(main, sender, label, args);
                     case "reload" -> reloadSubcommand.parseSubcommand(main, sender, label, args);
@@ -92,9 +97,27 @@ public class LevelledMobsCommand implements CommandExecutor, TabCompleter {
         mainUsage.forEach(sender::sendMessage);
     }
 
+    private void showHelp(@NotNull final CommandSender sender){
+        final String message = "Click here to open the wiki FAQ";
+        final String url = "https://tinyurl.com/yc8xds5a";
+
+        if (sender instanceof ConsoleCommandSender){
+            // hyperlinks don't work on console
+            sender.sendMessage(String.format("%s: %s",
+                    message, url));
+            return;
+        }
+
+        if (VersionUtils.isRunningPaper()) {
+            PaperUtils.sendHyperlink(sender, message, url);
+        } else {
+            SpigotUtils.sendHyperlink(sender, message, url);
+        }
+    }
+
     // Retain alphabetical order please.
-    private final List<String> commandsToCheck = List.of("debug", "egg", "info", "kill",
-        "reload", "rules", "spawner", "summon");
+    private final List<String> commandsToCheck = List.of("debug", "egg", "help",
+        "info", "kill", "reload", "rules", "spawner", "summon");
 
     @Override
     public List<String> onTabComplete(final @NotNull CommandSender sender,
