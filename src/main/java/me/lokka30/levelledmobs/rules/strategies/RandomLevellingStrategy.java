@@ -166,7 +166,9 @@ public class RandomLevellingStrategy implements LevellingStrategy, Cloneable {
         return results;
     }
 
-    private int getRandomLevel(final int minLevel, final int maxLevel) {
+    private int getRandomLevel(int minLevel, int maxLevel) {
+        minLevel = Math.max(minLevel, 0);
+        maxLevel = Math.max(minLevel, maxLevel);
         return ThreadLocalRandom.current().nextInt(minLevel, maxLevel + 1);
     }
 
