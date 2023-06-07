@@ -274,7 +274,7 @@ public class Definitions {
         String methodName;
 
         if (ver.getMinecraftVersion() >= 1.20){
-            methodName = "ai";
+            methodName = "aj";
         }
         else if (ver.getMinecraftVersion() == 1.19){
             // 1.19.4+
@@ -304,9 +304,9 @@ public class Definitions {
         // net.minecraft.world.level.entity.EntityAccess ->
         //   int getId() ->
         if (ver.getMinecraftVersion() >= 1.20){
-            methodName = "ae";
+            methodName = "af";
         }
-        if (ver.getMinecraftVersion() >= 1.18){
+        else if (ver.getMinecraftVersion() >= 1.18){
             if (ver.getRevision() >= 4){
                 methodName = "af";
             }
@@ -398,7 +398,8 @@ public class Definitions {
 
         // net.minecraft.server.level.ServerPlayer ->
         //    net.minecraft.server.network.ServerGamePacketListenerImpl connection ->
-        this.field_Connection = clazz_EntityPlayer.getDeclaredField("b");
+        String fieldName = ver.getMinecraftVersion() >= 1.20 ? "c" : "b";
+        this.field_Connection = clazz_EntityPlayer.getDeclaredField(fieldName);
 
         if (this.isOneNinteenThreeOrNewer) {
             // net.minecraft.network.syncher.SynchedEntityData ->
