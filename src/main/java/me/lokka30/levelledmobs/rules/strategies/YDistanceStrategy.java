@@ -6,7 +6,6 @@ package me.lokka30.levelledmobs.rules.strategies;
 
 import java.util.concurrent.ThreadLocalRandom;
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
-import me.lokka30.levelledmobs.util.Utils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -67,8 +66,6 @@ public class YDistanceStrategy implements LevellingStrategy, Cloneable {
 
         if (yPeriod != 0) {
             final double lvlPerPeriod = (maxLevel - minLevel) / (diff / yPeriod);
-            Utils.logger.info(String.format("lvlPerPeriod: %s, lvl: %s, diff: %s, yP: %s",
-                    lvlPerPeriod, (maxLevel - minLevel), diff, yPeriod));
             useLevel = (int) Math.floor(
                 minLevel + (lvlPerPeriod * (mobYLocation - yStart) / yPeriod));
         } else {
