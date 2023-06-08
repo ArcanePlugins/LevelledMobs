@@ -37,10 +37,14 @@ abstract class YamlConfig(
         const val FILE_EXTENSION = ".yml"
     }
 
-    private val loader: YamlConfigurationLoader = YamlConfigurationLoader
+    val loader: YamlConfigurationLoader = YamlConfigurationLoader
         .builder()
         .path(path)
         .build()
+
+    override fun load() {
+        super.load()
+    }
 
     override fun loadRootNode() {
         rootNode = loader.load()

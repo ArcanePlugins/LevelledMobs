@@ -19,7 +19,6 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 package io.github.arcaneplugins.levelledmobs.plugin.bukkit
 
 import io.github.arcaneplugins.levelledmobs.plugin.bukkit.config.ConfigHandler
-import io.github.arcaneplugins.levelledmobs.plugin.bukkit.misc.Log
 import org.bukkit.plugin.java.JavaPlugin
 
 /**
@@ -41,22 +40,20 @@ class LevelledMobs : JavaPlugin() {
     }
 
     //TODO Document
-    val configHandler = ConfigHandler()
+    lateinit var configHandler: ConfigHandler
 
     override fun onLoad() {
         lmInstance = this
 
-        configHandler.load()
-
-        Log.warning("It loads! (test)") // TODO remove once tested
+        configHandler = ConfigHandler()
     }
 
     override fun onEnable() {
-        Log.warning("It enables! (test)") // TODO remove once tested
+        configHandler.load()
     }
 
     override fun onDisable() {
-        Log.warning("It disables! (test)") // TODO remove once tested
+        // TODO
     }
 
 }
