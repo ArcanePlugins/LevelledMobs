@@ -14,18 +14,29 @@
   <artifactId>levelledmobs-parent</artifactId>
   <version>4</version>
   <modules>
-    <module>levelledmobs-plugin-bukkit</module>
     <module>levelledmobs-api-bukkit</module>
+    <module>levelledmobs-plugin-bukkit</module>
   </modules>
   <packaging>pom</packaging>
 
   <name>LevelledMobs Parent</name>
+  <description>Parent for LevelledMobs' source code modules.</description>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+    <!-- LevelledMobs Version Control -->
+    <revision>4.0.0-alpha1</revision>
+
+    <kotlin.version>1.8.21</kotlin.version>
+    <configurate.version>4.1.2</configurate.version>
+    <spigotapi.version>1.19.4-R0.1-SNAPSHOT</spigotapi.version>
+    <jupiter.version>5.9.2</jupiter.version>
+    <maven-compiler-plugin.version>3.10.1</maven-compiler-plugin.version>
+    <maven-shade-plugin.version>3.4.1</maven-shade-plugin.version>
   </properties>
 
   <build>
-    <defaultGoal>clean package</defaultGoal>
+    <defaultGoal>clean install</defaultGoal>
   </build>
 </project>

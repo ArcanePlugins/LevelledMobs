@@ -1,82 +1,18 @@
-##########################################
-#           ~ LevelledMobs v4 ~          #
-# The Ultimate RPG Mob Levelling Plugin  #
-##########################################
+simple-settings:
+  # TODO
 
-functions:
-  - function: 'entity-leveller'
-    triggers: ['on-entity-spawn', 'on-entity-scan']
-    processes:
-      - process: 'check-not-levellable'
-        if:
-          - condition: 'entity-type'
-            in-group: ['passive-mobs', 'neutral-mobs']
-          - condition: 'entity-owner'
-            not-in-list: []
-        do:
-          - action: 'set-level'
-            formula: 'no-level'
-          - action: 'exit-function'
+# (!) DO NOT MODIFY THIS SECTION UNLESS SPECIALLY INSTRUCTED BY A LEVELLEDMOBS MAINTAINER (!)
+# This section of the configuration contains various advanced options which very rarely should be
+# adjusted by any user.
+# (!) DO NOT MODIFY THIS SECTION UNLESS SPECIALLY INSTRUCTED BY A LEVELLEDMOBS MAINTAINER (!)
+advanced:
+  debug-categories: [""]
 
-      - process: 'apply-level'
-        if:
-          - condition: 'entity-level'
-            state: 'NOT_LEVELLED'
-        do:
-          - action: 'set-level'
-            formula: '%weighted-random-level%'
-            strategies:
-              weighted-random:
-                tiers:
-                  '1-20': 8
-                  '21-40': 6
-                  '41-60': 4
-                  '61-80': 2
-                  '81-100': 1
-
-      - process: 'apply-levelled-stats'
-        do:
-          - action: 'set-buffs'
-            use-presets: ['average-challenge']
-
-          - action: 'set-packet-label'
-            formula: '&8&l༺ &bLvl.%entity-level%&f %entity-prefix%&f%entity-name%&f%entity-suffix%&8 • &7%entity-health-rounded%&8/&7%entity-max-health-rounded%&c♥ &8&l༻'
-            visibility-methods: ['TARGETED', 'ATTACKED']
-            visibility-duration: '5s'
-
-          - action: 'set-death-label'
-            formula: '[Lvl.%entity-level%](color=aqua) %entity-prefix%%entity-name%%entity-suffix%'
-
-  - function: 'label-updater'
-    description: 'This function updates the labels of levelled entities automatically.'
-    triggers:
-      - 'on-entity-damage'
-      - 'on-entity-regain-health'
-      - 'on-player-join'
-      - 'on-player-teleport'
-      - 'on-entity-track' # TODO add listener
-      - 'on-entity-scan'
-      - 'on-entity-transform'
-    processes:
-      - process: 'update-label'
-        delay: 1 # A 1-tick delay is in place so that the correct info (e.g. health) is displayed.
-        if:
-          - condition: 'entity-level'
-            state: 'LEVELLED'
-        do:
-          - action: 'update-labels'
-
-lang: 'en_US'
-
-# TODO move to advanced settings
-# TODO Implement
-mob-target-placeholder:
-  levelled: 'default'
-  not-levelled: '&f%entity-prefix%&f%entity-name%&f%entity-suffix%&f'
-
-#### File Metadata
-# Do not edit this section!
-metadata:
-  version:
-    original: 34
-    current: 34
+  metadata:
+    version:
+      file:
+        initial: -1 # TODO add file version
+        installed: -1 # TODO add file version
+      plugin:
+        initial: "${project.version}"
+        installed: "${project.version}"
