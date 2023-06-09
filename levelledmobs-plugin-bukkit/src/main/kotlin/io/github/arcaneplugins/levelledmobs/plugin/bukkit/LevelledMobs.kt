@@ -18,7 +18,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 package io.github.arcaneplugins.levelledmobs.plugin.bukkit
 
-import io.github.arcaneplugins.levelledmobs.plugin.bukkit.config.ConfigHandler
+import io.github.arcaneplugins.levelledmobs.plugin.bukkit.config.ConfigManager
 import org.bukkit.plugin.java.JavaPlugin
 
 /**
@@ -40,20 +40,28 @@ class LevelledMobs : JavaPlugin() {
     }
 
     //TODO Document
-    lateinit var configHandler: ConfigHandler
+    lateinit var configManager: ConfigManager
 
     override fun onLoad() {
         lmInstance = this
 
-        configHandler = ConfigHandler()
+        //TODO assert server is running SpigotMC-based software
+
+        configManager = ConfigManager()
     }
 
     override fun onEnable() {
-        configHandler.load()
+        configManager.load()
     }
 
     override fun onDisable() {
         // TODO
+    }
+
+    // TODO Use
+    // TODO Document
+    fun reload() {
+        configManager.load()
     }
 
 }

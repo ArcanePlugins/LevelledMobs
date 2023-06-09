@@ -20,7 +20,7 @@ package io.github.arcaneplugins.levelledmobs.plugin.bukkit.misc
 
 import io.github.arcaneplugins.levelledmobs.plugin.bukkit.LevelledMobs.Companion.lmInstance
 import io.github.arcaneplugins.levelledmobs.plugin.bukkit.config.settings.debug.DebugCategory
-import io.github.arcaneplugins.levelledmobs.plugin.bukkit.config.settings.debug.DebugHandler
+import io.github.arcaneplugins.levelledmobs.plugin.bukkit.config.settings.debug.DebugManager
 import java.util.function.Supplier
 
 /**
@@ -65,14 +65,14 @@ object Log {
 
     /**
      * Logs [msg] to the console if the associated debug category [cat] is enabled in
-     * [io.github.arcaneplugins.levelledmobs.plugin.bukkit.config.settings.debug.DebugHandler].
+     * [io.github.arcaneplugins.levelledmobs.plugin.bukkit.config.settings.debug.DebugManager].
      *
      * @author Lachlan Adamson (lokka30)
      */
     fun debug(msg: Supplier<String>, cat: DebugCategory) {
-        val debugHandler: DebugHandler = lmInstance.configHandler.settings.debugHandler
+        val debugManager: DebugManager = lmInstance.configManager.settings.debugManager
 
-        if(!debugHandler.isCategoryEnabled(cat)) return
+        if(!debugManager.isCategoryEnabled(cat)) return
 
         lmInstance.logger.info("[DEBUG - ${cat}] ${msg.get()}")
     }

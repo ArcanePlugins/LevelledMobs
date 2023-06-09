@@ -6,13 +6,13 @@ simple-settings:
 # adjusted by any user.
 # (!) DO NOT MODIFY THIS SECTION UNLESS SPECIALLY INSTRUCTED BY A LEVELLEDMOBS MAINTAINER (!)
 advanced:
-  debug-categories: [""]
+  debug-categories: []
 
   metadata:
     version:
       file:
-        initial: -1 # TODO add file version
-        installed: -1 # TODO add file version
+        initial: 1
+        installed: 1
       plugin:
         initial: "${project.version}"
         installed: "${project.version}"

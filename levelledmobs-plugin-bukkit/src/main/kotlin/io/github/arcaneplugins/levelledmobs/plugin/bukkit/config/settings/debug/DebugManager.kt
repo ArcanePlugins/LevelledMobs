@@ -25,7 +25,7 @@ import java.util.*
  *
  * @author Lachlan Adamson (lokka30)
  */
-class DebugHandler {
+class DebugManager {
 
     /**
      * An [EnumSet] of enabled [DebugCategory] constants.

@@ -16,24 +16,20 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package io.github.arcaneplugins.levelledmobs.plugin.bukkit.config
+package io.github.arcaneplugins.levelledmobs.plugin.bukkit.rule.component.context
 
-import io.github.arcaneplugins.levelledmobs.plugin.bukkit.config.settings.SettingsConfig
+import io.github.arcaneplugins.levelledmobs.plugin.bukkit.rule.component.Rule
+import org.bukkit.entity.Entity
+import org.bukkit.entity.LivingEntity
+import org.bukkit.entity.Player
 
-class ConfigHandler {
+//todo doc
+class Context(
+    val other: Map<String, Any> = mutableMapOf(),
 
-    //TODO Describe
-    val settings: SettingsConfig = SettingsConfig()
-
-    //TODO Describe
-    val allConfigs: Array<Config> = arrayOf(
-        // Please do not change the order of items below!!
-        settings
-    )
-
-    //TODO Describe
-    fun load() {
-        allConfigs.forEach(Config::load)
-    }
-
-}
+    /* commonly accessed data is stored as a variable */
+    var rule: Rule? = null,
+    var entity: Entity? = null,
+    var livingEntity: LivingEntity? = null,
+    var player: Player? = null,
+)

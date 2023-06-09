@@ -20,18 +20,18 @@ package io.github.arcaneplugins.levelledmobs.plugin.bukkit.config.settings
 
 import io.github.arcaneplugins.levelledmobs.plugin.bukkit.config.YamlConfig
 import io.github.arcaneplugins.levelledmobs.plugin.bukkit.config.settings.debug.DebugCategory
-import io.github.arcaneplugins.levelledmobs.plugin.bukkit.config.settings.debug.DebugHandler
+import io.github.arcaneplugins.levelledmobs.plugin.bukkit.config.settings.debug.DebugManager
 import io.github.arcaneplugins.levelledmobs.plugin.bukkit.misc.DescriptiveException
 
 // TODO Document
 class SettingsConfig : YamlConfig(
     fileName = "settings",
     isResourceFile = true,
-    latestFileVersion = 35
+    latestFileVersion = 1 // If you're changing this, don't forget to sync it in the file. :)
 ) {
 
     // TODO Document
-    val debugHandler: DebugHandler = DebugHandler()
+    val debugManager: DebugManager = DebugManager()
 
     // TODO Document
     override fun load() {
@@ -62,8 +62,8 @@ class SettingsConfig : YamlConfig(
 
     // TODO Document
     private fun loadDebugCategories() {
-        debugHandler.enabledCategories.clear()
-        debugHandler.enabledCategories.addAll(
+        debugManager.enabledCategories.clear()
+        debugManager.enabledCategories.addAll(
             rootNode
                 .node("advanced", "debug-categories")
                 .getList(DebugCategory::class.java)
