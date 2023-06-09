@@ -18,18 +18,35 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 package io.github.arcaneplugins.levelledmobs.plugin.bukkit.rule.component
 
+import io.github.arcaneplugins.levelledmobs.plugin.bukkit.LevelledMobs.Companion.lmInstance
+import io.github.arcaneplugins.levelledmobs.plugin.bukkit.rule.component.action.Action
+import io.github.arcaneplugins.levelledmobs.plugin.bukkit.rule.component.condition.Condition
 import io.github.arcaneplugins.levelledmobs.plugin.bukkit.rule.component.context.Context
 import io.github.arcaneplugins.levelledmobs.plugin.bukkit.rule.component.trigger.Trigger
+import org.bukkit.Bukkit
 
 //todo doc
 class Rule(
     val id: String,
-    val triggers: Set<Trigger>,
+    val triggers: MutableSet<Trigger> = mutableSetOf(),
+    val actions: MutableList<Action> = mutableListOf(),
+    val conditions: MutableList<Condition> = mutableListOf(),
+    val delayTicks: Long = 0L,
 ) {
 
     //todo doc
     fun call(context: Context) {
-        TODO("Not yet implemented; context: $context")
+        fun callLogic() {
+            if (conditions.any { !it.evaluate(context) }) return
+
+            actions.forEach { it.call(context) }
+        }
+
+        if (delayTicks <= 0L) {
+            callLogic()
+        } else {
+            Bukkit.getScheduler().runTaskLater(lmInstance, ::callLogic, delayTicks)
+        }
     }
 
 }

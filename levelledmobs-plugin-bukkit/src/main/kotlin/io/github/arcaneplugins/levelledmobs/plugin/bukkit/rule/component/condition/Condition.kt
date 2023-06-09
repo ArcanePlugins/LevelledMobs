@@ -28,6 +28,6 @@ abstract class Condition(
     //todo doc
     abstract fun evaluate(
         context: Context
-    )
+    ): Boolean
 
 }
