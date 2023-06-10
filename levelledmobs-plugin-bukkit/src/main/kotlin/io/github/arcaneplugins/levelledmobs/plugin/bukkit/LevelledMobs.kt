@@ -19,6 +19,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 package io.github.arcaneplugins.levelledmobs.plugin.bukkit
 
 import io.github.arcaneplugins.levelledmobs.plugin.bukkit.config.ConfigManager
+import io.github.arcaneplugins.levelledmobs.plugin.bukkit.listener.ListenerManager
 import io.github.arcaneplugins.levelledmobs.plugin.bukkit.rule.RuleManager
 import org.bukkit.plugin.java.JavaPlugin
 
@@ -40,11 +41,9 @@ class LevelledMobs : JavaPlugin() {
 
     }
 
-    //TODO Document
     lateinit var configManager: ConfigManager
-
-    //TODO Document
     lateinit var ruleManager: RuleManager
+    lateinit var listenerManager: ListenerManager
 
     override fun onLoad() {
         lmInstance = this
@@ -53,11 +52,13 @@ class LevelledMobs : JavaPlugin() {
 
         configManager = ConfigManager()
         ruleManager = RuleManager()
+        listenerManager = ListenerManager()
     }
 
     override fun onEnable() {
         configManager.load()
         ruleManager.load()
+        listenerManager.load()
     }
 
     override fun onDisable() {

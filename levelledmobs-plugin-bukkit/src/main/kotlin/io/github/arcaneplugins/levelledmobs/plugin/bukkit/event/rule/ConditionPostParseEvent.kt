@@ -1,12 +1,12 @@
 package io.github.arcaneplugins.levelledmobs.plugin.bukkit.event.rule
 
-import io.github.arcaneplugins.levelledmobs.plugin.bukkit.rule.component.Rule
+import io.github.arcaneplugins.levelledmobs.plugin.bukkit.rule.component.condition.Condition
 import org.bukkit.event.Event
 import org.bukkit.event.HandlerList
 
 //todo doc
-class RuleParsedEvent(
-    val rule: Rule,
+class ConditionPostParseEvent(
+    val condition: Condition,
 ) : Event() {
 
     companion object {

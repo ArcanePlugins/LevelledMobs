@@ -32,7 +32,7 @@ class Rule(
     val actions: MutableList<Action> = mutableListOf(),
     val elseActions: MutableList<Action> = mutableListOf(),
     val conditions: MutableList<Condition> = mutableListOf(),
-    val delayTicks: Long = 0L,
+    var delayTicks: Long = 0L,
 ) {
 
     //todo doc

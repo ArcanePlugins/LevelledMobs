@@ -19,19 +19,25 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 package io.github.arcaneplugins.levelledmobs.plugin.bukkit.rule.component.context
 
 import io.github.arcaneplugins.levelledmobs.plugin.bukkit.rule.component.Rule
+import org.bukkit.Location
+import org.bukkit.World
 import org.bukkit.entity.Entity
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
+import org.bukkit.event.Event
 
 //todo doc
 class Context(
 
-    val other: Map<String, Any> = mutableMapOf(),
+    val other: MutableMap<String, Any> = mutableMapOf(),
 
     /* commonly accessed data is stored as a variable */
-    val rule: Rule?,
     var entity: Entity? = null,
+    var event: Event? = null,
     var livingEntity: LivingEntity? = null,
+    var location: Location? = null,
     var player: Player? = null,
+    var rule: Rule? = null,
+    var world: World? = null,
 
 )

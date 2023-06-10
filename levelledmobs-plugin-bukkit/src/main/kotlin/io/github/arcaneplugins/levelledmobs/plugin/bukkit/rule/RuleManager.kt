@@ -19,9 +19,9 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 package io.github.arcaneplugins.levelledmobs.plugin.bukkit.rule
 
 import io.github.arcaneplugins.levelledmobs.plugin.bukkit.LevelledMobs.Companion.lmInstance
-import io.github.arcaneplugins.levelledmobs.plugin.bukkit.event.rule.RuleParseEvent
-import io.github.arcaneplugins.levelledmobs.plugin.bukkit.event.rule.RuleParsedEvent
+import io.github.arcaneplugins.levelledmobs.plugin.bukkit.event.rule.*
 import io.github.arcaneplugins.levelledmobs.plugin.bukkit.misc.DescriptiveException
+import io.github.arcaneplugins.levelledmobs.plugin.bukkit.misc.TimeUtil
 import io.github.arcaneplugins.levelledmobs.plugin.bukkit.rule.component.Rule
 import io.github.arcaneplugins.levelledmobs.plugin.bukkit.rule.component.action.Action
 import io.github.arcaneplugins.levelledmobs.plugin.bukkit.rule.component.action.impl.DebugAction
@@ -68,9 +68,9 @@ class RuleManager {
         node: CommentedConfigurationNode,
     ): Rule? {
         /* assemble initial rule object with configured ID value */
-
         val rule = Rule(id = node.node("rule").string!!.lowercase())
 
+        /* make sure there are no duplicate rule IDs */
         if (rules.any { it.id == rule.id }) {
             throw DescriptiveException(
                 "Rules must be given unique ID values, but found at least 2 rules with the ID '${rule.id}'"
@@ -78,53 +78,46 @@ class RuleManager {
         }
 
         /* call the pre-parse event */
-
-        val preParseEvent = RuleParseEvent(rule)
+        val preParseEvent = RulePreParseEvent(rule)
         Bukkit.getPluginManager().callEvent(preParseEvent)
         if (preParseEvent.isCancelled)
             return null
 
         /* parse triggers in rule config */
-
         val triggerIds: List<String> = node
             .node("triggers")
             .getList(String::class.java) ?: emptyList()
 
-        triggerIds.forEach { rule.triggers.add(parseTrigger(it, rule)) }
+        triggers.addAll(triggerIds.mapNotNull { parseTrigger(it, rule) })
 
         /* parse 'if' conditions in rule config */
-
         val conditionNodes: List<CommentedConfigurationNode> = node
             .node("if")
             .childrenList()
 
-        conditionNodes.forEach { rule.conditions.add(parseConditionAtNode(it, rule)) }
+        rule.conditions.addAll(conditionNodes.mapNotNull { parseConditionAtNode(rule, it) })
 
         /* parse 'do' actions in rule config */
-
         val doActionNodes: List<CommentedConfigurationNode> = node
             .node("do")
             .childrenList()
 
-        doActionNodes.forEach { rule.actions.add(parseActionAtNode(it, rule)) }
+        rule.actions.addAll(doActionNodes.mapNotNull { parseActionAtNode(rule, it) })
 
         /* parse 'else' actions in rule config */
-
         val elseActionNodes: List<CommentedConfigurationNode> = node
             .node("else")
             .childrenList()
 
-        elseActionNodes.forEach { rule.elseActions.add(parseActionAtNode(it, rule)) }
+        rule.elseActions.addAll(elseActionNodes.mapNotNull { parseActionAtNode(rule, it) })
 
         /* parse the delay in rule config */
-
-        //todo parse delay
-        TODO("delay not yet implemented")
+        rule.delayTicks = TimeUtil.parseDelayAtConfigNode(node.node("delay"))
 
         /* call 'rule parsed' event and return the parsed rule */
+        Bukkit.getPluginManager().callEvent(RulePostParseEvent(rule))
 
-        Bukkit.getPluginManager().callEvent(RuleParsedEvent(rule))
-
+        /* done */
         return rule
     }
 
@@ -132,30 +125,85 @@ class RuleManager {
     private fun parseTrigger(
         id: String,
         rule: Rule,
-    ): Trigger {
-        return triggers
+    ): Trigger? {
+        /* locate trigger by id */
+
+        val trigger: Trigger = triggers
             // find trigger with the given id
             .firstOrNull { it.id() == id }
             // if trigger is null, no trigger was found with the given id; throw exception
             ?: throw DescriptiveException("For rule '${rule.id}', there is no Trigger available with the ID '${id}'; please check for spelling mistakes")
+
+        /* pre parse event */
+
+        val preParse = TriggerPreParseEvent(trigger, rule)
+        Bukkit.getPluginManager().callEvent(preParse)
+        if (preParse.isCancelled) return null
+
+        /* post parse event */
+
+        val postParse = TriggerPostParseEvent(trigger, rule)
+        Bukkit.getPluginManager().callEvent(postParse)
+
+        return trigger
     }
 
-    //todo use
     //todo doc
     private fun parseActionAtNode(
-        node: CommentedConfigurationNode,
         rule: Rule,
-    ): Action {
-        TODO("Not yet implemented; $node")
+        node: CommentedConfigurationNode,
+    ): Action? {
+        val id: String = node.node("action").string!!.lowercase()
+
+        if (!actionHandlers.containsKey(id)) {
+            throw DescriptiveException("Rule '${rule.id}' declares an action with the ID '${id}' which doesn't exist; please check for spelling mistakes")
+        }
+
+        /* parse action with id */
+
+        val action: Action = actionHandlers[id]!!.apply(rule, node)
+
+        /* call pre-parse event */
+
+        val preParse = ActionPreParseEvent(action)
+        Bukkit.getPluginManager().callEvent(preParse)
+        if (preParse.isCancelled) return null
+
+        /* call post-parse event */
+
+        val postParse = ActionPostParseEvent(action)
+        Bukkit.getPluginManager().callEvent(postParse)
+
+        return action
     }
 
-    //todo use
     //todo doc
     private fun parseConditionAtNode(
-        node: CommentedConfigurationNode,
         rule: Rule,
-    ): Condition {
-        TODO("Not yet implemented; $node")
+        node: CommentedConfigurationNode,
+    ): Condition? {
+        val id: String = node.node("condition").string!!.lowercase()
+
+        if (!conditionHandlers.containsKey(id)) {
+            throw DescriptiveException("Rule '${rule.id}' declares a condition with the ID '${id}' which doesn't exist; please check for spelling mistakes")
+        }
+
+        /* parse action with id */
+
+        val condition: Condition = conditionHandlers[id]!!.apply(rule, node)
+
+        /* call pre-parse event */
+
+        val preParse = ConditionPreParseEvent(condition)
+        Bukkit.getPluginManager().callEvent(preParse)
+        if (preParse.isCancelled) return null
+
+        /* call post-parse event */
+
+        val postParse = ConditionPostParseEvent(condition)
+        Bukkit.getPluginManager().callEvent(postParse)
+
+        return condition
     }
 
     //todo use
