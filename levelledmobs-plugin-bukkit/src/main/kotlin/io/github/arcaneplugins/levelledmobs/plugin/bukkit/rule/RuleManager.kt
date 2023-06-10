@@ -24,18 +24,36 @@ import io.github.arcaneplugins.levelledmobs.plugin.bukkit.event.rule.RuleParsedE
 import io.github.arcaneplugins.levelledmobs.plugin.bukkit.misc.DescriptiveException
 import io.github.arcaneplugins.levelledmobs.plugin.bukkit.rule.component.Rule
 import io.github.arcaneplugins.levelledmobs.plugin.bukkit.rule.component.action.Action
+import io.github.arcaneplugins.levelledmobs.plugin.bukkit.rule.component.action.impl.DebugAction
 import io.github.arcaneplugins.levelledmobs.plugin.bukkit.rule.component.condition.Condition
 import io.github.arcaneplugins.levelledmobs.plugin.bukkit.rule.component.context.Context
+import io.github.arcaneplugins.levelledmobs.plugin.bukkit.rule.component.trigger.LmTrigger
 import io.github.arcaneplugins.levelledmobs.plugin.bukkit.rule.component.trigger.Trigger
 import org.bukkit.Bukkit
 import org.spongepowered.configurate.CommentedConfigurationNode
+import java.util.function.BiFunction
 
 //todo doc
 class RuleManager {
 
+    //todo doc
     val rules: MutableList<Rule> = mutableListOf()
 
-    //todo use
+    //todo doc
+    val conditionHandlers: MutableMap<String, BiFunction<Rule, CommentedConfigurationNode, Condition>> =
+        mutableMapOf(
+            // TODO add conditions in here.
+        )
+
+    //todo doc
+    val actionHandlers: MutableMap<String, BiFunction<Rule, CommentedConfigurationNode, Action>> =
+        mutableMapOf(
+            "debug" to BiFunction { rule, _ -> DebugAction(rule) }
+        )
+
+    //todo doc
+    val triggers: MutableSet<Trigger> = LmTrigger.values().toMutableSet()
+
     //todo doc
     fun load() {
         val ruleNodes: List<CommentedConfigurationNode> = lmInstance.configManager.rules.rootNode
@@ -45,8 +63,6 @@ class RuleManager {
         rules.addAll(ruleNodes.mapNotNull { parseRuleAtNode(it) })
     }
 
-    //todo implementation incomplete
-    //todo use
     //todo doc
     private fun parseRuleAtNode(
         node: CommentedConfigurationNode,
@@ -55,7 +71,7 @@ class RuleManager {
 
         val rule = Rule(id = node.node("rule").string!!.lowercase())
 
-        if(rules.any { it.id == rule.id }) {
+        if (rules.any { it.id == rule.id }) {
             throw DescriptiveException(
                 "Rules must be given unique ID values, but found at least 2 rules with the ID '${rule.id}'"
             )
@@ -74,7 +90,7 @@ class RuleManager {
             .node("triggers")
             .getList(String::class.java) ?: emptyList()
 
-        triggerIds.forEach { rule.triggers.add(parseTrigger(it)) }
+        triggerIds.forEach { rule.triggers.add(parseTrigger(it, rule)) }
 
         /* parse 'if' conditions in rule config */
 
@@ -82,7 +98,7 @@ class RuleManager {
             .node("if")
             .childrenList()
 
-        conditionNodes.forEach { rule.conditions.add(parseConditionAtNode(it)) }
+        conditionNodes.forEach { rule.conditions.add(parseConditionAtNode(it, rule)) }
 
         /* parse 'do' actions in rule config */
 
@@ -90,7 +106,7 @@ class RuleManager {
             .node("do")
             .childrenList()
 
-        doActionNodes.forEach { rule.actions.add(parseActionAtNode(it)) }
+        doActionNodes.forEach { rule.actions.add(parseActionAtNode(it, rule)) }
 
         /* parse 'else' actions in rule config */
 
@@ -98,12 +114,12 @@ class RuleManager {
             .node("else")
             .childrenList()
 
-        elseActionNodes.forEach { rule.elseActions.add(parseActionAtNode(it)) }
+        elseActionNodes.forEach { rule.elseActions.add(parseActionAtNode(it, rule)) }
 
         /* parse the delay in rule config */
 
         //todo parse delay
-        // ...
+        TODO("delay not yet implemented")
 
         /* call 'rule parsed' event and return the parsed rule */
 
@@ -112,19 +128,23 @@ class RuleManager {
         return rule
     }
 
-    //todo use
     //todo doc
     private fun parseTrigger(
         id: String,
+        rule: Rule,
     ): Trigger {
-        //todo use a map to map trigget IDs to their corresponding objects
-        TODO("Not yet implemented; $id")
+        return triggers
+            // find trigger with the given id
+            .firstOrNull { it.id() == id }
+            // if trigger is null, no trigger was found with the given id; throw exception
+            ?: throw DescriptiveException("For rule '${rule.id}', there is no Trigger available with the ID '${id}'; please check for spelling mistakes")
     }
 
     //todo use
     //todo doc
     private fun parseActionAtNode(
         node: CommentedConfigurationNode,
+        rule: Rule,
     ): Action {
         TODO("Not yet implemented; $node")
     }
@@ -133,6 +153,7 @@ class RuleManager {
     //todo doc
     private fun parseConditionAtNode(
         node: CommentedConfigurationNode,
+        rule: Rule,
     ): Condition {
         TODO("Not yet implemented; $node")
     }
