@@ -28,7 +28,7 @@ enum class LmTrigger : Trigger {
 
     ;
 
-    private val id = name.replace("_", "-")
+    private val id = name.lowercase().replace("_", "-")
 
     override fun id(): String {
         return id

@@ -20,6 +20,7 @@ package io.github.arcaneplugins.levelledmobs.plugin.bukkit.config
 
 import org.spongepowered.configurate.yaml.YamlConfigurationLoader
 
+//todo doc
 abstract class YamlConfig(
     fileName: String,
     isResourceFile: Boolean,
@@ -41,10 +42,6 @@ abstract class YamlConfig(
         .builder()
         .path(path)
         .build()
-
-    override fun load() {
-        super.load()
-    }
 
     override fun loadRootNode() {
         rootNode = loader.load()

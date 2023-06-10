@@ -60,6 +60,7 @@ abstract class Config(
         migrate()
     }
 
+    //todo doc
     protected abstract fun loadRootNode()
 
     // TODO Description

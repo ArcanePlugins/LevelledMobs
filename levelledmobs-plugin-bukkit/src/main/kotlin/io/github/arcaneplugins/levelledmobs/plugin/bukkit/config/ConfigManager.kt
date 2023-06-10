@@ -23,10 +23,7 @@ import io.github.arcaneplugins.levelledmobs.plugin.bukkit.config.settings.Settin
 
 class ConfigManager {
 
-    //TODO Describe
     val settings: SettingsConfig = SettingsConfig()
-
-    //TODO Describe
     val rules: RulesConfig = RulesConfig()
 
     //TODO Describe
