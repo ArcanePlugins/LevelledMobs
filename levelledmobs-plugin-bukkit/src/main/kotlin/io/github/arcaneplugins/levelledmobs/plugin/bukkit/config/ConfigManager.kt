@@ -18,6 +18,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 package io.github.arcaneplugins.levelledmobs.plugin.bukkit.config
 
+import io.github.arcaneplugins.levelledmobs.plugin.bukkit.config.settings.RulesConfig
 import io.github.arcaneplugins.levelledmobs.plugin.bukkit.config.settings.SettingsConfig
 
 class ConfigManager {
@@ -26,9 +27,14 @@ class ConfigManager {
     val settings: SettingsConfig = SettingsConfig()
 
     //TODO Describe
+    val rules: RulesConfig = RulesConfig()
+
+    //TODO Describe
     val allConfigs: Array<Config> = arrayOf(
-        // Please do not change the order of items below!!
-        settings
+        settings, // do not change order
+        rules,    // do not change order
+        // ... do not insert nodes above this line
+        // ... do not insert nodes below this line
     )
 
     //TODO Describe

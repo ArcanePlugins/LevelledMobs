@@ -30,22 +30,25 @@ class Rule(
     val id: String,
     val triggers: MutableSet<Trigger> = mutableSetOf(),
     val actions: MutableList<Action> = mutableListOf(),
+    val elseActions: MutableList<Action> = mutableListOf(),
     val conditions: MutableList<Condition> = mutableListOf(),
     val delayTicks: Long = 0L,
 ) {
 
     //todo doc
     fun call(context: Context) {
-        fun callLogic() {
-            if (conditions.any { !it.evaluate(context) }) return
-
-            actions.forEach { it.call(context) }
+        fun run() {
+            if (conditions.all { !it.evaluate(context) }) {
+                actions.forEach { it.call(context) }
+            } else {
+                elseActions.forEach { it.call(context) }
+            }
         }
 
         if (delayTicks <= 0L) {
-            callLogic()
+            run()
         } else {
-            Bukkit.getScheduler().runTaskLater(lmInstance, ::callLogic, delayTicks)
+            Bukkit.getScheduler().runTaskLater(lmInstance, ::run, delayTicks)
         }
     }
 

@@ -18,10 +18,13 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 package io.github.arcaneplugins.levelledmobs.plugin.bukkit.rule
 
+import io.github.arcaneplugins.levelledmobs.plugin.bukkit.LevelledMobs.Companion.lmInstance
 import io.github.arcaneplugins.levelledmobs.plugin.bukkit.event.rule.RuleParseEvent
 import io.github.arcaneplugins.levelledmobs.plugin.bukkit.event.rule.RuleParsedEvent
+import io.github.arcaneplugins.levelledmobs.plugin.bukkit.misc.DescriptiveException
 import io.github.arcaneplugins.levelledmobs.plugin.bukkit.rule.component.Rule
 import io.github.arcaneplugins.levelledmobs.plugin.bukkit.rule.component.action.Action
+import io.github.arcaneplugins.levelledmobs.plugin.bukkit.rule.component.condition.Condition
 import io.github.arcaneplugins.levelledmobs.plugin.bukkit.rule.component.context.Context
 import io.github.arcaneplugins.levelledmobs.plugin.bukkit.rule.component.trigger.Trigger
 import org.bukkit.Bukkit
@@ -35,34 +38,77 @@ class RuleManager {
     //todo use
     //todo doc
     fun load() {
-        TODO("Not yet implemented")
+        val ruleNodes: List<CommentedConfigurationNode> = lmInstance.configManager.rules.rootNode
+            .node("rules")
+            .childrenList()
+
+        rules.addAll(ruleNodes.mapNotNull { parseRuleAtNode(it) })
     }
 
+    //todo implementation incomplete
     //todo use
     //todo doc
     private fun parseRuleAtNode(
         node: CommentedConfigurationNode,
     ): Rule? {
-        val rule = Rule(id = node.node("rule").string!!)
+        /* assemble initial rule object with configured ID value */
+
+        val rule = Rule(id = node.node("rule").string!!.lowercase())
+
+        if(rules.any { it.id == rule.id }) {
+            throw DescriptiveException(
+                "Rules must be given unique ID values, but found at least 2 rules with the ID '${rule.id}'"
+            )
+        }
+
+        /* call the pre-parse event */
 
         val preParseEvent = RuleParseEvent(rule)
         Bukkit.getPluginManager().callEvent(preParseEvent)
         if (preParseEvent.isCancelled)
             return null
 
+        /* parse triggers in rule config */
+
         val triggerIds: List<String> = node
             .node("triggers")
             .getList(String::class.java) ?: emptyList()
 
-        triggerIds.forEach { triggerId -> rule.triggers.add(parseTrigger(triggerId)) }
+        triggerIds.forEach { rule.triggers.add(parseTrigger(it)) }
 
-        //todo parse conditions
+        /* parse 'if' conditions in rule config */
 
-        //todo parse actions
+        val conditionNodes: List<CommentedConfigurationNode> = node
+            .node("if")
+            .childrenList()
+
+        conditionNodes.forEach { rule.conditions.add(parseConditionAtNode(it)) }
+
+        /* parse 'do' actions in rule config */
+
+        val doActionNodes: List<CommentedConfigurationNode> = node
+            .node("do")
+            .childrenList()
+
+        doActionNodes.forEach { rule.actions.add(parseActionAtNode(it)) }
+
+        /* parse 'else' actions in rule config */
+
+        val elseActionNodes: List<CommentedConfigurationNode> = node
+            .node("else")
+            .childrenList()
+
+        elseActionNodes.forEach { rule.elseActions.add(parseActionAtNode(it)) }
+
+        /* parse the delay in rule config */
 
         //todo parse delay
+        // ...
+
+        /* call 'rule parsed' event and return the parsed rule */
 
         Bukkit.getPluginManager().callEvent(RuleParsedEvent(rule))
+
         return rule
     }
 
@@ -87,7 +133,7 @@ class RuleManager {
     //todo doc
     private fun parseConditionAtNode(
         node: CommentedConfigurationNode,
-    ): Action {
+    ): Condition {
         TODO("Not yet implemented; $node")
     }
 

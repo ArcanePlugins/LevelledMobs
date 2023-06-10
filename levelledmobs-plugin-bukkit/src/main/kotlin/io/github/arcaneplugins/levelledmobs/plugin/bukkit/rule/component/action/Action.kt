@@ -24,7 +24,7 @@ import io.github.arcaneplugins.levelledmobs.plugin.bukkit.rule.component.context
 //todo doc
 abstract class Action(
     val id: String,
-    rule: Rule,
+    val rule: Rule,
 ) {
 
     //todo doc

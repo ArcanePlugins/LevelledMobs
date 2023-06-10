@@ -24,11 +24,11 @@ import io.github.arcaneplugins.levelledmobs.plugin.bukkit.rule.component.context
 //todo doc
 abstract class Condition(
     val id: String,
+    val rule: Rule,
 ) {
 
     //todo doc
     abstract fun evaluate(
-        rule: Rule,
         context: Context,
     ): Boolean
 

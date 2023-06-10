@@ -19,6 +19,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 package io.github.arcaneplugins.levelledmobs.plugin.bukkit
 
 import io.github.arcaneplugins.levelledmobs.plugin.bukkit.config.ConfigManager
+import io.github.arcaneplugins.levelledmobs.plugin.bukkit.rule.RuleManager
 import org.bukkit.plugin.java.JavaPlugin
 
 /**
@@ -42,16 +43,21 @@ class LevelledMobs : JavaPlugin() {
     //TODO Document
     lateinit var configManager: ConfigManager
 
+    //TODO Document
+    lateinit var ruleManager: RuleManager
+
     override fun onLoad() {
         lmInstance = this
 
         //TODO assert server is running SpigotMC-based software
 
         configManager = ConfigManager()
+        ruleManager = RuleManager()
     }
 
     override fun onEnable() {
         configManager.load()
+        ruleManager.load()
     }
 
     override fun onDisable() {
