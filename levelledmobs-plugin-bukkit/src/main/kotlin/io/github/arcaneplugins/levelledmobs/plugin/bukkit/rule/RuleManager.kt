@@ -43,12 +43,13 @@ class RuleManager {
     val conditionHandlers: MutableMap<String, BiFunction<Rule, CommentedConfigurationNode, Condition>> =
         mutableMapOf(
             // TODO add conditions in here.
+            // <condition-id> to BiFunction { rule, node -> ConditionImplementation(rule, node) },
         )
 
     //todo doc
     val actionHandlers: MutableMap<String, BiFunction<Rule, CommentedConfigurationNode, Action>> =
         mutableMapOf(
-            "debug" to BiFunction { rule, _ -> DebugAction(rule) }
+            "debug" to BiFunction { rule, _ -> DebugAction(rule) },
         )
 
     //todo doc
