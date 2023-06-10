@@ -18,16 +18,18 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 package io.github.arcaneplugins.levelledmobs.plugin.bukkit.rule.component.condition
 
+import io.github.arcaneplugins.levelledmobs.plugin.bukkit.rule.component.Rule
 import io.github.arcaneplugins.levelledmobs.plugin.bukkit.rule.component.context.Context
 
 //todo doc
 abstract class Condition(
-    val id: String
+    val id: String,
 ) {
 
     //todo doc
     abstract fun evaluate(
-        context: Context
+        rule: Rule,
+        context: Context,
     ): Boolean
 
 }

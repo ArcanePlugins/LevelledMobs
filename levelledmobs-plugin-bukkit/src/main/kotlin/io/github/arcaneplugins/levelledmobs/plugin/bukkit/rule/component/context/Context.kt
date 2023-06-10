@@ -25,11 +25,13 @@ import org.bukkit.entity.Player
 
 //todo doc
 class Context(
+
     val other: Map<String, Any> = mutableMapOf(),
 
     /* commonly accessed data is stored as a variable */
-    var rule: Rule? = null,
+    val rule: Rule?,
     var entity: Entity? = null,
     var livingEntity: LivingEntity? = null,
     var player: Player? = null,
+
 )

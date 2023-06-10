@@ -18,16 +18,18 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 package io.github.arcaneplugins.levelledmobs.plugin.bukkit.rule.component.action
 
+import io.github.arcaneplugins.levelledmobs.plugin.bukkit.rule.component.Rule
 import io.github.arcaneplugins.levelledmobs.plugin.bukkit.rule.component.context.Context
 
 //todo doc
 abstract class Action(
-    val id: String
+    val id: String,
+    rule: Rule,
 ) {
 
     //todo doc
     abstract fun call(
-        context: Context
+        context: Context,
     )
 
 }
