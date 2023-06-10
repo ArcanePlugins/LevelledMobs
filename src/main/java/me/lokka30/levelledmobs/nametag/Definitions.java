@@ -211,8 +211,14 @@ public class Definitions {
         //     net.minecraft.network.chat.MutableComponent empty()
 
         if (ver.getMinecraftVersion() >= 1.19) {
-            // 1.19.0 = g, 1.19.1+ = h
-            final String methodName = ver.getRevision() == 0 ? "g" : "h";
+            String methodName;
+            if (ver.getMinecraftVersion() >= 1.20){
+                methodName = "h";
+            }
+            else {
+                // 1.19.0 = g, 1.19.1+ = h
+                methodName = ver.getRevision() == 0 ? "g" : "h";
+            }
 
             // net.minecraft.network.chat.Component ->
             //     net.minecraft.network.chat.MutableComponent empty()
