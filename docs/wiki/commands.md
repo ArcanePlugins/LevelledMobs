@@ -297,9 +297,9 @@ This page lists and describes all of LevelledMobs' commands.
 
 <ul><li><b>Example:</b>
 
-| ...                 | `<entityType>` | `<amountRange>` | `<levelRange>` | `<minLevel>` | `<maxLevel> `| `<location>` |
-| ------------------- | -------------- | --------------- | -------------- | ------------ | ------------ | ------------ |
-| `/lm summon custom` | `Zombie`       | `1`             | `53`           | `1`          | `100`        | `7 20 100`   | 
+| ...                 | `<entityType>` | `<amountRange>` | `<levelRange>` | `<minLevel>` | `<maxLevel> ` | `<location>` |
+|---------------------|----------------|-----------------|----------------|--------------|---------------|--------------|
+| `/lm summon custom` | `Zombie`       | `1`             | `53`           | `1`          | `100`         | `7 20 100`   | 
 
 This example spawns in a Zombie...
 
@@ -331,9 +331,9 @@ This example spawns in a Zombie...
 
 <ul><li><b>Example:</b>
 
-| ...                 | `<customEntityId>` | `<amountRange>` | `<levelRange>` | `<minLevel>` | `<maxLevel> `| `<location>` |
-| ------------------- | ------------------ | --------------- | -------------- | ------------ | ------------ | ------------ |
-| `/lm summon custom` | `Crawler`          | `2..3`          | `20..100`      | `1`          | `100`        | `~ ~3 ~`     | 
+| ...                 | `<customEntityId>` | `<amountRange>` | `<levelRange>` | `<minLevel>` | `<maxLevel> ` | `<location>` |
+|---------------------|--------------------|-----------------|----------------|--------------|---------------|--------------|
+| `/lm summon custom` | `Crawler`          | `2..3`          | `20..100`      | `1`          | `100`         | `~ ~3 ~`     | 
 
 This example spawns in a custom entity (`Crawler`)...
 

@@ -25,7 +25,6 @@ import io.github.arcaneplugins.levelledmobs.plugin.bukkit.rule.component.context
 abstract class Action(
     val id: String,
     val rule: Rule,
-    val isElseAction: Boolean,
 ) {
 
     //todo doc

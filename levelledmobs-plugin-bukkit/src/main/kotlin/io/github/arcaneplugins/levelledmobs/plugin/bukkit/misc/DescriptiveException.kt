@@ -43,6 +43,7 @@ class DescriptiveException(
 ) : RuntimeException(message, cause) {
 
     init {
+        //todo doc
         clearRecursiveCause()
     }
 

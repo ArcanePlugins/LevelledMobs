@@ -1,6 +1,8 @@
 ---
-name: Bug report about: Let us know about any unintentional flaws in the resource title: 'Untitled'
-labels: bug, unconfirmed assignees: ''
+name: "Bug report about: Let us know about any unintentional flaws in the resource"
+title: "Untitled"
+labels: "bug"
+unconfirmed assignees: ""
 
 ---
 

@@ -26,8 +26,7 @@ import io.github.arcaneplugins.levelledmobs.plugin.bukkit.rule.component.context
 //todo document
 class DebugAction(
     rule: Rule,
-    isElseAction: Boolean,
-) : Action(id = "debug", rule = rule, isElseAction) {
+) : Action(id = "debug", rule = rule) {
 
     override fun call(
         context: Context
