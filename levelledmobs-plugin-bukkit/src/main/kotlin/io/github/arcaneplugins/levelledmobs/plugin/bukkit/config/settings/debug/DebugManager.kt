@@ -22,13 +22,17 @@ import java.util.*
 
 /**
  * This class contains features to aid with debugging LevelledMobs.
+ * Debug logging is *not* handled directly by [DebugManager] - see
+ * [io.github.arcaneplugins.levelledmobs.plugin.bukkit.misc.Log.debug].
+ * [DebugManager]'s role is to store which categories the server administrator is interested in
+ * debugging.
  *
  * @author Lachlan Adamson (lokka30)
  */
 class DebugManager {
 
     /**
-     * An [EnumSet] of enabled [DebugCategory] constants.
+     * A mutable [EnumSet] of enabled [DebugCategory] constants.
      */
     val enabledCategories: EnumSet<DebugCategory> = EnumSet.noneOf(DebugCategory::class.java)
 

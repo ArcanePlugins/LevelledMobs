@@ -16,7 +16,9 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package io.github.arcaneplugins.levelledmobs.plugin.bukkit.rule.component.trigger
+package io.github.arcaneplugins.levelledmobs.plugin.bukkit.rule.component.trigger.impl
+
+import io.github.arcaneplugins.levelledmobs.plugin.bukkit.rule.component.trigger.Trigger
 
 //TODO Doc
 enum class LmTrigger : Trigger {

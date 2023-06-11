@@ -19,13 +19,25 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 package io.github.arcaneplugins.levelledmobs.plugin.bukkit.config.settings
 
 import io.github.arcaneplugins.levelledmobs.plugin.bukkit.config.YamlConfig
+import io.github.arcaneplugins.levelledmobs.plugin.bukkit.misc.DescriptiveException
 
+//todo doc
 class RulesConfig : YamlConfig(
     fileName = "rules",
     isResourceFile = true,
     latestFileVersion = 4,
 ) {
+
     override fun migrateToNextVersion() {
-        TODO("Not yet implemented")
+        when (val installedFv = installedFileVersion()) {
+            latestFileVersion -> {
+                // latest is already migrated - do nothing
+                return
+            }
+            else -> {
+                throw DescriptiveException("Installed file version '$installedFv' of file '$fileName' is not migrateable. You may need to backup the file and edit the latest version of the file, '$latestFileVersion', instead.")
+            }
+        }
     }
+
 }

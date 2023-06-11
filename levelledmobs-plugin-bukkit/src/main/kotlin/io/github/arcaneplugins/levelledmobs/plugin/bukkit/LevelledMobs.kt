@@ -61,12 +61,8 @@ class LevelledMobs : JavaPlugin() {
         listenerManager.load()
     }
 
-    override fun onDisable() {
-        // TODO
-    }
-
-    // TODO Use
-    // TODO Document
+    // TODO Use in upcoming reload subcommand.
+    // TODO Document function.
     fun reload() {
         configManager.load()
     }

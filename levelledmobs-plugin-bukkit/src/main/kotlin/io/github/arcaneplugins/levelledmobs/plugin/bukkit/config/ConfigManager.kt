@@ -31,6 +31,7 @@ class ConfigManager {
         settings, // do not change order
         rules,    // do not change order
         // ... do not insert nodes above this line
+        
         // ... do not insert nodes below this line
     )
 

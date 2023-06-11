@@ -108,13 +108,19 @@ abstract class Config(
 
     //TODO describe
     protected fun migrate() {
+        if (installedFileVersion() > latestFileVersion) {
+            throw DescriptiveException(
+                message = "The installed version of the file '$fileName' (ver. '${installedFileVersion()}') - is newer than the latest file version supported by this version of LevelledMobs (ver. '$latestFileVersion'); please downgrade to the older file"
+            )
+        }
+
         while(installedFileVersion() < latestFileVersion) {
             try {
                 migrateToNextVersion()
             } catch(ex: DescriptiveException) {
                 throw DescriptiveException(
-                    "Unable to migrate '${fileName}' file to next version: ${ex.message}",
-                    ex
+                    message = "Unable to migrate '${fileName}' file from file version '${installedFileVersion()}'; exception message: ${ex.message}",
+                    cause = ex
                 )
             }
         }

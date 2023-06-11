@@ -33,29 +33,19 @@ class SettingsConfig : YamlConfig(
     // TODO Document
     val debugManager: DebugManager = DebugManager()
 
-    // TODO Document
     override fun load() {
         super.load()
         loadDebugCategories()
     }
 
-    // TODO Document
     override fun migrateToNextVersion() {
-        val installedFv = installedFileVersion()
-
-        // TODO Document
-        if (installedFv > latestFileVersion) {
-            throw DescriptiveException("Somehow your file version '$installedFv' is newer than the latest file version '$latestFileVersion'.")
-        }
-
-        // TODO Document
-        when (installedFv) {
+        when (val installedFv = installedFileVersion()) {
             latestFileVersion -> {
                 // latest is already migrated - do nothing
                 return
             }
             else -> {
-                throw DescriptiveException("Installed file version '$installedFv' is not migrateable. You may need to backup the file and edit the latest version of the file, '$latestFileVersion', instead.")
+                throw DescriptiveException("Installed file version '$installedFv' of file '$fileName' is not migrateable. You may need to backup the file and edit the latest version of the file, '$latestFileVersion', instead.")
             }
         }
     }

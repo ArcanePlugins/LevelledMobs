@@ -27,12 +27,12 @@ import org.bukkit.Bukkit
 
 //todo doc
 class Rule(
-    val id: String,
-    val triggers: MutableSet<Trigger> = mutableSetOf(),
-    val actions: MutableList<Action> = mutableListOf(),
-    val elseActions: MutableList<Action> = mutableListOf(),
-    val conditions: MutableList<Condition> = mutableListOf(),
-    var delayTicks: Long = 0L,
+    val id: String,                                             // unique identifier of this rule
+    val triggers: MutableSet<Trigger> = mutableSetOf(),         // any automatic triggers
+    val actions: MutableList<Action> = mutableListOf(),         // actions listed in 'do'
+    val elseActions: MutableList<Action> = mutableListOf(),     // actions listed in 'else'
+    val conditions: MutableList<Condition> = mutableListOf(),   // conditions listed in 'if'
+    var delayTicks: Long = 0L,                                  // schedule rule call delay in ticks
 ) {
 
     //todo doc

@@ -27,8 +27,8 @@ import io.github.arcaneplugins.levelledmobs.plugin.bukkit.rule.component.action.
 import io.github.arcaneplugins.levelledmobs.plugin.bukkit.rule.component.action.impl.DebugAction
 import io.github.arcaneplugins.levelledmobs.plugin.bukkit.rule.component.condition.Condition
 import io.github.arcaneplugins.levelledmobs.plugin.bukkit.rule.component.context.Context
-import io.github.arcaneplugins.levelledmobs.plugin.bukkit.rule.component.trigger.LmTrigger
 import io.github.arcaneplugins.levelledmobs.plugin.bukkit.rule.component.trigger.Trigger
+import io.github.arcaneplugins.levelledmobs.plugin.bukkit.rule.component.trigger.impl.LmTrigger
 import org.bukkit.Bukkit
 import org.spongepowered.configurate.CommentedConfigurationNode
 import java.util.function.BiFunction
@@ -207,7 +207,6 @@ class RuleManager {
         return condition
     }
 
-    //todo use
     //todo doc
     fun callRulesWithTrigger(
         trigger: Trigger,

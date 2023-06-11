@@ -21,7 +21,7 @@ package io.github.arcaneplugins.levelledmobs.plugin.bukkit.listener.entity
 import io.github.arcaneplugins.levelledmobs.plugin.bukkit.LevelledMobs.Companion.lmInstance
 import io.github.arcaneplugins.levelledmobs.plugin.bukkit.listener.ListenerWrapper
 import io.github.arcaneplugins.levelledmobs.plugin.bukkit.rule.component.context.Context
-import io.github.arcaneplugins.levelledmobs.plugin.bukkit.rule.component.trigger.LmTrigger
+import io.github.arcaneplugins.levelledmobs.plugin.bukkit.rule.component.trigger.impl.LmTrigger
 import org.bukkit.entity.LivingEntity
 import org.bukkit.event.EventHandler
 import org.bukkit.event.entity.EntitySpawnEvent
