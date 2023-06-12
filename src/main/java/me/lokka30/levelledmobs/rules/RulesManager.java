@@ -1254,46 +1254,6 @@ public class RulesManager {
     public void buildBiomeGroupMappings(final Map<String, Set<String>> customBiomeGroups) {
         this.biomeGroupMappings.clear();
 
-        this.biomeGroupMappings.put("SNOWY_BIOMES",
-            List.of("SNOWY_TUNDRA", "ICE_SPIKES", "SNOWY_TAIGA", "SNOWY_TAIGA_MOUNTAINS",
-                "SNOWY_TAIGA_HILLS", "FROZEN_RIVER", "SNOWY_BEACH", "SNOWY_MOUNTAINS"));
-
-        this.biomeGroupMappings.put("COLD_BIOMES",
-            List.of("MOUNTAINS", "GRAVELLY_MOUNTAINS", "MODIFIED_GRAVELLY_MOUNTAINS",
-                "WOODED_MOUNTAINS", "TAIGA", "TAIGA_MOUNTAINS", "TAIGA_HILLS", "GIANT_TREE_TAIGA",
-                "GIANT_TREE_TAIGA_HILLS",
-                "GIANT_SPRUCE_TAIGA", "GIANT_SPRUCE_TAIGA_HILLS", "STONE_SHORE"));
-
-        this.biomeGroupMappings.put("TEMPERATE_BIOMES",
-            List.of("PLAINS", "SUNFLOWER_PLAINS", "FOREST", "FLOWER_FOREST",
-                "BIRCH_FOREST", "BIRCH_FOREST_HILLS", "TALL_BIRCH_FOREST", "TALL_BIRCH_HILLS",
-                "DARK_FOREST", "DARK_FOREST_HILLS",
-                "SWAMP", "SWAMP_HILLS", "JUNGLE", "MODIFIED_JUNGLE", "JUNGLE_HILLS",
-                "MODIFIED_JUNGLE_EDGE", "BAMBOO_JUNGLE",
-                "BAMBOO_JUNGLE_HILLS", "RIVER", "BEACH", "MUSHROOM_FIELDS", "MUSHROOM_FIELD_SHORE",
-                "WOODED_HILLS"));
-
-        this.biomeGroupMappings.put("DRY_BIOMES",
-            List.of("DESERT", "DESERT_LAKES", "DESERT_HILLS", "SAVANNA",
-                "SHATTERED_SAVANNA", "SHATTERED_SAVANNA_PLATEAU", "BADLANDS", "ERODED_BADLANDS",
-                "WOODED_BADLANDS_PLATEAU",
-                "BADLANDS_PLATEAU", "SAVANNA_PLATEAU", "MODIFIED_BADLANDS_PLATEAU",
-                "MODIFIED_WOODED_BADLANDS_PLATEAU", "MODIFIED_SAVANNA_PLATEAU"));
-
-        this.biomeGroupMappings.put("OCEAN_BIOMES",
-            List.of("WARM_OCEAN", "DEEP_WARM_OCEAN", "LUKEWARM_OCEAN", "DEEP_LUKEWARM_OCEAN",
-                "OCEAN",
-                "DEEP_OCEAN", "COLD_OCEAN", "DEEP_COLD_OCEAN", "FROZEN_OCEAN",
-                "DEEP_FROZEN_OCEAN"));
-
-        this.biomeGroupMappings.put("NETHER_BIOMES",
-            List.of("NETHER_WASTES", "CRIMSON_FOREST", "WARPED_FOREST", "SOUL_SAND_VALLEY",
-                "BASALT_DELTAS"));
-
-        this.biomeGroupMappings.put("END_BIOMES",
-            List.of("THE_END", "SMALL_END_ISLANDS", "END_MIDLANDS", "END_HIGHLANDS",
-                "END_BARRENS"));
-
         if (customBiomeGroups == null) {
             return;
         }

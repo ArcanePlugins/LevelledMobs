@@ -44,17 +44,14 @@ mob-groups:
 
 
 biome-groups:
-  taigas:
-    - TAIGA
-    - TAIGA_MOUNTAINS
-    - SNOWY_TUNDRA
+  cold_biomes:
+    - SNOWY_BEACH
+    - SNOWY_PLAINS
+    - SNOWY_SLOPES
     - SNOWY_TAIGA
-    - SNOWY_TAIGA_HILLS
-    - GIANT_TREE_TAIGA
-    - GIANT_SPRUCE_TAIGA
-    - GIANT_SPRUCE_TAIGA_HILLS
-    - GIANT_TREE_TAIGA_HILLS
-    - SNOWY_TAIGA_MOUNTAINS
+    - FROZEN_OCEAN
+    - FROZEN_PEAKS
+    - FROZEN_RIVER
   flowers:
     - FLOWER_FOREST
     - SUNFLOWER_PLAINS
