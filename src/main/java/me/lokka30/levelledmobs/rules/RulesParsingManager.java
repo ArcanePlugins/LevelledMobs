@@ -278,7 +278,7 @@ public class RulesParsingManager {
                 if (group.trim().isEmpty()) {
                     continue;
                 }
-                if (mlpi.groupMapping == null || mlpi.groupMapping.containsKey(group)) {
+                if (mlpi.groupMapping == null || !mlpi.groupMapping.containsKey(group)) {
                     Utils.logger.info(String.format("invalid %s group: %s", mlpi.itemName, group));
                 } else {
                     cachedModalList.allowedGroups.add(group);
