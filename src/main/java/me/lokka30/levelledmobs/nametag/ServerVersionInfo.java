@@ -18,6 +18,7 @@ public class ServerVersionInfo {
     }
 
     private int majorVersion;
+    private MinecraftMajorVersion majorVersionEnum;
     private int minorVersion;
     private int revision;
     private double minecraftVersion;
@@ -50,12 +51,12 @@ public class ServerVersionInfo {
 
         if (nmsShortRegex.find()) {
             // example: 1.18
-            final String versionStr = nmsShortRegex
-                .group(1)
-                .replace("_", ".")
-                .replace("v", "");
+            String versionStr = nmsShortRegex
+                .group(1).toUpperCase();
 
             try {
+                this.majorVersionEnum = MinecraftMajorVersion.valueOf(versionStr.toUpperCase());
+                versionStr = versionStr.replace("_", ".").replace("V", "");
                 this.minecraftVersion = Double.parseDouble(versionStr);
             } catch (Exception e) {
                 Utils.logger.warning(
@@ -77,6 +78,10 @@ public class ServerVersionInfo {
 
     public int getMajorVersion() {
         return this.majorVersion;
+    }
+
+    public MinecraftMajorVersion getMajorVersionEnum(){
+        return this.majorVersionEnum;
     }
 
     public int getMinorVersion() {
@@ -102,5 +107,9 @@ public class ServerVersionInfo {
     public String toString() {
         return String.format("%s.%s.%s - %s",
             this.majorVersion, this.minorVersion, this.revision, this.nmsVersion);
+    }
+
+    public enum MinecraftMajorVersion{
+        V1_16, V1_17, V1_18, V1_19, V1_20
     }
 }

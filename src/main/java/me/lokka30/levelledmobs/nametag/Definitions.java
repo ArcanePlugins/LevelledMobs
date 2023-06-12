@@ -279,22 +279,21 @@ public class Definitions {
         // net.minecraft.network.syncher.SynchedEntityData getEntityData() ->
         String methodName;
 
-        if (ver.getMinecraftVersion() >= 1.20){
-            methodName = "aj";
-        }
-        else if (ver.getMinecraftVersion() == 1.19){
-            // 1.19.4+
-            if (ver.getRevision() >= 4)
-                methodName = "aj";
-            else // 1.19.3 only
-                methodName = "al";
-        }
-        else if (ver.getMinecraftVersion() <= 1.17) {
-            methodName = "getDataWatcher";
-        }
-        else{
-            // 1.18 - 1.19.2
-            methodName = "ai";
+        switch (ver.getMajorVersionEnum()) {
+            case V1_20 -> methodName = "aj";
+            case V1_19 -> {
+                if (ver.getRevision() >= 4) {
+                    methodName = "aj";
+                } else if (ver.getRevision() == 3) {
+                    methodName = "al";
+                } else {
+                    methodName = "ai";
+                }
+            }
+            case V1_18 -> methodName = "ai";
+            case V1_17 -> methodName = "getDataWatcher";
+            default ->
+                    throw new RuntimeException("Unable to determine NMS method name for your Minecraft server version. Is your server version compatible?");
         }
 
         // net.minecraft.network.syncher.SynchedEntityData getEntityData() ->
