@@ -48,7 +48,6 @@ public class RuleInfo {
     public Boolean customDrops_UseForMobs;
     public Boolean customDrops_UseOverride;
     public Boolean stopProcessingRules;
-    public Boolean useRandomLevelling;
     public Boolean mergeEntityNameOverrides;
     public Boolean passengerMatchLevel;
     Boolean lockEntity;

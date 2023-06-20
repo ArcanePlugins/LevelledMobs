@@ -240,7 +240,7 @@ public class NmsNametagSender implements NametagSender {
                     ComponentUtils.getTextComponent(livingEntity.getName());
         }
         else{
-            mobNameComponent = ComponentUtils.getTextComponent(nametag.overriddenName);
+            mobNameComponent = ComponentUtils.getTextComponent(resolveText(nametag.overriddenName));
         }
 
         // for whatever reason if you use an empty component,

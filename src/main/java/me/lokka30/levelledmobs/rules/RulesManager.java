@@ -27,7 +27,6 @@ import me.lokka30.levelledmobs.misc.DebugType;
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
 import me.lokka30.levelledmobs.result.RuleCheckResult;
 import me.lokka30.levelledmobs.rules.strategies.LevellingStrategy;
-import me.lokka30.levelledmobs.rules.strategies.RandomLevellingStrategy;
 import me.lokka30.levelledmobs.util.Utils;
 import org.bukkit.Particle;
 import org.bukkit.World;
@@ -302,15 +301,13 @@ public class RulesManager {
         LevellingStrategy levellingStrategy = null;
 
         for (final RuleInfo ruleInfo : lmEntity.getApplicableRules()) {
-            if (ruleInfo.useRandomLevelling != null && ruleInfo.useRandomLevelling) {
-                levellingStrategy = new RandomLevellingStrategy();
-            } else if (ruleInfo.levellingStrategy != null) {
-                if (levellingStrategy != null && levellingStrategy.getClass()
-                    .equals(ruleInfo.levellingStrategy.getClass())) {
-                    levellingStrategy.mergeRule(ruleInfo.levellingStrategy);
-                } else {
-                    levellingStrategy = ruleInfo.levellingStrategy.cloneItem();
-                }
+            if (ruleInfo.levellingStrategy == null) continue;
+
+            if (levellingStrategy != null && levellingStrategy.getClass()
+                .equals(ruleInfo.levellingStrategy.getClass())) {
+                levellingStrategy.mergeRule(ruleInfo.levellingStrategy);
+            } else {
+                levellingStrategy = ruleInfo.levellingStrategy.cloneItem();
             }
         }
 

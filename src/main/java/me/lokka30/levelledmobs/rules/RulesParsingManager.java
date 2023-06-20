@@ -1003,8 +1003,8 @@ public class RulesParsingManager {
 
         parsingInfo.maxRandomVariance = ymlHelper.getInt2(cs, "max-random-variance",
             parsingInfo.maxRandomVariance);
-        parsingInfo.useRandomLevelling = ymlHelper.getBoolean2(cs, "random",
-            parsingInfo.useRandomLevelling);
+        if (ymlHelper.getBoolean(cs, "random"))
+            parsingInfo.levellingStrategy = new RandomLevellingStrategy();
 
         final ConfigurationSection cs_YDistance = objTo_CS(cs, "y-coordinate");
         if (cs_YDistance != null) {
