@@ -26,6 +26,7 @@ import io.github.arcaneplugins.levelledmobs.plugin.bukkit.rule.component.Rule
 import io.github.arcaneplugins.levelledmobs.plugin.bukkit.rule.component.action.Action
 import io.github.arcaneplugins.levelledmobs.plugin.bukkit.rule.component.action.impl.DebugAction
 import io.github.arcaneplugins.levelledmobs.plugin.bukkit.rule.component.condition.Condition
+import io.github.arcaneplugins.levelledmobs.plugin.bukkit.rule.component.condition.impl.DebugCondition
 import io.github.arcaneplugins.levelledmobs.plugin.bukkit.rule.component.context.Context
 import io.github.arcaneplugins.levelledmobs.plugin.bukkit.rule.component.trigger.Trigger
 import io.github.arcaneplugins.levelledmobs.plugin.bukkit.rule.component.trigger.impl.LmTrigger
@@ -42,8 +43,7 @@ class RuleManager {
     //todo doc
     val conditionHandlers: MutableMap<String, BiFunction<Rule, CommentedConfigurationNode, Condition>> =
         mutableMapOf(
-            // TODO add conditions in here.
-            // <condition-id> to BiFunction { rule, node -> ConditionImplementation(rule, node) },
+            "debug" to BiFunction { rule, _ -> DebugCondition(rule) },
         )
 
     //todo doc
