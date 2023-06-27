@@ -38,7 +38,7 @@ class Rule(
     //todo doc
     fun call(context: Context) {
         fun run() {
-            if (conditions.all { !it.evaluate(context) }) {
+            if (conditions.all { it.evaluate(context) }) {
                 actions.forEach { it.call(context) }
             } else {
                 elseActions.forEach { it.call(context) }

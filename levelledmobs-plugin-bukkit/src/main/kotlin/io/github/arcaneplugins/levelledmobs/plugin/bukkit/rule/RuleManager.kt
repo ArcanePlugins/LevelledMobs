@@ -19,8 +19,10 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 package io.github.arcaneplugins.levelledmobs.plugin.bukkit.rule
 
 import io.github.arcaneplugins.levelledmobs.plugin.bukkit.LevelledMobs.Companion.lmInstance
+import io.github.arcaneplugins.levelledmobs.plugin.bukkit.config.settings.debug.DebugCategory.RULE_MANAGER
 import io.github.arcaneplugins.levelledmobs.plugin.bukkit.event.rule.*
 import io.github.arcaneplugins.levelledmobs.plugin.bukkit.misc.DescriptiveException
+import io.github.arcaneplugins.levelledmobs.plugin.bukkit.misc.Log.debug
 import io.github.arcaneplugins.levelledmobs.plugin.bukkit.misc.TimeUtil
 import io.github.arcaneplugins.levelledmobs.plugin.bukkit.rule.component.Rule
 import io.github.arcaneplugins.levelledmobs.plugin.bukkit.rule.component.action.Action
@@ -57,66 +59,110 @@ class RuleManager {
 
     //todo doc
     fun load() {
+        debug(RULE_MANAGER) { "RuleManager#load START" }
+        debug(RULE_MANAGER) { "Fetching rule nodes from rules.yml" }
         val ruleNodes: List<CommentedConfigurationNode> = lmInstance.configManager.rules.rootNode
             .node("rules")
             .childrenList()
 
+        debug(RULE_MANAGER) { "Parsing each node" }
         rules.addAll(ruleNodes.mapNotNull { parseRuleAtNode(it) })
+
+        debug(RULE_MANAGER) {
+            "Parsed the following rules: ${rules.joinToString { it.id }}"
+        }
+
+        debug(RULE_MANAGER) { "RuleManager#load DONE" }
     }
 
     //todo doc
     private fun parseRuleAtNode(
         node: CommentedConfigurationNode,
     ): Rule? {
+        debug(RULE_MANAGER) { "RuleManager#parseRuleAtNode START" }
+        debug(RULE_MANAGER) { "Node being parsed: ${node.path()}" }
+
         /* assemble initial rule object with configured ID value */
         val rule = Rule(id = node.node("rule").string!!.lowercase())
+        debug(RULE_MANAGER) { "Instantiated rule object with id=${rule.id}" }
 
         /* make sure there are no duplicate rule IDs */
+        debug(RULE_MANAGER) { "Checking for duplicate rule ID" }
         if (rules.any { it.id == rule.id }) {
             throw DescriptiveException(
                 "Rules must be given unique ID values, but found at least 2 rules with the ID '${rule.id}'"
             )
         }
+        debug(RULE_MANAGER) { "No duplicate rule ID found" }
 
         /* call the pre-parse event */
+        debug(RULE_MANAGER) { "Calling RulePreParseEvent" }
         val preParseEvent = RulePreParseEvent(rule)
         Bukkit.getPluginManager().callEvent(preParseEvent)
-        if (preParseEvent.isCancelled)
+        debug(RULE_MANAGER) { "Called RulePreParseEvent" }
+        if (preParseEvent.isCancelled) {
+            debug(RULE_MANAGER) { "RulePreParseEvent was cancelled, returning null rule" }
             return null
+        }
+        debug(RULE_MANAGER) { "RulePreParseEvent was not cancelled; continuing" }
 
         /* parse triggers in rule config */
+        debug(RULE_MANAGER) { "Fetching rule's triggers from rules.yml" }
         val triggerIds: List<String> = node
             .node("triggers")
             .getList(String::class.java) ?: emptyList()
-
-        triggers.addAll(triggerIds.mapNotNull { parseTrigger(it, rule) })
+        debug(RULE_MANAGER) { "Fetched the following triggers: $triggerIds" }
+        debug(RULE_MANAGER) { "Feeding those triggers into parseTrigger" }
+        rule.triggers.addAll(triggerIds.mapNotNull { parseTrigger(it, rule) })
+        debug(RULE_MANAGER) {
+            "The following triggers were parsed: ${rule.triggers.joinToString {it.id()}}"
+        }
 
         /* parse 'if' conditions in rule config */
+        debug(RULE_MANAGER) { "Fetching condition nodes" }
         val conditionNodes: List<CommentedConfigurationNode> = node
             .node("if")
             .childrenList()
-
+        debug(RULE_MANAGER) { "Fetched ${conditionNodes.size} condition nodes" }
+        debug(RULE_MANAGER) { "Parsing condition nodes" }
         rule.conditions.addAll(conditionNodes.mapNotNull { parseConditionAtNode(rule, it) })
+        debug(RULE_MANAGER) {
+            "Parsed the following conditions: ${rule.conditions.joinToString { it.id }}"
+        }
 
         /* parse 'do' actions in rule config */
+        debug(RULE_MANAGER) { "Fetching actions from config" }
         val doActionNodes: List<CommentedConfigurationNode> = node
             .node("do")
             .childrenList()
-
+        debug(RULE_MANAGER) { "Fetched ${doActionNodes.size} action nodes" }
+        debug(RULE_MANAGER) { "Parsing action nodes" }
         rule.actions.addAll(doActionNodes.mapNotNull { parseActionAtNode(rule, it) })
+        debug(RULE_MANAGER) {
+            "Parsed the following action ids: ${rule.actions.joinToString { it.id }}"
+        }
 
         /* parse 'else' actions in rule config */
+        debug(RULE_MANAGER) { "Fetching else-actions from config" }
         val elseActionNodes: List<CommentedConfigurationNode> = node
             .node("else")
             .childrenList()
-
+        debug(RULE_MANAGER) { "Fetched ${elseActionNodes.size} else-actions from config" }
+        debug(RULE_MANAGER) { "Parsing else-actions" }
         rule.elseActions.addAll(elseActionNodes.mapNotNull { parseActionAtNode(rule, it) })
+        debug(RULE_MANAGER) {
+            "Parsed the following else-action ids: ${rule.elseActions.joinToString { it.id }}"
+        }
 
         /* parse the delay in rule config */
+        debug(RULE_MANAGER) { "Parsing time delay (ticks)" }
         rule.delayTicks = TimeUtil.parseDelayAtConfigNode(node.node("delay"))
+        debug(RULE_MANAGER) { "Parsed delay of ${rule.delayTicks}" }
 
         /* call 'rule parsed' event and return the parsed rule */
+        debug(RULE_MANAGER) { "Calling RulePostParseEvent" }
         Bukkit.getPluginManager().callEvent(RulePostParseEvent(rule))
+        debug(RULE_MANAGER) { "RuleManager#parseRuleAtNode DONE" }
 
         /* done */
         return rule
@@ -127,6 +173,7 @@ class RuleManager {
         id: String,
         rule: Rule,
     ): Trigger? {
+        debug(RULE_MANAGER) { "RuleManager#parseTrigger START" }
         /* locate trigger by id */
 
         val trigger: Trigger = triggers
@@ -146,6 +193,7 @@ class RuleManager {
         val postParse = TriggerPostParseEvent(trigger, rule)
         Bukkit.getPluginManager().callEvent(postParse)
 
+        debug(RULE_MANAGER) { "RuleManager#parseTrigger DONE" }
         return trigger
     }
 
@@ -212,7 +260,23 @@ class RuleManager {
         trigger: Trigger,
         context: Context,
     ) {
-        rules.filter { trigger in it.triggers }.forEach { it.call(context) }
+        debug(RULE_MANAGER) {
+            "callRulesWithTrigger START; trigger=${trigger.id()}; rulesToFilter=${rules.size}"
+        }
+        debug(RULE_MANAGER) {
+            "Rules-Triggers overview:\n" +
+                    rules.joinToString { rule ->
+                        rule.id + ": " + rule.triggers.joinToString { it.id() }
+                    }
+        }
+        rules
+            .filter {
+                trigger.id() in it.triggers.map { otherTrigger -> otherTrigger.id() }
+            }
+            .forEach {
+                debug(RULE_MANAGER) { "callRulesWithTrigger: calling rule: ${it.id}" }
+                it.call(context)
+            }
     }
 
 }

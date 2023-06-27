@@ -20,8 +20,10 @@ package io.github.arcaneplugins.levelledmobs.plugin.bukkit.config.settings
 
 import io.github.arcaneplugins.levelledmobs.plugin.bukkit.config.YamlConfig
 import io.github.arcaneplugins.levelledmobs.plugin.bukkit.config.settings.debug.DebugCategory
+import io.github.arcaneplugins.levelledmobs.plugin.bukkit.config.settings.debug.DebugCategory.STARTUP_GENERIC
 import io.github.arcaneplugins.levelledmobs.plugin.bukkit.config.settings.debug.DebugManager
 import io.github.arcaneplugins.levelledmobs.plugin.bukkit.misc.DescriptiveException
+import io.github.arcaneplugins.levelledmobs.plugin.bukkit.misc.Log.debug
 
 // TODO Document
 class SettingsConfig : YamlConfig(
@@ -53,12 +55,19 @@ class SettingsConfig : YamlConfig(
     // TODO Document
     private fun loadDebugCategories() {
         debugManager.enabledCategories.clear()
+
         debugManager.enabledCategories.addAll(
             rootNode
                 .node("advanced", "debug-categories")
                 .getList(DebugCategory::class.java)
                 ?: emptyList() // if cnfgurate doesn't have anything for us. then add no categories.
         )
+
+        if(debugManager.enabledCategories.contains(DebugCategory.ALL)) {
+            debugManager.enabledCategories.addAll(DebugCategory.values())
+        }
+
+        debug(STARTUP_GENERIC) { "Loaded debug categories" }
     }
 
 }

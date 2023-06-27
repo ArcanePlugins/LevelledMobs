@@ -1,4 +1,4 @@
 name: "LevelledMobs"
 version: "${project.version}"
 main: "io.github.arcaneplugins.levelledmobs.plugin.bukkit.LevelledMobs"
-api-version: "1.19"
+api-version: "1.20"

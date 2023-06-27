@@ -19,10 +19,12 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 package io.github.arcaneplugins.levelledmobs.plugin.bukkit.rule.component.condition.impl
 
+import io.github.arcaneplugins.levelledmobs.plugin.bukkit.config.settings.debug.DebugCategory.CONDITIONS_GENERIC
+import io.github.arcaneplugins.levelledmobs.plugin.bukkit.misc.Log.debug
 import io.github.arcaneplugins.levelledmobs.plugin.bukkit.rule.component.Rule
 import io.github.arcaneplugins.levelledmobs.plugin.bukkit.rule.component.condition.Condition
 import io.github.arcaneplugins.levelledmobs.plugin.bukkit.rule.component.context.Context
-import org.bukkit.GameMode
+import org.bukkit.entity.EntityType
 
 class DebugCondition(
     rule: Rule
@@ -32,7 +34,8 @@ class DebugCondition(
 ) {
 
     override fun evaluate(context: Context): Boolean {
-        return context.player!!.gameMode == GameMode.CREATIVE
+        debug(CONDITIONS_GENERIC) { "evaluating DebugCondition; et=${context.entity!!.type};" }
+        return context.entity!!.type == EntityType.CREEPER
     }
 
 }

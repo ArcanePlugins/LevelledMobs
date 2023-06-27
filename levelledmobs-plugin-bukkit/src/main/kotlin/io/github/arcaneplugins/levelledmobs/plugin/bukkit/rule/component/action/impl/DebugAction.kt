@@ -21,6 +21,7 @@ package io.github.arcaneplugins.levelledmobs.plugin.bukkit.rule.component.action
 import io.github.arcaneplugins.levelledmobs.plugin.bukkit.rule.component.Rule
 import io.github.arcaneplugins.levelledmobs.plugin.bukkit.rule.component.action.Action
 import io.github.arcaneplugins.levelledmobs.plugin.bukkit.rule.component.context.Context
+import org.bukkit.entity.Player
 
 //todo document
 class DebugAction(
@@ -33,9 +34,16 @@ class DebugAction(
     override fun call(
         context: Context
     ) {
-        context.player!!.sendMessage(
-            "This is a debug message from LevelledMobs! This was called from rule ID '${rule.id}'. :)"
-        )
+        context
+            .entity!!
+            .getNearbyEntities(15.0, 15.0, 15.0)
+            .filterIsInstance<Player>()
+            .filter { it.isOp }
+            .forEach {
+                it.sendMessage(
+                    "LM Debug Message; ruleId=${rule.id}; entityType=${context.entity!!.type}"
+                )
+            }
     }
 
 }

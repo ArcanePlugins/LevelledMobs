@@ -1,0 +1,23 @@
+rules:
+
+  # TODO remove debug
+  - rule: "test-rule"
+    triggers: ["on-entity-spawn"]
+    if:
+      - condition: "debug"
+    do:
+      - action: "debug"
+
+# (!) DO NOT MODIFY THIS SECTION UNLESS SPECIALLY INSTRUCTED BY A LEVELLEDMOBS MAINTAINER (!)
+# This section of the configuration contains various advanced options which very rarely should be
+# adjusted by any user.
+# (!) DO NOT MODIFY THIS SECTION UNLESS SPECIALLY INSTRUCTED BY A LEVELLEDMOBS MAINTAINER (!)
+advanced:
+  metadata:
+    version:
+      file:
+        initial: 4
+        installed: 4
+      plugin:
+        initial: "${project.version}"
+        installed: "${project.version}"

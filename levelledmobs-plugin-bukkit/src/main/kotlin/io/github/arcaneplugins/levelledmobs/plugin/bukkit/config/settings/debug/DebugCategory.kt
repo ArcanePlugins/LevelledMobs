@@ -48,4 +48,10 @@ enum class DebugCategory {
      */
     TEMP,
 
+    RULE_MANAGER,
+
+    CONDITIONS_GENERIC,
+
+    STARTUP_GENERIC,
+
 }

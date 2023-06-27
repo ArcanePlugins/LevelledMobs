@@ -69,7 +69,10 @@ object Log {
      *
      * @author Lachlan Adamson (lokka30)
      */
-    fun debug(msg: Supplier<String>, cat: DebugCategory) {
+    fun debug(
+        cat: DebugCategory,
+        msg: Supplier<String>,
+    ) {
         val debugManager: DebugManager = lmInstance.configManager.settings.debugManager
 
         if(!debugManager.isCategoryEnabled(cat)) return
