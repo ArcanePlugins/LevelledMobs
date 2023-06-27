@@ -28,31 +28,30 @@ object TimeUtil {
         node: CommentedConfigurationNode
     ): Long {
 
-        val str: String = (node.string ?: "0").lowercase()
+        val strVal: String = (node.string ?: "0")
+            .lowercase()
+            .replace(" ", "")
 
         fun numericComponent(suffix: String): Double {
-            return str.substringBefore(suffix).toDouble()
+            return strVal.substringBefore(suffix).toDouble()
         }
 
+        val suffix1: String = strVal.takeLast(1)
+        val suffix2: String = strVal.takeLast(2)
+
         try {
-            return if(str.endsWith("t")) {
-                numericComponent("t").toLong()
-            } else if(str.endsWith("ms")) {
-                (numericComponent("ms") / 1000 * 20).toLong()
-            } else if(str.endsWith("s")) {
-                (numericComponent("s") * 20).toLong()
-            } else if(str.endsWith("m")) {
-                (numericComponent("m") * 60 * 20).toLong()
-            } else if(str.endsWith("h")) {
-                (numericComponent("h") * 60 * 60 * 20).toLong()
-            } else if(str.endsWith("d")) {
-                (numericComponent("d") * 24 * 60 * 60 * 20).toLong()
-            } else {
-                str.toLong()
-            }
+            return when {
+                suffix1 === "t" -> numericComponent("t")
+                suffix2 === "ms" -> numericComponent("ms") / 1000 * 20
+                suffix1 === "s" -> numericComponent("s") * 20
+                suffix1 === "m" -> numericComponent("m") * 60 * 20
+                suffix1 === "h" -> numericComponent("h") * 60 * 60 * 20
+                suffix1 === "d" -> numericComponent("d") * 24 * 60 * 60 * 20
+                else -> strVal.toDouble()
+            }.toLong()
         } catch(ex: NumberFormatException) {
-            throw DescriptiveException(
-                "Attempted to parse a delay with an invalid format '${str}'",
+            throw IllegalArgumentException(
+                "Attempted to parse a delay with an invalid format '${strVal}'",
                 ex
             )
         }
