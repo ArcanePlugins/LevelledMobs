@@ -23,7 +23,10 @@ import java.util.Objects;
 import java.util.TreeMap;
 import java.util.WeakHashMap;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 
+import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 import me.lokka30.levelledmobs.LevelInterface;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.LivingEntityInterface;
@@ -893,17 +896,21 @@ public class LevelManager implements LevelInterface {
     }
 
     public void updateNametagWithDelay(final @NotNull LivingEntityWrapper lmEntity) {
-        final BukkitRunnable runnable = new BukkitRunnable() {
-            @Override
-            public void run() {
-                updateNametag(lmEntity);
+        if (main.getDefinitions().getIsFolia()){
+            updateNametag(lmEntity);
+        }
+        else{
+            final BukkitRunnable runnable = new BukkitRunnable() {
+                @Override
+                public void run() {
+                    updateNametag(lmEntity);
+                    lmEntity.free();
+                }
+            };
 
-                lmEntity.free();
-            }
-        };
-
-        lmEntity.inUseCount.getAndIncrement();
-        runnable.runTaskLater(main, 1L);
+            lmEntity.inUseCount.getAndIncrement();
+            runnable.runTaskLater(main, 1L);
+        }
     }
 
     public void updateNametag(final LivingEntityWrapper lmEntity) {
@@ -943,45 +950,77 @@ public class LevelManager implements LevelInterface {
         final long period = main.helperSettings.getInt(main.settingsCfg, "async-task-update-period",
             6); // run every ? seconds.
 
-        nametagAutoUpdateTask = new BukkitRunnable() {
-            @Override
-            public void run() {
+        if (main.getDefinitions().getIsFolia()){
+           Consumer<ScheduledTask> bgThread = scheduledTask -> {
                 final Map<Player, List<Entity>> entitiesPerPlayer = new LinkedHashMap<>();
                 final int checkDistance = main.helperSettings.getInt(main.settingsCfg,
-                    "async-task-max-blocks-from-player", 100);
+                        "async-task-max-blocks-from-player", 100);
 
                 for (final Player player : Bukkit.getOnlinePlayers()) {
-                    final List<Entity> entities = player.getNearbyEntities(checkDistance,
-                        checkDistance, checkDistance);
-                    entitiesPerPlayer.put(player, entities);
+                    Consumer<ScheduledTask> playerCheck = scheduledTask1 -> {
+                        final List<Entity> entities = player.getNearbyEntities(checkDistance,
+                                checkDistance, checkDistance);
+                        entitiesPerPlayer.put(player, entities);
+                    };
+
+                    player.getScheduler().run(main, playerCheck, null);
                 }
 
-                final BukkitRunnable runnable = new BukkitRunnable() {
-                    @Override
-                    public void run() {
-                        runNametagCheck_aSync(entitiesPerPlayer);
-                    }
-                };
+                runNametagCheck_aSync(entitiesPerPlayer);
+            };
 
-                runnable.runTaskAsynchronously(main);
-            }
-        }.runTaskTimer(main, 0, 20 * period);
+            org.bukkit.Bukkit.getAsyncScheduler().runAtFixedRate(main, bgThread, 0, period, TimeUnit.SECONDS);
+        }
+        else{
+            nametagAutoUpdateTask = new BukkitRunnable() {
+                @Override
+                public void run() {
+                    final Map<Player, List<Entity>> entitiesPerPlayer = new LinkedHashMap<>();
+                    final int checkDistance = main.helperSettings.getInt(main.settingsCfg,
+                            "async-task-max-blocks-from-player", 100);
+
+                    for (final Player player : Bukkit.getOnlinePlayers()) {
+                        final List<Entity> entities = player.getNearbyEntities(checkDistance,
+                                checkDistance, checkDistance);
+                        entitiesPerPlayer.put(player, entities);
+                    }
+
+                    final BukkitRunnable runnable = new BukkitRunnable() {
+                        @Override
+                        public void run() {
+                            runNametagCheck_aSync(entitiesPerPlayer);
+                        }
+                    };
+
+                    runnable.runTaskAsynchronously(main);
+                }
+            }.runTaskTimer(main, 0, 20 * period);
+        }
     }
 
     public void startNametagTimer() {
-        nametagTimerTask = new BukkitRunnable() {
-            @Override
-            public void run() {
-                final BukkitRunnable runnable = new BukkitRunnable() {
-                    @Override
-                    public void run() {
-                        main.nametagTimerChecker.checkNametags();
-                    }
-                };
+        if (main.getDefinitions().getIsFolia()){
+            Consumer<ScheduledTask> bgThread = scheduledTask -> {
+                main.nametagTimerChecker.checkNametags();
+            };
 
-                runnable.runTaskAsynchronously(main);
-            }
-        }.runTaskTimer(main, 0, 20);
+            org.bukkit.Bukkit.getAsyncScheduler().runAtFixedRate(main, bgThread, 0, 1, TimeUnit.SECONDS);
+        }
+        else{
+            nametagTimerTask = new BukkitRunnable() {
+                @Override
+                public void run() {
+                    final BukkitRunnable runnable = new BukkitRunnable() {
+                        @Override
+                        public void run() {
+                            main.nametagTimerChecker.checkNametags();
+                        }
+                    };
+
+                    runnable.runTaskAsynchronously(main);
+                }
+            }.runTaskTimer(main, 0, 20);
+        }
     }
 
     private void runNametagCheck_aSync(final @NotNull Map<Player, List<Entity>> entitiesPerPlayer) {
@@ -1351,18 +1390,23 @@ public class LevelManager implements LevelInterface {
             return;
         }
 
-        final BukkitRunnable runnable = new BukkitRunnable() {
-            @Override
-            public void run() {
-                applyLevelledEquipment_NonAsync(lmEntity, customDropsRuleSet);
-                if (lmEntity.inUseCount.getAndDecrement() <= 0) {
-                    lmEntity.free();
+        if (main.getDefinitions().getIsFolia()){
+            applyLevelledEquipment_NonAsync(lmEntity, customDropsRuleSet);
+        }
+        else{
+            final BukkitRunnable runnable = new BukkitRunnable() {
+                @Override
+                public void run() {
+                    applyLevelledEquipment_NonAsync(lmEntity, customDropsRuleSet);
+                    if (lmEntity.inUseCount.getAndDecrement() <= 0) {
+                        lmEntity.free();
+                    }
                 }
-            }
-        };
+            };
 
-        lmEntity.inUseCount.getAndIncrement();
-        runnable.runTask(main);
+            lmEntity.inUseCount.getAndIncrement();
+            runnable.runTask(main);
+        }
     }
 
     private void applyLevelledEquipment_NonAsync(@NotNull final LivingEntityWrapper lmEntity, final CustomDropsRuleSet customDropsRuleSet) {
@@ -1530,9 +1574,9 @@ public class LevelManager implements LevelInterface {
      * @param bypassLimits               whether LM should disregard max level, etc.
      * @param additionalLevelInformation used to determine the source event
      */
-    public void applyLevelToMob(@NotNull final LivingEntityWrapper lmEntity, int level,
+    public void applyLevelToMob(final @NotNull LivingEntityWrapper lmEntity, int level,
         final boolean isSummoned, final boolean bypassLimits,
-        @NotNull final HashSet<AdditionalLevelInformation> additionalLevelInformation) {
+        final @NotNull HashSet<AdditionalLevelInformation> additionalLevelInformation) {
         // this thread runs in async.  if adding any functions make sure they can be run in this fashion
 
         if (level <= 0) {
@@ -1541,7 +1585,11 @@ public class LevelManager implements LevelInterface {
 
         assert
             bypassLimits || isSummoned || getLevellableState(lmEntity) == LevellableState.ALLOWED;
-        boolean skipLM_Nametag = false;
+        boolean skipLMNametag = false;
+
+        if (lmEntity.getLivingEntity() == null) {
+            return;
+        }
 
         if (lmEntity.getLivingEntity().isInsideVehicle()
             && main.rulesManager.getRulePassengerMatchLevel(lmEntity)
@@ -1577,7 +1625,7 @@ public class LevelManager implements LevelInterface {
 
             level = mobPreLevelEvent.getLevel();
             if (!mobPreLevelEvent.getShowLM_Nametag()) {
-                skipLM_Nametag = true;
+                skipLMNametag = true;
                 lmEntity.setShouldShowLM_Nametag(false);
             }
         }
@@ -1620,101 +1668,30 @@ public class LevelManager implements LevelInterface {
                 true);
         }
 
-        // setting attributes should be only done in the main thread.
-        final BukkitRunnable applyAttribs = new BukkitRunnable() {
-            @Override
-            public void run() {
-                synchronized (main.attributeSyncObject) {
-                    main.levelManager.applyLevelledAttributes(lmEntity,
-                        Addition.ATTRIBUTE_ATTACK_DAMAGE);
-                    main.levelManager.applyLevelledAttributes(lmEntity,
-                        Addition.ATTRIBUTE_MAX_HEALTH);
-                    main.levelManager.applyLevelledAttributes(lmEntity,
-                        Addition.ATTRIBUTE_MOVEMENT_SPEED);
-                    main.levelManager.applyLevelledAttributes(lmEntity,
-                        Addition.ATTRIBUTE_ARMOR_BONUS);
-                    main.levelManager.applyLevelledAttributes(lmEntity,
-                        Addition.ATTRIBUTE_ARMOR_TOUGHNESS);
-                    main.levelManager.applyLevelledAttributes(lmEntity,
-                        Addition.ATTRIBUTE_ATTACK_KNOCKBACK);
-                    main.levelManager.applyLevelledAttributes(lmEntity,
-                        Addition.ATTRIBUTE_FLYING_SPEED);
-                    main.levelManager.applyLevelledAttributes(lmEntity,
-                        Addition.ATTRIBUTE_KNOCKBACK_RESISTANCE);
-                    main.levelManager.applyLevelledAttributes(lmEntity,
-                        Addition.ATTRIBUTE_FOLLOW_RANGE);
+        final boolean doSkipLMNametag = skipLMNametag;
 
-                    if (lmEntity.getLivingEntity() instanceof Zombie) {
-                        main.levelManager.applyLevelledAttributes(lmEntity,
-                            Addition.ATTRIBUTE_ZOMBIE_SPAWN_REINFORCEMENTS);
-                    } else if (lmEntity.getLivingEntity() instanceof Horse) {
-                        main.levelManager.applyLevelledAttributes(lmEntity,
-                            Addition.ATTRIBUTE_HORSE_JUMP_STRENGTH);
-                    }
-                }
-
-                if (lmEntity.lockEntitySettings) {
-                    lmEntity.getPDC()
-                        .set(main.namespacedKeys.lockSettings, PersistentDataType.INTEGER, 1);
-                    if (lmEntity.lockedNametag != null) {
-                        lmEntity.getPDC()
-                            .set(main.namespacedKeys.lockedNametag, PersistentDataType.STRING,
-                                lmEntity.lockedNametag);
-                    }
-                    if (lmEntity.lockedOverrideName != null) {
-                        lmEntity.getPDC()
-                            .set(main.namespacedKeys.lockedNameOverride, PersistentDataType.STRING,
-                                lmEntity.lockedOverrideName);
-                    }
-                }
-
-                if (!nbtDatas.isEmpty()) {
-                    boolean hadSuccess = false;
-                    final List<NBTApplyResult> allResults = new LinkedList<>();
-
-                    for (final String nbtData : nbtDatas) {
-                        final NBTApplyResult result = NBTManager.applyNBT_Data_Mob(lmEntity,
-                            nbtData);
-                        if (result.hadException()) {
-                            if (lmEntity.summonedSender == null) {
-                                Utils.logger.warning(String.format(
-                                    "Error applying NBT data '%s' to %s. Exception message: %s",
-                                    nbtData, lmEntity.getNameIfBaby(), result.exceptionMessage));
-                            } else {
-                                lmEntity.summonedSender.sendMessage(
-                                    "Error applying NBT data to " + lmEntity.getNameIfBaby()
-                                        + ". Exception message: " + result.exceptionMessage);
-                            }
-                        } else {
-                            hadSuccess = true;
-                            allResults.add(result);
-                        }
-                    }
-
-                    if (hadSuccess && lmEntity.getMainInstance().companion.debugsEnabled.contains(
-                        DebugType.NBT_APPLY_SUCCESS)) {
-                        final String changes = getNBT_DebugMessage(allResults);
-
-                        Utils.debugLog(main, DebugType.NBT_APPLY_SUCCESS,
-                            "Applied NBT data to '" + lmEntity.getNameIfBaby() + "'. " + changes);
-                    }
-                }
-
-                if (lmEntity.getLivingEntity() instanceof Creeper) {
-                    main.levelManager.applyCreeperBlastRadius(lmEntity);
-                }
-
+        if (main.getDefinitions().getIsFolia()){
+            Consumer<ScheduledTask> task = scheduledTask -> {
+                applyLevelToMob2(lmEntity, nbtDatas, doSkipLMNametag);
                 lmEntity.free();
-            }
-        };
+            };
 
-        lmEntity.inUseCount.getAndIncrement();
-        applyAttribs.runTask(main);
-
-        if (!skipLM_Nametag) {
-            main.levelManager.updateNametagWithDelay(lmEntity);
+            lmEntity.inUseCount.getAndIncrement();
+            lmEntity.getLivingEntity().getScheduler().run(main, task, null);
         }
-        main.levelManager.applyLevelledEquipment(lmEntity, lmEntity.getMobLevel());
+        else{
+            // setting attributes should be only done in the main thread.
+            final BukkitRunnable applyAttribsRunnable = new BukkitRunnable() {
+                @Override
+                public void run() {
+                    applyLevelToMob2(lmEntity, nbtDatas, doSkipLMNametag);
+                    lmEntity.free();
+                }
+            };
+
+            lmEntity.inUseCount.getAndIncrement();
+            applyAttribsRunnable.runTask(main);
+        }
 
         final MobPostLevelEvent.LevelCause levelCause =
             isSummoned ? MobPostLevelEvent.LevelCause.SUMMONED
@@ -1740,6 +1717,99 @@ public class LevelManager implements LevelInterface {
         }
 
         Utils.debugLog(main, DebugType.APPLY_LEVEL_SUCCESS, sb.toString());
+    }
+
+    private void applyLevelToMob2(@NotNull final LivingEntityWrapper lmEntity,
+        final @NotNull List<String> nbtDatas, final boolean doSkipLMNametag){
+        applyAttribs(lmEntity, nbtDatas);
+
+        if (!doSkipLMNametag) {
+            main.levelManager.updateNametagWithDelay(lmEntity);
+        }
+        main.levelManager.applyLevelledEquipment(lmEntity, lmEntity.getMobLevel());
+
+    }
+
+    private void applyAttribs(final @NotNull LivingEntityWrapper lmEntity, final @NotNull List<String> nbtDatas){
+        synchronized (main.attributeSyncObject) {
+            main.levelManager.applyLevelledAttributes(lmEntity,
+                    Addition.ATTRIBUTE_ATTACK_DAMAGE);
+            main.levelManager.applyLevelledAttributes(lmEntity,
+                    Addition.ATTRIBUTE_MAX_HEALTH);
+            main.levelManager.applyLevelledAttributes(lmEntity,
+                    Addition.ATTRIBUTE_MOVEMENT_SPEED);
+            main.levelManager.applyLevelledAttributes(lmEntity,
+                    Addition.ATTRIBUTE_ARMOR_BONUS);
+            main.levelManager.applyLevelledAttributes(lmEntity,
+                    Addition.ATTRIBUTE_ARMOR_TOUGHNESS);
+            main.levelManager.applyLevelledAttributes(lmEntity,
+                    Addition.ATTRIBUTE_ATTACK_KNOCKBACK);
+            main.levelManager.applyLevelledAttributes(lmEntity,
+                    Addition.ATTRIBUTE_FLYING_SPEED);
+            main.levelManager.applyLevelledAttributes(lmEntity,
+                    Addition.ATTRIBUTE_KNOCKBACK_RESISTANCE);
+            main.levelManager.applyLevelledAttributes(lmEntity,
+                    Addition.ATTRIBUTE_FOLLOW_RANGE);
+
+            if (lmEntity.getLivingEntity() instanceof Zombie) {
+                main.levelManager.applyLevelledAttributes(lmEntity,
+                        Addition.ATTRIBUTE_ZOMBIE_SPAWN_REINFORCEMENTS);
+            } else if (lmEntity.getLivingEntity() instanceof Horse) {
+                main.levelManager.applyLevelledAttributes(lmEntity,
+                        Addition.ATTRIBUTE_HORSE_JUMP_STRENGTH);
+            }
+        }
+
+        if (lmEntity.lockEntitySettings) {
+            lmEntity.getPDC()
+                    .set(main.namespacedKeys.lockSettings, PersistentDataType.INTEGER, 1);
+            if (lmEntity.lockedNametag != null) {
+                lmEntity.getPDC()
+                        .set(main.namespacedKeys.lockedNametag, PersistentDataType.STRING,
+                                lmEntity.lockedNametag);
+            }
+            if (lmEntity.lockedOverrideName != null) {
+                lmEntity.getPDC()
+                        .set(main.namespacedKeys.lockedNameOverride, PersistentDataType.STRING,
+                                lmEntity.lockedOverrideName);
+            }
+        }
+
+        if (!nbtDatas.isEmpty()) {
+            boolean hadSuccess = false;
+            final List<NBTApplyResult> allResults = new LinkedList<>();
+
+            for (final String nbtData : nbtDatas) {
+                final NBTApplyResult result = NBTManager.applyNBT_Data_Mob(lmEntity,
+                        nbtData);
+                if (result.hadException()) {
+                    if (lmEntity.summonedSender == null) {
+                        Utils.logger.warning(String.format(
+                                "Error applying NBT data '%s' to %s. Exception message: %s",
+                                nbtData, lmEntity.getNameIfBaby(), result.exceptionMessage));
+                    } else {
+                        lmEntity.summonedSender.sendMessage(
+                                "Error applying NBT data to " + lmEntity.getNameIfBaby()
+                                        + ". Exception message: " + result.exceptionMessage);
+                    }
+                } else {
+                    hadSuccess = true;
+                    allResults.add(result);
+                }
+            }
+
+            if (hadSuccess && lmEntity.getMainInstance().companion.debugsEnabled.contains(
+                    DebugType.NBT_APPLY_SUCCESS)) {
+                final String changes = getNBT_DebugMessage(allResults);
+
+                Utils.debugLog(main, DebugType.NBT_APPLY_SUCCESS,
+                        "Applied NBT data to '" + lmEntity.getNameIfBaby() + "'. " + changes);
+            }
+        }
+
+        if (lmEntity.getLivingEntity() instanceof Creeper) {
+            main.levelManager.applyCreeperBlastRadius(lmEntity);
+        }
     }
 
     @NotNull private String getNBT_DebugMessage(final @NotNull List<NBTApplyResult> results) {

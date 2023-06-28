@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Optional;
 
 import net.kyori.adventure.text.Component;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.LivingEntity;
 import org.jetbrains.annotations.NotNull;
 
@@ -20,10 +21,12 @@ public class Definitions {
         this.ver = new ServerVersionInfo();
         build();
         if (hasMiniMessage) mm = net.kyori.adventure.text.minimessage.MiniMessage.miniMessage();
+        this.isFolia = Bukkit.getVersion().toLowerCase().contains("folia");
     }
 
     private final ServerVersionInfo ver;
     private boolean hasKiori;
+    private final boolean isFolia;
     private boolean isOneNinteenThreeOrNewer;
     private boolean hasMiniMessage;
     public boolean useTranslationComponents;
@@ -436,6 +439,10 @@ public class Definitions {
 
     public boolean hasKiori() {
         return hasKiori;
+    }
+
+    public boolean getIsFolia(){
+        return this.isFolia;
     }
 
     public @NotNull ServerVersionInfo getServerVersionInfo() {

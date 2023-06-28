@@ -6,9 +6,14 @@ package me.lokka30.levelledmobs.managers;
 
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
+
+import io.papermc.paper.threadedregions.scheduler.EntityScheduler;
+import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.misc.QueueItem;
 import me.lokka30.levelledmobs.util.Utils;
+import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 
@@ -37,19 +42,33 @@ public class MobsQueueManager {
         doThread = true;
         isRunning = true;
 
-        final BukkitRunnable bgThread = new BukkitRunnable() {
-            @Override
-            public void run() {
-                try {
-                    mainThread();
-                } catch (final InterruptedException ignored) {
-                    isRunning = false;
+        if (main.getDefinitions().getIsFolia()){
+//            Consumer<ScheduledTask> bgThread = scheduledTask -> {
+//                try {
+//                    mainThread();
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                }
+//                Utils.logger.info("Mob processing queue Manager has exited");
+//            };
+//
+//            org.bukkit.Bukkit.getAsyncScheduler().runNow(main, bgThread);
+        }
+        else{
+            final BukkitRunnable bgThread = new BukkitRunnable() {
+                @Override
+                public void run() {
+                    try {
+                        mainThread();
+                    } catch (final InterruptedException ignored) {
+                        isRunning = false;
+                    }
+                    Utils.logger.info("Mob processing queue Manager has exited");
                 }
-                Utils.logger.info("Mob processing queue Manager has exited");
-            }
-        };
+            };
 
-        bgThread.runTaskAsynchronously(main);
+            bgThread.runTaskAsynchronously(main);
+        }
     }
 
     public void stop() {
@@ -61,8 +80,13 @@ public class MobsQueueManager {
             return;
         }
 
-        item.lmEntity.inUseCount.getAndIncrement();
-        this.queue.offer(item);
+        if (main.getDefinitions().getIsFolia()){
+            processItem(item);
+        }
+        else{
+            item.lmEntity.inUseCount.getAndIncrement();
+            this.queue.offer(item);
+        }
     }
 
     private void mainThread() throws InterruptedException {
@@ -73,22 +97,9 @@ public class MobsQueueManager {
                 continue;
             }
 
-            String lastEntityType = null;
             try {
-                if (item.lmEntity.getLivingEntity() != null) {
-                    if (!item.lmEntity.getIsPopulated()) {
-                        continue;
-                    }
-                    if (!item.lmEntity.getShouldShowLM_Nametag()) {
-                        continue;
-                    }
-                    lastEntityType = item.lmEntity.getNameIfBaby();
-                    main.levelManager.entitySpawnListener.preprocessMob(item.lmEntity, item.event);
-                }
+                processItem(item);
             } catch (final Exception e) {
-                Utils.logger.error(
-                    "Got exception while processing " + (lastEntityType != null ? lastEntityType
-                        : "(unknown)"));
                 e.printStackTrace();
             } finally {
                 item.lmEntity.free();
@@ -96,5 +107,17 @@ public class MobsQueueManager {
         }
 
         isRunning = false;
+    }
+
+    private void processItem(final @NotNull QueueItem item){
+        if (item.lmEntity.getLivingEntity() != null) {
+            if (!item.lmEntity.getIsPopulated()) {
+                return;
+            }
+            if (!item.lmEntity.getShouldShowLM_Nametag()) {
+                return;
+            }
+            main.levelManager.entitySpawnListener.preprocessMob(item.lmEntity, item.event);
+        }
     }
 }

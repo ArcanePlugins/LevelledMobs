@@ -18,6 +18,7 @@ public enum DeathCause {
     FLY_INTO_WALL,
     FREEZE,
     HOT_FLOOR,
+    KILL,
     LAVA,
     LIGHTNING,
     MAGIC,

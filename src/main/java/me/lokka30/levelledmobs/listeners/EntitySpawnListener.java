@@ -10,7 +10,10 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
+
+import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.managers.ExternalCompatibilityManager;
 import me.lokka30.levelledmobs.managers.LevelManager;
@@ -352,8 +355,20 @@ public class EntitySpawnListener implements Listener {
                     runnable.runTask(main);
                 }
 
-                main.levelInterface.applyLevelToMob(lmEntity, levelAssignment,
-                    false, false, additionalLevelInfo);
+                if (main.getDefinitions().getIsFolia()){
+                    Consumer<ScheduledTask> task = scheduledTask -> {
+                        main.levelInterface.applyLevelToMob(lmEntity, levelAssignment,
+                                false, false, additionalLevelInfo);
+                        lmEntity.free();
+                    };
+
+                    lmEntity.inUseCount.getAndIncrement();
+                    lmEntity.getLivingEntity().getScheduler().run(main, task, null);
+                }
+                else{
+                    main.levelInterface.applyLevelToMob(lmEntity, levelAssignment,
+                            false, false, additionalLevelInfo);
+                }
             }
         } else {
             Utils.debugLog(main, DebugType.APPLY_LEVEL_FAIL,

@@ -11,6 +11,9 @@ import java.util.Map;
 import java.util.WeakHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
+
+import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
 import me.lokka30.levelledmobs.misc.NametagTimerChecker;
@@ -66,19 +69,33 @@ public class NametagQueueManager {
         doThread = true;
         isRunning = true;
 
-        final BukkitRunnable bgThread = new BukkitRunnable() {
-            @Override
-            public void run() {
+        if (main.getDefinitions().getIsFolia()){
+            Consumer<ScheduledTask> bgThread = scheduledTask -> {
                 try {
                     mainThread();
-                } catch (final InterruptedException ignored) {
-                    isRunning = false;
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
                 Utils.logger.info("Nametag update queue Manager has exited");
-            }
-        };
+            };
 
-        bgThread.runTaskAsynchronously(main);
+            org.bukkit.Bukkit.getAsyncScheduler().runNow(main, bgThread);
+        }
+        else{
+            final BukkitRunnable bgThread = new BukkitRunnable() {
+                @Override
+                public void run() {
+                    try {
+                        mainThread();
+                    } catch (final InterruptedException ignored) {
+                        isRunning = false;
+                    }
+                    Utils.logger.info("Nametag update queue Manager has exited");
+                }
+            };
+
+            bgThread.runTaskAsynchronously(main);
+        }
     }
 
     public void stop() {
@@ -106,26 +123,42 @@ public class NametagQueueManager {
             if (item == null) {
                 continue;
             }
-            if (item.lmEntity.getLivingEntity() == null) {
-                item.lmEntity.free();
-                continue;
+
+            if (main.getDefinitions().getIsFolia()){
+                Consumer<ScheduledTask> task = scheduledTask -> {
+                    preProcessItem(item);
+                    item.lmEntity.free();
+                };
+
+                item.lmEntity.inUseCount.getAndIncrement();
+                item.lmEntity.getLivingEntity().getScheduler().run(main, task, null);
             }
-
-            String lastEntityType = null;
-            try {
-                lastEntityType = item.lmEntity.getNameIfBaby();
-                processItem(item);
-            } catch (final Exception ex) {
-                final var entityName = lastEntityType == null ? "Unknown Entity" : lastEntityType;
-
-                Utils.logger.error("Unable to process nametag update for '" + entityName + "'. ");
-                ex.printStackTrace();
-            } finally {
-                item.lmEntity.free();
+            else{
+                preProcessItem(item);
             }
         }
 
         isRunning = false;
+    }
+
+    private void preProcessItem(final @NotNull QueueItem item){
+        if (item.lmEntity.getLivingEntity() == null) {
+            item.lmEntity.free();
+            return;
+        }
+
+        String lastEntityType = null;
+        try {
+            lastEntityType = item.lmEntity.getNameIfBaby();
+            processItem(item);
+        } catch (final Exception ex) {
+            final var entityName = lastEntityType == null ? "Unknown Entity" : lastEntityType;
+
+            Utils.logger.error("Unable to process nametag update for '" + entityName + "'. ");
+            ex.printStackTrace();
+        } finally {
+            item.lmEntity.free();
+        }
     }
 
     private void processItem(final @NotNull QueueItem item) {

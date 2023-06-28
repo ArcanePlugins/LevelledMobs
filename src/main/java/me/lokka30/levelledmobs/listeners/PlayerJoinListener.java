@@ -52,7 +52,9 @@ public class PlayerJoinListener implements Listener {
         main.nametagTimerChecker.addPlayerToQueue(new PlayerQueueItem(event.getPlayer(), true));
         parseUpdateChecker(event.getPlayer());
 
-        updateNametagsInWorldAsync(event.getPlayer(), event.getPlayer().getWorld().getEntities());
+        if (!main.getDefinitions().getIsFolia()) {
+            updateNametagsInWorldAsync(event.getPlayer(), event.getPlayer().getWorld().getEntities());
+        }
 
         if (event.getPlayer().isOp()) {
             if (main.companion.getHadRulesLoadError()) {

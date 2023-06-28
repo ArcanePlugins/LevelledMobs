@@ -21,8 +21,12 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.WeakHashMap;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 import me.lokka30.levelledmobs.commands.LevelledMobsCommand;
 import me.lokka30.levelledmobs.compatibility.Compat1_16;
 import me.lokka30.levelledmobs.compatibility.Compat1_17;
@@ -347,17 +351,31 @@ public class Companion {
     }
 
     void startCleanupTask() {
-        this.hashMapCleanUp = new BukkitRunnable() {
-            @Override
-            public void run() {
+        if (main.getDefinitions().getIsFolia()){
+            Consumer<ScheduledTask> bgThread = scheduledTask -> {
                 synchronized (entityDeathInChunkCounterLock) {
                     chunkKillLimitCleanup();
                 }
                 synchronized (entityDeathInChunkNotifierLock) {
                     chunkKillNoticationCleanup();
                 }
-            }
-        }.runTaskTimerAsynchronously(main, 100, 40);
+            };
+
+            org.bukkit.Bukkit.getAsyncScheduler().runAtFixedRate(main, bgThread, 5, 2, TimeUnit.SECONDS);
+        }
+        else{
+            this.hashMapCleanUp = new BukkitRunnable() {
+                @Override
+                public void run() {
+                    synchronized (entityDeathInChunkCounterLock) {
+                        chunkKillLimitCleanup();
+                    }
+                    synchronized (entityDeathInChunkNotifierLock) {
+                        chunkKillNoticationCleanup();
+                    }
+                }
+            }.runTaskTimerAsynchronously(main, 100, 40);
+        }
     }
 
     private void chunkKillLimitCleanup() {
@@ -479,7 +497,7 @@ public class Companion {
 
     //Check for updates on the Spigot page.
     void checkUpdates() {
-        if (main.helperSettings.getBoolean(main.settingsCfg, "use-update-checker", true)) {
+        if (!main.getDefinitions().getIsFolia() && main.helperSettings.getBoolean(main.settingsCfg, "use-update-checker", true)) {
             final UpdateChecker updateChecker = new UpdateChecker(main, 74304);
             try {
                 updateChecker.getLatestVersion(latestVersion -> {
@@ -567,7 +585,9 @@ public class Companion {
         if (hashMapCleanUp != null) {
             hashMapCleanUp.cancel();
         }
-        Bukkit.getScheduler().cancelTasks(main);
+        if (!main.getDefinitions().getIsFolia()) {
+            Bukkit.getScheduler().cancelTasks(main);
+        }
     }
 
     private void buildUniversalGroups() {

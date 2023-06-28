@@ -3,6 +3,7 @@ version: '${project.version}'
 description: '${project.description}'
 authors: [ 'lokka30', 'PenalBuffalo', 'UltimaOath' ]
 website: 'https://github.com/lokka30/LevelledMobs/'
+folia-supported: true
 
 main: 'me.lokka30.levelledmobs.LevelledMobs'
 api-version: '1.16'
