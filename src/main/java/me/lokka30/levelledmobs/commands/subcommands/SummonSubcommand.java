@@ -20,7 +20,6 @@ import me.lokka30.levelledmobs.misc.RequestedLevel;
 import me.lokka30.levelledmobs.util.PaperUtils;
 import me.lokka30.levelledmobs.util.SpigotUtils;
 import me.lokka30.levelledmobs.util.Utils;
-import me.lokka30.microlib.other.VersionUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -167,7 +166,7 @@ public class SummonSubcommand extends MessagesBase implements Subcommand {
                     : ((BlockCommandSender) commandSender).getBlock().getLocation();
 
                 if (location.getWorld() == null) {
-                    final String playerName = VersionUtils.isRunningPaper() ?
+                    final String playerName = main.getVerInfo().getIsRunningPaper() ?
                         PaperUtils.getPlayerDisplayName(player)
                         : SpigotUtils.getPlayerDisplayName(player);
                     showMessage("common.player-offline", "%player%", playerName);
@@ -565,7 +564,7 @@ public class SummonSubcommand extends MessagesBase implements Subcommand {
             );
             case AT_PLAYER -> {
 
-                final String playerName = VersionUtils.isRunningPaper() ?
+                final String playerName = main.getVerInfo().getIsRunningPaper() ?
                         PaperUtils.getPlayerDisplayName(target)
                         : SpigotUtils.getPlayerDisplayName(target);
                 showMessage("command.levelledmobs.summon.atPlayer.success",

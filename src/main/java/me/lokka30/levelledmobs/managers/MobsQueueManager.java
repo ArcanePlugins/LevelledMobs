@@ -6,14 +6,10 @@ package me.lokka30.levelledmobs.managers;
 
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Consumer;
 
-import io.papermc.paper.threadedregions.scheduler.EntityScheduler;
-import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.misc.QueueItem;
 import me.lokka30.levelledmobs.util.Utils;
-import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 
@@ -42,19 +38,7 @@ public class MobsQueueManager {
         doThread = true;
         isRunning = true;
 
-        if (main.getDefinitions().getIsFolia()){
-//            Consumer<ScheduledTask> bgThread = scheduledTask -> {
-//                try {
-//                    mainThread();
-//                } catch (InterruptedException e) {
-//                    e.printStackTrace();
-//                }
-//                Utils.logger.info("Mob processing queue Manager has exited");
-//            };
-//
-//            org.bukkit.Bukkit.getAsyncScheduler().runNow(main, bgThread);
-        }
-        else{
+        if (!main.getVerInfo().getIsRunningFolia()){
             final BukkitRunnable bgThread = new BukkitRunnable() {
                 @Override
                 public void run() {
@@ -80,7 +64,7 @@ public class MobsQueueManager {
             return;
         }
 
-        if (main.getDefinitions().getIsFolia()){
+        if (main.getVerInfo().getIsRunningFolia()){
             processItem(item);
         }
         else{

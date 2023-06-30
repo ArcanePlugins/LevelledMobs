@@ -19,7 +19,6 @@ import me.lokka30.levelledmobs.commands.subcommands.SummonSubcommand;
 import me.lokka30.levelledmobs.util.PaperUtils;
 import me.lokka30.levelledmobs.util.SpigotUtils;
 import me.lokka30.levelledmobs.util.Utils;
-import me.lokka30.microlib.other.VersionUtils;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -108,7 +107,7 @@ public class LevelledMobsCommand implements CommandExecutor, TabCompleter {
             return;
         }
 
-        if (VersionUtils.isRunningPaper()) {
+        if (main.getVerInfo().getIsRunningPaper()) {
             PaperUtils.sendHyperlink(sender, message, url);
         } else {
             SpigotUtils.sendHyperlink(sender, message, url);

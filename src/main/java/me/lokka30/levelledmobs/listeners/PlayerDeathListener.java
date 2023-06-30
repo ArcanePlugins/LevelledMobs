@@ -7,7 +7,6 @@ package me.lokka30.levelledmobs.listeners;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
 import me.lokka30.levelledmobs.util.SpigotUtils;
-import me.lokka30.microlib.other.VersionUtils;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -24,7 +23,7 @@ public class PlayerDeathListener implements Listener {
 
     public PlayerDeathListener(final LevelledMobs main) {
         this.main = main;
-        if (VersionUtils.isRunningPaper()) {
+        if (main.getVerInfo().getIsRunningPaper()) {
             paperListener = new me.lokka30.levelledmobs.listeners.paper.PlayerDeathListener(main);
         }
     }
@@ -42,7 +41,7 @@ public class PlayerDeathListener implements Listener {
     public void onPlayerDeath(@NotNull final PlayerDeathEvent event) {
         // returns false if not a translatable component, in which case just use the old method
         // this can happen if another plugin has butchered the event by using the deprecated method (*cough* mythic mobs)
-        if (!VersionUtils.isRunningPaper() || !paperListener.onPlayerDeathEvent(event)) {
+        if (!main.getVerInfo().getIsRunningPaper() || !paperListener.onPlayerDeathEvent(event)) {
             nonPaper_PlayerDeath(event);
         }
     }

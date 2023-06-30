@@ -7,8 +7,8 @@ import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Optional;
 
+import me.lokka30.levelledmobs.LevelledMobs;
 import net.kyori.adventure.text.Component;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.LivingEntity;
 import org.jetbrains.annotations.NotNull;
 
@@ -18,15 +18,13 @@ import org.jetbrains.annotations.NotNull;
 public class Definitions {
 
     public Definitions() {
-        this.ver = new ServerVersionInfo();
+        this.ver = LevelledMobs.getInstance().getVerInfo();
         build();
         if (hasMiniMessage) mm = net.kyori.adventure.text.minimessage.MiniMessage.miniMessage();
-        this.isFolia = Bukkit.getVersion().toLowerCase().contains("folia");
     }
 
     private final ServerVersionInfo ver;
     private boolean hasKiori;
-    private final boolean isFolia;
     private boolean isOneNinteenThreeOrNewer;
     private boolean hasMiniMessage;
     public boolean useTranslationComponents;
@@ -439,14 +437,6 @@ public class Definitions {
 
     public boolean hasKiori() {
         return hasKiori;
-    }
-
-    public boolean getIsFolia(){
-        return this.isFolia;
-    }
-
-    public @NotNull ServerVersionInfo getServerVersionInfo() {
-        return ver;
     }
 
     public boolean isOneNinteenThreeOrNewer() {

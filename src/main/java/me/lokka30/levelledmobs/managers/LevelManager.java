@@ -65,7 +65,6 @@ import me.lokka30.levelledmobs.rules.strategies.SpawnDistanceStrategy;
 import me.lokka30.levelledmobs.rules.strategies.YDistanceStrategy;
 import me.lokka30.levelledmobs.util.MythicMobUtils;
 import me.lokka30.levelledmobs.util.Utils;
-import me.lokka30.microlib.other.VersionUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -133,7 +132,7 @@ public class LevelManager implements LevelInterface {
             EntityType.UNKNOWN,
             EntityType.WITHER_SKULL, EntityType.SHULKER_BULLET, EntityType.PLAYER
         ));
-        if (VersionUtils.isOneSeventeen()) {
+        if (main.getVerInfo().getMinecraftVersion() >= 1.17) {
             this.FORCED_BLOCKED_ENTITY_TYPES.addAll(Compat1_17.getForceBlockedEntityType());
         }
 
@@ -896,8 +895,8 @@ public class LevelManager implements LevelInterface {
     }
 
     public void updateNametagWithDelay(final @NotNull LivingEntityWrapper lmEntity) {
-        if (main.getDefinitions().getIsFolia()){
-            Consumer<ScheduledTask> task = scheduledTask -> {
+        if (main.getVerInfo().getIsRunningFolia()){
+            final Consumer<ScheduledTask> task = scheduledTask -> {
                 updateNametag(lmEntity);
                 lmEntity.free();
             };
@@ -956,37 +955,32 @@ public class LevelManager implements LevelInterface {
         final long period = main.helperSettings.getInt(main.settingsCfg, "async-task-update-period",
             6); // run every ? seconds.
 
-        if (main.getDefinitions().getIsFolia()){
-           Consumer<ScheduledTask> bgThread = scheduledTask -> {
-                final Map<Player, List<Entity>> entitiesPerPlayer = new LinkedHashMap<>();
-                final int checkDistance = main.helperSettings.getInt(main.settingsCfg,
-                        "async-task-max-blocks-from-player", 100);
+        if (main.getVerInfo().getIsRunningFolia()){
+           final Consumer<ScheduledTask> bgThread = scheduledTask -> {
+               if (Bukkit.getOnlinePlayers().isEmpty()) return;
+               Player firstPlayer = null;
+               for (final Player player : Bukkit.getOnlinePlayers()){
+                   firstPlayer = player;
+                   break;
+               }
+               if (firstPlayer == null) return;
 
-                for (final Player player : Bukkit.getOnlinePlayers()) {
-                    Consumer<ScheduledTask> playerCheck = scheduledTask1 -> {
-                        final List<Entity> entities = player.getNearbyEntities(checkDistance,
-                                checkDistance, checkDistance);
-                        entitiesPerPlayer.put(player, entities);
+               final Consumer<ScheduledTask> task = scheduledTask1 -> {
+                   final Map<Player, List<Entity>> entitiesPerPlayer = new LinkedHashMap<>();
+                   final int checkDistance = main.helperSettings.getInt(main.settingsCfg,
+                           "async-task-max-blocks-from-player", 100);
 
-                        Utils.logger.info("entities found nearby: " + entities.size());
-                    };
+                   for (final Player player : Bukkit.getOnlinePlayers()) {
+                       final List<Entity> entities = player.getNearbyEntities(checkDistance,
+                               checkDistance, checkDistance);
+                       entitiesPerPlayer.put(player, entities);
+                   }
 
-                    final ScheduledTask task = player.getScheduler().run(main, playerCheck, null);
-                    if (task != null){
-                        Utils.logger.info("task execution state: " + task.getExecutionState());
-                        // state is IDLE, need it to be FINISHED before moving on
-                        try {
-                            // this causes an exception saying this thread is not the owner
-                            task.wait();
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
-                if (entitiesPerPlayer.isEmpty()) return;
+                   if (entitiesPerPlayer.isEmpty()) return;
+                   runNametagCheck_aSync(entitiesPerPlayer);
+               };
 
-                Utils.logger.info("running runNametagCheck_aSync, size: " + entitiesPerPlayer.size());
-                runNametagCheck_aSync(entitiesPerPlayer);
+               firstPlayer.getScheduler().run(main, task, null);
             };
 
             org.bukkit.Bukkit.getAsyncScheduler().runAtFixedRate(main, bgThread, 0, period, TimeUnit.SECONDS);
@@ -1020,9 +1014,8 @@ public class LevelManager implements LevelInterface {
     }
 
     public void startNametagTimer() {
-        if (main.getDefinitions().getIsFolia()){
-            Consumer<ScheduledTask> bgThread = scheduledTask -> main.nametagTimerChecker.checkNametags();
-
+        if (main.getVerInfo().getIsRunningFolia()){
+            final Consumer<ScheduledTask> bgThread = scheduledTask -> main.nametagTimerChecker.checkNametags();
             org.bukkit.Bukkit.getAsyncScheduler().runAtFixedRate(main, bgThread, 0, 1, TimeUnit.SECONDS);
         }
         else{
@@ -1047,7 +1040,7 @@ public class LevelManager implements LevelInterface {
 
         for (final Player player : entitiesPerPlayer.keySet()) {
             for (final Entity entity : entitiesPerPlayer.get(player)) {
-                if (main.getDefinitions().getIsFolia()){
+                if (main.getVerInfo().getIsRunningFolia()){
                     entity.getScheduler().run(main, scheduledTask -> checkEntity(entity, player, entityToPlayer), null);
                 }
                 else{
@@ -1418,7 +1411,7 @@ public class LevelManager implements LevelInterface {
             return;
         }
 
-        if (main.getDefinitions().getIsFolia()){
+        if (main.getVerInfo().getIsRunningFolia()){
             applyLevelledEquipment_NonAsync(lmEntity, customDropsRuleSet);
         }
         else{
@@ -1698,8 +1691,8 @@ public class LevelManager implements LevelInterface {
 
         final boolean doSkipLMNametag = skipLMNametag;
 
-        if (main.getDefinitions().getIsFolia()){
-            Consumer<ScheduledTask> task = scheduledTask -> {
+        if (main.getVerInfo().getIsRunningFolia()){
+            final Consumer<ScheduledTask> task = scheduledTask -> {
                 applyLevelToMob2(lmEntity, nbtDatas, doSkipLMNametag);
                 lmEntity.free();
             };

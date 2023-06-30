@@ -24,11 +24,10 @@ import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
 import me.lokka30.levelledmobs.misc.YmlParsingHelper;
 import me.lokka30.levelledmobs.result.PlayerLevelSourceResult;
 import me.lokka30.levelledmobs.rules.LevelledMobSpawnReason;
+import me.lokka30.levelledmobs.util.MessageUtils;
 import me.lokka30.levelledmobs.util.PaperUtils;
 import me.lokka30.levelledmobs.util.SpigotUtils;
 import me.lokka30.levelledmobs.util.Utils;
-import me.lokka30.microlib.messaging.MessageUtils;
-import me.lokka30.microlib.other.VersionUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
@@ -735,7 +734,7 @@ public class CustomDropsHandler {
 
                     newLore.add(lore);
 
-                    if (VersionUtils.isRunningPaper() && main.companion.useAdventure) {
+                    if (main.getVerInfo().getIsRunningPaper() && main.companion.useAdventure) {
                         PaperUtils.updateItemMetaLore(meta, newLore);
                     } else {
                         SpigotUtils.updateItemMetaLore(meta, newLore);
@@ -747,7 +746,7 @@ public class CustomDropsHandler {
                 String customName = dropItem.customName.replace("%player%", info.mobKiller == null ? "" : info.mobKiller.getName());
                 customName = main.levelManager.replaceStringPlaceholders(customName, info.lmEntity, true, info.mobKiller);
 
-                if (VersionUtils.isRunningPaper() && main.companion.useAdventure) {
+                if (main.getVerInfo().getIsRunningPaper() && main.companion.useAdventure) {
                     PaperUtils.updateItemDisplayName(meta, customName);
                 } else {
                     SpigotUtils.updateItemDisplayName(meta, MessageUtils.colorizeAll(customName));

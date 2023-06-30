@@ -19,9 +19,6 @@ import me.lokka30.levelledmobs.result.PlayerNetherOrWorldSpawnResult;
 import me.lokka30.levelledmobs.rules.LevelledMobSpawnReason;
 import me.lokka30.levelledmobs.rules.MinAndMax;
 import me.lokka30.levelledmobs.rules.RulesManager;
-import me.lokka30.microlib.messaging.MessageUtils;
-import me.lokka30.microlib.messaging.MicroLogger;
-import me.lokka30.microlib.other.VersionUtils;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -365,7 +362,7 @@ public final class Utils {
     }
 
     public static long getChunkKey(final @NotNull Chunk chunk) {
-        if (VersionUtils.isRunningPaper()) {
+        if (LevelledMobs.getInstance().getVerInfo().getIsRunningPaper()) {
             return chunk.getChunkKey();
         }
 

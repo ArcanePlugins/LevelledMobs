@@ -10,12 +10,12 @@ import java.util.Set;
 import java.util.TreeSet;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.commands.MessagesBase;
+import me.lokka30.levelledmobs.nametag.ServerVersionInfo;
 import me.lokka30.levelledmobs.rules.DoNotMerge;
+import me.lokka30.levelledmobs.util.MessageUtils;
 import me.lokka30.levelledmobs.util.PaperUtils;
 import me.lokka30.levelledmobs.util.SpigotUtils;
 import me.lokka30.levelledmobs.util.Utils;
-import me.lokka30.microlib.messaging.MessageUtils;
-import me.lokka30.microlib.other.VersionUtils;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -102,7 +102,10 @@ public class SpawnerBaseClass extends MessagesBase {
             return;
         }
 
-        if (VersionUtils.isRunningPaper() && info.main.companion.useAdventure) {
+        final ServerVersionInfo ver = LevelledMobs.getInstance().getVerInfo();
+
+        if (ver.getIsRunningPaper()
+                && info.main.companion.useAdventure) {
             PaperUtils.updateItemDisplayName(meta,
                 info.customName == null ? defaultName : info.customName);
         } else {
@@ -153,7 +156,7 @@ public class SpawnerBaseClass extends MessagesBase {
 
         if (!info.noLore && info.lore == null && info.customLore == null) {
             lore = Utils.colorizeAllInList(lore);
-            if (VersionUtils.isRunningPaper() && info.main.companion.useAdventure) {
+            if (ver.getIsRunningPaper() && info.main.companion.useAdventure) {
                 PaperUtils.updateItemMetaLore(meta, lore);
             } else {
                 SpigotUtils.updateItemMetaLore(meta, lore);
@@ -175,7 +178,7 @@ public class SpawnerBaseClass extends MessagesBase {
 
             lore.clear();
             lore.addAll(List.of(useLore.split("\n")));
-            if (VersionUtils.isRunningPaper() && info.main.companion.useAdventure) {
+            if (ver.getIsRunningPaper() && info.main.companion.useAdventure) {
                 PaperUtils.updateItemMetaLore(meta, lore);
             } else {
                 SpigotUtils.updateItemMetaLore(meta, lore);

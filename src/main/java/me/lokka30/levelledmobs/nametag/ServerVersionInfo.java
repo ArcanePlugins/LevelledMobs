@@ -22,6 +22,9 @@ public class ServerVersionInfo {
     private int minorVersion;
     private int revision;
     private double minecraftVersion;
+    private Boolean isRunningSpigot;
+    private Boolean isRunningPaper;
+    private Boolean isRunningFolia;
     private @NotNull String nmsVersion = "unknown";
     private static final Pattern versionPattern =
         Pattern.compile(".*\\.(v\\d+_\\d+_R\\d+)(?:.+)?");
@@ -74,6 +77,40 @@ public class ServerVersionInfo {
                     .getClass().getCanonicalName()
             );
         }
+    }
+
+    public boolean getIsRunningSpigot(){
+        if (this.isRunningSpigot == null){
+            try {
+                Class.forName("net.md_5.bungee.api.ChatColor");
+                this.isRunningSpigot = true;
+            } catch (ClassNotFoundException ignored) {
+                this.isRunningSpigot = false;
+            }
+        }
+
+        return this.isRunningSpigot;
+    }
+
+    public boolean getIsRunningPaper(){
+        if (this.isRunningPaper == null) {
+            try {
+                Class.forName("com.destroystokyo.paper.ParticleBuilder");
+                this.isRunningPaper = true;
+            } catch (ClassNotFoundException ignored) {
+                this.isRunningPaper = false;
+            }
+        }
+
+        return this.isRunningPaper;
+    }
+
+    public boolean getIsRunningFolia(){
+        if (this.isRunningFolia == null) {
+            this.isRunningFolia = Bukkit.getVersion().toLowerCase().contains("folia");
+        }
+
+        return this.isRunningFolia;
     }
 
     public int getMajorVersion() {

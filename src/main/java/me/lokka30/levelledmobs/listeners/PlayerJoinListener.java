@@ -5,16 +5,14 @@
 package me.lokka30.levelledmobs.listeners;
 
 import java.util.List;
-import java.util.function.Consumer;
 
-import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.misc.FileLoader;
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
 import me.lokka30.levelledmobs.misc.PlayerQueueItem;
 import me.lokka30.levelledmobs.result.NametagResult;
+import me.lokka30.levelledmobs.util.MessageUtils;
 import me.lokka30.levelledmobs.util.Utils;
-import me.lokka30.microlib.messaging.MessageUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
@@ -141,7 +139,7 @@ public class PlayerJoinListener implements Listener {
     }
 
     private void updateNametagsInWorldAsync(final Player player, final List<Entity> entities) {
-        if (main.getDefinitions().getIsFolia()){
+        if (main.getVerInfo().getIsRunningFolia()){
             updateNametagsInWorld(player, entities);
         }
         else{

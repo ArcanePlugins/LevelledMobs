@@ -69,8 +69,8 @@ public class NametagQueueManager {
         doThread = true;
         isRunning = true;
 
-        if (main.getDefinitions().getIsFolia()){
-            Consumer<ScheduledTask> bgThread = scheduledTask -> {
+        if (main.getVerInfo().getIsRunningFolia()){
+            final Consumer<ScheduledTask> bgThread = scheduledTask -> {
                 try {
                     mainThread();
                 } catch (InterruptedException e) {
@@ -124,8 +124,8 @@ public class NametagQueueManager {
                 continue;
             }
 
-            if (main.getDefinitions().getIsFolia()){
-                Consumer<ScheduledTask> task = scheduledTask -> {
+            if (main.getVerInfo().getIsRunningFolia()){
+                final Consumer<ScheduledTask> task = scheduledTask -> {
                     preProcessItem(item);
                     item.lmEntity.free();
                 };

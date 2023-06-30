@@ -9,7 +9,6 @@ import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
 import me.lokka30.levelledmobs.misc.NametagTimerChecker;
 import me.lokka30.levelledmobs.misc.QueueItem;
 import me.lokka30.levelledmobs.rules.NametagVisibilityEnum;
-import me.lokka30.levelledmobs.util.Utils;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -45,7 +44,6 @@ public class EntityTargetListener implements Listener {
         }
 
         if (event.getTarget() == null) {
-            Utils.logger.info(event.getEntity().getName() + " has lost target");
             synchronized (NametagTimerChecker.entityTarget_Lock) {
                 main.nametagTimerChecker.entityTargetMap.remove((LivingEntity) event.getEntity());
             }
@@ -76,7 +74,6 @@ public class EntityTargetListener implements Listener {
 
         if (main.rulesManager.getRuleCreatureNametagVisbility(lmEntity)
             .contains(NametagVisibilityEnum.TRACKING)) {
-            Utils.logger.info("adding " + lmEntity.getNameIfBaby() + " to entityTargetMap");
             synchronized (NametagTimerChecker.entityTarget_Lock) {
                 main.nametagTimerChecker.entityTargetMap.put(lmEntity.getLivingEntity(),
                     (Player) event.getTarget());
@@ -84,7 +81,6 @@ public class EntityTargetListener implements Listener {
         }
 
         // Update the nametag.
-        Utils.logger.info(lmEntity.getNameIfBaby() + " has targed player");
         main.levelManager.updateNametag(lmEntity);
         lmEntity.free();
     }

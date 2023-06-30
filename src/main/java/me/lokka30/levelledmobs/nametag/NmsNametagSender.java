@@ -6,12 +6,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.function.Consumer;
 
-import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.result.NametagResult;
-import me.lokka30.microlib.messaging.MessageUtils;
+import me.lokka30.levelledmobs.util.MessageUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -45,12 +43,8 @@ public class NmsNametagSender implements NametagSender {
 
         final LevelledMobs main = LevelledMobs.getInstance();
 
-        if (main.getDefinitions().getIsFolia()){
-            Consumer<ScheduledTask> task = scheduledTask -> {
-                sendNametagNonAsync(livingEntity, nametag, player, alwaysVisible);
-            };
-
-            player.getScheduler().run(main, task, null);
+        if (main.getVerInfo().getIsRunningFolia()){
+            player.getScheduler().run(main, scheduledTask -> sendNametagNonAsync(livingEntity, nametag, player, alwaysVisible), null);
         }
         else{
             Bukkit.getScheduler().runTask(

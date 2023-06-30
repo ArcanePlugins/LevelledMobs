@@ -8,13 +8,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.WeakHashMap;
-import java.util.function.Consumer;
 
-import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.result.NametagResult;
 import me.lokka30.levelledmobs.rules.NametagVisibilityEnum;
-import me.lokka30.levelledmobs.util.Utils;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -56,8 +53,6 @@ public class NametagTimerChecker {
     }
 
     public void checkNametags() {
-        final List<LivingEntity> entitiesToRemove = new LinkedList<>();
-
         synchronized (nametagTimer_Lock) {
             synchronized (playerQueue_Lock) {
                 while (!playersQueue.isEmpty()) {
@@ -74,70 +69,69 @@ public class NametagTimerChecker {
                 }
             }
 
-            for (final Map.Entry<Player, WeakHashMap<LivingEntity, Instant>> coolDown : nametagCooldownQueue.entrySet()) {
-                final Player player = coolDown.getKey();
-                for (final LivingEntity livingEntity : coolDown.getValue().keySet()) {
-                    if (!livingEntity.isValid()) {
-                        continue;
-                    }
+            if (nametagCooldownQueue.isEmpty()) return;
 
-                    final Instant startInclusive = coolDown.getValue().get(livingEntity);
-                    if (startInclusive == null){
-                        entitiesToRemove.add(livingEntity);
-                        continue;
-                    }
+            if (main.getVerInfo().getIsRunningFolia()){
+                for (final Map.Entry<Player, WeakHashMap<LivingEntity, Instant>> coolDown : nametagCooldownQueue.entrySet()) {
+                    // just need to get any player from the map
+                    final Player player = coolDown.getKey();
+                    player.getScheduler().run(main, scheduledTask -> processCooldownQueue(), null);
+                    break;
+                }
+            }
+            else{
+                processCooldownQueue();
+            }
+        }
+    }
 
-                    final Duration timeDuration = Duration.between(
+    private void processCooldownQueue(){
+        final List<LivingEntity> entitiesToRemove = new LinkedList<>();
+
+        for (final Map.Entry<Player, WeakHashMap<LivingEntity, Instant>> coolDown : nametagCooldownQueue.entrySet()) {
+            final Player player = coolDown.getKey();
+            for (final LivingEntity livingEntity : coolDown.getValue().keySet()) {
+                if (!livingEntity.isValid()) {
+                    continue;
+                }
+
+                final Instant startInclusive = coolDown.getValue().get(livingEntity);
+                if (startInclusive == null){
+                    entitiesToRemove.add(livingEntity);
+                    continue;
+                }
+
+                final Duration timeDuration = Duration.between(
                         startInclusive, Instant.now());
-                    final long cooldownTime = cooldownTimes.get(livingEntity);
-                    if (timeDuration.toMillis() >= cooldownTime) {
-                        // if using LoS targeting check if it's still within LoS and don't remove if so.
-                        final LivingEntityWrapper lmEntity = LivingEntityWrapper.getInstance(
+                final long cooldownTime = cooldownTimes.get(livingEntity);
+                if (timeDuration.toMillis() >= cooldownTime) {
+                    // if using LoS targeting check if it's still within LoS and don't remove if so.
+                    final LivingEntityWrapper lmEntity = LivingEntityWrapper.getInstance(
                             livingEntity, main);
 
-                        if (main.getDefinitions().getIsFolia()){
-                            Consumer<ScheduledTask> task = scheduledTask -> {
-                                final boolean usesLoS = main.rulesManager.getRuleCreatureNametagVisbility(
-                                        lmEntity).contains(NametagVisibilityEnum.TARGETED);
-                                if (usesLoS && livingEntity.hasLineOfSight(player)) {
-                                    Utils.logger.info(livingEntity.getName() + " has LOS");
-                                    coolDown.getValue().put(livingEntity, Instant.now());
-                                } else {
-                                    Utils.logger.info(livingEntity.getName() + " lost LOS");
-                                    entitiesToRemove.add(livingEntity);
-                                }
-                                lmEntity.free();
-                            };
-
-                            lmEntity.inUseCount.getAndIncrement();
-                            lmEntity.getLivingEntity().getScheduler().run(main, task, null);
-                        }
-                        else{
-                            final boolean usesLoS = main.rulesManager.getRuleCreatureNametagVisbility(
-                                    lmEntity).contains(NametagVisibilityEnum.TARGETED);
-                            if (usesLoS && livingEntity.hasLineOfSight(player)) {
-                                coolDown.getValue().put(livingEntity, Instant.now());
-                            } else {
-                                entitiesToRemove.add(livingEntity);
-                            }
-                            lmEntity.free();
-                        }
+                    final boolean usesLoS = main.rulesManager.getRuleCreatureNametagVisbility(
+                            lmEntity).contains(NametagVisibilityEnum.TARGETED);
+                    if (usesLoS && livingEntity.hasLineOfSight(player)) {
+                        coolDown.getValue().put(livingEntity, Instant.now());
+                    } else {
+                        entitiesToRemove.add(livingEntity);
                     }
-                }
-
-                for (final LivingEntity livingEntity : entitiesToRemove) {
-                    coolDown.getValue().remove(livingEntity);
-
-                    final LivingEntityWrapper lmEntity = LivingEntityWrapper.getInstance(
-                        livingEntity, main);
-
-                    final NametagResult nametag = main.levelManager.getNametag(lmEntity, false, true);
-                    main.levelManager.updateNametag(lmEntity, nametag, List.of(player));
                     lmEntity.free();
                 }
-
-                entitiesToRemove.clear();
             }
+
+            for (final LivingEntity livingEntity : entitiesToRemove) {
+                coolDown.getValue().remove(livingEntity);
+
+                final LivingEntityWrapper lmEntity = LivingEntityWrapper.getInstance(
+                        livingEntity, main);
+
+                final NametagResult nametag = main.levelManager.getNametag(lmEntity, false, true);
+                main.levelManager.updateNametag(lmEntity, nametag, List.of(player));
+                lmEntity.free();
+            }
+
+            entitiesToRemove.clear();
         }
     }
 }

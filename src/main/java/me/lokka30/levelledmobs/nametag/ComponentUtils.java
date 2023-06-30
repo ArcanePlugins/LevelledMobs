@@ -39,7 +39,7 @@ public class ComponentUtils {
     ) {
         final Definitions def = LevelledMobs.getInstance().getDefinitions();
         try {
-            if (text == null && def.getServerVersionInfo().getMinecraftVersion() >= 1.19) {
+            if (text == null && LevelledMobs.getInstance().getVerInfo().getMinecraftVersion() >= 1.19) {
                 // #empty()
                 return def.method_EmptyComponent.invoke(null);
             } else {
@@ -65,7 +65,7 @@ public class ComponentUtils {
         final Definitions def = LevelledMobs.getInstance().getDefinitions();
 
         try {
-            if (def.getServerVersionInfo().getMinecraftVersion() >= 1.19d) {
+            if (LevelledMobs.getInstance().getVerInfo().getMinecraftVersion() >= 1.19d) {
                 if (args == null || args.length == 0) {
                     return def.method_Translatable.invoke(null, key);
                 } else {

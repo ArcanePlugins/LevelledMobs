@@ -15,11 +15,10 @@ import java.util.UUID;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.customdrops.CustomDropItem;
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
+import me.lokka30.levelledmobs.util.MessageUtils;
 import me.lokka30.levelledmobs.util.PaperUtils;
 import me.lokka30.levelledmobs.util.SpigotUtils;
 import me.lokka30.levelledmobs.util.Utils;
-import me.lokka30.microlib.messaging.MessageUtils;
-import me.lokka30.microlib.other.VersionUtils;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -175,12 +174,13 @@ public class MobHeadManager {
         }
 
         String useName;
+        final boolean isRunningPaper = main.getVerInfo().getIsRunningPaper();
 
         if (dropItem.customName != null && !dropItem.customName.isEmpty()) {
             String killerName = "";
             final Player killerPlayer = lmEntity.getLivingEntity().getKiller();
             if (killerPlayer != null) {
-                killerName = VersionUtils.isRunningPaper() ?
+                killerName = isRunningPaper ?
                     PaperUtils.getPlayerDisplayName(killerPlayer)
                     : SpigotUtils.getPlayerDisplayName(killerPlayer);
             }
@@ -198,7 +198,7 @@ public class MobHeadManager {
             useName = "Mob Head";
         }
 
-        if (VersionUtils.isRunningPaper() && main.companion.useAdventure) {
+        if (isRunningPaper && main.companion.useAdventure) {
             PaperUtils.updateItemDisplayName(meta, useName);
         } else {
             SpigotUtils.updateItemDisplayName(meta, useName);

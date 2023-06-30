@@ -4,11 +4,10 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import me.lokka30.levelledmobs.LevelledMobs;
+import me.lokka30.levelledmobs.util.MessageUtils;
 import me.lokka30.levelledmobs.util.PaperUtils;
 import me.lokka30.levelledmobs.util.SpigotUtils;
 import me.lokka30.levelledmobs.util.Utils;
-import me.lokka30.microlib.messaging.MessageUtils;
-import me.lokka30.microlib.other.VersionUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
@@ -41,7 +40,7 @@ public class SpawnerEggCommand extends SpawnerBaseClass implements Subcommand {
             return;
         }
 
-        if (!VersionUtils.isRunningPaper()) {
+        if (!main.getVerInfo().getIsRunningPaper()) {
             showMessage("command.levelledmobs.spawn_egg.no-paper");
             return;
         }
@@ -207,7 +206,7 @@ public class SpawnerEggCommand extends SpawnerBaseClass implements Subcommand {
 
         info.player.getInventory().setItem(useInvSlotNum, item);
 
-        final String playerName = VersionUtils.isRunningPaper() ?
+        final String playerName = main.getVerInfo().getIsRunningPaper() ?
             PaperUtils.getPlayerDisplayName(info.player)
             : SpigotUtils.getPlayerDisplayName(info.player);
 

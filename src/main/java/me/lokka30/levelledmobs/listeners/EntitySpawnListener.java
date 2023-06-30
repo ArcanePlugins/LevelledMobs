@@ -188,8 +188,8 @@ public class EntitySpawnListener implements Listener {
     private void delayedAddToQueue(final @NotNull LivingEntityWrapper lmEntity, final Event event,
         final int delay) {
 
-        if (main.getDefinitions().getIsFolia()){
-            Consumer<ScheduledTask> task = scheduledTask -> {
+        if (main.getVerInfo().getIsRunningFolia()){
+            final Consumer<ScheduledTask> task = scheduledTask -> {
                 main.mobsQueueManager.addToQueue(new QueueItem(lmEntity, event));
                 lmEntity.free();
             };
@@ -368,8 +368,8 @@ public class EntitySpawnListener implements Listener {
                     runnable.runTask(main);
                 }
 
-                if (main.getDefinitions().getIsFolia()){
-                    Consumer<ScheduledTask> task = scheduledTask -> {
+                if (main.getVerInfo().getIsRunningFolia()){
+                    final Consumer<ScheduledTask> task = scheduledTask -> {
                         main.levelInterface.applyLevelToMob(lmEntity, levelAssignment,
                                 false, false, additionalLevelInfo);
                         lmEntity.free();

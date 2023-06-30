@@ -55,13 +55,12 @@ import me.lokka30.levelledmobs.misc.ChunkKillInfo;
 import me.lokka30.levelledmobs.misc.DebugType;
 import me.lokka30.levelledmobs.misc.FileLoader;
 import me.lokka30.levelledmobs.misc.FileMigrator;
+import me.lokka30.levelledmobs.misc.OutdatedServerVersionException;
 import me.lokka30.levelledmobs.misc.VersionInfo;
 import me.lokka30.levelledmobs.nametag.ServerVersionInfo;
 import me.lokka30.levelledmobs.rules.MetricsInfo;
+import me.lokka30.levelledmobs.util.UpdateChecker;
 import me.lokka30.levelledmobs.util.Utils;
-import me.lokka30.microlib.exceptions.OutdatedServerVersionException;
-import me.lokka30.microlib.other.UpdateChecker;
-import me.lokka30.microlib.other.VersionUtils;
 import org.bstats.bukkit.Metrics;
 import org.bstats.charts.SimpleBarChart;
 import org.bstats.charts.SimplePie;
@@ -351,8 +350,8 @@ public class Companion {
     }
 
     void startCleanupTask() {
-        if (main.getDefinitions().getIsFolia()){
-            Consumer<ScheduledTask> bgThread = scheduledTask -> {
+        if (main.getVerInfo().getIsRunningFolia()){
+            final Consumer<ScheduledTask> bgThread = scheduledTask -> {
                 synchronized (entityDeathInChunkCounterLock) {
                     chunkKillLimitCleanup();
                 }
@@ -497,7 +496,7 @@ public class Companion {
 
     //Check for updates on the Spigot page.
     void checkUpdates() {
-        if (!main.getDefinitions().getIsFolia() && main.helperSettings.getBoolean(main.settingsCfg, "use-update-checker", true)) {
+        if (main.helperSettings.getBoolean(main.settingsCfg, "use-update-checker", true)) {
             final UpdateChecker updateChecker = new UpdateChecker(main, 74304);
             try {
                 updateChecker.getLatestVersion(latestVersion -> {
@@ -585,7 +584,7 @@ public class Companion {
         if (hashMapCleanUp != null) {
             hashMapCleanUp.cancel();
         }
-        if (!main.getDefinitions().getIsFolia()) {
+        if (!main.getVerInfo().getIsRunningFolia()) {
             Bukkit.getScheduler().cancelTasks(main);
         }
     }
@@ -603,7 +602,7 @@ public class Companion {
             EntityType.SLIME
         ).collect(Collectors.toCollection(HashSet::new));
 
-        if (VersionUtils.isOneSeventeen() || VersionUtils.isOneSixteen()) {
+        if (versionInfo.getMinecraftVersion() >= 1.16) {
             hostileMobsGroup.addAll(Compat1_16.getHostileMobs());
         }
 
@@ -613,7 +612,7 @@ public class Companion {
             EntityType.SNOWMAN
         ).collect(Collectors.toCollection(HashSet::new));
 
-        if (VersionUtils.isOneSeventeen()) {
+        if (versionInfo.getMinecraftVersion() >= 1.17) {
             passiveMobsGroup.addAll(Compat1_17.getPassiveMobs());
         }
         if (versionInfo.getMajorVersion() >= 1.19) {

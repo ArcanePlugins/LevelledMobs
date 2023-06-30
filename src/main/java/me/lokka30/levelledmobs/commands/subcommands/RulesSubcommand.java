@@ -33,8 +33,7 @@ import me.lokka30.levelledmobs.rules.RuleInfo;
 import me.lokka30.levelledmobs.util.PaperUtils;
 import me.lokka30.levelledmobs.util.SpigotUtils;
 import me.lokka30.levelledmobs.util.Utils;
-import me.lokka30.microlib.messaging.MessageUtils;
-import me.lokka30.microlib.other.VersionUtils;
+import me.lokka30.levelledmobs.util.MessageUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Particle;
@@ -284,7 +283,7 @@ public class RulesSubcommand extends MessagesBase implements Subcommand {
             return;
         }
 
-        if (VersionUtils.isRunningPaper()) {
+        if (main.getVerInfo().getIsRunningPaper()) {
             PaperUtils.sendHyperlink(sender, message, url);
         } else {
             SpigotUtils.sendHyperlink(sender, message, url);
@@ -379,16 +378,25 @@ public class RulesSubcommand extends MessagesBase implements Subcommand {
             sb.setLength(0);
         }
 
-        final BukkitRunnable runnable = new BukkitRunnable() {
-            @Override
-            public void run() {
+        lmEntity.inUseCount.getAndIncrement();
+        if (main.getVerInfo().getIsRunningFolia()){
+            final Consumer<ScheduledTask> task = scheduledTask -> {
                 showEffectiveValues(player, lmEntity, showOnConsole, sb);
                 lmEntity.free();
-            }
-        };
+            };
+            lmEntity.getLivingEntity().getScheduler().runDelayed(main, task, null, 25L);
+        }
+        else{
+            final BukkitRunnable runnable = new BukkitRunnable() {
+                @Override
+                public void run() {
+                    showEffectiveValues(player, lmEntity, showOnConsole, sb);
+                    lmEntity.free();
+                }
+            };
 
-        lmEntity.inUseCount.getAndIncrement();
-        runnable.runTaskLater(main, 25);
+            runnable.runTaskLater(main, 25L);
+        }
     }
 
     @Nullable public LivingEntityWrapper getMobBeingLookedAt(@NotNull final Player player,
@@ -439,11 +447,8 @@ public class RulesSubcommand extends MessagesBase implements Subcommand {
             return;
         }
 
-        if (main.getDefinitions().getIsFolia()){
-            Consumer<ScheduledTask> task = scheduledTask -> {
-                spawnParticles(location, world);
-            };
-            org.bukkit.Bukkit.getRegionScheduler().run(main, location, task);
+        if (main.getVerInfo().getIsRunningFolia()){
+            org.bukkit.Bukkit.getRegionScheduler().run(main, location, scheduledTask -> spawnParticles(location, world));
         }
         else{
             final BukkitRunnable runnable = new BukkitRunnable() {

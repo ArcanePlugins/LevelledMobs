@@ -3,7 +3,6 @@ package me.lokka30.levelledmobs.nametag;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.managers.ExternalCompatibilityManager;
 import me.lokka30.levelledmobs.util.Utils;
-import me.lokka30.microlib.other.VersionUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -19,7 +18,6 @@ public class NametagSenderHandler {
         final @NotNull LevelledMobs main
     ) {
         this.main = main;
-        this.hasPaper = VersionUtils.isRunningPaper();
         this.versionInfo = new ServerVersionInfo();
     }
 
@@ -27,7 +25,6 @@ public class NametagSenderHandler {
     private NametagSender currentUtil;
     public boolean isUsingProtocolLib;
     public final ServerVersionInfo versionInfo;
-    public final boolean hasPaper;
 
     @Nullable
     public NametagSender getCurrentUtil() {

@@ -19,8 +19,7 @@ import me.lokka30.levelledmobs.misc.Cooldown;
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
 import me.lokka30.levelledmobs.misc.Point;
 import me.lokka30.levelledmobs.util.Utils;
-import me.lokka30.microlib.messaging.MessageUtils;
-import me.lokka30.microlib.other.VersionUtils;
+import me.lokka30.levelledmobs.util.MessageUtils;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -115,7 +114,7 @@ public class PlayerInteractEventListener extends MessagesBase implements Listene
     }
 
     private boolean processLMSpawnEgg(final @NotNull PlayerInteractEvent event) {
-        if (!VersionUtils.isRunningPaper()) {
+        if (!main.getVerInfo().getIsRunningPaper()) {
             return false;
         }
         if (event.getItem() == null) {

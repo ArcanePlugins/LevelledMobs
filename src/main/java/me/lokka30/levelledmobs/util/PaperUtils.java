@@ -2,7 +2,8 @@ package me.lokka30.levelledmobs.util;
 
 import java.util.ArrayList;
 import java.util.List;
-import me.lokka30.microlib.other.VersionUtils;
+
+import me.lokka30.levelledmobs.LevelledMobs;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.event.ClickEvent;
@@ -60,8 +61,8 @@ public class PaperUtils {
         }
         final Component comp = player.displayName();
         if (comp instanceof TextComponent) {
-            if (VersionUtils.isOneSeventeen()) {
-                // this is needed because PlainTextComponentSerializer is available in 1.16.5
+            if (LevelledMobs.getInstance().getVerInfo().getMinecraftVersion() >= 1.17) {
+                // this is needed because PlainTextComponentSerializer is available in 1.17+
                 return Paper117Utils.serializeTextComponent((TextComponent) comp);
             } else {
                 return net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacySection()

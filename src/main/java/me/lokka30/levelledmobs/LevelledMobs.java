@@ -32,11 +32,12 @@ import me.lokka30.levelledmobs.misc.NamespacedKeys;
 import me.lokka30.levelledmobs.misc.NametagTimerChecker;
 import me.lokka30.levelledmobs.misc.YmlParsingHelper;
 import me.lokka30.levelledmobs.nametag.Definitions;
+import me.lokka30.levelledmobs.nametag.ServerVersionInfo;
 import me.lokka30.levelledmobs.rules.RulesManager;
 import me.lokka30.levelledmobs.rules.RulesParsingManager;
 import me.lokka30.levelledmobs.util.ConfigUtils;
+import me.lokka30.levelledmobs.util.QuickTimer;
 import me.lokka30.levelledmobs.util.Utils;
-import me.lokka30.microlib.maths.QuickTimer;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -78,6 +79,7 @@ public final class LevelledMobs extends JavaPlugin {
     public long playerLevellingMinRelevelTime;
     public int maxPlayersRecorded;
     private Definitions definitions;
+    private ServerVersionInfo ver;
     private static LevelledMobs instance;
 
     // Configuration
@@ -102,6 +104,7 @@ public final class LevelledMobs extends JavaPlugin {
     public void onEnable() {
         final QuickTimer timer = new QuickTimer();
 
+        this.ver = new ServerVersionInfo();
         this.definitions = new Definitions();
         this.nametagQueueManager = new NametagQueueManager(this);
         this.mobsQueueManager = new MobsQueueManager(this);
@@ -223,6 +226,8 @@ public final class LevelledMobs extends JavaPlugin {
     public @NotNull Definitions getDefinitions(){
         return this.definitions;
     }
+
+    public @NotNull ServerVersionInfo getVerInfo() { return this.ver; }
 
     @Override
     public void onDisable() {

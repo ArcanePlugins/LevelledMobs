@@ -19,7 +19,6 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
     <bstats.version>3.0.1</bstats.version>
-    <microlib.version>3.2.0</microlib.version>
 
     <paper.version>1.19.4-R0.1-SNAPSHOT</paper.version>
     <essentialsx.version>2.19.7</essentialsx.version>
@@ -120,12 +119,6 @@
 
   <dependencies>
     <!-- Dependencies which are shaded in LM -->
-    <dependency>
-      <groupId>com.github.lokka30</groupId>
-      <artifactId>MicroLib</artifactId>
-      <version>${microlib.version}</version>
-      <scope>compile</scope>
-    </dependency>
     <dependency>
       <groupId>org.bstats</groupId>
       <artifactId>bstats-bukkit</artifactId>
