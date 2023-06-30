@@ -10,6 +10,7 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -186,16 +187,28 @@ public class EntitySpawnListener implements Listener {
 
     private void delayedAddToQueue(final @NotNull LivingEntityWrapper lmEntity, final Event event,
         final int delay) {
-        final BukkitRunnable runnable = new BukkitRunnable() {
-            @Override
-            public void run() {
+
+        if (main.getDefinitions().getIsFolia()){
+            Consumer<ScheduledTask> task = scheduledTask -> {
                 main.mobsQueueManager.addToQueue(new QueueItem(lmEntity, event));
                 lmEntity.free();
-            }
-        };
+            };
 
-        lmEntity.inUseCount.getAndIncrement();
-        runnable.runTaskLater(main, delay);
+            lmEntity.inUseCount.getAndIncrement();
+            org.bukkit.Bukkit.getAsyncScheduler().runDelayed(main, task, delay / 20L * 1000L, TimeUnit.MILLISECONDS);
+        }
+        else{
+            final BukkitRunnable runnable = new BukkitRunnable() {
+                @Override
+                public void run() {
+                    main.mobsQueueManager.addToQueue(new QueueItem(lmEntity, event));
+                    lmEntity.free();
+                }
+            };
+
+            lmEntity.inUseCount.getAndIncrement();
+            runnable.runTaskLater(main, delay);
+        }
     }
 
     private void lmSpawnerSpawn(final @NotNull LivingEntityWrapper lmEntity,

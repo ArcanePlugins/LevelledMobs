@@ -897,7 +897,13 @@ public class LevelManager implements LevelInterface {
 
     public void updateNametagWithDelay(final @NotNull LivingEntityWrapper lmEntity) {
         if (main.getDefinitions().getIsFolia()){
-            updateNametag(lmEntity);
+            Consumer<ScheduledTask> task = scheduledTask -> {
+                updateNametag(lmEntity);
+                lmEntity.free();
+            };
+
+            lmEntity.inUseCount.getAndIncrement();
+            lmEntity.getLivingEntity().getScheduler().runDelayed(main, task, null, 1L);
         }
         else{
             final BukkitRunnable runnable = new BukkitRunnable() {
@@ -961,11 +967,25 @@ public class LevelManager implements LevelInterface {
                         final List<Entity> entities = player.getNearbyEntities(checkDistance,
                                 checkDistance, checkDistance);
                         entitiesPerPlayer.put(player, entities);
+
+                        Utils.logger.info("entities found nearby: " + entities.size());
                     };
 
-                    player.getScheduler().run(main, playerCheck, null);
+                    final ScheduledTask task = player.getScheduler().run(main, playerCheck, null);
+                    if (task != null){
+                        Utils.logger.info("task execution state: " + task.getExecutionState());
+                        // state is IDLE, need it to be FINISHED before moving on
+                        try {
+                            // this causes an exception saying this thread is not the owner
+                            task.wait();
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
                 }
+                if (entitiesPerPlayer.isEmpty()) return;
 
+                Utils.logger.info("running runNametagCheck_aSync, size: " + entitiesPerPlayer.size());
                 runNametagCheck_aSync(entitiesPerPlayer);
             };
 
@@ -984,6 +1004,7 @@ public class LevelManager implements LevelInterface {
                                 checkDistance, checkDistance);
                         entitiesPerPlayer.put(player, entities);
                     }
+                    if (entitiesPerPlayer.isEmpty()) return;
 
                     final BukkitRunnable runnable = new BukkitRunnable() {
                         @Override
@@ -1000,9 +1021,7 @@ public class LevelManager implements LevelInterface {
 
     public void startNametagTimer() {
         if (main.getDefinitions().getIsFolia()){
-            Consumer<ScheduledTask> bgThread = scheduledTask -> {
-                main.nametagTimerChecker.checkNametags();
-            };
+            Consumer<ScheduledTask> bgThread = scheduledTask -> main.nametagTimerChecker.checkNametags();
 
             org.bukkit.Bukkit.getAsyncScheduler().runAtFixedRate(main, bgThread, 0, 1, TimeUnit.SECONDS);
         }
@@ -1028,89 +1047,11 @@ public class LevelManager implements LevelInterface {
 
         for (final Player player : entitiesPerPlayer.keySet()) {
             for (final Entity entity : entitiesPerPlayer.get(player)) {
-
-                if (!entity.isValid()) {
-                    continue; // async task, entity can despawn whilst it is running
+                if (main.getDefinitions().getIsFolia()){
+                    entity.getScheduler().run(main, scheduledTask -> checkEntity(entity, player, entityToPlayer), null);
                 }
-
-                // Mob must be a livingentity that is ...living.
-                if (!(entity instanceof LivingEntity) || entity instanceof Player
-                    || !entity.isValid()) {
-                    continue;
-                }
-                // this is mostly so for spawner mobs and spawner egg mobs as they have a 20 tick delay in before proessing
-                if (entity.getTicksLived() < 30) {
-                    continue;
-                }
-
-                boolean wrapperHasReference = false;
-                final LivingEntityWrapper lmEntity = LivingEntityWrapper.getInstance(
-                    (LivingEntity) entity, main);
-                lmEntity.playerForPermissionsCheck = player;
-
-                if (lmEntity.isLevelled()) {
-                    boolean skipLevelling = (
-                            lmEntity.getSpawnReason() == LevelledMobSpawnReason.LM_SPAWNER ||
-                                    lmEntity.getSpawnReason() == LevelledMobSpawnReason.LM_SUMMON
-                    );
-                    if (main.configUtils.playerLevellingEnabled && !checkIfReadyForRelevelling(lmEntity)){
-                        skipLevelling = true;
-                    }
-                    if (main.configUtils.playerLevellingEnabled && !skipLevelling) {
-                        final boolean hasKey = entityToPlayer.containsKey(lmEntity);
-                        final List<Player> players = hasKey ?
-                            entityToPlayer.get(lmEntity) : new LinkedList<>();
-                        players.add(player);
-                        if (!hasKey) {
-                            entityToPlayer.put(lmEntity, players);
-                        }
-                        wrapperHasReference = true;
-                    }
-
-                    if (lmEntity.getLivingEntity() == null) {
-                        continue;
-                    }
-                    final List<NametagVisibilityEnum> nametagVisibilityEnums = main.rulesManager.getRuleCreatureNametagVisbility(
-                        lmEntity);
-                    final long nametagVisibleTime = lmEntity.getNametagCooldownTime();
-                    if (nametagVisibleTime > 0L &&
-                        nametagVisibilityEnums.contains(NametagVisibilityEnum.TARGETED) &&
-                        lmEntity.getLivingEntity().hasLineOfSight(player)) {
-
-                        if (lmEntity.playersNeedingNametagCooldownUpdate == null) {
-                            lmEntity.playersNeedingNametagCooldownUpdate = new HashSet<>();
-                        }
-                        lmEntity.playersNeedingNametagCooldownUpdate.add(player);
-                    }
-
-                    checkLevelledEntity(lmEntity, player);
-                } else {
-                    final boolean wasBabyMob;
-                    synchronized (lmEntity.getLivingEntity().getPersistentDataContainer()) {
-                        wasBabyMob = lmEntity.getPDC()
-                            .has(main.namespacedKeys.wasBabyMobKey, PersistentDataType.INTEGER);
-                    }
-                    if (lmEntity.getLivingEntity()
-                        != null) { // a hack to prevent a null exception that was reported
-                        final LevellableState levellableState = main.levelInterface.getLevellableState(
-                            lmEntity);
-                        if (!lmEntity.isBabyMob() &&
-                            wasBabyMob &&
-                            levellableState == LevellableState.ALLOWED) {
-                            // if the mob was a baby at some point, aged and now is eligable for levelling, we'll apply a level to it now
-                            Utils.debugLog(main, DebugType.ENTITY_MISC,
-                                "&b" + lmEntity.getTypeName()
-                                    + " &7was a baby and is now an adult, applying levelling rules");
-
-                            main.mobsQueueManager.addToQueue(new QueueItem(lmEntity, null));
-                        } else if (levellableState == LevellableState.ALLOWED) {
-                            main.mobsQueueManager.addToQueue(new QueueItem(lmEntity, null));
-                        }
-                    }
-                }
-
-                if (!wrapperHasReference) {
-                    lmEntity.free();
+                else{
+                    checkEntity(entity, player, entityToPlayer);
                 }
             }
         }
@@ -1121,6 +1062,93 @@ public class LevelManager implements LevelInterface {
                 checkEntityForPlayerLevelling(lmEntity, entry.getValue());
             }
 
+            lmEntity.free();
+        }
+    }
+
+    private void checkEntity(final @NotNull Entity entity, final @NotNull Player player,
+                             final @NotNull Map<LivingEntityWrapper, List<Player>> entityToPlayer){
+        if (!entity.isValid()) {
+            return; // async task, entity can despawn whilst it is running
+        }
+
+        // Mob must be a livingentity that is ...living.
+        if (!(entity instanceof LivingEntity) || entity instanceof Player
+                || !entity.isValid()) {
+            return;
+        }
+        // this is mostly so for spawner mobs and spawner egg mobs as they have a 20 tick delay in before proessing
+        if (entity.getTicksLived() < 30) {
+            return;
+        }
+
+        boolean wrapperHasReference = false;
+        final LivingEntityWrapper lmEntity = LivingEntityWrapper.getInstance(
+                (LivingEntity) entity, main);
+        lmEntity.playerForPermissionsCheck = player;
+
+        if (lmEntity.isLevelled()) {
+            boolean skipLevelling = (
+                    lmEntity.getSpawnReason() == LevelledMobSpawnReason.LM_SPAWNER ||
+                            lmEntity.getSpawnReason() == LevelledMobSpawnReason.LM_SUMMON
+            );
+            if (main.configUtils.playerLevellingEnabled && !checkIfReadyForRelevelling(lmEntity)){
+                skipLevelling = true;
+            }
+            if (main.configUtils.playerLevellingEnabled && !skipLevelling) {
+                final boolean hasKey = entityToPlayer.containsKey(lmEntity);
+                final List<Player> players = hasKey ?
+                        entityToPlayer.get(lmEntity) : new LinkedList<>();
+                players.add(player);
+                if (!hasKey) {
+                    entityToPlayer.put(lmEntity, players);
+                }
+                wrapperHasReference = true;
+            }
+
+            if (lmEntity.getLivingEntity() == null) {
+                return;
+            }
+            final List<NametagVisibilityEnum> nametagVisibilityEnums = main.rulesManager.getRuleCreatureNametagVisbility(
+                    lmEntity);
+            final long nametagVisibleTime = lmEntity.getNametagCooldownTime();
+            if (nametagVisibleTime > 0L &&
+                    nametagVisibilityEnums.contains(NametagVisibilityEnum.TARGETED) &&
+                    lmEntity.getLivingEntity().hasLineOfSight(player)) {
+
+                if (lmEntity.playersNeedingNametagCooldownUpdate == null) {
+                    lmEntity.playersNeedingNametagCooldownUpdate = new HashSet<>();
+                }
+                lmEntity.playersNeedingNametagCooldownUpdate.add(player);
+            }
+
+            checkLevelledEntity(lmEntity, player);
+        } else {
+            final boolean wasBabyMob;
+            synchronized (lmEntity.getLivingEntity().getPersistentDataContainer()) {
+                wasBabyMob = lmEntity.getPDC()
+                        .has(main.namespacedKeys.wasBabyMobKey, PersistentDataType.INTEGER);
+            }
+            if (lmEntity.getLivingEntity()
+                    != null) { // a hack to prevent a null exception that was reported
+                final LevellableState levellableState = main.levelInterface.getLevellableState(
+                        lmEntity);
+                if (!lmEntity.isBabyMob() &&
+                        wasBabyMob &&
+                        levellableState == LevellableState.ALLOWED) {
+                    // if the mob was a baby at some point, aged and now is eligable for levelling, we'll apply a level to it now
+                    Utils.debugLog(main, DebugType.ENTITY_MISC,
+                            "&b" + lmEntity.getTypeName()
+                                    + " &7was a baby and is now an adult, applying levelling rules");
+
+                    main.mobsQueueManager.addToQueue(new QueueItem(lmEntity, null));
+                } else if (levellableState == LevellableState.ALLOWED) {
+                    main.mobsQueueManager.addToQueue(new QueueItem(lmEntity, null));
+                }
+            }
+        }
+
+        if (!wrapperHasReference) {
             lmEntity.free();
         }
     }

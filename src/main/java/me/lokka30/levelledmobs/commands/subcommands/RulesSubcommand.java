@@ -21,6 +21,9 @@ import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.function.Consumer;
+
+import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.commands.MessagesBase;
 import me.lokka30.levelledmobs.managers.ExternalCompatibilityManager;
@@ -430,26 +433,37 @@ public class RulesSubcommand extends MessagesBase implements Subcommand {
         return lmEntity;
     }
 
-    private void createParticleEffect(@NotNull final Location location) {
+    private void createParticleEffect(final @NotNull Location location) {
         final World world = location.getWorld();
         if (world == null) {
             return;
         }
 
-        final BukkitRunnable runnable = new BukkitRunnable() {
-            @Override
-            public void run() {
-                try {
-                    for (int i = 0; i < 10; i++) {
-                        world.spawnParticle(Particle.SPELL, location, 20, 0, 0, 0, 0.1);
-                        Thread.sleep(50);
-                    }
-                } catch (final InterruptedException ignored) {
+        if (main.getDefinitions().getIsFolia()){
+            Consumer<ScheduledTask> task = scheduledTask -> {
+                spawnParticles(location, world);
+            };
+            org.bukkit.Bukkit.getRegionScheduler().run(main, location, task);
+        }
+        else{
+            final BukkitRunnable runnable = new BukkitRunnable() {
+                @Override
+                public void run() {
+                    spawnParticles(location, world);
                 }
-            }
-        };
+            };
 
-        runnable.runTaskAsynchronously(main);
+            runnable.runTaskAsynchronously(main);
+        }
+    }
+
+    private void spawnParticles(final @NotNull Location location, final @NotNull World world){
+        try {
+            for (int i = 0; i < 10; i++) {
+                world.spawnParticle(Particle.SPELL, location, 20, 0, 0, 0, 0.1);
+                Thread.sleep(50);
+            }
+        } catch (final InterruptedException ignored) { }
     }
 
     private void showEffectiveValues(final CommandSender sender,

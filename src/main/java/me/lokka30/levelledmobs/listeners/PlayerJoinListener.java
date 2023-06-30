@@ -5,6 +5,9 @@
 package me.lokka30.levelledmobs.listeners;
 
 import java.util.List;
+import java.util.function.Consumer;
+
+import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.misc.FileLoader;
 import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
@@ -52,9 +55,7 @@ public class PlayerJoinListener implements Listener {
         main.nametagTimerChecker.addPlayerToQueue(new PlayerQueueItem(event.getPlayer(), true));
         parseUpdateChecker(event.getPlayer());
 
-        if (!main.getDefinitions().getIsFolia()) {
-            updateNametagsInWorldAsync(event.getPlayer(), event.getPlayer().getWorld().getEntities());
-        }
+        updateNametagsInWorldAsync(event.getPlayer(), event.getPlayer().getWorld().getEntities());
 
         if (event.getPlayer().isOp()) {
             if (main.companion.getHadRulesLoadError()) {
@@ -140,14 +141,18 @@ public class PlayerJoinListener implements Listener {
     }
 
     private void updateNametagsInWorldAsync(final Player player, final List<Entity> entities) {
-        final BukkitRunnable runnable = new BukkitRunnable() {
-            @Override
-            public void run() {
-                updateNametagsInWorld(player, entities);
-            }
-        };
-
-        runnable.runTaskAsynchronously(main);
+        if (main.getDefinitions().getIsFolia()){
+            updateNametagsInWorld(player, entities);
+        }
+        else{
+            final BukkitRunnable runnable = new BukkitRunnable() {
+                @Override
+                public void run() {
+                    updateNametagsInWorld(player, entities);
+                }
+            };
+            runnable.runTaskAsynchronously(main);
+        }
     }
 
     private void updateNametagsInWorld(final Player player, @NotNull final List<Entity> entities) {
