@@ -9,8 +9,8 @@ import java.util.Optional;
 
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.result.NametagResult;
+import me.lokka30.levelledmobs.wrappers.SchedulerWrapper;
 import me.lokka30.levelledmobs.util.MessageUtils;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -41,17 +41,9 @@ public class NmsNametagSender implements NametagSender {
             return;
         }
 
-        final LevelledMobs main = LevelledMobs.getInstance();
-
-        if (main.getVerInfo().getIsRunningFolia()){
-            player.getScheduler().run(main, scheduledTask -> sendNametagNonAsync(livingEntity, nametag, player, alwaysVisible), null);
-        }
-        else{
-            Bukkit.getScheduler().runTask(
-                    main,
-                    () -> sendNametagNonAsync(livingEntity, nametag, player, alwaysVisible)
-            );
-        }
+        final SchedulerWrapper scheduler = new SchedulerWrapper(player, () ->
+                sendNametagNonAsync(livingEntity, nametag, player, alwaysVisible));
+        scheduler.run();
     }
 
     public void refresh(){

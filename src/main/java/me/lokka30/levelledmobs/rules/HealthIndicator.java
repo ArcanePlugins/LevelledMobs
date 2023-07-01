@@ -7,7 +7,7 @@ package me.lokka30.levelledmobs.rules;
 import java.util.Map;
 import java.util.TreeMap;
 
-import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
+import me.lokka30.levelledmobs.wrappers.LivingEntityWrapper;
 import org.jetbrains.annotations.NotNull;
 
 

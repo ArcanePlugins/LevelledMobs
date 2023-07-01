@@ -5,7 +5,7 @@
 package me.lokka30.levelledmobs.rules.strategies;
 
 import java.util.concurrent.ThreadLocalRandom;
-import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
+import me.lokka30.levelledmobs.wrappers.LivingEntityWrapper;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

@@ -21,12 +21,9 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.WeakHashMap;
-import java.util.concurrent.TimeUnit;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 import me.lokka30.levelledmobs.commands.LevelledMobsCommand;
 import me.lokka30.levelledmobs.compatibility.Compat1_16;
 import me.lokka30.levelledmobs.compatibility.Compat1_17;
@@ -61,6 +58,8 @@ import me.lokka30.levelledmobs.nametag.ServerVersionInfo;
 import me.lokka30.levelledmobs.rules.MetricsInfo;
 import me.lokka30.levelledmobs.util.UpdateChecker;
 import me.lokka30.levelledmobs.util.Utils;
+import me.lokka30.levelledmobs.wrappers.SchedulerResult;
+import me.lokka30.levelledmobs.wrappers.SchedulerWrapper;
 import org.bstats.bukkit.Metrics;
 import org.bstats.charts.SimpleBarChart;
 import org.bstats.charts.SimplePie;
@@ -71,8 +70,6 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
-import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -119,7 +116,7 @@ public class Companion {
     final private PluginManager pluginManager = Bukkit.getPluginManager();
     final private MetricsInfo metricsInfo;
     final public ExternalCompatibilityManager externalCompatibilityManager;
-    private BukkitTask hashMapCleanUp;
+    private SchedulerResult hashMapCleanUp;
     final static private Object playerLogonTimesLock = new Object();
     final static private Object playerNetherPortalsLock = new Object();
     final static private Object entityDeathInChunkCounterLock = new Object();
@@ -350,31 +347,16 @@ public class Companion {
     }
 
     void startCleanupTask() {
-        if (main.getVerInfo().getIsRunningFolia()){
-            final Consumer<ScheduledTask> bgThread = scheduledTask -> {
-                synchronized (entityDeathInChunkCounterLock) {
-                    chunkKillLimitCleanup();
-                }
-                synchronized (entityDeathInChunkNotifierLock) {
-                    chunkKillNoticationCleanup();
-                }
-            };
+        final SchedulerWrapper scheduler = new SchedulerWrapper(() -> {
+            synchronized (entityDeathInChunkCounterLock) {
+                chunkKillLimitCleanup();
+            }
+            synchronized (entityDeathInChunkNotifierLock) {
+                chunkKillNoticationCleanup();
+            }
+        });
 
-            org.bukkit.Bukkit.getAsyncScheduler().runAtFixedRate(main, bgThread, 5, 2, TimeUnit.SECONDS);
-        }
-        else{
-            this.hashMapCleanUp = new BukkitRunnable() {
-                @Override
-                public void run() {
-                    synchronized (entityDeathInChunkCounterLock) {
-                        chunkKillLimitCleanup();
-                    }
-                    synchronized (entityDeathInChunkNotifierLock) {
-                        chunkKillNoticationCleanup();
-                    }
-                }
-            }.runTaskTimerAsynchronously(main, 100, 40);
-        }
+        this.hashMapCleanUp = scheduler.runTaskTimerAsynchronously(5000, 2000);
     }
 
     private void chunkKillLimitCleanup() {
@@ -582,7 +564,7 @@ public class Companion {
         main.mobsQueueManager.stop();
         main.nametagQueueManager.stop();
         if (hashMapCleanUp != null) {
-            hashMapCleanUp.cancel();
+            hashMapCleanUp.cancelTask();
         }
         if (!main.getVerInfo().getIsRunningFolia()) {
             Bukkit.getScheduler().cancelTasks(main);

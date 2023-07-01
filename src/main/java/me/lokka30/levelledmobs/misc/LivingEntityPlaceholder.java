@@ -9,6 +9,7 @@ import java.util.Stack;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.LivingEntityInterface;
 import me.lokka30.levelledmobs.rules.RuleInfo;
+import me.lokka30.levelledmobs.wrappers.LivingEntityWrapperBase;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.EntityType;

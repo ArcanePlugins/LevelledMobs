@@ -8,11 +8,12 @@ import java.util.List;
 
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.misc.FileLoader;
-import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
+import me.lokka30.levelledmobs.wrappers.LivingEntityWrapper;
 import me.lokka30.levelledmobs.misc.PlayerQueueItem;
 import me.lokka30.levelledmobs.result.NametagResult;
 import me.lokka30.levelledmobs.util.MessageUtils;
 import me.lokka30.levelledmobs.util.Utils;
+import me.lokka30.levelledmobs.wrappers.SchedulerWrapper;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
@@ -28,7 +29,6 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.persistence.PersistentDataType;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -139,18 +139,10 @@ public class PlayerJoinListener implements Listener {
     }
 
     private void updateNametagsInWorldAsync(final Player player, final List<Entity> entities) {
-        if (main.getVerInfo().getIsRunningFolia()){
-            updateNametagsInWorld(player, entities);
-        }
-        else{
-            final BukkitRunnable runnable = new BukkitRunnable() {
-                @Override
-                public void run() {
-                    updateNametagsInWorld(player, entities);
-                }
-            };
-            runnable.runTaskAsynchronously(main);
-        }
+        final SchedulerWrapper scheduler = new SchedulerWrapper(() ->
+                updateNametagsInWorld(player, entities));
+        scheduler.runDirectlyInFolia = true;
+        scheduler.run();
     }
 
     private void updateNametagsInWorld(final Player player, @NotNull final List<Entity> entities) {

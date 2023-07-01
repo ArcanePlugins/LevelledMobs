@@ -2,7 +2,7 @@
  * Copyright (c) 2020-2021  lokka30. Use of this source code is governed by the GNU AGPL v3.0 license that can be found in the LICENSE.md file.
  */
 
-package me.lokka30.levelledmobs.misc;
+package me.lokka30.levelledmobs.wrappers;
 
 import java.util.concurrent.atomic.AtomicInteger;
 import me.lokka30.levelledmobs.LevelledMobs;
@@ -19,7 +19,7 @@ import org.jetbrains.annotations.NotNull;
  */
 public abstract class LivingEntityWrapperBase {
 
-    LivingEntityWrapperBase(final @NotNull LevelledMobs main) {
+    protected LivingEntityWrapperBase(final @NotNull LevelledMobs main) {
         this.main = main;
         this.inUseCount = new AtomicInteger();
     }
@@ -27,19 +27,19 @@ public abstract class LivingEntityWrapperBase {
     private Double calculatedDistanceFromSpawn;
     private World world;
     private Location location;
-    @NotNull final LevelledMobs main;
-    Integer summonedLevel;
-    Integer spawnedTimeOfDay;
+    public final @NotNull LevelledMobs main;
+    protected Integer summonedLevel;
+    protected Integer spawnedTimeOfDay;
     private boolean isPopulated;
     public final AtomicInteger inUseCount;
 
-    void populateData(final @NotNull World world, final @NotNull Location location) {
+    protected void populateData(final @NotNull World world, final @NotNull Location location) {
         this.world = world;
         this.location = location;
         this.isPopulated = true;
     }
 
-    void clearEntityData() {
+    protected void clearEntityData() {
         this.world = null;
         this.location = null;
         this.calculatedDistanceFromSpawn = null;

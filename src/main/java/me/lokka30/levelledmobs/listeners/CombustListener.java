@@ -7,7 +7,7 @@ package me.lokka30.levelledmobs.listeners;
 import java.util.Arrays;
 import java.util.List;
 import me.lokka30.levelledmobs.LevelledMobs;
-import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
+import me.lokka30.levelledmobs.wrappers.LivingEntityWrapper;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.entity.EntityType;

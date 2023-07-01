@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Map;
 import me.lokka30.levelledmobs.LivingEntityInterface;
 import me.lokka30.levelledmobs.misc.LevellableState;
-import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
+import me.lokka30.levelledmobs.wrappers.LivingEntityWrapper;
 import me.lokka30.levelledmobs.misc.VersionInfo;
 import me.lokka30.levelledmobs.result.PlayerHomeCheckResult;
 import me.lokka30.levelledmobs.util.Utils;

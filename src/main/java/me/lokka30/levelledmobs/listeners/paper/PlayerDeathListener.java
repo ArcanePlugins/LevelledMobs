@@ -1,7 +1,7 @@
 package me.lokka30.levelledmobs.listeners.paper;
 
 import me.lokka30.levelledmobs.LevelledMobs;
-import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
+import me.lokka30.levelledmobs.wrappers.LivingEntityWrapper;
 import me.lokka30.levelledmobs.result.NametagResult;
 import me.lokka30.levelledmobs.util.Utils;
 import net.kyori.adventure.key.Key;

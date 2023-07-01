@@ -12,6 +12,7 @@ import java.util.WeakHashMap;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.result.NametagResult;
 import me.lokka30.levelledmobs.rules.NametagVisibilityEnum;
+import me.lokka30.levelledmobs.wrappers.LivingEntityWrapper;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;

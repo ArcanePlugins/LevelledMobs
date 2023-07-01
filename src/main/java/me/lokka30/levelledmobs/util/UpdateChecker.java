@@ -1,7 +1,6 @@
 package me.lokka30.levelledmobs.util;
 
-import me.lokka30.levelledmobs.LevelledMobs;
-import org.bukkit.Bukkit;
+import me.lokka30.levelledmobs.wrappers.SchedulerWrapper;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.IOException;
@@ -34,12 +33,8 @@ public class UpdateChecker {
      * @since unknown
      */
     public void getLatestVersion(final Consumer<String> consumer) {
-        if (LevelledMobs.getInstance().getVerInfo().getIsRunningFolia()){
-            org.bukkit.Bukkit.getAsyncScheduler().runNow(plugin, scheduledTask -> checkVersion(consumer));
-        }
-        else{
-            Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> checkVersion(consumer));
-        }
+        final SchedulerWrapper scheduler = new SchedulerWrapper(() -> checkVersion(consumer));
+        scheduler.run();
     }
 
     private void checkVersion(final Consumer<String> consumer){

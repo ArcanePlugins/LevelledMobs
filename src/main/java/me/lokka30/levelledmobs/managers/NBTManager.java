@@ -15,7 +15,7 @@ import java.util.TreeMap;
 
 import me.lokka30.levelledmobs.customdrops.CustomDropItem;
 import me.lokka30.levelledmobs.misc.DebugType;
-import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
+import me.lokka30.levelledmobs.wrappers.LivingEntityWrapper;
 import me.lokka30.levelledmobs.result.NBTApplyResult;
 import org.jetbrains.annotations.NotNull;
 

@@ -21,19 +21,18 @@ import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.TreeSet;
-import java.util.function.Consumer;
 
-import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.commands.MessagesBase;
 import me.lokka30.levelledmobs.managers.ExternalCompatibilityManager;
-import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
+import me.lokka30.levelledmobs.wrappers.LivingEntityWrapper;
 import me.lokka30.levelledmobs.misc.QueueItem;
 import me.lokka30.levelledmobs.rules.RuleInfo;
 import me.lokka30.levelledmobs.util.PaperUtils;
 import me.lokka30.levelledmobs.util.SpigotUtils;
 import me.lokka30.levelledmobs.util.Utils;
 import me.lokka30.levelledmobs.util.MessageUtils;
+import me.lokka30.levelledmobs.wrappers.SchedulerWrapper;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Particle;
@@ -44,7 +43,6 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.persistence.PersistentDataType;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -378,25 +376,13 @@ public class RulesSubcommand extends MessagesBase implements Subcommand {
             sb.setLength(0);
         }
 
-        lmEntity.inUseCount.getAndIncrement();
-        if (main.getVerInfo().getIsRunningFolia()){
-            final Consumer<ScheduledTask> task = scheduledTask -> {
-                showEffectiveValues(player, lmEntity, showOnConsole, sb);
-                lmEntity.free();
-            };
-            lmEntity.getLivingEntity().getScheduler().runDelayed(main, task, null, 25L);
-        }
-        else{
-            final BukkitRunnable runnable = new BukkitRunnable() {
-                @Override
-                public void run() {
-                    showEffectiveValues(player, lmEntity, showOnConsole, sb);
-                    lmEntity.free();
-                }
-            };
+        final SchedulerWrapper scheduler = new SchedulerWrapper(lmEntity.getLivingEntity(), () -> {
+            showEffectiveValues(player, lmEntity, showOnConsole, sb);
+            lmEntity.free();
+        });
 
-            runnable.runTaskLater(main, 25L);
-        }
+        lmEntity.inUseCount.getAndIncrement();
+        scheduler.runDelayed(25L);
     }
 
     @Nullable public LivingEntityWrapper getMobBeingLookedAt(@NotNull final Player player,
@@ -447,19 +433,9 @@ public class RulesSubcommand extends MessagesBase implements Subcommand {
             return;
         }
 
-        if (main.getVerInfo().getIsRunningFolia()){
-            org.bukkit.Bukkit.getRegionScheduler().run(main, location, scheduledTask -> spawnParticles(location, world));
-        }
-        else{
-            final BukkitRunnable runnable = new BukkitRunnable() {
-                @Override
-                public void run() {
-                    spawnParticles(location, world);
-                }
-            };
-
-            runnable.runTaskAsynchronously(main);
-        }
+        final SchedulerWrapper scheduler = new SchedulerWrapper(() -> spawnParticles(location, world));
+        scheduler.locationForRegionScheduler = location;
+        scheduler.run();
     }
 
     private void spawnParticles(final @NotNull Location location, final @NotNull World world){

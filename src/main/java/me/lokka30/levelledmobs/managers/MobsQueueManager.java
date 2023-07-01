@@ -10,7 +10,7 @@ import java.util.concurrent.TimeUnit;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.misc.QueueItem;
 import me.lokka30.levelledmobs.util.Utils;
-import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.Bukkit;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -39,19 +39,16 @@ public class MobsQueueManager {
         isRunning = true;
 
         if (!main.getVerInfo().getIsRunningFolia()){
-            final BukkitRunnable bgThread = new BukkitRunnable() {
-                @Override
-                public void run() {
-                    try {
-                        mainThread();
-                    } catch (final InterruptedException ignored) {
-                        isRunning = false;
-                    }
-                    Utils.logger.info("Mob processing queue Manager has exited");
+            final Runnable bgThread = () -> {
+                try {
+                    mainThread();
+                } catch (final InterruptedException ignored) {
+                    isRunning = false;
                 }
+                Utils.logger.info("Mob processing queue Manager has exited");
             };
 
-            bgThread.runTaskAsynchronously(main);
+            Bukkit.getScheduler().runTaskAsynchronously(main, bgThread);
         }
     }
 

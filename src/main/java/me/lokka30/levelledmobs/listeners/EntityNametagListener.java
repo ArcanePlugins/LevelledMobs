@@ -5,7 +5,7 @@
 package me.lokka30.levelledmobs.listeners;
 
 import me.lokka30.levelledmobs.LevelledMobs;
-import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
+import me.lokka30.levelledmobs.wrappers.LivingEntityWrapper;
 import me.lokka30.levelledmobs.rules.MobCustomNameStatus;
 import org.bukkit.Material;
 import org.bukkit.entity.LivingEntity;

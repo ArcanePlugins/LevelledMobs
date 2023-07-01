@@ -42,7 +42,7 @@ import me.lokka30.levelledmobs.misc.Addition;
 import me.lokka30.levelledmobs.misc.AdditionalLevelInformation;
 import me.lokka30.levelledmobs.misc.DebugType;
 import me.lokka30.levelledmobs.misc.LevellableState;
-import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
+import me.lokka30.levelledmobs.wrappers.LivingEntityWrapper;
 import me.lokka30.levelledmobs.misc.MythicMobsMobInfo;
 import me.lokka30.levelledmobs.result.NametagResult;
 import me.lokka30.levelledmobs.misc.QueueItem;
@@ -65,6 +65,8 @@ import me.lokka30.levelledmobs.rules.strategies.SpawnDistanceStrategy;
 import me.lokka30.levelledmobs.rules.strategies.YDistanceStrategy;
 import me.lokka30.levelledmobs.util.MythicMobUtils;
 import me.lokka30.levelledmobs.util.Utils;
+import me.lokka30.levelledmobs.wrappers.SchedulerResult;
+import me.lokka30.levelledmobs.wrappers.SchedulerWrapper;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -86,8 +88,6 @@ import org.bukkit.inventory.AbstractHorseInventory;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
-import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -100,7 +100,7 @@ import org.jetbrains.annotations.Nullable;
 @SuppressWarnings("deprecation")
 public class LevelManager implements LevelInterface {
 
-    public LevelManager(final LevelledMobs main) {
+    public LevelManager(final @NotNull LevelledMobs main) {
         this.main = main;
         this.randomLevellingCache = new TreeMap<>();
         this.summonedOrSpawnEggs = new WeakHashMap<>();
@@ -895,27 +895,13 @@ public class LevelManager implements LevelInterface {
     }
 
     public void updateNametagWithDelay(final @NotNull LivingEntityWrapper lmEntity) {
-        if (main.getVerInfo().getIsRunningFolia()){
-            final Consumer<ScheduledTask> task = scheduledTask -> {
-                updateNametag(lmEntity);
-                lmEntity.free();
-            };
+        final SchedulerWrapper scheduler = new SchedulerWrapper(lmEntity.getLivingEntity(), () -> {
+            updateNametag(lmEntity);
+            lmEntity.free();
+        });
 
-            lmEntity.inUseCount.getAndIncrement();
-            lmEntity.getLivingEntity().getScheduler().runDelayed(main, task, null, 1L);
-        }
-        else{
-            final BukkitRunnable runnable = new BukkitRunnable() {
-                @Override
-                public void run() {
-                    updateNametag(lmEntity);
-                    lmEntity.free();
-                }
-            };
-
-            lmEntity.inUseCount.getAndIncrement();
-            runnable.runTaskLater(main, 1L);
-        }
+        lmEntity.inUseCount.getAndIncrement();
+        scheduler.runDelayed(1L);
     }
 
     public void updateNametag(final LivingEntityWrapper lmEntity) {
@@ -946,8 +932,8 @@ public class LevelManager implements LevelInterface {
      *   - @7smile7 (https://www.spigotmc.org/members/7smile7.43809/)
      */
 
-    public BukkitTask nametagAutoUpdateTask;
-    private BukkitTask nametagTimerTask;
+    public SchedulerResult nametagAutoUpdateTask;
+    private SchedulerResult nametagTimerTask;
 
     public void startNametagAutoUpdateTask() {
         Utils.logger.info("&fTasks: &7Starting async nametag auto update task...");
@@ -966,88 +952,79 @@ public class LevelManager implements LevelInterface {
                if (firstPlayer == null) return;
 
                final Consumer<ScheduledTask> task = scheduledTask1 -> {
-                   final Map<Player, List<Entity>> entitiesPerPlayer = new LinkedHashMap<>();
-                   final int checkDistance = main.helperSettings.getInt(main.settingsCfg,
-                           "async-task-max-blocks-from-player", 100);
-
-                   for (final Player player : Bukkit.getOnlinePlayers()) {
-                       final List<Entity> entities = player.getNearbyEntities(checkDistance,
-                               checkDistance, checkDistance);
-                       entitiesPerPlayer.put(player, entities);
+                   final Map<Player, List<Entity>> entitiesPerPlayer = enumerateNearbyEntities();
+                   if (entitiesPerPlayer != null) {
+                       runNametagCheck_aSync(entitiesPerPlayer);
                    }
-
-                   if (entitiesPerPlayer.isEmpty()) return;
-                   runNametagCheck_aSync(entitiesPerPlayer);
                };
 
                firstPlayer.getScheduler().run(main, task, null);
             };
 
-            org.bukkit.Bukkit.getAsyncScheduler().runAtFixedRate(main, bgThread, 0, period, TimeUnit.SECONDS);
+            nametagTimerTask = new SchedulerResult(org.bukkit.Bukkit.getAsyncScheduler().runAtFixedRate(main, bgThread, 0, period, TimeUnit.SECONDS));
         }
         else{
-            nametagAutoUpdateTask = new BukkitRunnable() {
-                @Override
-                public void run() {
-                    final Map<Player, List<Entity>> entitiesPerPlayer = new LinkedHashMap<>();
-                    final int checkDistance = main.helperSettings.getInt(main.settingsCfg,
-                            "async-task-max-blocks-from-player", 100);
+            final Runnable runnable = () -> {
+                final Map<Player, List<Entity>> entitiesPerPlayer = enumerateNearbyEntities();
 
-                    for (final Player player : Bukkit.getOnlinePlayers()) {
-                        final List<Entity> entities = player.getNearbyEntities(checkDistance,
-                                checkDistance, checkDistance);
-                        entitiesPerPlayer.put(player, entities);
-                    }
-                    if (entitiesPerPlayer.isEmpty()) return;
-
-                    final BukkitRunnable runnable = new BukkitRunnable() {
-                        @Override
-                        public void run() {
-                            runNametagCheck_aSync(entitiesPerPlayer);
-                        }
-                    };
-
-                    runnable.runTaskAsynchronously(main);
+                if (entitiesPerPlayer != null) {
+                    final Runnable runnable2 = () -> runNametagCheck_aSync(entitiesPerPlayer);
+                    Bukkit.getScheduler().runTaskAsynchronously(main, runnable2);
                 }
-            }.runTaskTimer(main, 0, 20 * period);
+            };
+            nametagTimerTask = new SchedulerResult(Bukkit.getScheduler().runTaskTimer(main, runnable, 0, 20 * period));
+        }
+    }
+
+    private @Nullable Map<Player, List<Entity>> enumerateNearbyEntities(){
+        final Map<Player, List<Entity>> entitiesPerPlayer = new LinkedHashMap<>();
+        final int checkDistance = main.helperSettings.getInt(main.settingsCfg,
+                "async-task-max-blocks-from-player", 100);
+
+        for (final Player player : Bukkit.getOnlinePlayers()) {
+            final List<Entity> entities = player.getNearbyEntities(checkDistance,
+                    checkDistance, checkDistance);
+            entitiesPerPlayer.put(player, entities);
+        }
+        if (entitiesPerPlayer.isEmpty()) {
+            return null;
+        }
+        else{
+            return entitiesPerPlayer;
         }
     }
 
     public void startNametagTimer() {
-        if (main.getVerInfo().getIsRunningFolia()){
-            final Consumer<ScheduledTask> bgThread = scheduledTask -> main.nametagTimerChecker.checkNametags();
-            org.bukkit.Bukkit.getAsyncScheduler().runAtFixedRate(main, bgThread, 0, 1, TimeUnit.SECONDS);
-        }
-        else{
-            nametagTimerTask = new BukkitRunnable() {
-                @Override
-                public void run() {
-                    final BukkitRunnable runnable = new BukkitRunnable() {
-                        @Override
-                        public void run() {
-                            main.nametagTimerChecker.checkNametags();
-                        }
-                    };
-
-                    runnable.runTaskAsynchronously(main);
-                }
-            }.runTaskTimer(main, 0, 20);
-        }
+        final SchedulerWrapper scheduler = new SchedulerWrapper(() ->
+                main.nametagTimerChecker.checkNametags());
+        scheduler.runTaskTimerAsynchronously(0, 1000);
     }
 
     private void runNametagCheck_aSync(final @NotNull Map<Player, List<Entity>> entitiesPerPlayer) {
         final Map<LivingEntityWrapper, List<Player>> entityToPlayer = new LinkedHashMap<>();
 
-        for (final Player player : entitiesPerPlayer.keySet()) {
-            for (final Entity entity : entitiesPerPlayer.get(player)) {
-                if (main.getVerInfo().getIsRunningFolia()){
-                    entity.getScheduler().run(main, scheduledTask -> checkEntity(entity, player, entityToPlayer), null);
-                }
-                else{
+        final SchedulerWrapper scheduler = new SchedulerWrapper(() -> {
+            for (final Player player : entitiesPerPlayer.keySet()) {
+                for (final Entity entity : entitiesPerPlayer.get(player)) {
                     checkEntity(entity, player, entityToPlayer);
                 }
             }
+        });
+
+        if (main.getVerInfo().getIsRunningFolia()){
+            Entity firstEntity = null;
+            for (final Player player : entitiesPerPlayer.keySet()) {
+                for (final Entity entity : entitiesPerPlayer.get(player)) {
+                    firstEntity = entity;
+                    break;
+                }
+                if (firstEntity != null) break;
+            }
+            scheduler.entity = firstEntity;
         }
+
+        scheduler.runDirectlyInBukkit = true;
+        scheduler.run();
 
         for (final Map.Entry<LivingEntityWrapper, List<Player>> entry : entityToPlayer.entrySet()) {
             final LivingEntityWrapper lmEntity = entry.getKey();
@@ -1298,11 +1275,11 @@ public class LevelManager implements LevelInterface {
 
         if (nametagAutoUpdateTask != null && !nametagAutoUpdateTask.isCancelled()) {
             Utils.logger.info("&fTasks: &7Stopping async nametag auto update task...");
-            nametagAutoUpdateTask.cancel();
+            nametagAutoUpdateTask.cancelTask();
         }
 
         if (nametagTimerTask != null && !nametagTimerTask.isCancelled()) {
-            nametagTimerTask.cancel();
+            nametagTimerTask.cancelTask();
         }
     }
 
@@ -1411,23 +1388,14 @@ public class LevelManager implements LevelInterface {
             return;
         }
 
-        if (main.getVerInfo().getIsRunningFolia()){
+        final SchedulerWrapper scheduler = new SchedulerWrapper(() -> {
             applyLevelledEquipment_NonAsync(lmEntity, customDropsRuleSet);
-        }
-        else{
-            final BukkitRunnable runnable = new BukkitRunnable() {
-                @Override
-                public void run() {
-                    applyLevelledEquipment_NonAsync(lmEntity, customDropsRuleSet);
-                    if (lmEntity.inUseCount.getAndDecrement() <= 0) {
-                        lmEntity.free();
-                    }
-                }
-            };
+            lmEntity.free();
+        });
 
-            lmEntity.inUseCount.getAndIncrement();
-            runnable.runTask(main);
-        }
+        scheduler.entity = lmEntity.getLivingEntity();
+        lmEntity.inUseCount.getAndIncrement();
+        scheduler.run();
     }
 
     private void applyLevelledEquipment_NonAsync(@NotNull final LivingEntityWrapper lmEntity, final CustomDropsRuleSet customDropsRuleSet) {
@@ -1691,28 +1659,14 @@ public class LevelManager implements LevelInterface {
 
         final boolean doSkipLMNametag = skipLMNametag;
 
-        if (main.getVerInfo().getIsRunningFolia()){
-            final Consumer<ScheduledTask> task = scheduledTask -> {
-                applyLevelToMob2(lmEntity, nbtDatas, doSkipLMNametag);
-                lmEntity.free();
-            };
+        final SchedulerWrapper scheduler = new SchedulerWrapper(() -> {
+            applyLevelToMob2(lmEntity, nbtDatas, doSkipLMNametag);
+            lmEntity.free();
+        });
 
-            lmEntity.inUseCount.getAndIncrement();
-            lmEntity.getLivingEntity().getScheduler().run(main, task, null);
-        }
-        else{
-            // setting attributes should be only done in the main thread.
-            final BukkitRunnable applyAttribsRunnable = new BukkitRunnable() {
-                @Override
-                public void run() {
-                    applyLevelToMob2(lmEntity, nbtDatas, doSkipLMNametag);
-                    lmEntity.free();
-                }
-            };
-
-            lmEntity.inUseCount.getAndIncrement();
-            applyAttribsRunnable.runTask(main);
-        }
+        lmEntity.inUseCount.getAndIncrement();
+        scheduler.entity = lmEntity.getLivingEntity();
+        scheduler.run();
 
         final MobPostLevelEvent.LevelCause levelCause =
             isSummoned ? MobPostLevelEvent.LevelCause.SUMMONED

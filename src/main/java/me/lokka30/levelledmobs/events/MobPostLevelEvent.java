@@ -6,7 +6,7 @@ package me.lokka30.levelledmobs.events;
 
 import java.util.HashSet;
 import me.lokka30.levelledmobs.misc.AdditionalLevelInformation;
-import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
+import me.lokka30.levelledmobs.wrappers.LivingEntityWrapper;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.Event;

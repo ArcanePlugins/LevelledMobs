@@ -10,22 +10,20 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.managers.ExternalCompatibilityManager;
 import me.lokka30.levelledmobs.managers.LevelManager;
 import me.lokka30.levelledmobs.misc.AdditionalLevelInformation;
 import me.lokka30.levelledmobs.misc.DebugType;
 import me.lokka30.levelledmobs.misc.LevellableState;
-import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
+import me.lokka30.levelledmobs.wrappers.LivingEntityWrapper;
 import me.lokka30.levelledmobs.misc.QueueItem;
 import me.lokka30.levelledmobs.rules.LevelledMobSpawnReason;
 import me.lokka30.levelledmobs.rules.NametagVisibilityEnum;
 import me.lokka30.levelledmobs.util.Utils;
+import me.lokka30.levelledmobs.wrappers.SchedulerWrapper;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Particle;
@@ -188,27 +186,13 @@ public class EntitySpawnListener implements Listener {
     private void delayedAddToQueue(final @NotNull LivingEntityWrapper lmEntity, final Event event,
         final int delay) {
 
-        if (main.getVerInfo().getIsRunningFolia()){
-            final Consumer<ScheduledTask> task = scheduledTask -> {
-                main.mobsQueueManager.addToQueue(new QueueItem(lmEntity, event));
-                lmEntity.free();
-            };
+        final SchedulerWrapper scheduler = new SchedulerWrapper(() -> {
+            main.mobsQueueManager.addToQueue(new QueueItem(lmEntity, event));
+            lmEntity.free();
+        });
 
-            lmEntity.inUseCount.getAndIncrement();
-            org.bukkit.Bukkit.getAsyncScheduler().runDelayed(main, task, delay / 20L * 1000L, TimeUnit.MILLISECONDS);
-        }
-        else{
-            final BukkitRunnable runnable = new BukkitRunnable() {
-                @Override
-                public void run() {
-                    main.mobsQueueManager.addToQueue(new QueueItem(lmEntity, event));
-                    lmEntity.free();
-                }
-            };
-
-            lmEntity.inUseCount.getAndIncrement();
-            runnable.runTaskLater(main, delay);
-        }
+        lmEntity.inUseCount.getAndIncrement();
+        scheduler.runDelayed(delay);
     }
 
     private void lmSpawnerSpawn(final @NotNull LivingEntityWrapper lmEntity,
@@ -368,20 +352,14 @@ public class EntitySpawnListener implements Listener {
                     runnable.runTask(main);
                 }
 
-                if (main.getVerInfo().getIsRunningFolia()){
-                    final Consumer<ScheduledTask> task = scheduledTask -> {
-                        main.levelInterface.applyLevelToMob(lmEntity, levelAssignment,
-                                false, false, additionalLevelInfo);
-                        lmEntity.free();
-                    };
-
-                    lmEntity.inUseCount.getAndIncrement();
-                    lmEntity.getLivingEntity().getScheduler().run(main, task, null);
-                }
-                else{
+                final SchedulerWrapper scheduler = new SchedulerWrapper(lmEntity.getLivingEntity(), () -> {
                     main.levelInterface.applyLevelToMob(lmEntity, levelAssignment,
                             false, false, additionalLevelInfo);
-                }
+                    lmEntity.free();
+                });
+                scheduler.runDirectlyInBukkit = true;
+                lmEntity.inUseCount.getAndIncrement();
+                scheduler.run();
             }
         } else {
             Utils.debugLog(main, DebugType.APPLY_LEVEL_FAIL,

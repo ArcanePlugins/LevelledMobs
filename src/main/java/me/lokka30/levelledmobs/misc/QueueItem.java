@@ -7,6 +7,7 @@ package me.lokka30.levelledmobs.misc;
 import java.util.List;
 
 import me.lokka30.levelledmobs.result.NametagResult;
+import me.lokka30.levelledmobs.wrappers.LivingEntityWrapper;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.jetbrains.annotations.NotNull;

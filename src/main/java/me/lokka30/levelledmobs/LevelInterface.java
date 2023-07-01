@@ -7,7 +7,7 @@ package me.lokka30.levelledmobs;
 import java.util.HashSet;
 import me.lokka30.levelledmobs.misc.AdditionalLevelInformation;
 import me.lokka30.levelledmobs.misc.LevellableState;
-import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
+import me.lokka30.levelledmobs.wrappers.LivingEntityWrapper;
 import org.bukkit.entity.LivingEntity;
 import org.jetbrains.annotations.NotNull;
 

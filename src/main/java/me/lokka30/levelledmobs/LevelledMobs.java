@@ -27,7 +27,7 @@ import me.lokka30.levelledmobs.managers.MobsQueueManager;
 import me.lokka30.levelledmobs.managers.NametagQueueManager;
 import me.lokka30.levelledmobs.managers.PlaceholderApiIntegration;
 import me.lokka30.levelledmobs.misc.FileLoader;
-import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
+import me.lokka30.levelledmobs.wrappers.LivingEntityWrapper;
 import me.lokka30.levelledmobs.misc.NamespacedKeys;
 import me.lokka30.levelledmobs.misc.NametagTimerChecker;
 import me.lokka30.levelledmobs.misc.YmlParsingHelper;

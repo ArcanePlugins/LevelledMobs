@@ -11,11 +11,9 @@ import java.util.Map;
 import java.util.WeakHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Consumer;
 
-import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 import me.lokka30.levelledmobs.LevelledMobs;
-import me.lokka30.levelledmobs.misc.LivingEntityWrapper;
+import me.lokka30.levelledmobs.wrappers.LivingEntityWrapper;
 import me.lokka30.levelledmobs.misc.NametagTimerChecker;
 import me.lokka30.levelledmobs.misc.QueueItem;
 import me.lokka30.levelledmobs.nametag.NametagSenderHandler;
@@ -23,12 +21,12 @@ import me.lokka30.levelledmobs.nametag.NametagSender;
 import me.lokka30.levelledmobs.result.NametagResult;
 import me.lokka30.levelledmobs.rules.NametagVisibilityEnum;
 import me.lokka30.levelledmobs.util.Utils;
+import me.lokka30.levelledmobs.wrappers.SchedulerWrapper;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Tameable;
 import org.bukkit.persistence.PersistentDataType;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -69,33 +67,15 @@ public class NametagQueueManager {
         doThread = true;
         isRunning = true;
 
-        if (main.getVerInfo().getIsRunningFolia()){
-            final Consumer<ScheduledTask> bgThread = scheduledTask -> {
-                try {
-                    mainThread();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                Utils.logger.info("Nametag update queue Manager has exited");
-            };
-
-            org.bukkit.Bukkit.getAsyncScheduler().runNow(main, bgThread);
-        }
-        else{
-            final BukkitRunnable bgThread = new BukkitRunnable() {
-                @Override
-                public void run() {
-                    try {
-                        mainThread();
-                    } catch (final InterruptedException ignored) {
-                        isRunning = false;
-                    }
-                    Utils.logger.info("Nametag update queue Manager has exited");
-                }
-            };
-
-            bgThread.runTaskAsynchronously(main);
-        }
+        final SchedulerWrapper scheduler = new SchedulerWrapper(() -> {
+            try {
+                mainThread();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            Utils.logger.info("Nametag update queue Manager has exited");
+        });
+        scheduler.run();
     }
 
     public void stop() {
@@ -124,18 +104,16 @@ public class NametagQueueManager {
                 continue;
             }
 
-            if (main.getVerInfo().getIsRunningFolia()){
-                final Consumer<ScheduledTask> task = scheduledTask -> {
-                    preProcessItem(item);
-                    item.lmEntity.free();
-                };
-
-                item.lmEntity.inUseCount.getAndIncrement();
-                item.lmEntity.getLivingEntity().getScheduler().run(main, task, null);
-            }
-            else{
+            final SchedulerWrapper scheduler = new SchedulerWrapper(
+                    item.lmEntity.getLivingEntity(), () -> {
                 preProcessItem(item);
-            }
+                item.lmEntity.free();
+            });
+
+            scheduler.runDirectlyInBukkit = true;
+            scheduler.entity = item.lmEntity.getLivingEntity();
+            item.lmEntity.inUseCount.getAndIncrement();
+            scheduler.run();
         }
 
         isRunning = false;
