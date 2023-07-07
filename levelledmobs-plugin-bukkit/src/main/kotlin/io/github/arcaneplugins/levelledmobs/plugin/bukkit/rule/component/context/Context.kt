@@ -25,6 +25,7 @@ import org.bukkit.entity.Entity
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import org.bukkit.event.Event
+import java.util.*
 
 //todo doc
 class Context(
@@ -32,6 +33,7 @@ class Context(
     val other: MutableMap<String, Any> = mutableMapOf(),
 
     /* commonly accessed data is stored as a variable */
+    var ruleStack: Stack<Rule> = Stack(),
     var entity: Entity? = null,
     var event: Event? = null,
     var livingEntity: LivingEntity? = null,

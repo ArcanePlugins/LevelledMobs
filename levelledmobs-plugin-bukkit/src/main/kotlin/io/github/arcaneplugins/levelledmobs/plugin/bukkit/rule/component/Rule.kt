@@ -38,10 +38,20 @@ class Rule(
     //todo doc
     fun call(context: Context) {
         fun run() {
-            if (conditions.all { it.evaluate(context) }) {
-                actions.forEach { it.call(context) }
-            } else {
-                elseActions.forEach { it.call(context) }
+            try {
+                if (conditions.all { it.evaluate(context) }) {
+                    actions.forEach { it.call(context) }
+                } else {
+                    elseActions.forEach { it.call(context) }
+                }
+            } catch(ex: ExitRuleException) {
+                if(!ex.recursive || context.ruleStack.empty()) {
+                    // silently suspend running the rule entirely
+                    return
+                }
+
+                // recursive exit was requested; rethrow exception for the next calling rule
+                throw ex
             }
         }
 

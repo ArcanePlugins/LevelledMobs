@@ -27,6 +27,8 @@ import io.github.arcaneplugins.levelledmobs.plugin.bukkit.misc.TimeUtil
 import io.github.arcaneplugins.levelledmobs.plugin.bukkit.rule.component.Rule
 import io.github.arcaneplugins.levelledmobs.plugin.bukkit.rule.component.action.Action
 import io.github.arcaneplugins.levelledmobs.plugin.bukkit.rule.component.action.impl.DebugAction
+import io.github.arcaneplugins.levelledmobs.plugin.bukkit.rule.component.action.impl.ExitRuleAction
+import io.github.arcaneplugins.levelledmobs.plugin.bukkit.rule.component.action.impl.ExitRulesAction
 import io.github.arcaneplugins.levelledmobs.plugin.bukkit.rule.component.condition.Condition
 import io.github.arcaneplugins.levelledmobs.plugin.bukkit.rule.component.condition.impl.DebugCondition
 import io.github.arcaneplugins.levelledmobs.plugin.bukkit.rule.component.context.Context
@@ -52,6 +54,8 @@ class RuleManager {
     val actionHandlers: MutableMap<String, BiFunction<Rule, CommentedConfigurationNode, Action>> =
         mutableMapOf(
             "debug" to BiFunction { rule, _ -> DebugAction(rule) },
+            "exit-rule" to BiFunction { rule, _ -> ExitRuleAction(rule) },
+            "exit-rules" to BiFunction { rule, _ -> ExitRulesAction(rule) },
         )
 
     //todo doc

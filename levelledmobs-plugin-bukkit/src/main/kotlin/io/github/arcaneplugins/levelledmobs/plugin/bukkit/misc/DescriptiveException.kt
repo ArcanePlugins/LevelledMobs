@@ -37,7 +37,7 @@ package io.github.arcaneplugins.levelledmobs.plugin.bukkit.misc
  * @author Lachlan Adamson (lokka30)
  * @see RuntimeException
  */
-class DescriptiveException(
+open class DescriptiveException(
     message: String,
     cause: Throwable? = null,
 ) : RuntimeException(message, cause) {

@@ -42,8 +42,13 @@ class LevelledMobs : JavaPlugin() {
     }
 
     lateinit var configManager: ConfigManager
+        private set
+
     lateinit var ruleManager: RuleManager
+        private set
+
     lateinit var listenerManager: ListenerManager
+        private set
 
     override fun onLoad() {
         lmInstance = this
