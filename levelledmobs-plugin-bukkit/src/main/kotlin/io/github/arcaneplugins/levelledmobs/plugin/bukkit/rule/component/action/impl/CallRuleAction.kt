@@ -20,11 +20,9 @@ class CallRuleAction private constructor(
         callerRule: Rule,
         node: CommentedConfigurationNode
     ) : this(callerRule) {
-        val ruleIdToCall: String = node.node("rule-to-call").string!!
-
-        this.ruleToCall = lmInstance.ruleManager.rules.first {
-            it.id.equals(ruleIdToCall, ignoreCase = true)
-        }
+        this.ruleToCall = lmInstance.ruleManager.getRuleById(
+            node.node("rule-to-call").string!!
+        )
     }
 
     constructor(
@@ -37,9 +35,10 @@ class CallRuleAction private constructor(
     override fun call(
         context: Context
     ) {
-        context.ruleStack.push(rule)
-        ruleToCall.call(context)
-        context.ruleStack.pop()
+        ruleToCall.callOtherRule(
+            ruleToCall = ruleToCall,
+            context = context
+        )
     }
 
 }

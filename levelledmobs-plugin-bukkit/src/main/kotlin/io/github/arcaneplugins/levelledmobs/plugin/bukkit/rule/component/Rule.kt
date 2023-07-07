@@ -62,4 +62,13 @@ class Rule(
         }
     }
 
+    fun callOtherRule(
+        ruleToCall: Rule,
+        context: Context
+    ) {
+        context.ruleStack.push(this)
+        ruleToCall.call(context)
+        context.ruleStack.pop()
+    }
+
 }

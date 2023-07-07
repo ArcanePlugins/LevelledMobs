@@ -283,4 +283,11 @@ class RuleManager {
             }
     }
 
+    //todo doc
+    fun getRuleById(
+        id: String
+    ): Rule {
+        return rules.first { it.id.equals(id, ignoreCase = true) }
+    }
+
 }
