@@ -16,8 +16,21 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package io.github.arcaneplugins.levelledmobs.api.bukkit.entity;
+package io.github.arcaneplugins.levelledmobs.api.bukkit.keys;
 
-public class EntityDataUtil {
-    //TODO copy from older LM4 Java codebase
+import java.util.Locale;
+import java.util.Objects;
+import org.bukkit.Bukkit;
+import org.bukkit.NamespacedKey;
+
+//todo doc
+abstract class KeyStore {
+
+    //todo doc
+    static NamespacedKey getKey(final String key) {
+        return new NamespacedKey(Objects.requireNonNull(
+            Bukkit.getPluginManager().getPlugin("LevelledMobs")
+        ), key.toLowerCase(Locale.ROOT));
+    }
+
 }

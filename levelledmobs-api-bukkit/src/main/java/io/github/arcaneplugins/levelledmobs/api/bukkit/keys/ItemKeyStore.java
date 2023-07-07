@@ -16,8 +16,14 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package io.github.arcaneplugins.levelledmobs.api.bukkit.entity.keys;
+package io.github.arcaneplugins.levelledmobs.api.bukkit.keys;
 
-public class SpawnerKeyStore {
-    //TODO copy from older LM4 Java codebase
+import org.bukkit.NamespacedKey;
+
+//TODO Doc
+public class ItemKeyStore extends KeyStore {
+
+    //TODO Doc
+    public static final NamespacedKey IS_CUSTOM_ITEM = getKey("IsCustomItem");
+
 }

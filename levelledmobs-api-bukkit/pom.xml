@@ -21,4 +21,27 @@
   <name>LevelledMobs API - Bukkit</name>
   <description>LevelledMobs API for the Bukkit platform</description>
 
+  <repositories>
+    <repository>
+      <name>SpigotMC Repo</name>
+      <id>spigot-repo</id>
+      <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
+      <!-- required for dependencies [spigot-api] -->
+    </repository>
+  </repositories>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.spigotmc</groupId>
+      <artifactId>spigot-api</artifactId>
+      <version>${spigotapi.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.jetbrains</groupId>
+      <artifactId>annotations</artifactId>
+      <version>24.0.0</version>
+    </dependency>
+  </dependencies>
+
 </project>

@@ -18,6 +18,32 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 package io.github.arcaneplugins.levelledmobs.api.bukkit.misc;
 
+
+//TODO doc
 public enum TriState {
-    //TODO copy from older LM4 Java codebase
+
+    TRUE,
+    UNSPECIFIED,
+    FALSE;
+
+    //TODO doc
+    public static TriState of(
+        final boolean bool
+    ) {
+        return bool ? TRUE : FALSE;
+    }
+
+    //TODO doc
+    public static TriState of(
+        final Boolean bool
+    ) {
+        return bool == null ? UNSPECIFIED : of(bool);
+    }
+
+    //TODO doc
+    // 'falsy': treats only TRUE as Boolean.TRUE
+    public boolean toFalsyBoolean() {
+        return this == TRUE;
+    }
+
 }

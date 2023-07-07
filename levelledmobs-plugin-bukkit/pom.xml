@@ -38,6 +38,12 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
+      <groupId>org.spigotmc</groupId>
+      <artifactId>spigot-api</artifactId>
+      <version>${spigotapi.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>org.jetbrains.kotlin</groupId>
       <artifactId>kotlin-stdlib-jdk8</artifactId>
       <version>${kotlin.version}</version>
@@ -54,12 +60,6 @@
       <artifactId>junit-jupiter-engine</artifactId>
       <version>${jupiter.version}</version>
       <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.spigotmc</groupId>
-      <artifactId>spigot-api</artifactId>
-      <version>${spigotapi.version}</version>
-      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.spongepowered</groupId>
