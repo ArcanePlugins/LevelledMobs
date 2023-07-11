@@ -38,6 +38,10 @@ class Rule(
     //todo doc
     fun call(context: Context) {
         fun run() {
+            // todo detect if the rule is already within the ruleStack, if so, possible recursion going on
+
+            context.ruleStack.push(this)
+
             try {
                 if (conditions.all { it.evaluate(context) }) {
                     actions.forEach { it.call(context) }
@@ -45,13 +49,15 @@ class Rule(
                     elseActions.forEach { it.call(context) }
                 }
             } catch(ex: ExitRuleException) {
-                if(!ex.recursive || context.ruleStack.empty()) {
+                if(!ex.recursive || context.ruleStack.size == 1) {
                     // silently suspend running the rule entirely
                     return
                 }
 
                 // recursive exit was requested; rethrow exception for the next calling rule
                 throw ex
+            } finally {
+                context.ruleStack.pop()
             }
         }
 
@@ -66,9 +72,7 @@ class Rule(
         ruleToCall: Rule,
         context: Context
     ) {
-        context.ruleStack.push(this)
         ruleToCall.call(context)
-        context.ruleStack.pop()
     }
 
 }

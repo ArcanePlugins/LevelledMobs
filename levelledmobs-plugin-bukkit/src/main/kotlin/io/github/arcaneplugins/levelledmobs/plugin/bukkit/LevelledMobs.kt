@@ -20,6 +20,7 @@ package io.github.arcaneplugins.levelledmobs.plugin.bukkit
 
 import io.github.arcaneplugins.levelledmobs.plugin.bukkit.config.ConfigManager
 import io.github.arcaneplugins.levelledmobs.plugin.bukkit.listener.ListenerManager
+import io.github.arcaneplugins.levelledmobs.plugin.bukkit.misc.ExceptionUtil
 import io.github.arcaneplugins.levelledmobs.plugin.bukkit.rule.RuleManager
 import org.bukkit.plugin.java.JavaPlugin
 
@@ -55,21 +56,42 @@ class LevelledMobs : JavaPlugin() {
 
         //TODO assert server is running SpigotMC-based software
 
-        configManager = ConfigManager()
-        ruleManager = RuleManager()
-        listenerManager = ListenerManager()
+        try {
+            configManager = ConfigManager()
+            ruleManager = RuleManager()
+            listenerManager = ListenerManager()
+        } catch (ex: Exception) {
+            ExceptionUtil.printExceptionNicely(
+                ex = ex,
+                context = "An error has occurred whilst loading LevelledMobs"
+            )
+        }
     }
 
     override fun onEnable() {
-        configManager.load()
-        ruleManager.load()
-        listenerManager.load()
+        try {
+            configManager.load()
+            ruleManager.load()
+            listenerManager.load()
+        } catch(ex: Exception) {
+            ExceptionUtil.printExceptionNicely(
+                ex = ex,
+                context = "An error has occurred whilst enabling LevelledMobs"
+            )
+        }
     }
 
     // TODO Use in upcoming reload subcommand.
     // TODO Document function.
     fun reload() {
-        configManager.load()
+        try {
+            configManager.load()
+        } catch (ex: Exception) {
+            ExceptionUtil.printExceptionNicely(
+                ex = ex,
+                context = "An error has occurred whilst reloading LevelledMobs"
+            )
+        }
     }
 
 }

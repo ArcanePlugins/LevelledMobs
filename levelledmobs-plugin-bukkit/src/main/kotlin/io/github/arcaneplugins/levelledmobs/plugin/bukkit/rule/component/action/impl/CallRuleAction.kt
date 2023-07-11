@@ -13,30 +13,28 @@ class CallRuleAction private constructor(
     rule = rule
 ) {
 
-    lateinit var ruleToCall: Rule
+    lateinit var ruleIdToCall: String
         private set
 
     constructor(
         callerRule: Rule,
         node: CommentedConfigurationNode
     ) : this(callerRule) {
-        this.ruleToCall = lmInstance.ruleManager.getRuleById(
-            node.node("rule-to-call").string!!
-        )
+        this.ruleIdToCall = node.node("rule-to-call").string!!
     }
 
     constructor(
         callerRule: Rule,
         ruleToCall: Rule
     ) : this(callerRule) {
-        this.ruleToCall = ruleToCall
+        this.ruleIdToCall = ruleToCall.id
     }
 
     override fun call(
         context: Context
     ) {
-        ruleToCall.callOtherRule(
-            ruleToCall = ruleToCall,
+        rule.callOtherRule(
+            ruleToCall = lmInstance.ruleManager.getRuleById(ruleIdToCall),
             context = context
         )
     }
