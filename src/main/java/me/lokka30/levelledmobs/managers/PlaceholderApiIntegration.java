@@ -138,7 +138,7 @@ public class PlaceholderApiIntegration extends PlaceholderExpansion {
 
         final LastMobKilledInfo mobInfo = this.mobsByPlayerTracking.get(player.getUniqueId());
         return mobInfo == null || mobInfo.entityName == null ?
-            "" : mobInfo.entityName;
+            "" : mobInfo.entityName + "&r";
     }
 
     private @NotNull String getKilledByInfo(final @NotNull Player player) {
@@ -148,7 +148,7 @@ public class PlaceholderApiIntegration extends PlaceholderExpansion {
 
         final LastMobKilledInfo mobInfo = this.playerDeathInfo.get(player.getUniqueId());
         return mobInfo == null || mobInfo.entityName == null ?
-                "" : mobInfo.entityName;
+                "" : mobInfo.entityName + "&r";
     }
 
     private @NotNull String getMobNametagWithinPlayerSight(final @Nullable Player player) {
@@ -174,7 +174,7 @@ public class PlaceholderApiIntegration extends PlaceholderExpansion {
         }
 
         if (Utils.isNullOrEmpty(nametag) && lmEntity.isLevelled()) {
-            nametag = main.levelManager.getNametag(lmEntity, false).getNametag();
+            nametag = main.levelManager.getNametag(lmEntity, false).getNametag() + "&r";
         }
 
         lmEntity.free();

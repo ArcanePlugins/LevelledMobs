@@ -732,7 +732,7 @@ public class LevelManager implements LevelInterface {
             if (deathMessage != null && !deathMessage.isEmpty()){
                 nametag = deathMessage.replace("%death_nametag%", nametag);
                 final Player player = lmEntity.getPlayerForLevelling();
-                nametag = nametag.replace("%player%", player != null ? player.getName() : "");
+                nametag = nametag.replace("%player%", player != null ? player.getName() + "&r" : "");
                 nametag = replaceStringPlaceholders(nametag, lmEntity, true);
                 preserveMobName = false;
                 hadCustomDeathMessage = true;
@@ -790,26 +790,23 @@ public class LevelManager implements LevelInterface {
         nametag = replaceStringPlaceholders(nametag, lmEntity, false);
 
         // This is after colorize so that color codes in nametags dont get translated
-        nametag = nametag.replace("%displayname%", displayName);
+        nametag = nametag.replace("%displayname%", displayName) + "&r";
+        String indicatorStr = "";
+        String colorOnly = "";
 
-        if (nametag.toLowerCase().contains("%health-indicator%")) {
+        if (nametag.toLowerCase().contains("%health-indicator%") ||
+                nametag.toLowerCase().contains("%health-indicator-color%")) {
             final HealthIndicator indicator = lmEntity.getMainInstance().rulesManager.getRuleNametagIndicator(lmEntity);
-            String indicatorStr;
-            String colorOnly;
 
             if (indicator != null){
                 final HealthIndicator.HealthIndicatorResult result = indicator.formatHealthIndicator(lmEntity);
-                indicatorStr = result.formattedString;
+                indicatorStr = result.formattedString + "&r";
                 colorOnly = result.colorOnly;
             }
-            else{
-                indicatorStr = "";
-                colorOnly = "";
-            }
-
-            nametag = nametag.replace("%health-indicator%", indicatorStr);
-            nametag = nametag.replace("%health-indicator-color%", colorOnly);
         }
+
+        nametag = nametag.replace("%health-indicator%", indicatorStr);
+        nametag = nametag.replace("%health-indicator-color%", colorOnly);
 
         if (nametag.contains("%") && ExternalCompatibilityManager.hasPapiInstalled()) {
             nametag = ExternalCompatibilityManager.getPapiPlaceholder(null, nametag);
