@@ -794,8 +794,21 @@ public class LevelManager implements LevelInterface {
 
         if (nametag.toLowerCase().contains("%health-indicator%")) {
             final HealthIndicator indicator = lmEntity.getMainInstance().rulesManager.getRuleNametagIndicator(lmEntity);
-            final String indicatorStr = indicator == null ? "" : indicator.formatHealthIndicator(lmEntity);
+            String indicatorStr;
+            String colorOnly;
+
+            if (indicator != null){
+                final HealthIndicator.HealthIndicatorResult result = indicator.formatHealthIndicator(lmEntity);
+                indicatorStr = result.formattedString;
+                colorOnly = result.colorOnly;
+            }
+            else{
+                indicatorStr = "";
+                colorOnly = "";
+            }
+
             nametag = nametag.replace("%health-indicator%", indicatorStr);
+            nametag = nametag.replace("%health-indicator-color%", colorOnly);
         }
 
         if (nametag.contains("%") && ExternalCompatibilityManager.hasPapiInstalled()) {

@@ -41,11 +41,26 @@ public class HealthIndicator implements Cloneable {
         return copy;
     }
 
-    public @NotNull String formatHealthIndicator(final @NotNull LivingEntityWrapper lmEntity) {
+    public static class HealthIndicatorResult{
+        public HealthIndicatorResult(){
+            this.formattedString = "";
+            this.colorOnly = "";
+        }
+
+        public HealthIndicatorResult(final @NotNull String formattedString, final @NotNull String colorOnly){
+            this.formattedString = formattedString;
+            this.colorOnly = colorOnly;
+        }
+
+        public final @NotNull String formattedString;
+        public final @NotNull String colorOnly;
+    }
+
+    public @NotNull HealthIndicatorResult formatHealthIndicator(final @NotNull LivingEntityWrapper lmEntity) {
         final double mobHealth = lmEntity.getLivingEntity().getHealth();
 
         if (mobHealth == 0.0) {
-            return "";
+            return new HealthIndicatorResult();
         }
 
         final int maxIndicators = this.maxIndicators != null ? this.maxIndicators : 10;
@@ -103,7 +118,7 @@ public class HealthIndicator implements Cloneable {
             }
         }
 
-        return result.toString();
+        return new HealthIndicatorResult(result.toString(), primaryColor);
     }
 
     void mergeIndicator(final @NotNull HealthIndicator mergingIndicator) {
