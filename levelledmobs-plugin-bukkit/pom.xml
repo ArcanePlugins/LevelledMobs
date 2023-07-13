@@ -28,6 +28,11 @@
       <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
       <!-- required for dependencies [spigot-api] -->
     </repository>
+    <repository>
+      <id>papermc</id>
+      <url>https://repo.papermc.io/repository/maven-public/</url>
+      <!-- required for dependencies [folia-api, paper-api] -->
+    </repository>
   </repositories>
 
   <dependencies>
@@ -78,6 +83,18 @@
       <artifactId>configurate-extra-kotlin</artifactId>
       <version>${configurate.version}</version>
       <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>dev.folia</groupId>
+      <artifactId>folia-api</artifactId>
+      <version>${folia.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.papermc.paper</groupId>
+      <artifactId>paper-api</artifactId>
+      <version>${paper.version}</version>
+      <scope>provided</scope>
     </dependency>
   </dependencies>
 

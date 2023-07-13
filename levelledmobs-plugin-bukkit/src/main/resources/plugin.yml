@@ -1,4 +1,5 @@
+api-version: "1.20"
+folia-supported: true
+main: "io.github.arcaneplugins.levelledmobs.plugin.bukkit.LevelledMobs"
 name: "LevelledMobs"
 version: "${project.version}"
-main: "io.github.arcaneplugins.levelledmobs.plugin.bukkit.LevelledMobs"
-api-version: "1.20"

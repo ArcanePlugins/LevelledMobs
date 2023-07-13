@@ -32,6 +32,8 @@
     <configurate.version>4.1.2</configurate.version>
     <spigotapi.version>1.19.4-R0.1-SNAPSHOT</spigotapi.version>
     <jupiter.version>5.9.2</jupiter.version>
+    <folia.version>1.20.1-R0.1-SNAPSHOT</folia.version>
+    <paper.version>1.20.1-R0.1-SNAPSHOT</paper.version>
     <maven-compiler-plugin.version>3.10.1</maven-compiler-plugin.version>
     <maven-shade-plugin.version>3.4.1</maven-shade-plugin.version>
   </properties>

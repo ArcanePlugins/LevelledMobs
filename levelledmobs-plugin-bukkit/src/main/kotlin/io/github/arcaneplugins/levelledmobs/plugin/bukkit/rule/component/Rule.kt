@@ -65,6 +65,7 @@ class Rule(
             run()
         } else {
             Bukkit.getScheduler().runTaskLater(lmInstance, ::run, delayTicks)
+            //todo folia compatibility
         }
     }
 
