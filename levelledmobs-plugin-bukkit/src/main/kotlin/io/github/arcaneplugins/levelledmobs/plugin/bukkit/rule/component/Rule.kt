@@ -38,8 +38,6 @@ class Rule(
     //todo doc
     fun call(context: Context) {
         fun run() {
-            // todo detect if the rule is already within the ruleStack, if so, possible recursion going on
-
             context.ruleStack.push(this)
 
             try {

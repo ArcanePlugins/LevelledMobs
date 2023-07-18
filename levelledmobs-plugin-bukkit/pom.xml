@@ -43,12 +43,6 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>org.spigotmc</groupId>
-      <artifactId>spigot-api</artifactId>
-      <version>${spigotapi.version}</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
       <groupId>org.jetbrains.kotlin</groupId>
       <artifactId>kotlin-stdlib-jdk8</artifactId>
       <version>${kotlin.version}</version>
@@ -88,12 +82,6 @@
       <groupId>dev.folia</groupId>
       <artifactId>folia-api</artifactId>
       <version>${folia.version}</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>io.papermc.paper</groupId>
-      <artifactId>paper-api</artifactId>
-      <version>${paper.version}</version>
       <scope>provided</scope>
     </dependency>
   </dependencies>
