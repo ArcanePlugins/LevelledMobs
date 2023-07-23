@@ -313,6 +313,40 @@ public class YmlParsingHelper {
         return result;
     }
 
+    public @NotNull List<String> getStringOrList(final @Nullable ConfigurationSection cs, final @NotNull String key){
+        final List<String> results = new LinkedList<>();
+        if (cs == null) {
+            return results;
+        }
+
+        String foundKeyName = null;
+        for (final String enumeratedKey : cs.getKeys(false)) {
+            if (key.equalsIgnoreCase(enumeratedKey)) {
+                foundKeyName = enumeratedKey;
+                break;
+            }
+        }
+
+        if (foundKeyName == null) {
+            return results;
+        }
+
+        final List<?> lst = cs.getList(foundKeyName);
+        if (lst != null && !lst.isEmpty()){
+            for (final Object item : lst){
+                if (!item.toString().isEmpty()) results.add(item.toString());
+            }
+
+            return results;
+        }
+
+        final String temp = cs.getString(foundKeyName);
+        if (temp != null && !temp.isEmpty())
+            results.add(temp);
+
+        return results;
+    }
+
     @NotNull public String getKeyNameFromConfig(final @NotNull ConfigurationSection cs,
         final @NotNull String key) {
         if (!key.contains(".")) {

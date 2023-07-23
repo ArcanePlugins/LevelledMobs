@@ -49,6 +49,10 @@ public class RulesManager {
         this.biomeGroupMappings = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
         this.ruleNameMappings = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
         this.rulesCooldown = new TreeMap<>();
+        this.excludedKeys = List.of("isTempDisabled", "nametag_Placeholder_Levelled",
+                "nametag_Placeholder_Unlevelled", "presetName", "deathMessages",
+                "nametagVisibilityEnum", "ruleSourceNames", "spawnerParticle",
+                "useNoSpawnerParticles");
     }
 
     private final LevelledMobs main;
@@ -59,6 +63,7 @@ public class RulesManager {
     public boolean anyRuleHasChance;
     public boolean hasAnyWGCondition;
     private Instant lastRulesCheck;
+    private final List<String> excludedKeys;
     final static Object ruleLocker = new Object();
 
     public boolean getRuleIsWorldAllowedInAnyRule(final @Nullable World world) {
@@ -1304,7 +1309,7 @@ public class RulesManager {
         }
     }
 
-    @NotNull public String showTempDisabledRules(final boolean isFromConsole) {
+    public @NotNull String showTempDisabledRules(final boolean isFromConsole) {
         synchronized (ruleLocker) {
             if (this.rulesCooldown.isEmpty()) {
                 final String message = "No rules are currently temporarily disabled";
@@ -1343,4 +1348,19 @@ public class RulesManager {
             return sb.toString();
         }
     }
+
+//    public void getRulesHash(){
+//        synchronized (ruleLocker) {
+//            final StringBuilder sb = new StringBuilder();
+//
+//            for (final String ruleName : this.rulesCooldown.keySet()) {
+//                final RuleInfo rule = this.ruleNameMappings.get(ruleName);
+//                if (rule == null || !rule.ruleIsEnabled) {
+//                    continue;
+//                }
+//                sb.append(ruleName);
+//                sb.append(rule.formatRulesVisually(excludedKeys));
+//            }
+//        }
+//    }
 }

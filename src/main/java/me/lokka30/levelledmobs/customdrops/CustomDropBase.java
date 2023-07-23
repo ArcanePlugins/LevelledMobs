@@ -22,8 +22,10 @@ import org.jetbrains.annotations.Nullable;
 public abstract class CustomDropBase implements Cloneable {
 
     CustomDropBase(@NotNull final CustomDropsDefaults defaults) {
+        this.excludedMobs = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
         this.amount = defaults.amount;
         this.permissions = new LinkedList<>();
+        this.playeerVariableMatches = new LinkedList<>();
     }
 
     private int amount;
@@ -42,8 +44,9 @@ public abstract class CustomDropBase implements Cloneable {
     boolean noSpawner;
     String groupId;
     String playerLevelVariable;
-    final public List<String> permissions;
-    final Set<String> excludedMobs = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+    final public @NotNull List<String> permissions;
+    final public @NotNull List<String> playeerVariableMatches;
+    final @NotNull Set<String> excludedMobs;
     CachedModalList<DeathCause> causeOfDeathReqs;
 
     public int getAmount() {

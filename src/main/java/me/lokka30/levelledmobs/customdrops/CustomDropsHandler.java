@@ -987,7 +987,49 @@ public class CustomDropsHandler {
     }
 
     private boolean madePlayerLevelRequirement(final @NotNull CustomDropProcessingInfo info,
-        final CustomDropBase dropBase) {
+        final @NotNull CustomDropBase dropBase) {
+
+        if (dropBase.playerLevelVariable != null && !info.equippedOnly && !dropBase.playeerVariableMatches.isEmpty()) {
+            final String papiResult = ExternalCompatibilityManager.getPapiPlaceholder(
+                    info.mobKiller, dropBase.playerLevelVariable);
+
+            boolean foundMatch = false;
+            for (final String resultStr : dropBase.playeerVariableMatches){
+                if (resultStr.equalsIgnoreCase(papiResult)){
+                    foundMatch = true;
+                    if (isCustomDropsDebuggingEnabled()) {
+                        if (dropBase instanceof CustomDropItem) {
+                            info.addDebugMessage(String.format(
+                                    "&8 - &7Mob: &b%s&7, item: %s, PAPI val: %s, matched: %s",
+                                    info.lmEntity.getTypeName(), ((CustomDropItem) dropBase).getMaterial(),
+                                    papiResult, resultStr));
+                        } else {
+                            info.addDebugMessage(String.format(
+                                    "&8 - &7Mob: &b%s&7, (customCommand), PAPI val: %s, matched: %s",
+                                    info.lmEntity.getTypeName(), papiResult, resultStr));
+                        }
+                    }
+                    break;
+                }
+            }
+
+            if (!foundMatch) {
+                if (isCustomDropsDebuggingEnabled()) {
+                    if (dropBase instanceof CustomDropItem) {
+                        info.addDebugMessage(String.format(
+                                "&8 - &7Mob: &b%s&7, item: %s, PAPI val: %s, no matches found",
+                                info.lmEntity.getTypeName(), ((CustomDropItem) dropBase).getMaterial(),
+                                papiResult));
+                    } else {
+                        info.addDebugMessage(String.format(
+                                "&8 - &7Mob: &b%s&7, (customCommand), PAPI val: %s, no matches found",
+                                info.lmEntity.getTypeName(), papiResult));
+                    }
+                }
+                return false;
+            }
+        }
+
         if (!info.equippedOnly && (dropBase.minPlayerLevel > -1 || dropBase.maxPlayerLevel > -1)) {
             // check if the variable result has been cached already and use it if so
             final String variableToUse = Utils.isNullOrEmpty(dropBase.playerLevelVariable) ?

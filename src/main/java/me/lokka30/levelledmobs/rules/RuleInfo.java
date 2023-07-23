@@ -254,11 +254,11 @@ public class RuleInfo {
         }
     }
 
-    @NotNull public String formatRulesVisually() {
+    public @NotNull String formatRulesVisually() {
         return formatRulesVisually(null);
     }
 
-    @NotNull public String formatRulesVisually(final List<String> excludedKeys) {
+    public @NotNull String formatRulesVisually(final List<String> excludedKeys) {
         final SortedMap<String, String> values = new TreeMap<>();
         final StringBuilder sb = new StringBuilder();
 

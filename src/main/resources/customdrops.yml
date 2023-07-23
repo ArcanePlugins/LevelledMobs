@@ -58,6 +58,7 @@ defaults:
   min-player-level: -1
   max-player-level: -1
   player-level-variable: ''
+  player-variable-match-value: ''
 
 
 # +-------------------------------------------------------------------------------------------LM3
