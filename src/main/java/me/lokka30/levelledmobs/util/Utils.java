@@ -384,4 +384,43 @@ public final class Utils {
             final CreatureSpawnEvent.@NotNull SpawnReason spawnReason) {
         return LevelledMobSpawnReason.valueOf(spawnReason.toString());
     }
+
+    public static boolean matchWildcardString(final @NotNull String input, final @NotNull String match){
+        if (!match.contains("*")){
+            return input.equalsIgnoreCase(match);
+        }
+
+        final String[] chopped = match.split("\\*");
+        // 0 = *, 1 = text, 2 = *
+        if (chopped.length > 3){
+            Utils.logger.warning("Invalid wildcard pattern: " + match);
+            return input.equalsIgnoreCase(match);
+        }
+
+        final String inputL = input.toLowerCase();
+        final String matchL = match.toLowerCase();
+
+        String useSearch;
+        if (matchL.startsWith("*") && matchL.endsWith("*")){
+            useSearch = matchL.substring(1, matchL.length() - 1);
+            return inputL.contains(useSearch);
+        }
+        else if (matchL.startsWith("*")){
+            useSearch = matchL.substring(1);
+            return inputL.endsWith(useSearch);
+        }
+        else{
+            useSearch = matchL.substring(0, matchL.length() - 1);
+            return inputL.startsWith(useSearch);
+        }
+    }
+
+    public static String removeColorCodes(final @NotNull String input){
+        String formatted = input.replace("§", "&");
+
+        if (input.contains("&")){
+            formatted = input.replaceAll("&.", "");
+        }
+        return formatted;
+    }
 }

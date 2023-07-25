@@ -13,26 +13,26 @@ public class MiscUtils {
     public static @NotNull String getNBTDump(
         final @NotNull LivingEntity livingEntity
     ) {
-//        final ServerVersionInfo versionInfo = main.nametagQueueManager.nmsHandler.versionInfo;
-//        if (versionInfo.getMinecraftVersion() <= 1.16){
-//            return getNBTDump_1_16(livingEntity, versionInfo.getNMSVersion());
-//        }
-// TODO - Handle commented out code
+        final LevelledMobs main = LevelledMobs.getInstance();
+        final Definitions def = main.getDefinitions();
+        final ServerVersionInfo ver = main.getVerInfo();
 
-        final Definitions def = LevelledMobs.getInstance().getDefinitions();
+        if (ver.getMinecraftVersion() < 1.17){
+            return getNBTDump_1_16(livingEntity);
+        }
 
         try {
             //final Method method_getHandle = def.clazz_CraftLivingEntity.getDeclaredMethod("getHandle");
-            // TODO - Handle commented out code
             final Object internalLivingEntity = def.method_getHandle.invoke(livingEntity);
 
             final Class<?> compoundTagClazz =
                 Class.forName("net.minecraft.nbt.NBTTagCompound");
 
             final Object compoundTag = compoundTagClazz.getConstructor().newInstance();
+            // net.minecraft.nbt.CompoundTag saveWithoutId(net.minecraft.nbt.CompoundTag) -> f
 
             final Method saveWithoutId =
-                def.clazz_Entity.getDeclaredMethod("e", compoundTagClazz);
+                def.clazz_Entity.getDeclaredMethod("f", compoundTagClazz);
 
             saveWithoutId.invoke(internalLivingEntity, compoundTag);
 
@@ -44,34 +44,30 @@ public class MiscUtils {
         return "";
     }
 
-//    private static @NotNull String getNBTDump_1_16(final @NotNull LivingEntity livingEntity, final String nmsVersion){
-//        final String compoundTagName = "net.minecraft.server.v1_16_R3.NBTTagCompound";
-//        final String methodName = "save";
-//        final Definitions def = LevelledMobs.getInstance().getDefinitions();
-//
-//        try {
-//            final Class<?> clazz_CraftLivingEntity;
-//
-//            clazz_CraftLivingEntity = Class.forName(
-//                    "org.bukkit.craftbukkit." + nmsVersion + ".entity.CraftLivingEntity");
-//            final Method method_getHandle = clazz_CraftLivingEntity.getDeclaredMethod("getHandle");
-//
-//            // net.minecraft.server.v1_16_R3.EntityLiving
-//            final Object internalLivingEntity = method_getHandle.invoke(livingEntity);
-//
-//            final Class<?> compoundTagClazz = Class.forName(compoundTagName);
-//            final Object compoundTag = compoundTagClazz.getConstructor().newInstance();
-//
-//            //final Class<?> clazz_Entity = Class.forName("net.minecraft.server." + nmsVersion + ".Entity");
-//            final Method saveWithoutId = def.clazz_Entity.getDeclaredMethod(methodName, compoundTagClazz);
-//            saveWithoutId.invoke(internalLivingEntity, compoundTag);
-//
-//            return compoundTag.toString();
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//
-//        return "";
-//    }
-// TODO - Handle commented out code
+        private static @NotNull String getNBTDump_1_16(final @NotNull LivingEntity livingEntity){
+
+        try {
+            final Class<?> clazz_CraftLivingEntity;
+
+            clazz_CraftLivingEntity = Class.forName(
+                    "org.bukkit.craftbukkit.v1_16_R3.entity.CraftLivingEntity");
+            final Method method_getHandle = clazz_CraftLivingEntity.getDeclaredMethod("getHandle");
+
+            // net.minecraft.server.v1_16_R3.EntityLiving
+            final Object internalLivingEntity = method_getHandle.invoke(livingEntity);
+
+            final Class<?> compoundTagClazz = Class.forName("net.minecraft.server.v1_16_R3.NBTTagCompound");
+            final Object compoundTag = compoundTagClazz.getConstructor().newInstance();
+
+            final Class<?> clazz_Entity = Class.forName("net.minecraft.server.v1_16_R3.Entity");
+            final Method saveWithoutId = clazz_Entity.getDeclaredMethod("save", compoundTagClazz);
+            saveWithoutId.invoke(internalLivingEntity, compoundTag);
+
+            return compoundTag.toString();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return "";
+    }
 }

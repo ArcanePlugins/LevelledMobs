@@ -990,12 +990,12 @@ public class CustomDropsHandler {
         final @NotNull CustomDropBase dropBase) {
 
         if (dropBase.playerLevelVariable != null && !info.equippedOnly && !dropBase.playeerVariableMatches.isEmpty()) {
-            final String papiResult = ExternalCompatibilityManager.getPapiPlaceholder(
-                    info.mobKiller, dropBase.playerLevelVariable);
+            final String papiResult = Utils.removeColorCodes(ExternalCompatibilityManager.getPapiPlaceholder(
+                    info.mobKiller, dropBase.playerLevelVariable));
 
             boolean foundMatch = false;
             for (final String resultStr : dropBase.playeerVariableMatches){
-                if (resultStr.equalsIgnoreCase(papiResult)){
+                if (Utils.matchWildcardString(papiResult, resultStr)){
                     foundMatch = true;
                     if (isCustomDropsDebuggingEnabled()) {
                         if (dropBase instanceof CustomDropItem) {
