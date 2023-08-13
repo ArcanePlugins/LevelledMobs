@@ -86,7 +86,10 @@ public class PlayerDeathListener {
             return lmKiller;
         }
 
-        lmKiller.setPlayerForLevelling(event.getPlayer());
+        final Player player = main.getVerInfo().getMinecraftVersion() >= 1.17 ?
+                event.getPlayer() : event.getEntity();
+
+        lmKiller.setPlayerForLevelling(player);
         final NametagResult mobNametag = main.levelManager.getNametag(lmKiller, true, true);
         if (mobNametag.getNametag() != null && mobNametag.getNametag().isEmpty()){
             this.shouldCancelEvent = true;
