@@ -25,6 +25,7 @@ import org.bukkit.World;
 import org.bukkit.block.Biome;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.CreatureSpawnEvent;
+import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -422,5 +423,47 @@ public final class Utils {
             formatted = input.replaceAll("&.", "");
         }
         return formatted;
+    }
+
+    public static @NotNull String showLocation(final @NotNull Location location){
+        return String.format("%s at %s,%s,%s",
+                location.getWorld().getName(),
+                location.getBlockX(),
+                location.getBlockY(),
+                location.getBlockZ()
+        );
+    }
+
+    public static boolean checkIfMobHashChanged(final @NotNull LivingEntityWrapper lmEntity){
+        final LevelledMobs main = LevelledMobs.getInstance();
+
+        if (!lmEntity.getPDC().has(main.namespacedKeys.mobHash, PersistentDataType.STRING)) {
+            return true;
+        }
+
+        boolean hadHash = false;
+        String mobHash = null;
+        if (lmEntity.getPDC().has(main.namespacedKeys.mobHash, PersistentDataType.STRING)) {
+            mobHash = lmEntity.getPDC().get(main.namespacedKeys.mobHash, PersistentDataType.STRING);
+            hadHash = true;
+        }
+
+        final boolean hashChanged = !main.rulesManager.getCurrentRulesHash().equals(mobHash);
+        if (hashChanged) {
+            if (hadHash){
+                Utils.debugLog(main, DebugType.MOB_HASH, String.format("Invalid hash for %s %s"
+                        , lmEntity.getNameIfBaby(), Utils.showLocation(lmEntity.getLocation())));
+            }
+            else{
+                Utils.debugLog(main, DebugType.MOB_HASH, String.format("Hash missing for %s %s"
+                        , lmEntity.getNameIfBaby(), Utils.showLocation(lmEntity.getLocation())));
+            }
+
+            // also setting the PDC key here because if the mob is not eligable for levelling then it will
+            // run this same code repeatidly
+            lmEntity.getPDC().set(main.namespacedKeys.mobHash, PersistentDataType.STRING, main.rulesManager.getCurrentRulesHash());
+        }
+
+        return hashChanged;
     }
 }

@@ -143,6 +143,7 @@ public class LevelManager implements LevelInterface {
     public final Map<LivingEntity, Object> summonedOrSpawnEggs;
     public static final Object summonedOrSpawnEggs_Lock = new Object();
     private boolean hasMentionedNBTAPI_Missing;
+    public boolean doCheckMobHash;
     private final Map<String, RandomLevellingStrategy> randomLevellingCache;
     public EntitySpawnListener entitySpawnListener;
 
@@ -950,6 +951,7 @@ public class LevelManager implements LevelInterface {
 
         final long period = main.helperSettings.getInt(main.settingsCfg, "async-task-update-period",
             6); // run every ? seconds.
+        this.doCheckMobHash = main.helperSettings.getBoolean(main.settingsCfg, "check-mob-hash", true);
 
         if (main.getVerInfo().getIsRunningFolia()){
            final Consumer<ScheduledTask> bgThread = scheduledTask -> {
@@ -1066,13 +1068,18 @@ public class LevelManager implements LevelInterface {
         final LivingEntityWrapper lmEntity = LivingEntityWrapper.getInstance(
                 (LivingEntity) entity, main);
         lmEntity.playerForPermissionsCheck = player;
+        if (doCheckMobHash && Utils.checkIfMobHashChanged(lmEntity)) {
+            lmEntity.reEvaluateLevel = true;
+            lmEntity.isRulesForceAll = true;
+            lmEntity.wasPreviouslyLevelled = lmEntity.isLevelled();
+        }
 
         if (lmEntity.isLevelled()) {
             boolean skipLevelling = (
                     lmEntity.getSpawnReason() == LevelledMobSpawnReason.LM_SPAWNER ||
                             lmEntity.getSpawnReason() == LevelledMobSpawnReason.LM_SUMMON
             );
-            if (main.configUtils.playerLevellingEnabled && !checkIfReadyForRelevelling(lmEntity)){
+            if (main.configUtils.playerLevellingEnabled && !lmEntity.isRulesForceAll && !checkIfReadyForRelevelling(lmEntity)){
                 skipLevelling = true;
             }
             if (main.configUtils.playerLevellingEnabled && !skipLevelling) {
@@ -1202,7 +1209,10 @@ public class LevelManager implements LevelInterface {
             2); // square the distance we are using Location#distanceSquared. This is because it is faster than Location#distance since it does not need to sqrt which is taxing on the CPU.
         final Location location = player.getLocation();
 
-        if (lmEntity.getLivingEntity().getCustomName() != null
+        if (lmEntity.isRulesForceAll){
+            main.mobsQueueManager.addToQueue(new QueueItem(lmEntity, null));
+        }
+        else if (lmEntity.getLivingEntity().getCustomName() != null
             && main.rulesManager.getRuleMobCustomNameStatus(lmEntity)
             == MobCustomNameStatus.NOT_NAMETAGGED) {
             // mob has a nametag but is levelled so we'll remove it
@@ -1645,6 +1655,7 @@ public class LevelManager implements LevelInterface {
 
         synchronized (lmEntity.getLivingEntity().getPersistentDataContainer()) {
             lmEntity.getPDC().set(main.namespacedKeys.levelKey, PersistentDataType.INTEGER, level);
+            lmEntity.getPDC().set(main.namespacedKeys.mobHash, PersistentDataType.STRING, main.rulesManager.getCurrentRulesHash());
         }
         lmEntity.invalidateCache();
 

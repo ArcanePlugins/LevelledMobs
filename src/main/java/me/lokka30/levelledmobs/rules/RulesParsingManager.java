@@ -123,6 +123,9 @@ public class RulesParsingManager {
             this.main.rulesManager.ruleNameMappings.putAll(ruleMappings);
             this.main.rulesManager.rulesCooldown.clear();
         }
+
+        this.main.rulesManager.updateRulesHash();
+        Utils.logger.info("Current rules hash: " + this.main.rulesManager.getCurrentRulesHash());
     }
 
     public @NotNull List<RuleInfo> getAllRules() {

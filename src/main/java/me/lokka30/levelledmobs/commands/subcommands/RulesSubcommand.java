@@ -376,6 +376,14 @@ public class RulesSubcommand extends MessagesBase implements Subcommand {
             sb.setLength(0);
         }
 
+        if (lmEntity.getPDC().has(main.namespacedKeys.mobHash, PersistentDataType.STRING)){
+            final String mobHash = lmEntity.getPDC().get(main.namespacedKeys.mobHash, PersistentDataType.STRING);
+            if (mobHash != null){
+                sb.append("&r\nmobHash: ");
+                sb.append(mobHash);
+            }
+        }
+
         final SchedulerWrapper scheduler = new SchedulerWrapper(lmEntity.getLivingEntity(), () -> {
             showEffectiveValues(player, lmEntity, showOnConsole, sb);
             lmEntity.free();

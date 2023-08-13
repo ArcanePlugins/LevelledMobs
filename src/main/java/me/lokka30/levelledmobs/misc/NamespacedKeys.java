@@ -35,6 +35,7 @@ public class NamespacedKeys {
         lockedDropRulesOverride = new NamespacedKey(main, "lockedDropRulesOverride");
         playerLevellingSourceNumber = new NamespacedKey(main, "playerLevellingSourceNumber");
         lastDamageTime = new NamespacedKey(main, "lastDamageTime");
+        mobHash = new NamespacedKey(main, "mobHash");
 
         spawnerEgg = new NamespacedKey(main, "spawnerEgg");
         spawnerEggName = new NamespacedKey(main, "spawnerEggName");
@@ -74,6 +75,7 @@ public class NamespacedKeys {
     public final NamespacedKey skyLightLevel;
     public final NamespacedKey playerLevellingSourceNumber;
     public final NamespacedKey lastDamageTime;
+    public final NamespacedKey mobHash;
 
     public final NamespacedKey lockSettings;
     public final NamespacedKey lockedNametag;

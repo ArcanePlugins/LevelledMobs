@@ -5,6 +5,7 @@
 package me.lokka30.levelledmobs.listeners;
 
 import me.lokka30.levelledmobs.LevelledMobs;
+import me.lokka30.levelledmobs.util.Utils;
 import me.lokka30.levelledmobs.wrappers.LivingEntityWrapper;
 import me.lokka30.levelledmobs.misc.QueueItem;
 import org.bukkit.entity.Entity;
@@ -47,7 +48,12 @@ public class ChunkLoadListener implements Listener {
             final LivingEntityWrapper lmEntity = LivingEntityWrapper.getInstance(
                 (LivingEntity) entity, main);
 
-            if (lmEntity.isLevelled()) {
+            if (main.levelManager.doCheckMobHash && Utils.checkIfMobHashChanged(lmEntity)) {
+                lmEntity.reEvaluateLevel = true;
+                lmEntity.isRulesForceAll = true;
+                lmEntity.wasPreviouslyLevelled = lmEntity.isLevelled();
+            }
+            else if (lmEntity.isLevelled()) {
                 lmEntity.free();
                 continue;
             }

@@ -4,6 +4,9 @@
 
 package me.lokka30.levelledmobs.rules;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -64,6 +67,7 @@ public class RulesManager {
     public boolean hasAnyWGCondition;
     private Instant lastRulesCheck;
     private final List<String> excludedKeys;
+    private @NotNull String currentRulesHash = "";
     final static Object ruleLocker = new Object();
 
     public boolean getRuleIsWorldAllowedInAnyRule(final @Nullable World world) {
@@ -84,6 +88,10 @@ public class RulesManager {
         }
 
         return result;
+    }
+
+    public @NotNull String getCurrentRulesHash(){
+        return this.currentRulesHash;
     }
 
     @SuppressWarnings("unused")
@@ -1349,18 +1357,43 @@ public class RulesManager {
         }
     }
 
-//    public void getRulesHash(){
-//        synchronized (ruleLocker) {
-//            final StringBuilder sb = new StringBuilder();
-//
-//            for (final String ruleName : this.rulesCooldown.keySet()) {
-//                final RuleInfo rule = this.ruleNameMappings.get(ruleName);
-//                if (rule == null || !rule.ruleIsEnabled) {
-//                    continue;
-//                }
-//                sb.append(ruleName);
-//                sb.append(rule.formatRulesVisually(excludedKeys));
-//            }
-//        }
-//    }
+    void updateRulesHash(){
+        final StringBuilder sb = new StringBuilder();
+
+        synchronized (ruleLocker) {
+            for (final int rulePri : this.rulesInEffect.keySet()) {
+                final List<RuleInfo> rules = this.rulesInEffect.get(rulePri);
+                for (final RuleInfo rule : rules){
+                    if (rule == null || !rule.ruleIsEnabled) {
+                        continue;
+                    }
+                    if (!sb.isEmpty()) sb.append("\n");
+                    sb.append(rule.formatRulesVisually(excludedKeys));
+                }
+            }
+        }
+
+        try {
+            final MessageDigest digest = MessageDigest.getInstance("SHA3-256");
+            final byte[] hashbytes = digest.digest(
+                    sb.toString().getBytes(StandardCharsets.UTF_8));
+            this.currentRulesHash = bytesToHex(hashbytes);
+        } catch (NoSuchAlgorithmException e) {
+            Utils.logger.error("Unable to run SHA-256 hash: " + e.getMessage());
+            this.currentRulesHash = "1234";
+        }
+    }
+
+    // taken from https://www.baeldung.com/sha-256-hashing-java
+    private static @NotNull String bytesToHex(final byte @NotNull [] hash) {
+        final StringBuilder hexString = new StringBuilder(2 * hash.length);
+        for (byte b : hash) {
+            final String hex = Integer.toHexString(0xff & b);
+            if (hex.length() == 1) {
+                hexString.append('0');
+            }
+            hexString.append(hex);
+        }
+        return hexString.toString();
+    }
 }

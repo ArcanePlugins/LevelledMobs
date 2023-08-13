@@ -143,10 +143,15 @@ kill-skip-conditions:
 # ||  by default as to not harm their economies.
 mobs-multiply-head-drops: false
 
+# ||  When set to true, every mob is checked to make sure it has
+# ||  the latest rules applied by comparing a stored hash string.
+check-mob-hash: true
+
+
 # ||  ADVANCED USERS ONLY
 # ||  Do not touch this unless a LM developer tells you to.
 # ||  This value must not be modified, else your configuration
 # ||  may be corrupted by the migrator, since the migrator uses
 # ||  this value to check what changes the file requires to
 # ||  become updated to the latest file version.
-file-version: 34
+file-version: 35
