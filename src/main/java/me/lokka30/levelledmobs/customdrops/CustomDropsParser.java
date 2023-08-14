@@ -1037,7 +1037,7 @@ public class CustomDropsParser {
             final String override = dropInstance.overrideStockDrops ? " (override)" : "";
             final String overallChance = dropInstance.overallChance != null ? " (overall_chance: "
                 + dropInstance.overallChance + ")" : "";
-            if (sbMain.length() > 0) {
+            if (!sbMain.isEmpty()) {
                 sbMain.append(System.lineSeparator());
             }
             sbMain.append("group: ");
@@ -1229,7 +1229,7 @@ public class CustomDropsParser {
             final StringBuilder sb2 = new StringBuilder();
             if (meta != null) {
                 for (final Enchantment enchant : meta.getEnchants().keySet()) {
-                    if (sb2.length() > 0) {
+                    if (!sb2.isEmpty()) {
                         sb2.append(", ");
                     }
                     sb2.append(String.format("&b%s&r (%s)", enchant.getKey().getKey(),
@@ -1237,7 +1237,7 @@ public class CustomDropsParser {
                 }
             }
 
-            if (sb2.length() > 0) {
+            if (!sb2.isEmpty()) {
                 sb.append(System.lineSeparator());
                 sb.append("    ");
                 sb.append(sb2);

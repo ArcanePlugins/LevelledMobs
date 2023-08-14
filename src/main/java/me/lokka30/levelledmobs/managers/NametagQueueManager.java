@@ -83,9 +83,10 @@ public class NametagQueueManager {
     }
 
     void addToQueue(final @NotNull QueueItem item) {
-        if (Bukkit.getOnlinePlayers().size() == 0) {
+        if (Bukkit.getOnlinePlayers().isEmpty()) {
             return;
         }
+
         if (item.lmEntity.getLivingEntity() == null ||
             main.rulesManager.getRuleCreatureNametagVisbility(item.lmEntity)
                 .contains(NametagVisibilityEnum.DISABLED)) {

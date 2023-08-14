@@ -81,7 +81,7 @@ public class MergeableStringList {
         }
 
         if (doMerge) {
-            if (sb.length() > 0) {
+            if (!sb.isEmpty()) {
                 sb.append(" ");
             }
             sb.append("(merge)");

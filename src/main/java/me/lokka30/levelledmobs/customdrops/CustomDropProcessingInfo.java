@@ -60,7 +60,7 @@ class CustomDropProcessingInfo {
             this.debugMessages = new StringBuilder();
         }
 
-        if (this.debugMessages.length() > 0) {
+        if (!this.debugMessages.isEmpty()) {
             this.debugMessages.append(System.lineSeparator());
         }
 

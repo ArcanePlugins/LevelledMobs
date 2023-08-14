@@ -82,7 +82,7 @@ public class PlayerLevellingOptions implements Cloneable {
         }
 
         if (variable != null) {
-            if (sb.length() > 0) {
+            if (!sb.isEmpty()) {
                 sb.append(", ");
             }
             sb.append("var: ");
@@ -90,21 +90,21 @@ public class PlayerLevellingOptions implements Cloneable {
         }
 
         if (matchPlayerLevel != null && matchPlayerLevel) {
-            if (sb.length() > 0) {
+            if (!sb.isEmpty()) {
                 sb.append(", ");
             }
             sb.append("match-plr-lvl");
         }
 
         if (usePlayerMaxLevel != null && usePlayerMaxLevel) {
-            if (sb.length() > 0) {
+            if (!sb.isEmpty()) {
                 sb.append(", ");
             }
             sb.append("use-plr-max-lvl");
         }
 
         if (playerLevelScale != null) {
-            if (sb.length() > 0) {
+            if (!sb.isEmpty()) {
                 sb.append(", ");
             }
             sb.append("scale: ");
@@ -112,7 +112,7 @@ public class PlayerLevellingOptions implements Cloneable {
         }
 
         if (levelCap != null) {
-            if (sb.length() > 0) {
+            if (!sb.isEmpty()) {
                 sb.append(", ");
             }
             sb.append("cap: ");
@@ -120,27 +120,27 @@ public class PlayerLevellingOptions implements Cloneable {
         }
 
         if (!levelTiers.isEmpty()) {
-            if (sb.length() > 0) {
+            if (!sb.isEmpty()) {
                 sb.append(", ");
             }
             sb.append(levelTiers);
         }
 
         if (decreaseLevel) {
-            if (sb.length() > 0) {
+            if (!sb.isEmpty()) {
                 sb.append(", ");
             }
             sb.append("decrease-lvl");
         }
 
         if (recheckPlayers != null && recheckPlayers){
-            if (sb.length() > 0) {
+            if (!sb.isEmpty()) {
                 sb.append(", ");
             }
             sb.append("rechk-plr");
         }
 
-        if (sb.length() == 0) {
+        if (sb.isEmpty()) {
             return super.toString();
         } else {
             return sb.toString();

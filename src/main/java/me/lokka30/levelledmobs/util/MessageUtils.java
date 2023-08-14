@@ -67,7 +67,7 @@ public class MessageUtils {
     public static String colorizeHexCodes(String startTag, String endTag, String message) {
         final ServerVersionInfo ver = LevelledMobs.getInstance().getVerInfo();
 
-        if (ver.getMinecraftVersion() <= 1.16 || !ver.getIsRunningSpigot()) return message;
+        if (ver.getMinecraftVersion() < 1.16 || !ver.getIsRunningSpigot()) return message;
 
         final Pattern hexPattern = Pattern.compile(startTag + "([A-Fa-f0-9]{6})" + endTag);
         Matcher matcher = hexPattern.matcher(message);

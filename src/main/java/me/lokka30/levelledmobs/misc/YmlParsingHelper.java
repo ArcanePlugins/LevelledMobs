@@ -367,7 +367,7 @@ public class YmlParsingHelper {
 
         for (final String thisKey : periodSplit) {
             boolean foundKey = false;
-            final String checkKeyName = sb.length() == 0 ? thisKey : sb.toString();
+            final String checkKeyName = sb.isEmpty() ? thisKey : sb.toString();
             final ConfigurationSection useCS = keysFound == 0 ? cs : objTo_CS(cs, checkKeyName);
 
             if (useCS == null) {
@@ -376,7 +376,7 @@ public class YmlParsingHelper {
 
             for (final String enumeratedKey : useCS.getKeys(false)) {
                 if (thisKey.equalsIgnoreCase(enumeratedKey)) {
-                    if (sb.length() > 0) {
+                    if (!sb.isEmpty()) {
                         sb.append(".");
                     }
                     sb.append(enumeratedKey);
@@ -392,7 +392,7 @@ public class YmlParsingHelper {
 
         // if only some of the keys were found then add the remaining ones
         for (int i = keysFound; i < periodSplit.length; i++) {
-            if (sb.length() > 0) {
+            if (!sb.isEmpty()) {
                 sb.append(".");
             }
             sb.append(periodSplit[i]);

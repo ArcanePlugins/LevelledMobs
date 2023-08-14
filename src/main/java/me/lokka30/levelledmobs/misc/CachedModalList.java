@@ -89,21 +89,21 @@ public class CachedModalList<T extends Comparable<T>> implements Cloneable {
     public String toString() {
         final StringBuilder sb = new StringBuilder();
         if (!this.allowedList.isEmpty()) {
-            if (sb.length() > 0) {
+            if (!sb.isEmpty()) {
                 sb.append(", ");
             }
             sb.append("lst: ");
             sb.append(this.allowedList);
         }
         if (this.allowAll) {
-            if (sb.length() > 0) {
+            if (!sb.isEmpty()) {
                 sb.append(", ");
             }
             sb.append("all allowed");
         }
 
         if (!this.allowedGroups.isEmpty()) {
-            if (sb.length() > 0) {
+            if (!sb.isEmpty()) {
                 sb.append(", ");
             }
             sb.append("grps: ");
@@ -111,21 +111,21 @@ public class CachedModalList<T extends Comparable<T>> implements Cloneable {
         }
 
         if (this.excludeAll) {
-            if (sb.length() > 0) {
+            if (!sb.isEmpty()) {
                 sb.append(", ");
             }
             sb.append("all excluded");
         }
 
         if (!this.excludedList.isEmpty()) {
-            if (sb.length() > 0) {
+            if (!sb.isEmpty()) {
                 sb.append(", ");
             }
             sb.append("ex-lst: ");
             sb.append(this.excludedList);
         }
         if (!this.excludedGroups.isEmpty()) {
-            if (sb.length() > 0) {
+            if (!sb.isEmpty()) {
                 sb.append(", ");
             }
             sb.append("ex-grps: ");

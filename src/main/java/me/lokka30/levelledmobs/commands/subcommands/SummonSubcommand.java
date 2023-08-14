@@ -133,19 +133,15 @@ public class SummonSubcommand extends MessagesBase implements Subcommand {
         SummonType summonType = SummonType.HERE;
         if (args.length > 4) {
             switch (args[4].toLowerCase()) {
-                case "here":
-                    break;
-                case "atplayer":
-                    summonType = SummonType.AT_PLAYER;
-                    break;
-                case "atlocation":
-                    summonType = SummonType.AT_LOCATION;
-                    break;
-                default:
+                case "here" -> {
+                }
+                case "atplayer" -> summonType = SummonType.AT_PLAYER;
+                case "atlocation" -> summonType = SummonType.AT_LOCATION;
+                default -> {
                     showMessage("command.levelledmobs.summon.invalid-level", "%summonType%",
-                        args[4]);
-                    // messages = Utils.replaceAllInList(messages, "%summonType%", args[4]); // This is after colorize so args[4] is not colorized.
+                            args[4]);
                     return;
+                }
             }
         }
 

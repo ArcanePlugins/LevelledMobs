@@ -284,7 +284,7 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
 
         final StringBuilder sbAllowed = new StringBuilder();
         for (final RuleInfo ruleInfo : result.allApplicableRules_MadeChance) {
-            if (sbAllowed.length() > 0) {
+            if (!sbAllowed.isEmpty()) {
                 sbAllowed.append(";");
             }
             sbAllowed.append(ruleInfo.getRuleName());
@@ -292,7 +292,7 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
 
         final StringBuilder sbDenied = new StringBuilder();
         for (final RuleInfo ruleInfo : result.allApplicableRules_DidNotMakeChance) {
-            if (sbDenied.length() > 0) {
+            if (!sbDenied.isEmpty()) {
                 sbDenied.append(";");
             }
             sbDenied.append(ruleInfo.getRuleName());
@@ -305,12 +305,12 @@ public class LivingEntityWrapper extends LivingEntityWrapperBase implements Livi
         try {
             for (int i = 0; i < 2; i++) {
                 try {
-                    if (sbAllowed.length() > 0) {
+                    if (!sbAllowed.isEmpty()) {
                         this.livingEntity.getPersistentDataContainer()
                             .set(main.namespacedKeys.chanceRuleAllowed, PersistentDataType.STRING,
                                 sbAllowed.toString());
                     }
-                    if (sbDenied.length() > 0) {
+                    if (!sbDenied.isEmpty()) {
                         this.livingEntity.getPersistentDataContainer()
                             .set(main.namespacedKeys.chanceRuleDenied, PersistentDataType.STRING,
                                 sbDenied.toString());

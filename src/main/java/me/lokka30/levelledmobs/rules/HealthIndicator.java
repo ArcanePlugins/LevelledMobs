@@ -153,7 +153,7 @@ public class HealthIndicator implements Cloneable {
         }
 
         if (indicatorHalf != null) {
-            if (sb.length() > 0) {
+            if (!sb.isEmpty()) {
                 sb.append(", ");
             }
             sb.append("ind.5: ");
@@ -161,7 +161,7 @@ public class HealthIndicator implements Cloneable {
         }
 
         if (scale != null) {
-            if (sb.length() > 0) {
+            if (!sb.isEmpty()) {
                 sb.append(", ");
             }
             sb.append("scl: ");
@@ -169,7 +169,7 @@ public class HealthIndicator implements Cloneable {
         }
 
         if (maxIndicators != null) {
-            if (sb.length() > 0) {
+            if (!sb.isEmpty()) {
                 sb.append(", ");
             }
             sb.append("max: ");
@@ -177,20 +177,20 @@ public class HealthIndicator implements Cloneable {
         }
 
         if (tiers != null) {
-            if (sb.length() > 0) {
+            if (!sb.isEmpty()) {
                 sb.append(", ");
             }
             sb.append(tiers);
         }
 
         if (doMerge != null && doMerge) {
-            if (sb.length() > 0) {
+            if (!sb.isEmpty()) {
                 sb.append("&r, ");
             }
             sb.append("merge: true");
         }
 
-        if (sb.length() > 0) {
+        if (!sb.isEmpty()) {
             return sb.toString();
         } else {
             return super.toString();

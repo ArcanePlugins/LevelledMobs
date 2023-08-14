@@ -107,7 +107,7 @@ public class FileMigrator {
 
     private static String getKeyFromList(final @NotNull List<String> list,
         final String currentKey) {
-        if (list.size() == 0) {
+        if (list.isEmpty()) {
             return currentKey;
         }
 

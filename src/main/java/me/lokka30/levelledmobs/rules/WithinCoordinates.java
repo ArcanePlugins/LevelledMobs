@@ -147,7 +147,7 @@ public class WithinCoordinates {
     private void checkNumber(final Integer num, final String name, final StringBuilder sb){
         if (num == null) return;
 
-        if (sb.length() > 0) sb.append(", ");
+        if (!sb.isEmpty()) sb.append(", ");
         sb.append(name);
         sb.append(": ");
         sb.append(num);
@@ -156,7 +156,7 @@ public class WithinCoordinates {
     private void checkInfinityDirection(final InfinityDirection infinityDirection, final String name, final StringBuilder sb){
         if (infinityDirection == InfinityDirection.NONE) return;
 
-        if (sb.length() > 0) sb.append(", ");
+        if (!sb.isEmpty()) sb.append(", ");
         sb.append(name);
         sb.append(": ");
         if (infinityDirection == InfinityDirection.ASCENDING)

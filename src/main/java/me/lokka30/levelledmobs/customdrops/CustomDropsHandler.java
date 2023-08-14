@@ -246,7 +246,7 @@ public class CustomDropsHandler {
                 }
                 final StringBuilder sb = new StringBuilder();
                 for (final ItemStack drop : drops) {
-                    if (sb.length() > 0) {
+                    if (!sb.isEmpty()) {
                         sb.append(", ");
                     }
                     sb.append(drop.getType().name());

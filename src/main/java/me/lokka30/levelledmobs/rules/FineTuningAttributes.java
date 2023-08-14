@@ -143,7 +143,7 @@ public class FineTuningAttributes implements Cloneable {
             sb.append("(all stk)");
 
         for (final Multiplier item : this.multipliers.values()) {
-            if (sb.length() > 0) {
+            if (!sb.isEmpty()) {
                 sb.append(", ");
             }
             sb.append(getShortName(item.addition()));

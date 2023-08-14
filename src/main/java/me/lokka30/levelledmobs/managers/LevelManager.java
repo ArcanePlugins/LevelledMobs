@@ -1833,7 +1833,7 @@ public class LevelManager implements LevelInterface {
             }
 
             for (int i = 0; i < result.objectsUpdated.size(); i++) {
-                if (i > 0 || sb.length() > 0) {
+                if (i > 0 || !sb.isEmpty()) {
                     sb.append(", ");
                 }
                 if (i == 0) {
@@ -1850,7 +1850,7 @@ public class LevelManager implements LevelInterface {
             }
 
             for (int i = 0; i < result.objectsRemoved.size(); i++) {
-                if (i > 0 || sb.length() > 0) {
+                if (i > 0 || !sb.isEmpty()) {
                     sb.append(", ");
                 }
                 if (i == 0) {
@@ -1861,11 +1861,8 @@ public class LevelManager implements LevelInterface {
             }
         }
 
-        if (sb.length() > 0) {
-            return sb.toString();
-        } else {
-            return "";
-        }
+        return sb.isEmpty() ?
+                "" : sb.toString();
     }
 
     /**

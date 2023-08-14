@@ -141,7 +141,7 @@ public class SpawnerBaseClass extends MessagesBase {
                     itemsCount = 0;
                 }
 
-                if (loreLine.length() > 0) {
+                if (!loreLine.isEmpty()) {
                     loreLine.append(", ");
                 }
                 loreLine.append(String.format("&7%s: &b%s&7", name, f.get(info)));
@@ -164,7 +164,7 @@ public class SpawnerBaseClass extends MessagesBase {
 
             final StringBuilder sbLore = new StringBuilder();
             for (final String loreLine : lore) {
-                if (sbLore.length() > 0) {
+                if (!sbLore.isEmpty()) {
                     sbLore.append("\n");
                 }
                 sbLore.append(loreLine);
@@ -209,7 +209,7 @@ public class SpawnerBaseClass extends MessagesBase {
 
         final String lastArg = args[args.length - 1];
 
-        if (inQuotes || lastArg.length() > 0 && lastArg.charAt(lastArg.length() - 1) == '\"') {
+        if (inQuotes || !lastArg.isEmpty() && lastArg.charAt(lastArg.length() - 1) == '\"') {
             return Collections.emptyList();
         }
 

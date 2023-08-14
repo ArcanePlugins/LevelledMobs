@@ -307,7 +307,7 @@ public class RulesSubcommand extends MessagesBase implements Subcommand {
         for (int i = 2; i < args.length; i++) {
             final String arg = args[i].toLowerCase();
 
-            if (foundRule == null && arg.length() > 0 && !arg.startsWith("/")) {
+            if (foundRule == null && !arg.isEmpty() && !arg.startsWith("/")) {
                 if (allRuleNames.containsKey(arg)) {
                     foundRule = args[i];
                 } else if (badRuleName == null) {
@@ -473,7 +473,7 @@ public class RulesSubcommand extends MessagesBase implements Subcommand {
             return;
         }
 
-        if (sb.length() > 0) {
+        if (!sb.isEmpty()) {
             sb.append("\n");
         }
 
@@ -588,7 +588,7 @@ public class RulesSubcommand extends MessagesBase implements Subcommand {
                 for (int i = 2; i < args.length; i++) {
                     final String arg = args[i].toLowerCase();
 
-                    if (arg.length() > 0 && !arg.startsWith("/") && allRuleNames.contains(arg)) {
+                    if (!arg.isEmpty() && !arg.startsWith("/") && allRuleNames.contains(arg)) {
                         foundValue = true;
                     }
 
