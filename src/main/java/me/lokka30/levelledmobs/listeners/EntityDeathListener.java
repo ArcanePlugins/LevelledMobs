@@ -12,6 +12,7 @@ import me.lokka30.levelledmobs.LevelledMobs;
 import me.lokka30.levelledmobs.customdrops.CustomDropResult;
 import me.lokka30.levelledmobs.misc.ChunkKillInfo;
 import me.lokka30.levelledmobs.misc.DebugType;
+import me.lokka30.levelledmobs.rules.ChunkKillOptions;
 import me.lokka30.levelledmobs.wrappers.LivingEntityWrapper;
 import me.lokka30.levelledmobs.misc.NametagTimerChecker;
 import me.lokka30.levelledmobs.result.AdjacentChunksResult;
@@ -79,13 +80,26 @@ public class EntityDeathListener implements Listener {
                 lmEntity.getLivingEntity().getKiller(), lmEntity, false);
         }
 
+        boolean doNotMultiplyDrops = false;
+        boolean doNotBoostXp = false;
+        boolean disableXpDrops = false;
+
         if (lmEntity.isLevelled() && lmEntity.getLivingEntity().getKiller() != null
             && main.rulesManager.getMaximumDeathInChunkThreshold(lmEntity) > 0) {
 
             // Only counts if mob is killed by player
-            if (hasReachedEntityDeathChunkMax(lmEntity, lmEntity.getLivingEntity().getKiller())
-                && main.rulesManager.disableVanillaDropsOnChunkMax(lmEntity)) {
-                event.getDrops().clear();
+            if (hasReachedEntityDeathChunkMax(lmEntity, lmEntity.getLivingEntity().getKiller())){
+                final ChunkKillOptions opts = main.rulesManager.getRuleUseCustomDropsForMob(lmEntity).chunkKillOptions;
+                if (opts.disableVanillaDrops != null && opts.disableVanillaDrops){
+                    event.getDrops().clear();
+                    disableXpDrops = true;
+                }
+                if (opts.disableItemBoost != null && opts.disableItemBoost){
+                    doNotMultiplyDrops = true;
+                }
+                if (opts.disableXpDrops != null && opts.disableXpDrops){
+                    doNotBoostXp = true;
+                }
             }
         }
 
@@ -103,12 +117,17 @@ public class EntityDeathListener implements Listener {
 
         if (lmEntity.isLevelled()) {
             // Set levelled item drops
-            main.levelManager.setLevelledItemDrops(lmEntity, event.getDrops());
+            main.levelManager.setLevelledItemDrops(lmEntity, event.getDrops(), doNotMultiplyDrops);
 
             // Set levelled exp drops
-            if (event.getDroppedExp() > 0) {
-                event.setDroppedExp(
-                    main.levelManager.getLevelledExpDrops(lmEntity, event.getDroppedExp()));
+            if (disableXpDrops){
+                event.setDroppedExp(0);
+            }
+            else if (!doNotBoostXp){
+                if (event.getDroppedExp() > 0) {
+                    event.setDroppedExp(
+                            main.levelManager.getLevelledExpDrops(lmEntity, event.getDroppedExp()));
+                }
             }
         } else if (lmEntity.lockedCustomDrops != null || main.rulesManager.getRuleUseCustomDropsForMob(lmEntity).useDrops) {
             final List<ItemStack> drops = new LinkedList<>();

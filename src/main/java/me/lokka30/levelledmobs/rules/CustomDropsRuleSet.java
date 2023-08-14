@@ -21,6 +21,6 @@ public class CustomDropsRuleSet {
     }
 
     public boolean useDrops;
-    public boolean override;
+    public ChunkKillOptions chunkKillOptions;
     public final @NotNull List<String> useDropTableIds;
 }

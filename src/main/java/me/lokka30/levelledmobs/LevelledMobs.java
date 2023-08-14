@@ -179,11 +179,6 @@ public final class LevelledMobs extends JavaPlugin {
             configUtils.getPrefix());
         reloadFinishedMsg = Utils.colorizeAllInList(reloadFinishedMsg);
 
-        if (nametagQueueManager.hasNametagSupport() && (levelManager.nametagAutoUpdateTask == null
-            || levelManager.nametagAutoUpdateTask.isCancelled())) {
-            levelManager.startNametagAutoUpdateTask();
-        }
-
         if (helperSettings.getBoolean(settingsCfg, "debug-entity-damage")
             && !configUtils.debugEntityDamageWasEnabled) {
             configUtils.debugEntityDamageWasEnabled = true;

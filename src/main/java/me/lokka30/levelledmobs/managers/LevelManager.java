@@ -531,7 +531,7 @@ public class LevelManager implements LevelInterface {
 
     // This sets the levelled currentDrops on a levelled mob that just died.
     public void setLevelledItemDrops(final LivingEntityWrapper lmEntity,
-        final @NotNull List<ItemStack> currentDrops) {
+        final @NotNull List<ItemStack> currentDrops, final boolean disableItemBoost) {
 
         final int vanillaDrops = currentDrops.size();
         // this accomodates chested animals, saddles and armor on ridable creatures
@@ -539,8 +539,8 @@ public class LevelManager implements LevelInterface {
         final List<ItemStack> customDrops = new LinkedList<>();
         currentDrops.clear();
 
-        final boolean doNotMultiplyDrops = main.rulesManager.getRuleCheckIfNoDropMultiplierEntitiy(
-            lmEntity);
+        final boolean doNotMultiplyDrops = disableItemBoost ||
+                main.rulesManager.getRuleCheckIfNoDropMultiplierEntitiy(lmEntity);
         boolean hasOverride = false;
 
         if (lmEntity.lockedCustomDrops != null || main.rulesManager.getRuleUseCustomDropsForMob(lmEntity).useDrops) {
@@ -1439,7 +1439,7 @@ public class LevelManager implements LevelInterface {
         if (lmEntity.lockEntitySettings && !customDropsRuleSet.useDropTableIds.isEmpty()){
             final String customDrops = String.join(";", customDropsRuleSet.useDropTableIds);
             lmEntity.getPDC().set(main.namespacedKeys.lockedDropRules, PersistentDataType.STRING, customDrops);
-            if (customDropsRuleSet.override)
+            if (customDropsRuleSet.chunkKillOptions.disableVanillaDrops)
                 lmEntity.getPDC().set(main.namespacedKeys.lockedDropRulesOverride, PersistentDataType.INTEGER, 1);
         }
 

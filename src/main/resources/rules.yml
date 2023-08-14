@@ -383,6 +383,8 @@ default-rule:
     max-adjacent-chunks: 3
     chunk-max-cooldown-seconds: 300s
     disable-vanilla-drops-on-chunk-max: false
+    disable-item-boost-on-chunk-max: true
+    disable-xp-boost-on-chunk-max: true
 
     spawner-particles: 'SOUL'
     spawner-particles-count: 10

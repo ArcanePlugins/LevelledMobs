@@ -41,12 +41,10 @@ public class RuleInfo {
     private String ruleName;
     public @DoNotMerge boolean ruleIsEnabled;
     @DoNotMerge boolean isTempDisabled;
-    public Boolean disableVanillaDropsOnChunkMax;
     public boolean useNoSpawnerParticles;
     public Boolean babyMobsInheritAdultSetting;
     public Boolean mobLevelInheritance;
     public Boolean customDrops_UseForMobs;
-    public Boolean customDrops_UseOverride;
     public Boolean stopProcessingRules;
     public Boolean mergeEntityNameOverrides;
     public Boolean passengerMatchLevel;
@@ -112,6 +110,7 @@ public class RuleInfo {
     public WithinCoordinates conditions_WithinCoords;
     public @Nullable FineTuningAttributes allMobMultipliers;
     public Map<String, FineTuningAttributes> specificMobMultipliers;
+    public ChunkKillOptions chunkKillOptions;
 
     public String getRuleName() {
         return this.ruleName;

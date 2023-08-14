@@ -165,8 +165,12 @@ public class RulesManager {
             if (ruleInfo.customDrops_UseForMobs != null) {
                 dropRules.useDrops = ruleInfo.customDrops_UseForMobs;
             }
-            if (ruleInfo.customDrops_UseOverride != null) {
-                dropRules.override = ruleInfo.customDrops_UseOverride;
+            if (ruleInfo.chunkKillOptions != null) {
+                if (dropRules.chunkKillOptions == null)
+                    dropRules.chunkKillOptions = ruleInfo.chunkKillOptions;
+                else{
+                    dropRules.chunkKillOptions.merge(ruleInfo.chunkKillOptions);
+                }
             }
             dropRules.useDropTableIds.addAll(ruleInfo.customDrop_DropTableIds);
         }
@@ -177,8 +181,11 @@ public class RulesManager {
             dropRules.useDrops = true;
         }
 
+        if (dropRules.chunkKillOptions == null)
+            dropRules.chunkKillOptions = new ChunkKillOptions();
+
         if (lmEntity.hasLockedDropsOverride)
-            dropRules.override = true;
+            dropRules.chunkKillOptions.disableVanillaDrops = true;
 
         return dropRules;
     }
@@ -718,18 +725,6 @@ public class RulesManager {
         for (final RuleInfo ruleInfo : lmEntity.getApplicableRules()) {
             if (ruleInfo.chunkMaxCoolDownTime != null) {
                 result = ruleInfo.chunkMaxCoolDownTime;
-            }
-        }
-
-        return result;
-    }
-
-    public boolean disableVanillaDropsOnChunkMax(final @NotNull LivingEntityWrapper lmEntity) {
-        boolean result = false;
-
-        for (final RuleInfo ruleInfo : lmEntity.getApplicableRules()) {
-            if (ruleInfo.disableVanillaDropsOnChunkMax != null) {
-                result = ruleInfo.disableVanillaDropsOnChunkMax;
             }
         }
 

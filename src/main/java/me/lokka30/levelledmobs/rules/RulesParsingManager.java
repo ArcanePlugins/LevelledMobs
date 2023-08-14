@@ -727,9 +727,8 @@ public class RulesParsingManager {
         parsingInfo.creeperMaxDamageRadius = ymlHelper.getInt2(cs, "creeper-max-damage-radius",
             parsingInfo.creeperMaxDamageRadius);
         parsingInfo.customDrops_UseForMobs = ymlHelper.getBoolean2(cs,
-            "use-custom-item-drops-for-mobs", parsingInfo.customDrops_UseForMobs);
-        parsingInfo.customDrops_UseOverride = ymlHelper.getBoolean2(cs, "custom-drops-override",
-            parsingInfo.customDrops_UseOverride);
+                "use-custom-item-drops-for-mobs", parsingInfo.customDrops_UseForMobs);
+        parseChunkKillOptions(cs);
         parsingInfo.customDrop_DropTableIds.addAll(
             YmlParsingHelper.getListFromConfigItem(cs, "use-droptable-id"));
         parsingInfo.nametag = ymlHelper.getString(cs, "nametag", parsingInfo.nametag);
@@ -751,8 +750,6 @@ public class RulesParsingManager {
             "maximum-death-in-chunk-threshold", parsingInfo.maximumDeathInChunkThreshold);
         parsingInfo.chunkMaxCoolDownTime = ymlHelper.getIntTimeUnit(cs,
             "chunk-max-cooldown-seconds", parsingInfo.chunkMaxCoolDownTime);
-        parsingInfo.disableVanillaDropsOnChunkMax = ymlHelper.getBoolean2(cs,
-            "disable-vanilla-drops-on-chunk-max", parsingInfo.disableVanillaDropsOnChunkMax);
         parsingInfo.spawnerParticlesCount = ymlHelper.getInt2(cs, "spawner-particles-count",
             parsingInfo.spawnerParticlesCount);
         parsingInfo.maxAdjacentChunks = ymlHelper.getInt2(cs, "max-adjacent-chunks",
@@ -793,6 +790,18 @@ public class RulesParsingManager {
             } else {
                 parsingInfo.nametagVisibilityEnum = List.of(NametagVisibilityEnum.MELEE);
             }
+        }
+    }
+
+    private void parseChunkKillOptions(final @NotNull ConfigurationSection cs){
+        final ChunkKillOptions opts = new ChunkKillOptions();
+
+        opts.disableVanillaDrops = ymlHelper.getBoolean2(cs, "disable-vanilla-drops-on-chunk-max", null);
+        opts.disableItemBoost = ymlHelper.getBoolean2(cs, "disable-item-boost-on-chunk-max", null);
+        opts.disableXpDrops = ymlHelper.getBoolean2(cs, "disable-xp-boost-on-chunk-max", null);
+
+        if (!opts.isDefault()) {
+            parsingInfo.chunkKillOptions = opts;
         }
     }
 
