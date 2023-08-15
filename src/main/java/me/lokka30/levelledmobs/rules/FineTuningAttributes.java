@@ -18,7 +18,7 @@ import org.jetbrains.annotations.Nullable;
  * @author stumper66
  * @since 3.0.0
  */
-public class FineTuningAttributes implements Cloneable {
+public class FineTuningAttributes implements MergableRule, Cloneable {
     public FineTuningAttributes(){
         this.multipliers = new LinkedHashMap<>();
     }
@@ -31,8 +31,8 @@ public class FineTuningAttributes implements Cloneable {
         return this.multipliers.isEmpty();
     }
 
-    void mergeAttributes(final @Nullable FineTuningAttributes attributes) {
-        if (attributes == null) {
+    public void merge(final @Nullable MergableRule mergableRule) {
+        if (!(mergableRule instanceof final FineTuningAttributes attributes)) {
             return;
         }
 
@@ -41,6 +41,10 @@ public class FineTuningAttributes implements Cloneable {
 
     public void addItem(final Addition addition, final Multiplier multiplier){
         this.multipliers.put(addition, multiplier);
+    }
+
+    public boolean doMerge(){
+        return !this.doNotMerge;
     }
 
     public @Nullable Multiplier getItem(final @NotNull Addition addition){

@@ -97,7 +97,7 @@ public class RulesSubcommand extends MessagesBase implements Subcommand {
             for (final RuleInfo rpi : main.rulesParsingManager.rulePresets.values()) {
                 sb.append(
                     "\n--------------------------------- Preset rule ----------------------------------\n");
-                sb.append(rpi.formatRulesVisually(List.of("ruleIsEnabled")));
+                sb.append(rpi.formatRulesVisually(false, List.of("ruleIsEnabled")));
             }
 
             sb.append(
@@ -336,7 +336,7 @@ public class RulesSubcommand extends MessagesBase implements Subcommand {
             rule.getRuleName()));
         sb.append("\n");
 
-        sb.append(rule.formatRulesVisually(List.of("id")));
+        sb.append(rule.formatRulesVisually(false, List.of("id")));
         if (showOnConsole) {
             Utils.logger.info(sb.toString());
         } else {

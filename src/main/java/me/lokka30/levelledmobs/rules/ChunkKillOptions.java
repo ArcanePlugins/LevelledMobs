@@ -1,8 +1,8 @@
 package me.lokka30.levelledmobs.rules;
 
-import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-public class ChunkKillOptions {
+public class ChunkKillOptions implements MergableRule, Cloneable{
     public Boolean disableVanillaDrops;
     public Boolean disableItemBoost;
     public Boolean disableXpDrops;
@@ -16,7 +16,11 @@ public class ChunkKillOptions {
         return (disableVanillaDrops == null && disableItemBoost == null && disableXpDrops == null);
     }
 
-    public void merge(final @NotNull ChunkKillOptions chunkKillOptions){
+    public void merge(final @Nullable MergableRule mergableRule){
+        if (!(mergableRule instanceof final ChunkKillOptions chunkKillOptions)){
+            return;
+        }
+
         if (chunkKillOptions.isDefault()) return;
 
         if (chunkKillOptions.disableVanillaDrops != null)
@@ -25,6 +29,21 @@ public class ChunkKillOptions {
             this.disableItemBoost = chunkKillOptions.disableItemBoost;
         if (chunkKillOptions.disableXpDrops != null)
             this.disableXpDrops = chunkKillOptions.disableXpDrops;
+    }
+
+    public boolean doMerge(){
+        return true;
+    }
+
+    public ChunkKillOptions cloneItem() {
+        ChunkKillOptions copy = null;
+        try {
+            copy = (ChunkKillOptions) super.clone();
+        } catch (final Exception e) {
+            e.printStackTrace();
+        }
+
+        return copy;
     }
 
     public String toString(){

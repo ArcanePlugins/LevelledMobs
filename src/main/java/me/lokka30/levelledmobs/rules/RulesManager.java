@@ -52,10 +52,6 @@ public class RulesManager {
         this.biomeGroupMappings = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
         this.ruleNameMappings = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
         this.rulesCooldown = new TreeMap<>();
-        this.excludedKeys = List.of("isTempDisabled", "nametag_Placeholder_Levelled",
-                "nametag_Placeholder_Unlevelled", "presetName", "deathMessages",
-                "nametagVisibilityEnum", "ruleSourceNames", "spawnerParticle",
-                "useNoSpawnerParticles");
     }
 
     private final LevelledMobs main;
@@ -66,7 +62,6 @@ public class RulesManager {
     public boolean anyRuleHasChance;
     public boolean hasAnyWGCondition;
     private Instant lastRulesCheck;
-    private final List<String> excludedKeys;
     private @NotNull String currentRulesHash = "";
     final static Object ruleLocker = new Object();
 
@@ -245,7 +240,7 @@ public class RulesManager {
                         thisMobAttribs = null;
                     }
                 } else {
-                    allMobAttribs.mergeAttributes(ruleInfo.allMobMultipliers);
+                    allMobAttribs.merge(ruleInfo.allMobMultipliers);
                 }
             }
 
@@ -259,15 +254,15 @@ public class RulesManager {
                     if (tempAttribs.doNotMerge)
                         allMobAttribs = null;
                     else if (allMobAttribs != null)
-                        allMobAttribs.mergeAttributes(thisMobAttribs);
+                        allMobAttribs.merge(thisMobAttribs);
                 } else {
-                    thisMobAttribs.mergeAttributes(tempAttribs);
+                    thisMobAttribs.merge(tempAttribs);
                 }
             }
         }
 
         if (allMobAttribs != null) {
-            allMobAttribs.mergeAttributes(thisMobAttribs);
+            allMobAttribs.merge(thisMobAttribs);
             return allMobAttribs;
         } else {
             return thisMobAttribs;
@@ -475,11 +470,10 @@ public class RulesManager {
 
         for (final RuleInfo ruleInfo : lmEntity.getApplicableRules()) {
             if (ruleInfo.healthIndicator != null) {
-                if (indicator == null || ruleInfo.healthIndicator.doMerge == null
-                    || !ruleInfo.healthIndicator.doMerge) {
-                    indicator = ruleInfo.healthIndicator;
+                if (indicator == null || !ruleInfo.healthIndicator.doMerge()) {
+                    indicator = ruleInfo.healthIndicator.cloneItem();
                 } else {
-                    indicator.mergeIndicator(ruleInfo.healthIndicator);
+                    indicator.merge(ruleInfo.healthIndicator.cloneItem());
                 }
             }
         }
@@ -1363,7 +1357,7 @@ public class RulesManager {
                         continue;
                     }
                     if (!sb.isEmpty()) sb.append("\n");
-                    sb.append(rule.formatRulesVisually(excludedKeys));
+                    sb.append(rule.formatRulesVisually(true, List.of("id")));
                 }
             }
         }

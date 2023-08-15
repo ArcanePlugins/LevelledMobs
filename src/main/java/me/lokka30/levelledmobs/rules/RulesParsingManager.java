@@ -1198,7 +1198,7 @@ public class RulesParsingManager {
             indicator.indicatorHalf);
         indicator.maxIndicators = ymlHelper.getInt2(cs, "max", indicator.maxIndicators);
         indicator.scale = ymlHelper.getDouble2(cs, "scale", indicator.scale);
-        indicator.doMerge = ymlHelper.getBoolean2(cs, "merge", indicator.doMerge);
+        indicator.merge = ymlHelper.getBoolean2(cs, "merge", indicator.merge);
 
         final ConfigurationSection cs_Tiers = objTo_CS(cs, "colored-tiers");
         if (cs_Tiers != null) {
@@ -1240,9 +1240,8 @@ public class RulesParsingManager {
             }
         }
 
-        if (parsingInfo.healthIndicator != null && parsingInfo.healthIndicator.doMerge != null
-            && parsingInfo.healthIndicator.doMerge) {
-            parsingInfo.healthIndicator.mergeIndicator(indicator);
+        if (parsingInfo.healthIndicator != null && parsingInfo.healthIndicator.doMerge()) {
+            parsingInfo.healthIndicator.merge(indicator);
         } else {
             parsingInfo.healthIndicator = indicator;
         }

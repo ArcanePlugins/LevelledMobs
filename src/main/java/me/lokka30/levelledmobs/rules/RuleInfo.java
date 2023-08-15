@@ -38,21 +38,21 @@ public class RuleInfo {
         this.customDrop_DropTableIds = new LinkedList<>();
     }
 
-    private String ruleName;
+    private @ExcludeFromHash String ruleName;
     public @DoNotMerge boolean ruleIsEnabled;
-    @DoNotMerge boolean isTempDisabled;
-    public boolean useNoSpawnerParticles;
+    @DoNotMerge @ExcludeFromHash boolean isTempDisabled;
+    public @ExcludeFromHash boolean useNoSpawnerParticles;
     public Boolean babyMobsInheritAdultSetting;
     public Boolean mobLevelInheritance;
-    public Boolean customDrops_UseForMobs;
+    public @ExcludeFromHash Boolean customDrops_UseForMobs;
     public Boolean stopProcessingRules;
-    public Boolean mergeEntityNameOverrides;
+    public @ExcludeFromHash Boolean mergeEntityNameOverrides;
     public Boolean passengerMatchLevel;
-    Boolean lockEntity;
-    @DoNotMerge int rulePriority;
-    public Integer spawnerParticlesCount;
+    @ExcludeFromHash Boolean lockEntity;
+    @DoNotMerge @ExcludeFromHash int rulePriority;
+    public @ExcludeFromHash Integer spawnerParticlesCount;
     public Integer maxRandomVariance;
-    public Integer creeperMaxDamageRadius;
+    public @ExcludeFromHash Integer creeperMaxDamageRadius;
     public Integer conditions_MinLevel;
     public Integer conditions_MaxLevel;
     public Integer restrictions_MinLevel;
@@ -61,32 +61,32 @@ public class RuleInfo {
     public Integer conditions_ApplyBelowY;
     public Integer conditions_MinDistanceFromSpawn;
     public Integer conditions_MaxDistanceFromSpawn;
-    public Long nametagVisibleTime;
-    public Integer maximumDeathInChunkThreshold;
-    public Integer chunkMaxCoolDownTime;
-    public Integer maxAdjacentChunks;
-    public Long conditions_CooldownTime;
-    public Integer conditions_TimesToCooldownActivation;
-    public Float conditions_Chance;
-    public Double sunlightBurnAmount;
-    public String nametag;
-    public String nametag_CreatureDeath;
-    public String nametag_Placeholder_Levelled;
-    public String nametag_Placeholder_Unlevelled;
-    public @DoNotMerge String presetName;
-    public final @NotNull List<String> customDrop_DropTableIds;
-    public HealthIndicator healthIndicator;
+    public @ExcludeFromHash Long nametagVisibleTime;
+    public @ExcludeFromHash Integer maximumDeathInChunkThreshold;
+    public @ExcludeFromHash Integer chunkMaxCoolDownTime;
+    public @ExcludeFromHash Integer maxAdjacentChunks;
+    public @ExcludeFromHash Long conditions_CooldownTime;
+    public @ExcludeFromHash Integer conditions_TimesToCooldownActivation;
+    public @ExcludeFromHash Float conditions_Chance;
+    public @ExcludeFromHash Double sunlightBurnAmount;
+    public @ExcludeFromHash String nametag;
+    public @ExcludeFromHash String nametag_CreatureDeath;
+    public @ExcludeFromHash String nametag_Placeholder_Levelled;
+    public @ExcludeFromHash String nametag_Placeholder_Unlevelled;
+    public @DoNotMerge @ExcludeFromHash String presetName;
+    public final @NotNull @ExcludeFromHash List<String> customDrop_DropTableIds;
+    public @ExcludeFromHash HealthIndicator healthIndicator;
     public MobCustomNameStatus conditions_MobCustomnameStatus;
     public MobTamedStatus conditions_MobTamedStatus;
     public LevellingStrategy levellingStrategy;
     public PlayerLevellingOptions playerLevellingOptions;
-    public Map<String, List<LevelTierMatching>> entityNameOverrides_Level;
-    public Map<String, LevelTierMatching> entityNameOverrides;
-    public DeathMessages deathMessages;
-    public List<NametagVisibilityEnum> nametagVisibilityEnum;
-    public @NotNull @DoNotMerge final Map<String, String> ruleSourceNames;
-    public Particle spawnerParticle;
-    public List<TieredColoringInfo> tieredColoringInfos;
+    public @ExcludeFromHash Map<String, List<LevelTierMatching>> entityNameOverrides_Level;
+    public @ExcludeFromHash Map<String, LevelTierMatching> entityNameOverrides;
+    public @ExcludeFromHash DeathMessages deathMessages;
+    public @ExcludeFromHash List<NametagVisibilityEnum> nametagVisibilityEnum;
+    public @NotNull @DoNotMerge @ExcludeFromHash final Map<String, String> ruleSourceNames;
+    public @ExcludeFromHash Particle spawnerParticle;
+    public @ExcludeFromHash List<TieredColoringInfo> tieredColoringInfos;
     public Map<ExternalCompatibilityManager.ExternalCompatibility, Boolean> enabledExtCompats;
     public MergeableStringList mobNBT_Data;
     public CachedModalList<String> allowedEntities;
@@ -110,7 +110,7 @@ public class RuleInfo {
     public WithinCoordinates conditions_WithinCoords;
     public @Nullable FineTuningAttributes allMobMultipliers;
     public Map<String, FineTuningAttributes> specificMobMultipliers;
-    public ChunkKillOptions chunkKillOptions;
+    public @ExcludeFromHash ChunkKillOptions chunkKillOptions;
 
     public String getRuleName() {
         return this.ruleName;
@@ -140,34 +140,27 @@ public class RuleInfo {
                 }
 
                 boolean skipSettingValue = false;
-                final Object presetValue = f.get(preset);
+                Object presetValue = f.get(preset);
+                final Object ruleValue = this.getClass().getDeclaredField(f.getName()).get(this);
 
                 if (f.getName().equals("entityNameOverrides") && this.entityNameOverrides != null
                     && presetValue instanceof Map) {
                     this.entityNameOverrides.putAll((Map<String, LevelTierMatching>) presetValue);
                     skipSettingValue = true;
-                } else if (f.getName().equals("entityNameOverrides_Level")
+                }
+                else if (presetValue instanceof final MergableRule mergableRule){
+                    if (ruleValue != null && mergableRule.doMerge()) {
+                        ((MergableRule)ruleValue).merge((MergableRule) mergableRule.cloneItem());
+                        skipSettingValue = true;
+                    }
+                    else{
+                        presetValue = mergableRule.cloneItem();
+                    }
+                }
+                else if (f.getName().equals("entityNameOverrides_Level")
                     && this.entityNameOverrides_Level != null) {
                     this.entityNameOverrides_Level.putAll(
                         (Map<String, List<LevelTierMatching>>) presetValue);
-                    skipSettingValue = true;
-                } else if (f.getName().equals("healthIndicator")) {
-                    final HealthIndicator mergingPreset = (HealthIndicator) presetValue;
-                    if (this.healthIndicator == null || mergingPreset.doMerge == null
-                        || !mergingPreset.doMerge) {
-                        this.healthIndicator = mergingPreset;
-                    } else {
-                        this.healthIndicator.mergeIndicator(mergingPreset.cloneItem());
-                    }
-
-                    skipSettingValue = true;
-                } else if (f.getName().equals("allMobMultipliers")) {
-                    final FineTuningAttributes mergingPreset = (FineTuningAttributes) presetValue;
-                    if (this.allMobMultipliers == null) {
-                        this.allMobMultipliers = mergingPreset.cloneItem();
-                    } else {
-                        this.allMobMultipliers.mergeAttributes(mergingPreset);
-                    }
                     skipSettingValue = true;
                 } else if (f.getName().equals("specificMobMultipliers")) {
                     final Map<String, FineTuningAttributes> mergingPreset = (Map<String, FineTuningAttributes>) presetValue;
@@ -187,18 +180,16 @@ public class RuleInfo {
 
                     skipSettingValue = true;
                 } else if (presetValue instanceof final MergeableStringList mergingPreset
-                    && this.getClass().getDeclaredField(f.getName()).get(this) != null) {
+                    && ruleValue != null) {
                     if (mergingPreset.doMerge && !mergingPreset.isEmpty()) {
-                        final MergeableStringList current = (MergeableStringList) this.getClass()
-                            .getDeclaredField(f.getName()).get(this);
+                        final MergeableStringList current = (MergeableStringList) ruleValue;
                         current.items.addAll(mergingPreset.items);
                         skipSettingValue = true;
                     }
                 }
 
                 if (presetValue instanceof final CachedModalList<?> cachedModalList_preset) {
-                    final CachedModalList<?> thisCachedModalList = (CachedModalList<?>) this.getClass()
-                        .getDeclaredField(f.getName()).get(this);
+                    final CachedModalList<?> thisCachedModalList = (CachedModalList<?>) ruleValue;
 
                     if (thisCachedModalList != null && cachedModalList_preset.doMerge) {
                         thisCachedModalList.mergeCachedModal(cachedModalList_preset);
@@ -219,10 +210,8 @@ public class RuleInfo {
                     skipSettingValue = true;
                 }
 
-                if (presetValue instanceof TieredColoringInfo) {
-                    this.getClass().getDeclaredField(f.getName())
-                        .set(this, ((TieredColoringInfo) presetValue).cloneItem());
-                    skipSettingValue = true;
+                if (presetValue instanceof final TieredColoringInfo tieredColoringInfo) {
+                    presetValue = tieredColoringInfo.cloneItem();
                 }
 
                 if (presetValue == MobCustomNameStatus.NOT_SPECIFIED) {
@@ -254,14 +243,14 @@ public class RuleInfo {
     }
 
     public @NotNull String formatRulesVisually() {
-        return formatRulesVisually(null);
+        return formatRulesVisually(false, null);
     }
 
-    public @NotNull String formatRulesVisually(final List<String> excludedKeys) {
+    public @NotNull String formatRulesVisually(final boolean isForHash, final @Nullable List<String> excludedKeys) {
         final SortedMap<String, String> values = new TreeMap<>();
         final StringBuilder sb = new StringBuilder();
 
-        if (excludedKeys == null || !excludedKeys.contains("id")) {
+        if (excludedKeys == null || excludedKeys.contains("id")) {
             sb.append("id: ");
             sb.append(getRuleName());
             sb.append("\n");
@@ -278,7 +267,10 @@ public class RuleInfo {
                 if (f.getName().equals("ruleSourceNames")) {
                     continue;
                 }
-                if (excludedKeys != null && excludedKeys.contains(f.getName())) {
+                if (isForHash && f.isAnnotationPresent(ExcludeFromHash.class)) {
+                    continue;
+                }
+                if (excludedKeys != null && excludedKeys.contains(f.getName())){
                     continue;
                 }
                 final Object value = f.get(this);

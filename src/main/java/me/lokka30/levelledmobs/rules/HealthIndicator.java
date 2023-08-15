@@ -9,6 +9,7 @@ import java.util.TreeMap;
 
 import me.lokka30.levelledmobs.wrappers.LivingEntityWrapper;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 
 /**
@@ -17,14 +18,14 @@ import org.jetbrains.annotations.NotNull;
  * @author stumper66
  * @since 3.1.0
  */
-public class HealthIndicator implements Cloneable {
+public class HealthIndicator implements MergableRule, Cloneable {
 
     public String indicator;
     public String indicatorHalf;
     public Double scale;
     public Integer maxIndicators;
     public Map<Integer, String> tiers;
-    Boolean doMerge;
+    Boolean merge;
 
     public HealthIndicator cloneItem() {
         HealthIndicator copy = null;
@@ -121,7 +122,15 @@ public class HealthIndicator implements Cloneable {
         return new HealthIndicatorResult(result.toString(), primaryColor);
     }
 
-    void mergeIndicator(final @NotNull HealthIndicator mergingIndicator) {
+    public boolean doMerge(){
+        return this.merge != null && this.merge;
+    }
+
+    public void merge(final @Nullable MergableRule mergableRule) {
+        if (!(mergableRule instanceof final HealthIndicator mergingIndicator)){
+            return;
+        }
+
         if (mergingIndicator.indicator != null) {
             this.indicator = mergingIndicator.indicator;
         }
@@ -183,7 +192,7 @@ public class HealthIndicator implements Cloneable {
             sb.append(tiers);
         }
 
-        if (doMerge != null && doMerge) {
+        if (doMerge()) {
             if (!sb.isEmpty()) {
                 sb.append("&r, ");
             }
