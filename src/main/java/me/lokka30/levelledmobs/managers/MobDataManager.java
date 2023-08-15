@@ -136,7 +136,7 @@ public class MobDataManager {
                 if (lmEntity.getLivingEntity().getHealth() <= 0.0) return;
                 lmEntity.getLivingEntity().setHealth(
                     Math.max(
-                        0.0d,
+                        1.0d,
                         attrib.getValue() - existingDamage
                     )
                 );
